@@ -48,6 +48,7 @@ function truncatedProjectListRows(projects, urlFullList, gridDisplay, lastVisite
       url: url,
       itemType: "project",
       title: project.name,
+      creators: project.owner ? [project.owner] : [],
       slug: project.path_with_namespace,
       description: project.description ?
         <Fragment>
@@ -121,10 +122,10 @@ class YourProjects extends Component {
     }
 
     const title = this.props.lastVisited ? "Recent Projects" : "Your Projects";
-    return <Fragment>
+    return <div className="landing-projects-section">
       <h3 key="header">{title}</h3>
       {projectsComponent}
-    </Fragment>;
+    </div>;
   }
 }
 
@@ -157,12 +158,12 @@ class LoggedInHome extends Component {
       </Row>,
       <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
       <Row key="content">
-        <Col xs={{ order: 2 }} md={{ size: 6, order: 1 }}>
+        <Col xs={{ order: 2 }} md={{ size: 7, order: 1 }}>
           <YourProjects
             urlMap={urlMap} loading={projects.fetching} projects={projects.list} lastVisited={projects.lastVisited} />
           <Row><Col md={12}>&nbsp;</Col></Row>
         </Col>
-        <Col xs={{ order: 1 }} md={{ size: 6, order: 2 }}>
+        <Col xs={{ order: 1 }} md={{ size: 5, order: 2 }}>
           <Welcome {...this.props} />
         </Col>
       </Row>,
