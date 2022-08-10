@@ -67,3 +67,7 @@ a:focus-visible, svg:focus, svg:focus-visible {
   color: var(--bs-primary);
   background-color: white;
 }
+
+.tooltip-inner {
+  border-radius: 8px;
+}
