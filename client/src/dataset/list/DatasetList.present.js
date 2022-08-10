@@ -188,6 +188,7 @@ class DatasetsRows extends Component {
         url: `${datasetsUrl}/${encodeURIComponent(dataset.identifier)}`,
         itemType: "dataset",
         title: dataset.title || dataset.name,
+        tagList: dataset.keywords,
         description: dataset.description !== undefined && dataset.description !== null ?
           <Fragment>
             <MarkdownTextExcerpt markdownText={dataset.description} singleLine={gridDisplay ? false : true}

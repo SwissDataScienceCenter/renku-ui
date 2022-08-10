@@ -153,4 +153,19 @@ function InlineSubmitButton(
   </div>;
 }
 
-export { RefreshButton, ButtonWithMenu, GoBackButton, InlineSubmitButton };
+/**
+ * Round Button for cards
+ *
+ * @param {function} props.handleClick - function to trigger when clicking on the button
+ * @param {string} [props.color] - color of the button
+ * @param {IconProp} [props.icon] - icon of the button
+ */
+function CardButton({ icon, color, handleClick }) {
+  return (
+    <Button className={`btn-round btn-${color}`} onClick={handleClick}>
+      <FontAwesomeIcon icon={icon} color="white" />
+    </Button>
+  );
+}
+
+export { RefreshButton, ButtonWithMenu, CardButton, GoBackButton, InlineSubmitButton };
