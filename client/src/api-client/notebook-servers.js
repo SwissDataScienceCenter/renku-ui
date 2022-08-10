@@ -118,8 +118,8 @@ function addNotebookServersMethods(client) {
     }).then(resp => {
       return resp.data;
     }).catch(error => {
-      if (error.errorData && error.errorData.messages && error.errorData.messages.error) {
-        const err = new Error(error.errorData.messages.error);
+      if (error.errorData && error.errorData.error && error.errorData.error.message) {
+        const err = new Error(error.errorData.error.message);
         err.cause = error;
         throw err;
       }
@@ -151,8 +151,9 @@ function addNotebookServersMethods(client) {
       response = await client.clientFetch(url, { method: "GET", headers });
     }
     catch (errorResponse) {
-      if (errorResponse?.errorData?.messages)
-        return errorResponse.errorData.messages;
+      if (errorResponse?.errorData?.error?.message)
+        return errorResponse.errorData.error.message;
+
       return errorResponse;
     }
     return response.data;
