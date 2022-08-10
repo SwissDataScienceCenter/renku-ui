@@ -16,27 +16,27 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useContext, useRef } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useRef } from "react";
+import { Link, useHistory } from "react-router-dom";
 import { Col } from "reactstrap";
 import Masonry from "react-masonry-css";
-import { faGlobe, faLock, faUserFriends } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Briefcase, HddStack, Globe, People, Lock } from "react-bootstrap-icons";
+import { faPlay } from "@fortawesome/free-solid-svg-icons";
 
-import { ProjectTagList } from "../../project/shared";
 import { TimeCaption } from "./TimeCaption";
 import { Pagination } from "./Pagination";
 import { ThrottledTooltip } from "./Tooltip";
 import AppContext from "../context/appContext";
+import { CardButton } from "./buttons/Button";
 
-const VisibilityIcon = ({ visibility }) => {
+const VisibilityIcon = ({ visibility, className }) => {
   const ref = useRef(null);
   const { client } = useContext(AppContext);
   if (!visibility) return null;
   const icon = {
-    public: <FontAwesomeIcon icon={faGlobe} />,
-    private: <FontAwesomeIcon icon={faLock} />,
-    internal: <FontAwesomeIcon icon={faUserFriends} />
+    public: <Globe />,
+    private: <Lock />,
+    internal: <People />
   };
   const baseUrl = client.baseUrl;
   const { hostname } = baseUrl ? new URL(baseUrl) : { hostname: "renkulab.io" };
@@ -49,11 +49,11 @@ const VisibilityIcon = ({ visibility }) => {
 
   const style = {
     position: "relative",
-    top: "-3px"
+    top: "-3px",
   };
 
   return <>
-    <span ref={ref} className="text-rk-text" style={style}>
+    <span ref={ref} className={`card-visibility-icon ${className}`} style={style}>
       { icon[visibility] || "" }
     </span>
     <ThrottledTooltip
@@ -61,6 +61,113 @@ const VisibilityIcon = ({ visibility }) => {
       tooltip={tooltip[visibility]} />
   </>;
 };
+
+function Slug({ display, slug }) {
+  if (!slug) return null;
+  if (display === "list") {
+    return <div className="card-text text-truncate creators text-rk-text-light">
+      {slug}
+    </div>;
+  }
+
+  return <span className="slug font-weight-light text-rk-text ms-2">
+    {slug}
+  </span>;
+}
+
+function Creators({ display, creators }) {
+  if (!creators) return null;
+  if (display === "list") {
+    return <div className="card-text creators text-truncate text-rk-text-light">
+      {creators.slice(0, 3).map((creator) => creator.name).join(", ")}
+      {creators.length > 3 ? ", et al." : null}
+    </div>;
+  }
+
+  return <div className="creators text-truncate text-rk-text">
+    <small style={{ display: "block" }} className="font-weight-light">
+      {creators.slice(0, 3).map((creator) => creator.name).join(", ")}
+      {creators.length > 3 ? ", et al." : null}
+    </small>
+  </div>;
+}
+
+
+function EntityLabel({ type }) {
+  switch (type) {
+    case "project":
+      return (
+        <div className="card-type-label text-rk-green gap-2 d-flex align-items-center">
+          <Briefcase/>
+          Project
+        </div>);
+    case "dataset":
+      return (
+        <div className="card-type-label text-rk-pink gap-2 d-flex align-items-center">
+          <HddStack />
+          Dataset
+        </div>
+      );
+    default:
+      return null;
+  }
+}
+
+function EntityButton({ type, slug }) {
+  const history = useHistory();
+  const carButtonRef = useRef(null);
+  let handleClick;
+
+  switch (type) {
+    case "project":
+      handleClick = (e) => {
+        e.preventDefault();
+        history.push(`/projects/${slug}/sessions/new?autostart=1`);
+      };
+      return (
+        <>
+          <div ref={carButtonRef} className="card-button">
+            <CardButton color="rk-green" icon={faPlay} handleClick={handleClick} />
+          </div>
+          <ThrottledTooltip
+            target={carButtonRef}
+            tooltip="Start a session of this project" />
+        </>
+      );
+    case "dataset":
+      return null; // no defined yet
+    default:
+      return null;
+  }
+}
+
+function EntityDescription({ description }) {
+  const descriptionStyles = {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    display: "-webkit-box",// eslint-disable-line
+    lineClamp: 3,
+    WebkitLineClamp: 3,// eslint-disable-line
+    WebkitBoxOrient: "vertical",// eslint-disable-line
+    margin: "12px 0",
+    minHeight: "75px",
+    height: "75px",
+  };
+
+  return (<div className="card-text text-rk-text-light" style={descriptionStyles}>
+    {description ? description : null}
+  </div>);
+}
+
+function EntityTags ({ tagList, itemType }) {
+  const colorText = itemType === "project" ? "text-rk-green" : "text-rk-pink";
+
+  return (
+    <div className={`tagList card-tags text-truncate ${colorText}`}>
+      {tagList?.map(tag => `#${tag}`).join(" ")}
+    </div>
+  );
+}
 
 /**
  * ListCard/ListBar returns a card or a bar displaying an item in a List.
@@ -77,57 +184,32 @@ const VisibilityIcon = ({ visibility }) => {
  */
 function ListCard(props) {
   const { url, title, description, tagList, timeCaption,
-    labelCaption, mediaContent, creators, itemType, slug, visibility } = props;
+    labelCaption, creators, itemType, slug, visibility } = props;
+
   return (
     <div data-cy="list-card" className="col text-decoration-none p-2 rk-search-result-card">
       <Link to={url} className="col text-decoration-none">
-        <div className="card card-body border-0">
-          <div className="mt-2 mb-2">
-            <span className={"circle me-1 " + itemType}> </span>
-            <VisibilityIcon visibility={visibility} />
+        <div className="card card-entity">
+          <div className={`card-header-entity card-header-entity--${itemType}`}>
+            <div className="d-flex justify-content-between align-items-center m-3">
+              <EntityLabel type={itemType} />
+              <VisibilityIcon visibility={visibility} />
+            </div>
+            <div className="card-bg-title">{title}</div>
           </div>
-          <div className="title lh-sm" data-cy="list-card-title">
-            {title}
-          </div>
-          {
-            slug ?
-              <div className="card-text creators text-rk-text mt-1">
-                <small style={{ display: "block" }} className="font-weight-light">
-                  {slug}
-                </small>
-              </div>
-              : null
-          }
-          {
-            creators ?
-              <div className="card-text creators text-truncate text-rk-text mt-1">
-                <small style={{ display: "block" }} className="font-weight-light">
-                  {creators.slice(0, 3).map((creator) => creator.name).join(", ")}
-                  {creators.length > 3 ? ", et al." : null}
-                </small>
-              </div>
-              : null
-          }
-          <div className="card-text text-rk-text mt-3 mb-2">
-            {description ? description : null}
-          </div>
-          {tagList && tagList.length > 0 ?
-            <Fragment>
-              <div className="tagList mt-auto mb-2">
-                <ProjectTagList tagList={tagList} />
-              </div>
-              <p className="card-text ">
-                <TimeCaption caption={labelCaption || "Updated"} time={timeCaption} className="text-secondary"/>
-              </p>
-            </Fragment>
-            : <p className="card-text mt-auto">
-              <TimeCaption caption={labelCaption || "Updated"} time={timeCaption} className="text-secondary"/>
+          <EntityButton type={itemType} slug={slug} />
+          <div className="card-body">
+            <div className="card-title text-truncate lh-sm" data-cy="list-card-title">
+              {title}
+            </div>
+            <Slug display="list" slug={slug} />
+            <Creators display="list" creators={creators} />
+            <EntityDescription description={description} />
+            <EntityTags tagList={tagList} itemType={itemType} />
+            <p className="card-text my-1">
+              <TimeCaption caption={labelCaption || "Updated"} time={timeCaption} className="text-rk-text-light"/>
             </p>
-          }
-          {mediaContent ?
-            <img src={mediaContent} alt=" " className="card-img-bottom"/>
-            : null
-          }
+          </div>
         </div>
       </Link>
     </div>
@@ -145,40 +227,19 @@ function ListBar(props) {
         <span className={"circle " + itemType}> </span>
       </div>
       <div>
-        <VisibilityIcon visibility={visibility} />
+        <VisibilityIcon visibility={visibility} className="card-visibility-icon--bar" />
       </div>
     </div>
     <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
       <div className="title d-inline-block text-truncate">
         {title}
-        {
-          slug ?
-            <span className="slug font-weight-light text-rk-text ms-2">
-              {slug}
-            </span>
-            : null
-        }
+        <Slug display="bar" slug={slug} />
       </div>
-      {
-        creators ?
-          <div className="creators text-truncate text-rk-text">
-            <small style={{ display: "block" }} className="font-weight-light">
-              {creators.slice(0, 3).map((creator) => creator.name).join(", ")}
-              {creators.length > 3 ? ", et al." : null}
-            </small>
-          </div>
-          : null
-      }
-      <div className="description text-truncate text-rk-text d-flex">
+      <Creators display="bar" creators={creators} />
+      <div className="description card-description text-truncate text-rk-text d-flex">
         {description}
       </div>
-      {
-        tagList ?
-          <div className="tagList">
-            <ProjectTagList tagList={tagList} />
-          </div>
-          : null
-      }
+      <EntityTags tagList={tagList} itemType={itemType} />
       {
         timeCaption ?
           <div className="mt-auto">

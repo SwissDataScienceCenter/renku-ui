@@ -54,6 +54,7 @@ function ProjectListRows(props) {
       itemType: "project",
       title: project.name,
       slug: project.path_with_namespace,
+      creators: project.owner ? [project.owner] : [],
       description: project.description ?
         <Fragment>
           <MarkdownTextExcerpt markdownText={project.description} singleLine={gridDisplay ? false : true}

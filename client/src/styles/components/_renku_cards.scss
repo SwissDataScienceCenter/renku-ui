@@ -1,0 +1,65 @@
+.card-entity {
+  max-width: 350px;
+  margin: auto;
+
+  .card-body {
+    padding: 1.5rem 1rem 1rem 1rem;
+  }
+}
+.card-header-entity {
+  height: 198px;
+  border-radius: 8px 8px 0 0;
+  background-size: cover;
+}
+
+.card-header-entity--project {
+  background-image: url("../assets/projectBackgroundSmall.png");
+}
+
+.card-header-entity--dataset {
+  background-image: url("../assets/datasetBackgroundSmall.png");
+}
+
+.card-type-label {
+  border-radius: 1000px;
+  background-color: rgba(255,255,255,0.8);
+  padding: 5px 15px;
+}
+
+.card-visibility-icon svg {
+  color: rgba(255,255,255,0.6);
+}
+.card-visibility-icon--bar svg {
+  color: var(--bs-dark);
+}
+
+.card-bg-title {
+  color: rgba(255,255,255,0.2);
+  font-size: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  line-height: normal;
+}
+
+.card-title {
+  font-size: 27px;
+  color: var(--bs-dark);
+  line-height: 32px;
+  font-weight: bold;
+}
+
+.card-tags {
+  min-height: 24px;
+}
+
+.card-description {
+  min-height: 24px;
+}
+
+.card-button {
+  position: absolute;
+  top: 175px;
+  right: 20px;
+}
+
