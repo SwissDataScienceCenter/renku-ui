@@ -155,10 +155,6 @@ function InlineSubmitButton(
 
 /**
  * Round Button for cards
- *
- * @param {function} props.handleClick - function to trigger when clicking on the button
- * @param {string} [props.color] - color of the button
- * @param {IconProp} [props.icon] - icon of the button
  */
 function CardButton({ icon, color, handleClick }) {
   return (

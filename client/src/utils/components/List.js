@@ -16,158 +16,20 @@
  * limitations under the License.
  */
 
-import React, { useContext, useRef } from "react";
-import { Link, useHistory } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 import { Col } from "reactstrap";
 import Masonry from "react-masonry-css";
-import { Briefcase, HddStack, Globe, People, Lock } from "react-bootstrap-icons";
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
 
 import { TimeCaption } from "./TimeCaption";
 import { Pagination } from "./Pagination";
-import { ThrottledTooltip } from "./Tooltip";
-import AppContext from "../context/appContext";
-import { CardButton } from "./buttons/Button";
-
-const VisibilityIcon = ({ visibility, className }) => {
-  const ref = useRef(null);
-  const { client } = useContext(AppContext);
-  if (!visibility) return null;
-  const icon = {
-    public: <Globe />,
-    private: <Lock />,
-    internal: <People />
-  };
-  const baseUrl = client.baseUrl;
-  const { hostname } = baseUrl ? new URL(baseUrl) : { hostname: "renkulab.io" };
-
-  const tooltip = {
-    public: "Public: Anyone can access your project.",
-    private: "Private: Only members explicitly added to this project can access it.",
-    internal: `Internal: Anyone signed-in to ${hostname} can access your project.` //pending for other deployments
-  };
-
-  const style = {
-    position: "relative",
-    top: "-3px",
-  };
-
-  return <>
-    <span ref={ref} className={`card-visibility-icon ${className}`} style={style}>
-      { icon[visibility] || "" }
-    </span>
-    <ThrottledTooltip
-      target={ref}
-      tooltip={tooltip[visibility]} />
-  </>;
-};
-
-function Slug({ display, slug }) {
-  if (!slug) return null;
-  if (display === "list") {
-    return <div className="card-text text-truncate creators text-rk-text-light">
-      {slug}
-    </div>;
-  }
-
-  return <span className="slug font-weight-light text-rk-text ms-2">
-    {slug}
-  </span>;
-}
-
-function Creators({ display, creators }) {
-  if (!creators) return null;
-  if (display === "list") {
-    return <div className="card-text creators text-truncate text-rk-text-light">
-      {creators.slice(0, 3).map((creator) => creator.name).join(", ")}
-      {creators.length > 3 ? ", et al." : null}
-    </div>;
-  }
-
-  return <div className="creators text-truncate text-rk-text">
-    <small style={{ display: "block" }} className="font-weight-light">
-      {creators.slice(0, 3).map((creator) => creator.name).join(", ")}
-      {creators.length > 3 ? ", et al." : null}
-    </small>
-  </div>;
-}
-
-
-function EntityLabel({ type }) {
-  switch (type) {
-    case "project":
-      return (
-        <div className="card-type-label text-rk-green gap-2 d-flex align-items-center">
-          <Briefcase/>
-          Project
-        </div>);
-    case "dataset":
-      return (
-        <div className="card-type-label text-rk-pink gap-2 d-flex align-items-center">
-          <HddStack />
-          Dataset
-        </div>
-      );
-    default:
-      return null;
-  }
-}
-
-function EntityButton({ type, slug }) {
-  const history = useHistory();
-  const carButtonRef = useRef(null);
-  let handleClick;
-
-  switch (type) {
-    case "project":
-      handleClick = (e) => {
-        e.preventDefault();
-        history.push(`/projects/${slug}/sessions/new?autostart=1`);
-      };
-      return (
-        <>
-          <div ref={carButtonRef} className="card-button">
-            <CardButton color="rk-green" icon={faPlay} handleClick={handleClick} />
-          </div>
-          <ThrottledTooltip
-            target={carButtonRef}
-            tooltip="Start a session of this project" />
-        </>
-      );
-    case "dataset":
-      return null; // no defined yet
-    default:
-      return null;
-  }
-}
-
-function EntityDescription({ description }) {
-  const descriptionStyles = {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    display: "-webkit-box",// eslint-disable-line
-    lineClamp: 3,
-    WebkitLineClamp: 3,// eslint-disable-line
-    WebkitBoxOrient: "vertical",// eslint-disable-line
-    margin: "12px 0",
-    minHeight: "75px",
-    height: "75px",
-  };
-
-  return (<div className="card-text text-rk-text-light" style={descriptionStyles}>
-    {description ? description : null}
-  </div>);
-}
-
-function EntityTags ({ tagList, itemType }) {
-  const colorText = itemType === "project" ? "text-rk-green" : "text-rk-pink";
-
-  return (
-    <div className={`tagList card-tags text-truncate ${colorText}`}>
-      {tagList?.map(tag => `#${tag}`).join(" ")}
-    </div>
-  );
-}
+import EntityCreators from "./entities/Creators";
+import VisibilityIcon from "./entities/VisibilityIcon";
+import EntityLabel from "./entities/Label";
+import Slug from "./entities/Slug";
+import EntityDescription from "./entities/Description";
+import EntityTags from "./entities/Tags";
+import { EntityButton } from "./entities/Buttons";
 
 /**
  * ListCard/ListBar returns a card or a bar displaying an item in a List.
@@ -203,9 +65,9 @@ function ListCard(props) {
               {title}
             </div>
             <Slug display="list" slug={slug} />
-            <Creators display="list" creators={creators} />
-            <EntityDescription description={description} />
-            <EntityTags tagList={tagList} itemType={itemType} />
+            <EntityCreators display="list" creators={creators} itemType={itemType} />
+            <EntityDescription description={description} isHeightFixed={true} showSuggestion={false} />
+            <EntityTags tagList={tagList} multiline={false} />
             <p className="card-text my-1">
               <TimeCaption caption={labelCaption || "Updated"} time={timeCaption} className="text-rk-text-light"/>
             </p>
@@ -235,11 +97,11 @@ function ListBar(props) {
         {title}
         <Slug display="bar" slug={slug} />
       </div>
-      <Creators display="bar" creators={creators} />
+      <EntityCreators display="bar" creators={creators} itemType={itemType} />
       <div className="description card-description text-truncate text-rk-text d-flex">
         {description}
       </div>
-      <EntityTags tagList={tagList} itemType={itemType} />
+      <EntityTags tagList={tagList} multiline={false} />
       {
         timeCaption ?
           <div className="mt-auto">
@@ -307,4 +169,5 @@ function ListDisplay(props) {
     </div>;
 
 }
+
 export default ListDisplay;
