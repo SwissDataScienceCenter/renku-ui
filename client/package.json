@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "private": true,
   "dependencies": {
     "@ckeditor/ckeditor5-react": "^2.1.0",

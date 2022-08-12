@@ -1,5 +1,22 @@
 # Changes
 
+## [2.7.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.6.0...2.7.0) (2022-08-12)
+
+### Features
+
+* adapt notebook server error response format ([#1710](https://github.com/SwissDataScienceCenter/renku-ui/issues/1710), [#1989](https://github.com/SwissDataScienceCenter/renku-ui/issues/1989))
+* add styles for form elements ([#1964](https://github.com/SwissDataScienceCenter/renku-ui/issues/1964), [#1979](https://github.com/SwissDataScienceCenter/renku-ui/issues/1979))
+
+### Bug Fixes
+
+* host the Inter typeface on Renku ([#1981](https://github.com/SwissDataScienceCenter/renku-ui/issues/1981), [#1996](https://github.com/SwissDataScienceCenter/renku-ui/issues/1996))
+* **sessions** show the correct dialog when starting a session on an autosave branch ([#1947](https://github.com/SwissDataScienceCenter/renku-ui/issues/1947),  [#2000](https://github.com/SwissDataScienceCenter/renku-ui/issues/2000))
+
+### BREAKING CHANGES
+
+* requires renku-notebooks >= 1.9.2
+
+
 ## [2.6.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.5.0...2.6.0) (2022-07-26)
 
 ### Features
