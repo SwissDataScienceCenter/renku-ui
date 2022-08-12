@@ -3,8 +3,23 @@
     TO DO THIS, CONVERT FONT IN WOFF TO OTHER FORMATS THEN ADD THEM
 */
 
-/* Webfont: Calcutta-Bold */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Inter Regular'), local('Inter-Regular'),
+  url('../fonts/Inter/static/Inter-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Inter Bold'), local('Inter-Bold'),
+  url('../fonts/Inter/static/Inter-Bold.ttf') format('truetype');
+  font-display: swap;
+}
 
 //boostrap font family overwrite
 $font-family-base: 'Inter', sans-serif;
