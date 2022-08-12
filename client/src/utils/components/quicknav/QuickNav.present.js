@@ -25,7 +25,6 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import "./QuickNav.style.css";
 import { Label } from "reactstrap";
 import { defaultAnonymousSuggestionQuickBar, defaultSuggestionQuickBar } from "./QuickNav.container";
-
 class QuickNavPresent extends Component {
 
   constructor(props) {
@@ -116,32 +115,33 @@ class QuickNavPresent extends Component {
     }
 
     return (
-      <div className="search-box flex-nowrap justify-content-center">
-        <div id="quick-nav" className="quick-nav input-group flex-nowrap input-group-sm justify-content-center pe-2">
-          <Autosuggest
-            suggestions={suggestionList}
-            getSuggestionValue={this.props.callbacks.getSuggestionValue}
-            onSuggestionsFetchRequested={this.props.callbacks.onSuggestionsFetchRequested}
-            onSuggestionsClearRequested={this.props.callbacks.onSuggestionsClearRequested}
-            onSuggestionSelected={this.props.callbacks.onSuggestionSelected}
-            onSuggestionHighlighted={this.props.callbacks.onSuggestionHighlighted}
-            multiSection={true}
-            renderSectionTitle={this.onSectionTitle}
-            getSectionSuggestions={(section) => section.suggestions}
-            inputProps={inputProps}
-            theme={theme}
-            shouldRenderSuggestions={() => true}
-            focusInputOnSuggestionClick={false}
-            alwaysRenderSuggestions={false}
-            renderSuggestion={this.onRenderSuggestion} />
-          <span
-            className="quick-nav-icon
-            d-flex justify-content-center align-items-center mx-2"
-            id="addon-wrapping" onClick={this.props.callbacks.onSubmit}>
-            <FontAwesomeIcon icon={faSearch} />
-          </span>
+      <div className="d-flex flex-nowrap w-100 flex-sm-grow-1 mx-0 mx-lg-2">
+        <div className="search-box flex-nowrap justify-content-center m-auto">
+          <div id="quick-nav" className="quick-nav input-group flex-nowrap input-group-sm justify-content-center pe-2">
+            <Autosuggest
+              suggestions={suggestionList}
+              getSuggestionValue={this.props.callbacks.getSuggestionValue}
+              onSuggestionsFetchRequested={this.props.callbacks.onSuggestionsFetchRequested}
+              onSuggestionsClearRequested={this.props.callbacks.onSuggestionsClearRequested}
+              onSuggestionSelected={this.props.callbacks.onSuggestionSelected}
+              onSuggestionHighlighted={this.props.callbacks.onSuggestionHighlighted}
+              multiSection={true}
+              renderSectionTitle={this.onSectionTitle}
+              getSectionSuggestions={(section) => section.suggestions}
+              inputProps={inputProps}
+              theme={theme}
+              shouldRenderSuggestions={() => true}
+              focusInputOnSuggestionClick={false}
+              alwaysRenderSuggestions={false}
+              renderSuggestion={this.onRenderSuggestion} />
+            <span className="quick-nav-icon d-flex justify-content-center align-items-center mx-2 cursor-pointer"
+              id="addon-wrapping"
+              onClick={this.props.callbacks.onSubmit}>
+              <FontAwesomeIcon icon={faSearch} />
+            </span>
+          </div>
+          <Label className="search-input-label">Search for Projects or Datasets</Label>
         </div>
-        <Label className="search-input-label">Search for Projects or Datasets</Label>
       </div>
     );
   }

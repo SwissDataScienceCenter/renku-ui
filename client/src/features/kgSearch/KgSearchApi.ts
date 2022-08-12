@@ -31,6 +31,8 @@ type SearchEntitiesQueryParams = {
   author: KgAuthor;
   visibility?: VisibilitiesFilter;
   userName?: string;
+  since?: string;
+  until?: string
 };
 
 function getHeaderFieldNumeric(headers: Headers, field: string): number {
@@ -77,6 +79,14 @@ const getPhrase = (phrase?: string) => {
   return `*${phrase}*`;
 };
 
+const setDates = (query: string, since?: string, until?: string) => {
+  if (since)
+    query = `${query}&since=${since}`;
+  if (until)
+    query = `${query}&until=${until}`;
+  return query;
+};
+
 // Define a service using a base URL and expected endpoints
 export const kgSearchApi = createApi({
   reducerPath: "kgSearchApi",
@@ -94,16 +104,19 @@ export const kgSearchApi = createApi({
         type,
         visibility,
         author,
-        userName
+        userName,
+        since,
+        until
       }) => {
         const url = `entities?query=${getPhrase(
           phrase
         )}&sort=${sort}&page=${page}&per_page=${perPage}`;
-        return setAuthorInQuery(
-          setVisibilityInQuery(setTypeInQuery(url, type), visibility),
-          author,
-          userName
-        );
+        return setDates(
+          setAuthorInQuery(
+            setVisibilityInQuery(setTypeInQuery(url, type), visibility),
+            author,
+            userName
+          ), since, until);
       },
       transformResponse: (
         response: KgSearchResult[],
