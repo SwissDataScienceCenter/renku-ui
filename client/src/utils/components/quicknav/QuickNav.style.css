@@ -85,3 +85,27 @@
   }
 }
 
+
+.suggestion-icon {
+  margin-right: 20px;
+}
+
+.search-input-label {
+  color: white;
+  font-size: small;
+  font-style: italic;
+}
+
+.search-button {
+  width: 60px;
+  background-color: var(--bs-secondary);
+  color: white;
+  display: flex;
+  justify-content: center;
+  border: none;
+}
+
+.search-box {
+  width: 100%;
+  max-width: 900px;
+}

@@ -164,6 +164,7 @@
   background-color: white;
   border-top-right-radius: 20px;
   border-top-left-radius: 20px;
+  max-height: calc(100vh - 150px);
 
   .modal-content {
     border: none;
@@ -181,5 +182,8 @@
     .btn-close {
       padding-right: 20px;
     }
+  }
+  .modal-body {
+    overflow: auto;
   }
 }

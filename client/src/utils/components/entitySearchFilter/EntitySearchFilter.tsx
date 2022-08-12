@@ -19,11 +19,12 @@ import * as React from "react";
 import { useDispatch } from "react-redux";
 
 import { KgAuthor } from "../../../features/kgSearch/KgSearch";
-import { setAuthor, setType, setVisibility } from "../../../features/kgSearch/KgSearchSlice";
+import { setAuthor, setDates, setType, setVisibility } from "../../../features/kgSearch/KgSearchSlice";
 import { TypeEntityFilter, TypeEntitySelection } from "../typeEntityFilter/TypeEntityFilter";
 import { AuthorFilter } from "../authorFilter/AuthorFilter";
 import { VisibilitiesFilter, VisibilityFilter } from "../visibilityFilter/VisibilityFilter";
 import "./EntitySearchFilter.css";
+import { DateFilter, DatesFilter } from "../dateFilter/DateFilter";
 
 /**
  *  renku-ui
@@ -37,9 +38,10 @@ export interface FilterProps {
   type: TypeEntitySelection;
   visibility: VisibilitiesFilter;
   isLoggedUser: boolean;
+  valuesDate: DatesFilter;
 }
 
-const FilterEntitySearch = ({ author, type, visibility, isLoggedUser }: FilterProps) => {
+const FilterEntitySearch = ({ author, type, visibility, isLoggedUser, valuesDate }: FilterProps) => {
   const dispatch = useDispatch();
   const authorComponent = isLoggedUser ? (
     <div><AuthorFilter
@@ -57,6 +59,9 @@ const FilterEntitySearch = ({ author, type, visibility, isLoggedUser }: FilterPr
         <div><VisibilityFilter
           handler={(value: VisibilitiesFilter) => dispatch(setVisibility(value))}
           value={visibility} /></div>
+        <div>
+          <DateFilter values={valuesDate} handler={(dates: DatesFilter) => dispatch(setDates(dates))} />
+        </div>
       </div>
     </>
   );
