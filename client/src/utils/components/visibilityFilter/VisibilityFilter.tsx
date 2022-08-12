@@ -71,8 +71,10 @@ const VisibilityFilter = ({ handler, value }: VisibilityFilterProps) => {
           onChange={(e: ChangeEvent<HTMLInputElement>) => selectVisibility(item.value, e.target.checked)}
           className="visibility-input"
           data-cy={nameInput}/>
-        <label className="px-2 visibility-label">{item.title}</label>
-        <FontAwesomeIcon className="visibility-icon" icon={item.icon} />
+        <label className="px-2 visibility-label cursor-pointer"
+          onClick={() => selectVisibility(item.value, !value[itemValueAsKey])}>{item.title}</label>
+        <FontAwesomeIcon className="visibility-icon cursor-pointer" icon={item.icon}
+          onClick={() => selectVisibility(item.value, !value[itemValueAsKey])}/>
       </div>
     );
   });
