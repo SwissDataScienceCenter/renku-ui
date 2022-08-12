@@ -13,26 +13,10 @@
 }
 
 .menu-right {
-    margin-top: 10px;
+    margin: auto;
+    flex-grow: 0;
 }
 
 .menu-right ul{
     justify-content: space-between;
-}
-
-@media (min-width: 992px) {
-    .menu-right{
-        max-width: 260px;
-        margin-top: 0;
-    }
-}
-
-@media (min-width: 1440px) {
-    .menu-right{
-        max-width: 280px;
-        margin-top: 0;
-    }
-    .navbar-brand {
-        width: 280px;
-    }
 }

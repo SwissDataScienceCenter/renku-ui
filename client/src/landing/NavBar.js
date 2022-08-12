@@ -283,7 +283,7 @@ class LoggedInNavBar extends Component {
             </NavbarToggler>
             <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
             <Collapse isOpen={!this.state.isOpen} navbar className="menu-right">
-              <Nav className="navbar-nav flex-row flex-wrap ms-lg-auto">
+              <Nav className="navbar-nav flex-row flex-nowrap ms-lg-auto">
                 <NavItem className="nav-item col-4 col-lg-auto pe-lg-4">
                   <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
                 </NavItem>
@@ -342,9 +342,18 @@ class AnonymousNavBar extends Component {
             <NavbarToggler onClick={this.toggle} className="border-0">
               <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
             </NavbarToggler>
-            <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
             <Collapse isOpen={!this.state.isOpen} navbar className="menu-right">
-              <Nav className="navbar-nav flex-row flex-wrap ms-lg-auto">
+              <Nav className="navbar-nav flex-row flex-nowrap ms-lg-auto">
+                <NavItem className="nav-item col-12 col-lg-auto pe-0 pe-lg-4 my-2 my-lg-0">
+                  <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
+                </NavItem>
+                <NavItem className="nav-item col-4 col-lg-auto">
+                  <RenkuNavLink to="/projects" alternate={"/projects/all"}
+                    title="Projects" id="link-projects" className="link-secondary" />
+                </NavItem>
+                <NavItem className="nav-item col-4 col-lg-auto">
+                  <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
+                </NavItem>
                 <NavItem className="nav-item col-4 col-lg-auto pe-4">
                   <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
                 </NavItem>
