@@ -1138,11 +1138,13 @@ class ServerOptionLaunch extends Component {
   checkServer() {
     const { filters } = this.props;
     const { autosaved } = this.props.data;
+    const selectedBranchName = filters.branch.name;
+    const selectedCommitShort = filters.commit.id.substr(0, 7);
     const current = autosaved.filter(c =>
-      c.autosave.branch === filters.branch.name && c.autosave.commit === filters.commit.id.substr(0, 7));
+      c.autosave.branch === selectedBranchName && c.autosave.commit === selectedCommitShort);
     if (current.length > 0) {
       this.setState({ current: current[0] });
-      this.props.toggleShareLinkModal();
+      this.toggleModal();
     }
     else {
       this.props.handlers.startServer();
