@@ -7,6 +7,7 @@ global:
     clientSecret: "secret"
 
 ui:
-  baseUrl: "http://localhost:3000"
+  client:
+    url: "http://localhost:3000"
   ingress:
     enabled: false

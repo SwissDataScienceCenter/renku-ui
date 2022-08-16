@@ -6,7 +6,7 @@ Provide a basic chart for deploying Renku UI application.
 Configuration
 -------------
 
-- `baseUrl` define the URL on the application will be available
+- `client.url` define the URL on the application will be available
   (default: `http://localhost:3000`)
 - `gitlabUrl` define the URL of a running GitLab instance
   (default: `http://gitlab.renku.build`)

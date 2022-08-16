@@ -18,23 +18,24 @@
 
 import { convertType } from "./utils";
 
-
 const SERVER = {
   url: process.env.SERVER_URL,
   port: convertType(process.env.SERVER_PORT) || 8080,
-  prefix: process.env.SERVER_PREFIX || "/ui-server",
+  prefix: "/ui-server",
   logLevel: process.env.SERVER_LOG_LEVEL || "info",
   serverUiVersion: process.env.UI_SERVER_VERSION || "unknown",
   proxyTimeout: 600 * 1000, // in milliseconds
-  wsSuffix: "/ws"
+  wsSuffix: "/ws",
 };
 
 const DEPLOYMENT = {
   gatewayUrl: process.env.GATEWAY_URL || SERVER.url + "/api",
   gatewayLoginUrl:
-    (process.env.GATEWAY_URL || SERVER.url + "/api") + (process.env.GATEWAY_LOGIN_PATH || "/auth/login"),
+    (process.env.GATEWAY_URL || SERVER.url + "/api") +
+    (process.env.GATEWAY_LOGIN_PATH || "/auth/login"),
   gatewayLogoutUrl:
-    (process.env.GATEWAY_URL || SERVER.url + "/api") + (process.env.GATEWAY_LOGOUT_PATH || "/auth/logout"),
+    (process.env.GATEWAY_URL || SERVER.url + "/api") +
+    (process.env.GATEWAY_LOGOUT_PATH || "/auth/logout"),
 };
 
 const SENTRY = {
@@ -43,7 +44,7 @@ const SENTRY = {
   namespace: process.env.SENTRY_NAMESPACE || undefined,
   telepresence: !!process.env.TELEPRESENCE,
   sampleRate: parseFloat(process.env.SENTRY_TRACE_RATE) || 0,
-  debugMode: [true, "true"].includes(process.env.SENTRY_DEBUG)
+  debugMode: [true, "true"].includes(process.env.SENTRY_DEBUG),
 };
 
 const AUTHENTICATION = {
@@ -97,7 +98,7 @@ const config = {
   routes: ROUTES,
   sentry: SENTRY,
   server: SERVER,
-  websocket: WEBSOCKET
+  websocket: WEBSOCKET,
 };
 
 export default config;
