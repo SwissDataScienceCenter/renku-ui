@@ -39,7 +39,14 @@ global:
     existingSecret: redis-secret
     existingSecretPasswordKey: redis-password
 
+gateway:
+  url:
+  loginSuffix: /auth/login
+  logoutSuffix: /auth/logout
+
 client:
+  ## The URL for the client
+  url:
   replicaCount: 1
 
   image:
@@ -166,6 +173,9 @@ client:
       tag: "0.11.16"
 
 server:
+  ## The URL for the server service; the URL used by the client is the server.url + /ui-server endpoint.
+  url:
+  port: 8080
   replicaCount: 1
 
   image:
@@ -227,16 +237,6 @@ server:
   tolerations: []
 
   affinity: {}
-
-  serverData:
-    url:
-    port: 8080
-    prefix: /ui-server
-
-  gateway:
-    url:
-    loginSuffix: /auth/login
-    logoutSuffix: /auth/logout
 
   sentry:
     enabled: false

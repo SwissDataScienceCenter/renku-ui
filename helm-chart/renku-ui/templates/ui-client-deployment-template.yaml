@@ -44,11 +44,11 @@ spec:
           {{- end }}
           env:
             - name: BASE_URL
-              value: {{ .Values.baseUrl | default (printf "%s://%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
+              value: {{ .Values.client.url | default (printf "%s://%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: GATEWAY_URL
-              value: {{ .Values.gatewayUrl | default (printf "%s://%s/api" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
+              value: {{ .Values.gateway.url | default (printf "%s://%s/api" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: UISERVER_URL
-              value: {{ .Values.client.uiserverUrl | default (printf "%s://%s/ui-server" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
+              value: {{ .Values.server.url | default (printf "%s://%s" (include "ui.protocol" .) .Values.global.renku.domain) | printf "%s/ui-server" | quote }}
             - name: WELCOME_PAGE
               value: {{ .Values.client.welcomePage.text | b64enc | quote }}
             {{- if .Values.client.statuspage }}
