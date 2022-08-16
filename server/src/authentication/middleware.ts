@@ -22,7 +22,7 @@ import { TokenSet } from "openid-client";
 import config from "../config";
 import logger from "../logger";
 import { Authenticator } from "./index";
-import { getSessionId } from "./routes";
+import { getOrCreateSessionId } from "./routes";
 
 
 /**
@@ -38,6 +38,17 @@ function addAuthToken(req: express.Request, accessToken: string) : void {
 
 
 /**
+ * Add the nonymous header for invoking gateway APIs as an anonymous renku user.
+ *
+ * @param req - express response
+ * @param value - uid for the anonamous user.
+ */
+function addAnonymousToken(req: express.Request, value: string) : void {
+  req.headers[config.auth.cookiesAnonymousKey] = value;
+}
+
+
+/**
  * Add the invalid credentials header to signal the need to re-authenticate.
  *
  * @param res - express response
@@ -49,28 +60,28 @@ function addAuthInvalid(req: express.Request) : void {
 
 function renkuAuth(authenticator: Authenticator) {
   return async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> => {
-    // check session
-    const sessionId = getSessionId(req);
-    if (sessionId) {
-      let tokens: TokenSet;
-      try {
-        tokens = await authenticator.getTokens(sessionId, true);
-      }
-      catch (error) {
-        const stringyError = error.toString();
-        const expired = stringyError.includes("expired") || stringyError.includes("invalid");
-        if (expired) {
-          logger.info(`Adding token expirations info for session ${sessionId}`);
-          addAuthInvalid(req);
-        }
-        else {
-          throw error;
-        }
-      }
-
-      if (tokens)
-        addAuthToken(req, tokens.access_token);
+    // get or create session
+    const sessionId = getOrCreateSessionId(req, res);
+    let tokens: TokenSet;
+    try {
+      tokens = await authenticator.getTokens(sessionId, true);
     }
+    catch (error) {
+      const stringyError = error.toString();
+      const expired = stringyError.includes("expired") || stringyError.includes("invalid");
+      if (expired) {
+        logger.info(`Adding token expirations info for session ${sessionId}`);
+        addAuthInvalid(req);
+      }
+      else {
+        throw error;
+      }
+    }
+
+    if (tokens)
+      addAuthToken(req, tokens.access_token);
+    else
+      addAnonymousToken(req, sessionId);
 
     next();
   };
