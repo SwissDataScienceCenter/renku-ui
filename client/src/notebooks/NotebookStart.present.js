@@ -114,13 +114,13 @@ function StartNotebookServer(props) {
 
   const advancedSelection = (
     <Fragment>
+      {show.ci ? <StartNotebookPipelines {...props}
+        ignorePipeline={props.ignorePipeline}
+        setIgnorePipeline={setIgnorePipeline} /> : null}
       <AutosavesInfoAlert autosaves={autosaves} autosavesId={props.autosavesCommit}
         currentId={props.filters.commit?.id} deleteAutosave={deleteAutosave} setCommit={setCommit} />
       <StartNotebookBranches {...props} disabled={disabled} />
       {show.commits ? <StartNotebookCommits {...props} disabled={disabled} /> : null}
-      {show.ci ? <StartNotebookPipelines {...props}
-        ignorePipeline={props.ignorePipeline}
-        setIgnorePipeline={setIgnorePipeline} /> : null}
       {cloudStorageAvailable ?
         <Fragment>
           <ObjectStoresConfigurationButton
