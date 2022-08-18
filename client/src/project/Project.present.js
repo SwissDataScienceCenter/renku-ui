@@ -580,9 +580,6 @@ class ProjectNav extends Component {
             <NavItem>
               <RenkuNavLink exact={false} to={this.props.datasetsUrl} title="Datasets" />
             </NavItem>
-            <NavItem>
-              <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Sessions" />
-            </NavItem>
             <NavItem className="pe-0">
               <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
             </NavItem>
@@ -1078,8 +1075,8 @@ const ProjectSessions = (props) => {
   const locationFrom = props.history?.location?.state?.from;
   const filePath = props.history?.location?.state?.filePath;
   const backNotebookLabel = filePath ? `Back to ${filePath}` : "Back to notebook file";
-  const backButtonLabel = locationFrom ? backNotebookLabel : "Back to sessions list";
-  const backUrl = locationFrom ?? props.notebookServersUrl;
+  const backButtonLabel = locationFrom ? backNotebookLabel : `Back to ${props.metadata.pathWithNamespace}`;
+  const backUrl = locationFrom ?? props.baseUrl;
 
   const backButton = (<GoBackButton label={backButtonLabel} url={backUrl} />);
 
@@ -1405,9 +1402,14 @@ class ProjectView extends Component {
             render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
           <Route path={this.props.overviewUrl}
             render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
+          <Route path={this.props.notebookServersUrl}
+            render={() => null} />
           <Route component={()=><ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
         </Switch>
-        <ProjectNav key="nav" {...this.props} />
+        <Switch key="projectNav">
+          <Route path={this.props.notebookServersUrl} render={() => null} />
+          <Route component={() =><ProjectNav key="nav" {...this.props} />} />
+        </Switch>
         <Row key="content">
           <Switch>
             <Route exact path={this.props.baseUrl}
