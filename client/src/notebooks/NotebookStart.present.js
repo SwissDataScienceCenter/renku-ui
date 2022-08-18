@@ -1194,19 +1194,21 @@ class ServerOptionLaunch extends Component {
       </Button>;
 
 
-    return [
-      imageStatusAlert,
-      startBaseButton,
-      " ",
-      startButtonWithMenu,
+    return <div className="d-flex flex-row-reverse">
+      <div>
+        {imageStatusAlert}
+        {startBaseButton}
+        {" "}
+        {startButtonWithMenu}
+      </div>
       <AutosavedDataModal key="modal"
         toggleModal={this.toggleModal.bind(this)}
         showModal={this.state.showModal}
         currentBranch={this.state.current}
         {...this.props}
-      />,
-      globalNotification
-    ];
+      />
+      {globalNotification}
+    </div>;
   }
 }
 
