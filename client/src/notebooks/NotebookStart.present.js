@@ -58,13 +58,30 @@ function ProjectSessionLockAlert({ lockStatus }) {
   </WarnAlert>;
 }
 
+function SessionStartSidebar(props) {
+  return <>
+    <h2>Start session</h2>
+    <p>On the project<br /><b>{props.pathWithNamespace}</b></p>
+    <ProjectSessionLockAlert lockStatus={props.lockStatus} />
+    <LaunchErrorAlert autosaves={props.autosaves} launchError={props.launchError} ci={props.ci} />
+    {props.messageOutput}
+
+    <p>A session gives you an environment with resources for doing work.
+      The exact details of the available tools depends on the project.
+    </p>
+
+    <p>The resource settings have been set to the project defaults, but you can alter them if you wish.
+    </p>
+  </>;
+}
+
 
 // * StartNotebookServer code * //
 function StartNotebookServer(props) {
-  const { autosaves, autoStarting, ci, message, showAdvanced, showObjectStoreModal } = props;
-  const { branch, commit } = props.filters;
+  const { autosaves, autoStarting, ci, message, showObjectStoreModal } = props;
+  const { branch, commit, namespace, project } = props.filters;
   const { objectStoresConfiguration } = props.filters;
-  const { deleteAutosave, setCommit, setIgnorePipeline, toggleShowAdvanced } = props.handlers;
+  const { deleteAutosave, setCommit, setIgnorePipeline } = props.handlers;
   const { toggleShowObjectStoresConfigModal } = props.handlers;
   const location = useLocation();
 
@@ -94,54 +111,38 @@ function StartNotebookServer(props) {
   const disabled = fetching.branches || fetching.commits;
   const s3MountsConfig = props.options.global.cloudstorage?.s3;
   const cloudStorageAvailable = s3MountsConfig?.enabled ?? false;
-  const showAdvancedMessage = cloudStorageAvailable ?
-    "Do you want to select the branch, commit, or image, or configure cloud storage?" :
-    "Do you want to select the branch, commit, or image?";
-
-  const buttonMessage = showAdvanced ?
-    "Hide advanced settings" :
-    showAdvancedMessage;
 
   const advancedSelection = (
     <Fragment>
-      <Collapse isOpen={showAdvanced}>
-        <AutosavesInfoAlert autosaves={autosaves} autosavesId={props.autosavesCommit}
-          currentId={props.filters.commit?.id} deleteAutosave={deleteAutosave} setCommit={setCommit} />
-        <StartNotebookBranches {...props} disabled={disabled} />
-        {show.commits ? <StartNotebookCommits {...props} disabled={disabled} /> : null}
-        {show.ci ? <StartNotebookPipelines {...props}
-          ignorePipeline={props.ignorePipeline}
-          setIgnorePipeline={setIgnorePipeline} /> : null}
-        {cloudStorageAvailable ?
-          <Fragment>
-            <ObjectStoresConfigurationButton
-              objectStoresConfiguration={objectStoresConfiguration}
-              toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal} />
-            <ObjectStoresConfigurationModal
-              objectStoresConfiguration={objectStoresConfiguration}
-              showObjectStoreModal={showObjectStoreModal}
-              toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal}
-              setObjectStoresConfiguration={props.handlers.setObjectStoresConfiguration} />
-          </Fragment> :
-          null
-        }
-      </Collapse>
-      <FormGroup>
-        <Button color="link" className="ps-0 pe-0 pt-2 font-italic btn-sm"
-          onClick={() => { toggleShowAdvanced(); }}>
-          {buttonMessage}
-        </Button>
-      </FormGroup>
+      <AutosavesInfoAlert autosaves={autosaves} autosavesId={props.autosavesCommit}
+        currentId={props.filters.commit?.id} deleteAutosave={deleteAutosave} setCommit={setCommit} />
+      <StartNotebookBranches {...props} disabled={disabled} />
+      {show.commits ? <StartNotebookCommits {...props} disabled={disabled} /> : null}
+      {show.ci ? <StartNotebookPipelines {...props}
+        ignorePipeline={props.ignorePipeline}
+        setIgnorePipeline={setIgnorePipeline} /> : null}
+      {cloudStorageAvailable ?
+        <Fragment>
+          <ObjectStoresConfigurationButton
+            objectStoresConfiguration={objectStoresConfiguration}
+            toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal} />
+          <ObjectStoresConfigurationModal
+            objectStoresConfiguration={objectStoresConfiguration}
+            showObjectStoreModal={showObjectStoreModal}
+            toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal}
+            setObjectStoresConfiguration={props.handlers.setObjectStoresConfiguration} />
+        </Fragment> :
+        null
+      }
     </Fragment>
   );
 
   const options = show.options ?
     (<StartNotebookOptions
       notebookFilePath={location?.state?.filePath}
-      toggleShowAdvanced={toggleShowAdvanced}
       toggleShareLinkModal={toggleShareLinkModal}
       showShareLinkModal={showShareLinkModal}
-      showAdvanced={showAdvanced} {...props} />) :
+      {...props} />) :
     null;
 
   const loader = autosaves.fetching || !show.options ?
@@ -153,13 +154,16 @@ function StartNotebookServer(props) {
     ) :
     null;
 
+  const pathWithNamespace = `${namespace}/${project}`;
+
   return (
     <Row>
-      <Col sm={12} md={10} lg={8}>
-        <h3>Start a new session</h3>
-        <ProjectSessionLockAlert lockStatus={props.lockStatus} />
-        <LaunchErrorAlert autosaves={autosaves} launchError={props.launchError} ci={props.ci} />
-        {messageOutput}
+      <Col sm={12} md={3}>
+        <SessionStartSidebar autosaves={autosaves} ci={props.ci}
+          launchError={props.launchError} lockStatus={props.lockStatus}
+          messageOutput={messageOutput} pathWithNamespace={pathWithNamespace} />
+      </Col>
+      <Col sm={12} md={9} lg={7}>
         <Form className="form-rk-green">
           {advancedSelection}
           {options}
@@ -1179,14 +1183,7 @@ class ServerOptionLaunch extends Component {
     const imageStatusAlert = !hasImage ? <div key="noImageAvailableWarning" className="pb-2">
       <FontAwesomeIcon icon={faExclamationTriangle} className="text-warning"/>{" "}
       The image for this commit is not available.{" "}
-      {this.props.showAdvanced ?
-        <span>See the <b>Docker Image</b> section for details.</span>
-        : <Button color="link" className="ps-0 pe-0 font-italic"
-          onClick={() => { this.props.toggleShowAdvanced(true); }}>
-          Click here for more info.
-        </Button>
-      }
-
+      <span>See the <b>Docker Image</b> section for details.</span>
     </div>
       : null;
 

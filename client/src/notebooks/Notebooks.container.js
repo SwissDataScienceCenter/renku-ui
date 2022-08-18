@@ -308,7 +308,6 @@ class StartNotebookServer extends Component {
       first: true,
       ignorePipeline: null,
       launchError: null,
-      showAdvanced: false,
       showObjectStoreModal: false,
       starting: false,
       commitDelay: false, // used in setCommitWhenReady
@@ -331,7 +330,6 @@ class StartNotebookServer extends Component {
       startServer: this.startServer.bind(this),
       setObjectStoresConfiguration: this.setObjectStoresConfiguration.bind(this),
       toggleMergedBranches: this.toggleMergedBranches.bind(this),
-      toggleShowAdvanced: this.toggleShowAdvanced.bind(this),
       toggleShowObjectStoresConfigModal: this.toggleShowObjectStoresConfigModal.bind(this)
     };
   }
@@ -362,10 +360,6 @@ class StartNotebookServer extends Component {
       if (this._isMounted)
         this.refreshBranches().then(r => this.selectBranchWhenReady());
     }
-  }
-
-  toggleShowAdvanced() {
-    this.setState({ showAdvanced: !this.state.showAdvanced });
   }
 
   toggleShowObjectStoresConfigModal() {
@@ -573,7 +567,7 @@ class StartNotebookServer extends Component {
     if (this._isMounted) {
       const { accessLevel, user } = this.props;
       await this.coordinator.fetchNotebookOptions(); // TODO: this should not be here
-      const callback = () => { this.setState({ showAdvanced: true }); };
+      const callback = () => { };
       const owner = accessLevel >= ACCESS_LEVELS.DEVELOPER;
       await this.coordinator.fetchOrPollCi(force, user.logged, owner, callback);
       this.triggerAutoStart();
@@ -644,7 +638,6 @@ class StartNotebookServer extends Component {
               autostartReady: true,
               autostartTried: true,
               launchError: { frontendError: true, pipelineError: true, errorMessage },
-              showAdvanced: true,
               starting: false
             });
           }
@@ -816,7 +809,6 @@ class StartNotebookServer extends Component {
       launchError={this.state.launchError}
       lockStatus={this.props.lockStatus}
       message={this.props.message}
-      showAdvanced={this.state.showAdvanced}
       {...this.propsToChildProps()}
     />;
   }
