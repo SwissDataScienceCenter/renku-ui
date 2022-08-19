@@ -35,15 +35,17 @@ import { Clipboard } from "../utils/components/Clipboard";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { JupyterIcon } from "../utils/components/Icon";
 import { Loader } from "../utils/components/Loader";
+import { ShareLinkSessionModal } from "../utils/components/shareLinkSession/ShareLinkSession";
+import { Docs } from "../utils/constants/Docs";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
+import { SessionStatus } from "../utils/constants/Notebooks";
+import { sleep } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
 import Time from "../utils/helpers/Time";
+
+import LaunchErrorAlert from "./components/LaunchErrorAlert";
 import { NotebooksHelper } from "./index";
 import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from "./ObjectStoresConfig.present";
-import { SessionStatus } from "../utils/constants/Notebooks";
-import { Docs } from "../utils/constants/Docs";
-import { sleep } from "../utils/helpers/HelperFunctions";
-import { ShareLinkSessionModal } from "../utils/components/shareLinkSession/ShareLinkSession";
 
 
 function ProjectSessionLockAlert({ lockStatus }) {
@@ -75,14 +77,47 @@ function SessionStartSidebar(props) {
   </>;
 }
 
+function StartNotebookAdvancedOptions(props) {
+  const { autosaves, showObjectStoreModal } = props;
+  const { objectStoresConfiguration } = props.filters;
+  const { deleteAutosave, setCommit, setIgnorePipeline, toggleShowObjectStoresConfigModal } = props.handlers;
+  const s3MountsConfig = props.options.global.cloudstorage?.s3;
+  const cloudStorageAvailable = s3MountsConfig?.enabled ?? false;
+  return <>
+    <div className="field-group">
+      <StartNotebookPipelines {...props} ignorePipeline={props.ignorePipeline} setIgnorePipeline={setIgnorePipeline} />
+    </div>
+    <div className="field-group">
+      <AutosavesInfoAlert autosaves={autosaves} autosavesId={props.autosavesCommit}
+        currentId={props.filters.commit?.id} deleteAutosave={deleteAutosave} setCommit={setCommit} />
+    </div>
+    <div className="field-group">
+      <StartNotebookBranches {...props} disabled={props.disabled} />
+    </div>
+    <div className="field-group">
+      <StartNotebookCommits {...props} disabled={props.disabled} />
+    </div>
+    {cloudStorageAvailable ?
+      <div className="field-group">
+        <ObjectStoresConfigurationButton
+          objectStoresConfiguration={objectStoresConfiguration}
+          toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal} />
+        <ObjectStoresConfigurationModal
+          objectStoresConfiguration={objectStoresConfiguration}
+          showObjectStoreModal={showObjectStoreModal}
+          toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal}
+          setObjectStoresConfiguration={props.handlers.setObjectStoresConfiguration} />
+      </div> :
+      null
+    }
+  </>;
+}
+
 
 // * StartNotebookServer code * //
 function StartNotebookServer(props) {
-  const { autosaves, autoStarting, ci, message, showObjectStoreModal } = props;
+  const { autosaves, autoStarting, ci, message } = props;
   const { branch, commit, namespace, project } = props.filters;
-  const { objectStoresConfiguration } = props.filters;
-  const { deleteAutosave, setCommit, setIgnorePipeline } = props.handlers;
-  const { toggleShowObjectStoresConfigModal } = props.handlers;
   const location = useLocation();
 
   const [showShareLinkModal, setShowShareLinkModal] = useState(location?.state?.showShareLinkModal ?? false);
@@ -109,33 +144,6 @@ function StartNotebookServer(props) {
     (<div key="message">{message}</div>) :
     null;
   const disabled = fetching.branches || fetching.commits;
-  const s3MountsConfig = props.options.global.cloudstorage?.s3;
-  const cloudStorageAvailable = s3MountsConfig?.enabled ?? false;
-
-  const advancedSelection = (
-    <>
-      {<StartNotebookPipelines {...props}
-        ignorePipeline={props.ignorePipeline}
-        setIgnorePipeline={setIgnorePipeline} />}
-      <AutosavesInfoAlert autosaves={autosaves} autosavesId={props.autosavesCommit}
-        currentId={props.filters.commit?.id} deleteAutosave={deleteAutosave} setCommit={setCommit} />
-      <StartNotebookBranches {...props} disabled={disabled} />
-      {show.commits ? <StartNotebookCommits {...props} disabled={disabled} /> : null}
-      {cloudStorageAvailable ?
-        <>
-          <ObjectStoresConfigurationButton
-            objectStoresConfiguration={objectStoresConfiguration}
-            toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal} />
-          <ObjectStoresConfigurationModal
-            objectStoresConfiguration={objectStoresConfiguration}
-            showObjectStoreModal={showObjectStoreModal}
-            toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal}
-            setObjectStoresConfiguration={props.handlers.setObjectStoresConfiguration} />
-        </> :
-        null
-      }
-    </>
-  );
 
   const options = show.options ?
     (<StartNotebookOptions
@@ -165,7 +173,9 @@ function StartNotebookServer(props) {
       </Col>
       <Col sm={12} md={9} lg={7}>
         <Form className="form-rk-green">
-          {advancedSelection}
+          <StartNotebookAdvancedOptions {...props}
+            disabled={disabled}
+            show={show} />
           {options}
           {loader}
         </Form>
@@ -1077,50 +1087,6 @@ class ServerOptionRange extends Component {
       />
     );
   }
-}
-
-function LaunchErrorBackendAlert({ launchError }) {
-  return <WarnAlert>
-    The attempt to start a session failed with the following error:
-    <div><code>{launchError}</code></div>
-    This could be an intermittent issue, so you should try a second time,
-    and the session will hopefully start. If the problem persists, you can {" "}
-    <Link to="/help">contact us for assistance</Link>.
-  </WarnAlert>;
-}
-
-function LaunchErrorFrontendAlert({ launchError, ci }) {
-  const ciStatus = NotebooksHelper.checkCiStatus(ci);
-  if (launchError.pipelineError && ciStatus.available)
-    return null;
-  return (<WarnAlert>{launchError.errorMessage}</WarnAlert>);
-}
-
-function AutosavesErrorAlert({ autosaves }) {
-  if (autosaves.error == null)
-    return null;
-  return <WarnAlert>
-    <p>Autosaves are currently unavailable.</p>
-    <p className="mb-0">If you recently worked on the project, any previous unsaved work cannot be recovered.</p>
-  </WarnAlert>;
-}
-
-function LaunchErrorAlert({ autosaves, launchError, ci }) {
-  let launchErrorElement = null;
-  if (launchError != null) {
-    if (launchError.frontendError === true)
-      launchErrorElement = (<LaunchErrorFrontendAlert launchError={launchError} ci={ci} />);
-    else
-      launchErrorElement = (<LaunchErrorBackendAlert launchError={launchError} />);
-  }
-
-  let autosavesErrorElement = null;
-  if (autosaves.error != null)
-    autosavesErrorElement = (<AutosavesErrorAlert autosaves={autosaves} />);
-  return (<Fragment>
-    {launchErrorElement}
-    {autosavesErrorElement}
-  </Fragment>);
 }
 
 class ServerOptionLaunch extends Component {
