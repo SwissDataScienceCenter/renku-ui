@@ -113,16 +113,16 @@ function StartNotebookServer(props) {
   const cloudStorageAvailable = s3MountsConfig?.enabled ?? false;
 
   const advancedSelection = (
-    <Fragment>
-      {show.ci ? <StartNotebookPipelines {...props}
+    <>
+      {<StartNotebookPipelines {...props}
         ignorePipeline={props.ignorePipeline}
-        setIgnorePipeline={setIgnorePipeline} /> : null}
+        setIgnorePipeline={setIgnorePipeline} />}
       <AutosavesInfoAlert autosaves={autosaves} autosavesId={props.autosavesCommit}
         currentId={props.filters.commit?.id} deleteAutosave={deleteAutosave} setCommit={setCommit} />
       <StartNotebookBranches {...props} disabled={disabled} />
       {show.commits ? <StartNotebookCommits {...props} disabled={disabled} /> : null}
       {cloudStorageAvailable ?
-        <Fragment>
+        <>
           <ObjectStoresConfigurationButton
             objectStoresConfiguration={objectStoresConfiguration}
             toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal} />
@@ -131,10 +131,10 @@ function StartNotebookServer(props) {
             showObjectStoreModal={showObjectStoreModal}
             toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal}
             setObjectStoresConfiguration={props.handlers.setObjectStoresConfiguration} />
-        </Fragment> :
+        </> :
         null
       }
-    </Fragment>
+    </>
   );
 
   const options = show.options ?
@@ -299,7 +299,7 @@ class StartNotebookBranches extends Component {
     }
     else if (branches.length === 0) {
       content = (
-        <React.Fragment>
+        <FormGroup>
           <Label>A commit is necessary to start a session.</Label>
           <InfoAlert timeout={0}>
             <p>You can still do one of the following:</p>
@@ -315,7 +315,7 @@ class StartNotebookBranches extends Component {
               </li>
             </ul>
           </InfoAlert>
-        </React.Fragment>
+        </FormGroup>
       );
     }
     else {
@@ -955,11 +955,11 @@ class StartNotebookServerOptions extends Component {
           const options = mergeEnumOptions(globalOptions, projectOptions, key);
           serverOption["options"] = options;
           const separator = options.length === 1 ? null : (<br />);
-          optionContent = (<Fragment>
+          optionContent = (<FormGroup className="field-group">
             <Label className="me-2">{serverOption.displayName}</Label>
             {separator}<ServerOptionEnum {...serverOption} onChange={onChange} />
             {warning}
-          </Fragment>);
+          </FormGroup>);
         }
         else if (serverOption.type === "int" || serverOption.type === "float") {
           const step = serverOption.type === "int" ?
