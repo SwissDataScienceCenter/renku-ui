@@ -24,7 +24,6 @@ import config from "../config";
 import logger from "../logger";
 import { Authenticator } from "../authentication";
 import { CheckURLResponse } from "./apis.interfaces";
-import { getCookieValueByName } from "../utils";
 import { renkuAuth } from "../authentication/middleware";
 import { validateCSP } from "../utils/url";
 import { Storage, StorageGetOptions, TypeData } from "../storage";
@@ -35,8 +34,8 @@ const proxyMiddleware = createProxyMiddleware({
   // set gateway as target
   target: config.deployment.gatewayUrl,
   changeOrigin: true,
-  proxyTimeout: 600000,
-  timeout: 600000,
+  proxyTimeout: config.server.proxyTimeout,
+  timeout: config.server.proxyTimeout,
   pathRewrite: (path): string => {
     // remove basic ui-server routing
     const rewrittenPath = path.substring((config.server.prefix + config.routes.api).length);
@@ -45,16 +44,22 @@ const proxyMiddleware = createProxyMiddleware({
   },
   onProxyReq: (clientReq) => {
     // remove unnecessary cookies to avoid gateway conflicts with auth tokens
-    const cookies = clientReq.getHeader("cookie") as string;
-    const anonId = getCookieValueByName(cookies, "anon-id");
-    clientReq.removeHeader("cookie");
-    if (anonId)
-      clientReq.setHeader("cookie", `anon-id=${anonId}`);
+    const cookie = clientReq.getHeader("cookie") as string;
+    if (cookie)
+      clientReq.removeHeader("cookie");
+    // add anon-id to cookies when the proper header is set.
+    const anonId = clientReq.getHeader(config.auth.cookiesAnonymousKey);
+    if (anonId) {
+      // ? the anon-id MUST start with a letter to prevent k8s limitations
+      const fullAnonId = config.auth.anonPrefix + config.auth.cookiesAnonymousKey;
+      clientReq.setHeader("cookie", `${config.auth.cookiesAnonymousKey}=${fullAnonId}`);
+    }
   },
   onProxyRes: (clientRes, req: express.Request, res: express.Response) => {
     // Add CORS for sentry
     res.setHeader("Access-Control-Allow-Headers", "sentry-trace");
 
+    // handle auth expiration -- we change the response status to avoid browser caching
     const expHeader = req.get(config.auth.invalidHeaderField);
     if (expHeader != null) {
       clientRes.headers[config.auth.invalidHeaderField] = expHeader;
@@ -133,7 +138,7 @@ function registerApiRoutes(app: express.Application,
     const options: StorageGetOptions = {
       type: TypeData.Collections,
       start: 0,
-      stop: (parseFloat(req.params["length"]) || 0 ) - 1
+      stop: (parseFloat(req.params["length"]) || 0) - 1
     };
 
     if (userId)

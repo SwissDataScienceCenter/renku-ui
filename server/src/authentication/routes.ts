@@ -35,26 +35,15 @@ function getOrCreateSessionId(
   res: express.Response,
   serverPrefix: string = config.server.prefix): string {
   const cookiesKey = config.auth.cookiesKey;
-  let sessionId: string = getSessionId(req);
-  if (req.cookies[cookiesKey] == null) {
+  let sessionId: string;
+  if (req.cookies[cookiesKey] != null) {
+    sessionId = req.cookies[cookiesKey];
+  }
+  else {
     sessionId = uuidv4();
     res.cookie(cookiesKey, sessionId, { secure: true, httpOnly: true, path: serverPrefix });
   }
   return sessionId;
-}
-
-
-/**
- * Get the session id.
- *
- * @param req - express request
- * @returns session id
- */
-function getSessionId(req: express.Request) : string {
-  const cookiesKey = config.auth.cookiesKey;
-  if (req.cookies[cookiesKey] == null)
-    return null;
-  return req.cookies[cookiesKey];
 }
 
 
@@ -64,7 +53,7 @@ function getSessionId(req: express.Request) : string {
  * @param req - express request containing the url
  * @returns search string
  */
-function getStringyParams(req: express.Request) : string {
+function getStringyParams(req: express.Request): string {
   const fullUrl = req.url.toLowerCase().startsWith("http") ?
     req.url :
     config.server.url + req.url;
@@ -129,4 +118,4 @@ function registerAuthenticationRoutes(app: express.Application, authenticator: A
 }
 
 
-export { registerAuthenticationRoutes, getSessionId };
+export { registerAuthenticationRoutes, getOrCreateSessionId };

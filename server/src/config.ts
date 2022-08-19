@@ -24,7 +24,8 @@ const SERVER = {
   port: convertType(process.env.SERVER_PORT) || 8080,
   prefix: process.env.SERVER_PREFIX || "/ui-server",
   logLevel: process.env.SERVER_LOG_LEVEL || "info",
-  serverUiVersion: process.env.UI_SERVER_VERSION || "unknown"
+  serverUiVersion: process.env.UI_SERVER_VERSION || "unknown",
+  proxyTimeout: 600 * 1000 // in milliseconds
 };
 
 const DEPLOYMENT = {
@@ -36,12 +37,12 @@ const DEPLOYMENT = {
 };
 
 const SENTRY = {
-  enabled: [ true, "true" ].includes(process.env.SENTRY_ENABLED),
+  enabled: [true, "true"].includes(process.env.SENTRY_ENABLED),
   url: process.env.SENTRY_URL || undefined,
   namespace: process.env.SENTRY_NAMESPACE || undefined,
   telepresence: !!process.env.TELEPRESENCE,
   sampleRate: parseFloat(process.env.SENTRY_TRACE_RATE) || 0,
-  debugMode: [ true, "true" ].includes(process.env.SENTRY_DEBUG)
+  debugMode: [true, "true"].includes(process.env.SENTRY_DEBUG)
 };
 
 const AUTHENTICATION = {
@@ -50,6 +51,8 @@ const AUTHENTICATION = {
   clientSecret: process.env.AUTH_CLIENT_SECRET,
   tokenExpirationTolerance: convertType(process.env.AUTH_TOKEN_TOLERANCE) || 10,
   cookiesKey: "ui-server-session",
+  cookiesAnonymousKey: "anon-id",
+  anonPrefix: "anon-", // ? this MUST start with a letter to prevent k8s limitations
   authHeaderField: "Authorization",
   authHeaderPrefix: "bearer ",
   invalidHeaderField: "ui-server-auth",
@@ -81,6 +84,7 @@ const config = {
   redis: REDIS,
   routes: ROUTES,
   data: DATA,
-  sentry: SENTRY };
+  sentry: SENTRY
+};
 
 export default config;
