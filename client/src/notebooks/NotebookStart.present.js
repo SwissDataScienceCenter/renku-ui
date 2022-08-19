@@ -1160,12 +1160,15 @@ class ServerOptionLaunch extends Component {
       </Button>;
 
 
-    return <div className="d-flex flex-row-reverse">
-      <div>
-        {imageStatusAlert}
-        {startBaseButton}
-        {" "}
-        {startButtonWithMenu}
+    return <div>
+      {imageStatusAlert}
+      <div className="d-flex flex-row-reverse">
+        <div>
+          {startButtonWithMenu}
+        </div>
+        <div>
+          {startBaseButton} &nbsp;
+        </div>
       </div>
       <AutosavedDataModal key="modal"
         toggleModal={this.toggleModal.bind(this)}
