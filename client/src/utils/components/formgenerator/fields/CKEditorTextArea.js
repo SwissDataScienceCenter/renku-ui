@@ -26,7 +26,7 @@
 import React, { useState } from "react";
 import FormLabel from "./FormLabel";
 import { FormGroup, Label } from "reactstrap";
-import CKEditor from "@ckeditor/ckeditor5-react";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
 import RenkuCKEditor from "@renku/ckeditor5-build-renku";
 import { Input } from "reactstrap";
 import { FormText } from "../../../ts-wrappers";

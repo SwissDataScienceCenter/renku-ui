@@ -39,8 +39,8 @@
 	background-color: #e9ecef !important;
 }
 
-.ck-editor__editable :focus{
-	border:  var(--ck-color-base-border);
+.ck-editor__editable {
+	min-height: 180px;
 }
 
 .disabled-input{
