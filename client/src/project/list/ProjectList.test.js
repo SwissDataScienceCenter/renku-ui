@@ -27,6 +27,7 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
 import TestRenderer, { act } from "react-test-renderer";
+import { Provider } from "react-redux";
 
 import { testClient as client } from "../../api-client";
 import { generateFakeUser } from "../../user/User.test";
@@ -34,6 +35,7 @@ import { Url } from "../../utils/helpers/url";
 import { tests } from "./ProjectList.container";
 import AppContext from "../../utils/context/appContext";
 import { ProjectList } from "./";
+import { globalSchema, StateModel } from "../../model";
 
 
 describe("helper functions", () => {
@@ -117,17 +119,20 @@ describe("rendering", () => {
     params: { "TEMPLATES": templates },
     location: fakeLocation,
   };
+  const model = new StateModel(globalSchema);
 
 
   //TestRenderer
   it("Renders ProjectList for logged user", async () => {
     await act(async () => {
       TestRenderer.create(
-        <MemoryRouter>
-          <AppContext.Provider value={appContext}>
-            <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={loggedUser} />
-          </AppContext.Provider>
-        </MemoryRouter>
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <AppContext.Provider value={appContext}>
+              <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={loggedUser} />
+            </AppContext.Provider>
+          </MemoryRouter>
+        </Provider>
       );
     });
   });
@@ -135,11 +140,13 @@ describe("rendering", () => {
   it("Renders ProjectList for anonymous user", async () => {
     await act(async () => {
       TestRenderer.create(
-        <AppContext.Provider value={appContext}>
-          <MemoryRouter>
-            <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={anonymousUser} />
-          </MemoryRouter>
-        </AppContext.Provider>
+        <Provider store={model.reduxStore}>
+          <AppContext.Provider value={appContext}>
+            <MemoryRouter>
+              <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={anonymousUser} />
+            </MemoryRouter>
+          </AppContext.Provider>
+        </Provider>
       );
     });
   });
@@ -154,11 +161,13 @@ describe("rendering", () => {
     // Logged users can use searchIn=users
     await act(async () => {
       rendered = TestRenderer.create(
-        <AppContext.Provider value={appContext}>
-          <MemoryRouter>
-            <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={loggedUser} />
-          </MemoryRouter>
-        </AppContext.Provider>
+        <Provider store={model.reduxStore}>
+          <AppContext.Provider value={appContext}>
+            <MemoryRouter>
+              <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={loggedUser} />
+            </MemoryRouter>
+          </AppContext.Provider>
+        </Provider>
       );
     });
     props = rendered.root.findByType(ProjectList).props;
@@ -169,11 +178,13 @@ describe("rendering", () => {
     // Anonymous users can't use searchIn=users, they should be redirected to searchIn=projects
     await act(async () => {
       rendered = TestRenderer.create(
-        <AppContext.Provider value={appContext}>
-          <MemoryRouter>
-            <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={anonymousUser} />
-          </MemoryRouter>
-        </AppContext.Provider>
+        <Provider store={model.reduxStore}>0
+          <AppContext.Provider value={appContext}>
+            <MemoryRouter>
+              <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={anonymousUser} />
+            </MemoryRouter>
+          </AppContext.Provider>
+        </Provider>
       );
     });
     props = rendered.root.findByType(ProjectList).props;
