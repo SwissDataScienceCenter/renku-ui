@@ -34,6 +34,9 @@ proceed or send an error message and close the channel.
 
 This is the current set of interactions between the client and the server.
 
+Notice that, after an initialy authentication phase, there are two loops repeated approximatly
+every 5 seconds (short loop) and every 3 minutes (long loop).
+
 ```mermaid
 sequenceDiagram
   par Bootstrap phase
@@ -55,8 +58,7 @@ sequenceDiagram
   end
 ```
 
-Eventually, the client should be able to send messages interpreted as instructions by the server.
-This should allow the client to subscribe and unsubscribe to specific events.
+The client can send messages interpreted as instructions by the server.
 
 The following is just an example:
 
@@ -75,6 +77,26 @@ sequenceDiagram
     server->>GitLab: update SSE for /project/<id>
   end
 ```
+
+## Extend the supported commands
+
+The list of supported commands can be found in the [WebSocket index file](/index.ts)
+looking at the `acceptedMessages` variable.
+
+It can be easily extended by adding a new command with a set of:
+
+* Mandatory parameters.
+* Optional parameters.
+* A single handler function.
+
+Additional handlers can be added to either the `longLoopFunctions` or
+`shortLoopFunctions` variables.
+
+Ideally, for each supported command, there should be a handler function for the
+setup phase and a loop function repeated for each iteration of the relevant loop.
+Any relevant data is currently cached locally, but Redis support can easily be
+added if we require it.
+
 
 ## Handle multiple tabs/sessions
 
