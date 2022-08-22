@@ -302,7 +302,8 @@ function EditDatasetButton({ dataset, insideProject, locked, maintainer }) {
   return <Link className="float-right mb-1 me-1" id="editDatasetTooltip"
     data-cy="edit-dataset-button"
     to={{ pathname: "modify", state: { dataset: dataset } }} >
-    <Button className="btn-rk-white text-rk-pink icon-button" size="sm">
+    <Button className="btn-rk-white text-rk-pink icon-button" size="sm"
+      data-cy="edit-dataset-button">
       <FontAwesomeIcon icon={faPen} color="dark" />
     </Button>
     <ThrottledTooltip

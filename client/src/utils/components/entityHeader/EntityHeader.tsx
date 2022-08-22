@@ -68,12 +68,12 @@ function EntityHeader(
     <StartSessionButton launchNotebookUrl={launchNotebookUrl} sessionAutostartUrl={sessionAutostartUrl} /> : null;
 
   return (
-    <div className="entity-card-large row">
+    <div className="entity-card-large row" data-cy={`header-${itemType}`}>
       <Col
         className="d-flex align-items-start flex-column col-12 col-sm-12 col-md-12 col-lg-9 col-xl-9 overflow-hidden">
         <div className="card card-entity--large">
           <div className={`card-header-entity--large card-header-entity--${itemType}-large`}>
-            <div className="card-bg-title card-bg-title--large">{title}</div>
+            <div className="card-bg-title card-bg-title--large" data-cy={`${itemType}-title`}>{title}</div>
             <div className="d-flex justify-content-between align-items-center m-3">
               <EntityLabel type={itemType} />
               <VisibilityIcon visibility={visibility} className="" />
