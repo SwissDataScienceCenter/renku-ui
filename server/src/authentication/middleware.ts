@@ -31,7 +31,7 @@ import { getOrCreateSessionId } from "./routes";
  * @param res - express response
  * @param accessToken - valid access token.
  */
-function addAuthToken(req: express.Request, accessToken: string) : void {
+function addAuthToken(req: express.Request, accessToken: string): void {
   const value = config.auth.authHeaderPrefix + accessToken;
   req.headers[config.auth.authHeaderField] = value;
 }
@@ -43,7 +43,7 @@ function addAuthToken(req: express.Request, accessToken: string) : void {
  * @param req - express response
  * @param value - uid for the anonamous user.
  */
-function addAnonymousToken(req: express.Request, value: string) : void {
+function addAnonymousToken(req: express.Request, value: string): void {
   req.headers[config.auth.cookiesAnonymousKey] = value;
 }
 
@@ -53,7 +53,7 @@ function addAnonymousToken(req: express.Request, value: string) : void {
  *
  * @param res - express response
  */
-function addAuthInvalid(req: express.Request) : void {
+function addAuthInvalid(req: express.Request): void {
   req.headers[config.auth.invalidHeaderField] = config.auth.invalidHeaderExpired;
 }
 
@@ -87,4 +87,24 @@ function renkuAuth(authenticator: Authenticator) {
   };
 }
 
-export { renkuAuth, addAuthToken };
+async function wsRenkuAuth(authenticator: Authenticator, sessionId: string): Promise<Record<string, string>> {
+  let tokens: TokenSet;
+  try {
+    tokens = await authenticator.getTokens(sessionId, true);
+  }
+  catch (error) {
+    const stringyError = error.toString();
+
+    const expired = stringyError.includes("expired") || stringyError.includes("invalid");
+    if (expired)
+      throw new Error("expired");
+    throw error;
+  }
+
+  if (tokens) {
+    const value = config.auth.authHeaderPrefix + tokens.access_token;
+    return { [config.auth.authHeaderField]: value };
+  }
+}
+
+export { renkuAuth, addAuthToken, wsRenkuAuth };

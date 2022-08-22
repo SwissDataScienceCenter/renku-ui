@@ -47,6 +47,8 @@ spec:
               value: {{ .Values.server.serverData.port | default (printf "8080") | quote }}
             - name: SERVER_PREFIX
               value: {{ .Values.server.serverData.prefix | default (printf "/ui-server") | quote }}
+            - name: SERVER_WS_SUFFIX
+              value: {{ .Values.server.serverData.wsSuffix | default (printf "/ws") | quote }}
             - name: GATEWAY_URL
               value: {{ .Values.server.gateway.url | default (printf "https://%s/api" .Values.global.renku.domain) | quote }}
             - name: GATEWAY_LOGIN_PATH
@@ -73,6 +75,12 @@ spec:
             - name: SENTRY_DEBUG
               value: {{ .Values.server.sentry.debugMode | quote }}
             {{- end }}
+            - name: WEBSOCKET_ENABLED
+              value: {{ .Values.server.webSocket.enabled | quote }}
+            - name: WEBSOCKET_SHORT_INTERVAL
+              value: {{ .Values.server.webSocket.shortInterval | quote }}
+            - name: WEBSOCKET_LONG_INTERVAL
+              value: {{ .Values.server.webSocket.longInterval | quote }}
             - name: REDIS_HOST
               value: {{ .Values.global.redis.host | quote }}
             - name: REDIS_IS_SENTINEL

@@ -232,6 +232,7 @@ server:
     url:
     port: 8080
     prefix: /ui-server
+    wsSuffix: /ws
 
   gateway:
     url:
@@ -250,3 +251,8 @@ server:
     id: renku-ui
     # secret: 1234abcd # do not provide any value here to use the global gateway client secret
     expirationTolerance: 10 # in seconds
+
+  webSocket:
+    enabled: true
+    shortInterval: 5 # in seconds
+    longInterval: 180 # in seconds

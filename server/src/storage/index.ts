@@ -34,17 +34,17 @@ export interface SaveCollectionOptions {
 }
 
 // eslint-disable-next-line no-unused-vars
-export enum TypeData { String, Collections}
+export enum TypeData { String, Collections }
 
 interface Storage {
 
   ready: boolean;
 
-  getStatus() : string;
+  getStatus(): string;
 
-  get(path: string, options: StorageGetOptions): Promise<string|string[]>;
+  get(path: string, options?: StorageGetOptions): Promise<string | string[]>;
 
-  save(path: string, value: string, options: StorageSaveOptions): Promise<boolean>;
+  save(path: string, value: string, options?: StorageSaveOptions): Promise<boolean>;
 
   delete(path: string): Promise<number>;
 

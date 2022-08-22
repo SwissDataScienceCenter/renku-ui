@@ -19,6 +19,7 @@
 import cookieParser from "cookie-parser";
 import express from "express";
 import morgan from "morgan";
+import ws from "ws";
 
 import config from "./config";
 import logger from "./logger";
@@ -29,6 +30,7 @@ import { RedisStorage } from "./storage/RedisStorage";
 import { errorHandler } from "./utils/errorHandler";
 import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
 import { initializeSentry } from "./utils/sentry/sentry";
+import { configureWebsocket } from "./websocket";
 
 const app = express();
 const port = config.server.port;
@@ -60,7 +62,8 @@ const storage = new RedisStorage();
 
 // configure authenticator
 const authenticator = new Authenticator(storage);
-authenticator.init().then(() => {
+const authPromise = authenticator.init();
+authPromise.then(() => {
   logger.info("Authenticator started");
 
   registerAuthenticationRoutes(app, authenticator);
@@ -76,18 +79,21 @@ app.use(cookieParser());
 routes.register(app, prefix, authenticator, storage);
 
 
-process.on("unhandledRejection", (reason: Error) => {
-  errorHandler.handleError(reason);
-});
-
-process.on("uncaughtException", (error: Error) => {
-  errorHandler.handleError(error);
-});
-
 // start the Express server
 const server = app.listen(port, () => {
-  logger.info(`server started at http://localhost:${port}`);
+  logger.info(`Express server started at http://localhost:${port}`);
 });
+
+// start the WebSocket server
+if (config.websocket.enabled) {
+  const path = `${config.server.prefix}${config.server.wsSuffix}`;
+  const wsServer = new ws.Server({ server, path });
+  authPromise.then(() => {
+    logger.info("Configuring WebSocket server");
+
+    configureWebsocket(wsServer, authenticator, storage);
+  });
+}
 
 function shutdown() {
   server.close(() => {
@@ -95,6 +101,14 @@ function shutdown() {
     logger.info("Shutdown completed.");
   });
 }
+
+process.on("unhandledRejection", (reason: Error) => {
+  errorHandler.handleError(reason);
+});
+
+process.on("uncaughtException", (error: Error) => {
+  errorHandler.handleError(error);
+});
 
 process.on("SIGTERM", () => {
   logger.info("Shutting down.");
