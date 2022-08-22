@@ -18,6 +18,7 @@
 
 import React, { useRef } from "react";
 import { ThrottledTooltip } from "../Tooltip";
+import { RootStateOrAny, useSelector } from "react-redux";
 
 /**
  *  renku-ui
@@ -34,6 +35,15 @@ export interface EntityTagsProps {
 function EntityTags ({ tagList, multiline }: EntityTagsProps) {
   const ref = useRef(null);
   const multilineStyles = multiline ? "d-flex flex-wrap gap-1" : "text-truncate";
+  const isUpdatingValue = useSelector((state: RootStateOrAny ) => state.project.metadata.tagList.updating);
+  if (isUpdatingValue) {
+    return (
+      <div ref={ref} className={`tagList card-tags text-rk-text-light ${multilineStyles}`}>
+        <small><i>Updating list...</i></small>
+      </div>
+    );
+  }
+
   const tooltip = <ThrottledTooltip target={ref} tooltip={tagList?.map(tag => `#${tag}`).join(", ")} />;
   return (
     <>

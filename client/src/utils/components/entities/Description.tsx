@@ -18,6 +18,7 @@
 
 import React, { CSSProperties } from "react";
 import { Link } from "react-router-dom";
+import { RootStateOrAny, useSelector } from "react-redux";
 
 /**
  *  renku-ui
@@ -52,6 +53,15 @@ function EntityDescription(
     minHeight: isHeightFixed ? "75px" : undefined,
     height: isHeightFixed ? "75px" : undefined,
   };
+
+  const isUpdatingValue = useSelector((state: RootStateOrAny ) => state.project.metadata.description.updating);
+  if (isUpdatingValue) {
+    return (
+      <div className="card-text text-rk-text-light" style={descriptionStyles}>
+        <small><i>Updating description...</i></small>
+      </div>
+    );
+  }
 
   return (<div className="card-text text-rk-text-light" style={descriptionStyles} data-cy="entity-description">
     {description ? description :

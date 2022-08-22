@@ -202,14 +202,24 @@ const ProjectAttributesMixin = {
       .then(() => { this.set("metadata.pendingRefresh", true); });
   },
   setDescription(client, description) {
-    this.setUpdating({ metadata: { description: true } });
+    this.set("metadata.description", { updating: true });
     return client.setDescription(this.get("metadata.id"), description)
-      .then(() => { this.set("metadata.pendingRefresh", true); });
+      .then(() => {
+        this.set("metadata.description", description); // to refresh view
+        this.set("metadata.pendingRefresh", true);
+      });
   },
   setTags(client, tags) {
-    this.setUpdating({ metadata: { tagList: [true] } });
+    this.set("metadata.tagList.updating", true);
+    const currentTags = tags.trim();
+    const temporalTags = currentTags.length === 0 ?
+      [] : tags.split(",").map(tag => tag.trim());
+
     return client.setTags(this.get("metadata.id"), tags)
-      .then(() => { this.set("metadata.pendingRefresh", true); });
+      .then(() => {
+        this.set("metadata.tagList", temporalTags); // to refresh view
+        this.set("metadata.pendingRefresh", true);
+      });
   },
   setStars(num) {
     this.set("metadata.starCount", num);
