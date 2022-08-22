@@ -54,7 +54,7 @@ function EntityDescription(
     height: isHeightFixed ? "75px" : undefined,
   };
 
-  const isUpdatingValue = useSelector((state: RootStateOrAny ) => state.project.metadata.description.updating);
+  const isUpdatingValue = useSelector((state: RootStateOrAny ) => state.project.metadata?.description?.updating);
   if (isUpdatingValue) {
     return (
       <div className="card-text text-rk-text-light" style={descriptionStyles}>

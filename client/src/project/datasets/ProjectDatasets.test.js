@@ -27,7 +27,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { createMemoryHistory } from "history";
-
+import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { ACCESS_LEVELS, testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
@@ -90,13 +90,15 @@ describe("rendering", () => {
     };
     const div = document.createElement("div");
     ReactDOM.render(
-      <MemoryRouter>
-        <AppContext.Provider value={appContext}>
-          <DatasetsListView
-            {...props}
-          />
-        </AppContext.Provider>
-      </MemoryRouter>
+      <Provider store={model.reduxStore}>
+        <MemoryRouter>
+          <AppContext.Provider value={appContext}>
+            <DatasetsListView
+              {...props}
+            />
+          </AppContext.Provider>
+        </MemoryRouter>
+      </Provider>
       , div);
   });
 
