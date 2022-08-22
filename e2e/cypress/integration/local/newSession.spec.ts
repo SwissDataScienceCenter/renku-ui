@@ -34,9 +34,8 @@ describe("launch sessions", () => {
     fixtures.newSessionImages();
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
-    cy.contains("Do you want to select the branch, commit, or image?").should("be.visible");
-    cy.contains("Start session").should("be.visible").should("be.enabled");
-    cy.contains("Start with base image").should("not.exist");
+    cy.get("form").contains("Start session").should("be.visible").should("be.enabled");
+    cy.get("form").contains("Start with base image").should("not.exist");
   });
 
   it("new session page - logged - success", () => {
@@ -44,9 +43,8 @@ describe("launch sessions", () => {
     fixtures.newSessionImages();
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
-    cy.contains("Do you want to select the branch, commit, or image?").should("be.visible");
-    cy.contains("Start session").should("be.visible").should("be.enabled");
-    cy.contains("Start with base image").should("not.exist");
+    cy.get("form").contains("Start session").should("be.visible").should("be.enabled");
+    cy.get("form").contains("Start with base image").should("not.exist");
   });
 
   it("new session page - logged - missing pipeline", () => {
@@ -54,9 +52,8 @@ describe("launch sessions", () => {
     fixtures.newSessionPipelines(true).newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionPipelines", { timeout: 10000 });
-    cy.contains("Hide advanced settings").should("be.visible");
-    cy.contains("Start with base image").should("be.visible");
-    cy.contains("Start session").should("be.visible").should("be.disabled");
+    cy.get("form").contains("Start with base image").should("be.visible");
+    cy.get("form").contains("Start session").should("be.visible").should("be.disabled");
     cy.contains("No Docker image found").should("be.visible");
     cy.contains("building the branch image").should("be.visible");
     cy.get(".badge").contains("not available").should("be.visible");
@@ -67,9 +64,8 @@ describe("launch sessions", () => {
     fixtures.newSessionPipelines().newSessionJobs().newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
-    cy.contains("Hide advanced settings").should("be.visible");
-    cy.contains("Start with base image").should("be.visible");
-    cy.contains("Start session").should("be.visible").should("be.disabled");
+    cy.get("form").contains("Start with base image").should("be.visible");
+    cy.get("form").contains("Start session").should("be.visible").should("be.disabled");
     cy.get(".badge").contains("not available").should("be.visible");
   });
 
@@ -78,9 +74,8 @@ describe("launch sessions", () => {
     fixtures.newSessionPipelines().newSessionJobs().newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
-    cy.contains("Hide advanced settings").should("be.visible");
-    cy.contains("Start with base image").should("be.visible");
-    cy.contains("Start session").should("be.visible").should("be.disabled");
+    cy.get("form").contains("Start with base image").should("be.visible");
+    cy.get("form").contains("Start session").should("be.visible").should("be.disabled");
     cy.get(".badge").contains("not available").should("be.visible");
   });
 
@@ -89,9 +84,8 @@ describe("launch sessions", () => {
     fixtures.newSessionPipelines().newSessionJobs(true).newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJobs", { timeout: 10000 });
-    cy.contains("Hide advanced settings").should("be.visible");
-    cy.contains("Start with base image").should("be.visible");
-    cy.contains("Start session").should("be.visible").should("be.disabled");
+    cy.get("form").contains("Start with base image").should("be.visible");
+    cy.get("form").contains("Start session").should("be.visible").should("be.disabled");
     cy.get(".badge").contains("not available").should("be.visible");
     cy.get("#image_build").should("be.visible");
     cy.get("#image_build_again").should("not.exist");
@@ -103,9 +97,8 @@ describe("launch sessions", () => {
     fixtures.newSessionPipelines().newSessionJobs(false, true).newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJob", { timeout: 15000 });
-    cy.contains("Hide advanced settings").should("be.visible");
-    cy.contains("Start with base image").should("be.visible");
-    cy.contains("Start session").should("be.visible").should("be.disabled");
+    cy.get("form").contains("Start with base image").should("be.visible");
+    cy.get("form").contains("Start session").should("be.visible").should("be.disabled");
     cy.get(".badge").contains("building").should("be.visible");
     cy.get("#image_build").should("not.exist");
     cy.get("#image_build_again").should("not.exist");
@@ -117,9 +110,8 @@ describe("launch sessions", () => {
     fixtures.newSessionPipelines().newSessionJobs(false, false, true).newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJobs", { timeout: 10000 });
-    cy.contains("Hide advanced settings").should("be.visible");
-    cy.contains("Start with base image").should("be.visible");
-    cy.contains("Start session").should("be.visible").should("be.disabled");
+    cy.get("form").contains("Start with base image").should("be.visible");
+    cy.get("form").contains("Start session").should("be.visible").should("be.disabled");
     cy.get(".badge").contains("not available").should("be.visible");
     cy.get("#image_build").should("not.exist");
     cy.get("#image_build_again").should("be.visible");
@@ -132,9 +124,6 @@ describe("launch sessions", () => {
     fixtures.newSessionPipelines().newSessionJobs().newSessionImages();
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
-    cy.contains(
-      "Do you want to select the branch, commit, or image, or configure cloud storage?"
-    ).should("be.visible").click();
     cy.contains("Configure Cloud Storage").should("be.visible").click();
     cy.contains("Object Store Configuration").should("be.visible");
   });
