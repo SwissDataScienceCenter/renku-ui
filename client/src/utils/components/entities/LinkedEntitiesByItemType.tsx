@@ -37,7 +37,7 @@ export interface EntityLinksData {
 }
 export interface EntityLinksHeader {
   data: EntityLinksData[];
-  status: "pending" | "done";
+  status: "pending" | "done" | "error";
   total: number;
   linkAll: string;
 }
@@ -55,6 +55,7 @@ function LinkedEntitiesByItemType({ itemType, links, devAccess, url }: LinkedEnt
       description: "Main datasets used in this project",
       seeMore: "See more datasets...",
       noLinks: "No dataset has been added yet.",
+      error: "Error obtaining datasets",
       icon: <HddStack />,
     },
     dataset: {
@@ -62,6 +63,7 @@ function LinkedEntitiesByItemType({ itemType, links, devAccess, url }: LinkedEnt
       description: "Main projects that use this dataset",
       seeMore: "... see more projects in the section below",
       noLinks: "There are no projects using this dataset.",
+      error: "Error obtaining projects",
       icon: <Briefcase />
     }
   };
@@ -75,6 +77,12 @@ function LinkedEntitiesByItemType({ itemType, links, devAccess, url }: LinkedEnt
       <h3>{dataByItem[itemType].title}</h3>
       <p className="text-rk-text-light">{dataByItem[itemType].description}</p>
       {links.status === "pending" ? <LoadingLabel text="Loading links... " /> : null }
+      {links.status === "error" ? <small className="text-rk-text-light">
+        {dataByItem[itemType].error}.{" "}
+        { links.linkAll ?
+          <Link className="cursor-pointer text-rk-text-light" key="more-datasets" to={links.linkAll}>More info</Link>
+          : null }
+      </small> : null }
       {
         links.data
           .map(link =>

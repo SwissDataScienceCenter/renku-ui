@@ -171,8 +171,9 @@ function DisplayDescription(props) {
 
 function DisplayMetadata({ dataset, sameAs, insideProject }) {
   if (!dataset) return null;
-
-  if (!dataset.mediaContent && (!dataset.sameAs || !dataset.url) && dataset.published?.creator?.length < 3)
+  if (!dataset.mediaContent
+    && (!dataset.sameAs || !dataset.url || !dataset.sameAs.includes("doi.org"))
+    && dataset.published?.creator?.length < 3)
     return null;
 
   return <Card key="datasetDescription" className="border-rk-light mb-4">
@@ -373,10 +374,12 @@ export default function DatasetView(props) {
     identifier={dataset.identifier} insideKg={dataset?.insideKg} locked={locked} logged={props.logged} />;
   /* End header buttons */
 
-  const datasetPublished = dataset.published !== undefined && dataset.published.datePublished
-    !== undefined && dataset.published.datePublished !== null;
+  const datasetPublished = dataset.published?.datePublished;
   const datasetDate = datasetPublished ? dataset.published.datePublished : dataset.created;
   const linksHeader = getLinksDatasetHeader(dataset.usedIn);
+  const timeCaption = (datasetDate != null) ?
+    new Date(datasetDate.replace(/ /g, "T")) :
+    "";
 
   return (<ContainerWrap>
     <Col>
@@ -395,7 +398,7 @@ export default function DatasetView(props) {
           tagList={dataset.keywords}
           creators={dataset?.published?.creator}
           labelCaption={datasetPublished ? "Published" : "Created"}
-          timeCaption={datasetDate}
+          timeCaption={timeCaption}
           devAccess={false}
           url={dataset.identifier}
           links={linksHeader}

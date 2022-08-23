@@ -216,10 +216,12 @@ class ForkProjectModal extends Component {
 }
 
 
-function getLinksProjectHeader(datasets, datasetsUrl) {
+function getLinksProjectHeader(datasets, datasetsUrl, errorGettingDatasets) {
+  const status = errorGettingDatasets ? "error" :
+    datasets.transient === undefined || datasets.core === "is_updating" ? "pending" : "done";
   const linksHeader = {
     data: [],
-    status: datasets.transient === undefined || datasets.core === "is_updating" ? "pending" : "done",
+    status: status,
     total: 0,
     linkAll: datasetsUrl
   };
@@ -237,7 +239,8 @@ function getLinksProjectHeader(datasets, datasetsUrl) {
 
 function ProjectViewHeaderMinimal(props) {
   const titleColSize = "col-12";
-  const linksHeader = getLinksProjectHeader(props.datasets, props.datasetsUrl);
+  const linksHeader = getLinksProjectHeader(props.datasets, props.datasetsUrl,
+    props.migration.core.fetched && !props.migration.core.backendAvailable);
   const projectUrl = Url.get(Url.pages.project,
     { namespace: props.metadata.namespace, path: props.metadata.path });
   const statusButton = (<ProjectStatusIcon
