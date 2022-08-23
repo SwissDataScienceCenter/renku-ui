@@ -963,5 +963,5 @@ NotebookServerRowAction.displayName = "NotebookServerRowAction";
 
 export {
   CheckNotebookIcon, Notebooks, NotebooksDisabled, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,
-  ShowSession, StartNotebookServer, mergeEnumOptions
+  ShowSession, StartNotebookServer, mergeEnumOptions, SessionJupyter
 };

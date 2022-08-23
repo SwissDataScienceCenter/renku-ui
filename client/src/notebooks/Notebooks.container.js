@@ -30,6 +30,7 @@ import { StatusHelper } from "../model/Model";
 import { Loader } from "../utils/components/Loader";
 import { Url } from "../utils/helpers/url";
 import { sleep } from "../utils/helpers/HelperFunctions";
+import ShowSessionFullscreen from "../utils/components/sessionFullScreen/SessionFullScreen";
 
 
 /**
@@ -70,7 +71,8 @@ function mapSessionStateToProps(state, ownProps) {
   };
 }
 
-const ShowSessionMapped = connect(mapSessionStateToProps)(ShowSessionPresent);
+// const ShowSessionMapped = connect(mapSessionStateToProps)(ShowSessionPresent); ShowSessionFullscreen
+const ShowSessionMapped = connect(mapSessionStateToProps)(ShowSessionFullscreen);
 class ShowSession extends Component {
   constructor(props) {
     super(props);
