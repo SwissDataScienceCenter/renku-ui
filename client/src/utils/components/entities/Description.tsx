@@ -53,7 +53,7 @@ function EntityDescription(
     height: isHeightFixed ? "75px" : undefined,
   };
 
-  return (<div className="card-text text-rk-text-light" style={descriptionStyles}>
+  return (<div className="card-text text-rk-text-light" style={descriptionStyles} data-cy="entity-description">
     {description ? description :
       showSuggestion && hasDevAccess && urlChangeDescription ?
         <i>(This project has no description.

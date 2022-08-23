@@ -587,7 +587,7 @@ class ProjectViewReadme extends Component {
     return (
       <Card className="border-rk-light">
         <CardHeader className="bg-white p-3 ps-4">README.md</CardHeader>
-        <CardBody style={{ overflow: "auto" }} className="p-4">
+        <CardBody style={{ overflow: "auto" }} className="p-4" data-cy="project-readme">
           <RenkuMarkdown
             projectPathWithNamespace = {this.props.metadata.pathWithNamespace}
             filePath={""}

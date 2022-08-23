@@ -60,7 +60,7 @@ function LinkedEntitiesByItemType({ itemType, links, devAccess, url }: LinkedEnt
     },
     dataset: {
       title: "Linked projects",
-      description: "Main projects that use this dataset",
+      description: "Projects that use this dataset",
       seeMore: "... see more projects in the section below",
       noLinks: "There are no projects using this dataset.",
       error: "Error obtaining projects",
@@ -70,7 +70,7 @@ function LinkedEntitiesByItemType({ itemType, links, devAccess, url }: LinkedEnt
   const stylesByItem = stylesByItemType(itemType);
 
   const addDatasetLink = devAccess && itemType === "project" ?
-    <div className=""><Link to={`${url}/datasets/new`} title="Add a dataset">Add some datasets...</Link></div> : null;
+    <div className=""><Link to={`${url}/datasets/new`} title="Add a dataset">Add a dataset...</Link></div> : null;
 
   return (
     <div className="linked-entities">

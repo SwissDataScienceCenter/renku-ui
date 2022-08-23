@@ -74,7 +74,7 @@ export interface EntityDeleteButtonProps {
 function EntityDeleteButtonButton({ itemType, action }: EntityDeleteButtonProps) {
   const styles = stylesByItemType(itemType);
   return <>
-    <Button id="deleteButton"
+    <Button id="deleteButton" data-cy="delete-dataset-button"
       onClick={action} className="icon-button btn-rk-white text-rk-pink">
       <FontAwesomeIcon icon={faTrash} className={styles.colorText} />
     </Button>
