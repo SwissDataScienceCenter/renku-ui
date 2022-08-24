@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 import human from "human-time";
-import React, { Component } from "react";
+import React, { useRef } from "react";
+import { ThrottledTooltip } from "./Tooltip";
+import Time from "../helpers/Time";
 
 /**
  *  renku-ui
@@ -34,21 +36,26 @@ function displayTimeFromDate(time) {
   return displayTime;
 }
 
-class TimeCaption extends Component {
+function TimeCaption(
+  { time, caption = "Updated", endCaption = "", endPunctuation = ".",
+    className = "", noCaption = false, showTooltip = false }) {
   // Take a time and caption and generate a span that shows it
-  render() {
-    const displayTime = displayTimeFromDate(this.props.time);
-    let caption = (this.props.caption) ? this.props.caption : "Updated";
-    const endCaption = (this.props.endCaption) ? " " + this.props.endCaption : "";
-    const endPunctuation = (this.props.endPunctuation) ? this.props.endPunctuation : ".";
-    let className = this.props.className || "";
-    const noCaption = this.props.noCaption;
-    if (noCaption)
-      caption = "";
-    else
-      className = "time-caption " + className;
-    return <span className={className}>{caption} {displayTime}{endCaption}{endPunctuation}</span>;
-  }
+  const displayTime = displayTimeFromDate(time);
+  const endCaptionStyled = (endCaption) ? " " + endCaption : "";
+  if (!noCaption)
+    className = "time-caption " + className;
+
+  const ref = useRef(null);
+  const tooltip = showTooltip ?
+    <ThrottledTooltip target={ref} tooltip={Time.toIsoString(time)} /> : null;
+
+  return (
+    <>
+      <span ref={ref}
+        className={className}>{noCaption ? "" : caption} {displayTime}{endCaptionStyled}{endPunctuation}</span>
+      {tooltip}
+    </>
+  );
 }
 
 export { TimeCaption };

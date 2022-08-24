@@ -32,15 +32,13 @@ describe("display a project", () => {
     cy.wait("@getProject");
     cy.wait("@getReadme");
     // Check that the project header is shown
-    cy.get("[data-cy='project-header']").should(
-      "contain.text",
-      "local-test-project Public"
-    );
+    cy.get("[data-cy='header-project']").should("be.visible");
     // Check that the readme is shown
-    cy.get("h1").first().should("contain.text", "local test project");
+    cy.get("[data-cy='project-readme']").should("contain.text", "local test project");
 
     // Check that the title is correct
-    cy.get("title").first().should("contain.text", "local-test-project • Project • e2e/local-test-project");
+    cy.get("[data-cy='project-title']").first()
+      .should("contain.text", "local-test-project");
   });
 
   it("displays project settings", () => {
@@ -159,27 +157,6 @@ describe("display lock status", () => {
     cy.contains("currently being modified").should("not.exist");
   });
 
-  it("displays messages for locked project", () => {
-    fixtures.projectLockStatus({ locked: true });
-    cy.visit("/projects/e2e/local-test-project/datasets");
-    cy.wait("@getProject");
-    cy.wait("@getProjectLockStatus");
-    cy.contains("currently being modified").should("be.visible");
-  });
-
-  it("displays error when the API fails", () => {
-    fixtures.projectLockStatus({ locked: true, error: true });
-    cy.visit("/projects/e2e/local-test-project/datasets");
-    cy.wait("@getProjectLockStatus");
-    cy.contains("cannot verify status").should("be.visible");
-  });
-
-  it("displays error when the legacy API fails", () => {
-    fixtures.projectLockStatus({ locked: true, legacyError: true });
-    cy.visit("/projects/e2e/local-test-project/datasets");
-    cy.wait("@getProjectLockStatus");
-    cy.contains("cannot verify status").should("be.visible");
-  });
 });
 
 describe("display migration information for anon user", () => {

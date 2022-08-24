@@ -1,0 +1,35 @@
+.entity-card-large {
+    flex-grow: 1;
+}
+.linked-entities {
+    margin-left: 6px;
+    padding-top: 10px;
+}
+
+.linked-entities h3 {
+    font-size: 25px;
+}
+
+.linked-entities-link {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.linked-entities-link svg {
+    margin-right: 10px;
+}
+
+.buttons-header-entity .icon-button {
+    width: 30px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+.entity-tag {
+    background-color: hsl(0deg 0% 42% / 8%);
+    border-radius: 5px;
+    padding: 3px 8px;
+    margin: 0 4px;
+    font-size: 14px;
+}
+

@@ -19,13 +19,12 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import {
-  Button, Card, CardBody, CardHeader, Col, DropdownItem, Row,
-  Table, Badge
+  Button, Card, CardBody, CardHeader, Col, Table
 } from "reactstrap";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPen, faPlus, faTrash
+  faPen, faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 
@@ -42,7 +41,8 @@ import { ThrottledTooltip } from "../utils/components/Tooltip";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { CoreError } from "../utils/components/errors/CoreErrorHelpers";
 import { ContainerWrap } from "../App";
-import { ButtonWithMenu } from "../utils/components/buttons/Button";
+import EntityHeader from "../utils/components/entityHeader/EntityHeader";
+import { EntityDeleteButtonButton } from "../utils/components/entities/Buttons";
 
 
 function DisplayFiles(props) {
@@ -148,7 +148,7 @@ function DisplayProjects(props) {
 function DisplayDescription(props) {
   if (!props.description) return null;
 
-  return <Card key="datasetDescription" className="border-rk-light mb-4">
+  return <Card key="datasetDescription" className="border-rk-light mb-4 my-4">
     <CardHeader className="bg-white p-3 ps-4">Dataset description</CardHeader>
     <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
       {
@@ -169,15 +169,39 @@ function DisplayDescription(props) {
   </Card>;
 }
 
-function DisplayInfoTable(props) {
+function DisplayMetadata({ dataset, sameAs, insideProject }) {
+  if (!dataset) return null;
+  if (!dataset.mediaContent
+    && (!dataset.sameAs || !dataset.url || !dataset.sameAs.includes("doi.org"))
+    && dataset.published?.creator?.length < 3)
+    return null;
 
+  return <Card key="datasetDescription" className="border-rk-light mb-4">
+    <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
+      {
+        <div className="d-flex">
+          {dataset.mediaContent ?
+            <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
+              <img src={dataset.mediaContent} className=" rounded" alt=""
+                style={{ objectFit: "cover", width: "100%", height: "90px" }} />
+            </div>
+            : null}
+          <div className="flex-grow-1">
+            <DisplayInfoTable
+              dataset={dataset}
+              insideProject={insideProject}
+              sameAs={sameAs}
+            />
+          </div>
+        </div>
+      }
+    </CardBody>
+  </Card>;
+}
+
+function DisplayInfoTable(props) {
   const { dataset } = props;
   if (!dataset || !dataset?.exists) return null;
-
-  const datasetPublished = dataset.published !== undefined && dataset.published.datePublished
-    !== undefined && dataset.published.datePublished !== null;
-  const datasetDate = datasetPublished ? dataset.published.datePublished : dataset.created;
-
 
   const source = dataset.sameAs && dataset.sameAs.includes("doi.org") ?
     <ExternalLink url={dataset.sameAs} title={dataset.sameAs} role="link" /> :
@@ -186,11 +210,6 @@ function DisplayInfoTable(props) {
       : null;
 
   const authors = getDatasetAuthors(dataset);
-
-  const keywords = dataset.keywords && dataset.keywords.length > 0 ?
-    dataset.keywords.map(keyword =>
-      <span key={keyword}><Badge color="rk-text">{keyword}</Badge>&nbsp;</span>)
-    : null;
 
   // eslint-disable-next-line
   return <Table className="mb-4 table-borderless" size="sm">
@@ -206,33 +225,12 @@ function DisplayInfoTable(props) {
         </tr>
         : null
       }
-      {authors ? <tr>
+      {dataset.published?.creator?.length >= 3 ? <tr>
         <td className="text-dark fw-bold col-auto">
           Author(s)
         </td>
         <td>
           {authors}
-        </td>
-      </tr>
-        : null
-      }
-      {datasetDate ?
-        <tr>
-          <td className="text-dark fw-bold col-auto">
-            {datasetPublished ? "Published on " : "Created on "}
-          </td>
-          <td>
-            {Time.getReadableDate(datasetDate.replace(/ /g, "T"))}
-          </td>
-        </tr>
-        : null
-      }
-      {keywords ? <tr>
-        <td className="text-dark fw-bold col-auto">
-          Keywords
-        </td>
-        <td>
-          {keywords}
         </td>
       </tr>
         : null
@@ -258,18 +256,32 @@ function ErrorAfterCreation(props) {
     : null;
 }
 
-function AddToProjectButton({ goToAddToProject, insideKg, locked, logged, }) {
+function AddToProjectButton({ insideKg, locked, logged, identifier }) {
+  const history = useHistory();
+  const addDatasetUrl = `/datasets/${identifier}/add`;
+  const goToAddToProject = () => {
+    if (history)
+      history.push(addDatasetUrl);
+  };
+
   const tooltip = (logged && locked) ?
     <ThrottledTooltip
       target="add-dataset-to-project-button"
-      tooltip="Cannot add dataset to project until project modification finishes." /> :
-    null;
+      tooltip="Cannot add dataset to project until project modification finishes" /> :
+    insideKg === false ?
+      <ThrottledTooltip
+        target="add-dataset-to-project-button"
+        tooltip="Cannot add dataset to project, the project containing this dataset does not have kg activated" /> :
+      <ThrottledTooltip
+        target="add-dataset-to-project-button"
+        tooltip="Import Dataset in new or existing project" />;
+
   return <span id="add-dataset-to-project-button">
     <Button
       data-cy="add-to-project-button"
       disabled={insideKg === false || locked}
-      className="float-right mb-1 me-1 btn btn-rk-pink btn-icon-text" size="sm" onClick={() => goToAddToProject()}>
-      <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
+      className="btn-rk-white text-rk-pink icon-button" size="sm" onClick={() => goToAddToProject()}>
+      <FontAwesomeIcon icon={faPlus} color="dark" />
     </Button>
     {tooltip}
   </span>;
@@ -279,8 +291,9 @@ function EditDatasetButton({ dataset, insideProject, locked, maintainer }) {
   if (!insideProject || !maintainer) return null;
   if (locked) {
     return <span className="float-right mb-1 me-1" id="editDatasetTooltip">
-      <Button className="btn-outline-rk-pink btn-icon-text" data-cy="edit-dataset-button" disabled={true} size="sm">
-        <FontAwesomeIcon icon={faPen} color="dark" />Modify
+      <Button className="btn-rk-white text-rk-pink icon-button"
+        data-cy="edit-dataset-button" disabled={true} size="sm">
+        <FontAwesomeIcon icon={faPen} color="dark" />
       </Button>
       <ThrottledTooltip
         target="editDatasetTooltip"
@@ -290,10 +303,33 @@ function EditDatasetButton({ dataset, insideProject, locked, maintainer }) {
   return <Link className="float-right mb-1 me-1" id="editDatasetTooltip"
     data-cy="edit-dataset-button"
     to={{ pathname: "modify", state: { dataset: dataset } }} >
-    <Button className="btn-outline-rk-pink btn-icon-text" size="sm">
-      <FontAwesomeIcon icon={faPen} color="dark" />Modify
+    <Button className="btn-rk-white text-rk-pink icon-button" size="sm"
+      data-cy="edit-dataset-button">
+      <FontAwesomeIcon icon={faPen} color="dark" />
     </Button>
+    <ThrottledTooltip
+      target="editDatasetTooltip"
+      tooltip="Modify Dataset" />
   </Link>;
+}
+
+function getLinksDatasetHeader(projects) {
+  const linksHeader = {
+    data: [],
+    status: "done",
+    total: 0,
+    linkAll: undefined
+  };
+  if (linksHeader.status !== "is_updating" && projects?.length > 0) {
+    linksHeader.total = projects.length;
+    projects.slice(0, 5).map( project => {
+      linksHeader.data.push({
+        title: project.name,
+        url: `/projects/${project.path}`
+      });
+    });
+  }
+  return linksHeader;
 }
 
 export default function DatasetView(props) {
@@ -316,11 +352,6 @@ export default function DatasetView(props) {
       );
     }
   }
-  const addDatasetUrl = `/datasets/${dataset?.identifier}/add`;
-  const goToAddToProject = () => {
-    if (props.history)
-      props.history.push(addDatasetUrl);
-  };
 
   const datasetTitle = dataset.title || dataset.name;
   const datasetDesc = dataset.description;
@@ -328,18 +359,27 @@ export default function DatasetView(props) {
     `${datasetTitle} • Dataset • ${datasetDesc}` :
     `${datasetTitle} • Dataset`;
 
+  /* Header buttons */
   const modifyButton = <EditDatasetButton
+    key="editDatasetButton"
     dataset={dataset}
     insideProject={props.insideProject} locked={locked} maintainer={props.maintainer} />;
+
   const deleteOption = !props.insideProject || !props.maintainer || locked ? null :
-    <DropdownItem data-cy="delete-dataset-button"
-      className="btn-icon-text" onClick={() => setDeleteDatasetModalOpen(true)}>
-      <FontAwesomeIcon icon={faTrash} className="text-rk-pink" /> Delete
-    </DropdownItem>;
-  const otherButtons = !props.insideProject ? null :
-    <ButtonWithMenu id="project-dataset-menu" color="rk-pink" size="sm" default={modifyButton}>
-      {deleteOption}
-    </ButtonWithMenu>;
+    <EntityDeleteButtonButton
+      key="deleteDatasetButton" itemType="dataset" action={() => setDeleteDatasetModalOpen(true)}/>;
+
+  const addToProject = <AddToProjectButton
+    key="addToProjectButton"
+    identifier={dataset.identifier} insideKg={dataset?.insideKg} locked={locked} logged={props.logged} />;
+  /* End header buttons */
+
+  const datasetPublished = dataset.published?.datePublished;
+  const datasetDate = datasetPublished ? dataset.published.datePublished : dataset.created;
+  const linksHeader = getLinksDatasetHeader(dataset.usedIn);
+  const timeCaption = (datasetDate != null) ?
+    new Date(datasetDate.replace(/ /g, "T")) :
+    "";
 
   return (<ContainerWrap>
     <Col>
@@ -350,39 +390,26 @@ export default function DatasetView(props) {
             <title>{pageTitle}</title>
           </Helmet>
       }
-      <Row>
-        <Col md={7} sm={12}>
-          {props.insideProject ?
-            <h3 data-cy="dataset-title" key="datasetTitle" className="mb-4">
-              {dataset.title || dataset.name}
-            </h3>
-            :
-            <h2 data-cy="dataset-title" key="datasetTitle" className="mb-4">
-              {dataset.title || dataset.name}
-            </h2>
-          }
-        </Col>
-        <Col md={5} sm={12} className="d-flex flex-col justify-content-end mb-auto flex-wrap">
-          <AddToProjectButton goToAddToProject={goToAddToProject}
-            insideKg={dataset?.insideKg} locked={locked} logged={props.logged} />
-          {otherButtons}
-        </Col>
-      </Row>
-      <div className="d-flex">
-        {dataset.mediaContent ?
-          <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
-            <img src={dataset.mediaContent} className=" rounded" alt=""
-              style={{ objectFit: "cover", width: "100%", height: "90px" }} />
-          </div>
-          : null}
-        <div className="flex-grow-1">
-          <DisplayInfoTable
-            dataset={dataset}
-            insideProject={props.insideProject}
-            sameAs={props.sameAs}
-          />
-        </div>
+      <div className="mb-4">
+        <EntityHeader
+          title={dataset.title}
+          description=""
+          itemType="dataset"
+          tagList={dataset.keywords}
+          creators={dataset?.published?.creator}
+          labelCaption={datasetPublished ? "Published" : "Created"}
+          timeCaption={timeCaption}
+          devAccess={false}
+          url={dataset.identifier}
+          links={linksHeader}
+          otherButtons={[deleteOption, modifyButton, addToProject]}
+        />
       </div>
+      <DisplayMetadata
+        dataset={props.dataset}
+        sameAs={props.sameAs}
+        insideProject={props.insideProject}
+      />
       <DisplayDescription
         projectPathWithNamespace={props.projectPathWithNamespace}
         projectsUrl={props.projectsUrl}
