@@ -44,7 +44,6 @@ function checkDatasetDisplay(cy, fixtures, datasets) {
     cy.get_cy("dataset-title").should("contain.text", d.title);
 
     cy.get_cy("edit-dataset-button").should("exist");
-    cy.get("#project-dataset-menu").find(`[data-cy='more-options-button']`).click();
     cy.get_cy("delete-dataset-button").should("exist");
 
     cy.get_cy("go-back-button").click();
@@ -69,7 +68,6 @@ function checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets, editDisabl
       cy.get_cy("edit-dataset-button").should("not.exist");
       cy.get_cy("add-to-project-button").should("be.visible");
     }
-    cy.get("#project-dataset-menu").find(`[data-cy='more-options-button']`).should("not.exist");
 
     cy.get_cy("go-back-button").click();
   });
@@ -198,7 +196,7 @@ describe("Error loading datasets", () => {
     fixtures.projectLockStatus();
   });
 
-  it("displays project datasets", () => {
+  it("display project datasets", () => {
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProject");
     cy.wait("@datasetList")
@@ -227,11 +225,10 @@ describe("Project dataset (locked)", () => {
     fixtures.projectLockStatus({ locked: true });
   });
 
-  it("displays project datasets", () => {
+  it("display project datasets", () => {
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProject");
     cy.wait("@getProjectLockStatus");
-    cy.contains("currently being modified").should("be.visible");
     cy.wait("@datasetList")
       .its("response.body")
       .then((data) => {

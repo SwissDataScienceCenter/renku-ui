@@ -6,8 +6,19 @@
     padding: 1.5rem 1rem 1rem 1rem;
   }
 }
+.card-entity--large {
+  width: 100%;
+  .card-body {
+    padding: 1.5rem 1rem 1rem 1rem;
+  }
+}
 .card-header-entity {
   height: 198px;
+  border-radius: 8px 8px 0 0;
+  background-size: cover;
+}
+.card-header-entity--large {
+  height: 130px;
   border-radius: 8px 8px 0 0;
   background-size: cover;
 }
@@ -18,6 +29,14 @@
 
 .card-header-entity--dataset {
   background-image: url("../assets/datasetBackgroundSmall.png");
+}
+
+.card-header-entity--project-large {
+  background-image: url("../assets/projectBackgroundLarge.png");
+}
+
+.card-header-entity--dataset-large {
+  background-image: url("../assets/datasetBackgroundLarge.png");
 }
 
 .card-type-label {
@@ -40,6 +59,11 @@
   overflow: hidden;
   text-overflow: clip;
   line-height: normal;
+}
+
+.card-bg-title--large {
+  position: absolute;
+  line-height: 150px;
 }
 
 .card-title {
