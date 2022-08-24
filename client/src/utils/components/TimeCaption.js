@@ -45,8 +45,9 @@ function TimeCaption(
   if (!noCaption)
     className = "time-caption " + className;
 
+
   const ref = useRef(null);
-  const tooltip = showTooltip ?
+  const tooltip = showTooltip && time ?
     <ThrottledTooltip target={ref} tooltip={Time.toIsoString(time)} /> : null;
 
   return (
