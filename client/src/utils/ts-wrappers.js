@@ -34,6 +34,13 @@ import {
   UncontrolledTooltip as WrappedUncontrolledTooltip
 } from "reactstrap";
 
+import {
+  Briefcase as WrappedBriefcase,
+  HddStack as WrappedHddStack,
+  Globe as WrappedGlobe,
+  People as WrappedPeople,
+  Lock as WrappedLock,
+} from "react-bootstrap-icons";
 
 import { FormGroup as WrappedFormGroup, Input as WrappedInput } from "reactstrap";
 
@@ -142,6 +149,25 @@ function Table(props) {
   return <WrappedTable {...props} />;
 }
 
+function Briefcase(props) {
+  return <WrappedBriefcase {...props} />;
+}
+
+function HddStack(props) {
+  return <WrappedHddStack {...props} />;
+}
+
+function Globe(props) {
+  return <WrappedGlobe {...props} />;
+}
+
+function People(props) {
+  return <WrappedPeople {...props} />;
+}
+
+function Lock(props) {
+  return <WrappedLock {...props} />;
+}
 
 export { Alert, Button, ButtonGroup };
 export { Card, CardBody, CardText, CardFooter, Col, DropdownItem };
@@ -149,3 +175,4 @@ export { FormFeedback, FormText, Fade, Form, FormGroup, Input, Label };
 export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
+export { Briefcase, HddStack, Globe, People, Lock };

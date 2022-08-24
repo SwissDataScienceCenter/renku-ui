@@ -399,9 +399,29 @@ const computeVisibilities = (options) => {
   };
 };
 
+function stylesByItemType(itemType) {
+  switch (itemType) {
+    case "project":
+      return {
+        colorText: "text-rk-green",
+        bgColor: "rk-green"
+      };
+    case "dataset":
+      return {
+        colorText: "text-rk-pink",
+        bgColor: "rk-pink"
+      };
+    default:
+      return {
+        colorText: "text-rk-green",
+        bgColor: "rk-green"
+      };
+  }
+}
+
 export {
   capitalizeFirstLetter, generateZip, computeVisibilities,
   slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown,
   simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleCharacters,
-  convertUnicodeToAscii, refreshIfNecessary, sleep, toCapitalized
+  convertUnicodeToAscii, refreshIfNecessary, sleep, toCapitalized, stylesByItemType
 };

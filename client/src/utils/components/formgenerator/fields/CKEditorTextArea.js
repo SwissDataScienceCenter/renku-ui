@@ -59,26 +59,28 @@ function CktextareaInput(
       </div>
       {
         codeView === false ?
-          <CKEditor
-            id={name}
-            editor={outputType === "markdown" ? RenkuCKEditor.RenkuMarkdownEditor : RenkuCKEditor.RenkuHTMLEditor}
-            type={type}
-            data={value || ""}
-            disabled={disabled}
-            invalid={alert !== undefined}
-            customConfig={{ height: 500 }}
-            height={800}
-            data-cy={`ckeditor-${name}`}
-            onChange={
-              (event, editor) => {
-                const artificialEvent = {
-                  target: { name: name, value: editor.getData() },
-                  isPersistent: () => false
-                };
-                setInputs(artificialEvent);
+          <div data-cy={`ckeditor-${name}`}>
+            <CKEditor
+              id={name}
+              editor={outputType === "markdown" ? RenkuCKEditor.RenkuMarkdownEditor : RenkuCKEditor.RenkuHTMLEditor}
+              type={type}
+              data={value || ""}
+              disabled={disabled}
+              invalid={alert !== undefined}
+              customConfig={{ height: 500 }}
+              height={800}
+              data-cy={`ckeditor-${name}`}
+              onChange={
+                (event, editor) => {
+                  const artificialEvent = {
+                    target: { name: name, value: editor.getData() },
+                    isPersistent: () => false
+                  };
+                  setInputs(artificialEvent);
+                }
               }
-            }
-          />
+            />
+          </div>
           :
           <Input
             id={name + "text-area"}
