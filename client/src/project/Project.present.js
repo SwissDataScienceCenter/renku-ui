@@ -28,21 +28,20 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Link, Route, Switch } from "react-router-dom";
 import {
-  Alert, Badge, Button, ButtonGroup, Card, CardBody, CardHeader, Col, DropdownItem,
+  Alert, Button, ButtonGroup, Card, CardBody, CardHeader, Col, DropdownItem,
   Modal, Row, Nav, NavItem, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import { faUserClock } from "@fortawesome/free-solid-svg-icons";
 import {
-  faCodeBranch, faExclamationTriangle, faGlobe, faInfoCircle, faLock, faPlay,
-  faStar as faStarSolid, faUserFriends
+  faCodeBranch, faExclamationTriangle, faInfoCircle, faPlay,
+  faStar as faStarSolid
 } from "@fortawesome/free-solid-svg-icons";
 
 
 import { Url } from "../utils/helpers/url";
 import { SpecialPropVal } from "../model/Model";
-import { ProjectTagList } from "./shared";
 import { Notebooks, ShowSession, StartNotebookServer } from "../notebooks";
 import Issue from "../collaboration/issue/Issue";
 import {
@@ -70,6 +69,7 @@ import { Docs } from "../utils/constants/Docs";
 import { NotFound } from "../not-found/NotFound.present";
 import { ContainerWrap } from "../App";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
+import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -94,46 +94,6 @@ function isKgDown(webhook) {
   return webhook === false ||
     (webhook.status === false && webhook.created !== true) ||
     webhookError(webhook.status);
-}
-
-function ProjectVisibilityLabel({ visibilityLevel }) {
-  let text = null;
-  switch (visibilityLevel) {
-    case "private":
-      text = <Fragment><FontAwesomeIcon icon={faLock} /> Private</Fragment>;
-      break;
-    case "internal":
-      text = <Fragment><FontAwesomeIcon icon={faUserFriends} /> Internal</Fragment>;
-      break;
-    case "public":
-      text = <Fragment><FontAwesomeIcon icon={faGlobe} /> Public</Fragment>;
-      break;
-    default:
-      text = null;
-  }
-  if (text == null) return null;
-  return <span className="ms-3">
-    <Badge color="secondary" style={{ verticalAlign: "middle" }}>{text}</Badge>&nbsp;
-  </span>;
-}
-
-function ProjectLockStatus({ lockStatus }) {
-  // return null when not locked and no errors occurred
-  if (!lockStatus || (!lockStatus?.locked && !lockStatus?.error))
-    return null;
-
-  const content = lockStatus.error ?
-    (<Fragment>
-      <FontAwesomeIcon icon={faExclamationTriangle} /> <i>cannot verify status</i>
-      <UncontrolledTooltip key="tooltip" placement="bottom" target="locked-status-info">
-        {lockStatus.error?.userMessage ? lockStatus.error.userMessage : lockStatus.error?.reason}
-      </UncontrolledTooltip>
-    </Fragment>) :
-    (<Fragment>
-      <FontAwesomeIcon icon={faUserClock} /> <i>currently being modified</i>
-    </Fragment>);
-
-  return (<span className="fs-6 fw-normal m-2" id="locked-status-info">{content}</span>);
 }
 
 function ProjectDatasetLockAlert({ lockStatus }) {
@@ -175,7 +135,7 @@ class ProjectStatusIcon extends Component {
       null;
 
     return (
-      <span className="warningLabel" style={{ verticalAlign: "baseline" }}>
+      <span className="warningLabel" style={{ verticalAlign: "text-bottom" }}>
         <FontAwesomeIcon
           icon={faExclamationTriangle}
           onClick={() => history.push(overviewStatusUrl)}
@@ -255,58 +215,73 @@ class ForkProjectModal extends Component {
   }
 }
 
-function ProjectIdentifier(props) {
+
+function getLinksProjectHeader(datasets, datasetsUrl, errorGettingDatasets) {
+  const status = errorGettingDatasets ? "error" :
+    datasets.transient === undefined || datasets.core === "is_updating" ? "pending" : "done";
+  const linksHeader = {
+    data: [],
+    status: status,
+    total: 0,
+    linkAll: datasetsUrl
+  };
+  if (datasets.transient !== undefined && datasets.core !== "is_updating" && datasets.core?.datasets?.length > 0) {
+    linksHeader.total = datasets.core.datasets.length;
+    datasets.core.datasets.slice(0, 5).map( dataset => {
+      linksHeader.data.push({
+        title: dataset.title,
+        url: `${datasetsUrl}/${encodeURIComponent(dataset.name)}`
+      });
+    });
+  }
+  return linksHeader;
+}
+
+function ProjectViewHeaderMinimal(props) {
+  const titleColSize = "col-12";
+  const linksHeader = getLinksProjectHeader(props.datasets, props.datasetsUrl,
+    props.migration.core.fetched && !props.migration.core.backendAvailable);
+  const projectUrl = Url.get(Url.pages.project,
+    { namespace: props.metadata.namespace, path: props.metadata.path });
+  const statusButton = (<ProjectStatusIcon
+    history={props.history}
+    webhook={props.webhook}
+    overviewStatusUrl={props.overviewStatusUrl}
+    migration={props.migration}
+  />);
+
   const forkedFromText = (isForkedFromProject(props.forkedFromProject)) ?
     <Fragment>{" "}<b key="forked">forked</b>{" from "} {props.forkedFromLink}</Fragment> :
     null;
   const forkedFrom = (forkedFromText) ?
     <Fragment><span className="text-rk-text fs-small">{forkedFromText}</span><br /></Fragment> :
     null;
-  const projectId = props.metadata.pathWithNamespace;
-  const projectTitle = props.metadata.title;
-
-  return (
-    <Fragment>
-      <div className="flex-grow-1">
-        <h2 className="mb-0" data-cy="project-header">
-          <ProjectStatusIcon
-            history={props.history}
-            webhook={props.webhook}
-            overviewStatusUrl={props.overviewStatusUrl}
-            migration={props.migration}
-          />{projectTitle}
-          <ProjectVisibilityLabel visibilityLevel={props.metadata.visibility} />
-          <ProjectLockStatus lockStatus={props.lockStatus} />
-        </h2>
-        <span className="text-rk-text fs-small">{projectId}</span> {forkedFrom}
-      </div>
-    </Fragment>);
-}
-
-function ProjectViewHeaderMinimal(props) {
-  const titleColSize = "col-12";
+  const slug = <>{props.metadata.pathWithNamespace} {forkedFrom}</>;
 
   return (
     <Fragment>
       <Row className="d-flex rk-project-header gx-2 justify-content-md-between justify-content-sm-start">
         <Col className={"order-1 d-flex align-items-start " + titleColSize}>
-          <ProjectIdentifier {...props} />
-          <StartSessionButton {...props} />
+          <EntityHeader
+            title={props.metadata.title}
+            visibility={props.metadata.visibility}
+            description={props.metadata.description}
+            itemType="project"
+            slug={slug}
+            tagList={props.metadata.tagList}
+            creators={props.metadata.owner ? [props.metadata.owner] : []}
+            labelCaption={"Updated"}
+            timeCaption={props.metadata.lastActivityAt}
+            launchNotebookUrl={props.launchNotebookUrl}
+            sessionAutostartUrl={props.sessionAutostartUrl}
+            devAccess={props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
+            url={projectUrl}
+            links={linksHeader}
+            statusButton={statusButton}
+          />
         </Col>
       </Row>
     </Fragment>);
-}
-
-function ProjectViewHeaderOverviewDescription({ settingsReadOnly, description, settingsUrl }) {
-  if (description) {
-    return <RenkuMarkdown markdownText={description} fixRelativePaths={false}
-      className="p-mb-0 fs-6 rk-project-description"/>;
-  }
-  if (!settingsReadOnly) {
-    return <div className="p-mb-0 fs-6"><i>(This project has no description.
-      You can provide one on the <Link to={settingsUrl}>settings tab</Link>.)</i></div>;
-  }
-  return null;
 }
 
 function ProjectSuggestionReadme({ commits, commitsReadme, externalUrl, metadata }) {
@@ -443,10 +418,6 @@ class ProjectViewHeaderOverview extends Component {
 
     const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
       this.props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
-    const description = <ProjectViewHeaderOverviewDescription
-      description={this.props.metadata.description}
-      settingsReadOnly={this.props.settingsReadOnly}
-      settingsUrl={this.props.settingsUrl} />;
     const forkProjectDisabled = metadata.accessLevel < ACCESS_LEVELS.REPORTER
     && metadata.visibility === "private";
     const titleColSize = "col-12 col-md-8";
@@ -495,13 +466,6 @@ class ProjectViewHeaderOverview extends Component {
                 gitlabIDEUrl={gitlabIDEUrl}
                 userLogged={this.props.user.logged} />
             </div>
-            <div className="d-flex gap-2 justify-content-end">
-              { this.props.metadata.tagList.length > 0 ?
-                <div className="pt-2">
-                  <ProjectTagList tagList={this.props.metadata.tagList} />
-                </div>
-                : null }
-            </div>
           </Col>
           <Col className={"d-flex " + titleColSize}>
             { this.props.metadata.avatarUrl ?
@@ -510,9 +474,6 @@ class ProjectViewHeaderOverview extends Component {
                   style={{ objectFit: "cover", width: "100%", height: "90px" }}/>
               </div>
               : null }
-            <div className="flex-grow-1">
-              <span className="text-rk-text fs-small">{description}</span>
-            </div>
           </Col>
         </Row>
       </Fragment>);
@@ -626,7 +587,7 @@ class ProjectViewReadme extends Component {
     return (
       <Card className="border-rk-light">
         <CardHeader className="bg-white p-3 ps-4">README.md</CardHeader>
-        <CardBody style={{ overflow: "auto" }} className="p-4">
+        <CardBody style={{ overflow: "auto" }} className="p-4" data-cy="project-readme">
           <RenkuMarkdown
             projectPathWithNamespace = {this.props.metadata.pathWithNamespace}
             filePath={""}
@@ -1435,4 +1396,4 @@ export default { ProjectView };
 
 // For testing
 export { filterPaths };
-export { ProjectSuggestActions, ProjectSuggestionDataset, ProjectSuggestionReadme };
+export { ProjectSuggestActions, ProjectSuggestionDataset, ProjectSuggestionReadme, StartSessionButton };

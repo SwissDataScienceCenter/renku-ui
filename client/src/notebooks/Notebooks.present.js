@@ -440,10 +440,10 @@ class Notebooks extends Component {
 class NotebooksHeader extends Component {
   render() {
     if (this.props.standalone)
-      return (<h2>Sessions</h2>);
+      return (<h2 className="sessions-title">Sessions</h2>);
 
     return (<Fragment>
-      <h3>Sessions</h3>
+      <h3 className="sessions-title">Sessions</h3>
       <div>
         <Link className="btn btn-outline-rk-green btn-icon-text" role="button" to={this.props.urlNewSession}>
           <FontAwesomeIcon icon={faPlus} />

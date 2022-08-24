@@ -63,7 +63,7 @@ Cypress.Commands.add("gui_new_dataset", (newDataset: Dataset) => {
   }
 
   if (newDataset.description)
-    cy.get("p").click().type(newDataset.description);
+    cy.get("[data-cy='ckeditor-description']").find("p").click().type(newDataset.description);
 
   if (newDataset.file) {
     cy.get('[data-cy="dropzone"]')
