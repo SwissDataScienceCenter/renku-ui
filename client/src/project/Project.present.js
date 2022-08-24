@@ -887,7 +887,7 @@ function ProjectViewDatasets(props) {
         }/>
       <Route path={props.datasetUrl} render={p =>[
         <Col key="btn" md={12}>
-          <GoBackButton key="btn" label="Back to list" url={props.datasetsUrl}/>
+          <GoBackButton key="btn" label={`Back to ${props.metadata.pathWithNamespace}`} url={props.datasetsUrl}/>
         </Col>,
         props.datasetView(p, !kgDown, props.location)
       ]} />
@@ -1369,12 +1369,19 @@ class ProjectView extends Component {
             render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
           <Route path={this.props.overviewUrl}
             render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
-          <Route path={this.props.notebookServersUrl}
-            render={() => null} />
+          <Route path={this.props.notebookServersUrl} render={() => null} />
+          <Route path={this.props.editDatasetUrl} render={() => null} />
+          <Route path={this.props.newDatasetUrl} component={() =>
+            <ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
+          <Route component={()=><ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
+          <Route path={this.props.datasetUrl} render={() => null} />
           <Route component={()=><ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
         </Switch>
         <Switch key="projectNav">
           <Route path={this.props.notebookServersUrl} render={() => null} />
+          <Route path={this.props.editDatasetUrl} render={() => null} />
+          <Route path={this.props.datasetUrl} render={() => null} />
+          <Route path={this.props.newDatasetUrl} component={() => <ProjectNav key="nav" {...this.props} />} />
           <Route component={() =><ProjectNav key="nav" {...this.props} />} />
         </Switch>
         <Row key="content">

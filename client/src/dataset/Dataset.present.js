@@ -40,7 +40,6 @@ import { Loader } from "../utils/components/Loader";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { CoreError } from "../utils/components/errors/CoreErrorHelpers";
-import { ContainerWrap } from "../App";
 import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import { EntityDeleteButtonButton } from "../utils/components/entities/Buttons";
 
@@ -381,7 +380,7 @@ export default function DatasetView(props) {
     new Date(datasetDate.replace(/ /g, "T")) :
     "";
 
-  return (<ContainerWrap>
+  return (<div className={props.insideProject ? "row" : "container-xxl renku-container py-4 mt-2"}>
     <Col>
       <ErrorAfterCreation location={props.location} dataset={dataset} />
       {
@@ -471,5 +470,5 @@ export default function DatasetView(props) {
         : null
       }
     </Col>
-  </ContainerWrap>);
+  </div>);
 }
