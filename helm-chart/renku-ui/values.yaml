@@ -232,7 +232,6 @@ server:
     url:
     port: 8080
     prefix: /ui-server
-    wsSuffix: /ws
 
   gateway:
     url:
@@ -254,5 +253,3 @@ server:
 
   webSocket:
     enabled: true
-    shortInterval: 5 # in seconds
-    longInterval: 180 # in seconds

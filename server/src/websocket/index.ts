@@ -27,7 +27,7 @@ import { Authenticator } from "../authentication";
 import { wsRenkuAuth } from "../authentication/middleware";
 import { getCookieValueByName } from "../utils";
 import {
-  handlerClientVersion, handlerRequestServerVersion, hearthbeatClientVersion, hearthbeatRequestServerVersion
+  handlerClientVersion, handlerRequestServerVersion, heartbeatClientVersion, heartbeatRequestServerVersion
 } from "./handlers/clientVersion";
 
 
@@ -78,8 +78,8 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
 // *** Heartbeats functions ***
 
 const longLoopFunctions: Array<Function> = [ // eslint-disable-line
-  hearthbeatClientVersion,
-  hearthbeatRequestServerVersion
+  heartbeatClientVersion,
+  heartbeatRequestServerVersion
 ];
 const shortLoopFunctions: Array<Function> = []; // eslint-disable-line
 
@@ -101,7 +101,7 @@ async function channelLongLoop(sessionId: string, authenticator: Authenticator, 
   }
 
   // checking authentication
-  const timeoutLength = config.websocket.longInterval as number * 1000;
+  const timeoutLength = config.websocket.longIntervalSec as number * 1000;
   if (!authenticator.ready) {
     logger.info(`${infoPrefix} Authenticator not ready yet, skipping to the next loop`);
     setTimeout(() => channelLongLoop(sessionId, authenticator, storage), timeoutLength);
@@ -151,7 +151,7 @@ async function channelShortLoop(sessionId: string, authenticator: Authenticator,
   }
 
   // checking authentication
-  const timeoutLength = config.websocket.shortInterval as number * 1000;
+  const timeoutLength = config.websocket.shortIntervalSec as number * 1000;
   if (!authenticator.ready) {
     logger.info(`${infoPrefix} Authenticator not ready yet, skipping to the next loop`);
     setTimeout(() => channelShortLoop(sessionId, authenticator, storage), timeoutLength);
@@ -224,7 +224,7 @@ function configureWebsocket(server: ws.Server, authenticator: Authenticator, sto
         channelShortLoop(sessionId, authenticator, storage);
         // add a tiny buffer, in case authentication fails and channel is cleaned up -- no need to overlap
         setTimeout(() => { channelLongLoop(sessionId, authenticator, storage); }, 1000);
-      }, config.websocket.delayStart * 1000);
+      }, config.websocket.delayStartSec * 1000);
     }
 
     // event: close the socket

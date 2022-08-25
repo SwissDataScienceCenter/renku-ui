@@ -36,7 +36,7 @@ function handlerClientVersion(data: Record<string, unknown>, channel: Channel, s
   socket.send(JSON.stringify(new WsMessage(response, "user", "ack")));
 }
 
-function hearthbeatClientVersion(channel: Channel): void {
+function heartbeatClientVersion(channel: Channel): void {
   const clientSha = channel.data.get("clientVersion");
   const currentSha = process.env.RENKU_UI_SHORT_SHA ?
     process.env.RENKU_UI_SHORT_SHA :
@@ -65,10 +65,10 @@ function handlerRequestServerVersion(data: Record<string, unknown>, channel: Cha
       data = { start: false, message: "The server does not have up-to-date information about the version." };
     }
     else {
-      const longInterval = config.websocket.longInterval as number;
-      const info = longInterval < 60 ?
-        `${longInterval} seconds` :
-        `${longInterval / 60} minutes`;
+      const longIntervalSec = config.websocket.longIntervalSec as number;
+      const info = longIntervalSec < 60 ?
+        `${longIntervalSec} seconds` :
+        `${longIntervalSec / 60} minutes`;
       data = { start: true, message: `The server will send the UI version every ${info}.`, "version": currentSha };
     }
 
@@ -76,7 +76,7 @@ function handlerRequestServerVersion(data: Record<string, unknown>, channel: Cha
   }
 }
 
-function hearthbeatRequestServerVersion(channel: Channel): void {
+function heartbeatRequestServerVersion(channel: Channel): void {
   if (channel.data.get("requestServerVersion")) {
     const currentSha = process.env.RENKU_UI_SHORT_SHA ?
       process.env.RENKU_UI_SHORT_SHA :
@@ -89,4 +89,4 @@ function hearthbeatRequestServerVersion(channel: Channel): void {
 }
 
 
-export { handlerClientVersion, handlerRequestServerVersion, hearthbeatClientVersion, hearthbeatRequestServerVersion };
+export { handlerClientVersion, handlerRequestServerVersion, heartbeatClientVersion, heartbeatRequestServerVersion };

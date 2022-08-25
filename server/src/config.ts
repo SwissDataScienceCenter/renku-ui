@@ -26,7 +26,7 @@ const SERVER = {
   logLevel: process.env.SERVER_LOG_LEVEL || "info",
   serverUiVersion: process.env.UI_SERVER_VERSION || "unknown",
   proxyTimeout: 600 * 1000, // in milliseconds
-  wsSuffix: process.env.SERVER_WS_SUFFIX || "/ws"
+  wsSuffix: "/ws"
 };
 
 const DEPLOYMENT = {
@@ -84,9 +84,9 @@ const DATA = {
 
 const WEBSOCKET = {
   enabled: convertType(process.env.WEBSOCKET_ENABLED) || true,
-  shortInterval: convertType(process.env.WEBSOCKET_SHORT_INTERVAL) || 5, // ? in seconds
-  longInterval: convertType(process.env.WEBSOCKET_LONG_INTERVAL) || 180, // ? in seconds
-  delayStart: 3, // ? in seconds
+  shortIntervalSec: 5, // ? in seconds
+  longIntervalSec: 180, // ? in seconds
+  delayStartSec: 3, // ? in seconds
 };
 
 const config = {

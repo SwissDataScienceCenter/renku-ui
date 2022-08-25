@@ -115,7 +115,9 @@ function clamp(number: number, min:number, max:number): number {
 }
 
 /**
- * Compute a 32bit hash. Fast but non crypto-safe
+ * Compute a 32bit hash. Fast but non crypto-safe.
+ * Based on https://stackoverflow.com/a/52171480/1303090
+ *
  * @param str - string to hash.
  * @param [seed] - optional seed.
  * @returns 32bit hash.
