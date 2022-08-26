@@ -76,7 +76,7 @@ class RedisStorage implements Storage {
     this.redis.disconnect();
   }
 
-  async get(path: string, options: StorageGetOptions): Promise<string|string[]> {
+  async get(path: string, options: StorageGetOptions = { type: TypeData.String } ): Promise<string|string[]> {
     switch (options.type) {
       case TypeData.String: {
         return await this.redis.get(path);
@@ -91,7 +91,7 @@ class RedisStorage implements Storage {
     }
   }
 
-  async save(path: string, value: string, options: StorageSaveOptions): Promise<boolean> {
+  async save(path: string, value: string, options: StorageSaveOptions = { type: TypeData.String }): Promise<boolean> {
     switch (options.type) {
       case TypeData.String: {
         const result = await this.saveString(path, value);

@@ -73,6 +73,8 @@ spec:
             - name: SENTRY_DEBUG
               value: {{ .Values.server.sentry.debugMode | quote }}
             {{- end }}
+            - name: WEBSOCKET_ENABLED
+              value: {{ .Values.server.webSocket.enabled | quote }}
             - name: REDIS_HOST
               value: {{ .Values.global.redis.host | quote }}
             - name: REDIS_IS_SENTINEL

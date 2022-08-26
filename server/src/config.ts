@@ -25,7 +25,8 @@ const SERVER = {
   prefix: process.env.SERVER_PREFIX || "/ui-server",
   logLevel: process.env.SERVER_LOG_LEVEL || "info",
   serverUiVersion: process.env.UI_SERVER_VERSION || "unknown",
-  proxyTimeout: 600 * 1000 // in milliseconds
+  proxyTimeout: 600 * 1000, // in milliseconds
+  wsSuffix: "/ws"
 };
 
 const DEPLOYMENT = {
@@ -75,16 +76,28 @@ const ROUTES = {
   auth: "/auth",
 };
 
-const DATA = { projectsStoragePrefix: "LPROJECT_", projectsDefaultLength: 20 };
+const DATA = {
+  projectsStoragePrefix: "LPROJECT_",
+  projectsDefaultLength: 20,
+  userSessionsPrefix: "SESSIONS_",
+};
+
+const WEBSOCKET = {
+  enabled: convertType(process.env.WEBSOCKET_ENABLED) || true,
+  shortIntervalSec: 5, // ? in seconds
+  longIntervalSec: 180, // ? in seconds
+  delayStartSec: 3, // ? in seconds
+};
 
 const config = {
-  server: SERVER,
-  deployment: DEPLOYMENT,
   auth: AUTHENTICATION,
+  data: DATA,
+  deployment: DEPLOYMENT,
   redis: REDIS,
   routes: ROUTES,
-  data: DATA,
-  sentry: SENTRY
+  sentry: SENTRY,
+  server: SERVER,
+  websocket: WEBSOCKET
 };
 
 export default config;
