@@ -666,10 +666,13 @@ const datasetImportFormSchema = new Schema({
 });
 
 const environmentSchema = new Schema({
-  fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
-  fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
-  data: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
-  timeout: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+  uiVersion: {
+    [Prop.SCHEMA]: new Schema({
+      webSocket: { [Prop.INITIAL]: null },
+      lastValue: { [Prop.INITIAL]: null },
+      lastReceived: { [Prop.INITIAL]: null },
+    })
+  },
   coreVersions: {
     [Prop.SCHEMA]: new Schema({
       available: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },

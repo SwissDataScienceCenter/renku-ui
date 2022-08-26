@@ -28,14 +28,21 @@ function handleUserInit(data: Record<string, unknown>, webSocket: WebSocket, mod
 }
 
 function handleUserUiVersion(data: Record<string, unknown>, webSocket: WebSocket, model: any): boolean {
+  const localModel = model.subModel("environment.uiVersion");
+  let envValues: Record<string, any> = {};
+
   if (data.start != null) {
     if (data.start)
-      console.log("Version available on backend"); // eslint-disable-line
+      envValues.webSocket = true;
     else
-      console.log("Version NOT available on backend"); // eslint-disable-line
+      envValues.webSocket = false;
   }
-  if (data.version !== "get_value_from_model")
-    console.log("Version changed"); // eslint-disable-line
+  if (data.version != null) {
+    envValues.lastReceived = new Date();
+    if (localModel.get("lastValue") !== data.version)
+      envValues.lastValue = data.version;
+  }
+  localModel.setObject(envValues);
   return true;
 }
 
