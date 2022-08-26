@@ -195,6 +195,7 @@
           "nullable",
           "objectstores",
           "onloadend",
+          "onopen",
           "papermill",
           "pathname",
           "pdfjs",

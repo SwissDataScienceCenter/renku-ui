@@ -160,6 +160,21 @@ const newProjectSchema = new Schema({
   }
 });
 
+const webSocketSchema = new Schema({
+  open: { [Prop.INITIAL]: false },
+  error: { [Prop.INITIAL]: false },
+  errorObject: { [Prop.INITIAL]: {} },
+  lastPing: { [Prop.INITIAL]: null },
+  lastReceived: { [Prop.INITIAL]: null },
+  reconnect: {
+    [Prop.SCHEMA]: new Schema({
+      retrying: { [Prop.INITIAL]: false },
+      attempts: { [Prop.INITIAL]: 0 },
+      lastTime: { [Prop.INITIAL]: null },
+    })
+  }
+});
+
 const projectSchema = new Schema({
   branches: {
     [Prop.SCHEMA]: new Schema({
@@ -704,5 +719,5 @@ const formGeneratorSchema = new Schema({
 export {
   datasetFormSchema, datasetSchema, datasetImportFormSchema, environmentSchema,
   formGeneratorSchema, issueFormSchema, newProjectSchema, notebooksSchema, notificationsSchema,
-  projectSchema, projectsSchema, statuspageSchema, userSchema
+  projectSchema, projectsSchema, statuspageSchema, userSchema, webSocketSchema
 };
