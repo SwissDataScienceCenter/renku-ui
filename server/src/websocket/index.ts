@@ -26,9 +26,7 @@ import { Storage } from "../storage";
 import { Authenticator } from "../authentication";
 import { wsRenkuAuth } from "../authentication/middleware";
 import { getCookieValueByName } from "../utils";
-import {
-  handlerClientVersion, handlerRequestServerVersion, heartbeatClientVersion, heartbeatRequestServerVersion
-} from "./handlers/clientVersion";
+import { handlerRequestServerVersion, heartbeatRequestServerVersion } from "./handlers/clientVersion";
 
 
 // *** Channels ***
@@ -53,11 +51,6 @@ interface MessageData {
 const acceptedMessages: Record<string, Array<MessageData>> = {
   "init": [
     {
-      required: ["clientVersion"],
-      optional: null,
-      handler: handlerClientVersion
-    } as MessageData,
-    {
       required: ["requestServerVersion"],
       optional: null,
       handler: handlerRequestServerVersion
@@ -78,7 +71,6 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
 // *** Heartbeats functions ***
 
 const longLoopFunctions: Array<Function> = [ // eslint-disable-line
-  heartbeatClientVersion,
   heartbeatRequestServerVersion
 ];
 const shortLoopFunctions: Array<Function> = []; // eslint-disable-line

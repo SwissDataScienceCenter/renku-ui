@@ -79,20 +79,10 @@ function registerApiRoutes(app: express.Application,
   prefix: string, authenticator: Authenticator, storage: Storage): void {
 
   // Locally defined APIs
-  app.get(prefix + "/versions", (req, res) => {
-    const uiShortSha = process.env.RENKU_UI_SHORT_SHA ?
-      process.env.RENKU_UI_SHORT_SHA :
-      "";
-    const data = {
-      "ui-short-sha": uiShortSha
-    };
-    res.json(data);
-  });
-
   if (config.sentry.enabled && config.sentry.debugMode) {
-    app.get(prefix + "/debug-sentry", async () => {
+    app.get(prefix + "/fake-error", async () => {
       setTimeout(() => {
-        throw new Error("Async Fn error!");
+        throw new Error("Fake error!");
       }, 1000);
     });
   }

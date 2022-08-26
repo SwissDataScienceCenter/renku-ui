@@ -23,34 +23,6 @@ import { Channel } from "../index";
 import { WsMessage } from "../WsMessages";
 
 
-function handlerClientVersion(data: Record<string, unknown>, channel: Channel, socket: ws): void {
-  // save client version
-  channel.data.set("clientVersion", data.clientVersion);
-
-  // send ack
-  const response = {
-    target: "init",
-    message: `UI version saved: ${data.clientVersion}`
-  };
-
-  socket.send((new WsMessage(response, "user", "ack")).toString());
-}
-
-function heartbeatClientVersion(channel: Channel): void {
-  const clientSha = channel.data.get("clientVersion");
-  const currentSha = process.env.RENKU_UI_SHORT_SHA ?
-    process.env.RENKU_UI_SHORT_SHA :
-    "";
-  if (clientSha && currentSha && clientSha !== currentSha) {
-    const data = { message: "New version available", new: true, version: currentSha };
-    const info = new WsMessage(data, "user", "version");
-    channel.sockets.forEach(socket => socket.send(info.toString()));
-  }
-}
-
-
-// New set of functions: send the version to all the channels and the the client decide the action.
-
 function handlerRequestServerVersion(data: Record<string, unknown>, channel: Channel, socket: ws): void {
   // save the request enabler
   if (data.requestServerVersion) {
@@ -89,4 +61,4 @@ function heartbeatRequestServerVersion(channel: Channel): void {
 }
 
 
-export { handlerClientVersion, handlerRequestServerVersion, heartbeatClientVersion, heartbeatRequestServerVersion };
+export { handlerRequestServerVersion, heartbeatRequestServerVersion };

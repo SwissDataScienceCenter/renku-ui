@@ -15,7 +15,6 @@ import App from "./App";
 import APIClient from "./api-client";
 import { LoginHelper } from "./authentication";
 import { EnvironmentCoordinator } from "./environment";
-import { pollComponentsVersion } from "./landing";
 import { Maintenance } from "./Maintenance";
 import { StateModel, globalSchema } from "./model";
 import { pollStatuspage } from "./statuspage";
@@ -89,7 +88,6 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
     // Set up polling
     const statuspageId = params["STATUSPAGE_ID"];
     pollStatuspage(statuspageId, model);
-    pollComponentsVersion(model.subModel("environment"), client);
 
     // Retrieve service environment information
     new EnvironmentCoordinator(client, model.subModel("environment")).fetchCoreServiceVersions();
