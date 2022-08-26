@@ -37,7 +37,7 @@ import logo from "./logo.svg";
 import { getActiveProjectPathWithNamespace, gitLabUrlFromProfileUrl } from "../utils/helpers/HelperFunctions";
 import QuickNav from "../utils/components/quicknav";
 import { Url } from "../utils/helpers/url";
-import { VersionsBanner } from "./NabBarWarnings";
+import { NavBarWarnings } from "./NavBarWarnings";
 import { NotificationsMenu } from "../notifications";
 import { LoginHelper } from "../authentication";
 import { StatuspageBanner } from "../statuspage";
@@ -305,7 +305,7 @@ class LoggedInNavBar extends Component {
         <StatuspageBanner siteStatusUrl={Url.get(Url.pages.help.status)}
           model={this.props.model}
           location={this.props.location} />
-        <VersionsBanner model={this.props.model} uiShortSha={this.props.params["UI_SHORT_SHA"]} />
+        <NavBarWarnings model={this.props.model} uiShortSha={this.props.params["UI_SHORT_SHA"]} />
       </Fragment>
     );
   }
@@ -366,7 +366,7 @@ class AnonymousNavBar extends Component {
             </Collapse>
           </Navbar>
         </header>
-        <VersionsBanner model={this.props.model} uiShortSha={this.props.params["UI_SHORT_SHA"]} />
+        <NavBarWarnings model={this.props.model} uiShortSha={this.props.params["UI_SHORT_SHA"]} />
       </Fragment>
     );
   }

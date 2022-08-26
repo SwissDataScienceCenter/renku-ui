@@ -33,7 +33,7 @@ function handlerClientVersion(data: Record<string, unknown>, channel: Channel, s
     message: `UI version saved: ${data.clientVersion}`
   };
 
-  socket.send(JSON.stringify(new WsMessage(response, "user", "ack")));
+  socket.send((new WsMessage(response, "user", "ack")).toString());
 }
 
 function heartbeatClientVersion(channel: Channel): void {
@@ -44,7 +44,7 @@ function heartbeatClientVersion(channel: Channel): void {
   if (clientSha && currentSha && clientSha !== currentSha) {
     const data = { message: "New version available", new: true, version: currentSha };
     const info = new WsMessage(data, "user", "version");
-    channel.sockets.forEach(socket => socket.send(JSON.stringify(info)));
+    channel.sockets.forEach(socket => socket.send(info.toString()));
   }
 }
 
@@ -72,7 +72,7 @@ function handlerRequestServerVersion(data: Record<string, unknown>, channel: Cha
       data = { start: true, message: `The server will send the UI version every ${info}.`, "version": currentSha };
     }
 
-    socket.send(JSON.stringify(new WsMessage(data, "user", "version")));
+    socket.send((new WsMessage(data, "user", "version")).toString());
   }
 }
 
@@ -83,7 +83,7 @@ function heartbeatRequestServerVersion(channel: Channel): void {
       null;
     if (currentSha) {
       const info = new WsMessage({ "version": currentSha }, "user", "version");
-      channel.sockets.forEach(socket => socket.send(JSON.stringify(info)));
+      channel.sockets.forEach(socket => socket.send(info.toString()));
     }
   }
 }

@@ -42,7 +42,7 @@ import { Url } from "../utils/helpers/url";
 import { StatuspageBanner } from "../statuspage";
 import QuickNav from "../utils/components/quicknav";
 import { RenkuToolbarHelpMenu, RenkuToolbarNotifications } from "./NavBar";
-import { VersionsBanner } from "./NabBarWarnings";
+import { NavBarWarnings } from "./NavBarWarnings";
 
 import VisualHead from "./Assets/Visual_Head.svg";
 import VisualDetail from "./Assets/Visual_Detail.svg";
@@ -86,7 +86,7 @@ function HomeHeader(props) {
       <Col>
         <StatuspageBanner siteStatusUrl={urlMap.siteStatusUrl} model={props.model}
           location={{ pathname: Url.get(Url.pages.landing) }} />
-        <VersionsBanner model={props.model} uiShortSha={props.params["UI_SHORT_SHA"]} />
+        <NavBarWarnings model={props.model} uiShortSha={props.params["UI_SHORT_SHA"]} />
       </Col>
     </Row>
     <header className="px-0 pt-2 pb-4 d-flex rk-anon-home">
