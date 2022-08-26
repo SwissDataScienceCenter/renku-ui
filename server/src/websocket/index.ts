@@ -203,7 +203,10 @@ function configureWebsocket(server: ws.Server, authenticator: Authenticator, sto
     const sessionId = getCookieValueByName(request.headers.cookie, config.auth.cookiesKey);
     if (!sessionId) {
       logger.error("No ID for the user, session won't be saved.");
-      return null; // Error message here?
+      const info = "The request does not contain a valid session ID." +
+        " Are you reaching the WebSocket from an external source?";
+      socket.send(JSON.stringify(new WsMessage({ message: info, missingAuth: true }, "user", "error")));
+      return false;
     }
     logger.debug(`Incoming connection from: ${sessionId}`);
 
@@ -239,7 +242,7 @@ function configureWebsocket(server: ws.Server, authenticator: Authenticator, sto
       const channel = channels.get(sessionId);
       if (!channel) {
         logger.warn(`No channel for user ${sessionId}. That is unexpected...`);
-        return false; // Error message here?
+        return false;
       }
 
       // Remove socket and channel when no other sockets are left
@@ -364,8 +367,8 @@ async function getAuthHeaders(
   try {
     const authHeaders = await wsRenkuAuth(authenticator, sessionId);
     if (!authHeaders)
-      throw new Error("Cannot find auth headers");
-    return authHeaders;
+      // user is anonymous
+      return null;
   }
   catch (error) {
     const data = { message: "authentication not valid" };
