@@ -580,6 +580,9 @@ class ProjectNav extends Component {
             <NavItem>
               <RenkuNavLink exact={false} to={this.props.datasetsUrl} title="Datasets" />
             </NavItem>
+            <NavItem>
+              <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Sessions" />
+            </NavItem>
             <NavItem className="pe-0">
               <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
             </NavItem>
@@ -1084,7 +1087,10 @@ const ProjectSessions = (props) => {
     <Col key="content" xs={12}>
       <Switch>
         <Route exact path={props.notebookServersUrl}
-          render={p => <ProjectNotebookServers {...props} />} />
+          render={p => <>
+            {backButton}
+            <ProjectNotebookServers {...props} />
+          </>} />
         <Route path={props.launchNotebookUrl}
           render={p => (
             <Fragment>
