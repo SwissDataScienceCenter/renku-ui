@@ -67,12 +67,14 @@ function SessionStartSidebar(props) {
     <ProjectSessionLockAlert lockStatus={props.lockStatus} />
     <LaunchErrorAlert autosaves={props.autosaves} launchError={props.launchError} ci={props.ci} />
 
-    <p>A session gives you an environment with resources for doing work.
+    <div className="d-none d-md-block">
+      <p>A session gives you an environment with resources for doing work.
       The exact details of the available tools depends on the project.
-    </p>
+      </p>
 
-    <p>The resource settings have been set to the project defaults, but you can alter them if you wish.
-    </p>
+      <p>The resource settings have been set to the project defaults, but you can alter them if you wish.
+      </p>
+    </div>
   </>;
 }
 
