@@ -405,7 +405,8 @@ class ProjectViewHeaderOverview extends Component {
   star(event) {
     event.preventDefault();
     // do nothing if the star state is not yet loaded
-    if (this.props.starred == null) return;
+    if (this.props.starred == null && this.props.user?.logged)
+      return;
     this.setState({ updating_star: true });
     this.props.onStar().then(
       result => {
@@ -415,6 +416,7 @@ class ProjectViewHeaderOverview extends Component {
 
   render() {
     const metadata = this.props.metadata;
+    const logged = this.props.user?.logged;
 
     let starElement;
     let starText;
@@ -427,7 +429,7 @@ class ProjectViewHeaderOverview extends Component {
     }
     else {
       const starred = this.props.starred;
-      if (starred === null) {
+      if (starred == null && logged) {
         starElement = (<Loader inline size={14} />);
         starText = "";
       }
@@ -482,7 +484,7 @@ class ProjectViewHeaderOverview extends Component {
               <div id="project-stars">
                 <Button
                   className="btn-outline-rk-green btn-icon-text"
-                  disabled={this.state.updating_star || this.props.starred == null}
+                  disabled={this.state.updating_star || this.props.starred == null && logged}
                   onClick={this.star.bind(this)}>
                   {starElement} {starText} {metadata.starCount}
                 </Button>
