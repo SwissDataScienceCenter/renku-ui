@@ -317,14 +317,14 @@ function ProjectList(props) {
     // Searching in own or starred projects
     if (section !== SECTION_MAP.all) {
       const newUrl = Url.get(Url.pages.projects.all, searchParams);
-      props.history.push(newUrl);
+      props.history.replace(newUrl);
       return null;
     }
     // filtering per user or group
     if (searchParams.searchIn !== SEARCH_IN_MAP.projects.value) {
       const newParams = { ...searchParams, searchIn: SEARCH_IN_MAP.projects.value };
       const newUrl = Url.get(Url.pages.projects.all, newParams);
-      props.history.push(newUrl);
+      props.history.replace(newUrl);
       return null;
     }
   }
