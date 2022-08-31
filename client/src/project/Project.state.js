@@ -127,7 +127,7 @@ const FileTreeMixin = {
     if (oldTree.loaded === false)
       return this.initialFetchProjectFilesTree(client, openFilePath, openFolder);
 
-    if (openFolder !== undefined && oldTree.hash[openFolder].childrenLoaded === false)
+    if (openFolder !== undefined && oldTree.hash[openFolder]?.childrenLoaded === false)
       return this.deepFetchProjectFilesTree(client, openFilePath, openFolder, oldTree);
 
     return oldTree;
@@ -430,11 +430,17 @@ class ProjectCoordinator {
     this.model.setObject(value);
   }
 
+  resetFilesTree() {
+    this.set("filesTree.hash", {});
+    this.set("filesTree.loaded", false);
+  }
+
   fetchProject(client, projectPathWithNamespace) {
     const identifier = !projectPathWithNamespace ?
       this.get("metadata.id") : projectPathWithNamespace;
 
     this.setUpdating({ metadata: { exists: true } });
+    this.resetFilesTree();
     return client.getProject(identifier, { statistics: true })
       .then(resp => resp.data)
       .then(d => {
