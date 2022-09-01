@@ -79,7 +79,8 @@ function SessionStartSidebar(props) {
 }
 
 function StartNotebookAdvancedOptions(props) {
-  const { autosaves, showObjectStoreModal } = props;
+  const { autosaves, showObjectStoreModal, justStarted } = props;
+  if (justStarted) return null;
   const { objectStoresConfiguration } = props.filters;
   const { deleteAutosave, setCommit, setIgnorePipeline, toggleShowObjectStoresConfigModal } = props.handlers;
   const s3MountsConfig = props.options.global.cloudstorage?.s3;
