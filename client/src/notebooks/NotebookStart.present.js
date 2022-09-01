@@ -63,7 +63,7 @@ function ProjectSessionLockAlert({ lockStatus }) {
 function SessionStartSidebar(props) {
   return <>
     <h2>Start session</h2>
-    <p>On the project<br /><b>{props.pathWithNamespace}</b></p>
+    <p>On the project<br /><b className="text-break">{props.pathWithNamespace}</b></p>
     <ProjectSessionLockAlert lockStatus={props.lockStatus} />
     <LaunchErrorAlert autosaves={props.autosaves} launchError={props.launchError} ci={props.ci} />
 
