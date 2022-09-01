@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import _ from "lodash";
 import React, { useState, useEffect } from "react";
 
 import { ProjectList as ProjectListPresent } from "./ProjectList.present";
@@ -137,9 +138,9 @@ function removeDefaultParams(params, removeSection = false) {
 }
 
 /** React hook to monitor location changes and set params */
-function useLocation(props, setParams, setTargetUser) {
+function useLocation(location, params, setParams, setTargetUser) {
   useEffect(() => {
-    const newSection = getSection(props.location);
+    const newSection = getSection(location);
     let newSearchParams = getSearchParams(null, CONVERSIONS);
 
     // consider the default params when setting the new default
@@ -154,6 +155,10 @@ function useLocation(props, setParams, setTargetUser) {
     if (newSection !== SECTION_MAP.all && newParamsFull.searchIn !== SEARCH_IN_MAP.projects.value)
       newParamsFull.searchIn = SEARCH_IN_MAP.projects.value;
 
+    const newParams = { ...newParamsFull, section: newSection };
+    if (_.isEqual(newParams, params))
+      return null;
+
     setParams(p => {
       const newParams = { ...p, ...newParamsFull, section: newSection };
       // prevent extra queries when changing searchIn
@@ -162,7 +167,7 @@ function useLocation(props, setParams, setTargetUser) {
 
       return newParams;
     });
-  }, [props.location, setParams, setTargetUser]);
+  }, [location, params, setParams, setTargetUser]);
 }
 
 /** React hook to update project search results when parameters change */
@@ -301,15 +306,10 @@ function useUserProjectSearch(client, params, targetUser, setParams, setProjects
 // *** React functional components ***
 
 /**
- * Show list of projects, allowing advanced search.
- *
- * @param {object} props.location - React location object.
- * @param {object} props.history - React history object.
- * @param {object} props.client - client object.
- * @param {object} props.user - user object.
+ * Buffer component to handle anonymous users redirects.
+ * Check ProjectListRedirected for the functional component logic.
  */
 function ProjectList(props) {
-  // *** Setup ***
   // Redirect anonymous users when trying to perform an invalid search (manually modified link)
   if (!props.user.logged) {
     const section = getSection(props.location);
@@ -317,17 +317,31 @@ function ProjectList(props) {
     // Searching in own or starred projects
     if (section !== SECTION_MAP.all) {
       const newUrl = Url.get(Url.pages.projects.all, searchParams);
-      props.history.push(newUrl);
+      props.history.replace(newUrl);
+      return null;
     }
     // filtering per user or group
     if (searchParams.searchIn !== SEARCH_IN_MAP.projects.value) {
       const newParams = { ...searchParams, searchIn: SEARCH_IN_MAP.projects.value };
       const newUrl = Url.get(Url.pages.projects.all, newParams);
-      props.history.push(newUrl);
+      props.history.replace(newUrl);
+      return null;
     }
   }
+  return (<ProjectListRedirected {...props} />);
+}
 
-  // Initial setup
+
+/**
+ * Show list of projects, allowing advanced search.
+ *
+ * @param {object} props.location - React location object.
+ * @param {object} props.history - React history object.
+ * @param {object} props.client - client object.
+ * @param {object} props.user - user object.
+ */
+function ProjectListRedirected(props) {
+  // *** Setup ***
   const [projects, setProjects] = useState(DEFAULT_PROJECTS);
   const [users, setUsers] = useState(DEFAULT_USERS_GROUPS);
   const [targetUser, setTargetUser] = useState(null);
@@ -338,7 +352,7 @@ function ProjectList(props) {
 
   // *** Hooks ***
   // Monitor location changes and set params
-  useLocation(props, setParams, setTargetUser);
+  useLocation(props.location, params, setParams, setTargetUser);
 
   // Get new projects when params change (ONLY when searching in projects)
   useProjectSearchParams(props.client, params, setParams, setProjects);
