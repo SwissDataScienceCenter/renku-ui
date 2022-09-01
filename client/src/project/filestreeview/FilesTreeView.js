@@ -156,7 +156,7 @@ class FilesTreeView extends Component {
       this.props.projectUrl + redirectURL;
     const toLineage = this.props.lineageUrl + redirectURL;
 
-    const tree = treeStructure.tree ?
+    const tree = treeStructure.tree && treeStructure.loaded ?
       treeStructure.tree.map((node) => {
         return <TreeNode
           key={node.path}
