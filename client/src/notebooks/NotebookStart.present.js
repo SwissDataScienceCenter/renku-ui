@@ -167,12 +167,12 @@ function StartNotebookServer(props) {
 
   return (
     <Row>
-      <Col sm={12} md={3}>
+      <Col sm={12} md={3} lg={4}>
         <SessionStartSidebar autosaves={autosaves} ci={props.ci}
           launchError={props.launchError} lockStatus={props.lockStatus}
           pathWithNamespace={pathWithNamespace} />
       </Col>
-      <Col sm={12} md={9} lg={7}>
+      <Col sm={12} md={9} lg={8}>
         <Form className="form-rk-green">
           {messageOutput}
           <StartNotebookAdvancedOptions {...props}
