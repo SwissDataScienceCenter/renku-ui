@@ -44,11 +44,14 @@ export interface EntityLinksHeader {
 
 export interface LinkedEntitiesByItemTypeProps {
   itemType: EntityType;
-  links: EntityLinksHeader;
+  links?: EntityLinksHeader;
   devAccess: boolean,
   url: string
 }
 function LinkedEntitiesByItemType({ itemType, links, devAccess, url }: LinkedEntitiesByItemTypeProps) {
+  if (!links)
+    return null;
+
   const dataByItem = {
     project: {
       title: "Linked datasets",

@@ -56,11 +56,14 @@ function LogBody({ fetchLogs, logs, name }) {
 
 
 const LogTabs = ({ logs }) => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(null);
+
   useEffect(() => {
     if (logs) {
       const keys = Object.keys(logs);
-      if (keys.length)
+      if (keys.length && keys.includes("jupyter-server"))
+        setActiveTab("jupyter-server");
+      else if (keys.length)
         setActiveTab(keys[0]);
     }
   }, [logs]);
@@ -94,7 +97,7 @@ const LogTabs = ({ logs }) => {
               <Row>
                 <Col sm="12">
                   <pre
-                    className="bg-primary text-white p-2 w-100 overflow-auto log-container">
+                    className="bg-primary text-white p-2 w-100 overflow-auto log-container border-radius-8">
                     { logs[tab] }
                   </pre>
                 </Col>

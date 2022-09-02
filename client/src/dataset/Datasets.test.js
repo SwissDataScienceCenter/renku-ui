@@ -33,6 +33,7 @@ import { mapDataset } from "./DatasetFunctions";
 import { testClient as client } from "../api-client";
 import { StateModel, globalSchema } from "../model";
 import DatasetList from "./list";
+import { Provider } from "react-redux";
 
 describe("Dataset functions", () => {
 
@@ -62,15 +63,17 @@ describe("Dataset functions", () => {
     const div = document.createElement("div");
     await act(async () => {
       ReactDOM.render(
-        <MemoryRouter>
-          <DatasetList key="datasets"
-            client={client}
-            history={fakeHistory}
-            location={fakeHistory.location}
-            migration={migration}
-            model={model}
-          />
-        </MemoryRouter>
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <DatasetList key="datasets"
+              client={client}
+              history={fakeHistory}
+              location={fakeHistory.location}
+              migration={migration}
+              model={model}
+            />
+          </MemoryRouter>
+        </Provider>
         , div);
     });
   });
@@ -79,21 +82,23 @@ describe("Dataset functions", () => {
     const div = document.createElement("div");
     await act(async () => {
       ReactDOM.render(
-        <MemoryRouter>
-          <ShowDataset
-            client={client}
-            datasets={datasets}
-            datasetId="test-dataset-name"
-            identifier="79215657-4319-4fcf-82b9-58267f2a1db8"
-            insideProject={false}
-            location={fakeHistory.location}
-            logged={true}
-            migration={migration}
-            model={model}
-            projectsUrl="/projects"
-            selectedDataset="79215657-4319-4fcf-82b9-58267f2a1db8"
-          />
-        </MemoryRouter>
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <ShowDataset
+              client={client}
+              datasets={datasets}
+              datasetId="test-dataset-name"
+              identifier="79215657-4319-4fcf-82b9-58267f2a1db8"
+              insideProject={false}
+              location={fakeHistory.location}
+              logged={true}
+              migration={migration}
+              model={model}
+              projectsUrl="/projects"
+              selectedDataset="79215657-4319-4fcf-82b9-58267f2a1db8"
+            />
+          </MemoryRouter>
+        </Provider>
         , div);
     });
   });
