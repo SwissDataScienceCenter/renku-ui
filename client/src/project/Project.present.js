@@ -1078,8 +1078,8 @@ const ProjectSessions = (props) => {
   const locationFrom = props.history?.location?.state?.from;
   const filePath = props.history?.location?.state?.filePath;
   const backNotebookLabel = filePath ? `Back to ${filePath}` : "Back to notebook file";
-  const backButtonLabel = locationFrom ? backNotebookLabel : "Back to sessions list";
-  const backUrl = locationFrom ?? props.notebookServersUrl;
+  const backButtonLabel = locationFrom ? backNotebookLabel : `Back to ${props.metadata.pathWithNamespace}`;
+  const backUrl = locationFrom ?? props.baseUrl;
 
   const backButton = (<GoBackButton label={backButtonLabel} url={backUrl} />);
 
@@ -1087,7 +1087,10 @@ const ProjectSessions = (props) => {
     <Col key="content" xs={12}>
       <Switch>
         <Route exact path={props.notebookServersUrl}
-          render={p => <ProjectNotebookServers {...props} />} />
+          render={p => <>
+            {backButton}
+            <ProjectNotebookServers {...props} />
+          </>} />
         <Route path={props.launchNotebookUrl}
           render={p => (
             <Fragment>
@@ -1405,9 +1408,14 @@ class ProjectView extends Component {
             render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
           <Route path={this.props.overviewUrl}
             render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
+          <Route path={this.props.notebookServersUrl}
+            render={() => null} />
           <Route component={()=><ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
         </Switch>
-        <ProjectNav key="nav" {...this.props} />
+        <Switch key="projectNav">
+          <Route path={this.props.notebookServersUrl} render={() => null} />
+          <Route component={() =><ProjectNav key="nav" {...this.props} />} />
+        </Switch>
         <Row key="content">
           <Switch>
             <Route exact path={this.props.baseUrl}

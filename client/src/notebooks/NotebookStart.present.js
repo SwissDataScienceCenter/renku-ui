@@ -35,15 +35,17 @@ import { Clipboard } from "../utils/components/Clipboard";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { JupyterIcon } from "../utils/components/Icon";
 import { Loader } from "../utils/components/Loader";
+import { ShareLinkSessionModal } from "../utils/components/shareLinkSession/ShareLinkSession";
+import { Docs } from "../utils/constants/Docs";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
+import { SessionStatus } from "../utils/constants/Notebooks";
+import { sleep } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
 import Time from "../utils/helpers/Time";
+
+import LaunchErrorAlert from "./components/LaunchErrorAlert";
 import { NotebooksHelper } from "./index";
 import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from "./ObjectStoresConfig.present";
-import { SessionStatus } from "../utils/constants/Notebooks";
-import { Docs } from "../utils/constants/Docs";
-import { sleep } from "../utils/helpers/HelperFunctions";
-import { ShareLinkSessionModal } from "../utils/components/shareLinkSession/ShareLinkSession";
 
 
 function ProjectSessionLockAlert({ lockStatus }) {
@@ -58,14 +60,66 @@ function ProjectSessionLockAlert({ lockStatus }) {
   </WarnAlert>;
 }
 
+function SessionStartSidebar(props) {
+  return <>
+    <h2>Start session</h2>
+    <p>On the project<br /><b className="text-break">{props.pathWithNamespace}</b></p>
+    <ProjectSessionLockAlert lockStatus={props.lockStatus} />
+    <LaunchErrorAlert autosaves={props.autosaves} launchError={props.launchError} ci={props.ci} />
+
+    <div className="d-none d-md-block">
+      <p>A session gives you an environment with resources for doing work.
+      The exact details of the available tools depends on the project.
+      </p>
+
+      <p>The resource settings have been set to the project defaults, but you can alter them if you wish.
+      </p>
+    </div>
+  </>;
+}
+
+function StartNotebookAdvancedOptions(props) {
+  const { autosaves, showObjectStoreModal, justStarted } = props;
+  if (justStarted) return null;
+  const { objectStoresConfiguration } = props.filters;
+  const { deleteAutosave, setCommit, setIgnorePipeline, toggleShowObjectStoresConfigModal } = props.handlers;
+  const s3MountsConfig = props.options.global.cloudstorage?.s3;
+  const cloudStorageAvailable = s3MountsConfig?.enabled ?? false;
+  return <>
+    <div className="field-group">
+      <StartNotebookPipelines {...props} ignorePipeline={props.ignorePipeline} setIgnorePipeline={setIgnorePipeline} />
+    </div>
+    <div className="field-group">
+      <AutosavesInfoAlert autosaves={autosaves} autosavesId={props.autosavesCommit}
+        currentId={props.filters.commit?.id} deleteAutosave={deleteAutosave} setCommit={setCommit} />
+    </div>
+    <div className="field-group">
+      <StartNotebookBranches {...props} disabled={props.disabled} />
+    </div>
+    <div className="field-group">
+      <StartNotebookCommits {...props} disabled={props.disabled} />
+    </div>
+    {cloudStorageAvailable ?
+      <div className="field-group">
+        <ObjectStoresConfigurationButton
+          objectStoresConfiguration={objectStoresConfiguration}
+          toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal} />
+        <ObjectStoresConfigurationModal
+          objectStoresConfiguration={objectStoresConfiguration}
+          showObjectStoreModal={showObjectStoreModal}
+          toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal}
+          setObjectStoresConfiguration={props.handlers.setObjectStoresConfiguration} />
+      </div> :
+      null
+    }
+  </>;
+}
+
 
 // * StartNotebookServer code * //
 function StartNotebookServer(props) {
-  const { autosaves, autoStarting, ci, message, showAdvanced, showObjectStoreModal } = props;
-  const { branch, commit } = props.filters;
-  const { objectStoresConfiguration } = props.filters;
-  const { deleteAutosave, setCommit, setIgnorePipeline, toggleShowAdvanced } = props.handlers;
-  const { toggleShowObjectStoresConfigModal } = props.handlers;
+  const { autosaves, autoStarting, ci, message } = props;
+  const { branch, commit, namespace, project } = props.filters;
   const location = useLocation();
 
   const [showShareLinkModal, setShowShareLinkModal] = useState(location?.state?.showShareLinkModal ?? false);
@@ -92,56 +146,13 @@ function StartNotebookServer(props) {
     (<div key="message">{message}</div>) :
     null;
   const disabled = fetching.branches || fetching.commits;
-  const s3MountsConfig = props.options.global.cloudstorage?.s3;
-  const cloudStorageAvailable = s3MountsConfig?.enabled ?? false;
-  const showAdvancedMessage = cloudStorageAvailable ?
-    "Do you want to select the branch, commit, or image, or configure cloud storage?" :
-    "Do you want to select the branch, commit, or image?";
-
-  const buttonMessage = showAdvanced ?
-    "Hide advanced settings" :
-    showAdvancedMessage;
-
-  const advancedSelection = (
-    <Fragment>
-      <Collapse isOpen={showAdvanced}>
-        <AutosavesInfoAlert autosaves={autosaves} autosavesId={props.autosavesCommit}
-          currentId={props.filters.commit?.id} deleteAutosave={deleteAutosave} setCommit={setCommit} />
-        <StartNotebookBranches {...props} disabled={disabled} />
-        {show.commits ? <StartNotebookCommits {...props} disabled={disabled} /> : null}
-        {show.ci ? <StartNotebookPipelines {...props}
-          ignorePipeline={props.ignorePipeline}
-          setIgnorePipeline={setIgnorePipeline} /> : null}
-        {cloudStorageAvailable ?
-          <Fragment>
-            <ObjectStoresConfigurationButton
-              objectStoresConfiguration={objectStoresConfiguration}
-              toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal} />
-            <ObjectStoresConfigurationModal
-              objectStoresConfiguration={objectStoresConfiguration}
-              showObjectStoreModal={showObjectStoreModal}
-              toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal}
-              setObjectStoresConfiguration={props.handlers.setObjectStoresConfiguration} />
-          </Fragment> :
-          null
-        }
-      </Collapse>
-      <FormGroup>
-        <Button color="link" className="ps-0 pe-0 pt-2 font-italic btn-sm"
-          onClick={() => { toggleShowAdvanced(); }}>
-          {buttonMessage}
-        </Button>
-      </FormGroup>
-    </Fragment>
-  );
 
   const options = show.options ?
     (<StartNotebookOptions
       notebookFilePath={location?.state?.filePath}
-      toggleShowAdvanced={toggleShowAdvanced}
       toggleShareLinkModal={toggleShareLinkModal}
       showShareLinkModal={showShareLinkModal}
-      showAdvanced={showAdvanced} {...props} />) :
+      {...props} />) :
     null;
 
   const loader = autosaves.fetching || !show.options ?
@@ -153,15 +164,21 @@ function StartNotebookServer(props) {
     ) :
     null;
 
+  const pathWithNamespace = `${namespace}/${project}`;
+
   return (
     <Row>
-      <Col sm={12} md={10} lg={8}>
-        <h3>Start a new session</h3>
-        <ProjectSessionLockAlert lockStatus={props.lockStatus} />
-        <LaunchErrorAlert autosaves={autosaves} launchError={props.launchError} ci={props.ci} />
-        {messageOutput}
+      <Col sm={12} md={3} lg={4}>
+        <SessionStartSidebar autosaves={autosaves} ci={props.ci}
+          launchError={props.launchError} lockStatus={props.lockStatus}
+          pathWithNamespace={pathWithNamespace} />
+      </Col>
+      <Col sm={12} md={9} lg={8}>
         <Form className="form-rk-green">
-          {advancedSelection}
+          {messageOutput}
+          <StartNotebookAdvancedOptions {...props}
+            disabled={disabled}
+            show={show} />
           {options}
           {loader}
         </Form>
@@ -295,7 +312,7 @@ class StartNotebookBranches extends Component {
     }
     else if (branches.length === 0) {
       content = (
-        <React.Fragment>
+        <FormGroup>
           <Label>A commit is necessary to start a session.</Label>
           <InfoAlert timeout={0}>
             <p>You can still do one of the following:</p>
@@ -311,7 +328,7 @@ class StartNotebookBranches extends Component {
               </li>
             </ul>
           </InfoAlert>
-        </React.Fragment>
+        </FormGroup>
       );
     }
     else {
@@ -951,11 +968,11 @@ class StartNotebookServerOptions extends Component {
           const options = mergeEnumOptions(globalOptions, projectOptions, key);
           serverOption["options"] = options;
           const separator = options.length === 1 ? null : (<br />);
-          optionContent = (<Fragment>
+          optionContent = (<FormGroup className="field-group">
             <Label className="me-2">{serverOption.displayName}</Label>
             {separator}<ServerOptionEnum {...serverOption} onChange={onChange} />
             {warning}
-          </Fragment>);
+          </FormGroup>);
         }
         else if (serverOption.type === "int" || serverOption.type === "float") {
           const step = serverOption.type === "int" ?
@@ -1075,50 +1092,6 @@ class ServerOptionRange extends Component {
   }
 }
 
-function LaunchErrorBackendAlert({ launchError }) {
-  return <WarnAlert>
-    The attempt to start a session failed with the following error:
-    <div><code>{launchError}</code></div>
-    This could be an intermittent issue, so you should try a second time,
-    and the session will hopefully start. If the problem persists, you can {" "}
-    <Link to="/help">contact us for assistance</Link>.
-  </WarnAlert>;
-}
-
-function LaunchErrorFrontendAlert({ launchError, ci }) {
-  const ciStatus = NotebooksHelper.checkCiStatus(ci);
-  if (launchError.pipelineError && ciStatus.available)
-    return null;
-  return (<WarnAlert>{launchError.errorMessage}</WarnAlert>);
-}
-
-function AutosavesErrorAlert({ autosaves }) {
-  if (autosaves.error == null)
-    return null;
-  return <WarnAlert>
-    <p>Autosaves are currently unavailable.</p>
-    <p className="mb-0">If you recently worked on the project, any previous unsaved work cannot be recovered.</p>
-  </WarnAlert>;
-}
-
-function LaunchErrorAlert({ autosaves, launchError, ci }) {
-  let launchErrorElement = null;
-  if (launchError != null) {
-    if (launchError.frontendError === true)
-      launchErrorElement = (<LaunchErrorFrontendAlert launchError={launchError} ci={ci} />);
-    else
-      launchErrorElement = (<LaunchErrorBackendAlert launchError={launchError} />);
-  }
-
-  let autosavesErrorElement = null;
-  if (autosaves.error != null)
-    autosavesErrorElement = (<AutosavesErrorAlert autosaves={autosaves} />);
-  return (<Fragment>
-    {launchErrorElement}
-    {autosavesErrorElement}
-  </Fragment>);
-}
-
 class ServerOptionLaunch extends Component {
   constructor(props) {
     super(props);
@@ -1179,14 +1152,7 @@ class ServerOptionLaunch extends Component {
     const imageStatusAlert = !hasImage ? <div key="noImageAvailableWarning" className="pb-2">
       <FontAwesomeIcon icon={faExclamationTriangle} className="text-warning"/>{" "}
       The image for this commit is not available.{" "}
-      {this.props.showAdvanced ?
-        <span>See the <b>Docker Image</b> section for details.</span>
-        : <Button color="link" className="ps-0 pe-0 font-italic"
-          onClick={() => { this.props.toggleShowAdvanced(true); }}>
-          Click here for more info.
-        </Button>
-      }
-
+      <span>See the <b>Docker Image</b> section for details.</span>
     </div>
       : null;
 
@@ -1197,19 +1163,24 @@ class ServerOptionLaunch extends Component {
       </Button>;
 
 
-    return [
-      imageStatusAlert,
-      startBaseButton,
-      " ",
-      startButtonWithMenu,
+    return <div>
+      {imageStatusAlert}
+      <div className="d-flex flex-row-reverse">
+        <div>
+          {startButtonWithMenu}
+        </div>
+        <div>
+          {startBaseButton} &nbsp;
+        </div>
+      </div>
       <AutosavedDataModal key="modal"
         toggleModal={this.toggleModal.bind(this)}
         showModal={this.state.showModal}
         currentBranch={this.state.current}
         {...this.props}
-      />,
-      globalNotification
-    ];
+      />
+      {globalNotification}
+    </div>;
   }
 }
 

@@ -96,19 +96,21 @@ function ShowSession(props) {
     return handlers.fetchLogs(notebook.data.name);
   };
 
-  const urlList = Url.get(Url.pages.project.session, {
+  const urlList = Url.get(Url.pages.sessions);
+  const urlProject = Url.get(Url.pages.project.base, {
     namespace: filters.namespace,
     path: filters.project,
   });
 
   // redirect immediately if the session fail
   if (props.history && notebook.data?.status?.state === SessionStatus.failed)
-    props.history.push(urlList);
+    props.history.push(urlProject);
 
   // Always add all sub-components and hide them one by one to preserve the iframe navigation where needed
   return (
     <div className="bg-white">
-      <SessionInformation notebook={notebook} stopNotebook={handlers.stopNotebook} urlList={urlList} />
+      <SessionInformation notebook={notebook} stopNotebook={handlers.stopNotebook}
+        urlProject={urlProject} />
       <div className="d-lg-flex">
         <SessionNavbar fetchLogs={fetchLogs} setTab={setTab} tab={tab} />
         <div className={`border sessions-iframe-border w-100`}>
@@ -123,14 +125,14 @@ function ShowSession(props) {
 }
 
 function SessionInformation(props) {
-  const { notebook, stopNotebook, urlList } = props;
+  const { notebook, stopNotebook, urlProject } = props;
 
   const [stopping, setStopping] = useState(false);
 
   const stop = async () => {
     setStopping(true);
     // ? no need to handle the error here since we use the notifications at container level
-    const success = await stopNotebook(notebook.data.name, urlList);
+    const success = await stopNotebook(notebook.data.name, urlProject);
     if (success !== false)
       return;
     setStopping(false);
