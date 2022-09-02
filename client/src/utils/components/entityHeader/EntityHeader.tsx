@@ -54,68 +54,76 @@ export interface EntityHeaderProps {
   devAccess: boolean;
   email?: string;
   url: string;
-  links: EntityLinksHeader;
-  statusButton: React.ReactNode;
-  otherButtons: React.ReactNode[];
+  links?: EntityLinksHeader;
+  statusButton?: React.ReactNode;
+  otherButtons?: React.ReactNode[];
+  showFullHeader?: boolean;
 }
 
 function EntityHeader(
   { title, visibility, itemType, slug, tagList, creators, labelCaption, timeCaption, description,
-    launchNotebookUrl, sessionAutostartUrl, devAccess, url, links, statusButton, otherButtons }
+    launchNotebookUrl, sessionAutostartUrl, devAccess, url, links, statusButton, otherButtons, showFullHeader = true }
     : EntityHeaderProps) {
 
   const mainButton = launchNotebookUrl && sessionAutostartUrl ?
     <StartSessionButton launchNotebookUrl={launchNotebookUrl} sessionAutostartUrl={sessionAutostartUrl} /> : null;
 
+  const projectDetails = (
+    <div className="card card-entity--large">
+      <div className={`card-header-entity--large card-header-entity--${itemType}-large`}>
+        <div className="card-bg-title card-bg-title--large" data-cy={`${itemType}-title`}>{title}</div>
+        <div className="d-flex justify-content-between align-items-center m-3">
+          <EntityLabel type={itemType} />
+          <VisibilityIcon visibility={visibility} className="" />
+        </div>
+      </div>
+      <div className="card-body">
+        <div className="row">
+          <div className="col-12 col-sm-12 col-md-12 col-lg-9 col-xl-9 d-grid">
+            <div className="card-title text-truncate lh-sm" data-cy="list-card-title">
+              {statusButton}{title}
+            </div>
+          </div>
+          <div
+            className="buttons-header-entity col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 d-flex gap-2
+                align-items-center justify-content-start justify-content-lg-end my-2 my-lg-0">
+            {otherButtons}
+            {mainButton}
+          </div>
+        </div>
+        <Slug display="list" slug={slug ?? ""} />
+        <Creators display="list" creators={creators} itemType={itemType} />
+        <EntityDescription
+          description={description} isHeightFixed={false}
+          showSuggestion={true} hasDevAccess={devAccess}
+          urlChangeDescription={`${url}/settings`}
+        />
+        <div className="row">
+          <div className="col-12 col-sm-12 col-md-12 col-lg-9 col-xl-9 d-grid">
+            <EntityTags tagList={tagList} multiline={true} />
+          </div>
+          <div
+            className="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 d-flex
+                justify-content-start justify-content-lg-end">
+            <TimeCaption
+              caption={labelCaption || "Updated"}
+              showTooltip={true}
+              time={timeCaption}
+              className="text-rk-text-light"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (!showFullHeader)
+    return projectDetails;
+
   return (
     <div className="entity-card-large row" data-cy={`header-${itemType}`}>
       <Col
         className="d-flex align-items-start flex-column col-12 col-sm-12 col-md-12 col-lg-9 col-xl-9 overflow-hidden">
-        <div className="card card-entity--large">
-          <div className={`card-header-entity--large card-header-entity--${itemType}-large`}>
-            <div className="card-bg-title card-bg-title--large" data-cy={`${itemType}-title`}>{title}</div>
-            <div className="d-flex justify-content-between align-items-center m-3">
-              <EntityLabel type={itemType} />
-              <VisibilityIcon visibility={visibility} className="" />
-            </div>
-          </div>
-          <div className="card-body">
-            <div className="row">
-              <div className="col-12 col-sm-12 col-md-12 col-lg-9 col-xl-9 d-grid">
-                <div className="card-title text-truncate lh-sm" data-cy="list-card-title">
-                  {statusButton}{title}
-                </div>
-              </div>
-              <div
-                className="buttons-header-entity col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 d-flex gap-2
-                align-items-center justify-content-start justify-content-lg-end my-2 my-lg-0">
-                {otherButtons}
-                {mainButton}
-              </div>
-            </div>
-            <Slug display="list" slug={slug ?? ""} />
-            <Creators display="list" creators={creators} itemType={itemType} />
-            <EntityDescription
-              description={description} isHeightFixed={false}
-              showSuggestion={true} hasDevAccess={devAccess}
-              urlChangeDescription={`${url}/settings`}
-            />
-            <div className="row">
-              <div className="col-12 col-sm-12 col-md-12 col-lg-9 col-xl-9 d-grid">
-                <EntityTags tagList={tagList} multiline={true} />
-              </div>
-              <div
-                className="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 d-flex
-                justify-content-start justify-content-lg-end">
-                <TimeCaption
-                  caption={labelCaption || "Updated"}
-                  showTooltip={true}
-                  time={timeCaption}
-                  className="text-rk-text-light"/>
-              </div>
-            </div>
-          </div>
-        </div>
+        {projectDetails}
       </Col>
       <Col
         className="align-items-start flex-column col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 overflow-hidden

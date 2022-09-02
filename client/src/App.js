@@ -50,8 +50,9 @@ import { AddDataset } from "./dataset/addtoproject/DatasetAdd.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
 
-export const ContainerWrap = ({ children }) => {
-  return <div className="container-xxl py-4 mt-2 renku-container">{children}</div>;
+export const ContainerWrap = ({ children, fullSize = false }) => {
+  const classContainer = !fullSize ? "container-xxl py-4 mt-2 renku-container" : "w-100";
+  return <div className={classContainer}>{children}</div>;
 };
 
 function CentralContentContainer(props) {
@@ -75,7 +76,7 @@ function CentralContentContainer(props) {
     location: props.location,
   };
 
-  return <div>
+  return <div className="d-flex flex-grow-1">
     <AppContext.Provider value={appContext}>
       <Helmet>
         <title>Reproducible Data Science | Open Research | Renku</title>

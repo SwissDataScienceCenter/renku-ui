@@ -24,12 +24,13 @@ import { ACCESS_LEVELS } from "../api-client";
 import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
 import {
   StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled, Notebooks as NotebooksPresent,
-  CheckNotebookIcon, ShowSession as ShowSessionPresent
+  CheckNotebookIcon,
 } from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
 import { Loader } from "../utils/components/Loader";
 import { Url } from "../utils/helpers/url";
 import { sleep } from "../utils/helpers/HelperFunctions";
+import ShowSessionFullscreen from "./components/SessionFullScreen";
 
 
 /**
@@ -70,7 +71,7 @@ function mapSessionStateToProps(state, ownProps) {
   };
 }
 
-const ShowSessionMapped = connect(mapSessionStateToProps)(ShowSessionPresent);
+const ShowSessionMapped = connect(mapSessionStateToProps)(ShowSessionFullscreen);
 class ShowSession extends Component {
   constructor(props) {
     super(props);
@@ -136,6 +137,8 @@ class ShowSession extends Component {
         handlers={this.handlers}
         store={this.model.reduxStore}
         history={this.props.history}
+        urlBack={this.props.notebookServersUrl}
+        projectName={this.props.projectName}
       />
     );
   }

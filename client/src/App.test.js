@@ -7,6 +7,7 @@ import App from "./App";
 import { testClient as client } from "./api-client";
 import { StateModel, globalSchema } from "./model";
 import { generateFakeUser } from "./user/User.test";
+import { Provider } from "react-redux";
 
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
@@ -18,9 +19,11 @@ describe("rendering", () => {
     const user = generateFakeUser(true);
     await act(async () => {
       ReactDOM.render(
-        <Router>
-          <App client={client} model={model} user={user} location={fakeLocation} params={params} />
-        </Router>
+        <Provider store={model.reduxStore}>
+          <Router>
+            <App client={client} model={model} user={user} location={fakeLocation} params={params} />
+          </Router>
+        </Provider>
         , div);
     });
   });
@@ -30,9 +33,11 @@ describe("rendering", () => {
     const user = generateFakeUser();
     await act(async () => {
       ReactDOM.render(
-        <Router>
-          <App client={client} model={model} user={user} location={fakeLocation} params={params} />
-        </Router>
+        <Provider store={model.reduxStore}>
+          <Router>
+            <App client={client} model={model} user={user} location={fakeLocation} params={params} />
+          </Router>
+        </Provider>
         , div);
     });
   });

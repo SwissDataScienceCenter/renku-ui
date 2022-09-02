@@ -50,7 +50,7 @@ function ExternalLinkButton(props) {
 
   return (
     <a role="button" target="_blank" rel="noreferrer noopener" href={props.url} className={className}{...otherProps} >
-      {props.title}
+      {props.title}{props.children}
     </a>
   );
 }
@@ -70,7 +70,7 @@ function ExternalLinkText(props) {
 
   return (
     <a target="_blank" rel="noreferrer noopener" href={props.url} className={className} {...otherProps} >
-      {props.title}
+      {props.title} {props.children}
     </a>
   );
 }

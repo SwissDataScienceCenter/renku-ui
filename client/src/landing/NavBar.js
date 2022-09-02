@@ -24,7 +24,7 @@
  */
 
 import React, { Component, Fragment } from "react";
-import { Link } from "react-router-dom";
+import { Link, Route, Switch } from "react-router-dom";
 import {
   UncontrolledDropdown, DropdownItem, Navbar, Nav, NavbarToggler, Collapse, NavItem, DropdownToggle, DropdownMenu
 } from "reactstrap";
@@ -47,17 +47,30 @@ import { ExternalDocsLink, ExternalLink } from "../utils/components/ExternalLink
 import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { Loader } from "../utils/components/Loader";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
+import { useSelector } from "react-redux";
 
 
-class RenkuNavBar extends Component {
-  render() {
-    const { user } = this.props;
-    const userAvatar = <UserAvatar person={user.data} size="sm" />;
+function RenkuNavBar(props) {
 
-    return (user.logged) ?
-      <LoggedInNavBar {...this.props} userAvatar={userAvatar} /> :
-      <AnonymousNavBar {...this.props} userAvatar={userAvatar} />;
-  }
+  const { user } = props;
+  const userAvatar = <UserAvatar person={user.data} size="sm" />;
+  const projectMetadata = useSelector((state) => state.stateModel.project?.metadata);
+  const sessionShowUrl = Url.get(Url.pages.project.session.show, {
+    namespace: projectMetadata["namespace"],
+    path: projectMetadata["path"],
+    server: ":server",
+  });
+
+  const menu = (user.logged) ?
+    <LoggedInNavBar {...props} userAvatar={userAvatar} /> :
+    <AnonymousNavBar {...props} userAvatar={userAvatar} />;
+
+
+  return (
+    <Switch key="mainNav">
+      <Route path={sessionShowUrl} render={() => null} />
+      <Route component={() => menu} />
+    </Switch>);
 }
 
 function gitLabSettingsUrlFromProfileUrl(webUrl) {
@@ -399,40 +412,51 @@ class MaintenanceNavBar extends Component {
   }
 }
 
-class FooterNavbar extends Component {
-  render() {
-    const { params } = this.props;
-    const privacyLink = params && params["PRIVACY_STATEMENT"] ?
-      (<RenkuNavLink to="/privacy" title="Privacy" />) :
-      null;
-    return (
-      <footer className="footer mt-auto">
-        <Navbar className="container-fluid flex-wrap flex-lg-nowrap justify-content-between
-          renku-container navbar bg-primary navbar-dark">
-          <div>
-            <span className="text-white-50">&copy; SDSC {(new Date()).getFullYear()}</span>
-          </div>
-          <div>
-            <Nav className="ms-auto">
-              <Link className="nav-link" to="/">
-                <img src={logo} alt="Renku" className="pb-2" height="44" />
-              </Link>
-            </Nav>
-          </div>
-          <div className="d-none d-lg-inline">
-            <Nav className="ms-auto">
-              <RenkuNavLink to="/help" title="Help" />
-              {privacyLink}
-              <ExternalDocsLink url={Links.DISCOURSE} title="Forum" className="nav-link" />
-              <ExternalDocsLink url={Links.GITTER}
-                title="Gitter" className="nav-link" />
-              <ExternalDocsLink url={`${Links.HOMEPAGE}/who-we-are`} title="About" className="nav-link" />
-            </Nav>
-          </div>
-        </Navbar>
-      </footer>
-    );
-  }
+function FooterNavbar({ params }) {
+
+  const projectMetadata = useSelector((state) => state.stateModel.project?.metadata);
+  const sessionShowUrl = Url.get(Url.pages.project.session.show, {
+    namespace: projectMetadata["namespace"],
+    path: projectMetadata["path"],
+    server: ":server",
+  });
+
+  const privacyLink = params && params["PRIVACY_STATEMENT"] ?
+    (<RenkuNavLink to="/privacy" title="Privacy" />) :
+    null;
+  const footer = (
+    <footer className="footer">
+      <Navbar className="container-fluid flex-wrap flex-lg-nowrap justify-content-between
+        renku-container navbar bg-primary navbar-dark">
+        <div>
+          <span className="text-white-50">&copy; SDSC {(new Date()).getFullYear()}</span>
+        </div>
+        <div>
+          <Nav className="ms-auto">
+            <Link className="nav-link" to="/">
+              <img src={logo} alt="Renku" className="pb-2" height="44" />
+            </Link>
+          </Nav>
+        </div>
+        <div className="d-none d-lg-inline">
+          <Nav className="ms-auto">
+            <RenkuNavLink to="/help" title="Help" />
+            {privacyLink}
+            <ExternalDocsLink url={Links.DISCOURSE} title="Forum" className="nav-link" />
+            <ExternalDocsLink url={Links.GITTER}
+              title="Gitter" className="nav-link" />
+            <ExternalDocsLink url={`${Links.HOMEPAGE}/who-we-are`} title="About" className="nav-link" />
+          </Nav>
+        </div>
+      </Navbar>
+    </footer>
+  );
+
+  return (
+    <Switch key="footerNav">
+      <Route path={sessionShowUrl} render={() => null} />
+      <Route component={() => footer} />
+    </Switch>);
 }
 
 export { RenkuNavBar, FooterNavbar, MaintenanceNavBar };

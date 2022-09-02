@@ -35,14 +35,28 @@ import {
 } from "reactstrap";
 
 import {
+  ArrowLeft as WrappedArrowLeft,
   Briefcase as WrappedBriefcase,
   HddStack as WrappedHddStack,
   Globe as WrappedGlobe,
   People as WrappedPeople,
   Lock as WrappedLock,
+  Download as WrappedDownload,
+  Save as WrappedSave,
+  Journals as WrappedJournals,
+  StopCircle as WrappedStopCircle,
+  InfoCircle as WrappedInfoCircle,
 } from "react-bootstrap-icons";
 
 import { FormGroup as WrappedFormGroup, Input as WrappedInput } from "reactstrap";
+
+import {
+  Nav as WrappedNav,
+  NavItem as WrappedNavItem,
+  NavLink as WrappedNavLink,
+  TabContent as WrappedTabContent,
+  TabPane as WrappedTabPane,
+} from "reactstrap";
 
 function Alert(props) {
   return <WrappedAlert {...props} />;
@@ -169,10 +183,55 @@ function Lock(props) {
   return <WrappedLock {...props} />;
 }
 
+function Download(props) {
+  return <WrappedDownload {...props} />;
+}
+
+function Save(props) {
+  return <WrappedSave {...props} />;
+}
+
+function Journals(props) {
+  return <WrappedJournals {...props} />;
+}
+
+function ArrowLeft(props) {
+  return <WrappedArrowLeft {...props} />;
+}
+
+function StopCircle(props) {
+  return <WrappedStopCircle {...props} />;
+}
+
+function InfoCircle(props) {
+  return <WrappedInfoCircle {...props} />;
+}
+
+function Nav(props) {
+  return <WrappedNav {...props} />;
+}
+
+function NavItem(props) {
+  return <WrappedNavItem {...props} />;
+}
+
+function NavLink(props) {
+  return <WrappedNavLink {...props} />;
+}
+
+function TabContent(props) {
+  return <WrappedTabContent {...props} />;
+}
+
+function TabPane(props) {
+  return <WrappedTabPane {...props} />;
+}
+
 export { Alert, Button, ButtonGroup };
 export { Card, CardBody, CardText, CardFooter, Col, DropdownItem };
 export { FormFeedback, FormText, Fade, Form, FormGroup, Input, Label };
 export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
-export { Briefcase, HddStack, Globe, People, Lock };
+export { ArrowLeft, Briefcase, Download, HddStack, Globe, Journals, People, Lock, Save, InfoCircle, StopCircle };
+export { Nav, NavItem, NavLink, TabContent, TabPane };
