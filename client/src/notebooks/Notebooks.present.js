@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, useState, memo } from "react";
+import React, { Component, Fragment, memo, useEffect } from "react";
 import Media from "react-media";
 import { Link, useHistory } from "react-router-dom";
 import {
-  Alert, Badge, Button, Col, DropdownItem, Nav, NavItem, NavLink, PopoverBody, PopoverHeader, Row, UncontrolledPopover
+  Alert, Badge, Button, Col, DropdownItem, PopoverBody, PopoverHeader, Row, UncontrolledPopover
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBook, faCheckCircle, faExclamationTriangle, faExternalLinkAlt, faFileAlt, faHistory,
+  faCheckCircle, faExclamationTriangle, faExternalLinkAlt, faFileAlt,
   faInfoCircle, faPlus, faQuestionCircle, faStopCircle, faSyncAlt, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
@@ -39,14 +39,12 @@ import { formatBytes, simpleHash } from "../utils/helpers/HelperFunctions";
 import Time from "../utils/helpers/Time";
 import { Url } from "../utils/helpers/url";
 import Sizes from "../utils/constants/Media";
-import { Docs } from "../utils/constants/Docs";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { ButtonWithMenu } from "../utils/components/buttons/Button";
 import { TimeCaption } from "../utils/components/TimeCaption";
 import { Loader } from "../utils/components/Loader";
 import { InfoAlert, } from "../utils/components/Alert";
 import { Clipboard } from "../utils/components/Clipboard";
-import { JupyterIcon } from "../utils/components/Icon";
 import LoginAlert from "../utils/components/loginAlert/LoginAlert";
 import { EnvironmentLogs, LogDownloadButton, LogTabs, useDownloadLogs } from "../utils/components/Logs";
 import { SessionStatus } from "../utils/constants/Notebooks";
@@ -239,6 +237,11 @@ function SessionLogs(props) {
   const sessionName = notebook.data.name;
   const [ downloading, save ] = useDownloadLogs(logs, fetchLogs, sessionName);
 
+  useEffect(() => {
+    if (fetchLogs)
+      fetchLogs();
+  }, []); // eslint-disable-line
+
   if (tab !== SESSION_TABS.logs)
     return null;
 
@@ -293,23 +296,6 @@ function SessionLogs(props) {
   );
 }
 
-function SessionDocs(props) {
-  const { tab } = props;
-
-  const invisible = tab !== SESSION_TABS.docs ?
-    true :
-    false;
-  const localClass = invisible ?
-    "invisible" :
-    "";
-
-  return (
-    <iframe id="docs-iframe" title="documentation iframe" src={Docs.READ_THE_DOCS_ROOT} className={localClass}
-      width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin allow-scripts"
-    />
-  );
-}
-
 function SessionCommands(props) {
   const { tab, notebook } = props;
 
@@ -331,11 +317,8 @@ function SessionCommands(props) {
 }
 
 function SessionJupyter(props) {
-  const { filters, notebook, tab, urlList } = props;
+  const { filters, notebook, height = "800px", urlList } = props;
   const history = useHistory();
-  const invisible = tab !== SESSION_TABS.session ?
-    true :
-    false;
 
   let content = null;
   if (notebook.available) {
@@ -344,27 +327,18 @@ function SessionJupyter(props) {
       const locationFilePath = history?.location?.state?.filePath;
       const notebookUrl = locationFilePath ? `${notebook.data.url}/lab/tree/${locationFilePath}` : notebook.data.url;
 
-      const localClass = invisible ?
-        "invisible position-absolute" : // ? position-absolute prevent showing extra margins
-        "";
       content = (
-        <iframe id="session-iframe" title="session iframe" src={notebookUrl} className={localClass}
-          width="100%" height="800px" referrerPolicy="origin"
+        <iframe id="session-iframe" title="session iframe" src={notebookUrl}
+          width="100%" height={height} referrerPolicy="origin"
           sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
         />
       );
-    }
-    else if (invisible) {
-      return null;
     }
     else if (status === SessionStatus.starting || status === SessionStatus.stopping) {
       content = (<Loader />);
     }
   }
   else {
-    if (invisible)
-      return null;
-
     const urlNew = Url.get(Url.pages.project.session.new, {
       namespace: filters.namespace,
       path: filters.project,
@@ -542,6 +516,9 @@ class NotebookServersList extends Component {
 
 class NotebookServerRow extends Component {
   render() {
+    if (!this.props.annotations)
+      return null;
+
     const annotations = NotebooksHelper.cleanAnnotations(this.props.annotations, "renku.io");
     const status = this.props.status.state;
     const details = {
@@ -564,8 +541,10 @@ class NotebookServerRow extends Component {
       server: this.props.name,
     });
 
+    const showMenu = this.props.showMenu ?? true;
+
     const newProps = {
-      annotations, commitDetails, details, image, localUrl, repositoryLinks, resources, status, uid
+      annotations, commitDetails, details, image, localUrl, repositoryLinks, resources, status, uid, showMenu
     };
 
     return (
@@ -641,7 +620,8 @@ class NotebookServerRowCommitInfo extends Component {
 class NotebookServerRowFull extends Component {
   render() {
     const {
-      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit, image
+      annotations, details, status, url, uid, resources, repositoryLinks,
+      name, commitDetails, fetchCommit, image, showMenu = true
     } = this.props;
 
     const icon = <div className="align-middle">
@@ -671,7 +651,7 @@ class NotebookServerRowFull extends Component {
     const statusOut = <NotebooksServerRowStatus
       details={details} status={status} uid={uid} startTime={this.props.startTime} annotations={annotations}/>;
 
-    const action = (<span className="mb-auto">
+    const action = showMenu ? (<span className="mb-auto">
       <NotebookServerRowAction
         localUrl={this.props.localUrl}
         name={this.props.name}
@@ -688,10 +668,11 @@ class NotebookServerRowFull extends Component {
         name={this.props.name}
         annotations={annotations}
       />
-    </span>);
+    </span>) : null;
 
     return (
-      <div className="d-flex flex-row rk-search-result rk-search-result-100 cursor-auto overflow-visible">
+      <div className="d-flex flex-row bg-white border-0 border-radius-8
+        rk-search-result rk-search-result-100 cursor-auto overflow-visible">
         <span className={this.props.standalone ? "me-3 mt-2" : "me-3 mt-1"}>{icon}</span>
         <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
           <div className="project d-inline-block text-truncate">
@@ -729,7 +710,7 @@ class NotebookServerRowCompact extends Component {
   render() {
     const {
       annotations, commitDetails, details, fetchCommit, image, localUrl, logs, name, repositoryLinks,
-      resources, standalone, startTime, status, uid, url
+      resources, standalone, startTime, status, uid, url, showMenu = true
     } = this.props;
 
     const icon = <span>
@@ -772,7 +753,7 @@ class NotebookServerRowCompact extends Component {
         annotations={annotations}
       />
     </span>);
-    const action = (<span>
+    const action = showMenu ? (<span>
       <NotebookServerRowAction
         localUrl={localUrl}
         name={name}
@@ -788,10 +769,10 @@ class NotebookServerRowCompact extends Component {
         name={name}
         annotations={annotations}
       />
-    </span>);
+    </span>) : null;
 
     return (
-      <div className="rk-search-result-compact cursor-auto">
+      <div className="rk-search-result-compact bg-white cursor-auto border-radius-8 border-0">
         {project}
         {branch}
         {commit}
@@ -965,5 +946,6 @@ NotebookServerRowAction.displayName = "NotebookServerRowAction";
 
 export {
   CheckNotebookIcon, Notebooks, NotebooksDisabled, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,
-  ShowSession, StartNotebookServer, mergeEnumOptions
+  StartNotebookServer, mergeEnumOptions, SessionJupyter, NotebookServerRowFull, NotebookServerRow,
+  SessionCommands, SESSION_TABS, SessionLogs
 };

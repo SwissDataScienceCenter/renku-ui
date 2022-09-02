@@ -1062,7 +1062,6 @@ const ProjectSessions = (props) => {
         <Route path={props.sessionShowUrl}
           render={p => (
             <Fragment>
-              {backButton}
               <ProjectShowSession {...props} match={p.match} />
             </Fragment>
           )} />
@@ -1123,7 +1122,7 @@ class ProjectShowSession extends Component {
   render() {
     const {
       blockAnonymous, client, externalUrl, history, launchNotebookUrl, location, match,
-      metadata, model, notifications, forkUrl, user
+      metadata, model, notifications, forkUrl, user, notebookServersUrl
     } = this.props;
     const warning = notebookWarning(
       user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl
@@ -1142,6 +1141,8 @@ class ProjectShowSession extends Component {
         scope={{ namespace: this.props.metadata.namespace, project: this.props.metadata.path }}
         standalone={false}
         urlNewSession={launchNotebookUrl}
+        notebookServersUrl={notebookServersUrl}
+        projectName={this.props.metadata.title}
       />
     );
   }
@@ -1359,11 +1360,13 @@ class ProjectView extends Component {
       `${projectTitle} • Project • ${projectPath} • ${projectDesc}` :
       `${projectTitle} • Project • ${projectPath}`;
 
+    const cleanSessionUrl = this.props.location.pathname.split("/").slice(0, -1).join("/") + "/:server";
+    const isShowSession = cleanSessionUrl === this.props.sessionShowUrl;
     return [
       <Helmet key="page-title">
         <title>{pageTitle}</title>
       </Helmet>,
-      <ContainerWrap key="project-content">
+      <ContainerWrap key="project-content" fullSize={isShowSession}>
         <Switch key="projectHeader">
           <Route exact path={this.props.baseUrl}
             render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
@@ -1375,12 +1378,14 @@ class ProjectView extends Component {
             <ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
           <Route component={()=><ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
           <Route path={this.props.datasetUrl} render={() => null} />
+          <Route path={this.props.sessionShowUrl} render={props => null} />
           <Route component={()=><ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
         </Switch>
         <Switch key="projectNav">
           <Route path={this.props.notebookServersUrl} render={() => null} />
           <Route path={this.props.editDatasetUrl} render={() => null} />
           <Route path={this.props.datasetUrl} render={() => null} />
+          <Route path={this.props.sessionShowUrl} render={() => null} />
           <Route path={this.props.newDatasetUrl} component={() => <ProjectNav key="nav" {...this.props} />} />
           <Route component={() =><ProjectNav key="nav" {...this.props} />} />
         </Switch>

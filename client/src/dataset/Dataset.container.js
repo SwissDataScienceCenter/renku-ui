@@ -20,6 +20,7 @@ import React, { useState, useEffect } from "react";
 
 import DatasetView from "./Dataset.present";
 import { projectSchema } from "../model";
+import { useSelector } from "react-redux";
 
 export default function ShowDataset(props) {
 
@@ -30,24 +31,18 @@ export default function ShowDataset(props) {
     props.migration :
     projectSchema.createInitialized().migration;
 
+  const findDatasetId = (name, datasets) => {
+    const dataset = datasets?.find((d) => d.name === name);
+    return dataset?.identifier;
+  };
+
   // Use Effect to calculate dataset
   useEffect(() => {
-    const fetchDatasets = async (id) => {
+    const fetchDatasets = (id) => {
       props.datasetCoordinator.resetDataset();
       const fetchKG = props.insideProject ? props.graphStatus : true;
-      await props.datasetCoordinator.fetchDataset(id, props.datasets, fetchKG);
-      let currentFiles = props.datasetCoordinator.get("files");
-      let currentDataset = props.datasetCoordinator.get("metadata");
-      if (currentFiles && currentFiles?.hasPart)
-        setDatasetFiles(currentFiles);
-      setDataset(currentDataset);
+      props.datasetCoordinator.fetchDataset(id, props.datasets, fetchKG);
     };
-
-    const findDatasetId = (name, datasets) => {
-      const dataset = datasets?.find((d) => d.name === name);
-      return dataset?.identifier;
-    };
-
     if (props.datasetCoordinator) {
       const currentDataset = props.datasetCoordinator.get("metadata");
       const datasetId = props.insideProject ? findDatasetId(props.datasetId, props.datasets) : props.identifier;
@@ -70,15 +65,13 @@ export default function ShowDataset(props) {
 
   // use effect to calculate files
   useEffect(() => {
-    const fetchFiles = async (name, httpProjectUrl, versionUrl) => {
-      await props.datasetCoordinator.fetchDatasetFilesFromCoreService(name, httpProjectUrl, versionUrl);
-      const files = props.datasetCoordinator.get("files");
-      setDatasetFiles(files);
+    const fetchFiles = (name, httpProjectUrl, versionUrl) => {
+      props.datasetCoordinator.fetchDatasetFilesFromCoreService(name, httpProjectUrl, versionUrl);
     };
 
-    if (props.insideProject && props.datasetCoordinator && dataset?.identifier !== undefined && !datasetFiles) {
+    if (props.insideProject && props.datasetCoordinator && dataset?.identifier !== undefined &&
+      (!datasetFiles || !datasetFiles.fetched)) {
       const isFilesFetching = props.datasetCoordinator.get("files")?.fetching;
-
       if (migration.core.fetched && migration.core.backendAvailable && !isFilesFetching) {
         const versionUrl = migration.core.versionUrl;
         fetchFiles(dataset?.name, props.httpProjectUrl, versionUrl);
@@ -90,8 +83,24 @@ export default function ShowDataset(props) {
     migration.core.fetched, migration.core.versionUrl, props.datasetCoordinator, datasetFiles]
   );
 
-  const loadingDatasets = dataset === null || dataset?.fetching || !dataset?.fetched;
+  const currentDataset = useSelector((state) => state.stateModel.dataset?.metadata);
+  useEffect(() => {
+    const datasetId = props.insideProject ? findDatasetId(props.datasetId, props.datasets) : props.identifier;
+    const currentIdentifier = currentDataset?.identifier;
+    if (currentIdentifier === datasetId && currentIdentifier !== dataset?.identifier && !currentDataset.fetching)
+      setDataset(currentDataset);
+    if (currentDataset.fetchError && !currentDataset.fetching)
+      setDataset(currentDataset);
+  }, [ currentDataset, dataset ]); // eslint-disable-line
 
+  const currentFiles = useSelector((state) => state.stateModel.dataset?.files);
+  useEffect(() => {
+    if (!currentDataset.fetching && !currentFiles.fetching)
+      setDatasetFiles(currentFiles);
+  }, [ currentFiles, datasetFiles ]); // eslint-disable-line
+
+
+  const loadingDatasets = dataset === null || dataset?.fetching || !dataset?.fetched;
   return <DatasetView
     client={props.client}
     dataset={dataset}

@@ -6,6 +6,11 @@ $borderRadius: 1000px;
   font-weight: normal;
 }
 
+.btn.no-focus:focus {
+  border: none;
+  box-shadow: none;
+}
+
 .btn-group .btn {
   border-radius: 0;
   padding: 5px 10px;
@@ -300,4 +305,8 @@ $borderRadius: 1000px;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.fullscreen-back-button {
+  padding: 5px 0 5px 16px;
 }

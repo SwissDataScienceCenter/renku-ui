@@ -28,15 +28,20 @@ import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 
 import { Maintenance } from "./Maintenance";
+import { globalSchema, StateModel } from "./model";
+import { Provider } from "react-redux";
 
 describe("rendering", () => {
+  const model = new StateModel(globalSchema);
   it("renders Maintenance without info", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
     ReactDOM.render(
-      <MemoryRouter>
-        <Maintenance info={null} />
-      </MemoryRouter>,
+      <Provider store={model.reduxStore}>
+        <MemoryRouter>
+          <Maintenance info={null} />
+        </MemoryRouter>
+      </Provider>,
       div
     );
   });
@@ -45,9 +50,11 @@ describe("rendering", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
     ReactDOM.render(
-      <MemoryRouter>
-        <Maintenance info={"Important info"} />
-      </MemoryRouter>,
+      <Provider store={model.reduxStore}>
+        <MemoryRouter>
+          <Maintenance info={"Important info"} />
+        </MemoryRouter>
+      </Provider>,
       div
     );
   });
