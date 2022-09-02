@@ -23,34 +23,6 @@ import { Channel } from "../index";
 import { WsMessage } from "../WsMessages";
 
 
-function handlerClientVersion(data: Record<string, unknown>, channel: Channel, socket: ws): void {
-  // save client version
-  channel.data.set("clientVersion", data.clientVersion);
-
-  // send ack
-  const response = {
-    target: "init",
-    message: `UI version saved: ${data.clientVersion}`
-  };
-
-  socket.send(JSON.stringify(new WsMessage(response, "user", "ack")));
-}
-
-function heartbeatClientVersion(channel: Channel): void {
-  const clientSha = channel.data.get("clientVersion");
-  const currentSha = process.env.RENKU_UI_SHORT_SHA ?
-    process.env.RENKU_UI_SHORT_SHA :
-    "";
-  if (clientSha && currentSha && clientSha !== currentSha) {
-    const data = { message: "New version available", new: true, version: currentSha };
-    const info = new WsMessage(data, "user", "version");
-    channel.sockets.forEach(socket => socket.send(JSON.stringify(info)));
-  }
-}
-
-
-// New set of functions: send the version to all the channels and the the client decide the action.
-
 function handlerRequestServerVersion(data: Record<string, unknown>, channel: Channel, socket: ws): void {
   // save the request enabler
   if (data.requestServerVersion) {
@@ -72,7 +44,7 @@ function handlerRequestServerVersion(data: Record<string, unknown>, channel: Cha
       data = { start: true, message: `The server will send the UI version every ${info}.`, "version": currentSha };
     }
 
-    socket.send(JSON.stringify(new WsMessage(data, "user", "version")));
+    socket.send((new WsMessage(data, "user", "version")).toString());
   }
 }
 
@@ -83,10 +55,10 @@ function heartbeatRequestServerVersion(channel: Channel): void {
       null;
     if (currentSha) {
       const info = new WsMessage({ "version": currentSha }, "user", "version");
-      channel.sockets.forEach(socket => socket.send(JSON.stringify(info)));
+      channel.sockets.forEach(socket => socket.send(info.toString()));
     }
   }
 }
 
 
-export { handlerClientVersion, handlerRequestServerVersion, heartbeatClientVersion, heartbeatRequestServerVersion };
+export { handlerRequestServerVersion, heartbeatRequestServerVersion };

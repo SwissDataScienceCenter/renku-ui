@@ -26,6 +26,5 @@
 import AnonymousHome from "./AnonymousHome";
 import Landing from "./Landing";
 import { RenkuNavBar, FooterNavbar, MaintenanceNavBar } from "./NavBar";
-import { pollComponentsVersion } from "./NabBarWarnings";
 
-export { AnonymousHome, Landing, FooterNavbar, MaintenanceNavBar, pollComponentsVersion, RenkuNavBar };
+export { AnonymousHome, Landing, FooterNavbar, MaintenanceNavBar, RenkuNavBar };

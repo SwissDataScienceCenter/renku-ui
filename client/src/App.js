@@ -49,6 +49,7 @@ import { Loader } from "./utils/components/Loader";
 import { AddDataset } from "./dataset/addtoproject/DatasetAdd.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
+import { setupWebSocket } from "./websocket";
 
 export const ContainerWrap = ({ children }) => {
   return <div className="container-xxl py-4 mt-2 renku-container">{children}</div>;
@@ -202,6 +203,13 @@ class App extends Component {
     // Setup authentication listeners and notifications
     LoginHelper.setupListener();
     LoginHelper.triggerNotifications(this.notifications);
+
+    // Setup WebSocket channel
+    let webSocketUrl = props.client.uiserverUrl + "/ws";
+    if (webSocketUrl.startsWith("http"))
+      webSocketUrl = "ws" + webSocketUrl.substring(4);
+    // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
+    setTimeout(() => setupWebSocket(webSocketUrl, this.props.model), 1000);
   }
 
   render() {

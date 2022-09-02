@@ -18,20 +18,6 @@
 
 function addEnvironmentMethods(client) {
   /**
-   * Get the versions of the RenkuLab components.
-   */
-  client.getComponentsVersion = async () => {
-    const urlApi = `${client.baseUrl}/versions`;
-    let headers = client.getBasicHeaders();
-    headers.append("Content-Type", "application/json");
-    headers.append("X-Requested-With", "XMLHttpRequest");
-    return client.clientFetch(urlApi, {
-      method: "GET",
-      headers: headers
-    }).then(resp => resp.data);
-  };
-
-  /**
    * Get the version of the core service
    */
   client.getCoreVersion = async () => {

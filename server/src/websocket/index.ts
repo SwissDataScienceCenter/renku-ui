@@ -26,9 +26,7 @@ import { Storage } from "../storage";
 import { Authenticator } from "../authentication";
 import { wsRenkuAuth } from "../authentication/middleware";
 import { getCookieValueByName } from "../utils";
-import {
-  handlerClientVersion, handlerRequestServerVersion, heartbeatClientVersion, heartbeatRequestServerVersion
-} from "./handlers/clientVersion";
+import { handlerRequestServerVersion, heartbeatRequestServerVersion } from "./handlers/clientVersion";
 
 
 // *** Channels ***
@@ -45,30 +43,25 @@ const channels = new Map<string, Channel>();
 // *** Accepted messages ***
 
 interface MessageData {
-  required: Array<string>;
-  optional: Array<string>;
+  required: Array<string> | null;
+  optional: Array<string> | null;
   handler: Function; // eslint-disable-line
 }
 
 const acceptedMessages: Record<string, Array<MessageData>> = {
   "init": [
     {
-      required: ["clientVersion"],
-      optional: null,
-      handler: handlerClientVersion
-    },
-    {
       required: ["requestServerVersion"],
       optional: null,
       handler: handlerRequestServerVersion
-    },
+    } as MessageData,
   ],
   "ping": [
     {
       required: null,
       optional: null,
       handler: (data: Record<string, unknown>, channel: Channel, socket: ws) => {
-        return socket.send(JSON.stringify(new WsMessage("ping", "user", "ack")));
+        return socket.send((new WsMessage("ping", "user", "ack")).toString());
       }
     },
   ]
@@ -78,7 +71,6 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
 // *** Heartbeats functions ***
 
 const longLoopFunctions: Array<Function> = [ // eslint-disable-line
-  heartbeatClientVersion,
   heartbeatRequestServerVersion
 ];
 const shortLoopFunctions: Array<Function> = []; // eslint-disable-line
@@ -111,6 +103,7 @@ async function channelLongLoop(sessionId: string, authenticator: Authenticator, 
   // get the auth headers
   const authHeaders = await getAuthHeaders(authenticator, sessionId, infoPrefix);
   if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
+    // ? here authHeaders is an error message
     channel.sockets.forEach(socket => socket.send(authHeaders.toString()));
     channels.delete(sessionId);
     return false;
@@ -124,7 +117,7 @@ async function channelLongLoop(sessionId: string, authenticator: Authenticator, 
     catch (error) {
       const info = `Unexpected error while executing the function '${longLoopFunction.name}'.`;
       logger.error(`${infoPrefix} ${info}`);
-      channel.sockets.forEach(socket => socket.send(JSON.stringify(new WsMessage(info, "user", "error"))));
+      channel.sockets.forEach(socket => socket.send((new WsMessage(info, "user", "error")).toString()));
     }
   }
 
@@ -160,8 +153,8 @@ async function channelShortLoop(sessionId: string, authenticator: Authenticator,
 
   // get the auth headers
   const authHeaders = await getAuthHeaders(authenticator, sessionId, infoPrefix);
-  // channel.sockets.forEach(socket => socket.send("authHeaders: " + authHeaders.toString()));
   if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
+    // ? here authHeaders is an error message
     channel.sockets.forEach(socket => socket.send(authHeaders.toString()));
     channels.delete(sessionId);
     return false;
@@ -175,7 +168,7 @@ async function channelShortLoop(sessionId: string, authenticator: Authenticator,
     catch (error) {
       const info = `Unexpected error while executing the function '${shortLoopFunction.name}'.`;
       logger.error(`${infoPrefix} ${info}`);
-      channel.sockets.forEach(socket => socket.send(JSON.stringify(new WsMessage(info, "user", "error"))));
+      channel.sockets.forEach(socket => socket.send((new WsMessage(info, "user", "error")).toString()));
     }
   }
 
@@ -205,7 +198,8 @@ function configureWebsocket(server: ws.Server, authenticator: Authenticator, sto
       logger.error("No ID for the user, session won't be saved.");
       const info = "The request does not contain a valid session ID." +
         " Are you reaching the WebSocket from an external source?";
-      socket.send(JSON.stringify(new WsMessage({ message: info, missingAuth: true }, "user", "error")));
+      socket.send((new WsMessage({ message: info, missingAuth: true }, "user", "error")).toString());
+      socket.close(4000);
       return false;
     }
     logger.debug(`Incoming connection from: ${sessionId}`);
@@ -277,7 +271,7 @@ function configureWebsocket(server: ws.Server, authenticator: Authenticator, sto
       catch (error) {
         const info = "Incoming message is bad formed: " + error.toString();
         logger.error(`${info}\nmessage: ${message}`);
-        socket.send(JSON.stringify(new WsMessage(info, "user", "error")));
+        socket.send((new WsMessage(info, "user", "error")).toString());
         return false;
       }
 
@@ -286,7 +280,7 @@ function configureWebsocket(server: ws.Server, authenticator: Authenticator, sto
 
       if (typeof handler === "string") {
         logger.error(`${handler}\nmessage: ${message}`);
-        socket.send(JSON.stringify(new WsMessage(handler, "user", "error")));
+        socket.send((new WsMessage(handler, "user", "error")).toString());
         return false;
       }
 
@@ -297,15 +291,15 @@ function configureWebsocket(server: ws.Server, authenticator: Authenticator, sto
       catch (error) {
         const info = `Error while executing the '${clientMessage.type}' command: ${error.toString()}`;
         logger.error(`${info}\nmessage: ${message}`);
-        socket.send(JSON.stringify(new WsMessage(info, "user", "error")));
+        socket.send((new WsMessage(info, "user", "error")).toString());
       }
     });
 
     // check auth
     const head = await getAuthHeaders(authenticator, sessionId);
     if (head instanceof WsMessage && head.data?.expired)
-      socket.send(JSON.stringify(head));
-    socket.send(JSON.stringify(new WsMessage("Connection enstablished.", "user", "init")));
+      socket.send(head.toString());
+    socket.send((new WsMessage("Connection established.", "user", "init")).toString());
   });
 }
 

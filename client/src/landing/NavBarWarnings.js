@@ -31,61 +31,34 @@ import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { WarnAlert } from "../utils/components/Alert";
 
 
-const versionUpdateInterval = 1000 * 60 * 5; // Update every 5 minutes
-
-/**
- * Poller function to keep the server components version up-to-date. It doesn't need to run often.
- *
- * @param {Object} model - current model object for the environments (sub-model of the global model)
- * @param {*} client - API client
- */
-function pollComponentsVersion(model, client) {
-  async function fetchVersions() {
-    model.setObject({ fetching: true });
-    const componentsVersion = await client.getComponentsVersion();
-    const environment = {
-      fetching: false,
-      fetched: new Date(),
-      data: componentsVersion
-    };
-    model.setObject(environment);
-  }
-  fetchVersions();
-
-  if (model.get("timeout"))
-    return null;
-  const idTimeout = setInterval(fetchVersions, versionUpdateInterval);
-  model.setObject({ timeout: idTimeout });
-  return null;
-}
-
 /**
  * Container component for the warning banners
  */
-function VersionsBanner(props) {
+function NavBarWarnings(props) {
   function mapStateToProps(state, ownProps) {
     return { environment: state.stateModel.environment };
   }
 
-  const VisibleBanner = connect(mapStateToProps)(VersionsBannerPresent);
+  const VisibleBanner = connect(mapStateToProps)(NavBarWarningsPresent);
   return (<VisibleBanner store={props.model.reduxStore} uiShortSha={props.uiShortSha} />);
 }
 
 /**
  * Presentational component for the warning banners
  */
-function VersionsBannerPresent(props) {
-  const { environment, uiShortSha } = props;
+function NavBarWarningsPresent(props) {
+  let { environment, uiShortSha } = props;
+  const { uiVersion } = environment;
 
   // return when local ui version data is not available
   if (!uiShortSha || uiShortSha.toLowerCase() === "development" || uiShortSha.toLowerCase() === "dev")
     return null;
 
   // return when remote ui version data is not available
-  if (!environment.fetched || !environment.data["ui-short-sha"])
+  if (!uiVersion.webSocket || !uiVersion.lastValue)
     return null;
 
-  if (uiShortSha === environment.data["ui-short-sha"])
+  if (uiShortSha === uiVersion.lastValue)
     return null;
 
   return (
@@ -105,4 +78,4 @@ function VersionsBannerPresent(props) {
 }
 
 
-export { pollComponentsVersion, VersionsBanner };
+export { NavBarWarnings };
