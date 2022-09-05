@@ -1,5 +1,30 @@
 # Changes
 
+## [2.8.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.7.0...2.8.0)  (2022-09-06)
+
+### Features
+
+**sessions**
+* improve session start flow ([#1990](https://github.com/SwissDataScienceCenter/renku-ui/issues/1990), [#2003](https://github.com/SwissDataScienceCenter/renku-ui/issues/2003))
+
+**misc**
+* setup WebSocket communications channel ([#1338](https://github.com/SwissDataScienceCenter/renku-ui/issues/1338),  [#2004](https://github.com/SwissDataScienceCenter/renku-ui/issues/2004), [#2012](https://github.com/SwissDataScienceCenter/renku-ui/issues/2012)  [#2013](https://github.com/SwissDataScienceCenter/renku-ui/issues/2013))
+* handle anon-id cookies and headers ([#1601](https://github.com/SwissDataScienceCenter/renku-ui/issues/1601), [#2002](https://github.com/SwissDataScienceCenter/renku-ui/issues/2002))
+
+### Bug Fixes
+
+**project**
+* fix file tree display when changing to original project from fork ([#1907](https://github.com/SwissDataScienceCenter/renku-ui/issues/1907), [#2015](https://github.com/SwissDataScienceCenter/renku-ui/issues/2015))
+* prevent repeated queries to projects API ([#2017](https://github.com/SwissDataScienceCenter/renku-ui/issues/2017))
+
+**anonymous navigation**
+* render star project button for anon users ([#2014](https://github.com/SwissDataScienceCenter/renku-ui/issues/2014))
+* restore back button navigation on projects for anon users ([#2017](https://github.com/SwissDataScienceCenter/renku-ui/issues/2017))
+
+### BREAKING CHANGES
+
+* requires renku-gateway >= 0.15.0
+
 ## [2.7.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.6.0...2.7.0) (2022-08-12)
 
 ### Features
