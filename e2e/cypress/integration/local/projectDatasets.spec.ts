@@ -55,9 +55,11 @@ function checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets, editDisabl
     const datasetIdentifier = d.identifier.replace(/-/g, "");
     const requestId = `getDatasetById${i}`;
     fixtures.datasetById(datasetIdentifier, requestId);
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000, { log: false });
+    cy.get_cy("list-card-title").should("have.length", 3);
     cy.get_cy("list-card-title").contains(d.title).click();
     cy.wait(`@${requestId}`);
-
     cy.get_cy("dataset-title").should("contain.text", d.title);
 
     if (editDisabled) {
