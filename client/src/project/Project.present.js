@@ -70,6 +70,7 @@ import { NotFound } from "../not-found/NotFound.present";
 import { ContainerWrap } from "../App";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
 import EntityHeader from "../utils/components/entityHeader/EntityHeader";
+import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -1322,95 +1323,96 @@ class NotFoundInsideProject extends Component {
   }
 }
 
-class ProjectView extends Component {
-  render() {
-    const available = this.props.metadata ? this.props.metadata.exists : null;
-    const projectPathWithNamespaceOrId = this.props.projectPathWithNamespace ?
-      this.props.projectPathWithNamespace
-      : this.props.projectId;
+function ProjectView(props) {
+  const available = props.metadata ? props.metadata.exists : null;
+  const projectPathWithNamespaceOrId = props.projectPathWithNamespace ?
+    props.projectPathWithNamespace
+    : props.projectId;
 
-    if (this.props.namespace && !this.props.projectPathWithNamespace) {
-      return (
-        <NamespaceProjects
-          namespace={this.props.namespace}
-          client={this.props.client}
-        />
-      );
-    }
-    else if (available == null || available === SpecialPropVal.UPDATING || this.props.projectId) {
-      return (
-        <ContainerWrap><ProjectViewLoading
-          projectPathWithNamespace={this.props.projectPathWithNamespace}
-          projectId={this.props.projectId} /></ContainerWrap>
-      );
-    }
-    else if (available === false) {
-      const { logged } = this.props.user;
-      return (
-        <ProjectViewNotFound
-          projectPathWithNamespace={projectPathWithNamespaceOrId}
-          logged={logged}
-          location={this.props.location} />
-      );
-    }
-    const projectTitle = this.props.metadata.title;
-    const projectPath = this.props.metadata.pathWithNamespace;
-    const projectDesc = this.props.metadata.description;
-    const pageTitle = projectDesc ?
-      `${projectTitle} • Project • ${projectPath} • ${projectDesc}` :
-      `${projectTitle} • Project • ${projectPath}`;
+  const { data, isFetching, isLoading } = useProjectJsonLdQuery(props.projectPathWithNamespace);
 
-    const cleanSessionUrl = this.props.location.pathname.split("/").slice(0, -1).join("/") + "/:server";
-    const isShowSession = cleanSessionUrl === this.props.sessionShowUrl;
-    return [
-      <Helmet key="page-title">
-        <title>{pageTitle}</title>
-      </Helmet>,
-      <ContainerWrap key="project-content" fullSize={isShowSession}>
-        <Switch key="projectHeader">
-          <Route exact path={this.props.baseUrl}
-            render={() => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
-          <Route path={this.props.overviewUrl}
-            render={() => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
-          <Route path={this.props.notebookServersUrl} render={() => null} />
-          <Route path={this.props.editDatasetUrl} render={() => null} />
-          <Route path={this.props.datasetUrl} render={() => null} />
-          <Route path={this.props.sessionShowUrl} render={() => null} />
-          <Route path={this.props.newDatasetUrl} component={() =>
-            <ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
-          <Route component={()=><ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
-        </Switch>
-        <Switch key="projectNav">
-          <Route path={this.props.notebookServersUrl} render={() => null} />
-          <Route path={this.props.editDatasetUrl} render={() => null} />
-          <Route path={this.props.datasetUrl} render={() => null} />
-          <Route path={this.props.sessionShowUrl} render={() => null} />
-          <Route path={this.props.newDatasetUrl} component={() => <ProjectNav key="nav" {...this.props} />} />
-          <Route component={() =><ProjectNav key="nav" {...this.props} />} />
-        </Switch>
-        <Row key="content">
-          <Switch>
-            <Route exact path={this.props.baseUrl}
-              render={props => <ProjectViewOverview key="overview" {...this.props} />} />
-            <Route path={this.props.overviewUrl}
-              render={props => <ProjectViewOverview key="overview" {...this.props} />} />
-            <Route path={this.props.collaborationUrl}
-              render={props => <ProjectViewCollaboration key="collaboration" {...this.props} />} />
-            <Route path={this.props.filesUrl}
-              render={props => <ProjectViewFiles key="files" {...this.props} />} />
-            <Route path={this.props.datasetsUrl}
-              render={props => <ProjectViewDatasets key="datasets" {...this.props} />} />
-            <Route path={this.props.settingsUrl}
-              render={props => <ProjectSettings key="settings" {...this.props} />} />
-            <Route path={this.props.notebookServersUrl}
-              render={props => <ProjectSessions key="sessions" {...this.props} />} />
-            <Route component={NotFoundInsideProject} />
-          </Switch>
-        </Row>
-      </ContainerWrap>
-    ];
-
+  if (props.namespace && !props.projectPathWithNamespace) {
+    return (
+      <NamespaceProjects
+        namespace={props.namespace}
+        client={props.client}
+      />
+    );
   }
+  else if (available == null || available === SpecialPropVal.UPDATING || props.projectId) {
+    return (
+      <ContainerWrap><ProjectViewLoading
+        projectPathWithNamespace={props.projectPathWithNamespace}
+        projectId={props.projectId} /></ContainerWrap>
+    );
+  }
+  else if (available === false) {
+    const { logged } = props.user;
+    return (
+      <ProjectViewNotFound
+        projectPathWithNamespace={projectPathWithNamespaceOrId}
+        logged={logged}
+        location={props.location} />
+    );
+  }
+  const projectTitle = props.metadata.title;
+  const projectPath = props.metadata.pathWithNamespace;
+  const projectDesc = props.metadata.description;
+  const pageTitle = projectDesc ?
+    `${projectTitle} • Project • ${projectPath} • ${projectDesc}` :
+    `${projectTitle} • Project • ${projectPath}`;
+  const jsonLd = !isFetching && !isLoading && data ?
+    <script type="application/ld+json">{JSON.stringify(data)}</script> : null;
+  const cleanSessionUrl = props.location.pathname.split("/").slice(0, -1).join("/") + "/:server";
+  const isShowSession = cleanSessionUrl === props.sessionShowUrl;
+  return [
+    <Helmet key="page-title">
+      <title>{pageTitle}</title>
+      {jsonLd}
+    </Helmet>,
+    <ContainerWrap key="project-content" fullSize={isShowSession}>
+      <Switch key="projectHeader">
+        <Route exact path={props.baseUrl}
+          render={() => <ProjectViewHeader {...props} minimalistHeader={false}/>} />
+        <Route path={props.overviewUrl}
+          render={() => <ProjectViewHeader {...props} minimalistHeader={false}/>} />
+        <Route path={props.notebookServersUrl} render={() => null} />
+        <Route path={props.editDatasetUrl} render={() => null} />
+        <Route path={props.datasetUrl} render={() => null} />
+        <Route path={props.sessionShowUrl} render={() => null} />
+        <Route path={props.newDatasetUrl} component={() =>
+          <ProjectViewHeader {...props} minimalistHeader={true}/>} />
+        <Route component={()=><ProjectViewHeader {...props} minimalistHeader={true}/>} />
+      </Switch>
+      <Switch key="projectNav">
+        <Route path={props.notebookServersUrl} render={() => null} />
+        <Route path={props.editDatasetUrl} render={() => null} />
+        <Route path={props.datasetUrl} render={() => null} />
+        <Route path={props.sessionShowUrl} render={() => null} />
+        <Route path={props.newDatasetUrl} component={() => <ProjectNav key="nav" {...props} />} />
+        <Route component={() =><ProjectNav key="nav" {...props} />} />
+      </Switch>
+      <Row key="content">
+        <Switch>
+          <Route exact path={props.baseUrl}
+            render={() => <ProjectViewOverview key="overview" {...props} />} />
+          <Route path={props.overviewUrl}
+            render={() => <ProjectViewOverview key="overview" {...props} />} />
+          <Route path={props.collaborationUrl}
+            render={() => <ProjectViewCollaboration key="collaboration" {...props} />} />
+          <Route path={props.filesUrl}
+            render={() => <ProjectViewFiles key="files" {...props} />} />
+          <Route path={props.datasetsUrl}
+            render={() => <ProjectViewDatasets key="datasets" {...props} />} />
+          <Route path={props.settingsUrl}
+            render={() => <ProjectSettings key="settings" {...props} />} />
+          <Route path={props.notebookServersUrl}
+            render={() => <ProjectSessions key="sessions" {...props} />} />
+          <Route component={NotFoundInsideProject} />
+        </Switch>
+      </Row>
+    </ContainerWrap>
+  ];
 }
 
 export default { ProjectView };
