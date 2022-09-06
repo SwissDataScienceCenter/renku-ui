@@ -1369,16 +1369,15 @@ class ProjectView extends Component {
       <ContainerWrap key="project-content" fullSize={isShowSession}>
         <Switch key="projectHeader">
           <Route exact path={this.props.baseUrl}
-            render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
+            render={() => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
           <Route path={this.props.overviewUrl}
-            render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
+            render={() => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
           <Route path={this.props.notebookServersUrl} render={() => null} />
           <Route path={this.props.editDatasetUrl} render={() => null} />
+          <Route path={this.props.datasetUrl} render={() => null} />
+          <Route path={this.props.sessionShowUrl} render={() => null} />
           <Route path={this.props.newDatasetUrl} component={() =>
             <ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
-          <Route component={()=><ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
-          <Route path={this.props.datasetUrl} render={() => null} />
-          <Route path={this.props.sessionShowUrl} render={props => null} />
           <Route component={()=><ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
         </Switch>
         <Switch key="projectNav">

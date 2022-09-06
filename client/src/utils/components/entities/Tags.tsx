@@ -34,7 +34,8 @@ export interface EntityTagsProps {
 function EntityTags ({ tagList, multiline }: EntityTagsProps) {
   const ref = useRef(null);
   const multilineStyles = multiline ? "d-flex flex-wrap gap-1" : "text-truncate";
-  const tooltip = <ThrottledTooltip target={ref} tooltip={tagList?.map(tag => `#${tag}`).join(", ")} />;
+  const tooltip = tagList.length > 0 ?
+    <ThrottledTooltip target={ref} tooltip={tagList?.map(tag => `#${tag}`).join(", ")} /> : null;
   return (
     <>
       <div ref={ref} className={`tagList card-tags text-rk-text-light ${multilineStyles}`}>
