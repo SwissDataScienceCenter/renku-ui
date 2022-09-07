@@ -16,11 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import "../../support/utils";
 import Fixtures from "../../support/renkulab-fixtures";
 
 describe("display a project", () => {
   const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
@@ -41,7 +42,23 @@ describe("display a project", () => {
       .should("contain.text", "local-test-project");
   });
 
-  it("displays project settings", () => {
+  it("update project settings overview", () => {
+    fixtures.updateProject("39646", "updateProject", "project/update-project-tag-description.json");
+    cy.visit("/projects/e2e/local-test-project/settings");
+    cy.get_cy("tags-input").type("abcde");
+    cy.get_cy("update-tag-button").click();
+    cy.get_cy("updating-tag-list").should("contain.text", "Updating list..");
+    cy.wait("@updateProject");
+    cy.get_cy("entity-tag-list").should("contain.text", "abcde");
+
+    cy.get_cy("description-input").type("description abcde");
+    cy.get_cy("update-desc-button").click();
+    cy.get_cy("updating-description").should("contain.text", "Updating description..");
+    cy.wait("@updateProject");
+    cy.get_cy("entity-description").should("contain.text", "description abcde");
+  });
+
+  it("displays project settings sessions", () => {
     fixtures.sessionServerOptions();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");

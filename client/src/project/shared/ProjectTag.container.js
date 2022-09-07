@@ -84,8 +84,8 @@ class ProjectTags extends Component {
 
   render() {
     const inputField = this.props.settingsReadOnly || this.state.updating ?
-      <Input id="projectTags" readOnly value={this.state.value} /> :
-      <Input id="projectTags" value={this.state.value} onChange={this.onValueChange} />;
+      <Input id="projectTags" readOnly value={this.state.value} data-cy="tags-input" /> :
+      <Input id="projectTags" value={this.state.value} onChange={this.onValueChange} data-cy="tags-input" />;
     const submitButton = this.props.settingsReadOnly ? null :
       <InlineSubmitButton
         id="update-tag"

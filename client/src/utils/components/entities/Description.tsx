@@ -58,7 +58,7 @@ function EntityDescription(
     state.stateModel.project?.metadata?.description?.updating);
   if (isUpdatingValue) {
     return (
-      <div className="card-text text-rk-text-light" style={descriptionStyles}>
+      <div className="card-text text-rk-text-light" style={descriptionStyles} data-cy="updating-description">
         <small><i>Updating description...</i></small>
       </div>
     );
