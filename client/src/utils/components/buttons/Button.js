@@ -135,6 +135,7 @@ function InlineSubmitButton(
 
   const submit = !isDone ?
     <Button
+      data-cy={`${id}-button`}
       onClick={onSubmit}
       className={`${className} ${isMainButton ? "btn-rk-green" : "btn-outline-rk-green"}`}
       color="inlineSubmit"

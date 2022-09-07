@@ -40,7 +40,7 @@ function EntityTags ({ tagList, multiline }: EntityTagsProps) {
 
   if (isUpdatingValue) {
     return (
-      <div ref={ref} className={`tagList card-tags text-rk-text-light ${multilineStyles}`}>
+      <div ref={ref} className={`tagList card-tags text-rk-text-light ${multilineStyles}`} data-cy="updating-tag-list">
         <small><i>Updating list...</i></small>
       </div>
     );
@@ -50,7 +50,7 @@ function EntityTags ({ tagList, multiline }: EntityTagsProps) {
     <ThrottledTooltip target={ref} tooltip={tagList?.map(tag => `#${tag}`).join(", ")} /> : null;
   return (
     <>
-      <div ref={ref} className={`tagList card-tags text-rk-text-light ${multilineStyles}`}>
+      <div ref={ref} className={`tagList card-tags text-rk-text-light ${multilineStyles}`} data-cy="entity-tag-list">
         {tagList?.map(tag => <span key={tag} className="entity-tag">#{tag}</span>)}
       </div>
       {!multiline ? tooltip : null}
