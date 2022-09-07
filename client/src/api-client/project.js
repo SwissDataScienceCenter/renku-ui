@@ -464,7 +464,8 @@ function addProjectMethods(client) {
    */
   client.getProjectLockStatus = async (projectRepositoryUrl, versionUrl = null) => {
     const url = client.versionedCoreUrl("project.lock_status", versionUrl);
-    const queryParams = { git_url: projectRepositoryUrl };
+    // wait up to 2s if a project is locked to give it time to free
+    const queryParams = { git_url: projectRepositoryUrl, timeout: 2.0 };
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
