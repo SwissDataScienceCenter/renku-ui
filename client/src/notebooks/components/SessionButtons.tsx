@@ -46,7 +46,7 @@ interface StopSessionProps {
 function StopSessionBtn({ toggleStopSession }: StopSessionProps) {
   return (
     <div>
-      <Button id="stop-session-button"
+      <Button id="stop-session-button" data-cy="stop-session-button"
         className="border-0 bg-transparent text-dark p-0 no-focus" onClick={() => toggleStopSession()}>
         <StopCircle className="text-rk-dark" title="stop"/></Button>
       <ThrottledTooltip
@@ -62,7 +62,7 @@ interface ResourcesProps {
 function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
   return (
     <div>
-      <Button id="resources-button"
+      <Button id="resources-button" data-cy="resources-button"
         className="border-0 bg-transparent text-dark p-0 no-focus" onClick={() => toggleModalResources()}>
         <Journals className="text-rk-dark" title="help"/></Button>
       <ThrottledTooltip
@@ -78,7 +78,9 @@ interface AboutProps {
 }
 function AboutBtn({ toggleModalAbout, projectName }: AboutProps) {
   return (
-    <Button className="border-0 bg-transparent no-focus text-rk-green p-0" onClick={() => toggleModalAbout()}>
+    <Button className="border-0 bg-transparent no-focus text-rk-green p-0"
+      data-cy="about-button"
+      onClick={() => toggleModalAbout()}>
       <Briefcase /> {projectName}</Button>
   );
 }

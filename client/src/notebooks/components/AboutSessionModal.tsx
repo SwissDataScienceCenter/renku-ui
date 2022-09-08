@@ -97,7 +97,7 @@ const AboutSessionModal = ({ toggleModal, isOpen, projectMetadata, notebook }: A
       className="about-modal"
       scrollable={true}
       toggle={() => { toggleModal(); }}>
-      <ModalHeader className="bg-body header-multiline" toggle={() => { toggleModal(); }} >
+      <ModalHeader className="bg-body header-multiline" toggle={() => { toggleModal(); }} data-cy="modal-header" >
         About
       </ModalHeader>
       <ModalBody className="bg-body">

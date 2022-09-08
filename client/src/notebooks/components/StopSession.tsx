@@ -71,7 +71,7 @@ function StopSessionModal({ stopSession, stopping, closeModal, isOpen }: StopSes
           onClick={closeModal}>
           Back to Session
         </Button>
-        <Button type="submit" onClick={stopSession}
+        <Button type="submit" onClick={stopSession} data-cy="stop-session-modal-button"
           disabled={stopping} className="float-right mt-1  ms-2 btn-rk-green" >
           Stop Session
         </Button>

@@ -34,6 +34,7 @@ declare global {
       gui_search_dataset(datasetName: string, fixtures, resultFile): void
       gui_new_dataset(newDataset: Dataset): void
       gui_open_logs(): void
+      gui_open_session(): void;
       gui_create_project(title: string): void
       gui_create_project_add_dataset(title: string, path: string, fixtures): void
       gui_select_project_autosuggestion_list(project: string, fixtures, migrationCheckResult): void

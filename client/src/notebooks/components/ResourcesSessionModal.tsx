@@ -48,18 +48,18 @@ const ResourcesSessionModel =
         className="resources-modal modal-xl"
         scrollable={true}
         toggle={() => { toggleModal(); }}>
-        <ModalHeader className="bg-body header-multiline" toggle={() => { toggleModal(); }} >
+        <ModalHeader className="bg-body header-multiline" toggle={() => { toggleModal(); }} data-cy="modal-header" >
           <div className="d-flex flex-wrap gap-sm-0 gap-md-0 gap-lg-3 gap-xl-3">
             <div>Resources</div>
             <Nav pills className="nav-pills-underline modal-header-nav">
-              <NavItem key={SESSION_TABS.commands} data-cy="logs-tab" role="button">
+              <NavItem key={SESSION_TABS.commands} data-cy="cheat-sheet-tab" role="button">
                 <NavLink
                   className={activeTab === SESSION_TABS.commands ? "active" : ""}
                   onClick={() => { setActiveTab(SESSION_TABS.commands); }}>
                   Cheat Sheet
                 </NavLink>
               </NavItem>
-              <NavItem key={SESSION_TABS.docs} data-cy="logs-tab" role="button">
+              <NavItem key={SESSION_TABS.docs} data-cy="docs-tab" role="button">
                 <NavLink
                   className={activeTab === SESSION_TABS.docs ? "active" : ""}
                   onClick={() => { setActiveTab(SESSION_TABS.docs); }}>
