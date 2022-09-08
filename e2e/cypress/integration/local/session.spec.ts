@@ -54,4 +54,22 @@ describe("display a session", () => {
     cy.get_cy("no-logs-available").should("exist");
     cy.get_cy("session-log-download-button").should("be.disabled");
   });
+
+  it("display fullscreen session", () => {
+    cy.gui_open_session();
+    // open about modal info
+    cy.get_cy("about-button").click();
+    cy.get_cy("list-card-title").should("contain.text", "local-test-project");
+    cy.get_cy("modal-header").find(".btn-close").click();
+    // open resources modal
+    cy.get_cy("resources-button").click();
+    cy.get_cy("cheat-sheet-tab").should("exist");
+    cy.get_cy("docs-tab").should("exist");
+    cy.get_cy("logs-tab").should("exist");
+    cy.get_cy("modal-header").find(".btn-close").click();
+    // stop session
+    cy.get_cy("stop-session-button").click();
+    cy.get_cy("stop-session-modal-button").should("exist");
+
+  });
 });

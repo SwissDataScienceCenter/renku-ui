@@ -20,3 +20,7 @@ Cypress.Commands.add("gui_open_logs", () => {
   cy.get(".sessionsButton").find("[data-cy='more-menu']").click();
   cy.get_cy("session-log-button").click();
 });
+
+Cypress.Commands.add("gui_open_session", () => {
+  cy.get(".sessionsButton").click();
+});
