@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import urlJoin from "./url-join";
+
 
 /**
  * Convert string to booloan or numbers. Useful to handle values coming from environmental variables.
@@ -134,4 +136,4 @@ function simpleHash(str: string, seed = 0): number {
   return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }
 
-export { clamp, convertType, getCookieValueByName, getRelease, simpleHash, sleep };
+export { clamp, convertType, getCookieValueByName, getRelease, simpleHash, sleep, urlJoin };
