@@ -176,6 +176,7 @@ server:
   ## The URL for the server service; the URL used by the client is the server.url + /ui-server endpoint.
   url:
   replicaCount: 1
+  keepCookies: []
 
   image:
     repository: renku/renku-ui-server
