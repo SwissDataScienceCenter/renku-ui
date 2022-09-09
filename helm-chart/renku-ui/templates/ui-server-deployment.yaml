@@ -43,8 +43,6 @@ spec:
               value: {{ .Values.server.url | default (printf "%s://%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: UI_SERVER_VERSION
               value: {{ .Chart.Version | quote }}
-            - name: SERVER_PORT
-              value: {{ .Values.server.port | default (printf "8080") | quote }}
             - name: GATEWAY_URL
               value: {{ .Values.gateway.url | default (printf "%s://%s/api" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: GATEWAY_LOGIN_PATH

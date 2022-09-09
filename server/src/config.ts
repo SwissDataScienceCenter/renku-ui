@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import { convertType } from "./utils";
+import { convertType, urlJoin } from "./utils";
 
 const SERVER = {
   url: process.env.SERVER_URL,
-  port: convertType(process.env.SERVER_PORT) || 8080,
+  port: 8080,
   prefix: "/ui-server",
   logLevel: process.env.SERVER_LOG_LEVEL || "info",
   serverUiVersion: process.env.UI_SERVER_VERSION || "unknown",
@@ -28,14 +28,18 @@ const SERVER = {
   wsSuffix: "/ws",
 };
 
+const gatewayUrl = process.env.GATEWAY_URL || urlJoin(SERVER.url ?? "", "/api");
+
 const DEPLOYMENT = {
-  gatewayUrl: process.env.GATEWAY_URL || SERVER.url + "/api",
-  gatewayLoginUrl:
-    (process.env.GATEWAY_URL || SERVER.url + "/api") +
-    (process.env.GATEWAY_LOGIN_PATH || "/auth/login"),
-  gatewayLogoutUrl:
-    (process.env.GATEWAY_URL || SERVER.url + "/api") +
-    (process.env.GATEWAY_LOGOUT_PATH || "/auth/logout"),
+  gatewayUrl,
+  gatewayLoginUrl: urlJoin(
+    gatewayUrl,
+    process.env.GATEWAY_LOGIN_PATH || "/auth/login"
+  ),
+  gatewayLogoutUrl: urlJoin(
+    gatewayUrl,
+    process.env.GATEWAY_LOGOUT_PATH || "/auth/logout"
+  ),
 };
 
 const SENTRY = {

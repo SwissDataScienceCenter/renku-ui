@@ -175,7 +175,6 @@ client:
 server:
   ## The URL for the server service; the URL used by the client is the server.url + /ui-server endpoint.
   url:
-  port: 8080
   replicaCount: 1
 
   image:
