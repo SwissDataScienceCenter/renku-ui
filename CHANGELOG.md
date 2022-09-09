@@ -1,5 +1,13 @@
 # Changes
 
+## [2.8.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.8.0...2.8.1) (2022-09-09)
+
+### Features
+
+* update styling of entity header ([#1984](https://github.com/SwissDataScienceCenter/renku-ui/issues/1984), [#2001](https://github.com/SwissDataScienceCenter/renku-ui/issues/2001), [#2005](https://github.com/SwissDataScienceCenter/renku-ui/issues/2005))
+* improve use of real estate in session view ([#1988](https://github.com/SwissDataScienceCenter/renku-ui/issues/1988), [#2009](https://github.com/SwissDataScienceCenter/renku-ui/issues/2009))
+* update styling of project and dataset cards ([#1964](https://github.com/SwissDataScienceCenter/renku-ui/issues/1964), [#1978](https://github.com/SwissDataScienceCenter/renku-ui/issues/1978))
+
 ## [2.8.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.7.0...2.8.0)  (2022-09-06)
 
 ### Features
