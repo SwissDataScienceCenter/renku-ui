@@ -71,6 +71,24 @@ const proxyMiddleware = createProxyMiddleware({
         res.json({ error: "Invalid authentication tokens" });
       }
     }
+
+    // Prevent gateway from setting anon-id cookies. That's not needed in the UI anymore
+    const setCookie = null ?? clientRes.headers["set-cookie"];
+    if (setCookie != null && setCookie.length) {
+      if (setCookie.length === 1) {
+        if (setCookie[0].startsWith(config.auth.cookiesAnonymousKey))
+          clientRes.headers["set-cookie"] = null;
+      }
+      else {
+        const allowedSetCookie = [];
+        for (const cookie of setCookie) {
+          if (!cookie.startsWith(config.auth.cookiesAnonymousKey))
+            allowedSetCookie.push(cookie);
+        }
+        if (allowedSetCookie.length < setCookie.length)
+          clientRes.headers["set-cookie"] = allowedSetCookie;
+      }
+    }
   }
 });
 
