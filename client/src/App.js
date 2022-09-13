@@ -51,6 +51,7 @@ import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
 import SearchPage from "./features/kgSearch/KgSearchPage";
+import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize ? "container-xxl py-4 mt-2 renku-container" : "w-100";
@@ -103,6 +104,10 @@ function CentralContentContainer(props) {
           () => <ContainerWrap>
             <SearchPage
               key="kg-search" userName={props.user?.data?.name} isLoggedUser={props.user.logged} model={props.model} />
+          </ContainerWrap>} />
+        <Route path={Url.get(Url.pages.inactiveKgProjects)} render={
+          () => <ContainerWrap>
+            <InactiveKGProjectsPage key="-inactive-kg-projects" />
           </ContainerWrap>} />
         <Route exact
           path={[Url.get(Url.pages.projects), Url.get(Url.pages.projects.starred), Url.get(Url.pages.projects.all)]}

@@ -22,6 +22,7 @@ import {
   ModalBody as WrappedModalBody,
   ModalHeader as WrappedModalHeader,
   ModalFooter as WrappedModalFooter,
+  Progress as WrappedProgress,
   Row as WrappedRow,
   Table as WrappedTable,
 } from "reactstrap";
@@ -271,8 +272,12 @@ function FunnelFill(props) {
   return <WrappedFunnelFull {...props} />;
 }
 
+function Progress(props) {
+  return <WrappedProgress {...props} />;
+}
+
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
-export { Alert, Button, ButtonGroup, CheckCircleFill, XCircleFill };
+export { Alert, Button, ButtonGroup, Progress, CheckCircleFill, XCircleFill };
 export { Card, CardBody, CardText, CardFooter, Col, DropdownItem };
 export { FormFeedback, FormText, Fade, Form, FormGroup, Input, InputGroup, Label };
 export { PopoverHeader, PopoverBody };
