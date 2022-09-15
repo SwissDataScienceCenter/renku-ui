@@ -1,5 +1,15 @@
 # Changes
 
+## [2.8.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.8.1...2.8.2) (2022-09-15)
+
+### Bug Fixes
+
+* **server:** unique ids for each anonymous user ([#2031](https://github.com/SwissDataScienceCenter/renku-ui/issues/2031))
+
+### Features
+
+* **server:** prevent gateway from setting anon users cookies ([#2032](https://github.com/SwissDataScienceCenter/renku-ui/issues/2032))
+
 ## [2.8.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.8.0...2.8.1) (2022-09-09)
 
 ### Features
