@@ -18,7 +18,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { InactiveKgProjects } from "./InactiveKgProjects";
 
-
 export const inactiveKgProjectsApi = createApi({
   reducerPath: "inactiveKgProjectsApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/kg" }),
@@ -37,14 +36,14 @@ export const inactiveKgProjectsApi = createApi({
                 description: p.description ?? "",
                 visibility: p.visibility,
                 selected: true,
-                progressActivation: -1,
+                progressActivation: null,
               };
             });
         }
         return projects;
       }
     }),
-  })
+  }),
 });
 
 // Export hooks for usage in function components, which are

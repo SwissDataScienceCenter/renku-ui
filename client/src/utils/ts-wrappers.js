@@ -55,6 +55,7 @@ import {
   XCircleFill as WrappedXCircleFill,
   Funnel as WrappedFunnel,
   FunnelFill as WrappedFunnelFull,
+  Balloon as WrappedBalloon,
 } from "react-bootstrap-icons";
 
 import { FormGroup as WrappedFormGroup, Input as WrappedInput, InputGroup as WrappedInputGroup } from "reactstrap";
@@ -276,6 +277,10 @@ function Progress(props) {
   return <WrappedProgress {...props} />;
 }
 
+function Balloon(props) {
+  return <WrappedBalloon {...props} />;
+}
+
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
 export { Alert, Button, ButtonGroup, Progress, CheckCircleFill, XCircleFill };
 export { Card, CardBody, CardText, CardFooter, Col, DropdownItem };
@@ -283,6 +288,7 @@ export { FormFeedback, FormText, Fade, Form, FormGroup, Input, InputGroup, Label
 export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
-export { ArrowLeft, Briefcase, Download, HddStack, Globe, Journals, People, Lock, Save, InfoCircle, StopCircle };
+export { ArrowLeft, Briefcase, Download, HddStack, Globe, Journals,
+  People, Lock, Save, InfoCircle, StopCircle, Balloon };
 export { Nav, NavItem, NavLink, TabContent, TabPane };
 export { Funnel, FunnelFill };

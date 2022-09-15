@@ -23,6 +23,10 @@ import { InactiveKgProjects } from "./InactiveKgProjects";
 const initialState: InactiveKgProjects[] = [];
 
 type RootStateInactiveProjects = { kgInactiveProjects: InactiveKgProjects[] };
+interface ActivationStatus {
+  id: number;
+  progress: number;
+}
 
 export const kgInactiveProjectsSlice = createSlice({
   name: "kgInactiveProjects",
@@ -38,11 +42,18 @@ export const kgInactiveProjectsSlice = createSlice({
         return p;
       });
     },
+    updateProgress: (state, action: PayloadAction<ActivationStatus>) => {
+      return state.map(p => {
+        if (p.id === action.payload.id)
+          p = { ...p, progressActivation: action.payload.progress };
+        return p;
+      });
+    },
     reset: () => initialState
   },
 });
 
-export const { updateList, addFullList } =
+export const { updateList, addFullList, updateProgress } =
   kgInactiveProjectsSlice.actions;
 export const useInactiveProjectSelector: TypedUseSelectorHook<RootStateInactiveProjects> =
   useSelector;

@@ -23,7 +23,7 @@
  *  Coordinator for the application.
  */
 
-import React, { Component, Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -52,6 +52,7 @@ import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
 import SearchPage from "./features/kgSearch/KgSearchPage";
 import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
+import { useSelector } from "react-redux";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize ? "container-xxl py-4 mt-2 renku-container" : "w-100";
@@ -59,7 +60,7 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 };
 
 function CentralContentContainer(props) {
-  const { notifications, user } = props;
+  const { notifications, user, socket } = props;
 
   if (!props.user.logged && (props.location.pathname === Url.get(Url.pages.landing))) {
     return <AnonymousHome client={props.client}
@@ -106,9 +107,11 @@ function CentralContentContainer(props) {
               key="kg-search" userName={props.user?.data?.name} isLoggedUser={props.user.logged} model={props.model} />
           </ContainerWrap>} />
         <Route path={Url.get(Url.pages.inactiveKgProjects)} render={
-          () => <ContainerWrap>
-            <InactiveKGProjectsPage key="-inactive-kg-projects" />
-          </ContainerWrap>} />
+          (p) => props.user?.logged ?
+            <ContainerWrap>
+              <InactiveKGProjectsPage key="-inactive-kg-projects" socket={socket} />
+            </ContainerWrap> : <NotFound {...p} />
+        } />
         <Route exact
           path={[Url.get(Url.pages.projects), Url.get(Url.pages.projects.starred), Url.get(Url.pages.projects.all)]}
           render={p => <ContainerWrap><ProjectList
@@ -204,60 +207,59 @@ function CentralContentContainer(props) {
   </div>;
 }
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+function App(props) {
+  const [webSocket, setWebSocket] = useState(null);
+  const [notifications, setNotifications] = useState(null);
 
-    // Setup notification system
-    const getLocation = () => this.props.location;
-    this.notifications = new NotificationsManager(this.props.model, this.props.client, getLocation);
+  useEffect(() => {
+    const getLocation = () => props.location;
+    const notificationManager = new NotificationsManager(props.model, props.client, getLocation);
+    setNotifications(notificationManager);
 
     // Setup authentication listeners and notifications
     LoginHelper.setupListener();
-    LoginHelper.triggerNotifications(this.notifications);
+    LoginHelper.triggerNotifications(notifications);
 
     // Setup WebSocket channel
-    this.webSocket = null;
     let webSocketUrl = props.client.uiserverUrl + "/ws";
     if (webSocketUrl.startsWith("http"))
       webSocketUrl = "ws" + webSocketUrl.substring(4);
     // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
     setTimeout(
-      () => { this.webSocket = setupWebSocket(webSocketUrl, this.props.model); return; },
-      1000
+      () => {
+        setWebSocket(setupWebSocket(webSocketUrl, props.model, notificationManager));
+        return;
+      }, 1000
     );
-  }
+  }, []); // eslint-disable-line
 
-  render() {
-    // Avoid rendering the application while authenticating the user
-    const { user } = this.props;
-    if (!user.fetched && user.fetching) {
-      return (
-        <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
-          <h3 className="text-center text-primary">Checking user data</h3>
-          <Loader />
-        </section>
-      );
-    }
-    else if (user.error) {
-      return (<Unavailable />);
-    }
-
+  // Avoid rendering the application while authenticating the user
+  const user = useSelector(state => state.stateModel.user);
+  if (!user?.fetched && user?.fetching) {
     return (
-      <Fragment>
-        <Route render={p =>
-          (this.props.user.logged) || (p.location.pathname !== Url.get(Url.pages.landing)) ?
-            <RenkuNavBar {...p} {...this.props} notifications={this.notifications} /> :
-            null
-        } />
-        <CentralContentContainer notifications={this.notifications} socket={this.webSocket} {...this.props} />
-        <Route render={props => <FooterNavbar {...props} params={this.props.params} />} />
-        <Route render={props => <Cookie {...props} params={this.props.params} />} />
-        <ToastContainer />
-      </Fragment>
+      <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
+        <h3 className="text-center text-primary">Checking user data</h3>
+        <Loader />
+      </section>
     );
-
   }
+  else if (user.error) {
+    return (<Unavailable />);
+  }
+
+  return (
+    <Fragment>
+      <Route render={p =>
+        (user.logged) || (p.location.pathname !== Url.get(Url.pages.landing)) ?
+          <RenkuNavBar {...p} {...props} notifications={notifications} /> :
+          null
+      } />
+      <CentralContentContainer notifications={notifications} socket={webSocket} {...props} />
+      <Route render={propsRoute => <FooterNavbar {...propsRoute} params={props.params} />} />
+      <Route render={propsRoute => <Cookie {...propsRoute} params={props.params} />} />
+      <ToastContainer />
+    </Fragment>
+  );
 }
 
 export default App;

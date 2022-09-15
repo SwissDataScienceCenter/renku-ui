@@ -64,7 +64,7 @@ function ThrottledTooltip(props) {
 
   const toggle = standardToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastToggleTime);
 
-  return <Tooltip placement="top" target={props.target} isOpen={tooltipOpen} toggle={toggle}
+  return <Tooltip placement="top" target={props.target} isOpen={tooltipOpen} toggle={toggle} autohide={false}
     delay={{ show: 25, hide: 250 }}>
     {props.tooltip}
   </Tooltip>;

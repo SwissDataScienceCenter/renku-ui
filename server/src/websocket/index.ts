@@ -27,6 +27,7 @@ import { Authenticator } from "../authentication";
 import { wsRenkuAuth } from "../authentication/middleware";
 import { getCookieValueByName } from "../utils";
 import { handlerRequestServerVersion, heartbeatRequestServerVersion } from "./handlers/clientVersion";
+import { handlerRequestActivationKgStatus, heartbeatRequestActivationKgStatus } from "./handlers/activationKgStatus";
 
 
 // *** Channels ***
@@ -56,6 +57,13 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
       handler: handlerRequestServerVersion
     } as MessageData,
   ],
+  "pullKgActivationStatus": [
+    {
+      required: ["projects"],
+      optional: null,
+      handler: handlerRequestActivationKgStatus
+    } as MessageData,
+  ],
   "ping": [
     {
       required: null,
@@ -73,7 +81,9 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
 const longLoopFunctions: Array<Function> = [ // eslint-disable-line
   heartbeatRequestServerVersion
 ];
-const shortLoopFunctions: Array<Function> = []; // eslint-disable-line
+const shortLoopFunctions: Array<Function> = [ // eslint-disable-line
+  heartbeatRequestActivationKgStatus
+]; // eslint-disable-line
 
 /**
  * Long loop for each user -- executed every few minutes.

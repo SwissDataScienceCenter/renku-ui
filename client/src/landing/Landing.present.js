@@ -38,6 +38,7 @@ import { Docs } from "../utils/constants/Docs";
 import { WarnAlert } from "../utils/components/Alert";
 import { useSelector } from "react-redux";
 import { useGetInactiveKgProjectsQuery } from "../features/inactiveKgProjects/InactiveKgProjectsApi";
+import { useInactiveProjectSelector } from "../features/inactiveKgProjects/inactiveKgProjectsSlice";
 
 
 function truncatedProjectListRows(projects, urlFullList, gridDisplay, lastVisited) {
@@ -150,12 +151,27 @@ class Welcome extends Component {
 
 export function ProjectsInactiveKG() {
   const user = useSelector((state) => state.stateModel.user);
+  const projectList = useInactiveProjectSelector(
+    (state) => state.kgInactiveProjects
+  );
   const { data, isFetching, isLoading } = useGetInactiveKgProjectsQuery(user?.data?.id);
+
+  if (!user.logged)
+    return null;
 
   if (isLoading || isFetching || data?.length === 0)
     return null;
 
-  const totalProjects = data?.length;
+  let totalProjects;
+  if (projectList.length > 0) {
+    totalProjects = projectList.filter( p => p.progressActivation !== 100).length;
+    if (totalProjects === 0)
+      return null;
+  }
+  else {
+    totalProjects = data?.length;
+  }
+
   return <WarnAlert>
     You have {totalProjects} projects that are not in the Knowledge Graph.{" "}
     <Link to="/inactive-kg-projects">Activate your projects</Link> to make them searchable on Renku.
