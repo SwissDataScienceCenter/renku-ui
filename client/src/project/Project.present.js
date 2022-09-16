@@ -1417,7 +1417,7 @@ function ProjectView(props) {
           <Route path={props.datasetsUrl}
             render={() => <ProjectViewDatasets key="datasets" {...props} />} />
           <Route path={this.props.workflowsUrl}
-            render={props => <ProjectViewWorkflows key="workflows" {...this.props} />} />
+            render={() => <ProjectViewWorkflows key="workflows" {...this.props} />} />
           <Route path={props.settingsUrl}
             render={() => <ProjectSettings key="settings" {...props} />} />
           <Route path={props.notebookServersUrl}
