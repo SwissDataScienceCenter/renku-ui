@@ -20,11 +20,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
+import { ACCESS_LEVELS } from "../../api-client";
+
+
 import logo from "./logo.svg";
 import { AboutSessionModal } from "./AboutSessionModal";
 import { ResourcesSessionModel } from "./ResourcesSessionModal";
+import SaveSession from "./SaveSession";
 import StopSession from "./StopSession";
-import { AboutBtn, GoBackBtn, ResourcesBtn, StopSessionBtn } from "./SessionButtons";
+import { AboutBtn, GoBackBtn, ResourcesBtn, SaveSessionBtn, StopSessionBtn } from "./SessionButtons";
 import { Notebook, SessionHandlers } from "./Session";
 import useWindowSize from "../../utils/helpers/UseWindowsSize";
 import { Url } from "../../utils/helpers/url";
@@ -42,19 +46,22 @@ import SessionUnavailable from "./SessionUnavailable";
  */
 
 interface ShowSessionFullscreenProps {
+  accessLevel: number;
   filters: {
     namespace: string;
     project: string;
     defaultBranch: string;
   };
+  isLogged: boolean,
   notebook: Notebook;
   urlBack: string;
   projectName: string;
   handlers: SessionHandlers;
 }
-function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handlers }: ShowSessionFullscreenProps) {
-  const [sessionStatus, setSessionStatus] = useState<SessionStatusData>();
+function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
 
+  const { filters, notebook, urlBack, projectName, handlers } = props;
+  const [sessionStatus, setSessionStatus] = useState<SessionStatusData>();
   const [showModalAboutData, setShowModalAboutData] = useState(false);
   const toggleModalAbout = () => setShowModalAboutData(!showModalAboutData);
 
@@ -64,6 +71,9 @@ function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handle
 
   const [showModalStopSession, setShowModalStopSession] = useState(false);
   const toggleStopSession = () => setShowModalStopSession(!showModalStopSession);
+
+  const [showModalSaveSession, setShowModalSaveSession] = useState(false);
+  const toggleSaveSession = () => setShowModalSaveSession(!showModalSaveSession);
 
   const { height } = useWindowSize();
   const ref = useRef<any>(null);
@@ -101,13 +111,6 @@ function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handle
   if (history && notebook.data?.status?.state === SessionStatus.failed)
     history.push(urlList);
 
-  /* Buttons */
-  const goBackBtn = <GoBackBtn urlBack={urlBack} />;
-  const stopSessionBtn = <StopSessionBtn toggleStopSession={toggleStopSession} />;
-  const resourcesBtn = <ResourcesBtn toggleModalResources={toggleModalResources} />;
-  const aboutBtn = <AboutBtn projectName={projectName} toggleModalAbout={toggleModalAbout} /> ;
-  /* end Buttons */
-
   /* modals */
   const projectMetadata = useSelector((state: any) => state.stateModel.project?.metadata);
   const toggleToResourcesLogs = () => {
@@ -140,7 +143,14 @@ function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handle
     closeModal={toggleStopSession}
     urlList={urlList}
     isOpen={showModalStopSession}/>;
-  /* end Buttons */
+  const saveSessionModal = <SaveSession
+    isLogged={props.isLogged}
+    hasSaveAccess={props.accessLevel >= ACCESS_LEVELS.DEVELOPER}
+    notebook={notebook}
+    closeModal={toggleSaveSession}
+    urlList={urlList}
+    isOpen={showModalSaveSession}/>;
+  /* end modals */
 
   let content;
   let sessionView;
@@ -177,13 +187,14 @@ function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handle
       <div className="d-lg-flex flex-column">
         <div className="fullscreen-header d-flex gap-3">
           <div className="d-flex gap-3 flex-grow-0 align-items-center">
-            {goBackBtn}
-            {resourcesBtn}
-            {stopSessionBtn}
+            <GoBackBtn urlBack={urlBack} />
+            <SaveSessionBtn toggleSaveSession={toggleSaveSession} />
+            <ResourcesBtn toggleModalResources={toggleModalResources} />
+            <StopSessionBtn toggleStopSession={toggleStopSession} />
           </div>
           <div className="d-flex align-items-center justify-content-between bg-primary flex-grow-1 py-2">
             <div className="px-3 text-rk-green">
-              {aboutBtn}
+              <AboutBtn projectName={projectName} toggleModalAbout={toggleModalAbout} />
             </div>
             <div className="px-3">
               <img src={logo} alt="Renku" height="22" className="d-block" />
@@ -197,6 +208,7 @@ function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handle
       </div>
       {aboutModal}
       {resourcesModal}
+      {saveSessionModal}
       {stopSessionModal}
     </div>
   );

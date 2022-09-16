@@ -55,7 +55,7 @@ function StopSessionModal({ stopSession, stopping, closeModal, isOpen }: StopSes
     <p>
       Are you sure you want to stop this session?
       Make sure to commit any changes you want to be saved for next time
-      by running <code>renku save</code> or using Git.
+      (for example, by using the <b>Save</b> button).
     </p>
     <Fragment>
       { stopping ?

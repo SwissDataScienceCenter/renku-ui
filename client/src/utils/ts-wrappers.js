@@ -54,7 +54,7 @@ import {
   XCircleFill as WrappedXCircleFill,
 } from "react-bootstrap-icons";
 
-import { FormGroup as WrappedFormGroup, Input as WrappedInput } from "reactstrap";
+import { FormGroup as WrappedFormGroup, Input as WrappedInput, InputGroup as WrappedInputGroup } from "reactstrap";
 
 import {
   Nav as WrappedNav,
@@ -139,6 +139,10 @@ function FormGroup(props) {
 
 function Input(props) {
   return <WrappedInput {...props} />;
+}
+
+function InputGroup(props) {
+  return <WrappedInputGroup {...props} />;
 }
 
 function Label(props) {
@@ -260,7 +264,7 @@ function XCircleFill(props) {
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
 export { Alert, Button, ButtonGroup, CheckCircleFill, XCircleFill };
 export { Card, CardBody, CardText, CardFooter, Col, DropdownItem };
-export { FormFeedback, FormText, Fade, Form, FormGroup, Input, Label };
+export { FormFeedback, FormText, Fade, Form, FormGroup, Input, InputGroup, Label };
 export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };

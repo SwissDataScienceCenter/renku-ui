@@ -17,7 +17,7 @@
  */
 
 import { Link } from "react-router-dom";
-import { ArrowLeft, Briefcase, Button, Journals, StopCircle } from "../../utils/ts-wrappers";
+import { ArrowLeft, Briefcase, Button, Journals, Save, StopCircle } from "../../utils/ts-wrappers";
 import React from "react";
 import { ThrottledTooltip } from "../../utils/components/Tooltip";
 
@@ -56,6 +56,24 @@ function StopSessionBtn({ toggleStopSession }: StopSessionProps) {
   );
 }
 
+
+interface SaveSessionProps {
+  toggleSaveSession: Function;
+}
+function SaveSessionBtn({ toggleSaveSession }: SaveSessionProps) {
+  return (
+    <div>
+      <Button id="save-session-button" data-cy="save-session-button"
+        className="border-0 bg-transparent text-dark p-0 no-focus" onClick={() => toggleSaveSession()}>
+        <Save className="text-rk-dark" title="save"/>
+      </Button>
+      <ThrottledTooltip
+        target="save-session-button"
+        tooltip="Save session" />
+    </div>
+  );
+}
+
 interface ResourcesProps {
   toggleModalResources: Function;
 }
@@ -85,4 +103,4 @@ function AboutBtn({ toggleModalAbout, projectName }: AboutProps) {
   );
 }
 
-export { AboutBtn, GoBackBtn, ResourcesBtn, StopSessionBtn };
+export { AboutBtn, GoBackBtn, ResourcesBtn, SaveSessionBtn, StopSessionBtn };
