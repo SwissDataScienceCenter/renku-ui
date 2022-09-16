@@ -67,7 +67,7 @@ const subRoutes = {
   lineages: "files/lineage",
   lineage: "files/lineage/:filePath+",
   data: "files/data",
-  workflows: "files/workflows",
+  workflows: "workflows",
   settings: "settings",
   settingsSessions: "settings/sessions",
   sessions: "sessions",
@@ -339,6 +339,7 @@ class View extends Component {
     const fileContentUrl = `${filesUrl}/blob`;
     const collaborationUrl = `${baseUrl}/collaboration`;
     const datasetsUrl = `${baseUrl}/datasets`;
+    const workflowsUrl = `${baseUrl}/workflows`;
 
     return {
       projectsUrl: "/projects",
@@ -348,12 +349,12 @@ class View extends Component {
       overviewDatasetsUrl: `${baseUrl}/overview/datasets`,
       overviewCommitsUrl: `${baseUrl}/overview/commits`,
       overviewStatusUrl: `${baseUrl}/overview/status`,
-      datasetsUrl: `${datasetsUrl}`,
+      datasetsUrl: datasetsUrl,
       newDatasetUrl: `${datasetsUrl}/new`,
       datasetUrl: `${datasetsUrl}/:datasetId`,
       editDatasetUrl: `${datasetsUrl}/:datasetId/modify`,
       issueNewUrl: `${collaborationUrl}/issues/issue_new`,
-      collaborationUrl: `${collaborationUrl}`,
+      collaborationUrl: collaborationUrl,
       issuesUrl: `${collaborationUrl}/issues`,
       issueUrl: `${collaborationUrl}/issues/:issueIid`,
       mergeRequestsOverviewUrl: `${collaborationUrl}/mergerequests`,
@@ -362,13 +363,13 @@ class View extends Component {
       mergeRequestChangesUrl: `${collaborationUrl}/mergerequests/:mrIid(\\d+)/changes`,
       mergeRequestCommitsUrl: `${collaborationUrl}/mergerequests/:mrIid(\\d+)/commits`,
       forkUrl: `${collaborationUrl}/fork`,
-      filesUrl: `${filesUrl}`,
-      fileContentUrl: `${fileContentUrl}`,
+      filesUrl: filesUrl,
+      fileContentUrl: fileContentUrl,
       lineagesUrl: `${filesUrl}/lineage`,
       lineageUrl: `${filesUrl}/lineage/:filePath+`,
       notebookUrl: `${fileContentUrl}/:filePath([^.]+.ipynb)`,
       dataUrl: `${filesUrl}/data`,
-      workflowsUrl: `${filesUrl}/workflows`,
+      workflowsUrl: workflowsUrl,
       settingsUrl: `${baseUrl}/settings`,
       settingsSessionsUrl: `${baseUrl}/settings/sessions`,
       mrOverviewUrl: `${baseUrl}/pending`,

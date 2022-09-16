@@ -33,10 +33,9 @@ import {
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
-import { faUserClock } from "@fortawesome/free-solid-svg-icons";
 import {
-  faCodeBranch, faExclamationTriangle, faInfoCircle, faPlay,
-  faStar as faStarSolid
+  faCodeBranch, faDraftingCompass, faExclamationTriangle, faInfoCircle, faPlay,
+  faStar as faStarSolid, faUserClock
 } from "@fortawesome/free-solid-svg-icons";
 
 
@@ -543,6 +542,9 @@ class ProjectNav extends Component {
               <RenkuNavLink exact={false} to={this.props.datasetsUrl} title="Datasets" />
             </NavItem>
             <NavItem>
+              <RenkuNavLink exact={false} to={this.props.workflowsUrl} title="Workflows" />
+            </NavItem>
+            <NavItem>
               <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Sessions" />
             </NavItem>
             <NavItem className="pe-0">
@@ -897,6 +899,16 @@ function ProjectViewDatasets(props) {
       }/>
     </Switch>
   </Col>;
+}
+
+function ProjectViewWorkflows(props) {
+  return (
+    <div>
+      <h3>Workflows List</h3>
+      <p className="fst-italic">Work in progres... </p>
+      <FontAwesomeIcon icon={faDraftingCompass} size="3x" />
+    </div>
+  );
 }
 
 class ProjectViewCollaborationNav extends Component {
@@ -1404,6 +1416,8 @@ function ProjectView(props) {
             render={() => <ProjectViewFiles key="files" {...props} />} />
           <Route path={props.datasetsUrl}
             render={() => <ProjectViewDatasets key="datasets" {...props} />} />
+          <Route path={this.props.workflowsUrl}
+            render={props => <ProjectViewWorkflows key="workflows" {...this.props} />} />
           <Route path={props.settingsUrl}
             render={() => <ProjectSettings key="settings" {...props} />} />
           <Route path={props.notebookServersUrl}
