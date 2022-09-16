@@ -340,6 +340,14 @@ const Url = {
           ]
         )
       },
+      workflows: {
+        base: new UrlRule(
+          projectPageUrlBuilder("/workflows"), ["namespace", "path"], null, [
+            "/projects/namespace/path/workflows",
+            "/projects/group/subgroup/path/workflows",
+          ]
+        )
+      },
       overview: {
         base: new UrlRule(
           projectPageUrlBuilder(""), ["namespace", "path"], null, [
