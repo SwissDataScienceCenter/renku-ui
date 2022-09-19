@@ -46,6 +46,8 @@ import {
   Journals as WrappedJournals,
   StopCircle as WrappedStopCircle,
   InfoCircle as WrappedInfoCircle,
+  Funnel as WrappedFunnel,
+  FunnelFill as WrappedFunnelFull,
 } from "react-bootstrap-icons";
 
 import { FormGroup as WrappedFormGroup, Input as WrappedInput } from "reactstrap";
@@ -227,6 +229,14 @@ function TabPane(props) {
   return <WrappedTabPane {...props} />;
 }
 
+function Funnel(props) {
+  return <WrappedFunnel {...props} />;
+}
+
+function FunnelFill(props) {
+  return <WrappedFunnelFull {...props} />;
+}
+
 export { Alert, Button, ButtonGroup };
 export { Card, CardBody, CardText, CardFooter, Col, DropdownItem };
 export { FormFeedback, FormText, Fade, Form, FormGroup, Input, Label };
@@ -235,3 +245,4 @@ export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
 export { ArrowLeft, Briefcase, Download, HddStack, Globe, Journals, People, Lock, Save, InfoCircle, StopCircle };
 export { Nav, NavItem, NavLink, TabContent, TabPane };
+export { Funnel, FunnelFill };

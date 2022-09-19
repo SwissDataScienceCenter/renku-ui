@@ -17,107 +17,10 @@
  */
 
 import React from "react";
-import { Link } from "react-router-dom";
-import { Col } from "reactstrap";
 import Masonry from "react-masonry-css";
-
-import { TimeCaption } from "./TimeCaption";
 import { Pagination } from "./Pagination";
-import EntityCreators from "./entities/Creators";
-import VisibilityIcon from "./entities/VisibilityIcon";
-import EntityLabel from "./entities/Label";
-import Slug from "./entities/Slug";
-import EntityDescription from "./entities/Description";
-import EntityTags from "./entities/Tags";
-import { EntityButton } from "./entities/Buttons";
-
-/**
- * ListCard/ListBar returns a card or a bar displaying an item in a List.
- *
- * @param url containing a link to the item details.
- * @param title title of the item.
- * @param description description of the item.
- * @param tagList tag list of the item.
- * @param timeCaption date to put inside the time caption of the item.
- * @param labelCaption label to put inside the time caption of the item, if empty defaults to Updated.
- * @param mediaContent image of the item.
- * @param creators creators of the item, if more than 3 they will be cropped at 3.
- * @param itemType type of the item being rendered, the color of the circle depends on this.
- */
-function ListCard(props) {
-  const { url, title, description, tagList, timeCaption,
-    labelCaption, creators, itemType, slug, visibility } = props;
-
-  return (
-    <div data-cy="list-card" className="col text-decoration-none p-2 rk-search-result-card">
-      <Link to={url} className="col text-decoration-none">
-        <div className="card card-entity">
-          <div className={`card-header-entity card-header-entity--${itemType}`}>
-            <div className="d-flex justify-content-between align-items-center m-3">
-              <EntityLabel type={itemType} />
-              <VisibilityIcon visibility={visibility} />
-            </div>
-            <div className="card-bg-title">{title}</div>
-          </div>
-          <EntityButton type={itemType} slug={slug} />
-          <div className="card-body">
-            <div className="card-title text-truncate lh-sm" data-cy="list-card-title">
-              {title}
-            </div>
-            <Slug display="list" slug={slug} />
-            <EntityCreators display="list" creators={creators} itemType={itemType} />
-            <EntityDescription description={description} isHeightFixed={true} showSuggestion={false} />
-            <EntityTags tagList={tagList} multiline={false} />
-            <p className="card-text my-1">
-              <TimeCaption caption={labelCaption || "Updated"} time={timeCaption} className="text-rk-text-light"/>
-            </p>
-          </div>
-        </div>
-      </Link>
-    </div>
-  );
-}
-
-function ListBar(props) {
-
-  const { url, title, description, tagList, timeCaption, labelCaption,
-    mediaContent, creators, itemType, slug, visibility } = props;
-
-  return <Link className="d-flex flex-row rk-search-result" to={url}>
-    <div className="me-3 mt-2 d-flex flex-column align-items-center">
-      <div>
-        <span className={"circle " + itemType}> </span>
-      </div>
-      <div>
-        <VisibilityIcon visibility={visibility} className="card-visibility-icon--bar" />
-      </div>
-    </div>
-    <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
-      <div className="title d-inline-block text-truncate">
-        {title}
-        <Slug display="bar" slug={slug} />
-      </div>
-      <EntityCreators display="bar" creators={creators} itemType={itemType} />
-      <div className="description card-description text-truncate text-rk-text d-flex">
-        {description}
-      </div>
-      <EntityTags tagList={tagList} multiline={false} />
-      {
-        timeCaption ?
-          <div className="mt-auto">
-            <TimeCaption caption={labelCaption || "Updated"} time={timeCaption} className="text-secondary"/>
-          </div>
-          : null
-      }
-    </Col>
-    <Col className="d-flex justify-content-end align-self-center flex-shrink-0">
-      {mediaContent ?
-        <img src={mediaContent} alt=" " className="card-img-bottom"/>
-        : null
-      }
-    </Col>
-  </Link>;
-}
+import ListCard from "./list/ListCard";
+import ListBar from "./list/ListBar";
 
 /**
  * This class receives a list of "items" and displays them either in a grid or in classic list.
@@ -130,7 +33,6 @@ function ListBar(props) {
  * @param perPage items per page, used in the pagination.
  * @param items items to display, documented on top on ListCard.
  */
-
 function ListDisplay(props) {
 
   const { currentPage, perPage, items, search, totalItems, gridDisplay, itemsType, gridColumnsBreakPoint } = props;
