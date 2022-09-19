@@ -4,8 +4,6 @@ import { act } from "react-dom/test-utils";
 import { BrowserRouter as Router } from "react-router-dom";
 import * as reactRedux from "react-redux";
 import { Provider } from "react-redux";
-import thunk from "redux-thunk";
-import configureStore from "redux-mock-store";
 
 import App from "./App";
 import { testClient as client } from "./api-client";
@@ -17,13 +15,6 @@ describe("rendering", () => {
   const params = { WELCOME_PAGE: "Some text", STATUSPAGE_ID: "5bce9beff4ca" };
   const fakeLocation = { pathname: "" };
   const useDispatchMock = jest.spyOn(reactRedux, "useDispatch");
-  const initialState = {
-    kgSearchForm: { phrase: "" },
-    recentUserActivityApi: { data: [], isFetching: false, isLoading: false, refetch: () => true }
-  };
-  const middleware = [thunk];
-  const mockStore = configureStore(middleware);
-  let store;
 
   beforeEach(() => {
     useDispatchMock.mockClear();
@@ -34,7 +25,6 @@ describe("rendering", () => {
     const user = generateFakeUser(true);
     const dummyDispatch = jest.fn();
     useDispatchMock.mockReturnValue(dummyDispatch);
-    store = mockStore(initialState);
 
     await act(async () => {
       ReactDOM.render(
