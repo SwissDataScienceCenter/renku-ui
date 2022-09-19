@@ -206,11 +206,15 @@ class App extends Component {
     LoginHelper.triggerNotifications(this.notifications);
 
     // Setup WebSocket channel
+    this.webSocket = null;
     let webSocketUrl = props.client.uiserverUrl + "/ws";
     if (webSocketUrl.startsWith("http"))
       webSocketUrl = "ws" + webSocketUrl.substring(4);
     // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
-    setTimeout(() => setupWebSocket(webSocketUrl, this.props.model), 1000);
+    setTimeout(
+      () => { this.webSocket = setupWebSocket(webSocketUrl, this.props.model); return; },
+      1000
+    );
   }
 
   render() {
@@ -235,7 +239,7 @@ class App extends Component {
             <RenkuNavBar {...p} {...this.props} notifications={this.notifications} /> :
             null
         } />
-        <CentralContentContainer notifications={this.notifications} {...this.props} />
+        <CentralContentContainer notifications={this.notifications} socket={this.webSocket} {...this.props} />
         <Route render={props => <FooterNavbar {...props} params={this.props.params} />} />
         <Route render={props => <Cookie {...props} params={this.props.params} />} />
         <ToastContainer />

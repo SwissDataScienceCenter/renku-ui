@@ -177,6 +177,8 @@ function setupWebSocket(webSocketUrl: string, fullModel: any) {
       });
     }
   };
+
+  return webSocket;
 }
 
 
