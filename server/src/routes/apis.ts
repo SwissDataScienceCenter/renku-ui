@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import cookie from "cookie";
 import express from "express";
 import fetch from "cross-fetch";
 import { createProxyMiddleware } from "http-proxy-middleware";
@@ -26,7 +25,7 @@ import logger from "../logger";
 import { Authenticator } from "../authentication";
 import { CheckURLResponse } from "./apis.interfaces";
 import { renkuAuth } from "../authentication/middleware";
-import { getCookieValueByName } from "../utils";
+import { getCookieValueByName, serializeCookie } from "../utils";
 import { validateCSP } from "../utils/url";
 import { Storage, StorageGetOptions, TypeData } from "../storage";
 import {
@@ -62,10 +61,11 @@ const proxyMiddleware = createProxyMiddleware({
           existingCookie,
           cookieName
         );
-        if (cookieValue)
+        if (cookieValue) {
           newCookies.push(
-            cookie.serialize(cookieName, existingCookie[cookieName])
+            serializeCookie(cookieName, existingCookie[cookieName])
           );
+        }
       }
     }
     // add anon-id to cookies when the proper header is set.
@@ -75,7 +75,7 @@ const proxyMiddleware = createProxyMiddleware({
       const fullAnonId =
         config.auth.anonPrefix + config.auth.cookiesAnonymousKey;
       newCookies.push(
-        cookie.serialize(config.auth.cookiesAnonymousKey, fullAnonId)
+        serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)
       );
     }
     if (newCookies.length > 0)
@@ -176,11 +176,12 @@ function registerApiRoutes(
         stop: (parseFloat(req.params["length"]) || 0) - 1,
       };
 
-      if (userId)
+      if (userId) {
         data = (await storage.get(
           `${config.data.projectsStoragePrefix}${userId}`,
           options
         )) as string[];
+      }
       res.json({ projects: data });
     }
   );

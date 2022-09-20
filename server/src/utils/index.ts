@@ -60,6 +60,17 @@ function getCookieValueByName(cookies: string, target: string): string {
   return match ? match[2] : null;
 }
 
+/**
+ * Serialize key/value into cookie format
+ *
+ * @param key name of the cookie
+ * @param value value of the cookie
+ * @returns value of the target cookie. Null if unmatched
+ */
+ function serializeCookie(key: string, value: string): string {
+  return `${key}=${value}`;
+}
+
 
 /**
  * Simulate a sleep function.
@@ -136,4 +147,4 @@ function simpleHash(str: string, seed = 0): number {
   return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }
 
-export { clamp, convertType, getCookieValueByName, getRelease, simpleHash, sleep, urlJoin };
+export { clamp, convertType, getCookieValueByName, getRelease, serializeCookie, simpleHash, sleep, urlJoin };
