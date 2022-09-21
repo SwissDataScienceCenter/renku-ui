@@ -34,10 +34,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCodeBranch, faDraftingCompass, faExclamationTriangle, faInfoCircle, faPlay,
-  faStar as faStarSolid, faUserClock
+  faCodeBranch, faExclamationTriangle, faInfoCircle, faPlay, faStar as faStarSolid, faUserClock
 } from "@fortawesome/free-solid-svg-icons";
-
 
 import { Url } from "../utils/helpers/url";
 import { SpecialPropVal } from "../model/Model";
@@ -54,8 +52,7 @@ import { NamespaceProjects } from "../namespace";
 import { ProjectOverviewCommits, ProjectOverviewStats, ProjectOverviewVersion } from "./overview";
 import { ForkProject } from "./new";
 import { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions } from "./settings";
-
-import "./Project.css";
+import { WorkflowsList } from "../workflows";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { ButtonWithMenu, GoBackButton } from "../utils/components/buttons/Button";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
@@ -70,6 +67,8 @@ import { ContainerWrap } from "../App";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
 import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
+
+import "./Project.css";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -902,12 +901,12 @@ function ProjectViewDatasets(props) {
 }
 
 function ProjectViewWorkflows(props) {
+  const reference = props.metadata?.defaultBranch ?
+    props.metadata?.defaultBranch :
+    "";
   return (
-    <div>
-      <h3>Workflows List</h3>
-      <p className="fst-italic">Work in progres... </p>
-      <FontAwesomeIcon icon={faDraftingCompass} size="3x" />
-    </div>
+    <WorkflowsList client={props.client} model={props.model}
+      reference={reference} repositoryUrl={props.externalUrl} versionUrl={props.migration?.core?.versionUrl} />
   );
 }
 
@@ -1416,8 +1415,8 @@ function ProjectView(props) {
             render={() => <ProjectViewFiles key="files" {...props} />} />
           <Route path={props.datasetsUrl}
             render={() => <ProjectViewDatasets key="datasets" {...props} />} />
-          <Route path={this.props.workflowsUrl}
-            render={() => <ProjectViewWorkflows key="workflows" {...this.props} />} />
+          <Route path={props.workflowsUrl}
+            render={() => <ProjectViewWorkflows key="workflows" {...props} />} />
           <Route path={props.settingsUrl}
             render={() => <ProjectSettings key="settings" {...props} />} />
           <Route path={props.notebookServersUrl}
