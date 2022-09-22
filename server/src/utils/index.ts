@@ -67,7 +67,7 @@ function getCookieValueByName(cookies: string, target: string): string {
  * @param value value of the cookie
  * @returns value of the target cookie. Null if unmatched
  */
- function serializeCookie(key: string, value: string): string {
+function serializeCookie(key: string, value: string): string {
   return `${key}=${value}`;
 }
 
