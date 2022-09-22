@@ -65,8 +65,7 @@ const proxyMiddleware = createProxyMiddleware({
     const anonId = clientReq.getHeader(config.auth.cookiesAnonymousKey);
     if (anonId) {
       // ? the anon-id MUST start with a letter to prevent k8s limitations
-      const fullAnonId =
-        config.auth.anonPrefix + config.auth.cookiesAnonymousKey;
+      const fullAnonId = config.auth.anonPrefix + anonId;
       newCookies.push(
         serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)
       );
