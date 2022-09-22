@@ -1,5 +1,17 @@
 # Changes
 
+## [2.9.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.8.2...2.9.0) (2022-09-15)
+
+### Features
+
+* reduce unnecessary 'project locked' notifications ([#1982](https://github.com/SwissDataScienceCenter/renku-ui/issues/1982), [#2025](https://github.com/SwissDataScienceCenter/renku-ui/issues/2025))
+* expose project metadata as JSON-LD ([#1867](https://github.com/SwissDataScienceCenter/renku-ui/issues/1867), [#2022](https://github.com/SwissDataScienceCenter/renku-ui/issues/2022))
+
+### BREAKING CHANGES
+
+* Requires renku-core v1.7.0 or greater
+* Introduces changes to the helm chart which should have no impact on most deployments
+
 ## [2.8.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.8.1...2.8.2) (2022-09-15)
 
 ### Bug Fixes
