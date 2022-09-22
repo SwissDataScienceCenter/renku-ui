@@ -51,7 +51,7 @@ client:
 
   image:
     repository: renku/renku-ui
-    tag: "2.8.2"
+    tag: "2.9.0"
     pullPolicy: IfNotPresent
 
     ## Optionally specify an array of imagePullSecrets.
@@ -179,7 +179,7 @@ server:
 
   image:
     repository: renku/renku-ui-server
-    tag: "2.8.2"
+    tag: "2.9.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: []
