@@ -131,6 +131,8 @@
 .rk-search-result-grid {
   display: flex;
   width: auto;
+  height: calc(100vh - 300px);
+  overflow: auto;
 
   .rk-search-result-grid_column {
     padding-left: 1em;
