@@ -26,7 +26,7 @@ const SERVER = {
   serverUiVersion: process.env.UI_SERVER_VERSION || "unknown",
   proxyTimeout: 600 * 1000, // in milliseconds
   wsSuffix: "/ws",
-  keepCookies: JSON.parse(process.env.SERVER_KEEP_COOKIES || "null") || ["ui-server-session", "session"]
+  keepCookies: JSON.parse(process.env.SERVER_KEEP_COOKIES || "[]")
 };
 
 const gatewayUrl = process.env.GATEWAY_URL || urlJoin(SERVER.url ?? "", "/api");
