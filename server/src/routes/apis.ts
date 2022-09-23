@@ -25,6 +25,7 @@ import logger from "../logger";
 import { Authenticator } from "../authentication";
 import { CheckURLResponse } from "./apis.interfaces";
 import { renkuAuth } from "../authentication/middleware";
+import { getCookieValueByName, serializeCookie } from "../utils";
 import { validateCSP } from "../utils/url";
 import { Storage, StorageGetOptions, TypeData } from "../storage";
 import { getUserIdFromToken, lastProjectsMiddleware } from "../utils/middlewares/lastProjectsMiddleware";
@@ -44,16 +45,33 @@ const proxyMiddleware = createProxyMiddleware({
   },
   onProxyReq: (clientReq) => {
     // remove unnecessary cookies to avoid gateway conflicts with auth tokens
-    const cookie = clientReq.getHeader("cookie") as string;
-    if (cookie)
+    const existingCookie = clientReq.getHeader("cookie") as string;
+    const newCookies: Array<string> = [];
+    if (existingCookie) {
       clientReq.removeHeader("cookie");
+      for (const cookieName of config.server.keepCookies) {
+        const cookieValue: string = getCookieValueByName(
+          existingCookie,
+          cookieName
+        );
+        if (cookieValue) {
+          newCookies.push(
+            serializeCookie(cookieName, existingCookie[cookieName])
+          );
+        }
+      }
+    }
     // add anon-id to cookies when the proper header is set.
     const anonId = clientReq.getHeader(config.auth.cookiesAnonymousKey);
     if (anonId) {
       // ? the anon-id MUST start with a letter to prevent k8s limitations
       const fullAnonId = config.auth.anonPrefix + anonId;
-      clientReq.setHeader("cookie", `${config.auth.cookiesAnonymousKey}=${fullAnonId}`);
+      newCookies.push(
+        serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)
+      );
     }
+    if (newCookies.length > 0)
+      clientReq.setHeader("cookie", newCookies.join("; "));
   },
   onProxyRes: (clientRes, req: express.Request, res: express.Response) => {
     // Add CORS for sentry
