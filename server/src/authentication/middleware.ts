@@ -23,6 +23,7 @@ import config from "../config";
 import logger from "../logger";
 import { Authenticator } from "./index";
 import { getOrCreateSessionId } from "./routes";
+import { getCookieValueByName } from "../utils";
 
 
 /**
@@ -80,9 +81,20 @@ function renkuAuth(authenticator: Authenticator) {
 
     if (tokens)
       addAuthToken(req, tokens.access_token);
-    else
-      addAnonymousToken(req, sessionId);
-
+    else {
+      // check if an anonymous user id exists in the cookies already and use that
+      const existingAnonymousToken = getCookieValueByName(req.headers.cookie, config.auth.cookiesAnonymousKey);
+      if (existingAnonymousToken) {
+        if (existingAnonymousToken.startsWith(config.auth.anonPrefix)){
+          // the prefix is added in another part of the code to every request so we should remove it here
+          addAnonymousToken(req, existingAnonymousToken.substring(config.auth.anonPrefix.length));
+        } else {
+          addAnonymousToken(req, existingAnonymousToken);
+        }
+      } else {
+        addAnonymousToken(req, sessionId);
+      }
+    }
     next();
   };
 }
