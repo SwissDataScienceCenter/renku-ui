@@ -30,6 +30,22 @@ function addWorkflowsMethods(client: any) {
     const result = await client.clientFetch(url, { method: "GET", headers, queryParams });
     return result.data ? result.data : result;
   };
+
+  client.fetchWorkflowDetails = async (
+    workflowId: string, repositoryUrl: string, reference: string = "", versionUrl = null
+  ) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    const url: string = client.versionedCoreUrl("workflow_plans.show", versionUrl);
+    let queryParams: Record<string, string> = { plan_id: workflowId, git_url: repositoryUrl };
+    if (reference)
+      queryParams.branch = reference;
+
+    const result = await client.clientFetch(url, { method: "GET", headers, queryParams });
+    return result.data ? result.data : result;
+  };
 }
 
 export default addWorkflowsMethods;

@@ -16,6 +16,6 @@
  * limitations under the License.
  */
 
-import { WorkflowsList } from "./Workflows.container";
+import { WorkflowDetail, WorkflowsList } from "./Workflows.container";
 
-export { WorkflowsList };
+export { WorkflowDetail, WorkflowsList };

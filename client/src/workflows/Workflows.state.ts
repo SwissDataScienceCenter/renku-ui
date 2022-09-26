@@ -16,13 +16,18 @@
  * limitations under the License.
  */
 
+import { Url } from "../utils/helpers/url";
+
+
+const PLANS_PREFIX = "/plans/";
+
 
 /**
  * Enrich workflows list by adding or modifying required by the UI
  * @param workflowsList - list of workflows ar returned by the API
  * @returns list containing enhanced workflows objects
  */
-function adjustWorkflowsList(workflowsList: Array<Record<string, any>>) {
+function adjustWorkflowsList(workflowsList: Array<Record<string, any>>, fullPath: string) {
   return workflowsList.map(workflow => {
     return {
       ...workflow,
@@ -33,7 +38,10 @@ function adjustWorkflowsList(workflowsList: Array<Record<string, any>>) {
       tagList: workflow.keywords,
       timeCaption: workflow.created,
       title: workflow.name,
-      url: "/workflow" + workflow.id, // ! UPDATE ME!
+      url: Url.get(Url.pages.project.workflows.detail, {
+        namespace: "", path: fullPath, target: "/" + workflow.id.replace(PLANS_PREFIX, "")
+      }),
+      workflowId: workflow.id.replace(PLANS_PREFIX, ""),
       workflowType: workflow.type,
     };
   });
@@ -41,23 +49,27 @@ function adjustWorkflowsList(workflowsList: Array<Record<string, any>>) {
 
 class WorkflowsCoordinator {
   client: any;
-  model: any;
+  workflowModel: any;
+  workflowsModel: any;
 
   constructor(client: any, model: any) {
     this.client = client;
-    this.model = model.subModel("workflows");
+    this.workflowModel = model.subModel("workflow");
+    this.workflowsModel = model.subModel("workflows");
   }
 
-  async fetchWorkflowsList(repositoryUrl: string, reference: string, versionUrl: string, unsupported: boolean) {
+  async fetchWorkflowsList(
+    repositoryUrl: string, reference: string, versionUrl: string, unsupported: boolean, fullPath: string
+  ) {
     // do not fetch if we don't have the specific core url or already fetching
     if (!versionUrl || unsupported) return;
-    if (this.model.get("fetching") === true) return;
+    if (this.workflowsModel.get("fetching") === true) return;
 
     // pre-fetching state changes
     let newWorkflowsState: Record<string, any> = { fetching: true };
-    if (this.model.get("error"))
+    if (this.workflowsModel.get("error"))
       newWorkflowsState.error = null;
-    this.model.setObject(newWorkflowsState);
+    this.workflowsModel.setObject(newWorkflowsState);
 
     const workflowsList = await this.client.fetchWorkflowsList(repositoryUrl, reference, versionUrl);
 
@@ -66,11 +78,135 @@ class WorkflowsCoordinator {
     if (workflowsList?.error)
       newWorkflowsState.error = workflowsList.error;
     else if (workflowsList?.result)
-      newWorkflowsState.list = { $set: adjustWorkflowsList(workflowsList.result.plans) };
+      newWorkflowsState.list = { $set: adjustWorkflowsList(workflowsList.result.plans, fullPath) };
     else
       newWorkflowsState.list = { $set: [] };
-    this.model.setObject(newWorkflowsState);
+    this.workflowsModel.setObject(newWorkflowsState);
   }
+
+  async fetchWorkflowDetails(
+    workflowId: string, repositoryUrl: string, reference: string, versionUrl: string
+  ) {
+    // do not fetch if we don't have the specific core url or already fetching the same resource
+    if (!versionUrl) return;
+    if (this.workflowModel.get("fetching") === true && this.workflowModel.get("mounted") === workflowId) return;
+
+    // pre-fetching state changes
+    let newWorkflowState: Record<string, any> = { fetching: true };
+    if (this.workflowModel.get("error"))
+      newWorkflowState.error = null;
+    this.workflowModel.setObject(newWorkflowState);
+
+    const workflowFullId = PLANS_PREFIX + workflowId;
+    const workflowDetails = await this.client.fetchWorkflowDetails(
+      workflowFullId, repositoryUrl, reference, versionUrl
+    );
+
+    // post-fetch state changes -- to be ignored when the fetch is outdated
+    newWorkflowState = { fetching: false, fetched: new Date(), target: repositoryUrl + reference + workflowId };
+    if (workflowDetails?.error)
+      newWorkflowState.error = workflowDetails.error;
+    else if (workflowDetails?.result)
+      newWorkflowState.details = { $set: workflowDetails.result };
+    else
+      newWorkflowState.details = { $set: {} };
+    this.workflowModel.setObject(newWorkflowState);
+  }
+}
+
+
+/**
+ * Temporary function to simulate a response
+ * @param workflowId - real id to keep the simulated response data coherent (also for the cache comparison)
+ * @returns fake response
+ */
+// ! TODO: move this to a cypress test
+async function tmpReturnResponse(workflowId: string) { // eslint-disable-line
+  await new Promise(r => setTimeout(r, 500));
+  return {
+    "error": null,
+    "result": {
+      "id": workflowId,
+      "name": "echo-A-09883",
+      "description": "Echo a file",
+      "creators": [
+        {
+          "name": "John Doe",
+          "email": "jd@example.com",
+          "affiliation": "SDSC"
+        }
+      ],
+      "type": "Plan",
+      "created": "2022-09-26T13:45:35.171Z",
+      "last_executed": "2022-09-26T13:45:35.171Z",
+      "keywords": [
+        "bio",
+        "image-processing"
+      ],
+      "number_of_executions": 5,
+      "touches_existing_files": true,
+      "command": "python",
+      "full_command": "python myscript.py -i input.txt > output.txt", // eslint-disable-line
+      "inputs": [
+        {
+          "id": "/plans/ecf03c735e9f4554adf14fce6271bd93/inputs/1",
+          "plan_id": "/plans/ecf03c735e9f4554adf14fce6271bd93",
+          "type": "Input",
+          "name": "input-1",
+          "description": "string",
+          "default_value": "string",
+          "prefix": "-p",
+          "position": 0,
+          "mapped_to": "stdin", // eslint-disable-line
+          "encoding_format": [
+            "inode/directory"
+          ],
+          "exists": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "/plans/ecf03c735e9f4554adf14fce6271bd93/outputs/2",
+          "plan_id": "/plans/ecf03c735e9f4554adf14fce6271bd93",
+          "type": "Output",
+          "name": "output-2",
+          "description": "string",
+          "default_value": "string",
+          "prefix": "--o=",
+          "position": 0,
+          "mapped_to": "stdout",
+          "encoding_format": [
+            "inode/directory"
+          ],
+          "create_folder": true,
+          "exists": true,
+          "last_touched_by_this_plan": true
+        }
+      ],
+      "parameters": [
+        {
+          "id": "/plans/ecf03c735e9f4554adf14fce6271bd93/parameters/1",
+          "plan_id": "/plans/ecf03c735e9f4554adf14fce6271bd93",
+          "type": "Parameter",
+          "name": "string",
+          "description": "string",
+          "default_value": "string",
+          "prefix": "-p",
+          "position": 0
+        }
+      ],
+      "success_codes": [
+        0
+      ],
+      "annotations": [
+        {
+          "id": "/annotations/abcf03c735e9f4554adf14fce6271bd93",
+          "source": "renku",
+          "body": {}
+        }
+      ]
+    }
+  };
 }
 
 export { WorkflowsCoordinator };

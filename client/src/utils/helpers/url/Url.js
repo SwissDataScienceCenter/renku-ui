@@ -168,9 +168,13 @@ function projectNewUrlBuilder() {
  */
 function projectPageUrlBuilder(subSection) {
   return (data) => {
-    let url = `/projects/${data.namespace}/${data.path}`;
+    let url = data.namespace && data.namespace.length ?
+      `/projects/${data.namespace}/${data.path}` :
+      `/projects/${data.path}`;
     if (subSection)
-      return url + subSection;
+      url += subSection;
+    if (data.target)
+      url += data.target;
     return url;
   };
 }
@@ -345,6 +349,12 @@ const Url = {
           projectPageUrlBuilder("/workflows"), ["namespace", "path"], null, [
             "/projects/namespace/path/workflows",
             "/projects/group/subgroup/path/workflows",
+          ]
+        ),
+        detail: new UrlRule(
+          projectPageUrlBuilder("/workflows"), ["namespace", "path", "target"], null, [
+            "/projects/namespace/path/workflows/1234abcd",
+            "/projects/group/subgroup/path/workflows/1234abcd",
           ]
         )
       },

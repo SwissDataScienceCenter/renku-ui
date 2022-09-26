@@ -20,11 +20,13 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
 
+import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import ListDisplay from "../utils/components/List";
 import {
   Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Input, Label, Row
 } from "../utils/ts-wrappers";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
+import { EntityType } from "../utils/components/entities/Entities";
 import { Loader } from "../utils/components/Loader";
 import { WarnAlert } from "../utils/components/Alert";
 
@@ -81,6 +83,25 @@ function WorkflowsListFilters({
         </Button>
       </Col>
     </Row>
+  );
+}
+
+
+function UnsupportedWorkflows() {
+  return (
+    <div>
+      <WarnAlert dismissible={false}>
+        <p>
+          Interacting with workflows in the UI requires updating your project to a newer version.
+        </p>
+        {/*
+        // ! TODO: add link to status overview
+        <p>
+          {updateInfo} should resolve the problem.
+          <br />The <Link to={overviewStatusUrl}>Project status</Link> page provides further information.
+        </p> */}
+      </WarnAlert>
+    </div>
   );
 }
 
@@ -153,23 +174,44 @@ function WorkflowsList({
 }
 
 
-function UnsupportedWorkflows() {
-  return (
-    <div>
-      <WarnAlert dismissible={false}>
-        <p>
-          Interacting with workflows in the UI requires updating your project to a newer version.
-        </p>
-        {/*
-        // ! TODO: add link to status overview
-        <p>
-          {updateInfo} should resolve the problem.
-          <br />The <Link to={overviewStatusUrl}>Project status</Link> page provides further information.
-        </p> */}
-      </WarnAlert>
-    </div>
-  );
+interface WorkflowDetailProps {
+  waiting: boolean;
+  workflow: Record<string, any>;
+  workflowId: string;
+}
+
+function WorkflowDetail({ waiting, workflow, workflowId }: WorkflowDetailProps) {
+  const loading = waiting || (!workflow.fetched);
+
+  let content: React.ReactNode;
+  if (loading) {
+    content = (<Loader />);
+  }
+  else if (workflow.error) {
+    content = (<CoreErrorAlert error={workflow.error} />);
+  }
+  else {
+    content = (
+      <Col className="mb-4">
+        <EntityHeader
+          title={workflow.details.name}
+          description={workflow.details.description}
+          itemType={"workflow" as EntityType}
+          tagList={workflow.details.keywords}
+          creators={workflow.details.creators}
+          labelCaption="created"
+          timeCaption={workflow.details.created}
+          devAccess={false}
+          url="" launchNotebookUrl="" sessionAutostartUrl=""
+        // links={linksHeader}
+        // otherButtons={[deleteOption, modifyButton, addToProject]}
+        />
+      </Col>
+    );
+  }
+
+  return (<div>{content}</div>);
 }
 
 
-export { WorkflowsList };
+export { WorkflowDetail, WorkflowsList };

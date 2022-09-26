@@ -18,13 +18,15 @@
 
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 import { WorkflowsCoordinator } from "./Workflows.state";
-import { WorkflowsList as WorkflowsListPresent } from "./Workflows.present";
+import { WorkflowDetail as WorkflowDetailPresent, WorkflowsList as WorkflowsListPresent } from "./Workflows.present";
 
 
 interface WorkflowsListProps {
   client: any;
+  fullPath: string;
   model: any;
   reference: string;
   repositoryUrl: string;
@@ -39,7 +41,7 @@ const WorkflowsSorting = {
   workflowType: "Workflow type"
 };
 
-function WorkflowsList({ client, model, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
+function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
   const workflowsCoordinator = new WorkflowsCoordinator(client, model);
   const workflows = useSelector((state: any) => state.stateModel.workflows);
   const [orderBy, setOrderBy] = useState("created");
@@ -55,7 +57,7 @@ function WorkflowsList({ client, model, reference, repositoryUrl, versionUrl }: 
   const unsupported = projectVersion && projectVersion < minVersion ? true : false;
 
   useEffect(() => {
-    workflowsCoordinator.fetchWorkflowsList(repositoryUrl, reference, versionUrl, unsupported);
+    workflowsCoordinator.fetchWorkflowsList(repositoryUrl, reference, versionUrl, unsupported, fullPath);
   }, [repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const targetChanged = (repositoryUrl + reference) !== workflows.target;
@@ -73,4 +75,24 @@ function WorkflowsList({ client, model, reference, repositoryUrl, versionUrl }: 
 }
 
 
-export { WorkflowsList };
+function WorkflowDetail({ client, fullPath, model, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
+  const workflowsCoordinator = new WorkflowsCoordinator(client, model);
+  const workflow = useSelector((state: any) => state.stateModel.workflow);
+
+  const { id }: Record<string, string> = useParams();
+  const workflowId = id;
+
+  // fetch workflow details
+  useEffect(() => {
+    workflowsCoordinator.fetchWorkflowDetails(workflowId, repositoryUrl, reference, versionUrl);
+  }, [workflowId, repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const targetChanged = (repositoryUrl + reference + workflowId) !== workflow.target;
+  const versionUrlAvailable = !versionUrl ? false : true;
+  const waiting = !versionUrlAvailable || targetChanged;
+
+  return (<WorkflowDetailPresent waiting={waiting} workflowId={workflowId} workflow={workflow} />);
+}
+
+
+export { WorkflowDetail, WorkflowsList };
