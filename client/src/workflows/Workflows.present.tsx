@@ -56,10 +56,10 @@ function WorkflowsListFilters({
     <Row className="my-3">
       <Col xs={12} sm="auto" className="my-auto">
         <div className="form-check form-switch d-inline-block">
-          <Label className="text-rk-text me-2">Exclude inactive</Label>
+          <Label className="text-rk-text me-2">Show inactive</Label>
           <Input type="switch"
             id="wfExcludeInactive" label="label here" className="form-check-input rounded-pill"
-            checked={excludeInactive} onChange={() => toggleExcludeInactive()}
+            checked={!excludeInactive} onChange={() => toggleExcludeInactive()}
           />
         </div>
       </Col>
