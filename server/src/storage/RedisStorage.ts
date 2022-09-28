@@ -34,6 +34,7 @@ class RedisStorage implements Storage {
     // configure redis
     const redisConfig: Redis.RedisOptions = {
       lazyConnect: true,
+      db: config.redis.database,
       retryStrategy: (times) => {
         return times > 5 ?
           null :
