@@ -24,18 +24,15 @@ import stringify from "rehype-stringify";
 import math from "remark-math";
 import remark2rehype from "remark-rehype";
 import styled from "styled-components";
+import { useEffect, useState } from "react";
 
-interface Props {
+interface NotebookRenderProps {
   displayOrder: string[];
   notebook: ImmutableNotebook;
   transforms: Transforms;
   theme: "light" | "dark";
   showPrompt: Boolean;
   sourceClassName: string;
-}
-
-interface State {
-  notebook: ImmutableNotebook;
 }
 
 const ContentMargin = styled.div`
@@ -71,147 +68,137 @@ const toObj = (input: string) => {
   return result;
 };
 
-export default class NotebookRender extends React.PureComponent<Props, State> {
-  static defaultProps = {
+export default function NotebookRender(props: NotebookRenderProps) {
+  const defaultProps = {
     displayOrder,
     notebook: appendCellToNotebook(emptyNotebook, createCodeCell().set("source", "# where's the content?")),
     theme: "light",
     transforms,
     showPrompt: true,
   };
+  const [notebook, setNotebook] = useState<ImmutableNotebook>(defaultProps.notebook);
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      notebook: fromJS(props?.notebook),
-    };
-  }
+  useEffect(()=> {
+    const content = fromJS(props?.notebook);
+    setNotebook(content);
+  }, [props?.notebook]); // eslint-disable-line
 
-  static getDerivedStateFromProps(props: Props, state: State) {
-    if (props?.notebook !== state.notebook) return { notebook: fromJS(props?.notebook) };
-    return null;
-  }
+  // Propagated from the hide_(all)_input nbextension
+  const allSourceHidden = (notebook?.getIn(["metadata", "hide_input"]) as boolean) || false;
 
-  render() {
-    const notebook = this.state.notebook;
+  const language =
+    (notebook.getIn(["metadata", "language_info", "codemirror_mode", "name"]) as string) ||
+    (notebook.getIn(["metadata", "language_info", "codemirror_mode"]) as string) ||
+    (notebook.getIn(["metadata", "language_info", "name"]) as string) ||
+    "text";
 
-    // Propagated from the hide_(all)_input nbextension
-    const allSourceHidden = (notebook.getIn(["metadata", "hide_input"]) as boolean) || false;
+  const cellOrder = notebook.get("cellOrder");
+  const cellMap = notebook.get("cellMap");
 
-    const language =
-      (notebook.getIn(["metadata", "language_info", "codemirror_mode", "name"]) as string) ||
-      (notebook.getIn(["metadata", "language_info", "codemirror_mode"]) as string) ||
-      (notebook.getIn(["metadata", "language_info", "name"]) as string) ||
-      "text";
+  let sourceHidden: boolean | undefined = undefined;
+  let outputHidden: boolean | undefined = undefined;
+  let remarkPlugins: any[] = [];
+  let remarkRenderers = {};
 
-    const cellOrder = notebook.get("cellOrder");
-    const cellMap = notebook.get("cellMap");
+  return (
+    <div className="notebook-render">
+      <Cells>
+        {cellOrder.map((cellId: string) => {
+          const cell = cellMap.get(cellId)!;
+          const cellType: string = cell.get("cell_type", "");
+          const source = cell.get("source", "");
 
-    let sourceHidden: boolean | undefined = undefined;
-    let outputHidden: boolean | undefined = undefined;
-    let remarkPlugins: any[] = [];
-    let remarkRenderers = {};
+          switch (cell.cell_type) {
+            case "code":
+              sourceHidden =
+                allSourceHidden ||
+                (cell.getIn(["metadata", "inputHidden"]) as boolean) ||
+                (cell.getIn(["metadata", "hide_input"]) as boolean);
 
-    return (
-      <div className="notebook-render">
-        <Cells>
-          {cellOrder.map((cellId: string) => {
-            const cell = cellMap.get(cellId)!;
-            const cellType: string = cell.get("cell_type", "");
-            const source = cell.get("source", "");
+              outputHidden = cell.get("outputs").size === 0 || (cell.getIn(["metadata", "outputHidden"]) as boolean);
 
-            switch (cell.cell_type) {
-              case "code":
-                sourceHidden =
-                  allSourceHidden ||
-                  (cell.getIn(["metadata", "inputHidden"]) as boolean) ||
-                  (cell.getIn(["metadata", "hide_input"]) as boolean);
+              return (
+                <Cell key={cellId} className="cell">
+                  <Input hidden={sourceHidden} className="input-container">
+                    {props.showPrompt && <Prompt className="prompt" counter={cell.get("execution_count")} />}
+                    <Source language={language} theme={props.theme} className={props.sourceClassName}>
+                      {source}
+                    </Source>
+                  </Input>
+                  <Outputs
+                    hidden={outputHidden}
+                    expanded={(cell.getIn(["metadata", "outputExpanded"]) as boolean) || true}
+                  >
+                    <Display
+                      displayOrder={props.displayOrder}
+                      outputs={cell.get("outputs").toJS()}
+                      transforms={props.transforms}
+                      expanded={true}
+                    />
+                  </Outputs>
+                </Cell>
+              );
 
-                outputHidden = cell.get("outputs").size === 0 || (cell.getIn(["metadata", "outputHidden"]) as boolean);
+            case "markdown":
+              remarkPlugins = [math, remark2rehype, katex, stringify];
+              remarkRenderers = {
+                math: function blockMath({ node, props }: { node: unknown; props: { value: string } }) {
+                  return <BlockMath>{props?.value}</BlockMath>;
+                },
+                inlineMath: function inlineMath({ node, props }: { node: unknown; props: { value: string } }) {
+                  return <InlineMath>{props?.value}</InlineMath>;
+                },
+                element: function remarkElement(node: { tagName: string; properties: any; children: any }) {
+                  if (node.tagName === "math") return node.children;
 
-                return (
-                  <Cell key={cellId} className="cell">
-                    <Input hidden={sourceHidden} className="input-container">
-                      {this.props.showPrompt && <Prompt className="prompt" counter={cell.get("execution_count")} />}
-                      <Source language={language} theme={this.props.theme} className={this.props.sourceClassName}>
-                        {source}
-                      </Source>
-                    </Input>
-                    <Outputs
-                      hidden={outputHidden}
-                      expanded={(cell.getIn(["metadata", "outputExpanded"]) as boolean) || true}
-                    >
-                      <Display
-                        displayOrder={this.props.displayOrder}
-                        outputs={cell.get("outputs").toJS()}
-                        transforms={this.props.transforms}
-                        expanded={true}
-                      />
-                    </Outputs>
-                  </Cell>
-                );
+                  if (node.tagName === "img") return React.createElement(node.tagName, node.properties);
 
-              case "markdown":
-                remarkPlugins = [math, remark2rehype, katex, stringify];
-                remarkRenderers = {
-                  math: function blockMath({ node, props }: { node: unknown; props: { value: string } }) {
-                    return <BlockMath>{props?.value}</BlockMath>;
-                  },
-                  inlineMath: function inlineMath({ node, props }: { node: unknown; props: { value: string } }) {
-                    return <InlineMath>{props?.value}</InlineMath>;
-                  },
-                  element: function remarkElement(node: { tagName: string; properties: any; children: any }) {
-                    if (node.tagName === "math") return node.children;
+                  if (node.tagName === "br") return React.createElement(node.tagName, node.properties);
 
-                    if (node.tagName === "img") return React.createElement(node.tagName, node.properties);
+                  // Separate properties known to cause bugs and handle them separately
+                  let { ariaHidden, style, ...props } = node.properties;
 
-                    if (node.tagName === "br") return React.createElement(node.tagName, node.properties);
+                  // aria-hidden should be in the normal format
+                  if (ariaHidden) props["aria-hidden"] = ariaHidden;
 
-                    // Separate properties known to cause bugs and handle them separately
-                    let { ariaHidden, style, ...props } = node.properties;
+                  // Style must be an object
+                  if (typeof style === "string") props["style"] = toObj(style);
+                  else if (typeof style === "object") props["style"] = style;
 
-                    // aria-hidden should be in the normal format
-                    if (ariaHidden) props["aria-hidden"] = ariaHidden;
+                  return React.createElement(node.tagName, props, node.children);
+                },
+              } as any;
+              return (
+                <Cell key={cellId} className="cell">
+                  <ContentMargin className="markdown">
+                    <ReactMarkdown skipHtml={false} remarkPlugins={remarkPlugins} components={remarkRenderers}>
+                      {source}
+                    </ReactMarkdown>
+                  </ContentMargin>
+                </Cell>
+              );
 
-                    // Style must be an object
-                    if (typeof style === "string") props["style"] = toObj(style);
-                    else if (typeof style === "object") props["style"] = style;
+            case "raw":
+              return (
+                <Cell key={cellId} className="cell">
+                  <RawCell className="raw">{source}</RawCell>
+                </Cell>
+              );
 
-                    return React.createElement(node.tagName, props, node.children);
-                  },
-                } as any;
-                return (
-                  <Cell key={cellId} className="cell">
-                    <ContentMargin className="markdown">
-                      <ReactMarkdown skipHtml={false} remarkPlugins={remarkPlugins} components={remarkRenderers}>
-                        {source}
-                      </ReactMarkdown>
-                    </ContentMargin>
-                  </Cell>
-                );
-
-              case "raw":
-                return (
-                  <Cell key={cellId} className="cell">
-                    <RawCell className="raw">{source}</RawCell>
-                  </Cell>
-                );
-
-              default:
-                return (
-                  <Cell key={cellId} className="cell">
-                    <Outputs>
-                      <pre>{`Cell Type "${cellType}" is not implemented`}</pre>
-                    </Outputs>
-                  </Cell>
-                );
-            }
-          })}
-        </Cells>
-        {/* TS problems with this code
-        {this.props.theme === "dark" ? <DarkTheme /> : <LightTheme />}
-        */}
-      </div>
-    );
-  }
+            default:
+              return (
+                <Cell key={cellId} className="cell">
+                  <Outputs>
+                    <pre>{`Cell Type "${cellType}" is not implemented`}</pre>
+                  </Outputs>
+                </Cell>
+              );
+          }
+        })}
+      </Cells>
+      {/* TS problems with this code
+      {this.props.theme === "dark" ? <DarkTheme /> : <LightTheme />}
+      */}
+    </div>
+  );
 }
