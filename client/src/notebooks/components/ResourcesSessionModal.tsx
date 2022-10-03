@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
+import React from "react";
 
 import "./SessionModal.css";
 import { Notebook, SessionHandlers } from "./Session";
@@ -38,10 +38,11 @@ export interface ResourcesSessionModelProp {
   handlers: SessionHandlers;
   notebook: Notebook;
   defaultBranch: string;
+  setActiveTab: Function;
+  activeTab: string;
 }
 const ResourcesSessionModel =
-  ({ toggleModal, isOpen, handlers, notebook, defaultBranch }: ResourcesSessionModelProp) => {
-    const [activeTab, setActiveTab] = useState<string>(SESSION_TABS.commands);
+  ({ toggleModal, isOpen, handlers, notebook, defaultBranch, setActiveTab, activeTab }: ResourcesSessionModelProp) => {
     return (
       <Modal
         isOpen={isOpen}

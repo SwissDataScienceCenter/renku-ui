@@ -17,6 +17,7 @@
  */
 
 import { EntityCreator } from "../entities/Creators";
+import { SessionStatusData } from "./StartSessionProgressBar";
 
 interface NotebookAnnotations {
   [key: string]: string;
@@ -45,9 +46,7 @@ export interface Notebook {
     commits?: any;
     image: string;
     name: string;
-    status: {
-      state: string;
-    };
+    status: SessionStatusData;
     url: string;
   };
   logs: {
@@ -56,6 +55,8 @@ export interface Notebook {
     fetching: boolean;
   };
   available: boolean;
+  fetched: any;
+  fetching: any;
 }
 
 export interface ProjectMetadata {

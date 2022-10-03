@@ -20,12 +20,12 @@ import React, { Component, Fragment, memo, useEffect } from "react";
 import Media from "react-media";
 import { Link, useHistory } from "react-router-dom";
 import {
-  Alert, Badge, Button, Col, DropdownItem, PopoverBody, PopoverHeader, Row, UncontrolledPopover
+  Badge, Button, Col, DropdownItem, PopoverBody, PopoverHeader, Row, UncontrolledPopover
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheckCircle, faExclamationTriangle, faExternalLinkAlt, faFileAlt,
-  faInfoCircle, faPlus, faQuestionCircle, faStopCircle, faSyncAlt, faTimesCircle
+  faInfoCircle, faPlus, faStopCircle, faSyncAlt, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 
@@ -168,7 +168,7 @@ function SessionCommands(props) {
 }
 
 function SessionJupyter(props) {
-  const { filters, notebook, height = "800px", urlList } = props;
+  const { notebook, height = "800px", ready } = props;
   const history = useHistory();
 
   let content = null;
@@ -177,39 +177,17 @@ function SessionJupyter(props) {
     if (status === SessionStatus.running) {
       const locationFilePath = history?.location?.state?.filePath;
       const notebookUrl = locationFilePath ? `${notebook.data.url}/lab/tree/${locationFilePath}` : notebook.data.url;
-
       content = (
         <iframe id="session-iframe" title="session iframe" src={notebookUrl}
+          style={{ display: ready ? "block" : "none" }}
           width="100%" height={height} referrerPolicy="origin"
           sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
         />
       );
     }
-    else if (status === SessionStatus.starting || status === SessionStatus.stopping) {
+    else if (status === SessionStatus.stopping) {
       content = (<Loader />);
     }
-  }
-  else {
-    const urlNew = Url.get(Url.pages.project.session.new, {
-      namespace: filters.namespace,
-      path: filters.project,
-    });
-
-    content = (
-      <div className="p-2 p-lg-3 text-nowrap">
-        <p className="mt-2">The session you are trying to open is not available.</p>
-        <Alert color="primary">
-          <p className="mb-0">
-            <FontAwesomeIcon size="lg" icon={faQuestionCircle} />
-            {" "}You should either{" "}
-            <Link className="btn btn-primary btn-sm" to={urlNew}>start a new session</Link>
-            {" "}or{" "}
-            <Link className="btn btn-primary btn-sm" to={urlList}>check the running sessions</Link>
-            {" "}
-          </p>
-        </Alert>
-      </div>
-    );
   }
   return content;
 }

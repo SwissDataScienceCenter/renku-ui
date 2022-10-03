@@ -423,5 +423,5 @@ export {
   capitalizeFirstLetter, generateZip, computeVisibilities,
   slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown,
   simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleCharacters,
-  convertUnicodeToAscii, refreshIfNecessary, sleep, toCapitalized, stylesByItemType
+  convertUnicodeToAscii, refreshIfNecessary, sleep, toCapitalized, stylesByItemType, AUTOSAVED_PREFIX
 };

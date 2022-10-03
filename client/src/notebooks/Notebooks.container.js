@@ -27,7 +27,6 @@ import {
   CheckNotebookIcon,
 } from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
-import { Loader } from "../utils/components/Loader";
 import { Url } from "../utils/helpers/url";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import ShowSessionFullscreen from "./components/SessionFullScreen";
@@ -127,10 +126,6 @@ class ShowSession extends Component {
   render() {
     if (this.props.blockAnonymous && !this.userLogged)
       return <NotebooksDisabled logged={this.userLogged} />;
-
-    if (!this.model.get("notebooks.fetched"))
-      return <Loader />;
-
     return (
       <ShowSessionMapped
         target={this.target}
