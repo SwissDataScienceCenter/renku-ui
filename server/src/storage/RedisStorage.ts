@@ -30,10 +30,12 @@ class RedisStorage implements Storage {
     password: string = config.redis.password,
     isSentinel: boolean = config.redis.isSentinel as boolean,
     masterSet: string = config.redis.masterSet,
+    db: number = config.redis.database as number,
   ) {
     // configure redis
     const redisConfig: Redis.RedisOptions = {
       lazyConnect: true,
+      db,
       retryStrategy: (times) => {
         return times > 5 ?
           null :
