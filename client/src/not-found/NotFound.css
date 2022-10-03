@@ -6,6 +6,7 @@
     background-image: url("../styles/assets/404@0.25x.png");
     color: var(--bs-rk-pink);
     overflow: auto;
+    width: 100%;
 }
 
 .not-found-box-text {
