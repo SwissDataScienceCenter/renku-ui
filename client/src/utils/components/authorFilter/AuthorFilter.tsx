@@ -45,7 +45,7 @@ const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
   const options = items.map(item => {
     const nameInput = `author-${item.value}`;
     return (
-      <div className="d-flex align-items-center" key={nameInput}>
+      <div className="form-rk-green d-flex align-items-center" key={nameInput}>
         <Input
           type="radio"
           name="author-filter"
@@ -60,10 +60,10 @@ const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
     );
   });
   return (
-    <>
+    <div className="input-filter-box">
       <h3 className="filter-label">Author</h3>
       {options}
-    </>
+    </div>
   );
 };
 

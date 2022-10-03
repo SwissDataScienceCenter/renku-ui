@@ -66,6 +66,8 @@ import {
   StopCircle as WrappedStopCircle,
   InfoCircle as WrappedInfoCircle,
   XCircleFill as WrappedXCircleFill,
+  Funnel as WrappedFunnel,
+  FunnelFill as WrappedFunnelFull,
 } from "react-bootstrap-icons";
 
 import { FormGroup as WrappedFormGroup, Input as WrappedInput, InputGroup as WrappedInputGroup } from "reactstrap";
@@ -318,6 +320,14 @@ function XCircleFill(props) {
   return <WrappedXCircleFill {...props} />;
 }
 
+function Funnel(props) {
+  return <WrappedFunnel {...props} />;
+}
+
+function FunnelFill(props) {
+  return <WrappedFunnelFull {...props} />;
+}
+
 function Bookmarks(props) {
   return <WrappedBookmarks {...props} />;
 }
@@ -342,3 +352,4 @@ export { ArrowLeft, Briefcase, CardList, Diagram3, Download, Globe, HddStack, In
 export { People, Save, StopCircle };
 export { Nav, NavItem, NavLink, TabContent, TabPane };
 export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, Diagram2, XLg };
+export { Funnel, FunnelFill };

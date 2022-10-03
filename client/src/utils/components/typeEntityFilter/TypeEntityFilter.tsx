@@ -18,7 +18,7 @@
 import * as React from "react";
 import { ChangeEvent } from "react";
 
-import { Input } from "../../ts-wrappers";
+import { Briefcase, HddStack, Input } from "../../ts-wrappers";
 import "./TypeEntityFilter.css";
 /**
  *  renku-ui
@@ -54,34 +54,32 @@ const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {
   };
 
   const items = [
-    { title: "Project", value: "project", pathIcon: "/project-icon.png" },
-    { title: "Dataset", value: "dataset", pathIcon: "/dataset-icon.png" },
+    { title: "Project", value: "project", color: "rk-green", icon: <Briefcase /> },
+    { title: "Dataset", value: "dataset", color: "rk-pink", icon: <HddStack /> },
   ];
 
   const options = items.map(item => {
     const nameInput = `type-entity-${item.value}`;
     const itemValueAsKey = item.value as keyof TypeEntitySelection;
     return (
-      <div className="d-flex align-items-center" key={nameInput}>
+      <div className={`d-flex align-items-center form-${item.color}`} key={nameInput}>
         <Input
           type="checkbox"
           name={nameInput}
           checked={value[itemValueAsKey]}
           onChange={(e: ChangeEvent<HTMLInputElement>) => changeType(item.value, e.target.checked)}
-          className="type-entity-input"
+          className={`type-entity-input text-${item.color} ${item.color}`}
           data-cy={nameInput}/>
-        <label className="px-2 type-entity-label cursor-pointer"
-          onClick={() => changeType(item.value, !value[itemValueAsKey])}>{item.title}</label>
-        <img className="type-entity-icon cursor-pointer" src={item.pathIcon}
-          onClick={() => changeType(item.value, !value[itemValueAsKey])}/>
+        <label className={`px-2 type-entity-label cursor-pointer text-${item.color} d-flex gap-2 align-items-center`}
+          onClick={() => changeType(item.value, !value[itemValueAsKey])}>{item.icon} {item.title}</label>
       </div>
     );
   });
   return (
-    <>
-      <h3 className="filter-label">Type</h3>
+    <div className="input-filter-box">
+      <h3 className="filter-label">Content types</h3>
       {options}
-    </>
+    </div>
   );
 };
 

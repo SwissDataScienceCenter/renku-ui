@@ -5,22 +5,28 @@
 }
 .quick-nav {
   background-color: white;
-  border-radius: 1000px;
+  border-radius: 12px;
+  max-width: 550px;
+  height: 70px;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.05);
+  margin: auto;
 }
 .quick-nav .react-autosuggest__container > input {
   border: 0;
   border-radius: 1000px;
+  height: 70px;
 }
 
 .searchBarSuggestionsContainer {
   position: absolute;
-  top: 105%;
+  top: 102%;
   z-index: 100;
   left: 20px;
   right: auto;
   display: block;
   background-color: #fff;
   min-width: 300px;
+  max-width: 550px;
   border: none;
 }
 
@@ -65,6 +71,7 @@
 .search-box {
   width: 100%;
   margin: 10px 0 0 0;
+  padding-bottom: 50px;
 }
 
 @media (min-width: 992px) {
