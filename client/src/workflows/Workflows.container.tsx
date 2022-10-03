@@ -48,18 +48,26 @@ function WorkflowsList({ client, model, reference, repositoryUrl, versionUrl }: 
   const toggleAscending = () => setOrderByAscending(!orderByAscending);
   const toggleExcludeInactive = () => setExcludeInactive(!excludeInactive);
 
+  const minVersion = 9;
+  const projectVersion = versionUrl != null && versionUrl.length ?
+    parseInt(versionUrl.replace(/^\/+|\/+$/g, "")) :
+    0;
+  const unsupported = projectVersion && projectVersion < minVersion ? true : false;
+
   useEffect(() => {
-    workflowsCoordinator.fetchWorkflowsList(repositoryUrl, reference, versionUrl);
+    workflowsCoordinator.fetchWorkflowsList(repositoryUrl, reference, versionUrl, unsupported);
   }, [repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const targetChanged = (repositoryUrl + reference) !== workflows.target;
   const versionUrlAvailable = !versionUrl ? false : true;
   const waiting = !versionUrlAvailable || targetChanged;
+
   return (
     <WorkflowsListPresent
       ascending={orderByAscending} excludeInactive={excludeInactive} orderBy={orderBy}
       orderByMatrix={WorkflowsSorting} setOrderBy={setOrderBy} toggleAscending={toggleAscending}
-      toggleExcludeInactive={toggleExcludeInactive} waiting={waiting} workflows={workflows}
+      toggleExcludeInactive={toggleExcludeInactive} unsupported={unsupported}
+      waiting={waiting} workflows={workflows}
     />
   );
 }

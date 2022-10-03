@@ -26,6 +26,7 @@ import {
 } from "../utils/ts-wrappers";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { Loader } from "../utils/components/Loader";
+import { WarnAlert } from "../utils/components/Alert";
 
 
 interface WorkflowsListFiltersProps {
@@ -92,6 +93,7 @@ interface WorkflowsListProps {
   setOrderBy: Function;
   toggleAscending: Function;
   toggleExcludeInactive: Function;
+  unsupported: boolean;
   waiting: boolean;
   workflows: Record<string, any>;
 }
@@ -106,8 +108,12 @@ function orderWorkflows(
 
 function WorkflowsList({
   ascending, excludeInactive, orderBy, orderByMatrix, setOrderBy, toggleAscending,
-  toggleExcludeInactive, waiting, workflows
+  toggleExcludeInactive, unsupported, waiting, workflows
 }: WorkflowsListProps) {
+  // return immediately when workflows are not supported in the current project
+  if (unsupported) return (<UnsupportedWorkflows />);
+
+  // show status: loading or error or full content
   const loading = waiting || (!workflows.fetched);
   let content: React.ReactNode;
   if (loading) {
@@ -142,6 +148,25 @@ function WorkflowsList({
         toggleAscending={toggleAscending}
         toggleExcludeInactive={toggleExcludeInactive} />
       {content}
+    </div>
+  );
+}
+
+
+function UnsupportedWorkflows() {
+  return (
+    <div>
+      <WarnAlert dismissible={false}>
+        <p>
+          Interacting with workflows in the UI requires updating your project to a newer version.
+        </p>
+        {/*
+        // ! TODO: add link to status overview
+        <p>
+          {updateInfo} should resolve the problem.
+          <br />The <Link to={overviewStatusUrl}>Project status</Link> page provides further information.
+        </p> */}
+      </WarnAlert>
     </div>
   );
 }

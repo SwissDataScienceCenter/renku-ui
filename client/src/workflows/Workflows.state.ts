@@ -48,9 +48,9 @@ class WorkflowsCoordinator {
     this.model = model.subModel("workflows");
   }
 
-  async fetchWorkflowsList(repositoryUrl: string, reference: string, versionUrl: string) {
+  async fetchWorkflowsList(repositoryUrl: string, reference: string, versionUrl: string, unsupported: boolean) {
     // do not fetch if we don't have the specific core url or already fetching
-    if (!versionUrl) return;
+    if (!versionUrl || unsupported) return;
     if (this.model.get("fetching") === true) return;
 
     // pre-fetching state changes
