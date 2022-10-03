@@ -380,7 +380,7 @@ function metadataFromData(data) {
     id: data.all.id,
     lastActivityAt: data.metadata.core.last_activity_at,
     namespace: data.all.namespace.full_path,
-    owner: data.metadata.core.owner,
+    owner: data.metadata.core.owner ?? data.all.namespace,
     path: data.all.path,
     pathWithNamespace: data.all.path_with_namespace,
     repositoryUrl: data.all.web_url,

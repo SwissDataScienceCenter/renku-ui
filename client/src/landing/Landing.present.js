@@ -48,7 +48,7 @@ function truncatedProjectListRows(projects, urlFullList, gridDisplay, lastVisite
       url: url,
       itemType: "project",
       title: project.name,
-      creators: project.owner ? [project.owner] : [],
+      creators: project.owner ? [project.owner] : [project.namespace],
       slug: project.path_with_namespace,
       description: project.description ?
         <Fragment>
