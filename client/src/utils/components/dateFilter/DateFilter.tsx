@@ -121,7 +121,7 @@ const DateFilter = ({ handler, values }: DateFilterProps) => {
   const options = items.map(item => {
     const nameInput = `author-${item.value}`;
     return (
-      <div className="d-flex align-items-center" key={nameInput}>
+      <div className="form-rk-green d-flex align-items-center" key={nameInput}>
         <Input
           type="radio"
           name="date-filter"
@@ -136,11 +136,11 @@ const DateFilter = ({ handler, values }: DateFilterProps) => {
     );
   });
   return (
-    <>
+    <div className="input-filter-box">
       <h3 className="filter-label">Creation Date</h3>
       {options}
       {datesInput}
-    </>
+    </div>
   );
 };
 

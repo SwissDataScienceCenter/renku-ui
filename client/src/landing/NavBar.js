@@ -26,15 +26,23 @@
 import React, { Component, Fragment } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import {
-  UncontrolledDropdown, DropdownItem, Navbar, Nav, NavbarToggler, Collapse, NavItem, DropdownToggle, DropdownMenu
+  UncontrolledDropdown,
+  DropdownItem,
+  Navbar,
+  Nav,
+  NavbarToggler,
+  Collapse,
+  NavItem,
+  DropdownToggle,
+  DropdownMenu,
 } from "reactstrap";
+import { Search } from "react-bootstrap-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faBars } from "@fortawesome/free-solid-svg-icons";
 import { faQuestionCircle, faUser } from "@fortawesome/free-regular-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import { getActiveProjectPathWithNamespace, gitLabUrlFromProfileUrl } from "../utils/helpers/HelperFunctions";
-import QuickNav from "../utils/components/quicknav";
 import { Url } from "../utils/helpers/url";
 import { NavBarWarnings } from "./NavBarWarnings";
 import { NotificationsMenu } from "../notifications";
@@ -272,6 +280,7 @@ class LoggedInNavBar extends Component {
     if (null != nextRoute) this.props.history.push(nextRoute);
   }
   render() {
+    const searchIcon = <Search />;
     return (
       <Fragment>
         <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
@@ -282,9 +291,12 @@ class LoggedInNavBar extends Component {
             <NavbarToggler onClick={this.toggle} className="border-0">
               <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
             </NavbarToggler>
-            <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
-            <Collapse isOpen={!this.state.isOpen} navbar className="menu-right">
+            <Collapse isOpen={!this.state.isOpen} navbar className="">
               <Nav className="navbar-nav flex-row flex-nowrap ms-lg-auto">
+                <NavItem className="nav-item col-4 col-lg-auto pe-lg-4">
+                  <RenkuNavLink to="/search" title="Search" id="link-search"
+                    icon={searchIcon} className="d-flex gap-2 align-items-center" />
+                </NavItem>
                 <NavItem className="nav-item col-4 col-lg-auto pe-lg-4">
                   <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
                 </NavItem>
@@ -333,6 +345,7 @@ class AnonymousNavBar extends Component {
   }
 
   render() {
+    const searchIcon = <Search />;
     return (
       <Fragment>
         <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
@@ -343,17 +356,11 @@ class AnonymousNavBar extends Component {
             <NavbarToggler onClick={this.toggle} className="border-0">
               <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
             </NavbarToggler>
-            <Collapse isOpen={!this.state.isOpen} navbar className="menu-right">
+            <Collapse isOpen={!this.state.isOpen} navbar className="">
               <Nav className="navbar-nav flex-row flex-nowrap ms-lg-auto">
-                <NavItem className="nav-item col-12 col-lg-auto pe-0 pe-lg-4 my-2 my-lg-0">
-                  <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
-                </NavItem>
-                <NavItem className="nav-item col-4 col-lg-auto">
-                  <RenkuNavLink to="/projects" alternate={"/projects/all"}
-                    title="Projects" id="link-projects" className="link-secondary" />
-                </NavItem>
-                <NavItem className="nav-item col-4 col-lg-auto">
-                  <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
+                <NavItem className="nav-item col-4 col-lg-auto pe-lg-4">
+                  <RenkuNavLink to="/search" title="Search" id="link-search"
+                    icon={searchIcon} className="d-flex gap-2 align-items-center" />
                 </NavItem>
                 <NavItem className="nav-item col-4 col-lg-auto pe-4">
                   <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />

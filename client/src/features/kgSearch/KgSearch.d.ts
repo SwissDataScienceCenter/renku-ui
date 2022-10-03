@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Visibilities } from "../../utils/components/visibility/Visibility";
-import { Creator } from "../../utils/components/list/List.d";
 
 interface KgSearchResultLink {
   rel: string;
@@ -35,7 +34,8 @@ export enum EntityType {
 
 interface KgSearchResult {
   _links: KgSearchResultLink[];
-  creator: Creator[];
+  creators: string[];
+  creator: string;
   description: string;
   date: string;
   keywords: string[];

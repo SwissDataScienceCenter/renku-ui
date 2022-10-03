@@ -40,7 +40,6 @@ import {
 
 import { Url } from "../utils/helpers/url";
 import { StatuspageBanner } from "../statuspage";
-import QuickNav from "../utils/components/quicknav";
 import { RenkuToolbarHelpMenu, RenkuToolbarNotifications } from "./NavBar";
 import { NavBarWarnings } from "./NavBarWarnings";
 
@@ -68,6 +67,7 @@ import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 import { Docs } from "../utils/constants/Docs";
+import { Search } from "react-bootstrap-icons";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -82,6 +82,7 @@ function HomeHeader(props) {
     github: "https://github.com/SwissDataScienceCenter/renku",
     docs: Docs.READ_THE_DOCS_ROOT
   };
+  const searchIcon = <Search />;
   return <Fragment>
     <Row key="statuspage">
       <Col>
@@ -147,14 +148,9 @@ function HomeHeader(props) {
         <Navbar className="navbar rk-anon-home px-0">
           <Nav className="ms-auto flex-column rk-bg-shaded-dark text-end"
             style={{ "--rk-bg-opacity": 0.8 }}>
-            <NavItem className="nav-item pe-1">
-              <QuickNav client={props.client} model={props.model} user={props.user} />
-            </NavItem>
-            <NavItem>
-              <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary" />
-            </NavItem>
-            <NavItem>
-              <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
+            <NavItem className="nav-item">
+              <RenkuNavLink to="/search" title="Search" id="link-search"
+                icon={searchIcon} />
             </NavItem>
             <NavItem className="nav-item">
               <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
