@@ -52,6 +52,8 @@ import {
   StopCircle as WrappedStopCircle,
   InfoCircle as WrappedInfoCircle,
   XCircleFill as WrappedXCircleFill,
+  Funnel as WrappedFunnel,
+  FunnelFill as WrappedFunnelFull,
 } from "react-bootstrap-icons";
 
 import { FormGroup as WrappedFormGroup, Input as WrappedInput, InputGroup as WrappedInputGroup } from "reactstrap";
@@ -261,6 +263,14 @@ function XCircleFill(props) {
   return <WrappedXCircleFill {...props} />;
 }
 
+function Funnel(props) {
+  return <WrappedFunnel {...props} />;
+}
+
+function FunnelFill(props) {
+  return <WrappedFunnelFull {...props} />;
+}
+
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
 export { Alert, Button, ButtonGroup, CheckCircleFill, XCircleFill };
 export { Card, CardBody, CardText, CardFooter, Col, DropdownItem };
@@ -270,3 +280,4 @@ export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
 export { ArrowLeft, Briefcase, Download, HddStack, Globe, Journals, People, Lock, Save, InfoCircle, StopCircle };
 export { Nav, NavItem, NavLink, TabContent, TabPane };
+export { Funnel, FunnelFill };

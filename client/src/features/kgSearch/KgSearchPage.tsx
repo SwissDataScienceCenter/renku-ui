@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useContext, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Col, Modal, ModalBody, ModalHeader, Row } from "../../utils/ts-wrappers";
 import SortingEntities, { SortingOptions } from "../../utils/components/sortingEntities/SortingEntities";
@@ -29,13 +29,14 @@ import { setPage, setSort, removeFilters, useKgSearchFormSelector } from "./KgSe
 import { KgAuthor } from "./KgSearch";
 import { TypeEntitySelection } from "../../utils/components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../utils/components/visibilityFilter/VisibilityFilter";
-import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DatesFilter } from "../../utils/components/dateFilter/DateFilter";
+import QuickNav from "../../utils/components/quicknav";
+import AppContext from "../../utils/context/appContext";
 
 interface SearchPageProps {
   isLoggedUser: boolean;
   userName?: string;
+  model: any;
 }
 
 interface ModalFilterProps {
@@ -64,10 +65,10 @@ const ModalFilter = ({
   return (
     <Modal isOpen={isOpen} toggle={onToggle} className="filter-modal">
       <ModalHeader toggle={onToggle}>
-        <span className="filter-title">Filter by</span>
+        <span className="filter-title">Filters</span>
       </ModalHeader>
       <ModalBody>
-        <div className="bg-white px-4 pb-4 w-100">
+        <div className="pb-4 w-100">
           <FilterEntitySearch
             valuesDate={valuesDate} author={author} type={type} visibility={visibility} isLoggedUser={isLoggedUser} />
           <SortingEntities styleType="mobile" sort={sort} setSort={handleSort} />
@@ -77,11 +78,15 @@ const ModalFilter = ({
   );
 };
 
-function SearchPage({ userName, isLoggedUser }: SearchPageProps) {
+function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
   const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = useKgSearchFormSelector(
     (state) => state.kgSearchForm
   );
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
+  const [isOpenFilter, setIsOpenFilter] = useState(true);
+  // @ts-ignore
+  const { client } = useContext(AppContext);
+  const user = useSelector((state: any) => state.stateModel.user);
   const dispatch = useDispatch();
   const searchRequest = {
     phrase,
@@ -108,29 +113,39 @@ function SearchPage({ userName, isLoggedUser }: SearchPageProps) {
   const { data, isFetching, isLoading } = useSearchEntitiesQuery(searchRequest);
   const filter = (
     <>
-      <div className="d-sm-block d-md-block d-lg-none d-xl-none d-xxl-none text-end">
-        <div className="fw-bold" onClick={() => setIsOpenFilterModal(!isOpenFilterModal)}>
-          Filter & Sort <FontAwesomeIcon icon={isOpenFilterModal ? faAngleUp : faAngleDown} />
-        </div>
-      </div>
-      <div className="bg-white p-4 rounded-2 d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block">
-        <FilterEntitySearch
-          valuesDate={valuesDate} author={author} type={type} visibility={visibility} isLoggedUser={isLoggedUser} />
-      </div>
+      { isOpenFilter ?
+        <Col className="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-2 pb-2">
+          <div className="d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block">
+            <FilterEntitySearch
+              valuesDate={valuesDate} author={author} type={type} visibility={visibility} isLoggedUser={isLoggedUser} />
+          </div>
+        </Col>
+        : null }
     </>
   );
 
+  // @ts-ignore
+  const searchNav = <QuickNav client={client} model={model} user={user} />;
   return (
     <>
       <Row>
-        <Col className="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-2 pb-2">{filter}</Col>
-        <Col className="col-12 col-sm-12 col-md-12 col-lg-9 col-xl-10">
+        <Col className="col-12">
+          {searchNav}
+        </Col>
+        <Col className={isOpenFilter ? "col-12 pb-2 m-auto" : "col-10 pb-2 m-auto search-result-header"}>
           <SearchResultsHeader
             total={data?.total}
             phrase={phrase}
             sort={sort}
+            isFiltersOpened={isOpenFilter}
+            toggleFilter={() => setIsOpenFilter(!isOpenFilter)}
+            toggleFilterModal={setIsOpenFilterModal}
+            isOpenFilterModal={isOpenFilterModal}
             handleSort={(value: SortingOptions) => dispatch(setSort(value))}
           />
+        </Col>
+        {filter}
+        <Col className="col-12 col-sm-12 col-md-12 col-lg-9 col-xl-10 mx-auto">
           <SearchResultsContent
             data={data}
             isFetching={isFetching}

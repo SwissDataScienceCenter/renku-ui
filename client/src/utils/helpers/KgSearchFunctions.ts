@@ -40,11 +40,10 @@ export const mapSearchResultToEntity =
     const url = entity.type === EntityType.Dataset ?
       getDatasetUrl(entity._links) :
       getProjectUrl(entity.path);
-    const handler = () => {
-      const handlerUrl = entity.type === EntityType.Dataset ?
-        `${url}/add` : `${url}/sessions/new?autostart=1`;
-      history.push(handlerUrl);
-    };
+
+    const creators = entity.type === EntityType.Dataset ?
+      entity.creators?.map( (c: string) => { return { name: c }; }) :
+      [{ name: entity.creator }];
 
     return {
       url,
@@ -53,10 +52,9 @@ export const mapSearchResultToEntity =
       tagList: entity.keywords,
       timeCaption: entity.date,
       labelCaption: "Creation",
-      creators: entity.creator,
+      creators,
       itemType: entity.type,
       slug: entity.type === EntityType.Project ? entity.namespace : "",
       visibility: entity.visibility,
-      handler
     };
   };

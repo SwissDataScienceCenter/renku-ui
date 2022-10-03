@@ -16,31 +16,37 @@
  * limitations under the License.
  */
 
-import React from "react";
+import { FixturesConstructor } from "./fixtures";
 
 /**
- *  renku-ui
- *
- *  Entity Slug.tsx
- *  Entity Slug component
+ * Fixtures for kg search
  */
 
-export interface SlugProps {
-  display: "list" | "grid";
-  slug: string | React.ReactNode;
+
+function KgSearch<T extends FixturesConstructor>(Parent: T) {
+  return class KgSearchFixtures extends Parent {
+
+    getLastSearch(name = "getLastSearch") {
+      cy.intercept("/ui-server/api//last-searches/6", {
+        fixture: "kgSearch/lastSearch.json"
+      }).as(name);
+      return this;
+    }
+
+    search(name = "getEntities") {
+      cy.intercept(
+        "/ui-server/api/kg/entities*",
+        {
+          fixture: "kgSearch/search.json",
+          headers: {
+            "total": "7"
+          }
+        }
+      ).as(name);
+      return this;
+    }
+
+  };
 }
 
-function Slug({ display, slug }: SlugProps) {
-  if (!slug) slug = "";
-  if (display === "list") {
-    return <div className="slug card-text text-truncate creators text-rk-text-light">
-      {slug}
-    </div>;
-  }
-
-  return <span className="slug font-weight-light text-rk-text ms-2 d-grid">
-    {slug}
-  </span>;
-}
-
-export default Slug;
+export { KgSearch };

@@ -50,15 +50,14 @@ const FilterEntitySearch = ({ author, type, visibility, isLoggedUser, valuesDate
   ) : null;
   return (
     <>
-      <h3 className="filter-title d-none d-sm-none d-md-none d-lg-block d-xl-block pb-3">Filter by</h3>
       <div className="filter-box">
         <div><TypeEntityFilter
           handler={(value: TypeEntitySelection) => dispatch(setType(value))}
           value={type} /></div>
-        {authorComponent}
         <div><VisibilityFilter
           handler={(value: VisibilitiesFilter) => dispatch(setVisibility(value))}
           value={visibility} /></div>
+        {authorComponent}
         <div>
           <DateFilter values={valuesDate} handler={(dates: DatesFilter) => dispatch(setDates(dates))} />
         </div>

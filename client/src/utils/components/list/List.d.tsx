@@ -1,5 +1,6 @@
 import { Visibilities } from "../visibility/Visibility";
 import { EntityType } from "../../../features/kgSearch/KgSearch";
+import { EntityCreator } from "../entities/Creators";
 
 export interface Creator {
   name: string;
@@ -22,11 +23,10 @@ export interface ListElementProps {
   timeCaption: string;
   labelCaption: string;
   mediaContent?: any;
-  creators: Creator[] | string;
-  itemType?: EntityType;
+  creators: EntityCreator[];
+  itemType: EntityType;
   slug: string;
-  visibility?: Visibilities,
-  handler?: Function
+  visibility: Visibilities,
 }
 
 export interface VisibilityIconProps {

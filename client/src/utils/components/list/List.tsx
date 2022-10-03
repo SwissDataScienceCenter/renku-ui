@@ -16,62 +16,13 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGlobe, faLock, faPlay, faPlus, faUserFriends } from "@fortawesome/free-solid-svg-icons";
-
-import { toCapitalized } from "../../helpers/HelperFunctions";
-import { Button } from "../../ts-wrappers";
 import "./ListCard.css";
 import {
   ListElementProps,
   ListDisplayType,
-  VisibilityIconProps,
-  EntityIconProps,
-  EntityButtonProps,
 } from "./List.d";
 import ListCard from "./ListCard";
 import ListBar from "./ListBar";
-import { EntityType } from "../../../features/kgSearch";
-
-export const VisibilityIcon = ({ visibility }: VisibilityIconProps) => {
-  if (!visibility) return null;
-  const icon = {
-    public: <FontAwesomeIcon icon={faGlobe} />,
-    private: <FontAwesomeIcon icon={faLock} />,
-    internal: <FontAwesomeIcon icon={faUserFriends} />
-  };
-  return <span className="visibility-icon text-rk-text" title={toCapitalized(visibility)}>
-    { icon[visibility] || "" }
-  </span>;
-};
-
-
-export const EntityIcon = ({ entityType }: EntityIconProps) => {
-  if (!entityType)
-    return null;
-
-  const entityIcon = entityType === EntityType.Project ? "/project-icon.svg" : "/dataset-icon.svg";
-  return <div><img width={24} src={entityIcon} /></div>;
-};
-
-
-export const EntityButton = ({ entityType, handler }: EntityButtonProps) => {
-  if (!entityType)
-    return null;
-
-  const onMainButton = () => {
-    if (handler)
-      handler();
-  };
-
-  return entityType === EntityType.Project ?
-    (<Button key="start-session" color="primary" onClick={onMainButton}>
-      <FontAwesomeIcon className="me-1" icon={faPlay} /> Start session
-    </Button>) :
-    (<Button key="add-to-project" color="primary" onClick={onMainButton}>
-      <FontAwesomeIcon className="me-1" icon={faPlus} /> Add to project
-    </Button>);
-};
 
 /**
  * ListCard/ListBar returns a card or a bar displaying an item in a List.

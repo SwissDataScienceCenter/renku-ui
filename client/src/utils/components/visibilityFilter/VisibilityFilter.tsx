@@ -18,9 +18,7 @@
 import * as React from "react";
 import { ChangeEvent } from "react";
 import "./VisibilityFilter.css";
-import { faGlobe, faLock, faUserFriends } from "@fortawesome/free-solid-svg-icons";
-import { Input } from "../../ts-wrappers";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Globe, Input, Lock, People } from "../../ts-wrappers";
 
 /**
  *  renku-ui
@@ -53,16 +51,16 @@ const VisibilityFilter = ({ handler, value }: VisibilityFilterProps) => {
   };
 
   const items = [
-    { title: "Public", value: "public", icon: faGlobe },
-    { title: "Internal", value: "internal", icon: faUserFriends },
-    { title: "Private", value: "private", icon: faLock },
+    { title: "Public", value: "public", icon: <Globe color="#3A3A3D" /> },
+    { title: "Internal", value: "internal", icon: <People color="#3A3A3D" /> },
+    { title: "Private", value: "private", icon: <Lock color="#3A3A3D" /> },
   ];
 
   const options = items.map(item => {
     const nameInput = `visibility-${item.value}`;
     const itemValueAsKey = item.value as keyof VisibilitiesFilter;
     return (
-      <div className="d-flex align-items-center" key={nameInput}>
+      <div className="form-rk-green d-flex align-items-center" key={nameInput}>
         <Input
           type="checkbox"
           name={nameInput}
@@ -71,18 +69,16 @@ const VisibilityFilter = ({ handler, value }: VisibilityFilterProps) => {
           onChange={(e: ChangeEvent<HTMLInputElement>) => selectVisibility(item.value, e.target.checked)}
           className="visibility-input"
           data-cy={nameInput}/>
-        <label className="px-2 visibility-label cursor-pointer"
-          onClick={() => selectVisibility(item.value, !value[itemValueAsKey])}>{item.title}</label>
-        <FontAwesomeIcon className="visibility-icon cursor-pointer" icon={item.icon}
-          onClick={() => selectVisibility(item.value, !value[itemValueAsKey])}/>
+        <div className="px-2 visibility-label cursor-pointer d-flex align-items-center gap-2"
+          onClick={() => selectVisibility(item.value, !value[itemValueAsKey])}>{item.icon}{item.title}</div>
       </div>
     );
   });
   return (
-    <>
+    <div className="input-filter-box">
       <h3 className="filter-label">Visibility</h3>
       {options}
-    </>
+    </div>
   );
 };
 

@@ -23,8 +23,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 import "./QuickNav.style.css";
-import { Label } from "reactstrap";
-import { defaultAnonymousSuggestionQuickBar, defaultSuggestionQuickBar } from "./QuickNav.container";
 class QuickNavPresent extends Component {
 
   constructor(props) {
@@ -35,17 +33,6 @@ class QuickNavPresent extends Component {
 
   doRenderSuggestion(suggestion, { query, isHighlighted }) {
     const style = { padding: "5px 0", borderBottom: "1px solid #e1e4e8" };
-
-    if (suggestion.type === "fixed") {
-      return (
-        <div style={style}>
-          <Link id={suggestion.id} to={suggestion.url} style={{ textDecoration: "none", display: "block" }}>
-            <img src={suggestion.icon} className="suggestion-icon" width="27" alt={suggestion.label} />
-            {suggestion.label}
-          </Link>
-        </div>
-      );
-    }
 
     if (suggestion.type === "last-queries") {
       return (
@@ -98,7 +85,7 @@ class QuickNavPresent extends Component {
     const theme = this.getTheme();
 
     const inputProps = {
-      placeholder: "Search...",
+      placeholder: "What are you looking for?",
       type: "search",
       value: this.props.value,
       onChange: this.props.callbacks.onChange,
@@ -108,16 +95,16 @@ class QuickNavPresent extends Component {
       }
     };
 
-    let suggestionList = [defaultAnonymousSuggestionQuickBar];
+    let suggestionList = [];
     if (this.props.loggedIn) {
       suggestionList = this.props.suggestions ?
-        [this.props.suggestions, defaultSuggestionQuickBar] : [defaultSuggestionQuickBar];
+        [this.props.suggestions] : [];
     }
 
     return (
       <div className="d-flex flex-nowrap w-100 flex-sm-grow-1 mx-0 mx-lg-2">
         <div className="search-box flex-nowrap justify-content-center m-auto">
-          <div id="quick-nav" className="quick-nav input-group flex-nowrap input-group-sm justify-content-center pe-2">
+          <div id="quick-nav" className="quick-nav input-group flex-nowrap input-group-sm justify-content-center">
             <Autosuggest
               suggestions={suggestionList}
               getSuggestionValue={this.props.callbacks.getSuggestionValue}
@@ -134,13 +121,12 @@ class QuickNavPresent extends Component {
               focusInputOnSuggestionClick={false}
               alwaysRenderSuggestions={false}
               renderSuggestion={this.onRenderSuggestion} />
-            <span className="quick-nav-icon d-flex justify-content-center align-items-center mx-2 cursor-pointer"
+            <span className="quick-nav-icon d-flex justify-content-center align-items-center mx-4 cursor-pointer"
               id="addon-wrapping"
               onClick={this.props.callbacks.onSubmit}>
               <FontAwesomeIcon icon={faSearch} />
             </span>
           </div>
-          <Label className="search-input-label">Search for Projects or Datasets</Label>
         </div>
       </div>
     );
