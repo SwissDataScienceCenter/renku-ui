@@ -66,7 +66,7 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
 
   return (
     <WorkflowsListPresent
-      ascending={orderByAscending} excludeInactive={excludeInactive} orderBy={orderBy}
+      ascending={orderByAscending} excludeInactive={excludeInactive} fullPath={fullPath} orderBy={orderBy}
       orderByMatrix={WorkflowsSorting} setOrderBy={setOrderBy} toggleAscending={toggleAscending}
       toggleExcludeInactive={toggleExcludeInactive} unsupported={unsupported}
       waiting={waiting} workflows={workflows}

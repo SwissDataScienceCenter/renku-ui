@@ -17,6 +17,7 @@
  */
 
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
 
@@ -29,6 +30,7 @@ import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { EntityType } from "../utils/components/entities/Entities";
 import { Loader } from "../utils/components/Loader";
 import { WarnAlert } from "../utils/components/Alert";
+import { Url } from "../utils/helpers/url";
 
 
 interface WorkflowsListFiltersProps {
@@ -87,28 +89,40 @@ function WorkflowsListFilters({
 }
 
 
-function UnsupportedWorkflows() {
+interface UnsupportedWorkflowsProps {
+  fullPath: string;
+}
+
+function UnsupportedWorkflows({ fullPath }: UnsupportedWorkflowsProps) {
+  const updateUrl = Url.get(Url.pages.project.overview.status, { namespace: "", path: fullPath });
+
   return (
     <div>
       <WarnAlert dismissible={false}>
         <p>
           Interacting with workflows in the UI requires updating your project to a newer version.
         </p>
-        {/*
-        // ! TODO: add link to status overview
-        <p>
-          {updateInfo} should resolve the problem.
-          <br />The <Link to={overviewStatusUrl}>Project status</Link> page provides further information.
-        </p> */}
+        <p className="mb-0">
+        The <Link to={updateUrl}>Project status</Link> page provides further information.
+        </p>
       </WarnAlert>
     </div>
   );
 }
 
 
+function orderWorkflows(
+  workflows: Array<Record<string, any>>, orderBy: string, ascending: boolean, excludeInactive: boolean
+) {
+  const filtered = excludeInactive ? workflows.filter(w => w.active) : workflows;
+  const sorted = filtered.sort((a, b) => (a[orderBy] > b[orderBy]) ? 1 : ((b[orderBy] > a[orderBy]) ? -1 : 0));
+  return ascending ? sorted : sorted.reverse();
+}
+
 interface WorkflowsListProps {
   ascending: boolean;
   excludeInactive: boolean;
+  fullPath: string;
   orderBy: string;
   orderByMatrix: Record<string, string>,
   setOrderBy: Function;
@@ -119,20 +133,13 @@ interface WorkflowsListProps {
   workflows: Record<string, any>;
 }
 
-function orderWorkflows(
-  workflows: Array<Record<string, any>>, orderBy: string, ascending: boolean, excludeInactive: boolean
-) {
-  const filtered = excludeInactive ? workflows.filter(w => w.active) : workflows;
-  const sorted = filtered.sort((a, b) => (a[orderBy] > b[orderBy]) ? 1 : ((b[orderBy] > a[orderBy]) ? -1 : 0));
-  return ascending ? sorted : sorted.reverse();
-}
-
 function WorkflowsList({
-  ascending, excludeInactive, orderBy, orderByMatrix, setOrderBy, toggleAscending,
+  ascending, excludeInactive, fullPath, orderBy, orderByMatrix, setOrderBy, toggleAscending,
   toggleExcludeInactive, unsupported, waiting, workflows
 }: WorkflowsListProps) {
   // return immediately when workflows are not supported in the current project
-  if (unsupported) return (<UnsupportedWorkflows />);
+  if (unsupported)
+    return (<UnsupportedWorkflows fullPath={fullPath} />);
 
   // show status: loading or error or full content
   const loading = waiting || (!workflows.fetched);
