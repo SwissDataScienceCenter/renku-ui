@@ -73,7 +73,7 @@ function EntityHeader(
       <div className={`card-header-entity--large card-header-entity--${itemType}-large`}>
         <div className="card-bg-title card-bg-title--large" data-cy={`${itemType}-title`}>{title}</div>
         <div className="d-flex justify-content-between align-items-center m-3">
-          <EntityLabel type={itemType} />
+          <EntityLabel type={itemType} workflowType={null} />
           <VisibilityIcon visibility={visibility} className="" />
         </div>
       </div>
