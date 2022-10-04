@@ -45,7 +45,7 @@ export const kgInactiveProjectsSlice = createSlice({
     updateProgress: (state, action: PayloadAction<ActivationStatus>) => {
       return state.map(p => {
         if (p.id === action.payload.id)
-          p = { ...p, progressActivation: action.payload.progress };
+          p = { ...p, progressActivation: action.payload.progress, selected: true };
         return p;
       });
     },

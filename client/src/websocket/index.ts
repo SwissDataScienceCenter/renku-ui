@@ -18,7 +18,7 @@
 
 import { checkWsServerMessage, WsMessage, WsServerMessage } from "./WsMessages";
 import { handleUserInit, handleUserUiVersion, handleUserError } from "./handlers/userHandlers";
-import { HandleKgActivationStatus } from "./handlers/kgActivationStatusHandler";
+import { handleKgActivationStatus } from "./handlers/kgActivationStatusHandler";
 
 
 const timeoutIntervalMs = 45 * 1000; // ? set to 0 to disable
@@ -53,8 +53,8 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
     "activation": [
       {
         required: null,
-        optional: ["start", "message"],
-        handler: HandleKgActivationStatus
+        optional: ["message"],
+        handler: handleKgActivationStatus
       }
     ],
     "ack": [

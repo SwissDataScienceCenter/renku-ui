@@ -40,6 +40,7 @@ function KgActivationHeader() {
       </h1>
       <ThrottledTooltip
         target="activation-question"
+        autoHide={false}
         tooltip={tooltip} />
     </>
   );

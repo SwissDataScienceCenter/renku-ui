@@ -202,7 +202,7 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
     (
       <div className="col-md-12 p-4 border-radius-8 bg-white">
         <div className="d-flex justify-content-center align-items-center gap-2">
-          <Balloon size="30" /> Great. There are no pending projects to activate Knowledge Graph.</div></div>
+          <Balloon size="30" /> All projects are in the Knowledge Graph.</div></div>
     );
 
   return (

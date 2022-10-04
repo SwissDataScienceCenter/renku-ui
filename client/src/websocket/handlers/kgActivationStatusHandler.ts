@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-function HandleKgActivationStatus(data: Record<string, unknown>, webSocket: WebSocket, model: any, notifications: any) {
+function handleKgActivationStatus(data: Record<string, unknown>, webSocket: WebSocket, model: any, notifications: any) {
   if (data.message) {
     const statuses = JSON.parse(data.message as string);
     model.subModel("kgActivation").setObject({ status: statuses });
@@ -54,4 +54,4 @@ function processStatusForNotifications(statuses: Record<number, number>, notific
   });
 }
 
-export { HandleKgActivationStatus };
+export { handleKgActivationStatus };

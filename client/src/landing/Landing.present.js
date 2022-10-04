@@ -149,7 +149,7 @@ class Welcome extends Component {
   }
 }
 
-export function ProjectsInactiveKG() {
+export function ProjectsInactiveKGWarning() {
   const user = useSelector((state) => state.stateModel.user);
   const projectList = useInactiveProjectSelector(
     (state) => state.kgInactiveProjects
@@ -197,7 +197,7 @@ class LoggedInHome extends Component {
           <Row><Col md={12}>&nbsp;</Col></Row>
         </Col>
         <Col xs={{ order: 1 }} md={{ size: 5, order: 2 }}>
-          <ProjectsInactiveKG />
+          <ProjectsInactiveKGWarning />
           <Welcome {...this.props} />
         </Col>
       </Row>,

@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import ws from "ws";
-
 import { Channel } from "../index";
 import { WsMessage } from "../WsMessages";
 import config from "../../config";
@@ -29,57 +27,68 @@ type ActivationStatus = {
   [key: number]: number
 }
 
-async function getActivationStatus(projectIds: number[]): Promise<ActivationStatus> {
+function sendMessage(data: string, channel: Channel) {
+  const info = new WsMessage({ message: data }, "user", "activation");
+  channel.sockets.forEach(socket => socket.send(info.toString()));
+}
+
+function getActivationStatus(projectIds: number[], channel: Channel): void {
   const { gatewayUrl } = config.deployment;
-  let statuses = {};
   for (let i = 0; i < projectIds.length; i++) {
     const id = projectIds[i];
     const activationStatusURL = `${gatewayUrl}/projects/${id}/graph/status`;
     logger.info(`Fetching activation from ${id} projects`);
 
-    const response = await fetch(activationStatusURL);
-    const status = await response.json();
-    const progressActivation = status?.progress ?? -1;
-    statuses = { ...statuses, [id]: progressActivation };
+    fetch(activationStatusURL).then(async (response) => {
+      const status = await response.json();
+      const previousStatuses = channel.data.get("activationProjects") as ActivationStatus;
+      const currentStatus = status?.progress ?? -1;
+      const previousStatus = previousStatuses ? previousStatuses[id] : null;
+      if (!util.isDeepStrictEqual(previousStatus, currentStatus)) {
+        const currentStatuses = { ...previousStatuses, [id]: currentStatus };
+        sendMessage(JSON.stringify(currentStatuses), channel);
+        channel.data.set("activationProjects", currentStatuses);
+      }
+    });
   }
-  return statuses;
 }
 
 async function handlerRequestActivationKgStatus(
-  data: Record<string, unknown>, channel: Channel, socket: ws): Promise<void> {
+  data: Record<string, unknown>, channel: Channel): Promise<void> {
   // save the request enabler
   if (data.projects) {
     const projectsIds = data.projects as number[];
-    channel.data.set("projectsIds", data.projects);
-    if (!projectsIds.length)
-      return;
-
-    const statuses = await getActivationStatus(projectsIds as number[]);
-    const dataResponse = JSON.stringify(statuses);
-    channel.data.set("activationProjects", statuses);
-    const response = { start: true, message: dataResponse };
-    socket.send((new WsMessage(response, "user", "activation")).toString());
+    const currentProjectsIds = channel.data.get("projectsIds") as number[];
+    const ids = currentProjectsIds?.length ? [...currentProjectsIds, ...projectsIds] : projectsIds;
+    channel.data.set("projectsIds", ids);
   }
 }
 
 async function heartbeatRequestActivationKgStatus(channel: Channel): Promise<void> {
-  const previousStatuses = channel.data.get("activationProjects") as ActivationStatus;
   const projectsIds = channel.data.get("projectsIds") as number[];
-
-  if (projectsIds?.length && previousStatuses) {
+  if (projectsIds?.length) {
+    const previousStatuses = channel.data.get("activationProjects") as ActivationStatus;
     // remove ids are complete
-    const ids: number[] = (projectsIds).filter( (id: number) => previousStatuses[id] != 100);
+    const ids: number[] = previousStatuses ?
+      (projectsIds).filter( (id: number) => previousStatuses[id] != 100) :
+      projectsIds;
+    cleanCompletedStatuses(previousStatuses, channel);
 
     channel.data.set("projectsIds", ids.length ? ids : []);
-    const statuses = await getActivationStatus(ids);
-
-    if (!util.isDeepStrictEqual(previousStatuses, statuses)) {
-      channel.data.set("activationProjects", statuses);
-      const response = { start: true, message: JSON.stringify(statuses) };
-      const info = new WsMessage(response, "user", "activation");
-      channel.sockets.forEach(socket => socket.send(info.toString()));
-    }
+    getActivationStatus(ids, channel);
   }
+}
+
+function cleanCompletedStatuses(statuses: ActivationStatus, channel: Channel) {
+  if (!statuses)
+    return;
+  const noCompletedStatus = statuses;
+  Object.keys(statuses).forEach((key => {
+    const id = parseInt(key);
+    if (statuses[id] === 100)
+      delete noCompletedStatus[id];
+  }));
+  channel.data.set("activationProjects", noCompletedStatus);
 }
 
 export { handlerRequestActivationKgStatus, heartbeatRequestActivationKgStatus };
