@@ -10,9 +10,12 @@ import {
   AccordionBody as WrappedAccordionBody,
   Alert as WrappedAlert,
   Button as WrappedButton,
+  ButtonDropdown as WrappedButtonDropdown,
   ButtonGroup as WrappedButtonGroup,
   Col as WrappedCol,
   DropdownItem as WrappedDropdownItem,
+  DropdownMenu as WrappedDropdownMenu,
+  DropdownToggle as WrappedDropdownToggle,
   Fade as WrappedFade,
   FormFeedback as WrappedFormFeedback,
   Form as WrappedForm,
@@ -42,6 +45,8 @@ import {
   ArrowLeft as WrappedArrowLeft,
   Briefcase as WrappedBriefcase,
   CheckCircleFill as WrappedCheckCircleFill,
+  CardList as WrappedCardList,
+  Diagram3 as WrappedDiagram3,
   HddStack as WrappedHddStack,
   Globe as WrappedGlobe,
   People as WrappedPeople,
@@ -76,6 +81,10 @@ function ButtonGroup(props) {
   return <WrappedButtonGroup {...props} />;
 }
 
+function ButtonDropdown(props) {
+  return <WrappedButtonDropdown {...props} />;
+}
+
 function Col(props) {
   return <WrappedCol {...props} />;
 }
@@ -96,6 +105,14 @@ function CardFooter(props) {
   return <WrappedCardFooter {...props} />;
 }
 
+function DropdownMenu(props) {
+  return <WrappedDropdownMenu {...props} />;
+}
+
+function DropdownToggle(props) {
+  return <WrappedDropdownToggle {...props} />;
+}
+
 function PopoverHeader(props) {
   return <WrappedPopoverHeader {...props} />;
 }
@@ -103,7 +120,6 @@ function PopoverHeader(props) {
 function PopoverBody(props) {
   return <WrappedPopoverBody {...props} />;
 }
-
 
 function UncontrolledPopover(props) {
   return <WrappedUncontrolledPopover {...props} />;
@@ -175,6 +191,14 @@ function Table(props) {
 
 function Briefcase(props) {
   return <WrappedBriefcase {...props} />;
+}
+
+function CardList(props) {
+  return <WrappedCardList {...props} />;
+}
+
+function Diagram3(props) {
+  return <WrappedDiagram3 {...props} />;
 }
 
 function HddStack(props) {
@@ -262,11 +286,12 @@ function XCircleFill(props) {
 }
 
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
-export { Alert, Button, ButtonGroup, CheckCircleFill, XCircleFill };
-export { Card, CardBody, CardText, CardFooter, Col, DropdownItem };
+export { Alert, Button, ButtonDropdown, ButtonGroup, CheckCircleFill, XCircleFill  };
+export { Card, CardBody, CardText, CardFooter, Col, DropdownItem, DropdownMenu, DropdownToggle };
 export { FormFeedback, FormText, Fade, Form, FormGroup, Input, InputGroup, Label };
 export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
-export { ArrowLeft, Briefcase, Download, HddStack, Globe, Journals, People, Lock, Save, InfoCircle, StopCircle };
+export { ArrowLeft, Briefcase, CardList, Diagram3, Download, Globe, HddStack, InfoCircle, Journals, Lock };
+export { People, Save, StopCircle };
 export { Nav, NavItem, NavLink, TabContent, TabPane };
