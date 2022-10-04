@@ -57,6 +57,8 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
   const toggleAscending = () => setOrderByAscending(!orderByAscending);
   const toggleExcludeInactive = () => setExcludeInactive(!excludeInactive);
 
+  const toggleExpanded = (workflowId: string) => workflowsCoordinator.toggleExpanded(workflowId);
+
   const { id }: Record<string, string> = useParams();
   const selected = id;
 
@@ -70,18 +72,18 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
     workflowsCoordinator.fetchWorkflowsList(repositoryUrl, reference, versionUrl, unsupported, fullPath);
   }, [repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const targetChanged = (repositoryUrl + reference) !== workflows.target;
+  const targetChanged = (repositoryUrl + reference) !== workflows.target; // ! is this still necessary?
   const versionUrlAvailable = !versionUrl ? false : true;
   const waiting = !versionUrlAvailable || targetChanged;
 
   if (treeView) {
     return (
       <WorkflowsTreeBrowserPresent
-        ascending={orderByAscending} excludeInactive={excludeInactive} fullPath={fullPath} orderBy={orderBy}
-        orderByMatrix={WorkflowsSorting} setOrderBy={setOrderBy} toggleAscending={toggleAscending}
+        ascending={orderByAscending} excludeInactive={excludeInactive} expanded={workflows.expanded} fullPath={fullPath}
+        orderBy={orderBy} orderByMatrix={WorkflowsSorting} setOrderBy={setOrderBy} toggleAscending={toggleAscending}
         toggleExcludeInactive={toggleExcludeInactive} unsupported={unsupported}
         waiting={waiting} selected={selected} workflows={workflows}
-        toggleTreeView={toggleTreeView} treeView={treeView}
+        toggleExpanded={toggleExpanded} toggleTreeView={toggleTreeView} treeView={treeView}
       />
     );
   }

@@ -17,6 +17,7 @@
  */
 
 import { Url } from "../utils/helpers/url";
+import { workflowsSchema } from "../model/RenkuModels";
 
 
 const PLANS_PREFIX = "/plans/";
@@ -65,6 +66,14 @@ class WorkflowsCoordinator {
   async fetchWorkflowsList(
     repositoryUrl: string, reference: string, versionUrl: string, unsupported: boolean, fullPath: string
   ) {
+    // reset on target change
+    const target = repositoryUrl + reference;
+    const oldTarget = this.workflowsModel.get("target");
+    if (oldTarget && target !== oldTarget) {
+      const pristine = workflowsSchema.createInitialized();
+      this.workflowsModel.setObject({ $set: pristine });
+    }
+
     // do not fetch if we don't have the specific core url or already fetching
     if (!versionUrl || unsupported) return;
     if (this.workflowsModel.get("fetching") === true) return;
@@ -115,6 +124,16 @@ class WorkflowsCoordinator {
     else
       newWorkflowState.details = { $set: {} };
     this.workflowModel.setObject(newWorkflowState);
+  }
+
+  toggleExpanded(workflowId: string) {
+    const expanded = this.workflowsModel.get("expanded");
+    let newExpanded: string[] = [];
+    if (expanded.includes(workflowId))
+      newExpanded = expanded.filter((e: any) => e !== workflowId);
+    else
+      newExpanded = [...expanded, workflowId];
+    this.workflowsModel.set("expanded", newExpanded);
   }
 }
 

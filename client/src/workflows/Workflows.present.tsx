@@ -200,6 +200,7 @@ function TmpSwitchTreeView({ toggleTreeView, treeView }: TmpSwitchTreeViewProps)
 interface WorkflowsTreeBrowserProps {
   ascending: boolean;
   excludeInactive: boolean;
+  expanded: string[];
   fullPath: string;
   orderBy: string;
   orderByMatrix: Record<string, string>,
@@ -207,6 +208,7 @@ interface WorkflowsTreeBrowserProps {
   setOrderBy: Function;
   toggleAscending: Function;
   toggleExcludeInactive: Function;
+  toggleExpanded: Function;
   toggleTreeView: Function;
   treeView: boolean;
   unsupported: boolean;
@@ -215,18 +217,9 @@ interface WorkflowsTreeBrowserProps {
 }
 
 function WorkflowsTreeBrowser({
-  ascending, excludeInactive, fullPath, orderBy, orderByMatrix, selected, setOrderBy, toggleAscending,
-  toggleExcludeInactive, toggleTreeView, treeView, unsupported, waiting, workflows
+  ascending, excludeInactive, expanded, fullPath, orderBy, orderByMatrix, selected, setOrderBy, toggleAscending,
+  toggleExcludeInactive, toggleExpanded, toggleTreeView, treeView, unsupported, waiting, workflows
 }: WorkflowsTreeBrowserProps) {
-
-  const [expanded, setExpanded] = useState<string[]>([]);
-  const toggleExpanded = (workflowId: string) => {
-    if (expanded.includes(workflowId))
-      setExpanded(expanded.filter(e => e !== workflowId));
-    else
-      setExpanded([...expanded, workflowId]);
-  };
-
   // return immediately when workflows are not supported in the current project
   if (unsupported)
     return (<UnsupportedWorkflows fullPath={fullPath} />);
