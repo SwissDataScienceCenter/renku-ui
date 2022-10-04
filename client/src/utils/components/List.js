@@ -24,6 +24,7 @@ import Masonry from "react-masonry-css";
 import { TimeCaption } from "./TimeCaption";
 import { Pagination } from "./Pagination";
 import EntityCreators from "./entities/Creators";
+import EntityExecutions from "./entities/Executions";
 import VisibilityIcon from "./entities/VisibilityIcon";
 import EntityLabel from "./entities/Label";
 import Slug from "./entities/Slug";
@@ -34,19 +35,22 @@ import { EntityButton } from "./entities/Buttons";
 /**
  * ListCard/ListBar returns a card or a bar displaying an item in a List.
  *
- * @param url containing a link to the item details.
- * @param title title of the item.
- * @param description description of the item.
- * @param tagList tag list of the item.
- * @param timeCaption date to put inside the time caption of the item.
- * @param labelCaption label to put inside the time caption of the item, if empty defaults to Updated.
- * @param mediaContent image of the item.
- * @param creators creators of the item, if more than 3 they will be cropped at 3.
- * @param itemType type of the item being rendered, the color of the circle depends on this.
+ * @param creators - creators of the item, if more than 3 they will be cropped at 3.
+ * @param description - description of the item.
+ * @param itemType - type of the item being rendered, the color of the circle depends on this.
+ * @param labelCaption - label to put inside the time caption of the item, if empty defaults to Updated.
+ * @param slug - project namespace + id
+ * @param tagList - list of the item's tags
+ * @param timeCaption - date to put inside the time caption of the item.
+ * @param title - title of the item.
+ * @param url - containing a link to the item details.
+ * @param visibility - visibility level
  */
 function ListCard(props) {
-  const { url, title, description, tagList, timeCaption,
-    labelCaption, creators, itemType, slug, visibility } = props;
+  const {
+    creators, description, executions, itemType, labelCaption, lastExecuted, slug, tagList, timeCaption,
+    title, url, visibility, workflowType
+  } = props;
 
   return (
     <div data-cy="list-card" className="col text-decoration-none p-2 rk-search-result-card">
@@ -54,7 +58,7 @@ function ListCard(props) {
         <div className="card card-entity">
           <div className={`card-header-entity card-header-entity--${itemType}`}>
             <div className="d-flex justify-content-between align-items-center m-3">
-              <EntityLabel type={itemType} />
+              <EntityLabel type={itemType} workflowType={workflowType} />
               <VisibilityIcon visibility={visibility} />
             </div>
             <div className="card-bg-title">{title}</div>
@@ -66,6 +70,7 @@ function ListCard(props) {
             </div>
             <Slug display="list" slug={slug} />
             <EntityCreators display="list" creators={creators} itemType={itemType} />
+            <EntityExecutions display="list" executions={executions} itemType={itemType} lastExecuted={lastExecuted} />
             <EntityDescription description={description} isHeightFixed={true} showSuggestion={false} />
             <EntityTags tagList={tagList} multiline={false} />
             <p className="card-text my-1">
