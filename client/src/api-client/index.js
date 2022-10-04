@@ -27,14 +27,14 @@ import addJobMethods from "./job";
 import addMergeRequestMethods from "./merge-request";
 import addMigrationMethods from "./migration";
 import addNotebookServersMethods from "./notebook-servers";
-import processPaginationHeaders from "./pagination";
 import addPipelineMethods from "./pipeline";
 import addProjectMethods from "./project";
 import addRepositoryMethods from "./repository";
 import addTemplatesMethods from "./templates";
-import testClient from "./test-client";
-
 import addUserMethods from "./user";
+import addWorkflowsMethods from "./workflows";
+import processPaginationHeaders from "./pagination";
+import testClient from "./test-client";
 import { APIError, alertAPIErrors, API_ERRORS } from "./errors";
 import { renkuFetch, RETURN_TYPES } from "./utils";
 
@@ -87,6 +87,7 @@ class APIClient {
     addRepositoryMethods(this);
     addTemplatesMethods(this);
     addUserMethods(this);
+    addWorkflowsMethods(this);
   }
 
   /**

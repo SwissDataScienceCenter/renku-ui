@@ -68,6 +68,14 @@ function LinkedEntitiesByItemType({ itemType, links, devAccess, url }: LinkedEnt
       noLinks: "There are no projects using this dataset.",
       error: "Error obtaining projects",
       icon: <Briefcase />
+    },
+    workflow: {
+      title: "Linked composite workflows",
+      description: "Composite workflows that use this workflow",
+      seeMore: "",
+      noLinks: "There are no composite workflows using this workflow.",
+      error: "Error obtaining related workflows",
+      icon: <Briefcase />
     }
   };
   const stylesByItem = stylesByItemType(itemType);

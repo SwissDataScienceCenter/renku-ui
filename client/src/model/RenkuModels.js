@@ -175,6 +175,14 @@ const webSocketSchema = new Schema({
   }
 });
 
+const workflowsSchema = new Schema({
+  list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+  target: { [Prop.INITIAL]: "" },
+  error: { [Prop.INITIAL]: null },
+  fetched: { [Prop.INITIAL]: null },
+  fetching: { [Prop.INITIAL]: false },
+});
+
 const projectSchema = new Schema({
   branches: {
     [Prop.SCHEMA]: new Schema({
@@ -723,5 +731,5 @@ const formGeneratorSchema = new Schema({
 export {
   datasetFormSchema, datasetSchema, datasetImportFormSchema, environmentSchema,
   formGeneratorSchema, issueFormSchema, newProjectSchema, notebooksSchema, notificationsSchema,
-  projectSchema, projectsSchema, statuspageSchema, userSchema, webSocketSchema,
+  projectSchema, projectsSchema, statuspageSchema, userSchema, webSocketSchema, workflowsSchema
 };

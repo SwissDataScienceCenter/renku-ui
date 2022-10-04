@@ -38,13 +38,17 @@ export interface EntityCreatorsProps {
   itemType: EntityType;
 }
 function EntityCreators({ display, creators, itemType }: EntityCreatorsProps) {
-  if (!creators) return null;
-
+  let creatorsText;
   const stylesByItem = stylesByItemType(itemType);
-  let creatorsText = creators.slice(0, 3)
-    .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : "")).join(", ");
-  if (creators.length > 3)
-    creatorsText += ", et al.";
+  if (!creators) {
+    creatorsText = <span className="fst-italic">Unknown creator</span>;
+  }
+  else {
+    creatorsText = creators.slice(0, 3)
+      .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : "")).join(", ");
+    if (creators.length > 3)
+      creatorsText += ", et al.";
+  }
 
   if (display === "list") {
     return <div className={`card-text creators text-truncate ${stylesByItem.colorText}`}>
