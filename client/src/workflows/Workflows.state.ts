@@ -33,12 +33,16 @@ function adjustWorkflowsList(workflowsList: Array<Record<string, any>>, fullPath
       ...workflow,
       active: workflow.touches_existing_files,
       executions: workflow.number_of_executions,
+      indentation: 0,
       itemType: "workflow",
       lastExecuted: workflow.last_executed,
       tagList: workflow.keywords,
       timeCaption: workflow.created,
       title: workflow.name,
       url: Url.get(Url.pages.project.workflows.detail, {
+        namespace: "", path: fullPath, target: "/" + workflow.id.replace(PLANS_PREFIX, "")
+      }),
+      urlSingle: Url.get(Url.pages.project.workflows.single, {
         namespace: "", path: fullPath, target: "/" + workflow.id.replace(PLANS_PREFIX, "")
       }),
       workflowId: workflow.id.replace(PLANS_PREFIX, ""),

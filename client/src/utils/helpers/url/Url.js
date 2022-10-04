@@ -356,6 +356,12 @@ const Url = {
             "/projects/namespace/path/workflows/1234abcd",
             "/projects/group/subgroup/path/workflows/1234abcd",
           ]
+        ),
+        single: new UrlRule(
+          projectPageUrlBuilder("/workflow"), ["namespace", "path", "target"], null, [
+            "/projects/namespace/path/workflow/1234abcd",
+            "/projects/group/subgroup/path/workflow/1234abcd",
+          ]
         )
       },
       overview: {

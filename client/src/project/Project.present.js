@@ -907,7 +907,7 @@ function ProjectViewWorkflows(props) {
 
   return (
     <Switch>
-      <Route exact path={props.workflowsUrl}
+      <Route path={[props.workflowUrl, props.workflowsUrl]}
         render={renderProps => {
           return (
             <WorkflowsList client={props.client} fullPath={props.projectPathWithNamespace} model={props.model}
@@ -915,7 +915,7 @@ function ProjectViewWorkflows(props) {
           );
         }}
       />
-      <Route path={props.workflowUrl}
+      <Route path={props.workflowSingleUrl}
         render={renderProps => {
           return [
             <Col key="btn" md={12}>
@@ -1412,7 +1412,7 @@ function ProjectView(props) {
         <Route path={props.editDatasetUrl} render={() => null} />
         <Route path={props.datasetUrl} render={() => null} />
         <Route path={props.sessionShowUrl} render={() => null} />
-        <Route path={props.workflowUrl} render={() => null} />
+        <Route path={props.workflowSingleUrl} render={() => null} />
         <Route path={props.newDatasetUrl} component={() =>
           <ProjectViewHeader {...props} minimalistHeader={true}/>} />
         <Route component={()=><ProjectViewHeader {...props} minimalistHeader={true}/>} />
@@ -1422,7 +1422,7 @@ function ProjectView(props) {
         <Route path={props.editDatasetUrl} render={() => null} />
         <Route path={props.datasetUrl} render={() => null} />
         <Route path={props.sessionShowUrl} render={() => null} />
-        <Route path={props.workflowUrl} render={() => null} />
+        <Route path={props.workflowSingleUrl} render={() => null} />
         <Route path={props.newDatasetUrl} component={() => <ProjectNav key="nav" {...props} />} />
         <Route component={() =><ProjectNav key="nav" {...props} />} />
       </Switch>
@@ -1438,6 +1438,8 @@ function ProjectView(props) {
             render={() => <ProjectViewFiles key="files" {...props} />} />
           <Route path={props.datasetsUrl}
             render={() => <ProjectViewDatasets key="datasets" {...props} />} />
+          <Route path={props.workflowSingleUrl}
+            render={() => <ProjectViewWorkflows key="workflow" {...props} />} />
           <Route path={props.workflowsUrl}
             render={() => <ProjectViewWorkflows key="workflows" {...props} />} />
           <Route path={props.settingsUrl}

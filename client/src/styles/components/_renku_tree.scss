@@ -1,0 +1,68 @@
+.rk-tree-item {
+  text-decoration: none;
+  color: $rk-dark;
+  background-color: white;
+  border: solid 1px $light;
+
+  &:not(:last-child) {
+    border-bottom: none !important;
+  }
+
+  &:hover {
+    background-color: $rk-background-0;
+  }
+  
+  &.selected {
+    background-color: $rk-light !important;
+  }
+
+  &.indentation-1 {
+    margin-left: 0.5em;
+  }
+
+  &.indentation-2 {
+    margin-left: 1em;
+  }
+
+  &.indentation3 {
+    margin-left: 1.5em;
+  }
+
+  &.indentation4 {
+    margin-left: 2em;
+  }
+
+  .interactive {
+    cursor: pointer !important;
+  }
+
+  .center-vertically {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  .rk-tree-item-content {
+    padding: 1em 1em 1em 0;
+  }
+
+  a {
+    text-decoration: none !important;
+  }
+
+  p, h5 {
+    margin-bottom: 0;
+    display: inline-block !important;
+    margin-right: 0.5rem !important;
+  }
+
+  .executions p {
+    display: inline-block !important;
+    margin-right: 0.5rem !important;
+  }
+
+  .description {
+    max-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

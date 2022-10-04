@@ -21,7 +21,11 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import { WorkflowsCoordinator } from "./Workflows.state";
-import { WorkflowDetail as WorkflowDetailPresent, WorkflowsList as WorkflowsListPresent } from "./Workflows.present";
+import {
+  WorkflowDetail as WorkflowDetailPresent,
+  WorkflowsList as WorkflowsListPresent,
+  WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent
+} from "./Workflows.present";
 
 
 interface WorkflowsListProps {
@@ -42,6 +46,9 @@ const WorkflowsSorting = {
 };
 
 function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
+  const [treeView, setTreeView] = useState(true);
+  const toggleTreeView = () => setTreeView(!treeView);
+
   const workflowsCoordinator = new WorkflowsCoordinator(client, model);
   const workflows = useSelector((state: any) => state.stateModel.workflows);
   const [orderBy, setOrderBy] = useState("created");
@@ -49,6 +56,9 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
   const [excludeInactive, setExcludeInactive] = useState(true);
   const toggleAscending = () => setOrderByAscending(!orderByAscending);
   const toggleExcludeInactive = () => setExcludeInactive(!excludeInactive);
+
+  const { id }: Record<string, string> = useParams();
+  const selected = id;
 
   const minVersion = 9;
   const projectVersion = versionUrl != null && versionUrl.length ?
@@ -64,12 +74,25 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
   const versionUrlAvailable = !versionUrl ? false : true;
   const waiting = !versionUrlAvailable || targetChanged;
 
+  if (treeView) {
+    return (
+      <WorkflowsTreeBrowserPresent
+        ascending={orderByAscending} excludeInactive={excludeInactive} fullPath={fullPath} orderBy={orderBy}
+        orderByMatrix={WorkflowsSorting} setOrderBy={setOrderBy} toggleAscending={toggleAscending}
+        toggleExcludeInactive={toggleExcludeInactive} unsupported={unsupported}
+        waiting={waiting} selected={selected} workflows={workflows}
+        toggleTreeView={toggleTreeView} treeView={treeView}
+      />
+    );
+  }
+
   return (
     <WorkflowsListPresent
       ascending={orderByAscending} excludeInactive={excludeInactive} fullPath={fullPath} orderBy={orderBy}
       orderByMatrix={WorkflowsSorting} setOrderBy={setOrderBy} toggleAscending={toggleAscending}
       toggleExcludeInactive={toggleExcludeInactive} unsupported={unsupported}
       waiting={waiting} workflows={workflows}
+      toggleTreeView={toggleTreeView} treeView={treeView}
     />
   );
 }

@@ -31,6 +31,7 @@ import { EntityType } from "../utils/components/entities/Entities";
 import { Loader } from "../utils/components/Loader";
 import { WarnAlert } from "../utils/components/Alert";
 import { Url } from "../utils/helpers/url";
+import { TreeBrowser } from "../utils/components/Tree";
 
 
 interface WorkflowsListFiltersProps {
@@ -128,6 +129,8 @@ interface WorkflowsListProps {
   setOrderBy: Function;
   toggleAscending: Function;
   toggleExcludeInactive: Function;
+  toggleTreeView: Function;
+  treeView: boolean;
   unsupported: boolean;
   waiting: boolean;
   workflows: Record<string, any>;
@@ -135,7 +138,7 @@ interface WorkflowsListProps {
 
 function WorkflowsList({
   ascending, excludeInactive, fullPath, orderBy, orderByMatrix, setOrderBy, toggleAscending,
-  toggleExcludeInactive, unsupported, waiting, workflows
+  toggleExcludeInactive, toggleTreeView, treeView, unsupported, waiting, workflows
 }: WorkflowsListProps) {
   // return immediately when workflows are not supported in the current project
   if (unsupported)
@@ -166,6 +169,91 @@ function WorkflowsList({
 
   return (
     <div>
+      <TmpSwitchTreeView toggleTreeView={toggleTreeView} treeView={treeView} />
+      <h3>Workflows List</h3>
+      <WorkflowsListFilters
+        ascending={ascending}
+        excludeInactive={excludeInactive}
+        orderBy={orderBy}
+        orderByMatrix={orderByMatrix}
+        setOrderBy={setOrderBy}
+        toggleAscending={toggleAscending}
+        toggleExcludeInactive={toggleExcludeInactive} />
+      {content}
+    </div>
+  );
+}
+
+
+interface TmpSwitchTreeViewProps { toggleTreeView: Function; treeView: boolean; }
+function TmpSwitchTreeView({ toggleTreeView, treeView }: TmpSwitchTreeViewProps) {
+  return (
+    <div className="float-end">
+      <Label className="text-rk-text me-2">Use tree view</Label>
+      <Input type="switch" className="form-check-input rounded-pill"
+        checked={treeView} onChange={() => toggleTreeView()}
+      />
+    </div>
+  );
+}
+
+interface WorkflowsTreeBrowserProps {
+  ascending: boolean;
+  excludeInactive: boolean;
+  fullPath: string;
+  orderBy: string;
+  orderByMatrix: Record<string, string>,
+  selected: string;
+  setOrderBy: Function;
+  toggleAscending: Function;
+  toggleExcludeInactive: Function;
+  toggleTreeView: Function;
+  treeView: boolean;
+  unsupported: boolean;
+  waiting: boolean;
+  workflows: Record<string, any>;
+}
+
+function WorkflowsTreeBrowser({
+  ascending, excludeInactive, fullPath, orderBy, orderByMatrix, selected, setOrderBy, toggleAscending,
+  toggleExcludeInactive, toggleTreeView, treeView, unsupported, waiting, workflows
+}: WorkflowsTreeBrowserProps) {
+
+  const [expanded, setExpanded] = useState<string[]>([]);
+  const toggleExpanded = (workflowId: string) => {
+    if (expanded.includes(workflowId))
+      setExpanded(expanded.filter(e => e !== workflowId));
+    else
+      setExpanded([...expanded, workflowId]);
+  };
+
+  // return immediately when workflows are not supported in the current project
+  if (unsupported)
+    return (<UnsupportedWorkflows fullPath={fullPath} />);
+
+  // show status: loading or error or full content
+  const loading = waiting || (!workflows.fetched);
+  let content: React.ReactNode;
+  if (loading) {
+    content = (<Loader />);
+  }
+  else if (workflows.error) {
+    content = (<CoreErrorAlert error={workflows.error} />);
+  }
+  else {
+    content = (
+      <TreeBrowser
+        expanded={expanded}
+        items={orderWorkflows(workflows.list, orderBy, ascending, excludeInactive)}
+        selected={selected}
+        toggleExpanded={toggleExpanded}
+      />
+    );
+  }
+
+  return (
+    <div>
+      <TmpSwitchTreeView toggleTreeView={toggleTreeView} treeView={treeView} />
       <h3>Workflows List</h3>
       <WorkflowsListFilters
         ascending={ascending}
@@ -221,4 +309,4 @@ function WorkflowDetail({ waiting, workflow, workflowId }: WorkflowDetailProps) 
 }
 
 
-export { WorkflowDetail, WorkflowsList };
+export { WorkflowDetail, WorkflowsList, WorkflowsTreeBrowser };
