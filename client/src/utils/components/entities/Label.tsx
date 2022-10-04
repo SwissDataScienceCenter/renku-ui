@@ -17,8 +17,8 @@
  */
 
 import * as React from "react";
-import { EntityType } from "./Entities";
-import { Briefcase, HddStack } from "../../ts-wrappers";
+import { EntityType, WorkflowType } from "./Entities";
+import { Briefcase, CardList, Diagram3, HddStack } from "../../ts-wrappers";
 
 /**
  *  renku-ui
@@ -28,9 +28,10 @@ import { Briefcase, HddStack } from "../../ts-wrappers";
  */
 interface EntityLabelProps {
   type: EntityType;
+  workflowType: WorkflowType | null;
 }
 
-function EntityLabel({ type }: EntityLabelProps) {
+function EntityLabel({ type, workflowType = null }: EntityLabelProps) {
   switch (type) {
     case "project":
       return (
@@ -45,6 +46,20 @@ function EntityLabel({ type }: EntityLabelProps) {
           Dataset
         </div>
       );
+    case "workflow":
+      /* eslint-disable no-case-declarations */
+      const icon = workflowType === "CompositePlan" ?
+        (<CardList title="workflow" />) :
+        (<Diagram3 title="workflow" />);
+      const text = workflowType === "CompositePlan" ?
+        "Composite workflow" :
+        "Workflow";
+      /* eslint-enable no-case-declarations */
+
+      return (
+        <div className="card-type-label text-rk-yellow gap-2 d-flex align-items-center">
+          {icon} {text}
+        </div>);
     default:
       return null;
   }

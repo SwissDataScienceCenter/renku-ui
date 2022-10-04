@@ -16,16 +16,6 @@
  * limitations under the License.
  */
 
-// These are used by the TS compiler does not realize it.
-/* eslint-disable no-unused-vars */
-export enum EntityType {
-  Dataset = "dataset",
-  Project = "project",
-  Workflow = "workflow",
-}
+import { WorkflowsList } from "./Workflows.container";
 
-export enum WorkflowType {
-  Simple = "Plan",
-  Composite = "CompositePlan",
-}
-/* eslint-enable no-unused-vars */
+export { WorkflowsList };
