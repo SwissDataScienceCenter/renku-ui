@@ -31,12 +31,20 @@
   background-image: url("../assets/datasetBackgroundSmall.png");
 }
 
+.card-header-entity--workflow {
+  background-image: url("../assets/workflowBackgroundSmall.png");
+}
+
 .card-header-entity--project-large {
   background-image: url("../assets/projectBackgroundLarge.png");
 }
 
 .card-header-entity--dataset-large {
   background-image: url("../assets/datasetBackgroundLarge.png");
+}
+
+.card-header-entity--workflow-large {
+  background-image: url("../assets/workflowBackgroundLarge.png");
 }
 
 .card-type-label {
