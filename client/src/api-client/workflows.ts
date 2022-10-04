@@ -16,16 +16,20 @@
  * limitations under the License.
  */
 
-// These are used by the TS compiler does not realize it.
-/* eslint-disable no-unused-vars */
-export enum EntityType {
-  Dataset = "dataset",
-  Project = "project",
-  Workflow = "workflow",
+function addWorkflowsMethods(client: any) {
+  client.fetchWorkflowsList = async (repositoryUrl: string, reference: string = "", versionUrl = null) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    const url: string = client.versionedCoreUrl("workflow_plans.list", versionUrl);
+    let queryParams: Record<string, string> = { git_url: repositoryUrl };
+    if (reference)
+      queryParams.branch = reference;
+
+    const result = await client.clientFetch(url, { method: "GET", headers, queryParams });
+    return result.data ? result.data : result;
+  };
 }
 
-export enum WorkflowType {
-  Simple = "Plan",
-  Composite = "CompositePlan",
-}
-/* eslint-enable no-unused-vars */
+export default addWorkflowsMethods;
