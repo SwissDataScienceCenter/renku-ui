@@ -411,6 +411,11 @@ function stylesByItemType(itemType) {
         colorText: "text-rk-pink",
         bgColor: "rk-pink"
       };
+    case "workflow":
+      return {
+        colorText: "text-rk-yellow",
+        bgColor: "rk-yellow"
+      };
     default:
       return {
         colorText: "text-rk-green",

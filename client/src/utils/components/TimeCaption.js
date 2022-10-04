@@ -53,7 +53,7 @@ function TimeCaption(
   return (
     <>
       <span ref={ref}
-        className={className}>{noCaption ? "" : caption} {displayTime}{endCaptionStyled}{endPunctuation}</span>
+        className={className}>{noCaption ? "" : caption + " "}{displayTime}{endCaptionStyled}{endPunctuation}</span>
       {tooltip}
     </>
   );
