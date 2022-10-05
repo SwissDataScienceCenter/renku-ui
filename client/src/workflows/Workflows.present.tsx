@@ -22,7 +22,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faInfoCircle, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
 
 import EntityHeader from "../utils/components/entityHeader/EntityHeader";
-import ListDisplay from "../utils/components/List";
 import {
   Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Input, Label, Row,
   UncontrolledPopover, PopoverBody
@@ -39,16 +38,16 @@ import { TreeBrowser } from "../utils/components/Tree";
 
 interface WorkflowsListFiltersProps {
   ascending: boolean;
-  excludeInactive: boolean;
   orderBy: string;
   orderByMatrix: Record<string, string>,
   setOrderBy: Function;
+  showInactive: boolean;
   toggleAscending: Function;
-  toggleExcludeInactive: Function;
+  toggleInactive: Function;
 }
 
 function WorkflowsListFilters({
-  ascending, excludeInactive, orderBy, orderByMatrix, setOrderBy, toggleAscending, toggleExcludeInactive
+  ascending, orderBy, orderByMatrix, setOrderBy, showInactive, toggleAscending, toggleInactive
 }: WorkflowsListFiltersProps) {
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
   const toggleSortDropdownOpen = () => { setSortDropdownOpen((sortDropdownOpen) => !sortDropdownOpen); };
@@ -87,7 +86,7 @@ function WorkflowsListFilters({
           </Label>
           <Input type="switch"
             id="wfExcludeInactive" label="label here" className="form-check-input rounded-pill"
-            checked={!excludeInactive} onChange={() => toggleExcludeInactive()}
+            checked={showInactive} onChange={() => toggleInactive()}
           />
         </div>
       </Col>
@@ -135,112 +134,36 @@ function UnsupportedWorkflows({ fullPath }: UnsupportedWorkflowsProps) {
 
 
 function orderWorkflows(
-  workflows: Array<Record<string, any>>, orderBy: string, ascending: boolean, excludeInactive: boolean
+  workflows: Array<Record<string, any>>, orderBy: string, ascending: boolean, showInactive: boolean
 ) {
-  const filtered = excludeInactive ? workflows.filter(w => w.active) : workflows;
-  const sorted = filtered.sort((a, b) => (a[orderBy] > b[orderBy]) ? 1 : ((b[orderBy] > a[orderBy]) ? -1 : 0));
+  const filtered = !showInactive ? workflows.filter(w => w.active) : workflows;
+  // ? we pre-sort by name to guarantee consistency since some properties could be identical
+  const preSorted = filtered.sort((a, b) => (a["name"] > b["name"]) ? 1 : ((b["name"] > a["name"]) ? -1 : 0));
+  const sorted = preSorted.sort((a, b) => (a[orderBy] > b[orderBy]) ? 1 : ((b[orderBy] > a[orderBy]) ? -1 : 0));
   return ascending ? sorted : sorted.reverse();
 }
 
-interface WorkflowsListProps {
-  ascending: boolean;
-  excludeInactive: boolean;
-  fullPath: string;
-  orderBy: string;
-  orderByMatrix: Record<string, string>,
-  setOrderBy: Function;
-  toggleAscending: Function;
-  toggleExcludeInactive: Function;
-  toggleTreeView: Function;
-  treeView: boolean;
-  unsupported: boolean;
-  waiting: boolean;
-  workflows: Record<string, any>;
-}
-
-function WorkflowsList({
-  ascending, excludeInactive, fullPath, orderBy, orderByMatrix, setOrderBy, toggleAscending,
-  toggleExcludeInactive, toggleTreeView, treeView, unsupported, waiting, workflows
-}: WorkflowsListProps) {
-  // return immediately when workflows are not supported in the current project
-  if (unsupported)
-    return (<UnsupportedWorkflows fullPath={fullPath} />);
-
-  // show status: loading or error or full content
-  const loading = waiting || (!workflows.fetched);
-  let content: React.ReactNode;
-  if (loading) {
-    content = (<Loader />);
-  }
-  else if (workflows.error) {
-    content = (<CoreErrorAlert error={workflows.error} />);
-  }
-  else {
-    content = (
-      <ListDisplay
-        itemsType="workflow"
-        search={null}
-        currentPage={null}
-        gridDisplay={true}
-        totalItems={workflows.list.length}
-        perPage={workflows.list.length}
-        items={orderWorkflows(workflows.list, orderBy, ascending, excludeInactive)}
-      />
-    );
-  }
-
-  return (
-    <div>
-      <TmpSwitchTreeView toggleTreeView={toggleTreeView} treeView={treeView} />
-      <h3>Workflows List</h3>
-      <WorkflowsListFilters
-        ascending={ascending}
-        excludeInactive={excludeInactive}
-        orderBy={orderBy}
-        orderByMatrix={orderByMatrix}
-        setOrderBy={setOrderBy}
-        toggleAscending={toggleAscending}
-        toggleExcludeInactive={toggleExcludeInactive} />
-      {content}
-    </div>
-  );
-}
-
-
-interface TmpSwitchTreeViewProps { toggleTreeView: Function; treeView: boolean; }
-function TmpSwitchTreeView({ toggleTreeView, treeView }: TmpSwitchTreeViewProps) {
-  return (
-    <div className="float-end">
-      <Label className="text-rk-text me-2">Use tree view</Label>
-      <Input type="switch" className="form-check-input rounded-pill"
-        checked={treeView} onChange={() => toggleTreeView()}
-      />
-    </div>
-  );
-}
 
 interface WorkflowsTreeBrowserProps {
   ascending: boolean;
-  excludeInactive: boolean;
   expanded: string[];
   fullPath: string;
   orderBy: string;
   orderByMatrix: Record<string, string>,
   selected: string;
   setOrderBy: Function;
+  showInactive: boolean;
   toggleAscending: Function;
-  toggleExcludeInactive: Function;
   toggleExpanded: Function;
-  toggleTreeView: Function;
-  treeView: boolean;
+  toggleInactive: Function;
   unsupported: boolean;
   waiting: boolean;
   workflows: Record<string, any>;
 }
 
 function WorkflowsTreeBrowser({
-  ascending, excludeInactive, expanded, fullPath, orderBy, orderByMatrix, selected, setOrderBy, toggleAscending,
-  toggleExcludeInactive, toggleExpanded, toggleTreeView, treeView, unsupported, waiting, workflows
+  ascending, expanded, fullPath, orderBy, orderByMatrix, selected, setOrderBy, showInactive, toggleAscending,
+  toggleInactive, toggleExpanded, unsupported, waiting, workflows
 }: WorkflowsTreeBrowserProps) {
   // return immediately when workflows are not supported in the current project
   if (unsupported)
@@ -259,7 +182,7 @@ function WorkflowsTreeBrowser({
     content = (
       <TreeBrowser
         expanded={expanded}
-        items={orderWorkflows(workflows.list, orderBy, ascending, excludeInactive)}
+        items={orderWorkflows(workflows.list, orderBy, ascending, showInactive)}
         selected={selected}
         toggleExpanded={toggleExpanded}
       />
@@ -268,16 +191,15 @@ function WorkflowsTreeBrowser({
 
   return (
     <div>
-      <TmpSwitchTreeView toggleTreeView={toggleTreeView} treeView={treeView} />
       <h3>Workflows List</h3>
       <WorkflowsListFilters
         ascending={ascending}
-        excludeInactive={excludeInactive}
         orderBy={orderBy}
         orderByMatrix={orderByMatrix}
         setOrderBy={setOrderBy}
+        showInactive={showInactive}
         toggleAscending={toggleAscending}
-        toggleExcludeInactive={toggleExcludeInactive} />
+        toggleInactive={toggleInactive} />
       {content}
     </div>
   );
@@ -313,8 +235,6 @@ function WorkflowDetail({ waiting, workflow, workflowId }: WorkflowDetailProps) 
           timeCaption={workflow.details.created}
           devAccess={false}
           url="" launchNotebookUrl="" sessionAutostartUrl=""
-        // links={linksHeader}
-        // otherButtons={[deleteOption, modifyButton, addToProject]}
         />
       </Col>
     );
@@ -324,4 +244,4 @@ function WorkflowDetail({ waiting, workflow, workflowId }: WorkflowDetailProps) 
 }
 
 
-export { WorkflowDetail, WorkflowsList, WorkflowsTreeBrowser };
+export { WorkflowDetail, WorkflowsTreeBrowser };

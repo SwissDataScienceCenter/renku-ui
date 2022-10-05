@@ -20,7 +20,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
 import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityExecutions from "./entities/Executions";
@@ -122,7 +122,7 @@ function TreeElement({
             <EntityExecutions display="tree" executions={executions} itemType={itemType} lastExecuted={lastExecuted} />
           </Col>
           <Col xs={12} sm={5} md={3} className="title center-vertically">
-            <TimeCaption caption="Updated" className="text-rk-text-light" time={timeCaption} endPunctuation="" />
+            <TimeCaption caption="Created" className="text-rk-text-light" time={timeCaption} endPunctuation="" />
             {/* <Link to={urlSingle}><FontAwesomeIcon className="text-rk-yellow float-end" icon={faLink} /></Link> */}
           </Col>
         </Link>

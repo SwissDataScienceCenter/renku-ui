@@ -33,10 +33,11 @@ function adjustWorkflowsList(workflowsList: Array<Record<string, any>>, fullPath
     return {
       ...workflow,
       active: workflow.touches_existing_files,
+      created: workflow.created ? new Date(workflow.created) : workflow.created,
       executions: workflow.number_of_executions,
       indentation: 0,
       itemType: "workflow",
-      lastExecuted: workflow.last_executed,
+      lastExecuted: workflow.last_executed ? new Date(workflow.last_executed) : workflow.last_executed,
       tagList: workflow.keywords,
       timeCaption: workflow.created,
       title: workflow.name,
@@ -134,6 +135,18 @@ class WorkflowsCoordinator {
     else
       newExpanded = [...expanded, workflowId];
     this.workflowsModel.set("expanded", newExpanded);
+  }
+
+  toggleInactive() {
+    this.workflowsModel.set("showInactive", !this.workflowsModel.get("showInactive"));
+  }
+
+  toggleOrderAscending() {
+    this.workflowsModel.set("orderAscending", !this.workflowsModel.get("orderAscending"));
+  }
+
+  setOrderProperty(newProperty: string) {
+    this.workflowsModel.set("orderProperty", newProperty);
   }
 }
 

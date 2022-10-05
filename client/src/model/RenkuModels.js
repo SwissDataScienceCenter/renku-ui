@@ -190,6 +190,9 @@ const workflowsSchema = new Schema({
   fetched: { [Prop.INITIAL]: null },
   fetching: { [Prop.INITIAL]: false },
   expanded: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+  showInactive: { [Prop.INITIAL]: false },
+  orderAscending: { [Prop.INITIAL]: false },
+  orderProperty: { [Prop.INITIAL]: "created" }
 });
 
 const projectSchema = new Schema({

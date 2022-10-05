@@ -16,14 +16,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import { WorkflowsCoordinator } from "./Workflows.state";
 import {
   WorkflowDetail as WorkflowDetailPresent,
-  WorkflowsList as WorkflowsListPresent,
   WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent
 } from "./Workflows.present";
 
@@ -46,18 +45,13 @@ const WorkflowsSorting = {
 };
 
 function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
-  const [treeView, setTreeView] = useState(true);
-  const toggleTreeView = () => setTreeView(!treeView);
-
   const workflowsCoordinator = new WorkflowsCoordinator(client, model);
   const workflows = useSelector((state: any) => state.stateModel.workflows);
-  const [orderBy, setOrderBy] = useState("created");
-  const [orderByAscending, setOrderByAscending] = useState(false);
-  const [excludeInactive, setExcludeInactive] = useState(true);
-  const toggleAscending = () => setOrderByAscending(!orderByAscending);
-  const toggleExcludeInactive = () => setExcludeInactive(!excludeInactive);
 
+  const toggleAscending = () => workflowsCoordinator.toggleOrderAscending();
   const toggleExpanded = (workflowId: string) => workflowsCoordinator.toggleExpanded(workflowId);
+  const toggleInactive = () => workflowsCoordinator.toggleInactive();
+  const setOrderProperty = (newProperty: string) => workflowsCoordinator.setOrderProperty(newProperty);
 
   const { id }: Record<string, string> = useParams();
   const selected = id;
@@ -76,25 +70,22 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
   const versionUrlAvailable = !versionUrl ? false : true;
   const waiting = !versionUrlAvailable || targetChanged;
 
-  if (treeView) {
-    return (
-      <WorkflowsTreeBrowserPresent
-        ascending={orderByAscending} excludeInactive={excludeInactive} expanded={workflows.expanded} fullPath={fullPath}
-        orderBy={orderBy} orderByMatrix={WorkflowsSorting} setOrderBy={setOrderBy} toggleAscending={toggleAscending}
-        toggleExcludeInactive={toggleExcludeInactive} unsupported={unsupported}
-        waiting={waiting} selected={selected} workflows={workflows}
-        toggleExpanded={toggleExpanded} toggleTreeView={toggleTreeView} treeView={treeView}
-      />
-    );
-  }
-
   return (
-    <WorkflowsListPresent
-      ascending={orderByAscending} excludeInactive={excludeInactive} fullPath={fullPath} orderBy={orderBy}
-      orderByMatrix={WorkflowsSorting} setOrderBy={setOrderBy} toggleAscending={toggleAscending}
-      toggleExcludeInactive={toggleExcludeInactive} unsupported={unsupported}
-      waiting={waiting} workflows={workflows}
-      toggleTreeView={toggleTreeView} treeView={treeView}
+    <WorkflowsTreeBrowserPresent
+      ascending={workflows.orderAscending}
+      expanded={workflows.expanded}
+      fullPath={fullPath}
+      orderBy={workflows.orderProperty}
+      orderByMatrix={WorkflowsSorting}
+      selected={selected}
+      setOrderBy={setOrderProperty}
+      showInactive={workflows.showInactive}
+      toggleAscending={toggleAscending}
+      toggleExpanded={toggleExpanded}
+      toggleInactive={toggleInactive}
+      unsupported={unsupported}
+      waiting={waiting}
+      workflows={workflows}
     />
   );
 }
