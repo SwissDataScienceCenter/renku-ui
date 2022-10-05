@@ -17,19 +17,19 @@
   }
 
   &.indentation-1 {
-    margin-left: 0.5em;
-  }
-
-  &.indentation-2 {
     margin-left: 1em;
   }
 
+  &.indentation-2 {
+    margin-left: 2em;
+  }
+
   &.indentation3 {
-    margin-left: 1.5em;
+    margin-left: 3em;
   }
 
   &.indentation4 {
-    margin-left: 2em;
+    margin-left: 4em;
   }
 
   .interactive {

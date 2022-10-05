@@ -54,6 +54,7 @@ function TreeBrowser({
 
 
 interface TreeElementProps extends TreeBrowserProps {
+  active: boolean;
   children: string[],
   creators: EntityCreator[],
   executions: number | null;
@@ -69,8 +70,8 @@ interface TreeElementProps extends TreeBrowserProps {
 }
 
 function TreeElement({
-  children, creators, expanded, executions, indentation, itemType, items, lastExecuted, selected, timeCaption, title,
-  toggleExpanded, url, urlSingle, workflowId, workflowType
+  active, children, creators, expanded, executions, indentation, itemType, items, lastExecuted, selected,
+  timeCaption, title, toggleExpanded, url, urlSingle, workflowId, workflowType
 }: TreeElementProps) {
   const newClasses = workflowId === selected ? "selected" : "";
   const isComposite = workflowType === "CompositePlan" ? true : false;
@@ -78,15 +79,17 @@ function TreeElement({
   const leftItemClasses = "mx-3 center-vertically d-flex flex-column align-items-center";
   let leftItem: React.ReactNode;
   if (isComposite) {
-    const icon = expanded.includes(workflowId) ? faChevronDown : faChevronUp;
+    const icon = expanded.includes(workflowId) ? faChevronUp : faChevronDown;
+    const color = active ? "yellow" : "text";
     leftItem = (
       <div className={`${leftItemClasses} interactive`} onClick={() => { toggleExpanded(workflowId); }}>
-        <FontAwesomeIcon size="lg" className="me-1 text-rk-yellow" icon={icon} />
+        <FontAwesomeIcon size="lg" className={`me-1 text-rk-${color}`} icon={icon} />
       </div>
     );
   }
   else {
-    leftItem = (<div className={leftItemClasses}><span className={"circle " + itemType}></span></div>);
+    const inactive = active ? "" : "inactive";
+    leftItem = (<div className={leftItemClasses}><span className={`circle ${itemType} ${inactive}`}></span></div>);
   }
 
   let childrenItems = items.filter((item: any) => children.includes(item.id));
@@ -120,7 +123,7 @@ function TreeElement({
           </Col>
           <Col xs={12} sm={5} md={3} className="title center-vertically">
             <TimeCaption caption="Updated" className="text-rk-text-light" time={timeCaption} endPunctuation="" />
-            <Link to={urlSingle}><FontAwesomeIcon className="text-rk-yellow float-end" icon={faLink} /></Link>
+            {/* <Link to={urlSingle}><FontAwesomeIcon className="text-rk-yellow float-end" icon={faLink} /></Link> */}
           </Col>
         </Link>
       </div>

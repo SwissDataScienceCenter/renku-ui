@@ -19,15 +19,18 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faInfoCircle, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
 
 import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import ListDisplay from "../utils/components/List";
 import {
-  Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Input, Label, Row
+  Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Input, Label, Row,
+  UncontrolledPopover, PopoverBody
 } from "../utils/ts-wrappers";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
+import { Docs } from "../utils/constants/Docs";
 import { EntityType } from "../utils/components/entities/Entities";
+import { ExternalLink } from "../utils/components/ExternalLinks";
 import { Loader } from "../utils/components/Loader";
 import { WarnAlert } from "../utils/components/Alert";
 import { Url } from "../utils/helpers/url";
@@ -62,7 +65,26 @@ function WorkflowsListFilters({
     <Row className="my-3">
       <Col xs={12} sm="auto" className="my-auto">
         <div className="form-check form-switch d-inline-block">
-          <Label className="text-rk-text me-2">Show inactive</Label>
+          <Label className="text-rk-text me-2">
+            Show inactive{" "}
+            <FontAwesomeIcon id="showInactiveInfo" className="cursor-pointer align-middle" icon={faInfoCircle} />
+            <UncontrolledPopover target="showInactiveInfo" trigger="legacy" placement="bottom">
+              {/* <PopoverHeader>{repository.name} templates</PopoverHeader> */}
+              <PopoverBody className="p-2">
+                <p className="mb-1">
+                  Inactive workflows don&apos;t have files in the branch&apos;s head
+                </p>
+                <p className="mb-0">
+                  You can{" "}
+                  <ExternalLink
+                    role="text" iconSup={true} iconAfter={true} title="check our documentation"
+                    url={Docs.rtdHowToGuide("404-missing-link")}
+                  />
+                  {" "}for mode details
+                </p>
+              </PopoverBody>
+            </UncontrolledPopover>
+          </Label>
           <Input type="switch"
             id="wfExcludeInactive" label="label here" className="form-check-input rounded-pill"
             checked={!excludeInactive} onChange={() => toggleExcludeInactive()}
