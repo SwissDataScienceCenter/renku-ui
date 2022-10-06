@@ -9,7 +9,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.15.3",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
-    "@nteract/commutable": "^7.4.6",
+    "@nteract/commutable": "^7.5.0",
     "@nteract/display-area": "^5.0.4-alpha.0",
     "@nteract/markdown": "^4.6.2",
     "@nteract/presentational-components": "^3.4.12",
