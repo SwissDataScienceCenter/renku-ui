@@ -25,7 +25,10 @@ import {
   WorkflowDetail as WorkflowDetailPresent,
   WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent
 } from "./Workflows.present";
+import { checkRenkuCoreSupport } from "../utils/helpers/HelperFunctions";
 
+
+const MIN_CORE_VERSION_WORKFLOWS = 9;
 
 interface WorkflowsListProps {
   client: any;
@@ -47,20 +50,14 @@ const WorkflowsSorting = {
 function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
   const workflowsCoordinator = new WorkflowsCoordinator(client, model);
   const workflows = useSelector((state: any) => state.stateModel.workflows);
+  const { id }: Record<string, string> = useParams();
+  const selected = id;
+  const unsupported = !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
 
   const toggleAscending = () => workflowsCoordinator.toggleOrderAscending();
   const toggleExpanded = (workflowId: string) => workflowsCoordinator.toggleExpanded(workflowId);
   const toggleInactive = () => workflowsCoordinator.toggleInactive();
   const setOrderProperty = (newProperty: string) => workflowsCoordinator.setOrderProperty(newProperty);
-
-  const { id }: Record<string, string> = useParams();
-  const selected = id;
-
-  const minVersion = 9;
-  const projectVersion = versionUrl != null && versionUrl.length ?
-    parseInt(versionUrl.replace(/^\/+|\/+$/g, "")) :
-    0;
-  const unsupported = projectVersion && projectVersion < minVersion ? true : false;
 
   useEffect(() => {
     workflowsCoordinator.fetchWorkflowsList(repositoryUrl, reference, versionUrl, unsupported, fullPath);
