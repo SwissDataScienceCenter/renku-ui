@@ -23,7 +23,7 @@ import { faCheck, faInfoCircle, faSortAmountDown, faSortAmountUp } from "@fortaw
 
 import {
   Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Input, Label, Row,
-  UncontrolledPopover, PopoverBody
+  UncontrolledPopover, PopoverBody, Card, CardBody, Table
 } from "../utils/ts-wrappers";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { Docs } from "../utils/constants/Docs";
@@ -227,15 +227,90 @@ function WorkflowsTreeBrowser({
   );
 }
 
+interface WorkflowMetadataProps {
+  workflow: Record<string, any>;
+  fullPath: string;
+}
+
+function DisplayMetadata({ workflow, fullPath }: WorkflowMetadataProps) {
+  return <Card key="datasetDescription" className="border-rk-light mb-4">
+    <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
+      <Table className="mb-4 table-borderless" size="sm">
+        <tbody className="text-rk-text">
+          <tr>
+            <td className="text-dark fw-bold" style={{ "width": "200px" }}>
+              Number of Executions
+            </td>
+            <td>
+              {workflow.details.number_of_executions}
+            </td>
+          </tr>
+          <tr>
+            <td className="text-dark fw-bold" style={{ "width": "200px" }}>
+              Last Execution
+            </td>
+            <td>
+              <TimeCaption
+                caption=""
+                showTooltip={true}
+                time={workflow.details.last_executed}
+                className="text-rk-text-light"/>
+            </td>
+          </tr>
+          <tr>
+            <td className="text-dark fw-bold" style={{ "width": "200px" }}>
+              Type
+            </td>
+            <td>
+              {workflow.details.type}
+            </td>
+          </tr>
+          <tr>
+            <td className="text-dark fw-bold" style={{ "width": "200px" }}>
+              Full Command
+            </td>
+            <td>
+              <pre>
+                <code>
+                  {workflow.details.full_command}
+                </code>
+              </pre>
+            </td>
+          </tr>
+          { workflow.details.id != workflow.details.latest
+            ?
+            <tr>
+              <td className="text-dark fw-bold" style={{ "width": "200px" }}></td>
+              <td>
+                You are viewing an outdated version of this Workflow Plan.&nbsp;
+                <Link to={Url.get(Url.pages.project.workflows.single, {
+                  // TODO: Use PLANS_PREFIX here
+                  namespace: "", path: fullPath, target: "/" + workflow.details.latest.replace("/plans/", "")
+                })}
+                className="col text-decoration-none">
+                  Go to newest version
+                </Link>
+              </td>
+            </tr>
+            : null
+
+          }
+        </tbody>
+      </Table>
+    </CardBody>
+  </Card>;
+}
+
 
 interface WorkflowDetailProps {
   selectedAvailable: boolean;
   waiting: boolean;
   workflow: Record<string, any>;
   workflowId: string;
+  fullPath: string;
 }
 
-function WorkflowDetail({ selectedAvailable, waiting, workflow, workflowId }: WorkflowDetailProps) {
+function WorkflowDetail({ fullPath, selectedAvailable, waiting, workflow, workflowId }: WorkflowDetailProps) {
   let content: React.ReactNode;
   if (waiting) {
     content = (<Loader />);

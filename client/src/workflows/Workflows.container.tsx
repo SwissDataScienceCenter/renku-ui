@@ -117,7 +117,8 @@ function WorkflowDetail({ client, fullPath, model, reference, repositoryUrl, ver
   const waiting = !versionUrlAvailable || targetChanged;
 
   return (
-    <WorkflowDetailPresent selectedAvailable={true} waiting={waiting} workflowId={workflowId} workflow={workflow} />
+    <WorkflowDetailPresent
+      fullPath={fullPath} selectedAvailable={true} waiting={waiting} workflowId={workflowId} workflow={workflow} />
   );
 }
 
