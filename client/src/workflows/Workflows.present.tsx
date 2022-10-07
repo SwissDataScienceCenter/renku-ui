@@ -79,7 +79,7 @@ function WorkflowsListFilters({
                     role="text" iconSup={true} iconAfter={true} title="check our documentation"
                     url={Docs.rtdHowToGuide("404-missing-link")}
                   />
-                  {" "}for mode details
+                  {" "}for more details
                 </p>
               </PopoverBody>
             </UncontrolledPopover>
