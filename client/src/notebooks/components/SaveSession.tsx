@@ -22,8 +22,8 @@ import { Button, Col, Form, FormGroup, FormText, Modal, ModalBody, ModalHeader, 
 import { Input, Label } from "../../utils/ts-wrappers";
 import { Loader } from "../../utils/components/Loader";
 import { Notebook } from "./Session";
-import { useGitStatusQuery, useHealthQuery, useRenkuSaveMutation } from "../../services/session/sidecar";
-import type { GitStatusResult } from "../../services/session/sidecar";
+import { useGitStatusQuery, useHealthQuery, useRenkuSaveMutation } from "../../features/session/sidecarApi";
+import type { GitStatusResult } from "../../features/session/sidecarApi";
 
 function CenteredLoader() {
   return <div className="d-flex justify-content-center">

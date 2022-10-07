@@ -25,7 +25,7 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { projectKgApi } from "../../features/projects/ProjectKgApi";
-import { sessionSidecarApi } from "../../services/session/sidecar";
+import { sessionSidecarApi } from "../../features/session/sidecarApi";
 
 function createStore(renkuStateModelReducer, name = "renku") {
   renkuStateModelReducer[projectKgApi.reducerPath] = projectKgApi.reducer;
