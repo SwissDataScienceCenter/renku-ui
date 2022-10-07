@@ -749,7 +749,7 @@ const NotebookServerRowAction = memo((props) => {
       </DropdownItem>
     </Fragment>;
   }
-  if (status === SessionStatus.running) {
+  if (status === SessionStatus.running || status === SessionStatus.starting) {
     const state = scope?.filePath ? { filePath: scope?.filePath } : undefined;
     defaultAction = (
       <Link className="btn btn-outline-rk-green" to={{ pathname: props.localUrl, state }}>Open</Link>);

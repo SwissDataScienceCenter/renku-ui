@@ -145,16 +145,10 @@ function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handle
   let content;
   let sessionView;
 
-  if (!notebook.fetched) {
-    content =
-      (<div className="progress-box-small progress-box-small--steps">
-        <StartSessionProgressBar toggleLogs={toggleToResourcesLogs} />
-      </div>);
-  }
-  else if (notebook.fetched && !notebook.available) {
+  if (notebook.fetched && !notebook.available) {
     content = <SessionUnavailable filters={filters} urlList={urlList} />;
   }
-  else {
+  else if (notebook.available) {
     const status = sessionStatus?.state;
     const sessionBranchKey = notebook?.data?.annotations ?
       Object.keys(notebook?.data?.annotations).find( key => key.split("/")[1] === "branch") : null;
@@ -170,6 +164,12 @@ function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handle
         ready={sessionStatus?.isTheSessionReady} filters={filters}
         notebook={notebook} urlList={urlList} height={`${iframeHeight}px`} /> :
       null;
+  }
+  else {
+    content =
+      (<div className="progress-box-small progress-box-small--steps">
+        <StartSessionProgressBar toggleLogs={toggleToResourcesLogs} />
+      </div>);
   }
 
   return (
