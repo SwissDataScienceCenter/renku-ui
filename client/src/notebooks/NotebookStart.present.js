@@ -47,7 +47,7 @@ import LaunchErrorAlert from "./components/LaunchErrorAlert";
 import { NotebooksHelper } from "./index";
 import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from "./ObjectStoresConfig.present";
 import ProgressIndicator, { ProgressStyle, ProgressType } from "../utils/components/progress/Progress";
-
+import EnvironmentVariables from "./components/EnviromentVariables";
 
 function ProjectSessionLockAlert({ lockStatus }) {
   if (lockStatus == null) return null;
@@ -124,6 +124,18 @@ function StartNotebookServer(props) {
   const location = useLocation();
 
   const [showShareLinkModal, setShowShareLinkModal] = useState(location?.state?.showShareLinkModal ?? false);
+  const [environmentVariables, setEnvironmentVariables] = useState([ { key: "", value: "" }]);
+
+  const setNotebookEnvVariables = (variables) => {
+    props.handlers.setNotebookEnvVariables(variables);
+    setEnvironmentVariables(variables);
+  };
+
+  useEffect(() => {
+    if (props.envVariablesQueryParams)
+      setEnvironmentVariables(props.envVariablesQueryParams);
+  }, []); // eslint-disable-line
+
   const toggleShareLinkModal = () => setShowShareLinkModal(!showShareLinkModal);
 
   // Show fetching status when auto-starting
@@ -153,6 +165,8 @@ function StartNotebookServer(props) {
       notebookFilePath={location?.state?.filePath}
       toggleShareLinkModal={toggleShareLinkModal}
       showShareLinkModal={showShareLinkModal}
+      setEnvironmentVariables={setNotebookEnvVariables}
+      environmentVariables={environmentVariables}
       {...props} />) :
     null;
 
@@ -835,54 +849,54 @@ class StartNotebookCommitsOptions extends Component {
   }
 }
 
-class StartNotebookOptions extends Component {
-  render() {
-    const { justStarted } = this.props;
-    if (justStarted)
-      return <Label>Starting a new session... <Loader size="14" inline="true" /></Label>;
+function StartNotebookOptions(props) {
 
-    const { all, fetched } = this.props.notebooks;
-    const { filters, options } = this.props;
-    if (!fetched)
-      return (<Label>Verifying available sessions... <Loader size="14" inline="true" /></Label>);
+  const { justStarted, environmentVariables, setEnvironmentVariables } = props;
+  if (justStarted)
+    return <Label>Starting a new session... <Loader size="14" inline="true" /></Label>;
 
-    if (Object.keys(options.global).length === 0 || options.fetching)
-      return (<Label>Loading session parameters... <Loader size="14" inline="true" /></Label>);
+  const { all, fetched } = props.notebooks;
+  const { filters, options } = props;
+  if (!fetched)
+    return (<Label>Verifying available sessions... <Loader size="14" inline="true" /></Label>);
 
-    if (Object.keys(all).length > 0) {
-      const currentCommit = filters.commit?.id;
-      const currentNotebook = Object.keys(all).find(k => {
-        const annotations = NotebooksHelper.cleanAnnotations(all[k].annotations, "renku.io");
-        if (annotations["commit-sha"] === currentCommit)
-          return true;
-        return false;
-      });
-      if (currentNotebook) {
-        return [
-          <StartNotebookOptionsRunning key="notebook-options-running" notebook={all[currentNotebook]}/>,
-          <ShareLinkSessionModal
-            key="shareLinkModal"
-            toggleModal={this.props.toggleShareLinkModal}
-            showModal={this.props.showShareLinkModal}
-            notebookFilePath={this.props.notebookFilePath}
-            {...this.props}
-          />
-        ];
-      }
+  if (Object.keys(options.global).length === 0 || options.fetching)
+    return (<Label>Loading session parameters... <Loader size="14" inline="true" /></Label>);
+
+  if (Object.keys(all).length > 0) {
+    const currentCommit = filters.commit?.id;
+    const currentNotebook = Object.keys(all).find(k => {
+      const annotations = NotebooksHelper.cleanAnnotations(all[k].annotations, "renku.io");
+      if (annotations["commit-sha"] === currentCommit)
+        return true;
+      return false;
+    });
+    if (currentNotebook) {
+      return [
+        <StartNotebookOptionsRunning key="notebook-options-running" notebook={all[currentNotebook]}/>,
+        <ShareLinkSessionModal
+          key="shareLinkModal"
+          toggleModal={props.toggleShareLinkModal}
+          showModal={props.showShareLinkModal}
+          notebookFilePath={props.notebookFilePath}
+          {...props}
+        />
+      ];
     }
-
-    return [
-      <StartNotebookServerOptions key="options" {...this.props} />,
-      <ServerOptionLaunch key="button" {...this.props} />,
-      <ShareLinkSessionModal
-        key="shareLinkModal"
-        toggleModal={this.props.toggleShareLinkModal}
-        showModal={this.props.showShareLinkModal}
-        {...this.props}
-      />
-    ];
-
   }
+
+  return [
+    <StartNotebookServerOptions key="options" {...props} />,
+    <EnvironmentVariables key="envVariables"
+      environmentVariables={environmentVariables} setEnvironmentVariables={setEnvironmentVariables} />,
+    <ServerOptionLaunch key="button" {...props} />,
+    <ShareLinkSessionModal
+      key="shareLinkModal"
+      toggleModal={props.toggleShareLinkModal}
+      showModal={props.showShareLinkModal}
+      {...props}
+    />
+  ];
 }
 
 function Warning(props) {

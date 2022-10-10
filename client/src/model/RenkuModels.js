@@ -391,6 +391,7 @@ const notebooksSchema = new Schema({
       commit: { initial: {} },
       discard: { initial: false },
       options: { initial: {} },
+      environment_variables: { initial: [{ key: "", value: "" }] },
       objectStoresConfiguration: { initial: [] },
       includeMergedBranches: { initial: false },
       displayedCommits: { initial: 25 },

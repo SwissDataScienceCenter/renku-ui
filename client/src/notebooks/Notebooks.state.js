@@ -472,6 +472,10 @@ class NotebooksCoordinator {
     this.model.set(`filters.options.${option}`, value);
   }
 
+  setNotebookEnvironmentVariables(values) {
+    this.model.set(`filters.environment_variables`, values);
+  }
+
   setObjectStoresConfiguration(value) {
     this.model.set("filters.objectStoresConfiguration", value);
   }
@@ -1262,8 +1266,9 @@ class NotebooksCoordinator {
     const image = projectOptions.image ?
       projectOptions.image :
       null;
+    const env_variables = this.model.get("filters.environment_variables");
 
-    return this.client.startNotebook(namespace, project, branch, commit, image, options);
+    return this.client.startNotebook(namespace, project, branch, commit, image, options, env_variables);
   }
 
   stopNotebook(serverName, force = false) {

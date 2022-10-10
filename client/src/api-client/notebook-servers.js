@@ -84,7 +84,7 @@ function addNotebookServersMethods(client) {
     });
   };
 
-  client.startNotebook = (namespacePath, projectPath, branchName, commitId, image, options) => {
+  client.startNotebook = (namespacePath, projectPath, branchName, commitId, image, options, env_variables = {}) => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     const url = `${client.baseUrl}/notebooks/servers`;
@@ -106,6 +106,7 @@ function addNotebookServersMethods(client) {
       commit_sha: commitId,
       branch: branchName,
       notebook,
+      environment_variables: env_variables,
       ...options
     };
     if (image)
