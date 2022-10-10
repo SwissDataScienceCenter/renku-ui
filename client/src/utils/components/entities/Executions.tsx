@@ -18,36 +18,75 @@
 
 import React from "react";
 
+import Time from "../../helpers/Time";
+import { UncontrolledTooltip } from "../../ts-wrappers";
 import { EntityType } from "./Entities";
 import { TimeCaption } from "../TimeCaption";
 
 
 export interface EntityExecutionsProps {
-  display: "list" | "grid";
+  display: "list" | "tree";
   executions: number | null;
   itemType: EntityType;
   lastExecuted: Date | null;
+  showLastExecutionTooltip: boolean;
+  workflowId: string;
 }
 
-function EntityExecutions({ display, executions, itemType, lastExecuted }: EntityExecutionsProps) {
+function EntityExecutions({
+  display, executions, itemType, lastExecuted, showLastExecutionTooltip = true, workflowId
+}: EntityExecutionsProps) {
   if (itemType !== "workflow") return null;
   let executionLast = lastExecuted != null ?
     (<TimeCaption noCaption={true} endPunctuation="" time={lastExecuted} className="text-rk-text-light"/>) :
     null;
   let executionContent: React.ReactNode;
-  if (!executions)
-    executionContent = (<span className="fst-italic">No data on executions.</span>);
-  else if (executions === 1)
-    executionContent = (<><span>{executions}</span> execution ({executionLast})</>);
-  else
-    executionContent = (<><span>{executions}</span> executions (last {executionLast})</>);
+  const classSmall = "text-rk-text-light small";
+
   if (display === "list") {
+    if (executions == null)
+      executionContent = (<span className="fst-italic">No data on executions.</span>);
+    else if (executions === 0)
+      executionContent = (<span>No executions</span>);
+    else if (executions === 1)
+      executionContent = (<span>{executions} execution ({executionLast})</span>);
+    else
+      executionContent = (<span>{executions} executions (last {executionLast})</span>);
     return (
-      <p className="text-rk-text-light small my-1">{executionContent}</p>
+      <p className={`${classSmall} my-1`}>{executionContent}</p>
     );
   }
 
-  return null; // ? no implementation yet for grid
+  const lastExecutionId = `lastExec-${workflowId}`;
+  if (executions == null) {
+    return null;
+  }
+  else if (executions === 0) {
+    executionContent = (<p>No executions</p>);
+  }
+  else if (executions === 1) {
+    executionContent = (
+      <><p>{executions} execution</p><p id={lastExecutionId} className={classSmall}>{executionLast}</p></>
+    );
+  }
+  else {
+    executionContent = (
+      <><p>{executions} executions</p><p id={lastExecutionId} className={classSmall}>last {executionLast}</p></>
+    );
+  }
+
+  let lastExecutionTooltip: React.ReactNode = null;
+  if (showLastExecutionTooltip && workflowId && lastExecuted) {
+    lastExecutionTooltip = (
+      <UncontrolledTooltip key={`tooltip-${lastExecutionId}`} placement="top" target={lastExecutionId}>
+        <span>{Time.toIsoTimezoneString(lastExecuted)}</span>
+      </UncontrolledTooltip>
+    );
+  }
+
+  return (
+    <div className="executions">{executionContent}{lastExecutionTooltip}</div>
+  );
 }
 
 export default EntityExecutions;
