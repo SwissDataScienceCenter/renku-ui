@@ -18,6 +18,8 @@
 
 import React from "react";
 
+import Time from "../../helpers/Time";
+import { UncontrolledTooltip } from "../../ts-wrappers";
 import { EntityType } from "./Entities";
 import { TimeCaption } from "../TimeCaption";
 
@@ -27,9 +29,13 @@ export interface EntityExecutionsProps {
   executions: number | null;
   itemType: EntityType;
   lastExecuted: Date | null;
+  showLastExecutionTooltip: boolean;
+  workflowId: string;
 }
 
-function EntityExecutions({ display, executions, itemType, lastExecuted }: EntityExecutionsProps) {
+function EntityExecutions({
+  display, executions, itemType, lastExecuted, showLastExecutionTooltip = true, workflowId
+}: EntityExecutionsProps) {
   if (itemType !== "workflow") return null;
   let executionLast = lastExecuted != null ?
     (<TimeCaption noCaption={true} endPunctuation="" time={lastExecuted} className="text-rk-text-light"/>) :
@@ -51,16 +57,35 @@ function EntityExecutions({ display, executions, itemType, lastExecuted }: Entit
     );
   }
 
-  if (executions == null)
+  const lastExecutionId = `lastExec-${workflowId}`;
+  if (executions == null) {
     return null;
-  else if (executions === 0)
+  }
+  else if (executions === 0) {
     executionContent = (<p>No executions</p>);
-  else if (executions === 1)
-    executionContent = (<><p>{executions} execution</p><p className={classSmall}>{executionLast}</p></>);
-  else
-    executionContent = (<><p>{executions} executions</p><p className={classSmall}>last {executionLast}</p></>);
+  }
+  else if (executions === 1) {
+    executionContent = (
+      <><p>{executions} execution</p><p id={lastExecutionId} className={classSmall}>{executionLast}</p></>
+    );
+  }
+  else {
+    executionContent = (
+      <><p>{executions} executions</p><p id={lastExecutionId} className={classSmall}>last {executionLast}</p></>
+    );
+  }
+
+  let lastExecutionTooltip: React.ReactNode = null;
+  if (showLastExecutionTooltip && workflowId && lastExecuted) {
+    lastExecutionTooltip = (
+      <UncontrolledTooltip key={`tooltip-${lastExecutionId}`} placement="top" target={lastExecutionId}>
+        <span>{Time.toIsoTimezoneString(lastExecuted)}</span>
+      </UncontrolledTooltip>
+    );
+  }
+
   return (
-    <div className="executions">{executionContent}</div>
+    <div className="executions">{executionContent}{lastExecutionTooltip}</div>
   );
 }
 

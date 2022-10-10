@@ -24,7 +24,8 @@ import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
 import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityExecutions from "./entities/Executions";
-import { Col } from "../ts-wrappers";
+import Time from "../../utils/helpers/Time";
+import { Col, UncontrolledTooltip } from "../ts-wrappers";
 import { EntityType, WorkflowType } from "./entities/Entities";
 import { TimeCaption } from "./TimeCaption";
 
@@ -101,17 +102,17 @@ function TreeElement({
     });
   }
 
-  let currentIndentation = "indentation-";
-  if (!indentation)
-    currentIndentation += 0;
-  else if (indentation >= 4)
-    currentIndentation += 4;
-  else
-    currentIndentation += indentation;
+  let currentIndentation = 0;
+  if (indentation >= 4)
+    currentIndentation = 4;
+  else if (indentation)
+    currentIndentation = indentation;
+  const elementStyle = { marginLeft: `${currentIndentation}em` };
 
+  const createdId = `created-${workflowId}`;
   return (
     <>
-      <div className={`d-flex flex-row rk-tree-item ${newClasses} ${currentIndentation}`}>
+      <div className={`d-flex flex-row rk-tree-item ${newClasses}`} style={elementStyle}>
         {leftItem}
         <Link className="row w-100 rk-tree-item-content" to={url}>
           <Col xs={12} md={5} className="title center-vertically">
@@ -119,10 +120,16 @@ function TreeElement({
             <EntityCreators display="tree" creators={creators} itemType={itemType} />
           </Col>
           <Col xs={12} sm={7} md={4} className="title center-vertically">
-            <EntityExecutions display="tree" executions={executions} itemType={itemType} lastExecuted={lastExecuted} />
+            <EntityExecutions display="tree" executions={executions} itemType={itemType}
+              lastExecuted={lastExecuted} showLastExecutionTooltip={true} workflowId={workflowId} />
           </Col>
           <Col xs={12} sm={5} md={3} className="title center-vertically">
-            <TimeCaption caption="Created" className="text-rk-text-light" time={timeCaption} endPunctuation="" />
+            <span id={createdId}>
+              <TimeCaption caption="Created" className="text-rk-text-light" time={timeCaption} endPunctuation="" />
+            </span>
+            <UncontrolledTooltip key={`tool-created-${createdId}`} placement="top" target={createdId}>
+              <span>{ Time.toIsoTimezoneString(timeCaption) }</span>
+            </UncontrolledTooltip>
             {/* <Link to={urlSingle}><FontAwesomeIcon className="text-rk-yellow float-end" icon={faLink} /></Link> */}
           </Col>
         </Link>
