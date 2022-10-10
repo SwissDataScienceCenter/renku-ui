@@ -41,7 +41,7 @@ import LinkedEntitiesByItemType, { EntityLinksHeader } from "../entities/LinkedE
 
 export interface EntityHeaderProps {
   title: string;
-  visibility: "public" | "internal" | "private";
+  visibility?: "public" | "internal" | "private";
   description: string;
   itemType: EntityType;
   slug?: string | React.ReactNode;
@@ -74,7 +74,7 @@ function EntityHeader(
         <div className="card-bg-title card-bg-title--large" data-cy={`${itemType}-title`}>{title}</div>
         <div className="d-flex justify-content-between align-items-center m-3">
           <EntityLabel type={itemType} workflowType={null} />
-          <VisibilityIcon visibility={visibility} className="" />
+          { visibility ? (<VisibilityIcon visibility={visibility} className="" />) : null }
         </div>
       </div>
       <div className="card-body">

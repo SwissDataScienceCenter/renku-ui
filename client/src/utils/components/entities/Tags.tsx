@@ -50,7 +50,8 @@ function EntityTags ({ tagList, multiline }: EntityTagsProps) {
     <ThrottledTooltip target={ref} tooltip={tagList?.map(tag => `#${tag}`).join(", ")} /> : null;
   return (
     <>
-      <div ref={ref} className={`tagList card-tags text-rk-text-light ${multilineStyles}`} data-cy="entity-tag-list">
+      <div ref={ref} data-cy="entity-tag-list"
+        className={`tagList card-tags text-rk-text-light mb-3 ${multilineStyles}`}>
         {tagList?.map(tag => <span key={tag} className="entity-tag">#{tag}</span>)}
       </div>
       {!multiline ? tooltip : null}

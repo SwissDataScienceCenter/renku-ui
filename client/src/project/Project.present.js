@@ -52,7 +52,7 @@ import { NamespaceProjects } from "../namespace";
 import { ProjectOverviewCommits, ProjectOverviewStats, ProjectOverviewVersion } from "./overview";
 import { ForkProject } from "./new";
 import { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions } from "./settings";
-import { WorkflowsList } from "../workflows";
+import { WorkflowDetail, WorkflowsList } from "../workflows";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { ButtonWithMenu, GoBackButton } from "../utils/components/buttons/Button";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
@@ -904,9 +904,30 @@ function ProjectViewWorkflows(props) {
   const reference = props.metadata?.defaultBranch ?
     props.metadata?.defaultBranch :
     "";
+
   return (
-    <WorkflowsList client={props.client} model={props.model}
-      reference={reference} repositoryUrl={props.externalUrl} versionUrl={props.migration?.core?.versionUrl} />
+    <Switch>
+      <Route path={[props.workflowUrl, props.workflowsUrl]}
+        render={renderProps => {
+          return (
+            <WorkflowsList client={props.client} fullPath={props.projectPathWithNamespace} model={props.model}
+              reference={reference} repositoryUrl={props.externalUrl} versionUrl={props.migration?.core?.versionUrl} />
+          );
+        }}
+      />
+      <Route path={props.workflowSingleUrl}
+        render={renderProps => {
+          return [
+            <Col key="btn" md={12}>
+              <GoBackButton data-cy="go-back-workflows" label="Back to workflows list" url={props.workflowsUrl} />
+            </Col>,
+            <WorkflowDetail key="workflowDetails"
+              client={props.client} fullPath={props.projectPathWithNamespace} model={props.model}
+              reference={reference} repositoryUrl={props.externalUrl} versionUrl={props.migration?.core?.versionUrl} />
+          ];
+        }}
+      />
+    </Switch>
   );
 }
 
@@ -1391,6 +1412,7 @@ function ProjectView(props) {
         <Route path={props.editDatasetUrl} render={() => null} />
         <Route path={props.datasetUrl} render={() => null} />
         <Route path={props.sessionShowUrl} render={() => null} />
+        <Route path={props.workflowSingleUrl} render={() => null} />
         <Route path={props.newDatasetUrl} component={() =>
           <ProjectViewHeader {...props} minimalistHeader={true}/>} />
         <Route component={()=><ProjectViewHeader {...props} minimalistHeader={true}/>} />
@@ -1400,6 +1422,7 @@ function ProjectView(props) {
         <Route path={props.editDatasetUrl} render={() => null} />
         <Route path={props.datasetUrl} render={() => null} />
         <Route path={props.sessionShowUrl} render={() => null} />
+        <Route path={props.workflowSingleUrl} render={() => null} />
         <Route path={props.newDatasetUrl} component={() => <ProjectNav key="nav" {...props} />} />
         <Route component={() =><ProjectNav key="nav" {...props} />} />
       </Switch>
@@ -1415,6 +1438,8 @@ function ProjectView(props) {
             render={() => <ProjectViewFiles key="files" {...props} />} />
           <Route path={props.datasetsUrl}
             render={() => <ProjectViewDatasets key="datasets" {...props} />} />
+          <Route path={props.workflowSingleUrl}
+            render={() => <ProjectViewWorkflows key="workflow" {...props} />} />
           <Route path={props.workflowsUrl}
             render={() => <ProjectViewWorkflows key="workflows" {...props} />} />
           <Route path={props.settingsUrl}
