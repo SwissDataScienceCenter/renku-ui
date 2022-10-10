@@ -286,7 +286,7 @@ function XCircleFill(props) {
 }
 
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
-export { Alert, Button, ButtonDropdown, ButtonGroup, CheckCircleFill, XCircleFill  };
+export { Alert, Button, ButtonDropdown, ButtonGroup, CheckCircleFill, XCircleFill };
 export { Card, CardBody, CardText, CardFooter, Col, DropdownItem, DropdownMenu, DropdownToggle };
 export { FormFeedback, FormText, Fade, Form, FormGroup, Input, InputGroup, Label };
 export { PopoverHeader, PopoverBody };

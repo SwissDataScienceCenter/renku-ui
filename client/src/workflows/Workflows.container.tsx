@@ -16,15 +16,23 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 import { WorkflowsCoordinator } from "./Workflows.state";
-import { WorkflowsList as WorkflowsListPresent } from "./Workflows.present";
+import {
+  WorkflowDetail as WorkflowDetailPresent,
+  WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent
+} from "./Workflows.present";
+import { checkRenkuCoreSupport } from "../utils/helpers/HelperFunctions";
 
+
+const MIN_CORE_VERSION_WORKFLOWS = 9;
 
 interface WorkflowsListProps {
   client: any;
+  fullPath: string;
   model: any;
   reference: string;
   repositoryUrl: string;
@@ -39,38 +47,65 @@ const WorkflowsSorting = {
   workflowType: "Workflow type"
 };
 
-function WorkflowsList({ client, model, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
+function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
   const workflowsCoordinator = new WorkflowsCoordinator(client, model);
   const workflows = useSelector((state: any) => state.stateModel.workflows);
-  const [orderBy, setOrderBy] = useState("created");
-  const [orderByAscending, setOrderByAscending] = useState(false);
-  const [excludeInactive, setExcludeInactive] = useState(true);
-  const toggleAscending = () => setOrderByAscending(!orderByAscending);
-  const toggleExcludeInactive = () => setExcludeInactive(!excludeInactive);
+  const { id }: Record<string, string> = useParams();
+  const selected = id;
+  const unsupported = !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
 
-  const minVersion = 9;
-  const projectVersion = versionUrl != null && versionUrl.length ?
-    parseInt(versionUrl.replace(/^\/+|\/+$/g, "")) :
-    0;
-  const unsupported = projectVersion && projectVersion < minVersion ? true : false;
+  const toggleAscending = () => workflowsCoordinator.toggleOrderAscending();
+  const toggleExpanded = (workflowId: string) => workflowsCoordinator.toggleExpanded(workflowId);
+  const toggleInactive = () => workflowsCoordinator.toggleInactive();
+  const setOrderProperty = (newProperty: string) => workflowsCoordinator.setOrderProperty(newProperty);
 
   useEffect(() => {
-    workflowsCoordinator.fetchWorkflowsList(repositoryUrl, reference, versionUrl, unsupported);
+    workflowsCoordinator.fetchWorkflowsList(repositoryUrl, reference, versionUrl, unsupported, fullPath);
   }, [repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const targetChanged = (repositoryUrl + reference) !== workflows.target;
+  const targetChanged = (repositoryUrl + reference) !== workflows.target; // ! is this still necessary?
   const versionUrlAvailable = !versionUrl ? false : true;
   const waiting = !versionUrlAvailable || targetChanged;
 
   return (
-    <WorkflowsListPresent
-      ascending={orderByAscending} excludeInactive={excludeInactive} orderBy={orderBy}
-      orderByMatrix={WorkflowsSorting} setOrderBy={setOrderBy} toggleAscending={toggleAscending}
-      toggleExcludeInactive={toggleExcludeInactive} unsupported={unsupported}
-      waiting={waiting} workflows={workflows}
+    <WorkflowsTreeBrowserPresent
+      ascending={workflows.orderAscending}
+      expanded={workflows.expanded}
+      fullPath={fullPath}
+      orderBy={workflows.orderProperty}
+      orderByMatrix={WorkflowsSorting}
+      selected={selected}
+      setOrderBy={setOrderProperty}
+      showInactive={workflows.showInactive}
+      toggleAscending={toggleAscending}
+      toggleExpanded={toggleExpanded}
+      toggleInactive={toggleInactive}
+      unsupported={unsupported}
+      waiting={waiting}
+      workflows={workflows}
     />
   );
 }
 
 
-export { WorkflowsList };
+function WorkflowDetail({ client, fullPath, model, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
+  const workflowsCoordinator = new WorkflowsCoordinator(client, model);
+  const workflow = useSelector((state: any) => state.stateModel.workflow);
+
+  const { id }: Record<string, string> = useParams();
+  const workflowId = id;
+
+  // fetch workflow details
+  useEffect(() => {
+    workflowsCoordinator.fetchWorkflowDetails(workflowId, repositoryUrl, reference, versionUrl);
+  }, [workflowId, repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const targetChanged = (repositoryUrl + reference + workflowId) !== workflow.target;
+  const versionUrlAvailable = !versionUrl ? false : true;
+  const waiting = !versionUrlAvailable || targetChanged;
+
+  return (<WorkflowDetailPresent waiting={waiting} workflowId={workflowId} workflow={workflow} />);
+}
+
+
+export { WorkflowDetail, WorkflowsList };
