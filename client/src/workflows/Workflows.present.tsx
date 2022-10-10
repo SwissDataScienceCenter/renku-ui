@@ -151,6 +151,7 @@ interface WorkflowsTreeBrowserProps {
   orderBy: string;
   orderByMatrix: Record<string, string>,
   selected: string;
+  selectedAvailable: boolean;
   setOrderBy: Function;
   showInactive: boolean;
   toggleAscending: Function;
@@ -162,8 +163,8 @@ interface WorkflowsTreeBrowserProps {
 }
 
 function WorkflowsTreeBrowser({
-  ascending, expanded, fullPath, orderBy, orderByMatrix, selected, setOrderBy, showInactive, toggleAscending,
-  toggleInactive, toggleExpanded, unsupported, waiting, workflows
+  ascending, expanded, fullPath, orderBy, orderByMatrix, selected, selectedAvailable, setOrderBy,
+  showInactive, toggleAscending, toggleInactive, toggleExpanded, unsupported, waiting, workflows
 }: WorkflowsTreeBrowserProps) {
   // return immediately when workflows are not supported in the current project
   if (unsupported)
@@ -171,6 +172,7 @@ function WorkflowsTreeBrowser({
 
   // show status: loading or error or full content
   const loading = waiting || (!workflows.fetched);
+  const shrunk = selectedAvailable && !!selected;
   let content: React.ReactNode;
   if (loading) {
     content = (<Loader />);
@@ -179,19 +181,36 @@ function WorkflowsTreeBrowser({
     content = (<CoreErrorAlert error={workflows.error} />);
   }
   else {
-    content = (
+    const treeBrowser = (
       <TreeBrowser
         expanded={expanded}
         items={orderWorkflows(workflows.list, orderBy, ascending, showInactive)}
         selected={selected}
+        shrunk={shrunk}
         toggleExpanded={toggleExpanded}
       />
     );
+
+    if (!shrunk) {
+      content = treeBrowser;
+    }
+    else {
+      content = (
+        <Row>
+          <Col xs={12} md={5} lg={4}>
+            {treeBrowser}
+          </Col>
+          <Col fluid="true">
+            <p>SOMETHING HERE</p>
+          </Col>
+        </Row>
+      );
+    }
   }
 
   return (
     <div>
-      <h3>Workflows List</h3>
+      <h3>Workflows</h3>
       <WorkflowsListFilters
         ascending={ascending}
         orderBy={orderBy}

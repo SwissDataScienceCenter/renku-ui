@@ -34,17 +34,18 @@ interface TreeBrowserProps {
   expanded: string[];
   items: Record<string, any>;
   selected: string;
+  shrunk: boolean;
   toggleExpanded: Function;
 }
 
 function TreeBrowser({
-  expanded, items = [], selected, toggleExpanded
+  expanded, items = [], selected, shrunk, toggleExpanded
 }: TreeBrowserProps) {
   if (!items.length)
     return (<p>No elements to display</p>);
 
   const treeElements = items.map((item: any) => {
-    let newProps: Record<string, any> = { selected, expanded, toggleExpanded, items };
+    let newProps: Record<string, any> = { expanded, items, selected, shrunk, toggleExpanded };
     return (<TreeElement key={item.workflowId} {...item} {...newProps} />);
   });
 
@@ -72,7 +73,7 @@ interface TreeElementProps extends TreeBrowserProps {
 
 function TreeElement({
   active, children, creators, expanded, executions, indentation, itemType, items, lastExecuted, selected,
-  timeCaption, title, toggleExpanded, url, urlSingle, workflowId, workflowType
+  shrunk, timeCaption, title, toggleExpanded, url, urlSingle, workflowId, workflowType
 }: TreeElementProps) {
   const newClasses = workflowId === selected ? "selected" : "";
   const isComposite = workflowType === "CompositePlan" ? true : false;
@@ -97,7 +98,9 @@ function TreeElement({
   let childrenNodes: React.ReactNode[] = [];
   if (childrenItems.length && expanded.includes(workflowId)) {
     childrenNodes = childrenItems.map((item: any) => {
-      let newProps: Record<string, any> = { selected, expanded, toggleExpanded, items, indentation: indentation + 1 };
+      let newProps: Record<string, any> = {
+        expanded, items, indentation: indentation + 1, selected, shrunk, toggleExpanded
+      };
       return (<TreeElement key={workflowId + item.workflowId} {...item} {...newProps} />);
     });
   }
@@ -107,9 +110,33 @@ function TreeElement({
     currentIndentation = 4;
   else if (indentation)
     currentIndentation = indentation;
+  if (shrunk)
+    currentIndentation = currentIndentation / 2;
   const elementStyle = { marginLeft: `${currentIndentation}em` };
 
   const createdId = `created-${workflowId}`;
+
+  // return either shrunk or full-size element
+  if (shrunk) {
+    return (
+      <>
+        <div className={`d-flex flex-row rk-tree-item ${newClasses}`} style={elementStyle}>
+          {leftItem}
+          <Link className="row w-100 rk-tree-item-content" to={url}>
+            <Col xs={12} className="title center-vertically">
+              <h5>{title}</h5>
+            </Col>
+            <Col xs={12} className="title center-vertically">
+              <EntityExecutions display="tree" executions={executions} itemType={itemType}
+                lastExecuted={lastExecuted} showLastExecution={false} workflowId={workflowId} />
+            </Col>
+          </Link>
+        </div>
+        {childrenNodes}
+      </>
+    );
+  }
+
   return (
     <>
       <div className={`d-flex flex-row rk-tree-item ${newClasses}`} style={elementStyle}>
@@ -121,7 +148,7 @@ function TreeElement({
           </Col>
           <Col xs={12} sm={7} md={4} className="title center-vertically">
             <EntityExecutions display="tree" executions={executions} itemType={itemType}
-              lastExecuted={lastExecuted} showLastExecutionTooltip={true} workflowId={workflowId} />
+              lastExecuted={lastExecuted} showLastExecution={true} workflowId={workflowId} />
           </Col>
           <Col xs={12} sm={5} md={3} className="title center-vertically">
             <span id={createdId}>

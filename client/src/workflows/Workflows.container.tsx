@@ -52,6 +52,7 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
   const workflows = useSelector((state: any) => state.stateModel.workflows);
   const { id }: Record<string, string> = useParams();
   const selected = id;
+  const selectedAvailable = !!workflows.list.find((w: any) => w.workflowId === selected);
   const unsupported = !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
 
   const toggleAscending = () => workflowsCoordinator.toggleOrderAscending();
@@ -75,6 +76,7 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
       orderBy={workflows.orderProperty}
       orderByMatrix={WorkflowsSorting}
       selected={selected}
+      selectedAvailable={selectedAvailable}
       setOrderBy={setOrderProperty}
       showInactive={workflows.showInactive}
       toggleAscending={toggleAscending}
