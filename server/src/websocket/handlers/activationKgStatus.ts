@@ -18,13 +18,15 @@
 
 import { Channel } from "../index";
 import { WsMessage } from "../WsMessages";
-import config from "../../config";
-import logger from "../../logger";
-import fetch from "cross-fetch";
 import * as util from "util";
+import APIClient from "../../api-client";
 
 type ActivationStatus = {
   [key: number]: number
+}
+
+interface ActivationResult {
+  progress: number;
 }
 
 function sendMessage(data: string, channel: Channel) {
@@ -32,15 +34,12 @@ function sendMessage(data: string, channel: Channel) {
   channel.sockets.forEach(socket => socket.send(info.toString()));
 }
 
-function getActivationStatus(projectIds: number[], channel: Channel): void {
-  const { gatewayUrl } = config.deployment;
+function getActivationStatus(projectIds: number[], channel: Channel, apiClient: APIClient): void {
   for (let i = 0; i < projectIds.length; i++) {
     const id = projectIds[i];
-    const activationStatusURL = `${gatewayUrl}/projects/${id}/graph/status`;
-    logger.info(`Fetching activation from ${id} projects`);
 
-    fetch(activationStatusURL).then(async (response) => {
-      const status = await response.json();
+    apiClient.kgActivationStatus(id).then(async (response) => {
+      const status = response as unknown as ActivationResult;
       const previousStatuses = channel.data.get("activationProjects") as ActivationStatus;
       const currentStatus = status?.progress ?? -1;
       const previousStatus = previousStatuses ? previousStatuses[id] : null;
@@ -60,11 +59,11 @@ async function handlerRequestActivationKgStatus(
     const projectsIds = data.projects as number[];
     const currentProjectsIds = channel.data.get("projectsIds") as number[];
     const ids = currentProjectsIds?.length ? [...currentProjectsIds, ...projectsIds] : projectsIds;
-    channel.data.set("projectsIds", ids);
+    channel.data.set("projectsIds", [...new Set(ids)]);
   }
 }
 
-async function heartbeatRequestActivationKgStatus(channel: Channel): Promise<void> {
+async function heartbeatRequestActivationKgStatus(channel: Channel, apiClient: APIClient): Promise<void> {
   const projectsIds = channel.data.get("projectsIds") as number[];
   if (projectsIds?.length) {
     const previousStatuses = channel.data.get("activationProjects") as ActivationStatus;
@@ -75,7 +74,7 @@ async function heartbeatRequestActivationKgStatus(channel: Channel): Promise<voi
     cleanCompletedStatuses(previousStatuses, channel);
 
     channel.data.set("projectsIds", ids.length ? ids : []);
-    getActivationStatus(ids, channel);
+    getActivationStatus(ids, channel, apiClient);
   }
 }
 
