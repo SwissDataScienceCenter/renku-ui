@@ -17,30 +17,37 @@
  */
 
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faInfoCircle, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
 
-import ListDisplay from "../utils/components/List";
+import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import {
-  Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Input, Label, Row
+  Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Input, Label, Row,
+  UncontrolledPopover, PopoverBody
 } from "../utils/ts-wrappers";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
+import { Docs } from "../utils/constants/Docs";
+import { EntityType } from "../utils/components/entities/Entities";
+import { ExternalLink } from "../utils/components/ExternalLinks";
 import { Loader } from "../utils/components/Loader";
 import { WarnAlert } from "../utils/components/Alert";
+import { Url } from "../utils/helpers/url";
+import { TreeBrowser } from "../utils/components/Tree";
 
 
 interface WorkflowsListFiltersProps {
   ascending: boolean;
-  excludeInactive: boolean;
   orderBy: string;
   orderByMatrix: Record<string, string>,
   setOrderBy: Function;
+  showInactive: boolean;
   toggleAscending: Function;
-  toggleExcludeInactive: Function;
+  toggleInactive: Function;
 }
 
 function WorkflowsListFilters({
-  ascending, excludeInactive, orderBy, orderByMatrix, setOrderBy, toggleAscending, toggleExcludeInactive
+  ascending, orderBy, orderByMatrix, setOrderBy, showInactive, toggleAscending, toggleInactive
 }: WorkflowsListFiltersProps) {
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
   const toggleSortDropdownOpen = () => { setSortDropdownOpen((sortDropdownOpen) => !sortDropdownOpen); };
@@ -57,10 +64,29 @@ function WorkflowsListFilters({
     <Row className="my-3">
       <Col xs={12} sm="auto" className="my-auto">
         <div className="form-check form-switch d-inline-block">
-          <Label className="text-rk-text me-2">Show inactive</Label>
+          <Label className="text-rk-text me-2">
+            Show inactive{" "}
+            <FontAwesomeIcon id="showInactiveInfo" className="cursor-pointer align-middle" icon={faInfoCircle} />
+            <UncontrolledPopover target="showInactiveInfo" trigger="legacy" placement="bottom">
+              {/* <PopoverHeader>{repository.name} templates</PopoverHeader> */}
+              <PopoverBody className="p-2">
+                <p className="mb-1">
+                  Inactive workflows don&apos;t have files in the branch&apos;s head
+                </p>
+                <p className="mb-0">
+                  You can{" "}
+                  <ExternalLink
+                    role="text" iconSup={true} iconAfter={true} title="check our documentation"
+                    url={Docs.rtdHowToGuide("404-missing-link")}
+                  />
+                  {" "}for more details
+                </p>
+              </PopoverBody>
+            </UncontrolledPopover>
+          </Label>
           <Input type="switch"
             id="wfExcludeInactive" label="label here" className="form-check-input rounded-pill"
-            checked={!excludeInactive} onChange={() => toggleExcludeInactive()}
+            checked={showInactive} onChange={() => toggleInactive()}
           />
         </div>
       </Col>
@@ -85,33 +111,63 @@ function WorkflowsListFilters({
 }
 
 
-interface WorkflowsListProps {
+interface UnsupportedWorkflowsProps {
+  fullPath: string;
+}
+
+function UnsupportedWorkflows({ fullPath }: UnsupportedWorkflowsProps) {
+  const updateUrl = Url.get(Url.pages.project.overview.status, { namespace: "", path: fullPath });
+
+  return (
+    <div>
+      <WarnAlert dismissible={false}>
+        <p>
+          Interacting with workflows in the UI requires updating your project to a newer version.
+        </p>
+        <p className="mb-0">
+        The <Link to={updateUrl}>Project status</Link> page provides further information.
+        </p>
+      </WarnAlert>
+    </div>
+  );
+}
+
+
+function orderWorkflows(
+  workflows: Array<Record<string, any>>, orderBy: string, ascending: boolean, showInactive: boolean
+) {
+  const filtered = !showInactive ? workflows.filter(w => w.active) : workflows;
+  // ? we pre-sort by name to guarantee consistency since some properties could be identical
+  const preSorted = filtered.sort((a, b) => (a["name"] > b["name"]) ? 1 : ((b["name"] > a["name"]) ? -1 : 0));
+  const sorted = preSorted.sort((a, b) => (a[orderBy] > b[orderBy]) ? 1 : ((b[orderBy] > a[orderBy]) ? -1 : 0));
+  return ascending ? sorted : sorted.reverse();
+}
+
+
+interface WorkflowsTreeBrowserProps {
   ascending: boolean;
-  excludeInactive: boolean;
+  expanded: string[];
+  fullPath: string;
   orderBy: string;
   orderByMatrix: Record<string, string>,
+  selected: string;
   setOrderBy: Function;
+  showInactive: boolean;
   toggleAscending: Function;
-  toggleExcludeInactive: Function;
+  toggleExpanded: Function;
+  toggleInactive: Function;
   unsupported: boolean;
   waiting: boolean;
   workflows: Record<string, any>;
 }
 
-function orderWorkflows(
-  workflows: Array<Record<string, any>>, orderBy: string, ascending: boolean, excludeInactive: boolean
-) {
-  const filtered = excludeInactive ? workflows.filter(w => w.active) : workflows;
-  const sorted = filtered.sort((a, b) => (a[orderBy] > b[orderBy]) ? 1 : ((b[orderBy] > a[orderBy]) ? -1 : 0));
-  return ascending ? sorted : sorted.reverse();
-}
-
-function WorkflowsList({
-  ascending, excludeInactive, orderBy, orderByMatrix, setOrderBy, toggleAscending,
-  toggleExcludeInactive, unsupported, waiting, workflows
-}: WorkflowsListProps) {
+function WorkflowsTreeBrowser({
+  ascending, expanded, fullPath, orderBy, orderByMatrix, selected, setOrderBy, showInactive, toggleAscending,
+  toggleInactive, toggleExpanded, unsupported, waiting, workflows
+}: WorkflowsTreeBrowserProps) {
   // return immediately when workflows are not supported in the current project
-  if (unsupported) return (<UnsupportedWorkflows />);
+  if (unsupported)
+    return (<UnsupportedWorkflows fullPath={fullPath} />);
 
   // show status: loading or error or full content
   const loading = waiting || (!workflows.fetched);
@@ -124,14 +180,11 @@ function WorkflowsList({
   }
   else {
     content = (
-      <ListDisplay
-        itemsType="workflow"
-        search={null}
-        currentPage={null}
-        gridDisplay={true}
-        totalItems={workflows.list.length}
-        perPage={workflows.list.length}
-        items={orderWorkflows(workflows.list, orderBy, ascending, excludeInactive)}
+      <TreeBrowser
+        expanded={expanded}
+        items={orderWorkflows(workflows.list, orderBy, ascending, showInactive)}
+        selected={selected}
+        toggleExpanded={toggleExpanded}
       />
     );
   }
@@ -141,35 +194,54 @@ function WorkflowsList({
       <h3>Workflows List</h3>
       <WorkflowsListFilters
         ascending={ascending}
-        excludeInactive={excludeInactive}
         orderBy={orderBy}
         orderByMatrix={orderByMatrix}
         setOrderBy={setOrderBy}
+        showInactive={showInactive}
         toggleAscending={toggleAscending}
-        toggleExcludeInactive={toggleExcludeInactive} />
+        toggleInactive={toggleInactive} />
       {content}
     </div>
   );
 }
 
 
-function UnsupportedWorkflows() {
-  return (
-    <div>
-      <WarnAlert dismissible={false}>
-        <p>
-          Interacting with workflows in the UI requires updating your project to a newer version.
-        </p>
-        {/*
-        // ! TODO: add link to status overview
-        <p>
-          {updateInfo} should resolve the problem.
-          <br />The <Link to={overviewStatusUrl}>Project status</Link> page provides further information.
-        </p> */}
-      </WarnAlert>
-    </div>
-  );
+interface WorkflowDetailProps {
+  waiting: boolean;
+  workflow: Record<string, any>;
+  workflowId: string;
+}
+
+function WorkflowDetail({ waiting, workflow, workflowId }: WorkflowDetailProps) {
+  const loading = waiting || (!workflow.fetched);
+
+  let content: React.ReactNode;
+  if (loading) {
+    content = (<Loader />);
+  }
+  else if (workflow.error) {
+    content = (<CoreErrorAlert error={workflow.error} />);
+  }
+  else {
+    content = (
+      <Col className="mb-4">
+        <EntityHeader
+          title={workflow.details.name}
+          description={workflow.details.description}
+          itemType={"workflow" as EntityType}
+          tagList={workflow.details.keywords}
+          creators={workflow.details.creators}
+          labelCaption="created"
+          timeCaption={workflow.details.created}
+          devAccess={false}
+          url="" launchNotebookUrl="" sessionAutostartUrl=""
+        />
+      </Col>
+    );
+  }
+
+  return (<div>{content}</div>);
 }
 
 
-export { WorkflowsList };
+export { WorkflowDetail, WorkflowsTreeBrowser };
