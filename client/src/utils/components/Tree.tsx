@@ -24,8 +24,9 @@ import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
 import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityExecutions from "./entities/Executions";
+import EntityHeader from "./entityHeader/EntityHeader";
 import Time from "../../utils/helpers/Time";
-import { Col, UncontrolledTooltip } from "../ts-wrappers";
+import { Card, CardHeader, CardBody, Col, UncontrolledTooltip } from "../ts-wrappers";
 import { EntityType, WorkflowType } from "./entities/Entities";
 import { TimeCaption } from "./TimeCaption";
 
@@ -49,9 +50,7 @@ function TreeBrowser({
     return (<TreeElement key={item.workflowId} {...item} {...newProps} />);
   });
 
-  // ! TODO: make it shrink on select
-
-  return (<div>{treeElements}</div>);
+  return (<div className="mb-3">{treeElements}</div>);
 }
 
 
@@ -166,4 +165,43 @@ function TreeElement({
   );
 }
 
-export { TreeBrowser, TreeElement };
+
+interface TreeDetailsProps {
+  waiting: boolean;
+  workflow: Record<string, any>;
+  workflowId: string;
+}
+
+function TreeDetails({ waiting, workflow, workflowId }: TreeDetailsProps) {
+  return (
+    <>
+      <Card className="rk-tree-details mb-3">
+        <EntityHeader
+          creators={workflow.details.creators}
+          description={workflow.details.description}
+          devAccess={false}
+          itemType={"workflow" as EntityType}
+          labelCaption="created"
+          launchNotebookUrl=""
+          sessionAutostartUrl=""
+          showFullHeader={false}
+          tagList={workflow.details.keywords}
+          timeCaption={workflow.details.created}
+          title={workflow.details.name}
+          url=""
+        />
+      </Card>
+
+      <Card className="rk-tree-details mb-3">
+        <CardHeader className="bg-white">
+          <p className="my-2">HEADER</p>
+        </CardHeader>
+        <CardBody>
+          <p>TEST</p>
+        </CardBody>
+      </Card>
+    </>
+  );
+}
+
+export { TreeBrowser, TreeDetails, TreeElement };

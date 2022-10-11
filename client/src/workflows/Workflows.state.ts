@@ -102,7 +102,7 @@ class WorkflowsCoordinator {
     workflowId: string, repositoryUrl: string, reference: string, versionUrl: string
   ) {
     // do not fetch if we don't have the specific core url or already fetching the same resource
-    if (!versionUrl) return;
+    if (!versionUrl || !workflowId) return;
     if (this.workflowModel.get("fetching") === true && this.workflowModel.get("mounted") === workflowId) return;
 
     // pre-fetching state changes

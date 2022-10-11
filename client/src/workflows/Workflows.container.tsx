@@ -54,17 +54,25 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
   const selected = id;
   const selectedAvailable = !!workflows.list.find((w: any) => w.workflowId === selected);
   const unsupported = !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
+  const workflow = useSelector((state: any) => state.stateModel.workflow);
 
   const toggleAscending = () => workflowsCoordinator.toggleOrderAscending();
   const toggleExpanded = (workflowId: string) => workflowsCoordinator.toggleExpanded(workflowId);
   const toggleInactive = () => workflowsCoordinator.toggleInactive();
   const setOrderProperty = (newProperty: string) => workflowsCoordinator.setOrderProperty(newProperty);
 
+  // fetch workflows list
   useEffect(() => {
     workflowsCoordinator.fetchWorkflowsList(repositoryUrl, reference, versionUrl, unsupported, fullPath);
   }, [repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const targetChanged = (repositoryUrl + reference) !== workflows.target; // ! is this still necessary?
+  // fetch workflow details
+  useEffect(() => {
+    workflowsCoordinator.fetchWorkflowDetails(selected, repositoryUrl, reference, versionUrl);
+  }, [selected, repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ? consider removing this or including the workflow detail target too
+  const targetChanged = (repositoryUrl + reference) !== workflows.target;
   const versionUrlAvailable = !versionUrl ? false : true;
   const waiting = !versionUrlAvailable || targetChanged;
 
@@ -85,11 +93,13 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
       unsupported={unsupported}
       waiting={waiting}
       workflows={workflows}
+      workflow={workflow}
     />
   );
 }
 
 
+// ! TODO: REMOVE as a separate entity
 function WorkflowDetail({ client, fullPath, model, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
   const workflowsCoordinator = new WorkflowsCoordinator(client, model);
   const workflow = useSelector((state: any) => state.stateModel.workflow);
@@ -106,7 +116,9 @@ function WorkflowDetail({ client, fullPath, model, reference, repositoryUrl, ver
   const versionUrlAvailable = !versionUrl ? false : true;
   const waiting = !versionUrlAvailable || targetChanged;
 
-  return (<WorkflowDetailPresent waiting={waiting} workflowId={workflowId} workflow={workflow} />);
+  return (
+    <WorkflowDetailPresent selectedAvailable={true} waiting={waiting} workflowId={workflowId} workflow={workflow} />
+  );
 }
 
 

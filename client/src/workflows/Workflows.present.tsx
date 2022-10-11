@@ -21,19 +21,17 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faInfoCircle, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
 
-import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import {
   Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Input, Label, Row,
   UncontrolledPopover, PopoverBody
 } from "../utils/ts-wrappers";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { Docs } from "../utils/constants/Docs";
-import { EntityType } from "../utils/components/entities/Entities";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { Loader } from "../utils/components/Loader";
-import { WarnAlert } from "../utils/components/Alert";
 import { Url } from "../utils/helpers/url";
-import { TreeBrowser } from "../utils/components/Tree";
+import { TreeBrowser, TreeDetails } from "../utils/components/Tree";
+import { WarnAlert } from "../utils/components/Alert";
 
 
 interface WorkflowsListFiltersProps {
@@ -68,7 +66,6 @@ function WorkflowsListFilters({
             Show inactive{" "}
             <FontAwesomeIcon id="showInactiveInfo" className="cursor-pointer align-middle" icon={faInfoCircle} />
             <UncontrolledPopover target="showInactiveInfo" trigger="legacy" placement="bottom">
-              {/* <PopoverHeader>{repository.name} templates</PopoverHeader> */}
               <PopoverBody className="p-2">
                 <p className="mb-1">
                   Inactive workflows don&apos;t have files in the branch&apos;s head
@@ -159,12 +156,13 @@ interface WorkflowsTreeBrowserProps {
   toggleInactive: Function;
   unsupported: boolean;
   waiting: boolean;
+  workflow: Record<string, any>;
   workflows: Record<string, any>;
 }
 
 function WorkflowsTreeBrowser({
   ascending, expanded, fullPath, orderBy, orderByMatrix, selected, selectedAvailable, setOrderBy,
-  showInactive, toggleAscending, toggleInactive, toggleExpanded, unsupported, waiting, workflows
+  showInactive, toggleAscending, toggleInactive, toggleExpanded, unsupported, waiting, workflow, workflows
 }: WorkflowsTreeBrowserProps) {
   // return immediately when workflows are not supported in the current project
   if (unsupported)
@@ -195,13 +193,18 @@ function WorkflowsTreeBrowser({
       content = treeBrowser;
     }
     else {
+      const waitingDetails = waiting || workflow.fetching || !workflow.fetched;
       content = (
         <Row>
           <Col xs={12} md={5} lg={4}>
             {treeBrowser}
           </Col>
           <Col fluid="true">
-            <p>SOMETHING HERE</p>
+            <WorkflowDetail
+              selectedAvailable={selectedAvailable}
+              waiting={waitingDetails}
+              workflow={workflow}
+              workflowId={selected} />
           </Col>
         </Row>
       );
@@ -226,16 +229,15 @@ function WorkflowsTreeBrowser({
 
 
 interface WorkflowDetailProps {
+  selectedAvailable: boolean;
   waiting: boolean;
   workflow: Record<string, any>;
   workflowId: string;
 }
 
-function WorkflowDetail({ waiting, workflow, workflowId }: WorkflowDetailProps) {
-  const loading = waiting || (!workflow.fetched);
-
+function WorkflowDetail({ selectedAvailable, waiting, workflow, workflowId }: WorkflowDetailProps) {
   let content: React.ReactNode;
-  if (loading) {
+  if (waiting) {
     content = (<Loader />);
   }
   else if (workflow.error) {
@@ -243,19 +245,11 @@ function WorkflowDetail({ waiting, workflow, workflowId }: WorkflowDetailProps) 
   }
   else {
     content = (
-      <Col className="mb-4">
-        <EntityHeader
-          title={workflow.details.name}
-          description={workflow.details.description}
-          itemType={"workflow" as EntityType}
-          tagList={workflow.details.keywords}
-          creators={workflow.details.creators}
-          labelCaption="created"
-          timeCaption={workflow.details.created}
-          devAccess={false}
-          url="" launchNotebookUrl="" sessionAutostartUrl=""
-        />
-      </Col>
+      <TreeDetails
+        waiting={waiting}
+        workflow={workflow}
+        workflowId={workflowId}
+      />
     );
   }
 
