@@ -26,7 +26,7 @@ import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityExecutions from "./entities/Executions";
 import EntityHeader from "./entityHeader/EntityHeader";
 import Time from "../../utils/helpers/Time";
-import { Card, CardHeader, CardBody, Col, UncontrolledTooltip } from "../ts-wrappers";
+import { Card, CardHeader, CardBody, Col, Row, Table, UncontrolledTooltip } from "../ts-wrappers";
 import { EntityType, WorkflowType } from "./entities/Entities";
 import { TimeCaption } from "./TimeCaption";
 
@@ -167,15 +167,27 @@ function TreeElement({
 
 
 interface TreeDetailsProps {
+  backElement: React.ReactNode;
   waiting: boolean;
   workflow: Record<string, any>;
   workflowId: string;
 }
 
-function TreeDetails({ waiting, workflow, workflowId }: TreeDetailsProps) {
+function TreeDetails({ backElement, waiting, workflow, workflowId }: TreeDetailsProps) {
+  const executions = workflow.details?.executions ?
+    (<Col xs={12} lg={6}>
+      <span className="text-dark">
+        <span className="fw-bold">Number of Executions</span>
+        {workflow.details.executions}
+      </span>
+    </Col>) :
+    null;
   return (
     <>
       <Card className="rk-tree-details mb-3">
+        <div className="rk-tree-details-back">
+          <div className="rk-tree-details-back-container">{backElement}</div>
+        </div>
         <EntityHeader
           creators={workflow.details.creators}
           description={workflow.details.description}
@@ -194,10 +206,74 @@ function TreeDetails({ waiting, workflow, workflowId }: TreeDetailsProps) {
 
       <Card className="rk-tree-details mb-3">
         <CardHeader className="bg-white">
-          <p className="my-2">HEADER</p>
+          <h3 className="my-2">Details</h3>
         </CardHeader>
         <CardBody>
-          <p>TEST</p>
+          <Row>
+            {executions}
+          </Row>
+          <Table className="mb-4 table-borderless" size="sm">
+            <tbody className="text-rk-text">
+              <tr>
+                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
+                  Number of Executions
+                </td>
+                <td>
+                  {workflow.details.number_of_executions}
+                </td>
+              </tr>
+              <tr>
+                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
+                  Last Execution
+                </td>
+                <td>
+                  <TimeCaption
+                    caption=""
+                    showTooltip={true}
+                    time={workflow.details.last_executed}
+                    className="text-rk-text-light" />
+                </td>
+              </tr>
+              <tr>
+                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
+                  Type
+                </td>
+                <td>
+                  {workflow.details.type}
+                </td>
+              </tr>
+              <tr>
+                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
+                  Full Command
+                </td>
+                <td>
+                  <pre>
+                    <code>
+                      {workflow.details.full_command}
+                    </code>
+                  </pre>
+                </td>
+              </tr>
+              {workflow.details.id != workflow.details.latest
+                ?
+                <tr>
+                  <td className="text-dark fw-bold" style={{ "width": "200px" }}></td>
+                  <td>
+                    You are viewing an outdated version of this Workflow Plan.&nbsp;
+                    {/* <Link to={Url.get(Url.pages.project.workflows.single, {
+                      // TODO: Use PLANS_PREFIX here
+                      namespace: "", path: fullPath, target: "/" + workflow.details.latest.replace("/plans/", "")
+                    })}
+                      className="col text-decoration-none">
+                      Go to newest version
+                    </Link> */}
+                  </td>
+                </tr>
+                : null
+
+              }
+            </tbody>
+          </Table>
         </CardBody>
       </Card>
     </>

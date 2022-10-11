@@ -18,12 +18,14 @@
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faInfoCircle, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon, } from "@fortawesome/react-fontawesome";
+import {
+  faCheck, faExclamationTriangle, faInfoCircle, faSortAmountDown, faSortAmountUp, faTimesCircle
+} from "@fortawesome/free-solid-svg-icons";
 
 import {
   Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Input, Label, Row,
-  UncontrolledPopover, PopoverBody, Card, CardBody, Table
+  UncontrolledPopover, PopoverBody, Card, CardBody
 } from "../utils/ts-wrappers";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { Docs } from "../utils/constants/Docs";
@@ -201,6 +203,7 @@ function WorkflowsTreeBrowser({
           </Col>
           <Col fluid="true">
             <WorkflowDetail
+              fullPath={fullPath}
               selectedAvailable={selectedAvailable}
               waiting={waitingDetails}
               workflow={workflow}
@@ -227,100 +230,38 @@ function WorkflowsTreeBrowser({
   );
 }
 
-interface WorkflowMetadataProps {
-  workflow: Record<string, any>;
-  fullPath: string;
-}
-
-function DisplayMetadata({ workflow, fullPath }: WorkflowMetadataProps) {
-  return <Card key="datasetDescription" className="border-rk-light mb-4">
-    <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
-      <Table className="mb-4 table-borderless" size="sm">
-        <tbody className="text-rk-text">
-          <tr>
-            <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-              Number of Executions
-            </td>
-            <td>
-              {workflow.details.number_of_executions}
-            </td>
-          </tr>
-          <tr>
-            <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-              Last Execution
-            </td>
-            <td>
-              <TimeCaption
-                caption=""
-                showTooltip={true}
-                time={workflow.details.last_executed}
-                className="text-rk-text-light"/>
-            </td>
-          </tr>
-          <tr>
-            <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-              Type
-            </td>
-            <td>
-              {workflow.details.type}
-            </td>
-          </tr>
-          <tr>
-            <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-              Full Command
-            </td>
-            <td>
-              <pre>
-                <code>
-                  {workflow.details.full_command}
-                </code>
-              </pre>
-            </td>
-          </tr>
-          { workflow.details.id != workflow.details.latest
-            ?
-            <tr>
-              <td className="text-dark fw-bold" style={{ "width": "200px" }}></td>
-              <td>
-                You are viewing an outdated version of this Workflow Plan.&nbsp;
-                <Link to={Url.get(Url.pages.project.workflows.single, {
-                  // TODO: Use PLANS_PREFIX here
-                  namespace: "", path: fullPath, target: "/" + workflow.details.latest.replace("/plans/", "")
-                })}
-                className="col text-decoration-none">
-                  Go to newest version
-                </Link>
-              </td>
-            </tr>
-            : null
-
-          }
-        </tbody>
-      </Table>
-    </CardBody>
-  </Card>;
-}
-
-
 interface WorkflowDetailProps {
+  fullPath: string;
   selectedAvailable: boolean;
   waiting: boolean;
   workflow: Record<string, any>;
   workflowId: string;
-  fullPath: string;
 }
 
 function WorkflowDetail({ fullPath, selectedAvailable, waiting, workflow, workflowId }: WorkflowDetailProps) {
+  const backUrl = Url.get(Url.pages.project.workflows, { namespace: "", path: fullPath });
+  const backElement = (
+    <div>
+      <Link to={backUrl}>
+        <FontAwesomeIcon className="cursor-pointer" icon={faTimesCircle} />
+      </Link>
+    </div>
+  );
+
   let content: React.ReactNode;
   if (waiting) {
-    content = (<Loader />);
+    content = (<WorkflowDetailPlaceholder backElement={backElement} waiting={true} />);
   }
   else if (workflow.error) {
-    content = (<CoreErrorAlert error={workflow.error} />);
+    content = (<WorkflowDetailPlaceholder backElement={backElement} error={workflow.error} />);
+  }
+  else if (workflowId && !selectedAvailable) {
+    content = (<WorkflowDetailPlaceholder backElement={backElement} unknown={true} />);
   }
   else {
     content = (
       <TreeDetails
+        backElement={backElement}
         waiting={waiting}
         workflow={workflow}
         workflowId={workflowId}
@@ -328,7 +269,53 @@ function WorkflowDetail({ fullPath, selectedAvailable, waiting, workflow, workfl
     );
   }
 
-  return (<div>{content}</div>);
+  return (<>{content}</>);
+}
+
+
+interface WorkflowDetailPlaceholderProps {
+  backElement: React.ReactNode;
+  error?: Record<string, any>;
+  unknown?: boolean;
+  waiting?: boolean;
+}
+
+function WorkflowDetailPlaceholder({
+  backElement, error, unknown, waiting
+}: WorkflowDetailPlaceholderProps) {
+  let content: React.ReactNode;
+  if (waiting) {
+    content = (<>
+      <div className="float-end m-1">{backElement}</div>
+      <div className="d-flex">
+        <p className="m-auto mt-1">Loading workflow details...</p>
+      </div>
+      <Loader />
+    </>);
+  }
+  else if (error) {
+    content = (<>
+      <div className="float-end m-1">{backElement}</div>
+      <div className="d-flex">
+        <p className="m-auto mb-3 mt-1">A problem occurred while getting the workflow details.</p>
+      </div>
+      <CoreErrorAlert error={error} />
+    </>);
+  }
+  else if (unknown) {
+    content = (<>
+      <div className="float-end m-1">{backElement}</div>
+      <div className="d-flex">
+        <p className="m-auto mt-1">
+          <FontAwesomeIcon icon={faExclamationTriangle} /> We cannot find the
+          workflow you are looking for.
+        </p>
+        <p className="m-auto mb-1">You can use the navbar to pick another one.</p>
+      </div>
+    </>);
+  }
+
+  return (<Card><CardBody>{content}</CardBody></Card>);
 }
 
 
