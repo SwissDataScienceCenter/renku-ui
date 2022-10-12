@@ -23,7 +23,6 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import config from "../config";
 import logger from "../logger";
 import { Authenticator } from "../authentication";
-import { getCookieValueByName } from "../utils";
 import { renkuAuth } from "../authentication/middleware";
 import { getCookieValueByName, serializeCookie } from "../utils";
 import { validateCSP } from "../utils/url";
