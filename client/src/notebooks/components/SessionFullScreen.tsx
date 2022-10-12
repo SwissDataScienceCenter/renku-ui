@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
@@ -29,7 +29,10 @@ import { Notebook, SessionHandlers } from "./Session";
 import useWindowSize from "../../utils/helpers/UseWindowsSize";
 import { Url } from "../../utils/helpers/url";
 import { SessionStatus } from "../../utils/constants/Notebooks";
-import { SessionJupyter } from "../Notebooks.present";
+import { SESSION_TABS, SessionJupyter } from "../Notebooks.present";
+import StartSessionProgressBar, { SessionStatusData } from "./StartSessionProgressBar";
+import { AUTOSAVED_PREFIX } from "../../utils/helpers/HelperFunctions";
+import SessionUnavailable from "./SessionUnavailable";
 
 /**
  *  renku-ui
@@ -50,12 +53,14 @@ interface ShowSessionFullscreenProps {
   handlers: SessionHandlers;
 }
 function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handlers }: ShowSessionFullscreenProps) {
+  const [sessionStatus, setSessionStatus] = useState<SessionStatusData>();
 
   const [showModalAboutData, setShowModalAboutData] = useState(false);
   const toggleModalAbout = () => setShowModalAboutData(!showModalAboutData);
 
   const [showModalResourcesData, setShowModalResourcesData] = useState(false);
   const toggleModalResources = () => setShowModalResourcesData(!showModalResourcesData);
+  const [activeResourcesTab, setActiveResourcesTab] = useState<string>(SESSION_TABS.commands);
 
   const [showModalStopSession, setShowModalStopSession] = useState(false);
   const toggleStopSession = () => setShowModalStopSession(!showModalStopSession);
@@ -70,6 +75,28 @@ function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handle
     path: filters.project,
   });
 
+  const mounted = useRef(false);
+  useEffect(() => {
+    // this keeps track of the component status
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  });
+
+  useEffect(() => {
+    if (!notebook.data.status)
+      return;
+    if (notebook.data.status.state === "running") {
+      setSessionStatus({ ...notebook.data.status, isTheSessionReady: false } as SessionStatusData);
+      setTimeout(() => {
+        if (mounted.current)
+          setSessionStatus({ ...notebook.data.status, isTheSessionReady: true } as SessionStatusData);
+      }, 4000); // wait 4 sec to use isTheSessionReady for session view
+    }
+    else {
+      setSessionStatus({ ...notebook.data.status, isTheSessionReady: false } as SessionStatusData);
+    }
+  }, [notebook.data.status]);
+
   // redirect immediately if the session fail
   if (history && notebook.data?.status?.state === SessionStatus.failed)
     history.push(urlList);
@@ -83,6 +110,14 @@ function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handle
 
   /* modals */
   const projectMetadata = useSelector((state: any) => state.stateModel.project?.metadata);
+  const toggleToResourcesLogs = () => {
+    setActiveResourcesTab(SESSION_TABS.logs);
+    toggleModalResources();
+  };
+  const toggleResources = () => {
+    setActiveResourcesTab(SESSION_TABS.commands);
+    toggleModalResources();
+  };
 
   const aboutModal = <AboutSessionModal
     toggleModal={toggleModalAbout}
@@ -93,9 +128,12 @@ function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handle
   const resourcesModal = <ResourcesSessionModel
     handlers={handlers}
     notebook={notebook}
-    toggleModal={toggleModalResources}
+    toggleModal={toggleResources}
     defaultBranch={filters.defaultBranch ?? "master"}
-    isOpen={showModalResourcesData}/>;
+    isOpen={showModalResourcesData}
+    activeTab={activeResourcesTab}
+    setActiveTab={setActiveResourcesTab}
+  />;
   const stopSessionModal = <StopSession
     stopNotebook={handlers.stopNotebook}
     notebook={notebook}
@@ -103,6 +141,36 @@ function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handle
     urlList={urlList}
     isOpen={showModalStopSession}/>;
   /* end Buttons */
+
+  let content;
+  let sessionView;
+
+  if (notebook.fetched && !notebook.available) {
+    content = <SessionUnavailable filters={filters} urlList={urlList} />;
+  }
+  else if (notebook.available) {
+    const status = sessionStatus?.state;
+    const sessionBranchKey = notebook?.data?.annotations ?
+      Object.keys(notebook?.data?.annotations).find( key => key.split("/")[1] === "branch") : null;
+    const sessionBranchValue = sessionBranchKey ? notebook?.data?.annotations[sessionBranchKey] : "";
+    const isAutoSave = sessionBranchValue.startsWith(AUTOSAVED_PREFIX);
+    content = !sessionStatus?.isTheSessionReady ?
+      (<div className="progress-box-small progress-box-small--steps">
+        <StartSessionProgressBar
+          sessionStatus={sessionStatus} isAutoSave={isAutoSave} toggleLogs={toggleToResourcesLogs} />
+      </div>) : null;
+    sessionView = status === SessionStatus.running ?
+      <SessionJupyter
+        ready={sessionStatus?.isTheSessionReady} filters={filters}
+        notebook={notebook} urlList={urlList} height={`${iframeHeight}px`} /> :
+      null;
+  }
+  else {
+    content =
+      (<div className="progress-box-small progress-box-small--steps">
+        <StartSessionProgressBar toggleLogs={toggleToResourcesLogs} />
+      </div>);
+  }
 
   return (
     <div className="bg-white w-100">
@@ -123,7 +191,8 @@ function ShowSessionFullscreen({ filters, notebook, urlBack, projectName, handle
           </div>
         </div>
         <div ref={ref} className={`fullscreen-content w-100`}>
-          <SessionJupyter filters={filters} notebook={notebook} urlList={urlList} height={`${iframeHeight}px`} />
+          {content}
+          {sessionView}
         </div>
       </div>
       {aboutModal}

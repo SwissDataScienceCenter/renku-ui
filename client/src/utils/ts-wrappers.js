@@ -4,6 +4,10 @@
 import React from "react";
 
 import {
+  Accordion as WrappedAccordion,
+  AccordionItem as WrappedAccordionItem,
+  AccordionHeader as WrappedAccordionHeader,
+  AccordionBody as WrappedAccordionBody,
   Alert as WrappedAlert,
   Button as WrappedButton,
   ButtonGroup as WrappedButtonGroup,
@@ -37,6 +41,7 @@ import {
 import {
   ArrowLeft as WrappedArrowLeft,
   Briefcase as WrappedBriefcase,
+  CheckCircleFill as WrappedCheckCircleFill,
   HddStack as WrappedHddStack,
   Globe as WrappedGlobe,
   People as WrappedPeople,
@@ -46,6 +51,7 @@ import {
   Journals as WrappedJournals,
   StopCircle as WrappedStopCircle,
   InfoCircle as WrappedInfoCircle,
+  XCircleFill as WrappedXCircleFill,
 } from "react-bootstrap-icons";
 
 import { FormGroup as WrappedFormGroup, Input as WrappedInput } from "reactstrap";
@@ -227,7 +233,32 @@ function TabPane(props) {
   return <WrappedTabPane {...props} />;
 }
 
-export { Alert, Button, ButtonGroup };
+function Accordion(props) {
+  return <WrappedAccordion {...props} />;
+}
+
+function AccordionItem(props) {
+  return <WrappedAccordionItem {...props} />;
+}
+
+function AccordionHeader(props) {
+  return <WrappedAccordionHeader {...props} />;
+}
+
+function AccordionBody(props) {
+  return <WrappedAccordionBody {...props} />;
+}
+
+function CheckCircleFill(props) {
+  return <WrappedCheckCircleFill {...props} />;
+}
+
+function XCircleFill(props) {
+  return <WrappedXCircleFill {...props} />;
+}
+
+export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
+export { Alert, Button, ButtonGroup, CheckCircleFill, XCircleFill };
 export { Card, CardBody, CardText, CardFooter, Col, DropdownItem };
 export { FormFeedback, FormText, Fade, Form, FormGroup, Input, Label };
 export { PopoverHeader, PopoverBody };

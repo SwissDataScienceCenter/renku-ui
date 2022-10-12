@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, useState } from "react";
+import React, { Component, Fragment, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Badge, Button, ButtonGroup, Col, Collapse, DropdownItem, Form, FormGroup, FormText, Input, Label,
-  Modal, ModalBody, ModalFooter, ModalHeader, PopoverBody, PopoverHeader, Progress,
+  Modal, ModalBody, ModalFooter, ModalHeader, PopoverBody, PopoverHeader,
   Row, UncontrolledPopover, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -46,6 +46,7 @@ import Time from "../utils/helpers/Time";
 import LaunchErrorAlert from "./components/LaunchErrorAlert";
 import { NotebooksHelper } from "./index";
 import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from "./ObjectStoresConfig.present";
+import ProgressIndicator, { ProgressStyle, ProgressType } from "../utils/components/progress/Progress";
 
 
 function ProjectSessionLockAlert({ lockStatus }) {
@@ -271,19 +272,33 @@ function AutosavesInfoAlert({ autosaves, autosavesId, currentId, deleteAutosave,
 function StartNotebookAutostart(props) {
   const { ci, data, notebooks, options } = props;
   const ciStatus = NotebooksHelper.checkCiStatus(ci);
-
-  const fetching = {
-    ci: ciStatus.ongoing === false ? true : false,
-    data: data.fetched ? true : false,
-    options: options.fetched ? true : false
-  };
+  const [progress, setProgress] = useState(0);
+  const [fetching, setFetching] = useState({
+    ci: ciStatus.ongoing === false,
+    data: !!data.fetched,
+    options: !!options.fetched
+  });
 
   // Compute fetching status, but ignore notebooks.fetched since it may be unreliable
-  let fetched = Object.keys(fetching).filter(k => fetching[k] ? true : false);
+  let fetched = Object.keys(fetching).filter(k => !!fetching[k]);
   if (!notebooks.fetched)
     fetched = false;
-  const multiplier = Object.keys(fetching).length + 1;
-  let progress = fetched.length * 100 / multiplier;
+
+  useEffect(() => {
+    if (!fetched.length)
+      return;
+    const multiplier = Object.keys(fetching).length + 1;
+    setProgress(fetched.length * 100 / multiplier);
+  }, [fetched.length, fetching]);
+
+  useEffect(() => {
+    setFetching({
+      ci: ciStatus.ongoing === false,
+      data: !!data.fetched,
+      options: !!options.fetched
+    });
+  }, [ ciStatus.ongoing, data.fetched, options.fetched ]);
+
   let message = "Checking project data";
   if (fetching.ci)
     message = "Checking GitLab jobs";
@@ -292,10 +307,14 @@ function StartNotebookAutostart(props) {
   else if (fetching.notebooks)
     message = "Checking existing sessions";
   return (
-    <div>
-      <h3>Starting session</h3>
-      <p>{message}...</p>
-      <Progress value={progress} />
+    <div className="progress-box-small">
+      <ProgressIndicator
+        description=""
+        title="Preparing Session"
+        style={ProgressStyle.Light}
+        type={ProgressType.Determinate}
+        currentStatus={`${message}...`}
+        percentage={progress} />
     </div>
   );
 }

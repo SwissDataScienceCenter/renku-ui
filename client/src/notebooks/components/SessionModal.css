@@ -1,9 +1,11 @@
 .fullscreen-header {
     height: 42px;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 10%);
 }
 
 .fullscreen-content {
     height: calc(100vh - 42px);
+    background-color: var(--bs-rk-background-0);
 }
 
 .about-modal {

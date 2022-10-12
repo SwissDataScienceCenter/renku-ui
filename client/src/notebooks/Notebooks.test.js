@@ -35,6 +35,7 @@ import { ExpectedAnnotations } from "./Notebooks.state";
 import { StateModel, globalSchema } from "../model";
 import { ProjectCoordinator } from "../project";
 import { testClient as client } from "../api-client";
+import { Provider } from "react-redux";
 
 
 const model = new StateModel(globalSchema);
@@ -313,9 +314,11 @@ describe("rendering", () => {
     document.body.appendChild(div);
     await act(async () => {
       ReactDOM.render(
-        <MemoryRouter>
-          <ShowSession {...props} urlNewSession="new_session"/>
-        </MemoryRouter>, div);
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <ShowSession {...props} urlNewSession="new_session"/>
+          </MemoryRouter>
+        </Provider>, div);
     });
   });
 
