@@ -48,6 +48,7 @@ import { NotebooksHelper } from "./index";
 import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from "./ObjectStoresConfig.present";
 import ProgressIndicator, { ProgressStyle, ProgressType } from "../utils/components/progress/Progress";
 import EnvironmentVariables from "./components/EnviromentVariables";
+import { useSelector } from "react-redux";
 
 function ProjectSessionLockAlert({ lockStatus }) {
   if (lockStatus == null) return null;
@@ -124,17 +125,10 @@ function StartNotebookServer(props) {
   const location = useLocation();
 
   const [showShareLinkModal, setShowShareLinkModal] = useState(location?.state?.showShareLinkModal ?? false);
-  const [environmentVariables, setEnvironmentVariables] = useState([ { key: "", value: "" }]);
-
+  const environmentVariables = useSelector(state => state.stateModel.notebooks.filters?.environment_variables);
   const setNotebookEnvVariables = (variables) => {
     props.handlers.setNotebookEnvVariables(variables);
-    setEnvironmentVariables(variables);
   };
-
-  useEffect(() => {
-    if (props.envVariablesQueryParams)
-      setEnvironmentVariables(props.envVariablesQueryParams);
-  }, []); // eslint-disable-line
 
   const toggleShareLinkModal = () => setShowShareLinkModal(!showShareLinkModal);
 

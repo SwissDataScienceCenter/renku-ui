@@ -28,6 +28,7 @@ import _ from "lodash";
 import { API_ERRORS } from "../api-client/errors";
 import { notebooksSchema } from "../model";
 import { parseINIString, sleep } from "../utils/helpers/HelperFunctions";
+import { formatEnvironmentVariables } from "../api-client/utils";
 
 
 const POLLING_INTERVAL = 3000;
@@ -1266,7 +1267,7 @@ class NotebooksCoordinator {
     const image = projectOptions.image ?
       projectOptions.image :
       null;
-    const env_variables = this.model.get("filters.environment_variables");
+    const env_variables = formatEnvironmentVariables(this.model.get("filters.environment_variables"));
 
     return this.client.startNotebook(namespace, project, branch, commit, image, options, env_variables);
   }

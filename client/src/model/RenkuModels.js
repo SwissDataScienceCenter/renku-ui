@@ -364,6 +364,8 @@ const projectSchema = new Schema({
   },
 });
 
+const DEFAULT_ENV_VARIABLES = [{ key: "", value: "" }];
+
 const notebooksSchema = new Schema({
   autosaves: {
     schema: {
@@ -391,7 +393,7 @@ const notebooksSchema = new Schema({
       commit: { initial: {} },
       discard: { initial: false },
       options: { initial: {} },
-      environment_variables: { initial: [{ key: "", value: "" }] },
+      environment_variables: { initial: DEFAULT_ENV_VARIABLES },
       objectStoresConfiguration: { initial: [] },
       includeMergedBranches: { initial: false },
       displayedCommits: { initial: 25 },
@@ -723,5 +725,5 @@ const formGeneratorSchema = new Schema({
 export {
   datasetFormSchema, datasetSchema, datasetImportFormSchema, environmentSchema,
   formGeneratorSchema, issueFormSchema, newProjectSchema, notebooksSchema, notificationsSchema,
-  projectSchema, projectsSchema, statuspageSchema, userSchema, webSocketSchema
+  projectSchema, projectsSchema, statuspageSchema, userSchema, webSocketSchema, DEFAULT_ENV_VARIABLES
 };

@@ -79,4 +79,15 @@ function fetchJson(...args) {
   return fetch(...args).then(response => response.json());
 }
 
-export { fetchJson, renkuFetch, AUTH_HEADER, RETURN_TYPES };
+function formatEnvironmentVariables(variables) {
+  const env_variables = {};
+  if (variables?.length > 0) {
+    variables.map( variable => {
+      if (variable.key && variable.value)
+        env_variables[variable.key] = variable.value;
+    });
+  }
+  return env_variables;
+}
+
+export { fetchJson, renkuFetch, formatEnvironmentVariables, AUTH_HEADER, RETURN_TYPES };
