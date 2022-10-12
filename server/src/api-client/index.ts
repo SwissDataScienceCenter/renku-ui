@@ -82,7 +82,7 @@ class APIClient {
       });
   }
 
-  _renkuFetch(url: string, options: FetchOptions) {
+  _renkuFetch(url: string, options: FetchOptions): Promise<Response> {
 
     const urlObject = new URL(url);
     if (options.queryParams) {

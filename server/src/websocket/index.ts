@@ -84,7 +84,7 @@ const longLoopFunctions: Array<Function> = [ // eslint-disable-line
 ];
 const shortLoopFunctions: Array<Function> = [ // eslint-disable-line
   heartbeatRequestActivationKgStatus
-]; // eslint-disable-line
+];
 
 /**
  * Long loop for each user -- executed every few minutes.
