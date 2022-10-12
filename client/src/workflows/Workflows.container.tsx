@@ -21,10 +21,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import { WorkflowsCoordinator } from "./Workflows.state";
-import {
-  WorkflowDetail as WorkflowDetailPresent,
-  WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent
-} from "./Workflows.present";
+import { WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent } from "./Workflows.present";
 import { checkRenkuCoreSupport } from "../utils/helpers/HelperFunctions";
 
 
@@ -98,29 +95,4 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
   );
 }
 
-
-// ! TODO: REMOVE as a separate entity
-function WorkflowDetail({ client, fullPath, model, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
-  const workflowsCoordinator = new WorkflowsCoordinator(client, model);
-  const workflow = useSelector((state: any) => state.stateModel.workflow);
-
-  const { id }: Record<string, string> = useParams();
-  const workflowId = id;
-
-  // fetch workflow details
-  useEffect(() => {
-    workflowsCoordinator.fetchWorkflowDetails(workflowId, repositoryUrl, reference, versionUrl);
-  }, [workflowId, repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const targetChanged = (repositoryUrl + reference + workflowId) !== workflow.target;
-  const versionUrlAvailable = !versionUrl ? false : true;
-  const waiting = !versionUrlAvailable || targetChanged;
-
-  return (
-    <WorkflowDetailPresent
-      fullPath={fullPath} selectedAvailable={true} waiting={waiting} workflowId={workflowId} workflow={workflow} />
-  );
-}
-
-
-export { WorkflowDetail, WorkflowsList };
+export { WorkflowsList };

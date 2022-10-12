@@ -227,11 +227,11 @@ function TreeDetails({ backElement, waiting, workflow, workflowId }: TreeDetails
                   Last Execution
                 </td>
                 <td>
-                  <TimeCaption
-                    caption=""
-                    showTooltip={true}
-                    time={workflow.details.last_executed}
-                    className="text-rk-text-light" />
+                  {
+                    workflow.details?.last_executed ?
+                      Time.toIsoTimezoneString(workflow.details.last_executed) :
+                      null
+                  }
                 </td>
               </tr>
               <tr>
@@ -247,11 +247,9 @@ function TreeDetails({ backElement, waiting, workflow, workflowId }: TreeDetails
                   Full Command
                 </td>
                 <td>
-                  <pre>
-                    <code>
-                      {workflow.details.full_command}
-                    </code>
-                  </pre>
+                  <code>
+                    {workflow.details.full_command}
+                  </code>
                 </td>
               </tr>
               {workflow.details.id != workflow.details.latest
