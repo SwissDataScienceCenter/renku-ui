@@ -38,8 +38,6 @@
 import immutableUpdate from "immutability-helper";
 import { createStore } from "../utils/helpers/EnhancedState";
 // import { Component } from 'react';
-// // Todo: Resolve dependency from our custom store
-// import { createStore } from '../utils/helpers/EnhancedState';
 
 
 const PropertyName = {

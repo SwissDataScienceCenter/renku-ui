@@ -49,6 +49,7 @@ import ShowSessionFullscreen from "./components/SessionFullScreen";
  */
 
 function mapSessionStateToProps(state, ownProps) {
+  const metadata = state.stateModel.project.metadata;
   const notebooks = state.stateModel.notebooks.notebooks;
   const available = !!notebooks.all[ownProps.target];
   const notebook = {
@@ -61,6 +62,7 @@ function mapSessionStateToProps(state, ownProps) {
     logs: state.stateModel.notebooks.logs
   };
   return {
+    accessLevel: metadata.accessLevel,
     handlers: ownProps.handlers,
     target: ownProps.target,
     filters: state.stateModel.notebooks.filters,
@@ -126,6 +128,7 @@ class ShowSession extends Component {
       return <NotebooksDisabled logged={this.userLogged} />;
     return (
       <ShowSessionMapped
+        isLogged={this.userLogged}
         target={this.target}
         handlers={this.handlers}
         store={this.model.reduxStore}

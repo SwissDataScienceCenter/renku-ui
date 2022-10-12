@@ -17,7 +17,7 @@
  */
 
 import React, { Fragment, useState } from "react";
-import { Button, Col, FormText, Modal, ModalBody, ModalHeader, Row } from "../../utils/ts-wrappers";
+import { Button, Col, FormText, Modal, ModalBody, ModalHeader, Row, Save } from "../../utils/ts-wrappers";
 import { Loader } from "../../utils/components/Loader";
 import { Notebook } from "./Session";
 
@@ -55,7 +55,7 @@ function StopSessionModal({ stopSession, stopping, closeModal, isOpen }: StopSes
     <p>
       Are you sure you want to stop this session?
       Make sure to commit any changes you want to be saved for next time
-      by running <code>renku save</code> or using Git.
+      (for example, by using the <b><Save className="text-rk-dark align-middle" title="save"/> (Save)</b> button).
     </p>
     <Fragment>
       { stopping ?

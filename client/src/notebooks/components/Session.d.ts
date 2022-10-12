@@ -70,4 +70,3 @@ export interface ProjectMetadata {
   lastActivityAt: string;
   accessLevel: number;
 }
-

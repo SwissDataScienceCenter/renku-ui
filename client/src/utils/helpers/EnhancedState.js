@@ -1,4 +1,3 @@
-
 /*!
  * Copyright 2017 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -26,9 +25,11 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { projectKgApi } from "../../features/projects/ProjectKgApi";
+import { sessionSidecarApi } from "../../features/session/sidecarApi";
 
 function createStore(renkuStateModelReducer, name = "renku") {
   renkuStateModelReducer[projectKgApi.reducerPath] = projectKgApi.reducer;
+  renkuStateModelReducer[sessionSidecarApi.reducerPath] = sessionSidecarApi.reducer;
   // For the moment, disable the custom middleware, since it causes
   // problems for our app.
   const store = configureStore({
@@ -37,7 +38,7 @@ function createStore(renkuStateModelReducer, name = "renku") {
       getDefaultMiddleware({
         immutableCheck: false,
         serializableCheck: false,
-      }),
+      }).concat(sessionSidecarApi.middleware),
   });
   return store;
 }
@@ -48,6 +49,5 @@ function createStore(renkuStateModelReducer, name = "renku") {
 //   const mockStore = configureMockStore([thunk]);
 //   return mockStore;
 // }
-
 
 export { createStore };
