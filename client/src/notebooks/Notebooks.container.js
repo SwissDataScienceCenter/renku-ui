@@ -30,7 +30,6 @@ import { StatusHelper } from "../model/Model";
 import { Url } from "../utils/helpers/url";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import ShowSessionFullscreen from "./components/SessionFullScreen";
-import { DEFAULT_ENV_VARIABLES } from "../model/RenkuModels";
 
 
 /**
@@ -304,7 +303,7 @@ class StartNotebookServer extends Component {
 
     const environmentVariables = this.getEnvironmentVariablesFromSearch(currentSearch);
     this.customEnvVariables = currentSearch && this.autostart && environmentVariables.length ?
-      environmentVariables : DEFAULT_ENV_VARIABLES;
+      environmentVariables : [];
 
     this.state = {
       autosavesCommit: false,
