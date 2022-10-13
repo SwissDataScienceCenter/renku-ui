@@ -429,7 +429,11 @@ class StartNotebookServer extends Component {
     Object.keys(search).map( key => {
       if (key.startsWith("env[")) {
         const env_key = key.split("env[").pop().split("]").shift();
-        variables.push({ key: env_key, value: search[key] });
+        const value = search[key];
+        if (Array.isArray(value))
+          value.forEach(val => variables.push({ key: env_key, value: val }));
+        else
+          variables.push({ key: env_key, value: search[key] });
       }
     });
     return variables;

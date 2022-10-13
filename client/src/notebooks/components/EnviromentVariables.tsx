@@ -19,7 +19,7 @@ import React, { ChangeEvent } from "react";
 import { Button, Col, FormGroup, Input, Label, Row } from "../../utils/ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { InputLabel } from "../../utils/components/formlabels/FormLabels";
+import { ErrorLabel, InputLabel } from "../../utils/components/formlabels/FormLabels";
 
 interface EnvironmentVariablesProps {
   environmentVariables: EnvVariablesField[];
@@ -43,13 +43,20 @@ function EnvironmentVariables({ environmentVariables, setEnvironmentVariables }:
     setEnvironmentVariables([...environmentVariables, object]);
   };
 
+  const isKeyDuplicated = (key: string) => {
+    if (!key)
+      return false;
+    return environmentVariables.filter( variable => variable.key === key).length >= 2;
+  };
+
   const removeFields = (index: number) => {
     let data = [...environmentVariables];
     data.splice(index, 1);
     setEnvironmentVariables(data);
   };
 
-  const content = environmentVariables?.map((input, index) => {
+  const form = environmentVariables?.map((input, index) => {
+    const isDuplicated = isKeyDuplicated(input.key);
     return (
       <Row key={index}>
         <Col xs={5}>
@@ -58,8 +65,10 @@ function EnvironmentVariables({ environmentVariables, setEnvironmentVariables }:
             <Input
               name="variable"
               value={input.key}
+              invalid={isDuplicated}
               onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(index, "key", event.target.value)}
             />
+            {isDuplicated ? <ErrorLabel text="Variable names must be unique" /> : null }
           </FormGroup>
         </Col>
         <Col xs={5}>
@@ -68,11 +77,12 @@ function EnvironmentVariables({ environmentVariables, setEnvironmentVariables }:
             <Input
               name="value"
               value={input.value}
-              onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(index, "value", event.target.value)}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                handleFormChange(index, "value", event.target.value)}
             />
           </FormGroup>
         </Col>
-        <Col xs={2} className="d-flex align-items-center justify-content-start">
+        <Col xs={2} className="d-flex align-items-start justify-content-start">
           <Button
             size="sm"
             className="border-0 text-danger bg-transparent mb-3"
@@ -97,7 +107,7 @@ function EnvironmentVariables({ environmentVariables, setEnvironmentVariables }:
   return <div className="mt-3">
     <InputLabel text="Environment Variables" isRequired={false} />
     {header}
-    {content}
+    {form}
     <div><Button className="btn-outline-rk-green my-1" onClick={addFields}>Add Variable</Button></div>
   </div>;
 }
