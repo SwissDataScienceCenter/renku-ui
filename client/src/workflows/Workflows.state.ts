@@ -97,7 +97,7 @@ class WorkflowsCoordinator {
       workflowsList = await refreshIfNecessary(oldModel.fetching, oldModel.fetched, fetchWorkflowList, 10);
       if (!workflowsList) {
         newWorkflowsState.fetching = false;
-        this.workflowsModel.setObject(workflowsList);
+        this.workflowsModel.setObject(newWorkflowsState);
         return;
       }
     }
