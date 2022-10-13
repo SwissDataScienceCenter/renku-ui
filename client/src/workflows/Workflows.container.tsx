@@ -17,7 +17,7 @@
  */
 
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { RootStateOrAny, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import { WorkflowsCoordinator } from "./Workflows.state";
@@ -46,12 +46,12 @@ const WorkflowsSorting = {
 
 function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
   const workflowsCoordinator = new WorkflowsCoordinator(client, model);
-  const workflows = useSelector((state: any) => state.stateModel.workflows);
+  const workflows = useSelector((state: RootStateOrAny) => state.stateModel.workflows);
   const { id }: Record<string, string> = useParams();
   const selected = id;
   const selectedAvailable = !!workflows.list.find((w: any) => w.workflowId === selected);
   const unsupported = !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
-  const workflow = useSelector((state: any) => state.stateModel.workflow);
+  const workflow = useSelector((state: RootStateOrAny) => state.stateModel.workflow);
 
   const toggleAscending = () => workflowsCoordinator.toggleOrderAscending();
   const toggleExpanded = (workflowId: string) => workflowsCoordinator.toggleExpanded(workflowId);

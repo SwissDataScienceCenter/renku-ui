@@ -87,7 +87,7 @@ class WorkflowsCoordinator {
       newWorkflowsState.error = null;
     this.workflowsModel.setObject(newWorkflowsState);
 
-    let workflowsList: any;
+    let workflowsList: Record<string, any>;
     const fetchWorkflowList = async () =>
       this.client.fetchWorkflowsList(repositoryUrl, reference, versionUrl);
     if (force) {
@@ -136,7 +136,7 @@ class WorkflowsCoordinator {
     this.workflowModel.setObject(newWorkflowState);
 
     const workflowFullId = PLANS_PREFIX + workflowId;
-    let workflowDetails: any;
+    let workflowDetails: Record<string, any>;
     const fetchWorkflowDetails = async () =>
       this.client.fetchWorkflowDetails(workflowFullId, repositoryUrl, reference, versionUrl);
     if (force) {
