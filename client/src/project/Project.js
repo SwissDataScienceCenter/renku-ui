@@ -373,7 +373,6 @@ class View extends Component {
       dataUrl: `${filesUrl}/data`,
       workflowsUrl: workflowsUrl,
       workflowUrl: `${workflowsUrl}/:id`,
-      workflowSingleUrl: `${baseUrl}/workflow/:id`,
       settingsUrl: `${baseUrl}/settings`,
       settingsSessionsUrl: `${baseUrl}/settings/sessions`,
       mrOverviewUrl: `${baseUrl}/pending`,

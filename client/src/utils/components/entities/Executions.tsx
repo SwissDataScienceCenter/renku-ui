@@ -29,12 +29,12 @@ export interface EntityExecutionsProps {
   executions: number | null;
   itemType: EntityType;
   lastExecuted: Date | null;
-  showLastExecutionTooltip: boolean;
+  showLastExecution: boolean;
   workflowId: string;
 }
 
 function EntityExecutions({
-  display, executions, itemType, lastExecuted, showLastExecutionTooltip = true, workflowId
+  display, executions, itemType, lastExecuted, showLastExecution, workflowId
 }: EntityExecutionsProps) {
   if (itemType !== "workflow") return null;
   let executionLast = lastExecuted != null ?
@@ -65,18 +65,20 @@ function EntityExecutions({
     executionContent = (<p>No executions</p>);
   }
   else if (executions === 1) {
-    executionContent = (
-      <><p>{executions} execution</p><p id={lastExecutionId} className={classSmall}>{executionLast}</p></>
-    );
+    const lastExec = showLastExecution ?
+      (<p id={lastExecutionId} className={classSmall}>{executionLast}</p>) :
+      null;
+    executionContent = (<><p>{executions} execution</p>{lastExec}</>);
   }
   else {
-    executionContent = (
-      <><p>{executions} executions</p><p id={lastExecutionId} className={classSmall}>last {executionLast}</p></>
-    );
+    const lastExec = showLastExecution ?
+      (<p id={lastExecutionId} className={classSmall}>last {executionLast}</p>) :
+      null;
+    executionContent = (<><p>{executions} executions</p>{lastExec}</>);
   }
 
   let lastExecutionTooltip: React.ReactNode = null;
-  if (showLastExecutionTooltip && workflowId && lastExecuted) {
+  if (showLastExecution && workflowId && lastExecuted) {
     lastExecutionTooltip = (
       <UncontrolledTooltip key={`tooltip-${lastExecutionId}`} placement="top" target={lastExecutionId}>
         <span>{Time.toIsoTimezoneString(lastExecuted)}</span>
