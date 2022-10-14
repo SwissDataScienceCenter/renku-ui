@@ -17,10 +17,16 @@
  */
 
 import { Url } from "../utils/helpers/url";
-import { workflowsSchema } from "../model/RenkuModels";
+import { workflowSchema, workflowsSchema } from "../model/RenkuModels";
+import { refreshIfNecessary } from "../utils/helpers/HelperFunctions";
 
 
 const PLANS_PREFIX = "/plans/";
+
+interface workflowApiResponse {
+  error?: Record<string, any>;
+  result?: Record<string, any>;
+}
 
 
 /**
@@ -65,27 +71,41 @@ class WorkflowsCoordinator {
   }
 
   async fetchWorkflowsList(
-    repositoryUrl: string, reference: string, versionUrl: string, unsupported: boolean, fullPath: string
+    repositoryUrl: string, reference: string, versionUrl: string, unsupported: boolean, fullPath: string, force = false
   ) {
     // reset on target change
     const target = repositoryUrl + reference;
-    const oldTarget = this.workflowsModel.get("target");
-    if (oldTarget && target !== oldTarget) {
+    const oldModel = this.workflowsModel.get("");
+    if (oldModel.target && target !== oldModel.target) {
       const pristine = workflowsSchema.createInitialized();
       this.workflowsModel.setObject({ $set: pristine });
+      force = true;
     }
 
     // do not fetch if we don't have the specific core url or already fetching
     if (!versionUrl || unsupported) return;
-    if (this.workflowsModel.get("fetching") === true) return;
+    if (oldModel.fetching === true) return;
 
     // pre-fetching state changes
     let newWorkflowsState: Record<string, any> = { fetching: true };
-    if (this.workflowsModel.get("error"))
+    if (oldModel.error)
       newWorkflowsState.error = null;
     this.workflowsModel.setObject(newWorkflowsState);
 
-    const workflowsList = await this.client.fetchWorkflowsList(repositoryUrl, reference, versionUrl);
+    let workflowsList: workflowApiResponse;
+    const fetchWorkflowList = async () =>
+      this.client.fetchWorkflowsList(repositoryUrl, reference, versionUrl);
+    if (force) {
+      workflowsList = await fetchWorkflowList();
+    }
+    else {
+      workflowsList = await refreshIfNecessary(oldModel.fetching, oldModel.fetched, fetchWorkflowList, 10);
+      if (!workflowsList) {
+        newWorkflowsState.fetching = false;
+        this.workflowsModel.setObject(newWorkflowsState);
+        return;
+      }
+    }
 
     // post fetch state changes
     newWorkflowsState = { fetching: false, fetched: new Date(), target: repositoryUrl + reference };
@@ -99,22 +119,42 @@ class WorkflowsCoordinator {
   }
 
   async fetchWorkflowDetails(
-    workflowId: string, repositoryUrl: string, reference: string, versionUrl: string
+    workflowId: string, repositoryUrl: string, reference: string, versionUrl: string, force = false
   ) {
+    // reset on target change
+    const target = repositoryUrl + reference + workflowId;
+    const oldModel = this.workflowModel.get("");
+    if (oldModel.target && target !== oldModel.target) {
+      const pristine = workflowSchema.createInitialized();
+      this.workflowModel.setObject({ $set: pristine });
+      force = true;
+    }
+
     // do not fetch if we don't have the specific core url or already fetching the same resource
-    if (!versionUrl) return;
-    if (this.workflowModel.get("fetching") === true && this.workflowModel.get("mounted") === workflowId) return;
+    if (!versionUrl || !workflowId) return;
+    if (oldModel.fetching === true) return;
 
     // pre-fetching state changes
     let newWorkflowState: Record<string, any> = { fetching: true };
-    if (this.workflowModel.get("error"))
+    if (oldModel.error)
       newWorkflowState.error = null;
     this.workflowModel.setObject(newWorkflowState);
 
     const workflowFullId = PLANS_PREFIX + workflowId;
-    const workflowDetails = await this.client.fetchWorkflowDetails(
-      workflowFullId, repositoryUrl, reference, versionUrl
-    );
+    let workflowDetails: workflowApiResponse;
+    const fetchWorkflowDetails = async () =>
+      this.client.fetchWorkflowDetails(workflowFullId, repositoryUrl, reference, versionUrl);
+    if (force) {
+      workflowDetails = await fetchWorkflowDetails();
+    }
+    else {
+      workflowDetails = await refreshIfNecessary(oldModel.fetching, oldModel.fetched, fetchWorkflowDetails, 3);
+      if (!workflowDetails) {
+        newWorkflowState.fetching = false;
+        this.workflowModel.setObject(newWorkflowState);
+        return;
+      }
+    }
 
     // post-fetch state changes -- to be ignored when the fetch is outdated
     newWorkflowState = { fetching: false, fetched: new Date(), target: repositoryUrl + reference + workflowId };
