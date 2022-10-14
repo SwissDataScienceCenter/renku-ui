@@ -19,10 +19,12 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router";
 
-import { StateKind, Schema, StateModel } from "../../../model/Model";
-import { QuickNavPresent } from "./QuickNav.present";
 import { ProjectsCoordinator } from "../../../project/shared";
+import { QuickNavPresent } from "./QuickNav.present";
+import { refreshIfNecessary } from "../../helpers/HelperFunctions";
+import { Schema, StateKind, StateModel } from "../../../model/Model";
 import { Url } from "../../helpers/url";
+
 
 const suggestionSchema = new Schema({
   path: { mandatory: true },
@@ -48,8 +50,7 @@ class QuickNavContainerWithRouter extends Component {
     this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
     if (this.props.user.logged) {
       const featured = this.projectsCoordinator.model.get("featured");
-      if (!featured.featured && !featured.fetching)
-        this.projectsCoordinator.getFeatured();
+      refreshIfNecessary(featured.fetching, featured.fetched, () => this.projectsCoordinator.getFeatured(), 120);
     }
 
     this.callbacks = {
