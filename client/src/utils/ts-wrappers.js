@@ -33,6 +33,7 @@ import {
 import {
   Card as WrappedCard,
   CardBody as WrappedCardBody,
+  CardHeader as WrappedCardHeader,
   CardText as WrappedCardText,
   CardFooter as WrappedCardFooter,
   PopoverHeader as WrappedPopoverHeader,
@@ -95,6 +96,10 @@ function Card(props) {
 
 function CardBody(props) {
   return <WrappedCardBody {...props} />;
+}
+
+function CardHeader(props) {
+  return <WrappedCardHeader {...props} />;
 }
 
 function CardText(props) {
@@ -287,7 +292,7 @@ function XCircleFill(props) {
 
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
 export { Alert, Button, ButtonDropdown, ButtonGroup, CheckCircleFill, XCircleFill };
-export { Card, CardBody, CardText, CardFooter, Col, DropdownItem, DropdownMenu, DropdownToggle };
+export { Card, CardBody, CardFooter, CardHeader, CardText, Col, DropdownItem, DropdownMenu, DropdownToggle };
 export { FormFeedback, FormText, Fade, Form, FormGroup, Input, InputGroup, Label };
 export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
