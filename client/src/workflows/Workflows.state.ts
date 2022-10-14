@@ -23,6 +23,11 @@ import { refreshIfNecessary } from "../utils/helpers/HelperFunctions";
 
 const PLANS_PREFIX = "/plans/";
 
+interface workflowApiResponse {
+  error?: Record<string, any>;
+  result?: Record<string, any>;
+}
+
 
 /**
  * Enrich workflows list by adding or modifying required by the UI
@@ -87,7 +92,7 @@ class WorkflowsCoordinator {
       newWorkflowsState.error = null;
     this.workflowsModel.setObject(newWorkflowsState);
 
-    let workflowsList: Record<string, any>;
+    let workflowsList: workflowApiResponse;
     const fetchWorkflowList = async () =>
       this.client.fetchWorkflowsList(repositoryUrl, reference, versionUrl);
     if (force) {
@@ -136,7 +141,7 @@ class WorkflowsCoordinator {
     this.workflowModel.setObject(newWorkflowState);
 
     const workflowFullId = PLANS_PREFIX + workflowId;
-    let workflowDetails: Record<string, any>;
+    let workflowDetails: workflowApiResponse;
     const fetchWorkflowDetails = async () =>
       this.client.fetchWorkflowDetails(workflowFullId, repositoryUrl, reference, versionUrl);
     if (force) {
