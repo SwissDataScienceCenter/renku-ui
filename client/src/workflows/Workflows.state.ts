@@ -29,6 +29,11 @@ interface workflowApiResponse {
 }
 
 
+function stringifyCreators(creators: Array<Record<string, any>>) {
+  const creatorNames = creators.map(c => c.name ? c.name : null);
+  return creatorNames.join(" ");
+}
+
 /**
  * Enrich workflows list by adding or modifying required by the UI
  * @param workflowsList - list of workflows ar returned by the API
@@ -39,6 +44,7 @@ function adjustWorkflowsList(workflowsList: Array<Record<string, any>>, fullPath
     return {
       ...workflow,
       active: workflow.touches_existing_files,
+      authors: stringifyCreators(workflow.creators),
       created: workflow.created ? new Date(workflow.created) : workflow.created,
       executions: workflow.number_of_executions,
       indentation: 0,

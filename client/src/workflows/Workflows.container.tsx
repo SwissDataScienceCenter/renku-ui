@@ -37,7 +37,8 @@ interface WorkflowsListProps {
 }
 
 const WorkflowsSorting = {
-  created: "Creation date",
+  authors: "Authors",
+  duration: "Estimated duration",
   executions: "Executions",
   lastExecuted: "Last execution",
   name: "Name",

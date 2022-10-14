@@ -24,10 +24,9 @@ import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
 import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityExecutions from "./entities/Executions";
-import Time from "../../utils/helpers/Time";
-import { Col, UncontrolledTooltip } from "../ts-wrappers";
+import EntityDuration from "./entities/Duration";
+import { Col } from "../ts-wrappers";
 import { EntityType, WorkflowType } from "./entities/Entities";
-import { TimeCaption } from "./TimeCaption";
 
 
 interface TreeBrowserProps {
@@ -57,6 +56,7 @@ interface TreeElementProps extends TreeBrowserProps {
   active: boolean;
   children: string[],
   creators: EntityCreator[],
+  duration: number;
   executions: number | null;
   indentation: number;
   itemType: EntityType;
@@ -70,8 +70,8 @@ interface TreeElementProps extends TreeBrowserProps {
 }
 
 function TreeElement({
-  active, children, creators, expanded, executions, indentation, itemType, items, lastExecuted, selected,
-  shrunk, timeCaption, title, toggleExpanded, url, urlSingle, workflowId, workflowType
+  active, children, creators, duration, expanded, executions, indentation, itemType, items, lastExecuted,
+  selected, shrunk, timeCaption, title, toggleExpanded, url, urlSingle, workflowId, workflowType
 }: TreeElementProps) {
   const newClasses = workflowId === selected ? "selected" : "";
   const isComposite = workflowType === "CompositePlan" ? true : false;
@@ -112,8 +112,6 @@ function TreeElement({
     currentIndentation = currentIndentation / 2;
   const elementStyle = { marginLeft: `${currentIndentation}em` };
 
-  const createdId = `created-${workflowId}`;
-
   // return either shrunk or full-size element
   if (shrunk) {
     return (
@@ -142,6 +140,8 @@ function TreeElement({
         <Link className="row w-100 rk-tree-item-content" to={url}>
           <Col xs={12} md={5} className="title center-vertically">
             <h5>{title}</h5>
+            {/* // ! TODO: show children number for composite WF -- create element */}
+            {/* // ! {children?.length ? children.length : ""} */}
             <EntityCreators display="tree" creators={creators} itemType={itemType} />
           </Col>
           <Col xs={12} sm={7} md={4} className="title center-vertically">
@@ -149,12 +149,7 @@ function TreeElement({
               lastExecuted={lastExecuted} showLastExecution={true} workflowId={workflowId} />
           </Col>
           <Col xs={12} sm={5} md={3} className="title center-vertically">
-            <span id={createdId}>
-              <TimeCaption caption="Created" className="text-rk-text-light" time={timeCaption} endPunctuation="" />
-            </span>
-            <UncontrolledTooltip key={`tool-created-${createdId}`} placement="top" target={createdId}>
-              <span>{ Time.toIsoTimezoneString(timeCaption) }</span>
-            </UncontrolledTooltip>
+            <EntityDuration duration={duration} workflowId={workflowId} />
           </Col>
         </Link>
       </div>

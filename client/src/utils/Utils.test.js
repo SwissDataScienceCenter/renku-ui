@@ -235,6 +235,26 @@ describe("Time class helper", () => {
     expect(Time.formatDateTime(dt, { d3FormatString: "%d %m %Y %H:%M:%S" }))
       .toEqual(`11 03 2019 ${hour}:34:51`);
   });
+  it("function getDuration", () => {
+    expect(Time.getDuration(0)).toEqual("Less than 1 second");
+    expect(Time.getDuration(0.2)).toEqual("Less than 1 second");
+    expect(Time.getDuration(1)).toEqual("1 second");
+    expect(Time.getDuration(1.4)).toEqual("1 second");
+    expect(Time.getDuration(20)).toEqual("20 seconds");
+    expect(Time.getDuration(59)).toEqual("59 seconds");
+    expect(Time.getDuration(60)).toEqual("1 minute");
+    expect(Time.getDuration(99.55)).toEqual("1 minute");
+    expect(Time.getDuration(121)).toEqual("2 minutes");
+    expect(Time.getDuration(60 * 20)).toEqual("20 minutes");
+    expect(Time.getDuration(60 * 59 + 50)).toEqual("59 minutes");
+    expect(Time.getDuration(60 * 60 * 1.2)).toEqual("1 hour");
+    expect(Time.getDuration(60 * 60 * 1.99)).toEqual("1 hour");
+    expect(Time.getDuration(60 * 60 * 2)).toEqual("2 hours");
+    expect(Time.getDuration(60 * 60 * 23 + 45)).toEqual("23 hours");
+    expect(Time.getDuration(60 * 60 * 24)).toEqual("24 hours");
+    expect(Time.getDuration(60 * 60 * 24 + 200)).toEqual("more than 24 hours");
+    expect(Time.getDuration(60 * 60 * 25)).toEqual("more than 24 hours");
+  });
 });
 
 describe("Ini file parser", () => {
