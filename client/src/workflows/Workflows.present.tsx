@@ -24,11 +24,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Input, Label, Row,
-  UncontrolledPopover, PopoverBody, Card, CardBody
+  Button, ButtonDropdown, Card, CardBody, Col, CardHeader, DropdownItem, DropdownMenu,
+  DropdownToggle, Input, Label, PopoverBody, Row, UncontrolledPopover, Table
 } from "../utils/ts-wrappers";
+
+import EntityHeader from "../utils/components/entityHeader/EntityHeader";
+import Time from "../utils/helpers/Time";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { Docs } from "../utils/constants/Docs";
+import { EntityType } from "../utils/components/entities/Entities";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { Loader } from "../utils/components/Loader";
 import { Url } from "../utils/helpers/url";
@@ -260,18 +264,132 @@ function WorkflowDetail({ fullPath, selectedAvailable, waiting, workflow, workfl
   }
   else {
     content = (
-      <TreeDetails
-        backElement={backElement}
-        waiting={waiting}
-        workflow={workflow}
-        workflowId={workflowId}
-      />
+      <TreeDetails>
+        <WorkflowTreeDetail
+          backElement={backElement}
+          waiting={waiting}
+          workflow={workflow}
+          workflowId={workflowId} />
+      </TreeDetails>
     );
   }
 
   return (<>{content}</>);
 }
 
+
+interface WorkflowTreeDetailsProps {
+  backElement: React.ReactNode;
+  waiting: boolean;
+  workflow: Record<string, any>;
+  workflowId: string;
+}
+
+function WorkflowTreeDetail({
+  backElement, waiting, workflow, workflowId
+}: WorkflowTreeDetailsProps) {
+  const executions = workflow.details?.executions ?
+    (<Col xs={12} lg={6}>
+      <span className="text-dark">
+        <span className="fw-bold">Number of Executions</span>
+        {workflow.details.executions}
+      </span>
+    </Col>) :
+    null;
+  return (
+    <>
+      <Card className="rk-tree-details mb-3">
+        <div className="rk-tree-details-back">
+          <div className="rk-tree-details-back-container">{backElement}</div>
+        </div>
+        <EntityHeader
+          creators={workflow.details.creators}
+          description={workflow.details.description}
+          devAccess={false}
+          itemType={"workflow" as EntityType}
+          labelCaption="created"
+          launchNotebookUrl=""
+          sessionAutostartUrl=""
+          showFullHeader={false}
+          tagList={workflow.details.keywords}
+          timeCaption={workflow.details.created}
+          title={workflow.details.name}
+          url=""
+        />
+      </Card>
+
+      <Card className="rk-tree-details mb-3">
+        <CardHeader className="bg-white">
+          <h3 className="my-2">Details</h3>
+        </CardHeader>
+        <CardBody>
+          <Row>
+            {executions}
+          </Row>
+          <Table className="mb-4 table-borderless" size="sm">
+            <tbody className="text-rk-text">
+              <tr>
+                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
+                  Number of Executions
+                </td>
+                <td>
+                  {workflow.details.number_of_executions}
+                </td>
+              </tr>
+              <tr>
+                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
+                  Last Execution
+                </td>
+                <td>
+                  {
+                    workflow.details?.last_executed ?
+                      Time.toIsoTimezoneString(workflow.details.last_executed) :
+                      null
+                  }
+                </td>
+              </tr>
+              <tr>
+                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
+                  Type
+                </td>
+                <td>
+                  {workflow.details.type}
+                </td>
+              </tr>
+              <tr>
+                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
+                  Full Command
+                </td>
+                <td>
+                  <code>
+                    {workflow.details.full_command}
+                  </code>
+                </td>
+              </tr>
+              {workflow.details.id != workflow.details.latest
+                ?
+                <tr>
+                  <td className="text-dark fw-bold" style={{ "width": "200px" }}></td>
+                  <td>
+                    You are viewing an outdated version of this Workflow Plan.&nbsp;
+                    {/* <Link to={Url.get(Url.pages.project.workflows.single, {
+                      // TODO: Use PLANS_PREFIX here
+                      namespace: "", path: fullPath, target: "/" + workflow.details.latest.replace("/plans/", "")
+                    })}
+                      className="col text-decoration-none">
+                      Go to newest version
+                    </Link> */}
+                  </td>
+                </tr>
+                : null
+              }
+            </tbody>
+          </Table>
+        </CardBody>
+      </Card>
+    </>
+  );
+}
 
 interface WorkflowDetailPlaceholderProps {
   backElement: React.ReactNode;

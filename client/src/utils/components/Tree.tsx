@@ -24,9 +24,8 @@ import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
 import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityExecutions from "./entities/Executions";
-import EntityHeader from "./entityHeader/EntityHeader";
 import Time from "../../utils/helpers/Time";
-import { Card, CardHeader, CardBody, Col, Row, Table, UncontrolledTooltip } from "../ts-wrappers";
+import { Col, UncontrolledTooltip } from "../ts-wrappers";
 import { EntityType, WorkflowType } from "./entities/Entities";
 import { TimeCaption } from "./TimeCaption";
 
@@ -156,7 +155,6 @@ function TreeElement({
             <UncontrolledTooltip key={`tool-created-${createdId}`} placement="top" target={createdId}>
               <span>{ Time.toIsoTimezoneString(timeCaption) }</span>
             </UncontrolledTooltip>
-            {/* <Link to={urlSingle}><FontAwesomeIcon className="text-rk-yellow float-end" icon={faLink} /></Link> */}
           </Col>
         </Link>
       </div>
@@ -167,115 +165,11 @@ function TreeElement({
 
 
 interface TreeDetailsProps {
-  backElement: React.ReactNode;
-  waiting: boolean;
-  workflow: Record<string, any>;
-  workflowId: string;
+  children: React.ReactNode
 }
 
-function TreeDetails({ backElement, waiting, workflow, workflowId }: TreeDetailsProps) {
-  const executions = workflow.details?.executions ?
-    (<Col xs={12} lg={6}>
-      <span className="text-dark">
-        <span className="fw-bold">Number of Executions</span>
-        {workflow.details.executions}
-      </span>
-    </Col>) :
-    null;
-  return (
-    <>
-      <Card className="rk-tree-details mb-3">
-        <div className="rk-tree-details-back">
-          <div className="rk-tree-details-back-container">{backElement}</div>
-        </div>
-        <EntityHeader
-          creators={workflow.details.creators}
-          description={workflow.details.description}
-          devAccess={false}
-          itemType={"workflow" as EntityType}
-          labelCaption="created"
-          launchNotebookUrl=""
-          sessionAutostartUrl=""
-          showFullHeader={false}
-          tagList={workflow.details.keywords}
-          timeCaption={workflow.details.created}
-          title={workflow.details.name}
-          url=""
-        />
-      </Card>
-
-      <Card className="rk-tree-details mb-3">
-        <CardHeader className="bg-white">
-          <h3 className="my-2">Details</h3>
-        </CardHeader>
-        <CardBody>
-          <Row>
-            {executions}
-          </Row>
-          <Table className="mb-4 table-borderless" size="sm">
-            <tbody className="text-rk-text">
-              <tr>
-                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-                  Number of Executions
-                </td>
-                <td>
-                  {workflow.details.number_of_executions}
-                </td>
-              </tr>
-              <tr>
-                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-                  Last Execution
-                </td>
-                <td>
-                  {
-                    workflow.details?.last_executed ?
-                      Time.toIsoTimezoneString(workflow.details.last_executed) :
-                      null
-                  }
-                </td>
-              </tr>
-              <tr>
-                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-                  Type
-                </td>
-                <td>
-                  {workflow.details.type}
-                </td>
-              </tr>
-              <tr>
-                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-                  Full Command
-                </td>
-                <td>
-                  <code>
-                    {workflow.details.full_command}
-                  </code>
-                </td>
-              </tr>
-              {workflow.details.id != workflow.details.latest
-                ?
-                <tr>
-                  <td className="text-dark fw-bold" style={{ "width": "200px" }}></td>
-                  <td>
-                    You are viewing an outdated version of this Workflow Plan.&nbsp;
-                    {/* <Link to={Url.get(Url.pages.project.workflows.single, {
-                      // TODO: Use PLANS_PREFIX here
-                      namespace: "", path: fullPath, target: "/" + workflow.details.latest.replace("/plans/", "")
-                    })}
-                      className="col text-decoration-none">
-                      Go to newest version
-                    </Link> */}
-                  </td>
-                </tr>
-                : null
-
-              }
-            </tbody>
-          </Table>
-        </CardBody>
-      </Card>
-    </>
-  );
+function TreeDetails({ children }: TreeDetailsProps) {
+  return (<>{ children }</>);
 }
 
 export { TreeBrowser, TreeDetails, TreeElement };
