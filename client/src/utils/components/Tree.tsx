@@ -26,11 +26,14 @@ import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityExecutions from "./entities/Executions";
 import EntityDuration from "./entities/Duration";
 import { Col } from "../ts-wrappers";
+import { EntityChildren, EntityChildrenDot } from "./entities/Children";
 import { EntityType, WorkflowType } from "./entities/Entities";
 
 
 interface TreeBrowserProps {
+  emptyElement: React.ReactNode;
   expanded: string[];
+  highlightedProp: string;
   items: Record<string, any>;
   selected: string;
   shrunk: boolean;
@@ -38,13 +41,13 @@ interface TreeBrowserProps {
 }
 
 function TreeBrowser({
-  expanded, items = [], selected, shrunk, toggleExpanded
+  emptyElement, expanded, highlightedProp, items = [], selected, shrunk, toggleExpanded
 }: TreeBrowserProps) {
   if (!items.length)
-    return (<p>No elements to display</p>);
+    return (<>{emptyElement}</>);
 
   const treeElements = items.map((item: any) => {
-    let newProps: Record<string, any> = { expanded, items, selected, shrunk, toggleExpanded };
+    let newProps: Record<string, any> = { expanded, highlightedProp, items, selected, shrunk, toggleExpanded };
     return (<TreeElement key={item.workflowId} {...item} {...newProps} />);
   });
 
@@ -58,6 +61,7 @@ interface TreeElementProps extends TreeBrowserProps {
   creators: EntityCreator[],
   duration: number;
   executions: number | null;
+  highlightedProp: string,
   indentation: number;
   itemType: EntityType;
   lastExecuted: Date | null;
@@ -70,8 +74,9 @@ interface TreeElementProps extends TreeBrowserProps {
 }
 
 function TreeElement({
-  active, children, creators, duration, expanded, executions, indentation, itemType, items, lastExecuted,
-  selected, shrunk, timeCaption, title, toggleExpanded, url, urlSingle, workflowId, workflowType
+  active, children, creators, duration, expanded, executions, highlightedProp,
+  indentation, itemType, items, lastExecuted, selected, shrunk, timeCaption, title,
+  toggleExpanded, url, urlSingle, workflowId, workflowType
 }: TreeElementProps) {
   const newClasses = workflowId === selected ? "selected" : "";
   const isComposite = workflowType === "CompositePlan" ? true : false;
@@ -97,7 +102,7 @@ function TreeElement({
   if (childrenItems.length && expanded.includes(workflowId)) {
     childrenNodes = childrenItems.map((item: any) => {
       let newProps: Record<string, any> = {
-        expanded, items, indentation: indentation + 1, selected, shrunk, toggleExpanded
+        expanded, highlightedProp, items, indentation: indentation + 1, selected, shrunk, toggleExpanded
       };
       return (<TreeElement key={workflowId + item.workflowId} {...item} {...newProps} />);
     });
@@ -114,18 +119,39 @@ function TreeElement({
 
   // return either shrunk or full-size element
   if (shrunk) {
+    let details: React.ReactNode = null;
+    if (highlightedProp === "authors") {
+      details = (<EntityCreators display="tree" creators={creators} itemType={itemType} />);
+    }
+    else if (highlightedProp === "duration") {
+      details = (<EntityDuration duration={duration} workflowId={workflowId} />);
+    }
+    else if (highlightedProp === "executions") {
+      details = (
+        <EntityExecutions display="tree" executions={executions} itemType={itemType}
+          lastExecuted={lastExecuted} showLastExecution={true} workflowId={workflowId} />
+      );
+    }
+    else {
+      // ! TODO: update this
+      details = (
+        <EntityExecutions display="tree" executions={executions} itemType={itemType}
+          lastExecuted={lastExecuted} showLastExecution={false} workflowId={workflowId} />
+      );
+    }
+
     return (
       <>
         <div className={`d-flex flex-row rk-tree-item ${newClasses}`} style={elementStyle}>
           {leftItem}
           <Link className="row w-100 rk-tree-item-content" to={url}>
             <Col xs={12} className="title center-vertically">
-              <h5>{title}</h5>
+              <h5>
+                {title} <EntityChildrenDot
+                  childrenElements={children} itemType={itemType} workflowId={workflowId} />
+              </h5>
             </Col>
-            <Col xs={12} className="title center-vertically">
-              <EntityExecutions display="tree" executions={executions} itemType={itemType}
-                lastExecuted={lastExecuted} showLastExecution={false} workflowId={workflowId} />
-            </Col>
+            {details}
           </Link>
         </div>
         {childrenNodes}
@@ -139,14 +165,16 @@ function TreeElement({
         {leftItem}
         <Link className="row w-100 rk-tree-item-content" to={url}>
           <Col xs={12} md={5} className="title center-vertically">
-            <h5>{title}</h5>
-            {/* // ! TODO: show children number for composite WF -- create element */}
-            {/* // ! {children?.length ? children.length : ""} */}
+            <h5>
+              {title} <EntityChildrenDot
+                childrenElements={children} itemType={itemType} workflowId={workflowId} />
+            </h5>
             <EntityCreators display="tree" creators={creators} itemType={itemType} />
           </Col>
           <Col xs={12} sm={7} md={4} className="title center-vertically">
             <EntityExecutions display="tree" executions={executions} itemType={itemType}
               lastExecuted={lastExecuted} showLastExecution={true} workflowId={workflowId} />
+            <EntityChildren childrenElements={children} itemType={itemType} />
           </Col>
           <Col xs={12} sm={5} md={3} className="title center-vertically">
             <EntityDuration duration={duration} workflowId={workflowId} />

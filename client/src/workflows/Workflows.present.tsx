@@ -33,11 +33,11 @@ import Time from "../utils/helpers/Time";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { Docs } from "../utils/constants/Docs";
 import { EntityType } from "../utils/components/entities/Entities";
-import { ExternalLink } from "../utils/components/ExternalLinks";
+import { ExternalDocsLink, ExternalLink } from "../utils/components/ExternalLinks";
 import { Loader } from "../utils/components/Loader";
 import { Url } from "../utils/helpers/url";
 import { TreeBrowser, TreeDetails } from "../utils/components/Tree";
-import { WarnAlert } from "../utils/components/Alert";
+import { InfoAlert, WarnAlert } from "../utils/components/Alert";
 
 
 interface WorkflowsListFiltersProps {
@@ -153,6 +153,22 @@ function orderWorkflows(
 }
 
 
+function NoWorkflows() {
+  return (
+    <div>
+      <p>There are no workflows in this project.</p>
+      <InfoAlert timeout={0}>
+        <p>Renku workflows is a key feature of Renku to make code and processing pipelines reusable.</p>
+        <p>
+          <ExternalDocsLink url={Docs.rtdTopicGuide("workflows.html")} title="Check out our documentation" />{" "}
+          on workflows if you wish to learn more about this feature.
+        </p>
+      </InfoAlert>
+    </div>
+  );
+}
+
+
 interface WorkflowsTreeBrowserProps {
   ascending: boolean;
   expanded: string[];
@@ -179,6 +195,7 @@ function WorkflowsTreeBrowser({
   // return immediately when workflows are not supported in the current project
   if (unsupported)
     return (<UnsupportedWorkflows fullPath={fullPath} />);
+  const emptyElement = (<NoWorkflows />);
 
   // show status: loading or error or full content
   const loading = waiting || (!workflows.fetched);
@@ -193,7 +210,9 @@ function WorkflowsTreeBrowser({
   else {
     const treeBrowser = (
       <TreeBrowser
+        emptyElement={emptyElement}
         expanded={expanded}
+        highlightedProp={orderBy in ["name", "workflowType"] ? "lastExecution" : orderBy}
         items={orderWorkflows(workflows.list, orderBy, ascending, showInactive)}
         selected={selected}
         shrunk={shrunk}
