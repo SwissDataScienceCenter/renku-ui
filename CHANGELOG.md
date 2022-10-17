@@ -1,3 +1,27 @@
+# [2.10.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.9.0...2.10.0) (2022-10-17)
+
+
+### Bug Fixes
+
+* load notebook preview ([#2052](https://github.com/SwissDataScienceCenter/renku-ui/issues/2052))
+* prevent sending repeated queries to GitLab graphql ([#2072](https://github.com/SwissDataScienceCenter/renku-ui/issues/2072))
+* **server:** use the correct redis namespace ([#2053](https://github.com/SwissDataScienceCenter/renku-ui/issues/2053))
+* show namespace name when there is no owner data ([#2051](https://github.com/SwissDataScienceCenter/renku-ui/issues/2051))
+* set the size of the image on the Not Found page to full screen ([#2051](https://github.com/SwissDataScienceCenter/renku-ui/issues/2051))
+
+
+### Features
+
+* save session button ([#1957](https://github.com/SwissDataScienceCenter/renku-ui/issues/1957), [#1985](https://github.com/SwissDataScienceCenter/renku-ui/issues/1985), [#2040](https://github.com/SwissDataScienceCenter/renku-ui/issues/2040), [#1985](https://github.com/SwissDataScienceCenter/renku-ui/issues/1985), [#1957](https://github.com/SwissDataScienceCenter/renku-ui/issues/1957))
+* add environment variables when starting a session ([#2058](https://github.com/SwissDataScienceCenter/renku-ui/issues/2058), [#2066](https://github.com/SwissDataScienceCenter/renku-ui/issues/2066))
+* add progress indicator when starting a session ([#1879](https://github.com/SwissDataScienceCenter/renku-ui/issues/1879), [#2054](https://github.com/SwissDataScienceCenter/renku-ui/issues/2054))
+* **server:** keep some cookies when proxying ([#2018](https://github.com/SwissDataScienceCenter/renku-ui/issues/2018), [#2029](https://github.com/SwissDataScienceCenter/renku-ui/issues/2029))
+
+### BREAKING CHANGES
+
+* Requires renku-notebook v1.12.0 or greater
+
+
 # Changes
 
 ## [2.9.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.8.2...2.9.0) (2022-09-15)
