@@ -300,6 +300,11 @@ class StartNotebookServer extends Component {
     this.customNotebookFilePath = currentSearch && this.autostart && currentSearch["notebook"] ?
       currentSearch["notebook"] :
       null;
+
+    const environmentVariables = this.getEnvironmentVariablesFromSearch(currentSearch);
+    this.customEnvVariables = currentSearch && this.autostart && environmentVariables.length ?
+      environmentVariables : [];
+
     this.state = {
       autosavesCommit: false,
       autostartReady: false,
@@ -326,6 +331,7 @@ class StartNotebookServer extends Component {
       setIgnorePipeline: this.setIgnorePipeline.bind(this),
       setDisplayedCommits: this.setDisplayedCommits.bind(this),
       setServerOption: this.setServerOptionFromEvent.bind(this),
+      setNotebookEnvVariables: this.setNotebookEnvVariables.bind(this),
       startServer: this.startServer.bind(this),
       setObjectStoresConfiguration: this.setObjectStoresConfiguration.bind(this),
       toggleMergedBranches: this.toggleMergedBranches.bind(this),
@@ -340,6 +346,7 @@ class StartNotebookServer extends Component {
         this.coordinator.startNotebookPolling();
       this.coordinator.fetchAutosaves();
       this.selectNotebookFilePath(this.customNotebookFilePath);
+      this.setNotebookEnvVariables(this.customEnvVariables);
       this.refreshBranches();
     }
   }
@@ -411,6 +418,25 @@ class StartNotebookServer extends Component {
     if (!notebookFilePath)
       return;
     this.coordinator.setNotebookFilePath(notebookFilePath);
+  }
+
+  setNotebookEnvVariables(variables) {
+    this.coordinator.setNotebookEnvironmentVariables(variables);
+  }
+
+  getEnvironmentVariablesFromSearch(search) {
+    const variables = [];
+    Object.keys(search).map( key => {
+      if (key.startsWith("env[")) {
+        const env_key = key.split("env[").pop().split("]").shift();
+        const value = search[key];
+        if (Array.isArray(value))
+          value.forEach(val => variables.push({ key: env_key, value: val }));
+        else
+          variables.push({ key: env_key, value: search[key] });
+      }
+    });
+    return variables;
   }
 
   async selectBranch(branchName) {
@@ -808,6 +834,7 @@ class StartNotebookServer extends Component {
       launchError={this.state.launchError}
       lockStatus={this.props.lockStatus}
       message={this.props.message}
+      envVariablesQueryParams={this.customEnvVariables}
       {...this.propsToChildProps()}
     />;
   }

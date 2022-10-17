@@ -25,6 +25,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Clipboard } from "../Clipboard";
 import { ThrottledTooltip } from "../Tooltip";
+import { EnvVariablesField } from "../../../notebooks/components/EnviromentVariables";
 
 interface ShareLinkSessionProps {
   filters: ProjectFilters;
@@ -65,10 +66,13 @@ interface ShareLinkSessionModalProps {
   showModal: boolean;
   toggleModal: Function;
   notebookFilePath: string;
+  environmentVariables: EnvVariablesField[];
 }
-const ShareLinkSessionModal = ({ filters, showModal, toggleModal, notebookFilePath }: ShareLinkSessionModalProps) => {
+const ShareLinkSessionModal = ({ filters, showModal, toggleModal, notebookFilePath, environmentVariables }
+                                 : ShareLinkSessionModalProps) => {
   const [includeBranch, setIncludeBranch] = useState(false);
   const [includeCommit, setIncludeCommit] = useState(false);
+  const [includeEnvVariables, setIncludeEnvVariables] = useState(false);
   const [url, setUrl] = useState("");
 
   useEffect(() => {
@@ -85,8 +89,17 @@ const ShareLinkSessionModal = ({ filters, showModal, toggleModal, notebookFilePa
     urlSession = notebookFilePath ? `${urlSession}&notebook=${notebookFilePath}` : urlSession;
     urlSession = includeCommit ? `${urlSession}&commit=${data.commit}` : urlSession;
     urlSession = includeBranch ? `${urlSession}&branch=${data.branch}` : urlSession;
+    if (includeEnvVariables && environmentVariables.length) {
+      let urlVariables = "";
+      environmentVariables.map(env => {
+        if (env.key && env.value)
+          urlVariables = `${urlVariables}&env[${encodeURIComponent(env.key)}]=${encodeURIComponent(env.value)}`;
+      });
+      urlSession = `${urlSession}${urlVariables}`;
+    }
+
     setUrl(urlSession);
-  }, [ includeCommit, includeBranch, filters, notebookFilePath ]);
+  }, [ includeCommit, includeBranch, includeEnvVariables, filters, notebookFilePath, environmentVariables ]);
 
   const setCommit = (checked: boolean) => {
     setIncludeCommit(checked);
@@ -98,6 +111,13 @@ const ShareLinkSessionModal = ({ filters, showModal, toggleModal, notebookFilePa
     if (!checked)
       setIncludeCommit(checked);
   };
+  const setVariables = (checked: boolean) => {
+    setIncludeEnvVariables(checked);
+  };
+
+
+  const validVariables = environmentVariables.filter(variable => variable.key.length && variable.value.length);
+  const isVariablesEmpty = !validVariables.length;
 
   const markdown = `[![launch - renku](${Url.get(Url.pages.landing, undefined, true)}renku-badge.svg)](${url})`;
   const notebookFilePathLabel = notebookFilePath ? (
@@ -123,6 +143,14 @@ const ShareLinkSessionModal = ({ filters, showModal, toggleModal, notebookFilePa
                 <Label check>
                   <Input type="checkbox" checked={includeCommit}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setCommit(e.target.checked)}/> Commit
+                </Label>
+              </FormGroup>
+              <FormGroup key="env-variables" check>
+                <Label check>
+                  <Input type="checkbox" checked={isVariablesEmpty ? false : includeEnvVariables}
+                    disabled={isVariablesEmpty}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setVariables(e.target.checked)}/>
+                  <span className={isVariablesEmpty ? "text-rk-text-light" : ""}>Environment Variables</span>
                 </Label>
               </FormGroup>
               <FormText>

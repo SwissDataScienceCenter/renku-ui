@@ -391,6 +391,7 @@ const notebooksSchema = new Schema({
       commit: { initial: {} },
       discard: { initial: false },
       options: { initial: {} },
+      environment_variables: { initial: [] },
       objectStoresConfiguration: { initial: [] },
       includeMergedBranches: { initial: false },
       displayedCommits: { initial: 25 },
@@ -722,5 +723,5 @@ const formGeneratorSchema = new Schema({
 export {
   datasetFormSchema, datasetSchema, datasetImportFormSchema, environmentSchema,
   formGeneratorSchema, issueFormSchema, newProjectSchema, notebooksSchema, notificationsSchema,
-  projectSchema, projectsSchema, statuspageSchema, userSchema, webSocketSchema
+  projectSchema, projectsSchema, statuspageSchema, userSchema, webSocketSchema,
 };

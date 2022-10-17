@@ -372,23 +372,29 @@ describe("rendering", () => {
     document.body.appendChild(div);
     await act(async () => {
       ReactDOM.render(
-        <MemoryRouter>
-          <StartNotebookServer {...props} />
-        </MemoryRouter>, div);
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <StartNotebookServer {...props} />
+          </MemoryRouter>
+        </Provider>, div);
     });
     await act(async () => {
       ReactDOM.render(
-        <MemoryRouter>
-          <StartNotebookServer {...props} scope={scope} />
-        </MemoryRouter>, div);
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <StartNotebookServer {...props} scope={scope} />
+          </MemoryRouter>
+        </Provider>, div);
     });
     // autostart session
     const autostartFakeLocation = { pathname: "", search: "autostart=1" };
     await act(async () => {
       ReactDOM.render(
-        <MemoryRouter>
-          <StartNotebookServer {...props} location={autostartFakeLocation} />
-        </MemoryRouter>, div);
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <StartNotebookServer {...props} location={autostartFakeLocation} />
+          </MemoryRouter>
+        </Provider>, div);
     });
   });
 
