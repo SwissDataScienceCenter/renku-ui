@@ -112,7 +112,7 @@ class Time {
   static getDuration(seconds) {
     let currentValue = parseInt(seconds);
     if (currentValue < 1)
-      return "Less than 1 second";
+      return "< 1 second";
     if (currentValue === 1)
       return "1 second";
     if (currentValue < 60)
@@ -127,7 +127,7 @@ class Time {
       return "1 hour";
     if (currentValue >= 2 && currentValue <= 24)
       return `${parseInt(currentValue)} hours`;
-    return "more than 24 hours";
+    return "> 24 hours";
   }
 }
 

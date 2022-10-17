@@ -36,9 +36,11 @@ function EntityDuration({
 
   return (
     <>
-      <p id={elemId}>{Time.getDuration(duration)}</p>
+      <p id={elemId}>
+        <span className="text-rk-text small">Runs in</span> {Time.getDuration(duration)}
+      </p>
       <UncontrolledTooltip key={`duration-elem-${elemId}`} placement="top" target={elemId}>
-        <span>Esitmated duration</span>
+        <span>Esitmated runtime</span>
       </UncontrolledTooltip>
     </>
   );
