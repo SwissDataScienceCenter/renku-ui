@@ -66,3 +66,11 @@
     }
   }
 }
+
+.rk-tree-table {
+  td.short {
+    white-space: nowrap;
+    width: 1px; // ? combined with `nowrap`, this limit the width to the shortest sentence
+    padding-right: 1rem;
+  }
+}

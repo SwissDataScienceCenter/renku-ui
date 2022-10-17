@@ -28,8 +28,9 @@ import {
   DropdownToggle, Input, Label, PopoverBody, Row, UncontrolledPopover, Table
 } from "../utils/ts-wrappers";
 
-import EntityHeader from "../utils/components/entityHeader/EntityHeader";
+import EntityCreators from "../utils/components/entities/Creators";
 import Time from "../utils/helpers/Time";
+import { Clipboard } from "../utils/components/Clipboard";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { Docs } from "../utils/constants/Docs";
 import { EntityType } from "../utils/components/entities/Entities";
@@ -303,6 +304,23 @@ function WorkflowDetail({ fullPath, selectedAvailable, waiting, workflow, workfl
 }
 
 
+interface WorkflowTreeDetailRowProps {
+  children: React.ReactNode;
+  name: string | React.ReactNode;
+}
+
+function WorkflowTreeDetailRow({
+  children, name
+}: WorkflowTreeDetailRowProps) {
+  return (
+    <tr>
+      <td className="fw-bold short">{name}</td>
+      <td>{children}</td>
+    </tr>
+  );
+}
+
+
 interface WorkflowTreeDetailsProps {
   backElement: React.ReactNode;
   waiting: boolean;
@@ -313,34 +331,77 @@ interface WorkflowTreeDetailsProps {
 function WorkflowTreeDetail({
   backElement, waiting, workflow, workflowId
 }: WorkflowTreeDetailsProps) {
-  const executions = workflow.details?.executions ?
-    (<Col xs={12} lg={6}>
-      <span className="text-dark">
-        <span className="fw-bold">Number of Executions</span>
-        {workflow.details.executions}
-      </span>
-    </Col>) :
-    null;
+  const details = workflow.details ? workflow.details : {};
+  const isComposite = details.type === "Plan" ? false : true;
+
+  let typeSpecificRows: React.ReactNode;
+  if (isComposite) {
+    typeSpecificRows = (<>
+      <WorkflowTreeDetailRow name="Number of children">
+        {details.plans?.length}
+      </WorkflowTreeDetailRow>
+    </>);
+  }
+  else {
+    typeSpecificRows = (<>
+      <WorkflowTreeDetailRow name="Number of executions">
+        {details.number_of_executions}
+      </WorkflowTreeDetailRow>
+      <WorkflowTreeDetailRow name="Last execution">
+        {Time.toIsoTimezoneString(details.last_executed)}
+      </WorkflowTreeDetailRow>
+      <WorkflowTreeDetailRow name="Full command">
+        <pre className="mb-0">
+          {details.full_command}
+          <Clipboard clipboardText={details.full_command} />
+        </pre>
+      </WorkflowTreeDetailRow>
+    </>);
+  }
+
   return (
     <>
       <Card className="rk-tree-details mb-3">
-        <div className="rk-tree-details-back">
-          <div className="rk-tree-details-back-container">{backElement}</div>
-        </div>
-        <EntityHeader
-          creators={workflow.details.creators}
-          description={workflow.details.description}
-          devAccess={false}
-          itemType={"workflow" as EntityType}
-          labelCaption="created"
-          launchNotebookUrl=""
-          sessionAutostartUrl=""
-          showFullHeader={false}
-          tagList={workflow.details.keywords}
-          timeCaption={workflow.details.created}
-          title={workflow.details.name}
-          url=""
-        />
+        <CardHeader className="bg-white">
+          <div className="float-end m-2">{backElement}</div>
+          <h3 className="my-2">{details.name}</h3>
+        </CardHeader>
+
+        <CardBody>
+          <Table className="table-borderless rk-tree-table mb-0" size="sm">
+            <tbody>
+              <WorkflowTreeDetailRow name="Author(s)">
+                {
+                  details.creators?.length ?
+                    (
+                      <EntityCreators display="plain" creators={details.creators}
+                        itemType={"workflow" as EntityType}
+                      />
+                    ) :
+                    (<span className="fst-italic text-rk-text-light">Not available</span>)
+                }
+              </WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Description">
+                {
+                  details.description?.length ?
+                    details.description :
+                    (<span className="fst-italic text-rk-text-light">None</span>)
+                }
+              </WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Keywords">
+                {
+                  details.keywords?.length ?
+                    // (<EntityTags multiline={true} tagList={details.keywords} />) :
+                    (<>{ details.keywords.join(", ") }</>) :
+                    (<span className="fst-italic text-rk-text-light">None</span>)
+                }
+              </WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Creation date">
+                { Time.toIsoTimezoneString(details.created)}
+              </WorkflowTreeDetailRow>
+            </tbody>
+          </Table>
+        </CardBody>
       </Card>
 
       <Card className="rk-tree-details mb-3">
@@ -348,66 +409,15 @@ function WorkflowTreeDetail({
           <h3 className="my-2">Details</h3>
         </CardHeader>
         <CardBody>
-          <Row>
-            {executions}
-          </Row>
-          <Table className="mb-4 table-borderless" size="sm">
-            <tbody className="text-rk-text">
-              <tr>
-                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-                  Number of Executions
-                </td>
-                <td>
-                  {workflow.details.number_of_executions}
-                </td>
-              </tr>
-              <tr>
-                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-                  Last Execution
-                </td>
-                <td>
-                  {
-                    workflow.details?.last_executed ?
-                      Time.toIsoTimezoneString(workflow.details.last_executed) :
-                      null
-                  }
-                </td>
-              </tr>
-              <tr>
-                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-                  Type
-                </td>
-                <td>
-                  {workflow.details.type}
-                </td>
-              </tr>
-              <tr>
-                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-                  Full Command
-                </td>
-                <td>
-                  <code>
-                    {workflow.details.full_command}
-                  </code>
-                </td>
-              </tr>
-              {workflow.details.id != workflow.details.latest
-                ?
-                <tr>
-                  <td className="text-dark fw-bold" style={{ "width": "200px" }}></td>
-                  <td>
-                    You are viewing an outdated version of this Workflow Plan.&nbsp;
-                    {/* <Link to={Url.get(Url.pages.project.workflows.single, {
-                      // TODO: Use PLANS_PREFIX here
-                      namespace: "", path: fullPath, target: "/" + workflow.details.latest.replace("/plans/", "")
-                    })}
-                      className="col text-decoration-none">
-                      Go to newest version
-                    </Link> */}
-                  </td>
-                </tr>
-                : null
-              }
+          <Table className="table-borderless rk-tree-table mb-0" size="sm">
+            <tbody>
+              <WorkflowTreeDetailRow name="Workflow type">
+                {isComposite ? "Workflow (Composite)" : "Single step" }
+              </WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Estimated runtime">
+                {Time.getDuration(details.duration)}
+              </WorkflowTreeDetailRow>
+              {typeSpecificRows}
             </tbody>
           </Table>
         </CardBody>
@@ -429,16 +439,14 @@ function WorkflowDetailPlaceholder({
   let content: React.ReactNode;
   if (waiting) {
     content = (<>
-      <div className="float-end m-1">{backElement}</div>
       <div className="d-flex">
-        <p className="m-auto mt-1">Loading workflow details...</p>
+        <p className="m-auto mt-1">Getting workflow details...</p>
       </div>
       <Loader />
     </>);
   }
   else if (error) {
     content = (<>
-      <div className="float-end m-1">{backElement}</div>
       <div className="d-flex">
         <p className="m-auto mb-3 mt-1">A problem occurred while getting the workflow details.</p>
       </div>
@@ -447,7 +455,6 @@ function WorkflowDetailPlaceholder({
   }
   else if (unknown) {
     content = (<>
-      <div className="float-end m-1">{backElement}</div>
       <div className="d-flex">
         <p className="m-auto mt-1">
           <FontAwesomeIcon icon={faExclamationTriangle} /> We cannot find the
@@ -458,7 +465,15 @@ function WorkflowDetailPlaceholder({
     </>);
   }
 
-  return (<Card><CardBody>{content}</CardBody></Card>);
+  return (
+    <Card className="rk-tree-details mb-3">
+      <CardHeader className="bg-white">
+        <div className="float-end m-2">{backElement}</div>
+        <h3 className="my-2">Loading details</h3>
+      </CardHeader>
+      <CardBody>{content}</CardBody>
+    </Card>
+  );
 }
 
 
