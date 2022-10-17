@@ -129,20 +129,19 @@ function TreeElement({
     else if (highlightedProp === "executions") {
       details = (
         <EntityExecutions display="tree" executions={executions} itemType={itemType}
-          lastExecuted={lastExecuted} showLastExecution={true} workflowId={workflowId} />
+          lastExecuted={lastExecuted} showLastExecution={false} workflowId={workflowId} />
       );
     }
     else {
-      // ! TODO: update this
       details = (
         <EntityExecutions display="tree" executions={executions} itemType={itemType}
-          lastExecuted={lastExecuted} showLastExecution={false} workflowId={workflowId} />
+          lastExecuted={lastExecuted} showOnlyLastExecution={true} workflowId={workflowId} />
       );
     }
 
     return (
       <>
-        <div className={`d-flex flex-row rk-tree-item ${newClasses}`} style={elementStyle}>
+        <div className={`d-flex flex-row rk-tree-item compact ${newClasses}`} style={elementStyle}>
           {leftItem}
           <Link className="row w-100 rk-tree-item-content" to={url}>
             <Col xs={12} className="title center-vertically">
@@ -151,7 +150,7 @@ function TreeElement({
                   childrenElements={children} itemType={itemType} workflowId={workflowId} />
               </h5>
             </Col>
-            {details}
+            <span className="text-rk-text-light">{details}</span>
           </Link>
         </div>
         {childrenNodes}
@@ -192,7 +191,7 @@ interface TreeDetailsProps {
 }
 
 function TreeDetails({ children }: TreeDetailsProps) {
-  return (<>{ children }</>);
+  return (<>{children}</>);
 }
 
 export { TreeBrowser, TreeDetails, TreeElement };

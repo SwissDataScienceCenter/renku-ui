@@ -359,6 +359,16 @@ function WorkflowTreeDetail({
     </>);
   }
 
+  let newerAvailable: React.ReactNode = null;
+  if (details.latestUrl) {
+    newerAvailable = (
+      <InfoAlert timeout={0}>
+        <p>A new version of this workflow is available.</p>
+        <p><Link className="btn btn-info btn-sm" to={details.latestUrl}>Click here</Link> to visualize it.</p>
+      </InfoAlert>
+    );
+  }
+
   return (
     <>
       <Card className="rk-tree-details mb-3">
@@ -368,6 +378,7 @@ function WorkflowTreeDetail({
         </CardHeader>
 
         <CardBody>
+          {newerAvailable}
           <Table className="table-borderless rk-tree-table mb-0" size="sm">
             <tbody>
               <WorkflowTreeDetailRow name="Author(s)">
@@ -422,8 +433,21 @@ function WorkflowTreeDetail({
           </Table>
         </CardBody>
       </Card>
+
+      <Card className="rk-tree-details mb-3">
+        <CardHeader className="bg-white">
+          <h3 className="my-2">Visualization</h3>
+        </CardHeader>
+        <CardBody>
+          <WorkflowDetailVisualizer />
+        </CardBody>
+      </Card>
     </>
   );
+}
+
+function WorkflowDetailVisualizer() {
+  return (<p className="mb-0">Not implemented yet - Work in progress...</p>);
 }
 
 interface WorkflowDetailPlaceholderProps {

@@ -35,7 +35,7 @@ function stringifyCreators(creators: Array<Record<string, any>>) {
 }
 
 /**
- * Enrich workflows list by adding or modifying required by the UI
+ * Enrich workflows list by adding or modifying properties required by the UI
  * @param workflowsList - list of workflows ar returned by the API
  * @returns list containing enhanced workflows objects
  */
@@ -63,6 +63,22 @@ function adjustWorkflowsList(workflowsList: Array<Record<string, any>>, fullPath
       workflowType: workflow.type,
     };
   });
+}
+
+/**
+ * Enrich workflow details by adding or modifying required by the UI
+ * @param workflowDetails - workflow details object as returned by the API
+ * @returns object containing enhanced workflow details
+ */
+function adjustWorkflowDetails(workflowDetails: Record<string, any>, fullPath: string) {
+  return {
+    ...workflowDetails,
+    latestUrl: workflowDetails.latest === workflowDetails.id ?
+      null :
+      Url.get(Url.pages.project.workflows.detail, {
+        namespace: "", path: fullPath, target: "/" + workflowDetails.latest.replace(PLANS_PREFIX, "")
+      })
+  };
 }
 
 class WorkflowsCoordinator {
@@ -125,7 +141,7 @@ class WorkflowsCoordinator {
   }
 
   async fetchWorkflowDetails(
-    workflowId: string, repositoryUrl: string, reference: string, versionUrl: string, force = false
+    workflowId: string, repositoryUrl: string, reference: string, versionUrl: string, fullPath: string, force = false
   ) {
     // reset on target change
     const target = repositoryUrl + reference + workflowId;
@@ -167,7 +183,7 @@ class WorkflowsCoordinator {
     if (workflowDetails?.error)
       newWorkflowState.error = workflowDetails.error;
     else if (workflowDetails?.result)
-      newWorkflowState.details = { $set: workflowDetails.result };
+      newWorkflowState.details = { $set: adjustWorkflowDetails(workflowDetails.result, fullPath) };
     else
       newWorkflowState.details = { $set: {} };
     this.workflowModel.setObject(newWorkflowState);
