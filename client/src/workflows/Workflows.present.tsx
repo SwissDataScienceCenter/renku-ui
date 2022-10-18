@@ -145,8 +145,8 @@ function orderWorkflows(
   // ? Pre-sort by a unique prop to guarantee consistency
   const preSorted = filtered.sort((a, b) => (a["name"] > b["name"]) ? 1 : ((b["name"] > a["name"]) ? -1 : 0));
   // ? Then second-sort by last execution
-  const secondSorted = preSorted.sort((a, b) => (a["lastExecuted"] > b["lastExecuted"]) ? 1 :
-    ((b["lastExecuted"] > a["lastExecuted"]) ? -1 : 0));
+  const secondSorted = preSorted.sort((a, b) => (a["lastExecuted"] < b["lastExecuted"]) ? 1 :
+    ((b["lastExecuted"] < a["lastExecuted"]) ? -1 : 0));
 
   // ? Final sorting
   const sorted = secondSorted.sort((a, b) => (a[orderBy] > b[orderBy]) ? 1 : ((b[orderBy] > a[orderBy]) ? -1 : 0));
