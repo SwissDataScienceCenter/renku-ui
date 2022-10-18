@@ -234,6 +234,7 @@ class App extends Component {
 
     return (
       <Fragment>
+
         <Route render={p =>
           (this.props.user.logged) || (p.location.pathname !== Url.get(Url.pages.landing)) ?
             <RenkuNavBar {...p} {...this.props} notifications={this.notifications} /> :
@@ -248,5 +249,7 @@ class App extends Component {
 
   }
 }
+
+// FAKE
 
 export default App;
