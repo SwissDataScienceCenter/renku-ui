@@ -200,7 +200,8 @@ function WorkflowsTreeBrowser({
 
   // show status: loading or error or full content
   const loading = waiting || (!workflows.fetched);
-  const shrunk = selectedAvailable && !!selected;
+  const shrunk = selectedAvailable && !!selected || workflow.error;
+
   let content: React.ReactNode;
   if (loading) {
     content = (<Loader />);
@@ -351,10 +352,10 @@ function WorkflowTreeDetail({
         {Time.toIsoTimezoneString(details.last_executed)}
       </WorkflowTreeDetailRow>
       <WorkflowTreeDetailRow name="Full command">
-        <pre className="mb-0">
+        <code className="mb-0">
           {details.full_command}
           <Clipboard clipboardText={details.full_command} />
-        </pre>
+        </code>
       </WorkflowTreeDetailRow>
     </>);
   }
