@@ -232,7 +232,7 @@ function WorkflowsTreeBrowser({
           <Col xs={12} md={5} lg={4}>
             {treeBrowser}
           </Col>
-          <Col fluid="true">
+          <Col xs={12} md={7} lg={8}>
             <WorkflowDetail
               fullPath={fullPath}
               selectedAvailable={selectedAvailable}
@@ -496,7 +496,7 @@ function WorkflowDetailPlaceholder({
         <div className="float-end m-2">{backElement}</div>
         <h3 className="my-2">Loading details</h3>
       </CardHeader>
-      <CardBody>{content}</CardBody>
+      <CardBody className="text-break">{content}</CardBody>
     </Card>
   );
 }
