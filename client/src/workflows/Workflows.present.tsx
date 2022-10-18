@@ -440,16 +440,68 @@ function WorkflowTreeDetail({
           <h3 className="my-2">Visualization</h3>
         </CardHeader>
         <CardBody>
-          <WorkflowDetailVisualizer />
+          <WorkflowDetailVisualizer details={details} />
         </CardBody>
       </Card>
     </>
   );
 }
 
-function WorkflowDetailVisualizer() {
-  return (<p className="mb-0">Not implemented yet - Work in progress...</p>);
+
+interface WorkflowVisualizerSimpleBoxProps {
+  children: React.ReactNode;
+  title: string;
 }
+
+function WorkflowVisualizerSimpleBox({ children, title }: WorkflowVisualizerSimpleBoxProps) {
+  return (
+    <Col xs={12} lg={4}>
+      <Card className="border border-rk-light mb-3">
+        <CardHeader className="bg-white p-2">
+          <h4 className="m-0">{title}</h4>
+        </CardHeader>
+        <CardBody className="p-2">
+          {children}
+        </CardBody>
+      </Card>
+    </Col>
+  );
+}
+
+
+interface WorkflowDetailVisualizerProps {
+  details: Record<string, any>;
+}
+
+function WorkflowDetailVisualizer({ details }: WorkflowDetailVisualizerProps) {
+  const inputs = details.inputs?.length ?
+    details.inputs.map((i: any) => (<p key={i.plan_id + i.name}>{i.name}</p>)) :
+    (<span className="fst-italic text-rk-text-light">None</span>);
+  const outputs = details.outputs?.length ?
+    details.outputs.map((i: any) => (<p key={i.plan_id + i.name}>{i.name}</p>)) :
+    (<span className="fst-italic text-rk-text-light">None</span>);
+  return (<>
+    <Table className="table-borderless rk-tree-table mb-3" size="sm">
+      <tbody>
+        <WorkflowTreeDetailRow name="Base command">
+          <span className="fst-italic text-rk-text-light">Not implemented yet...</span>
+        </WorkflowTreeDetailRow>
+      </tbody>
+    </Table>
+    <Row>
+      <WorkflowVisualizerSimpleBox title="Inputs">
+        {inputs}
+      </WorkflowVisualizerSimpleBox>
+      <WorkflowVisualizerSimpleBox title="Outputs">
+        {outputs}
+      </WorkflowVisualizerSimpleBox>
+      <WorkflowVisualizerSimpleBox title="Parameters">
+        <p>not implemented yet</p>
+      </WorkflowVisualizerSimpleBox>
+    </Row>
+  </>);
+}
+
 
 interface WorkflowDetailPlaceholderProps {
   backElement: React.ReactNode;
