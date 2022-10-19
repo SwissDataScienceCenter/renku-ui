@@ -9,6 +9,7 @@ import {
   AccordionHeader as WrappedAccordionHeader,
   AccordionBody as WrappedAccordionBody,
   Alert as WrappedAlert,
+  Badge as WrappedBadge,
   Button as WrappedButton,
   ButtonDropdown as WrappedButtonDropdown,
   ButtonGroup as WrappedButtonGroup,
@@ -77,6 +78,10 @@ function Alert(props) {
 
 function ArrowClockwise(props) {
   return <WrappedArrowClockwise {...props} />;
+}
+
+function Badge(props) {
+  return <WrappedBadge {...props} />;
 }
 
 function Button(props) {
@@ -297,7 +302,7 @@ function XCircleFill(props) {
 
 export { ArrowClockwise };
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
-export { Alert, Button, ButtonDropdown, ButtonGroup, CheckCircleFill, XCircleFill };
+export { Alert, Badge, Button, ButtonDropdown, ButtonGroup, CheckCircleFill, XCircleFill };
 export { Card, CardBody, CardFooter, CardHeader, CardText, Col, DropdownItem, DropdownMenu, DropdownToggle };
 export { FormFeedback, FormText, Fade, Form, FormGroup, Input, InputGroup, Label };
 export { PopoverHeader, PopoverBody };
