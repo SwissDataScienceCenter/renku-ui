@@ -29,12 +29,13 @@ export interface EntityExecutionsProps {
   executions: number | null;
   itemType: EntityType;
   lastExecuted: Date | null;
-  showLastExecution: boolean;
+  showLastExecution?: boolean;
+  showOnlyLastExecution?: boolean;
   workflowId: string;
 }
 
 function EntityExecutions({
-  display, executions, itemType, lastExecuted, showLastExecution, workflowId
+  display, executions, itemType, lastExecuted, showLastExecution = true, showOnlyLastExecution = false, workflowId
 }: EntityExecutionsProps) {
   if (itemType !== "workflow") return null;
   let executionLast = lastExecuted != null ?
@@ -65,15 +66,19 @@ function EntityExecutions({
     executionContent = (<p>No executions</p>);
   }
   else if (executions === 1) {
-    const lastExec = showLastExecution ?
-      (<p id={lastExecutionId} className={classSmall}>{executionLast}</p>) :
+    const lastExec = showLastExecution || showOnlyLastExecution ?
+      (<p id={lastExecutionId} className={classSmall}>{showOnlyLastExecution ? "last " : ""}{executionLast}</p>) :
       null;
+    if (showOnlyLastExecution)
+      return lastExec;
     executionContent = (<><p>{executions} execution</p>{lastExec}</>);
   }
   else {
-    const lastExec = showLastExecution ?
+    const lastExec = showLastExecution || showOnlyLastExecution ?
       (<p id={lastExecutionId} className={classSmall}>last {executionLast}</p>) :
       null;
+    if (showOnlyLastExecution)
+      return lastExec;
     executionContent = (<><p>{executions} executions</p>{lastExec}</>);
   }
 

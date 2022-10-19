@@ -33,7 +33,7 @@ export interface EntityCreator {
 }
 
 export interface EntityCreatorsProps {
-  display: "list" | "grid" | "tree";
+  display: "grid" | "list" | "plain" | "tree";
   creators: EntityCreator[];
   itemType: EntityType;
 }
@@ -50,22 +50,30 @@ function EntityCreators({ display, creators, itemType }: EntityCreatorsProps) {
       creatorsText += ", et al.";
   }
 
+  if (display === "plain")
+    return (<span>{creatorsText}</span>);
+
   if (display === "list") {
-    return <div className={`card-text creators text-truncate ${stylesByItem.colorText}`}>
-      {creatorsText}
-    </div>;
+    return (
+      <div className={`card-text creators text-truncate ${stylesByItem.colorText}`}>
+        {creatorsText}
+      </div>
+    );
   }
 
   if (display === "tree") {
-    if (!creatorsText) return null;
+    if (!creatorsText)
+      return null;
     return (<p className="text-rk-text small">{creatorsText}</p>);
   }
 
-  return <div className={`creators text-truncate text-rk-text ${ stylesByItem.colorText }`}>
-    <small style={{ display: "block" }} className="font-weight-light">
-      {creatorsText}
-    </small>
-  </div>;
+  return (
+    <div className={`creators text-truncate text-rk-text ${ stylesByItem.colorText }`}>
+      <small style={{ display: "block" }} className="font-weight-light">
+        {creatorsText}
+      </small>
+    </div>
+  );
 }
 
 export default EntityCreators;

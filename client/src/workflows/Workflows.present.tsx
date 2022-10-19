@@ -28,16 +28,17 @@ import {
   DropdownToggle, Input, Label, PopoverBody, Row, UncontrolledPopover, Table
 } from "../utils/ts-wrappers";
 
-import EntityHeader from "../utils/components/entityHeader/EntityHeader";
+import EntityCreators from "../utils/components/entities/Creators";
 import Time from "../utils/helpers/Time";
+import { Clipboard } from "../utils/components/Clipboard";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { Docs } from "../utils/constants/Docs";
 import { EntityType } from "../utils/components/entities/Entities";
-import { ExternalLink } from "../utils/components/ExternalLinks";
+import { ExternalDocsLink, ExternalLink } from "../utils/components/ExternalLinks";
 import { Loader } from "../utils/components/Loader";
 import { Url } from "../utils/helpers/url";
 import { TreeBrowser, TreeDetails } from "../utils/components/Tree";
-import { WarnAlert } from "../utils/components/Alert";
+import { InfoAlert, WarnAlert } from "../utils/components/Alert";
 
 
 interface WorkflowsListFiltersProps {
@@ -140,10 +141,32 @@ function orderWorkflows(
   workflows: Array<Record<string, any>>, orderBy: string, ascending: boolean, showInactive: boolean
 ) {
   const filtered = !showInactive ? workflows.filter(w => w.active) : workflows;
-  // ? we pre-sort by name to guarantee consistency since some properties could be identical
+
+  // ? Pre-sort by a unique prop to guarantee consistency
   const preSorted = filtered.sort((a, b) => (a["name"] > b["name"]) ? 1 : ((b["name"] > a["name"]) ? -1 : 0));
-  const sorted = preSorted.sort((a, b) => (a[orderBy] > b[orderBy]) ? 1 : ((b[orderBy] > a[orderBy]) ? -1 : 0));
+  // ? Then second-sort by last execution
+  const secondSorted = preSorted.sort((a, b) => (a["lastExecuted"] < b["lastExecuted"]) ? 1 :
+    ((b["lastExecuted"] < a["lastExecuted"]) ? -1 : 0));
+
+  // ? Final sorting
+  const sorted = secondSorted.sort((a, b) => (a[orderBy] > b[orderBy]) ? 1 : ((b[orderBy] > a[orderBy]) ? -1 : 0));
   return ascending ? sorted : sorted.reverse();
+}
+
+
+function NoWorkflows() {
+  return (
+    <div>
+      <p>There are no workflows in this project.</p>
+      <InfoAlert timeout={0}>
+        <p>Renku workflows is a key feature of Renku to make code and processing pipelines reusable.</p>
+        <p>
+          <ExternalDocsLink url={Docs.rtdTopicGuide("workflows.html")} title="Check out our documentation" />{" "}
+          on workflows if you wish to learn more about this feature.
+        </p>
+      </InfoAlert>
+    </div>
+  );
 }
 
 
@@ -173,10 +196,12 @@ function WorkflowsTreeBrowser({
   // return immediately when workflows are not supported in the current project
   if (unsupported)
     return (<UnsupportedWorkflows fullPath={fullPath} />);
+  const emptyElement = (<NoWorkflows />);
 
   // show status: loading or error or full content
   const loading = waiting || (!workflows.fetched);
-  const shrunk = selectedAvailable && !!selected;
+  const shrunk = selectedAvailable && !!selected || workflow.error;
+
   let content: React.ReactNode;
   if (loading) {
     content = (<Loader />);
@@ -187,7 +212,9 @@ function WorkflowsTreeBrowser({
   else {
     const treeBrowser = (
       <TreeBrowser
+        emptyElement={emptyElement}
         expanded={expanded}
+        highlightedProp={orderBy in ["name", "workflowType"] ? "lastExecution" : orderBy}
         items={orderWorkflows(workflows.list, orderBy, ascending, showInactive)}
         selected={selected}
         shrunk={shrunk}
@@ -205,7 +232,7 @@ function WorkflowsTreeBrowser({
           <Col xs={12} md={5} lg={4}>
             {treeBrowser}
           </Col>
-          <Col fluid="true">
+          <Col xs={12} md={7} lg={8}>
             <WorkflowDetail
               fullPath={fullPath}
               selectedAvailable={selectedAvailable}
@@ -278,6 +305,23 @@ function WorkflowDetail({ fullPath, selectedAvailable, waiting, workflow, workfl
 }
 
 
+interface WorkflowTreeDetailRowProps {
+  children: React.ReactNode;
+  name: string | React.ReactNode;
+}
+
+function WorkflowTreeDetailRow({
+  children, name
+}: WorkflowTreeDetailRowProps) {
+  return (
+    <tr>
+      <td className="fw-bold short">{name}</td>
+      <td>{children}</td>
+    </tr>
+  );
+}
+
+
 interface WorkflowTreeDetailsProps {
   backElement: React.ReactNode;
   waiting: boolean;
@@ -288,34 +332,88 @@ interface WorkflowTreeDetailsProps {
 function WorkflowTreeDetail({
   backElement, waiting, workflow, workflowId
 }: WorkflowTreeDetailsProps) {
-  const executions = workflow.details?.executions ?
-    (<Col xs={12} lg={6}>
-      <span className="text-dark">
-        <span className="fw-bold">Number of Executions</span>
-        {workflow.details.executions}
-      </span>
-    </Col>) :
-    null;
+  const details = workflow.details ? workflow.details : {};
+  const isComposite = details.type === "Plan" ? false : true;
+
+  let typeSpecificRows: React.ReactNode;
+  if (isComposite) {
+    typeSpecificRows = (<>
+      <WorkflowTreeDetailRow name="Number of children">
+        {details.plans?.length}
+      </WorkflowTreeDetailRow>
+    </>);
+  }
+  else {
+    typeSpecificRows = (<>
+      <WorkflowTreeDetailRow name="Number of executions">
+        {details.number_of_executions}
+      </WorkflowTreeDetailRow>
+      <WorkflowTreeDetailRow name="Last execution">
+        {Time.toIsoTimezoneString(details.last_executed)}
+      </WorkflowTreeDetailRow>
+      <WorkflowTreeDetailRow name="Full command">
+        <code className="mb-0">
+          {details.full_command}
+          <Clipboard clipboardText={details.full_command} />
+        </code>
+      </WorkflowTreeDetailRow>
+    </>);
+  }
+
+  let newerAvailable: React.ReactNode = null;
+  if (details.latestUrl) {
+    newerAvailable = (
+      <InfoAlert timeout={0}>
+        <p>A new version of this workflow is available.</p>
+        <p><Link className="btn btn-info btn-sm" to={details.latestUrl}>Click here</Link> to visualize it.</p>
+      </InfoAlert>
+    );
+  }
+
   return (
     <>
       <Card className="rk-tree-details mb-3">
-        <div className="rk-tree-details-back">
-          <div className="rk-tree-details-back-container">{backElement}</div>
-        </div>
-        <EntityHeader
-          creators={workflow.details.creators}
-          description={workflow.details.description}
-          devAccess={false}
-          itemType={"workflow" as EntityType}
-          labelCaption="created"
-          launchNotebookUrl=""
-          sessionAutostartUrl=""
-          showFullHeader={false}
-          tagList={workflow.details.keywords}
-          timeCaption={workflow.details.created}
-          title={workflow.details.name}
-          url=""
-        />
+        <CardHeader className="bg-white">
+          <div className="float-end m-2">{backElement}</div>
+          <h3 className="my-2">{details.name}</h3>
+        </CardHeader>
+
+        <CardBody>
+          {newerAvailable}
+          <Table className="table-borderless rk-tree-table mb-0" size="sm">
+            <tbody>
+              <WorkflowTreeDetailRow name="Author(s)">
+                {
+                  details.creators?.length ?
+                    (
+                      <EntityCreators display="plain" creators={details.creators}
+                        itemType={"workflow" as EntityType}
+                      />
+                    ) :
+                    (<span className="fst-italic text-rk-text-light">Not available</span>)
+                }
+              </WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Description">
+                {
+                  details.description?.length ?
+                    details.description :
+                    (<span className="fst-italic text-rk-text-light">None</span>)
+                }
+              </WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Keywords">
+                {
+                  details.keywords?.length ?
+                    // (<EntityTags multiline={true} tagList={details.keywords} />) :
+                    (<>{ details.keywords.join(", ") }</>) :
+                    (<span className="fst-italic text-rk-text-light">None</span>)
+                }
+              </WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Creation date">
+                { Time.toIsoTimezoneString(details.created)}
+              </WorkflowTreeDetailRow>
+            </tbody>
+          </Table>
+        </CardBody>
       </Card>
 
       <Card className="rk-tree-details mb-3">
@@ -323,73 +421,87 @@ function WorkflowTreeDetail({
           <h3 className="my-2">Details</h3>
         </CardHeader>
         <CardBody>
-          <Row>
-            {executions}
-          </Row>
-          <Table className="mb-4 table-borderless" size="sm">
-            <tbody className="text-rk-text">
-              <tr>
-                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-                  Number of Executions
-                </td>
-                <td>
-                  {workflow.details.number_of_executions}
-                </td>
-              </tr>
-              <tr>
-                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-                  Last Execution
-                </td>
-                <td>
-                  {
-                    workflow.details?.last_executed ?
-                      Time.toIsoTimezoneString(workflow.details.last_executed) :
-                      null
-                  }
-                </td>
-              </tr>
-              <tr>
-                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-                  Type
-                </td>
-                <td>
-                  {workflow.details.type}
-                </td>
-              </tr>
-              <tr>
-                <td className="text-dark fw-bold" style={{ "width": "200px" }}>
-                  Full Command
-                </td>
-                <td>
-                  <code>
-                    {workflow.details.full_command}
-                  </code>
-                </td>
-              </tr>
-              {workflow.details.id != workflow.details.latest
-                ?
-                <tr>
-                  <td className="text-dark fw-bold" style={{ "width": "200px" }}></td>
-                  <td>
-                    You are viewing an outdated version of this Workflow Plan.&nbsp;
-                    {/* <Link to={Url.get(Url.pages.project.workflows.single, {
-                      // TODO: Use PLANS_PREFIX here
-                      namespace: "", path: fullPath, target: "/" + workflow.details.latest.replace("/plans/", "")
-                    })}
-                      className="col text-decoration-none">
-                      Go to newest version
-                    </Link> */}
-                  </td>
-                </tr>
-                : null
-              }
+          <Table className="table-borderless rk-tree-table mb-0" size="sm">
+            <tbody>
+              <WorkflowTreeDetailRow name="Workflow type">
+                {isComposite ? "Workflow (Composite)" : "Single step" }
+              </WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Estimated runtime">
+                {Time.getDuration(details.duration)}
+              </WorkflowTreeDetailRow>
+              {typeSpecificRows}
             </tbody>
           </Table>
+        </CardBody>
+      </Card>
+
+      <Card className="rk-tree-details mb-3">
+        <CardHeader className="bg-white">
+          <h3 className="my-2">Visualization</h3>
+        </CardHeader>
+        <CardBody>
+          <WorkflowDetailVisualizer details={details} />
         </CardBody>
       </Card>
     </>
   );
 }
+
+
+interface WorkflowVisualizerSimpleBoxProps {
+  children: React.ReactNode;
+  title: string;
+}
+
+function WorkflowVisualizerSimpleBox({ children, title }: WorkflowVisualizerSimpleBoxProps) {
+  return (
+    <Col xs={12} lg={4}>
+      <Card className="border border-rk-light mb-3">
+        <CardHeader className="bg-white p-2">
+          <h4 className="m-0">{title}</h4>
+        </CardHeader>
+        <CardBody className="p-2">
+          {children}
+        </CardBody>
+      </Card>
+    </Col>
+  );
+}
+
+
+interface WorkflowDetailVisualizerProps {
+  details: Record<string, any>;
+}
+
+function WorkflowDetailVisualizer({ details }: WorkflowDetailVisualizerProps) {
+  const inputs = details.inputs?.length ?
+    details.inputs.map((i: any) => (<p key={i.plan_id + i.name}>{i.name}</p>)) :
+    (<span className="fst-italic text-rk-text-light">None</span>);
+  const outputs = details.outputs?.length ?
+    details.outputs.map((i: any) => (<p key={i.plan_id + i.name}>{i.name}</p>)) :
+    (<span className="fst-italic text-rk-text-light">None</span>);
+  return (<>
+    <Table className="table-borderless rk-tree-table mb-3" size="sm">
+      <tbody>
+        <WorkflowTreeDetailRow name="Base command">
+          <span className="fst-italic text-rk-text-light">Not implemented yet...</span>
+        </WorkflowTreeDetailRow>
+      </tbody>
+    </Table>
+    <Row>
+      <WorkflowVisualizerSimpleBox title="Inputs">
+        {inputs}
+      </WorkflowVisualizerSimpleBox>
+      <WorkflowVisualizerSimpleBox title="Outputs">
+        {outputs}
+      </WorkflowVisualizerSimpleBox>
+      <WorkflowVisualizerSimpleBox title="Parameters">
+        <p>not implemented yet</p>
+      </WorkflowVisualizerSimpleBox>
+    </Row>
+  </>);
+}
+
 
 interface WorkflowDetailPlaceholderProps {
   backElement: React.ReactNode;
@@ -404,16 +516,14 @@ function WorkflowDetailPlaceholder({
   let content: React.ReactNode;
   if (waiting) {
     content = (<>
-      <div className="float-end m-1">{backElement}</div>
       <div className="d-flex">
-        <p className="m-auto mt-1">Loading workflow details...</p>
+        <p className="m-auto mt-1">Getting workflow details...</p>
       </div>
       <Loader />
     </>);
   }
   else if (error) {
     content = (<>
-      <div className="float-end m-1">{backElement}</div>
       <div className="d-flex">
         <p className="m-auto mb-3 mt-1">A problem occurred while getting the workflow details.</p>
       </div>
@@ -422,7 +532,6 @@ function WorkflowDetailPlaceholder({
   }
   else if (unknown) {
     content = (<>
-      <div className="float-end m-1">{backElement}</div>
       <div className="d-flex">
         <p className="m-auto mt-1">
           <FontAwesomeIcon icon={faExclamationTriangle} /> We cannot find the
@@ -433,7 +542,15 @@ function WorkflowDetailPlaceholder({
     </>);
   }
 
-  return (<Card><CardBody>{content}</CardBody></Card>);
+  return (
+    <Card className="rk-tree-details mb-3">
+      <CardHeader className="bg-white">
+        <div className="float-end m-2">{backElement}</div>
+        <h3 className="my-2">Loading details</h3>
+      </CardHeader>
+      <CardBody className="text-break">{content}</CardBody>
+    </Card>
+  );
 }
 
 
