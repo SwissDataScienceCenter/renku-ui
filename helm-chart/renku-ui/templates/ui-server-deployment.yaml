@@ -26,7 +26,7 @@ spec:
     {{- end }}
       securityContext:
         {{- toYaml .Values.server.podSecurityContext | nindent 8 }}
-      automountServiceAccountToken: false
+      automountServiceAccountToken: {{ .Values.global.debug }}
       initContainers:
         {{- include "certificates.initContainer" . | nindent 8 }}
       containers:
