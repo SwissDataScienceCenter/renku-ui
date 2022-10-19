@@ -29,7 +29,7 @@ spec:
             - key: {{ .Values.client.privacy.page.configMapKey | default (printf "privacy_statement") | quote }}
               path: statement.md
       {{- end }}
-      automountServiceAccountToken: false
+      automountServiceAccountToken: {{ .Values.global.debug }}
       containers:
         - name: {{ .Chart.Name }}
           image: {{ .imageName }}

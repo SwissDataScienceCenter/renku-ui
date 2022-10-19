@@ -38,6 +38,8 @@ global:
       renku-redis-host: "true"
     existingSecret: redis-secret
     existingSecretPasswordKey: redis-password
+  ## Turn on debug settings
+  debug: true
 
 gateway:
   url:
