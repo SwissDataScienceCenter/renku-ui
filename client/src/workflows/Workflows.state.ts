@@ -59,6 +59,7 @@ function adjustWorkflowsList(workflowsList: Array<Record<string, any>>, fullPath
       urlSingle: Url.get(Url.pages.project.workflows.single, {
         namespace: "", path: fullPath, target: "/" + workflow.id.replace(PLANS_PREFIX, "")
       }),
+      uniqueId: workflow.id.replace(PLANS_PREFIX, ""),
       workflowId: workflow.id.replace(PLANS_PREFIX, ""),
       workflowType: workflow.type,
     };

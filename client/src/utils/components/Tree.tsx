@@ -28,6 +28,7 @@ import EntityDuration from "./entities/Duration";
 import { Col } from "../ts-wrappers";
 import { EntityChildren, EntityChildrenDot } from "./entities/Children";
 import { EntityType, WorkflowType } from "./entities/Entities";
+import { simpleHash } from "../helpers/HelperFunctions";
 
 
 interface TreeBrowserProps {
@@ -68,15 +69,15 @@ interface TreeElementProps extends TreeBrowserProps {
   timeCaption: string;
   title: string;
   url: string;
-  urlSingle: string;
+  uniqueId: string;
   workflowId: string;
   workflowType: WorkflowType;
 }
 
 function TreeElement({
   active, children, creators, duration, expanded, executions, highlightedProp,
-  indentation, itemType, items, lastExecuted, selected, shrunk, timeCaption, title,
-  toggleExpanded, url, urlSingle, workflowId, workflowType
+  indentation, itemType, items, lastExecuted, selected, shrunk, title,
+  toggleExpanded, uniqueId, url, workflowId, workflowType
 }: TreeElementProps) {
   const newClasses = workflowId === selected ? "selected" : "";
   const isComposite = workflowType === "CompositePlan" ? true : false;
@@ -101,8 +102,10 @@ function TreeElement({
   let childrenNodes: React.ReactNode[] = [];
   if (childrenItems.length && expanded.includes(workflowId)) {
     childrenNodes = childrenItems.map((item: any) => {
+      const childUniqueId = simpleHash(uniqueId + item.uniqueId);
       let newProps: Record<string, any> = {
-        expanded, highlightedProp, items, indentation: indentation + 1, selected, shrunk, toggleExpanded
+        expanded, highlightedProp, items, indentation: indentation + 1, selected, shrunk,
+        toggleExpanded, uniqueId: childUniqueId
       };
       return (<TreeElement key={workflowId + item.workflowId} {...item} {...newProps} />);
     });
@@ -124,18 +127,18 @@ function TreeElement({
       details = (<EntityCreators display="tree" creators={creators} itemType={itemType} />);
     }
     else if (highlightedProp === "duration") {
-      details = (<EntityDuration duration={duration} workflowId={workflowId} />);
+      details = (<EntityDuration duration={duration} workflowId={uniqueId} />);
     }
     else if (highlightedProp === "executions") {
       details = (
         <EntityExecutions display="tree" executions={executions} itemType={itemType}
-          lastExecuted={lastExecuted} showLastExecution={false} workflowId={workflowId} />
+          lastExecuted={lastExecuted} showLastExecution={false} workflowId={uniqueId} />
       );
     }
     else {
       details = (
         <EntityExecutions display="tree" executions={executions} itemType={itemType}
-          lastExecuted={lastExecuted} showOnlyLastExecution={true} workflowId={workflowId} />
+          lastExecuted={lastExecuted} showOnlyLastExecution={true} workflowId={uniqueId} />
       );
     }
 
@@ -147,7 +150,7 @@ function TreeElement({
             <Col xs={12} className="title center-vertically">
               <h5>
                 {title} <EntityChildrenDot
-                  childrenElements={children} itemType={itemType} workflowId={workflowId} />
+                  childrenElements={children} itemType={itemType} workflowId={uniqueId} />
               </h5>
             </Col>
             <span className="text-rk-text-light">{details}</span>
@@ -166,17 +169,17 @@ function TreeElement({
           <Col xs={12} md={5} className="title center-vertically">
             <h5>
               {title} <EntityChildrenDot
-                childrenElements={children} itemType={itemType} workflowId={workflowId} />
+                childrenElements={children} itemType={itemType} workflowId={uniqueId} />
             </h5>
             <EntityCreators display="tree" creators={creators} itemType={itemType} />
           </Col>
           <Col xs={12} sm={7} md={4} className="title center-vertically">
             <EntityExecutions display="tree" executions={executions} itemType={itemType}
-              lastExecuted={lastExecuted} showLastExecution={true} workflowId={workflowId} />
+              lastExecuted={lastExecuted} showLastExecution={true} workflowId={uniqueId} />
             <EntityChildren childrenElements={children} itemType={itemType} />
           </Col>
           <Col xs={12} sm={5} md={3} className="title center-vertically">
-            <EntityDuration duration={duration} workflowId={workflowId} />
+            <EntityDuration duration={duration} workflowId={uniqueId} />
           </Col>
         </Link>
       </div>
