@@ -37,7 +37,8 @@ interface WorkflowsListProps {
 }
 
 const WorkflowsSorting = {
-  created: "Creation date",
+  authors: "Authors",
+  duration: "Estimated duration",
   executions: "Executions",
   lastExecuted: "Last execution",
   name: "Name",
@@ -65,7 +66,7 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
 
   // fetch workflow details
   useEffect(() => {
-    workflowsCoordinator.fetchWorkflowDetails(selected, repositoryUrl, reference, versionUrl);
+    workflowsCoordinator.fetchWorkflowDetails(selected, repositoryUrl, reference, versionUrl, fullPath);
   }, [selected, repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ? consider removing this or including the workflow detail target too

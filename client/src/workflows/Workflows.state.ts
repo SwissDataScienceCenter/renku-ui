@@ -29,8 +29,13 @@ interface workflowApiResponse {
 }
 
 
+function stringifyCreators(creators: Array<Record<string, any>>) {
+  const creatorNames = creators.map(c => c.name ? c.name : null);
+  return creatorNames.join(" ");
+}
+
 /**
- * Enrich workflows list by adding or modifying required by the UI
+ * Enrich workflows list by adding or modifying properties required by the UI
  * @param workflowsList - list of workflows ar returned by the API
  * @returns list containing enhanced workflows objects
  */
@@ -39,6 +44,7 @@ function adjustWorkflowsList(workflowsList: Array<Record<string, any>>, fullPath
     return {
       ...workflow,
       active: workflow.touches_existing_files,
+      authors: stringifyCreators(workflow.creators),
       created: workflow.created ? new Date(workflow.created) : workflow.created,
       executions: workflow.number_of_executions,
       indentation: 0,
@@ -53,10 +59,27 @@ function adjustWorkflowsList(workflowsList: Array<Record<string, any>>, fullPath
       urlSingle: Url.get(Url.pages.project.workflows.single, {
         namespace: "", path: fullPath, target: "/" + workflow.id.replace(PLANS_PREFIX, "")
       }),
+      uniqueId: workflow.id.replace(PLANS_PREFIX, ""),
       workflowId: workflow.id.replace(PLANS_PREFIX, ""),
       workflowType: workflow.type,
     };
   });
+}
+
+/**
+ * Enrich workflow details by adding or modifying required by the UI
+ * @param workflowDetails - workflow details object as returned by the API
+ * @returns object containing enhanced workflow details
+ */
+function adjustWorkflowDetails(workflowDetails: Record<string, any>, fullPath: string) {
+  return {
+    ...workflowDetails,
+    latestUrl: workflowDetails.latest === workflowDetails.id ?
+      null :
+      Url.get(Url.pages.project.workflows.detail, {
+        namespace: "", path: fullPath, target: "/" + workflowDetails.latest.replace(PLANS_PREFIX, "")
+      })
+  };
 }
 
 class WorkflowsCoordinator {
@@ -119,7 +142,7 @@ class WorkflowsCoordinator {
   }
 
   async fetchWorkflowDetails(
-    workflowId: string, repositoryUrl: string, reference: string, versionUrl: string, force = false
+    workflowId: string, repositoryUrl: string, reference: string, versionUrl: string, fullPath: string, force = false
   ) {
     // reset on target change
     const target = repositoryUrl + reference + workflowId;
@@ -161,7 +184,7 @@ class WorkflowsCoordinator {
     if (workflowDetails?.error)
       newWorkflowState.error = workflowDetails.error;
     else if (workflowDetails?.result)
-      newWorkflowState.details = { $set: workflowDetails.result };
+      newWorkflowState.details = { $set: adjustWorkflowDetails(workflowDetails.result, fullPath) };
     else
       newWorkflowState.details = { $set: {} };
     this.workflowModel.setObject(newWorkflowState);
