@@ -20,7 +20,11 @@
           "memory":"1G",
           "storage":"1G"
         },
-        "usage": {}
+        "usage": {
+          "cpu": 0.007691289,
+          "memory": "0.09G",
+          "storage": "0.00G"
+        }
       },
       "started":"2022-02-28T14:15:59+00:00",
       "state":{
