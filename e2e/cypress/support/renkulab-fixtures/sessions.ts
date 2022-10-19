@@ -26,10 +26,25 @@ function Sessions<T extends FixturesConstructor>(Parent: T) {
   return class SessionsFixtures extends Parent {
 
     getSessions(name = "getSessions", namespace = "*", resultFile = "sessions/sessions.json") {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
+      const fixtureA = this.useMockedData ? { fixture: "sessions/sessionsV2.json" } : undefined;
+      const fixtureB = this.useMockedData ? { fixture: resultFile } : undefined;
+
+      // intercept: different times to get different results
       cy.intercept(
         "/ui-server/api/notebooks/servers?namespace=" + namespace,
-        fixture
+        fixtureA
+      ).as(name);
+      cy.intercept(
+        "/ui-server/api/notebooks/servers?namespace=" + namespace,
+        { times: 4 }, fixtureB
+      ).as(name);
+      cy.intercept(
+        "/ui-server/api/notebooks/servers?namespace=" + namespace,
+        { times: 4 }, fixtureA
+      ).as(name);
+      cy.intercept(
+        "/ui-server/api/notebooks/servers?namespace=" + namespace,
+        { times: 4 }, fixtureB
       ).as(name);
       return this;
     }

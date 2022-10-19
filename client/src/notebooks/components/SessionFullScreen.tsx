@@ -105,7 +105,7 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
     else {
       setSessionStatus({ ...notebook.data.status, isTheSessionReady: false } as SessionStatusData);
     }
-  }, [notebook.data.status]);
+  }, [notebook.data.status?.state]); // eslint-disable-line
 
   // redirect immediately if the session fail
   if (history && notebook.data?.status?.state === SessionStatus.failed)
