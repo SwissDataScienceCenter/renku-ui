@@ -159,7 +159,8 @@ class APIClient {
    *
    * @param {string} url - API url
    * @param {object} [parameters] - Optional parameters object to be provided to clientFetch.
-   * @param {number} [parameters.maxIterations] - Maximum iterations before throwing an error. Used to prevent
+   * @param {object} [parameters.options] - Fetch options, like method, headers... Default only include basic headers.
+   * @param {number} [options.maxIterations] - Maximum iterations before throwing an error. Used to prevent
    *   long/endless loops that would trigger the gateway rate limit. Set 0 for unlimited.
    * @example "for await" syntax that consumes the async iterator
    * for await (const partialData of clientIterableFetch("myApiUrl")) { console.log(partialData) }

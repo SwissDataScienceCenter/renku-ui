@@ -19,29 +19,50 @@
 // API methods that return Gitlab server instance-level information
 
 import { renkuFetch } from "./utils";
+import { ACCESS_LEVELS } from "./index";
 
 function addInstanceMethods(client) {
-  client.getNamespaces = async (per_page = 100) => {
-    const url = `${client.baseUrl}/namespaces`;
+  /**
+   * Fetch user namespaces and groups
+   *
+   * @param {number} per_page - result per page
+   * @param {ACCESS_LEVELS} min_access_level - to filter by access level, by default is developer access level (30)
+   */
+  client.getNamespaces = async (per_page = 100, min_access_level = ACCESS_LEVELS.MAINTAINER) => {
+    const urlNamespaces = `${client.baseUrl}/namespaces`;
+    const urlGroups = `${client.baseUrl}/groups`;
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
-    const queryParams = { per_page };
-    const options = { method: "GET", headers, queryParams };
-    const namespacesIterator = client.clientIterableFetch(url, { options });
+    const options = { method: "GET", headers, queryParams: { per_page } };
+    const namespacesIterator = client.clientIterableFetch(urlNamespaces, { options });
 
-    let namespaces = [], pagination = {}, error = false;
+    const groupOptions = options;
+    groupOptions.queryParams["min_access_level"] = min_access_level;
+    const groupsIterator = client.clientIterableFetch(urlGroups, { options: groupOptions });
+
+    let namespaces = [], paginationNamespace = {}, paginationGroups = {}, error = false;
     try {
       for await (const namespacesPage of namespacesIterator) {
-        namespaces = [...namespaces, ...namespacesPage.data];
-        pagination = { ...namespacesPage.pagination, done: false };
+        const onlyUserNamespaces = namespacesPage.data?.filter( namespace => namespace.kind !== "group");
+        namespaces = [...namespaces, ...onlyUserNamespaces];
+        paginationNamespace = { ...namespacesPage.pagination, done: false };
       }
-      pagination.done = true;
+      paginationNamespace.done = true;
+
+      for await (const groupsPage of groupsIterator) {
+        const groups = groupsPage.data.map( group => {
+          return { ...group, kind: "group" };
+        });
+        namespaces = [...namespaces, ...groups];
+        paginationGroups = { ...paginationGroups.pagination, done: false };
+      }
+      paginationGroups.done = true;
     }
     catch (exception) {
       error = exception;
     }
     finally {
-      return { data: namespaces, pagination, error };
+      return { data: namespaces, pagination: paginationNamespace && paginationGroups, error };
     }
   };
 
