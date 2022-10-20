@@ -77,6 +77,9 @@ describe("Project new dataset", () => {
     };
     fixtures.uploadDatasetFile("cacheProjectListOnProgress", "datasets/upload-dataset-multiple-files.json", options);
     cy.wait("@getProject");
+    cy.wait("@getProjectLockStatus");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(3500, { log: false });
     cy.gui_new_dataset({
       title: "New dataset completed",
     });

@@ -22,6 +22,8 @@ const GITLAB_PROVIDER = Cypress.env("GITLAB_PROVIDER");
 Cypress.Commands.add("gui_kc_login", (user: User, startFromHome = false) => {
   if (startFromHome) {
     cy.visit("/");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(3500, { log: false });
     cy.get("#login-button").click({ force: true }); // eslint-disable-line cypress/no-force
   }
   cy.get("#username").clear();
@@ -81,8 +83,9 @@ Cypress.Commands.add("gui_logout", () => {
   cy.get("#profile-dropdown > #userIcon").click();
   cy.get("#logout-link").click();
   cy.url().then( () => {
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(6000, { log: false });
     cy.url().should("be.equal", Cypress.config("baseUrl"));
-    cy.get("#login-button").contains("Login");
   });
 });
 

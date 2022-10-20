@@ -45,6 +45,8 @@ describe("display a project", () => {
   it("update project settings overview", () => {
     fixtures.updateProject("39646", "updateProject", "project/update-project-tag-description.json");
     cy.visit("/projects/e2e/local-test-project/settings");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(3500, { log: false });
     cy.get_cy("tags-input").type("abcde");
     cy.get_cy("update-tag-button").click();
     cy.get_cy("updating-tag-list").should("contain.text", "Updating list..");
