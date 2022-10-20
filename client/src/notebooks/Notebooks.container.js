@@ -307,6 +307,7 @@ class StartNotebookServer extends Component {
 
     this.state = {
       autosavesCommit: false,
+      autosavesWrong: false,
       autostartReady: false,
       autostartTried: false,
       first: true,
@@ -542,18 +543,28 @@ class StartNotebookServer extends Component {
           return;
       }
       else {
+        let autosave;
         // check if there is an autosave for this branch, and find the corresponding commit
         const autosaves = this.model.get("autosaves");
         const branch = this.model.get("filters.branch");
         let autosaveFound = false;
         if (branch.name && autosaves.fetched && !autosaves.error && autosaves.list?.length) {
-          const autosave = autosaves.list.find(a => a.branch === branch.name);
+          autosave = autosaves.list.find(a => a.branch === branch.name);
           if (autosave) {
             const autosaveCommit = commits.find(commit => commit.id.startsWith(autosave.commit));
-            commit = autosaveCommit;
-            autosaveFound = true;
-            if (autosaveCommit && this.state.autosavesCommit !== autosaveCommit?.id)
-              this.setState({ autosavesCommit: autosaveCommit.id });
+            // we expect to find an autosave, unless the user manually removed/changed it (or cloned the project)
+            if (autosaveCommit) {
+              commit = autosaveCommit;
+              autosaveFound = true;
+              if (this.state.autosavesCommit !== autosaveCommit?.id)
+                this.setState({ autosavesCommit: autosaveCommit.id, autosavesWrong: false });
+            }
+            else {
+              // recovering form a corrupted autosave is unlikely; removing it prevents this from happening again
+              this.setState({ autosavesWrong: true });
+              if (autosave?.name)
+                this.deleteAutosave(autosave.name);
+            }
           }
         }
 
@@ -828,6 +839,7 @@ class StartNotebookServer extends Component {
     return <StartNotebookServerPresent
       autoStarting={this.autostart && !this.state.autostartTried}
       autosavesCommit={this.state.autosavesCommit}
+      autosavesWrong={this.state.autosavesWrong}
       ignorePipeline={this.state.ignorePipeline}
       inherited={this.props}
       justStarted={this.state.starting}
