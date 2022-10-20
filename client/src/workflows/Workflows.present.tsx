@@ -301,7 +301,7 @@ function WorkflowDetail({ fullPath, selectedAvailable, waiting, workflow, workfl
     );
   }
 
-  return (<>{content}</>);
+  return (<div id="workflowsDetailsContent">{content}</div>);
 }
 
 
@@ -355,6 +355,12 @@ function WorkflowTreeDetail({
         <code className="mb-0">
           {details.full_command}
           <Clipboard clipboardText={details.full_command} />
+        </code>
+      </WorkflowTreeDetailRow>
+      <WorkflowTreeDetailRow name="Renku command">
+        <code className="mb-0">
+          {details.renkuCommand}
+          <Clipboard clipboardText={details.renkuCommand} />
         </code>
       </WorkflowTreeDetailRow>
     </>);
