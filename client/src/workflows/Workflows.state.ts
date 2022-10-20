@@ -78,7 +78,8 @@ function adjustWorkflowDetails(workflowDetails: Record<string, any>, fullPath: s
       null :
       Url.get(Url.pages.project.workflows.detail, {
         namespace: "", path: fullPath, target: "/" + workflowDetails.latest.replace(PLANS_PREFIX, "")
-      })
+      }),
+    renkuCommand: `renku workflow execute ${workflowDetails.name}`
   };
 }
 
