@@ -1,3 +1,12 @@
+# [2.10.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.10.0...2.10.1) (2022-10-20)
+
+
+### Bug Fixes
+
+* do not show session loader when values other than session status change ([#2083](https://github.com/SwissDataScienceCenter/renku-ui/issues/2083))
+
+
+
 # [2.10.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.9.0...2.10.0) (2022-10-17)
 
 
