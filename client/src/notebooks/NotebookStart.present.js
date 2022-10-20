@@ -67,7 +67,6 @@ function SessionStartSidebar(props) {
     <h2>Start session</h2>
     <p>On the project<br /><b className="text-break">{props.pathWithNamespace}</b></p>
     <ProjectSessionLockAlert lockStatus={props.lockStatus} />
-    <LaunchErrorAlert autosaves={props.autosaves} launchError={props.launchError} ci={props.ci} />
 
     <div className="d-none d-md-block">
       <p>A session gives you an environment with resources for doing work.
@@ -179,6 +178,7 @@ function StartNotebookServer(props) {
 
   return (
     <Row>
+      <LaunchErrorAlert autosaves={props.autosaves} launchError={props.launchError} ci={props.ci} />
       <Col sm={12} md={3} lg={4}>
         <SessionStartSidebar autosaves={autosaves} ci={props.ci}
           launchError={props.launchError} lockStatus={props.lockStatus}
