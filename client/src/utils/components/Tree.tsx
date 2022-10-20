@@ -26,7 +26,7 @@ import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityExecutions from "./entities/Executions";
 import EntityDuration from "./entities/Duration";
 import { Col } from "../ts-wrappers";
-import { EntityChildren, EntityChildrenDot } from "./entities/Children";
+import { EntityChildrenDot } from "./entities/Children";
 import { EntityType, WorkflowType } from "./entities/Entities";
 import { simpleHash } from "../helpers/HelperFunctions";
 
@@ -49,7 +49,7 @@ function TreeBrowser({
 
   const treeElements = items.map((item: any) => {
     let newProps: Record<string, any> = { expanded, highlightedProp, items, selected, shrunk, toggleExpanded };
-    return (<TreeElement key={item.workflowId} {...item} {...newProps} />);
+    return (<TreeElement key={item.uniqueId} {...item} {...newProps} />);
   });
 
   return (<div className="mb-3">{treeElements}</div>);
@@ -88,7 +88,7 @@ function TreeElement({
     const icon = expanded.includes(workflowId) ? faChevronUp : faChevronDown;
     const color = active ? "yellow" : "text";
     leftItem = (
-      <div className={`${leftItemClasses} interactive`} onClick={() => { toggleExpanded(workflowId); }}>
+      <div className={`${leftItemClasses} interactive`} onClick={() => toggleExpanded(uniqueId)}>
         <FontAwesomeIcon size="lg" className={`me-1 text-rk-${color}`} icon={icon} />
       </div>
     );
@@ -100,7 +100,7 @@ function TreeElement({
 
   let childrenItems = items.filter((item: any) => children.includes(item.id));
   let childrenNodes: React.ReactNode[] = [];
-  if (childrenItems.length && expanded.includes(workflowId)) {
+  if (childrenItems.length && expanded.includes(uniqueId)) {
     childrenNodes = childrenItems.map((item: any) => {
       const childUniqueId = simpleHash(uniqueId + item.uniqueId);
       let newProps: Record<string, any> = {
@@ -119,6 +119,29 @@ function TreeElement({
   if (shrunk)
     currentIndentation = currentIndentation / 2;
   const elementStyle = { marginLeft: `${currentIndentation}em` };
+
+  // define actions to trigger on click
+  const expandIfCollapsed = (workflowId: string) => {
+    // expand composite workflows when they are collapsed
+    if (isComposite) {
+      if (!expanded.includes(uniqueId))
+        toggleExpanded(uniqueId);
+    }
+  };
+
+  const scrollToDetail = () => {
+    // scroll to details page top unless it's the same id
+    if (selected !== workflowId) {
+      setTimeout(() => {
+        document.getElementById("workflowsDetailsContent")?.scrollIntoView(true);
+      }, 100);
+    }
+  };
+
+  const actionsOnClick = (workflowId: string) => {
+    expandIfCollapsed(workflowId);
+    scrollToDetail();
+  };
 
   // return either shrunk or full-size element
   if (shrunk) {
@@ -146,7 +169,7 @@ function TreeElement({
       <>
         <div className={`d-flex flex-row rk-tree-item compact ${newClasses}`} style={elementStyle}>
           {leftItem}
-          <Link className="row w-100 rk-tree-item-content" to={url}>
+          <Link className="row w-100 rk-tree-item-content" to={url} onClick={() => actionsOnClick(workflowId)}>
             <Col xs={12} className="title center-vertically">
               <h5>
                 {title} <EntityChildrenDot
@@ -165,7 +188,7 @@ function TreeElement({
     <>
       <div className={`d-flex flex-row rk-tree-item ${newClasses}`} style={elementStyle}>
         {leftItem}
-        <Link className="row w-100 rk-tree-item-content" to={url}>
+        <Link className="row w-100 rk-tree-item-content" to={url} onClick={() => actionsOnClick(workflowId)}>
           <Col xs={12} md={5} className="title center-vertically">
             <h5>
               {title} <EntityChildrenDot
@@ -176,7 +199,6 @@ function TreeElement({
           <Col xs={12} sm={7} md={4} className="title center-vertically">
             <EntityExecutions display="tree" executions={executions} itemType={itemType}
               lastExecuted={lastExecuted} showLastExecution={true} workflowId={uniqueId} />
-            <EntityChildren childrenElements={children} itemType={itemType} />
           </Col>
           <Col xs={12} sm={5} md={3} className="title center-vertically">
             <EntityDuration duration={duration} workflowId={uniqueId} />
