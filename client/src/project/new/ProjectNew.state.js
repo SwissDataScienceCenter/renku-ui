@@ -131,8 +131,9 @@ class NewProjectCoordinator {
    * Set newProject.automated object with new content -- either the provided data or an error
    * @param {object} data - data to pre-fill
    * @param {object} [error] - error generated while parsing the data
+   * @param {ProjectsCoordinator} [projectCoordinator] - to use some project coordinator functions
    */
-  setAutomated(data, error) {
+  setAutomated(data, error, projectCoordinator) {
     let automated = newProjectSchema.createInitialized().automated;
     if (error) {
       automated = {
@@ -152,15 +153,16 @@ class NewProjectCoordinator {
         data: { ...automated.data, ...data }
       };
       // ? passing the content is more efficient than invoking the `model.set` and then the function.
-      this.autoFill(automated);
+      this.autoFill(automated, projectCoordinator);
     }
   }
 
   /**
    * Get all the auto-fill content and fill in the provided data.
    * @param {object} [automatedObject] - pass the up-to-date `automated` object to optimize performance.
+   * @param {ProjectsCoordinator} [projectsCoordinator] - fetch visibilities
    */
-  async autoFill(automatedObject) {
+  async autoFill(automatedObject, projectsCoordinator) {
     let automated = automatedObject ?
       automatedObject :
       newProjectSchema.createInitialized().automated;
@@ -218,7 +220,7 @@ class NewProjectCoordinator {
       else {
         this.setProperty("namespace", data.namespace); // full path
         newInput.namespace = data.namespace;
-        this.getVisibilities(namespaceAvailable);
+        projectsCoordinator.getVisibilities(namespaceAvailable);
       }
     }
     if (data.template && !data.url) {
@@ -240,7 +242,7 @@ class NewProjectCoordinator {
     if (this.model.get("automated.manuallyReset")) return;
     automated.step = 3;
     this.model.set("automated.step", 3);
-    if (data.template && data.url) {
+    if (data.ref && data.url) {
       const ref = data.ref ? data.ref : "master";
       this.setProperty("userRepo", true);
       this.setTemplateProperty("url", data.url);
@@ -255,16 +257,18 @@ class NewProjectCoordinator {
         this.model.set("automated", { ...automated });
         return;
       }
-      const templateAvailable = templates.find(template => template.id === data.template);
-      if (!templateAvailable) {
-        automated.error = `The template "${data.template}" is not available.`;
-        automated.finished = true;
-        this.model.set("automated", { ...automated });
-        return;
+      if (data.template) {
+        const templateAvailable = templates.find(template => template.id === data.template);
+        if (!templateAvailable) {
+          automated.error = `The template "${data.template}" is not available.`;
+          automated.finished = true;
+          this.model.set("automated", { ...automated });
+          return;
+        }
+        this.setProperty("template", data.template);
+        newInput.template = data.template;
+        availableVariables = templateAvailable.variables;
       }
-      this.setProperty("template", data.template);
-      newInput.template = data.template;
-      availableVariables = templateAvailable.variables;
     }
     if (data.visibility) {
       // wait for namespace visibilities to be available

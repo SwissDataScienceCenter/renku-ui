@@ -117,3 +117,71 @@ describe("Add new project", () => {
     cy.get_cy("create-project-form").should("not.exist");
   });
 });
+
+describe("Add new project shared link", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
+
+  beforeEach(() => {
+    fixtures.config().versions().userTest().namespaces();
+    fixtures.projects().landingUserProjects("getLandingUserProjects");
+  });
+
+  it("prefill values all values (custom template)", () => {
+    // eslint-disable-next-line max-len
+    const customValues = "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwiZGVzY3JpcHRpb24iOiIgdGhpcyBhIGN1c3RvbSBkZXNjcmlwdGlvbiIsIm5hbWVzcGFjZSI6ImUyZSIsInZpc2liaWxpdHkiOiJpbnRlcm5hbCIsInVybCI6Imh0dHBzOi8vZ2l0aHViLmNvbS9Td2lzc0RhdGFTY2llbmNlQ2VudGVyL3Jlbmt1LXByb2plY3QtdGVtcGxhdGUiLCJyZWYiOiJtYXN0ZXIiLCJ0ZW1wbGF0ZSI6IkN1c3RvbS9SLW1pbmltYWwifQ%3D%3D";
+    fixtures
+      .templates(false, "*", "getTemplates")
+      .getNamespace("internal-space", "getInternalNamespace", "projects/namespace-128.json");
+    cy.visit(`projects/new${customValues}`);
+    cy.wait("@getTemplates");
+
+    // check title
+    cy.get_cy("field-group-title").should("contain.value", "new project");
+    // check description
+    cy.get_cy("field-group-description").should("contain.text", "this a custom description");
+    // check namespace
+    cy.get_cy("project-slug").should("contain.value", "e2e/new-project");
+    // check visibility
+    cy.get_cy("visibility-public").should("not.be.checked");
+    cy.get_cy("visibility-internal").should("be.checked");
+    cy.get_cy("visibility-private").should("not.be.checked");
+
+    // check custom template source
+    // eslint-disable-next-line max-len
+    cy.get_cy("url-repository").should("contain.value", "https://github.com/SwissDataScienceCenter/renku-project-template");
+    cy.get_cy("ref-repository").should("contain.value", "master");
+
+    // check selected template
+    cy.get_cy("project-template-card").get(".selected").should("contain.text", "Basic R (4.1.2) Project");
+  });
+
+  it("prefill values custom template", () => {
+    // eslint-disable-next-line max-len
+    const customValues = "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwiZGVzY3JpcHRpb24iOiIgdGhpcyBhIGN1c3RvbSBkZXNjcmlwdGlvbiIsIm5hbWVzcGFjZSI6ImUyZSIsInZpc2liaWxpdHkiOiJpbnRlcm5hbCIsInVybCI6Imh0dHBzOi8vZ2l0aHViLmNvbS9Td2lzc0RhdGFTY2llbmNlQ2VudGVyL3Jlbmt1LXByb2plY3QtdGVtcGxhdGUiLCJyZWYiOiJtYXN0ZXIifQ%3D%3D";
+    const templateUrl = "https://github.com/SwissDataScienceCenter/renku-project-template";
+    const templateRef = "master";
+    fixtures
+      .templates(false, "*", "getTemplates")
+      .getNamespace("internal-space", "getInternalNamespace", "projects/namespace-128.json");
+    cy.visit(`projects/new${customValues}`);
+    cy.wait("@getTemplates");
+
+    // check custom templates
+    cy.get_cy("url-repository").should("contain.value", templateUrl);
+    cy.get_cy("ref-repository").should("contain.value", templateRef);
+  });
+
+  it("prefill values renkuLab template", () => {
+    // eslint-disable-next-line max-len
+    const customValues = "?data=eyJ0ZW1wbGF0ZSI6IlJlbmt1L2p1bGlhLW1pbmltYWwifQ%3D%3D";
+    fixtures
+      .templates(false, "*", "getTemplates")
+      .getNamespace("internal-space", "getInternalNamespace", "projects/namespace-128.json");
+    cy.visit(`projects/new${customValues}`);
+    cy.wait("@getTemplates");
+
+    // check selected template
+    cy.get_cy("project-template-card").get(".selected").should("contain.text", "Basic Julia (1.7.1) Project");
+  });
+});

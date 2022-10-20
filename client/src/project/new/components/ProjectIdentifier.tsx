@@ -41,7 +41,7 @@ const ProjectIdentifier = ({ input, isRequired }: ProjectIdentifierProps) => {
   return (
     <FormGroup className="field-group">
       <InputLabel text="Identifier" isRequired={isRequired} />
-      <Input id="slug" readOnly value={slug} />
+      <Input id="slug" data-cy="project-slug" readOnly value={slug} />
       <InputHintLabel text="This is automatically derived from Namespace and Title" />
     </FormGroup>
   );
