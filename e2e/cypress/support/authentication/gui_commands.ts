@@ -22,8 +22,6 @@ const GITLAB_PROVIDER = Cypress.env("GITLAB_PROVIDER");
 Cypress.Commands.add("gui_kc_login", (user: User, startFromHome = false) => {
   if (startFromHome) {
     cy.visit("/");
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(3500, { log: false });
     cy.get("#login-button").click({ force: true }); // eslint-disable-line cypress/no-force
   }
   cy.get("#username").clear();

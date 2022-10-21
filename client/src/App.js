@@ -224,13 +224,8 @@ function App(props) {
     let webSocketUrl = props.client.uiserverUrl + "/ws";
     if (webSocketUrl.startsWith("http"))
       webSocketUrl = "ws" + webSocketUrl.substring(4);
-    // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
-    setTimeout(
-      () => {
-        setWebSocket(setupWebSocket(webSocketUrl, props.model, notificationManager));
-        return;
-      }, 1000
-    );
+
+    setWebSocket(setupWebSocket(webSocketUrl, props.model, notificationManager));
   }, []); // eslint-disable-line
 
   // Avoid rendering the application while authenticating the user
@@ -261,5 +256,63 @@ function App(props) {
     </Fragment>
   );
 }
+
+// class App extends Component {
+//   constructor(props) {
+//     super(props);
+//
+//     // Setup notification system
+//     const getLocation = () => this.props.location;
+//     this.notifications = new NotificationsManager(this.props.model, this.props.client, getLocation);
+//
+//     // Setup authentication listeners and notifications
+//     LoginHelper.setupListener();
+//     LoginHelper.triggerNotifications(this.notifications);
+//
+//     // Setup WebSocket channel
+//     this.webSocket = null;
+//     let webSocketUrl = props.client.uiserverUrl + "/ws";
+//     if (webSocketUrl.startsWith("http"))
+//       webSocketUrl = "ws" + webSocketUrl.substring(4);
+//     // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
+//     setTimeout(
+//       () => { this.webSocket = setupWebSocket(webSocketUrl, this.props.model); return; },
+//       1000
+//     );
+//   }
+//
+//   render() {
+//     // Avoid rendering the application while authenticating the user
+//     const { user } = this.props;
+//     if (!user.fetched && user.fetching) {
+//       return (
+//         <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
+//           <h3 className="text-center text-primary">Checking user data</h3>
+//           <Loader />
+//         </section>
+//       );
+//     }
+//     else if (user.error) {
+//       return (<Unavailable />);
+//     }
+//
+//     console.log("websocket", this.webSocket);
+//
+//     return (
+//       <Fragment>
+//         <Route render={p =>
+//           (this.props.user.logged) || (p.location.pathname !== Url.get(Url.pages.landing)) ?
+//             <RenkuNavBar {...p} {...this.props} notifications={this.notifications} /> :
+//             null
+//         } />
+//         <CentralContentContainer notifications={this.notifications} socket={this.webSocket} {...this.props} />
+//         <Route render={props => <FooterNavbar {...props} params={this.props.params} />} />
+//         <Route render={props => <Cookie {...props} params={this.props.params} />} />
+//         <ToastContainer />
+//       </Fragment>
+//     );
+//
+//   }
+// }
 
 export default App;

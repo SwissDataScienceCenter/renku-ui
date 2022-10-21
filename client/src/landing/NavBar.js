@@ -282,7 +282,7 @@ class LoggedInNavBar extends Component {
     const searchIcon = <Search />;
     return (
       <Fragment>
-        <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
+        <header id="renku-header-navbar" className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
           <Navbar color="primary" className="container-fluid flex-wrap flex-lg-nowrap renku-container">
             <Link id="link-home" to="/" className="navbar-brand me-2 pb-0 pt-0">
               <img src={logo} alt="Renku" height="50" className="d-block" />
