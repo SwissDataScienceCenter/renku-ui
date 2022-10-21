@@ -178,6 +178,7 @@ interface WorkflowsTreeBrowserProps {
   orderByMatrix: Record<string, string>,
   selected: string;
   selectedAvailable: boolean;
+  setDetailExpanded: Function;
   setOrderBy: Function;
   showInactive: boolean;
   toggleAscending: Function;
@@ -190,7 +191,7 @@ interface WorkflowsTreeBrowserProps {
 }
 
 function WorkflowsTreeBrowser({
-  ascending, expanded, fullPath, orderBy, orderByMatrix, selected, selectedAvailable, setOrderBy,
+  ascending, expanded, fullPath, orderBy, orderByMatrix, selected, selectedAvailable, setDetailExpanded, setOrderBy,
   showInactive, toggleAscending, toggleInactive, toggleExpanded, unsupported, waiting, workflow, workflows
 }: WorkflowsTreeBrowserProps) {
   // return immediately when workflows are not supported in the current project
@@ -236,6 +237,7 @@ function WorkflowsTreeBrowser({
             <WorkflowDetail
               fullPath={fullPath}
               selectedAvailable={selectedAvailable}
+              setDetailExpanded={setDetailExpanded}
               waiting={waitingDetails}
               workflow={workflow}
               workflowId={selected} />
@@ -264,12 +266,15 @@ function WorkflowsTreeBrowser({
 interface WorkflowDetailProps {
   fullPath: string;
   selectedAvailable: boolean;
+  setDetailExpanded: Function;
   waiting: boolean;
   workflow: Record<string, any>;
   workflowId: string;
 }
 
-function WorkflowDetail({ fullPath, selectedAvailable, waiting, workflow, workflowId }: WorkflowDetailProps) {
+function WorkflowDetail({
+  fullPath, selectedAvailable, setDetailExpanded, waiting, workflow, workflowId
+}: WorkflowDetailProps) {
   const backUrl = Url.get(Url.pages.project.workflows, { namespace: "", path: fullPath });
   const backElement = (
     <div>
@@ -294,6 +299,7 @@ function WorkflowDetail({ fullPath, selectedAvailable, waiting, workflow, workfl
       <TreeDetails>
         <WorkflowTreeDetail
           backElement={backElement}
+          setDetailExpanded={setDetailExpanded}
           waiting={waiting}
           workflow={workflow}
           workflowId={workflowId} />
@@ -324,13 +330,14 @@ function WorkflowTreeDetailRow({
 
 interface WorkflowTreeDetailsProps {
   backElement: React.ReactNode;
+  setDetailExpanded: Function;
   waiting: boolean;
   workflow: Record<string, any>;
   workflowId: string;
 }
 
 function WorkflowTreeDetail({
-  backElement, waiting, workflow, workflowId
+  backElement, setDetailExpanded, waiting, workflow, workflowId
 }: WorkflowTreeDetailsProps) {
   const details = workflow.details ? workflow.details : {};
   const isComposite = details.type === "Plan" ? false : true;
@@ -446,7 +453,8 @@ function WorkflowTreeDetail({
           <h3 className="my-2">Visualization</h3>
         </CardHeader>
         <CardBody>
-          <WorkflowDetailVisualizer details={details} />
+          <WorkflowDetailVisualizer
+            details={details} expanded={workflow.expanded} setDetailExpanded={setDetailExpanded} />
         </CardBody>
       </Card>
     </>
@@ -456,17 +464,18 @@ function WorkflowTreeDetail({
 
 interface WorkflowVisualizerSimpleBoxProps {
   children: React.ReactNode;
+  large?: boolean;
   title: string;
 }
 
-function WorkflowVisualizerSimpleBox({ children, title }: WorkflowVisualizerSimpleBoxProps) {
+function WorkflowVisualizerSimpleBox({ children, large = false, title }: WorkflowVisualizerSimpleBoxProps) {
   return (
-    <Col xs={12} lg={4}>
+    <Col xs={12} lg={large ? 12 : 4}>
       <Card className="border border-rk-light mb-3">
         <CardHeader className="bg-white p-2">
-          <h4 className="m-0">{title}</h4>
+          <h4 className="m-1">{title}</h4>
         </CardHeader>
-        <CardBody className="p-2">
+        <CardBody className="p-1">
           {children}
         </CardBody>
       </Card>
@@ -475,37 +484,125 @@ function WorkflowVisualizerSimpleBox({ children, title }: WorkflowVisualizerSimp
 }
 
 
-interface WorkflowDetailVisualizerProps {
-  details: Record<string, any>;
+/** VISUALIZER **/
+
+function UnavailableDetail({ className = "", text = "None" }) {
+  return (
+    <span className={`fst-italic text-rk-text-light ${className}`}>{text}</span>
+  );
 }
 
-function WorkflowDetailVisualizer({ details }: WorkflowDetailVisualizerProps) {
-  const inputs = details.inputs?.length ?
-    details.inputs.map((i: any) => (<p key={i.plan_id + i.name}>{i.name}</p>)) :
-    (<span className="fst-italic text-rk-text-light">None</span>);
-  const outputs = details.outputs?.length ?
-    details.outputs.map((i: any) => (<p key={i.plan_id + i.name}>{i.name}</p>)) :
-    (<span className="fst-italic text-rk-text-light">None</span>);
+interface WorkflowDetailVisualizerProps {
+  details: Record<string, any>;
+  expanded: Record<string, any>
+  setDetailExpanded: Function;
+}
+
+function WorkflowDetailVisualizer({
+  details, expanded, setDetailExpanded
+}: WorkflowDetailVisualizerProps) {
+  const command = details.command ?
+    (<code className="mb-0">{details.command} <Clipboard clipboardText={details.command} /></code>) :
+    (<UnavailableDetail />);
+
   return (<>
     <Table className="table-borderless rk-tree-table mb-3" size="sm">
       <tbody>
         <WorkflowTreeDetailRow name="Base command">
-          <span className="fst-italic text-rk-text-light">Not implemented yet...</span>
+          {command}
         </WorkflowTreeDetailRow>
       </tbody>
     </Table>
     <Row>
       <WorkflowVisualizerSimpleBox title="Inputs">
-        {inputs}
+        <VisualizerCommandEntities data={details.inputs} expanded={expanded}
+          setDetailExpanded={setDetailExpanded} />
       </WorkflowVisualizerSimpleBox>
       <WorkflowVisualizerSimpleBox title="Outputs">
-        {outputs}
+        <VisualizerCommandEntities data={details.outputs} expanded={expanded}
+          setDetailExpanded={setDetailExpanded} />
       </WorkflowVisualizerSimpleBox>
       <WorkflowVisualizerSimpleBox title="Parameters">
-        <p>not implemented yet</p>
+        <VisualizerCommandEntities data={details.parameters} expanded={expanded}
+          setDetailExpanded={setDetailExpanded} />
       </WorkflowVisualizerSimpleBox>
     </Row>
+    <VisualizerDetailExpanded data={expanded} />
   </>);
+}
+
+
+interface VisualizerCommandEntitiesProps {
+  data: Record<string, any>[]
+  expanded: Record<string, any>
+  setDetailExpanded: Function;
+}
+
+function VisualizerCommandEntities({
+  data, expanded, setDetailExpanded
+}: VisualizerCommandEntitiesProps) {
+  if (!data?.length)
+    return (<p className="my-2"><UnavailableDetail text="Not implemented yet" /></p>);
+  const elements = data.map((i: any) => (
+    <VisualizerCommandEntity key={i.plan_id + i.name} element={i}
+      expanded={expanded} setDetailExpanded={setDetailExpanded} />
+  ));
+  return (<>{elements}</>);
+}
+
+interface VisualizerCommandEntityProps {
+  element: Record<string, any>
+  expanded: Record<string, any>
+  setDetailExpanded: Function;
+}
+
+function VisualizerCommandEntity({ element, expanded, setDetailExpanded }: VisualizerCommandEntityProps) {
+  const elemClass = (expanded.type === element.type && expanded.name === element.name) ?
+    "selected" : "";
+  return (
+    <div className={`p-2 rk-clickable ${elemClass}`} onClick={() => { setDetailExpanded(element); }}>
+      <p className="mb-0"><b>{element.name}</b>: {element.default_value}</p>
+    </div>
+  );
+}
+
+
+interface VisualizerDetailExpandedProps {
+  data: Record<string, any>
+}
+
+function VisualizerDetailExpanded({ data }: VisualizerDetailExpandedProps) {
+  if (!data?.name)
+    return null;
+
+  const defaultValue = data.default_value ? data.default_value : <UnavailableDetail />;
+  const description = data.description ? data.description : <UnavailableDetail />;
+  const prefix = data.prefix ? data.prefix : <UnavailableDetail />;
+  const position = data.position ? data.position : <UnavailableDetail />;
+  // ? add back: const format = data.format ? data.format : <UnavailableDetail text="Unknown" />;
+  const typeElem = data.type ? data.type : <UnavailableDetail />;
+  let mappedToElement: React.ReactNode = null;
+  if (Object.keys(data).includes("mapped_to")) {
+    const mappedTo = data.mapped_to ? data.mapped_to : <UnavailableDetail text="Nothing" />;
+    mappedToElement = (<WorkflowTreeDetailRow name="Mapped to">{mappedTo}</WorkflowTreeDetailRow>);
+  }
+  return (
+    <Row>
+      <WorkflowVisualizerSimpleBox title="Details" large={true}>
+        <Table className="table-borderless rk-tree-table mb-0" size="sm">
+          <tbody>
+            <WorkflowTreeDetailRow name="Name">{data.name}</WorkflowTreeDetailRow>
+            <WorkflowTreeDetailRow name="Type">{typeElem}</WorkflowTreeDetailRow>
+            <WorkflowTreeDetailRow name="Default value">{defaultValue}</WorkflowTreeDetailRow>
+            <WorkflowTreeDetailRow name="Description">{description}</WorkflowTreeDetailRow>
+            <WorkflowTreeDetailRow name="Prefix">{prefix}</WorkflowTreeDetailRow>
+            <WorkflowTreeDetailRow name="Position">{position}</WorkflowTreeDetailRow>
+            {mappedToElement}
+          </tbody>
+        </Table>
+      </WorkflowVisualizerSimpleBox>
+    </Row>
+  );
 }
 
 
