@@ -22,6 +22,14 @@
     }
   }
 
+  &.embed {
+    border: none;
+
+    .rk-tree-item-content {
+      padding: 0.5em;
+    }
+  }
+
   .interactive {
     cursor: pointer !important;
   }

@@ -37,9 +37,109 @@ import { EntityType } from "../utils/components/entities/Entities";
 import { ExternalDocsLink, ExternalLink } from "../utils/components/ExternalLinks";
 import { Loader } from "../utils/components/Loader";
 import { Url } from "../utils/helpers/url";
-import { TreeBrowser, TreeDetails } from "../utils/components/Tree";
+import { TreeBrowser, TreeDetails, TreeElement } from "../utils/components/Tree";
 import { InfoAlert, WarnAlert } from "../utils/components/Alert";
 
+
+/** BROWSER **/
+
+interface WorkflowsTreeBrowserProps {
+  ascending: boolean;
+  expanded: string[];
+  fullPath: string;
+  orderBy: string;
+  orderByMatrix: Record<string, string>,
+  selected: string;
+  selectedAvailable: boolean;
+  setDetailExpanded: Function;
+  setOrderBy: Function;
+  showInactive: boolean;
+  toggleAscending: Function;
+  toggleExpanded: Function;
+  toggleInactive: Function;
+  unsupported: boolean;
+  waiting: boolean;
+  workflow: Record<string, any>;
+  workflows: Record<string, any>;
+}
+
+function WorkflowsTreeBrowser({
+  ascending, expanded, fullPath, orderBy, orderByMatrix, selected, selectedAvailable, setDetailExpanded, setOrderBy,
+  showInactive, toggleAscending, toggleInactive, toggleExpanded, unsupported, waiting, workflow, workflows
+}: WorkflowsTreeBrowserProps) {
+  // return immediately when workflows are not supported in the current project
+  if (unsupported)
+    return (<UnsupportedWorkflows fullPath={fullPath} />);
+  const emptyElement = (<NoWorkflows />);
+
+  // show status: loading or error or full content
+  const loading = waiting || (!workflows.fetched);
+  const shrunk = selectedAvailable && !!selected || workflow.error;
+
+  let content: React.ReactNode;
+  if (loading) {
+    content = (<Loader />);
+  }
+  else if (workflows.error) {
+    content = (<CoreErrorAlert error={workflows.error} />);
+  }
+  else {
+    const treeBrowser = (
+      <TreeBrowser
+        emptyElement={emptyElement}
+        expanded={expanded}
+        highlightedProp={orderBy in ["name", "workflowType"] ? "lastExecution" : orderBy}
+        items={orderWorkflows(workflows.list, orderBy, ascending, showInactive)}
+        selected={selected}
+        shrunk={shrunk}
+        toggleExpanded={toggleExpanded}
+      />
+    );
+
+    if (!shrunk) {
+      content = treeBrowser;
+    }
+    else {
+      const waitingDetails = waiting || workflow.fetching || !workflow.fetched;
+      content = (
+        <Row>
+          <Col xs={12} md={5} lg={4}>
+            {treeBrowser}
+          </Col>
+          <Col xs={12} md={7} lg={8}>
+            <WorkflowDetail
+              fullPath={fullPath}
+              selectedAvailable={selectedAvailable}
+              setDetailExpanded={setDetailExpanded}
+              waiting={waitingDetails}
+              workflow={workflow}
+              workflowId={selected}
+              workflows={workflows}
+            />
+          </Col>
+        </Row>
+      );
+    }
+  }
+
+  return (
+    <div>
+      <h3>Workflows</h3>
+      <WorkflowsListFilters
+        ascending={ascending}
+        orderBy={orderBy}
+        orderByMatrix={orderByMatrix}
+        setOrderBy={setOrderBy}
+        showInactive={showInactive}
+        toggleAscending={toggleAscending}
+        toggleInactive={toggleInactive} />
+      {content}
+    </div>
+  );
+}
+
+
+/** FILTERS AND SPECIAL CASES **/
 
 interface WorkflowsListFiltersProps {
   ascending: boolean;
@@ -114,6 +214,22 @@ function WorkflowsListFilters({
   );
 }
 
+function orderWorkflows(
+  workflows: Array<Record<string, any>>, orderBy: string, ascending: boolean, showInactive: boolean
+) {
+  const filtered = !showInactive ? workflows.filter(w => w.active) : workflows;
+
+  // ? Pre-sort by a unique prop to guarantee consistency
+  const preSorted = filtered.sort((a, b) => (a["name"] > b["name"]) ? 1 : ((b["name"] > a["name"]) ? -1 : 0));
+  // ? Then second-sort by last execution
+  const secondSorted = preSorted.sort((a, b) => (a["lastExecuted"] < b["lastExecuted"]) ? 1 :
+    ((b["lastExecuted"] < a["lastExecuted"]) ? -1 : 0));
+
+  // ? Final sorting
+  const sorted = secondSorted.sort((a, b) => (a[orderBy] > b[orderBy]) ? 1 : ((b[orderBy] > a[orderBy]) ? -1 : 0));
+  return ascending ? sorted : sorted.reverse();
+}
+
 
 interface UnsupportedWorkflowsProps {
   fullPath: string;
@@ -137,23 +253,6 @@ function UnsupportedWorkflows({ fullPath }: UnsupportedWorkflowsProps) {
 }
 
 
-function orderWorkflows(
-  workflows: Array<Record<string, any>>, orderBy: string, ascending: boolean, showInactive: boolean
-) {
-  const filtered = !showInactive ? workflows.filter(w => w.active) : workflows;
-
-  // ? Pre-sort by a unique prop to guarantee consistency
-  const preSorted = filtered.sort((a, b) => (a["name"] > b["name"]) ? 1 : ((b["name"] > a["name"]) ? -1 : 0));
-  // ? Then second-sort by last execution
-  const secondSorted = preSorted.sort((a, b) => (a["lastExecuted"] < b["lastExecuted"]) ? 1 :
-    ((b["lastExecuted"] < a["lastExecuted"]) ? -1 : 0));
-
-  // ? Final sorting
-  const sorted = secondSorted.sort((a, b) => (a[orderBy] > b[orderBy]) ? 1 : ((b[orderBy] > a[orderBy]) ? -1 : 0));
-  return ascending ? sorted : sorted.reverse();
-}
-
-
 function NoWorkflows() {
   return (
     <div>
@@ -170,98 +269,7 @@ function NoWorkflows() {
 }
 
 
-interface WorkflowsTreeBrowserProps {
-  ascending: boolean;
-  expanded: string[];
-  fullPath: string;
-  orderBy: string;
-  orderByMatrix: Record<string, string>,
-  selected: string;
-  selectedAvailable: boolean;
-  setDetailExpanded: Function;
-  setOrderBy: Function;
-  showInactive: boolean;
-  toggleAscending: Function;
-  toggleExpanded: Function;
-  toggleInactive: Function;
-  unsupported: boolean;
-  waiting: boolean;
-  workflow: Record<string, any>;
-  workflows: Record<string, any>;
-}
-
-function WorkflowsTreeBrowser({
-  ascending, expanded, fullPath, orderBy, orderByMatrix, selected, selectedAvailable, setDetailExpanded, setOrderBy,
-  showInactive, toggleAscending, toggleInactive, toggleExpanded, unsupported, waiting, workflow, workflows
-}: WorkflowsTreeBrowserProps) {
-  // return immediately when workflows are not supported in the current project
-  if (unsupported)
-    return (<UnsupportedWorkflows fullPath={fullPath} />);
-  const emptyElement = (<NoWorkflows />);
-
-  // show status: loading or error or full content
-  const loading = waiting || (!workflows.fetched);
-  const shrunk = selectedAvailable && !!selected || workflow.error;
-
-  let content: React.ReactNode;
-  if (loading) {
-    content = (<Loader />);
-  }
-  else if (workflows.error) {
-    content = (<CoreErrorAlert error={workflows.error} />);
-  }
-  else {
-    const treeBrowser = (
-      <TreeBrowser
-        emptyElement={emptyElement}
-        expanded={expanded}
-        highlightedProp={orderBy in ["name", "workflowType"] ? "lastExecution" : orderBy}
-        items={orderWorkflows(workflows.list, orderBy, ascending, showInactive)}
-        selected={selected}
-        shrunk={shrunk}
-        toggleExpanded={toggleExpanded}
-      />
-    );
-
-    if (!shrunk) {
-      content = treeBrowser;
-    }
-    else {
-      const waitingDetails = waiting || workflow.fetching || !workflow.fetched;
-      content = (
-        <Row>
-          <Col xs={12} md={5} lg={4}>
-            {treeBrowser}
-          </Col>
-          <Col xs={12} md={7} lg={8}>
-            <WorkflowDetail
-              fullPath={fullPath}
-              selectedAvailable={selectedAvailable}
-              setDetailExpanded={setDetailExpanded}
-              waiting={waitingDetails}
-              workflow={workflow}
-              workflowId={selected} />
-          </Col>
-        </Row>
-      );
-    }
-  }
-
-  return (
-    <div>
-      <h3>Workflows</h3>
-      <WorkflowsListFilters
-        ascending={ascending}
-        orderBy={orderBy}
-        orderByMatrix={orderByMatrix}
-        setOrderBy={setOrderBy}
-        showInactive={showInactive}
-        toggleAscending={toggleAscending}
-        toggleInactive={toggleInactive} />
-      {content}
-    </div>
-  );
-}
+/** DETAILS **/
 
 interface WorkflowDetailProps {
   fullPath: string;
@@ -270,10 +278,11 @@ interface WorkflowDetailProps {
   waiting: boolean;
   workflow: Record<string, any>;
   workflowId: string;
+  workflows: Record<string, any>;
 }
 
 function WorkflowDetail({
-  fullPath, selectedAvailable, setDetailExpanded, waiting, workflow, workflowId
+  fullPath, selectedAvailable, setDetailExpanded, waiting, workflow, workflowId, workflows
 }: WorkflowDetailProps) {
   const backUrl = Url.get(Url.pages.project.workflows, { namespace: "", path: fullPath });
   const backElement = (
@@ -302,7 +311,9 @@ function WorkflowDetail({
           setDetailExpanded={setDetailExpanded}
           waiting={waiting}
           workflow={workflow}
-          workflowId={workflowId} />
+          workflowId={workflowId}
+          workflows={workflows}
+        />
       </TreeDetails>
     );
   }
@@ -334,10 +345,11 @@ interface WorkflowTreeDetailsProps {
   waiting: boolean;
   workflow: Record<string, any>;
   workflowId: string;
+  workflows: Record<string, any>;
 }
 
 function WorkflowTreeDetail({
-  backElement, setDetailExpanded, waiting, workflow, workflowId
+  backElement, setDetailExpanded, waiting, workflow, workflowId, workflows
 }: WorkflowTreeDetailsProps) {
   const details = workflow.details ? workflow.details : {};
   const isComposite = details.type === "Plan" ? false : true;
@@ -362,12 +374,6 @@ function WorkflowTreeDetail({
         <code className="mb-0">
           {details.full_command}
           <Clipboard clipboardText={details.full_command} />
-        </code>
-      </WorkflowTreeDetailRow>
-      <WorkflowTreeDetailRow name="Renku command">
-        <code className="mb-0">
-          {details.renkuCommand}
-          <Clipboard clipboardText={details.renkuCommand} />
         </code>
       </WorkflowTreeDetailRow>
     </>);
@@ -416,7 +422,6 @@ function WorkflowTreeDetail({
               <WorkflowTreeDetailRow name="Keywords">
                 {
                   details.keywords?.length ?
-                    // (<EntityTags multiline={true} tagList={details.keywords} />) :
                     (<>{ details.keywords.join(", ") }</>) :
                     (<span className="fst-italic text-rk-text-light">None</span>)
                 }
@@ -443,6 +448,12 @@ function WorkflowTreeDetail({
                 {Time.getDuration(details.duration)}
               </WorkflowTreeDetailRow>
               {typeSpecificRows}
+              <WorkflowTreeDetailRow name="Renku command">
+                <code className="mb-0">
+                  {details.renkuCommand}
+                  <Clipboard clipboardText={details.renkuCommand} />
+                </code>
+              </WorkflowTreeDetailRow>
             </tbody>
           </Table>
         </CardBody>
@@ -454,7 +465,12 @@ function WorkflowTreeDetail({
         </CardHeader>
         <CardBody>
           <WorkflowDetailVisualizer
-            details={details} expanded={workflow.expanded} setDetailExpanded={setDetailExpanded} />
+            details={details}
+            expanded={workflow.expanded}
+            isComposite={isComposite}
+            setDetailExpanded={setDetailExpanded}
+            workflows={workflows}
+          />
         </CardBody>
       </Card>
     </>
@@ -462,29 +478,8 @@ function WorkflowTreeDetail({
 }
 
 
-interface WorkflowVisualizerSimpleBoxProps {
-  children: React.ReactNode;
-  large?: boolean;
-  title: string;
-}
-
-function WorkflowVisualizerSimpleBox({ children, large = false, title }: WorkflowVisualizerSimpleBoxProps) {
-  return (
-    <Col xs={12} lg={large ? 12 : 4}>
-      <Card className="border border-rk-light mb-3">
-        <CardHeader className="bg-white p-2">
-          <h4 className="m-1">{title}</h4>
-        </CardHeader>
-        <CardBody className="p-1">
-          {children}
-        </CardBody>
-      </Card>
-    </Col>
-  );
-}
-
-
 /** VISUALIZER **/
+
 
 function UnavailableDetail({ className = "", text = "None" }) {
   return (
@@ -495,15 +490,48 @@ function UnavailableDetail({ className = "", text = "None" }) {
 interface WorkflowDetailVisualizerProps {
   details: Record<string, any>;
   expanded: Record<string, any>
+  isComposite: boolean;
   setDetailExpanded: Function;
+  workflows: Record<string, any>;
 }
 
 function WorkflowDetailVisualizer({
-  details, expanded, setDetailExpanded
+  details, expanded, isComposite, setDetailExpanded, workflows
 }: WorkflowDetailVisualizerProps) {
   const command = details.command ?
     (<code className="mb-0">{details.command} <Clipboard clipboardText={details.command} /></code>) :
     (<UnavailableDetail />);
+
+  if (isComposite) {
+    // compute the children -- we can use a different visualization if we wish
+    const childrenWorkflowsIds = details.plans?.length ? details.plans.map((p: Record<string, any>) => p.id) : [];
+    const childrenWorkflowsObjects = workflows.list.filter(
+      (w: Record<string, any>) => childrenWorkflowsIds.includes(w.id)
+    );
+    const childrenWorkflowsElements = childrenWorkflowsObjects.map((w: any) => {
+      let newProps: Record<string, any> = {
+        embed: true,
+        expanded: [],
+        items: workflows.list,
+        uniqueId: `wf-children-details-${w.workflowId}`,
+        toggleExpanded: () => { }
+      };
+      return (<TreeElement key={"wf-children-details-" + w.workflowId} {...w} {...newProps} />);
+    });
+    return (<>
+      <WorkflowVisualizerSimpleBox large={true} title="Steps">
+        {childrenWorkflowsElements}
+      </WorkflowVisualizerSimpleBox>
+      <WorkflowVisualizerSimpleBox large={true} title="Mappings">
+        <VisualizerMappings data={details.mappings} expanded={expanded}
+          setDetailExpanded={setDetailExpanded} />
+        {/* // ! CONTINUE IN THIS COMPONENT */}
+      </WorkflowVisualizerSimpleBox>
+      <WorkflowVisualizerSimpleBox large={true} title="Links">
+        <p className="p-2 m-0">LINKS -- not implemented yet...</p>
+      </WorkflowVisualizerSimpleBox>
+    </>);
+  }
 
   return (<>
     <Table className="table-borderless rk-tree-table mb-3" size="sm">
@@ -531,6 +559,53 @@ function WorkflowDetailVisualizer({
   </>);
 }
 
+interface VisualizerMappingsProps {
+  data: Record<string, any>[]
+  expanded: Record<string, any>
+  setDetailExpanded: Function;
+}
+
+function VisualizerMappings({
+  data, expanded, setDetailExpanded
+}: VisualizerMappingsProps) {
+  if (!data?.length)
+    return (<p className="m-2"><UnavailableDetail /></p>);
+  const elements = data.map((element: any) => {
+    const elemClass = (expanded.type === element.type && expanded.name === element.name) ?
+      "selected" : "";
+    return (
+      <div key={element.name} className={`p-2 rk-clickable ${elemClass}`}
+        onClick={() => { setDetailExpanded(element); }}>
+        <p className="mb-0"><b>{element.name}</b>: {element.default_value}</p>
+      </div>
+    );
+  });
+
+  // ! TODO: return details panel
+  return (<>{elements}</>);
+}
+
+interface WorkflowVisualizerSimpleBoxProps {
+  children: React.ReactNode;
+  large?: boolean;
+  title: string;
+}
+
+function WorkflowVisualizerSimpleBox({ children, large = false, title }: WorkflowVisualizerSimpleBoxProps) {
+  return (
+    <Col xs={12} lg={large ? 12 : 4}>
+      <Card className="border border-rk-light mb-3">
+        <CardHeader className="bg-white p-2">
+          <h4 className="m-1">{title}</h4>
+        </CardHeader>
+        <CardBody className="p-1">
+          {children}
+        </CardBody>
+      </Card>
+    </Col>
+  );
+}
+
 
 interface VisualizerCommandEntitiesProps {
   data: Record<string, any>[]
@@ -542,7 +617,7 @@ function VisualizerCommandEntities({
   data, expanded, setDetailExpanded
 }: VisualizerCommandEntitiesProps) {
   if (!data?.length)
-    return (<p className="my-2"><UnavailableDetail text="Not implemented yet" /></p>);
+    return (<p className="m-2"><UnavailableDetail /></p>);
   const elements = data.map((i: any) => (
     <VisualizerCommandEntity key={i.plan_id + i.name} element={i}
       expanded={expanded} setDetailExpanded={setDetailExpanded} />
