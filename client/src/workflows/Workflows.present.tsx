@@ -309,6 +309,7 @@ function WorkflowDetail({
       <TreeDetails>
         <WorkflowTreeDetail
           backElement={backElement}
+          fullPath={fullPath}
           setDetailExpanded={setDetailExpanded}
           waiting={waiting}
           workflow={workflow}
@@ -342,6 +343,7 @@ function WorkflowTreeDetailRow({
 
 interface WorkflowTreeDetailsProps {
   backElement: React.ReactNode;
+  fullPath: string;
   setDetailExpanded: Function;
   waiting: boolean;
   workflow: Record<string, any>;
@@ -350,7 +352,7 @@ interface WorkflowTreeDetailsProps {
 }
 
 function WorkflowTreeDetail({
-  backElement, setDetailExpanded, waiting, workflow, workflowId, workflows
+  backElement, fullPath, setDetailExpanded, waiting, workflow, workflowId, workflows
 }: WorkflowTreeDetailsProps) {
   const details = workflow.details ? workflow.details : {};
   const isComposite = details.type === "Plan" ? false : true;
@@ -468,6 +470,7 @@ function WorkflowTreeDetail({
           <WorkflowDetailVisualizer
             details={details}
             expanded={workflow.expanded}
+            fullPath={fullPath}
             isComposite={isComposite}
             setDetailExpanded={setDetailExpanded}
             workflows={workflows}
@@ -491,13 +494,14 @@ function UnavailableDetail({ className = "", text = "None" }) {
 interface WorkflowDetailVisualizerProps {
   details: Record<string, any>;
   expanded: Record<string, any>
+  fullPath: string;
   isComposite: boolean;
   setDetailExpanded: Function;
   workflows: Record<string, any>;
 }
 
 function WorkflowDetailVisualizer({
-  details, expanded, isComposite, setDetailExpanded, workflows
+  details, expanded, fullPath, isComposite, setDetailExpanded, workflows
 }: WorkflowDetailVisualizerProps) {
   const command = details.command ?
     (<code className="mb-0">{details.command} <Clipboard clipboardText={details.command} /></code>) :
@@ -543,19 +547,19 @@ function WorkflowDetailVisualizer({
     </Table>
     <Row>
       <WorkflowVisualizerSimpleBox title="Inputs">
-        <VisualizerCommandEntities data={details.inputs} expanded={expanded}
+        <VisualizerCommandEntities data={details.inputs} expanded={expanded} fullPath={fullPath}
           setDetailExpanded={setDetailExpanded} />
       </WorkflowVisualizerSimpleBox>
       <WorkflowVisualizerSimpleBox title="Outputs">
-        <VisualizerCommandEntities data={details.outputs} expanded={expanded}
+        <VisualizerCommandEntities data={details.outputs} expanded={expanded} fullPath={fullPath}
           setDetailExpanded={setDetailExpanded} />
       </WorkflowVisualizerSimpleBox>
       <WorkflowVisualizerSimpleBox title="Parameters">
-        <VisualizerCommandEntities data={details.parameters} expanded={expanded}
+        <VisualizerCommandEntities data={details.parameters} expanded={expanded} fullPath={fullPath}
           setDetailExpanded={setDetailExpanded} />
       </WorkflowVisualizerSimpleBox>
     </Row>
-    <VisualizerDetailExpanded data={expanded} />
+    <VisualizerDetailExpanded data={expanded} fullPath={fullPath} />
   </>);
 }
 
@@ -625,33 +629,53 @@ function WorkflowVisualizerSimpleBox({ children, large = false, title }: Workflo
 interface VisualizerCommandEntitiesProps {
   data: Record<string, any>[]
   expanded: Record<string, any>
+  fullPath: string;
   setDetailExpanded: Function;
 }
 
 function VisualizerCommandEntities({
-  data, expanded, setDetailExpanded
+  data, expanded, fullPath, setDetailExpanded
 }: VisualizerCommandEntitiesProps) {
   if (!data?.length)
     return (<p className="m-2"><UnavailableDetail /></p>);
-  const elements = data.map((i: any) => (
-    <VisualizerCommandEntity key={i.plan_id + i.name} element={i}
-      expanded={expanded} setDetailExpanded={setDetailExpanded} />
-  ));
+  const elements = data.map((i: any) => {
+    const fileUrl = Url.get(Url.pages.project.file, { namespace: "", path: fullPath, target: i.default_value });
+    return (
+      <VisualizerCommandEntity key={i.plan_id + i.name} element={i} fileUrl={fileUrl}
+        expanded={expanded} setDetailExpanded={setDetailExpanded}
+      />
+    );
+  });
   return (<>{elements}</>);
 }
 
 interface VisualizerCommandEntityProps {
   element: Record<string, any>
   expanded: Record<string, any>
+  fileUrl: string;
   setDetailExpanded: Function;
 }
 
-function VisualizerCommandEntity({ element, expanded, setDetailExpanded }: VisualizerCommandEntityProps) {
+function VisualizerCommandEntity({ element, expanded, fileUrl, setDetailExpanded }: VisualizerCommandEntityProps) {
   const elemClass = (expanded.type === element.type && expanded.name === element.name) ?
     "selected" : "";
+  let valueClass = "";
+  let link: React.ReactNode = null;
+  if (element.encoding_format) {
+    if (element.exists) {
+      link = (
+        <Link to={fileUrl}>
+          <FontAwesomeIcon className="text-rk-yellow" icon={faLink} />
+        </Link>
+      );
+    }
+    else {
+      valueClass = "text-rk-text-light";
+    }
+  }
   return (
     <div className={`p-2 rk-clickable ${elemClass}`} onClick={() => { setDetailExpanded(element); }}>
-      <p className="mb-0"><b>{element.name}</b>: {element.default_value}</p>
+      <p className="mb-0"><b>{element.name}</b>: <span className={valueClass}>{element.default_value}</span> {link}</p>
     </div>
   );
 }
@@ -659,13 +683,22 @@ function VisualizerCommandEntity({ element, expanded, setDetailExpanded }: Visua
 
 interface VisualizerDetailExpandedProps {
   data: Record<string, any>
+  fullPath: string;
 }
 
-function VisualizerDetailExpanded({ data }: VisualizerDetailExpandedProps) {
+function VisualizerDetailExpanded({ data, fullPath }: VisualizerDetailExpandedProps) {
   if (!data?.name)
     return null;
 
-  const defaultValue = data.default_value ? data.default_value : <UnavailableDetail />;
+  let defaultValue = data.default_value ? data.default_value : <UnavailableDetail />;
+  if (data.default_value && data.encoding_format && data.exists) {
+    const fileUrl = Url.get(Url.pages.project.file, { namespace: "", path: fullPath, target: data.default_value });
+    defaultValue = (
+      <span>{defaultValue} <Link to={fileUrl}>
+        <FontAwesomeIcon className="text-rk-yellow" icon={faLink} />
+      </Link></span>
+    );
+  }
   const description = data.description ? data.description : <UnavailableDetail />;
   const prefix = data.prefix ? data.prefix : <UnavailableDetail />;
   const position = data.position ? data.position : <UnavailableDetail />;
@@ -722,7 +755,7 @@ function VisualizerMappingExpanded({ data, workflows }: VisualizerMappingExpande
           const newName = `[WF: ${targetWorkflow.name}] @ ${subItem.replace("/", " #")}`;
           const url = targetWorkflow.url; // ! (**restore here**) + t.id.replace(targetWorkflow.id, "");
           const link = (<Link to={url}>
-            <FontAwesomeIcon className="text-rk-green" icon={faLink} />
+            <FontAwesomeIcon className="text-rk-yellow" icon={faLink} />
           </Link>);
           return (<span key={simpleHash(t.id + t.name)}>{newName} {link}</span>);
         }
