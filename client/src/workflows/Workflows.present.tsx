@@ -20,7 +20,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon, } from "@fortawesome/react-fontawesome";
 import {
-  faCheck, faExclamationTriangle, faInfoCircle, faSortAmountDown, faSortAmountUp, faTimesCircle
+  faCheck, faExclamationTriangle, faInfoCircle, faLink, faSortAmountDown, faSortAmountUp, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -39,6 +39,7 @@ import { Loader } from "../utils/components/Loader";
 import { Url } from "../utils/helpers/url";
 import { TreeBrowser, TreeDetails, TreeElement } from "../utils/components/Tree";
 import { InfoAlert, WarnAlert } from "../utils/components/Alert";
+import { simpleHash } from "../utils/helpers/HelperFunctions";
 
 
 /** BROWSER **/
@@ -524,12 +525,11 @@ function WorkflowDetailVisualizer({
       </WorkflowVisualizerSimpleBox>
       <WorkflowVisualizerSimpleBox large={true} title="Mappings">
         <VisualizerMappings data={details.mappings} expanded={expanded}
-          setDetailExpanded={setDetailExpanded} />
-        {/* // ! CONTINUE IN THIS COMPONENT */}
+          setDetailExpanded={setDetailExpanded} workflows={workflows} />
       </WorkflowVisualizerSimpleBox>
-      <WorkflowVisualizerSimpleBox large={true} title="Links">
+      {/* <WorkflowVisualizerSimpleBox large={true} title="Links">
         <p className="p-2 m-0">LINKS -- not implemented yet...</p>
-      </WorkflowVisualizerSimpleBox>
+      </WorkflowVisualizerSimpleBox> */}
     </>);
   }
 
@@ -563,10 +563,11 @@ interface VisualizerMappingsProps {
   data: Record<string, any>[]
   expanded: Record<string, any>
   setDetailExpanded: Function;
+  workflows: Record<string, any>;
 }
 
 function VisualizerMappings({
-  data, expanded, setDetailExpanded
+  data, expanded, setDetailExpanded, workflows
 }: VisualizerMappingsProps) {
   if (!data?.length)
     return (<p className="m-2"><UnavailableDetail /></p>);
@@ -581,8 +582,22 @@ function VisualizerMappings({
     );
   });
 
-  // ! TODO: return details panel
-  return (<>{elements}</>);
+  let content: React.ReactNode;
+  if (expanded && expanded.type === "Mapping") {
+    content = (
+      <Row>
+        <Col xs={12} sm={6} md={12} lg={6}>{elements}</Col>
+        <Col xs={12} sm={6} md={12} lg={6}>
+          <VisualizerMappingExpanded data={expanded} workflows={workflows} />
+        </Col>
+      </Row>
+    );
+  }
+  else {
+    content = elements;
+  }
+
+  return (<>{content}</>);
 }
 
 interface WorkflowVisualizerSimpleBoxProps {
@@ -677,6 +692,58 @@ function VisualizerDetailExpanded({ data }: VisualizerDetailExpandedProps) {
         </Table>
       </WorkflowVisualizerSimpleBox>
     </Row>
+  );
+}
+
+
+interface VisualizerMappingExpandedProps {
+  data: Record<string, any>
+  workflows: Record<string, any>;
+}
+
+function VisualizerMappingExpanded({ data, workflows }: VisualizerMappingExpandedProps) {
+  if (!data?.name)
+    return null;
+
+  const defaultValue = data.default_value ? data.default_value : <UnavailableDetail />;
+  const description = data.description ? data.description : <UnavailableDetail />;
+  let targets: React.ReactNode;
+  if (!data?.targets?.length) {
+    targets = (<UnavailableDetail text="None" />);
+  }
+  else {
+    targets = (
+      data.targets.map((t: any) => {
+        try {
+          const targetWorkflow = workflows?.list?.length ?
+            workflows.list.find((w: any) => ("/" + w.id === t.plan_id)) : // ! remove the temporary `"/" + `
+            null;
+          const subItem = t.id.replace(targetWorkflow.id + "/", "");
+          const newName = `[WF: ${targetWorkflow.name}] @ ${subItem.replace("/", " #")}`;
+          const url = targetWorkflow.url; // ! (**restore here**) + t.id.replace(targetWorkflow.id, "");
+          const link = (<Link to={url}>
+            <FontAwesomeIcon className="text-rk-green" icon={faLink} />
+          </Link>);
+          return (<span key={simpleHash(t.id + t.name)}>{newName} {link}</span>);
+        }
+        catch {
+          return (<span key={simpleHash(t.id + t.name)}>{t.id}</span>);
+        }
+      })
+    );
+  }
+
+  return (
+    <WorkflowVisualizerSimpleBox title="Details" large={true}>
+      <Table className="table-borderless rk-tree-table mb-0" size="sm">
+        <tbody>
+          <WorkflowTreeDetailRow name="Name">{data.name}</WorkflowTreeDetailRow>
+          <WorkflowTreeDetailRow name="Default value">{defaultValue}</WorkflowTreeDetailRow>
+          <WorkflowTreeDetailRow name="Description">{description}</WorkflowTreeDetailRow>
+          <WorkflowTreeDetailRow name="Targets">{targets}</WorkflowTreeDetailRow>
+        </tbody>
+      </Table>
+    </WorkflowVisualizerSimpleBox>
   );
 }
 
