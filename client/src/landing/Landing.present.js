@@ -35,6 +35,10 @@ import ListDisplay from "../utils/components/List";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { Loader } from "../utils/components/Loader";
 import { Docs } from "../utils/constants/Docs";
+import { WarnAlert } from "../utils/components/Alert";
+import { useSelector } from "react-redux";
+import { useGetInactiveKgProjectsQuery } from "../features/inactiveKgProjects/InactiveKgProjectsApi";
+import { useInactiveProjectSelector } from "../features/inactiveKgProjects/inactiveKgProjectsSlice";
 
 
 function truncatedProjectListRows(projects, urlFullList, gridDisplay, lastVisited) {
@@ -145,6 +149,35 @@ class Welcome extends Component {
   }
 }
 
+export function ProjectsInactiveKGWarning() {
+  const user = useSelector((state) => state.stateModel.user);
+  const projectList = useInactiveProjectSelector(
+    (state) => state.kgInactiveProjects
+  );
+  const { data, isFetching, isLoading } = useGetInactiveKgProjectsQuery(user?.data?.id);
+
+  if (!user.logged)
+    return null;
+
+  if (isLoading || isFetching || data?.length === 0)
+    return null;
+
+  let totalProjects;
+  if (projectList.length > 0) {
+    totalProjects = projectList.filter( p => p.progressActivation !== 100).length;
+    if (totalProjects === 0)
+      return null;
+  }
+  else {
+    totalProjects = data?.length;
+  }
+
+  return <WarnAlert>
+    You have {totalProjects} projects that are not in the Knowledge Graph.{" "}
+    <Link to="/inactive-kg-projects">Activate your projects</Link> to make them searchable on Renku.
+  </WarnAlert>;
+}
+
 class LoggedInHome extends Component {
   render() {
     const urlMap = this.props.urlMap;
@@ -164,6 +197,7 @@ class LoggedInHome extends Component {
           <Row><Col md={12}>&nbsp;</Col></Row>
         </Col>
         <Col xs={{ order: 1 }} md={{ size: 5, order: 2 }}>
+          <ProjectsInactiveKGWarning />
           <Welcome {...this.props} />
         </Col>
       </Row>,

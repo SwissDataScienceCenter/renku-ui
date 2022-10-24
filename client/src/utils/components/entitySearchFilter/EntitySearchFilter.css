@@ -9,6 +9,11 @@
     font-weight: bold;
 }
 
+.filter-title {
+    font-size: large;
+    font-weight: bold;
+}
+
 .filter-box {
     display: flex;
     flex-direction: column;

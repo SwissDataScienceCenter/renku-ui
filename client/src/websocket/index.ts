@@ -18,6 +18,7 @@
 
 import { checkWsServerMessage, WsMessage, WsServerMessage } from "./WsMessages";
 import { handleUserInit, handleUserUiVersion, handleUserError } from "./handlers/userHandlers";
+import { handleKgActivationStatus } from "./handlers/kgActivationStatusHandler";
 
 
 const timeoutIntervalMs = 45 * 1000; // ? set to 0 to disable
@@ -47,6 +48,13 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
         required: ["version"],
         optional: ["start", "message"],
         handler: handleUserUiVersion
+      }
+    ],
+    "activation": [
+      {
+        required: null,
+        optional: ["message"],
+        handler: handleKgActivationStatus
       }
     ],
     "ack": [
@@ -80,8 +88,9 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
  * Setup WebSocket channel.
  * @param webSocketUrl - target URL
  * @param fullModel - global model
+ * @param notifications - global notifications service
  */
-function setupWebSocket(webSocketUrl: string, fullModel: any) {
+function setupWebSocket(webSocketUrl: string, fullModel: any, notifications: any) {
   const model = fullModel.subModel("webSocket");
   const webSocket = new WebSocket(webSocketUrl);
   model.setObject({ open: false, reconnect: { retrying: false } });
@@ -98,7 +107,7 @@ function setupWebSocket(webSocketUrl: string, fullModel: any) {
   webSocket.onopen = (status) => {
     // start pinging regularly when the connection is open
     const target = status.target as WebSocket;
-    const webSocketOpen = target && target["readyState"] ? true : false;
+    const webSocketOpen = !!(target && target["readyState"]);
     if (webSocketOpen)
       model.setObject({ open: true, error: false, lastReceived: null });
 
@@ -122,7 +131,7 @@ function setupWebSocket(webSocketUrl: string, fullModel: any) {
     model.setObject(wsData);
 
     if (data.code === 1006 || data.code === 4000)
-      retryConnection(webSocketUrl, fullModel);
+      retryConnection(webSocketUrl, fullModel, notifications);
   };
 
   webSocket.onmessage = (message) => {
@@ -156,7 +165,7 @@ function setupWebSocket(webSocketUrl: string, fullModel: any) {
       // execute the command
       try {
         // ? Mind we are passing the full model, not just model
-        const outcome = handler(serverMessage.data, webSocket, fullModel);
+        const outcome = handler(serverMessage.data, webSocket, fullModel, notifications);
         if (outcome && model.get("error"))
           model.set("error", false);
         else if (!outcome && !model.get("error"))
@@ -233,8 +242,9 @@ function getWsServerMessageHandler(
  * Retry connection when it fails, keeping track of the attempts.
  * @param webSocketUrl - target URL
  * @param fullModel - global model
+ * @param notifications - global notifications service
  */
-function retryConnection(webSocketUrl: string, fullModel: any) {
+function retryConnection(webSocketUrl: string, fullModel: any, notifications: any) {
   const reconnectModel = fullModel.subModel("webSocket.reconnect");
   const reconnectData = reconnectModel.get("");
   // reset timer after 1 hour
@@ -246,7 +256,7 @@ function retryConnection(webSocketUrl: string, fullModel: any) {
   reconnectData.retrying = true;
   const delay = (reconnectPenaltyFactor ** reconnectData.attempts) * reconnectIntervalMs;
   reconnectModel.setObject(reconnectData);
-  setTimeout(() => setupWebSocket(webSocketUrl, fullModel), delay);
+  setTimeout(() => setupWebSocket(webSocketUrl, fullModel, notifications), delay);
 }
 
 

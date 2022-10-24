@@ -711,6 +711,10 @@ const environmentSchema = new Schema({
   }
 });
 
+const kgActivationSchema = new Schema({
+  status: { initial: null }
+});
+
 /**
  * Schema for information from statuspage.io. Used by the statuspage module.
  */
@@ -745,5 +749,5 @@ export {
   datasetFormSchema, datasetSchema, datasetImportFormSchema, environmentSchema,
   formGeneratorSchema, issueFormSchema, newProjectSchema, notebooksSchema, notificationsSchema,
   projectSchema, projectsSchema, statuspageSchema, userSchema, webSocketSchema, workflowSchema,
-  workflowsSchema
+  workflowsSchema, kgActivationSchema
 };
