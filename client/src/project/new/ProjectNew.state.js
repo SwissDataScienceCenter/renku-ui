@@ -167,6 +167,7 @@ class NewProjectCoordinator {
       automatedObject :
       newProjectSchema.createInitialized().automated;
     let availableVariables = [];
+    let visibilities;
 
     // Step 1: wait for templates and namespaces to be fetched
     automated.step = 1;
@@ -220,7 +221,9 @@ class NewProjectCoordinator {
       else {
         this.setProperty("namespace", data.namespace); // full path
         newInput.namespace = data.namespace;
-        projectsCoordinator.getVisibilities(namespaceAvailable);
+        const visibilitiesByNamespace = await projectsCoordinator.getVisibilities(namespaceAvailable);
+        visibilities = visibilitiesByNamespace.visibilities;
+        this.setVisibilities(visibilitiesByNamespace, namespaceAvailable);
       }
     }
     if (data.template && !data.url) {
@@ -271,20 +274,21 @@ class NewProjectCoordinator {
       }
     }
     if (data.visibility) {
-      // wait for namespace visibilities to be available
-      let namespace, visibilities = null;
-      do {
-        // check namespaces availability
-        if (this.model.get("automated.manuallyReset")) return;
-        if (!visibilities) {
-          namespace = this.model.get("meta.namespace");
-          if (namespace.fetched && !namespace.fetching)
-            visibilities = namespace.visibilities;
-        }
-        await sleep(intervalLength);
-      } while (!visibilities);
-
-      if (visibilities.includes(data.visibility)) {
+      if (!visibilities) {
+        // wait for namespace visibilities to be available
+        let namespace = null;
+        do {
+          // check namespaces availability
+          if (this.model.get("automated.manuallyReset")) return;
+          if (!visibilities) {
+            namespace = this.model.get("meta.namespace");
+            if (namespace.fetched && !namespace.fetching)
+              visibilities = namespace.visibilities;
+          }
+          await sleep(intervalLength);
+        } while (!visibilities);
+      }
+      if (visibilities?.includes(data.visibility)) {
         this.setProperty("visibility", data.visibility);
       }
       else {
