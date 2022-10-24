@@ -32,6 +32,7 @@ import { testClient as client } from "../api-client";
 import { generateFakeUser } from "../user/User.test";
 import Landing from "./Landing";
 import { StateModel, globalSchema } from "../model";
+import { Provider } from "react-redux";
 
 describe("rendering", () => {
   const anonymousUser = generateFakeUser(true);
@@ -42,13 +43,15 @@ describe("rendering", () => {
     const div = document.createElement("div");
     await act(async () => {
       ReactDOM.render(
-        <MemoryRouter>
-          <Landing.Home
-            welcomePage={btoa("## Welcome to Renku")}
-            user={anonymousUser}
-            model={model}
-            client={client} />
-        </MemoryRouter>, div);
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <Landing.Home
+              welcomePage={btoa("## Welcome to Renku")}
+              user={anonymousUser}
+              model={model}
+              client={client} />
+          </MemoryRouter>
+        </Provider>, div);
     });
   });
 
@@ -56,13 +59,15 @@ describe("rendering", () => {
     const div = document.createElement("div");
     await act(async () => {
       ReactDOM.render(
-        <MemoryRouter>
-          <Landing.Home
-            welcomePage={btoa("## Welcome to Renku")}
-            user={loggedUser}
-            model={model}
-            client={client} />
-        </MemoryRouter>, div);
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <Landing.Home
+              welcomePage={btoa("## Welcome to Renku")}
+              user={loggedUser}
+              model={model}
+              client={client} />
+          </MemoryRouter>
+        </Provider>, div);
     });
   });
 });
