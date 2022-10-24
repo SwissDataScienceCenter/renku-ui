@@ -225,12 +225,7 @@ function App(props) {
     if (webSocketUrl.startsWith("http"))
       webSocketUrl = "ws" + webSocketUrl.substring(4);
     // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
-    setTimeout(
-      () => {
-        setWebSocket(setupWebSocket(webSocketUrl, props.model, notificationManager));
-        return;
-      }, 1000
-    );
+    setWebSocket(setupWebSocket(webSocketUrl, props.model, notificationManager));
   }, []); // eslint-disable-line
 
   // Avoid rendering the application while authenticating the user
