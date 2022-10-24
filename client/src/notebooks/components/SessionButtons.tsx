@@ -17,7 +17,7 @@
  */
 
 import { Link } from "react-router-dom";
-import { ArrowLeft, Briefcase, Button, Journals, Save, StopCircle } from "../../utils/ts-wrappers";
+import { ArrowClockwise, ArrowLeft, Briefcase, Button, Journals, Save, StopCircle } from "../../utils/ts-wrappers";
 import React from "react";
 import { ThrottledTooltip } from "../../utils/components/Tooltip";
 
@@ -74,6 +74,23 @@ function SaveSessionBtn({ toggleSaveSession }: SaveSessionProps) {
   );
 }
 
+interface PullSessionProps {
+  togglePullSession: Function;
+}
+function PullSessionBtn({ togglePullSession }: PullSessionProps) {
+  return (
+    <div>
+      <Button id="pull-session-button" data-cy="pull-session-button"
+        className="border-0 bg-transparent text-dark p-0 no-focus" onClick={() => togglePullSession()}>
+        <ArrowClockwise className="text-rk-dark" title="Pull"/>
+      </Button>
+      <ThrottledTooltip
+        target="pull-session-button"
+        tooltip="Refresh session" />
+    </div>
+  );
+}
+
 interface ResourcesProps {
   toggleModalResources: Function;
 }
@@ -103,4 +120,4 @@ function AboutBtn({ toggleModalAbout, projectName }: AboutProps) {
   );
 }
 
-export { AboutBtn, GoBackBtn, ResourcesBtn, SaveSessionBtn, StopSessionBtn };
+export { AboutBtn, GoBackBtn, PullSessionBtn, ResourcesBtn, SaveSessionBtn, StopSessionBtn };

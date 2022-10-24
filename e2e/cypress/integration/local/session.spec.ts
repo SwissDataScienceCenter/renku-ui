@@ -72,4 +72,12 @@ describe("display a session", () => {
     cy.get_cy("stop-session-modal-button").should("exist");
 
   });
+
+  it("save session button", () => {
+    cy.gui_open_session();
+    // save session
+    cy.get_cy("save-session-button").click();
+    cy.get_cy("save-session-modal-button").should("exist");
+
+  });
 });

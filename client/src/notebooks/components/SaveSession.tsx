@@ -286,3 +286,4 @@ function SaveSessionBody({ closeModal, gitStatus, saveSession, saving }: SaveSes
 
 
 export default SaveSession;
+export { commitsPhrasing };

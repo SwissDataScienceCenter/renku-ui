@@ -30,6 +30,13 @@ interface SaveResult extends JsonRpcResult {
     message: string;
   };
 }
+interface PullResult extends JsonRpcResult {
+  result: string;
+  error?: {
+    code: number;
+    message: string;
+  };
+}
 
 export const sessionSidecarApi = createApi({
   reducerPath: "sessionSidecarApi",
@@ -76,10 +83,24 @@ export const sessionSidecarApi = createApi({
         };
       },
     }),
+    renkuPull: builder.mutation<PullResult, SaveArgs>({
+      query: (args) => {
+        const body = {
+          id: 0,
+          jsonrpc: "2.0",
+          method: "git/pull",
+        };
+        return {
+          body,
+          method: "POST",
+          url: `${args.serverName}/sidecar/jsonrpc`,
+        };
+      },
+    }),
   }),
 });
 
-export const { useGitStatusQuery, useHealthQuery, useRenkuSaveMutation } =
+export const { useGitStatusQuery, useHealthQuery, useRenkuSaveMutation, useRenkuPullMutation } =
   sessionSidecarApi;
 
 export type { GitStatusResult, HealthState };
