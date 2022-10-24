@@ -67,7 +67,6 @@ function SessionStartSidebar(props) {
     <h2>Start session</h2>
     <p>On the project<br /><b className="text-break">{props.pathWithNamespace}</b></p>
     <ProjectSessionLockAlert lockStatus={props.lockStatus} />
-    <LaunchErrorAlert autosaves={props.autosaves} launchError={props.launchError} ci={props.ci} />
 
     <div className="d-none d-md-block">
       <p>A session gives you an environment with resources for doing work.
@@ -93,7 +92,9 @@ function StartNotebookAdvancedOptions(props) {
     </div>
     <div className="field-group">
       <AutosavesInfoAlert autosaves={autosaves} autosavesId={props.autosavesCommit}
-        currentId={props.filters.commit?.id} deleteAutosave={deleteAutosave} setCommit={setCommit} />
+        autosavesWrong={props.autosavesWrong} currentId={props.filters.commit?.id}
+        deleteAutosave={deleteAutosave} setCommit={setCommit}
+      />
     </div>
     <div className="field-group">
       <StartNotebookBranches {...props} disabled={props.disabled} />
@@ -177,6 +178,7 @@ function StartNotebookServer(props) {
 
   return (
     <Row>
+      <LaunchErrorAlert autosaves={props.autosaves} launchError={props.launchError} ci={props.ci} />
       <Col sm={12} md={3} lg={4}>
         <SessionStartSidebar autosaves={autosaves} ci={props.ci}
           launchError={props.launchError} lockStatus={props.lockStatus}
@@ -196,7 +198,7 @@ function StartNotebookServer(props) {
   );
 }
 
-function AutosavesInfoAlert({ autosaves, autosavesId, currentId, deleteAutosave, setCommit }) {
+function AutosavesInfoAlert({ autosaves, autosavesId, autosavesWrong, currentId, deleteAutosave, setCommit }) {
   const [deleteOngoing, setDeleteOngoing] = useState(false);
   const [deleteResult, setDeleteResult] = useState(null);
 
@@ -237,6 +239,19 @@ function AutosavesInfoAlert({ autosaves, autosavesId, currentId, deleteAutosave,
           You might{" "}
           <Button size="sm" color="warning" onClick={() => window.location.reload()}>refresh the page</Button>
           {" "}and try again. The autosave may have been deleted in another session.
+        </p>
+      </WarnAlert>
+    );
+  }
+
+  if (autosavesWrong) {
+    return (
+      <WarnAlert dismissible={false} timeout={0}>
+        <p className="mb-0">
+          There might be unsaved work left from your last session, but data is corrupted and
+          restoring it is not possible.
+          <br />
+          The latest commit was picked instead.
         </p>
       </WarnAlert>
     );
