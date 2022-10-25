@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useState } from "react";
+import React, { Fragment } from "react";
 
 import { Button, Col, Form, FormGroup, FormText, Modal, ModalBody, ModalHeader, Row } from "../../utils/ts-wrappers";
 import { Input, Label } from "../../utils/ts-wrappers";
@@ -25,16 +25,8 @@ import { Notebook } from "./Session";
 import { useGitStatusQuery, useHealthQuery, useRenkuSaveMutation } from "../../features/session/sidecarApi";
 import type { GitStatusResult } from "../../features/session/sidecarApi";
 
-function CenteredLoader() {
-  return <div className="d-flex justify-content-center">
-    <div><Loader size="16" inline="true" margin="2" /></div>
-  </div>;
-}
-
-interface ModalProps {
-  isOpen: boolean;
-  closeModal: Function;
-}
+import { CenteredLoader, InformationalBody, commitsPhrasing } from "./Sidecar";
+import type { CloseModalProps, ModalProps } from "./Sidecar";
 
 interface SaveSessionProps extends ModalProps {
   hasSaveAccess: boolean;
@@ -49,13 +41,13 @@ function SaveSession(props: SaveSessionProps) {
   const { data, error, isLoading } = useHealthQuery({ serverName });
 
   let body = null;
-  if (!props.isLogged) body = <AnonymousSessionBody closeModal={closeModal} isOpen={isOpen} />;
-  else if (!props.hasSaveAccess) body = <NoSaveAccessBody closeModal={closeModal} isOpen={isOpen} />;
+  if (!props.isLogged) body = <AnonymousSessionBody closeModal={closeModal} />;
+  else if (!props.hasSaveAccess) body = <NoSaveAccessBody closeModal={closeModal} />;
   else if (isLoading)
     body = <CenteredLoader />;
 
   else if (error != null || data == null || data.status !== "running")
-    body = <NoSidecarBody closeModal={closeModal} isOpen={isOpen} />;
+    body = <NoSidecarBody closeModal={closeModal} />;
 
   else body = <SaveSessionStatusBody closeModal={closeModal} isOpen={isOpen} sessionName={serverName} />;
 
@@ -69,54 +61,30 @@ function SaveSession(props: SaveSessionProps) {
   </Modal>;
 }
 
-function AnonymousSessionBody({ closeModal }: ModalProps) {
+function AnonymousSessionBody({ closeModal }: CloseModalProps) {
 
-  return (<Row>
-    <Col>
-      <div>This is an anonymous session so you will need to log in and redo your work.</div>
-      <div className="d-flex justify-content-end">
-        <Button className="float-right mt-1 btn-outline-rk-green"
-          onClick={closeModal}>
-            Back to Session
-        </Button>
-      </div>
-    </Col>
-  </Row>
+  return (<InformationalBody closeModal={closeModal}>
+    <div>This is an anonymous session so you will need to log in and redo your work.</div>
+  </InformationalBody>
   );
 }
 
-function NoSaveAccessBody({ closeModal }: ModalProps) {
-  return (<Row>
-    <Col>
-      <div>You do not have sufficient rights to save changes to this project.
+function NoSaveAccessBody({ closeModal }: CloseModalProps) {
+  return (<InformationalBody closeModal={closeModal}>
+    <div>You do not have sufficient rights to save changes to this project.
         If you wish to keep your changes, you can fork the project and push your changes to the fork.
-      </div>
-      <div className="d-flex justify-content-end">
-        <Button className="float-right mt-1 btn-outline-rk-green"
-          onClick={closeModal}>
-            Back to Session
-        </Button>
-      </div>
-    </Col>
-  </Row>
+    </div>
+  </InformationalBody>
   );
 }
 
-function NoSidecarBody({ closeModal }: ModalProps) {
+function NoSidecarBody({ closeModal }: CloseModalProps) {
 
-  return (<Row>
-    <Col>
-      <div>It is not possible to offer a one-click save for this session.
+  return (<InformationalBody closeModal={closeModal}>
+    <div>It is not possible to offer a one-click save for this session.
           If you are logged in, please invoke `<code>renku save</code>` in the terminal.
           If this is an anonymous session, you will need to log in and redo your work.</div>
-      <div className="d-flex justify-content-end">
-        <Button className="float-right mt-1 btn-outline-rk-green"
-          onClick={closeModal}>
-            Back to Session
-        </Button>
-      </div>
-    </Col>
-  </Row>
+  </InformationalBody>
   );
 }
 
@@ -125,7 +93,7 @@ interface SaveSessionStatusBodyProps extends ModalProps {
 }
 
 function SaveSessionStatusBody({ closeModal, isOpen, sessionName }: SaveSessionStatusBodyProps) {
-  const [succeeded, setSucceeded] = useState<boolean|undefined>(undefined);
+  const [succeeded, setSucceeded] = React.useState<boolean|undefined>(undefined);
   const { data, error, isFetching } = useGitStatusQuery({ serverName: sessionName });
   const [renkuSave, { isLoading: saving }] = useRenkuSaveMutation();
 
@@ -139,51 +107,35 @@ function SaveSessionStatusBody({ closeModal, isOpen, sessionName }: SaveSessionS
   };
 
   if (isFetching || data == null) return <CenteredLoader />;
-  if (error) return <NoSidecarBody closeModal={closeModal} isOpen={isOpen} />;
+  if (error) return <NoSidecarBody closeModal={closeModal} />;
   if (data.result.behind > 0)
     return <SaveSessionNoFFBody closeModal={closeModal} gitStatus={data} isOpen={isOpen} sessionName={sessionName} />;
-  if (succeeded === false) return <SaveSessionFailedBody closeModal={closeModal} isOpen={isOpen} />;
-  if (succeeded === true) return <SaveSessionUpToDateBody closeModal={closeModal} isOpen={isOpen} />;
+  if (succeeded === false) return <SaveSessionFailedBody closeModal={closeModal} />;
+  if (succeeded === true) return <SaveSessionUpToDateBody closeModal={closeModal} />;
   if (!data.result.clean || data.result.ahead > 0) {
     return <SaveSessionBody
       closeModal={closeModal} gitStatus={data} isOpen={isOpen} sessionName={sessionName}
       saving={saving} saveSession={saveSession}
     />;
   }
-  return <SaveSessionUpToDateBody closeModal={closeModal} isOpen={isOpen} />;
+  return <SaveSessionUpToDateBody closeModal={closeModal} />;
 }
 
 
-function SaveSessionUpToDateBody({ closeModal }: ModalProps) {
+function SaveSessionUpToDateBody({ closeModal }: CloseModalProps) {
   return (
-    <Row>
-      <Col>
-        <p>Your session is up-to-date. There are no changes that need saving.</p>
-        <div className="d-flex justify-content-end">
-          <Button className="float-right mt-1 btn-rk-green"
-            onClick={closeModal}>
-                  Back to Session
-          </Button>
-        </div>
-      </Col>
-    </Row>
+    <InformationalBody closeModal={closeModal}>
+      <p>Your session is up-to-date. There are no changes that need saving.</p>
+    </InformationalBody>
   );
 }
 
 
-function SaveSessionFailedBody({ closeModal }: ModalProps) {
+function SaveSessionFailedBody({ closeModal }: CloseModalProps) {
   return (
-    <Row>
-      <Col>
-        <p>Session save failed. Please try to save by running `<code>renku save</code>` in the terminal.</p>
-        <div className="d-flex justify-content-end">
-          <Button className="float-right mt-1 btn-rk-green"
-            onClick={closeModal}>
-                  Back to Session
-          </Button>
-        </div>
-      </Col>
-    </Row>
+    <InformationalBody closeModal={closeModal}>
+      <p>Session save failed. Please try to save by running `<code>renku save</code>` in the terminal.</p>
+    </InformationalBody>
   );
 }
 
@@ -194,20 +146,12 @@ interface SaveSessionBodyProps extends SaveSessionStatusBodyProps {
 function SaveSessionNoFFBody({ closeModal, gitStatus }: SaveSessionBodyProps) {
   const commitsToken = commitsPhrasing(gitStatus.result.behind);
 
-  return (<Row>
-    <Col>
-      <div>
+  return (<InformationalBody closeModal={closeModal}>
+    <div>
         This session is behind the server by {commitsToken}.
         You must first `<code>git pull</code>` in the work from the server before you can save.
-      </div>
-      <div className="d-flex justify-content-end">
-        <Button className="float-right mt-1 btn-outline-rk-green"
-          onClick={closeModal}>
-            Back to Session
-        </Button>
-      </div>
-    </Col>
-  </Row>
+    </div>
+  </InformationalBody>
   );
 }
 
@@ -245,14 +189,8 @@ interface SaveSessionSaveBodyProps extends SaveSessionBodyProps {
   saveSession: (arg0?: string) => unknown;
 }
 
-function commitsPhrasing(numberOfCommits: number) {
-  return numberOfCommits > 1 ?
-    `${numberOfCommits} commits` :
-    `${numberOfCommits} commit`;
-}
-
 function SaveSessionBody({ closeModal, gitStatus, saveSession, saving }: SaveSessionSaveBodyProps) {
-  const [commitMessage, setCommitMessage] = useState(undefined);
+  const [commitMessage, setCommitMessage] = React.useState(undefined);
   return (
     <Row>
       <Col>
@@ -284,6 +222,4 @@ function SaveSessionBody({ closeModal, gitStatus, saveSession, saving }: SaveSes
   );
 }
 
-
 export default SaveSession;
-export { commitsPhrasing };

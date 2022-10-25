@@ -16,25 +16,15 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
+import React from "react";
 
 import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "../../utils/ts-wrappers";
-import { Loader } from "../../utils/components/Loader";
-import { Notebook } from "./Session";
 import { useGitStatusQuery, useHealthQuery, useRenkuPullMutation } from "../../features/session/sidecarApi";
 import type { GitStatusResult } from "../../features/session/sidecarApi";
-import { commitsPhrasing } from "./SaveSession";
 
-function CenteredLoader() {
-  return <div className="d-flex justify-content-center">
-    <div><Loader size="16" inline="true" margin="2" /></div>
-  </div>;
-}
-
-interface ModalProps {
-  isOpen: boolean;
-  closeModal: Function;
-}
+import { Notebook } from "./Session";
+import { CenteredLoader, InformationalBody, commitsPhrasing } from "./Sidecar";
+import type { CloseModalProps, ModalProps } from "./Sidecar";
 
 interface PullSessionProps extends ModalProps {
   hasPullAccess: boolean;
@@ -53,7 +43,7 @@ function PullSession(props: PullSessionProps) {
     body = <CenteredLoader />;
 
   else if (error != null || data == null || data.status !== "running")
-    body = <NoSidecarBody closeModal={closeModal} isOpen={isOpen} />;
+    body = <NoSidecarBody closeModal={closeModal} />;
 
   else body = <PullSessionStatusBody closeModal={closeModal} isOpen={isOpen} sessionName={serverName} />;
 
@@ -67,19 +57,14 @@ function PullSession(props: PullSessionProps) {
   </Modal>;
 }
 
-function NoSidecarBody({ closeModal }: ModalProps) {
+function NoSidecarBody({ closeModal }: CloseModalProps) {
 
-  return (<Row>
-    <Col>
-      <div>It is not possible to offer a one-click refresh for this session.</div>
-      <div className="d-flex justify-content-end">
-        <Button className="float-right mt-1 btn-outline-rk-green"
-          onClick={closeModal}>
-          Back to Session
-        </Button>
-      </div>
-    </Col>
-  </Row>
+  return (<InformationalBody closeModal={closeModal}>
+    <div>It is not possible to offer a one-click refresh for this session.
+    You can, however, execute `<code>renku pull</code>` in the terminal to retrieve
+    the latest work from the server.
+    </div>
+  </InformationalBody>
   );
 }
 
@@ -88,7 +73,7 @@ interface PullSessionStatusBodyProps extends ModalProps {
 }
 
 function PullSessionStatusBody({ closeModal, isOpen, sessionName }: PullSessionStatusBodyProps) {
-  const [succeeded, setSucceeded] = useState<boolean|undefined>(undefined);
+  const [succeeded, setSucceeded] = React.useState<boolean|undefined>(undefined);
   const { data, error, isFetching } = useGitStatusQuery({ serverName: sessionName });
   const [renkuPull, { isLoading: pulling }] = useRenkuPullMutation();
 
@@ -102,9 +87,9 @@ function PullSessionStatusBody({ closeModal, isOpen, sessionName }: PullSessionS
   };
 
   if (isFetching || data == null) return <CenteredLoader />;
-  if (error) return <NoSidecarBody closeModal={closeModal} isOpen={isOpen} />;
-  if (succeeded === false) return <PullSessionFailedBody closeModal={closeModal} isOpen={isOpen} />;
-  if (succeeded === true) return <PullSessionUpToDateBody closeModal={closeModal} isOpen={isOpen} />;
+  if (error) return <NoSidecarBody closeModal={closeModal} />;
+  if (succeeded === false) return <PullSessionFailedBody closeModal={closeModal} />;
+  if (succeeded === true) return <PullSessionUpToDateBody closeModal={closeModal}/>;
   if (data.result.behind > 0) {
     return <PullSessionNoFFBody
       closeModal={closeModal}
@@ -115,39 +100,25 @@ function PullSessionStatusBody({ closeModal, isOpen, sessionName }: PullSessionS
       pullSession={pullSession} />;
   }
   if (!data.result.clean || data.result.ahead > 0)
-    return <PullSessionUpToDateBody closeModal={closeModal} isOpen={isOpen} />;
-  return <PullSessionUpToDateBody closeModal={closeModal} isOpen={isOpen} />;
+    return <PullSessionUpToDateBody closeModal={closeModal} />;
+  return <PullSessionUpToDateBody closeModal={closeModal} />;
 }
 
 
-function PullSessionUpToDateBody({ closeModal }: ModalProps) {
+function PullSessionUpToDateBody({ closeModal }: CloseModalProps) {
   return (
-    <Row>
-      <Col>
-        <p>Your session is up-to-date. There are no changes that need pulling.</p>
-        <div className="d-flex justify-content-end">
-          <Button className="float-right mt-1 btn-rk-green" onClick={closeModal}>
-            Back to Session
-          </Button>
-        </div>
-      </Col>
-    </Row>
+    <InformationalBody closeModal={closeModal}>
+      <p>Your session is up-to-date. There are no changes that need retrieving.</p>
+    </InformationalBody>
   );
 }
 
 
-function PullSessionFailedBody({ closeModal }: ModalProps) {
+function PullSessionFailedBody({ closeModal }: CloseModalProps) {
   return (
-    <Row>
-      <Col>
-        <p>Session pull failed. Please try to pull by running `<code>renku pull</code>` in the terminal.</p>
-        <div className="d-flex justify-content-end">
-          <Button className="float-right mt-1 btn-rk-green" onClick={closeModal}>
-            Back to Session
-          </Button>
-        </div>
-      </Col>
-    </Row>
+    <InformationalBody closeModal={closeModal}>
+      <p>Session pull failed. Please try to pull by running `<code>renku pull</code>` in the terminal.</p>
+    </InformationalBody>
   );
 }
 
