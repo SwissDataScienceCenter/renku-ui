@@ -121,7 +121,14 @@ function ShareLinkModal(props) {
   }, [createUrl, include, input, userTemplates]);
 
   const handleCheckbox = (target, event) => {
-    setInclude({ ...include, [target]: event.target.checked });
+    // select the template source if is selected a custom template
+    if (target === "template" && event.target.checked && available.templateRepo)
+      setInclude({ ...include, templateRepo: event.target.checked, [target]: event.target.checked });
+    // deselect template if deselect templateRepo
+    else if (target === "templateRepo" && !event.target.checked && available.template)
+      setInclude({ ...include, template: false, [target]: event.target.checked });
+    else
+      setInclude({ ...include, [target]: event.target.checked });
   };
 
   const labels = Object.keys(include).map(item => (
@@ -129,7 +136,7 @@ function ShareLinkModal(props) {
       <Label check className={`text-capitalize${available[item] ? " cursor-pointer" : " text-muted cursor-pointer"}`}>
         <Input
           type="checkbox"
-          disabled={available[item] ? false : true}
+          disabled={!available[item]}
           checked={include[item]}
           onChange={e => handleCheckbox(item, e)}
         /> {item === "templateRepo" ? "template source" : item}

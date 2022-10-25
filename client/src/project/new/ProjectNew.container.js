@@ -456,7 +456,7 @@ class NewProject extends Component {
     try {
       const data = getDataFromParams(searchParams);
       if (data)
-        this.coordinator.setAutomated(data);
+        this.coordinator.setAutomated(data, undefined, this.projectsCoordinator);
 
       // do not update url if is importing a dataset
       if (!props.importingDataset) {
