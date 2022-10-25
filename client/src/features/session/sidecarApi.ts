@@ -2,6 +2,14 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 type HealthState = { status: string };
 
+interface SidecarRequestArgs {
+  serverName: string;
+}
+
+interface SaveArgs extends SidecarRequestArgs {
+  message?: string;
+}
+
 interface JsonRpcResult {
   id: number;
   jsonRpc: string;
@@ -18,25 +26,16 @@ interface GitStatusResult extends JsonRpcResult {
   };
 }
 
-interface SaveArgs {
-  serverName: string;
-  message?: string;
+interface RenkuOpResult extends JsonRpcResult {
+  result: string;
+  error?: {
+    code: number;
+    message: string;
+  };
 }
 
-interface SaveResult extends JsonRpcResult {
-  result: string;
-  error?: {
-    code: number;
-    message: string;
-  };
-}
-interface PullResult extends JsonRpcResult {
-  result: string;
-  error?: {
-    code: number;
-    message: string;
-  };
-}
+interface SaveResult extends RenkuOpResult {}
+interface PullResult extends RenkuOpResult {}
 
 export const sessionSidecarApi = createApi({
   reducerPath: "sessionSidecarApi",
@@ -44,8 +43,8 @@ export const sessionSidecarApi = createApi({
   tagTypes: [],
   keepUnusedDataFor: 0,
   endpoints: (builder) => ({
-    gitStatus: builder.query<GitStatusResult, string>({
-      query: (serverName: string) => {
+    gitStatus: builder.query<GitStatusResult, SidecarRequestArgs>({
+      query: (args) => {
         const body = {
           id: 0,
           jsonrpc: "2.0",
@@ -54,14 +53,14 @@ export const sessionSidecarApi = createApi({
         return {
           body,
           method: "POST",
-          url: `${serverName}/sidecar/jsonrpc`,
+          url: `${args.serverName}/sidecar/jsonrpc`,
         };
       },
     }),
-    health: builder.query<HealthState, string>({
-      query: (serverName: string) => {
+    health: builder.query<HealthState, SidecarRequestArgs>({
+      query: (args) => {
         return {
-          url: `${serverName}/sidecar/health`,
+          url: `${args.serverName}/sidecar/health`,
         };
       },
     }),
@@ -83,7 +82,7 @@ export const sessionSidecarApi = createApi({
         };
       },
     }),
-    renkuPull: builder.mutation<PullResult, SaveArgs>({
+    renkuPull: builder.mutation<PullResult, SidecarRequestArgs>({
       query: (args) => {
         const body = {
           id: 0,
@@ -100,7 +99,11 @@ export const sessionSidecarApi = createApi({
   }),
 });
 
-export const { useGitStatusQuery, useHealthQuery, useRenkuSaveMutation, useRenkuPullMutation } =
-  sessionSidecarApi;
+export const {
+  useGitStatusQuery,
+  useHealthQuery,
+  useRenkuSaveMutation,
+  useRenkuPullMutation,
+} = sessionSidecarApi;
 
 export type { GitStatusResult, HealthState };

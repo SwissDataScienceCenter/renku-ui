@@ -45,8 +45,8 @@ interface PullSessionProps extends ModalProps {
 
 function PullSession(props: PullSessionProps) {
   const { closeModal, isOpen } = props;
-  const sessionName = props.notebook.data.name;
-  const { data, error, isLoading } = useHealthQuery(sessionName);
+  const serverName = props.notebook.data.name;
+  const { data, error, isLoading } = useHealthQuery({ serverName });
 
   let body = null;
   if (isLoading)
@@ -55,7 +55,7 @@ function PullSession(props: PullSessionProps) {
   else if (error != null || data == null || data.status !== "running")
     body = <NoSidecarBody closeModal={closeModal} isOpen={isOpen} />;
 
-  else body = <PullSessionStatusBody closeModal={closeModal} isOpen={isOpen} sessionName={sessionName} />;
+  else body = <PullSessionStatusBody closeModal={closeModal} isOpen={isOpen} sessionName={serverName} />;
 
   return <Modal className="modal-session" isOpen={isOpen} toggle={closeModal}>
     <ModalHeader toggle={closeModal}>
@@ -89,7 +89,7 @@ interface PullSessionStatusBodyProps extends ModalProps {
 
 function PullSessionStatusBody({ closeModal, isOpen, sessionName }: PullSessionStatusBodyProps) {
   const [succeeded, setSucceeded] = useState<boolean|undefined>(undefined);
-  const { data, error, isFetching } = useGitStatusQuery(sessionName);
+  const { data, error, isFetching } = useGitStatusQuery({ serverName: sessionName });
   const [renkuPull, { isLoading: pulling }] = useRenkuPullMutation();
 
   const pullSession = async (commitMessage: string|undefined) => {

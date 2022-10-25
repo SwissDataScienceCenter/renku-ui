@@ -45,8 +45,8 @@ interface SaveSessionProps extends ModalProps {
 
 function SaveSession(props: SaveSessionProps) {
   const { closeModal, isOpen } = props;
-  const sessionName = props.notebook.data.name;
-  const { data, error, isLoading } = useHealthQuery(sessionName);
+  const serverName = props.notebook.data.name;
+  const { data, error, isLoading } = useHealthQuery({ serverName });
 
   let body = null;
   if (!props.isLogged) body = <AnonymousSessionBody closeModal={closeModal} isOpen={isOpen} />;
@@ -57,7 +57,7 @@ function SaveSession(props: SaveSessionProps) {
   else if (error != null || data == null || data.status !== "running")
     body = <NoSidecarBody closeModal={closeModal} isOpen={isOpen} />;
 
-  else body = <SaveSessionStatusBody closeModal={closeModal} isOpen={isOpen} sessionName={sessionName} />;
+  else body = <SaveSessionStatusBody closeModal={closeModal} isOpen={isOpen} sessionName={serverName} />;
 
   return <Modal className="modal-session" isOpen={isOpen} toggle={closeModal}>
     <ModalHeader toggle={closeModal}>
@@ -126,7 +126,7 @@ interface SaveSessionStatusBodyProps extends ModalProps {
 
 function SaveSessionStatusBody({ closeModal, isOpen, sessionName }: SaveSessionStatusBodyProps) {
   const [succeeded, setSucceeded] = useState<boolean|undefined>(undefined);
-  const { data, error, isFetching } = useGitStatusQuery(sessionName);
+  const { data, error, isFetching } = useGitStatusQuery({ serverName: sessionName });
   const [renkuSave, { isLoading: saving }] = useRenkuSaveMutation();
 
   const saveSession = async (commitMessage: string|undefined) => {
