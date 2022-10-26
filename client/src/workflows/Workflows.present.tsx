@@ -25,7 +25,7 @@ import {
 
 import {
   Button, ButtonDropdown, Card, CardBody, Col, CardHeader, DropdownItem, DropdownMenu,
-  DropdownToggle, Input, Label, PopoverBody, Row, UncontrolledPopover, Table
+  DropdownToggle, Input, Label, PopoverBody, Row, UncontrolledPopover, UncontrolledTooltip, Table
 } from "../utils/ts-wrappers";
 
 import EntityCreators from "../utils/components/entities/Creators";
@@ -550,15 +550,15 @@ function WorkflowDetailVisualizer({
     </Table>
     <Row>
       <WorkflowVisualizerSimpleBox title="Inputs">
-        <VisualizerCommandEntities data={details.inputs} expanded={expanded} fullPath={fullPath}
+        <VisualizerCommandEntities data={details.inputs} expanded={expanded}
           setDetailExpanded={setDetailExpanded} />
       </WorkflowVisualizerSimpleBox>
       <WorkflowVisualizerSimpleBox title="Outputs">
-        <VisualizerCommandEntities data={details.outputs} expanded={expanded} fullPath={fullPath}
+        <VisualizerCommandEntities data={details.outputs} expanded={expanded}
           setDetailExpanded={setDetailExpanded} />
       </WorkflowVisualizerSimpleBox>
       <WorkflowVisualizerSimpleBox title="Parameters">
-        <VisualizerCommandEntities data={details.parameters} expanded={expanded} fullPath={fullPath}
+        <VisualizerCommandEntities data={details.parameters} expanded={expanded}
           setDetailExpanded={setDetailExpanded} />
       </WorkflowVisualizerSimpleBox>
     </Row>
@@ -617,19 +617,17 @@ function WorkflowVisualizerSimpleBox({ children, large = false, title }: Workflo
 interface VisualizerCommandEntitiesProps {
   data: Record<string, any>[]
   expanded: Record<string, any>
-  fullPath: string;
   setDetailExpanded: Function;
 }
 
 function VisualizerCommandEntities({
-  data, expanded, fullPath, setDetailExpanded
+  data, expanded, setDetailExpanded
 }: VisualizerCommandEntitiesProps) {
   if (!data?.length)
     return (<p className="m-2"><UnavailableDetail /></p>);
   const elements = data.map((i: any) => {
-    const fileUrl = Url.get(Url.pages.project.file, { namespace: "", path: fullPath, target: i.default_value });
     return (
-      <VisualizerCommandEntity key={i.plan_id + i.name} element={i} fileUrl={fileUrl}
+      <VisualizerCommandEntity key={i.plan_id + i.name} element={i}
         expanded={expanded} setDetailExpanded={setDetailExpanded}
       />
     );
@@ -640,27 +638,16 @@ function VisualizerCommandEntities({
 interface VisualizerCommandEntityProps {
   element: Record<string, any>
   expanded: Record<string, any>
-  fileUrl: string;
   setDetailExpanded: Function;
 }
 
-function VisualizerCommandEntity({ element, expanded, fileUrl, setDetailExpanded }: VisualizerCommandEntityProps) {
+function VisualizerCommandEntity({ element, expanded, setDetailExpanded }: VisualizerCommandEntityProps) {
   const elemClass = (expanded.type === element.type && expanded.name === element.name) ?
     "selected" : "";
   let valueClass = "";
   let link: React.ReactNode = null;
-  if (element.encoding_format) {
-    if (element.exists) {
-      link = (
-        <Link to={fileUrl}>
-          <FontAwesomeIcon className="text-rk-yellow" icon={faLink} />
-        </Link>
-      );
-    }
-    else {
-      valueClass = "text-rk-text-light";
-    }
-  }
+  if (element.encoding_format && !element.exists)
+    valueClass = "text-rk-text-light";
   return (
     <div className={`p-2 rk-clickable ${elemClass}`} onClick={() => { setDetailExpanded(element); }}>
       <p className="mb-0"><b>{element.name}</b>: <span className={valueClass}>{element.default_value}</span> {link}</p>
@@ -679,13 +666,29 @@ function VisualizerDetailExpanded({ data, fullPath }: VisualizerDetailExpandedPr
     return null;
 
   let defaultValue = data.default_value ? data.default_value : <UnavailableDetail />;
-  if (data.default_value && data.encoding_format && data.exists) {
-    const fileUrl = Url.get(Url.pages.project.file, { namespace: "", path: fullPath, target: data.default_value });
-    defaultValue = (
-      <span>{defaultValue} <Link to={fileUrl}>
-        <FontAwesomeIcon className="text-rk-yellow" icon={faLink} />
-      </Link></span>
-    );
+  if (data.default_value && data.encoding_format) {
+    if (data.exists) {
+      const fileUrl = Url.get(Url.pages.project.file, { namespace: "", path: fullPath, target: data.default_value });
+      defaultValue = (
+        <span>{defaultValue} <Link to={fileUrl}>
+          <FontAwesomeIcon className="text-rk-yellow" icon={faLink} />
+        </Link></span>
+      );
+    }
+    else {
+      const keyTooltip = "param-gone-info-" + simpleHash(data.plan_id + data.name);
+      defaultValue = (
+        <>
+          {defaultValue}{" "}
+          <span id={keyTooltip} className="text-rk-text">
+            <FontAwesomeIcon icon={faExclamationTriangle} />
+          </span>
+          <UncontrolledTooltip key={keyTooltip} placement="top" target={keyTooltip}>
+            <span>The file was manually removed and not avilable in the repository.</span>
+          </UncontrolledTooltip>
+        </>
+      );
+    }
   }
   const description = data.description ? data.description : <UnavailableDetail />;
   const prefix = data.prefix ? data.prefix : <UnavailableDetail />;
