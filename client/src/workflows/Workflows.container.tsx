@@ -71,7 +71,13 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
 
   // fetch workflow details
   useEffect(() => {
-    workflowsCoordinator.fetchWorkflowDetails(selected, repositoryUrl, reference, versionUrl, fullPath);
+    workflowsCoordinator.fetchWorkflowDetails(selected, repositoryUrl, reference, versionUrl, fullPath).
+      then((result: any) => {
+        // ? not sure if this should be here, but this scrolls nicely to the workflow detail
+        setTimeout(() => {
+          document.getElementById("workflowsDetailsContent")?.scrollIntoView(true);
+        }, 100);
+      });
   }, [selected, repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ? consider removing this or including the workflow detail target too

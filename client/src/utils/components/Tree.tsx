@@ -128,23 +128,14 @@ function TreeElement({
   const expandIfCollapsed = (workflowId: string) => {
     // expand composite workflows when they are collapsed
     if (isComposite) {
-      if (!expanded.includes(uniqueId))
-        toggleExpanded(uniqueId);
+      if (!expanded.includes(workflowId))
+        toggleExpanded(workflowId);
     }
   };
 
-  const scrollToDetail = () => {
-    // scroll to details page top unless it's the same id
-    if (selected !== workflowId) {
-      setTimeout(() => {
-        document.getElementById("workflowsDetailsContent")?.scrollIntoView(true);
-      }, 100);
-    }
-  };
 
   const actionsOnClick = (workflowId: string) => {
     expandIfCollapsed(workflowId);
-    scrollToDetail();
   };
 
   // return either shrunk or full-size element
