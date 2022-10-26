@@ -43,7 +43,7 @@ interface ModalProps extends CloseModalProps {
 }
 
 interface InformationalProps extends CloseModalProps {
-  children: React.ReactElement | React.ReactElement[]
+  children: React.ReactNode
 }
 
 function InformationalBody({ closeModal, children }: InformationalProps) {
