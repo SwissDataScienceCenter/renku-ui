@@ -77,7 +77,7 @@ function PullSessionStatusBody({ closeModal, isOpen, sessionName }: PullSessionS
   const { data, error, isFetching } = useGitStatusQuery({ serverName: sessionName });
   const [renkuPull, { isLoading: pulling }] = useRenkuPullMutation();
 
-  const pullSession = async (commitMessage: string|undefined) => {
+  const pullSession = async () => {
     setSucceeded(undefined);
     const result = await renkuPull({ serverName: sessionName }).unwrap();
     if (result.error == null)
@@ -90,8 +90,11 @@ function PullSessionStatusBody({ closeModal, isOpen, sessionName }: PullSessionS
   if (error) return <NoSidecarBody closeModal={closeModal} />;
   if (succeeded === false) return <PullSessionFailedBody closeModal={closeModal} />;
   if (succeeded === true) return <PullSessionUpToDateBody closeModal={closeModal}/>;
+  if (data.result.behind < 1) return <PullSessionUpToDateBody closeModal={closeModal} />;
+  if (!data.result.clean || data.result.ahead > 0)
+    return <PullSessionDivergedBody clean={data.result.clean} closeModal={closeModal} />;
   if (data.result.behind > 0) {
-    return <PullSessionNoFFBody
+    return <PullSessionBody
       closeModal={closeModal}
       gitStatus={data}
       isOpen={isOpen}
@@ -99,16 +102,27 @@ function PullSessionStatusBody({ closeModal, isOpen, sessionName }: PullSessionS
       pulling={pulling}
       pullSession={pullSession} />;
   }
-  if (!data.result.clean || data.result.ahead > 0)
-    return <PullSessionUpToDateBody closeModal={closeModal} />;
   return <PullSessionUpToDateBody closeModal={closeModal} />;
 }
 
+interface DivergedProps extends CloseModalProps {
+  clean: boolean;
+}
 
-function PullSessionUpToDateBody({ closeModal }: CloseModalProps) {
+function PullSessionDivergedBody({ clean, closeModal }: DivergedProps) {
   return (
     <InformationalBody closeModal={closeModal}>
-      <p>Your session is up-to-date. There are no changes that need retrieving.</p>
+      <p>
+        Your session has diverged from the origin.
+      </p>
+      {clean ? <span></span> :
+        <div>First, commit your unsaved work with
+          <div className="ps-4"><code>git commit -m [reason for changes]</code></div>
+        </div>}
+      <div className="pt-2">{clean ? "You" : "Then, you"} should run{" "}
+        <code>git pull</code> in the terminal to get the changes from the server.
+        You may need to manually resolve merge conflicts to incorporate the changes.
+      </div>
     </InformationalBody>
   );
 }
@@ -122,13 +136,22 @@ function PullSessionFailedBody({ closeModal }: CloseModalProps) {
   );
 }
 
+function PullSessionUpToDateBody({ closeModal }: CloseModalProps) {
+  return (
+    <InformationalBody closeModal={closeModal}>
+      <p>Your session is up-to-date. There are no changes that need retrieving.</p>
+    </InformationalBody>
+  );
+}
+
+
 interface PullSessionBodyProps extends PullSessionStatusBodyProps {
   gitStatus: GitStatusResult;
   pullSession: Function;
   pulling: boolean;
 }
 
-function PullSessionNoFFBody({ closeModal, gitStatus, pullSession, pulling }: PullSessionBodyProps) {
+function PullSessionBody({ closeModal, gitStatus, pullSession, pulling }: PullSessionBodyProps) {
   const commitsToken = commitsPhrasing(gitStatus.result.behind);
 
   return (<Row>
