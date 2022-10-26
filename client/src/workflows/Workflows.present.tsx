@@ -576,11 +576,11 @@ function WorkflowDetailVisualizer({
           <VisualizerMappings data={details.mappings} expanded={expanded}
             setDetailExpanded={setDetailExpanded} workflows={workflows} />
         </WorkflowVisualizerSimpleBox>
-        {/* <WorkflowVisualizerSimpleBox large={true} title="Links">
-          <p className="p-2 m-0">LINKS -- not implemented yet...</p>
-        </WorkflowVisualizerSimpleBox> */}
+        <VisualizerMappingExpanded data={expanded} workflows={workflows} />
+        <WorkflowVisualizerSimpleBox large={true} title="Links">
+          <VisualizerLinks data={details.links} workflows={workflows} />
+        </WorkflowVisualizerSimpleBox>
       </Row>
-      <VisualizerMappingExpanded data={expanded} workflows={workflows} />
     </>);
   }
 
@@ -613,6 +613,7 @@ function WorkflowDetailVisualizer({
   </>);
 }
 
+
 interface VisualizerMappingsProps {
   data: Record<string, any>[]
   expanded: Record<string, any>
@@ -638,6 +639,45 @@ function VisualizerMappings({
 
   return (<>{elements}</>);
 }
+
+
+interface VisualizerLinksProps {
+  data: Record<string, any>[]
+  workflows: Record<string, any>;
+}
+
+function VisualizerLinks({
+  data, workflows
+}: VisualizerLinksProps) {
+  if (!data?.length)
+    return (<p className="m-2"><UnavailableDetail /></p>);
+
+  let num = 0;
+  let links = data.map((t: any) => {
+    num++;
+    let targetCounter = 0;
+    const targets = t.sinks.map((target: any) => {
+      targetCounter++;
+      const targetKey = simpleHash(target.id + target.name + num + targetCounter);
+      return (<VisualizerLocalResource key={targetKey} data={target} workflows={workflows} />);
+    });
+    return (
+      <tr key={simpleHash(t.id + t.name + num)}>
+        <td><VisualizerLocalResource data={t.source} workflows={workflows} /></td>
+        <td><FontAwesomeIcon className="m-0" icon={faArrowRight} /></td>
+        <td>{targets}</td>
+      </tr>
+    );
+  });
+  return (
+    <Table className="table-borderless rk-tree-table mb-3" size="sm">
+      <tbody>
+        {links}
+      </tbody>
+    </Table>
+  );
+}
+
 
 interface WorkflowVisualizerSimpleBoxProps {
   children: React.ReactNode;
@@ -767,6 +807,30 @@ function VisualizerDetailExpanded({ data, fullPath }: VisualizerDetailExpandedPr
 }
 
 
+interface VisualizerLocalResourceProps {
+  data: Record<string, any>
+  workflows: Record<string, any>;
+}
+
+function VisualizerLocalResource({ data, workflows }: VisualizerLocalResourceProps) {
+  try {
+    const targetWorkflow = workflows?.list?.length ?
+      workflows.list.find((w: any) => (w.id === data.plan_id)) :
+      null;
+    const subItem = data.id.replace(targetWorkflow.id + "/", "");
+    const newName = `[WF: ${targetWorkflow.name}] @ ${subItem.replace("/", " #")}`;
+    const url = targetWorkflow.url; // + t.id.replace(targetWorkflow.id, "");
+    const link = (<Link to={url}>
+      <FontAwesomeIcon className="text-rk-yellow" icon={faLink} />
+    </Link>);
+    return (<span key={simpleHash(data.id + data.name)}>{newName} {link}</span>);
+  }
+  catch {
+    return (<span className="text-break" key={simpleHash(data.id + data.name)}>{data.id}</span>);
+  }
+}
+
+
 interface VisualizerMappingExpandedProps {
   data: Record<string, any>
   workflows: Record<string, any>;
@@ -785,21 +849,7 @@ function VisualizerMappingExpanded({ data, workflows }: VisualizerMappingExpande
   else {
     targets = (
       data.targets.map((t: any) => {
-        try {
-          const targetWorkflow = workflows?.list?.length ?
-            workflows.list.find((w: any) => (w.id === t.plan_id)) :
-            null;
-          const subItem = t.id.replace(targetWorkflow.id + "/", "");
-          const newName = `[WF: ${targetWorkflow.name}] @ ${subItem.replace("/", " #")}`;
-          const url = targetWorkflow.url; // ! (**restore here**) + t.id.replace(targetWorkflow.id, "");
-          const link = (<Link to={url}>
-            <FontAwesomeIcon className="text-rk-yellow" icon={faLink} />
-          </Link>);
-          return (<span key={simpleHash(t.id + t.name)}>{newName} {link}</span>);
-        }
-        catch {
-          return (<span key={simpleHash(t.id + t.name)}>{t.id}</span>);
-        }
+        return (<VisualizerLocalResource key={simpleHash(t.id + t.name)} data={t} workflows={workflows} />);
       })
     );
   }
