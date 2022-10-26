@@ -50,9 +50,12 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
   const workflows = useSelector((state: RootStateOrAny) => state.stateModel.workflows);
   const { id }: Record<string, string> = useParams();
   const selected = id;
-  const selectedAvailable = !!workflows.list.find((w: any) => w.workflowId === selected);
   const unsupported = !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
   const workflow = useSelector((state: RootStateOrAny) => state.stateModel.workflow);
+  // ? either the workflow is available, or the latest version is available
+  const selectedAvailable =
+    (!!workflows.list.find((w: any) => w.workflowId === selected)) ||
+    (workflow.details?.latest && !!workflows.list.find((w: any) => w.id === workflow.details.latest));
 
   const toggleAscending = () => workflowsCoordinator.toggleOrderAscending();
   const toggleExpanded = (workflowId: string) => workflowsCoordinator.toggleExpanded(workflowId);
@@ -68,7 +71,13 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
 
   // fetch workflow details
   useEffect(() => {
-    workflowsCoordinator.fetchWorkflowDetails(selected, repositoryUrl, reference, versionUrl, fullPath);
+    workflowsCoordinator.fetchWorkflowDetails(selected, repositoryUrl, reference, versionUrl, fullPath).
+      then((result: any) => {
+        // ? not sure if this should be here, but this scrolls nicely to the workflow detail
+        setTimeout(() => {
+          document.getElementById("workflowsDetailsContent")?.scrollIntoView(true);
+        }, 100);
+      });
   }, [selected, repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ? consider removing this or including the workflow detail target too

@@ -20,33 +20,14 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon, } from "@fortawesome/react-fontawesome";
 import {
-  faCheck, faExclamationTriangle, faInfoCircle, faLink, faSortAmountDown, faSortAmountUp,
+  faArrowRight, faCheck, faExclamationTriangle, faInfoCircle, faLink, faSortAmountDown, faSortAmountUp
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  Button,
-  ButtonDropdown,
-  Card,
-  CardBody,
-  Col,
-  CardHeader,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Input,
-  Label,
-  PopoverBody,
-  Row,
-  UncontrolledTooltip,
-  UncontrolledPopover,
-  Table,
-  XLg,
-  People,
-  Journals,
-  Bookmarks,
-  Calendar4
+  Bookmarks, Button, ButtonDropdown, Calendar4, Card, CardBody, CardHeader, Col, DropdownItem,
+  DropdownMenu, DropdownToggle, Input, Journals, Label, People, PopoverBody, Row, Table,
+  UncontrolledPopover, UncontrolledTooltip, XLg
 } from "../utils/ts-wrappers";
-
 import EntityCreators from "../utils/components/entities/Creators";
 import Time from "../utils/helpers/Time";
 import { Clipboard } from "../utils/components/Clipboard";
@@ -406,6 +387,10 @@ function WorkflowTreeDetail({
     </>);
   }
   else {
+    const command = details.command ?
+      (<code className="mb-0">{details.command} <Clipboard clipboardText={details.command} /></code>) :
+      (<UnavailableDetail />);
+
     typeSpecificRows = (<>
       <WorkflowTreeDetailRow name="Number of executions">
         {details.number_of_executions}
@@ -418,6 +403,9 @@ function WorkflowTreeDetail({
           {details.full_command}
           <Clipboard clipboardText={details.full_command} />
         </code>
+      </WorkflowTreeDetailRow>
+      <WorkflowTreeDetailRow name="Base command">
+        {command}
       </WorkflowTreeDetailRow>
     </>);
   }
@@ -434,7 +422,7 @@ function WorkflowTreeDetail({
 
   return (
     <>
-      <Card className="rk-tree-details mb-3 main-card-container">
+      <Card className="rk-tree-details mb-4 main-card-container">
         <CardHeader className="bg-white d-flex justify-content-between align-items-center">
           <h3 className="workflow-details-title">{details.name}</h3>
           <div>{backElement}</div>
@@ -477,45 +465,35 @@ function WorkflowTreeDetail({
         </CardBody>
       </Card>
 
-      <Card className="rk-tree-details mb-3">
-        <CardHeader className="bg-white">
-          <h3 className="my-2">Details</h3>
-        </CardHeader>
-        <CardBody>
-          <Table className="table-borderless rk-tree-table mb-0" size="sm">
-            <tbody>
-              <WorkflowTreeDetailRow name="Workflow type">
-                {isComposite ? "Workflow (Composite)" : "Single step" }
-              </WorkflowTreeDetailRow>
-              <WorkflowTreeDetailRow name="Estimated runtime">
-                {Time.getDuration(details.duration)}
-              </WorkflowTreeDetailRow>
-              {typeSpecificRows}
-              <WorkflowTreeDetailRow name="Renku command">
-                <code className="mb-0">
-                  {details.renkuCommand}
-                  <Clipboard clipboardText={details.renkuCommand} />
-                </code>
-              </WorkflowTreeDetailRow>
-            </tbody>
-          </Table>
-        </CardBody>
+      <Card className="rk-tree-details mb-4">
+        <Table className="table-borderless rk-tree-table mb-0" size="sm">
+          <tbody>
+            <WorkflowTreeDetailRow name="Workflow type">
+              {isComposite ? "Workflow (Composite)" : "Single step" }
+            </WorkflowTreeDetailRow>
+            <WorkflowTreeDetailRow name="Estimated runtime">
+              {Time.getDuration(details.duration)}
+            </WorkflowTreeDetailRow>
+            {typeSpecificRows}
+            <WorkflowTreeDetailRow name="Renku command">
+              <code className="mb-0">
+                {details.renkuCommand}
+                <Clipboard clipboardText={details.renkuCommand} />
+              </code>
+            </WorkflowTreeDetailRow>
+          </tbody>
+        </Table>
       </Card>
 
-      <Card className="rk-tree-details mb-3">
-        <CardHeader className="bg-white">
-          <h3 className="my-2">Visualization</h3>
-        </CardHeader>
-        <CardBody>
-          <WorkflowDetailVisualizer
-            details={details}
-            expanded={workflow.expanded}
-            fullPath={fullPath}
-            isComposite={isComposite}
-            setDetailExpanded={setDetailExpanded}
-            workflows={workflows}
-          />
-        </CardBody>
+      <Card className="rk-tree-details mb-4">
+        <WorkflowDetailVisualizer
+          details={details}
+          expanded={workflow.expanded}
+          fullPath={fullPath}
+          isComposite={isComposite}
+          setDetailExpanded={setDetailExpanded}
+          workflows={workflows}
+        />
       </Card>
     </>
   );
@@ -543,11 +521,11 @@ interface WorkflowDetailVisualizerProps {
 function WorkflowDetailVisualizer({
   details, expanded, fullPath, isComposite, setDetailExpanded, workflows
 }: WorkflowDetailVisualizerProps) {
-  const command = details.command ?
-    (<code className="mb-0">{details.command} <Clipboard clipboardText={details.command} /></code>) :
-    (<UnavailableDetail />);
-
   if (isComposite) {
+    // pre-select first mapping automatically
+    if (!expanded?.name && details?.mappings?.length)
+      expanded = details.mappings[0];
+
     // compute the children -- we can use a different visualization if we wish
     const childrenWorkflowsIds = details.plans?.length ? details.plans.map((p: Record<string, any>) => p.id) : [];
     const childrenWorkflowsObjects = workflows.list.filter(
@@ -572,22 +550,18 @@ function WorkflowDetailVisualizer({
           <VisualizerMappings data={details.mappings} expanded={expanded}
             setDetailExpanded={setDetailExpanded} workflows={workflows} />
         </WorkflowVisualizerSimpleBox>
-        {/* <WorkflowVisualizerSimpleBox large={true} title="Links">
-          <p className="p-2 m-0">LINKS -- not implemented yet...</p>
-        </WorkflowVisualizerSimpleBox> */}
+        <VisualizerMappingExpanded data={expanded} workflows={workflows} />
+        <WorkflowVisualizerSimpleBox large={true} title="Links">
+          <VisualizerLinks data={details.links} workflows={workflows} />
+        </WorkflowVisualizerSimpleBox>
       </Row>
-      <VisualizerMappingExpanded data={expanded} workflows={workflows} />
     </>);
   }
 
+  // pre-select first input automatically
+  if (!expanded?.name && details?.inputs?.length)
+    expanded = details.inputs[0];
   return (<>
-    <Table className="table-borderless rk-tree-table mb-3" size="sm">
-      <tbody>
-        <WorkflowTreeDetailRow name="Base command">
-          {command}
-        </WorkflowTreeDetailRow>
-      </tbody>
-    </Table>
     <Row>
       <WorkflowVisualizerSimpleBox title="Inputs">
         <VisualizerCommandEntities data={details.inputs} expanded={expanded}
@@ -605,6 +579,7 @@ function WorkflowDetailVisualizer({
     <VisualizerDetailExpanded data={expanded} fullPath={fullPath} />
   </>);
 }
+
 
 interface VisualizerMappingsProps {
   data: Record<string, any>[]
@@ -631,6 +606,41 @@ function VisualizerMappings({
 
   return (<>{elements}</>);
 }
+
+
+interface VisualizerLinksProps {
+  data: Record<string, any>[]
+  workflows: Record<string, any>;
+}
+
+function VisualizerLinks({
+  data, workflows
+}: VisualizerLinksProps) {
+  if (!data?.length)
+    return (<p className="m-2"><UnavailableDetail /></p>);
+
+  let links = data.map((t: any, num: number) => {
+    const targets = t.sinks.map((target: any, targetCounter: number) => {
+      const targetKey = simpleHash(target.id + target.name + num + targetCounter);
+      return (<VisualizerLocalResource key={targetKey} data={target} workflows={workflows} />);
+    });
+    return (
+      <tr key={simpleHash(t.id + t.name + num)}>
+        <td><VisualizerLocalResource data={t.source} workflows={workflows} /></td>
+        <td><FontAwesomeIcon className="m-0" icon={faArrowRight} /></td>
+        <td>{targets}</td>
+      </tr>
+    );
+  });
+  return (
+    <Table className="table-borderless rk-tree-table mb-3" size="sm">
+      <tbody>
+        {links}
+      </tbody>
+    </Table>
+  );
+}
+
 
 interface WorkflowVisualizerSimpleBoxProps {
   children: React.ReactNode;
@@ -760,6 +770,30 @@ function VisualizerDetailExpanded({ data, fullPath }: VisualizerDetailExpandedPr
 }
 
 
+interface VisualizerLocalResourceProps {
+  data: Record<string, any>
+  workflows: Record<string, any>;
+}
+
+function VisualizerLocalResource({ data, workflows }: VisualizerLocalResourceProps) {
+  try {
+    const targetWorkflow = workflows?.list?.length ?
+      workflows.list.find((w: any) => (w.id === data.plan_id)) :
+      null;
+    const subItem = data.id.replace(targetWorkflow.id + "/", "");
+    const newName = `[WF: ${targetWorkflow.name}] @ ${subItem.replace("/", " #")}`;
+    const url = targetWorkflow.url; // + t.id.replace(targetWorkflow.id, "");
+    const link = (<Link to={url}>
+      <FontAwesomeIcon className="text-rk-yellow" icon={faLink} />
+    </Link>);
+    return (<span key={simpleHash(data.id + data.name)}>{newName} {link}</span>);
+  }
+  catch {
+    return (<span className="text-break" key={simpleHash(data.id + data.name)}>{data.id}</span>);
+  }
+}
+
+
 interface VisualizerMappingExpandedProps {
   data: Record<string, any>
   workflows: Record<string, any>;
@@ -778,21 +812,7 @@ function VisualizerMappingExpanded({ data, workflows }: VisualizerMappingExpande
   else {
     targets = (
       data.targets.map((t: any) => {
-        try {
-          const targetWorkflow = workflows?.list?.length ?
-            workflows.list.find((w: any) => (w.id === t.plan_id)) :
-            null;
-          const subItem = t.id.replace(targetWorkflow.id + "/", "");
-          const newName = `[WF: ${targetWorkflow.name}] @ ${subItem.replace("/", " #")}`;
-          const url = targetWorkflow.url; // ! (**restore here**) + t.id.replace(targetWorkflow.id, "");
-          const link = (<Link to={url}>
-            <FontAwesomeIcon className="text-rk-yellow" icon={faLink} />
-          </Link>);
-          return (<span key={simpleHash(t.id + t.name)}>{newName} {link}</span>);
-        }
-        catch {
-          return (<span key={simpleHash(t.id + t.name)}>{t.id}</span>);
-        }
+        return (<VisualizerLocalResource key={simpleHash(t.id + t.name)} data={t} workflows={workflows} />);
       })
     );
   }
@@ -824,12 +844,19 @@ function WorkflowDetailPlaceholder({
 }: WorkflowDetailPlaceholderProps) {
   let content: React.ReactNode;
   if (waiting) {
-    content = (<>
-      <div className="d-flex">
-        <p className="m-auto mt-1">Getting workflow details...</p>
-      </div>
-      <Loader />
-    </>);
+    return (
+      <Card className="rk-tree-details mb-3">
+        <div>
+          <div className="float-end m-2">{backElement}</div>
+        </div>
+        <CardBody>
+          <div className="d-flex">
+            <p className="m-auto mt-1">Getting workflow details...</p>
+          </div>
+          <Loader />
+        </CardBody>
+      </Card>
+    );
   }
   else if (error) {
     content = (<>
@@ -839,14 +866,14 @@ function WorkflowDetailPlaceholder({
       <CoreErrorAlert error={error} />
     </>);
   }
-  else if (unknown) {
+  else if (1 == 1 || unknown) {
     content = (<>
-      <div className="d-flex">
-        <p className="m-auto mt-1">
+      <div className="d-flex flex-column">
+        <p className="mx-auto my-2">
           <FontAwesomeIcon icon={faExclamationTriangle} /> We cannot find the
           workflow you are looking for.
         </p>
-        <p className="m-auto mb-1">You can use the navbar to pick another one.</p>
+        <p className="mx-auto my-2">You can use the navbar to pick another one.</p>
       </div>
     </>);
   }
@@ -855,7 +882,7 @@ function WorkflowDetailPlaceholder({
     <Card className="rk-tree-details mb-3">
       <CardHeader className="bg-white">
         <div className="float-end m-2">{backElement}</div>
-        <h3 className="my-2 fst-italic">Loading details</h3>
+        <h3 className="my-2 fst-italic">Workflow details</h3>
       </CardHeader>
       <CardBody className="text-break">{content}</CardBody>
     </Card>
