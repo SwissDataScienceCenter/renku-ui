@@ -749,7 +749,7 @@ function VisualizerMappingExpanded({ data, workflows }: VisualizerMappingExpande
       data.targets.map((t: any) => {
         try {
           const targetWorkflow = workflows?.list?.length ?
-            workflows.list.find((w: any) => ("/" + w.id === t.plan_id)) : // ! remove the temporary `"/" + `
+            workflows.list.find((w: any) => (w.id === t.plan_id)) :
             null;
           const subItem = t.id.replace(targetWorkflow.id + "/", "");
           const newName = `[WF: ${targetWorkflow.name}] @ ${subItem.replace("/", " #")}`;
