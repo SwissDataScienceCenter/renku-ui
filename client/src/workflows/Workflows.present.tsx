@@ -548,6 +548,10 @@ function WorkflowDetailVisualizer({
     (<UnavailableDetail />);
 
   if (isComposite) {
+    // pre-select first mapping automatically
+    if (!expanded?.name && details?.mappings?.length)
+      expanded = details.mappings[0];
+
     // compute the children -- we can use a different visualization if we wish
     const childrenWorkflowsIds = details.plans?.length ? details.plans.map((p: Record<string, any>) => p.id) : [];
     const childrenWorkflowsObjects = workflows.list.filter(
@@ -580,6 +584,9 @@ function WorkflowDetailVisualizer({
     </>);
   }
 
+  // pre-select first input automatically
+  if (!expanded?.name && details?.inputs?.length)
+    expanded = details.inputs[0];
   return (<>
     <Table className="table-borderless rk-tree-table mb-3" size="sm">
       <tbody>
