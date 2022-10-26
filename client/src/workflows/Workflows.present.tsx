@@ -524,16 +524,19 @@ function WorkflowDetailVisualizer({
       return (<TreeElement key={"wf-children-details-" + w.workflowId} {...w} {...newProps} />);
     });
     return (<>
-      <WorkflowVisualizerSimpleBox large={true} title="Steps">
-        {childrenWorkflowsElements}
-      </WorkflowVisualizerSimpleBox>
-      <WorkflowVisualizerSimpleBox large={true} title="Mappings">
-        <VisualizerMappings data={details.mappings} expanded={expanded}
-          setDetailExpanded={setDetailExpanded} workflows={workflows} />
-      </WorkflowVisualizerSimpleBox>
-      {/* <WorkflowVisualizerSimpleBox large={true} title="Links">
-        <p className="p-2 m-0">LINKS -- not implemented yet...</p>
-      </WorkflowVisualizerSimpleBox> */}
+      <Row>
+        <WorkflowVisualizerSimpleBox large={true} title="Steps">
+          {childrenWorkflowsElements}
+        </WorkflowVisualizerSimpleBox>
+        <WorkflowVisualizerSimpleBox large={true} title="Mappings">
+          <VisualizerMappings data={details.mappings} expanded={expanded}
+            setDetailExpanded={setDetailExpanded} workflows={workflows} />
+        </WorkflowVisualizerSimpleBox>
+        {/* <WorkflowVisualizerSimpleBox large={true} title="Links">
+          <p className="p-2 m-0">LINKS -- not implemented yet...</p>
+        </WorkflowVisualizerSimpleBox> */}
+      </Row>
+      <VisualizerMappingExpanded data={expanded} workflows={workflows} />
     </>);
   }
 
@@ -586,22 +589,7 @@ function VisualizerMappings({
     );
   });
 
-  let content: React.ReactNode;
-  if (expanded && expanded.type === "Mapping") {
-    content = (
-      <Row>
-        <Col xs={12} sm={6} md={12} lg={6}>{elements}</Col>
-        <Col xs={12} sm={6} md={12} lg={6}>
-          <VisualizerMappingExpanded data={expanded} workflows={workflows} />
-        </Col>
-      </Row>
-    );
-  }
-  else {
-    content = elements;
-  }
-
-  return (<>{content}</>);
+  return (<>{elements}</>);
 }
 
 interface WorkflowVisualizerSimpleBoxProps {
