@@ -47,8 +47,14 @@ import {
   ArrowClockwise as WrappedArrowClockwise,
   ArrowLeft as WrappedArrowLeft,
   Briefcase as WrappedBriefcase,
+  Bookmarks as WrappedBookmarks,
+  XLg as WrappedXLg,
   CheckCircleFill as WrappedCheckCircleFill,
+  Calendar4 as WrappedCalendar4,
   CardList as WrappedCardList,
+  CaretDownFill as WrappedCaretDownFill,
+  CaretRightFill as WrappedCaretRightFill,
+  Diagram2 as WrappedDiagram2,
   Diagram3 as WrappedDiagram3,
   HddStack as WrappedHddStack,
   Globe as WrappedGlobe,
@@ -118,6 +124,18 @@ function CardText(props) {
 
 function CardFooter(props) {
   return <WrappedCardFooter {...props} />;
+}
+
+function CaretDownFill(props) {
+  return <WrappedCaretDownFill {...props} />;
+}
+
+function CaretRightFill(props) {
+  return <WrappedCaretRightFill {...props} />;
+}
+
+function Diagram2(props) {
+  return <WrappedDiagram2 {...props} />;
 }
 
 function DropdownMenu(props) {
@@ -300,6 +318,18 @@ function XCircleFill(props) {
   return <WrappedXCircleFill {...props} />;
 }
 
+function Bookmarks(props) {
+  return <WrappedBookmarks {...props} />;
+}
+
+function Calendar4(props) {
+  return <WrappedCalendar4 {...props} />;
+}
+
+function XLg(props) {
+  return <WrappedXLg {...props} />;
+}
+
 export { ArrowClockwise };
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
 export { Alert, Badge, Button, ButtonDropdown, ButtonGroup, CheckCircleFill, XCircleFill };
@@ -311,3 +341,4 @@ export { UncontrolledPopover, UncontrolledTooltip };
 export { ArrowLeft, Briefcase, CardList, Diagram3, Download, Globe, HddStack, InfoCircle, Journals, Lock };
 export { People, Save, StopCircle };
 export { Nav, NavItem, NavLink, TabContent, TabPane };
+export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, Diagram2, XLg };

@@ -1,0 +1,48 @@
+.workflows-box.btn-check:focus + .btn, .btn:focus {
+    box-shadow: none;
+}
+.workflows-details-content {
+    padding: 30px;
+}
+
+.workflows-filters {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@media (max-width: 768px) { //md-size
+    .workflows-filters {
+        display: flex;
+        flex-direction: column-reverse;
+        justify-content: center;
+        align-items: stretch;
+        gap: 5px;
+    }
+}
+
+h3.workflow-details-title {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) { //md-size
+    .workflows-details-content {
+        padding: 15px;
+    }
+    .internal-steps {
+        .rk-tree-item {
+            display: flex !important;
+            flex-direction: column !important;
+            border-bottom: 1px solid #ccc !important;
+            padding-bottom: 10px;
+        }
+        .rk-tree-item:last-child {
+            border-bottom: none !important;
+        }
+    }
+    .rk-tree-item.embed .rk-tree-item-content {
+        padding: 10px 0;
+    }
+}

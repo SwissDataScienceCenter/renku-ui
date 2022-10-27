@@ -1,19 +1,19 @@
 .rk-tree-item {
   text-decoration: none;
   color: $rk-dark;
-  background-color: white;
-  border: solid 1px $light;
+  background-color: transparent;
+  border: none;
 
   &:not(:last-child) {
     border-bottom: none !important;
   }
 
-  &:hover {
-    background-color: $rk-background-0;
+  &:hover .rk-tree-column-child {
+    background-color: rgba(255, 255, 255);
   }
-  
+
   &.selected {
-    background-color: $rk-light !important;
+    background-color: white;
   }
 
   &.compact {
@@ -47,15 +47,29 @@
     text-decoration: none !important;
   }
 
-  p, h5 {
+  p {
     margin-bottom: 0;
     display: inline-block !important;
     margin-right: 0.5rem !important;
+    color: var(--bs-dark);
+    font-size: 16px;
+  }
+
+  h5 {
+    margin-bottom: 0;
+    display: flex !important;
+    color: var(--bs-dark);
+    font-size: 16px;
+    flex-wrap: wrap;
   }
 
   .executions p {
     display: inline-block !important;
     margin-right: 0.5rem !important;
+  }
+
+  &--children {
+    border-left: 3px solid var(--bs-rk-yellow);
   }
 }
 
@@ -87,10 +101,56 @@
   }
 }
 
+.rk-tree-container {
+  background-color: $rk-background-table;
+  padding: 20px;
+  border-radius: 8px;
+  overflow: scroll;
+
+  &--shrunk {
+    padding: 20px 0 20px 20px;
+    border-radius: 8px 0 0 8px;
+    overflow: hidden;
+
+    .rk-tree-item:hover {
+      background-color: rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  @media (max-width: 768px) { //md-size
+    &--shrunk {
+      border-radius: 8px;
+    }
+  }
+}
+
 .rk-tree-table {
   td.short {
     white-space: nowrap;
     width: 1px; // ? combined with `nowrap`, this limit the width to the shortest sentence
     padding-right: 1rem;
+  }
+}
+@media (max-width: 768px) { //md-size
+  .rk-tree-table {
+    td.short {
+      white-space: normal;
+    }
+  }
+}
+
+.rk-tree-details-container {
+  background-color: white;
+  border-radius: 0 8px 8px 0;
+
+  & h3{
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 768px) { //md-size
+  .rk-tree-details-container {
+    border-radius: 8px;
+    margin-top: 15px;
   }
 }

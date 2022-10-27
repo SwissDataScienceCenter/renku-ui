@@ -95,3 +95,16 @@
   right: 20px;
 }
 
+.main-card-container {
+  .card-header {
+    border: none;
+    padding: 0 0 10px 0;
+  }
+
+  .card-body {
+    background-color: #F5F5FA;
+    border-radius: 7px;
+    padding: 20px;
+  }
+}
+

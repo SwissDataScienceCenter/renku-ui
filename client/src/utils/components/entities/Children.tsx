@@ -66,7 +66,7 @@ function EntityChildrenDot({ childrenElements, itemType, workflowId }: EntityChi
     return null;
 
   if (itemType === "workflow") {
-    const color = "bg-rk-yellow";
+    const color = "bg-rk-text";
     const tooltipId = `contains-${workflowId}`;
     const toolTip = (
       <UncontrolledTooltip key={`duration-elem-${workflowId}`} placement="top" target={tooltipId}>
