@@ -38,7 +38,8 @@ function createStore(renkuStateModelReducer, name = "renku") {
       getDefaultMiddleware({
         immutableCheck: false,
         serializableCheck: false,
-      }).concat(sessionSidecarApi.middleware),
+      }).concat(projectKgApi.middleware)
+        .concat(sessionSidecarApi.middleware),
   });
   return store;
 }
