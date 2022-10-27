@@ -215,8 +215,8 @@ function WorkflowsListFilters({
           </Label>
         </div>
       </div>
-      <div className="d-flex align-items-center">
-        <Label className="text-rk-text me-2">Order by:</Label>
+      <div className="d-flex align-items-center gap-2">
+        <Label className="text-rk-text">Order by:</Label>
         <ButtonDropdown
           className="input-filter-box--workflows"
           toggle={toggleSortDropdownOpen}
@@ -224,7 +224,7 @@ function WorkflowsListFilters({
           <DropdownToggle caret color="rk-light">{orderByMatrix[orderBy]}</DropdownToggle>
           <DropdownMenu>{ dropdownItems }</DropdownMenu>
         </ButtonDropdown>
-        <Button className="input-filter-box--workflows px-3 mx-2" color="input-filter-box"
+        <Button className="input-filter-box--workflows px-3" color="input-filter-box"
           onClick={() => toggleAscending()}>
           {ascending ?
             <FontAwesomeIcon className="m-0" icon={faSortAmountUp} /> :

@@ -12,12 +12,13 @@
     align-items: center;
 }
 
-@media (max-width: 576px) { //sm-size
+@media (max-width: 768px) { //md-size
     .workflows-filters {
         display: flex;
         flex-direction: column-reverse;
         justify-content: center;
         align-items: stretch;
+        gap: 5px;
     }
 }
 
