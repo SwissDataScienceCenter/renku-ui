@@ -57,7 +57,93 @@ function Sessions<T extends FixturesConstructor>(Parent: T) {
       ).as(name);
       return this;
     }
+
+    getGitStatusDirty(name = "getGitStatus") {
+      const fixture = this.useMockedData ? {
+        body: {
+          "result": {
+            "clean": false,
+            "ahead": 0,
+            "behind": 0,
+            "branch": "master",
+            "commit": "7bede1a",
+            "status": "# branch.oid 7bede1a\n" +
+              "# branch.head master\n" +
+              "# branch.upstream origin/master\n" +
+              "# branch.ab +0 -0\n? bar.txt\n"
+          },
+          "id": 0,
+          "jsonrpc": "2.0"
+        } } : undefined;
+
+      cy.intercept(
+        "/sessions/*/sidecar/jsonrpc",
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    getGitStatusDiverged(name = "getGitStatus") {
+      const fixture = this.useMockedData ? {
+        body: {
+          "result": {
+            "clean": true,
+            "ahead": 1,
+            "behind": 1,
+            "branch": "local-behind",
+            "commit": "d705881",
+            "status": "# branch.oid d705881\n" +
+              "# branch.head local-behind\n" +
+              "# branch.upstream origin/local-behind\n# branch.ab +1 -1\n"
+          },
+          "id": 0,
+          "jsonrpc": "2.0"
+        } } : undefined;
+
+      cy.intercept(
+        "/sessions/*/sidecar/jsonrpc",
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    getGitStatusClean(name = "getGitStatus") {
+      const fixture = this.useMockedData ? {
+        body: {
+          "result": {
+            "clean": true,
+            "ahead": 0,
+            "behind": 0,
+            "branch": "local-behind",
+            "commit": "d705881",
+            "status": "# branch.oid d705881\n" +
+              "# branch.head local-behind\n" +
+              "# branch.upstream origin/local-behind\n# branch.ab +0 -0\n"
+          },
+          "id": 0,
+          "jsonrpc": "2.0"
+        } } : undefined;
+
+      cy.intercept(
+        "/sessions/*/sidecar/jsonrpc",
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    getSidecarHealth(isRunning = true, name = "getSidecarHealth") {
+      const status = isRunning ? "running" : "down";
+      const fixture = this.useMockedData ? { body: {
+        "status": status
+      } } : undefined;
+      cy.intercept(
+        "/sessions/*/sidecar/health*",
+        fixture
+      ).as(name);
+      return this;
+    }
   };
+
 }
 
 export { Sessions };
