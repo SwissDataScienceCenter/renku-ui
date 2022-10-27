@@ -181,6 +181,7 @@ const workflowSchema = new Schema({
   error: { [Prop.INITIAL]: null },
   fetched: { [Prop.INITIAL]: null },
   fetching: { [Prop.INITIAL]: false },
+  expanded: { [Prop.INITIAL]: {} }
 });
 
 const workflowsSchema = new Schema({
