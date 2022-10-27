@@ -387,6 +387,10 @@ function WorkflowTreeDetail({
     </>);
   }
   else {
+    const command = details.command ?
+      (<code className="mb-0">{details.command} <Clipboard clipboardText={details.command} /></code>) :
+      (<UnavailableDetail />);
+
     typeSpecificRows = (<>
       <WorkflowTreeDetailRow name="Number of executions">
         {details.number_of_executions}
@@ -399,6 +403,9 @@ function WorkflowTreeDetail({
           {details.full_command}
           <Clipboard clipboardText={details.full_command} />
         </code>
+      </WorkflowTreeDetailRow>
+      <WorkflowTreeDetailRow name="Base command">
+        {command}
       </WorkflowTreeDetailRow>
     </>);
   }
@@ -415,7 +422,7 @@ function WorkflowTreeDetail({
 
   return (
     <>
-      <Card className="rk-tree-details mb-3 main-card-container">
+      <Card className="rk-tree-details mb-4 main-card-container">
         <CardHeader className="bg-white d-flex justify-content-between align-items-center">
           <h3 className="workflow-details-title">{details.name}</h3>
           <div>{backElement}</div>
@@ -458,45 +465,35 @@ function WorkflowTreeDetail({
         </CardBody>
       </Card>
 
-      <Card className="rk-tree-details mb-3">
-        <CardHeader className="bg-white">
-          <h3 className="my-2">Details</h3>
-        </CardHeader>
-        <CardBody>
-          <Table className="table-borderless rk-tree-table mb-0" size="sm">
-            <tbody>
-              <WorkflowTreeDetailRow name="Workflow type">
-                {isComposite ? "Workflow (Composite)" : "Single step" }
-              </WorkflowTreeDetailRow>
-              <WorkflowTreeDetailRow name="Estimated runtime">
-                {Time.getDuration(details.duration)}
-              </WorkflowTreeDetailRow>
-              {typeSpecificRows}
-              <WorkflowTreeDetailRow name="Renku command">
-                <code className="mb-0">
-                  {details.renkuCommand}
-                  <Clipboard clipboardText={details.renkuCommand} />
-                </code>
-              </WorkflowTreeDetailRow>
-            </tbody>
-          </Table>
-        </CardBody>
+      <Card className="rk-tree-details mb-4">
+        <Table className="table-borderless rk-tree-table mb-0" size="sm">
+          <tbody>
+            <WorkflowTreeDetailRow name="Workflow type">
+              {isComposite ? "Workflow (Composite)" : "Single step" }
+            </WorkflowTreeDetailRow>
+            <WorkflowTreeDetailRow name="Estimated runtime">
+              {Time.getDuration(details.duration)}
+            </WorkflowTreeDetailRow>
+            {typeSpecificRows}
+            <WorkflowTreeDetailRow name="Renku command">
+              <code className="mb-0">
+                {details.renkuCommand}
+                <Clipboard clipboardText={details.renkuCommand} />
+              </code>
+            </WorkflowTreeDetailRow>
+          </tbody>
+        </Table>
       </Card>
 
-      <Card className="rk-tree-details mb-3">
-        <CardHeader className="bg-white">
-          <h3 className="my-2">Visualization</h3>
-        </CardHeader>
-        <CardBody>
-          <WorkflowDetailVisualizer
-            details={details}
-            expanded={workflow.expanded}
-            fullPath={fullPath}
-            isComposite={isComposite}
-            setDetailExpanded={setDetailExpanded}
-            workflows={workflows}
-          />
-        </CardBody>
+      <Card className="rk-tree-details mb-4">
+        <WorkflowDetailVisualizer
+          details={details}
+          expanded={workflow.expanded}
+          fullPath={fullPath}
+          isComposite={isComposite}
+          setDetailExpanded={setDetailExpanded}
+          workflows={workflows}
+        />
       </Card>
     </>
   );
@@ -524,10 +521,6 @@ interface WorkflowDetailVisualizerProps {
 function WorkflowDetailVisualizer({
   details, expanded, fullPath, isComposite, setDetailExpanded, workflows
 }: WorkflowDetailVisualizerProps) {
-  const command = details.command ?
-    (<code className="mb-0">{details.command} <Clipboard clipboardText={details.command} /></code>) :
-    (<UnavailableDetail />);
-
   if (isComposite) {
     // pre-select first mapping automatically
     if (!expanded?.name && details?.mappings?.length)
@@ -569,13 +562,6 @@ function WorkflowDetailVisualizer({
   if (!expanded?.name && details?.inputs?.length)
     expanded = details.inputs[0];
   return (<>
-    <Table className="table-borderless rk-tree-table mb-3" size="sm">
-      <tbody>
-        <WorkflowTreeDetailRow name="Base command">
-          {command}
-        </WorkflowTreeDetailRow>
-      </tbody>
-    </Table>
     <Row>
       <WorkflowVisualizerSimpleBox title="Inputs">
         <VisualizerCommandEntities data={details.inputs} expanded={expanded}
