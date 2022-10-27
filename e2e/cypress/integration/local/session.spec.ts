@@ -84,7 +84,7 @@ describe("display a session", () => {
       .contains("It is not possible to offer a one-click save for this session.").should("be.visible");
   });
 
-  it.only("save session button -- session clean", () => {
+  it("save session button -- session clean", () => {
     fixtures.getSidecarHealth().getGitStatusClean();
     cy.gui_open_session();
     // save session
@@ -104,5 +104,49 @@ describe("display a session", () => {
     cy.get(".modal-dialog").get("h5").contains("Save Session").should("be.visible");
     cy.get(".modal-dialog").get("div")
       .contains("You have work in this session that has not yet been saved to the server.").should("be.visible");
+  });
+
+  it("pull changes button -- no sidecar", () => {
+    fixtures.getSidecarHealth(false);
+    cy.gui_open_session();
+    // pull changes
+    cy.get_cy("pull-changes-button").click();
+    cy.get(".modal-dialog").should("exist");
+    cy.get(".modal-dialog").get("h5").contains("Refresh Session").should("be.visible");
+    cy.get(".modal-dialog").get("div")
+      .contains("It is not possible to offer a one-click refresh for this session.").should("be.visible");
+  });
+
+  it("pull changes button -- session clean", () => {
+    fixtures.getSidecarHealth().getGitStatusClean();
+    cy.gui_open_session();
+    // pull changes
+    cy.get_cy("pull-changes-button").click();
+    cy.get(".modal-dialog").should("exist");
+    cy.get(".modal-dialog").get("h5").contains("Refresh Session").should("be.visible");
+    cy.get(".modal-dialog").get("div")
+      .contains("Your session is up-to-date.").should("be.visible");
+  });
+
+  it("pull changes button -- session behind", () => {
+    fixtures.getSidecarHealth().getGitStatusBehind();
+    cy.gui_open_session();
+    // pull changes
+    cy.get_cy("pull-changes-button").click();
+    cy.get(".modal-dialog").should("exist");
+    cy.get(".modal-dialog").get("h5").contains("Refresh Session").should("be.visible");
+    cy.get(".modal-dialog").get("div")
+      .contains("This session is behind the server").should("be.visible");
+  });
+
+  it("pull changes button -- session diverged", () => {
+    fixtures.getSidecarHealth().getGitStatusDiverged();
+    cy.gui_open_session();
+    // pull changes
+    cy.get_cy("pull-changes-button").click();
+    cy.get(".modal-dialog").should("exist");
+    cy.get(".modal-dialog").get("h5").contains("Refresh Session").should("be.visible");
+    cy.get(".modal-dialog").get("div")
+      .contains("Your session has diverged from the origin.").should("be.visible");
   });
 });

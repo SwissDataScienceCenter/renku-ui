@@ -80,12 +80,12 @@ interface PullSessionProps {
 function PullSessionBtn({ togglePullSession }: PullSessionProps) {
   return (
     <div>
-      <Button id="pull-session-button" data-cy="pull-session-button"
+      <Button id="pull-changes-button" data-cy="pull-changes-button"
         className="border-0 bg-transparent text-dark p-0 no-focus" onClick={() => togglePullSession()}>
-        <ArrowClockwise className="text-rk-dark" title="Pull"/>
+        <ArrowClockwise className="text-rk-dark" title="pull"/>
       </Button>
       <ThrottledTooltip
-        target="pull-session-button"
+        target="pull-changes-button"
         tooltip="Refresh session" />
     </div>
   );

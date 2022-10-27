@@ -165,7 +165,7 @@ function PullSessionBody({ closeModal, gitStatus, pullSession, pulling }: PullSe
           onClick={closeModal}>
           Back to Session
         </Button>
-        <Button type="submit" onClick={() => { pullSession(); }} data-cy="pull-session-modal-button"
+        <Button type="submit" onClick={() => { pullSession(); }} data-cy="pull-changes-modal-button"
           disabled={pulling} className="float-right mt-1  ms-2 btn-rk-green" >
           Continue
         </Button>

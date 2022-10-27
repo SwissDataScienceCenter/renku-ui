@@ -58,6 +58,54 @@ function Sessions<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    getGitStatusBehind(name = "getGitStatus") {
+      const fixture = this.useMockedData ? {
+        body: {
+          "result": {
+            "clean": true,
+            "ahead": 0,
+            "behind": 1,
+            "branch": "local-behind",
+            "commit": "d705881",
+            "status": "# branch.oid d705881\n" +
+              "# branch.head local-behind\n" +
+              "# branch.upstream origin/local-behind\n# branch.ab +0 -1\n"
+          },
+          "id": 0,
+          "jsonrpc": "2.0"
+        } } : undefined;
+
+      cy.intercept(
+        "/sessions/*/sidecar/jsonrpc",
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    getGitStatusClean(name = "getGitStatus") {
+      const fixture = this.useMockedData ? {
+        body: {
+          "result": {
+            "clean": true,
+            "ahead": 0,
+            "behind": 0,
+            "branch": "local-behind",
+            "commit": "d705881",
+            "status": "# branch.oid d705881\n" +
+              "# branch.head local-behind\n" +
+              "# branch.upstream origin/local-behind\n# branch.ab +0 -0\n"
+          },
+          "id": 0,
+          "jsonrpc": "2.0"
+        } } : undefined;
+
+      cy.intercept(
+        "/sessions/*/sidecar/jsonrpc",
+        fixture
+      ).as(name);
+      return this;
+    }
+
     getGitStatusDirty(name = "getGitStatus") {
       const fixture = this.useMockedData ? {
         body: {
@@ -95,30 +143,6 @@ function Sessions<T extends FixturesConstructor>(Parent: T) {
             "status": "# branch.oid d705881\n" +
               "# branch.head local-behind\n" +
               "# branch.upstream origin/local-behind\n# branch.ab +1 -1\n"
-          },
-          "id": 0,
-          "jsonrpc": "2.0"
-        } } : undefined;
-
-      cy.intercept(
-        "/sessions/*/sidecar/jsonrpc",
-        fixture
-      ).as(name);
-      return this;
-    }
-
-    getGitStatusClean(name = "getGitStatus") {
-      const fixture = this.useMockedData ? {
-        body: {
-          "result": {
-            "clean": true,
-            "ahead": 0,
-            "behind": 0,
-            "branch": "local-behind",
-            "commit": "d705881",
-            "status": "# branch.oid d705881\n" +
-              "# branch.head local-behind\n" +
-              "# branch.upstream origin/local-behind\n# branch.ab +0 -0\n"
           },
           "id": 0,
           "jsonrpc": "2.0"
