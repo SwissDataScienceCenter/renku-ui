@@ -20,33 +20,14 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon, } from "@fortawesome/react-fontawesome";
 import {
-  faCheck, faExclamationTriangle, faInfoCircle, faLink, faSortAmountDown, faSortAmountUp,
+  faArrowRight, faCheck, faExclamationTriangle, faInfoCircle, faLink, faSortAmountDown, faSortAmountUp
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  Button,
-  ButtonDropdown,
-  Card,
-  CardBody,
-  Col,
-  CardHeader,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Input,
-  Label,
-  PopoverBody,
-  Row,
-  UncontrolledTooltip,
-  UncontrolledPopover,
-  Table,
-  XLg,
-  People,
-  Journals,
-  Bookmarks,
-  Calendar4
+  Bookmarks, Button, ButtonDropdown, Calendar4, Card, CardBody, CardHeader, Col, DropdownItem,
+  DropdownMenu, DropdownToggle, Input, Journals, Label, People, PopoverBody, Row, Table,
+  UncontrolledPopover, UncontrolledTooltip, XLg
 } from "../utils/ts-wrappers";
-
 import EntityCreators from "../utils/components/entities/Creators";
 import Time from "../utils/helpers/Time";
 import { Clipboard } from "../utils/components/Clipboard";
