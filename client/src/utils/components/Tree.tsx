@@ -61,6 +61,7 @@ interface TreeElementProps extends TreeBrowserProps {
   children: string[],
   creators: EntityCreator[],
   duration: number;
+  embed?: boolean;
   executions: number | null;
   highlightedProp: string,
   indentation: number;
@@ -75,27 +76,31 @@ interface TreeElementProps extends TreeBrowserProps {
 }
 
 function TreeElement({
-  active, children, creators, duration, expanded, executions, highlightedProp,
+  active, children, creators, duration, embed = false, expanded, executions, highlightedProp,
   indentation, itemType, items, lastExecuted, selected, shrunk, title,
   toggleExpanded, uniqueId, url, workflowId, workflowType
 }: TreeElementProps) {
-  const newClasses = workflowId === selected ? "selected" : "";
+  let newClasses = workflowId === selected ? "selected" : "";
+  if (embed)
+    newClasses += " embed";
   const isComposite = workflowType === "CompositePlan" ? true : false;
 
   const leftItemClasses = "mx-3 center-vertically d-flex flex-column align-items-center";
-  let leftItem: React.ReactNode;
-  if (isComposite) {
-    const icon = expanded.includes(workflowId) ? faChevronUp : faChevronDown;
-    const color = active ? "yellow" : "text";
-    leftItem = (
-      <div className={`${leftItemClasses} interactive`} onClick={() => toggleExpanded(uniqueId)}>
-        <FontAwesomeIcon size="lg" className={`me-1 text-rk-${color}`} icon={icon} />
-      </div>
-    );
-  }
-  else {
-    const inactive = active ? "" : "inactive";
-    leftItem = (<div className={leftItemClasses}><span className={`circle ${itemType} ${inactive}`}></span></div>);
+  let leftItem: React.ReactNode = null;
+  if (!embed) {
+    if (isComposite) {
+      const icon = expanded.includes(workflowId) ? faChevronUp : faChevronDown;
+      const color = active ? "yellow" : "text";
+      leftItem = (
+        <div className={`${leftItemClasses} interactive`} onClick={() => toggleExpanded(uniqueId)}>
+          <FontAwesomeIcon size="lg" className={`me-1 text-rk-${color}`} icon={icon} />
+        </div>
+      );
+    }
+    else {
+      const inactive = active ? "" : "inactive";
+      leftItem = (<div className={leftItemClasses}><span className={`circle ${itemType} ${inactive}`}></span></div>);
+    }
   }
 
   let childrenItems = items.filter((item: any) => children.includes(item.id));

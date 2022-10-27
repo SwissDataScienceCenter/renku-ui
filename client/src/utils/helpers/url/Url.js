@@ -318,6 +318,12 @@ const Url = {
           "/projects/new?data=eyJ0aXRsZSI6InRlC3QifQ==",
         ]
       ),
+      file: new UrlRule(
+        projectPageUrlBuilder("/files/blob/"), ["namespace", "path", "target"], null, [
+          "/projects/namespace/path/files/blob/target",
+          "/projects/group/subgroup/path/files/blob/target",
+        ]
+      ),
       session: {
         base: new UrlRule(
           projectPageUrlBuilder("/sessions"), ["namespace", "path"], null, [
