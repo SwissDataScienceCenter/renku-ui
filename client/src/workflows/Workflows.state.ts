@@ -212,6 +212,10 @@ class WorkflowsCoordinator {
   setOrderProperty(newProperty: string) {
     this.workflowsModel.set("orderProperty", newProperty);
   }
+
+  setDetailExpanded(targetElement: Record<string, any>) {
+    this.workflowModel.set("expanded", targetElement);
+  }
 }
 
 
