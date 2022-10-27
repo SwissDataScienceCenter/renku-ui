@@ -20,12 +20,31 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon, } from "@fortawesome/react-fontawesome";
 import {
-  faCheck, faExclamationTriangle, faInfoCircle, faLink, faSortAmountDown, faSortAmountUp, faTimesCircle
+  faCheck, faExclamationTriangle, faInfoCircle, faLink, faSortAmountDown, faSortAmountUp,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  Button, ButtonDropdown, Card, CardBody, Col, CardHeader, DropdownItem, DropdownMenu,
-  DropdownToggle, Input, Label, PopoverBody, Row, UncontrolledPopover, UncontrolledTooltip, Table
+  Button,
+  ButtonDropdown,
+  Card,
+  CardBody,
+  Col,
+  CardHeader,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Input,
+  Label,
+  PopoverBody,
+  Row,
+  UncontrolledTooltip,
+  UncontrolledPopover,
+  Table,
+  XLg,
+  People,
+  Journals,
+  Bookmarks,
+  Calendar4
 } from "../utils/ts-wrappers";
 
 import EntityCreators from "../utils/components/entities/Creators";
@@ -40,6 +59,7 @@ import { Url } from "../utils/helpers/url";
 import { TreeBrowser, TreeDetails, TreeElement } from "../utils/components/Tree";
 import { InfoAlert, WarnAlert } from "../utils/components/Alert";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
+import "./Workflows.scss";
 
 
 /** BROWSER **/
@@ -98,16 +118,16 @@ function WorkflowsTreeBrowser({
     );
 
     if (!shrunk) {
-      content = treeBrowser;
+      content = <div className="rk-tree-container">{treeBrowser}</div>;
     }
     else {
       const waitingDetails = waiting || workflow.fetching || !workflow.fetched;
       content = (
-        <Row>
-          <Col xs={12} md={5} lg={4}>
+        <Row className="px-3">
+          <Col xs={12} md={5} lg={4} className={`px-0 rk-tree-container ${shrunk ? "rk-tree-container--shrunk" : ""}`}>
             {treeBrowser}
           </Col>
-          <Col xs={12} md={7} lg={8}>
+          <Col xs={12} md={7} lg={8} className="px-0 rk-tree-details-container">
             <WorkflowDetail
               fullPath={fullPath}
               selectedAvailable={selectedAvailable}
@@ -124,7 +144,7 @@ function WorkflowsTreeBrowser({
   }
 
   return (
-    <div>
+    <div className="workflows-box">
       <h3>Workflows</h3>
       <WorkflowsListFilters
         ascending={ascending}
@@ -167,11 +187,15 @@ function WorkflowsListFilters({
   });
 
   return (
-    <Row className="my-3">
-      <Col xs={12} sm="auto" className="my-auto">
-        <div className="form-check form-switch d-inline-block">
+    <div className="workflows-filters my-3">
+      <div className="input-filter-box--workflows form-rk-yellow">
+        <div className="form-check form-switch">
+          <Input type="switch"
+            id="wfExcludeInactive" label="label here" className="rounded-pill"
+            checked={showInactive} onChange={() => toggleInactive()}
+          />
           <Label className="text-rk-text me-2">
-            Show inactive{" "}
+            Show inactive workflows{" "}
             <FontAwesomeIcon id="showInactiveInfo" className="cursor-pointer align-middle" icon={faInfoCircle} />
             <UncontrolledPopover target="showInactiveInfo" trigger="legacy" placement="bottom">
               <PopoverBody className="p-2">
@@ -189,29 +213,26 @@ function WorkflowsListFilters({
               </PopoverBody>
             </UncontrolledPopover>
           </Label>
-          <Input type="switch"
-            id="wfExcludeInactive" label="label here" className="form-check-input rounded-pill"
-            checked={showInactive} onChange={() => toggleInactive()}
-          />
         </div>
-      </Col>
-      <Col xs={12} sm="auto" className="my-auto">
-        <Label className="text-rk-text me-2">Order by:</Label>
+      </div>
+      <div className="d-flex align-items-center gap-2">
+        <Label className="text-rk-text">Order by:</Label>
         <ButtonDropdown
-          className="me-2"
+          className="input-filter-box--workflows"
           toggle={toggleSortDropdownOpen}
           isOpen={sortDropdownOpen}>
           <DropdownToggle caret color="rk-light">{orderByMatrix[orderBy]}</DropdownToggle>
           <DropdownMenu>{ dropdownItems }</DropdownMenu>
         </ButtonDropdown>
-        <Button color="rk-white" onClick={() => toggleAscending()}>
+        <Button className="input-filter-box--workflows px-3" color="input-filter-box"
+          onClick={() => toggleAscending()}>
           {ascending ?
             <FontAwesomeIcon className="m-0" icon={faSortAmountUp} /> :
             <FontAwesomeIcon className="m-0" icon={faSortAmountDown} />
           }
         </Button>
-      </Col>
-    </Row>
+      </div>
+    </div>
   );
 }
 
@@ -289,7 +310,7 @@ function WorkflowDetail({
   const backElement = (
     <div>
       <Link to={backUrl}>
-        <FontAwesomeIcon className="cursor-pointer" icon={faTimesCircle} />
+        <XLg size="24" />
       </Link>
     </div>
   );
@@ -320,7 +341,7 @@ function WorkflowDetail({
     );
   }
 
-  return (<div id="workflowsDetailsContent">{content}</div>);
+  return (<div id="workflowsDetailsContent" className="workflows-details-content">{content}</div>);
 }
 
 
@@ -335,6 +356,25 @@ function WorkflowTreeDetailRow({
   return (
     <tr>
       <td className="fw-bold short">{name}</td>
+      <td>{children}</td>
+    </tr>
+  );
+}
+
+interface WorkflowTreeMainDetailRowProps extends WorkflowTreeDetailRowProps {
+  icon: React.ReactNode;
+}
+
+function WorkflowTreeMainDetailRow({
+  children, name, icon }: WorkflowTreeMainDetailRowProps) {
+  return (
+    <tr>
+      <td className="short">
+        <div className="d-flex gap-2 align-items-center">
+          {icon}
+          {name}
+        </div>
+      </td>
       <td>{children}</td>
     </tr>
   );
@@ -394,17 +434,17 @@ function WorkflowTreeDetail({
 
   return (
     <>
-      <Card className="rk-tree-details mb-3">
-        <CardHeader className="bg-white">
-          <div className="float-end m-2">{backElement}</div>
-          <h3 className="my-2">{details.name}</h3>
+      <Card className="rk-tree-details mb-3 main-card-container">
+        <CardHeader className="bg-white d-flex justify-content-between align-items-center">
+          <h3 className="workflow-details-title">{details.name}</h3>
+          <div>{backElement}</div>
         </CardHeader>
 
         <CardBody>
           {newerAvailable}
           <Table className="table-borderless rk-tree-table mb-0" size="sm">
             <tbody>
-              <WorkflowTreeDetailRow name="Author(s)">
+              <WorkflowTreeMainDetailRow name="Author(s)" icon={<People className="text-rk-yellow" size="20" />}>
                 {
                   details.creators?.length ?
                     (
@@ -414,24 +454,24 @@ function WorkflowTreeDetail({
                     ) :
                     (<span className="fst-italic text-rk-text-light">Not available</span>)
                 }
-              </WorkflowTreeDetailRow>
-              <WorkflowTreeDetailRow name="Description">
+              </WorkflowTreeMainDetailRow>
+              <WorkflowTreeMainDetailRow name="Description" icon={<Journals className="text-rk-yellow" size="20" />}>
                 {
                   details.description?.length ?
                     details.description :
                     (<span className="fst-italic text-rk-text-light">None</span>)
                 }
-              </WorkflowTreeDetailRow>
-              <WorkflowTreeDetailRow name="Keywords">
+              </WorkflowTreeMainDetailRow>
+              <WorkflowTreeMainDetailRow name="Keywords" icon={<Bookmarks className="text-rk-yellow" size="20" />}>
                 {
                   details.keywords?.length ?
                     (<>{ details.keywords.join(", ") }</>) :
                     (<span className="fst-italic text-rk-text-light">None</span>)
                 }
-              </WorkflowTreeDetailRow>
-              <WorkflowTreeDetailRow name="Creation date">
+              </WorkflowTreeMainDetailRow>
+              <WorkflowTreeMainDetailRow name="Creation date" icon={<Calendar4 className="text-rk-yellow" size="20" />}>
                 { Time.toIsoTimezoneString(details.created)}
-              </WorkflowTreeDetailRow>
+              </WorkflowTreeMainDetailRow>
             </tbody>
           </Table>
         </CardBody>
@@ -526,7 +566,7 @@ function WorkflowDetailVisualizer({
     return (<>
       <Row>
         <WorkflowVisualizerSimpleBox large={true} title="Steps">
-          {childrenWorkflowsElements}
+          <div className="internal-steps">{childrenWorkflowsElements}</div>
         </WorkflowVisualizerSimpleBox>
         <WorkflowVisualizerSimpleBox large={true} title="Mappings">
           <VisualizerMappings data={details.mappings} expanded={expanded}
@@ -815,7 +855,7 @@ function WorkflowDetailPlaceholder({
     <Card className="rk-tree-details mb-3">
       <CardHeader className="bg-white">
         <div className="float-end m-2">{backElement}</div>
-        <h3 className="my-2">Loading details</h3>
+        <h3 className="my-2 fst-italic">Loading details</h3>
       </CardHeader>
       <CardBody className="text-break">{content}</CardBody>
     </Card>

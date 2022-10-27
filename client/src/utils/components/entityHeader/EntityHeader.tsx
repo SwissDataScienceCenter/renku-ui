@@ -80,12 +80,12 @@ function EntityHeader({
       <div className="card-body">
         <Row>
           <Col xs={12} lg={9}>
-            <div className="card-title text-truncate lh-sm" data-cy="list-card-title">
+            <div className="card-title card-entity-row card-entity-row--title lh-sm" data-cy="list-card-title">
               {statusButton}{title}
             </div>
           </Col>
           <Col xs={12} lg={3}
-            className="gap-2 align-items-center justify-content-start justify-content-lg-end my-2 my-lg-0">
+            className="d-flex gap-2 align-items-center justify-content-start justify-content-lg-end my-2 my-lg-0">
             {otherButtons}
             {mainButton}
           </Col>

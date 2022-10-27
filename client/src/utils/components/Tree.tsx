@@ -19,13 +19,11 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
 import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityExecutions from "./entities/Executions";
 import EntityDuration from "./entities/Duration";
-import { Col } from "../ts-wrappers";
+import { CaretDownFill, CaretRightFill, Col, Diagram2 } from "../ts-wrappers";
 import { EntityChildrenDot } from "./entities/Children";
 import { EntityType, WorkflowType } from "./entities/Entities";
 import { simpleHash } from "../helpers/HelperFunctions";
@@ -86,20 +84,26 @@ function TreeElement({
   const isComposite = workflowType === "CompositePlan" ? true : false;
 
   const leftItemClasses = "mx-3 center-vertically d-flex flex-column align-items-center";
+  const lineNestedItem = indentation > 0 ? "rk-tree-item--children" : "";
   let leftItem: React.ReactNode = null;
   if (!embed) {
     if (isComposite) {
-      const icon = expanded.includes(workflowId) ? faChevronUp : faChevronDown;
-      const color = active ? "yellow" : "text";
+      const icon = expanded.includes(workflowId) || expanded.includes(uniqueId) ?
+        <CaretDownFill /> : <CaretRightFill />;
       leftItem = (
         <div className={`${leftItemClasses} interactive`} onClick={() => toggleExpanded(uniqueId)}>
-          <FontAwesomeIcon size="lg" className={`me-1 text-rk-${color}`} icon={icon} />
+          {icon}
         </div>
       );
     }
     else {
       const inactive = active ? "" : "inactive";
-      leftItem = (<div className={leftItemClasses}><span className={`circle ${itemType} ${inactive}`}></span></div>);
+      leftItem = (
+        <div className={leftItemClasses}>
+          <span className={`circle ${itemType} ${inactive} d-flex justify-content-center align-items-center`}>
+            <Diagram2 color="white" />
+          </span>
+        </div>);
     }
   }
 
@@ -116,14 +120,9 @@ function TreeElement({
     });
   }
 
-  let currentIndentation = 0;
-  if (indentation >= 4)
-    currentIndentation = 4;
-  else if (indentation)
-    currentIndentation = indentation;
-  if (shrunk)
-    currentIndentation = currentIndentation / 2;
-  const elementStyle = { marginLeft: `${currentIndentation}em` };
+  // after 3 nested levels increase the left margin by 10px
+  const marginIndentation = indentation < 3 ? indentation * 30 : ((indentation - 2) * 10) + 60;
+  const elementStyle = { marginLeft: `${marginIndentation}px` };
 
   // define actions to trigger on click
   const expandIfCollapsed = (workflowId: string) => {
@@ -172,16 +171,16 @@ function TreeElement({
 
     return (
       <>
-        <div className={`d-flex flex-row rk-tree-item compact ${newClasses}`} style={elementStyle}>
+        <div className={`d-flex flex-row rk-tree-item ${newClasses} ${lineNestedItem}`} style={elementStyle}>
           {leftItem}
           <Link className="row w-100 rk-tree-item-content" to={url} onClick={() => actionsOnClick(workflowId)}>
-            <Col xs={12} className="title center-vertically">
-              <h5>
-                {title} <EntityChildrenDot
-                  childrenElements={children} itemType={itemType} workflowId={uniqueId} />
+            <div className="d-flex justify-content-between align-items-center">
+              <h5 className="d-flex flex-column">
+                {title}
+                <span className="text-rk-text-light">{details}</span>
               </h5>
-            </Col>
-            <span className="text-rk-text-light">{details}</span>
+              <EntityChildrenDot childrenElements={children} itemType={itemType} workflowId={uniqueId} />
+            </div>
           </Link>
         </div>
         {childrenNodes}
@@ -191,24 +190,29 @@ function TreeElement({
 
   return (
     <>
-      <div className={`d-flex flex-row rk-tree-item ${newClasses}`} style={elementStyle}>
-        {leftItem}
-        <Link className="row w-100 rk-tree-item-content" to={url} onClick={() => actionsOnClick(workflowId)}>
-          <Col xs={12} md={5} className="title center-vertically">
-            <h5>
-              {title} <EntityChildrenDot
-                childrenElements={children} itemType={itemType} workflowId={uniqueId} />
-            </h5>
-            <EntityCreators display="tree" creators={creators} itemType={itemType} />
-          </Col>
-          <Col xs={12} sm={7} md={4} className="title center-vertically">
+      <div className={`d-flex flex-row rk-tree-item ${newClasses}`}>
+        <Col xs={12} md={5} className="title center-vertically d-flex flex-row" >
+          <div style={elementStyle} className={`d-flex rk-tree-column-child ${lineNestedItem}`}>{leftItem}</div>
+          <Link className="row w-100 rk-tree-item-content rk-tree-column-child" to={url}
+            onClick={() => actionsOnClick(workflowId)}>
+            <div className="d-flex justify-content-between align-items-center">
+              <h5 className="rk-tree-title gap-3">
+                {title}
+                <EntityCreators display="tree" creators={creators} itemType={itemType} />
+              </h5>
+              <EntityChildrenDot childrenElements={children} itemType={itemType} workflowId={uniqueId} />
+            </div>
+          </Link>
+        </Col>
+        <Col xs={12} sm={7} md={4} className="title d-flex align-items-center rk-tree-column-child">
+          <div className={`d-flex rk-tree-column-child `}>
             <EntityExecutions display="tree" executions={executions} itemType={itemType}
               lastExecuted={lastExecuted} showLastExecution={true} workflowId={uniqueId} />
-          </Col>
-          <Col xs={12} sm={5} md={3} className="title center-vertically">
-            <EntityDuration duration={duration} workflowId={uniqueId} />
-          </Col>
-        </Link>
+          </div>
+        </Col>
+        <Col xs={12} sm={5} md={3} className="title d-flex align-items-center rk-tree-column-child">
+          <EntityDuration duration={duration} workflowId={uniqueId} />
+        </Col>
       </div>
       {childrenNodes}
     </>
