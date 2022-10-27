@@ -57,6 +57,8 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
   const toggleAscending = () => workflowsCoordinator.toggleOrderAscending();
   const toggleExpanded = (workflowId: string) => workflowsCoordinator.toggleExpanded(workflowId);
   const toggleInactive = () => workflowsCoordinator.toggleInactive();
+  const setDetailExpanded = (targetElement: Record<string, any> = {}) =>
+    workflowsCoordinator.setDetailExpanded(targetElement);
   const setOrderProperty = (newProperty: string) => workflowsCoordinator.setOrderProperty(newProperty);
 
   // fetch workflows list
@@ -83,6 +85,7 @@ function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, vers
       orderByMatrix={WorkflowsSorting}
       selected={selected}
       selectedAvailable={selectedAvailable}
+      setDetailExpanded={setDetailExpanded}
       setOrderBy={setOrderProperty}
       showInactive={workflows.showInactive}
       toggleAscending={toggleAscending}
