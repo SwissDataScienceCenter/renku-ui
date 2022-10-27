@@ -35,7 +35,6 @@ export interface SessionStatusData {
   readyNumContainers: number;
   state: string;
   totalNumContainers: number;
-  isTheSessionReady: boolean;
 }
 interface StartSessionProgressBarProps {
   sessionStatus?: SessionStatusData;
