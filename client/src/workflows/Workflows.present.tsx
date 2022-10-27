@@ -848,12 +848,19 @@ function WorkflowDetailPlaceholder({
 }: WorkflowDetailPlaceholderProps) {
   let content: React.ReactNode;
   if (waiting) {
-    content = (<>
-      <div className="d-flex">
-        <p className="m-auto mt-1">Getting workflow details...</p>
-      </div>
-      <Loader />
-    </>);
+    return (
+      <Card className="rk-tree-details mb-3">
+        <div>
+          <div className="float-end m-2">{backElement}</div>
+        </div>
+        <CardBody>
+          <div className="d-flex">
+            <p className="m-auto mt-1">Getting workflow details...</p>
+          </div>
+          <Loader />
+        </CardBody>
+      </Card>
+    );
   }
   else if (error) {
     content = (<>
@@ -863,14 +870,14 @@ function WorkflowDetailPlaceholder({
       <CoreErrorAlert error={error} />
     </>);
   }
-  else if (unknown) {
+  else if (1 == 1 || unknown) {
     content = (<>
-      <div className="d-flex">
-        <p className="m-auto mt-1">
+      <div className="d-flex flex-column">
+        <p className="mx-auto my-2">
           <FontAwesomeIcon icon={faExclamationTriangle} /> We cannot find the
           workflow you are looking for.
         </p>
-        <p className="m-auto mb-1">You can use the navbar to pick another one.</p>
+        <p className="mx-auto my-2">You can use the navbar to pick another one.</p>
       </div>
     </>);
   }
@@ -879,7 +886,7 @@ function WorkflowDetailPlaceholder({
     <Card className="rk-tree-details mb-3">
       <CardHeader className="bg-white">
         <div className="float-end m-2">{backElement}</div>
-        <h3 className="my-2 fst-italic">Loading details</h3>
+        <h3 className="my-2 fst-italic">Workflow details</h3>
       </CardHeader>
       <CardBody className="text-break">{content}</CardBody>
     </Card>
