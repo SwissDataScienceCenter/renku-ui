@@ -33,12 +33,12 @@ export interface SlugProps {
 function Slug({ display, slug }: SlugProps) {
   if (!slug) return null;
   if (display === "list") {
-    return <div className="card-text text-truncate creators text-rk-text-light">
+    return <div className="card-entity-row card-text text-rk-text-light">
       {slug}
     </div>;
   }
 
-  return <span className="slug font-weight-light text-rk-text ms-2 d-grid">
+  return <span className="card-entity-row font-weight-light text-rk-text ms-2 d-grid">
     {slug}
   </span>;
 }

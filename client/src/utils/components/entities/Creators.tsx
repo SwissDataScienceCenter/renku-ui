@@ -55,7 +55,7 @@ function EntityCreators({ display, creators, itemType }: EntityCreatorsProps) {
 
   if (display === "list") {
     return (
-      <div className={`card-text creators text-truncate ${stylesByItem.colorText}`}>
+      <div className={`card-text card-entity-row ${stylesByItem.colorText}`}>
         {creatorsText}
       </div>
     );
@@ -68,7 +68,7 @@ function EntityCreators({ display, creators, itemType }: EntityCreatorsProps) {
   }
 
   return (
-    <div className={`creators text-truncate text-rk-text ${ stylesByItem.colorText }`}>
+    <div className={`card-entity-row text-rk-text ${ stylesByItem.colorText }`}>
       <small style={{ display: "block" }} className="font-weight-light">
         {creatorsText}
       </small>
