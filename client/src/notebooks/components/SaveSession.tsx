@@ -30,12 +30,30 @@ import type { CloseModalProps, ModalProps } from "./Sidecar";
 
 interface SaveSessionProps extends ModalProps {
   hasSaveAccess: boolean;
+  isSessionReady: boolean;
   isLogged: boolean;
   notebook: Notebook;
   urlList: any;
 }
 
 function SaveSession(props: SaveSessionProps) {
+  const { closeModal, isOpen } = props;
+
+  const body = (!props.isSessionReady) ?
+    <p>The session is not available yet.</p> :
+    <RunningSaveSessionBody {...props} />;
+
+  return <Modal className="modal-session" isOpen={isOpen} toggle={closeModal}>
+    <ModalHeader toggle={closeModal}>
+    Save Session
+    </ModalHeader>
+    <ModalBody>
+      {body}
+    </ModalBody>
+  </Modal>;
+}
+
+function RunningSaveSessionBody(props: SaveSessionProps) {
   const { closeModal, isOpen } = props;
   const serverName = props.notebook.data.name;
   const { data, error, isLoading } = useHealthQuery({ serverName });
@@ -51,14 +69,7 @@ function SaveSession(props: SaveSessionProps) {
 
   else body = <SaveSessionStatusBody closeModal={closeModal} isOpen={isOpen} sessionName={serverName} />;
 
-  return <Modal className="modal-session" isOpen={isOpen} toggle={closeModal}>
-    <ModalHeader toggle={closeModal}>
-    Save Session
-    </ModalHeader>
-    <ModalBody>
-      {body}
-    </ModalBody>
-  </Modal>;
+  return body;
 }
 
 function AnonymousSessionBody({ closeModal }: CloseModalProps) {
@@ -191,6 +202,7 @@ interface SaveSessionSaveBodyProps extends SaveSessionBodyProps {
 
 function SaveSessionBody({ closeModal, gitStatus, saveSession, saving }: SaveSessionSaveBodyProps) {
   const [commitMessage, setCommitMessage] = React.useState(undefined);
+  const saveText = saving ? <span><Loader inline={true} size={16} />Saving Session</span> : "Save Session";
   return (
     <Row>
       <Col>
@@ -213,7 +225,7 @@ function SaveSessionBody({ closeModal, gitStatus, saveSession, saving }: SaveSes
             </Button>
             <Button type="submit" onClick={() => { saveSession(commitMessage); }} data-cy="save-session-modal-button"
               disabled={saving} className="float-right mt-1  ms-2 btn-rk-green" >
-                  Save Session
+              {saveText}
             </Button>
           </div>
         </Fragment>

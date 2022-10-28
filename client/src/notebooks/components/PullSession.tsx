@@ -19,6 +19,7 @@
 import React from "react";
 
 import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "../../utils/ts-wrappers";
+import { Loader } from "../../utils/components/Loader";
 import { useGitStatusQuery, useHealthQuery, useRenkuPullMutation } from "../../features/session/sidecarApi";
 import type { GitStatusResult } from "../../features/session/sidecarApi";
 
@@ -27,11 +28,29 @@ import { CenteredLoader, InformationalBody, commitsPhrasing } from "./Sidecar";
 import type { CloseModalProps, ModalProps } from "./Sidecar";
 
 interface PullSessionProps extends ModalProps {
+  isSessionReady: boolean;
   notebook: Notebook;
   urlList: any;
 }
 
 function PullSession(props: PullSessionProps) {
+  const { closeModal, isOpen } = props;
+
+  const body = (!props.isSessionReady) ?
+    <p>The session is not available yet.</p> :
+    <RunningPullSessionBody {...props} />;
+
+  return <Modal className="modal-session" isOpen={isOpen} toggle={closeModal}>
+    <ModalHeader toggle={closeModal}>
+      Refresh Session
+    </ModalHeader>
+    <ModalBody>
+      {body}
+    </ModalBody>
+  </Modal>;
+}
+
+function RunningPullSessionBody(props: PullSessionProps) {
   const { closeModal, isOpen } = props;
   const serverName = props.notebook.data.name;
   const { data, error, isLoading } = useHealthQuery({ serverName });
@@ -45,14 +64,7 @@ function PullSession(props: PullSessionProps) {
 
   else body = <PullSessionStatusBody closeModal={closeModal} isOpen={isOpen} sessionName={serverName} />;
 
-  return <Modal className="modal-session" isOpen={isOpen} toggle={closeModal}>
-    <ModalHeader toggle={closeModal}>
-      Refresh Session
-    </ModalHeader>
-    <ModalBody>
-      {body}
-    </ModalBody>
-  </Modal>;
+  return body;
 }
 
 function NoSidecarBody({ closeModal }: CloseModalProps) {
@@ -151,12 +163,12 @@ interface PullSessionBodyProps extends PullSessionStatusBodyProps {
 
 function PullSessionBody({ closeModal, gitStatus, pullSession, pulling }: PullSessionBodyProps) {
   const commitsToken = commitsPhrasing(gitStatus.result.behind);
-
+  const pullText = pulling ? <span><Loader inline={true} size={16} />Pulling Changes</span> : "Pull Changes";
   return (<Row>
     <Col>
       <div className="mb-3">
         This session is behind the server by {commitsToken}.
-        Continue to pull those changes in your current session.
+        Pull changes to bring them into the session.
       </div>
       <div className="d-flex justify-content-end">
         <Button className="float-right mt-1 btn-outline-rk-green"
@@ -165,7 +177,7 @@ function PullSessionBody({ closeModal, gitStatus, pullSession, pulling }: PullSe
         </Button>
         <Button type="submit" onClick={() => { pullSession(); }} data-cy="pull-changes-modal-button"
           disabled={pulling} className="float-right mt-1  ms-2 btn-rk-green" >
-          Continue
+          {pullText}
         </Button>
       </div>
     </Col>
