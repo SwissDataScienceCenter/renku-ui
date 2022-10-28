@@ -620,9 +620,7 @@ function VisualizerLinks({
     return (<p className="m-2"><UnavailableDetail /></p>);
 
   let links = data.map((t: any, num: number) => {
-    num++;
     const targets = t.sinks.map((target: any, targetCounter: number) => {
-      targetCounter++;
       const targetKey = simpleHash(target.id + target.name + num + targetCounter);
       return (<VisualizerLocalResource key={targetKey} data={target} workflows={workflows} />);
     });
