@@ -68,7 +68,7 @@ function EntityDescription(
     {description ? description :
       showSuggestion && hasDevAccess && urlChangeDescription ?
         <i>(This project has no description.
-          You can provide one on the <Link to={urlChangeDescription}>here</Link>.)</i> : null }
+          You can provide one <Link to={urlChangeDescription}>here</Link>.)</i> : null }
   </div>);
 }
 
