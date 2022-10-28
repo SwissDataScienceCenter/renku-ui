@@ -85,8 +85,9 @@ function PullSessionBtn({ togglePullSession }: PullSessionProps) {
         <ArrowClockwise className="text-rk-dark" title="pull"/>
       </Button>
       <ThrottledTooltip
+        placement="bottom"
         target="pull-changes-button"
-        tooltip="Refresh session" />
+        tooltip="Pull changes" />
     </div>
   );
 }
