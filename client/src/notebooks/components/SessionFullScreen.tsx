@@ -62,6 +62,7 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
 
   const { filters, notebook, urlBack, projectName, handlers } = props;
   const [sessionStatus, setSessionStatus] = useState<SessionStatusData>();
+  const [isTheSessionReady, setIsTheSessionReady] = useState(false);
   const [showModalAboutData, setShowModalAboutData] = useState(false);
   const toggleModalAbout = () => setShowModalAboutData(!showModalAboutData);
 
@@ -93,19 +94,22 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
   });
 
   useEffect(() => {
-    if (!notebook.data.status)
-      return;
-    if (notebook.data.status.state === "running") {
-      setSessionStatus({ ...notebook.data.status, isTheSessionReady: false } as SessionStatusData);
+    if (notebook.data.status?.state === "running") {
       setTimeout(() => {
         if (mounted.current)
-          setSessionStatus({ ...notebook.data.status, isTheSessionReady: true } as SessionStatusData);
+          setIsTheSessionReady(true);
       }, 4000); // wait 4 sec to use isTheSessionReady for session view
     }
     else {
-      setSessionStatus({ ...notebook.data.status, isTheSessionReady: false } as SessionStatusData);
+      setIsTheSessionReady(false);
     }
   }, [notebook.data.status?.state]); // eslint-disable-line
+
+  useEffect(() => {
+    if (!notebook.data.status)
+      return;
+    setSessionStatus({ ...notebook.data.status } as SessionStatusData);
+  }, [notebook.data.status]); // eslint-disable-line
 
   // redirect immediately if the session fail
   if (history && notebook.data?.status?.state === SessionStatus.failed)
@@ -164,14 +168,14 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
       Object.keys(notebook?.data?.annotations).find( key => key.split("/")[1] === "branch") : null;
     const sessionBranchValue = sessionBranchKey ? notebook?.data?.annotations[sessionBranchKey] : "";
     const isAutoSave = sessionBranchValue.startsWith(AUTOSAVED_PREFIX);
-    content = !sessionStatus?.isTheSessionReady ?
+    content = !isTheSessionReady ?
       (<div className="progress-box-small progress-box-small--steps">
         <StartSessionProgressBar
           sessionStatus={sessionStatus} isAutoSave={isAutoSave} toggleLogs={toggleToResourcesLogs} />
       </div>) : null;
     sessionView = status === SessionStatus.running ?
       <SessionJupyter
-        ready={sessionStatus?.isTheSessionReady} filters={filters}
+        ready={isTheSessionReady} filters={filters}
         notebook={notebook} urlList={urlList} height={`${iframeHeight}px`} /> :
       null;
   }
