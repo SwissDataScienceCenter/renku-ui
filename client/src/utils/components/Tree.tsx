@@ -189,7 +189,7 @@ function TreeElement({
           <Link className="row w-100 rk-tree-item-content rk-tree-column-child" to={url}
             onClick={() => actionsOnClick(workflowId)}>
             <div className="d-flex justify-content-between align-items-center">
-              <h5 className="rk-tree-title gap-3">
+              <h5 className="rk-tree-title gap-2">
                 {title}
                 <EntityCreators display="tree" creators={creators} itemType={itemType} />
               </h5>

@@ -39,6 +39,11 @@ h3.workflow-details-title {
     font-weight: bold;
 }
 
+.internal-steps {
+    margin-left: -0.25rem;
+    margin-right: 0.25rem;
+}
+
 @media (max-width: 768px) { //md-size
     .workflows-details-content {
         padding: 15px;

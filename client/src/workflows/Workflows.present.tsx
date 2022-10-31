@@ -670,7 +670,7 @@ function WorkflowVisualizerSimpleBox(
             { information ? <InformativeIcon>{information}</InformativeIcon> : null }
           </h4>
         </CardHeader>
-        <CardBody className="p-0">
+        <CardBody className="px-0 py-2">
           {children}
         </CardBody>
       </Card>
