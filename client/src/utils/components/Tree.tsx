@@ -27,6 +27,8 @@ import { CaretDownFill, CaretRightFill, Col, Diagram2 } from "../ts-wrappers";
 import { EntityChildrenDot } from "./entities/Children";
 import { EntityType, WorkflowType } from "./entities/Entities";
 import { simpleHash } from "../helpers/HelperFunctions";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { IconLink } from "./ExternalLinks";
 
 
 interface TreeBrowserProps {
@@ -196,13 +198,17 @@ function TreeElement({
           </Link>
         </Col>
         <Col xs={12} sm={7} md={4} className="title d-flex align-items-center rk-tree-column-child">
-          <div className={`d-flex rk-tree-column-child `}>
+          <div className="d-flex rk-tree-column-child">
             <EntityExecutions display="tree" executions={executions} itemType={itemType}
               lastExecuted={lastExecuted} showLastExecution={true} workflowId={uniqueId} />
           </div>
         </Col>
         <Col xs={12} sm={5} md={3} className="title d-flex align-items-center rk-tree-column-child">
           <EntityDuration duration={duration} workflowId={uniqueId} />
+          { embed && !isComposite ?
+            <span className="ms-2">
+              <IconLink tooltip="Open workflow" className="text-rk-yellow" icon={faLink} to={url} />
+            </span> : null }
         </Col>
       </div>
       {childrenNodes}
