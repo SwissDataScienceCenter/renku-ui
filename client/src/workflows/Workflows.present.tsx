@@ -542,7 +542,7 @@ function WorkflowDetailVisualizer({
     const information = {
       steps: "Steps within this workflow",
       // eslint-disable-next-line max-len
-      mapping: "Mappings for single steps parameters",
+      mapping: "The inputs, outputs, and parameters of steps within this workflow that are exposed to the overall workflow",
       links: "Which outputs from earlier workflow steps are linked to the inputs of subsequent steps"
     };
     return (<>
