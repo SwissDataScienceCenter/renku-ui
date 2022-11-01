@@ -1056,8 +1056,8 @@ const ProjectSessions = (props) => {
         <Route path={props.launchNotebookUrl}
           render={p => (
             <Fragment>
-              {backButton}
-              <ProjectStartNotebookServer key="startNotebookForm" {...props} />
+              <ProjectStartNotebookServer
+                key="startNotebookForm" {...props} backUrl={backUrl} defaultBackButton={backButton} />
             </Fragment>
           )} />
         <Route path={props.sessionShowUrl}
@@ -1176,7 +1176,7 @@ class ProjectStartNotebookServer extends Component {
     const {
       branches, client, commits, model, user, forkUrl, externalUrl, location, metadata,
       fetchBranches, fetchCommits, notebookServersUrl, history, blockAnonymous, notifications,
-      projectCoordinator, lockStatus
+      projectCoordinator, lockStatus, backUrl, defaultBackButton
     } = this.props;
     const warning = notebookWarning(
       user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl
@@ -1222,6 +1222,8 @@ class ProjectStartNotebookServer extends Component {
         successUrl={notebookServersUrl}
         user={user}
         openShareLinkModal={location?.state?.openShareLinkModal}
+        backUrl={backUrl}
+        defaultBackButton={defaultBackButton}
       />
     );
   }
