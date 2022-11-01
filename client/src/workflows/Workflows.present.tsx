@@ -736,7 +736,7 @@ function VisualizerDetailExpanded({ data, fullPath }: VisualizerDetailExpandedPr
       const fileUrl = Url.get(Url.pages.project.file, { namespace: "", path: fullPath, target: data.default_value });
       defaultValue = (
         <span>{defaultValue}
-          <IconLink tooltip="Open file" className="text-rk-yellow" icon={faFileCode} to={fileUrl} />
+          <IconLink tooltip="Go to file" className="text-rk-yellow" icon={faFileCode} to={fileUrl} />
         </span>
       );
     }
