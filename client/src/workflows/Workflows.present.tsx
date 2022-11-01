@@ -20,13 +20,13 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon, } from "@fortawesome/react-fontawesome";
 import {
-  faArrowRight, faCheck, faExclamationTriangle, faInfoCircle, faLink, faSortAmountDown, faSortAmountUp
+  faArrowRight, faCheck, faExclamationTriangle, faLink, faFileCode, faSortAmountDown, faSortAmountUp
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  Bookmarks, Button, ButtonDropdown, Calendar4, Card, CardBody, CardHeader, Col, DropdownItem,
-  DropdownMenu, DropdownToggle, Input, Journals, Label, People, PopoverBody, Row, Table,
-  UncontrolledPopover, UncontrolledTooltip, XLg
+  Bookmarks, Button, ButtonDropdown, Calendar4, Card, CardBody, CardHeader, Col, Diagram2, DropdownItem,
+  DropdownMenu, DropdownToggle, Input, Journals, Label, People, Row, Table,
+  UncontrolledTooltip, XLg
 } from "../utils/ts-wrappers";
 import EntityCreators from "../utils/components/entities/Creators";
 import Time from "../utils/helpers/Time";
@@ -34,14 +34,14 @@ import { Clipboard } from "../utils/components/Clipboard";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { Docs } from "../utils/constants/Docs";
 import { EntityType } from "../utils/components/entities/Entities";
-import { ExternalDocsLink, ExternalLink } from "../utils/components/ExternalLinks";
+import { ExternalDocsLink, ExternalLink, IconLink } from "../utils/components/ExternalLinks";
 import { Loader } from "../utils/components/Loader";
 import { Url } from "../utils/helpers/url";
 import { TreeBrowser, TreeDetails, TreeElement } from "../utils/components/Tree";
 import { InfoAlert, WarnAlert } from "../utils/components/Alert";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
 import "./Workflows.scss";
-
+import InformativeIcon from "../utils/components/InformativeIcon";
 
 /** BROWSER **/
 
@@ -177,22 +177,19 @@ function WorkflowsListFilters({
           />
           <Label className="text-rk-text me-2">
             Show inactive workflows{" "}
-            <FontAwesomeIcon id="showInactiveInfo" className="cursor-pointer align-middle" icon={faInfoCircle} />
-            <UncontrolledPopover target="showInactiveInfo" trigger="legacy" placement="bottom">
-              <PopoverBody className="p-2">
-                <p className="mb-1">
-                  Inactive workflows don&apos;t have files in the branch&apos;s head
-                </p>
-                <p className="mb-0">
-                  You can{" "}
-                  <ExternalLink
-                    role="text" iconSup={true} iconAfter={true} title="check our documentation"
-                    url={Docs.rtdHowToGuide("404-missing-link")}
-                  />
-                  {" "}for more details
-                </p>
-              </PopoverBody>
-            </UncontrolledPopover>
+            <InformativeIcon>
+              <p className="mb-1">
+                Inactive workflows don&apos;t have files in the branch&apos;s head
+              </p>
+              <p className="mb-0">
+                You can{" "}
+                <ExternalLink
+                  role="text" iconSup={true} iconAfter={true} title="check our documentation"
+                  url={Docs.rtdHowToGuide("404-missing-link")}
+                />
+                {" "}for more details
+              </p>
+            </InformativeIcon>
           </Label>
         </div>
       </div>
@@ -381,7 +378,7 @@ function WorkflowTreeDetail({
   let typeSpecificRows: React.ReactNode;
   if (isComposite) {
     typeSpecificRows = (<>
-      <WorkflowTreeDetailRow name="Number of children">
+      <WorkflowTreeDetailRow name="Number of steps">
         {details.plans?.length}
       </WorkflowTreeDetailRow>
     </>);
@@ -424,7 +421,7 @@ function WorkflowTreeDetail({
     <>
       <Card className="rk-tree-details mb-4 main-card-container">
         <CardHeader className="bg-white d-flex justify-content-between align-items-center">
-          <h3 className="workflow-details-title">{details.name}</h3>
+          <h3 className="workflow-details-title mb-0">{details.name}</h3>
           <div>{backElement}</div>
         </CardHeader>
 
@@ -541,17 +538,30 @@ function WorkflowDetailVisualizer({
       };
       return (<TreeElement key={"wf-children-details-" + w.workflowId} {...w} {...newProps} />);
     });
+
+    const information = {
+      steps: "Steps within this workflow",
+      // eslint-disable-next-line max-len
+      mapping: "The inputs, outputs, and parameters of steps within this workflow that are exposed to the overall workflow",
+      links: "Which outputs from earlier workflow steps are linked to the inputs of subsequent steps"
+    };
     return (<>
-      <Row>
-        <WorkflowVisualizerSimpleBox large={true} title="Steps">
+      <Row className="gap-3">
+        <WorkflowVisualizerSimpleBox large={true} title="Steps" information={information.steps}>
           <div className="internal-steps">{childrenWorkflowsElements}</div>
         </WorkflowVisualizerSimpleBox>
-        <WorkflowVisualizerSimpleBox large={true} title="Mappings">
-          <VisualizerMappings data={details.mappings} expanded={expanded}
-            setDetailExpanded={setDetailExpanded} workflows={workflows} />
+        <WorkflowVisualizerSimpleBox large={true} title="Mappings" information={information.mapping}>
+          <Row className="mt-2">
+            <Col xs={12} lg={5}>
+              <VisualizerMappings data={details.mappings} expanded={expanded}
+                setDetailExpanded={setDetailExpanded} workflows={workflows} />
+            </Col>
+            <Col xs={12} lg={7}>
+              <VisualizerMappingExpanded data={expanded} workflows={workflows} />
+            </Col>
+          </Row>
         </WorkflowVisualizerSimpleBox>
-        <VisualizerMappingExpanded data={expanded} workflows={workflows} />
-        <WorkflowVisualizerSimpleBox large={true} title="Links">
+        <WorkflowVisualizerSimpleBox large={true} title="Links" information={information.links}>
           <VisualizerLinks data={details.links} workflows={workflows} />
         </WorkflowVisualizerSimpleBox>
       </Row>
@@ -561,7 +571,7 @@ function WorkflowDetailVisualizer({
   // pre-select first input automatically
   if (!expanded?.name && details?.inputs?.length)
     expanded = details.inputs[0];
-  return (<>
+  return (<div className="workflows-detail-table">
     <Row>
       <WorkflowVisualizerSimpleBox title="Inputs">
         <VisualizerCommandEntities data={details.inputs} expanded={expanded}
@@ -577,7 +587,7 @@ function WorkflowDetailVisualizer({
       </WorkflowVisualizerSimpleBox>
     </Row>
     <VisualizerDetailExpanded data={expanded} fullPath={fullPath} />
-  </>);
+  </div>);
 }
 
 
@@ -597,9 +607,9 @@ function VisualizerMappings({
     const elemClass = (expanded.type === element.type && expanded.name === element.name) ?
       "selected" : "";
     return (
-      <div key={element.name} className={`p-2 rk-clickable ${elemClass}`}
+      <div key={element.name} className={`px-2 pt-1 mb-2 rk-clickable ${elemClass}`}
         onClick={() => { setDetailExpanded(element); }}>
-        <p className="mb-0"><b>{element.name}</b>: {element.default_value}</p>
+        <p className="mb-0">{element.name}</p>
       </div>
     );
   });
@@ -628,7 +638,7 @@ function VisualizerLinks({
       <tr key={simpleHash(t.id + t.name + num)}>
         <td><VisualizerLocalResource data={t.source} workflows={workflows} /></td>
         <td><FontAwesomeIcon className="m-0" icon={faArrowRight} /></td>
-        <td>{targets}</td>
+        <td className="text-end">{targets}</td>
       </tr>
     );
   });
@@ -646,16 +656,21 @@ interface WorkflowVisualizerSimpleBoxProps {
   children: React.ReactNode;
   large?: boolean;
   title: string;
+  information? : string;
 }
 
-function WorkflowVisualizerSimpleBox({ children, large = false, title }: WorkflowVisualizerSimpleBoxProps) {
+function WorkflowVisualizerSimpleBox(
+  { children, large = false, title, information }: WorkflowVisualizerSimpleBoxProps) {
   return (
     <Col xs={12} lg={large ? 12 : 4}>
-      <Card className="border border-rk-light mb-3">
-        <CardHeader className="bg-white p-2">
-          <h4 className="m-1">{title}</h4>
+      <Card className="borderless border-rk-light mb-3">
+        <CardHeader className="bg-white py-2 px-0">
+          <h4 className="m-1 workflow-simple-box-title d-flex gap-2">
+            {title}
+            { information ? <InformativeIcon>{information}</InformativeIcon> : null }
+          </h4>
         </CardHeader>
-        <CardBody className="p-1">
+        <CardBody className="px-0 py-2">
           {children}
         </CardBody>
       </Card>
@@ -699,7 +714,7 @@ function VisualizerCommandEntity({ element, expanded, setDetailExpanded }: Visua
   if (element.encoding_format && !element.exists)
     valueClass = "text-rk-text-light";
   return (
-    <div className={`p-2 rk-clickable ${elemClass}`} onClick={() => { setDetailExpanded(element); }}>
+    <div className={`px-2 py-1 mb-2 rk-clickable ${elemClass}`} onClick={() => { setDetailExpanded(element); }}>
       <p className="mb-0"><b>{element.name}</b>: <span className={valueClass}>{element.default_value}</span> {link}</p>
     </div>
   );
@@ -720,9 +735,9 @@ function VisualizerDetailExpanded({ data, fullPath }: VisualizerDetailExpandedPr
     if (data.exists) {
       const fileUrl = Url.get(Url.pages.project.file, { namespace: "", path: fullPath, target: data.default_value });
       defaultValue = (
-        <span>{defaultValue} <Link to={fileUrl}>
-          <FontAwesomeIcon className="text-rk-yellow" icon={faLink} />
-        </Link></span>
+        <span>{defaultValue}
+          <IconLink tooltip="Open file" className="text-rk-yellow" icon={faFileCode} to={fileUrl} />
+        </span>
       );
     }
     else {
@@ -753,17 +768,19 @@ function VisualizerDetailExpanded({ data, fullPath }: VisualizerDetailExpandedPr
   return (
     <Row>
       <WorkflowVisualizerSimpleBox title="Details" large={true}>
-        <Table className="table-borderless rk-tree-table mb-0" size="sm">
-          <tbody>
-            <WorkflowTreeDetailRow name="Name">{data.name}</WorkflowTreeDetailRow>
-            <WorkflowTreeDetailRow name="Type">{typeElem}</WorkflowTreeDetailRow>
-            <WorkflowTreeDetailRow name="Default value">{defaultValue}</WorkflowTreeDetailRow>
-            <WorkflowTreeDetailRow name="Description">{description}</WorkflowTreeDetailRow>
-            <WorkflowTreeDetailRow name="Prefix">{prefix}</WorkflowTreeDetailRow>
-            <WorkflowTreeDetailRow name="Position">{position}</WorkflowTreeDetailRow>
-            {mappedToElement}
-          </tbody>
-        </Table>
+        <div className="workflow-details-table p-3">
+          <Table className="table-borderless rk-tree-table mb-0" size="sm">
+            <tbody>
+              <WorkflowTreeDetailRow name="Name">{data.name}</WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Type">{typeElem}</WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Default value">{defaultValue}</WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Description">{description}</WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Prefix">{prefix}</WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Position">{position}</WorkflowTreeDetailRow>
+              {mappedToElement}
+            </tbody>
+          </Table>
+        </div>
       </WorkflowVisualizerSimpleBox>
     </Row>
   );
@@ -781,12 +798,12 @@ function VisualizerLocalResource({ data, workflows }: VisualizerLocalResourcePro
       workflows.list.find((w: any) => (w.id === data.plan_id)) :
       null;
     const subItem = data.id.replace(targetWorkflow.id + "/", "");
-    const newName = `[WF: ${targetWorkflow.name}] @ ${subItem.replace("/", " #")}`;
+    const newName = `${subItem.replace("/", " #")}  @ `;
     const url = targetWorkflow.url; // + t.id.replace(targetWorkflow.id, "");
-    const link = (<Link to={url}>
-      <FontAwesomeIcon className="text-rk-yellow" icon={faLink} />
-    </Link>);
-    return (<span key={simpleHash(data.id + data.name)}>{newName} {link}</span>);
+    const link = (<IconLink tooltip="Open workflow" className="text-rk-yellow" icon={faLink} to={url} />);
+    return (<span key={simpleHash(data.id + data.name)}>
+      {newName} <Diagram2 className="text-rk-yellow" /> {` `}{targetWorkflow.name} {link}</span>
+    );
   }
   catch {
     return (<span className="text-break" key={simpleHash(data.id + data.name)}>{data.id}</span>);
@@ -818,7 +835,7 @@ function VisualizerMappingExpanded({ data, workflows }: VisualizerMappingExpande
   }
 
   return (
-    <WorkflowVisualizerSimpleBox title="Details" large={true}>
+    <div className="workflow-mapping-table">
       <Table className="table-borderless rk-tree-table mb-0" size="sm">
         <tbody>
           <WorkflowTreeDetailRow name="Name">{data.name}</WorkflowTreeDetailRow>
@@ -827,7 +844,7 @@ function VisualizerMappingExpanded({ data, workflows }: VisualizerMappingExpande
           <WorkflowTreeDetailRow name="Targets">{targets}</WorkflowTreeDetailRow>
         </tbody>
       </Table>
-    </WorkflowVisualizerSimpleBox>
+    </div>
   );
 }
 
