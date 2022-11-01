@@ -27,8 +27,6 @@ import { CenteredLoader, InformationalBody, commitsPhrasing } from "./Sidecar";
 import type { CloseModalProps, ModalProps } from "./Sidecar";
 
 interface PullSessionProps extends ModalProps {
-  hasPullAccess: boolean;
-  isLogged: boolean;
   notebook: Notebook;
   urlList: any;
 }

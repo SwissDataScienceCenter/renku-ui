@@ -159,12 +159,10 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
     urlList={urlList}
     isOpen={showModalSaveSession}/>;
   const pullSessionModal = <PullSession
-    isLogged={props.isLogged}
     notebook={notebook}
     closeModal={togglePullSession}
     urlList={urlList}
-    isOpen={showModalPullSession}
-    hasPullAccess={props.accessLevel >= ACCESS_LEVELS.DEVELOPER}/>;
+    isOpen={showModalPullSession} />;
   /* end modals */
 
   let content;
