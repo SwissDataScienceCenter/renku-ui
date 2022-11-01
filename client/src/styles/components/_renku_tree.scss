@@ -96,7 +96,7 @@
     }
 
     &.selected {
-      background-color: $rk-light !important;
+      border-bottom: 2px solid $rk-yellow;
     }
   }
 }
