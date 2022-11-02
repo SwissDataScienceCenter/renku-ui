@@ -17,7 +17,6 @@
  */
 
 import { User, userToUsername } from "./user.interfaces";
-const GITLAB_PROVIDER = Cypress.env("GITLAB_PROVIDER");
 
 Cypress.Commands.add("gui_kc_login", (user: User, startFromHome = false) => {
   if (startFromHome) {
@@ -35,11 +34,11 @@ Cypress.Commands.add("gui_kc_login", (user: User, startFromHome = false) => {
     if (url.includes("auth/realms/Renku/login-actions/authenticate")) {
       cy.gui_kc_register(user);
     }
-    else if (url.includes(`${GITLAB_PROVIDER}/auth/realms/Renku/protocol/openid-connect/auth`)) {
+    else if (url.includes(`/auth/realms/Renku/protocol/openid-connect/auth`)) {
       // Next logging again in dev
       cy.gui_kc_login(user, false);
     }
-    else if (url.includes(`${GITLAB_PROVIDER}/gitlab/oauth/authorize`)) {
+    else if (url.includes(`/oauth/authorize`)) {
       // Accept gitlab authorization
       cy.get("[data-qa-selector='authorization_button']").click();
       cy.gui_is_welcome_page_logged_user(user);
