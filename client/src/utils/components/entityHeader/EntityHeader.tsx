@@ -74,7 +74,7 @@ function EntityHeader({
         <div className="card-bg-title card-bg-title--large" data-cy={`${itemType}-title`}>{title}</div>
         <div className="d-flex justify-content-between align-items-center m-3">
           <EntityLabel type={itemType} workflowType={null} />
-          { visibility ? (<VisibilityIcon visibility={visibility} className="" />) : null }
+          { visibility ? (<VisibilityIcon visibility={visibility} />) : null }
         </div>
       </div>
       <div className="card-body">
