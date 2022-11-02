@@ -16,19 +16,11 @@
  * limitations under the License.
  */
 
-/**
- * Common fixtures defined in one place.
- */
-import BaseFixtures from "./fixtures";
-import { Datasets } from "./datasets";
-import { NewProject } from "./newProject";
-import { NewSession } from "./newSession";
-import { Projects } from "./projects";
-import { Session } from "./session";
-import { Sessions } from "./sessions";
-import { User } from "./user";
-import { Workflows } from "./workflows";
+Cypress.Commands.add("gui_workflows_change_sorting", (target: string) => {
+  cy.get_cy("workflows-ordering").should("exist").click();
+  cy.get("button.dropdown-item").contains(target).click();
+});
 
-const Fixtures = NewProject(NewSession(Sessions(Datasets(Projects(Session(User(Workflows(BaseFixtures))))))));
-
-export default Fixtures;
+Cypress.Commands.add("gui_workflows_change_sort_order", () => {
+  cy.get_cy("workflows-order-direction").should("exist").click();
+});

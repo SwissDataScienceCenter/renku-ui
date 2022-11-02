@@ -16,19 +16,32 @@
  * limitations under the License.
  */
 
+import { FixturesConstructor } from "./fixtures";
+
 /**
- * Common fixtures defined in one place.
+ * Fixtures for workflows
  */
-import BaseFixtures from "./fixtures";
-import { Datasets } from "./datasets";
-import { NewProject } from "./newProject";
-import { NewSession } from "./newSession";
-import { Projects } from "./projects";
-import { Session } from "./session";
-import { Sessions } from "./sessions";
-import { User } from "./user";
-import { Workflows } from "./workflows";
 
-const Fixtures = NewProject(NewSession(Sessions(Datasets(Projects(Session(User(Workflows(BaseFixtures))))))));
+function Workflows<T extends FixturesConstructor>(Parent: T) {
+  return class WorkflowsFixtures extends Parent {
+    getWorkflows(resultFile = "workflows/workflows-list-links-mappings.json") {
+      cy.intercept(
+        "/ui-server/api/renku/*/workflow_plans.list?*",
+        { fixture: resultFile }
+      ).as("getWorkflows");
+      return this;
+    }
 
-export default Fixtures;
+    getWorkflowDetails(resultFile = "workflows/workflow-show-links-mappings.json") {
+      cy.intercept(
+        "/ui-server/api/renku/*/workflow_plans.show?*",
+        { fixture: resultFile }
+      ).as("getWorkflowDetails");
+      return this;
+    }
+
+    // TODO: add single workflow
+  };
+}
+
+export { Workflows };

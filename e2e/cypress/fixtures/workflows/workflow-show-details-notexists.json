@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": 3150,
+    "userMessage": "The workflow '1234c0e72966478ba61eaad737c6ce8e' could not be found. Check that the name/id is correct and try again.",
+    "devMessage": "Unexpected error on workflow '1234c0e72966478ba61eaad737c6ce8e', possibly caused by concurrent actions.",
+    "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.ui.service.errors.IntermittentWorkflowNotFound",
+    "sentry": "https://sentry.dev.renku.ch/organizations/sentry?query=123474a28e9a4d1b80c37a083f485fdc"
+  }
+}

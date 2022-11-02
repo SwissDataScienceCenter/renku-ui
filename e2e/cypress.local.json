@@ -3,5 +3,7 @@
   "env": {
     "USE_FIXTURES": true
   },
-  "video": false
+  "video": false,
+  "viewportWidth": 1600,
+  "viewportHeight": 1200
 }

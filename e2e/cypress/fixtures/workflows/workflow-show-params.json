@@ -1,0 +1,93 @@
+{
+  "result": {
+    "last_executed": "2022-07-19T16:25:38+02:00",
+    "id": "/plans/d1341c90f2b2464dba2bd933fc716007",
+    "number_of_executions": 5,
+    "command": "python",
+    "annotations": null,
+    "description": "Train a model",
+    "outputs": [
+      {
+        "position": 4,
+        "prefix": "--model ",
+        "encoding_format": "application/octet-stream",
+        "exists": true,
+        "mapped_to": null,
+        "plan_id": "/plans/d1341c90f2b2464dba2bd933fc716007",
+        "type": "Output",
+        "default_value": "models/trained_model",
+        "description": null,
+        "create_folder": true,
+        "name": "model"
+      }
+    ],
+    "touches_existing_files": true,
+    "full_command": "python train.py --data data/X_train --target data/Y_train --model models/trained_model --gamma 0.1 --c 0.0001",
+    "keywords": [],
+    "creators": null,
+    "name": "train",
+    "type": "Plan",
+    "success_codes": [],
+    "latest": "/plans/d1341c90f2b2464dba2bd933fc716007",
+    "parameters": [
+      {
+        "position": 5,
+        "prefix": "--gamma ",
+        "plan_id": "/plans/d1341c90f2b2464dba2bd933fc716007",
+        "type": "Parameter",
+        "default_value": "0.1",
+        "description": null,
+        "name": "gamma"
+      },
+      {
+        "position": 6,
+        "prefix": "--c ",
+        "plan_id": "/plans/d1341c90f2b2464dba2bd933fc716007",
+        "type": "Parameter",
+        "default_value": "0.0001",
+        "description": null,
+        "name": "c"
+      }
+    ],
+    "duration": 4,
+    "created": "2022-07-19T16:25:01+02:00",
+    "inputs": [
+      {
+        "position": 1,
+        "prefix": null,
+        "encoding_format": "application/octet-stream",
+        "exists": true,
+        "mapped_to": null,
+        "plan_id": "/plans/d1341c90f2b2464dba2bd933fc716007",
+        "type": "Input",
+        "default_value": "train.py",
+        "description": null,
+        "name": "input-1"
+      },
+      {
+        "position": 2,
+        "prefix": "--data ",
+        "encoding_format": "application/octet-stream",
+        "exists": true,
+        "mapped_to": null,
+        "plan_id": "/plans/d1341c90f2b2464dba2bd933fc716007",
+        "type": "Input",
+        "default_value": "data/X_train",
+        "description": null,
+        "name": "data"
+      },
+      {
+        "position": 3,
+        "prefix": "--target ",
+        "encoding_format": "application/octet-stream",
+        "exists": true,
+        "mapped_to": null,
+        "plan_id": "/plans/d1341c90f2b2464dba2bd933fc716007",
+        "type": "Input",
+        "default_value": "data/Y_train",
+        "description": null,
+        "name": "target"
+      }
+    ]
+  }
+}

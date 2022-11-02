@@ -52,7 +52,7 @@ function TreeBrowser({
     return (<TreeElement key={item.uniqueId} {...item} {...newProps} />);
   });
 
-  return (<div className="mb-3">{treeElements}</div>);
+  return (<div data-cy="workflows-browser" className="mb-3">{treeElements}</div>);
 }
 
 
@@ -222,7 +222,7 @@ interface TreeDetailsProps {
 }
 
 function TreeDetails({ children }: TreeDetailsProps) {
-  return (<>{children}</>);
+  return (<div data-cy="workflow-details">{children}</div>);
 }
 
 export { TreeBrowser, TreeDetails, TreeElement };
