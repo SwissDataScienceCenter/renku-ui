@@ -29,7 +29,7 @@ describe("Test url util functions", () => {
     expect(validateCSP("abcdef", "frame-ancestors *").isIframeValid).toBe(false);
 
     // CSP doesn t have frame-ancestors
-    expect(validateCSP(url, "default-src 'none' ; base-uri 'self'").isIframeValid).toBe(true);
+    expect(validateCSP(url, "default-src 'none' ; base-uri 'self'").isIframeValid).toBe(false);
 
     // all domain valid
     expect(validateCSP(url, "frame-ancestors *").isIframeValid).toBe(true);
