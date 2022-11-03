@@ -25,22 +25,20 @@ import { FixturesConstructor } from "./fixtures";
 function Workflows<T extends FixturesConstructor>(Parent: T) {
   return class WorkflowsFixtures extends Parent {
     getWorkflows(resultFile = "workflows/workflows-list-links-mappings.json") {
+      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
       cy.intercept(
-        "/ui-server/api/renku/*/workflow_plans.list?*",
-        { fixture: resultFile }
+        "/ui-server/api/renku/*/workflow_plans.list?*", fixture
       ).as("getWorkflows");
       return this;
     }
 
     getWorkflowDetails(resultFile = "workflows/workflow-show-links-mappings.json") {
+      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
       cy.intercept(
-        "/ui-server/api/renku/*/workflow_plans.show?*",
-        { fixture: resultFile }
+        "/ui-server/api/renku/*/workflow_plans.show?*", fixture
       ).as("getWorkflowDetails");
       return this;
     }
-
-    // TODO: add single workflow
   };
 }
 

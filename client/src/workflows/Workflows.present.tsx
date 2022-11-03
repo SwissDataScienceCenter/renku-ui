@@ -577,7 +577,7 @@ function WorkflowDetailVisualizer({
   return (<div className="workflows-detail-table">
     <Row>
       <WorkflowVisualizerSimpleBox title="Inputs">
-        <VisualizerCommandEntities data-cy="AAA" data={details.inputs} expanded={expanded}
+        <VisualizerCommandEntities data={details.inputs} expanded={expanded}
           setDetailExpanded={setDetailExpanded} />
       </WorkflowVisualizerSimpleBox>
       <WorkflowVisualizerSimpleBox title="Outputs">
