@@ -31,9 +31,9 @@ export function validateCSP(url: string, csp: string): CheckURLResponse {
     const originUrl = new URL(config.server.url);
     const frameAncestor = csp.split(";").find( (p: string) => p.split(" ")?.includes("frame-ancestors"));
 
-    // If is not set framer-ancestor it can be use in iframes
+    // If is not set framer-ancestor it can't be use in iframes
     if (!frameAncestor)
-      return { ...response, isIframeValid: true, detail: "No include frame-ancestor in Content-Security-Policy (CSP)" };
+      return { ...response, isIframeValid: false, detail: "No frame-ancestor exists in Content-Security-Policy (CSP)" };
 
     const allowedSources = frameAncestor?.split(" ");
 
