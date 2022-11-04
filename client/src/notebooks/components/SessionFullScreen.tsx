@@ -28,7 +28,7 @@ import { AboutSessionModal } from "./AboutSessionModal";
 import { ResourcesSessionModel } from "./ResourcesSessionModal";
 import SaveSession from "./SaveSession";
 import StopSession from "./StopSession";
-import { AboutBtn, GoBackBtn, ResourcesBtn, SaveSessionBtn, StopSessionBtn } from "./SessionButtons";
+import { AboutBtn, GoBackBtn, PullSessionBtn, ResourcesBtn, SaveSessionBtn, StopSessionBtn } from "./SessionButtons";
 import { Notebook, SessionHandlers } from "./Session";
 import useWindowSize from "../../utils/helpers/UseWindowsSize";
 import { Url } from "../../utils/helpers/url";
@@ -37,6 +37,7 @@ import { SESSION_TABS, SessionJupyter } from "../Notebooks.present";
 import StartSessionProgressBar, { SessionStatusData } from "./StartSessionProgressBar";
 import { AUTOSAVED_PREFIX } from "../../utils/helpers/HelperFunctions";
 import SessionUnavailable from "./SessionUnavailable";
+import PullSession from "./PullSession";
 
 /**
  *  renku-ui
@@ -75,6 +76,9 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
 
   const [showModalSaveSession, setShowModalSaveSession] = useState(false);
   const toggleSaveSession = () => setShowModalSaveSession(!showModalSaveSession);
+
+  const [showModalPullSession, setShowModalPullSession] = useState(false);
+  const togglePullSession = () => setShowModalPullSession(!showModalPullSession);
 
   const { height } = useWindowSize();
   const ref = useRef<any>(null);
@@ -155,6 +159,11 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
     closeModal={toggleSaveSession}
     urlList={urlList}
     isOpen={showModalSaveSession}/>;
+  const pullSessionModal = <PullSession
+    notebook={notebook}
+    closeModal={togglePullSession}
+    urlList={urlList}
+    isOpen={showModalPullSession} />;
   /* end modals */
 
   let content;
@@ -194,6 +203,7 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
         <div className="fullscreen-header d-flex gap-3">
           <div className="d-flex gap-3 flex-grow-0 align-items-center">
             <GoBackBtn urlBack={urlBack} />
+            <PullSessionBtn togglePullSession={togglePullSession} />
             <SaveSessionBtn toggleSaveSession={toggleSaveSession} />
             <ResourcesBtn toggleModalResources={toggleModalResources} />
             <StopSessionBtn toggleStopSession={toggleStopSession} />
@@ -215,6 +225,7 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
       {aboutModal}
       {resourcesModal}
       {saveSessionModal}
+      {pullSessionModal}
       {stopSessionModal}
     </div>
   );
