@@ -135,10 +135,13 @@ function ExternalDocsLink(props) {
  */
 function IconLink(props) {
   const [uniqueId, ] = useState(`icon-link-${_.uniqueId()}`);
+  let iconClass = "icon-link ";
+  if (props.className)
+    iconClass += props.className;
 
   return <span>
     <Link to={props.to} id={uniqueId} >
-      <FontAwesomeIcon className="icon-link" icon={props.icon} />
+      <FontAwesomeIcon className={iconClass} icon={props.icon} />
     </Link>
     <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
   </span>;

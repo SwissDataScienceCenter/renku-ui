@@ -16,16 +16,34 @@
  * limitations under the License.
  */
 
-// These are used by the TS compiler does not realize it.
-/* eslint-disable no-unused-vars */
-export enum EntityType {
-  Dataset = "dataset",
-  Project = "project",
-  Workflow = "workflow",
+import React from "react";
+
+import Time from "../../helpers/Time";
+import { UncontrolledTooltip } from "../../ts-wrappers";
+
+
+export interface EntityDurationProps {
+  duration: number | null;
+  workflowId: string;
 }
 
-export enum WorkflowType {
-  Simple = "Plan",
-  Composite = "CompositePlan",
+function EntityDuration({
+  duration, workflowId
+}: EntityDurationProps) {
+  if (duration == null)
+    return null;
+  const elemId = `duration-${workflowId}`;
+  const durationDesc = "Estimated runtime";
+  return (
+    <>
+      <p id={elemId}>
+        <span className="text-rk-text small">Runs in</span> {Time.getDuration(duration)}
+      </p>
+      <UncontrolledTooltip key={`duration-elem-${elemId}`} placement="top" target={elemId}>
+        <span>{durationDesc}</span>
+      </UncontrolledTooltip>
+    </>
+  );
 }
-/* eslint-enable no-unused-vars */
+
+export default EntityDuration;

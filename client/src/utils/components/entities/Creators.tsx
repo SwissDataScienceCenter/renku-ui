@@ -33,30 +33,47 @@ export interface EntityCreator {
 }
 
 export interface EntityCreatorsProps {
-  display: "list" | "grid";
+  display: "grid" | "list" | "plain" | "tree";
   creators: EntityCreator[];
   itemType: EntityType;
 }
 function EntityCreators({ display, creators, itemType }: EntityCreatorsProps) {
-  if (!creators) return null;
-
+  let creatorsText;
   const stylesByItem = stylesByItemType(itemType);
-  let creatorsText = creators.slice(0, 3)
-    .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : "")).join(", ");
-  if (creators.length > 3)
-    creatorsText += ", et al.";
-
-  if (display === "list") {
-    return <div className={`card-text creators text-truncate ${stylesByItem.colorText}`}>
-      {creatorsText}
-    </div>;
+  if (!creators) {
+    creatorsText = <span className="fst-italic">Unknown creator</span>;
+  }
+  else {
+    creatorsText = creators.slice(0, 3)
+      .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : "")).join(", ");
+    if (creators.length > 3)
+      creatorsText += ", et al.";
   }
 
-  return <div className={`creators text-truncate text-rk-text ${ stylesByItem.colorText }`}>
-    <small style={{ display: "block" }} className="font-weight-light">
-      {creatorsText}
-    </small>
-  </div>;
+  if (display === "plain")
+    return (<span>{creatorsText}</span>);
+
+  if (display === "list") {
+    return (
+      <div className={`card-text card-entity-row ${stylesByItem.colorText}`}>
+        {creatorsText}
+      </div>
+    );
+  }
+
+  if (display === "tree") {
+    if (!creatorsText)
+      return null;
+    return (<p className="text-rk-text small">{creatorsText}</p>);
+  }
+
+  return (
+    <div className={`card-entity-row text-rk-text ${ stylesByItem.colorText }`}>
+      <small style={{ display: "block" }} className="font-weight-light">
+        {creatorsText}
+      </small>
+    </div>
+  );
 }
 
 export default EntityCreators;

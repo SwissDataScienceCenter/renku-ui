@@ -33,12 +33,9 @@ import {
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
-import { faUserClock } from "@fortawesome/free-solid-svg-icons";
 import {
-  faCodeBranch, faExclamationTriangle, faInfoCircle, faPlay,
-  faStar as faStarSolid
+  faCodeBranch, faExclamationTriangle, faInfoCircle, faPlay, faStar as faStarSolid, faUserClock
 } from "@fortawesome/free-solid-svg-icons";
-
 
 import { Url } from "../utils/helpers/url";
 import { SpecialPropVal } from "../model/Model";
@@ -55,8 +52,7 @@ import { NamespaceProjects } from "../namespace";
 import { ProjectOverviewCommits, ProjectOverviewStats, ProjectOverviewVersion } from "./overview";
 import { ForkProject } from "./new";
 import { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions } from "./settings";
-
-import "./Project.css";
+import { WorkflowsList } from "../workflows";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { ButtonWithMenu, GoBackButton } from "../utils/components/buttons/Button";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
@@ -71,6 +67,8 @@ import { ContainerWrap } from "../App";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
 import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
+
+import "./Project.css";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -543,6 +541,9 @@ class ProjectNav extends Component {
               <RenkuNavLink exact={false} to={this.props.datasetsUrl} title="Datasets" />
             </NavItem>
             <NavItem>
+              <RenkuNavLink exact={false} to={this.props.workflowsUrl} title="Workflows" />
+            </NavItem>
+            <NavItem>
               <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Sessions" />
             </NavItem>
             <NavItem className="pe-0">
@@ -897,6 +898,17 @@ function ProjectViewDatasets(props) {
       }/>
     </Switch>
   </Col>;
+}
+
+function ProjectViewWorkflows(props) {
+  const reference = props.metadata?.defaultBranch ?
+    props.metadata?.defaultBranch :
+    "";
+
+  return (
+    <WorkflowsList client={props.client} fullPath={props.projectPathWithNamespace} model={props.model}
+      reference={reference} repositoryUrl={props.externalUrl} versionUrl={props.migration?.core?.versionUrl} />
+  );
 }
 
 class ProjectViewCollaborationNav extends Component {
@@ -1404,6 +1416,8 @@ function ProjectView(props) {
             render={() => <ProjectViewFiles key="files" {...props} />} />
           <Route path={props.datasetsUrl}
             render={() => <ProjectViewDatasets key="datasets" {...props} />} />
+          <Route path={[props.workflowUrl, props.workflowsUrl]}
+            render={() => <ProjectViewWorkflows key="workflows" {...props} />} />
           <Route path={props.settingsUrl}
             render={() => <ProjectSettings key="settings" {...props} />} />
           <Route path={props.notebookServersUrl}

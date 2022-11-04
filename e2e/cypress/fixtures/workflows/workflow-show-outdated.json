@@ -1,0 +1,68 @@
+{
+	"result": {
+		"inputs": [
+			{
+				"position": 1,
+				"default_value": "m",
+				"prefix": null,
+				"exists": true,
+				"name": "input-1",
+				"encoding_format": "application/octet-stream",
+				"description": null,
+				"plan_id": "/plans/998ff6b7853d4889bbec55dfb31b4ba6",
+				"type": "Input",
+				"mapped_to": null
+			},
+			{
+				"position": 2,
+				"default_value": "n",
+				"prefix": null,
+				"exists": true,
+				"name": "input-2",
+				"encoding_format": "application/octet-stream",
+				"description": null,
+				"plan_id": "/plans/998ff6b7853d4889bbec55dfb31b4ba6",
+				"type": "Input",
+				"mapped_to": null
+			}
+		],
+		"outputs": [
+			{
+				"create_folder": true,
+				"position": 3,
+				"default_value": "x",
+				"prefix": null,
+				"exists": true,
+				"name": "output-3",
+				"encoding_format": "application/octet-stream",
+				"description": null,
+				"plan_id": "/plans/998ff6b7853d4889bbec55dfb31b4ba6",
+				"type": "Output",
+				"mapped_to": "stdout"
+			}
+		],
+		"type": "Plan",
+		"id": "/plans/998ff6b7853d4889bbec55dfb31b4ba6",
+		"creators": [
+			{
+				"name": "Ralf Grubenmann",
+				"affiliation": null,
+				"email": "ralf.grubenmann@gmail.com"
+			}
+		],
+		"full_command": "cat m n > x",
+		"success_codes": [],
+		"latest": "/plans/3398f0a970774e2d82b1791190de85d0",
+		"touches_existing_files": true,
+		"keywords": [],
+		"last_executed": "2022-09-19T12:31:05+02:00",
+		"annotations": null,
+		"description": null,
+		"parameters": [],
+		"duration": 0,
+		"name": "cat-m-n-b38fc",
+		"command": "cat",
+		"created": "2022-09-19T12:31:05+02:00",
+		"number_of_executions": 1
+	}
+}

@@ -23,47 +23,47 @@
  *  Entity Header component
  */
 import * as React from "react";
-import {
-  Col,
-} from "../../ts-wrappers";
 
-import "./EntityHeader.css";
-import { TimeCaption } from "../TimeCaption";
-import { StartSessionButton } from "../../../project/Project.present";
+import { Col, Row } from "../../ts-wrappers";
 import Creators, { EntityCreator } from "../entities/Creators";
-import VisibilityIcon from "../entities/VisibilityIcon";
-import Slug from "../entities/Slug";
 import EntityDescription from "../entities/Description";
 import EntityTags from "../entities/Tags";
-import { EntityType } from "../entities/Entities";
 import EntityLabel from "../entities/Label";
 import LinkedEntitiesByItemType, { EntityLinksHeader } from "../entities/LinkedEntitiesByItemType";
+import Slug from "../entities/Slug";
+import VisibilityIcon from "../entities/VisibilityIcon";
+import { EntityType } from "../entities/Entities";
+import { StartSessionButton } from "../../../project/Project.present";
+import { TimeCaption } from "../TimeCaption";
+
+import "./EntityHeader.css";
 
 export interface EntityHeaderProps {
-  title: string;
-  visibility: "public" | "internal" | "private";
-  description: string;
-  itemType: EntityType;
-  slug?: string | React.ReactNode;
-  tagList: string[];
   creators: EntityCreator[];
-  labelCaption: string;
-  timeCaption: string;
-  launchNotebookUrl: string;
-  sessionAutostartUrl: string;
+  description: string;
   devAccess: boolean;
   email?: string;
-  url: string;
+  itemType: EntityType;
+  labelCaption: string;
+  launchNotebookUrl: string;
   links?: EntityLinksHeader;
-  statusButton?: React.ReactNode;
   otherButtons?: React.ReactNode[];
+  sessionAutostartUrl: string;
   showFullHeader?: boolean;
+  slug?: string | React.ReactNode;
+  statusButton?: React.ReactNode;
+  tagList: string[];
+  timeCaption: string;
+  title: string;
+  url: string;
+  visibility?: "public" | "internal" | "private";
 }
 
-function EntityHeader(
-  { title, visibility, itemType, slug, tagList, creators, labelCaption, timeCaption, description,
-    launchNotebookUrl, sessionAutostartUrl, devAccess, url, links, statusButton, otherButtons, showFullHeader = true }
-    : EntityHeaderProps) {
+function EntityHeader({
+  creators, description, devAccess, itemType, labelCaption, launchNotebookUrl, links,
+  otherButtons, sessionAutostartUrl, showFullHeader = true, slug, statusButton, tagList, timeCaption,
+  title, url, visibility
+}: EntityHeaderProps) {
 
   const mainButton = launchNotebookUrl && sessionAutostartUrl ?
     <StartSessionButton launchNotebookUrl={launchNotebookUrl} sessionAutostartUrl={sessionAutostartUrl} /> : null;
@@ -73,24 +73,23 @@ function EntityHeader(
       <div className={`card-header-entity--large card-header-entity--${itemType}-large`}>
         <div className="card-bg-title card-bg-title--large" data-cy={`${itemType}-title`}>{title}</div>
         <div className="d-flex justify-content-between align-items-center m-3">
-          <EntityLabel type={itemType} />
-          <VisibilityIcon visibility={visibility} className="" />
+          <EntityLabel type={itemType} workflowType={null} />
+          { visibility ? (<VisibilityIcon visibility={visibility} />) : null }
         </div>
       </div>
       <div className="card-body">
-        <div className="row">
-          <div className="col-12 col-sm-12 col-md-12 col-lg-9 col-xl-9 d-grid">
-            <div className="card-title text-truncate lh-sm" data-cy="list-card-title">
+        <Row>
+          <Col xs={12} lg={9}>
+            <div className="card-title card-entity-row card-entity-row--title lh-sm" data-cy="list-card-title">
               {statusButton}{title}
             </div>
-          </div>
-          <div
-            className="buttons-header-entity col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 d-flex gap-2
-                align-items-center justify-content-start justify-content-lg-end my-2 my-lg-0">
+          </Col>
+          <Col xs={12} lg={3}
+            className="d-flex gap-2 align-items-center justify-content-start justify-content-lg-end my-2 my-lg-0">
             {otherButtons}
             {mainButton}
-          </div>
-        </div>
+          </Col>
+        </Row>
         <Slug display="list" slug={slug ?? ""} />
         <Creators display="list" creators={creators} itemType={itemType} />
         <EntityDescription
@@ -98,20 +97,19 @@ function EntityHeader(
           showSuggestion={true} hasDevAccess={devAccess}
           urlChangeDescription={`${url}/settings`}
         />
-        <div className="row">
-          <div className="col-12 col-sm-12 col-md-12 col-lg-9 col-xl-9 d-grid">
+        <Row>
+          <Col xs={12} lg={9}>
             <EntityTags tagList={tagList} multiline={true} />
-          </div>
-          <div
-            className="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 d-flex
-                justify-content-start justify-content-lg-end">
+          </Col>
+          <Col xs={12} lg={3}
+            className="justify-content-start justify-content-lg-end">
             <TimeCaption
               caption={labelCaption || "Updated"}
               showTooltip={true}
               time={timeCaption}
               className="text-rk-text-light"/>
-          </div>
-        </div>
+          </Col>
+        </Row>
       </div>
     </div>
   );

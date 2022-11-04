@@ -411,6 +411,11 @@ function stylesByItemType(itemType) {
         colorText: "text-rk-pink",
         bgColor: "rk-pink"
       };
+    case "workflow":
+      return {
+        colorText: "text-rk-yellow",
+        bgColor: "rk-yellow"
+      };
     default:
       return {
         colorText: "text-rk-green",
@@ -419,8 +424,23 @@ function stylesByItemType(itemType) {
   }
 }
 
+/**
+ * Check renku core support based on partial Url and minimum expected version
+ * @param {string | number} minimumVersion - required version.
+ * @param {string} coreUrl - url string for the project version.
+ * @returns boolean value to indicate whether the feature is supported or not.
+ */
+function checkRenkuCoreSupport(minimumVersion, coreUrl) {
+  const projectVersion = coreUrl != null && coreUrl.length ?
+    parseInt(coreUrl.replace(/^\/+|\/+$/g, "")) :
+    0;
+  const unsupported = projectVersion && projectVersion < minimumVersion ? true : false;
+  return !unsupported;
+}
+
+
 export {
-  capitalizeFirstLetter, generateZip, computeVisibilities,
+  capitalizeFirstLetter, checkRenkuCoreSupport, generateZip, computeVisibilities,
   slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown,
   simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleCharacters,
   convertUnicodeToAscii, refreshIfNecessary, sleep, toCapitalized, stylesByItemType, AUTOSAVED_PREFIX

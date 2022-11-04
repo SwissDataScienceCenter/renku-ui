@@ -1,0 +1,65 @@
+{
+	"result": {
+		"plans": [
+			{
+				"children": [],
+				"id": "/plans/59d7c0e72966478ba61eaad737c6ce8e",
+				"creators": [],
+				"touches_existing_files": true,
+				"keywords": [],
+				"duration": 5,
+				"last_executed": "2022-07-19T16:25:38+02:00",
+				"description": null,
+				"name": "evaluation",
+				"number_of_executions": 5,
+				"created": "2022-07-19T15:10:40+02:00",
+				"type": "Plan"
+			},
+			{
+				"children": [],
+				"id": "/plans/d1341c90f2b2464dba2bd933fc716007",
+				"creators": [],
+				"touches_existing_files": true,
+				"keywords": [],
+				"duration": 4,
+				"last_executed": "2022-07-19T16:25:38+02:00",
+				"description": "Train a model",
+				"name": "train",
+				"number_of_executions": 5,
+				"created": "2022-07-19T16:25:01+02:00",
+				"type": "Plan"
+			},
+			{
+				"children": [
+					"/plans/d1341c90f2b2464dba2bd933fc716007",
+					"/plans/59d7c0e72966478ba61eaad737c6ce8e"
+				],
+				"id": "/plans/952c938055a041168f6e795ae33b0d22",
+				"creators": [],
+				"touches_existing_files": true,
+				"keywords": [],
+				"duration": 10,
+				"last_executed": null,
+				"description": null,
+				"name": "pipeline",
+				"number_of_executions": null,
+				"created": "2022-07-19T16:25:27+02:00",
+				"type": "CompositePlan"
+			},
+			{
+				"children": [],
+				"id": "/plans/0b287509ce164a399bab4a0266a4777a",
+				"creators": [],
+				"touches_existing_files": true,
+				"keywords": [],
+				"duration": 5,
+				"last_executed": "2022-07-19T15:11:32+02:00",
+				"description": null,
+				"name": "preprocessing",
+				"number_of_executions": 3,
+				"created": "2022-07-19T15:09:53+02:00",
+				"type": "Plan"
+			}
+		]
+	}
+}

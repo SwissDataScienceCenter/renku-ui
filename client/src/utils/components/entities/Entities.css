@@ -36,4 +36,21 @@
 .creators {
     height: 24px;
 }
+.card-entity-row {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 24px;
+}
+.card-entity-row--title {
+    height: 30px;
+}
+@media (max-width: 768px) {
+    .card-entity-row {
+        height: auto;
+        display: flex;
+        flex-wrap: wrap;
+        white-space: normal;
+    }
+}
 

@@ -1,0 +1,93 @@
+{
+	"result": {
+		"id": "/plans/952c938055a041168f6e795ae33b0d22",
+		"creators": null,
+		"touches_existing_files": true,
+		"keywords": [],
+		"mappings": [
+			{
+				"description": null,
+				"name": "model",
+				"targets": [
+					{
+						"name": "model",
+						"plan_id": "/plans/d1341c90f2b2464dba2bd933fc716007",
+						"id": "/plans/d1341c90f2b2464dba2bd933fc716007/outputs/4",
+						"type": "Output"
+					}
+				],
+				"default_value": "None",
+				"plan_id": "/plans/952c938055a041168f6e795ae33b0d22",
+				"type": "Mapping"
+			},
+			{
+				"description": null,
+				"name": "gamma",
+				"targets": [
+					{
+						"name": "gamma",
+						"plan_id": "/plans/d1341c90f2b2464dba2bd933fc716007",
+						"id": "/plans/d1341c90f2b2464dba2bd933fc716007/parameters/5",
+						"type": "Parameter"
+					}
+				],
+				"default_value": "None",
+				"plan_id": "/plans/952c938055a041168f6e795ae33b0d22",
+				"type": "Mapping"
+			},
+			{
+				"description": null,
+				"name": "c",
+				"targets": [
+					{
+						"name": "c",
+						"plan_id": "/plans/d1341c90f2b2464dba2bd933fc716007",
+						"id": "/plans/d1341c90f2b2464dba2bd933fc716007/parameters/6",
+						"type": "Parameter"
+					}
+				],
+				"default_value": "None",
+				"plan_id": "/plans/952c938055a041168f6e795ae33b0d22",
+				"type": "Mapping"
+			}
+		],
+		"duration": 10,
+		"description": null,
+		"plans": [
+			{
+				"name": "train",
+				"id": "/plans/d1341c90f2b2464dba2bd933fc716007"
+			},
+			{
+				"name": "evaluation",
+				"id": "/plans/59d7c0e72966478ba61eaad737c6ce8e"
+			}
+		],
+		"links": [
+			{
+				"id": "/plans/952c938055a041168f6e795ae33b0d22/links/5a8cb983-911c-4e9c-ba2f-5c7cdf1a18f3",
+				"source": {
+					"name": "model",
+					"plan_id": "/plans/d1341c90f2b2464dba2bd933fc716007",
+					"id": "/plans/d1341c90f2b2464dba2bd933fc716007/outputs/4",
+					"type": "Output"
+				},
+				"sinks": [
+					{
+						"name": "model-4",
+						"plan_id": "/plans/59d7c0e72966478ba61eaad737c6ce8e",
+						"id": "/plans/59d7c0e72966478ba61eaad737c6ce8e/inputs/4",
+						"type": "Input"
+					}
+				],
+				"plan_id": "/plans/952c938055a041168f6e795ae33b0d22",
+				"type": "Link"
+			}
+		],
+		"name": "pipeline",
+		"latest": "/plans/952c938055a041168f6e795ae33b0d22",
+		"created": "2022-07-19T16:25:27+02:00",
+		"annotations": null,
+		"type": "CompositePlan"
+	}
+}

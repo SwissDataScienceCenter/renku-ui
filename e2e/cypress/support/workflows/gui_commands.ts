@@ -16,16 +16,11 @@
  * limitations under the License.
  */
 
-// These are used by the TS compiler does not realize it.
-/* eslint-disable no-unused-vars */
-export enum EntityType {
-  Dataset = "dataset",
-  Project = "project",
-  Workflow = "workflow",
-}
+Cypress.Commands.add("gui_workflows_change_sorting", (target: string) => {
+  cy.get_cy("workflows-ordering").should("exist").click();
+  cy.get("button.dropdown-item").contains(target).click();
+});
 
-export enum WorkflowType {
-  Simple = "Plan",
-  Composite = "CompositePlan",
-}
-/* eslint-enable no-unused-vars */
+Cypress.Commands.add("gui_workflows_change_sort_order", () => {
+  cy.get_cy("workflows-order-direction").should("exist").click();
+});
