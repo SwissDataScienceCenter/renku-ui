@@ -4,12 +4,21 @@ div.commands {
   min-width: 300px;
   padding: 10px;
 }
+div.commands .break {
+  flex-basis: 100%;
+  width: 0;
+}
 
 .commands h1 {
   border-bottom: 2px solid rgba(0, 0, 0, 0.2);
 }
 
-.commands div.commands-row div {
+.command {
+  flex-grow: 1;
+  padding: 0 20px 5px 0;
+}
+
+.commands div.commands-row div:not(.command) {
   flex-basis: 0;
   flex-grow: 1;
   padding: 0 20px 5px 0;
