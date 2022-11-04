@@ -103,6 +103,32 @@ class Time {
       return d3TimeFormat.timeFormat(d3FormatString)(dt);
     return `${dt.toLocaleDateString()} ${dt.toLocaleTimeString([], localeTimeOptions)}`;
   }
+
+  /**
+   * Convert a duration into text. Up to 24 hours and approximate.
+   * @param {number} seconds - number of seconds
+   * @returns stringy approximate duration.
+   */
+  static getDuration(seconds) {
+    let currentValue = parseInt(seconds);
+    if (currentValue < 1)
+      return "< 1 second";
+    if (currentValue === 1)
+      return "1 second";
+    if (currentValue < 60)
+      return `${currentValue} seconds`;
+    currentValue = currentValue / 60;
+    if (currentValue >= 1 && currentValue < 2)
+      return "1 minute";
+    if (currentValue >= 2 && currentValue < 60)
+      return `${parseInt(currentValue)} minutes`;
+    currentValue = currentValue / 60;
+    if (currentValue >= 1 && currentValue < 2)
+      return "1 hour";
+    if (currentValue >= 2 && currentValue <= 24)
+      return `${parseInt(currentValue)} hours`;
+    return "> 24 hours";
+  }
 }
 
 export default Time;

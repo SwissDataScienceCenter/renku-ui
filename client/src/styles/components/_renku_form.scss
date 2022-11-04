@@ -184,3 +184,19 @@
     border-color: var(--bs-rk-pink);
   }
 }
+
+.form-rk-yellow {
+  .form-switch .form-check-input:checked[type=checkbox] {
+    background-color: var(--bs-rk-yellow);
+  }
+}
+
+.input-filter-box--workflows {
+  background-color: white;
+  border: 1px solid #DCE4EC;
+  border-radius: 8px;
+  padding: 0 10px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}

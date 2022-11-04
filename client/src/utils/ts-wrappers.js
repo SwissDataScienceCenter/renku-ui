@@ -9,10 +9,14 @@ import {
   AccordionHeader as WrappedAccordionHeader,
   AccordionBody as WrappedAccordionBody,
   Alert as WrappedAlert,
+  Badge as WrappedBadge,
   Button as WrappedButton,
+  ButtonDropdown as WrappedButtonDropdown,
   ButtonGroup as WrappedButtonGroup,
   Col as WrappedCol,
   DropdownItem as WrappedDropdownItem,
+  DropdownMenu as WrappedDropdownMenu,
+  DropdownToggle as WrappedDropdownToggle,
   Fade as WrappedFade,
   FormFeedback as WrappedFormFeedback,
   Form as WrappedForm,
@@ -30,6 +34,7 @@ import {
 import {
   Card as WrappedCard,
   CardBody as WrappedCardBody,
+  CardHeader as WrappedCardHeader,
   CardText as WrappedCardText,
   CardFooter as WrappedCardFooter,
   PopoverHeader as WrappedPopoverHeader,
@@ -42,7 +47,15 @@ import {
   ArrowClockwise as WrappedArrowClockwise,
   ArrowLeft as WrappedArrowLeft,
   Briefcase as WrappedBriefcase,
+  Bookmarks as WrappedBookmarks,
+  XLg as WrappedXLg,
   CheckCircleFill as WrappedCheckCircleFill,
+  Calendar4 as WrappedCalendar4,
+  CardList as WrappedCardList,
+  CaretDownFill as WrappedCaretDownFill,
+  CaretRightFill as WrappedCaretRightFill,
+  Diagram2 as WrappedDiagram2,
+  Diagram3 as WrappedDiagram3,
   HddStack as WrappedHddStack,
   Globe as WrappedGlobe,
   People as WrappedPeople,
@@ -73,12 +86,20 @@ function ArrowClockwise(props) {
   return <WrappedArrowClockwise {...props} />;
 }
 
+function Badge(props) {
+  return <WrappedBadge {...props} />;
+}
+
 function Button(props) {
   return <WrappedButton {...props} />;
 }
 
 function ButtonGroup(props) {
   return <WrappedButtonGroup {...props} />;
+}
+
+function ButtonDropdown(props) {
+  return <WrappedButtonDropdown {...props} />;
 }
 
 function Col(props) {
@@ -93,12 +114,36 @@ function CardBody(props) {
   return <WrappedCardBody {...props} />;
 }
 
+function CardHeader(props) {
+  return <WrappedCardHeader {...props} />;
+}
+
 function CardText(props) {
   return <WrappedCardText {...props} />;
 }
 
 function CardFooter(props) {
   return <WrappedCardFooter {...props} />;
+}
+
+function CaretDownFill(props) {
+  return <WrappedCaretDownFill {...props} />;
+}
+
+function CaretRightFill(props) {
+  return <WrappedCaretRightFill {...props} />;
+}
+
+function Diagram2(props) {
+  return <WrappedDiagram2 {...props} />;
+}
+
+function DropdownMenu(props) {
+  return <WrappedDropdownMenu {...props} />;
+}
+
+function DropdownToggle(props) {
+  return <WrappedDropdownToggle {...props} />;
 }
 
 function PopoverHeader(props) {
@@ -108,7 +153,6 @@ function PopoverHeader(props) {
 function PopoverBody(props) {
   return <WrappedPopoverBody {...props} />;
 }
-
 
 function UncontrolledPopover(props) {
   return <WrappedUncontrolledPopover {...props} />;
@@ -180,6 +224,14 @@ function Table(props) {
 
 function Briefcase(props) {
   return <WrappedBriefcase {...props} />;
+}
+
+function CardList(props) {
+  return <WrappedCardList {...props} />;
+}
+
+function Diagram3(props) {
+  return <WrappedDiagram3 {...props} />;
 }
 
 function HddStack(props) {
@@ -266,13 +318,27 @@ function XCircleFill(props) {
   return <WrappedXCircleFill {...props} />;
 }
 
+function Bookmarks(props) {
+  return <WrappedBookmarks {...props} />;
+}
+
+function Calendar4(props) {
+  return <WrappedCalendar4 {...props} />;
+}
+
+function XLg(props) {
+  return <WrappedXLg {...props} />;
+}
+
 export { ArrowClockwise };
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
-export { Alert, Button, ButtonGroup, CheckCircleFill, XCircleFill };
-export { Card, CardBody, CardText, CardFooter, Col, DropdownItem };
+export { Alert, Badge, Button, ButtonDropdown, ButtonGroup, CheckCircleFill, XCircleFill };
+export { Card, CardBody, CardFooter, CardHeader, CardText, Col, DropdownItem, DropdownMenu, DropdownToggle };
 export { FormFeedback, FormText, Fade, Form, FormGroup, Input, InputGroup, Label };
 export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
-export { ArrowLeft, Briefcase, Download, HddStack, Globe, Journals, People, Lock, Save, InfoCircle, StopCircle };
+export { ArrowLeft, Briefcase, CardList, Diagram3, Download, Globe, HddStack, InfoCircle, Journals, Lock };
+export { People, Save, StopCircle };
 export { Nav, NavItem, NavLink, TabContent, TabPane };
+export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, Diagram2, XLg };

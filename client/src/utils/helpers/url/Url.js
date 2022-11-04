@@ -168,9 +168,13 @@ function projectNewUrlBuilder() {
  */
 function projectPageUrlBuilder(subSection) {
   return (data) => {
-    let url = `/projects/${data.namespace}/${data.path}`;
+    let url = data.namespace && data.namespace.length ?
+      `/projects/${data.namespace}/${data.path}` :
+      `/projects/${data.path}`;
     if (subSection)
-      return url + subSection;
+      url += subSection;
+    if (data.target)
+      url += data.target;
     return url;
   };
 }
@@ -314,6 +318,12 @@ const Url = {
           "/projects/new?data=eyJ0aXRsZSI6InRlC3QifQ==",
         ]
       ),
+      file: new UrlRule(
+        projectPageUrlBuilder("/files/blob/"), ["namespace", "path", "target"], null, [
+          "/projects/namespace/path/files/blob/target",
+          "/projects/group/subgroup/path/files/blob/target",
+        ]
+      ),
       session: {
         base: new UrlRule(
           projectPageUrlBuilder("/sessions"), ["namespace", "path"], null, [
@@ -337,6 +347,26 @@ const Url = {
           projectSessionUrlBuilder(), ["namespace", "path", "server"], null, [
             "/projects/namespace/path/sessions/show/server-id",
             "/projects/group/subgroup/path/sessions/show/server-id",
+          ]
+        )
+      },
+      workflows: {
+        base: new UrlRule(
+          projectPageUrlBuilder("/workflows"), ["namespace", "path"], null, [
+            "/projects/namespace/path/workflows",
+            "/projects/group/subgroup/path/workflows",
+          ]
+        ),
+        detail: new UrlRule(
+          projectPageUrlBuilder("/workflows"), ["namespace", "path", "target"], null, [
+            "/projects/namespace/path/workflows/1234abcd",
+            "/projects/group/subgroup/path/workflows/1234abcd",
+          ]
+        ),
+        single: new UrlRule(
+          projectPageUrlBuilder("/workflow"), ["namespace", "path", "target"], null, [
+            "/projects/namespace/path/workflow/1234abcd",
+            "/projects/group/subgroup/path/workflow/1234abcd",
           ]
         )
       },

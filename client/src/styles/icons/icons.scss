@@ -29,6 +29,12 @@
 
 .circle.workflow {
   background: #D1BB4C;
+  height: 33px;
+  width: 33px;
+}
+
+.circle.workflow.inactive {
+  background: #838383;
 }
 
 // TODO - DELETE WHEN COLLABORATION IFRAME IS MERGED
