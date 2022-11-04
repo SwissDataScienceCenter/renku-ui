@@ -38,6 +38,14 @@ function User<T extends FixturesConstructor>(Parent: T) {
       }).as(name);
       return this;
     }
+
+    renkuDown(name = "getUser") {
+      cy.intercept("/ui-server/api/user", {
+        statusCode: 500,
+        body: {}
+      }).as(name);
+      return this;
+    }
   };
 }
 
