@@ -126,7 +126,7 @@ function WorkflowsTreeBrowser({
 
   return (
     <div className="workflows-box">
-      <h3>Workflows</h3>
+      <h3 data-cy="workflows-page">Workflows</h3>
       <WorkflowsListFilters
         ascending={ascending}
         orderBy={orderBy}
@@ -193,7 +193,7 @@ function WorkflowsListFilters({
           </Label>
         </div>
       </div>
-      <div className="d-flex align-items-center gap-2">
+      <div data-cy="workflows-ordering" className="d-flex align-items-center gap-2">
         <Label className="text-rk-text">Order by:</Label>
         <ButtonDropdown
           className="input-filter-box--workflows"
@@ -202,8 +202,8 @@ function WorkflowsListFilters({
           <DropdownToggle caret color="rk-light">{orderByMatrix[orderBy]}</DropdownToggle>
           <DropdownMenu>{ dropdownItems }</DropdownMenu>
         </ButtonDropdown>
-        <Button className="input-filter-box--workflows px-3" color="input-filter-box"
-          onClick={() => toggleAscending()}>
+        <Button data-cy="workflows-order-direction" className="input-filter-box--workflows px-3"
+          color="input-filter-box" onClick={() => toggleAscending()}>
           {ascending ?
             <FontAwesomeIcon className="m-0" icon={faSortAmountUp} /> :
             <FontAwesomeIcon className="m-0" icon={faSortAmountDown} />
@@ -412,7 +412,10 @@ function WorkflowTreeDetail({
     newerAvailable = (
       <InfoAlert timeout={0}>
         <p>A new version of this workflow is available.</p>
-        <p><Link className="btn btn-info btn-sm" to={details.latestUrl}>Click here</Link> to visualize it.</p>
+        <p data-cy="workflow-details-newer">
+          <Link className="btn btn-info btn-sm" to={details.latestUrl}>Click here</Link>
+          {" "}to visualize it.
+        </p>
       </InfoAlert>
     );
   }
@@ -427,7 +430,7 @@ function WorkflowTreeDetail({
 
         <CardBody>
           {newerAvailable}
-          <Table className="table-borderless rk-tree-table mb-0" size="sm">
+          <Table data-cy="workflow-details-info-table" className="table-borderless rk-tree-table mb-0" size="sm">
             <tbody>
               <WorkflowTreeMainDetailRow name="Author(s)" icon={<People className="text-rk-yellow" size="20" />}>
                 {
@@ -463,7 +466,7 @@ function WorkflowTreeDetail({
       </Card>
 
       <Card className="rk-tree-details mb-4">
-        <Table className="table-borderless rk-tree-table mb-0" size="sm">
+        <Table data-cy="workflow-details-extended-table" className="table-borderless rk-tree-table mb-0" size="sm">
           <tbody>
             <WorkflowTreeDetailRow name="Workflow type">
               {isComposite ? "Workflow (Composite)" : "Single step" }
@@ -643,7 +646,7 @@ function VisualizerLinks({
     );
   });
   return (
-    <Table className="table-borderless rk-tree-table mb-3" size="sm">
+    <Table data-cy="workflow-details-links" className="table-borderless rk-tree-table mb-3" size="sm">
       <tbody>
         {links}
       </tbody>
@@ -697,7 +700,7 @@ function VisualizerCommandEntities({
       />
     );
   });
-  return (<>{elements}</>);
+  return (<div data-cy="workflow-details-params-list">{elements}</div>);
 }
 
 interface VisualizerCommandEntityProps {
@@ -768,7 +771,7 @@ function VisualizerDetailExpanded({ data, fullPath }: VisualizerDetailExpandedPr
   return (
     <Row>
       <WorkflowVisualizerSimpleBox title="Details" large={true}>
-        <div className="workflow-details-table p-3">
+        <div data-cy="workflow-details-params-table" className="workflow-details-table p-3">
           <Table className="table-borderless rk-tree-table mb-0" size="sm">
             <tbody>
               <WorkflowTreeDetailRow name="Name">{data.name}</WorkflowTreeDetailRow>
@@ -799,7 +802,7 @@ function VisualizerLocalResource({ data, workflows }: VisualizerLocalResourcePro
       null;
     const subItem = data.id.replace(targetWorkflow.id + "/", "");
     const newName = `${subItem.replace("/", " #")}  @ `;
-    const url = targetWorkflow.url; // + t.id.replace(targetWorkflow.id, "");
+    const url = targetWorkflow.url;
     const link = (<IconLink tooltip="Open workflow" className="text-rk-yellow" icon={faLink} to={url} />);
     return (<span key={simpleHash(data.id + data.name)}>
       {newName} <Diagram2 className="text-rk-yellow" /> {` `}{targetWorkflow.name} {link}</span>
@@ -835,7 +838,7 @@ function VisualizerMappingExpanded({ data, workflows }: VisualizerMappingExpande
   }
 
   return (
-    <div className="workflow-mapping-table">
+    <div className="workflow-mapping-table" data-cy="workflow-details-mapping-panel">
       <Table className="table-borderless rk-tree-table mb-0" size="sm">
         <tbody>
           <WorkflowTreeDetailRow name="Name">{data.name}</WorkflowTreeDetailRow>
@@ -867,7 +870,7 @@ function WorkflowDetailPlaceholder({
           <div className="float-end m-2">{backElement}</div>
         </div>
         <CardBody>
-          <div className="d-flex">
+          <div className="d-flex" data-cy="workflow-details-waiting">
             <p className="m-auto mt-1">Getting workflow details...</p>
           </div>
           <Loader />
@@ -877,15 +880,15 @@ function WorkflowDetailPlaceholder({
   }
   else if (error) {
     content = (<>
-      <div className="d-flex">
+      <div className="d-flex" data-cy="workflow-details-error">
         <p className="m-auto mb-3 mt-1">A problem occurred while getting the workflow details.</p>
       </div>
       <CoreErrorAlert error={error} />
     </>);
   }
-  else if (1 == 1 || unknown) {
+  else if (unknown) {
     content = (<>
-      <div className="d-flex flex-column">
+      <div className="d-flex flex-column" data-cy="workflow-details-unavailable">
         <p className="mx-auto my-2">
           <FontAwesomeIcon icon={faExclamationTriangle} /> We cannot find the
           workflow you are looking for.
