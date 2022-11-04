@@ -2,6 +2,14 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 type HealthState = { status: string };
 
+interface SidecarRequestArgs {
+  serverName: string;
+}
+
+interface SaveArgs extends SidecarRequestArgs {
+  message?: string;
+}
+
 interface JsonRpcResult {
   id: number;
   jsonRpc: string;
@@ -18,12 +26,7 @@ interface GitStatusResult extends JsonRpcResult {
   };
 }
 
-interface SaveArgs {
-  serverName: string;
-  message?: string;
-}
-
-interface SaveResult extends JsonRpcResult {
+interface RenkuOpResult extends JsonRpcResult {
   result: string;
   error?: {
     code: number;
@@ -31,14 +34,17 @@ interface SaveResult extends JsonRpcResult {
   };
 }
 
+interface SaveResult extends RenkuOpResult {}
+interface PullResult extends RenkuOpResult {}
+
 export const sessionSidecarApi = createApi({
   reducerPath: "sessionSidecarApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/sessions/" }),
   tagTypes: [],
   keepUnusedDataFor: 0,
   endpoints: (builder) => ({
-    gitStatus: builder.query<GitStatusResult, string>({
-      query: (serverName: string) => {
+    gitStatus: builder.query<GitStatusResult, SidecarRequestArgs>({
+      query: (args) => {
         const body = {
           id: 0,
           jsonrpc: "2.0",
@@ -47,14 +53,14 @@ export const sessionSidecarApi = createApi({
         return {
           body,
           method: "POST",
-          url: `${serverName}/sidecar/jsonrpc`,
+          url: `${args.serverName}/sidecar/jsonrpc`,
         };
       },
     }),
-    health: builder.query<HealthState, string>({
-      query: (serverName: string) => {
+    health: builder.query<HealthState, SidecarRequestArgs>({
+      query: (args) => {
         return {
-          url: `${serverName}/sidecar/health`,
+          url: `${args.serverName}/sidecar/health`,
         };
       },
     }),
@@ -76,10 +82,28 @@ export const sessionSidecarApi = createApi({
         };
       },
     }),
+    renkuPull: builder.mutation<PullResult, SidecarRequestArgs>({
+      query: (args) => {
+        const body = {
+          id: 0,
+          jsonrpc: "2.0",
+          method: "git/pull",
+        };
+        return {
+          body,
+          method: "POST",
+          url: `${args.serverName}/sidecar/jsonrpc`,
+        };
+      },
+    }),
   }),
 });
 
-export const { useGitStatusQuery, useHealthQuery, useRenkuSaveMutation } =
-  sessionSidecarApi;
+export const {
+  useGitStatusQuery,
+  useHealthQuery,
+  useRenkuSaveMutation,
+  useRenkuPullMutation,
+} = sessionSidecarApi;
 
 export type { GitStatusResult, HealthState };

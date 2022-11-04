@@ -57,14 +57,17 @@ function standardToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastTog
  *
  * @param {string} [target] - id of the element on which the tooltip should be shown
  * @param {string} [tooltip] - the text of the tooltip
+ * @param {string} [placement] - the location for the tooltip, defaults to top,
+ *  see https://reactstrap.github.io/?path=/docs/components-tooltip--tooltip
  */
 function ThrottledTooltip(props) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [lastToggleTime, setLastToggleTime] = useState(Date.now());
 
   const toggle = standardToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastToggleTime);
+  const placement = props.placement ?? "top";
 
-  return <Tooltip placement="top" target={props.target} isOpen={tooltipOpen} toggle={toggle}
+  return <Tooltip placement={placement} target={props.target} isOpen={tooltipOpen} toggle={toggle}
     delay={{ show: 25, hide: 250 }}>
     {props.tooltip}
   </Tooltip>;
