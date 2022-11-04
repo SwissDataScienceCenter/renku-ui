@@ -50,7 +50,7 @@ import VisualFooter from "./Assets/Visual_Footer.svg";
 
 import graphic_containers from "./Graphics/Features/Containers.svg";
 import graphic_data from "./Graphics/Features/Data.svg";
-import graphic_git from "./Graphics/Features/VersionControl.svg";
+import graphic_gitGitlab from "./Graphics/Features/GitGitlab.svg";
 import graphic_provenance from "./Graphics/Features/Provenance.svg";
 import graphic_sessions from "./Graphics/Features/Sessions.svg";
 import graphic_workflows from "./Graphics/Features/Workflows.svg";
@@ -433,8 +433,8 @@ function SectionFeatures(props) {
               Leverage Renku&apos;s GitLab instance to automatically version your project&apos;s files.
               </div>
             </div>
-            <div className="align-self-center p-3 m-4">
-              <img src={graphic_git} alt="Version Control" height="52" />
+            <div className="align-self-center px-3 m-2">
+              <img src={graphic_gitGitlab} alt="Git & Gitlab" height="60" />
             </div>
           </div>
         </Col>
