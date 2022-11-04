@@ -39,6 +39,7 @@ import {
 } from "reactstrap";
 
 import {
+  ArrowClockwise as WrappedArrowClockwise,
   ArrowLeft as WrappedArrowLeft,
   Briefcase as WrappedBriefcase,
   CheckCircleFill as WrappedCheckCircleFill,
@@ -66,6 +67,10 @@ import {
 
 function Alert(props) {
   return <WrappedAlert {...props} />;
+}
+
+function ArrowClockwise(props) {
+  return <WrappedArrowClockwise {...props} />;
 }
 
 function Button(props) {
@@ -261,6 +266,7 @@ function XCircleFill(props) {
   return <WrappedXCircleFill {...props} />;
 }
 
+export { ArrowClockwise };
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
 export { Alert, Button, ButtonGroup, CheckCircleFill, XCircleFill };
 export { Card, CardBody, CardText, CardFooter, Col, DropdownItem };
