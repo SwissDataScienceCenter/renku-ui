@@ -370,7 +370,7 @@ function StartNotebookAutostart(props) {
           description="Checking current status to start your session"
           type={ProgressType.Determinate}
           style={ProgressStyle.Light}
-          title="Preparing Session"
+          title="Step 1 of 2: Checking if launch is possible"
           status={steps}
         />
       </div>

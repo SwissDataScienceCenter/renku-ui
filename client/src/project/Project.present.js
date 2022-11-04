@@ -1055,10 +1055,8 @@ const ProjectSessions = (props) => {
           </>} />
         <Route path={props.launchNotebookUrl}
           render={p => (
-            <Fragment>
-              <ProjectStartNotebookServer
-                key="startNotebookForm" {...props} backUrl={backUrl} defaultBackButton={backButton} />
-            </Fragment>
+            <ProjectStartNotebookServer
+              key="startNotebookForm" {...props} backUrl={backUrl} defaultBackButton={backButton} />
           )} />
         <Route path={props.sessionShowUrl}
           render={p => (

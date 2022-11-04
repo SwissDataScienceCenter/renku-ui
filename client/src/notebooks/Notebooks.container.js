@@ -737,7 +737,7 @@ class StartNotebookServer extends Component {
             path: annotations["projectName"],
             server: data.name,
           });
-          const state = { filePath: this.customNotebookFilePath };
+          const state = { filePath: this.customNotebookFilePath, redirectFromStartServer: true };
 
           // ? Start with a short delay to prevent missing server information from "GET /servers" API
           setTimeout(() => {

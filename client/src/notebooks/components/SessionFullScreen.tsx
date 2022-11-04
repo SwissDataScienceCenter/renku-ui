@@ -18,7 +18,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 import { ACCESS_LEVELS } from "../../api-client";
 
@@ -81,6 +81,7 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
   const iframeHeight = height ? height - 42 : 800;
 
   const history = useHistory();
+  const location = useLocation();
   const urlList = Url.get(Url.pages.project.session, {
     namespace: filters.namespace,
     path: filters.project,
@@ -158,6 +159,7 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
 
   let content;
   let sessionView;
+  const includeStepInTitle = (location as any)?.state?.redirectFromStartServer;
 
   if (notebook.fetched && !notebook.available) {
     content = <SessionUnavailable filters={filters} urlList={urlList} />;
@@ -170,7 +172,7 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
     const isAutoSave = sessionBranchValue.startsWith(AUTOSAVED_PREFIX);
     content = !isTheSessionReady ?
       (<div className="progress-box-small progress-box-small--steps">
-        <StartSessionProgressBar
+        <StartSessionProgressBar includeStepInTitle={includeStepInTitle}
           sessionStatus={sessionStatus} isAutoSave={isAutoSave} toggleLogs={toggleToResourcesLogs} />
       </div>) : null;
     sessionView = status === SessionStatus.running ?
@@ -182,7 +184,7 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
   else {
     content =
       (<div className="progress-box-small progress-box-small--steps">
-        <StartSessionProgressBar toggleLogs={toggleToResourcesLogs} />
+        <StartSessionProgressBar toggleLogs={toggleToResourcesLogs} includeStepInTitle={includeStepInTitle} />
       </div>);
   }
 
