@@ -737,7 +737,7 @@ class StartNotebookServer extends Component {
             path: annotations["projectName"],
             server: data.name,
           });
-          const state = { filePath: this.customNotebookFilePath };
+          const state = { filePath: this.customNotebookFilePath, redirectFromStartServer: true };
 
           // ? Start with a short delay to prevent missing server information from "GET /servers" API
           setTimeout(() => {
@@ -834,7 +834,7 @@ class StartNotebookServer extends Component {
 
   render() {
     if (this.props.blockAnonymous && !this.userLogged)
-      return <NotebooksDisabled logged={this.userLogged} />;
+      return <>{this.props.defaultBackButton}<NotebooksDisabled logged={this.userLogged} /></>;
 
     return <StartNotebookServerPresent
       autoStarting={this.autostart && !this.state.autostartTried}
@@ -847,6 +847,8 @@ class StartNotebookServer extends Component {
       lockStatus={this.props.lockStatus}
       message={this.props.message}
       envVariablesQueryParams={this.customEnvVariables}
+      defaultBackButton={this.props.defaultBackButton}
+      backUrl={this.props.backUrl}
       {...this.propsToChildProps()}
     />;
   }

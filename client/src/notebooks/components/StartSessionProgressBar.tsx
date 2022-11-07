@@ -40,12 +40,14 @@ interface StartSessionProgressBarProps {
   sessionStatus?: SessionStatusData;
   isAutoSave?: boolean;
   toggleLogs: Function;
+  includeStepInTitle?: boolean;
 }
 const StartSessionProgressBar = (
   {
     sessionStatus,
     isAutoSave,
-    toggleLogs
+    toggleLogs,
+    includeStepInTitle
   }: StartSessionProgressBarProps) => {
 
   const status = getStatusData(sessionStatus?.details, sessionStatus?.state);
@@ -57,7 +59,7 @@ const StartSessionProgressBar = (
       description="Starting the containers for your session"
       type={ProgressType.Determinate}
       style={ProgressStyle.Light}
-      title={title}
+      title={includeStepInTitle ? `Step 2 of 2: ${title}` : title}
       status={status}
       moreOptions={logButton}
     />);
