@@ -7,7 +7,7 @@
 ### Bug Fixes
 
 **sessions**
-* handle corrupted autosaves and improve warnings ([#2088](https://github.com/SwissDataScienceCenter/renku-ui/issues/2088))
+* handle corrupted autosaves and improve warnings ([#2086](https://github.com/SwissDataScienceCenter/renku-ui/issues/2086), [#2088](https://github.com/SwissDataScienceCenter/renku-ui/issues/2088))
 * fix progress updates on session start ([#2095](https://github.com/SwissDataScienceCenter/renku-ui/issues/2095),  [#2098](https://github.com/SwissDataScienceCenter/renku-ui/issues/2098))
 
 **projects**
