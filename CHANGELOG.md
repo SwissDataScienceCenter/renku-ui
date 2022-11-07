@@ -1,4 +1,37 @@
-# [2.10.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.10.0...2.10.1) (2022-10-20)
+# Changes
+
+## [2.11.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.10.1...2.11.0) (2022-11-07)
+
+
+### Bug Fixes
+
+**sessions**
+* handle corrupted autosaves and improve warnings ([#2086](https://github.com/SwissDataScienceCenter/renku-ui/issues/2086), [#2088](https://github.com/SwissDataScienceCenter/renku-ui/issues/2088))
+* fix progress updates on session start ([#2095](https://github.com/SwissDataScienceCenter/renku-ui/issues/2095),  [#2098](https://github.com/SwissDataScienceCenter/renku-ui/issues/2098))
+
+**projects**
+* display shared link values in the new project form ([#2026](https://github.com/SwissDataScienceCenter/renku-ui/issues/2026), [#2089](https://github.com/SwissDataScienceCenter/renku-ui/issues/2089))
+* correctly cache response from KG endpoint ([#2096](https://github.com/SwissDataScienceCenter/renku-ui/issues/2096), [#2097](https://github.com/SwissDataScienceCenter/renku-ui/issues/2097))
+
+
+### Features
+
+**session**
+* add refresh button to session ([#1986](https://github.com/SwissDataScienceCenter/renku-ui/issues/1986),  [#2091](https://github.com/SwissDataScienceCenter/renku-ui/issues/2091))
+* use the same component for session preparation and start progress ([#2064](https://github.com/SwissDataScienceCenter/renku-ui/issues/2064), [#2104](https://github.com/SwissDataScienceCenter/renku-ui/issues/2104))
+
+**workflows**
+* initial workflow support on project page ([#2038](https://github.com/SwissDataScienceCenter/renku-ui/issues/2038), [#2041](https://github.com/SwissDataScienceCenter/renku-ui/issues/2041), [#2050](https://github.com/SwissDataScienceCenter/renku-ui/issues/2050),  [#2065](https://github.com/SwissDataScienceCenter/renku-ui/issues/2065), [#2071](https://github.com/SwissDataScienceCenter/renku-ui/issues/2071),  [#2082](https://github.com/SwissDataScienceCenter/renku-ui/issues/2082), [#2087](https://github.com/SwissDataScienceCenter/renku-ui/issues/2087), [#2092](https://github.com/SwissDataScienceCenter/renku-ui/issues/2092), [#2102](https://github.com/SwissDataScienceCenter/renku-ui/issues/2102), [#2105](https://github.com/SwissDataScienceCenter/renku-ui/issues/2105), [#2099](https://github.com/SwissDataScienceCenter/renku-ui/issues/2099))
+
+**misc**
+* add gitlab logo in landing page  ([#1955](https://github.com/SwissDataScienceCenter/renku-ui/issues/1955), [#2106](https://github.com/SwissDataScienceCenter/renku-ui/issues/2106))
+
+### BREAKING CHANGES
+
+* Requires renku-python v1.9.0 or greater
+
+
+## [2.10.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.10.0...2.10.1) (2022-10-20)
 
 
 ### Bug Fixes
@@ -7,7 +40,7 @@
 
 
 
-# [2.10.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.9.0...2.10.0) (2022-10-17)
+## [2.10.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.9.0...2.10.0) (2022-10-17)
 
 
 ### Bug Fixes
@@ -29,9 +62,6 @@
 ### BREAKING CHANGES
 
 * Requires renku-notebook v1.12.0 or greater
-
-
-# Changes
 
 ## [2.9.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.8.2...2.9.0) (2022-09-15)
 
