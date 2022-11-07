@@ -12,7 +12,7 @@
 
 **projects**
 * display shared link values in the new project form ([#2026](https://github.com/SwissDataScienceCenter/renku-ui/issues/2026), [#2089](https://github.com/SwissDataScienceCenter/renku-ui/issues/2089))
-* correctly cache response from KG endpoint([#2096](https://github.com/SwissDataScienceCenter/renku-ui/issues/2096))
+* correctly cache response from KG endpoint ([#2096](https://github.com/SwissDataScienceCenter/renku-ui/issues/2096), [#2097](https://github.com/SwissDataScienceCenter/renku-ui/issues/2097))
 
 
 ### Features
