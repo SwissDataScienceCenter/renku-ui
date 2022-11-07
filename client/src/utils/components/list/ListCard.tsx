@@ -49,7 +49,7 @@ function ListCard(
         <div className="card card-entity">
           <div className={`card-header-entity card-header-entity--${itemType}`}>
             <div className="d-flex justify-content-between align-items-center m-3">
-              <EntityLabel type={itemType} />
+              <EntityLabel type={itemType} workflowType={null} />
               <VisibilityIcon visibility={visibility} />
             </div>
             <div className="card-bg-title">{title}</div>
