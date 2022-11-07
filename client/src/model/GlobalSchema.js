@@ -26,7 +26,8 @@
 import { Schema, PropertyName as Prop } from "./index";
 import {
   datasetSchema, environmentSchema, formGeneratorSchema, newProjectSchema, notebooksSchema, notificationsSchema,
-  projectsSchema, projectSchema, statuspageSchema, userSchema, webSocketSchema, workflowSchema, workflowsSchema, kgActivationSchema
+  projectsSchema, projectSchema, statuspageSchema, userSchema, webSocketSchema, workflowSchema, workflowsSchema,
+  kgActivationSchema
 } from "./RenkuModels";
 
 const globalSchema = new Schema({
