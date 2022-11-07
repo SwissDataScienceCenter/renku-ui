@@ -19,6 +19,7 @@
 
 **session**
 * add refresh button to session ([#1986](https://github.com/SwissDataScienceCenter/renku-ui/issues/1986),  [#2091](https://github.com/SwissDataScienceCenter/renku-ui/issues/2091))
+* add progress indicator when prepare a session ([#2064](https://github.com/SwissDataScienceCenter/renku-ui/issues/2064),  [#2104](https://github.com/SwissDataScienceCenter/renku-ui/issues/2104))
 
 **workflows**
 * initial workflow support on project page ([#2038](https://github.com/SwissDataScienceCenter/renku-ui/issues/2038), [#2041](https://github.com/SwissDataScienceCenter/renku-ui/issues/2041), [#2050](https://github.com/SwissDataScienceCenter/renku-ui/issues/2050),  [#2065](https://github.com/SwissDataScienceCenter/renku-ui/issues/2065), [#2071](https://github.com/SwissDataScienceCenter/renku-ui/issues/2071),  [#2082](https://github.com/SwissDataScienceCenter/renku-ui/issues/2082), [#2087](https://github.com/SwissDataScienceCenter/renku-ui/issues/2087), [#2092](https://github.com/SwissDataScienceCenter/renku-ui/issues/2092), [#2102](https://github.com/SwissDataScienceCenter/renku-ui/issues/2102), [#2105](https://github.com/SwissDataScienceCenter/renku-ui/issues/2105), [#2099](https://github.com/SwissDataScienceCenter/renku-ui/issues/2099))
