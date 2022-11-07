@@ -133,18 +133,25 @@ class FileLineage extends Component {
               this.setState({ graph, currentNode });
             }
           }
+        })
+        .catch(error => {
+          this.handleFileLineageError(error);
         });
     }
     catch (error) {
-      if (this._isMounted) {
-        if (error.case === API_ERRORS.notFoundError) {
-          this.setState({
-            error: "ERROR 404: Could not load lineage. The file with path " + this.props.filePath + ' does not exist."'
-          });
-        }
-        else {
-          this.setState({ error: "Could not load lineage." });
-        }
+      this.handleFileLineageError(error);
+    }
+  }
+
+  handleFileLineageError(error) {
+    if (this._isMounted) {
+      if (error.case === API_ERRORS.notFoundError) {
+        this.setState({
+          error: "ERROR 404: Could not load lineage. The file with path " + this.props.filePath + ' does not exist."'
+        });
+      }
+      else {
+        this.setState({ error: "Could not load lineage." });
       }
     }
   }
