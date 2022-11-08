@@ -30,7 +30,6 @@ import {
 import _ from "lodash";
 
 import { NotebooksHelper } from "./index";
-import SessionCheatSheet from "./SessionCheatSheet";
 import {
   CheckNotebookIcon, StartNotebookServer, mergeEnumOptions, ServerOptionBoolean, ServerOptionEnum,
   ServerOptionRange
@@ -142,26 +141,6 @@ function SessionLogs(props) {
       </div>
       <div className="p-2 p-lg-3 border-top">
         {body}
-      </div>
-    </Fragment>
-  );
-}
-
-function SessionCommands(props) {
-  const { tab, notebook } = props;
-
-  if (tab !== SESSION_TABS.commands)
-    return null;
-
-  const annotations = NotebooksHelper.cleanAnnotations(notebook.data.annotations, "renku.io");
-  const branch = annotations["branch"];
-
-  // ? Having a minHeight prevent losing the vertical scroll position.
-  // TODO: Revisit after #1219
-  return (
-    <Fragment>
-      <div className="p-2 p-lg-3" style={{ minHeight: 800 }}>
-        <SessionCheatSheet branch={branch}/>
       </div>
     </Fragment>
   );
@@ -776,5 +755,5 @@ NotebookServerRowAction.displayName = "NotebookServerRowAction";
 export {
   CheckNotebookIcon, Notebooks, NotebooksDisabled, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,
   StartNotebookServer, mergeEnumOptions, SessionJupyter, NotebookServerRowFull, NotebookServerRow,
-  SessionCommands, SESSION_TABS, SessionLogs
+  SESSION_TABS, SessionLogs
 };
