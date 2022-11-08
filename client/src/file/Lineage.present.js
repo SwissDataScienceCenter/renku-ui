@@ -234,7 +234,7 @@ class FileLineage extends Component {
         lineagesUrl={this.props.lineagesUrl}
         history={this.props.history} /> :
       (this.props.error) ?
-        <div>No lineage information.</div> :
+        <p>{this.props.error}</p> :
         <p>Loading...</p>;
     const externalUrl = this.props.externalUrl;
     const externalFileUrl = `${externalUrl}/blob/master/${this.props.path}`;

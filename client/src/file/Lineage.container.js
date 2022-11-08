@@ -134,7 +134,7 @@ class FileLineage extends Component {
             }
           }
         })
-        .catch(error => {
+        .catch( (error) => {
           this.handleFileLineageError(error);
         });
     }
@@ -145,14 +145,10 @@ class FileLineage extends Component {
 
   handleFileLineageError(error) {
     if (this._isMounted) {
-      if (error.case === API_ERRORS.notFoundError) {
-        this.setState({
-          error: "ERROR 404: Could not load lineage. The file with path " + this.props.filePath + ' does not exist."'
-        });
-      }
-      else {
+      if (error.case === API_ERRORS.notFoundError)
+        this.setState({ error: "No lineage information." });
+      else
         this.setState({ error: "Could not load lineage." });
-      }
     }
   }
 
