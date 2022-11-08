@@ -22,8 +22,8 @@ import "./SessionModal.css";
 import { Notebook, SessionHandlers } from "./Session";
 import { Modal, ModalBody, ModalHeader, Nav, NavItem, NavLink, TabContent, TabPane } from "../../utils/ts-wrappers";
 import { SESSION_TABS, SessionLogs } from "../Notebooks.present";
-import SessionCheatSheet from "../SessionCheatSheet";
 import { Docs } from "../../utils/constants/Docs";
+import SessionCheatSheetGenerated from "./SessionCheatSheet";
 
 /**
  *  renku-ui
@@ -105,7 +105,7 @@ const Resources = ({ handlers, notebook, defaultBranch, activeTab }: ResourcesPr
       <TabContent activeTab={activeTab}>
         <TabPane key={SESSION_TABS.commands} tabId={SESSION_TABS.commands}>
           <div className="session-cheat-sheet bg-white border-radius-8">
-            <SessionCheatSheet branch={defaultBranch} />
+            <SessionCheatSheetGenerated />
           </div>
         </TabPane>
         <TabPane key={SESSION_TABS.docs} tabId={SESSION_TABS.docs}>
