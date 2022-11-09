@@ -46,7 +46,7 @@ spec:
               value: {{ .Chart.Version | quote }}
             - name: SERVER_KEEP_COOKIES
               value: |
-                {{- .Values.server.keepCookies | toJson | nindent 16 }}
+                {{- concat .Values.server.keepCookies (list "stickyCoreIngressCookie") | toJson | nindent 16 }}
             - name: GATEWAY_URL
               value: {{ .Values.gateway.url | default (printf "%s://%s/api" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: GATEWAY_LOGIN_PATH
