@@ -5,7 +5,7 @@
 
 ### Bug Fixes
 
-**session**
+**sessions**
 * do not disable no-code pull/push buttons in situations where they will actually work ([#2100](https://github.com/SwissDataScienceCenter/renku-ui/issues/2100), [#2103](https://github.com/SwissDataScienceCenter/renku-ui/issues/2103))
 
 
