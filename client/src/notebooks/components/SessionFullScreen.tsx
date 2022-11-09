@@ -154,12 +154,14 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
     isOpen={showModalStopSession}/>;
   const saveSessionModal = <SaveSession
     isLogged={props.isLogged}
+    isSessionReady={isTheSessionReady}
     hasSaveAccess={props.accessLevel >= ACCESS_LEVELS.DEVELOPER}
     notebook={notebook}
     closeModal={toggleSaveSession}
     urlList={urlList}
     isOpen={showModalSaveSession}/>;
   const pullSessionModal = <PullSession
+    isSessionReady={isTheSessionReady}
     notebook={notebook}
     closeModal={togglePullSession}
     urlList={urlList}
