@@ -11,7 +11,7 @@
 
 ### Features
 
-**session**
+**sessions**
 * generate cheatsheet based on spec from renku-python ([#1920](https://github.com/SwissDataScienceCenter/renku-ui/issues/1920),   [#2112](https://github.com/SwissDataScienceCenter/renku-ui/issues/2112))
 
 
@@ -31,7 +31,7 @@
 
 ### Features
 
-**session**
+**sessions**
 * add refresh button to session ([#1986](https://github.com/SwissDataScienceCenter/renku-ui/issues/1986),  [#2091](https://github.com/SwissDataScienceCenter/renku-ui/issues/2091))
 * use the same component for session preparation and start progress ([#2064](https://github.com/SwissDataScienceCenter/renku-ui/issues/2064), [#2104](https://github.com/SwissDataScienceCenter/renku-ui/issues/2104))
 
