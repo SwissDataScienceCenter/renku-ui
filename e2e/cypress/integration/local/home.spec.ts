@@ -83,3 +83,20 @@ describe("404 page", () => {
     cy.get("h3").should("contain.text", "Page not found");
   });
 });
+
+describe("display the maintenance page", () => {
+  beforeEach(() => {
+    new Fixtures(cy).config().versions().renkuDown();
+    cy.visit("/");
+  });
+
+  it.only("displays status page information", () => {
+    cy.get("h1").should("have.length", 1);
+    cy.get("h1")
+      .first()
+      .should("have.text", " RenkuLab Down"); // The space in the string is necessary
+    cy.get("h3")
+      .first()
+      .should("have.text", "RenkuLab Status");
+  });
+});

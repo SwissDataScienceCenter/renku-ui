@@ -57,6 +57,7 @@
     "react-motion": "^0.5.2",
     "react-pdf": "^5.5.0",
     "react-redux": "^7.2.6",
+    "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
     "react-router-hash-link": "^2.4.3",
     "react-sticky": "^6.0.3",
@@ -132,7 +133,10 @@
     "typescript": "^4.5.2"
   },
   "overrides": {
-    "@types/react": "^17.0.41"
+    "@types/react": "^17.0.41",
+    "npm-run-all": {
+      "shell-quote": "^1.7.3"
+    }
   },
   "browserslist": [
     ">0.2%",

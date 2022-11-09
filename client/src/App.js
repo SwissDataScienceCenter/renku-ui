@@ -229,7 +229,7 @@ class App extends Component {
       );
     }
     else if (user.error) {
-      return (<Unavailable />);
+      return (<Unavailable model={this.props.model} statuspageId={this.props.statuspageId} />);
     }
 
     return (
