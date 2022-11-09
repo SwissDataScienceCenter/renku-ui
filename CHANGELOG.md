@@ -1,5 +1,20 @@
 # Changes
 
+## [2.11.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.11.0...2.11.1) (2022-11-09)
+
+
+### Bug Fixes
+
+**session**
+* do not disable no-code pull/push buttons in situations where they will actually work ([#2100](https://github.com/SwissDataScienceCenter/renku-ui/issues/2100), [#2103](https://github.com/SwissDataScienceCenter/renku-ui/issues/2103))
+
+
+### Features
+
+**session**
+* generate cheatsheet based on spec from renku-python ([#1920](https://github.com/SwissDataScienceCenter/renku-ui/issues/1920),   [#2112](https://github.com/SwissDataScienceCenter/renku-ui/issues/2112))
+
+
 ## [2.11.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.10.1...2.11.0) (2022-11-07)
 
 
