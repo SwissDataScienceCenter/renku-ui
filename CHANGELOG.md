@@ -1,5 +1,20 @@
 # Changes
 
+## [2.11.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.11.0...2.11.1) (2022-11-09)
+
+
+### Bug Fixes
+
+**sessions**
+* do not disable no-code pull/push buttons in situations where they will actually work ([#2100](https://github.com/SwissDataScienceCenter/renku-ui/issues/2100), [#2103](https://github.com/SwissDataScienceCenter/renku-ui/issues/2103))
+
+
+### Features
+
+**sessions**
+* generate cheatsheet based on spec from renku-python ([#1920](https://github.com/SwissDataScienceCenter/renku-ui/issues/1920),   [#2112](https://github.com/SwissDataScienceCenter/renku-ui/issues/2112))
+
+
 ## [2.11.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.10.1...2.11.0) (2022-11-07)
 
 
@@ -16,7 +31,7 @@
 
 ### Features
 
-**session**
+**sessions**
 * add refresh button to session ([#1986](https://github.com/SwissDataScienceCenter/renku-ui/issues/1986),  [#2091](https://github.com/SwissDataScienceCenter/renku-ui/issues/2091))
 * use the same component for session preparation and start progress ([#2064](https://github.com/SwissDataScienceCenter/renku-ui/issues/2064), [#2104](https://github.com/SwissDataScienceCenter/renku-ui/issues/2104))
 
