@@ -38,6 +38,16 @@ function updateObjectFromCoreVersion(oldList, data) {
   };
 }
 
+function formatErrorObject(error) {
+  return {
+    services: {
+      fetching: false,
+      fetched: new Date(),
+      error
+    }
+  };
+}
+
 class EnvironmentCoordinator {
   constructor(client, model) {
     this.client = client;
@@ -50,19 +60,21 @@ class EnvironmentCoordinator {
 
     return this.client.getCoreVersion()
       .then(data => {
-        const obj = updateObjectFromCoreVersion(model.get("services.list"), data);
-        model.setObject(obj);
-
-        return data;
+        if (data.result) {
+          const obj = updateObjectFromCoreVersion(model.get("services.list"), data.result);
+          model.setObject(obj);
+          return data.result;
+        }
+        else if (data.error) {
+          const errorObject = formatErrorObject(data.error);
+          model.setObject(errorObject);
+          return data.error;
+        }
       })
       .catch(error => {
-        const errorObject = { services: {
-          fetching: false,
-          fetched: new Date(),
-          error } };
+        const errorObject = formatErrorObject(error);
         model.setObject(errorObject);
-
-        return errorObject;
+        return { error };
       });
   }
 }
