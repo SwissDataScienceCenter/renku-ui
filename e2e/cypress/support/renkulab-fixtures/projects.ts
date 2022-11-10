@@ -230,7 +230,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept("/ui-server/api/projects/*/graph/status", {
         body: { done: 1, total: 1, progress: 100.0 }
       });
-      cy.intercept(`/ui-server/api/renku/${coreVersion}/versions`, {
+      cy.intercept(`/ui-server/api/renku/${coreVersion}/version`, {
         body: {
           result: {
             latest_version: "0.16.2",
@@ -238,7 +238,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
           }
         }
       }).as(coreService8VersionName);
-      cy.intercept("/ui-server/api/renku/9/versions", {
+      cy.intercept("/ui-server/api/renku/9/version", {
         body: {
           result: {
             latest_version: "1.0.4",
