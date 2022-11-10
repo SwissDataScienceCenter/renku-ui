@@ -55,6 +55,28 @@ describe("display a session", () => {
     cy.get_cy("session-log-download-button").should("be.disabled");
   });
 
+  it("display logs in fullscreen session", () => {
+    cy.gui_open_session();
+    cy.get_cy("resources-button").click();
+    // empty logs
+    fixtures.getLogs("getLogs", "sessions/emptyLogs.json");
+    cy.get_cy("logs-tab").click();
+    cy.get_cy("no-logs-message").should("exist");
+    // clean logs
+    fixtures.getLogs("getLogs", "sessions/cleanLogs.json");
+    cy.get_cy("retry-logs-body").click();
+    cy.get_cy("no-logs-message").should("exist");
+    // logs with data
+    fixtures.getLogs("getLogs", "sessions/logs.json");
+    cy.get_cy("retry-logs-body").click();
+    cy.wait("@getLogs").then( (result) => {
+      const logs = result.response.body;
+      // validate see logs and can download it
+      cy.get_cy("logs-tab").should("have.length", Object.keys(logs).length);
+      cy.get_cy("session-log-download-button").should("be.enabled");
+    });
+  });
+
   it("display fullscreen session", () => {
     cy.gui_open_session();
     // open about modal info

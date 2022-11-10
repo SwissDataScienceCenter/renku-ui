@@ -35,6 +35,17 @@ import {
 import { Loader } from "./Loader";
 import { capitalizeFirstLetter, generateZip } from "../helpers/HelperFunctions";
 
+function getLogsToShow(logs) {
+  const logsWithData = {};
+  if (logs.data && typeof logs.data !== "string") {
+    Object.keys(logs.data).map(key => {
+      if (logs.data[key].length > 0)
+        logsWithData[key] = logs.data[key];
+    });
+  }
+  return logsWithData;
+}
+
 function LogBody({ fetchLogs, logs, name }) {
   if (logs.fetching) return <Loader />;
 
@@ -44,8 +55,9 @@ function LogBody({ fetchLogs, logs, name }) {
     </p>;
   }
 
-  if (logs.data && typeof logs.data !== "string")
-    return <LogTabs logs={logs.data}/>;
+  const logsWithData = getLogsToShow(logs);
+  if (logs.data && typeof logs.data !== "string" && Object.keys(logsWithData).length)
+    return <LogTabs logs={logsWithData}/>;
 
   return <div>
     <p data-cy="no-logs-available">No logs available for this pod yet.</p>
@@ -57,28 +69,31 @@ function LogBody({ fetchLogs, logs, name }) {
 
 const LogTabs = ({ logs }) => {
   const [activeTab, setActiveTab] = useState(null);
+  const [data, setData] = useState(null);
 
   useEffect(() => {
     if (logs) {
-      const keys = Object.keys(logs);
-      if (keys.length && keys.includes("jupyter-server"))
-        setActiveTab("jupyter-server");
-      else if (keys.length)
+      const orderedLogs = logs && logs["jupyter-server"] ? { "jupyter-server": logs["jupyter-server"], ...logs } : logs;
+      setData(orderedLogs);
+      if (activeTab === null) {
+        const keys = Object.keys(orderedLogs);
         setActiveTab(keys[0]);
+      }
     }
-  }, [logs]);
+  }, [logs, activeTab]);
+
 
   const getTitle = (name) => {
     return name.split("-").map(word => capitalizeFirstLetter(word)).join(" ");
   };
 
-  if (!logs)
+  if (!data)
     return null;
 
   return (
     <div>
       <Nav pills className="nav-pills-underline">
-        { Object.keys(logs).map( tab => {
+        { Object.keys(data).map( tab => {
           return (
             <NavItem key={tab} data-cy="logs-tab" role="button">
               <NavLink
@@ -91,14 +106,14 @@ const LogTabs = ({ logs }) => {
         })}
       </Nav>
       <TabContent activeTab={activeTab}>
-        { Object.keys(logs).map(tab => {
+        { Object.keys(data).map(tab => {
           return (
             <TabPane key={`log_${tab}`} tabId={tab}>
               <Row>
                 <Col sm="12">
                   <pre
                     className="bg-primary text-white p-2 w-100 overflow-auto log-container border-radius-8">
-                    { logs[tab] }
+                    { data[tab] }
                   </pre>
                 </Col>
               </Row>
@@ -199,4 +214,4 @@ const EnvironmentLogs = ({ logs, name, toggleLogs, fetchLogs, annotations }) => 
     </Modal>
   );
 };
-export { EnvironmentLogs, LogTabs, LogDownloadButton, useDownloadLogs };
+export { EnvironmentLogs, LogTabs, LogDownloadButton, useDownloadLogs, getLogsToShow };
