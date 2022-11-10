@@ -62,6 +62,30 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    projectFiles( names = {
+      rootName: "getProjectFilesRoot",
+      gitAttributesName: "getGitAttributes",
+      historicalUseNotebookName: "getHistoricalUseNotebook",
+      latexNotebookName: "getLatexNotebook"
+    }) {
+      const { rootName, gitAttributesName, historicalUseNotebookName, latexNotebookName } = names;
+      cy.intercept(
+        `/ui-server/api/projects/*/repository/tree?path=&recursive=false&per_page=100&page=1`,
+        { fixture: "project/files/project-files-root.json" }
+      ).as(rootName);
+      cy.intercept(
+        `/ui-server/api/projects/*/repository/files/.gitattributes/raw?ref=master`,
+        { fixture: "project/files/project-files-git-attributes" }
+      ).as(gitAttributesName);
+      cy.intercept("/ui-server/api/projects/*/repository/files/Historical-Use.ipynb?ref=master",
+        { fixture: "project/files/Historical-Use.json" }
+      ).as(historicalUseNotebookName);
+      cy.intercept("/ui-server/api/projects/*/repository/files/latex-notebook.ipynb?ref=master",
+        { fixture: "project/files/latex-notebook.json" }
+      ).as(latexNotebookName);
+      return this;
+    }
+
     errorProject(path = "", name = "getErrorProject") {
       const fixture = this.useMockedData ? { fixture: `projects/no-project.json`, statusCode: 404 } : undefined;
       cy.intercept(
