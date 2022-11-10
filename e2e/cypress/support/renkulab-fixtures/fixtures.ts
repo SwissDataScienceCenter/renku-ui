@@ -53,7 +53,7 @@ class Fixtures {
     cy.intercept("/ui-server/api/versions", {
       fixture: "version-ui.json"
     }).as(uiVersionName);
-    cy.intercept("/ui-server/api/renku/version", {
+    cy.intercept("/ui-server/api/renku/versions", {
       fixture: "version-core.json"
     }).as(coreVersionsName);
 

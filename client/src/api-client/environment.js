@@ -21,7 +21,7 @@ function addEnvironmentMethods(client) {
    * Get the version of the core service
    */
   client.getCoreVersion = async () => {
-    const urlApi = `${client.baseUrl}/renku/version`;
+    const urlApi = `${client.baseUrl}/renku/versions`;
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
