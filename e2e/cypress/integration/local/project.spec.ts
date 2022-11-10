@@ -102,6 +102,34 @@ describe("display a project", () => {
     cy.contains("Error").should("be.visible");
     cy.contains("[Show details]").should("be.visible");
   });
+  it("displays project file > notebook with image", () => {
+    fixtures.projectFiles();
+    cy.visit("/projects/e2e/local-test-project/files");
+    cy.wait("@getProjectFilesRoot");
+    cy.contains("Historical-Use.ipynb").scrollIntoView();
+    cy.contains("Historical-Use.ipynb").should("be.visible");
+    cy.contains("Historical-Use.ipynb").click();
+    cy.wait("@getHistoricalUseNotebook");
+    // look for an input cell
+    cy.contains("import numpy as np").should("be.visible");
+    // look for an output cell
+    cy.contains("2005").should("be.visible")
+      .should("have.prop", "tagName").should("eq", "TH");
+    // look for a markdown cell
+    cy.contains("Historical Use Patterns").should("be.visible")
+      .should("have.prop", "tagName").should("eq", "H1");
+  });
+  it("displays project file > notebook with LaTex", () => {
+    fixtures.projectFiles();
+    cy.visit("/projects/e2e/local-test-project/files");
+    cy.wait("@getProjectFilesRoot");
+    cy.contains("latex-notebook.ipynb").scrollIntoView();
+    cy.contains("latex-notebook.ipynb").should("be.visible");
+    cy.contains("latex-notebook.ipynb").click();
+    cy.wait("@getLatexNotebook");
+    // look for latex output
+    cy.get("mjx-container").should("be.visible");
+  });
 });
 
 describe("display migration information", () => {
