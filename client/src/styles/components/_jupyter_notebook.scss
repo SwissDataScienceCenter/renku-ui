@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,500;1,400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,500;1,400&display=swap");
 
 .dataframe {
   @extend .table-sm;
@@ -7,7 +7,7 @@
   border-style: none;
   border-collapse: collapse;
   thead {
-    border-bottom-color:rgb(189, 189, 189);
+    border-bottom-color: rgb(189, 189, 189);
 
     th {
       border-style: none;
@@ -30,6 +30,14 @@
   }
 }
 
+.output_prompt,
+.input_prompt {
+  display: none;
+}
+
+div.output_gif img,
+div.output_jpg img,
+div.output_png img,
 .jupyter .output img {
   max-width: 100%;
   margin-left: auto;
@@ -37,6 +45,14 @@
   display: block;
 }
 
+.output_wrapper {
+  overflow: scroll;
+}
+
 code {
   color: black;
+}
+
+.hl-ipython3 {
+  background-color: var(--cm-background, #fafafa);
 }
