@@ -37,8 +37,8 @@ export interface TypeFilterProps {
 }
 
 export const initialTypeValues: TypeEntitySelection = {
-  project: false,
-  dataset: false
+  project: true,
+  dataset: true
 };
 
 const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {

@@ -39,7 +39,7 @@ const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
   };
   const items = [
     { title: "All", value: "all" },
-    { title: "Only Me", value: "user" },
+    { title: "Owned by me", value: "user" },
   ];
 
   const options = items.map(item => {

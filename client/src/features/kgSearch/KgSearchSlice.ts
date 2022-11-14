@@ -43,8 +43,8 @@ const initialState: KgSearchFormState = {
   page: 1,
   perPage: 20,
   type: {
-    project: false,
-    dataset: false,
+    project: true,
+    dataset: true,
   },
   author: "all",
   visibility: {
