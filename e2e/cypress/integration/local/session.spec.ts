@@ -39,7 +39,7 @@ describe("display a session", () => {
     cy.wait("@getLogs").then( (result) => {
       const logs = result.response.body;
       // validate see logs and can download it
-      cy.get_cy("logs-tab").should("have.length", Object.keys(logs).length);
+      cy.get_cy("log-tab").should("have.length", Object.keys(logs).length);
       cy.get_cy("session-log-download-button").should("be.enabled");
     });
   });
@@ -57,22 +57,26 @@ describe("display a session", () => {
 
   it("display logs in fullscreen session", () => {
     cy.gui_open_session();
+    fixtures.getLogs("getLogs-empty", "sessions/emptyLogs.json");
     cy.get_cy("resources-button").click();
     // empty logs
-    fixtures.getLogs("getLogs", "sessions/emptyLogs.json");
     cy.get_cy("logs-tab").click();
+    cy.wait("@getLogs-empty");
     cy.get_cy("no-logs-message").should("exist");
     // clean logs
-    fixtures.getLogs("getLogs", "sessions/cleanLogs.json");
+    fixtures.getLogs("getLogs-clean", "sessions/cleanLogs.json");
     cy.get_cy("retry-logs-body").click();
+    cy.wait("@getLogs-clean");
     cy.get_cy("no-logs-message").should("exist");
     // logs with data
-    fixtures.getLogs("getLogs", "sessions/logs.json");
+    fixtures.getLogs("getLogs-full", "sessions/logs.json");
     cy.get_cy("retry-logs-body").click();
-    cy.wait("@getLogs").then( (result) => {
+    cy.wait("@getLogs-full").then( (result) => {
       const logs = result.response.body;
       // validate see logs and can download it
-      cy.get_cy("logs-tab").should("have.length", Object.keys(logs).length);
+      // eslint-disable-next-line max-nested-callbacks
+      const validLogs = Object.keys(logs).filter(key => logs[key].length > 0);
+      cy.get_cy("log-tab").should("have.length", validLogs.length);
       cy.get_cy("session-log-download-button").should("be.enabled");
     });
   });

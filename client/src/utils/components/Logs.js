@@ -95,7 +95,7 @@ const LogTabs = ({ logs }) => {
       <Nav pills className="nav-pills-underline">
         { Object.keys(data).map( tab => {
           return (
-            <NavItem key={tab} data-cy="logs-tab" role="button">
+            <NavItem key={tab} data-cy="log-tab" role="button">
               <NavLink
                 className={activeTab === tab ? "active" : ""}
                 onClick={() => { setActiveTab(tab); }}>
