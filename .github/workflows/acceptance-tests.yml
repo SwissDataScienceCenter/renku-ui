@@ -17,7 +17,7 @@ on:
 
 jobs:
   cleanup-previous-runs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: github.event.action != 'closed'
     steps:
       - uses: rokroskar/workflow-run-cleanup-action@v0.3.3
@@ -25,7 +25,7 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
   check-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       pr-contains-string: ${{ steps.deploy-comment.outputs.pr-contains-string }}
       renku: ${{ steps.deploy-comment.outputs.renku}}
@@ -46,7 +46,7 @@ jobs:
   deploy-pr:
     needs: [check-deploy, cleanup-previous-runs]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment:
       name: renku-ci-ui-${{ github.event.number }}
     steps:
@@ -92,7 +92,7 @@ jobs:
           extra_values: "${{ needs.check-deploy.outputs.extra-values }}"
   run-acceptance-tests:
     needs: [check-deploy, deploy-pr]
-    if: ${{ github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true' }}
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
     runs-on: ubuntu-20.04
     steps:
       - uses: SwissDataScienceCenter/renku-actions/test-renku@v1.4.1
@@ -107,24 +107,21 @@ jobs:
 
   run-e2e:
     needs: [check-deploy, deploy-pr]
-    if: github.event.action != 'closed'
-    runs-on: ubuntu-latest
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Cypress run
-        uses: cypress-io/github-action@v2
-        if: "needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'"
+        uses: cypress-io/github-action@v4
         env:
           CYPRESS_BASE_URL: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch/
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
           CYPRESS_USER: ${{ secrets.CYPRESS_USER }}
         with:
+          browser: chrome
           working-directory: e2e
-          record: true
-        # NOTE: cypress screenshots will be generated only if the test failed
-        # thus we store screenshots only on failures
+        # Cypress screenshots will be generated only if the test failed, thus we store screenshots only on failures
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
@@ -142,7 +139,7 @@ jobs:
   cleanup:
     needs: check-deploy
     if: github.event.action == 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Find deplyoment url
         uses: peter-evans/find-comment@v1
