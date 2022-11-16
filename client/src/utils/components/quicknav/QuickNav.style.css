@@ -17,10 +17,18 @@
   height: 70px;
 }
 
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+input[type="search"]:focus::-webkit-search-cancel-button {
+  display: none;
+}
+
 .searchBarSuggestionsContainer {
   position: absolute;
   top: 102%;
-  z-index: 100;
+  z-index: 2000;
   left: 20px;
   right: auto;
   display: block;
