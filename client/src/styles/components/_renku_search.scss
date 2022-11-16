@@ -131,7 +131,6 @@
 .rk-search-result-grid {
   display: flex;
   width: auto;
-  height: calc(100vh - 300px);
   overflow: auto;
 
   .rk-search-result-grid_column {
@@ -151,6 +150,18 @@
       }
     }
   }
+}
+
+.search-header-container {
+  position: sticky;
+  top: 0;
+  padding-top: 10px;
+  background-color: #f5f6fa;
+  z-index: 1000;
+}
+.filter-container {
+  position: sticky;
+  top: 40px;
 }
 
 .rk-search-result-title {

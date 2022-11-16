@@ -116,7 +116,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
     <>
       { isOpenFilter ?
         <Col className="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-2 pb-2">
-          <div className="d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block">
+          <div className="d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block filter-container">
             <FilterEntitySearch
               valuesDate={valuesDate} author={author} type={type} visibility={visibility} isLoggedUser={isLoggedUser} />
           </div>
@@ -134,7 +134,8 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
         <Col className="col-12">
           {searchNav}
         </Col>
-        <Col className={isOpenFilter ? "col-12 pb-2 m-auto" : "col-10 pb-2 m-auto search-result-header"}>
+        <Col className={isOpenFilter ? "col-12 pb-2 m-auto search-header-container" :
+          "col-10 pb-2 m-auto search-result-header search-header-container"}>
           <SearchResultsHeader
             total={data?.total}
             phrase={phrase}
