@@ -24,7 +24,7 @@ describe("display kg search", () => {
   fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
-    fixtures.search().getLastSearch();
+    fixtures.entitySearch().getLastSearch();
     fixtures.projects().landingUserProjects().projectTest();
     fixtures.projectLockStatus().projectMigrationUpToDate();
     cy.visit("/search");

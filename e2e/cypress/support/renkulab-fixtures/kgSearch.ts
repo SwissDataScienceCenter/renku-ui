@@ -33,7 +33,7 @@ function KgSearch<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    search(name = "getEntities") {
+    entitySearch(name = "getEntities") {
       cy.intercept(
         "/ui-server/api/kg/entities*",
         {
