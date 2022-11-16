@@ -69,6 +69,8 @@ import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
 
 import "./Project.css";
+import { useSelector } from "react-redux";
+import { WsMessage } from "../websocket/WsMessages";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -233,6 +235,18 @@ function getLinksProjectHeader(datasets, datasetsUrl, errorGettingDatasets) {
 }
 
 function ProjectViewHeaderMinimal(props) {
+  const websocket = useSelector((state) => state.stateModel.webSocket);
+  const socket = props.socket;
+  useEffect(() => {
+    console.log("initial fetch");
+    if (props.fetchSessions && websocket.open && socket) {
+      console.log("start fetching sessions...");
+      const message = JSON.stringify(new WsMessage({} , "pullSessionStatus"));
+      socket.send(message);
+    } else {
+      console.log("🙈 no pull session ", { fetchSessions: props.fetchSessions, websocket, socket });
+    }
+  }, []);
   const titleColSize = "col-12";
   const linksHeader = getLinksProjectHeader(props.datasets, props.datasetsUrl,
     props.migration.core.fetched && !props.migration.core.backendAvailable);
@@ -1379,7 +1393,7 @@ function ProjectView(props) {
     <ContainerWrap key="project-content" fullSize={isShowSession}>
       <Switch key="projectHeader">
         <Route exact path={props.baseUrl}
-          render={() => <ProjectViewHeader {...props} minimalistHeader={false}/>} />
+          render={() => <ProjectViewHeader {...props} minimalistHeader={false} fetchSessions={true} />} />
         <Route path={props.overviewUrl}
           render={() => <ProjectViewHeader {...props} minimalistHeader={false}/>} />
         <Route path={props.notebookServersUrl} render={() => null} />

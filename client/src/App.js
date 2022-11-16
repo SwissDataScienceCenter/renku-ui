@@ -57,7 +57,7 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 };
 
 function CentralContentContainer(props) {
-  const { notifications, user } = props;
+  const { notifications, user, socket } = props;
 
   if (!props.user.logged && (props.location.pathname === Url.get(Url.pages.landing))) {
     return <AnonymousHome client={props.client}
@@ -125,6 +125,7 @@ function CentralContentContainer(props) {
             user={props.user}
             blockAnonymous={blockAnonymous}
             notifications={notifications}
+            socket={socket}
             {...p}
           />}
         />

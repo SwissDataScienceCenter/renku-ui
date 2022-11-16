@@ -27,6 +27,8 @@ import { Authenticator } from "../authentication";
 import { wsRenkuAuth } from "../authentication/middleware";
 import { getCookieValueByName } from "../utils";
 import { handlerRequestServerVersion, heartbeatRequestServerVersion } from "./handlers/clientVersion";
+import APIClient from "../api-client";
+import { handlerRequestSessionStatus, heartbeatRequestSessionStatus } from "./handlers/sessions";
 
 
 // *** Channels ***
@@ -56,6 +58,13 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
       handler: handlerRequestServerVersion
     } as MessageData,
   ],
+  "pullSessionStatus": [
+    {
+      required: null,
+      optional: null,
+      handler: handlerRequestSessionStatus
+    } as MessageData,
+  ],
   "ping": [
     {
       required: null,
@@ -73,7 +82,7 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
 const longLoopFunctions: Array<Function> = [ // eslint-disable-line
   heartbeatRequestServerVersion
 ];
-const shortLoopFunctions: Array<Function> = []; // eslint-disable-line
+const shortLoopFunctions: Array<Function> = [heartbeatRequestSessionStatus]; // eslint-disable-line
 
 /**
  * Long loop for each user -- executed every few minutes.
@@ -132,8 +141,10 @@ async function channelLongLoop(sessionId: string, authenticator: Authenticator, 
  * @param sessionId - user session ID
  * @param authenticator - auth component
  * @param storage - storage component
+ * @param apiClient - api client
  */
-async function channelShortLoop(sessionId: string, authenticator: Authenticator, storage: Storage) {
+async function channelShortLoop(
+  sessionId: string, authenticator: Authenticator, storage: Storage, apiClient: APIClient) {
   const infoPrefix = `${sessionId} - short loop:`;
 
   // checking user
@@ -147,7 +158,7 @@ async function channelShortLoop(sessionId: string, authenticator: Authenticator,
   const timeoutLength = config.websocket.shortIntervalSec as number * 1000;
   if (!authenticator.ready) {
     logger.info(`${infoPrefix} Authenticator not ready yet, skipping to the next loop`);
-    setTimeout(() => channelShortLoop(sessionId, authenticator, storage), timeoutLength);
+    setTimeout(() => channelShortLoop(sessionId, authenticator, storage, apiClient), timeoutLength);
     return;
   }
 
@@ -163,7 +174,7 @@ async function channelShortLoop(sessionId: string, authenticator: Authenticator,
   for (const shortLoopFunction of shortLoopFunctions) {
     // execute the loop function
     try {
-      shortLoopFunction(channel);
+      shortLoopFunction(channel, apiClient);
     }
     catch (error) {
       const info = `Unexpected error while executing the function '${shortLoopFunction.name}'.`;
@@ -174,7 +185,7 @@ async function channelShortLoop(sessionId: string, authenticator: Authenticator,
 
   // Ping to keep the socket alive, then reschedule loop
   channel.sockets.forEach(socket => socket.ping());
-  setTimeout(() => channelShortLoop(sessionId, authenticator, storage), timeoutLength);
+  setTimeout(() => channelShortLoop(sessionId, authenticator, storage, apiClient), timeoutLength);
 }
 
 
@@ -187,8 +198,10 @@ async function channelShortLoop(sessionId: string, authenticator: Authenticator,
  * @param server - main wss server
  * @param authenticator - auth component
  * @param storage - storage component
+ * @param apiClient - api client
  */
-function configureWebsocket(server: ws.Server, authenticator: Authenticator, storage: Storage): void {
+function configureWebsocket(
+  server: ws.Server, authenticator: Authenticator, storage: Storage, apiClient: APIClient): void {
   server.on("connection", async (socket, request) => {
     // ? Should we Upgrade here? And verify the Origin since same-origin policy doesn't work for WS?
 
@@ -218,7 +231,7 @@ function configureWebsocket(server: ws.Server, authenticator: Authenticator, sto
       // add a buffer before starting the loop, so we can receive setup messages
 
       setTimeout(() => {
-        channelShortLoop(sessionId, authenticator, storage);
+        channelShortLoop(sessionId, authenticator, storage, apiClient);
         // add a tiny buffer, in case authentication fails and channel is cleaned up -- no need to overlap
         setTimeout(() => { channelLongLoop(sessionId, authenticator, storage); }, 1000);
       }, config.websocket.delayStartSec * 1000);

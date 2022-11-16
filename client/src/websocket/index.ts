@@ -18,6 +18,7 @@
 
 import { checkWsServerMessage, WsMessage, WsServerMessage } from "./WsMessages";
 import { handleUserInit, handleUserUiVersion, handleUserError } from "./handlers/userHandlers";
+import { handleSessionsStatus } from "./handlers/sessionStatusHandler";
 
 
 const timeoutIntervalMs = 45 * 1000; // ? set to 0 to disable
@@ -68,6 +69,13 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
         required: null,
         optional: ["message"],
         handler: () => ({ test: true })
+      }
+    ],
+    "sessions": [
+      {
+        required: null,
+        optional: ["message"],
+        handler: handleSessionsStatus
       }
     ],
   }
