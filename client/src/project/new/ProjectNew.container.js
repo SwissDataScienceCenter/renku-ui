@@ -25,7 +25,7 @@
 
 import React, { Component, useEffect, useState, useRef } from "react";
 // TODO: switch to useSelector
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { withRouter } from "react-router-dom";
 
 import { NewProject as NewProjectPresent, ForkProject as ForkProjectPresent } from "./ProjectNew.present";
@@ -84,92 +84,6 @@ function addForkNotification(notifications, url, info, startingLocation, success
     );
   }
 }
-
-
-/**
- * This component is needed to map properties from the redux store and keep local states cleared by the
- * mapping function. We can remove it when we switch to the useSelector hook
- *
- * @param {object} props.client - client object
- * @param {object} props.model - redux model
- * @param {object} props.history - react history object
- * @param {object} props.notifications - notifications object
- * @param {string} props.title - reference project title
- * @param {number} props.id - reference project id
- * @param {function} props.toggleModal - function to toggle the modal on and off
- */
-class ForkProjectMapper extends Component {
-  constructor(props) {
-    super(props);
-    this.model = props.model;
-    this.projectsCoordinator = new ProjectsCoordinator(props.client, this.model.subModel("projects"));
-
-    this.handlers = {
-      getNamespaces: this.getNamespaces.bind(this),
-      getProjects: this.getProjects.bind(this),
-      getVisibilities: this.getVisibilities.bind(this),
-    };
-  }
-
-  componentDidMount() {
-    // fetch if not yet available and refresh if older than 10 seconds
-    const currentState = this.model.get("projects");
-    refreshIfNecessary(
-      currentState.namespaces.fetching, currentState.namespaces.fetched, () => { this.getNamespaces(); }
-    );
-    refreshIfNecessary(
-      currentState.featured.fetching, currentState.featured.fetched, () => { this.getProjects(); }
-    );
-  }
-
-  async getNamespaces() {
-    return await this.projectsCoordinator.getNamespaces();
-  }
-
-  async getProjects() {
-    return await this.projectsCoordinator.getFeatured();
-  }
-
-  async getVisibilities(namespace) {
-    return await this.projectsCoordinator.getVisibilities(namespace, this.props.projectVisibility);
-  }
-
-  mapStateToProps(state, ownProps) {
-    return {
-      namespaces: { ...state.stateModel.projects.namespaces },
-      // We need only a selection of the featured projects. Replicate the namespaces structure fetched/fetching/list
-      projects: {
-        fetched: state.stateModel.projects.featured.fetched,
-        fetching: state.stateModel.projects.featured.fetching,
-        list: state.stateModel.projects.featured.member,
-      },
-      user: {
-        logged: state.stateModel.user.logged,
-        username: state.stateModel.user.data && state.stateModel.user.data.username ?
-          state.stateModel.user.data.username : null
-      }
-    };
-  }
-
-  render() {
-    const { client, id, history, notifications, title, toggleModal } = this.props;
-
-    const ForkProjectMapped = connect(this.mapStateToProps.bind(this))(ForkProject);
-    return (
-      <ForkProjectMapped
-        client={client}
-        forkedId={id}
-        forkedTitle={title}
-        handlers={this.handlers}
-        history={history}
-        notifications={notifications}
-        store={this.model.reduxStore}
-        toggleModal={toggleModal}
-      />
-    );
-  }
-}
-
 
 function ForkProject(props) {
   const { forkedTitle, handlers, namespaces, projects, toggleModal, user } = props;
@@ -391,6 +305,85 @@ function ForkProject(props) {
       user={user}
       visibilities={visibilities}
       visibility={visibility}
+    />
+  );
+}
+
+/**
+ * This component is needed to map properties from the redux store and keep local states cleared by the
+ * mapping function. We can remove it when we switch to the useSelector hook
+ *
+ * @param {object} props.client - client object
+ * @param {object} props.history - react history object
+ * @param {number} props.id - reference project id
+ * @param {object} props.notifications - notifications object
+ * @param {object} props.projectVisibility - project visibility
+ * @param {ProjectsCoordinator} [projectCoordinator] - to use some project coordinator functions
+ * @param {string} props.title - reference project title
+ * @param {function} props.toggleModal - function to toggle the modal on and off
+ */
+function ForkProjectMapper(props) {
+  const { client, history, id, notifications, projectVisibility, projectsCoordinator, title, toggleModal } = props;
+  const projects = useSelector((state) => state.stateModel.projects);
+  const user = useSelector((state) => state.stateModel.user);
+
+  const getNamespaces = async () => {
+    return await projectsCoordinator?.getNamespaces();
+  };
+
+  const getProjects = async () => {
+    return await projectsCoordinator?.getFeatured();
+  };
+
+  const getVisibilities = async (namespace) => {
+    return await projectsCoordinator?.getVisibilities(namespace, projectVisibility);
+  };
+
+  useEffect(() => {
+    if (!projects)
+      return;
+    refreshIfNecessary(
+      projects?.namespaces?.fetching, projects?.namespaces?.fetched, () => {
+        getNamespaces();
+      }
+    );
+    refreshIfNecessary(
+      projects?.featured?.fetching, projects?.featured?.fetched, () => {
+        getProjects();
+      }
+    );
+  }, [ projects ]); // eslint-disable-line
+
+  const handlers = {
+    getNamespaces,
+    getProjects,
+    getVisibilities,
+  };
+
+  const otherProps = {
+    namespaces: { ...projects?.namespaces },
+    // We need only a selection of the featured projects. Replicate the namespaces structure fetched/fetching/list
+    projects: {
+      fetched: projects?.featured?.fetched,
+      fetching: projects?.featured?.fetching,
+      list: projects?.featured?.member,
+    },
+    user: {
+      logged: user?.logged,
+      username: user?.data && user?.data.username ? user?.data.username : null
+    }
+  };
+
+  return (
+    <ForkProject
+      client={client}
+      forkedId={id}
+      forkedTitle={title}
+      handlers={handlers}
+      history={history}
+      notifications={notifications}
+      toggleModal={toggleModal}
+      {...otherProps}
     />
   );
 }

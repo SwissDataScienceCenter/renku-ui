@@ -69,6 +69,7 @@ import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
 
 import "./Project.css";
+import { ProjectsCoordinator } from "./shared";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -174,6 +175,7 @@ class ForkProjectModal extends Component {
     super(props);
     this.state = { open: false };
     this.toggleFunction = this.toggle.bind(this);
+    this.projectsCoordinator = new ProjectsCoordinator(this.props.client, this.props.model.subModel("projects"));
   }
 
   toggle() {
@@ -193,6 +195,7 @@ class ForkProjectModal extends Component {
           notifications={this.props.notifications}
           projectVisibility={this.props.projectVisibility}
           title={this.props.title}
+          projectsCoordinator={this.projectsCoordinator}
           toggleModal={this.toggleFunction}
         />
       );

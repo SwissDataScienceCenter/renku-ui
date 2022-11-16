@@ -37,6 +37,7 @@ import { testClient as client } from "../../api-client";
 import { btoaUTF8 } from "../../utils/helpers/Encoding";
 import { generateFakeUser } from "../../user/User.test";
 import AppContext from "../../utils/context/appContext";
+import { Provider } from "react-redux";
 
 
 const fakeHistory = createMemoryHistory({
@@ -166,14 +167,16 @@ describe("rendering", () => {
     document.body.appendChild(div);
     await act(async () => {
       ReactDOM.render(
-        <MemoryRouter>
-          <ForkProject
-            client={client}
-            model={model}
-            history={fakeHistory}
-            user={loggedUser}
-          />
-        </MemoryRouter>
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <ForkProject
+              client={client}
+              model={model}
+              history={fakeHistory}
+              user={loggedUser}
+            />
+          </MemoryRouter>
+        </Provider>
         , div);
     });
   });
