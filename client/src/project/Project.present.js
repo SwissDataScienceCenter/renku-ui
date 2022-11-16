@@ -194,6 +194,7 @@ class ForkProjectModal extends Component {
           projectVisibility={this.props.projectVisibility}
           title={this.props.title}
           toggleModal={this.toggleFunction}
+          user={this.props.user}
         />
       );
     }
@@ -440,6 +441,7 @@ class ProjectViewHeaderOverview extends Component {
                 id={this.props.metadata && this.props.metadata.id ? this.props.metadata.id : 0}
                 forkProjectDisabled={forkProjectDisabled}
                 projectVisibility={this.props.metadata.visibility}
+                user={this.props.user}
               />
               <Button
                 id="project-forks"
@@ -1021,6 +1023,7 @@ function ProjectCollaborationFork(props) {
         notifications={props.notifications}
         title={props.metadata.title}
         toggleModal={null}
+        user={props.user}
       />
     </Col>
   </Row>;
