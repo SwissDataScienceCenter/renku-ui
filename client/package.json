@@ -74,7 +74,7 @@
     "showdown-highlight": "^2.1.8",
     "showdown-katex": "0.6.0",
     "showdown-mermaid": "0.0.1",
-    "styled-jsx": "^3.4.5",
+    "styled-jsx": "^5.0.0",
     "uuid": "^3.3.3",
     "xregexp": "^4.4.0",
     "yaml": "^2.0.1"
