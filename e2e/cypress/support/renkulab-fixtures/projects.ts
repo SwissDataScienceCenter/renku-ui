@@ -302,7 +302,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     }
 
     updateProject(path = "", name = "updateProject", result = "project/update-project.json") {
-      const fixture = this.useMockedData ? { fixture: result } : undefined;
+      const fixture = this.useMockedData ? { fixture: result, delay: 100 } : undefined;
       cy.intercept("/ui-server/api/projects/*/graph/webhooks", {
         body: { message: "Hook created" }
       });
