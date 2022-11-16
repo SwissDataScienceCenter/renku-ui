@@ -134,37 +134,26 @@ class ForkProjectMapper extends Component {
     return await this.projectsCoordinator.getVisibilities(namespace, this.props.projectVisibility);
   }
 
-  mapStateToProps(state, ownProps) {
-    return {
-      namespaces: { ...state.stateModel.projects.namespaces },
-      // We need only a selection of the featured projects. Replicate the namespaces structure fetched/fetching/list
-      projects: {
-        fetched: state.stateModel.projects.featured.fetched,
-        fetching: state.stateModel.projects.featured.fetching,
-        list: state.stateModel.projects.featured.member,
-      },
-      user: {
-        logged: state.stateModel.user.logged,
-        username: state.stateModel.user.data && state.stateModel.user.data.username ?
-          state.stateModel.user.data.username : null
-      }
-    };
-  }
-
   render() {
     const { client, id, history, notifications, title, toggleModal } = this.props;
 
-    const ForkProjectMapped = connect(this.mapStateToProps.bind(this))(ForkProject);
+    const namespaces = this.model.get("projects.namespaces");
+    const tp = this.model.get("projects.featured");
+    const projects = { fetched: tp.fetched, fetching: tp.fetching, list: tp.member };
+    const user = { logged: this.props.user.logged, username: this.props.user.data.username };
+
     return (
-      <ForkProjectMapped
+      <ForkProject
         client={client}
         forkedId={id}
         forkedTitle={title}
         handlers={this.handlers}
         history={history}
+        namespaces={namespaces}
         notifications={notifications}
-        store={this.model.reduxStore}
+        projects={projects}
         toggleModal={toggleModal}
+        user={user}
       />
     );
   }
