@@ -50,7 +50,9 @@ function createStore(renkuStateModelReducer, name = "renku") {
         serializableCheck: false,
       }).concat(projectKgApi.middleware)
         .concat(kgSearchApi.middleware)
-        .concat(sessionSidecarApi.middleware),
+        .concat(sessionSidecarApi.middleware)
+        .concat(recentUserActivityApi.middleware)
+        .concat(inactiveKgProjectsApi.middleware)
   });
   return store;
 }
