@@ -15,17 +15,17 @@ export enum ListDisplayType {
 /* eslint-enable no-unused-vars */
 
 export interface ListElementProps {
-  type?: ListDisplayType;
-  url: string;
-  title: string;
+  creators: EntityCreator[];
   description: string;
-  tagList: string[];
-  timeCaption: string;
+  itemType: EntityType;
   labelCaption: string;
   mediaContent?: any;
-  creators: EntityCreator[];
-  itemType: EntityType;
   slug: string;
+  tagList: string[];
+  timeCaption: string;
+  title: string;
+  type?: ListDisplayType;
+  url: string;
   visibility: Visibilities,
 }
 

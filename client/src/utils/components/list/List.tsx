@@ -27,19 +27,18 @@ import ListBar from "./ListBar";
 /**
  * ListCard/ListBar returns a card or a bar displaying an item in a List.
  *
- * @param props.type Type of visualization (Card, Bar).
- * @param props.url containing a link to the entity details.
- * @param props.title title of the entity.
- * @param props.slug slug of the entity.
+ * @param props.creators creators of the entity, if more than 3 they will be cropped at 3.
  * @param props.description description of the entity.
- * @param props.visibility visibility of the entity.
- * @param props.tagList tag list of the entity.
- * @param props.timeCaption date to put inside the time caption of the entity.
+ * @param props.itemType type of the entity being rendered, the color of the circle depends on this.
  * @param props.labelCaption label to put inside the time caption of the entity, if empty defaults to Updated.
  * @param props.mediaContent image of the entity.
- * @param props.creators creators of the entity, if more than 3 they will be cropped at 3.
- * @param props.itemType type of the entity being rendered, the color of the circle depends on this.
- * @param props.handler handler function for main button.
+ * @param props.slug slug of the entity.
+ * @param props.tagList tag list of the entity.
+ * @param props.timeCaption date to put inside the time caption of the entity.
+ * @param props.title title of the entity.
+ * @param props.type Type of visualization (Card, Bar).
+ * @param props.url containing a link to the entity details.
+ * @param props.visibility visibility of the entity.
  */
 function List(props: ListElementProps) {
   const type = props.type;
