@@ -41,7 +41,7 @@ const initialState: KgSearchFormState = {
   phrase: "",
   sort: SortingOptions.AscTitle,
   page: 1,
-  perPage: 20,
+  perPage: 24,
   type: {
     project: true,
     dataset: true,
