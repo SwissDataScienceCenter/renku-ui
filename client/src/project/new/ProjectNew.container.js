@@ -138,8 +138,8 @@ class ForkProjectMapper extends Component {
     const { client, id, history, notifications, title, toggleModal } = this.props;
 
     const namespaces = this.model.get("projects.namespaces");
-    const tp = this.model.get("projects.featured");
-    const projects = { fetched: tp.fetched, fetching: tp.fetching, list: tp.member };
+    const featured = this.model.get("projects.featured");
+    const projects = { fetched: featured.fetched, fetching: featured.fetching, list: featured.member };
     const user = { logged: this.props.user.logged, username: this.props.user.data.username };
 
     return (
