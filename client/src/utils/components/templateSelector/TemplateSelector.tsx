@@ -39,11 +39,12 @@ import {
   UncontrolledTooltip,
 } from "../../ts-wrappers";
 
-import defaultTemplateIcon from "../../../project/new/templatePlaceholder.svg";
 import { simpleHash } from "../../helpers/HelperFunctions";
 import { ExternalLink } from "../ExternalLinks";
 import { ErrorLabel, HelperLabel, InputLabel, LoadingLabel } from "../formlabels/FormLabels";
 import "./TemplateSelector.css";
+
+const defaultTemplateIcon = "/stockimages/templatePlaceholder.svg";
 
 export interface Repository {
   url: string;
