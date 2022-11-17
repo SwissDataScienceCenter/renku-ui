@@ -130,7 +130,8 @@
     "@types/react": "^17.0.41",
     "npm-run-all": {
       "shell-quote": "^1.7.4"
-    }
+    },
+    "autoprefixer": "10.4.5"
   },
   "browserslist": [
     ">0.2%",
