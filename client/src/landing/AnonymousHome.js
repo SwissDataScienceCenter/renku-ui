@@ -59,7 +59,6 @@ import graphic_build from "./Graphics/Features/Build.svg";
 import graphic_collaborate from "./Graphics/Features/Collaborate.svg";
 import graphic_teach from "./Graphics/Features/Teach.svg";
 
-import logo from "./logo.svg";
 import logo_EPFL from "./Logos/EPFL.svg";
 import logo_ETH from "./Logos/ETH.svg";
 import logo_SDSC from "./Logos/SDSC.svg";
@@ -69,6 +68,8 @@ import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 import { Docs } from "../utils/constants/Docs";
+
+const logo = "/static/public/img/logo.svg";
 
 function HomeHeader(props) {
   const [isOpen, setIsOpen] = useState(false);

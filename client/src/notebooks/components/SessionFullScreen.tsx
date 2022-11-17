@@ -22,8 +22,6 @@ import { useHistory, useLocation } from "react-router-dom";
 
 import { ACCESS_LEVELS } from "../../api-client";
 
-
-import logo from "./logo.svg";
 import { AboutSessionModal } from "./AboutSessionModal";
 import { ResourcesSessionModel } from "./ResourcesSessionModal";
 import SaveSession from "./SaveSession";
@@ -38,6 +36,8 @@ import StartSessionProgressBar, { SessionStatusData } from "./StartSessionProgre
 import { AUTOSAVED_PREFIX } from "../../utils/helpers/HelperFunctions";
 import SessionUnavailable from "./SessionUnavailable";
 import PullSession from "./PullSession";
+
+const logo = "/static/public/img/logo.svg";
 
 /**
  *  renku-ui

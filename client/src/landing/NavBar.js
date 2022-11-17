@@ -33,7 +33,6 @@ import { faPlus, faBars } from "@fortawesome/free-solid-svg-icons";
 import { faQuestionCircle, faUser } from "@fortawesome/free-regular-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
-import logo from "./logo.svg";
 import { getActiveProjectPathWithNamespace, gitLabUrlFromProfileUrl } from "../utils/helpers/HelperFunctions";
 import QuickNav from "../utils/components/quicknav";
 import { Url } from "../utils/helpers/url";
@@ -48,6 +47,8 @@ import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { Loader } from "../utils/components/Loader";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 import { useSelector } from "react-redux";
+
+const logo = "/static/public/img/logo.svg";
 
 
 function RenkuNavBar(props) {
