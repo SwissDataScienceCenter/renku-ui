@@ -46,7 +46,7 @@ class ComplexModel extends StateModel {
     setTimeout(() => {
       this.set("subThing.age", Math.random());
     }, 1000);
-  }
+  };
 }
 
 

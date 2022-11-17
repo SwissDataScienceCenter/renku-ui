@@ -127,7 +127,7 @@ class NamespacesAutosuggest extends Component {
   renderSuggestion = (suggestion) => {
     const className = suggestion.full_path === this.state.value ? "highlighted" : "";
     return (<span className={className}>{suggestion.full_path}</span>);
-  }
+  };
 
   renderSectionTitle(suggestion) {
     return (<strong>{suggestion.kind}</strong>);
@@ -138,7 +138,7 @@ class NamespacesAutosuggest extends Component {
       this.props.handlers.setNamespace(newValue);
     else if (this.props.input.namespace)
       this.setState({ value: this.props.input.namespace });
-  }
+  };
 
   onChange = (event, { newValue, method }) => {
     if (method === "type")
@@ -160,7 +160,7 @@ class NamespacesAutosuggest extends Component {
     this.setState({ value: suggestionValue });
     const namespace = this.props.namespaces.list.filter(ns => ns.full_path === suggestionValue)[0];
     this.props.handlers.setNamespace(namespace);
-  }
+  };
 
   getTheme() {
     const defaultTheme = {
