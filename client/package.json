@@ -46,7 +46,7 @@
     "react-helmet": "^6.1.0",
     "react-ipynb-renderer": "^1.1.0",
     "react-js-pagination": "^3.0.2",
-    "react-katex": "^2.0.2",
+    "react-katex": "^3.0.1",
     "react-markdown": "^8.0.3",
     "react-masonry-css": "^1.0.16",
     "react-media": "^1.10.0",
