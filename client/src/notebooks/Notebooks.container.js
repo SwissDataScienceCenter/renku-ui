@@ -322,6 +322,7 @@ class StartNotebookServer extends Component {
     };
 
     this.handlers = {
+      fakeChange: () => {},
       deleteAutosave: this.deleteAutosave.bind(this),
       refreshBranches: this.refreshBranches.bind(this),
       refreshCommits: this.refreshCommits.bind(this),
