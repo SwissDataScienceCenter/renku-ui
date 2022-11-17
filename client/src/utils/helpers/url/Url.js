@@ -404,7 +404,10 @@ const Url = {
     },
     datasets: {
       base: "/datasets",
-    }
+    },
+    searchEntities: {
+      base: "/search",
+    },
   },
 
   setBaseUrl: setBaseUrl,

@@ -19,6 +19,8 @@
 import { EntityType, KgSearchResult, KgSearchResultLink } from "../../features/kgSearch";
 import { ListElementProps } from "../components/list/List.d";
 import { Url } from "./url";
+import { dateFilterTypes } from "../components/dateFilter/DateFilter";
+import _ from "lodash";
 
 const getDatasetIdentifier = (links: KgSearchResultLink[]) => {
   const details = links.filter(link => link.rel === "details");
@@ -58,3 +60,40 @@ export const mapSearchResultToEntity =
       visibility: entity.visibility,
     };
   };
+
+export interface FiltersProperties {
+  type: {
+    project: boolean;
+    dataset: boolean;
+  },
+  author: string;
+  visibility: {
+    private: boolean;
+    public: boolean;
+    internal: boolean;
+  },
+  since: string;
+  until: string;
+  typeDate: dateFilterTypes;
+}
+
+export function hasInitialFilterValues( filters: FiltersProperties) {
+
+  const filterInitialState: FiltersProperties = {
+    type: {
+      project: true,
+      dataset: true,
+    },
+    author: "all",
+    visibility: {
+      private: false,
+      public: false,
+      internal: false,
+    },
+    since: "",
+    until: "",
+    typeDate: dateFilterTypes.all
+  };
+
+  return _.isEqual(filterInitialState, filters);
+}

@@ -39,6 +39,7 @@ import { WarnAlert } from "../utils/components/Alert";
 import { useSelector } from "react-redux";
 import { useGetInactiveKgProjectsQuery } from "../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { useInactiveProjectSelector } from "../features/inactiveKgProjects/inactiveKgProjectsSlice";
+import { urlMap } from "../project/list/ProjectList.container";
 
 
 function truncatedProjectListRows(projects, urlFullList, gridDisplay, lastVisited) {
@@ -111,13 +112,13 @@ class YourEmptyProjects extends Component {
 class YourProjects extends Component {
   render() {
     const projects = this.props.projects || [];
-    const { projectsUrl, projectsSearchUrl } = this.props.urlMap;
+    const { searchEntities, projectsSearchUrl } = this.props.urlMap;
     let projectsComponent = null;
     if (this.props.loading)
       return <Loader key="loader" />;
 
     if (projects.length > 0) {
-      projectsComponent = truncatedProjectListRows(projects, projectsUrl, true, this.props.lastVisited);
+      projectsComponent = truncatedProjectListRows(projects, searchEntities, true, this.props.lastVisited);
     }
     else {
       const { projectNewUrl } = this.props.urlMap;
@@ -127,7 +128,13 @@ class YourProjects extends Component {
 
     const title = this.props.lastVisited ? "Recent Projects" : "Your Projects";
     return <div className="landing-projects-section">
-      <h3 key="header">{title}</h3>
+      <div className="d-flex justify-content-between align-items-center flex-wrap">
+        <h3 key="header">{title}</h3>
+        <Link className="btn btn-secondary btn-icon-text" role="button" to={urlMap.projectNewUrl}>
+          <FontAwesomeIcon icon={faPlus} />
+          New project
+        </Link>
+      </div>
       {projectsComponent}
     </div>;
   }

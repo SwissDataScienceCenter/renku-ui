@@ -154,7 +154,6 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
             isFetching={isFetching}
             isLoading={isLoading}
             onPageChange={(value: number) => dispatch(setPage(value))}
-            phrase={phrase}
             onRemoveFilters={onRemoveFilters}
           />
           <div className="d-sm-block d-md-none d-lg-none d-xl-none d-xxl-none">

@@ -85,7 +85,7 @@ class QuickNavPresent extends Component {
     const theme = this.getTheme();
 
     const inputProps = {
-      placeholder: "What are you looking for?",
+      placeholder: "Search...",
       type: "search",
       value: this.props.value,
       onChange: this.props.callbacks.onChange,

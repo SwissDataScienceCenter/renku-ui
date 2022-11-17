@@ -134,6 +134,9 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
     onClick={() => activateProjects()}>
     { activating ? "Activating..." : `Activate ${totalSelected} ${totalSelected > 1 ? "projects" : "project"}` }
   </button>;
+  const activatingPlaceholder = activating ?
+    <div className="small py-2 fst-italic">Activation may take several minutes, you can continue interacting with
+      the application and receive a notification when it is finished. Or restart the process at any time.</div> : null;
 
 
   if (isFetching || isLoading) {
@@ -149,6 +152,7 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
       <div className="col-md-12 p-4 border-radius-8 bg-white">
         <div className="pb-4">
           {activationButton}
+          {activatingPlaceholder}
         </div>
         <Table hover borderless responsive className="table inactive-kg-projects-table">
           <thead>

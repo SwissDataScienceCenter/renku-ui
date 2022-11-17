@@ -23,29 +23,34 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSadCry } from "@fortawesome/free-solid-svg-icons";
 
 import { KgSearchResult, ListResponse } from "../../../features/kgSearch/KgSearch";
-import { mapSearchResultToEntity } from "../../helpers/KgSearchFunctions";
+import { FiltersProperties, hasInitialFilterValues, mapSearchResultToEntity } from "../../helpers/KgSearchFunctions";
 import { Loader } from "../Loader";
 import ListCard from "../list/ListCard";
 import { Pagination } from "../Pagination";
 import { Button } from "../../ts-wrappers";
+import { useKgSearchFormSelector } from "../../../features/kgSearch/KgSearchSlice";
 
 interface SearchResultProps {
   data?: ListResponse<KgSearchResult>;
   isFetching: boolean;
   isLoading: boolean;
   onPageChange: Function;
-  phrase: string;
   onRemoveFilters: Function;
 }
 interface EmptyResultProps {
-  phrase: string;
   onRemoveFilters: Function;
 }
-const EmptyResult = ({ phrase, onRemoveFilters } : EmptyResultProps) => {
+const EmptyResult = ({ onRemoveFilters } : EmptyResultProps) => {
+  const { phrase, type, author, visibility, since, until, typeDate } = useKgSearchFormSelector(
+    (state) => state.kgSearchForm
+  );
   const removeFilters = () => {
     if (onRemoveFilters)
       onRemoveFilters();
   };
+
+  const currentFilters: FiltersProperties = { type, author, visibility, since, until, typeDate };
+  const hasFilters = hasInitialFilterValues(currentFilters);
 
   const phraseText = (<p>
     We could not find any matches for phrase <span className="fst-italic fw-bold">{phrase}.</span>
@@ -55,23 +60,23 @@ const EmptyResult = ({ phrase, onRemoveFilters } : EmptyResultProps) => {
     <div className="mt-5 text-center">
       <FontAwesomeIcon icon={faSadCry} size="3x" className="opacity-25" />{" "}
       { phrase ? phraseText : " We could not find any matches." }
-      <p>
+      { !hasFilters ? <p>
         To get some data you can modify the current filters or remove all filters.{" "}
         <Button color="primary" size="sm" onClick={removeFilters}>Yes, remove all filters</Button>
-      </p>
+      </p> : null }
     </div>);
 };
 
 
 const SearchResultsContent = (
-  { data, isFetching, isLoading, onPageChange, phrase, onRemoveFilters }: SearchResultProps) => {
+  { data, isFetching, isLoading, onPageChange, onRemoveFilters }: SearchResultProps) => {
   const history = useHistory();
   if (isLoading) return <Loader />;
   if (isFetching) return <Loader />;
   if (data == null) return <Loader />;
 
   if (!data || data.total === 0)
-    return (<EmptyResult phrase={phrase} onRemoveFilters={onRemoveFilters} />);
+    return (<EmptyResult onRemoveFilters={onRemoveFilters} />);
 
 
   const rows = data.results
@@ -104,6 +109,8 @@ const SearchResultsContent = (
         perPage={data.perPage}
         totalItems={data.total}
         onPageChange={changePage}
+        showDescription={true}
+        totalInPage={data.results?.length}
         className="d-flex justify-content-center rk-search-pagination" />
     </>
   );

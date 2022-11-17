@@ -15,6 +15,7 @@
     "@sentry/react": "^6.16.1",
     "@sentry/tracing": "^6.16.1",
     "@storybook/addon-storysource": "^6.4.19",
+    "@types/lodash": "^4.14.189",
     "ajv": "^6.12.6",
     "bootstrap": "^5.0.2",
     "cookieconsent": "^3.1.1",

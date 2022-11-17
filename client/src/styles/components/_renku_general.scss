@@ -80,6 +80,14 @@ a:focus-visible, svg:focus, svg:focus-visible {
   border: 1px solid #F5F6FA;
 }
 
+.pagination-label {
+  color: var(--bs-rk-text-light)
+}
+
+.rk-search-pagination {
+  margin-bottom: 10px;
+}
+
 .rk-search-pagination .page-item.active .page-link {
   background-color: var(--bs-rk-green) !important;
   color: white !important;
