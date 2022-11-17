@@ -69,11 +69,11 @@ class FilePreview extends React.Component {
     if (this.props.hashElement && this.props.hashElement.isLfs)
       return true;
     return false;
-  }
+  };
 
   loadAnyway = () => {
     this.setState({ previewAnyway: true });
-  }
+  };
 
   highlightBlock = () => {
     // FIXME: Usage of findDOMNode is discouraged.

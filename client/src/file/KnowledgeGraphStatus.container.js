@@ -85,7 +85,7 @@ class KnowledgeGraphStatus extends Component {
         }
       });
     }
-  }
+  };
 
   createWebhook(e) {
     this.setState({ webhookJustCreated: true });

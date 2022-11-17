@@ -91,7 +91,7 @@ class FileLineage extends Component {
         }
       });
     }
-  }
+  };
 
   createWebhook(e) {
     this.setState({ webhookJustCreated: true });
