@@ -174,7 +174,7 @@ function addProjectMethods(client) {
         }
       }`;
       const resp = await client.getProjectsGraphQL({ ...params, query });
-      projects = [...projects, ...resp?.nodes];
+      projects = [...projects, ...(resp?.nodes ?? {})];
 
       if (!resp?.pageInfo?.hasNextPage)
         finished = true;
