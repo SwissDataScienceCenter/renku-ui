@@ -169,49 +169,42 @@ function GitLabConnectButton(props) {
   return (<div>{button}</div>);
 }
 
-class ForkProjectModal extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { open: false };
-    this.toggleFunction = this.toggle.bind(this);
-  }
 
-  toggle() {
-    this.setState({ open: !this.state.open });
-  }
+function ForkProjectModal(props) {
+  const [isOpen, setOpen] = React.useState(false);
 
-  render() {
-    let content = null;
-    // this prevents flashing wrong content during the close animation
-    if (this.state.open) {
-      content = (
-        <ForkProject
-          client={this.props.client}
-          history={this.props.history}
-          id={this.props.id}
-          model={this.props.model}
-          notifications={this.props.notifications}
-          projectVisibility={this.props.projectVisibility}
-          title={this.props.title}
-          toggleModal={this.toggleFunction}
-        />
-      );
-    }
-    return (
-      <Fragment>
-        <Button className="btn-outline-rk-green" id="fork-project"
-          disabled={this.props.forkProjectDisabled} onClick={this.toggleFunction}>
-          Fork
-          <ThrottledTooltip
-            target="fork-project"
-            tooltip="Fork this project" />
-        </Button>
-        <Modal isOpen={this.state.open} toggle={this.toggleFunction}>
-          {content}
-        </Modal>
-      </Fragment>
+  const toggle = () => setOpen(!isOpen);
+
+  let content = null;
+  // this prevents flashing wrong content during the close animation
+  if (this.state.open) {
+    content = (
+      <ForkProject
+        client={this.props.client}
+        history={this.props.history}
+        id={this.props.id}
+        model={this.props.model}
+        notifications={this.props.notifications}
+        projectVisibility={this.props.projectVisibility}
+        title={this.props.title}
+        toggleModal={toggle}
+      />
     );
   }
+  return (
+    <Fragment>
+      <Button className="btn-outline-rk-green" id="fork-project"
+        disabled={this.props.forkProjectDisabled} onClick={this.toggleFunction}>
+        Fork
+        <ThrottledTooltip
+          target="fork-project"
+          tooltip="Fork this project" />
+      </Button>
+      <Modal isOpen={isOpen} toggle={toggle}>
+        {content}
+      </Modal>
+    </Fragment>
+  );
 }
 
 
