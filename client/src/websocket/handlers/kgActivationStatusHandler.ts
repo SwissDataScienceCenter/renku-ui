@@ -16,13 +16,25 @@
  * limitations under the License.
  */
 
+import { updateProgress } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
+
 function handleKgActivationStatus(data: Record<string, unknown>, webSocket: WebSocket, model: any, notifications: any) {
   if (data.message) {
     const statuses = JSON.parse(data.message as string);
-    model.subModel("kgActivation").setObject({ status: statuses });
+    updateStatus(statuses, model.reduxStore);
     processStatusForNotifications(statuses, notifications);
   }
   return null;
+}
+
+function updateStatus(kgActivation: any, store: any) {
+  Object.keys(kgActivation).forEach( (projectId: string) => {
+    const id = parseInt(projectId);
+    if (id > 0) {
+      const status = kgActivation[projectId] ?? null;
+      store.dispatch(updateProgress({ id, progress: status }));
+    }
+  });
 }
 
 function processStatusForNotifications(statuses: Record<number, number>, notifications: any) {

@@ -52,7 +52,6 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
   const [activating, setActivating] = useState(false);
   const user = useSelector((state: any) => state.stateModel.user);
   const websocket = useSelector((state: any) => state.stateModel.webSocket);
-  const kgActivation = useSelector((state: any) => state.stateModel.kgActivation?.status);
   const { data, isFetching, isLoading } = useGetInactiveKgProjectsQuery(user?.data?.id);
   const projectList = useInactiveProjectSelector(
     (state) => state.kgInactiveProjects
@@ -67,25 +66,13 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
       dispatch(addFullList(data ?? []));
   }, [data]); // eslint-disable-line
 
-  // hook to modify progress when activation status change
-  useEffect(() => {
-    if (kgActivation) {
-      Object.keys(kgActivation).forEach( (projectId: string) => {
-        const id = parseInt(projectId);
-        if (id > 0) {
-          const status = kgActivation[projectId] ?? null;
-          dispatch(updateProgress({ id, progress: status }));
-          if (status >= 0 || status < 100)
-            setActivating(true);
-        }
-      });
-    }
-  }, [kgActivation]); // eslint-disable-line
-
   // hook to calculate if still activating a project of the list
   useEffect(() => {
+    const inProgress = projectList.find( p => p.progressActivation !== 100 && p.progressActivation !== null);
     const totalCompleted = projectList.filter(p => p.progressActivation === 100 || p.progressActivation === -2).length;
     const totalSelected = projectList.filter(p => p.selected).length;
+    if (inProgress)
+      setActivating(true);
     if (totalCompleted === totalSelected)
       setActivating(false);
   }, [projectList]);

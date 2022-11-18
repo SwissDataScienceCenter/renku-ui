@@ -27,7 +27,6 @@ import { Schema, PropertyName as Prop } from "./index";
 import {
   datasetSchema, environmentSchema, formGeneratorSchema, newProjectSchema, notebooksSchema, notificationsSchema,
   projectsSchema, projectSchema, statuspageSchema, userSchema, webSocketSchema, workflowSchema, workflowsSchema,
-  kgActivationSchema
 } from "./RenkuModels";
 
 const globalSchema = new Schema({
@@ -42,7 +41,6 @@ const globalSchema = new Schema({
   statuspage: { [Prop.SCHEMA]: statuspageSchema },
   user: { [Prop.SCHEMA]: userSchema },
   webSocket: { [Prop.SCHEMA]: webSocketSchema },
-  kgActivation: { [Prop.SCHEMA]: kgActivationSchema },
   workflow: { [Prop.SCHEMA]: workflowSchema },
   workflows: { [Prop.SCHEMA]: workflowsSchema },
 });
