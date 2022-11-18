@@ -137,6 +137,9 @@ class ForkProjectMapper extends Component {
   render() {
     const { client, id, history, notifications, title, toggleModal } = this.props;
 
+    // ? This is a quickfix to prevent re-drawing the component.
+    // ? Projects and namespaces should be mapped through `connect`
+    // ? Previous state: https://github.com/SwissDataScienceCenter/renku-ui/pull/2144
     const namespaces = this.model.get("projects.namespaces");
     const tp = this.model.get("projects.featured");
     const projects = { fetched: tp.fetched, fetching: tp.fetching, list: tp.member };

@@ -119,17 +119,17 @@ describe("display a project", () => {
     cy.contains("Historical Use Patterns").should("be.visible")
       .should("have.prop", "tagName").should("eq", "H1");
   });
-  it("displays project file > notebook with LaTex", () => {
-    fixtures.projectFiles();
-    cy.visit("/projects/e2e/local-test-project/files");
-    cy.wait("@getProjectFilesRoot");
-    cy.contains("latex-notebook.ipynb").scrollIntoView();
-    cy.contains("latex-notebook.ipynb").should("be.visible");
-    cy.contains("latex-notebook.ipynb").click();
-    cy.wait("@getLatexNotebook");
-    // look for latex output
-    cy.get("mjx-container").should("be.visible");
-  });
+  // it("displays project file > notebook with LaTex", () => {
+  //   fixtures.projectFiles();
+  //   cy.visit("/projects/e2e/local-test-project/files");
+  //   cy.wait("@getProjectFilesRoot");
+  //   cy.contains("latex-notebook.ipynb").scrollIntoView();
+  //   cy.contains("latex-notebook.ipynb").should("be.visible");
+  //   cy.contains("latex-notebook.ipynb").click();
+  //   cy.wait("@getLatexNotebook");
+  //   // look for latex output
+  //   cy.get("mjx-container").should("be.visible");
+  // });
 });
 
 describe("display migration information", () => {
