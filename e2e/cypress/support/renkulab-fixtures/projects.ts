@@ -65,10 +65,11 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     projectFiles( names = {
       rootName: "getProjectFilesRoot",
       gitAttributesName: "getGitAttributes",
+      countFlightsName: "getCountFlights",
       historicalUseNotebookName: "getHistoricalUseNotebook",
-      latexNotebookName: "getLatexNotebook"
+      latexNotebookName: "getLatexNotebook",
     }) {
-      const { rootName, gitAttributesName, historicalUseNotebookName, latexNotebookName } = names;
+      const { countFlightsName, gitAttributesName, historicalUseNotebookName, latexNotebookName, rootName, } = names;
       cy.intercept(
         `/ui-server/api/projects/*/repository/tree?path=&recursive=false&per_page=100&page=1`,
         { fixture: "project/files/project-files-root.json" }
@@ -77,6 +78,9 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         `/ui-server/api/projects/*/repository/files/.gitattributes/raw?ref=master`,
         { fixture: "project/files/project-files-git-attributes" }
       ).as(gitAttributesName);
+      cy.intercept("/ui-server/api/projects/*/repository/files/01-CountFlights.ipynb?ref=master",
+        { fixture: "project/files/01-CountFlights.json" }
+      ).as(countFlightsName);
       cy.intercept("/ui-server/api/projects/*/repository/files/Historical-Use.ipynb?ref=master",
         { fixture: "project/files/Historical-Use.json" }
       ).as(historicalUseNotebookName);
