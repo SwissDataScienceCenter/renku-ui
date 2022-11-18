@@ -43,6 +43,13 @@ function processedNotebook(notebook: IIpynb): IIpynb {
         delete c["source"];
       }
     }
+    c.outputs = c.outputs?.map(o => {
+      const oCopy = { ...o };
+      if (Object.keys(oCopy.data ?? {}).length == 0)
+        oCopy.data = undefined;
+      return oCopy;
+    });
+
 
     return c;
   });
