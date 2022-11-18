@@ -119,17 +119,28 @@ describe("display a project", () => {
     cy.contains("Historical Use Patterns").should("be.visible")
       .should("have.prop", "tagName").should("eq", "H1");
   });
-  // it("displays project file > notebook with LaTex", () => {
-  //   fixtures.projectFiles();
-  //   cy.visit("/projects/e2e/local-test-project/files");
-  //   cy.wait("@getProjectFilesRoot");
-  //   cy.contains("latex-notebook.ipynb").scrollIntoView();
-  //   cy.contains("latex-notebook.ipynb").should("be.visible");
-  //   cy.contains("latex-notebook.ipynb").click();
-  //   cy.wait("@getLatexNotebook");
-  //   // look for latex output
-  //   cy.get("mjx-container").should("be.visible");
-  // });
+  it("displays project file > notebook with LaTex", () => {
+    fixtures.projectFiles();
+    cy.visit("/projects/e2e/local-test-project/files");
+    cy.wait("@getProjectFilesRoot");
+    cy.contains("latex-notebook.ipynb").scrollIntoView();
+    cy.contains("latex-notebook.ipynb").should("be.visible");
+    cy.contains("latex-notebook.ipynb").click();
+    cy.wait("@getLatexNotebook");
+    // look for latex output
+    cy.get("mjx-container").should("be.visible");
+  });
+  it("displays project file > notebook with python output", () => {
+    fixtures.projectFiles();
+    cy.visit("/projects/e2e/local-test-project/files");
+    cy.wait("@getProjectFilesRoot");
+    cy.contains("01-CountFlights.ipynb").scrollIntoView();
+    cy.contains("01-CountFlights.ipynb").should("be.visible");
+    cy.contains("01-CountFlights.ipynb").click();
+    cy.wait("@getCountFlights");
+    // look for python output
+    cy.contains("There were 4951 flights to Austin, TX in Jan 2019.").should("be.visible");
+  });
 });
 
 describe("display migration information", () => {
