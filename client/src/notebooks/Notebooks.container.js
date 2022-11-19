@@ -743,6 +743,16 @@ class StartNotebookServer extends Component {
     this.coordinator.setObjectStoresConfiguration(value);
   }
 
+  redirectToShowSession(data, state, history) {
+    const annotations = NotebooksHelper.cleanAnnotations(data.annotations, "renku.io");
+    const localUrl = Url.get(Url.pages.project.session.show, {
+      namespace: annotations["namespace"],
+      path: annotations["projectName"],
+      server: data.name,
+    });
+    history.push({ pathname: localUrl, search: "", state: { ...state, redirectFromStartServer: true } });
+  }
+
   internalStartServer() {
     // The core internal logic extracted here for re-use
     const { location, history } = this.props;
@@ -753,23 +763,15 @@ class StartNotebookServer extends Component {
         return;
       if (location.state && location.state.successUrl && history.location.pathname === location.pathname) {
         if (this.autostart && !this.state.autostartTried) {
-          // Derive the local Url and connect to the notebook
-          const annotations = NotebooksHelper.cleanAnnotations(data.annotations, "renku.io");
-          const localUrl = Url.get(Url.pages.project.session.show, {
-            namespace: annotations["namespace"],
-            path: annotations["projectName"],
-            server: data.name,
-          });
-          const state = { filePath: this.customNotebookFilePath, redirectFromStartServer: true };
-
+          const state = { filePath: this.customNotebookFilePath };
           // ? Start with a short delay to prevent missing server information from "GET /servers" API
           setTimeout(() => {
             this.setState({ autostartTried: true });
-            history.push({ pathname: localUrl, search: "", state });
+            this.redirectToShowSession(data, state, history);
           }, 3000);
         }
         else {
-          history.push(location.state.successUrl);
+          this.redirectToShowSession(data, {}, history);
         }
       }
     });
