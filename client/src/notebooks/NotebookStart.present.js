@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, useEffect, useState } from "react";
+import React, { Component, Fragment, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Badge, Button, ButtonGroup, Col, Collapse, DropdownItem, Form, FormGroup, FormText, Input, Label,
@@ -30,7 +30,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { ErrorAlert, InfoAlert, SuccessAlert, WarnAlert } from "../utils/components/Alert";
-import { ButtonWithMenu, GoBackButton } from "../utils/components/buttons/Button";
+import { ButtonWithMenu } from "../utils/components/buttons/Button";
 import { Clipboard } from "../utils/components/Clipboard";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { JupyterIcon } from "../utils/components/Icon";
@@ -46,10 +46,9 @@ import Time from "../utils/helpers/Time";
 import LaunchErrorAlert from "./components/LaunchErrorAlert";
 import { NotebooksHelper } from "./index";
 import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from "./ObjectStoresConfig.present";
-import { ProgressStyle, ProgressType } from "../utils/components/progress/Progress";
 import EnvironmentVariables from "./components/EnviromentVariables";
 import { useSelector } from "react-redux";
-import ProgressStepsIndicator, { StatusStepProgressBar } from "../utils/components/progress/ProgressSteps";
+import { StartNotebookAutostartLoader, StartNotebookLoader } from "./components/StartSessionLoader";
 
 function ProjectSessionLockAlert({ lockStatus }) {
   if (lockStatus == null) return null;
@@ -122,7 +121,7 @@ function StartNotebookAdvancedOptions(props) {
 
 // * StartNotebookServer code * //
 function StartNotebookServer(props) {
-  const { autosaves, autoStarting, ci, message, defaultBackButton } = props;
+  const { autosaves, autoStarting, ci, message, defaultBackButton, justStarted } = props;
   const { branch, commit, namespace, project } = props.filters;
   const location = useLocation();
 
@@ -136,7 +135,11 @@ function StartNotebookServer(props) {
 
   // Show fetching status when auto-starting
   if (autoStarting)
-    return (<StartNotebookAutostart {...props} />);
+    return (<StartNotebookAutostartLoader {...props} />);
+
+  // show loader when is starting a session
+  if (justStarted)
+    return (<StartNotebookLoader backUrl={defaultBackButton} />);
 
   const ciStatus = NotebooksHelper.checkCiStatus(ci);
   const fetching = {
@@ -293,88 +296,6 @@ function AutosavesInfoAlert({ autosaves, autosavesId, autosavesWrong, currentId,
         {" "}to start from there instead.
       </p>
     </WarnAlert>
-  );
-}
-
-function StartNotebookAutostart(props) {
-  const { ci, data, notebooks, options, backUrl } = props;
-  const ciStatus = NotebooksHelper.checkCiStatus(ci);
-  const [fetching, setFetching] = useState({
-    ci: ciStatus.ongoing === false,
-    data: !!data.fetched,
-    options: !!options.fetched
-  });
-  const [steps, setSteps] = useState([
-    {
-      id: 0,
-      status: StatusStepProgressBar.EXECUTING,
-      step: "Checking project data"
-    },
-    {
-      id: 1,
-      status: StatusStepProgressBar.WAITING,
-      step: "Checking GitLab jobs"
-    },
-    {
-      id: 2,
-      status: StatusStepProgressBar.WAITING,
-      step: "Checking RenkuLab status"
-    },
-    {
-      id: 3,
-      status: StatusStepProgressBar.WAITING,
-      step: "Checking existing sessions"
-    }
-  ]);
-
-  // Compute fetching status, but ignore notebooks.fetched since it may be unreliable
-  let fetched = Object.keys(fetching).filter(k => !!fetching[k]);
-  if (!notebooks.fetched)
-    fetched = false;
-
-  useEffect(() => {
-    if (!fetched.length)
-      return;
-    const multiplier = Object.keys(fetching).length + 1;
-    const currentProgress = fetched.length * 100 / multiplier;
-    const statuses = steps;
-    if (fetching.ci)
-      statuses[0].status = StatusStepProgressBar.READY;
-    else if (fetching.options)
-      statuses[1].status = StatusStepProgressBar.READY;
-    else if (fetching.notebooks)
-      statuses[2].status = StatusStepProgressBar.READY;
-
-    if (currentProgress === 100)
-      statuses[3].status = StatusStepProgressBar.READY;
-
-    setSteps(statuses);
-  }, [fetched.length, fetching]); //eslint-disable-line
-
-  useEffect(() => {
-    setFetching({
-      ci: ciStatus.ongoing === false,
-      data: !!data.fetched,
-      options: !!options.fetched
-    });
-  }, [ ciStatus.ongoing, data.fetched, options.fetched ]);
-
-  const pathWithNamespace = useSelector((state) => state.stateModel.project?.metadata.pathWithNamespace);
-  const backButtonSessions = (
-    <GoBackButton label={`Cancel Session Start & back to ${pathWithNamespace}`} url={backUrl} />);
-  return (
-    <>
-      {backButtonSessions}
-      <div className="progress-box-small">
-        <ProgressStepsIndicator
-          description="Checking current status to start your session"
-          type={ProgressType.Determinate}
-          style={ProgressStyle.Light}
-          title="Step 1 of 2: Checking if launch is possible"
-          status={steps}
-        />
-      </div>
-    </>
   );
 }
 

@@ -100,9 +100,10 @@ function RefreshButton(props) {
  *
  * @param {string} props.url url to go back to
  * @param {string} props.label text next to the arrow
+ * @param {string} props.activeClassName personalize class to attach
  */
-function GoBackButton({ className, label, url }) {
-
+function GoBackButton(props) {
+  const { className = "", label, url } = props;
   const linkClasses = (className) ?
     className + " link-rk-text text-decoration-none" :
     "link-rk-text text-decoration-none";

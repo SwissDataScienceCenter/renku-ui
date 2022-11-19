@@ -281,6 +281,10 @@ class StartNotebookServer extends Component {
     this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
     this.notifications = props.notifications;
     this.userLogged = this.userModel.get("logged");
+    this.errorCustomValues = {
+      "branch": false,
+      "commit": false
+    };
 
     // reset data since notebooks model was not designed to be static
     this.coordinator.reset();
@@ -377,14 +381,24 @@ class StartNotebookServer extends Component {
     this.setState({ ignorePipeline: value });
   }
 
-  setErrorInAutostart() {
+  setErrorInAutostart(defaultBranchName) {
     this.autostart = false;
+    let referenceError = "";
+    if (this.errorCustomValues.branch && this.errorCustomValues.commit)
+      referenceError = `on the branch ${this.customBranch} and the commit ${this.customCommit}`;
+    else
+      referenceError = `for the reference ${ this.errorCustomValues.branch ? this.customBranch : this.customCommit}`;
+
+    const message = `A session ${referenceError} could not be started
+        because it does not exist in the repository. The branch has been set to the default
+        ${defaultBranchName ? defaultBranchName : "master"}.
+        You can change that and other options down below.`;
     this.setState({
       starting: false,
       launchError: {
         frontendError: true,
         pipelineError: false,
-        errorMessage: `The session could not be started because the commit or the branch name was not found.`
+        errorMessage: message
       },
     });
     this.coordinator.startNotebookPolling();
@@ -442,6 +456,7 @@ class StartNotebookServer extends Component {
 
   async selectBranch(branchName) {
     if (this._isMounted) {
+      this.errorCustomValues = { ...this.errorCustomValues, branch: false };
       // get the useful branchName
       let autoBranchName = false;
       if (!branchName) {
@@ -469,7 +484,8 @@ class StartNotebookServer extends Component {
       else if (this.customBranch || this.customCommit) {
         // set the error and get the first branch anyway
         branchToSet = branches[0];
-        this.setErrorInAutostart();
+        this.errorCustomValues = { ...this.errorCustomValues, branch: true };
+        this.setErrorInAutostart(branchToSet?.name);
       }
 
       this.coordinator.setBranch(branchToSet);
@@ -523,24 +539,31 @@ class StartNotebookServer extends Component {
 
   async selectCommit(commitId) {
     if (this._isMounted) {
+      this.errorCustomValues = { ...this.errorCustomValues, commit: false };
       // filter the list of commits according to the constraints
       const maximum = this.model.get("filters.displayedCommits");
       const commits = maximum && parseInt(maximum) > 0 ?
         this.props.commits.list.slice(0, maximum) :
         this.props.commits.list;
       let commit = commits[0];
+      const branch = this.model.get("filters.branch");
 
       // find the proper commit or return
       if (commitId) {
         const filteredCommits = commits.filter(commit => commit.id === commitId);
-        if (filteredCommits.length === 1)
+        if (filteredCommits.length === 1) {
           commit = filteredCommits[0];
-        else if (commitId === "latest")
+        }
+        else if (commitId === "latest") {
           commit = commits[0];
-        else if (this.customBranch || this.customCommit)
-          this.setErrorInAutostart();
-        else
+        }
+        else if (this.customBranch || this.customCommit) {
+          this.errorCustomValues = { ...this.errorCustomValues, commit: true };
+          this.setErrorInAutostart(branch.name);
+        }
+        else {
           return;
+        }
       }
       else {
         let autosave;
@@ -720,6 +743,16 @@ class StartNotebookServer extends Component {
     this.coordinator.setObjectStoresConfiguration(value);
   }
 
+  redirectToShowSession(data, state, history) {
+    const annotations = NotebooksHelper.cleanAnnotations(data.annotations, "renku.io");
+    const localUrl = Url.get(Url.pages.project.session.show, {
+      namespace: annotations["namespace"],
+      path: annotations["projectName"],
+      server: data.name,
+    });
+    history.push({ pathname: localUrl, search: "", state: { ...state, redirectFromStartServer: true } });
+  }
+
   internalStartServer() {
     // The core internal logic extracted here for re-use
     const { location, history } = this.props;
@@ -730,23 +763,15 @@ class StartNotebookServer extends Component {
         return;
       if (location.state && location.state.successUrl && history.location.pathname === location.pathname) {
         if (this.autostart && !this.state.autostartTried) {
-          // Derive the local Url and connect to the notebook
-          const annotations = NotebooksHelper.cleanAnnotations(data.annotations, "renku.io");
-          const localUrl = Url.get(Url.pages.project.session.show, {
-            namespace: annotations["namespace"],
-            path: annotations["projectName"],
-            server: data.name,
-          });
-          const state = { filePath: this.customNotebookFilePath, redirectFromStartServer: true };
-
+          const state = { filePath: this.customNotebookFilePath };
           // ? Start with a short delay to prevent missing server information from "GET /servers" API
           setTimeout(() => {
             this.setState({ autostartTried: true });
-            history.push({ pathname: localUrl, search: "", state });
+            this.redirectToShowSession(data, state, history);
           }, 3000);
         }
         else {
-          history.push(location.state.successUrl);
+          this.redirectToShowSession(data, {}, history);
         }
       }
     });

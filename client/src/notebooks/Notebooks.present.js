@@ -45,7 +45,7 @@ import { Loader } from "../utils/components/Loader";
 import { InfoAlert, } from "../utils/components/Alert";
 import { Clipboard } from "../utils/components/Clipboard";
 import LoginAlert from "../utils/components/loginAlert/LoginAlert";
-import { EnvironmentLogs, LogDownloadButton, LogTabs, useDownloadLogs } from "../utils/components/Logs";
+import { EnvironmentLogs, getLogsToShow, LogDownloadButton, LogTabs, useDownloadLogs } from "../utils/components/Logs";
 import { SessionStatus } from "../utils/constants/Notebooks";
 
 import "./Notebooks.css";
@@ -110,16 +110,23 @@ function SessionLogs(props) {
       );
     }
     else {
-      if (logs.data && typeof logs.data !== "string") {
-        body = <LogTabs logs={logs.data}/>;
+      const logsWithData = getLogsToShow(logs);
+      if (logs.data && typeof logs.data !== "string" && Object.keys(logsWithData).length) {
+        body = <LogTabs logs={logsWithData}/>;
       }
       else {
         body = (
           <Fragment>
-            <p>No logs available for this pod yet.</p>
+            <p data-cy="no-logs-message">No logs available for this pod yet.</p>
             <p>
               You can try to{" "}
-              <Button className="btn-outline-rk-green" size="sm" onClick={() => { fetchLogs(); }}>refresh</Button>
+              <Button
+                data-cy="retry-logs-body"
+                className="btn-outline-rk-green"
+                size="sm"
+                onClick={() => { fetchLogs(); }}>
+                refresh
+              </Button>
               {" "}them after a while.
             </p>
           </Fragment>
