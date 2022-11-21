@@ -1,5 +1,24 @@
 # Changes
 
+## [2.12.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.11.1...2.12.0) (2022-11-21)
+
+### Bug Fixes
+
+**projects:**
+* prevent resetting user inputs when forking a project ([#2144](https://github.com/SwissDataScienceCenter/renku-ui/issues/2144))
+
+### Features
+
+**sessions**
+* update warning message on missing references ([#2141](https://github.com/SwissDataScienceCenter/renku-ui/issues/2141), [#1777](https://github.com/SwissDataScienceCenter/renku-ui/issues/1777))
+* set jupyter server logs as default ([#1743](https://github.com/SwissDataScienceCenter/renku-ui/issues/1743), [#2137](https://github.com/SwissDataScienceCenter/renku-ui/issues/2137))
+* unify flow for starting sessions ([#2131](https://github.com/SwissDataScienceCenter/renku-ui/issues/2131), [#2115](https://github.com/SwissDataScienceCenter/renku-ui/issues/2115))
+
+**misc**
+* add static files for other RenkuLab components ([#2126](https://github.com/SwissDataScienceCenter/renku-ui/issues/2126))
+* update or swap outdated client components ([#2156](https://github.com/SwissDataScienceCenter/renku-ui/issues/2156), [#2159](https://github.com/SwissDataScienceCenter/renku-ui/issues/2159))
+
+
 ## [2.11.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.11.0...2.11.1) (2022-11-09)
 
 
