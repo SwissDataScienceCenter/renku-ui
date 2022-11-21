@@ -67,7 +67,8 @@ function addGraphMethods(client) {
    *  "figs/grid_plot.png")
    */
   client.getFileLineage = (projectPath, filePath) => {
-    const url = `${client.baseUrl}/kg/projects/${projectPath}/files/${filePath}/lineage`;
+    const urlEncodedPath = encodeURIComponent(filePath);
+    const url = `${client.baseUrl}/kg/projects/${projectPath}/files/${urlEncodedPath}/lineage`;
     const headers = client.getBasicHeaders();
     return client.clientFetch(url, { method: "GET", headers }).then((resp) => {
       return resp.data;
