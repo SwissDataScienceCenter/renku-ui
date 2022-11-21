@@ -17,6 +17,10 @@
     font-weight: 600;
 }
 
+.modal-content {
+    height: 100%;
+}
+
 .about-modal .modal-content, .resources-modal .modal-content {
     padding: 15px;
 }
@@ -30,7 +34,6 @@
 }
 
 .session-cheat-sheet {
-    height: 800px;
     padding: 20px;
     overflow: auto;
 }

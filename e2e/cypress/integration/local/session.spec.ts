@@ -51,7 +51,7 @@ describe("display a session", () => {
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
     cy.gui_open_logs();
     // validate show a warning when there is an error loading the logs
-    cy.get_cy("no-logs-available").should("exist");
+    cy.get_cy("no-logs-message").should("exist");
     cy.get_cy("session-log-download-button").should("be.disabled");
   });
 

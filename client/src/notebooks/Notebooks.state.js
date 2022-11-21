@@ -84,6 +84,8 @@ const ExpectedAnnotations = {
   }
 };
 
+const LOG_ERROR_KEY = "__error";
+
 const NotebooksHelper = {
   /**
    * Add missing annotations from the notebook servers
@@ -649,7 +651,7 @@ class NotebooksCoordinator {
     }
     this.model.setObject({ logs });
     return this.client.getNotebookServerLogs(serverName, lines)
-      .catch(e => "Logs currently not available. Try again in a minute...")
+      .catch(e => ({ [LOG_ERROR_KEY]: "Logs currently not available. Try again in a minute..." }))
       .then((data) => {
         let updatedLogs = { fetching: false };
         if (!full) {
@@ -1291,4 +1293,4 @@ class NotebooksCoordinator {
   }
 }
 
-export { NotebooksHelper, ExpectedAnnotations, NotebooksCoordinator };
+export { LOG_ERROR_KEY, NotebooksHelper, ExpectedAnnotations, NotebooksCoordinator };

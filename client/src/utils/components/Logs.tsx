@@ -16,24 +16,28 @@
  * limitations under the License.
  */
 
+
+import "./Logs.css";
 import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRedo, faSave } from "@fortawesome/free-solid-svg-icons";
+import { faSave } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
-  Col, Modal,
+  Modal,
   ModalBody,
-  ModalFooter,
   ModalHeader,
   Nav,
   NavItem,
   NavLink,
-  Row,
   TabContent,
   TabPane
 } from "reactstrap";
 import { Loader } from "./Loader";
 import { capitalizeFirstLetter, generateZip } from "../helpers/HelperFunctions";
+import { LOG_ERROR_KEY } from "../../notebooks/Notebooks.state";
+
+import { faSyncAlt
+} from "@fortawesome/free-solid-svg-icons";
 
 interface ILogs {
   data: Record<string, string>;
@@ -54,33 +58,13 @@ function getLogsToShow(logs: ILogs) {
 }
 
 interface IFetchableLogs {
-  fetchLogs: (name: string, thing?: boolean) => Promise<ILogs["data"]>;
+  fetchLogs: (name: string, fullLogs?: boolean) => Promise<ILogs["data"]>;
   logs: ILogs;
 }
 
 interface LogBodyProps extends IFetchableLogs {
   name: string;
 }
-function LogBody({ fetchLogs, logs, name }: LogBodyProps) {
-  if (logs.fetching) return <Loader />;
-
-  if (!logs.fetched) {
-    return <p>Logs unavailable. Please
-      <Button color="primary" onClick={() => { fetchLogs(name); }}>download</Button> them again.
-    </p>;
-  }
-
-  const logsWithData = getLogsToShow(logs);
-  if (logs.data && typeof logs.data !== "string" && Object.keys(logsWithData).length)
-    return <LogTabs logs={logsWithData}/>;
-
-  return <div>
-    <p data-cy="no-logs-available">No logs available for this pod yet.</p>
-    <p>You can try to <Button className="btn-outline-rk-green" onClick={() => { fetchLogs(name); }}>Refresh</Button>
-      {" "}them after a while.</p>
-  </div>;
-}
-
 
 const LogTabs = ({ logs }: { logs: Record<string, string>;}) => {
   const [activeTab, setActiveTab] = React.useState<string|undefined>(undefined);
@@ -107,7 +91,7 @@ const LogTabs = ({ logs }: { logs: Record<string, string>;}) => {
 
   return (
     <div>
-      <Nav pills className="nav-pills-underline">
+      <Nav pills className="nav-pills-underline log-nav bg-white">
         { Object.keys(data).map( tab => {
           return (
             <NavItem key={tab} data-cy="log-tab" role="button">
@@ -124,14 +108,12 @@ const LogTabs = ({ logs }: { logs: Record<string, string>;}) => {
         { Object.keys(data).map(tab => {
           return (
             <TabPane key={`log_${tab}`} tabId={tab}>
-              <Row>
-                <Col sm="12">
-                  <pre
-                    className="bg-primary text-white p-2 w-100 overflow-auto log-container border-radius-8">
-                    { data[tab] }
-                  </pre>
-                </Col>
-              </Row>
+              <div className="d-flex flex-column">
+                <pre
+                  className="bg-primary text-white p-2 w-100 overflow-hidden log-container border-radius-8">
+                  { data[tab] }
+                </pre>
+              </div>
             </TabPane>
           );
         })}
@@ -147,6 +129,7 @@ interface LogDownloadButtonProps {
   save: () => unknown;
   size?: string;
 }
+
 const LogDownloadButton = ({ logs, downloading, save, size, color }: LogDownloadButtonProps) => {
 
   const canDownload = (logs: ILogs) => {
@@ -154,8 +137,8 @@ const LogDownloadButton = ({ logs, downloading, save, size, color }: LogDownload
       return false;
     if (!logs.data || typeof logs.data === "string")
       return false;
-    // Validate if this result is possible
-    return !(Object.keys(logs.data).length === 1 && logs.data[0].startsWith("Logs unavailable"));
+    if (Object.keys(logs.data).length < 1 || logs.data[LOG_ERROR_KEY] != null) return false;
+    return true;
   };
 
   return (
@@ -182,23 +165,95 @@ const useDownloadLogs = (logs: IFetchableLogs["logs"],
       setDownloading(false);
       return;
     }
+    const logName = `Logs_${sessionName}`;
     const files = [];
     for (const fullLogsKey in fullLogs) {
       const data = fullLogs[fullLogsKey];
       // create the blob element to download logs as a file
       const file = new Blob([data], { type: "text/plain" });
       files.push({
-        name: `${fullLogsKey}.txt`,
+        name: `${logName}/${fullLogsKey}.txt`,
         content: file,
       });
     }
 
-    await generateZip(files, `Logs_${sessionName}`);
+    await generateZip(files, logName);
     setDownloading(false);
   };
 
   return [downloading, save];
 };
+
+function NoLogsAvailable(props: LogBodyProps) {
+  const { fetchLogs, name } = props;
+  return (
+    <>
+      <p data-cy="no-logs-message">No logs available for this pod yet.</p>
+      <p>
+            You can try to{" "}
+        <Button
+          data-cy="retry-logs-body"
+          className="btn-outline-rk-green"
+          size="sm"
+          onClick={() => { fetchLogs(name); }}>
+              refresh
+        </Button>
+        {" "}them after a while.
+      </p>
+    </>
+  );
+}
+
+function SessionLogsBody(props: LogBodyProps) {
+  const { fetchLogs, logs, name } = props;
+  if (logs.fetching) return <Loader />;
+  if (!logs.fetched) {
+    return (
+      <p>
+          Logs unavailable. Please{" "}
+        <Button className="btn-outline-rk-green" size="sm" onClick={() => { fetchLogs(name); }}>download</Button>
+        {" "}them again.
+      </p>
+    );
+  }
+  // The keys of logsWithData indicate which logs have data
+  const logsWithData = getLogsToShow(logs);
+  if (Object.keys(logsWithData).length < 1 || !logs.data || logs.data[LOG_ERROR_KEY] != null)
+    return <NoLogsAvailable fetchLogs={fetchLogs} logs={logs} name={name} />;
+  return <LogTabs logs={logsWithData}/>;
+}
+
+
+function SessionLogs(props: LogBodyProps) {
+  const { fetchLogs, logs } = props;
+  const sessionName = props.name;
+  const [ downloading, save ] = useDownloadLogs(logs, fetchLogs, sessionName);
+
+  useEffect(() => {
+    if (fetchLogs)
+      fetchLogs(sessionName);
+  }, []); // eslint-disable-line
+
+
+  // ? Having a minHeight prevent losing the vertical scroll position.
+  // TODO: Revisit after #1219
+  return (
+    <>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <Button key="button" color="rk-green" size="sm" style={{ marginRight: 8 }}
+          id="session-refresh-logs" onClick={() => {
+            fetchLogs(sessionName);
+          }} disabled={logs.fetching} >
+          <FontAwesomeIcon icon={faSyncAlt} /> Refresh logs
+        </Button>
+        <LogDownloadButton logs={logs} downloading={downloading} save={save} size="sm" color="secondary"/>
+      </div>
+      <div className="p-2 p-lg-3 border-top">
+        <SessionLogsBody fetchLogs={fetchLogs} logs={logs} name={sessionName} />
+      </div>
+    </>
+  );
+}
 
 /**
  * Simple environment logs container
@@ -218,32 +273,31 @@ interface EnvironmentLogsProps {
 }
 const EnvironmentLogs = ({ logs, name, toggleLogs, fetchLogs, annotations }: EnvironmentLogsProps) => {
 
-  const [ downloading, save ] = useDownloadLogs(logs, fetchLogs, name);
-
   if (!logs.show || logs.show !== name)
     return null;
 
   return (
     <Modal
       isOpen={!!logs.show}
-      className="modal-dynamic-width"
+      className="bg-body modal-dynamic-width"
       scrollable={true}
       toggle={() => { toggleLogs(name); }}>
       <ModalHeader className="bg-body header-multiline" toggle={() => { toggleLogs(name); }} >
-        Logs <small>
-          {annotations["namespace"]}/{annotations["projectName"]}{" "}
-          [{annotations["branch"]}@{annotations["commit-sha"].substring(0, 8)}]</small>
+        <div>Logs</div>
+        <div className="fs-5 fw-normal">
+          <small>
+            {annotations["namespace"]}/{annotations["projectName"]}{" "}
+          [{annotations["branch"]}@{annotations["commit-sha"].substring(0, 8)}]
+          </small>
+        </div>
       </ModalHeader>
-      <ModalBody className="bg-body logs-modal">
-        <LogBody fetchLogs={fetchLogs} logs={logs} name={name} />
+      <ModalBody className="logs-modal">
+        <div className="mx-2 bg-white">
+          <SessionLogs fetchLogs={fetchLogs} logs={logs} name={name} />
+        </div>
       </ModalBody>
-      <ModalFooter className="bg-body">
-        <LogDownloadButton logs={logs} downloading={downloading} save={save}/>
-        <Button className="btn-outline-rk-green" disabled={logs.fetching} onClick={() => { fetchLogs(name); }}>
-          <FontAwesomeIcon icon={faRedo} /> Refresh
-        </Button>
-      </ModalFooter>
     </Modal>
   );
 };
-export { EnvironmentLogs, LogTabs, LogDownloadButton, useDownloadLogs, getLogsToShow };
+
+export { EnvironmentLogs, SessionLogs };
