@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo, faSave } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -35,8 +35,15 @@ import {
 import { Loader } from "./Loader";
 import { capitalizeFirstLetter, generateZip } from "../helpers/HelperFunctions";
 
-function getLogsToShow(logs) {
-  const logsWithData = {};
+interface ILogs {
+  data: Record<string, string>;
+  fetching: boolean;
+  fetched: boolean;
+  show: string;
+}
+
+function getLogsToShow(logs: ILogs) {
+  const logsWithData: Record<string, string> = {};
   if (logs.data && typeof logs.data !== "string") {
     Object.keys(logs.data).map(key => {
       if (logs.data[key].length > 0)
@@ -46,7 +53,15 @@ function getLogsToShow(logs) {
   return logsWithData;
 }
 
-function LogBody({ fetchLogs, logs, name }) {
+interface IFetchableLogs {
+  fetchLogs: (name: string, thing?: boolean) => Promise<ILogs["data"]>;
+  logs: ILogs;
+}
+
+interface LogBodyProps extends IFetchableLogs {
+  name: string;
+}
+function LogBody({ fetchLogs, logs, name }: LogBodyProps) {
   if (logs.fetching) return <Loader />;
 
   if (!logs.fetched) {
@@ -67,15 +82,15 @@ function LogBody({ fetchLogs, logs, name }) {
 }
 
 
-const LogTabs = ({ logs }) => {
-  const [activeTab, setActiveTab] = useState(null);
-  const [data, setData] = useState(null);
+const LogTabs = ({ logs }: { logs: Record<string, string>;}) => {
+  const [activeTab, setActiveTab] = React.useState<string|undefined>(undefined);
+  const [data, setData] = React.useState<Record<string, string> | null>(null);
 
   useEffect(() => {
     if (logs) {
       const orderedLogs = logs && logs["jupyter-server"] ? { "jupyter-server": logs["jupyter-server"], ...logs } : logs;
       setData(orderedLogs);
-      if (activeTab === null) {
+      if (activeTab == null) {
         const keys = Object.keys(orderedLogs);
         setActiveTab(keys[0]);
       }
@@ -83,7 +98,7 @@ const LogTabs = ({ logs }) => {
   }, [logs, activeTab]);
 
 
-  const getTitle = (name) => {
+  const getTitle = (name: string) => {
     return name.split("-").map(word => capitalizeFirstLetter(word)).join(" ");
   };
 
@@ -125,15 +140,22 @@ const LogTabs = ({ logs }) => {
   );
 };
 
-const LogDownloadButton = ({ logs, downloading, save, size, color }) => {
+interface LogDownloadButtonProps {
+  color?: string;
+  downloading?: boolean;
+  logs: ILogs;
+  save: () => unknown;
+  size?: string;
+}
+const LogDownloadButton = ({ logs, downloading, save, size, color }: LogDownloadButtonProps) => {
 
-  const canDownload = (logs) => {
+  const canDownload = (logs: ILogs) => {
     if (logs.fetching || downloading)
       return false;
     if (!logs.data || typeof logs.data === "string")
       return false;
     // Validate if this result is possible
-    return !(logs.data.length === 1 && logs.data[0].startsWith("Logs unavailable"));
+    return !(Object.keys(logs.data).length === 1 && logs.data[0].startsWith("Logs unavailable"));
   };
 
   return (
@@ -146,8 +168,11 @@ const LogDownloadButton = ({ logs, downloading, save, size, color }) => {
   );
 };
 
-const useDownloadLogs = (logs, fetchLogs, sessionName) => {
-  const [downloading, setDownloading] = useState(null);
+
+const useDownloadLogs = (logs: IFetchableLogs["logs"],
+  fetchLogs: IFetchableLogs["fetchLogs"],
+  sessionName: string): [boolean|undefined, ()=>Promise<void>] => {
+  const [downloading, setDownloading] = React.useState<boolean|undefined>(undefined);
 
   const save = async () => {
     setDownloading(true);
@@ -184,7 +209,14 @@ const useDownloadLogs = (logs, fetchLogs, sessionName) => {
  * @param {string} name - server name
  * @param {object} annotations - list of cleaned annotations
  */
-const EnvironmentLogs = ({ logs, name, toggleLogs, fetchLogs, annotations }) => {
+interface EnvironmentLogsProps {
+  annotations: Record<string, string>;
+  fetchLogs: IFetchableLogs["fetchLogs"];
+  logs: ILogs;
+  name: string;
+  toggleLogs: (name:string) => unknown;
+}
+const EnvironmentLogs = ({ logs, name, toggleLogs, fetchLogs, annotations }: EnvironmentLogsProps) => {
 
   const [ downloading, save ] = useDownloadLogs(logs, fetchLogs, name);
 
