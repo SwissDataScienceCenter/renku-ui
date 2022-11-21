@@ -30,6 +30,33 @@
   }
 }
 
+.output_html {
+  border-collapse: collapse;
+  thead {
+    border-bottom-color: rgba(189, 189, 189);
+    border-right-color: rgba(220, 220, 220);
+
+    th {
+      border-style: none;
+      border-bottom-style: solid;
+      border-bottom-width: 2px;
+      border-collapse: collapse;
+    }
+  }
+  tbody {
+    border-bottom-color: rgb(189, 189, 189);
+    th {
+      border-collapse: collapse;
+    }
+    td {
+      border-style: solid;
+      border-width: 0.5px;
+      border-collapse: collapse;
+      padding: 0.5em 1em;
+    }
+  }
+}
+
 .output_prompt,
 .input_prompt {
   display: none;
