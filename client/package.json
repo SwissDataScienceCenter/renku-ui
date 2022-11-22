@@ -130,9 +130,6 @@
     "@types/react": "^17.0.41",
     "npm-run-all": {
       "shell-quote": "^1.7.3"
-    },
-    "apollo-boost": {
-      "graphql": "^16.0.0"
     }
   },
   "browserslist": [
