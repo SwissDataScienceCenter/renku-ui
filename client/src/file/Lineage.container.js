@@ -133,19 +133,22 @@ class FileLineage extends Component {
               this.setState({ graph, currentNode });
             }
           }
+        })
+        .catch( (error) => {
+          this.handleFileLineageError(error);
         });
     }
     catch (error) {
-      if (this._isMounted) {
-        if (error.case === API_ERRORS.notFoundError) {
-          this.setState({
-            error: "ERROR 404: Could not load lineage. The file with path " + this.props.filePath + ' does not exist."'
-          });
-        }
-        else {
-          this.setState({ error: "Could not load lineage." });
-        }
-      }
+      this.handleFileLineageError(error);
+    }
+  }
+
+  handleFileLineageError(error) {
+    if (this._isMounted) {
+      if (error.case === API_ERRORS.notFoundError)
+        this.setState({ error: "No lineage information." });
+      else
+        this.setState({ error: "Could not load lineage." });
     }
   }
 
@@ -157,10 +160,8 @@ class FileLineage extends Component {
     client.getRepositoryFile(this.props.projectId, filePath, branch, "base64")
       .catch(e => {
         if (!this._isMounted) return null;
-        if (e.case === API_ERRORS.notFoundError)
-          this.setState({ error: "ERROR 404: The file with path '" + filePath + "' does not exist." });
-
-        else this.setState({ error: "Could not load file with path " + filePath });
+        if (e.case !== API_ERRORS.notFoundError)
+          this.setState({ error: "Could not load file with path " + filePath });
       })
       .then(json => {
         if (!this._isMounted) return null;

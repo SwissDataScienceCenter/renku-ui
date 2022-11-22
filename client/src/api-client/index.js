@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import ApolloClient from "apollo-boost"; // ? Consider a minimal graphql lib: https://github.com/yoshuawuyts/nanographql
-
 import addDatasetMethods from "./dataset";
 import addEnvironmentMethods from "./environment";
 import addGraphMethods from "./graph";
@@ -68,10 +66,6 @@ class APIClient {
     this.baseUrl = apiUrl;
     this.uiserverUrl = uiserverUrl;
     this.returnTypes = RETURN_TYPES;
-    this.graphqlClient = new ApolloClient({
-      uri: `${apiUrl}/kg/graphql`,
-      headers: { "X-Requested-With": "XMLHttpRequest" }
-    });
 
     addDatasetMethods(this);
     addEnvironmentMethods(this);
@@ -191,17 +185,6 @@ class APIClient {
       iterations++;
       yield response;
     } while (page);
-  }
-
-  graphqlFetch(query, variables) {
-    return this.graphqlClient.query({ query, variables })
-      .catch(error => {
-        // TODO implement here common error solutions (re-login, ...)
-        return Promise.reject(error);
-      })
-      .then(response => {
-        return response.data;
-      });
   }
 
   // clientFetch does't handle non-2xx responses (ex: graph APIs)

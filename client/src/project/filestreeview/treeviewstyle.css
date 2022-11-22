@@ -1,4 +1,4 @@
-/* 
+/*
   TODO - MAKE SCSS
 */
 .icon-link{
@@ -16,17 +16,19 @@
 .fs-element{
   color: #3D3D3D; /* $rk-dark */
   text-overflow: ellipsis;
-  overflow: hidden; 
+  overflow: hidden;
   white-space: nowrap;
   padding:1px;
   padding-left: 6px;
   padding-right:2px;
   font-size: medium;
+  display: flex;
 }
 
 .fs-element a{
   color:#3D3D3D; /* $rk-dark */
   text-decoration: none;
+  width: 100%;
 }
 
 .tree-header-title{
@@ -67,7 +69,7 @@
 
 /* TODO - do we need this???
 .tree-container{
-  display: flex; 
+  display: flex;
   flex-direction: column;
   font-size: 2rem;
   font-weight: 300;

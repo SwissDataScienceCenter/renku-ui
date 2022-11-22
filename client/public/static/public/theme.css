@@ -1,0 +1,125 @@
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Inter Regular'), local('Inter-Regular'),
+    url('./fonts/Inter/static/Inter-Regular.ttf') format('truetype');
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    src: local('Inter Bold'), local('Inter-Bold'),
+    url('./fonts/Inter/static/Inter-Bold.ttf') format('truetype');
+    font-display: swap;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+.header {
+    height: 70px;
+    background-color: #01192d;
+    display: flex;
+    align-items: center;
+    padding-left: 30px;
+}
+
+.footer {
+    height: 75px;
+    color: white;
+    background-color: #01192d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+}
+
+.footer .network {
+    display: flex;
+    gap: 10px;
+}
+
+.footer .network a {
+    color: white;
+    text-decoration: none;
+}
+
+.btn-rk-green {
+    color: white;
+    font-size: 1rem;
+    line-height: 1.5;
+    background-color: #009568;
+    border-color: #009568;
+    border-radius: 1000px;
+    padding: 5px 20px;
+    font-weight: 400;
+    text-decoration: none;
+}
+.btn-rk-green:hover {
+    color: white;
+    background-color: #26a57f;
+    border-color: #1aa077;
+}
+.content {
+    background-position: center;
+    background-size: cover;
+    /* calc 100vh - footer height - header height */
+    height: calc(100vh - 75px - 70px);
+    background-image: url("./img/404@0.25x.png");
+    color: #D26A98;
+    overflow: auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.content-text {
+    padding: 20px;
+    background-color: #01192db3;
+    margin-top: 15%;
+    max-width: 700px;
+}
+
+.content h1 {
+    font-weight: bold;
+    font-size: xx-large;
+}
+
+.content p {
+    font-size: x-large;
+    line-height: 1.2;
+    word-break: break-all;
+}
+
+@media (max-width: 768px) {
+    .footer .network {
+        display: none;
+    }
+}
+
+@media (min-width: 1024px) {
+    .content-text {
+        margin: 10% 50px;
+    }
+}
+
+@media (min-width: 1500px) {
+    .content {
+        background-image: url("./img/404@0.5x.png");
+    }
+}
+
+@media (min-width: 2200px) {
+    .content {
+        background-image: url("./img/404@0.75x.png");
+        padding: 0 4rem;
+    }
+}
+
+
