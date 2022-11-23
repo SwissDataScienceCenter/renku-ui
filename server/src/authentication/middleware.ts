@@ -94,7 +94,6 @@ async function wsRenkuAuth(authenticator: Authenticator, sessionId: string): Pro
   }
   catch (error) {
     const stringyError = error.toString();
-
     const expired = stringyError.includes("expired") || stringyError.includes("invalid");
     if (expired)
       throw new Error("expired");

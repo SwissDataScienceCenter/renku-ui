@@ -174,7 +174,7 @@ async function channelShortLoop(
   for (const shortLoopFunction of shortLoopFunctions) {
     // execute the loop function
     try {
-      shortLoopFunction(channel, apiClient);
+      shortLoopFunction(channel, apiClient, authHeaders);
     }
     catch (error) {
       const info = `Unexpected error while executing the function '${shortLoopFunction.name}'.`;
@@ -376,6 +376,7 @@ async function getAuthHeaders(
     if (!authHeaders)
       // user is anonymous
       return null;
+    return authHeaders;
   }
   catch (error) {
     const data = { message: "authentication not valid" };

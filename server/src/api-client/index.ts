@@ -37,10 +37,13 @@ class APIClient {
    * Fetch session status
    *
    */
-  async sessionStatus(): Promise<Response> {
+  async sessionStatus(authHeathers: Record<string, string>): Promise<Response> {
     const sessionsUrl = `${this.gatewayUrl}/notebooks/servers`;
-    logger.info(`🌸 Fetching session status `, sessionsUrl);
-    return this.clientFetch(sessionsUrl, FETCH_DEFAULT.options, RETURN_TYPES.json);
+    logger.info(`Fetching session status `, sessionsUrl);
+    const options = {
+      headers: authHeathers as unknown as Headers ?? new Headers(),
+    };
+    return this.clientFetch(sessionsUrl, options, RETURN_TYPES.json);
   }
 
   /**
@@ -82,9 +85,8 @@ class APIClient {
   }
 
   _renkuFetch(url: string, options: FetchOptions): Promise<Response> {
-
     const urlObject = new URL(url);
-    if (options.queryParams) {
+    if (options?.queryParams) {
       Object.keys(options.queryParams).forEach((key) => {
         urlObject.searchParams.append(key, options.queryParams[key]);
       });
@@ -92,10 +94,6 @@ class APIClient {
 
     // This is the default behavior for most browsers.
     options["credentials"] = "same-origin";
-
-    // Add a custom header for protection against CSRF attacks.
-    options.headers.append("X-Requested-With", "XMLHttpRequest");
-
     const request = new Request(urlObject.toString());
 
     return fetch(request, options)

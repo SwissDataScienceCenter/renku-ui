@@ -22,6 +22,9 @@ import APIClient from "../../api-client";
 import * as util from "util";
 import { WsMessage } from "../WsMessages";
 
+interface SessionsResult {
+  servers: Record<string, Session>;
+}
 interface Session {
   annotations: Record<string, string>;
   cloudStorage: Record<string, string|number> | null;
@@ -59,25 +62,22 @@ function sendMessage(data: string, channel: Channel) {
   channel.sockets.forEach(socket => socket.send(info.toString()));
 }
 
-async function heartbeatRequestSessionStatus(channel: Channel, apiClient: APIClient): Promise<void> {
+async function heartbeatRequestSessionStatus
+(channel: Channel, apiClient: APIClient, authHeathers: Record<string, string>): Promise<void> {
   const requestSession = channel.data.get("requestSessionStatus") as boolean;
   if (requestSession) {
-    const previousStatuses = channel.data.get("sessionStatus") as Record<string, Session>;
-    apiClient.sessionStatus()
+    const previousStatuses = channel.data.get("sessionStatus") as SessionsResult;
+    apiClient.sessionStatus(authHeathers)
       .then(async (response) => {
-        const statusFetched = response as unknown as Record<string, Session>;
-        const cleanStatus = statusFetched;
-        Object.keys(statusFetched).map( key => {
+        const statusFetched = response as unknown as SessionsResult;
+        const servers = statusFetched?.servers ?? {};
+        const cleanStatus: Record<string, Session> = servers;
+        Object.keys(servers).map( key => {
           cleanStatus[key].resources.usage = null;
         });
-        console.log("---------> statuses", JSON.stringify(cleanStatus), JSON.stringify(previousStatuses));
         if (!util.isDeepStrictEqual(previousStatuses, cleanStatus)) {
-          console.log("💙 sending session message");
           sendMessage(JSON.stringify(cleanStatus), channel);
           channel.data.set("sessionStatus", cleanStatus);
-        }
-        else {
-          console.log("👯‍️ same object", JSON.stringify(cleanStatus));
         }
       })
       .catch((e) => {
@@ -86,45 +86,5 @@ async function heartbeatRequestSessionStatus(channel: Channel, apiClient: APICli
       });
   }
 }
-
-// ! This is only an example, it's not used yet in production
-// TODO: cleanup and use it in the short loop
-
-/**
- * Check user sessions
- * @param sessionId - user session ID
- * @param storage - storage component
- */
-// async function checkSession(sessionId: string, storage: Storage, headers: Record<string, string>): Promise<boolean> {
-//   // fetch sessions
-//   let hashedSessions: string;
-//   try {
-//     const { gatewayUrl } = config.deployment;
-//     const sessionsUrl = `${gatewayUrl}/notebooks/servers`;
-//     logger.info(`Fetching sessions from <${sessionsUrl}>`); // ? TMP
-//
-//     const response = await fetch(sessionsUrl, { headers });
-//     const sessions = await response.json();
-//
-//     hashedSessions = simpleHash(JSON.stringify(sessions)).toString();
-//     logger.info(`Session fetched succesfully. The hash is ${hashedSessions}`); // ? TMP
-//   }
-//   catch (e) {
-//     logger.warn("There was a problem while trying to fetch sessions");
-//     logger.warn(e);
-//     throw e;
-//   }
-//
-//   // try to get old hash and compare it
-//   // TODO: should we store this in the channel cache instead?
-//   let changed = false;
-//   const storageKey = config.data.userSessionsPrefix + sessionId;
-//   const oldHash = await storage.get(storageKey) as string;
-//   if (oldHash && oldHash !== hashedSessions)
-//     changed = true;
-//   if (!oldHash || oldHash !== hashedSessions)
-//     await storage.save(storageKey, hashedSessions);
-//   return changed;
-// }
 
 export { handlerRequestSessionStatus, heartbeatRequestSessionStatus };
