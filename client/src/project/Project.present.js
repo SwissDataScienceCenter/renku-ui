@@ -69,8 +69,7 @@ import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
 
 import "./Project.css";
-import { useSelector } from "react-redux";
-import { WsMessage } from "../websocket/WsMessages";
+import PullSessionStatus from "../utils/components/PullSessionStatus";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -235,18 +234,6 @@ function getLinksProjectHeader(datasets, datasetsUrl, errorGettingDatasets) {
 }
 
 function ProjectViewHeaderMinimal(props) {
-  const websocket = useSelector((state) => state.stateModel.webSocket);
-  const socket = props.socket;
-  useEffect(() => {
-    console.log("initial fetch");
-    if (props.fetchSessions && websocket.open && socket) {
-      console.log("start fetching sessions...");
-      const message = JSON.stringify(new WsMessage({} , "pullSessionStatus"));
-      socket.send(message);
-    } else {
-      console.log("🙈 no pull session ", { fetchSessions: props.fetchSessions, websocket, socket });
-    }
-  }, []);
   const titleColSize = "col-12";
   const linksHeader = getLinksProjectHeader(props.datasets, props.datasetsUrl,
     props.migration.core.fetched && !props.migration.core.backendAvailable);
@@ -1385,6 +1372,7 @@ function ProjectView(props) {
     <script type="application/ld+json">{JSON.stringify(data)}</script> : null;
   const cleanSessionUrl = props.location.pathname.split("/").slice(0, -1).join("/") + "/:server";
   const isShowSession = cleanSessionUrl === props.sessionShowUrl;
+  const pullingSession = <PullSessionStatus key="pullingSessions" fetchSessions={true} socket={props.socket} />;
   return [
     <Helmet key="page-title">
       <title>{pageTitle}</title>
@@ -1393,7 +1381,7 @@ function ProjectView(props) {
     <ContainerWrap key="project-content" fullSize={isShowSession}>
       <Switch key="projectHeader">
         <Route exact path={props.baseUrl}
-          render={() => <ProjectViewHeader {...props} minimalistHeader={false} fetchSessions={true} />} />
+          render={() => <ProjectViewHeader {...props} minimalistHeader={false}/>} />
         <Route path={props.overviewUrl}
           render={() => <ProjectViewHeader {...props} minimalistHeader={false}/>} />
         <Route path={props.notebookServersUrl} render={() => null} />
@@ -1415,19 +1403,20 @@ function ProjectView(props) {
       <Row key="content">
         <Switch>
           <Route exact path={props.baseUrl}
-            render={() => <ProjectViewOverview key="overview" {...props} />} />
+            render={() =>
+              [<ProjectViewOverview key="overview" {...props} />, pullingSession]} />
           <Route path={props.overviewUrl}
-            render={() => <ProjectViewOverview key="overview" {...props} />} />
+            render={() => [<ProjectViewOverview key="overview" {...props} />, pullingSession]} />
           <Route path={props.collaborationUrl}
-            render={() => <ProjectViewCollaboration key="collaboration" {...props} />} />
+            render={() => [<ProjectViewCollaboration key="collaboration" {...props} />, pullingSession]} />
           <Route path={props.filesUrl}
-            render={() => <ProjectViewFiles key="files" {...props} />} />
+            render={() => [<ProjectViewFiles key="files" {...props} />, pullingSession]} />
           <Route path={props.datasetsUrl}
-            render={() => <ProjectViewDatasets key="datasets" {...props} />} />
+            render={() => [<ProjectViewDatasets key="datasets" {...props} />, pullingSession]} />
           <Route path={[props.workflowUrl, props.workflowsUrl]}
-            render={() => <ProjectViewWorkflows key="workflows" {...props} />} />
+            render={() => [<ProjectViewWorkflows key="workflows" {...props} />, pullingSession]} />
           <Route path={props.settingsUrl}
-            render={() => <ProjectSettings key="settings" {...props} />} />
+            render={() => [<ProjectSettings key="settings" {...props} />, pullingSession]} />
           <Route path={props.notebookServersUrl}
             render={() => <ProjectSessions key="sessions" {...props} />} />
           <Route component={NotFoundInsideProject} />

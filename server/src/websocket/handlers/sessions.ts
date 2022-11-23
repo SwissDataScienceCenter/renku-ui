@@ -51,10 +51,15 @@ interface Session {
   url: string;
 }
 
-async function handlerRequestSessionStatus(
-  data: Record<string, unknown>, channel: Channel): Promise<void> {
-  // save the request enabler
+function handlerRequestSessionStatus(
+  data: Record<string, unknown>, channel: Channel): void {
   channel.data.set("requestSessionStatus", true);
+}
+
+function handlerRequestStopSessionStatus(
+  data: Record<string, unknown>, channel: Channel): void {
+  channel.data.set("requestSessionStatus", false);
+  channel.data.set("sessionStatus", null);
 }
 
 function sendMessage(data: string, channel: Channel) {
@@ -62,16 +67,17 @@ function sendMessage(data: string, channel: Channel) {
   channel.sockets.forEach(socket => socket.send(info.toString()));
 }
 
-async function heartbeatRequestSessionStatus
-(channel: Channel, apiClient: APIClient, authHeathers: Record<string, string>): Promise<void> {
+function heartbeatRequestSessionStatus
+(channel: Channel, apiClient: APIClient, authHeathers: Record<string, string>): void {
   const requestSession = channel.data.get("requestSessionStatus") as boolean;
   if (requestSession) {
     const previousStatuses = channel.data.get("sessionStatus") as SessionsResult;
     apiClient.sessionStatus(authHeathers)
-      .then(async (response) => {
+      .then((response) => {
         const statusFetched = response as unknown as SessionsResult;
         const servers = statusFetched?.servers ?? {};
         const cleanStatus: Record<string, Session> = servers;
+        // remove usage information, it is not necessary at this time.
         Object.keys(servers).map( key => {
           cleanStatus[key].resources.usage = null;
         });
@@ -87,4 +93,4 @@ async function heartbeatRequestSessionStatus
   }
 }
 
-export { handlerRequestSessionStatus, heartbeatRequestSessionStatus };
+export { handlerRequestSessionStatus, heartbeatRequestSessionStatus, handlerRequestStopSessionStatus };

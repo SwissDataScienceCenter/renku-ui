@@ -41,7 +41,7 @@ class APIClient {
     const sessionsUrl = `${this.gatewayUrl}/notebooks/servers`;
     logger.info(`Fetching session status `, sessionsUrl);
     const options = {
-      headers: authHeathers as unknown as Headers ?? new Headers(),
+      headers: new Headers(authHeathers),
     };
     return this.clientFetch(sessionsUrl, options, RETURN_TYPES.json);
   }

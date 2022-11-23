@@ -71,7 +71,7 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
         handler: () => ({ test: true })
       }
     ],
-    "sessions": [
+    "sessionStatus": [
       {
         required: null,
         optional: ["message"],

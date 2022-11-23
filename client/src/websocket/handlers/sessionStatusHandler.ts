@@ -15,11 +15,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+interface Session {
+  annotations: Record<string, string>;
+  cloudStorage: Record<string, string|number> | null;
+  image: string;
+  name: string;
+  resources: {
+    requests: Record<string, string|number>;
+    usage: Record<string, string|number> | null;
+    started: string;
+  };
+  state: {
+    "pod_name": string;
+  };
+  status: {
+    details: {
+      status: string;
+      step: string;
+    }[];
+    message?: string;
+    readyNumContainers: number;
+    state: string;
+    totalNumContainers: number;
+  };
+  url: string;
+}
+
+interface ServersResult {
+  fetching: boolean;
+  fetched: Date;
+  all: Record<string, Session>;
+}
 
 function handleSessionsStatus(data: Record<string, unknown>, webSocket: WebSocket, model: any, notifications: any) {
   if (data.message) {
     const statuses = JSON.parse(data.message as string);
-    console.log("status received", statuses);
+
+    let updatedNotebooks: ServersResult = { fetching: false, fetched: new Date(), all: {} };
+    updatedNotebooks.all = statuses;
+    model.set("notebooks.notebooks", updatedNotebooks);
   }
   return null;
 }

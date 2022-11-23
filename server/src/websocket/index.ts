@@ -28,7 +28,11 @@ import { wsRenkuAuth } from "../authentication/middleware";
 import { getCookieValueByName } from "../utils";
 import { handlerRequestServerVersion, heartbeatRequestServerVersion } from "./handlers/clientVersion";
 import APIClient from "../api-client";
-import { handlerRequestSessionStatus, heartbeatRequestSessionStatus } from "./handlers/sessions";
+import {
+  handlerRequestSessionStatus,
+  handlerRequestStopSessionStatus,
+  heartbeatRequestSessionStatus
+} from "./handlers/sessions";
 
 
 // *** Channels ***
@@ -63,6 +67,13 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
       required: null,
       optional: null,
       handler: handlerRequestSessionStatus
+    } as MessageData,
+  ],
+  "stopPullSessionStatus": [
+    {
+      required: null,
+      optional: null,
+      handler: handlerRequestStopSessionStatus
     } as MessageData,
   ],
   "ping": [
