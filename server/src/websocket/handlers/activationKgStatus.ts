@@ -20,9 +20,10 @@ import { Channel } from "../index";
 import { WsMessage } from "../WsMessages";
 import * as util from "util";
 import APIClient from "../../api-client";
+import { AsyncSemaphore } from "../../utils/asyncSemaphore";
 
 type ActivationStatus = {
-  [key: number]: number
+  [key: string]: number
 }
 
 interface ActivationResult {
@@ -34,22 +35,32 @@ function sendMessage(data: string, channel: Channel) {
   channel.sockets.forEach(socket => socket.send(info.toString()));
 }
 
-function getActivationStatus(projectIds: number[], channel: Channel, apiClient: APIClient): void {
-  for (let i = 0; i < projectIds.length; i++) {
-    const id = projectIds[i];
-
-    apiClient.kgActivationStatus(id).then(async (response) => {
+function getActivationStatus(id: number, channel: Channel, apiClient: APIClient, authHeaders: Headers) {
+  return apiClient.kgActivationStatus(id, authHeaders)
+    .then(async (response) => {
       const status = response as unknown as ActivationResult;
       const previousStatuses = channel.data.get("activationProjects") as ActivationStatus;
       const currentStatus = status?.progress ?? -1;
-      const previousStatus = previousStatuses ? previousStatuses[id] : null;
+      const previousStatus = previousStatuses ? previousStatuses[`${id}`] : null;
       if (!util.isDeepStrictEqual(previousStatus, currentStatus)) {
-        const currentStatuses = { ...previousStatuses, [id]: currentStatus };
+        const currentStatuses = { ...previousStatuses, [`${id}`]: currentStatus };
         sendMessage(JSON.stringify(currentStatuses), channel);
         channel.data.set("activationProjects", currentStatuses);
       }
     });
+}
+
+async function getAllActivationStatus(
+  projectIds: number[], channel: Channel, apiClient: APIClient, authHeaders: Headers
+): Promise<void> {
+  const semaphore = new AsyncSemaphore(5);
+
+  for (let i = 0; i < projectIds.length; i++) {
+    const id = projectIds[i];
+    await semaphore.withLockRunAndForget(() => getActivationStatus(id, channel, apiClient, authHeaders));
   }
+
+  await semaphore.awaitTerminate();
 }
 
 async function handlerRequestActivationKgStatus(
@@ -63,18 +74,21 @@ async function handlerRequestActivationKgStatus(
   }
 }
 
-async function heartbeatRequestActivationKgStatus(channel: Channel, apiClient: APIClient): Promise<void> {
+async function heartbeatRequestActivationKgStatus(
+  channel: Channel, apiClient: APIClient, authHeaders: Headers
+): Promise<void> {
   const projectsIds = channel.data.get("projectsIds") as number[];
   if (projectsIds?.length) {
     const previousStatuses = channel.data.get("activationProjects") as ActivationStatus;
     // remove ids are complete
     const ids: number[] = previousStatuses ?
-      (projectsIds).filter( (id: number) => previousStatuses[id] != 100) :
+      (projectsIds).filter( (id: number) => previousStatuses[`${id}`] != 100) :
       projectsIds;
+
     cleanCompletedStatuses(previousStatuses, channel);
 
     channel.data.set("projectsIds", ids.length ? ids : []);
-    getActivationStatus(ids, channel, apiClient);
+    getAllActivationStatus(ids, channel, apiClient, authHeaders);
   }
 }
 
@@ -84,7 +98,7 @@ function cleanCompletedStatuses(statuses: ActivationStatus, channel: Channel) {
   const noCompletedStatus = statuses;
   Object.keys(statuses).forEach((key => {
     const id = parseInt(key);
-    if (statuses[id] === 100)
+    if (statuses[`${id}`] && statuses[`${id}`] === 100)
       delete noCompletedStatus[id];
   }));
   channel.data.set("activationProjects", noCompletedStatus);

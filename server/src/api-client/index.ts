@@ -1,6 +1,5 @@
 import config from "../config";
 import fetch, { Headers, Request } from "cross-fetch";
-import logger from "../logger";
 
 export const RETURN_TYPES = {
   json: "json",
@@ -37,11 +36,12 @@ class APIClient {
    * Fetch kg activation status by projectId
    *
    * @param {number} projectId - Project Id
+   * @param {Headers} authHeaders - Authentication headers
    */
-  async kgActivationStatus(projectId: number): Promise<Response> {
+  async kgActivationStatus(projectId: number, authHeaders: Headers): Promise<Response> {
+    const headers = new Headers(authHeaders);
     const activationStatusURL = `${ this.gatewayUrl }/projects/${ projectId }/graph/status`;
-    logger.info(`Fetching kg activation from ${ projectId } project`);
-    return this.clientFetch(activationStatusURL, FETCH_DEFAULT.options, RETURN_TYPES.json);
+    return this.clientFetch(activationStatusURL, { headers }, RETURN_TYPES.json);
   }
 
   /**
