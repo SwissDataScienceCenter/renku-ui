@@ -1,5 +1,12 @@
 # Changes
 
+## [2.13.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.12.0...2.13.0) (2022-11-28)
+
+### Features
+
+* switch to REST endpoint for lineage from KG ([#1857](https://github.com/SwissDataScienceCenter/renku-ui/issues/1857), [#2122](https://github.com/SwissDataScienceCenter/renku-ui/issues/2122))
+
+
 ## [2.12.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.11.1...2.12.0) (2022-11-21)
 
 ### Bug Fixes
