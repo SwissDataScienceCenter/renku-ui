@@ -6,6 +6,8 @@
 
 * switch to REST endpoint for lineage from KG ([#1857](https://github.com/SwissDataScienceCenter/renku-ui/issues/1857), [#2122](https://github.com/SwissDataScienceCenter/renku-ui/issues/2122))
 
+* unify display of session logs in all places in the UI ([#2139](https://github.com/SwissDataScienceCenter/renku-ui/issues/2139), [#2160](https://github.com/SwissDataScienceCenter/renku-ui/issues/2160))
+
 
 ## [2.12.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.11.1...2.12.0) (2022-11-21)
 
