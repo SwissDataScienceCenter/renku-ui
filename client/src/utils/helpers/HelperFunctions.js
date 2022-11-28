@@ -347,7 +347,7 @@ const generateZip = async (files, name) => {
     return;
 
   const JSZip = await require("jszip");
-  const { saveAs } = await import ("file-saver");
+  const { saveAs } = await require("file-saver");
   const zip = new JSZip();
 
   for (const file of files)
