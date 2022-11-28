@@ -1,0 +1,9 @@
+.modal-title {
+  font-size: 27px;
+  font-weight: 600;
+}
+
+.log-nav {
+  position: sticky;
+  top: -1em;
+}

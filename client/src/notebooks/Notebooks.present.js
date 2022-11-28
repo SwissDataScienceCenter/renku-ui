@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, memo, useEffect } from "react";
+import React, { Component, Fragment, memo } from "react";
 import Media from "react-media";
 import { Link, useHistory } from "react-router-dom";
 import {
@@ -25,7 +25,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheckCircle, faExclamationTriangle, faExternalLinkAlt, faFileAlt,
-  faInfoCircle, faPlus, faStopCircle, faSyncAlt, faTimesCircle
+  faInfoCircle, faPlus, faStopCircle, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 
@@ -45,7 +45,7 @@ import { Loader } from "../utils/components/Loader";
 import { InfoAlert, } from "../utils/components/Alert";
 import { Clipboard } from "../utils/components/Clipboard";
 import LoginAlert from "../utils/components/loginAlert/LoginAlert";
-import { EnvironmentLogs, getLogsToShow, LogDownloadButton, LogTabs, useDownloadLogs } from "../utils/components/Logs";
+import { EnvironmentLogs, SessionLogs as LogsSessionLogs } from "../utils/components/Logs";
 import { SessionStatus } from "../utils/constants/Notebooks";
 
 import "./Notebooks.css";
@@ -85,72 +85,11 @@ function SessionLogs(props) {
   const { fetchLogs, notebook, tab } = props;
   const { logs } = notebook;
   const sessionName = notebook.data.name;
-  const [ downloading, save ] = useDownloadLogs(logs, fetchLogs, sessionName);
-
-  useEffect(() => {
-    if (fetchLogs)
-      fetchLogs();
-  }, []); // eslint-disable-line
 
   if (tab !== SESSION_TABS.logs)
     return null;
 
-  let body = null;
-  if (logs.fetching) {
-    body = (<Loader />);
-  }
-  else {
-    if (!logs.fetched) {
-      body = (
-        <p>
-          Logs unavailable. Please{" "}
-          <Button className="btn-outline-rk-green" size="sm" onClick={() => { fetchLogs(); }}>download</Button>
-          {" "}them again.
-        </p>
-      );
-    }
-    else {
-      const logsWithData = getLogsToShow(logs);
-      if (logs.data && typeof logs.data !== "string" && Object.keys(logsWithData).length) {
-        body = <LogTabs logs={logsWithData}/>;
-      }
-      else {
-        body = (
-          <Fragment>
-            <p data-cy="no-logs-message">No logs available for this pod yet.</p>
-            <p>
-              You can try to{" "}
-              <Button
-                data-cy="retry-logs-body"
-                className="btn-outline-rk-green"
-                size="sm"
-                onClick={() => { fetchLogs(); }}>
-                refresh
-              </Button>
-              {" "}them after a while.
-            </p>
-          </Fragment>
-        );
-      }
-    }
-  }
-
-  // ? Having a minHeight prevent losing the vertical scroll position.
-  // TODO: Revisit after #1219
-  return (
-    <Fragment>
-      <div className="p-2 p-lg-3 text-nowrap">
-        <Button key="button" color="rk-green" size="sm" style={{ marginRight: 8 }}
-          id="session-refresh-logs" onClick={() => fetchLogs()} disabled={logs.fetching} >
-          <FontAwesomeIcon icon={faSyncAlt} /> Refresh logs
-        </Button>
-        <LogDownloadButton logs={logs} downloading={downloading} save={save} size="sm" color="secondary"/>
-      </div>
-      <div className="p-2 p-lg-3 border-top">
-        {body}
-      </div>
-    </Fragment>
-  );
+  return <LogsSessionLogs fetchLogs={fetchLogs} logs={logs} name={sessionName} />;
 }
 
 function SessionJupyter(props) {

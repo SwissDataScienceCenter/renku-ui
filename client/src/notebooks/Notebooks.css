@@ -34,34 +34,8 @@
   }
 }
 
-
 .log-container {
   white-space: pre-line;
-}
-
-/* Modals body personalization for logs */
-.logs-modal.log-container {
-  white-space: pre-line;
-  height: 600px;
-}
-
-@media (max-height: 1024px) {
-  .logs-modal .log-container {
-    height: 400px;
-  }
-}
-
-@media (max-height: 700px) {
-  .logs-modal .log-container {
-    height: auto;
-  }
-}
-
-/* Logs personalization for session-view */
-@media (min-height: 1200px) {
-  .log-container {
-    height: 600px;
-  }
 }
 
 /* sessions page borders */

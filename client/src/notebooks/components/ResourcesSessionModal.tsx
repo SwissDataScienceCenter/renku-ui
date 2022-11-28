@@ -46,12 +46,12 @@ const ResourcesSessionModel =
     return (
       <Modal
         isOpen={isOpen}
-        className="resources-modal modal-xl"
+        className="resources-modal modal-fullscreen-lg-down modal-xl"
         scrollable={true}
         toggle={() => { toggleModal(); }}>
         <ModalHeader className="bg-body header-multiline" toggle={() => { toggleModal(); }} data-cy="modal-header" >
           <div className="d-flex flex-wrap gap-sm-0 gap-md-0 gap-lg-3 gap-xl-3">
-            <div>Resources</div>
+            <div className="pe-2">Resources</div>
             <Nav pills className="nav-pills-underline modal-header-nav">
               <NavItem key={SESSION_TABS.commands} data-cy="cheat-sheet-tab" role="button">
                 <NavLink
@@ -77,8 +77,8 @@ const ResourcesSessionModel =
             </Nav>
           </div>
         </ModalHeader>
-        <ModalBody className="bg-body pt-0">
-          <div className="about-box d-flex flex-column">
+        <ModalBody className="bg-body h-100 pt-0">
+          <div className="about-box h-100 d-flex flex-column">
             <Resources handlers={handlers} notebook={notebook} defaultBranch={defaultBranch} activeTab={activeTab} />
           </div>
         </ModalBody>
@@ -94,27 +94,27 @@ interface ResourcesProps {
 }
 const Resources = ({ handlers, notebook, defaultBranch, activeTab }: ResourcesProps) => {
 
-  const fetchLogs = () => {
+  const fetchLogs = (_sessionName: string, fullLogs = false) => {
     if (!notebook.available)
       return;
-    return handlers.fetchLogs(notebook.data.name);
+    return handlers.fetchLogs(notebook.data.name, fullLogs);
   };
 
   return (
-    <div>
-      <TabContent activeTab={activeTab}>
-        <TabPane key={SESSION_TABS.commands} tabId={SESSION_TABS.commands}>
+    <div className="h-100">
+      <TabContent className="h-100" activeTab={activeTab}>
+        <TabPane className="h-100" key={SESSION_TABS.commands} tabId={SESSION_TABS.commands}>
           <div className="session-cheat-sheet bg-white border-radius-8">
             <SessionCheatSheetGenerated />
           </div>
         </TabPane>
-        <TabPane key={SESSION_TABS.docs} tabId={SESSION_TABS.docs}>
-          <div>
+        <TabPane className="h-100" key={SESSION_TABS.docs} tabId={SESSION_TABS.docs}>
+          <div className="h-100">
             <iframe id="docs-iframe" title="documentation iframe" src={Docs.READ_THE_DOCS_ROOT}
-              style={{ borderRadius: "8px" }} width="100%" height="800px"
+              style={{ borderRadius: "8px", height: "calc(100%)" }} width="100%"
               referrerPolicy="origin" sandbox="allow-same-origin allow-scripts"/></div>
         </TabPane>
-        <TabPane key={SESSION_TABS.logs} tabId={SESSION_TABS.logs}>
+        <TabPane className="h-100" key={SESSION_TABS.logs} tabId={SESSION_TABS.logs}>
           <div className="session-cheat-sheet bg-white border-radius-8">
             <SessionLogs fetchLogs={fetchLogs} notebook={notebook} tab={activeTab} /></div>
         </TabPane>

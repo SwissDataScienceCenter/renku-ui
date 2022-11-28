@@ -146,6 +146,7 @@
           "dockerfile",
           "dockerignore",
           "enum",
+          "fetchable",
           "formgenerator",
           "fortran",
           "frameborder",
