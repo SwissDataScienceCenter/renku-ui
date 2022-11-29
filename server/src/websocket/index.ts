@@ -92,8 +92,11 @@ const shortLoopFunctions: Array<Function> = [ // eslint-disable-line
  * @param sessionId - user session ID
  * @param authenticator - auth component
  * @param storage - storage component
+ * @param apiClient - api to fetch data
  */
-async function channelLongLoop(sessionId: string, authenticator: Authenticator, storage: Storage) {
+async function channelLongLoop(
+  sessionId: string, authenticator: Authenticator, storage: Storage, apiClient: APIClient
+) {
   const infoPrefix = `${sessionId} - long loop:`;
 
   // checking user
@@ -107,7 +110,7 @@ async function channelLongLoop(sessionId: string, authenticator: Authenticator, 
   const timeoutLength = config.websocket.longIntervalSec as number * 1000;
   if (!authenticator.ready) {
     logger.info(`${infoPrefix} Authenticator not ready yet, skipping to the next loop`);
-    setTimeout(() => channelLongLoop(sessionId, authenticator, storage), timeoutLength);
+    setTimeout(() => channelLongLoop(sessionId, authenticator, storage, apiClient), timeoutLength);
     return false;
   }
 
@@ -123,7 +126,7 @@ async function channelLongLoop(sessionId: string, authenticator: Authenticator, 
   for (const longLoopFunction of longLoopFunctions) {
     // execute the loop function
     try {
-      longLoopFunction(channel);
+      longLoopFunction(channel, apiClient, authHeaders);
     }
     catch (error) {
       const info = `Unexpected error while executing the function '${longLoopFunction.name}'.`;
@@ -134,7 +137,7 @@ async function channelLongLoop(sessionId: string, authenticator: Authenticator, 
 
   // Ping to keep the socket alive, then reschedule loop
   channel.sockets.forEach(socket => socket.ping());
-  setTimeout(() => channelLongLoop(sessionId, authenticator, storage), timeoutLength);
+  setTimeout(() => channelLongLoop(sessionId, authenticator, storage, apiClient), timeoutLength);
 }
 
 /**
@@ -146,7 +149,8 @@ async function channelLongLoop(sessionId: string, authenticator: Authenticator, 
  * @param apiClient - api client
  */
 async function channelShortLoop(
-  sessionId: string, authenticator: Authenticator, storage: Storage, apiClient: APIClient) {
+  sessionId: string, authenticator: Authenticator, storage: Storage, apiClient: APIClient
+) {
   const infoPrefix = `${sessionId} - short loop:`;
 
   // checking user
@@ -159,7 +163,7 @@ async function channelShortLoop(
   // checking authentication
   const timeoutLength = config.websocket.shortIntervalSec as number * 1000;
   if (!authenticator.ready) {
-    logger.info(`${infoPrefix} Authenticator not ready yet, skipping to the next loop`);
+    logger.info(`${infoPrefix} Authenticator not ready yet, skipping to the next loop `);
     setTimeout(() => channelShortLoop(sessionId, authenticator, storage, apiClient), timeoutLength);
     return;
   }
@@ -176,7 +180,7 @@ async function channelShortLoop(
   for (const shortLoopFunction of shortLoopFunctions) {
     // execute the loop function
     try {
-      shortLoopFunction(channel, apiClient);
+      shortLoopFunction(channel, apiClient, authHeaders);
     }
     catch (error) {
       const info = `Unexpected error while executing the function '${shortLoopFunction.name}'.`;
@@ -235,7 +239,7 @@ function configureWebsocket(
       setTimeout(() => {
         channelShortLoop(sessionId, authenticator, storage, apiClient);
         // add a tiny buffer, in case authentication fails and channel is cleaned up -- no need to overlap
-        setTimeout(() => { channelLongLoop(sessionId, authenticator, storage); }, 1000);
+        setTimeout(() => { channelLongLoop(sessionId, authenticator, storage, apiClient); }, 1000);
       }, config.websocket.delayStartSec * 1000);
     }
 
@@ -378,6 +382,7 @@ async function getAuthHeaders(
     if (!authHeaders)
       // user is anonymous
       return null;
+    return authHeaders;
   }
   catch (error) {
     const data = { message: "authentication not valid" };

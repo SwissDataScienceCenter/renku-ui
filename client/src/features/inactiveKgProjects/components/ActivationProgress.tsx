@@ -27,6 +27,9 @@ function ActivationProgress({ project }: ActivationProgressProps) {
   if (project.progressActivation === -2)
     return <small className="text-danger">There was an error in activating the KG. Please contact us for help. </small>;
 
+  if (project.progressActivation === -408)
+    return <small className="text-danger">Timeout fetching the activation status. Please contact us for help. </small>;
+
   if (project.progressActivation === 100)
     return <small className="text-success">Activated</small>;
 
