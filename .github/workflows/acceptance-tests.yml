@@ -10,8 +10,9 @@ on:
       - closed
     paths:
       - client/**
-      - server/**
       - helm-chart/**
+      - tests/**
+      - server/**
       - .github/workflows/**
       - chartpress.yaml
 
@@ -120,20 +121,20 @@ jobs:
           CYPRESS_USER: ${{ secrets.CYPRESS_USER }}
         with:
           browser: chrome
-          working-directory: e2e
+          working-directory: tests
         # Cypress screenshots will be generated only if the test failed, thus we store screenshots only on failures
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: cypress-screenshots
-          path: e2e/cypress/screenshots
+          path: tests/cypress/screenshots
           retention-days: 7
       # Cypress test video is always captured, so this action uses "always()" condition
       - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: cypress-videos
-          path: e2e/cypress/videos
+          path: tests/cypress/videos
           retention-days: 3
 
   cleanup:

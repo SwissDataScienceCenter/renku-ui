@@ -1,9 +1,0 @@
-{
-  "baseUrl": "http://localhost:3000",
-  "env": {
-    "USE_FIXTURES": true
-  },
-  "video": false,
-  "viewportWidth": 1600,
-  "viewportHeight": 1200
-}
