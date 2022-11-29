@@ -96,6 +96,7 @@ const WEBSOCKET = {
   shortIntervalSec: 5, // ? in seconds
   longIntervalSec: 180, // ? in seconds
   delayStartSec: 3, // ? in seconds
+  timeoutActivationStatus: 120 // in minutes
 };
 
 const config = {

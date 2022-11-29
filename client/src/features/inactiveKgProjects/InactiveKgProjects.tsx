@@ -96,20 +96,23 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
 
   const activateProjects = () => {
     setActivating(true);
-    if (client) {
+    if (client && websocket.open && socket) {
       const projectSelected = projectList.filter( p => p.selected && p.progressActivation !== 100);
       for (let i = 0 ; i < projectSelected.length; i++) {
-        client.createGraphWebhook(projectSelected[i].id);
-        dispatch(updateProgress({ id: projectSelected[i].id, progress: 0 }));
+        const projectId = projectSelected[i].id;
+        client.createGraphWebhook(projectId)
+          .then((activation: boolean) => {
+            if (activation) {
+              dispatch(updateProgress({ id: projectId, progress: 0 }));
+              const message = JSON.stringify(new WsMessage({ projects: [projectId] }, "pullKgActivationStatus"));
+              socket.send(message);
+            }
+          })
+          .catch(() => dispatch(updateProgress({ id: projectSelected[i].id, progress: -2 })));
       }
-      const projectIds = projectSelected.map( p => p.id);
-      if (websocket.open && socket) {
-        const message = JSON.stringify(new WsMessage({ projects: projectIds }, "pullKgActivationStatus"));
-        socket.send(message);
-      }
-      else {
-        setActivating(false);
-      }
+    }
+    else {
+      setActivating(false);
     }
   };
 

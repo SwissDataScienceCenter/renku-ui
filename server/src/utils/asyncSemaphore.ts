@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+// ref: https://alexn.org/blog/2020/04/21/javascript-semaphore/
 export class AsyncSemaphore {
   private _available: number
   private _upcoming: Function[]; // eslint-disable-line @typescript-eslint/ban-types
