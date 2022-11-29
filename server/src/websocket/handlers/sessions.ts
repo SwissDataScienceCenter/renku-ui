@@ -26,18 +26,6 @@ interface SessionsResult {
   servers: Record<string, Session>;
 }
 interface Session {
-  annotations: Record<string, string>;
-  cloudStorage: Record<string, string|number> | null;
-  image: string;
-  name: string;
-  resources: {
-    requests: Record<string, string|number>;
-    usage: Record<string, string|number> | null;
-    started: string;
-  };
-  state: {
-    "pod_name": string;
-  };
   status: {
     details: {
       status: string;
@@ -48,17 +36,10 @@ interface Session {
     state: string;
     totalNumContainers: number;
   };
-  url: string;
 }
 
 function handlerRequestSessionStatus(
   data: Record<string, unknown>, channel: Channel): void {
-  channel.data.set("requestSessionStatus", true);
-}
-
-function handlerRequestStopSessionStatus(
-  data: Record<string, unknown>, channel: Channel): void {
-  channel.data.set("requestSessionStatus", false);
   channel.data.set("sessionStatus", null);
 }
 
@@ -69,28 +50,27 @@ function sendMessage(data: string, channel: Channel) {
 
 function heartbeatRequestSessionStatus
 (channel: Channel, apiClient: APIClient, authHeathers: Record<string, string>): void {
-  const requestSession = channel.data.get("requestSessionStatus") as boolean;
-  if (requestSession) {
-    const previousStatuses = channel.data.get("sessionStatus") as SessionsResult;
-    apiClient.sessionStatus(authHeathers)
-      .then((response) => {
-        const statusFetched = response as unknown as SessionsResult;
-        const servers = statusFetched?.servers ?? {};
-        const cleanStatus: Record<string, Session> = servers;
-        // remove usage information, it is not necessary at this time.
-        Object.keys(servers).map( key => {
-          cleanStatus[key].resources.usage = null;
-        });
-        if (!util.isDeepStrictEqual(previousStatuses, cleanStatus)) {
-          sendMessage(JSON.stringify(cleanStatus), channel);
-          channel.data.set("sessionStatus", cleanStatus);
-        }
-      })
-      .catch((e) => {
-        logger.warn("There was a problem while trying to fetch sessions");
-        logger.warn(e);
+  const previousStatuses = channel.data.get("sessionStatus") as SessionsResult;
+  apiClient.sessionStatus(authHeathers)
+    .then((response) => {
+      const statusFetched = response as unknown as SessionsResult;
+      const servers = statusFetched?.servers ?? {};
+      const cleanStatus: Record<string, Session> = {};
+      // only keep status information
+      Object.keys(servers).map( key => {
+        cleanStatus[key] = { status: servers[key].status };
       });
-  }
+
+      // only send message when something change
+      if (!util.isDeepStrictEqual(previousStatuses, cleanStatus)) {
+        sendMessage("true", channel);
+        channel.data.set("sessionStatus", cleanStatus);
+      }
+    })
+    .catch((e) => {
+      logger.warn("There was a problem while trying to fetch sessions");
+      logger.warn(e);
+    });
 }
 
-export { handlerRequestSessionStatus, heartbeatRequestSessionStatus, handlerRequestStopSessionStatus };
+export { handlerRequestSessionStatus, heartbeatRequestSessionStatus };

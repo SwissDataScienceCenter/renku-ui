@@ -460,7 +460,20 @@ function getSearchParams(expectedParams = null, convertParams = null, convertTyp
   return parameters;
 }
 
-export { Url, getSearchParams };
+/**
+ * Calculate if the url is a session URL
+ *
+ * @param {string} [url] - url
+ * @returns {boolean} if match with a session url
+ */
+function isSessionUrl(url) {
+  const isNewSessionUrl = /\/sessions\/new/g.exec(url);
+  const isShowSessionUrl = /\/sessions\/show\//g.exec(url);
+  const endUrl = /\w+$/g.exec(url);
+  return isNewSessionUrl?.length || isShowSessionUrl?.length || (endUrl && endUrl[0] === "sessions");
+}
+
+export { Url, getSearchParams, isSessionUrl };
 
 // testing only
 export { UrlRule };

@@ -15,47 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-interface Session {
-  annotations: Record<string, string>;
-  cloudStorage: Record<string, string|number> | null;
-  image: string;
-  name: string;
-  resources: {
-    requests: Record<string, string|number>;
-    usage: Record<string, string|number> | null;
-    started: string;
-  };
-  state: {
-    "pod_name": string;
-  };
-  status: {
-    details: {
-      status: string;
-      step: string;
-    }[];
-    message?: string;
-    readyNumContainers: number;
-    state: string;
-    totalNumContainers: number;
-  };
-  url: string;
-}
 
-interface ServersResult {
-  fetching: boolean;
-  fetched: Date;
-  all: Record<string, Session>;
-}
+import { isSessionUrl } from "../../utils/helpers/url/Url";
+import { NotebooksCoordinator } from "../../notebooks";
+import APIClient from "../../api-client";
+import { StateModel } from "../../model";
 
-function handleSessionsStatus(data: Record<string, unknown>, webSocket: WebSocket, model: any, notifications: any) {
-  if (data.message) {
-    const statuses = JSON.parse(data.message as string);
+function handleSessionsStatus(
+  data: Record<string, unknown>, webSocket: WebSocket, model: StateModel, getLocation: Function, client: APIClient) {
+  if (data.message as boolean && client && model) {
+    const location = getLocation();
 
-    let updatedNotebooks: ServersResult = { fetching: false, fetched: new Date(), all: {} };
-    updatedNotebooks.all = statuses;
-    model.set("notebooks.notebooks", updatedNotebooks);
+    if (!isSessionUrl(location?.pathname)) {
+      const notebooksModel = model.subModel("notebooks");
+      const userModel = model.subModel("user");
+      const notebookCoordinator = new NotebooksCoordinator(client, notebooksModel, userModel);
+      notebookCoordinator.fetchNotebooks();
+    }
   }
-  return null;
 }
 
 export { handleSessionsStatus };

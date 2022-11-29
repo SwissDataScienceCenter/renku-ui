@@ -30,7 +30,6 @@ import { handlerRequestServerVersion, heartbeatRequestServerVersion } from "./ha
 import APIClient from "../api-client";
 import {
   handlerRequestSessionStatus,
-  handlerRequestStopSessionStatus,
   heartbeatRequestSessionStatus
 } from "./handlers/sessions";
 
@@ -67,13 +66,6 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
       required: null,
       optional: null,
       handler: handlerRequestSessionStatus
-    } as MessageData,
-  ],
-  "stopPullSessionStatus": [
-    {
-      required: null,
-      optional: null,
-      handler: handlerRequestStopSessionStatus
     } as MessageData,
   ],
   "ping": [

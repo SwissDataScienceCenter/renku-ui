@@ -69,7 +69,6 @@ import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
 
 import "./Project.css";
-import PullSessionStatus from "../utils/components/PullSessionStatus";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -1372,7 +1371,6 @@ function ProjectView(props) {
     <script type="application/ld+json">{JSON.stringify(data)}</script> : null;
   const cleanSessionUrl = props.location.pathname.split("/").slice(0, -1).join("/") + "/:server";
   const isShowSession = cleanSessionUrl === props.sessionShowUrl;
-  const pullingSession = <PullSessionStatus key="pullingSessions" fetchSessions={true} socket={props.socket} />;
   return [
     <Helmet key="page-title">
       <title>{pageTitle}</title>
@@ -1403,20 +1401,19 @@ function ProjectView(props) {
       <Row key="content">
         <Switch>
           <Route exact path={props.baseUrl}
-            render={() =>
-              [<ProjectViewOverview key="overview" {...props} />, pullingSession]} />
+            render={() => <ProjectViewOverview key="overview" {...props} />} />
           <Route path={props.overviewUrl}
-            render={() => [<ProjectViewOverview key="overview" {...props} />, pullingSession]} />
+            render={() => <ProjectViewOverview key="overview" {...props} />} />
           <Route path={props.collaborationUrl}
-            render={() => [<ProjectViewCollaboration key="collaboration" {...props} />, pullingSession]} />
+            render={() => <ProjectViewCollaboration key="collaboration" {...props} />} />
           <Route path={props.filesUrl}
-            render={() => [<ProjectViewFiles key="files" {...props} />, pullingSession]} />
+            render={() => <ProjectViewFiles key="files" {...props} />} />
           <Route path={props.datasetsUrl}
-            render={() => [<ProjectViewDatasets key="datasets" {...props} />, pullingSession]} />
+            render={() => <ProjectViewDatasets key="datasets" {...props} />} />
           <Route path={[props.workflowUrl, props.workflowsUrl]}
-            render={() => [<ProjectViewWorkflows key="workflows" {...props} />, pullingSession]} />
+            render={() => <ProjectViewWorkflows key="workflows" {...props} />} />
           <Route path={props.settingsUrl}
-            render={() => [<ProjectSettings key="settings" {...props} />, pullingSession]} />
+            render={() => <ProjectSettings key="settings" {...props} />} />
           <Route path={props.notebookServersUrl}
             render={() => <ProjectSessions key="sessions" {...props} />} />
           <Route component={NotFoundInsideProject} />

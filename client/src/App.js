@@ -50,6 +50,7 @@ import { AddDataset } from "./dataset/addtoproject/DatasetAdd.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
+import { WsMessage } from "./websocket/WsMessages";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize ? "container-xxl py-4 mt-2 renku-container" : "w-100";
@@ -213,7 +214,11 @@ class App extends Component {
       webSocketUrl = "ws" + webSocketUrl.substring(4);
     // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
     setTimeout(
-      () => { this.webSocket = setupWebSocket(webSocketUrl, this.props.model); return; },
+      () => {
+        this.webSocket = setupWebSocket(webSocketUrl, this.props.model, getLocation, this.props.client);
+        this.webSocket?.send(JSON.stringify(new WsMessage({}, "pullSessionStatus")));
+        return;
+      },
       1000
     );
   }
