@@ -178,6 +178,47 @@ async function channelShortLoop(sessionId: string, authenticator: Authenticator,
 }
 
 
+/**
+ * This function pings the channel to prevent timing out the connection early.
+ * @param sessionId - user session ID
+ * @param authenticator - auth component
+ */
+async function channelPingLoop(sessionId: string, authenticator: Authenticator) {
+  const infoPrefix = `${sessionId} - ping loop:`;
+
+  // checking user
+  const channel = channels.get(sessionId);
+  if (!channel) {
+    logger.info(`${infoPrefix} no channels detected, ending loop.`);
+    return false;
+  }
+
+  // checking authentication
+  const fixedDelta = config.websocket.pingIntervalSec as number;
+  const variableDelta = Math.floor(Math.random() + config.websocket.pingIntervalUncertaintySec as number + 1);
+  const timeoutLength = (fixedDelta + variableDelta) * 1000;
+  if (!authenticator.ready) {
+    logger.info(`${infoPrefix} Authenticator not ready yet, skipping to the next loop`);
+    setTimeout(() => channelPingLoop(sessionId, authenticator), timeoutLength);
+    return;
+  }
+
+  // get the auth headers
+  const authHeaders = await getAuthHeaders(authenticator, sessionId, infoPrefix);
+  if (authHeaders instanceof WsMessage && authHeaders.data.expired) {
+    // ? here authHeaders is an error message
+    channel.sockets.forEach(socket => socket.send(authHeaders.toString()));
+    channels.delete(sessionId);
+    return false;
+  }
+
+  // Ping to keep the socket alive, then reschedule loop
+  const ping = new WsMessage({ message: "ping", source: "server" }, "user", "ping");
+  channel.sockets.forEach(socket => socket.send(ping.toString()));
+  setTimeout(() => channelPingLoop(sessionId, authenticator), timeoutLength);
+}
+
+
 // *** WebSocket startup and configuration ***
 // We might want to increase the `proxy_read_timeout` in nginx, otherwise connection terminates after 60 seconds
 // REF: http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_read_timeout
@@ -220,7 +261,13 @@ function configureWebsocket(server: ws.Server, authenticator: Authenticator, sto
       setTimeout(() => {
         channelShortLoop(sessionId, authenticator, storage);
         // add a tiny buffer, in case authentication fails and channel is cleaned up -- no need to overlap
-        setTimeout(() => { channelLongLoop(sessionId, authenticator, storage); }, 1000);
+        setTimeout(() => {
+          channelLongLoop(sessionId, authenticator, storage);
+          // start pinging after all these steps
+          setTimeout(() => { // eslint-disable-line max-nested-callbacks
+            channelPingLoop(sessionId, authenticator);
+          }, config.websocket.pingIntervalUncertaintySec * 1000);
+        }, 1000);
       }, config.websocket.delayStartSec * 1000);
     }
 

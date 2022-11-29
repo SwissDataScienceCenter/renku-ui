@@ -90,6 +90,8 @@ const DATA = {
 
 const WEBSOCKET = {
   enabled: convertType(process.env.WEBSOCKET_ENABLED) || true,
+  pingIntervalSec: 30, // ? in seconds
+  pingIntervalUncertaintySec: 5, // ? in seconds
   shortIntervalSec: 5, // ? in seconds
   longIntervalSec: 180, // ? in seconds
   delayStartSec: 3, // ? in seconds
