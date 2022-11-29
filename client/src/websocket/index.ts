@@ -49,6 +49,13 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
         handler: handleUserUiVersion
       }
     ],
+    "ping": [
+      {
+        required: ["message"],
+        optional: ["source"],
+        handler: handleServerPing
+      }
+    ],
     "ack": [
       {
         required: null,
@@ -74,6 +81,17 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
 };
 
 
+function handleServerPing(data: Record<string, unknown>, webSocket: WebSocket, model: any): boolean {
+  let pingMessage: WsMessage;
+  if (data.message === "ping" && data.source === "server") {
+    pingMessage = new WsMessage({ message: "ack" }, "ping");
+    webSocket.send(pingMessage.toString());
+    return true;
+  }
+  return false;
+}
+
+
 // *** WebSocket startup and configuration ***
 
 /**
@@ -88,7 +106,7 @@ function setupWebSocket(webSocketUrl: string, fullModel: any) {
 
   function pingWebSocketServer(targetWebSocket: WebSocket) {
     if (model.get("open") && targetWebSocket.readyState === targetWebSocket.OPEN) {
-      const pingMessage = new WsMessage({}, "ping");
+      const pingMessage = new WsMessage({ message: "ping", source: "client" }, "ping");
       targetWebSocket.send(pingMessage.toString());
       model.setObject({ lastPing: new Date(pingMessage.timestamp) });
       setTimeout(() => pingWebSocketServer(targetWebSocket), timeoutIntervalMs);
