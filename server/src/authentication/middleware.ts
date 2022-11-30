@@ -105,6 +105,7 @@ async function wsRenkuAuth(authenticator: Authenticator, sessionId: string): Pro
     const value = config.auth.authHeaderPrefix + tokens.access_token;
     return { [config.auth.authHeaderField]: value };
   }
+  return { [config.auth.cookiesAnonymousKey]: sessionId };
 }
 
 export { renkuAuth, addAuthToken, wsRenkuAuth };

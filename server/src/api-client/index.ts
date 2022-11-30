@@ -1,6 +1,7 @@
 import config from "../config";
 import fetch, { Headers, Request } from "cross-fetch";
 import logger from "../logger";
+import { serializeCookie } from "../utils";
 
 export const RETURN_TYPES = {
   json: "json",
@@ -91,6 +92,19 @@ class APIClient {
         urlObject.searchParams.append(key, options.queryParams[key]);
       });
     }
+
+    // add anon-id to cookies when the proper header is set.
+    const anonId = options.headers.get(config.auth.cookiesAnonymousKey);
+    const newCookies: Array<string> = [];
+    if (anonId) {
+      // ? the anon-id MUST start with a letter to prevent k8s limitations
+      const fullAnonId = config.auth.anonPrefix + anonId;
+      newCookies.push(
+        serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)
+      );
+    }
+    if (newCookies.length > 0)
+      options.headers.set("cookie", newCookies.join("; "));
 
     // This is the default behavior for most browsers.
     options["credentials"] = "same-origin";
