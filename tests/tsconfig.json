@@ -1,7 +1,8 @@
 {
   "include": [
     "node_modules/cypress",
-    "cypress/**/*.ts"
+    "cypress/**/*.ts",
+    "cypress*.config.ts"
   ],
   "compilerOptions": {
     "target": "es5",

@@ -1,6 +1,6 @@
 # E2E Tests for Renku UI
 
-The `e2e` folder implements two kinds of Cypress-based UI tests. The first kind, which are in the `cypress/integration/live` folder, run against a live instance of RenkuLab (such as https://dev.renku.ch). These are useful for testing the end-to-end behavior of an actual running system.
+The `tests` folder implements two kinds of Cypress-based UI tests. The first kind, which are in the `cypress/integration/live` folder, run against a live instance of RenkuLab (such as https://dev.renku.ch). These are useful for testing the end-to-end behavior of an actual running system.
 
 The second kind, which are in the `cypress/integration/local` folder, run against a UI running on `localhost` and use mocked data. These are designed to test components, isolated, in a variety of situations.
 

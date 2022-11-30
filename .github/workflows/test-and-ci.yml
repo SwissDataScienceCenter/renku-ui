@@ -73,13 +73,13 @@ jobs:
           node-version: '16.13.2'
       - name: Install project e2e dependencies
         run: |
-          cd e2e
+          cd tests
           npm install
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
       - name: Run lint e2e
         run: |
-          cd e2e
+          cd tests
           npm run lint
 
   test-chart:

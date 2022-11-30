@@ -4,13 +4,13 @@
   "description": "Acceptance tests for Renku",
   "main": "index.js",
   "scripts": {
-    "cypress:local": "cypress open --config-file cypress.local.json",
-    "cypress:local-headless": "cypress run --headless --config-file cypress.local.json --spec '**/local/*'",
-    "e2e": "cypress open",
+    "cypress:local": "cypress open --e2e --browser=chrome --config-file cypress.local.config.ts",
+    "cypress:local-headless": "cypress run --e2e --headless --config-file cypress.local.config.ts --spec '**/local/*'",
+    "e2e": "cypress open --e2e --browser=chrome",
     "e2e:local": "start-server-and-test start:local 3000 cypress:local",
     "e2e:local-headless": "start-server-and-test start:local 3000 cypress:local-headless",
-    "e2e:run": "cypress run",
-    "e2e:headless": "cypress run --headless",
+    "e2e:run": "cypress run --e2e --browser=chrome",
+    "e2e:headless": "cypress run --e2e --browser=chrome --headless",
     "lint": "eslint . --ext .ts",
     "start:local": "npm --prefix ../client run start"
   },
@@ -18,12 +18,11 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.6.0",
     "@typescript-eslint/parser": "^5.6.0",
-    "cypress": "^9.1.0",
+    "cypress": "^11.0.0",
     "cypress-file-upload": "^5.0.8",
-    "eslint": "^8.4.1",
+    "eslint": "^8.28.0",
     "eslint-plugin-cypress": "^2.12.1",
     "start-server-and-test": "^1.14.0",
     "typescript": "^4.5.2"
-  },
-  "dependencies": {}
+  }
 }
