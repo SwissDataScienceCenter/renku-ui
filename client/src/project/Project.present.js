@@ -187,14 +187,9 @@ class ForkProjectModal extends Component {
       content = (
         <ForkProject
           client={this.props.client}
-          history={this.props.history}
-          id={this.props.id}
-          model={this.props.model}
-          notifications={this.props.notifications}
-          projectVisibility={this.props.projectVisibility}
-          title={this.props.title}
+          forkedId={this.props.id}
+          forkedTitle={this.props.title}
           toggleModal={this.toggleFunction}
-          user={this.props.user}
         />
       );
     }
@@ -1017,13 +1012,9 @@ function ProjectCollaborationFork(props) {
     <Col sm={12} md={10}>
       <ForkProject
         client={props.client}
-        id={props.metadata.id}
-        history={props.history}
-        model={props.model}
-        notifications={props.notifications}
-        title={props.metadata.title}
+        forkedId={props.metadata.id}
+        forkedTitle={props.metadata.title}
         toggleModal={null}
-        user={props.user}
       />
     </Col>
   </Row>;

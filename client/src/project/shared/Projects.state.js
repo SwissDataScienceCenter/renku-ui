@@ -23,8 +23,8 @@
  *  Projects controller code.
  */
 
-import { ACCESS_LEVELS } from "../../api-client";
 import { computeVisibilities } from "../../utils/helpers/HelperFunctions";
+import { formatProjectMetadata } from "../../utils/helpers/ProjectFunctions";
 
 
 class ProjectsCoordinator {
@@ -34,44 +34,7 @@ class ProjectsCoordinator {
   }
 
   _starredProjectMetadata(project) {
-    let accessLevel = 0;
-    // check permissions from v4 API
-    if (project?.permissions) {
-      if (project?.permissions?.project_access)
-        accessLevel = Math.max(accessLevel, project.permissions.project_access.access_level);
-      if (project?.permissions?.group_access)
-        accessLevel = Math.max(accessLevel, project.permissions.group_access.access_level);
-    }
-    // check permissions from GraphQL -- // ? REF: https://docs.gitlab.com/ee/user/permissions.html
-    else if (project?.userPermissions) {
-      if (project.userPermissions.removeProject)
-        accessLevel = Math.max(accessLevel, ACCESS_LEVELS.OWNER);
-      else if (project.userPermissions.adminProject)
-        accessLevel = Math.max(accessLevel, ACCESS_LEVELS.MAINTAINER);
-      else if (project.userPermissions.pushCode)
-        accessLevel = Math.max(accessLevel, ACCESS_LEVELS.DEVELOPER);
-    }
-
-    // Project id can be a number e.g. 1234 or a string with the format: gid://gitlab/Project/1234
-    const projectFullId = typeof (project.id) === "number" ? [] : project.id.split("/");
-    const projectId = projectFullId.length > 1 ? projectFullId[projectFullId.length - 1] : project.id;
-
-    return {
-      id: projectId,
-      name: project.name,
-      path_with_namespace: project.path_with_namespace ?? project?.fullPath,
-      description: project.description,
-      tag_list: project.tag_list,
-      star_count: project.star_count,
-      owner: project.owner,
-      last_activity_at: project.last_activity_at,
-      access_level: accessLevel,
-      http_url_to_repo: project.http_url_to_repo ? project.http_url_to_repo : project.httpUrlToRepo,
-      namespace: project.namespace,
-      path: project.path,
-      avatar_url: project.avatar_url,
-      visibility: project.visibility
-    };
+    return formatProjectMetadata(project);
   }
 
   async getFeatured() {
