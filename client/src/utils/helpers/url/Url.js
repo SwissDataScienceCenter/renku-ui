@@ -470,7 +470,7 @@ function isSessionUrl(url) {
   const isNewSessionUrl = /\/sessions\/new/g.exec(url);
   const isShowSessionUrl = /\/sessions\/show\//g.exec(url);
   const endUrl = /\w+$/g.exec(url);
-  return isNewSessionUrl?.length || isShowSessionUrl?.length || (endUrl && endUrl[0] === "sessions");
+  return isNewSessionUrl?.length > 0 || isShowSessionUrl?.length > 0 || (endUrl && endUrl[0] === "sessions");
 }
 
 export { Url, getSearchParams, isSessionUrl };
