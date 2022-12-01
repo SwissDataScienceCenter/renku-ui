@@ -38,11 +38,11 @@ class APIClient {
    * Fetch session status
    *
    */
-  async sessionStatus(authHeathers: Record<string, string>): Promise<Response> {
+  async getSessionStatus(authHeathers: Headers): Promise<Response> {
     const sessionsUrl = `${this.gatewayUrl}/notebooks/servers`;
     logger.info(`Fetching session status `, sessionsUrl);
     const options = {
-      headers: new Headers(authHeathers),
+      headers: authHeathers,
     };
     return this.clientFetch(sessionsUrl, options, RETURN_TYPES.json);
   }
@@ -93,20 +93,6 @@ class APIClient {
       });
     }
 
-    // add anon-id to cookies when the proper header is set.
-    const anonId = options.headers.get(config.auth.cookiesAnonymousKey);
-    const newCookies: Array<string> = [];
-    if (anonId) {
-      // ? the anon-id MUST start with a letter to prevent k8s limitations
-      const fullAnonId = config.auth.anonPrefix + anonId;
-      newCookies.push(
-        serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)
-      );
-    }
-    if (newCookies.length > 0)
-      options.headers.set("cookie", newCookies.join("; "));
-
-    // This is the default behavior for most browsers.
     options["credentials"] = "same-origin";
     const request = new Request(urlObject.toString());
 

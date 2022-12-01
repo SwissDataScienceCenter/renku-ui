@@ -216,7 +216,6 @@ class App extends Component {
     setTimeout(
       () => {
         this.webSocket = setupWebSocket(webSocketUrl, this.props.model, getLocation, this.props.client);
-        this.webSocket?.send(JSON.stringify(new WsMessage({}, "pullSessionStatus")));
         return;
       },
       1000

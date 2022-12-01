@@ -373,7 +373,7 @@ function getWsClientMessageHandler(
  */
 async function getAuthHeaders(
   authenticator: Authenticator, sessionId: string, infoPrefix = ""
-): Promise<WsMessage | Record<string, string>> {
+): Promise<WsMessage | Headers> {
   try {
     const authHeaders = await wsRenkuAuth(authenticator, sessionId);
     if (!authHeaders)

@@ -49,9 +49,9 @@ function sendMessage(data: string, channel: Channel) {
 }
 
 function heartbeatRequestSessionStatus
-(channel: Channel, apiClient: APIClient, authHeathers: Record<string, string>): void {
+(channel: Channel, apiClient: APIClient, authHeathers: Headers): void {
   const previousStatuses = channel.data.get("sessionStatus") as SessionsResult;
-  apiClient.sessionStatus(authHeathers)
+  apiClient.getSessionStatus(authHeathers)
     .then((response) => {
       const statusFetched = response as unknown as SessionsResult;
       const servers = statusFetched?.servers ?? {};
