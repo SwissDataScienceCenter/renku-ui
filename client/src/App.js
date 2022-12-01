@@ -50,7 +50,6 @@ import { AddDataset } from "./dataset/addtoproject/DatasetAdd.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
-import { WsMessage } from "./websocket/WsMessages";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize ? "container-xxl py-4 mt-2 renku-container" : "w-100";
