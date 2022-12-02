@@ -19,6 +19,7 @@
 import { checkWsServerMessage, WsMessage, WsServerMessage } from "./WsMessages";
 import { handleUserInit, handleUserUiVersion, handleUserError } from "./handlers/userHandlers";
 import { handleKgActivationStatus } from "./handlers/kgActivationStatusHandler";
+import { InactiveKgProjects } from "../features/inactiveKgProjects/InactiveKgProjects";
 
 
 const timeoutIntervalMs = 45 * 1000; // ? set to 0 to disable
@@ -104,12 +105,33 @@ function setupWebSocket(webSocketUrl: string, fullModel: any, notifications: any
     }
   }
 
+  function resumePendingKgActivation(model: any, socket: any) {
+    const state = model?.reduxStore?.getState();
+    // kgInactiveProjects
+    const projectsInProgress = state?.kgInactiveProjects;
+    const projectIds = projectsInProgress?.filter((project: InactiveKgProjects) => {
+      return project.progressActivation !== null && project.progressActivation !== 100;
+    }). map( (p: InactiveKgProjects) => p.id );
+
+    if (projectIds.length) {
+      const message = JSON.stringify(new WsMessage({ projects: projectIds }, "pullKgActivationStatus"));
+      socket.send(message);
+    }
+  }
+
+  function resumePendingProcesses(model: any, socket: any) {
+    resumePendingKgActivation(model, socket);
+  }
+
   webSocket.onopen = (status) => {
     // start pinging regularly when the connection is open
     const target = status.target as WebSocket;
     const webSocketOpen = !!(target && target["readyState"]);
-    if (webSocketOpen)
+    if (webSocketOpen) {
       model.setObject({ open: true, error: false, lastReceived: null });
+      // resume running processes
+      resumePendingProcesses(fullModel, webSocket);
+    }
 
     // Start a ping loop -- this should keep the connection alive
     if (timeoutIntervalMs)
