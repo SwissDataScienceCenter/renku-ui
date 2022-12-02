@@ -141,6 +141,7 @@ describe("Url session validation", () => {
     expect(isSessionUrl("projects/namespaceProject/projectName/sessions/show/sessionName")).toBe(true);
     expect(isSessionUrl("projects/datasets")).toBe(false);
     expect(isSessionUrl("projects/sessions")).toBe(true);
+    expect(isSessionUrl("projects/namespaceProject/session")).toBe(false);
   });
 });
 

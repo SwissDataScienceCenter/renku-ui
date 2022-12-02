@@ -21,6 +21,7 @@ import { Channel } from "../index";
 import APIClient from "../../api-client";
 import * as util from "util";
 import { WsMessage } from "../WsMessages";
+import { simpleHash, sortObjectProperties } from "../../utils";
 
 interface SessionsResult {
   servers: Record<string, Session>;
@@ -50,7 +51,7 @@ function sendMessage(data: string, channel: Channel) {
 
 function heartbeatRequestSessionStatus
 (channel: Channel, apiClient: APIClient, authHeathers: Headers): void {
-  const previousStatuses = channel.data.get("sessionStatus") as SessionsResult;
+  const previousStatuses = channel.data.get("sessionStatus") as string;
   apiClient.getSessionStatus(authHeathers)
     .then((response) => {
       const statusFetched = response as unknown as SessionsResult;
@@ -61,10 +62,12 @@ function heartbeatRequestSessionStatus
         cleanStatus[key] = { status: servers[key].status };
       });
 
+      const sortedObject = sortObjectProperties(cleanStatus);
+      const currentHashedSessions = simpleHash(JSON.stringify(sortedObject)).toString();
       // only send message when something change
-      if (!util.isDeepStrictEqual(previousStatuses, cleanStatus)) {
+      if (!util.isDeepStrictEqual(previousStatuses, currentHashedSessions)) {
         sendMessage("true", channel);
-        channel.data.set("sessionStatus", cleanStatus);
+        channel.data.set("sessionStatus", currentHashedSessions);
       }
     })
     .catch((e) => {

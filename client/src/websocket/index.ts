@@ -108,19 +108,18 @@ function setupWebSocket(webSocketUrl: string, fullModel: StateModel, getLocation
   }
 
   function startPullingSessionStatus(targetWebSocket: WebSocket) {
-    if (model.get("open") && targetWebSocket.readyState === targetWebSocket.OPEN)
-      targetWebSocket.send(JSON.stringify(new WsMessage({}, "pullSessionStatus")));
+    targetWebSocket.send(JSON.stringify(new WsMessage({}, "pullSessionStatus")));
   }
 
   webSocket.onopen = (status) => {
     // start pinging regularly when the connection is open
     const target = status.target as WebSocket;
     const webSocketOpen = target && target["readyState"] ? true : false;
-    if (webSocketOpen)
+    if (webSocketOpen) {
       model.setObject({ open: true, error: false, lastReceived: null });
-
-    // request session status
-    startPullingSessionStatus(webSocket);
+      // request session status
+      startPullingSessionStatus(webSocket);
+    }
 
     // Start a ping loop -- this should keep the connection alive
     if (timeoutIntervalMs)
