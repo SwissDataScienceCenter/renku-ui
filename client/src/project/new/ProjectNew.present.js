@@ -52,10 +52,10 @@ import AppContext from "../../utils/context/appContext";
 import "./Project.style.css";
 
 function ForkProject(props) {
-  const { error, fork, forkedTitle, forking, forkUrl, namespaces, projects, toggleModal } = props;
+  const { error, fork, forkedTitle, forking, forkUrl, namespaces, isFetchingProjects, toggleModal } = props;
 
   const fetching = {
-    projects: projects.fetching,
+    projects: isFetchingProjects,
     namespaces: namespaces.fetching
   };
 

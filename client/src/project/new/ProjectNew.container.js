@@ -25,17 +25,21 @@
 
 import React, { Component, useEffect, useState, useRef } from "react";
 // TODO: switch to useSelector
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { connect, useSelector } from "react-redux";
+import { useLocation, withRouter } from "react-router-dom";
+import { useHistory } from "react-router";
 
 import { NewProject as NewProjectPresent, ForkProject as ForkProjectPresent } from "./ProjectNew.present";
 import { NewProjectCoordinator, validateTitle, checkTitleDuplicates } from "./ProjectNew.state";
 import { ProjectsCoordinator } from "../shared";
-import { gitLabUrlFromProfileUrl, slugFromTitle, refreshIfNecessary } from "../../utils/helpers/HelperFunctions";
+import { gitLabUrlFromProfileUrl, slugFromTitle } from "../../utils/helpers/HelperFunctions";
 import { Url, getSearchParams } from "../../utils/helpers/url";
 import { atobUTF8, btoaUTF8 } from "../../utils/helpers/Encoding";
 import { newProjectSchema } from "../../model/RenkuModels";
 import AppContext from "../../utils/context/appContext";
+import useGetNamespaces from "../../utils/customHooks/UseGetNamespaces";
+import useGetUserProjects from "../../utils/customHooks/UseGetProjects";
+import useGetVisibilities from "../../utils/customHooks/UseGetVisibilities";
 
 const CUSTOM_REPO_NAME = "Custom";
 
@@ -86,85 +90,10 @@ function addForkNotification(notifications, url, info, startingLocation, success
 }
 
 
-/**
- * This component is needed to map properties from the redux store and keep local states cleared by the
- * mapping function. We can remove it when we switch to the useSelector hook
- *
- * @param {object} props.client - client object
- * @param {object} props.model - redux model
- * @param {object} props.history - react history object
- * @param {object} props.notifications - notifications object
- * @param {string} props.title - reference project title
- * @param {number} props.id - reference project id
- * @param {function} props.toggleModal - function to toggle the modal on and off
- */
-class ForkProjectMapper extends Component {
-  constructor(props) {
-    super(props);
-    this.model = props.model;
-    this.projectsCoordinator = new ProjectsCoordinator(props.client, this.model.subModel("projects"));
-
-    this.handlers = {
-      getNamespaces: this.getNamespaces.bind(this),
-      getProjects: this.getProjects.bind(this),
-      getVisibilities: this.getVisibilities.bind(this),
-    };
-  }
-
-  componentDidMount() {
-    // fetch if not yet available and refresh if older than 10 seconds
-    const currentState = this.model.get("projects");
-    refreshIfNecessary(
-      currentState.namespaces.fetching, currentState.namespaces.fetched, () => { this.getNamespaces(); }
-    );
-    refreshIfNecessary(
-      currentState.featured.fetching, currentState.featured.fetched, () => { this.getProjects(); }
-    );
-  }
-
-  async getNamespaces() {
-    return await this.projectsCoordinator.getNamespaces();
-  }
-
-  async getProjects() {
-    return await this.projectsCoordinator.getFeatured();
-  }
-
-  async getVisibilities(namespace) {
-    return await this.projectsCoordinator.getVisibilities(namespace, this.props.projectVisibility);
-  }
-
-  render() {
-    const { client, id, history, notifications, title, toggleModal } = this.props;
-
-    // ? This is a quickfix to prevent re-drawing the component.
-    // ? Projects and namespaces should be mapped through `connect`
-    // ? Previous state: https://github.com/SwissDataScienceCenter/renku-ui/pull/2144
-    const namespaces = this.model.get("projects.namespaces");
-    const tp = this.model.get("projects.featured");
-    const projects = { fetched: tp.fetched, fetching: tp.fetching, list: tp.member };
-    const user = { logged: this.props.user.logged, username: this.props.user.data.username };
-
-    return (
-      <ForkProject
-        client={client}
-        forkedId={id}
-        forkedTitle={title}
-        handlers={this.handlers}
-        history={history}
-        namespaces={namespaces}
-        notifications={notifications}
-        projects={projects}
-        toggleModal={toggleModal}
-        user={user}
-      />
-    );
-  }
-}
-
-
 function ForkProject(props) {
-  const { forkedTitle, handlers, namespaces, projects, toggleModal, user } = props;
+  const { client, forkedId, forkedTitle, toggleModal } = props;
+  const namespaces = useGetNamespaces();
+  const { projectsMember, isFetchingProjects } = useGetUserProjects();
 
   const [title, setTitle] = useState(forkedTitle);
   const [namespace, setNamespace] = useState("");
@@ -179,13 +108,26 @@ function ForkProject(props) {
   const [forkVisibilityError, setForkVisibilityError] = useState(null);
   const [forkUrl, setForkUrl] = useState(null);
 
+  const { availableVisibilities, isFetchingVisibilities } = useGetVisibilities(fullNamespace);
+  const { logged, data: { username } = null } = useSelector( (state) => state.stateModel.user);
+
+  const history = useHistory();
+  const location = useLocation();
+
+  useEffect(()=> {
+    if (!logged) {
+      const loginUrl = Url.get(Url.pages.login.link, { pathname: location.pathname });
+      history.push(loginUrl);
+    }
+  }, []); //eslint-disable-line
+
   // Monitor changes to projects list
   useEffect(() => {
-    if (!projects.list || !projects.list.length)
+    if (!projectsMember || !projectsMember.length)
       setProjectsPaths([]);
     else
-      setProjectsPaths(projects.list.map(project => project.path_with_namespace.toLowerCase()));
-  }, [projects.list]);
+      setProjectsPaths(projectsMember.map(project => project.path_with_namespace.toLowerCase()));
+  }, [projectsMember]);
 
   // Monitor changes to title, namespace or projects slug list to check for errors
   useEffect(() => {
@@ -218,21 +160,17 @@ function ForkProject(props) {
       setVisibility(null);
 
       // calculate visibilities values
-      const availableVisibilities = await handlers.getVisibilities(namespace);
       setVisibilities(availableVisibilities ?? null);
       setVisibility(availableVisibilities?.default ?? null);
     };
-    if (fullNamespace) {
+    if (fullNamespace && !isFetchingVisibilities) {
       getVisibilities(fullNamespace);
     }
     else {
       setVisibilities(null);
       setVisibility(null);
     }
-    // the useEffect uses the function handlers.getVisibility,
-    // if we include it as a dependency the effect will be trigger many times
-    // since the function changes in each rendering.
-  }, [fullNamespace]); // eslint-disable-line
+  }, [fullNamespace, availableVisibilities, isFetchingVisibilities]); // eslint-disable-line
 
   // Monitor component mounted state -- helper to prevent illegal action when the fork takes long
   const mounted = useRef(false);
@@ -246,7 +184,6 @@ function ForkProject(props) {
   const fork = async () => {
     // TODO: re-add notifications after #1585 is addressed-- for some reason the project's sub-components
     // TODO: ("mrView", "issuesVIew", ...) trigger a re-render after adding a notification, losing local states.
-    const { client, forkedId, history } = props;
 
     const path = slugFromTitle(title, true);
     // const startingLocation = history.location.pathname;
@@ -360,7 +297,7 @@ function ForkProject(props) {
   };
 
   const adjustedHandlers = {
-    getNamespaces: handlers.getNamespaces,
+    getNamespaces: namespaces?.refetchNamespaces,
     setNamespace: setNamespaceP,
     setProperty: setPropertyP
   };
@@ -377,12 +314,13 @@ function ForkProject(props) {
       handlers={adjustedHandlers}
       namespace={namespace}
       namespaces={namespaces}
-      projects={projects}
+      projects={projectsMember}
       title={title}
       toggleModal={toggleModal}
-      user={user}
+      user={{ logged, username }}
       visibilities={visibilities}
       visibility={visibility}
+      isFetchingProjects={isFetchingProjects}
     />
   );
 }
@@ -608,7 +546,7 @@ class NewProject extends Component {
 NewProject.contextType = AppContext;
 const NewProjectContainer = withRouter(NewProject);
 
-export { NewProjectContainer as NewProject, CUSTOM_REPO_NAME, ForkProjectMapper as ForkProject };
+export { NewProjectContainer as NewProject, CUSTOM_REPO_NAME, ForkProject };
 
 // test only
 export { getDataFromParams };

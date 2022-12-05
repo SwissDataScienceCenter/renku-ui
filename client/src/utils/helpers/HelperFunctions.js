@@ -375,7 +375,7 @@ function toCapitalized(aString) {
 
 /**
  * computeVisibilities.
- * @param {[string]} options
+ * @param {string[]} options
  */
 const computeVisibilities = (options) => {
   if (options.includes("private")) {
