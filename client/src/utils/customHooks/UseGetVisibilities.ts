@@ -18,7 +18,7 @@
 
 import { useEffect, useState } from "react";
 import { computeVisibilities } from "../helpers/HelperFunctions";
-import { useGroupByPathQuery } from "../../features/projects/ProjectApi";
+import { useGetGroupByPathQuery } from "../../features/projects/ProjectApi";
 
 /**
  *  useGetVisibilities custom hook
@@ -28,7 +28,7 @@ import { useGroupByPathQuery } from "../../features/projects/ProjectApi";
  */
 function useGetVisibilities(namespace: any) {
   const { data, isFetching, isLoading } =
-    useGroupByPathQuery(namespace?.full_path, { skip: !namespace || namespace?.kind !== "group" });
+    useGetGroupByPathQuery(namespace?.full_path, { skip: !namespace || namespace?.kind !== "group" });
   const [availableVisibilities, setAvailableVisibilities] = useState<any>(null);
 
   useEffect(() => {

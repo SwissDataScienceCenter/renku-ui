@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { useMemberProjectsQuery } from "../../features/projects/ProjectApi";
+import { useGetMemberProjectsQuery } from "../../features/projects/ProjectApi";
 
 /**
  *  useGetProjects custom hook
@@ -25,11 +25,11 @@ import { useMemberProjectsQuery } from "../../features/projects/ProjectApi";
  *  UseGetProjects.ts
  *  hook to fetch member projects
  */
-function useGetProjects() {
+function useGetUserProjects() {
   const [projectsMember, setProjectsMembers] = useState<any[]>([]);
   const [endCursor, setEndCursor] = useState("");
   const [isFetchingProjects, setIsFetchingProjects] = useState(false);
-  const { data, isFetching } = useMemberProjectsQuery({ per_page: 100, endCursor });
+  const { data, isFetching } = useGetMemberProjectsQuery({ per_page: 100, endCursor });
 
   // continue fetching if there is more data
   useEffect(() => {
@@ -57,4 +57,4 @@ function useGetProjects() {
   return { projectsMember, isFetchingProjects };
 }
 
-export default useGetProjects;
+export default useGetUserProjects;

@@ -35,16 +35,16 @@ export const projectApi = createApi({
   reducerPath: "projects",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
   endpoints: (builder) => ({
-    namespaces: builder.query({
+    getNamespaces: builder.query({
       query: (arg) => ({ url: "/namespaces", method: "GET" }),
     }),
-    groupByPath: builder.query<any, string>({
+    getGroupByPath: builder.query<any, string>({
       query: (projectPath) => {
         const urlEncodedPath = encodeURIComponent(projectPath);
         return { url: `/groups/${urlEncodedPath}`, method: "GET" };
       }
     }),
-    memberProjects: builder.query<any, QueryParams>({
+    getMemberProjects: builder.query<any, QueryParams>({
       query: (queryParams: QueryParams ) => {
         const params = { "variables": null, "operationName": null };
         let query = `{
@@ -108,4 +108,4 @@ export const projectApi = createApi({
 
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
-export const { useNamespacesQuery, useGroupByPathQuery, useMemberProjectsQuery } = projectApi;
+export const { useGetNamespacesQuery, useGetGroupByPathQuery, useGetMemberProjectsQuery } = projectApi;

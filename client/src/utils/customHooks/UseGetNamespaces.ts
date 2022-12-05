@@ -17,7 +17,7 @@
  */
 
 
-import { useNamespacesQuery } from "../../features/projects/ProjectApi";
+import { useGetNamespacesQuery } from "../../features/projects/ProjectApi";
 
 /**
  *  useGetNamespaces custom hook
@@ -26,7 +26,7 @@ import { useNamespacesQuery } from "../../features/projects/ProjectApi";
  *  hook to fetch Namespaces
  */
 function useGetNamespaces() {
-  const { data, isFetching, isLoading, refetch } = useNamespacesQuery({});
+  const { data, isFetching, isLoading, refetch } = useGetNamespacesQuery({});
 
   return {
     list: data ?? [],

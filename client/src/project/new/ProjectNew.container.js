@@ -38,7 +38,7 @@ import { atobUTF8, btoaUTF8 } from "../../utils/helpers/Encoding";
 import { newProjectSchema } from "../../model/RenkuModels";
 import AppContext from "../../utils/context/appContext";
 import useGetNamespaces from "../../utils/customHooks/UseGetNamespaces";
-import useGetProjects from "../../utils/customHooks/UseGetProjects";
+import useGetUserProjects from "../../utils/customHooks/UseGetProjects";
 import useGetVisibilities from "../../utils/customHooks/UseGetVisibilities";
 
 const CUSTOM_REPO_NAME = "Custom";
@@ -93,7 +93,7 @@ function addForkNotification(notifications, url, info, startingLocation, success
 function ForkProject(props) {
   const { client, forkedId, forkedTitle, toggleModal } = props;
   const namespaces = useGetNamespaces();
-  const { projectsMember, isFetchingProjects } = useGetProjects();
+  const { projectsMember, isFetchingProjects } = useGetUserProjects();
 
   const [title, setTitle] = useState(forkedTitle);
   const [namespace, setNamespace] = useState("");
