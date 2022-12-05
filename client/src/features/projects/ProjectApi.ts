@@ -36,7 +36,7 @@ export const projectApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
   endpoints: (builder) => ({
     getNamespaces: builder.query({
-      query: (arg) => ({ url: "/namespaces", method: "GET" }),
+      query: (ownerOnly?: boolean) => ({ url: `/namespaces${ownerOnly ? "?owned_only=true" : ""}`, method: "GET" }),
     }),
     getGroupByPath: builder.query<any, string>({
       query: (projectPath) => {

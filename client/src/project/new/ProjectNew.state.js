@@ -131,9 +131,11 @@ class NewProjectCoordinator {
    * Set newProject.automated object with new content -- either the provided data or an error
    * @param {object} data - data to pre-fill
    * @param {object} [error] - error generated while parsing the data
-   * @param {ProjectsCoordinator} [projectCoordinator] - to use some project coordinator functions
+   * @param {object} [namespaces] - up-to-date namespaces object
+   * @param {object} [availableVisibilities] - up-to-date visibilities object
+   * @param {object} [setNamespace] - function to set namespace, it is necessary to calculate visibilities
    */
-  setAutomated(data, error, projectCoordinator) {
+  setAutomated(data, error, namespaces, availableVisibilities, setNamespace) {
     let automated = newProjectSchema.createInitialized().automated;
     if (error) {
       automated = {
@@ -153,7 +155,7 @@ class NewProjectCoordinator {
         data: { ...automated.data, ...data }
       };
       // ? passing the content is more efficient than invoking the `model.set` and then the function.
-      this.autoFill(automated, projectCoordinator);
+      this.autoFill(automated, namespaces, availableVisibilities, setNamespace);
     }
   }
 
@@ -161,39 +163,42 @@ class NewProjectCoordinator {
    * Get all the auto-fill content and fill in the provided data.
    * @param {object} [automatedObject] - pass the up-to-date `automated` object to optimize performance.
    * @param {ProjectsCoordinator} [projectsCoordinator] - fetch visibilities
+   * @param {object} [namespaces] - up-to-date namespaces
+   * @param {object} [availableVisibilities] - available visibilities
+   * @param {function} [setNamespace] - function to set a new namespace, it is necessary to calculate the visibilities
    */
-  async autoFill(automatedObject, projectsCoordinator) {
+  async autoFill(automatedObject, namespaces, availableVisibilities, setNamespace) {
     let automated = automatedObject ?
-      automatedObject :
-      newProjectSchema.createInitialized().automated;
+      automatedObject : newProjectSchema.createInitialized().automated;
     let availableVariables = [];
     let visibilities;
+    const { data } = automated;
+    let getDataAttempts = 0;
+    let maxAttempts = 60;
 
-    // Step 1: wait for templates and namespaces to be fetched
+    // Step 1: wait for templates to be fetched
     automated.step = 1;
     this.model.set("automated", { ...automated });
     // ? since this is triggered elsewhere, we need to use ugly timeouts here
     const intervalLength = 1;
-    let namespaces = false, templates = false;
+    let templates = false;
     do {
       if (this.model.get("automated.manuallyReset")) return;
-
-      // check namespaces availability
-      if (!namespaces) {
-        const namespacesStatus = this.projectsModel.get("namespaces");
-        if (namespacesStatus.fetched && !namespacesStatus.fetching)
-          namespaces = namespacesStatus.list;
-      }
       // check templates availability
       if (!templates) {
+        getDataAttempts++;
         const templatesStatus = this.model.get("templates");
         if (templatesStatus.fetched && !templatesStatus.fetching)
           templates = templatesStatus.all;
       }
-
       await sleep(intervalLength);
-    } while (!namespaces || !templates);
-    const { data } = automated;
+    } while (!templates && getDataAttempts <= maxAttempts);
+    if (!templates) {
+      automated.error = `Fetching templates takes too long.`;
+      automated.finished = true;
+      this.model.set("automated", { ...automated });
+      return;
+    }
 
     // Step 2: Set title, namespace, template (if no url/ref). Start fetching visibilities
     if (this.model.get("automated.manuallyReset")) return;
@@ -210,8 +215,7 @@ class NewProjectCoordinator {
     }
     if (data.namespace) {
       // Check if the namespace is available
-      const namespaces = this.projectsModel.get("namespaces.list");
-      const namespaceAvailable = namespaces.find(namespace => namespace.full_path === data.namespace);
+      const namespaceAvailable = namespaces?.list?.find(namespace => namespace.full_path === data.namespace);
       if (!namespaceAvailable) {
         automated.warnings = [
           ...automated.warnings,
@@ -221,9 +225,7 @@ class NewProjectCoordinator {
       else {
         this.setProperty("namespace", data.namespace); // full path
         newInput.namespace = data.namespace;
-        const visibilitiesByNamespace = await projectsCoordinator.getVisibilities(namespaceAvailable);
-        visibilities = visibilitiesByNamespace.visibilities;
-        this.setVisibilities(visibilitiesByNamespace, namespaceAvailable);
+        setNamespace(namespaceAvailable); // this will trigger to set visibilities according to namespace
       }
     }
     if (data.template && !data.url) {
@@ -277,6 +279,7 @@ class NewProjectCoordinator {
       if (!visibilities) {
         // wait for namespace visibilities to be available
         let namespace = null;
+        getDataAttempts = 0;
         do {
           // check namespaces availability
           if (this.model.get("automated.manuallyReset")) return;
@@ -285,8 +288,15 @@ class NewProjectCoordinator {
             if (namespace.fetched && !namespace.fetching)
               visibilities = namespace.visibilities;
           }
+          getDataAttempts++;
           await sleep(intervalLength);
-        } while (!visibilities);
+        } while (!visibilities && getDataAttempts < maxAttempts);
+      }
+      if (!visibilities) {
+        automated.error = `Fetching visibilities takes too long.`;
+        automated.finished = true;
+        this.model.set("automated", { ...automated });
+        return;
       }
       if (visibilities?.includes(data.visibility)) {
         this.setProperty("visibility", data.visibility);
@@ -339,7 +349,6 @@ class NewProjectCoordinator {
 
   setProperty(property, value) {
     const currentInput = this.model.get("input");
-
     // check if the value needs to be updated
     if (currentInput[property] === value)
       return;
@@ -359,9 +368,8 @@ class NewProjectCoordinator {
     if (property === "template")
       updateObj.input.variables = { $set: this._setTemplateVariables(currentInput, value) };
 
-    // validate current state and update model
-    updateObj["meta"] = { validation: this.validate(updateObj.input) };
     this.model.setObject(updateObj);
+    return updateObj;
   }
 
   getSlugAndReset() {
@@ -523,10 +531,9 @@ class NewProjectCoordinator {
         }
     };
 
-    // save the model and invoke the normal setProperty
+    // save the model
     this.model.setObject(updateObject);
-    this.setProperty("visibility", availableVisibilities.default);
-    return availableVisibilities.visibilities;
+    return availableVisibilities;
   }
 
   /**
@@ -673,21 +680,19 @@ class NewProjectCoordinator {
    * @param {Object} [newInput] - input object containing only the updated fields.
    * @param {Object} [newTemplates] - templates object containing only the updated fields.
    * @param {bool} [update] - set true to update the values inside the function.
-   * @param {Object} [projectsObject] - optionally provide the projects object
+   * @param {Object} [projects] - optionally provide the projects object
+   * @param {Object} [namespaces] - up-to-date namespaces object
+   * @param {boolean} [isFetchingVisibilities] - to indicate if the visibilities are ready
    */
-  validate(newInput, newTemplates, update, projectsObject) {
+  validate(newInput, newTemplates, update, projects,
+    namespaces, isFetchingVisibilities) {
     // get all the necessary data
     let model = this.model.get();
     let { templates, input, meta } = model;
-    let projects = null;
-    if (projectsObject)
-      projects = projectsObject;
-    else if (this.projectsModel)
-      projects = this.projectsModel.get("");
-    const projectsPaths = projects && projects.featured.member && projects.featured.member.length ?
-      projects.featured.member.map(project => project.path_with_namespace.toLowerCase()) :
-      [];
 
+    const projectsPaths = projects && projects?.members?.length ?
+      projects.members?.map(project => project.path_with_namespace.toLowerCase()) :
+      [];
     // assign input changes-to-be
     if (newInput)
       input = Object.assign({}, input, newInput);
@@ -701,10 +706,13 @@ class NewProjectCoordinator {
 
     // check warnings (temporary problems)
     let warnings = {};
-    if (projects && projects.namespaces.fetching)
+    if (namespaces && namespaces.fetching)
       warnings["namespace"] = "Fetching namespaces...";
 
-    if (meta.namespace.fetching)
+    if (projects && projects.fetching)
+      warnings["title"] = "Fetching projects to prevent duplicates...";
+
+    if (meta.namespace.fetching || isFetchingVisibilities)
       warnings["visibility"] = "Verifying visibility constraints...";
 
     if (templates.fetching)

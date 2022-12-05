@@ -31,16 +31,17 @@ import { Button, DropdownItem } from "../../../utils/ts-wrappers";
 import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
 
 interface SubmitFormButtonProps {
-  input: NewProjectInputs;
-  meta: NewProjectMeta;
-  importingDataset: boolean;
+  createDataAvailable: boolean;
   handlers: {
     createEncodedUrl: Function;
     onSubmit: MouseEventHandler<HTMLButtonElement>;
   };
+  importingDataset: boolean;
+  input: NewProjectInputs;
+  meta: NewProjectMeta;
 }
 
-const SubmitFormButton = ({ input, meta, importingDataset, handlers }: SubmitFormButtonProps) => {
+const SubmitFormButton = ({ createDataAvailable, handlers, input, importingDataset, meta }: SubmitFormButtonProps) => {
   const [showModal, setShotModal] = useState(false);
   const toggleModal = () => {
     setShotModal((showModal) => !showModal);
@@ -56,7 +57,8 @@ const SubmitFormButton = ({ input, meta, importingDataset, handlers }: SubmitFor
   );
 
   const createProject = (
-    <Button id="create-new-project" color="secondary" data-cy="create-project-button" onClick={handlers.onSubmit}>
+    <Button id="create-new-project" color="secondary" data-cy="create-project-button"
+      disabled={!createDataAvailable} onClick={handlers.onSubmit}>
       {" "}
       Create project
     </Button>

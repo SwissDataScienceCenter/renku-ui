@@ -29,7 +29,7 @@ function useGetUserProjects() {
   const [projectsMember, setProjectsMembers] = useState<any[]>([]);
   const [endCursor, setEndCursor] = useState("");
   const [isFetchingProjects, setIsFetchingProjects] = useState(false);
-  const { data, isFetching } = useGetMemberProjectsQuery({ per_page: 100, endCursor });
+  const { data, isFetching, refetch } = useGetMemberProjectsQuery({ per_page: 100, endCursor });
 
   // continue fetching if there is more data
   useEffect(() => {
@@ -49,12 +49,12 @@ function useGetUserProjects() {
     if (isFetching)
       return;
     if (endCursor === "")
-      setProjectsMembers(data.data);
+      setProjectsMembers(data?.data);
     else
       setProjectsMembers([...projectsMember, ...data.data]);
   }, [ data?.data, isFetching, endCursor ]); //eslint-disable-line
 
-  return { projectsMember, isFetchingProjects };
+  return { projectsMember, isFetchingProjects, refetchUserProjects: refetch };
 }
 
 export default useGetUserProjects;
