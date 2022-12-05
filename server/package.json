@@ -11,7 +11,7 @@
     "dev": "concurrently \"npm:build:dev\" \"npm:start:dev\"",
     "dev-debug": "concurrently \"npm:build:dev\" \"npm:start:dev-debug\"",
     "dev-debug-brk": "concurrently \"npm:build:dev\" \"npm:start:dev-debug-brk\"",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .ts --max-warnings=0",
     "prestart": "npm run build",
     "start": "node .",
     "start:dev": "nodemon dist/src/index.js",

@@ -79,7 +79,7 @@
     "build": "REACT_APP_UI_DEV_MODE=false craco --max_old_space_size=4096 build",
     "test": "craco test",
     "eject": "craco eject",
-    "lint": "eslint --max-warnings=0 src/",
+    "lint": "eslint . --max-warnings=0",
     "lint-fix": "eslint src/ --fix",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"

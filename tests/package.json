@@ -11,7 +11,7 @@
     "e2e:local-headless": "start-server-and-test start:local 3000 cypress:local-headless",
     "e2e:run": "cypress run --e2e --browser=chrome",
     "e2e:headless": "cypress run --e2e --browser=chrome --headless",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .ts --max-warnings=0",
     "start:local": "npm --prefix ../client run start"
   },
   "author": "",
