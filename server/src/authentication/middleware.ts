@@ -90,7 +90,8 @@ function renkuAuth(authenticator: Authenticator) {
   };
 }
 
-async function wsRenkuAuth(authenticator: Authenticator, sessionId: string): Promise<WsMessage | Headers> {
+async function wsRenkuAuth(authenticator: Authenticator, sessionId: string):
+  Promise<WsMessage | Record<string, string>> {
   let tokens: TokenSet;
   try {
     tokens = await authenticator.getTokens(sessionId, true);
@@ -106,20 +107,14 @@ async function wsRenkuAuth(authenticator: Authenticator, sessionId: string): Pro
 
   if (tokens) {
     const value = config.auth.authHeaderPrefix + tokens.access_token;
-    return new Headers({ [config.auth.authHeaderField]: value });
+    return { [config.auth.authHeaderField]: value };
   }
 
   // Anonymous users
   const fullAnonId = config.auth.anonPrefix + sessionId;
   const authorizationHeader = { [config.auth.cookiesAnonymousKey]: sessionId };
-  const headers = new Headers(authorizationHeader);
-  const newCookies: Array<string> = [];
-  newCookies.push(
-    serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)
-  );
-  if (newCookies.length > 0)
-    headers.set("cookie", newCookies.join("; "));
-  return headers;
+  const newCookies: Array<string> = [serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)];
+  return { ...authorizationHeader, "cookie": newCookies.join("; ") };
 }
 
 export { renkuAuth, addAuthToken, wsRenkuAuth };

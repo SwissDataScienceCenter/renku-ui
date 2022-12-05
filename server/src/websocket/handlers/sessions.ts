@@ -50,7 +50,7 @@ function sendMessage(data: string, channel: Channel) {
 }
 
 function heartbeatRequestSessionStatus
-(channel: Channel, apiClient: APIClient, authHeathers: Headers): void {
+(channel: Channel, apiClient: APIClient, authHeathers: Record<string, string>): void {
   const previousStatuses = channel.data.get("sessionStatus") as string;
   apiClient.getSessionStatus(authHeathers)
     .then((response) => {

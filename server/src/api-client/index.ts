@@ -38,11 +38,11 @@ class APIClient {
    * Fetch session status
    *
    */
-  async getSessionStatus(authHeathers: Headers): Promise<Response> {
+  async getSessionStatus(authHeathers: Record<string, string>): Promise<Response> {
     const sessionsUrl = `${this.gatewayUrl}/notebooks/servers`;
     logger.info(`Fetching session status `, sessionsUrl);
     const options = {
-      headers: authHeathers,
+      headers: new Headers(authHeathers),
     };
     return this.clientFetch(sessionsUrl, options, RETURN_TYPES.json);
   }
