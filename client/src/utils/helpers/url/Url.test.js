@@ -139,9 +139,15 @@ describe("Url session validation", () => {
     expect(isSessionUrl("projects/namespaceProject/projectName")).toBe(false);
     expect(isSessionUrl("projects/namespaceProject/projectName/sessions/new")).toBe(true);
     expect(isSessionUrl("projects/namespaceProject/projectName/sessions/show/sessionName")).toBe(true);
+    expect(isSessionUrl("projects/namespaceProject/sessions")).toBe(false);
+
+    const namespaceSeveralLevels = "namespaceProjectSubGroup1/namespaceProjectSubGroup2/namespaceProjectSubGroup1";
+    expect(isSessionUrl(`projects/${namespaceSeveralLevels}/projectName/sessions`))
+      .toBe(true);
     expect(isSessionUrl("projects/datasets")).toBe(false);
-    expect(isSessionUrl("projects/sessions")).toBe(true);
-    expect(isSessionUrl("projects/namespaceProject/session")).toBe(false);
+    expect(isSessionUrl("projects/sessions")).toBe(false);
+    expect(isSessionUrl("sessions")).toBe(true);
+    expect(isSessionUrl("/")).toBe(false);
   });
 });
 

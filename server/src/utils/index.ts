@@ -147,13 +147,13 @@ function simpleHash(str: string, seed = 0): number {
   return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }
 
-function sortObjectProperties( unsortedObject: Record<string, any> ): Record<string, any> {
+function sortObjectProperties( unsortedObject: Record<string, never> ): Record<string, never> {
   return Object.keys(unsortedObject).sort().reduce(
     (obj, key: string) => {
       obj[key] = unsortedObject[key];
       return obj;
     },
-    {} as Record<string, any>
+    {} as Record<string, never>
   );
 }
 

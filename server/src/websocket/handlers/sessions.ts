@@ -62,7 +62,7 @@ function heartbeatRequestSessionStatus
         cleanStatus[key] = { status: servers[key].status };
       });
 
-      const sortedObject = sortObjectProperties(cleanStatus);
+      const sortedObject = sortObjectProperties(cleanStatus as Record<string, never>);
       const currentHashedSessions = simpleHash(JSON.stringify(sortedObject)).toString();
       // only send message when something change
       if (!util.isDeepStrictEqual(previousStatuses, currentHashedSessions)) {

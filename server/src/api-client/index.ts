@@ -1,7 +1,6 @@
 import config from "../config";
 import fetch, { Headers, Request } from "cross-fetch";
 import logger from "../logger";
-import { serializeCookie } from "../utils";
 
 export const RETURN_TYPES = {
   json: "json",
@@ -40,7 +39,7 @@ class APIClient {
    */
   async getSessionStatus(authHeathers: Record<string, string>): Promise<Response> {
     const sessionsUrl = `${this.gatewayUrl}/notebooks/servers`;
-    logger.info(`Fetching session status `, sessionsUrl);
+    logger.debug(`Fetching session status.`);
     const options = {
       headers: new Headers(authHeathers),
     };

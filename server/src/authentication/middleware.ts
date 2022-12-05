@@ -24,7 +24,6 @@ import logger from "../logger";
 import { Authenticator } from "./index";
 import { getOrCreateSessionId } from "./routes";
 import { serializeCookie } from "../utils";
-import { Headers } from "cross-fetch";
 import { WsMessage } from "../websocket/WsMessages";
 
 
@@ -112,9 +111,8 @@ async function wsRenkuAuth(authenticator: Authenticator, sessionId: string):
 
   // Anonymous users
   const fullAnonId = config.auth.anonPrefix + sessionId;
-  const authorizationHeader = { [config.auth.cookiesAnonymousKey]: sessionId };
   const newCookies: Array<string> = [serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)];
-  return { ...authorizationHeader, "cookie": newCookies.join("; ") };
+  return { "cookie": newCookies.join("; ") };
 }
 
 export { renkuAuth, addAuthToken, wsRenkuAuth };

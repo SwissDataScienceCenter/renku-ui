@@ -470,7 +470,12 @@ function isSessionUrl(url) {
   const isNewSessionUrl = /\/sessions\/new/g.exec(url);
   const isShowSessionUrl = /\/sessions\/show\//g.exec(url);
   const endUrl = /\w+$/g.exec(url);
-  return isNewSessionUrl?.length > 0 || isShowSessionUrl?.length > 0 || (endUrl && endUrl[0] === "sessions");
+  const endInSessions = endUrl?.length > 0 && endUrl[0] === "sessions";
+  const urlParts = url.split("/");
+  // if is a project url and finished with sessions should have a namespace and project name
+  if (urlParts.length && urlParts[0] === "projects" && endInSessions)
+    return urlParts.length >= 4;
+  return isNewSessionUrl?.length > 0 || isShowSessionUrl?.length > 0 || endInSessions;
 }
 
 export { Url, getSearchParams, isSessionUrl };
