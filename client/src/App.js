@@ -213,7 +213,7 @@ class App extends Component {
     // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
     setTimeout(
       () => { this.webSocket = setupWebSocket(webSocketUrl, this.props.model); return; },
-      1000
+      1001
     );
   }
 
