@@ -23,7 +23,7 @@
  *  Tests for Url.
  */
 
-import { UrlRule, Url, getSearchParams } from "./Url";
+import { UrlRule, Url, getSearchParams, isSessionUrl } from "./Url";
 
 
 describe("UrlRule private class", () => {
@@ -130,6 +130,24 @@ describe("UrlRule private class", () => {
     expect(() => rule.get({ ...data, path: 12345 })).toThrow();
     expect(() => rule.get({})).toThrow();
     expect(rule.get(data)).toBe(rule.examples[0]);
+  });
+});
+
+describe("Url session validation", () => {
+  it("Test valid and invalid session url", () => {
+    expect(isSessionUrl("projects/namespaceProject/projectName/sessions")).toBe(true);
+    expect(isSessionUrl("projects/namespaceProject/projectName")).toBe(false);
+    expect(isSessionUrl("projects/namespaceProject/projectName/sessions/new")).toBe(true);
+    expect(isSessionUrl("projects/namespaceProject/projectName/sessions/show/sessionName")).toBe(true);
+    expect(isSessionUrl("projects/namespaceProject/sessions")).toBe(false);
+
+    const namespaceSeveralLevels = "namespaceProjectSubGroup1/namespaceProjectSubGroup2/namespaceProjectSubGroup1";
+    expect(isSessionUrl(`projects/${namespaceSeveralLevels}/projectName/sessions`))
+      .toBe(true);
+    expect(isSessionUrl("projects/datasets")).toBe(false);
+    expect(isSessionUrl("projects/sessions")).toBe(false);
+    expect(isSessionUrl("sessions")).toBe(true);
+    expect(isSessionUrl("/")).toBe(false);
   });
 });
 
