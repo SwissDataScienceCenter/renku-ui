@@ -18,6 +18,9 @@
 
 import { checkWsServerMessage, WsMessage, WsServerMessage } from "./WsMessages";
 import { handleUserInit, handleUserUiVersion, handleUserError } from "./handlers/userHandlers";
+import { handleSessionsStatus } from "./handlers/sessionStatusHandler";
+import { StateModel } from "../model";
+import APIClient from "../api-client";
 
 
 const timeoutIntervalMs = 45 * 1000; // ? set to 0 to disable
@@ -70,6 +73,13 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
         handler: () => ({ test: true })
       }
     ],
+    "sessionStatus": [
+      {
+        required: null,
+        optional: ["message"],
+        handler: handleSessionsStatus
+      }
+    ],
   }
 };
 
@@ -80,8 +90,10 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
  * Setup WebSocket channel.
  * @param webSocketUrl - target URL
  * @param fullModel - global model
+ * @param getLocation - function to get location
+ * @param client - api client
  */
-function setupWebSocket(webSocketUrl: string, fullModel: any) {
+function setupWebSocket(webSocketUrl: string, fullModel: StateModel, getLocation: Function, client: APIClient) {
   const model = fullModel.subModel("webSocket");
   const webSocket = new WebSocket(webSocketUrl);
   model.setObject({ open: false, reconnect: { retrying: false } });
@@ -95,12 +107,19 @@ function setupWebSocket(webSocketUrl: string, fullModel: any) {
     }
   }
 
+  function startPullingSessionStatus(targetWebSocket: WebSocket) {
+    targetWebSocket.send(JSON.stringify(new WsMessage({}, "pullSessionStatus")));
+  }
+
   webSocket.onopen = (status) => {
     // start pinging regularly when the connection is open
     const target = status.target as WebSocket;
     const webSocketOpen = target && target["readyState"] ? true : false;
-    if (webSocketOpen)
+    if (webSocketOpen) {
       model.setObject({ open: true, error: false, lastReceived: null });
+      // request session status
+      startPullingSessionStatus(webSocket);
+    }
 
     // Start a ping loop -- this should keep the connection alive
     if (timeoutIntervalMs)
@@ -122,7 +141,7 @@ function setupWebSocket(webSocketUrl: string, fullModel: any) {
     model.setObject(wsData);
 
     if (data.code === 1006 || data.code === 4000)
-      retryConnection(webSocketUrl, fullModel);
+      retryConnection(webSocketUrl, fullModel, getLocation, client);
   };
 
   webSocket.onmessage = (message) => {
@@ -156,7 +175,7 @@ function setupWebSocket(webSocketUrl: string, fullModel: any) {
       // execute the command
       try {
         // ? Mind we are passing the full model, not just model
-        const outcome = handler(serverMessage.data, webSocket, fullModel);
+        const outcome = handler(serverMessage.data, webSocket, fullModel, getLocation, client);
         if (outcome && model.get("error"))
           model.set("error", false);
         else if (!outcome && !model.get("error"))
@@ -233,8 +252,10 @@ function getWsServerMessageHandler(
  * Retry connection when it fails, keeping track of the attempts.
  * @param webSocketUrl - target URL
  * @param fullModel - global model
+ * @param getLocation - function to get location
+ * @param client - api client
  */
-function retryConnection(webSocketUrl: string, fullModel: any) {
+function retryConnection(webSocketUrl: string, fullModel: StateModel, getLocation: Function, client: APIClient) {
   const reconnectModel = fullModel.subModel("webSocket.reconnect");
   const reconnectData = reconnectModel.get("");
   // reset timer after 1 hour
@@ -246,7 +267,7 @@ function retryConnection(webSocketUrl: string, fullModel: any) {
   reconnectData.retrying = true;
   const delay = (reconnectPenaltyFactor ** reconnectData.attempts) * reconnectIntervalMs;
   reconnectModel.setObject(reconnectData);
-  setTimeout(() => setupWebSocket(webSocketUrl, fullModel), delay);
+  setTimeout(() => setupWebSocket(webSocketUrl, fullModel, getLocation, client), delay);
 }
 
 

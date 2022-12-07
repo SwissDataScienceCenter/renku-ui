@@ -23,6 +23,8 @@ import config from "../config";
 import logger from "../logger";
 import { Authenticator } from "./index";
 import { getOrCreateSessionId } from "./routes";
+import { serializeCookie } from "../utils";
+import { WsMessage } from "../websocket/WsMessages";
 
 
 /**
@@ -87,7 +89,8 @@ function renkuAuth(authenticator: Authenticator) {
   };
 }
 
-async function wsRenkuAuth(authenticator: Authenticator, sessionId: string): Promise<Record<string, string>> {
+async function wsRenkuAuth(authenticator: Authenticator, sessionId: string):
+  Promise<WsMessage | Record<string, string>> {
   let tokens: TokenSet;
   try {
     tokens = await authenticator.getTokens(sessionId, true);
@@ -105,6 +108,11 @@ async function wsRenkuAuth(authenticator: Authenticator, sessionId: string): Pro
     const value = config.auth.authHeaderPrefix + tokens.access_token;
     return { [config.auth.authHeaderField]: value };
   }
+
+  // Anonymous users
+  const fullAnonId = config.auth.anonPrefix + sessionId;
+  const newCookies: Array<string> = [serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)];
+  return { "cookie": newCookies.join("; ") };
 }
 
 export { renkuAuth, addAuthToken, wsRenkuAuth };
