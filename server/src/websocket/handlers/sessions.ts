@@ -16,51 +16,64 @@
  * limitations under the License.
  */
 
-import fetch from "cross-fetch";
-
-import config from "../../config";
 import logger from "../../logger";
-import { simpleHash } from "../../utils";
+import { Channel } from "../index";
+import APIClient from "../../api-client";
+import * as util from "util";
+import { WsMessage } from "../WsMessages";
+import { simpleHash, sortObjectProperties } from "../../utils";
 
-
-// ! This is only an example, it's not used yet in production
-// TODO: cleanup and use it in the short loop
-
-/**
- * Check user sessions
- * @param sessionId - user session ID
- * @param storage - storage component
- */
-async function checkSession(sessionId: string, storage: Storage, headers: Record<string, string>): Promise<boolean> {
-  // fetch sessions
-  let hashedSessions: string;
-  try {
-    const { gatewayUrl } = config.deployment;
-    const sessionsUrl = `${gatewayUrl}/notebooks/servers`;
-    logger.info(`Fetching sessions from <${sessionsUrl}>`); // ? TMP
-
-    const response = await fetch(sessionsUrl, { headers });
-    const sessions = await response.json();
-
-    hashedSessions = simpleHash(JSON.stringify(sessions)).toString();
-    logger.info(`Session fetched succesfully. The hash is ${hashedSessions}`); // ? TMP
-  }
-  catch (e) {
-    logger.warn("There was a problem while trying to fetch sessions");
-    logger.warn(e);
-    throw e;
-  }
-
-  // try to get old hash and compare it
-  // TODO: should we store this in the channel cache instead?
-  let changed = false;
-  const storageKey = config.data.userSessionsPrefix + sessionId;
-  const oldHash = await storage.get(storageKey) as string;
-  if (oldHash && oldHash !== hashedSessions)
-    changed = true;
-  if (!oldHash || oldHash !== hashedSessions)
-    await storage.save(storageKey, hashedSessions);
-  return changed;
+interface SessionsResult {
+  servers: Record<string, Session>;
+}
+interface Session {
+  status: {
+    details: {
+      status: string;
+      step: string;
+    }[];
+    message?: string;
+    readyNumContainers: number;
+    state: string;
+    totalNumContainers: number;
+  };
 }
 
-export { checkSession };
+function handlerRequestSessionStatus(
+  data: Record<string, unknown>, channel: Channel): void {
+  channel.data.set("sessionStatus", null);
+}
+
+function sendMessage(data: string, channel: Channel) {
+  const info = new WsMessage({ message: data }, "user", "sessionStatus");
+  channel.sockets.forEach(socket => socket.send(info.toString()));
+}
+
+function heartbeatRequestSessionStatus
+(channel: Channel, apiClient: APIClient, authHeathers: Record<string, string>): void {
+  const previousStatuses = channel.data.get("sessionStatus") as string;
+  apiClient.getSessionStatus(authHeathers)
+    .then((response) => {
+      const statusFetched = response as unknown as SessionsResult;
+      const servers = statusFetched?.servers ?? {};
+      const cleanStatus: Record<string, Session> = {};
+      // only keep status information
+      Object.keys(servers).map( key => {
+        cleanStatus[key] = { status: servers[key].status };
+      });
+
+      const sortedObject = sortObjectProperties(cleanStatus as Record<string, never>);
+      const currentHashedSessions = simpleHash(JSON.stringify(sortedObject)).toString();
+      // only send message when something change
+      if (!util.isDeepStrictEqual(previousStatuses, currentHashedSessions)) {
+        sendMessage("true", channel);
+        channel.data.set("sessionStatus", currentHashedSessions);
+      }
+    })
+    .catch((e) => {
+      logger.warn("There was a problem while trying to fetch sessions");
+      logger.warn(e);
+    });
+}
+
+export { handlerRequestSessionStatus, heartbeatRequestSessionStatus };

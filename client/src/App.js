@@ -57,7 +57,7 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 };
 
 function CentralContentContainer(props) {
-  const { notifications, user } = props;
+  const { notifications, user, socket } = props;
 
   if (!props.user.logged && (props.location.pathname === Url.get(Url.pages.landing))) {
     return <AnonymousHome client={props.client}
@@ -125,6 +125,7 @@ function CentralContentContainer(props) {
             user={props.user}
             blockAnonymous={blockAnonymous}
             notifications={notifications}
+            socket={socket}
             {...p}
           />}
         />
@@ -212,7 +213,10 @@ class App extends Component {
       webSocketUrl = "ws" + webSocketUrl.substring(4);
     // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
     setTimeout(
-      () => { this.webSocket = setupWebSocket(webSocketUrl, this.props.model); return; },
+      () => {
+        this.webSocket = setupWebSocket(webSocketUrl, this.props.model, getLocation, this.props.client);
+        return;
+      },
       1000
     );
   }
