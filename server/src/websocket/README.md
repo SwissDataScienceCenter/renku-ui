@@ -107,7 +107,8 @@ WebSocket channels are handled per user, and each time a new channel is added, t
 server sends the same notification to each of them. When the last user's channel is
 removed, the loop stops.
 We should implement a strategy to redirect all the user requests from the same user
-to the same instance of the the server (sticky sessions).
+to the same instance of the the server (sticky sessions, see
+[#2184](https://github.com/SwissDataScienceCenter/renku-ui/issues/2184)).
 
 ## Client side
 See the [client side section](../../../client/src/websocket/) for details on how the client uses WebSockets.
