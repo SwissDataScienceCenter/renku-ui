@@ -110,4 +110,4 @@ We should implement a strategy to redirect all the user requests from the same u
 to the same instance of the the server (sticky sessions).
 
 ## Client side
-See the [client side section](../../../client/src/websocket/) for further details on WebSockets.
+See the [client side section](../../../client/src/websocket/) for details on how the client uses WebSockets.
