@@ -744,7 +744,7 @@ class StartNotebookCommits extends Component {
         true :
         false;
       if (autosaveExists) {
-        const url = Docs.rtdHowToGuide("session-stopping-and-saving.html#autosave-in-sessions");
+        const url = Docs.rtdHowToGuide("renkulab/session-stopping-and-saving.html#autosave-in-sessions");
         commitComment = (
           <FormText>
             <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> We
@@ -1195,7 +1195,7 @@ class AutosavedDataModal extends Component {
     const docsLink = (
       <ExternalLink
         role="text" iconSup={true} iconAfter={true} title="documentation"
-        url={Docs.rtdHowToGuide("session-stopping-and-saving.html#autosave-in-sessions")}
+        url={Docs.rtdHowToGuide("renkulab/session-stopping-and-saving.html#autosave-in-sessions")}
       />
     );
     const command = `git reset --hard ${this.props.filters.commit.short_id} && git clean -f -d`;
