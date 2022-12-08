@@ -70,7 +70,7 @@ function ExternalLinkText(props) {
 
   return (
     <a target="_blank" rel="noreferrer noopener" href={props.url} className={className} {...otherProps} >
-      {props.title} {props.children}
+      {props.title}{props.children}
     </a>
   );
 }
