@@ -817,7 +817,7 @@ class StartNotebookCommitsOptions extends Component {
 
 function StartNotebookOptions(props) {
 
-  const { justStarted, environmentVariables, setEnvironmentVariables, defaultBackButton } = props;
+  const { justStarted, environmentVariables, setEnvironmentVariables } = props;
   if (justStarted)
     return <Label>Starting a new session... <Loader size="14" inline="true" /></Label>;
 
@@ -852,7 +852,6 @@ function StartNotebookOptions(props) {
   }
 
   return [
-    defaultBackButton,
     <StartNotebookServerOptions key="options" {...props} />,
     <EnvironmentVariables key="envVariables"
       environmentVariables={environmentVariables} setEnvironmentVariables={setEnvironmentVariables} />,
