@@ -17,6 +17,7 @@
  */
 import { FetchBaseQueryMeta } from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import type { KgAuthor, KgSearchResult, ListResponse } from "./KgSearch";
 import { VisibilitiesFilter } from "../../utils/components/visibilityFilter/VisibilityFilter";
 import { TypeEntitySelection } from "../../utils/components/typeEntityFilter/TypeEntityFilter";
