@@ -35,6 +35,7 @@ jobs:
       renku-graph: ${{ steps.deploy-comment.outputs.renku-graph}}
       renku-notebooks: ${{ steps.deploy-comment.outputs.renku-notebooks}}
       test-enabled: ${{ steps.deploy-comment.outputs.test-enabled}}
+      test-cypress-enabled: ${{ steps.deploy-comment.outputs.test-cypress-enabled}}
       persist: ${{ steps.deploy-comment.outputs.persist}}
       extra-values: ${{ steps.deploy-comment.outputs.extra-values}}
     steps:
@@ -105,10 +106,22 @@ jobs:
           s3-results-access-key: ${{ secrets.ACCEPTANCE_TESTS_BUCKET_ACCESS_KEY }}
           s3-results-secret-key: ${{ secrets.ACCEPTANCE_TESTS_BUCKET_SECRET_KEY }}
           test-timeout-mins: "80"
-
+  run-cypress-acceptance-tests:
+    needs: [check-deploy, deploy-pr]
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-cypress-enabled == 'true'
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Extract renku repo ref
+        run: echo "RENKU=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
+      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.4.2
+        with:
+          gitlab-token: ${{ secrets.DEV_GITLAB_TOKEN }}
+          renku-release: renku-ci-ui-${{ github.event.number }}
+          test-user-password: ${{ secrets.RENKU_BOT_DEV_PASSWORD }}
+          renku: ${{ env.RENKU }}
   run-e2e:
     needs: [check-deploy, deploy-pr]
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && (needs.check-deploy.outputs.test-enabled == 'true' || needs.check-deploy.outputs.test-cypress-enabled == 'true')
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
