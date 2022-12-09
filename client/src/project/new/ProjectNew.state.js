@@ -367,7 +367,7 @@ class NewProjectCoordinator {
   getSlugAndReset() {
     const creation = this.model.get("meta.creation");
     this.resetCreationResult();
-    return `${creation.newNamespace}/${creation.newName}`;
+    return `${creation.newNamespace}/${creation.newNameSlug}`;
   }
 
   resetCreationResult() {
