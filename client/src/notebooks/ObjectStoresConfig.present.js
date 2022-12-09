@@ -25,6 +25,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Map, List } from "immutable";
 
+import { ExternalLink } from "../utils/components/ExternalLinks";
+
 
 function ObjectStoreSummary({ objectStoreConfiguration }) {
   return <Fragment>
@@ -41,7 +43,9 @@ function ObjectStoresConfigurationButton({ objectStoresConfiguration, toggleShow
       Cloud Storage
     </Label> &nbsp; &nbsp;
     <FormText color="muted">
-      Use data from sources like AWS S3, Google Cloud Storage, or Azure Blob Storage.
+      Use data from <ExternalLink role="text" title="compatible S3 Storage"
+        url="https://en.wikipedia.org/wiki/Amazon_S3#S3_API_and_competing_services" /> sources like AWS S3,
+      Google Cloud Storage, etc.
     </FormText> {"  "}
     <br />
     {
@@ -305,8 +309,10 @@ function ObjectStoresConfigurationModal({ objectStoresConfiguration, showObjectS
       <ModalHeader toggle={onClose}>Object Store Configuration</ModalHeader>
       <ModalBody>
         <p>
-          Provide credentials to use cloud storage like {" "}
-          AWS S3, Google Cloud Storage, or Azure Blob Storage.
+          Provide credentials to use cloud storage like{" "}
+          AWS S3, Google Cloud Storage, or any other{" "}
+          <ExternalLink role="text" title="compatible S3 Storage"
+            url="https://en.wikipedia.org/wiki/Amazon_S3#S3_API_and_competing_services" />.
         </p>
         <ObjectStoresTable
           objectStoresConfiguration={storesConfig}
