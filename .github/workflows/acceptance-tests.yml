@@ -121,7 +121,7 @@ jobs:
           renku: ${{ env.RENKU }}
   run-e2e:
     needs: [check-deploy, deploy-pr]
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && (needs.check-deploy.outputs.test-enabled == 'true' || needs.check-deploy.outputs.test-cypress-enabled == 'true')
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
