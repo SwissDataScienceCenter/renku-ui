@@ -185,7 +185,7 @@ function WorkflowsListFilters({
                 You can{" "}
                 <ExternalLink
                   role="text" iconSup={true} iconAfter={true} title="check our documentation"
-                  url={Docs.rtdHowToGuide("404-missing-link")}
+                  url={Docs.rtdTopicGuide("workflows.html")}
                 />
                 {" "}for more details
               </p>

@@ -826,7 +826,7 @@ class StartNotebookServer extends Component {
   filterAutosavedBranches(branches, username) {
     if (!username || !branches)
       return [];
-    return branches.filter(branch => branch.autosave.username === username);
+    return branches.filter(branch => branch.autosave.username && branch.autosave.username.startsWith(username));
   }
 
   propsToChildProps() {

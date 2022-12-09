@@ -1083,7 +1083,7 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
         <p>
           As
           an anonymous user, you can start <ExternalLink role="text" title="Sessions"
-            url={Docs.rtdHowToGuide("sessions.html")} />, but
+            url={Docs.rtdHowToGuide("renkulab/session-stopping-and-saving.html")} />, but
           you cannot save your work.
         </p>
         <p className="mb-0">
@@ -1110,10 +1110,8 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
           <li className="pt-1">
             <ExternalLink size="sm" title="Contact a maintainer"
               url={`${externalUrl}/-/project_members`} /> and ask them
-            to <a href={Docs.rtdHowToGuide("collaboration.html#add-or-be-added-as-a-developer-on-a-project")}
-              target="_blank" rel="noreferrer noopener">
-              grant you the necessary permissions
-            </a>.
+            to <ExternalLink role="text" title="grant you the necessary permissions"
+              url={Docs.rtdHowToGuide("renkulab/collaboration.html")} />.
           </li>
         </ul>
       </InfoAlert>
