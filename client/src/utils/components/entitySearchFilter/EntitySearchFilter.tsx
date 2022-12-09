@@ -54,10 +54,10 @@ const FilterEntitySearch = ({ author, type, visibility, isLoggedUser, valuesDate
         <div><TypeEntityFilter
           handler={(value: TypeEntitySelection) => dispatch(setType(value))}
           value={type} /></div>
+        {authorComponent}
         <div><VisibilityFilter
           handler={(value: VisibilitiesFilter) => dispatch(setVisibility(value))}
           value={visibility} /></div>
-        {authorComponent}
         <div>
           <DateFilter values={valuesDate} handler={(dates: DatesFilter) => dispatch(setDates(dates))} />
         </div>

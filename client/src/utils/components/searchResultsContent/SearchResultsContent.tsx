@@ -53,7 +53,7 @@ const EmptyResult = ({ onRemoveFilters } : EmptyResultProps) => {
   const hasFilters = hasInitialFilterValues(currentFilters);
 
   const phraseText = (<p>
-    We could not find any matches for phrase <span className="fst-italic fw-bold">{phrase}.</span>
+    We could not find any matches for phrase <span className="fst-italic fw-bold">{decodeURIComponent(phrase)}.</span>
   </p>);
 
   return (

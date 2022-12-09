@@ -138,7 +138,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
           "col-10 pb-2 m-auto search-result-header search-header-container"}>
           <SearchResultsHeader
             total={data?.total}
-            phrase={phrase}
+            phrase={decodeURIComponent(phrase)}
             sort={sort}
             isFiltersOpened={isOpenFilter}
             toggleFilter={() => setIsOpenFilter(!isOpenFilter)}
