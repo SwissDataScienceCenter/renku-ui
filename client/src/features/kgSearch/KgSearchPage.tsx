@@ -111,7 +111,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
     dispatch(removeFilters());
   };
 
-  const { data, isFetching, isLoading } = useSearchEntitiesQuery(searchRequest);
+  const { data, isFetching, isLoading, error } = useSearchEntitiesQuery(searchRequest);
   const filter = (
     <>
       { isOpenFilter ?
@@ -137,7 +137,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
         <Col className={isOpenFilter ? "col-12 pb-2 m-auto search-header-container" :
           "col-10 pb-2 m-auto search-result-header search-header-container"}>
           <SearchResultsHeader
-            total={data?.total}
+            total={error ? 0 : data?.total}
             phrase={decodeURIComponent(phrase)}
             sort={sort}
             isFiltersOpened={isOpenFilter}
@@ -155,6 +155,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
             isLoading={isLoading}
             onPageChange={(value: number) => dispatch(setPage(value))}
             onRemoveFilters={onRemoveFilters}
+            error={error}
           />
           <div className="d-sm-block d-md-none d-lg-none d-xl-none d-xxl-none">
             <ModalFilter

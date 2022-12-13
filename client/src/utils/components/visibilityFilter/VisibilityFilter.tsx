@@ -43,11 +43,15 @@ const VisibilityFilter = ({ handler, value }: VisibilityFilterProps) => {
   const selectVisibility = (visibilityKey: string, visibility: boolean) => {
     if (!handler)
       return;
+    const newValues = { ...value };
     switch (visibilityKey) {
-      case "public": handler({ ...value, public: visibility }); break;
-      case "internal": handler({ ...value, internal: visibility }); break;
-      case "private": handler({ ...value, private: visibility }); break;
+      case "public": newValues.public = visibility; break;
+      case "internal": newValues.internal = visibility; break;
+      case "private": newValues.private = visibility; break;
     }
+    const somethingSelected = Object.values(newValues).filter( val => val);
+    if (somethingSelected.length) // there must always be something selected
+      handler(newValues);
   };
 
   const items = [

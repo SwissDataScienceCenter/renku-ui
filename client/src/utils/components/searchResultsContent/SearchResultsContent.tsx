@@ -21,6 +21,8 @@ import Masonry from "react-masonry-css";
 import { useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSadCry } from "@fortawesome/free-solid-svg-icons";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { SerializedError } from "@reduxjs/toolkit";
 
 import { KgSearchResult, ListResponse } from "../../../features/kgSearch/KgSearch";
 import { FiltersProperties, hasInitialFilterValues, mapSearchResultToEntity } from "../../helpers/KgSearchFunctions";
@@ -36,11 +38,13 @@ interface SearchResultProps {
   isLoading: boolean;
   onPageChange: Function;
   onRemoveFilters: Function;
+  error?: FetchBaseQueryError | SerializedError;
 }
 interface EmptyResultProps {
   onRemoveFilters: Function;
+  error?: FetchBaseQueryError | SerializedError;
 }
-const EmptyResult = ({ onRemoveFilters } : EmptyResultProps) => {
+const EmptyResult = ({ onRemoveFilters, error } : EmptyResultProps) => {
   const { phrase, type, author, visibility, since, until, typeDate } = useKgSearchFormSelector(
     (state) => state.kgSearchForm
   );
@@ -52,14 +56,18 @@ const EmptyResult = ({ onRemoveFilters } : EmptyResultProps) => {
   const currentFilters: FiltersProperties = { type, author, visibility, since, until, typeDate };
   const hasFilters = hasInitialFilterValues(currentFilters);
 
-  const phraseText = (<p>
+  const phraseText = phrase ? (<p>
     We could not find any matches for phrase <span className="fst-italic fw-bold">{decodeURIComponent(phrase)}.</span>
+  </p>) : " We could not find any matches.";
+
+  const errorText = (<p>
+    Search return an error for phrase <span className="fst-italic fw-bold">{decodeURIComponent(phrase)}.</span>
   </p>);
 
   return (
     <div className="mt-5 text-center">
       <FontAwesomeIcon icon={faSadCry} size="3x" className="opacity-25" />{" "}
-      { phrase ? phraseText : " We could not find any matches." }
+      { error ? errorText : phraseText }
       { !hasFilters ? <p>
         To get some data you can modify the current filters or remove all filters.{" "}
         <Button color="primary" size="sm" onClick={removeFilters}>Yes, remove all filters</Button>
@@ -69,14 +77,14 @@ const EmptyResult = ({ onRemoveFilters } : EmptyResultProps) => {
 
 
 const SearchResultsContent = (
-  { data, isFetching, isLoading, onPageChange, onRemoveFilters }: SearchResultProps) => {
+  { data, isFetching, isLoading, onPageChange, onRemoveFilters, error }: SearchResultProps) => {
   const history = useHistory();
   if (isLoading) return <Loader />;
   if (isFetching) return <Loader />;
   if (data == null) return <Loader />;
 
-  if (!data || data.total === 0)
-    return (<EmptyResult onRemoveFilters={onRemoveFilters} />);
+  if (!data || data.total === 0 || error)
+    return (<EmptyResult onRemoveFilters={onRemoveFilters} error={error} />);
 
 
   const rows = data.results

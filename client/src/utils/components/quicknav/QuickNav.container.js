@@ -105,9 +105,7 @@ const QuickNavContainerWithRouter = ({ user }) => {
 
   const onSuggestionsFetchRequested = () => {};
 
-  const onSuggestionsClearRequested = () => {
-    setCurrentPhrase(currentPhrase);
-  };
+  const onSuggestionsClearRequested = () => {};
 
   const onChange = (event, { newValue }) => {
     setCurrentPhrase(newValue);
@@ -124,6 +122,7 @@ const QuickNavContainerWithRouter = ({ user }) => {
 
     if (suggestion && suggestion?.type === "last-queries" && event.type === "click") {
       dispatch(setPhrase(suggestion.label));
+      setCurrentPhrase(suggestion.label);
       refetchLastQueries(event.currentTarget);
     }
   };
