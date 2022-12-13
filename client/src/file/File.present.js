@@ -83,19 +83,18 @@ class FileCard extends React.Component {
     return (
       <Card className="border-rk-light">
         <CardHeader id="file-card-header"
-          className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3" >
-          <div className="d-flex align-items-end">
+          className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3 flex-wrap" >
+          <div className="d-flex align-items-end overflow-hidden gap-2">
             {this.props.isLFSBadge}
-            <span className="fw-bold">{this.props.filePath}</span>
-          &nbsp;
-            {this.props.fileSize ? <span><small> {formatBytes(this.props.fileSize)}</small></span> : null}
-          &nbsp;
+            <div className="fw-bold text-truncate">{this.props.filePath}</div>
+            {this.props.fileSize ?
+              <div className="flex-grow-0 flex-shrink-0">
+                <small> {formatBytes(this.props.fileSize)}</small></div> : null}
             {/* <span className="fileBarIconButton"> */}
-            <Clipboard clipboardText={this.props.filePath} className="icon-link"/>
+            <Clipboard clipboardText={this.props.filePath} className="icon-link d-flex"/>
             {/* </span> */}
-          &nbsp;
           </div>
-          <div className="d-flex align-items-end">
+          <div className="d-flex align-items-center">
             {this.props.buttonShareLinkSession}
             {this.props.buttonDownload}
             {this.props.buttonJupyter}
