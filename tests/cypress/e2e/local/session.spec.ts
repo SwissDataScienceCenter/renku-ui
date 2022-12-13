@@ -176,3 +176,23 @@ describe("display a session", () => {
       .contains("Your session has diverged from the origin.").should("be.visible");
   });
 });
+
+describe("display a session with error", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects().projectTest();
+    fixtures.getSessionsError();
+    cy.visit("/projects/e2e/local-test-project/sessions");
+  });
+
+  it("display error in sessions page", () => {
+    fixtures.getLogs("getLogs", "");
+    cy.wait("@getSessionsError");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
+    cy.get_cy("stop-session-button").should("be.visible");
+  });
+
+});
