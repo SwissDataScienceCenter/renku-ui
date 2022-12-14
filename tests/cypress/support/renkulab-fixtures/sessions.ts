@@ -49,6 +49,16 @@ function Sessions<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    getSessionsError(name = "getSessionsError", namespace = "*", resultFile = "sessions/sessionError.json") {
+      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
+
+      cy.intercept(
+        "/ui-server/api/notebooks/servers?namespace=" + namespace,
+        fixture
+      ).as(name);
+      return this;
+    }
+
     getLogs(name = "getLogs", resultFile = "sessions/logs.json") {
       const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
       cy.intercept(
