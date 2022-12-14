@@ -47,7 +47,7 @@ function EntityButton({ type, slug }: EntityButtonProps) {
     case "project":
       handleClick = (e: any) => {
         e.preventDefault();
-        history.push(`/projects/${slug}/sessions/new?autostart=1`);
+        history.push(`${slug}/sessions/new?autostart=1`);
       };
       return (
         <>

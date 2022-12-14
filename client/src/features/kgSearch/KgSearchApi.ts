@@ -21,6 +21,7 @@ import type { KgAuthor, KgSearchResult, ListResponse } from "./KgSearch";
 import { VisibilitiesFilter } from "../../utils/components/visibilityFilter/VisibilityFilter";
 import { TypeEntitySelection } from "../../utils/components/typeEntityFilter/TypeEntityFilter";
 import { SortingOptions } from "../../utils/components/sortingEntities/SortingEntities";
+import { hasSpecialCharacters } from "../../utils/helpers/HelperFunctions";
 
 type SearchEntitiesQueryParams = {
   phrase: string;
@@ -73,9 +74,7 @@ function setVisibilityInQuery(
 
 const getPhrase = (phrase?: string) => {
   if (!phrase) return "*";
-
-  if (phrase.includes("*")) return phrase;
-
+  if (hasSpecialCharacters(phrase)) return phrase;
   return `*${phrase}*`;
 };
 

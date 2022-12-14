@@ -34,10 +34,8 @@ interface ResultHeaderProps {
 const SearchResultsHeader = ({
   total, phrase, sort, handleSort, isFiltersOpened, toggleFilter, toggleFilterModal, isOpenFilterModal
 }: ResultHeaderProps) => {
-  if (!total)
-    return null;
 
-  const totalText = total > 1 ? "results" : "result";
+  const totalText = total && total > 1 ? "results" : "result";
   const title = phrase ?
     <div className="rk-search-result-title">
       {total} {totalText} for <span className="fw-bold">{`"${phrase}"`}</span></div> :

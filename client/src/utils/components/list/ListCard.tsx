@@ -54,7 +54,7 @@ function ListCard(
             </div>
             <div className="card-bg-title">{title}</div>
           </div>
-          <EntityButton type={itemType} slug={slug} />
+          <EntityButton type={itemType} slug={url} />
           <div className="card-body">
             <div className="card-title text-truncate lh-sm" data-cy="list-card-title">
               {title}

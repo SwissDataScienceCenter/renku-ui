@@ -235,7 +235,7 @@ function Section1(props) {
         </Row>
         <Row>
           <Col className="rk-pt-s rk-w-s">
-            <HashLink className="btn btn-outline-rk-pink" role="button"
+            <HashLink className="btn btn-secondary-home" role="button"
               to="#rk-anon-home-section-features">
             Learn more
             </HashLink>
@@ -254,11 +254,11 @@ function TutorialLink(props) {
   if (url.startsWith("http")) {
     return <ExternalLink
       title="Follow the tutorial"
-      className="btn btn-outline-rk-pink" role="button" id="link-learn"
+      className="btn btn-secondary-home" role="button" id="link-learn"
       showLinkIcon={true}
       url={url} />;
   }
-  return <Link className="btn btn-outline-rk-pink" role="link" id="link-tutorial" to={url}>
+  return <Link className="btn btn-secondary-home" role="link" id="link-tutorial" to={url}>
     Follow the tutorial
   </Link>;
 }
@@ -298,7 +298,7 @@ function Section4(props) {
         <div className="pt-2" style={{ minWidth: "180px" }}>
           <ExternalLink
             title="Learn more"
-            className="btn btn-outline-rk-pink" role="button" id="link-learn"
+            className="btn btn-secondary-home" role="button" id="link-learn"
             showLinkIcon={true}
             url={Docs.READ_THE_DOCS_ROOT} />
         </div>

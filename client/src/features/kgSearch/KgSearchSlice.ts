@@ -39,7 +39,7 @@ export interface KgSearchFormState {
 
 const initialState: KgSearchFormState = {
   phrase: "",
-  sort: SortingOptions.AscTitle,
+  sort: SortingOptions.DescMatchingScore,
   page: 1,
   perPage: 24,
   type: {
@@ -48,9 +48,9 @@ const initialState: KgSearchFormState = {
   },
   author: "all",
   visibility: {
-    private: false,
-    public: false,
-    internal: false,
+    private: true,
+    public: true,
+    internal: true,
   },
   since: "",
   until: "",
@@ -68,7 +68,7 @@ export const kgSearchFormSlice = createSlice({
       state.page = 1;
     },
     setPhrase: (state, action: PayloadAction<string>) => {
-      state.phrase = action.payload;
+      state.phrase = encodeURIComponent(action.payload);
       state.page = 1;
     },
     setSort: (state, action: PayloadAction<SortingOptions>) => {
