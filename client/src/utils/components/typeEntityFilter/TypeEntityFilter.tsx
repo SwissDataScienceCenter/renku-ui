@@ -47,10 +47,15 @@ const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {
     if (!handler)
       return;
 
+    const newValues = { ...value };
     if (typeKey === "project")
-      handler({ ...value, project: type });
+      newValues.project = type;
     else
-      handler({ ...value, dataset: type });
+      newValues.dataset = type;
+
+    const somethingSelected = Object.values(newValues).filter( val => val);
+    if (somethingSelected.length) // there must always be something selected
+      handler(newValues);
   };
 
   const items = [

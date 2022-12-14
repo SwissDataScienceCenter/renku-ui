@@ -34,15 +34,19 @@ export enum SortingOptions {
   AscTitle = "name:asc",
   DescTitle = "name:desc",
   AscDate = "date:asc",
-  DescDate = "date:desc"
+  DescDate = "date:desc",
+  AscMatchingScore = "matchingScore:asc",
+  DescMatchingScore = "matchingScore:desc"
 }
 /* eslint-enable no-unused-vars */
 
 interface SortingItems {
-  AscTitle: string,
-  DescTitle: string,
-  AscDate: string,
-  DescDate: string,
+  AscTitle: string;
+  DescTitle: string;
+  AscDate: string;
+  DescDate: string;
+  AscMatchingScore: string;
+  DescMatchingScore: string;
 }
 
 export interface SortingInputProps {
@@ -65,13 +69,18 @@ const SortingEntities = (
     AscTitle: "Title: A - Z",
     DescTitle: "Title: Z - A",
     AscDate: "Old - New",
-    DescDate: "New - Old"
+    DescDate: "New - Old",
+    AscMatchingScore: "Relevance Asc",
+    DescMatchingScore: "Relevance Desc"
   };
 
   const options = [];
-  for (const key in items)
-    options.push(<option value={key} key={key}>{items[key as keyof SortingItems]}</option>);
-
+  for (const key in items) {
+    options.push(<option
+      value={key} key={key}>
+      { items[key as keyof SortingItems] }</option>);
+  }
+  const SortOptionByValue = Object.keys(SortingOptions)[Object.values(SortingOptions).indexOf(sort as SortingOptions)];
   return (
     <>
       <div className={styleType === "desk" ?
@@ -84,6 +93,7 @@ const SortingEntities = (
           type="select"
           className="sorting-input"
           name="sorting"
+          defaultValue={SortOptionByValue}
           onChange={(event: ChangeEvent<HTMLInputElement>) => changeSorting(event.target.value as SortOptionsStrings)}>
           {options}
         </Input>
