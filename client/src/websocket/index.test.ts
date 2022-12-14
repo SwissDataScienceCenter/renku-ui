@@ -22,8 +22,9 @@ import { StateModel, globalSchema } from "../model";
 import { getWsServerMessageHandler, retryConnection, setupWebSocket, MessageData } from "./index";
 import { WsServerMessage } from "./WsMessages";
 import { sleep } from "../utils/helpers/HelperFunctions";
+import APIClient, { testClient as client } from "../api-client";
 
-
+const fakeLocation = () => { };
 const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
   "user": {
     "init": [
@@ -124,7 +125,7 @@ describe("Test WebSocket functions", () => {
     const reconnectModel = model.subModel("webSocket.reconnect");
     expect(reconnectModel.get("attempts")).toBe(0);
     expect(reconnectModel.get("retrying")).toBe(false);
-    retryConnection("fakeUrl", model);
+    retryConnection("fakeUrl", model, fakeLocation, client as APIClient);
     expect(reconnectModel.get("attempts")).toBe(1);
     expect(reconnectModel.get("retrying")).toBe(true);
   });
@@ -144,12 +145,12 @@ describe("Test WebSocket server", () => {
 
     // using a wrong URL shouldn't work
     expect(localModel.get("open")).toBe(false);
-    setupWebSocket(webSocketURL.replace("localhost", "fake_host"), fullModel);
+    setupWebSocket(webSocketURL.replace("localhost", "fake_host"), fullModel, fakeLocation, client as APIClient);
     await sleep(0.01); // ? It's ugly, but it's needed when using the fake WebSocket server...
     expect(localModel.get("open")).toBe(false);
 
     // using the correct URL opens the connection
-    setupWebSocket(webSocketURL, fullModel);
+    setupWebSocket(webSocketURL, fullModel, fakeLocation, client as APIClient);
     await sleep(0.01);
     expect(localModel.get("open")).toBe(true);
 

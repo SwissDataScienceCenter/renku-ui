@@ -684,7 +684,9 @@ const NotebookServerRowAction = memo((props) => {
   }
   else {
     const classes = { className: "text-nowrap btn-outline-rk-green" };
-    defaultAction = (<Button {...classes} onClick={() => props.toggleLogs(name)}>Get logs</Button>);
+    defaultAction = (<Button data-cy="stop-session-button" {...classes} onClick={() => props.stopNotebook(name)}>
+      <FontAwesomeIcon className="text-rk-green" icon={faStopCircle} /> Stop</Button>);
+    actions.stop = null;
   }
 
   return (

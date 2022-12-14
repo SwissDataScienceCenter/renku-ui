@@ -31,6 +31,7 @@ import { errorHandler } from "./utils/errorHandler";
 import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
 import { initializeSentry } from "./utils/sentry/sentry";
 import { configureWebsocket } from "./websocket";
+import APIClient from "./api-client";
 
 const app = express();
 const port = config.server.port;
@@ -84,6 +85,9 @@ const server = app.listen(port, () => {
   logger.info(`Express server started at http://localhost:${port}`);
 });
 
+// configure API client
+const apiClient = new APIClient();
+
 // start the WebSocket server
 if (config.websocket.enabled) {
   const path = `${config.server.prefix}${config.server.wsSuffix}`;
@@ -91,7 +95,7 @@ if (config.websocket.enabled) {
   authPromise.then(() => {
     logger.info("Configuring WebSocket server");
 
-    configureWebsocket(wsServer, authenticator, storage);
+    configureWebsocket(wsServer, authenticator, storage, apiClient);
   });
 }
 
