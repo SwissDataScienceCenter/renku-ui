@@ -48,16 +48,21 @@ const FilterEntitySearch = ({ author, type, visibility, isLoggedUser, valuesDate
       handler={(value: KgAuthor) => dispatch(setAuthor(value))}
       value={author} /></div>
   ) : null;
+
+  const visibilityComponent = isLoggedUser ? (
+    <div><VisibilityFilter
+      handler={(value: VisibilitiesFilter) => dispatch(setVisibility(value))}
+      value={visibility} /></div>
+  ) : null;
+
   return (
     <>
       <div className="filter-box">
         <div><TypeEntityFilter
           handler={(value: TypeEntitySelection) => dispatch(setType(value))}
           value={type} /></div>
-        <div><VisibilityFilter
-          handler={(value: VisibilitiesFilter) => dispatch(setVisibility(value))}
-          value={visibility} /></div>
         {authorComponent}
+        {visibilityComponent}
         <div>
           <DateFilter values={valuesDate} handler={(dates: DatesFilter) => dispatch(setDates(dates))} />
         </div>

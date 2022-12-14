@@ -55,7 +55,7 @@ const QuickNavContainerWithRouter = ({ user }) => {
   const { data, isFetching, isLoading, refetch } = useSearchLastQueriesQuery(TOTAL_QUERIES);
 
   useEffect(() => {
-    setCurrentPhrase(phrase);
+    setCurrentPhrase(decodeURIComponent(phrase));
   }, [phrase]);
 
   const getLastQueries = (lastQueries) => {
@@ -122,16 +122,12 @@ const QuickNavContainerWithRouter = ({ user }) => {
 
     if (suggestion && suggestion?.type === "last-queries" && event.type === "click") {
       dispatch(setPhrase(suggestion.label));
+      setCurrentPhrase(suggestion.label);
       refetchLastQueries(event.currentTarget);
     }
   };
 
-  const onSuggestionHighlighted = ({ suggestion }) => {
-    if (suggestion && suggestion?.type === "last-queries")
-      setCurrentPhrase(suggestion.query);
-    else
-      setCurrentPhrase("");
-  };
+  const onSuggestionHighlighted = () => {};
 
   const callbacks = {
     onChange,
