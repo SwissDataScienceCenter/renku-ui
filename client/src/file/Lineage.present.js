@@ -277,18 +277,17 @@ class FileLineage extends Component {
       );
 
     return <Card className="border-rk-light">
-      <CardHeader className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3">
-        <div className="d-flex align-items-end">
+      <CardHeader className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3 flex-wrap">
+        <div className="d-flex align-items-end overflow-hidden gap-2">
           {isLFSBadge}
-          <strong>{this.props.path}</strong>
-        &nbsp;
-          {this.props.fileSize ? <span><small> {formatBytes(this.props.fileSize)}</small></span> : null}
-        &nbsp;
-          <span className="fileBarIconButton"><Clipboard clipboardText={this.props.path} /></span>
-        &nbsp;
+          <div className="fw-bold text-truncate">{this.props.path}</div>
+          {this.props.fileSize ?
+            <div className="flex-grow-0 flex-shrink-0">
+              <small> {formatBytes(this.props.fileSize)}</small></div> : null}
+          <span className="fileBarIconButton"><Clipboard clipboardText={this.props.path} className="d-flex" /></span>
         </div>
 
-        <div className="d-flex align-items-end">
+        <div className="d-flex align-items-center">
           <span className="fileBarIconButton">{buttonDownload}</span>
           <span className="fileBarIconButton">{buttonJupyter}</span>
           <span className="fileBarIconButton">{buttonGit}</span>
