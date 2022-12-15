@@ -61,7 +61,7 @@ const EmptyResult = ({ onRemoveFilters, error } : EmptyResultProps) => {
   </p>) : " We could not find any matches.";
 
   const errorText = (<p>
-    Search return an error for phrase <span className="fst-italic fw-bold">{decodeURIComponent(phrase)}.</span>
+    Search returned an error for phrase <span className="fst-italic fw-bold">{decodeURIComponent(phrase)}.</span>
   </p>);
 
   return (

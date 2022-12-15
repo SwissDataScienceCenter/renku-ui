@@ -7,6 +7,10 @@
     vertical-align: middle;
 }
 
+.inactive-kg-projects-table svg {
+    min-width: 24px;
+}
+
 .inactive-kg-projects-table thead th {
     border-color: white;
 }
@@ -17,4 +21,7 @@
 
 .activationHeader {
     font-size: 27px;
+}
+.project-title-table {
+    max-width: 300px;
 }

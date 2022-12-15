@@ -101,7 +101,6 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
     since,
     until,
   };
-
   const valuesDate = {
     since,
     until,
