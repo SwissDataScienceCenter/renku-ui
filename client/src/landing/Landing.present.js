@@ -37,9 +37,9 @@ import { Loader } from "../utils/components/Loader";
 import { Docs } from "../utils/constants/Docs";
 import { WarnAlert } from "../utils/components/Alert";
 import { useSelector } from "react-redux";
-import { useGetInactiveKgProjectsQuery } from "../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { useInactiveProjectSelector } from "../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { urlMap } from "../project/list/ProjectList.container";
+import useGetInactiveProjects from "../utils/customHooks/UseGetInactiveProjects";
 
 
 function truncatedProjectListRows(projects, urlFullList, gridDisplay, lastVisited) {
@@ -161,7 +161,7 @@ export function ProjectsInactiveKGWarning() {
   const projectList = useInactiveProjectSelector(
     (state) => state.kgInactiveProjects
   );
-  const { data, isFetching, isLoading } = useGetInactiveKgProjectsQuery(user?.data?.id);
+  const { data, isFetching, isLoading } = useGetInactiveProjects(user?.data?.id);
 
   if (!user.logged)
     return null;
