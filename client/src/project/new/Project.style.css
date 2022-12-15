@@ -113,3 +113,8 @@ svg.no-pointer {
   display: none !important;
   content: none !important;
 }
+
+.new-project-indicator {
+  max-width: 650px;
+  margin: auto;
+}

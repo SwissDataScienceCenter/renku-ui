@@ -195,28 +195,22 @@ function ForkProjectContent(props) {
   );
 }
 
+const isFormProcessingOrFinished = (meta) => {
+  // posting
+  if (meta.creation.creating || meta.creation.projectUpdating || meta.creation.kgUpdating)
+    return true;
+  // posted successfully with visibility or KG warning
+  if (meta.creation.created) return true;
+  return (meta.creation.projectError || meta.creation.kgError);
+};
+
 const NewProjectForm = (
   { automated, config, handlers, input, meta, namespaces, namespace,
     user, importingDataset, userRepo, templates } ) => {
 
-  const isFormProcessingOrFinished = (meta) => {
-    // posting
-    if (meta.creation.creating || meta.creation.projectUpdating || meta.creation.kgUpdating)
-      return true;
-    // posted successfully with visibility or KG warning
-    if (meta.creation.created) return true;
-    return (meta.creation.projectError || meta.creation.kgError);
-  };
-
-  const onProgress = isFormProcessingOrFinished(meta);
-  const creation = <Creation handlers={handlers} meta={meta} importingDataset={importingDataset} />;
-  if (onProgress)
-    return creation;
-
   const errorTemplateAlert = <ErrorTemplateFeedback templates={templates} meta={meta} input={input}/>;
   return (
     <Form data-cy="create-project-form" className="form-rk-green mb-4">
-      {creation}
       <Automated automated={automated} removeAutomated={handlers.removeAutomated} />
       <Title handlers={handlers} meta={meta} input={input} />
       <Namespaces
@@ -283,8 +277,15 @@ class NewProject extends Component {
       userRepo={userRepo}
       templates={templates}
     />;
+
+    const onProgress = isFormProcessingOrFinished(meta);
+    const creation = <Creation handlers={handlers} meta={meta} importingDataset={importingDataset} />;
+    if (onProgress)
+      return creation;
+
     return !this.props.importingDataset ? (
       <FormSchema showHeader={!formOnProcess} title={title} description={desc}>
+        {creation}
         {form}
       </FormSchema>
     ) : form ;
@@ -371,14 +372,16 @@ class Creation extends Component {
       : "You'll be redirected to the new project page when the creation is completed.";
 
     return (
-      <ProgressIndicator
-        type={ProgressType.Indeterminate}
-        style={ProgressStyle.Dark}
-        title={title}
-        description="We've received your project information. This may take a while."
-        currentStatus={message}
-        feedback={feedback}
-      />
+      <div className="new-project-indicator">
+        <ProgressIndicator
+          type={ProgressType.Indeterminate}
+          style={ProgressStyle.Dark}
+          title={title}
+          description="We've received your project information. This may take a while."
+          currentStatus={message}
+          feedback={feedback}
+        />
+      </div>
     );
   }
 }
