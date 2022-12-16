@@ -68,8 +68,10 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       countFlightsName: "getCountFlights",
       historicalUseNotebookName: "getHistoricalUseNotebook",
       latexNotebookName: "getLatexNotebook",
+      randomPyFileName: "getRandomPyFile"
     }) {
       const { countFlightsName, gitAttributesName, historicalUseNotebookName, latexNotebookName, rootName, } = names;
+      const { randomPyFileName } = names;
       cy.intercept(
         `/ui-server/api/projects/*/repository/tree?path=&recursive=false&per_page=100&page=1`,
         { fixture: "project/files/project-files-root.json" }
@@ -87,6 +89,9 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept("/ui-server/api/projects/*/repository/files/latex-notebook.ipynb?ref=master",
         { fixture: "project/files/latex-notebook.json" }
       ).as(latexNotebookName);
+      this.cy.intercept("/ui-server/api/projects/*/repository/files/random_py_file.py?ref=master",
+        { fixture: "project/files/random_py_file.json" }
+      ).as(randomPyFileName);
       return this;
     }
 
