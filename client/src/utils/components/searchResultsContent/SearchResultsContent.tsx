@@ -69,8 +69,8 @@ const EmptyResult = ({ onRemoveFilters, error } : EmptyResultProps) => {
       <FontAwesomeIcon icon={faSadCry} size="3x" className="opacity-25" />{" "}
       { error ? errorText : phraseText }
       { !hasFilters ? <p>
-        To get some data you can modify the current filters or remove all filters.{" "}
-        <Button color="primary" size="sm" onClick={removeFilters}>Yes, remove all filters</Button>
+        To get some data you can modify the current filters or{" "}
+        <Button color="primary" size="sm" onClick={removeFilters}>remove all filters</Button>
       </p> : null }
     </div>);
 };

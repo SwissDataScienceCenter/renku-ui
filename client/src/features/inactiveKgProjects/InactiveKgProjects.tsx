@@ -143,7 +143,6 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
       </div>);
   }
   const totalActive = (projectList.filter((p) => p.progressActivation === 100))?.length ?? 0;
-
   const content = projectList.length !== totalActive ?
     (
       <div className="col-md-12 p-4 border-radius-8 bg-white">
