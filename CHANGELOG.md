@@ -1,5 +1,23 @@
 # Changes
 
+## [2.14.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.13.0...2.14.0) (2022-12-16)
+
+### Bug Fixes
+
+* adjust layout on project creation page ([#2077](https://github.com/SwissDataScienceCenter/renku-ui/issues/2077), [#2214](https://github.com/SwissDataScienceCenter/renku-ui/issues/2214))
+* prevent resetting inputs when forking a project ([#2157](https://github.com/SwissDataScienceCenter/renku-ui/issues/2157))
+* update links to documentation ([#2207](https://github.com/SwissDataScienceCenter/renku-ui/issues/2207), [#2199](https://github.com/SwissDataScienceCenter/renku-ui/issues/2199))
+* adjust glitches on start session page ([#2199](https://github.com/SwissDataScienceCenter/renku-ui/issues/2199))
+* use project slug for local links ([#2209](https://github.com/SwissDataScienceCenter/renku-ui/issues/2209))
+* prevent overflowing content on file browser ([#2132](https://github.com/SwissDataScienceCenter/renku-ui/issues/2132), [#2213](https://github.com/SwissDataScienceCenter/renku-ui/issues/2213))
+
+
+### Features
+
+* add default action for failed sessions ([#1892](https://github.com/SwissDataScienceCenter/renku-ui/issues/1892), [#2211](https://github.com/SwissDataScienceCenter/renku-ui/issues/2211))
+* receive notifications through websocket when sessions change ([#2016](https://github.com/SwissDataScienceCenter/renku-ui/issues/2016), [#2145](https://github.com/SwissDataScienceCenter/renku-ui/issues/2145), [#2189](https://github.com/SwissDataScienceCenter/renku-ui/issues/2189))
+
+
 ## [2.13.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.12.0...2.13.0) (2022-11-28)
 
 ### Bug Fixes
