@@ -200,6 +200,7 @@ class DatasetsRows extends Component {
         labelCaption: projectsCount + ". Created",
         creators: dataset.published !== undefined && dataset.published.creator !== undefined ?
           dataset.published.creator : null,
+        imageUrl: dataset.images?.length > 0 ? dataset.images[0]["_links"][0].href : undefined,
       };
     });
 

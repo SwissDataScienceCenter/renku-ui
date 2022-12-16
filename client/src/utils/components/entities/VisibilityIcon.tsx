@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { CSSProperties, useContext, useRef } from "react";
+import React, { useContext, useRef } from "react";
 import { Globe, People, Lock } from "../../ts-wrappers";
 
 import AppContext from "../../context/appContext";
@@ -52,15 +52,10 @@ const VisibilityIcon = ({ visibility, className }: VisibilityIconProps) => {
     internal: `Internal: Anyone signed-in to ${hostname} can access your project.` //pending for other deployments
   };
 
-  const style: CSSProperties = {
-    position: "relative",
-    top: "-3px",
-  };
-
   return <>
-    <span ref={ref} className={`card-visibility-icon ${className}`} style={style}>
-      { icon[visibility] || "" }
-    </span>
+    <div ref={ref} className={`card-visibility-icon d-flex gap-2 align-items-baseline ${className}`}>
+      { icon[visibility] || "" } {visibility}
+    </div>
     <ThrottledTooltip
       target={ref}
       tooltip={tooltip[visibility]} />

@@ -179,12 +179,6 @@ function DisplayMetadata({ dataset, sameAs, insideProject }) {
     <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
       {
         <div className="d-flex">
-          {dataset.mediaContent ?
-            <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
-              <img src={dataset.mediaContent} className=" rounded" alt=""
-                style={{ objectFit: "cover", width: "100%", height: "90px" }} />
-            </div>
-            : null}
           <div className="flex-grow-1">
             <DisplayInfoTable
               dataset={dataset}
@@ -289,7 +283,7 @@ function AddToProjectButton({ insideKg, locked, logged, identifier }) {
 function EditDatasetButton({ dataset, insideProject, locked, maintainer }) {
   if (!insideProject || !maintainer) return null;
   if (locked) {
-    return <span className="float-right mb-1 me-1" id="editDatasetTooltip">
+    return <span className="float-right mb-1" id="editDatasetTooltip">
       <Button className="btn-rk-white text-rk-pink icon-button"
         data-cy="edit-dataset-button" disabled={true} size="sm">
         <FontAwesomeIcon icon={faPen} color="dark" />
@@ -299,7 +293,7 @@ function EditDatasetButton({ dataset, insideProject, locked, maintainer }) {
         tooltip="Cannot edit dataset until project modification finishes." />
     </span>;
   }
-  return <Link className="float-right mb-1 me-1" id="editDatasetTooltip"
+  return <Link className="float-right mb-1" id="editDatasetTooltip"
     data-cy="edit-dataset-button"
     to={{ pathname: "modify", state: { dataset: dataset } }} >
     <Button className="btn-rk-white text-rk-pink icon-button" size="sm"
@@ -321,7 +315,7 @@ function getLinksDatasetHeader(projects) {
   };
   if (linksHeader.status !== "is_updating" && projects?.length > 0) {
     linksHeader.total = projects.length;
-    projects.slice(0, 5).map( project => {
+    projects.slice(0, 3).map( project => {
       linksHeader.data.push({
         title: project.name,
         url: `/projects/${project.path}`
@@ -380,6 +374,10 @@ export default function DatasetView(props) {
     new Date(datasetDate.replace(/ /g, "T")) :
     "";
 
+  const imageUrl = dataset.mediaContent ? dataset.mediaContent :
+    dataset.images?.length > 0 ?
+      dataset.images[0]["_links"][0].href : undefined;
+
   return (<div className={props.insideProject ? "row" : "container-xxl renku-container py-4 mt-2"}>
     <Col>
       <ErrorAfterCreation location={props.location} dataset={dataset} />
@@ -402,6 +400,7 @@ export default function DatasetView(props) {
           url={dataset.identifier}
           links={linksHeader}
           otherButtons={[deleteOption, modifyButton, addToProject]}
+          imageUrl={imageUrl}
         />
       </div>
       <DisplayMetadata

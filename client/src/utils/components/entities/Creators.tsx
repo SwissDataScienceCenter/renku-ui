@@ -19,6 +19,7 @@
 import React from "react";
 import { EntityType } from "./Entities";
 import { stylesByItemType } from "../../helpers/HelperFunctions";
+import { People, Person } from "../../ts-wrappers";
 
 /**
  *  renku-ui
@@ -36,8 +37,9 @@ export interface EntityCreatorsProps {
   display: "grid" | "list" | "plain" | "tree";
   creators: EntityCreator[];
   itemType: EntityType;
+  includeIcon?: boolean;
 }
-function EntityCreators({ display, creators, itemType }: EntityCreatorsProps) {
+function EntityCreators({ display, creators, itemType, includeIcon }: EntityCreatorsProps) {
   let creatorsText;
   const stylesByItem = stylesByItemType(itemType);
   if (!creators) {
@@ -50,12 +52,17 @@ function EntityCreators({ display, creators, itemType }: EntityCreatorsProps) {
       creatorsText += ", et al.";
   }
 
+  const icon = includeIcon ?
+    creators.length > 1 ? <People size="20" className="me-2" /> : <Person className="me-2" size="20" />
+    : null;
+
   if (display === "plain")
-    return (<span>{creatorsText}</span>);
+    return (<>{icon}<span>{creatorsText}</span></>);
 
   if (display === "list") {
     return (
-      <div className={`card-text card-entity-row ${stylesByItem.colorText}`}>
+      <div className={`card-text ${stylesByItem.colorText}`}>
+        {icon}
         {creatorsText}
       </div>
     );
@@ -68,7 +75,7 @@ function EntityCreators({ display, creators, itemType }: EntityCreatorsProps) {
   }
 
   return (
-    <div className={`card-entity-row text-rk-text ${ stylesByItem.colorText }`}>
+    <div className={`text-rk-text ${ stylesByItem.colorText }`}>
       <small style={{ display: "block" }} className="font-weight-light">
         {creatorsText}
       </small>

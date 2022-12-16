@@ -64,7 +64,7 @@ function ProjectListRows(props) {
         : " ",
       tagList: project.tag_list,
       timeCaption: project.last_activity_at,
-      mediaContent: project.avatar_url,
+      imageUrl: project.avatar_url,
       visibility: project.visibility
     };
   });

@@ -62,6 +62,7 @@ const AboutSessionModal = ({ toggleModal, isOpen, projectMetadata, notebook }: A
         devAccess={projectMetadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
         url={`projects/${slug}`}
         showFullHeader={false}
+        imageUrl={projectMetadata.avatarUrl}
       />
     </div>
   );

@@ -38,18 +38,21 @@ export interface EntityDescriptionProps {
   showSuggestion: boolean;
 
   urlChangeDescription?: string;
+
+  className?: string;
 }
 
 function EntityDescription(
-  { description, isHeightFixed = true, hasDevAccess, showSuggestion, urlChangeDescription }: EntityDescriptionProps) {
+  { description, isHeightFixed = true, hasDevAccess, showSuggestion, urlChangeDescription, className }
+    : EntityDescriptionProps) {
   const descriptionStyles: CSSProperties = {
     overflow: "hidden",
     textOverflow: "ellipsis",
     display: "-webkit-box",// eslint-disable-line
-    lineClamp: 3,
-    WebkitLineClamp: 3,// eslint-disable-line
+    lineClamp: isHeightFixed ? 3 : undefined,
+    WebkitLineClamp: isHeightFixed ? 3 : undefined,// eslint-disable-line
     WebkitBoxOrient: "vertical",// eslint-disable-line
-    margin: "12px 0",
+    margin: "12px 0 0 0",
     minHeight: isHeightFixed ? "75px" : undefined,
     height: isHeightFixed ? "75px" : undefined,
   };
@@ -64,7 +67,8 @@ function EntityDescription(
     );
   }
 
-  return (<div className="card-text text-rk-text-light" style={descriptionStyles} data-cy="entity-description">
+  return (<div className={`card-text ${className}`}
+    style={descriptionStyles} data-cy="entity-description">
     {description ? description :
       showSuggestion && hasDevAccess && urlChangeDescription ?
         <i>(This project has no description.

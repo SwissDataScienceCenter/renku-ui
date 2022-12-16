@@ -24,7 +24,6 @@
  */
 import * as React from "react";
 
-import { Col, Row } from "../../ts-wrappers";
 import Creators, { EntityCreator } from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityTags from "../entities/Tags";
@@ -36,7 +35,8 @@ import { EntityType } from "../entities/Entities";
 import { StartSessionButton } from "../../../project/Project.present";
 import { TimeCaption } from "../TimeCaption";
 
-import "./EntityHeader.css";
+import "./EntityHeader.scss";
+import { stylesByItemType } from "../../helpers/HelperFunctions";
 
 export interface EntityHeaderProps {
   creators: EntityCreator[];
@@ -57,77 +57,62 @@ export interface EntityHeaderProps {
   title: string;
   url: string;
   visibility?: "public" | "internal" | "private";
+  imageUrl?: string;
 }
 
 function EntityHeader({
   creators, description, devAccess, itemType, labelCaption, launchNotebookUrl, links,
   otherButtons, sessionAutostartUrl, showFullHeader = true, slug, statusButton, tagList, timeCaption,
-  title, url, visibility
+  title, url, visibility, imageUrl
 }: EntityHeaderProps) {
 
   const mainButton = launchNotebookUrl && sessionAutostartUrl ?
     <StartSessionButton launchNotebookUrl={launchNotebookUrl} sessionAutostartUrl={sessionAutostartUrl} /> : null;
 
-  const projectDetails = (
-    <div className="card card-entity--large">
-      <div className={`card-header-entity--large card-header-entity--${itemType}-large`}>
-        <div className="card-bg-title card-bg-title--large" data-cy={`${itemType}-title`}>{title}</div>
-        <div className="d-flex justify-content-between align-items-center m-3">
-          <EntityLabel type={itemType} workflowType={null} />
-          { visibility ? (<VisibilityIcon visibility={visibility} />) : null }
+  const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
+  const colorByType = stylesByItemType(itemType);
+
+  return (
+    <div className={`container-entity-header ${!showFullHeader ? "container-entity-header-incomplete" : ""}`}>
+      <div className="entity-image">
+        <div style={imageStyles}
+          className={`header-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
         </div>
       </div>
-      <div className="card-body">
-        <Row>
-          <Col xs={12} lg={9}>
-            <div className="card-title card-entity-row card-entity-row--title lh-sm" data-cy="list-card-title">
-              {statusButton}{title}
-            </div>
-          </Col>
-          <Col xs={12} lg={3}
-            className="d-flex gap-2 align-items-center justify-content-start justify-content-lg-end my-2 my-lg-0">
-            {otherButtons}
-            {mainButton}
-          </Col>
-        </Row>
-        <Slug display="list" slug={slug ?? ""} />
-        <Creators display="list" creators={creators} itemType={itemType} />
+      <div className="entity-time-tags">
+        <TimeCaption
+          caption={labelCaption || "Updated"}
+          showTooltip={true}
+          time={timeCaption}
+          className="text-rk-text-light"/>
+        <EntityTags tagList={tagList} multiline={true} />
+      </div>
+      <div className="entity-action d-flex align-items-baseline gap-1">
+        {mainButton}
+        {otherButtons}
+      </div>
+      <div className="entity-type-visibility align-items-baseline">
+        <EntityLabel type={itemType} workflowType={null} />
+        { visibility ? (<VisibilityIcon visibility={visibility} className={colorByType.colorText} />) : null }
+      </div>
+      <div className="entity-title">
+        <div className="card-title lh-sm" data-cy="list-card-title">
+          {statusButton}{title}
+        </div>
+      </div>
+      <div className="entity-other-links">
+        <LinkedEntitiesByItemType itemType={itemType} links={links} devAccess={devAccess} url={url} />
+      </div>
+      <div className="entity-metadata">
+        <Creators display="list" creators={creators} itemType={itemType} includeIcon={true} />
+        <Slug multiline={true} slug={slug ?? ""} />
         <EntityDescription
           description={description} isHeightFixed={false}
           showSuggestion={true} hasDevAccess={devAccess}
           urlChangeDescription={`${url}/settings`}
+          className="text-rk-dark"
         />
-        <Row>
-          <Col xs={12} lg={9}>
-            <EntityTags tagList={tagList} multiline={true} />
-          </Col>
-          <Col xs={12} lg={3}
-            className="justify-content-start justify-content-lg-end">
-            <TimeCaption
-              caption={labelCaption || "Updated"}
-              showTooltip={true}
-              time={timeCaption}
-              className="text-rk-text-light"/>
-          </Col>
-        </Row>
       </div>
-    </div>
-  );
-
-  if (!showFullHeader)
-    return projectDetails;
-
-  return (
-    <div className="entity-card-large row" data-cy={`header-${itemType}`}>
-      <Col
-        className="d-flex align-items-start flex-column col-12 col-sm-12 col-md-12 col-lg-9 col-xl-9 overflow-hidden">
-        {projectDetails}
-      </Col>
-      <Col
-        className="align-items-start flex-column col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 overflow-hidden
-        d-sm-none d-md-none d-lg-flex d-xl-flex">
-        <LinkedEntitiesByItemType itemType={itemType} links={links} devAccess={devAccess} url={url} />
-      </Col>
     </div>
   );
 }
