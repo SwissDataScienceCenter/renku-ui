@@ -30,7 +30,7 @@
     "ioredis": "^4.27.9",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
-    "openid-client": "^4.9.0",
+    "openid-client": "^4.9.1",
     "uuid": "^8.3.2",
     "winston": "^3.3.3",
     "ws": "^7.5.3"
