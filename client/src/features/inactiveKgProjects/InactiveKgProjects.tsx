@@ -20,7 +20,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { useGetInactiveKgProjectsQuery } from "./InactiveKgProjectsApi";
 import { Loader } from "../../utils/components/Loader";
 import { Balloon, Briefcase, Table } from "../../utils/ts-wrappers";
 import "./inactiveKgProjects.css";
@@ -33,6 +32,7 @@ import AppContext from "../../utils/context/appContext";
 import { WsMessage } from "../../websocket/WsMessages";
 import KgActivationHeader from "./components/KgActivationHeader";
 import ActivationProgress from "./components/ActivationProgress";
+import useGetInactiveProjects from "../../utils/customHooks/UseGetInactiveProjects";
 
 export interface InactiveKgProjects {
   id: number;
@@ -52,7 +52,7 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
   const [activating, setActivating] = useState(false);
   const user = useSelector((state: any) => state.stateModel.user);
   const websocket = useSelector((state: any) => state.stateModel.webSocket);
-  const { data, isFetching, isLoading } = useGetInactiveKgProjectsQuery(user?.data?.id);
+  const { data, isFetching, isLoading, error } = useGetInactiveProjects(user?.data?.id);
   const projectList = useInactiveProjectSelector(
     (state) => state.kgInactiveProjects
   );
@@ -62,9 +62,9 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
 
   // hook to update project list when projects pending to activate change
   useEffect(() => {
-    if (!projectList.length)
+    if (!isFetching && !error && !projectList.length)
       dispatch(addFullList(data ?? []));
-  }, [data]); // eslint-disable-line
+  }, [data, isFetching, error]); // eslint-disable-line
 
   // hook to calculate if still activating a project of the list
   useEffect(() => {
@@ -135,8 +135,14 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
         <Loader />Loading projects.
       </div>);
   }
-  const totalActive = (projectList.filter((p) => p.progressActivation === 100))?.length ?? 0;
 
+  if (error) {
+    return (
+      <div className="d-flex justify-content-center align-items-center gap-2 flex-column fst-italic">
+        Error loading projects, please refresh page to try again.
+      </div>);
+  }
+  const totalActive = (projectList.filter((p) => p.progressActivation === 100))?.length ?? 0;
   const content = projectList.length !== totalActive ?
     (
       <div className="col-md-12 p-4 border-radius-8 bg-white">
@@ -178,12 +184,15 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
                     /> : null
                   }
                 </th>
-                <td>
+                <td className="project-title-table">
                   <Link to={`/projects/${project.namespaceWithPath}`}
-                    className="d-flex align-items-center text-rk-green gap-1 text-decoration-none text-truncate">
-                    <Briefcase title="project" />{project.title}</Link>
+                    className="d-flex text-rk-green gap-1 text-decoration-none text-truncate align-items-center">
+                    <Briefcase title="project" />
+                    <span className="text-rk-green text-decoration-none text-truncate">
+                      {project.title}
+                    </span></Link>
                 </td>
-                <td>{project.namespaceWithPath}</td>
+                <td className="project-title-table text-truncate">{project.namespaceWithPath}</td>
                 <td className="text-capitalize">{project.visibility}</td>
                 <td><ActivationProgress project={project} /></td>
               </tr>

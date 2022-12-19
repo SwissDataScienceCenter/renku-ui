@@ -21,7 +21,6 @@ import type { KgAuthor, KgSearchResult, ListResponse } from "./KgSearch";
 import { VisibilitiesFilter } from "../../utils/components/visibilityFilter/VisibilityFilter";
 import { TypeEntitySelection } from "../../utils/components/typeEntityFilter/TypeEntityFilter";
 import { SortingOptions } from "../../utils/components/sortingEntities/SortingEntities";
-import { hasSpecialCharacters } from "../../utils/helpers/HelperFunctions";
 
 type SearchEntitiesQueryParams = {
   phrase: string;
@@ -73,9 +72,8 @@ function setVisibilityInQuery(
 }
 
 const getPhrase = (phrase?: string) => {
-  if (!phrase) return "*";
-  if (hasSpecialCharacters(phrase)) return phrase;
-  return `*${phrase}*`;
+  if (!phrase) return "";
+  return `query=${phrase}`;
 };
 
 const setDates = (query: string, since?: string, until?: string) => {
@@ -107,7 +105,7 @@ export const kgSearchApi = createApi({
         since,
         until
       }) => {
-        const url = `entities?query=${getPhrase(
+        const url = `entities?${getPhrase(
           phrase
         )}&sort=${sort}&page=${page}&per_page=${perPage}`;
         return setDates(

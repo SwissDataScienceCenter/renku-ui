@@ -18,13 +18,28 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { InactiveKgProjects } from "./InactiveKgProjects";
 
+
+interface InactiveKgProjectsResponse {
+  data: InactiveKgProjects[];
+  nextPage?: number | undefined;
+  total: number;
+  page: number;
+}
+
+interface InactiveProjectParams {
+  userId: number;
+  perPage: number;
+  page: number;
+}
+
 export const inactiveKgProjectsApi = createApi({
   reducerPath: "inactiveKgProjectsApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/kg" }),
   endpoints: (builder) => ({
-    getInactiveKgProjects: builder.query<InactiveKgProjects[], number>({
-      query: (userId) => `users/${userId}/projects?state=NOT_ACTIVATED`,
-      transformResponse: (response: any) => {
+    getInactiveKgProjects: builder.query<InactiveKgProjectsResponse, InactiveProjectParams>({
+      query: (params: InactiveProjectParams) =>
+        `users/${params.userId}/projects?state=NOT_ACTIVATED&per_page=${params.perPage}&page=${params.page}`,
+      transformResponse: (response: any, meta, arg) => {
         let projects = [];
         if (response) {
           projects = response
@@ -40,7 +55,13 @@ export const inactiveKgProjectsApi = createApi({
               };
             });
         }
-        return projects;
+        const nextPage = meta?.response?.headers.get("next-page");
+        return {
+          data: projects,
+          nextPage: nextPage ? parseInt(nextPage) : undefined,
+          total: parseInt(meta?.response?.headers.get("total") ?? "0"),
+          page: parseInt(meta?.response?.headers.get("page") ?? "1")
+        };
       }
     }),
   }),

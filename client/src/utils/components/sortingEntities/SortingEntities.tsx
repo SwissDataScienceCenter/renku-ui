@@ -70,8 +70,8 @@ const SortingEntities = (
     DescTitle: "Title: Z - A",
     AscDate: "Old - New",
     DescDate: "New - Old",
-    AscMatchingScore: "Relevance Asc",
-    DescMatchingScore: "Relevance Desc"
+    AscMatchingScore: "Low Relevance",
+    DescMatchingScore: "Relevance"
   };
 
   const options = [];
