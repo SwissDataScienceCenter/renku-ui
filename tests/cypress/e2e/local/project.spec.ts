@@ -102,6 +102,7 @@ describe("display a project", () => {
     cy.contains("Error").should("be.visible");
     cy.contains("[Show details]").should("be.visible");
   });
+
   it("displays project file > notebook with image", () => {
     fixtures.projectFiles();
     cy.visit("/projects/e2e/local-test-project/files");
@@ -119,6 +120,7 @@ describe("display a project", () => {
     cy.contains("Historical Use Patterns").should("be.visible")
       .should("have.prop", "tagName").should("eq", "H1");
   });
+
   it("displays project file > notebook with LaTex", () => {
     fixtures.projectFiles();
     cy.visit("/projects/e2e/local-test-project/files");
@@ -130,6 +132,7 @@ describe("display a project", () => {
     // look for latex output
     cy.get("mjx-container").should("be.visible");
   });
+
   it("displays project file > notebook with python output", () => {
     fixtures.projectFiles();
     cy.visit("/projects/e2e/local-test-project/files");
@@ -140,6 +143,18 @@ describe("display a project", () => {
     cy.wait("@getCountFlights");
     // look for python output
     cy.contains("There were 4951 flights to Austin, TX in Jan 2019.").should("be.visible");
+  });
+
+  it("displays project file > python file", () => {
+    fixtures.projectFiles();
+    cy.visit("/projects/e2e/local-test-project/files");
+    cy.wait("@getProjectFilesRoot");
+    cy.contains("random_py_file.py").scrollIntoView();
+    cy.contains("random_py_file.py").should("be.visible");
+    cy.contains("random_py_file.py").click();
+    cy.wait("@getRandomPyFile");
+    // look for python output
+    cy.contains("Minimal example.").should("be.visible");
   });
 });
 
