@@ -73,7 +73,8 @@ function EntityHeader({
   const colorByType = stylesByItemType(itemType);
 
   return (
-    <div className={`container-entity-header ${!showFullHeader ? "container-entity-header-incomplete" : ""}`}>
+    <div className={`container-entity-header ${!showFullHeader ? "container-entity-header-incomplete" : ""}`}
+      data-cy={`header-${itemType}`}>
       <div className="entity-image">
         <div style={imageStyles}
           className={`header-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
@@ -95,8 +96,8 @@ function EntityHeader({
         <EntityLabel type={itemType} workflowType={null} />
         { visibility ? (<VisibilityIcon visibility={visibility} className={colorByType.colorText} />) : null }
       </div>
-      <div className="entity-title">
-        <div className="card-title lh-sm" data-cy="list-card-title">
+      <div className="entity-title" data-cy={`${itemType}-title`}>
+        <div className="card-title lh-sm" data-cy="list-card-title" >
           {statusButton}{title}
         </div>
       </div>
@@ -118,4 +119,3 @@ function EntityHeader({
 }
 
 export default EntityHeader;
-
