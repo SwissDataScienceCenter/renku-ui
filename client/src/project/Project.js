@@ -156,7 +156,6 @@ function matchToDatasetId(matchDatasetId) {
 function mapProjectStateToProps(state, ownProps) {
   const projectCoordinator = ownProps.projectCoordinator;
   const pathComponents = splitProjectSubRoute(ownProps.match.url);
-  const internalId = projectCoordinator.get("metadata.id") || parseInt(ownProps.match.params.id, 10);
   const starred = ownProps.getStarred();
   const accessLevel = projectCoordinator.get("metadata.accessLevel");
   const settingsReadOnly = accessLevel < ACCESS_LEVELS.MAINTAINER;
@@ -170,7 +169,6 @@ function mapProjectStateToProps(state, ownProps) {
     projectPathWithNamespace: pathComponents.projectPathWithNamespace,
     projectId: pathComponents.projectId,
     namespace: pathComponents.namespace,
-    ...ownProps.subComponents(internalId, ownProps),
     starred,
     settingsReadOnly,
     externalUrl,
@@ -411,191 +409,269 @@ class View extends Component {
   }
 
   // TODO: remove sub-components and use mapping function as everywhere else
-  subComponents(projectId, ownProps) {
-    const isPrivate = this.projectCoordinator.get("metadata.visibility") === "private";
-    const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
-    const branches = {
-      all: this.projectCoordinator.get("branches"),
-      fetch: () => { this.projectCoordinator.fetchBranches(); }
+  subComponents(ownProps) {
+    const getSubProps = () => {
+      const projectId = this.projectCoordinator.get("metadata.id") || parseInt(ownProps.match.params.id, 10);
+      const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
+      const datasets = this.projectCoordinator.get("datasets.core.datasets");
+      const externalUrl = this.projectCoordinator.get("metadata.externalUrl");
+      const filesTree = this.projectCoordinator.get("filesTree");
+      const projectPathWithNamespace = this.projectCoordinator.get("metadata.pathWithNamespace");
+      return {
+        ...ownProps, projectId, accessLevel, externalUrl, filesTree, projectPathWithNamespace, datasets
+      };
     };
-    const datasets = this.projectCoordinator.get("datasets.core.datasets");
-    const externalUrl = this.projectCoordinator.get("metadata.externalUrl");
-    const filesTree = this.projectCoordinator.get("filesTree");
-    const forkedData = this.projectCoordinator.get("forkedFromProject");
-    const forked = (forkedData != null && Object.keys(forkedData).length > 0) ? true : false;
-    const graphProgress = this.projectCoordinator.get("webhook.progress");
-    const httpProjectUrl = this.projectCoordinator.get("metadata.httpUrl");
-    const lockStatus = this.projectCoordinator.get("lockStatus");
-    const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
-    const migration = this.projectCoordinator.get("migration");
-    const pathComponents = splitProjectSubRoute(this.props.match.url);
-    const projectPathWithNamespace = this.projectCoordinator.get("metadata.pathWithNamespace");
-    const subProps = {
-      ...ownProps, projectId, accessLevel, externalUrl, filesTree, projectPathWithNamespace, datasets
-    };
-    const subUrls = this.getSubUrls();
+
     const updateProjectView = this.forceUpdate.bind(this);
 
     return {
+      mrView: (p) => {
+        const subProps = getSubProps();
+        const subUrls = this.getSubUrls();
+        return <MergeRequest
+          key="mr" {...subProps}
+          match={p.match}
+          iid={p.match.params.mrIid}
+          updateProjectState={this.fetchAll.bind(this)}
+          mergeRequestsOverviewUrl={subUrls.mergeRequestsOverviewUrl}
+          mergeRequestUrl={subUrls.mergeRequestUrl}
+          mergeRequestDiscussionUrl={subUrls.mergeRequestDiscussionUrl}
+          mergeRequestChangesUrl={subUrls.mergeRequestChangesUrl}
+          mergeRequestCommitsUrl={subUrls.mergeRequestCommitsUrl}
+        />;
+      },
 
-      mrView: (p) => <MergeRequest
-        key="mr" {...subProps}
-        match={p.match}
-        iid={p.match.params.mrIid}
-        updateProjectState={this.fetchAll.bind(this)}
-        mergeRequestsOverviewUrl={subUrls.mergeRequestsOverviewUrl}
-        mergeRequestUrl={subUrls.mergeRequestUrl}
-        mergeRequestDiscussionUrl={subUrls.mergeRequestDiscussionUrl}
-        mergeRequestChangesUrl={subUrls.mergeRequestChangesUrl}
-        mergeRequestCommitsUrl={subUrls.mergeRequestCommitsUrl}
-      />,
+      issueView: (p) => {
+        const projectPathWithNamespace = this.projectCoordinator.get("metadata.pathWithNamespace");
+        const subProps = getSubProps();
+        const subUrls = this.getSubUrls();
+        return <Issue.View key="issue" {...subProps}
+          issueIid={p.match.params.issueIid}
+          updateProjectView={updateProjectView}
+          projectPath={projectPathWithNamespace}
+          issuesUrl={subUrls.issuesUrl}
+        />;
+      },
 
-      issueView: (p) => <Issue.View key="issue" {...subProps}
-        issueIid={p.match.params.issueIid}
-        updateProjectView={updateProjectView}
-        projectPath={projectPathWithNamespace}
-        issuesUrl={subUrls.issuesUrl}
-      />,
+      lineageView: (p) => {
+        const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
+        const branches = {
+          all: this.projectCoordinator.get("branches"),
+          fetch: () => { this.projectCoordinator.fetchBranches(); }
+        };
+        const externalUrl = this.projectCoordinator.get("metadata.externalUrl");
+        const filesTree = this.projectCoordinator.get("filesTree");
+        const forkedData = this.projectCoordinator.get("forkedFromProject");
+        const forked = (forkedData != null && Object.keys(forkedData).length > 0) ? true : false;
+        const graphProgress = this.projectCoordinator.get("webhook.progress");
+        const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
+        const pathComponents = splitProjectSubRoute(this.props.match.url);
+        const projectPathWithNamespace = this.projectCoordinator.get("metadata.pathWithNamespace");
+        const subProps = getSubProps();
+        const subUrls = this.getSubUrls();
+        return <FileLineage key="lineage" {...subProps}
+          externalUrl={externalUrl}
+          lineagesUrl={subUrls.lineagesUrl}
+          projectPath={projectPathWithNamespace}
+          path={p.match.params.filePath}
+          notebook={"Notebook"}
+          accessLevel={accessLevel}
+          progress={graphProgress}
+          maintainer={maintainer}
+          forked={forked}
+          launchNotebookUrl={subUrls.launchNotebookUrl}
+          projectNamespace={this.projectCoordinator.get("metadata.namespace")}
+          projectPathOnly={this.projectCoordinator.get("metadata.path")}
+          branches={branches}
+          hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined}
+          gitFilePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/lineage/", "")}
+          history={this.props.history}
+          branch={this.projectCoordinator.get("metadata.defaultBranch")} />;
+      },
 
-      lineageView: (p) => <FileLineage key="lineage" {...subProps}
-        externalUrl={externalUrl}
-        lineagesUrl={subUrls.lineagesUrl}
-        projectPath={projectPathWithNamespace}
-        path={p.match.params.filePath}
-        notebook={"Notebook"}
-        accessLevel={accessLevel}
-        progress={graphProgress}
-        maintainer={maintainer}
-        forked={forked}
-        launchNotebookUrl={subUrls.launchNotebookUrl}
-        projectNamespace={this.projectCoordinator.get("metadata.namespace")}
-        projectPathOnly={this.projectCoordinator.get("metadata.path")}
-        branches={branches}
-        hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined}
-        gitFilePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/lineage/", "")}
-        history={this.props.history}
-        branch={this.projectCoordinator.get("metadata.defaultBranch")} />,
+      fileView: (p) => {
+        const branches = {
+          all: this.projectCoordinator.get("branches"),
+          fetch: () => { this.projectCoordinator.fetchBranches(); }
+        };
+        const filesTree = this.projectCoordinator.get("filesTree");
+        const pathComponents = splitProjectSubRoute(this.props.match.url);
+        const subProps = getSubProps();
+        const subUrls = this.getSubUrls();
+        return <ShowFile
+          key="filePreview" {...subProps}
+          filePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")}
+          lineagesPath={subUrls.lineagesUrl}
+          launchNotebookUrl={subUrls.launchNotebookUrl}
+          projectNamespace={this.projectCoordinator.get("metadata.namespace")}
+          projectPath={this.projectCoordinator.get("metadata.path")}
+          branches={branches}
+          projectId={subProps.projectId}
+          projectPathWithNamespace={this.projectCoordinator.get("metadata.pathWithNamespace")}
+          hashElement={filesTree !== undefined ?
+            filesTree.hash[p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")] :
+            undefined}
+          filesTree={filesTree}
+          history={this.props.history}
+          branch={this.projectCoordinator.get("metadata.defaultBranch")} //this can be changed
+          defaultBranch={this.projectCoordinator.get("metadata.defaultBranch")} />;
+      },
 
-      fileView: (p) => <ShowFile
-        key="filePreview" {...subProps}
-        filePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")}
-        lineagesPath={subUrls.lineagesUrl}
-        launchNotebookUrl={subUrls.launchNotebookUrl}
-        projectNamespace={this.projectCoordinator.get("metadata.namespace")}
-        projectPath={this.projectCoordinator.get("metadata.path")}
-        branches={branches}
-        projectId={projectId}
-        projectPathWithNamespace={this.projectCoordinator.get("metadata.pathWithNamespace")}
-        hashElement={filesTree !== undefined ?
-          filesTree.hash[p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")] :
-          undefined}
-        filesTree={filesTree}
-        history={this.props.history}
-        branch={this.projectCoordinator.get("metadata.defaultBranch")} //this can be changed
-        defaultBranch={this.projectCoordinator.get("metadata.defaultBranch")} />,
+      datasetView: (p, projectInsideKg) => {
+        const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
+        const datasets = this.projectCoordinator.get("datasets.core.datasets");
+        const httpProjectUrl = this.projectCoordinator.get("metadata.httpUrl");
+        const lockStatus = this.projectCoordinator.get("lockStatus");
+        const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
+        const migration = this.projectCoordinator.get("migration");
+        const projectPathWithNamespace = this.projectCoordinator.get("metadata.pathWithNamespace");
+        const subProps = getSubProps();
+        const subUrls = this.getSubUrls();
+        return <ShowDataset
+          key="datasetPreview" {...subProps}
+          datasets={datasets}
+          datasetId={matchToDatasetId(p.match.params.datasetId)}
+          fileContentUrl={subUrls.fileContentUrl}
+          graphStatus={this.isGraphReady()}
+          history={this.props.history}
+          httpProjectUrl={httpProjectUrl}
+          insideProject={true}
+          lineagesUrl={subUrls.lineagesUrl}
+          location={this.props.location}
+          lockStatus={lockStatus}
+          logged={this.props.user.logged}
+          maintainer={maintainer}
+          migration={migration}
+          model={this.props.model}
+          overviewStatusUrl={subUrls.overviewStatusUrl}
+          projectId={subProps.projectId}
+          projectInsideKg={projectInsideKg}
+          projectPathWithNamespace={projectPathWithNamespace}
+          projectsUrl={subUrls.projectsUrl}
+          datasetCoordinator={this.datasetCoordinator}
+        />;
+      },
 
-      datasetView: (p, projectInsideKg) => <ShowDataset
-        key="datasetPreview" {...subProps}
-        datasets={datasets}
-        datasetId={matchToDatasetId(p.match.params.datasetId)}
-        fileContentUrl={subUrls.fileContentUrl}
-        graphStatus={this.isGraphReady()}
-        history={this.props.history}
-        httpProjectUrl={httpProjectUrl}
-        insideProject={true}
-        lineagesUrl={subUrls.lineagesUrl}
-        location={this.props.location}
-        lockStatus={lockStatus}
-        logged={this.props.user.logged}
-        maintainer={maintainer}
-        migration={migration}
-        model={this.props.model}
-        overviewStatusUrl={subUrls.overviewStatusUrl}
-        projectId={projectId}
-        projectInsideKg={projectInsideKg}
-        projectPathWithNamespace={projectPathWithNamespace}
-        projectsUrl={subUrls.projectsUrl}
-        datasetCoordinator={this.datasetCoordinator}
-      />,
+      newDataset: (p) => {
+        const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
+        const datasets = this.projectCoordinator.get("datasets.core.datasets");
+        const forkedData = this.projectCoordinator.get("forkedFromProject");
+        const forked = (forkedData != null && Object.keys(forkedData).length > 0) ? true : false;
+        const graphProgress = this.projectCoordinator.get("webhook.progress");
+        const httpProjectUrl = this.projectCoordinator.get("metadata.httpUrl");
+        const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
+        const migration = this.projectCoordinator.get("migration");
+        const subProps = getSubProps();
+        const subUrls = this.getSubUrls();
+        return <ChangeDataset
+          key="datasetCreate" {...subProps}
+          accessLevel={accessLevel}
+          client={this.props.client}
+          datasets={datasets}
+          defaultBranch={this.projectCoordinator.get("metadata.defaultBranch")}
+          edit={false}
+          fetchDatasets={this.eventHandlers.fetchDatasets}
+          fileContentUrl={subUrls.fileContentUrl}
+          forked={forked}
+          history={this.props.history}
+          httpProjectUrl={httpProjectUrl}
+          insideProject={true}
+          lineagesUrl={subUrls.lineagesUrl}
+          location={p.location}
+          maintainer={maintainer}
+          migration={migration}
+          model={this.props.model}
+          notifications={p.notifications}
+          overviewCommitsUrl={subUrls.overviewCommitsUrl}
+          progress={graphProgress}
+          projectsUrl={subUrls.projectsUrl}
+          toggleNewDataset={p.toggleNewDataset}
+        />;
+      },
 
-      newDataset: (p) => <ChangeDataset
-        key="datasetCreate" {...subProps}
-        accessLevel={accessLevel}
-        client={this.props.client}
-        datasets={datasets}
-        defaultBranch={this.projectCoordinator.get("metadata.defaultBranch")}
-        edit={false}
-        fetchDatasets={this.eventHandlers.fetchDatasets}
-        fileContentUrl={subUrls.fileContentUrl}
-        forked={forked}
-        history={this.props.history}
-        httpProjectUrl={httpProjectUrl}
-        insideProject={true}
-        lineagesUrl={subUrls.lineagesUrl}
-        location={p.location}
-        maintainer={maintainer}
-        migration={migration}
-        model={this.props.model}
-        notifications={p.notifications}
-        overviewCommitsUrl={subUrls.overviewCommitsUrl}
-        progress={graphProgress}
-        projectsUrl={subUrls.projectsUrl}
-        toggleNewDataset={p.toggleNewDataset}
-      />,
+      editDataset: (p) => {
+        const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
+        const datasets = this.projectCoordinator.get("datasets.core.datasets");
+        const forkedData = this.projectCoordinator.get("forkedFromProject");
+        const forked = (forkedData != null && Object.keys(forkedData).length > 0) ? true : false;
+        const graphProgress = this.projectCoordinator.get("webhook.progress");
+        const httpProjectUrl = this.projectCoordinator.get("metadata.httpUrl");
+        const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
+        const migration = this.projectCoordinator.get("migration");
+        const subProps = getSubProps();
+        const subUrls = this.getSubUrls();
+        return <ChangeDataset
+          key="datasetModify" {...subProps}
+          accessLevel={accessLevel}
+          client={this.props.client}
+          dataset={p.location.state ? p.location.state.dataset : null}
+          datasetId={matchToDatasetId(p.match.params.datasetId)}
+          datasets={datasets}
+          defaultBranch={this.projectCoordinator.get("metadata.defaultBranch")}
+          edit={true}
+          fetchDatasets={this.eventHandlers.fetchDatasets}
+          fileContentUrl={subUrls.fileContentUrl}
+          forked={forked}
+          history={this.props.history}
+          httpProjectUrl={httpProjectUrl}
+          insideProject={true}
+          lineagesUrl={subUrls.lineagesUrl}
+          location={p.location}
+          maintainer={maintainer}
+          migration={migration}
+          model={this.props.model}
+          notifications={p.notifications}
+          overviewCommitsUrl={subUrls.overviewCommitsUrl}
+          progress={graphProgress}
+          projectsUrl={subUrls.projectsUrl}
+          toggleNewDataset={p.toggleNewDataset}
+        />;
+      },
 
-      editDataset: (p) => <ChangeDataset
-        key="datasetModify" {...subProps}
-        accessLevel={accessLevel}
-        client={this.props.client}
-        dataset={p.location.state ? p.location.state.dataset : null}
-        datasetId={matchToDatasetId(p.match.params.datasetId)}
-        datasets={datasets}
-        defaultBranch={this.projectCoordinator.get("metadata.defaultBranch")}
-        edit={true}
-        fetchDatasets={this.eventHandlers.fetchDatasets}
-        fileContentUrl={subUrls.fileContentUrl}
-        forked={forked}
-        history={this.props.history}
-        httpProjectUrl={httpProjectUrl}
-        insideProject={true}
-        lineagesUrl={subUrls.lineagesUrl}
-        location={p.location}
-        maintainer={maintainer}
-        migration={migration}
-        model={this.props.model}
-        notifications={p.notifications}
-        overviewCommitsUrl={subUrls.overviewCommitsUrl}
-        progress={graphProgress}
-        projectsUrl={subUrls.projectsUrl}
-        toggleNewDataset={p.toggleNewDataset}
-      />,
+      importDataset: (p) => {
+        const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
+        const datasets = this.projectCoordinator.get("datasets.core.datasets");
+        const forkedData = this.projectCoordinator.get("forkedFromProject");
+        const forked = (forkedData != null && Object.keys(forkedData).length > 0) ? true : false;
+        const graphProgress = this.projectCoordinator.get("webhook.progress");
+        const httpProjectUrl = this.projectCoordinator.get("metadata.httpUrl");
+        const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
+        const migration = this.projectCoordinator.get("migration");
+        const subProps = getSubProps();
+        const subUrls = this.getSubUrls();
+        return <ImportDataset
+          key="datasetImport" {...subProps}
+          accessLevel={accessLevel}
+          client={this.props.client}
+          datasets={datasets}
+          fetchDatasets={this.eventHandlers.fetchDatasets}
+          fileContentUrl={subUrls.fileContentUrl}
+          forked={forked}
+          history={this.props.history}
+          httpProjectUrl={httpProjectUrl}
+          insideProject={true}
+          lineagesUrl={subUrls.lineagesUrl}
+          location={p.location}
+          maintainer={maintainer}
+          migration={migration}
+          model={this.props.model}
+          notifications={p.notifications}
+          overviewCommitsUrl={subUrls.overviewCommitsUrl}
+          progress={graphProgress}
+          projectsUrl={subUrls.projectsUrl}
+          selectedDataset={matchToDatasetId(p.match.params.datasetId)}
+          toggleNewDataset={p.toggleNewDataset}
+        />;
+      },
 
-      importDataset: (p) => <ImportDataset
-        key="datasetImport" {...subProps}
-        accessLevel={accessLevel}
-        client={this.props.client}
-        datasets={datasets}
-        fetchDatasets={this.eventHandlers.fetchDatasets}
-        fileContentUrl={subUrls.fileContentUrl}
-        forked={forked}
-        history={this.props.history}
-        httpProjectUrl={httpProjectUrl}
-        insideProject={true}
-        lineagesUrl={subUrls.lineagesUrl}
-        location={p.location}
-        maintainer={maintainer}
-        migration={migration}
-        model={this.props.model}
-        notifications={p.notifications}
-        overviewCommitsUrl={subUrls.overviewCommitsUrl}
-        progress={graphProgress}
-        projectsUrl={subUrls.projectsUrl}
-        selectedDataset={matchToDatasetId(p.match.params.datasetId)}
-        toggleNewDataset={p.toggleNewDataset}
-      />,
-
-      kgStatusView: (displaySuccessMessage = false) =>
-        <KnowledgeGraphStatus
+      kgStatusView: (displaySuccessMessage = false) => {
+        const isPrivate = this.projectCoordinator.get("metadata.visibility") === "private";
+        const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
+        const forkedData = this.projectCoordinator.get("forkedFromProject");
+        const forked = (forkedData != null && Object.keys(forkedData).length > 0) ? true : false;
+        const graphProgress = this.projectCoordinator.get("webhook.progress");
+        const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
+        return <KnowledgeGraphStatus
           fetchGraphStatus={this.eventHandlers.fetchGraphStatus}
           createGraphWebhook={this.eventHandlers.createGraphWebhook}
           maintainer={maintainer}
@@ -605,7 +681,8 @@ class View extends Component {
           warningMessage="Knowledge Graph integration has not been turned on."
           fetchAfterBuild={this.eventHandlers.fetchDatasets}
           isPrivate={isPrivate}
-        />
+        />;
+      }
     };
   }
 
@@ -696,7 +773,7 @@ class View extends Component {
       getStarred={this.getStarred.bind(this)}
       isGraphReady={this.isGraphReady.bind(this)}
       projectCoordinator={this.projectCoordinator}
-      subComponents={this.subComponents.bind(this)}
+      {...this.subComponents(props)}
       {...props} />;
   }
 }
