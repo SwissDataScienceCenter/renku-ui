@@ -97,7 +97,7 @@ function EntityHeader({
         { visibility ? (<VisibilityIcon visibility={visibility} className={colorByType.colorText} />) : null }
       </div>
       <div className="entity-title" data-cy={`${itemType}-title`}>
-        <div className="card-title lh-sm" data-cy="list-card-title" >
+        <div className="card-title lh-sm d-flex align-items-baseline" data-cy="list-card-title" >
           {statusButton}{title}
         </div>
       </div>

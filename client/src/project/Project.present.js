@@ -134,7 +134,7 @@ class ProjectStatusIcon extends Component {
       null;
 
     return (
-      <span className="warningLabel" style={{ verticalAlign: "text-bottom" }}>
+      <span className="warningLabel cursor-pointer" style={{ verticalAlign: "text-bottom" }}>
         <FontAwesomeIcon
           icon={faExclamationTriangle}
           onClick={() => history.push(overviewStatusUrl)}
