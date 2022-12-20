@@ -45,4 +45,19 @@ function getDatasetAuthors(dataset) {
     : null;
 }
 
-export { mapDataset, getDatasetAuthors };
+/**
+ * Display a file with some metadata. Has the following parameters:
+ *
+ * @param {Object[]} images - Images link arrays
+ */
+function getDatasetImageUrl(images) {
+  try {
+    return images?.length > 0 ?
+      images[0]["_links"][0].href : undefined;
+  }
+  catch {
+    return undefined;
+  }
+}
+
+export { mapDataset, getDatasetAuthors, getDatasetImageUrl };
