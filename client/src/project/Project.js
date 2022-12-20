@@ -153,6 +153,32 @@ function matchToDatasetId(matchDatasetId) {
   return decodeURIComponent(matchDatasetId);
 }
 
+function mapProjectStateToProps(state, ownProps) {
+  const projectCoordinator = ownProps.projectCoordinator;
+  const pathComponents = splitProjectSubRoute(ownProps.match.url);
+  const internalId = projectCoordinator.get("metadata.id") || parseInt(ownProps.match.params.id, 10);
+  const starred = ownProps.getStarred();
+  const accessLevel = projectCoordinator.get("metadata.accessLevel");
+  const settingsReadOnly = accessLevel < ACCESS_LEVELS.MAINTAINER;
+  const externalUrl = projectCoordinator.get("metadata.externalUrl");
+  const canCreateMR = accessLevel >= ACCESS_LEVELS.DEVELOPER;
+  const isGraphReady = ownProps.isGraphReady();
+
+  return {
+    ...projectCoordinator.get(),
+    ...ownProps,
+    projectPathWithNamespace: pathComponents.projectPathWithNamespace,
+    projectId: pathComponents.projectId,
+    namespace: pathComponents.namespace,
+    ...ownProps.subComponents(internalId, ownProps),
+    starred,
+    settingsReadOnly,
+    externalUrl,
+    canCreateMR,
+    isGraphReady
+  };
+}
+
 
 // TODO: This component has grown too much and needs restructuring. One option would be to insert
 // TODO: another container component between this top-level project component and the presentational
@@ -659,41 +685,19 @@ class View extends Component {
     }
   };
 
-  mapStateToProps(state, ownProps) {
-    const pathComponents = splitProjectSubRoute(ownProps.match.url);
-    const internalId = this.projectCoordinator.get("metadata.id") || parseInt(ownProps.match.params.id, 10);
-    const starred = this.getStarred();
-    const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
-    const settingsReadOnly = accessLevel < ACCESS_LEVELS.MAINTAINER;
-    const externalUrl = this.projectCoordinator.get("metadata.externalUrl");
-    const canCreateMR = accessLevel >= ACCESS_LEVELS.DEVELOPER;
-    const isGraphReady = this.isGraphReady();
-
-    return {
-      ...this.projectCoordinator.get(),
-      ...ownProps,
-      projectPathWithNamespace: pathComponents.projectPathWithNamespace,
-      projectId: pathComponents.projectId,
-      namespace: pathComponents.namespace,
-      ...this.getSubUrls(),
-      ...this.subComponents.bind(this)(internalId, ownProps),
-      starred,
-      settingsReadOnly,
-      externalUrl,
-      canCreateMR,
-      isGraphReady
-    };
-  }
-
   render() {
-    const ConnectedProjectView = connect(
-      this.mapStateToProps.bind(this), null, null)(Present.ProjectView);
+    const ConnectedProjectView = connect(mapProjectStateToProps)(Present.ProjectView);
     const props = {
       ...this.props,
       ...this.eventHandlers,
-      projectCoordinator: this.projectCoordinator
+      ...this.getSubUrls(),
     };
-    return <ConnectedProjectView {...props} />;
+    return <ConnectedProjectView
+      getStarred={this.getStarred.bind(this)}
+      isGraphReady={this.isGraphReady.bind(this)}
+      projectCoordinator={this.projectCoordinator}
+      subComponents={this.subComponents.bind(this)}
+      {...props} />;
   }
 }
 
@@ -752,7 +756,7 @@ function withProjectMapped(MappingComponent, features = [], passProps = true) {
     render() {
       const projectCoordinator = this.props.projectCoordinator;
       const mapFunction = mapProjectFeatures(projectCoordinator, features);
-      const MappedComponent = connect(mapFunction.bind(this))(MappingComponent);
+      const MappedComponent = connect(mapFunction)(MappingComponent);
       const props = passProps ? this.props : {};
 
       return (<MappedComponent projectCoordinator={projectCoordinator} {...props} />);
