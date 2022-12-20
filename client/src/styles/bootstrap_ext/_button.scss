@@ -333,3 +333,58 @@ $borderRadius: 1000px;
     padding-left: 20px;
   }
 }
+.edit-image-btn {
+  position: absolute;
+  left: 15px;
+  background-color: #d9d9d9de;
+  color: black;
+  border: none;
+  border-radius: 8px;
+
+  &:hover {
+    background-color: rgba(166, 166, 166, 0.87);
+    color: white;
+  }
+  &:focus {
+    background-color: rgba(166, 166, 166, 0.87);
+    color: white;
+  }
+}
+
+.editor-control-btn {
+  border-radius: 4px;
+  background-color: #D9D9D9;
+  border: none;
+  padding: 2px 8px;
+  color: var(--bs-dark);
+
+  &:hover {
+    background-color: #d9d9d9de;
+    color: var(--bs-dark);
+  }
+  &:focus {
+    background-color: #d9d9d9de;
+    color: var(--bs-dark);
+  }
+  &:disabled {
+    background-color: rgba(217, 217, 217, 0.81);
+    color: var(--bs-dark);
+  }
+}
+
+.form-rk-pink .btn-save-editor {
+  background-color: var(--bs-rk-pink);
+  border: none;
+
+  &:hover {
+    background-color: #d980a7;
+  }
+}
+
+.form-rk-green .btn-save-editor {
+  background-color: var(--bs-rk-green);
+  border: none;
+  &:hover {
+    background-color: #26a57f;
+  }
+}
