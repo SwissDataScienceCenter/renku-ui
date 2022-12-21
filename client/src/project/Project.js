@@ -153,6 +153,33 @@ function matchToDatasetId(matchDatasetId) {
   return decodeURIComponent(matchDatasetId);
 }
 
+function stripFetchingInfo(thing) {
+  const result = {};
+  for (const k of Object.keys(thing)) {
+    if (k === "fetching" || k === "fetched") continue;
+    // We could make this more deeply recursive, but not necessary for now
+    if (typeof thing[k] === "object") {
+      result[k] = { ...thing[k] };
+      if (result[k].fetching !== undefined)
+        delete result[k].fetching;
+      if (result[k].fetched !== undefined)
+        delete result[k].fetched;
+    }
+    else {
+      result[k] = thing[k];
+    }
+  }
+  return result;
+}
+
+// N.b. This is explicitly against the best practices of Redux because
+// it does not scale.
+// But it is a temporary solution to prevent unnecessary rerenders
+// until we have finished refactoring the code.
+function refreshTrigger(thing) {
+  return JSON.stringify(stripFetchingInfo(thing));
+}
+
 function mapProjectStateToProps(state, ownProps) {
   const projectCoordinator = ownProps.projectCoordinator;
   const pathComponents = splitProjectSubRoute(ownProps.match.url);
@@ -162,6 +189,9 @@ function mapProjectStateToProps(state, ownProps) {
   const externalUrl = projectCoordinator.get("metadata.externalUrl");
   const canCreateMR = accessLevel >= ACCESS_LEVELS.DEVELOPER;
   const isGraphReady = ownProps.isGraphReady();
+  const pathname = ownProps.history.location.pathname;
+  const isOnDatasetEditPage = pathname.endsWith("datasets/new") || pathname.endsWith("modify");
+
 
   return {
     ...projectCoordinator.get(),
@@ -173,7 +203,13 @@ function mapProjectStateToProps(state, ownProps) {
     settingsReadOnly,
     externalUrl,
     canCreateMR,
-    isGraphReady
+    isGraphReady,
+    // fields (mostly non-project) that should trigger a re-render
+    triggerDataset: refreshTrigger(state.stateModel.dataset),
+    triggerForm: isOnDatasetEditPage ? {} : null,
+    triggerNotebooks: refreshTrigger(state.stateModel.notebooks),
+    triggerWorkflow: refreshTrigger(state.stateModel.workflow),
+    triggerWorkflows: refreshTrigger(state.stateModel.workflows)
   };
 }
 
