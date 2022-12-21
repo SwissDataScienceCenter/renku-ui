@@ -52,8 +52,7 @@ function getDatasetAuthors(dataset) {
  */
 function getDatasetImageUrl(images) {
   try {
-    return images?.length > 0 ?
-      images[0]["_links"][0].href : undefined;
+    return images[0]["_links"][0].href;
   }
   catch {
     return undefined;
