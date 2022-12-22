@@ -21,6 +21,7 @@ import { Globe, People, Lock } from "../../ts-wrappers";
 
 import AppContext from "../../context/appContext";
 import { ThrottledTooltip } from "../Tooltip";
+import { capitalizeFirstLetter } from "../../helpers/HelperFunctions";
 
 /**
  *  renku-ui
@@ -54,7 +55,7 @@ const VisibilityIcon = ({ visibility, className }: VisibilityIconProps) => {
 
   return <>
     <div ref={ref} className={`card-visibility-icon d-flex gap-2 align-items-baseline ${className}`}>
-      { icon[visibility] || "" } {visibility}
+      { icon[visibility] || "" } {capitalizeFirstLetter(visibility)}
     </div>
     <ThrottledTooltip
       target={ref}

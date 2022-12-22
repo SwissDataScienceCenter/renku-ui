@@ -34,7 +34,7 @@ export interface EntityTagsProps {
 
 function EntityTags ({ tagList, multiline }: EntityTagsProps) {
   const ref = useRef(null);
-  const multilineStyles = multiline ? "d-flex flex-wrap" : "text-truncate";
+  const multilineStyles = multiline ? "d-flex flex-wrap text-rk-text-light" : "text-truncate text-dark";
   const isUpdatingValue = useSelector((state: RootStateOrAny ) =>
     state.stateModel.project?.metadata?.tagList?.updating);
 
@@ -51,7 +51,7 @@ function EntityTags ({ tagList, multiline }: EntityTagsProps) {
   return (
     <>
       <div ref={ref} data-cy="entity-tag-list"
-        className={`tagList card-tags text-rk-text-light ${multilineStyles}`}>
+        className={`tagList card-tags ${multilineStyles}`}>
         {tagList?.map(tag =>
           <span key={tag} className={`entity-tag ${ multiline ? "entity-tag--small" : "" }`}>#{tag}</span>)}
       </div>

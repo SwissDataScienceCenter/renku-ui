@@ -74,11 +74,11 @@ function ListCard(props) {
             <EntityExecutions display="list" executions={executions} itemType={itemType} lastExecuted={lastExecuted} />
             <EntityDescription
               description={description} isHeightFixed={true} showSuggestion={false} className="text-rk-text-light" />
+            <EntityTags tagList={tagList} multiline={false} />
             <div className="d-flex align-items-center gap-3 card-small-text">
               <EntityLabel type={itemType} workflowType={workflowType} />
               <VisibilityIcon visibility={visibility} className={colorByType.colorText} />
             </div>
-            <EntityTags tagList={tagList} multiline={false} />
             <p className="card-text my-1">
               <TimeCaption caption={labelCaption || "Updated"} time={timeCaption} className="text-rk-text-light"/>
             </p>
