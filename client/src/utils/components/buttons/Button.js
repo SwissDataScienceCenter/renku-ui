@@ -24,13 +24,15 @@
 
 import React, { Fragment, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisV, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Button, ButtonDropdown, DropdownToggle, DropdownMenu, UncontrolledTooltip, Col } from "reactstrap";
+import { ButtonGroup } from "reactstrap";
 import { simpleHash } from "../../helpers/HelperFunctions";
 import { SuccessLabel } from "../formlabels/FormLabels";
 import { Loader } from "../Loader";
 import { ThrottledTooltip } from "../Tooltip";
+import { ChevronDown } from "../../ts-wrappers";
 
 /**
  * A button with a menu (dropdown button)
@@ -39,25 +41,26 @@ import { ThrottledTooltip } from "../Tooltip";
  * @param {[DropdownItem]} [children] - The items to show in the menu
  * @param {"rk-blue" | "rk-green"| "rk-pink" } props.color - Indicate the color of the button
  * @param {string} props.id - Identifier
+ * @param {boolean} props.isPrincipal -  Indicate if is principal or secondary button
  */
 function ButtonWithMenu(props) {
   const [dropdownOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(!dropdownOpen);
   const size = (props.size) ? props.size : "md";
   let bgColor = props.color || "rk-green";
+  const classes = props.isPrincipal ? "" : `btn-outline-${bgColor}`;
 
   const options = props.children ?
     (<>
-      <DropdownToggle data-cy="more-menu" >
-        <FontAwesomeIcon
-          data-cy="more-options-button"
-          className={`text-${props.color || "rk-green"} btn-with-menu-icon`} icon={faEllipsisV}/>
+      <DropdownToggle data-cy="more-menu" className={`${props.className} ${classes}`} >
+        <ChevronDown data-cy="more-options-button" size="20" className="btn-with-menu-icon" />
       </DropdownToggle>
       <DropdownMenu className="btn-with-menu-options" end>
         {props.children}
       </DropdownMenu>
     </>)
     : null;
+
 
   return <ButtonDropdown
     id={props.id}
@@ -166,4 +169,16 @@ function CardButton({ icon, color, handleClick }) {
   );
 }
 
-export { RefreshButton, ButtonWithMenu, CardButton, GoBackButton, InlineSubmitButton };
+/**
+ * Round Button group
+ * @param {IntrinsicAttributes & Element[]} buttons - Buttons to include in the group button
+ */
+function RoundButtonGroup({ buttons }) {
+  return (
+    <ButtonGroup className={`round-button-group`}>
+      {buttons}
+    </ButtonGroup>
+  );
+}
+
+export { RefreshButton, ButtonWithMenu, CardButton, GoBackButton, InlineSubmitButton, RoundButtonGroup };

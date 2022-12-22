@@ -677,7 +677,9 @@ const NotebookServerRowAction = memo((props) => {
   if (status === SessionStatus.running || status === SessionStatus.starting) {
     const state = scope?.filePath ? { filePath: scope?.filePath } : undefined;
     defaultAction = (
-      <Link className="btn btn-outline-rk-green" to={{ pathname: props.localUrl, state }}>Open</Link>);
+      <Link data-cy="open-session" className="btn btn-outline-rk-green" to={{ pathname: props.localUrl, state }}>
+        Open
+      </Link>);
     actions.openExternal = (<DropdownItem href={props.url} target="_blank" >
       <FontAwesomeIcon className="text-rk-green" icon={faExternalLinkAlt} /> Open in new tab
     </DropdownItem>);
@@ -691,7 +693,7 @@ const NotebookServerRowAction = memo((props) => {
 
   return (
     <ButtonWithMenu
-      data-cy="sessions-button" className="sessionsButton" size="sm" default={defaultAction} color="rk-green">
+      className="sessionsButton" size="sm" default={defaultAction} color="rk-green">
       {actions.openExternal}
       {actions.logs}
       {actions.stop}

@@ -1144,7 +1144,8 @@ class ServerOptionLaunch extends Component {
     const startButton = <Button key="start-session" color="rk-green" disabled={!hasImage} onClick={this.checkServer}>
       Start session
     </Button>;
-    const startButtonWithMenu = <ButtonWithMenu key="button-menu" color="rk-green" default={startButton} direction="up">
+    const startButtonWithMenu = <ButtonWithMenu key="button-menu" color="rk-green" default={startButton}
+      direction="up" isPrincipal={true}>
       {createLink}
     </ButtonWithMenu>;
 

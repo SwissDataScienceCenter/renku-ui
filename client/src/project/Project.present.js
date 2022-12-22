@@ -28,7 +28,7 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Link, Route, Switch } from "react-router-dom";
 import {
-  Alert, Button, ButtonGroup, Card, CardBody, CardHeader, Col, DropdownItem,
+  Alert, Button, Card, CardBody, CardHeader, Col, DropdownItem,
   Modal, Row, Nav, NavItem, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -54,7 +54,7 @@ import { ForkProject } from "./new";
 import { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions } from "./settings";
 import { WorkflowsList } from "../workflows";
 import { ExternalLink } from "../utils/components/ExternalLinks";
-import { ButtonWithMenu, GoBackButton } from "../utils/components/buttons/Button";
+import { ButtonWithMenu, GoBackButton, RoundButtonGroup } from "../utils/components/buttons/Button";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../utils/components/Alert";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
@@ -193,15 +193,30 @@ class ForkProjectModal extends Component {
         />
       );
     }
+
+    const buttons = [
+      <Button className="btn-outline-rk-green" id="fork-project" key="fork-project"
+        disabled={this.props.forkProjectDisabled} onClick={this.toggleFunction}>
+        Fork
+        <ThrottledTooltip
+          target="fork-project"
+          tooltip="Fork this project" />
+      </Button>,
+      <Button
+        id="project-forks"
+        key="counter-forks"
+        className="btn-outline-rk-green btn-icon-text"
+        disabled={this.props.forkProjectDisabled}
+        href={`${this.props.externalUrl}/-/forks`} target="_blank" rel="noreferrer noopener">
+        <FontAwesomeIcon size="sm" icon={faCodeBranch} /> {this.props.forksCount}
+        <ThrottledTooltip
+          target="project-forks"
+          tooltip="Forks" />
+      </Button>
+    ];
     return (
       <Fragment>
-        <Button className="btn-outline-rk-green" id="fork-project"
-          disabled={this.props.forkProjectDisabled} onClick={this.toggleFunction}>
-          Fork
-          <ThrottledTooltip
-            target="fork-project"
-            tooltip="Fork this project" />
-        </Button>
+        <RoundButtonGroup buttons={buttons}/>
         <Modal isOpen={this.state.open} toggle={this.toggleFunction}>
           {content}
         </Modal>
@@ -437,17 +452,9 @@ class ProjectViewHeaderOverview extends Component {
                 forkProjectDisabled={forkProjectDisabled}
                 projectVisibility={this.props.metadata.visibility}
                 user={this.props.user}
+                forksCount={metadata.forksCount}
+                externalUrl={this.props.externalUrl}
               />
-              <Button
-                id="project-forks"
-                className="btn-outline-rk-green btn-icon-text"
-                disabled={forkProjectDisabled}
-                href={`${this.props.externalUrl}/-/forks`} target="_blank" rel="noreferrer noopener">
-                <FontAwesomeIcon size="sm" icon={faCodeBranch} /> {metadata.forksCount}
-                <ThrottledTooltip
-                  target="project-forks"
-                  tooltip="Forks" />
-              </Button>
               <div id="project-stars">
                 <Button
                   className="btn-outline-rk-green btn-icon-text"
@@ -488,13 +495,11 @@ function StartSessionButton(props) {
     </Link>
   );
   return (
-    <ButtonGroup size="sm" className="ms-1">
-      <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="rk-green">
-        <DropdownItem>
-          <Link className="text-decoration-none" to={launchNotebookUrl}>Start with options</Link>
-        </DropdownItem>
-      </ButtonWithMenu>
-    </ButtonGroup>
+    <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="rk-green" isPrincipal={true}>
+      <DropdownItem>
+        <Link className="text-decoration-none" to={launchNotebookUrl}>Start with options</Link>
+      </DropdownItem>
+    </ButtonWithMenu>
   );
 }
 

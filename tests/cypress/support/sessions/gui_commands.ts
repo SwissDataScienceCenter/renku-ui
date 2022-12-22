@@ -22,5 +22,5 @@ Cypress.Commands.add("gui_open_logs", () => {
 });
 
 Cypress.Commands.add("gui_open_session", () => {
-  cy.get(".sessionsButton").click();
+  cy.get_cy("open-session").click();
 });
