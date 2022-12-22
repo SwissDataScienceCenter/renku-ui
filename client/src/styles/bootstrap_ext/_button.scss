@@ -15,19 +15,26 @@ $borderRadius: 1000px;
   border-radius: 0;
   padding: 5px 10px;
 }
-.btn-with-menu .btn:nth-child(1) {
+.btn-with-menu {
   border-radius: 1000px;
+}
+
+.btn-with-menu .btn:nth-child(1) {
+  border-radius: 1000px 0 0 1000px;
   padding: 5px 20px;
-  margin-right: 5px;
+  margin-right: 1px;
 }
+
+.btn-with-menu .btn-outline-rk-green.btn:nth-child(1) {
+  margin-right: 0;
+}
+
 .btn-with-menu .btn:nth-child(2) {
-  background-color: transparent;
-  border: none;
   box-shadow: none;
+  border-radius: 0 1000px 1000px 0;
+  border-left: 1px solid;
 }
-.btn-with-menu .btn:nth-child(2):focus {
-  color: $rk-green-highlight;
-}
+
 .btn-with-menu-options svg {
   margin-right: 12px;
 }
@@ -198,6 +205,7 @@ $borderRadius: 1000px;
   &:hover, &:focus, &.active {
     background-color: transparent;
     color: $rk-green-highlight;
+    border-color: $rk-green;
   }
   &:disabled {
     color: $rk-green;
@@ -212,6 +220,7 @@ $borderRadius: 1000px;
   &:hover, &:focus, &.active {
     background-color: transparent;
     color: $rk-pink-highlight;
+    border-color: $rk-pink;
   }
   &.disabled{
     background-color: transparent;
@@ -263,7 +272,7 @@ $borderRadius: 1000px;
   background-color: transparent;
 }
 
-.btn-group:not(.btn-with-menu) {
+.btn-group:not(.btn-with-menu, .round-button-group) {
   border-radius: 8px;
 
   button {
@@ -309,4 +318,18 @@ $borderRadius: 1000px;
 
 .fullscreen-back-button {
   padding: 5px 0 5px 16px;
+}
+
+.round-button-group {
+  .btn:first-child {
+    border-radius: 1000px 0 0 1000px;
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .btn:last-child {
+    border-radius: 0 1000px 1000px 0;
+    padding-right: 20px;
+    padding-left: 20px;
+  }
 }
