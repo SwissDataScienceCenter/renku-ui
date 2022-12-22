@@ -68,7 +68,7 @@ const SubmitFormButton = ({ input, meta, importingDataset, handlers }: SubmitFor
   );
   // when is also importing a new dataset show a different submit button
   const button = !importingDataset ? (
-    <ButtonWithMenu color="rk-green" default={createProject} direction="up">
+    <ButtonWithMenu color="rk-green" default={createProject} direction="up" isPrincipal={true}>
       {createLink}
     </ButtonWithMenu>
   ) : (
