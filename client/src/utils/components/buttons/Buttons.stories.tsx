@@ -19,6 +19,7 @@ import * as React from "react";
 import { Button } from "../../ts-wrappers";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ButtonWithMenu, RoundButtonGroup } from "./Button";
 
 
 interface LabelsProps {
@@ -86,4 +87,41 @@ export const SecondaryPink = (args: LabelsProps) => (
 SecondaryPink.args = {
   text: "My Button",
 };
+
+const defaultAction = <Button key="button-main-primary">Main Action</Button>;
+const options = [
+  <Button key="button-a">Option A</Button>,
+  <Button key="button-B">Option B</Button>
+];
+export const menuWithOptionPrimary = (args: LabelsProps) => (
+  <>
+    <ButtonWithMenu
+      default={defaultAction}
+      isPrincipal={true}
+      color="rk-green">
+      {options}
+    </ButtonWithMenu>
+  </>
+);
+const defaultActionSecondary = <Button key="button-a" className="btn-outline-rk-green">Main Action</Button>;
+export const menuWithOptionSecondary = (args: LabelsProps) => (
+  <>
+    <ButtonWithMenu
+      default={defaultActionSecondary}
+      isPrincipal={false}
+      color="rk-green">
+      {options}
+    </ButtonWithMenu>
+  </>
+);
+
+const optionsGroupButton = [
+  <Button key="button-x" className="btn-outline-rk-green">Option X</Button>,
+  <Button key="button-y" className="btn-outline-rk-green">Option y</Button>
+];
+export const roundButtonGroup = (args: LabelsProps) => (
+  <>
+    <RoundButtonGroup buttons={optionsGroupButton} />
+  </>
+);
 

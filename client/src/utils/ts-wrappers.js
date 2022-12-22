@@ -54,6 +54,7 @@ import {
   CardList as WrappedCardList,
   CaretDownFill as WrappedCaretDownFill,
   CaretRightFill as WrappedCaretRightFill,
+  ChevronDown as WrappedChevronDown,
   Diagram2 as WrappedDiagram2,
   Diagram3 as WrappedDiagram3,
   HddStack as WrappedHddStack,
@@ -132,6 +133,10 @@ function CaretDownFill(props) {
 
 function CaretRightFill(props) {
   return <WrappedCaretRightFill {...props} />;
+}
+
+function ChevronDown(props) {
+  return <WrappedChevronDown {...props} />;
 }
 
 function Diagram2(props) {
@@ -341,4 +346,4 @@ export { UncontrolledPopover, UncontrolledTooltip };
 export { ArrowLeft, Briefcase, CardList, Diagram3, Download, Globe, HddStack, InfoCircle, Journals, Lock };
 export { People, Save, StopCircle };
 export { Nav, NavItem, NavLink, TabContent, TabPane };
-export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, Diagram2, XLg };
+export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, ChevronDown, Diagram2, XLg };
