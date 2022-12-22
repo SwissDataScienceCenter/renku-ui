@@ -16,7 +16,7 @@
 
 .container-entity-header {
     display: grid;
-    grid-template-columns: 250px auto 200px 140px;
+    grid-template-columns: 250px auto 200px 160px;
     grid-template-rows: auto auto auto;
     grid-auto-rows: 1fr;
     gap: 0 20px;
@@ -77,7 +77,7 @@
 @media (max-width: 992px) {
     .container-entity-header {
         display: grid;
-        grid-template-columns: 250px auto 140px;
+        grid-template-columns: 250px auto 160px;
         grid-template-rows: auto auto auto auto;
         grid-auto-rows: 1fr;
         gap: 10px 10px;
@@ -97,7 +97,7 @@
 @media (max-width: 576px) { // sm-size
     .container-entity-header {
         display: grid;
-        grid-template-columns: auto 140px;
+        grid-template-columns: auto 160px;
         grid-template-rows: auto auto auto auto auto;
         grid-auto-rows: 1fr;
         gap: 10px 10px;
