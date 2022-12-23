@@ -31,6 +31,7 @@ import Slug from "./entities/Slug";
 import EntityDescription from "./entities/Description";
 import EntityTags from "./entities/Tags";
 import { EntityButton } from "./entities/Buttons";
+import { stylesByItemType } from "../helpers/HelperFunctions";
 
 /**
  * ListCard/ListBar returns a card or a bar displaying an item in a List.
@@ -49,30 +50,35 @@ import { EntityButton } from "./entities/Buttons";
 function ListCard(props) {
   const {
     creators, description, executions, itemType, labelCaption, lastExecuted, slug, tagList, timeCaption,
-    title, url, visibility, workflowType
+    title, url, visibility, workflowType, imageUrl
   } = props;
+
+  const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
+  const colorByType = stylesByItemType(itemType);
 
   return (
     <div data-cy="list-card" className="col text-decoration-none p-2 rk-search-result-card">
       <Link to={url} className="col text-decoration-none">
         <div className="card card-entity">
-          <div className={`card-header-entity card-header-entity--${itemType}`}>
-            <div className="d-flex justify-content-between align-items-center m-3">
-              <EntityLabel type={itemType} workflowType={workflowType} />
-              <VisibilityIcon visibility={visibility} />
-            </div>
-            <div className="card-bg-title">{title}</div>
+          <div style={imageStyles}
+            className={`card-header-entity ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
+            {!imageUrl ? <div className="card-bg-title">{title}</div> : null}
           </div>
           <EntityButton type={itemType} slug={slug} />
           <div className="card-body">
             <div className="card-title text-truncate lh-sm" data-cy="list-card-title">
               {title}
             </div>
-            <Slug display="list" slug={slug} />
+            <Slug multiline={false} slug={slug} />
             <EntityCreators display="list" creators={creators} itemType={itemType} />
             <EntityExecutions display="list" executions={executions} itemType={itemType} lastExecuted={lastExecuted} />
-            <EntityDescription description={description} isHeightFixed={true} showSuggestion={false} />
+            <EntityDescription
+              description={description} isHeightFixed={true} showSuggestion={false} className="text-rk-text-light" />
             <EntityTags tagList={tagList} multiline={false} />
+            <div className="d-flex align-items-center gap-3 card-small-text">
+              <EntityLabel type={itemType} workflowType={workflowType} />
+              <VisibilityIcon visibility={visibility} className={colorByType.colorText} />
+            </div>
             <p className="card-text my-1">
               <TimeCaption caption={labelCaption || "Updated"} time={timeCaption} className="text-rk-text-light"/>
             </p>
@@ -100,7 +106,7 @@ function ListBar(props) {
     <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
       <div className="title d-inline-block text-truncate">
         {title}
-        <Slug display="bar" slug={slug} />
+        <Slug multiline={false} slug={slug} />
       </div>
       <EntityCreators display="bar" creators={creators} itemType={itemType} />
       <div className="description card-description text-truncate text-rk-text d-flex">

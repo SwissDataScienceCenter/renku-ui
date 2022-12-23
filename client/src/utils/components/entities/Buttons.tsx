@@ -75,7 +75,7 @@ function EntityDeleteButtonButton({ itemType, action }: EntityDeleteButtonProps)
   const styles = stylesByItemType(itemType);
   return <>
     <Button id="deleteButton" data-cy="delete-dataset-button"
-      onClick={action} className="icon-button btn-rk-white text-rk-pink">
+      onClick={action} className="icon-button btn-rk-white" size="sm">
       <FontAwesomeIcon icon={faTrash} className={styles.colorText} />
     </Button>
     <UncontrolledTooltip key="tooltip-delete-entity" placement="top" target="deleteButton">

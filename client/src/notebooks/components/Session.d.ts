@@ -69,4 +69,5 @@ export interface ProjectMetadata {
   owner?: EntityCreator;
   lastActivityAt: string;
   accessLevel: number;
+  avatarUrl?: string;
 }

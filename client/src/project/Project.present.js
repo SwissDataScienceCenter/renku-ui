@@ -134,7 +134,7 @@ class ProjectStatusIcon extends Component {
       null;
 
     return (
-      <span className="warningLabel" style={{ verticalAlign: "text-bottom" }}>
+      <span className="warningLabel cursor-pointer" style={{ verticalAlign: "text-bottom" }}>
         <FontAwesomeIcon
           icon={faExclamationTriangle}
           onClick={() => history.push(overviewStatusUrl)}
@@ -237,7 +237,7 @@ function getLinksProjectHeader(datasets, datasetsUrl, errorGettingDatasets) {
   };
   if (datasets.transient !== undefined && datasets.core !== "is_updating" && datasets.core?.datasets?.length > 0) {
     linksHeader.total = datasets.core.datasets.length;
-    datasets.core.datasets.slice(0, 5).map( dataset => {
+    datasets.core.datasets.slice(0, 3).map( dataset => {
       linksHeader.data.push({
         title: dataset.title,
         url: `${datasetsUrl}/${encodeURIComponent(dataset.name)}`
@@ -248,7 +248,6 @@ function getLinksProjectHeader(datasets, datasetsUrl, errorGettingDatasets) {
 }
 
 function ProjectViewHeaderMinimal(props) {
-  const titleColSize = "col-12";
   const linksHeader = getLinksProjectHeader(props.datasets, props.datasetsUrl,
     props.migration.core.fetched && !props.migration.core.backendAvailable);
   const projectUrl = Url.get(Url.pages.project,
@@ -270,27 +269,24 @@ function ProjectViewHeaderMinimal(props) {
 
   return (
     <Fragment>
-      <Row className="d-flex rk-project-header gx-2 justify-content-md-between justify-content-sm-start">
-        <Col className={"order-1 d-flex align-items-start " + titleColSize}>
-          <EntityHeader
-            title={props.metadata.title}
-            visibility={props.metadata.visibility}
-            description={props.metadata.description}
-            itemType="project"
-            slug={slug}
-            tagList={props.metadata.tagList}
-            creators={props.metadata.owner ? [props.metadata.owner] : []}
-            labelCaption={"Updated"}
-            timeCaption={props.metadata.lastActivityAt}
-            launchNotebookUrl={props.launchNotebookUrl}
-            sessionAutostartUrl={props.sessionAutostartUrl}
-            devAccess={props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
-            url={projectUrl}
-            links={linksHeader}
-            statusButton={statusButton}
-          />
-        </Col>
-      </Row>
+      <EntityHeader
+        title={props.metadata.title}
+        visibility={props.metadata.visibility}
+        description={props.metadata.description}
+        itemType="project"
+        slug={slug}
+        tagList={props.metadata.tagList}
+        creators={props.metadata.owner ? [props.metadata.owner] : []}
+        labelCaption={"Updated"}
+        timeCaption={props.metadata.lastActivityAt}
+        launchNotebookUrl={props.launchNotebookUrl}
+        sessionAutostartUrl={props.sessionAutostartUrl}
+        devAccess={props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
+        url={projectUrl}
+        links={linksHeader}
+        statusButton={statusButton}
+        imageUrl={props.metadata.avatarUrl}
+      />
     </Fragment>);
 }
 
@@ -432,7 +428,6 @@ class ProjectViewHeaderOverview extends Component {
       this.props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
     const forkProjectDisabled = metadata.accessLevel < ACCESS_LEVELS.REPORTER
     && metadata.visibility === "private";
-    const titleColSize = "col-12 col-md-8";
 
     return (
       <Fragment>
@@ -471,14 +466,6 @@ class ProjectViewHeaderOverview extends Component {
                 gitlabIDEUrl={gitlabIDEUrl}
                 userLogged={this.props.user.logged} />
             </div>
-          </Col>
-          <Col className={"d-flex " + titleColSize}>
-            { this.props.metadata.avatarUrl ?
-              <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
-                <img src={this.props.metadata.avatarUrl} className=" rounded" alt=""
-                  style={{ objectFit: "cover", width: "100%", height: "90px" }}/>
-              </div>
-              : null }
           </Col>
         </Row>
       </Fragment>);

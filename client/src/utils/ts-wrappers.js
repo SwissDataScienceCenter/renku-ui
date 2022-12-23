@@ -60,6 +60,7 @@ import {
   HddStack as WrappedHddStack,
   Globe as WrappedGlobe,
   People as WrappedPeople,
+  Person as WrappedPerson,
   Lock as WrappedLock,
   Download as WrappedDownload,
   Save as WrappedSave,
@@ -251,6 +252,10 @@ function People(props) {
   return <WrappedPeople {...props} />;
 }
 
+function Person(props) {
+  return <WrappedPerson {...props} />;
+}
+
 function Lock(props) {
   return <WrappedLock {...props} />;
 }
@@ -344,6 +349,6 @@ export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
 export { ArrowLeft, Briefcase, CardList, Diagram3, Download, Globe, HddStack, InfoCircle, Journals, Lock };
-export { People, Save, StopCircle };
+export { People, Save, StopCircle, Person };
 export { Nav, NavItem, NavLink, TabContent, TabPane };
 export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, ChevronDown, Diagram2, XLg };
