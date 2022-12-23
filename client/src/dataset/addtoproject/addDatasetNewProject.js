@@ -86,6 +86,7 @@ const AddDatasetNewProject = (
         importingDataset={true}
         startImportDataset={startImportDataset}
         user={user}
+        client={client}
       />
     );
 

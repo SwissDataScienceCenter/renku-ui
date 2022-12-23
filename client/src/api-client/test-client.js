@@ -80,11 +80,6 @@ const methods = {
       data: []
     }
   },
-  getNamespaces: {
-    response: {
-      data: samples.namespaces
-    }
-  },
   getUser: {
     response: {
       data: samples.user

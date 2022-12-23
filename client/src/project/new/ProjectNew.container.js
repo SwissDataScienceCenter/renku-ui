@@ -23,15 +23,13 @@
  *  Container components for new project
  */
 
-import React, { Component, useEffect, useState, useRef } from "react";
-// TODO: switch to useSelector
-import { connect, useSelector } from "react-redux";
-import { useLocation, withRouter } from "react-router-dom";
+import React, { useEffect, useState, useRef, useContext, Component } from "react";
+import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { useHistory } from "react-router";
 
 import { NewProject as NewProjectPresent, ForkProject as ForkProjectPresent } from "./ProjectNew.present";
-import { NewProjectCoordinator, validateTitle, checkTitleDuplicates } from "./ProjectNew.state";
-import { ProjectsCoordinator } from "../shared";
+import { validateTitle, checkTitleDuplicates, NewProjectCoordinator } from "./ProjectNew.state";
 import { gitLabUrlFromProfileUrl, slugFromTitle } from "../../utils/helpers/HelperFunctions";
 import { Url, getSearchParams } from "../../utils/helpers/url";
 import { atobUTF8, btoaUTF8 } from "../../utils/helpers/Encoding";
@@ -40,6 +38,7 @@ import AppContext from "../../utils/context/appContext";
 import useGetNamespaces from "../../utils/customHooks/UseGetNamespaces";
 import useGetUserProjects from "../../utils/customHooks/UseGetProjects";
 import useGetVisibilities from "../../utils/customHooks/UseGetVisibilities";
+import { Loader } from "../../utils/components/Loader";
 
 const CUSTOM_REPO_NAME = "Custom";
 
@@ -92,7 +91,7 @@ function addForkNotification(notifications, url, info, startingLocation, success
 
 function ForkProject(props) {
   const { client, forkedId, forkedTitle, toggleModal } = props;
-  const namespaces = useGetNamespaces();
+  const namespaces = useGetNamespaces(true);
   const { projectsMember, isFetchingProjects } = useGetUserProjects();
 
   const [title, setTitle] = useState(forkedTitle);
@@ -348,205 +347,238 @@ function getDataFromParams(params) {
   return data;
 }
 
-class NewProject extends Component {
-  constructor(props, context) {
-    super(props, context);
-    const { client, params } = this.context;
-    // Create model and reset inputs
-    this.model = props.model;
-    this.coordinator = new NewProjectCoordinator(client, this.model.subModel("newProject"),
-      this.model.subModel("projects"));
-    this.coordinator.setConfig(params["TEMPLATES"].custom, params["TEMPLATES"].repositories);
-    this.projectsCoordinator = new ProjectsCoordinator(client, this.model.subModel("projects"));
-    this.coordinator.resetInput();
-    this.removeAutomated();
-    if (!props.user.logged)
-      this.coordinator.resetAutomated();
+// temporal solution to include coordinator
+class NewProjectWrapper extends Component {
+  constructor(props) {
+    super(props);
+    this.coordinator = new NewProjectCoordinator(
+      this.props.client, this.props.model.subModel("newProject"), this.props.model.subModel("projects"));
+  }
 
-    // create handlers
-    this.handlers = {
-      createEncodedUrl: this.createEncodedUrl.bind(this),
-      getNamespaces: this.getNamespaces.bind(this),
-      getTemplates: this.getTemplates.bind(this),
-      getUserTemplates: this.getUserTemplates.bind(this),
-      goToProject: this.goToProject.bind(this),
-      resetCreationResult: this.resetCreationResult.bind(this),
-      onSubmit: this.onSubmit.bind(this),
-      removeAutomated: this.removeAutomated.bind(this),
-      setNamespace: this.setNamespace.bind(this),
-      setProperty: this.setProperty.bind(this),
-      setTemplateProperty: this.setTemplateProperty.bind(this),
-      setVariable: this.setVariable.bind(this),
-    };
+  render() {
+    if (!this.props.client || !this.props.model)
+      return <Loader />;
+    return <NewProject {...this.props} coordinator={this.coordinator} />;
+  }
+}
 
-    // Handle optional param used to pre-fill inputs
-    if (!props.user.logged)
+function NewProject(props) {
+  const { model, importingDataset, startImportDataset, coordinator } = props;
+  const { params } = useContext(AppContext);
+  const history = useHistory();
+  const user = useSelector((state) => state.stateModel.user);
+  const newProject = useSelector((state) => state.stateModel.newProject);
+  const [namespace, setNamespace] = useState(null);
+  const [automatedData, setAutomatedData] = useState(null);
+  const namespaces = useGetNamespaces(true);
+  const { projectsMember, isFetchingProjects, refetchUserProjects } = useGetUserProjects();
+  const { availableVisibilities, isFetchingVisibilities } = useGetVisibilities(namespace);
+
+  /*
+   * Start fetching templates and get automatedData
+   */
+  useEffect(() => {
+    if (!coordinator)
       return;
+    coordinator.setConfig(params["TEMPLATES"].custom, params["TEMPLATES"].repositories);
+    coordinator.resetInput();
+    coordinator.getTemplates();
+    removeAutomated();
+    if (!user.logged)
+      coordinator.resetAutomated();
+    else
+      extractAutomatedData();
+  }, []); // eslint-disable-line
+
+  /*
+   * Start Auto fill form when namespaces are ready
+   */
+  useEffect(() => {
+    if (automatedData && !namespaces?.fetching && !newProject.automated.finished)
+      coordinator?.setAutomated(automatedData, undefined, namespaces, availableVisibilities, setNamespace);
+  }, [automatedData, namespaces.list, namespaces.fetching, newProject.automated.finished]); // eslint-disable-line
+
+  /*
+   * Validate form when projects/namespace are ready or the auto fill form finished
+   */
+  useEffect(() => {
+    if (namespaces.fetching || (newProject.automated.received && !newProject.automated.finished))
+      return;
+    validateForm(null, null, true);
+  }, [ //eslint-disable-line
+    namespaces.list,
+    namespaces.fetching,
+    projectsMember,
+    isFetchingProjects,
+    newProject.automated.received,
+    newProject.automated.finished]);
+
+  /*
+   * Calculate visibilities when namespace change
+   */
+  useEffect(() => {
+    if (!namespace)
+      return;
+
+    if (!availableVisibilities || isFetchingVisibilities) {
+      coordinator?.resetVisibility(namespace);
+      return;
+    }
+    coordinator?.setVisibilities(availableVisibilities, namespace);
+    setProperty("namespace", namespace.full_path);
+    setProperty("visibility", availableVisibilities.default);
+  }, [ namespace, availableVisibilities, isFetchingVisibilities ]); // eslint-disable-line
+
+  const extractAutomatedData = () => {
     const searchParams = getSearchParams();
     try {
       const data = getDataFromParams(searchParams);
-      if (data)
-        this.coordinator.setAutomated(data, undefined, this.projectsCoordinator);
-
-      // do not update url if is importing a dataset
-      if (!props.importingDataset) {
-        const newUrl = Url.get(Url.pages.project.new);
-        this.props.history.push(newUrl);
+      if (data) {
+        setAutomatedData(data);
+        if (!importingDataset) {
+          const newUrl = Url.get(Url.pages.project.new);
+          history.push(newUrl);
+        }
       }
     }
     catch (e) {
-      this.coordinator.setAutomated(null, e);
+      coordinator.setAutomated(null, e);
     }
-  }
+  };
 
-  removeAutomated(manuallyReset = true) {
-    this.coordinator.resetAutomated(manuallyReset);
-  }
+  const removeAutomated = (manuallyReset = true) => {
+    coordinator?.resetAutomated(manuallyReset);
+  };
 
-  createEncodedUrl(data) {
+  const validateForm = (newInput = null, newTemplates = null, update = null) => {
+    const projects = { members: projectsMember, fetching: isFetchingProjects };
+    coordinator?.validate(newInput, newTemplates, update, projects, namespaces, isFetchingVisibilities);
+  };
+
+  const createEncodedUrl = (data) => {
     if (!data || !Object.keys(data).length)
       return Url.get(Url.pages.project.new, {}, true);
     const encodedContent = btoaUTF8(JSON.stringify(data));
     return Url.get(Url.pages.project.new, { data: encodedContent }, true);
-  }
+  };
 
-  async getNamespaces() {
-    // we pass the projects object but we pre-set loading to get proper validation
-    let projects = this.model.get("projects");
-    projects = { ...projects, namespaces: { ...projects.namespaces, fetching: true } };
-    this.coordinator.validate(null, null, true, projects);
-    const namespaces = await this.projectsCoordinator.getNamespaces();
-    this.coordinator.validate(null, null, true);
-    return namespaces;
-  }
+  const getNamespaces = () => {
+    namespaces?.refetchNamespaces();
+  };
 
-  async getTemplates() {
-    return this.coordinator.getTemplates(this.model, false);
-  }
+  const getTemplates = async () => {
+    return await coordinator?.getTemplates(null, false);
+  };
 
-  async getUserTemplates() {
-    const targetRepository = this.model.get("newProject.meta.userTemplates");
+  const getUserTemplates = () => {
+    const targetRepository = model.get("newProject.meta.userTemplates");
     const repositories = [{
       name: CUSTOM_REPO_NAME,
       url: targetRepository.url,
       ref: targetRepository.ref
     }];
-    return this.coordinator.getTemplates(repositories, true);
-  }
+    return coordinator.getTemplates(repositories, true);
+  };
 
-  async calculateVisibilities(namespace) {
-    // temporarily reset visibility metadata
-    this.coordinator.resetVisibility(namespace);
-    const availableVisibilities = await this.projectsCoordinator.getVisibilities(namespace);
-    this.coordinator.setVisibilities(availableVisibilities, namespace);
-  }
+  const refreshUserProjects = () => {
+    refetchUserProjects();
+  };
 
-  refreshUserProjects() {
-    this.projectsCoordinator.getFeatured();
-  }
+  const setProperty = (property, value) => {
+    coordinator?.setProperty(property, value);
+    let updateObj = { input: { [property]: value } };
+    validateForm(updateObj, null, true);
+  };
 
-  setProperty(property, value) {
-    this.coordinator.setProperty(property, value);
-  }
+  const setNamespaceProperty = (namespace) => {
+    setNamespace(namespace);
+    setProperty("namespace", namespace.full_path);
+  };
 
-  setNamespace(namespace) {
-    this.setProperty("namespace", namespace.full_path);
-    this.calculateVisibilities(namespace);
-  }
+  const setTemplateProperty = (property, value) => {
+    coordinator?.setTemplateProperty(property, value);
+  };
 
-  setTemplateProperty(property, value) {
-    this.coordinator.setTemplateProperty(property, value);
-  }
+  const setVariable = (variable, value) => {
+    coordinator?.setVariable(variable, value);
+  };
 
-  setVariable(variable, value) {
-    this.coordinator.setVariable(variable, value);
-  }
+  const resetCreationResult = () => {
+    coordinator?.resetCreationResult();
+  };
 
-  resetCreationResult() {
-    this.coordinator.resetCreationResult();
-  }
+  const goToProject = () => {
+    const slug = coordinator?.getSlugAndReset();
+    history.push(`/projects/${slug}`);
+  };
 
-  goToProject() {
-    const slug = this.coordinator.getSlugAndReset();
-    this.props.history.push(`/projects/${slug}`);
-  }
-
-  sendProjectToAddDataset(projectPath) {
+  const sendProjectToAddDataset = (projectPath) => {
     if (projectPath)
-      this.props.startImportDataset(projectPath);
-  }
+      startImportDataset(projectPath);
+  };
 
-  onSubmit(e) {
+  const onSubmit = (e) => {
     e.preventDefault();
 
     // validate -- we do this cause we don't show errors on pristine variables
-    if (this.coordinator.invalidatePristine())
+    if (coordinator?.invalidatePristine())
       return;
-    let validation = this.coordinator.getValidation();
+    let validation = coordinator?.getValidation();
     if (Object.keys(validation.errors).length || Object.keys(validation.warnings).length)
       return;
 
     // submit
-    const gitlabUrl = gitLabUrlFromProfileUrl(this.props.user.data.web_url);
-    this.coordinator.postProject(gitlabUrl).then(result => {
+    const gitlabUrl = gitLabUrlFromProfileUrl(user.data.web_url);
+    coordinator?.postProject(gitlabUrl).then(result => {
       const { creation } = result.meta;
       if (creation.created) {
-        this.refreshUserProjects();
+        refreshUserProjects();
         if (!creation.kgError && !creation.projectError) {
           const slug = `${creation.newNamespace}/${creation.newNameSlug}`;
-          if (this.props.importingDataset) {
-            this.sendProjectToAddDataset(slug);
-          }
-          else {
-            // continue regular process
-            this.props.history.push(`/projects/${slug}`);
-          }
-          this.resetCreationResult();
+          if (importingDataset)
+            sendProjectToAddDataset(slug);
+          else
+            history.push(`/projects/${slug}`);
+          resetCreationResult();
         }
       }
     });
-  }
+  };
 
-  mapStateToProps(state, ownProps) {
-    // map minimal projects and user information
-    const additional = {
-      projects: {
-        fetched: state.stateModel.projects.featured.fetched,
-        fetching: state.stateModel.projects.featured.fetching,
-        list: state.stateModel.projects.featured.member
-      },
-      namespaces: {
-        fetched: state.stateModel.projects.namespaces.fetched,
-        fetching: state.stateModel.projects.namespaces.fetching,
-        list: state.stateModel.projects.namespaces.list
-      },
-      user: {
-        logged: state.stateModel.user.logged,
-        username: state.stateModel.user.data && state.stateModel.user.data.username ?
-          state.stateModel.user.data.username : null
-      },
-    };
+  // create handlers
+  const handlers = {
+    createEncodedUrl,
+    getNamespaces,
+    getTemplates,
+    getUserTemplates,
+    goToProject,
+    onSubmit,
+    removeAutomated,
+    resetCreationResult,
+    setNamespace: setNamespaceProperty,
+    setProperty,
+    setTemplateProperty,
+    setVariable,
+  };
 
-    return {
-      ...additional,
-      ...state.stateModel.newProject,
-      handlers: this.handlers
-    };
-  }
+  const newProps = {
+    ...newProject,
+    handlers,
+    importingDataset,
+    isFetchingProjects,
+    namespaces,
+    user: {
+      logged: user.logged,
+      username: user.data && user.data.username ? user.data.username : null
+    }
+  };
 
-  render() {
-    const ConnectedNewProject = connect(this.mapStateToProps.bind(this))(NewProjectPresent);
+  if (!coordinator)
+    return <Loader />;
 
-    return <ConnectedNewProject
-      store={this.model.reduxStore}
-      importingDataset={this.props.importingDataset}
-    />;
-  }
+  return <NewProjectPresent {...newProps} />;
 }
-NewProject.contextType = AppContext;
-const NewProjectContainer = withRouter(NewProject);
 
-export { NewProjectContainer as NewProject, CUSTOM_REPO_NAME, ForkProject };
-
+export { NewProjectWrapper as NewProject, CUSTOM_REPO_NAME, ForkProject };
 // test only
 export { getDataFromParams };

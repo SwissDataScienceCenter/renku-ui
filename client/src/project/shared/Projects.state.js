@@ -146,33 +146,6 @@ class ProjectsCoordinator {
     return newStarred;
   }
 
-  async getNamespaces() {
-    if (this.model.get("namespaces.fetching"))
-      return;
-    this.model.set("namespaces.fetching", true);
-    return this.client.getNamespaces()
-      .then((response) => {
-        this.model.setObject({
-          namespaces: {
-            list: { $set: response.data },
-            fetched: new Date(),
-            fetching: false
-          }
-        });
-        return response.data;
-      })
-      .catch((error) => {
-        this.model.setObject({
-          namespaces: {
-            list: { $set: [] },
-            fetched: null,
-            fetching: false
-          }
-        });
-        throw error;
-      });
-  }
-
   async getVisibilities(namespace, projectVisibility) {
     let availableVisibilities = null;
     let options = projectVisibility ? [projectVisibility] : [];

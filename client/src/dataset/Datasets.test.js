@@ -29,7 +29,7 @@ import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
 
 import ShowDataset from "./Dataset.container";
-import { mapDataset } from "./DatasetFunctions";
+import { getDatasetImageUrl, mapDataset } from "./DatasetFunctions";
 import { testClient as client } from "../api-client";
 import { StateModel, globalSchema } from "../model";
 import DatasetList from "./list";
@@ -213,6 +213,30 @@ describe("Dataset functions", () => {
 
   it("maps core dataset into kg dataset in a project for imported dataset", () => {
     expect(mapDataset(core_dataset_import, kg_dataset_import, core_files)).toEqual(result_dataset_import);
+  });
+
+  it("get dataset image url", () => {
+    const validImages = [
+      {
+        "_links": [
+          { "href": "url-example" },
+          { "href": "url-example2" }
+        ]
+      }
+    ];
+    expect(getDatasetImageUrl(validImages)).toEqual("url-example");
+    let invalidImages = [];
+    expect(getDatasetImageUrl([])).toEqual(undefined);
+    invalidImages = [ { "_links": [] } ];
+    expect(getDatasetImageUrl(invalidImages)).toEqual(undefined);
+    invalidImages = [ {
+      "_links": "is not array"
+    } ];
+    expect(getDatasetImageUrl(invalidImages)).toEqual(undefined);
+    invalidImages = [ {
+      "_links": [{ "noHref": "url-example" }]
+    }];
+    expect(getDatasetImageUrl(invalidImages)).toEqual(undefined);
   });
 
 });

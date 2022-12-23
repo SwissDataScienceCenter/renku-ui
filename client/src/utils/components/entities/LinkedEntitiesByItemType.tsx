@@ -86,7 +86,7 @@ function LinkedEntitiesByItemType({ itemType, links, devAccess, url }: LinkedEnt
   return (
     <div className="linked-entities">
       <h3>{dataByItem[itemType].title}</h3>
-      <p className="text-rk-text-light">{dataByItem[itemType].description}</p>
+      <p className="text-rk-text-light mb-1">{dataByItem[itemType].description}</p>
       {links.status === "pending" ? <LoadingLabel text="Loading links... " /> : null }
       {links.status === "error" ? <small className="text-rk-text-light">
         {dataByItem[itemType].error}.{" "}
@@ -101,7 +101,7 @@ function LinkedEntitiesByItemType({ itemType, links, devAccess, url }: LinkedEnt
               className={`${stylesByItem.colorText} linked-entities-link text-truncate`}
               to={link.url}>{dataByItem[itemType].icon}{link.title}</Link></div>)
       }
-      {links.total > 5 ?
+      {links.total > 3 ?
         <SeeMoreByType itemType={itemType} text={dataByItem[itemType].seeMore} linkTo={links.linkAll} />
         : null
       }
@@ -119,12 +119,12 @@ interface SeeMoreByTypeProps {
 function SeeMoreByType({ itemType, text, linkTo }: SeeMoreByTypeProps) {
   switch (itemType) {
     case "project":
-      return <div className="my-2">
+      return <div className="mt-1">
         {linkTo ? <Link
           className="cursor-pointer text-rk-text-light"
           key="more-datasets" to={linkTo}>{text}</Link> : null }</div>;
     case "dataset":
-      return <div className="my-2"><small className="text-rk-text-light">{text}</small></div>;
+      return <div className="mt-1"><small className="text-rk-text-light">{text}</small></div>;
     default:
       return null;
   }

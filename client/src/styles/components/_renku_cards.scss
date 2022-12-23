@@ -48,14 +48,13 @@
 }
 
 .card-type-label {
-  border-radius: 1000px;
-  background-color: rgba(255,255,255,0.8);
-  padding: 5px 15px;
+  padding: 5px 0;
 }
 
-.card-visibility-icon svg {
-  color: rgba(255,255,255,0.6);
+.card-visibility-icon {
+  padding: 5px 0;
 }
+
 .card-visibility-icon--bar svg {
   color: var(--bs-dark);
 }
@@ -67,6 +66,7 @@
   overflow: hidden;
   text-overflow: clip;
   line-height: normal;
+  margin-top: 50px;
 }
 
 .card-bg-title--large {
@@ -83,6 +83,10 @@
 
 .card-tags {
   min-height: 24px;
+}
+
+.card-small-text {
+  font-size: 14px;
 }
 
 .card-description {

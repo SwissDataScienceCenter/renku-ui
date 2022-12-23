@@ -19,11 +19,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '16.13.2'
-    - name: Install client dependencies and build
+    - name: Install client dependencies
       run: |
         cd client
         npm install
-        npm run-script build
       env:
         NODE_OPTIONS: '--max-old-space-size=4096'
     - name: Run test client
@@ -36,6 +35,12 @@ jobs:
       run: |
         cd client
         npm run lint
+    - name: Build client
+      run: |
+        cd client
+        npm run-script build
+      env:
+        NODE_OPTIONS: '--max-old-space-size=4096'
 
   test-server:
     runs-on: ubuntu-22.04

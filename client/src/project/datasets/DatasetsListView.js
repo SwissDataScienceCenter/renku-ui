@@ -34,7 +34,7 @@ function datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, datase
     timeCaption: timeCaption,
     labelCaption: `${kgCaption}. Created `,
     creators: dataset.creators,
-    mediaContent: dataset.mediaContent
+    imageUrl: dataset.mediaContent
   };
 }
 

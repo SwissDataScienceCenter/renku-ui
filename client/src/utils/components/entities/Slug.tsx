@@ -26,21 +26,21 @@ import React from "react";
  */
 
 export interface SlugProps {
-  display: "list" | "grid";
+  multiline: boolean;
   slug: string | React.ReactNode;
 }
 
-function Slug({ display, slug }: SlugProps) {
+function Slug({ multiline, slug }: SlugProps) {
   if (!slug) return null;
-  if (display === "list") {
-    return <div className="card-entity-row card-text text-rk-text-light">
+  if (multiline) {
+    return <div className="card-text text-rk-text-light">
       {slug}
     </div>;
   }
 
-  return <span className="card-entity-row font-weight-light text-rk-text ms-2 d-grid">
+  return <div className="card-entity-row font-weight-light text-rk-text text-truncate">
     {slug}
-  </span>;
+  </div>;
 }
 
 export default Slug;
