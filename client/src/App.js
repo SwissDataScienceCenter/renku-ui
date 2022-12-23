@@ -113,6 +113,7 @@ function CentralContentContainer(props) {
             key="newProject"
             model={props.model}
             user={props.user}
+            client={props.client}
             {...p}
           /></ContainerWrap>}
         />

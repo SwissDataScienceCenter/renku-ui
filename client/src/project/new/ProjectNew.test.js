@@ -28,16 +28,16 @@ import ReactDOM from "react-dom";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
+import { Provider } from "react-redux";
 
 import { StateModel, globalSchema } from "../../model";
-import { validateTitle, checkTitleDuplicates, NewProject, ForkProject } from "./index";
+import { validateTitle, checkTitleDuplicates, NewProject } from "./index";
 import { getDataFromParams } from "./ProjectNew.container";
 import { RESERVED_TITLE_NAMES } from "./ProjectNew.state";
 import { testClient as client } from "../../api-client";
 import { btoaUTF8 } from "../../utils/helpers/Encoding";
 import { generateFakeUser } from "../../user/User.test";
 import AppContext from "../../utils/context/appContext";
-import { Provider } from "react-redux";
 
 
 const fakeHistory = createMemoryHistory({
@@ -147,37 +147,20 @@ describe("rendering", () => {
       document.body.appendChild(div);
       await act(async () => {
         ReactDOM.render(
-          <MemoryRouter>
-            <AppContext.Provider value={appContext}>
-              <NewProject
-                model={model}
-                history={fakeHistory}
-                user={user.data}
-              />
-            </AppContext.Provider>
-          </MemoryRouter>
+          <Provider store={model.reduxStore}>
+            <MemoryRouter>
+              <AppContext.Provider value={appContext}>
+                <NewProject
+                  model={model}
+                  history={fakeHistory}
+                  user={user.data}
+                  client={client}
+                />
+              </AppContext.Provider>
+            </MemoryRouter>
+          </Provider>
           , div);
       });
     });
   }
-
-  it("renders ForkProject without crashing for logged user", async () => {
-    const div = document.createElement("div");
-    // Fix UncontrolledTooltip error. https://github.com/reactstrap/reactstrap/issues/773
-    document.body.appendChild(div);
-    await act(async () => {
-      ReactDOM.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <ForkProject
-              client={client}
-              model={model}
-              history={fakeHistory}
-              user={loggedUser}
-            />
-          </MemoryRouter>
-        </Provider>
-        , div);
-    });
-  });
 });

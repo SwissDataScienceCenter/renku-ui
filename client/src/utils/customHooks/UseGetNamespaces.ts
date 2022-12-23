@@ -25,8 +25,8 @@ import { useGetNamespacesQuery } from "../../features/projects/ProjectApi";
  *  UseGetNamespaces.ts
  *  hook to fetch Namespaces
  */
-function useGetNamespaces() {
-  const { data, isFetching, isLoading, refetch } = useGetNamespacesQuery({});
+function useGetNamespaces(ownedOnly: boolean) {
+  const { data, isFetching, isLoading, refetch } = useGetNamespacesQuery(ownedOnly);
 
   return {
     list: data ?? [],

@@ -37,7 +37,7 @@ const ErrorTemplateFeedback = ({ templates, meta, input }) => {
     templates.errors[0] :
     null;
 
-  if (error) {
+  if (templates.fetched != null && !templates.fetching && error) {
     const fatal = !(templates.all && templates.all.length);
     const suggestion = input.userRepo ?
       null :
@@ -55,7 +55,7 @@ const ErrorTemplateFeedback = ({ templates, meta, input }) => {
     }
     else {
       const first = error[Object.keys(error)[0]];
-      if (typeof error === "string") {
+      if (typeof first === "string") {
         details = first;
         errorObject = { code: 10000 };
       }

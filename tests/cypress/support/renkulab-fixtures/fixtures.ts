@@ -61,7 +61,7 @@ class Fixtures {
   }
 
   namespaces(name = "getNamespaces") {
-    cy.intercept("/ui-server/api/namespaces?per_page=100&page=1", {
+    cy.intercept("/ui-server/api/namespaces?*", {
       fixture: "namespaces.json"
     }).as(name);
     return this;
