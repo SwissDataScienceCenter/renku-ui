@@ -2,8 +2,7 @@
     flex-grow: 1;
 }
 .linked-entities {
-    margin-left: 6px;
-    padding-top: 10px;
+    padding: 20px;
 }
 
 .linked-entities h3 {
@@ -26,10 +25,10 @@
     cursor: pointer;
 }
 .entity-tag {
-    background-color: hsl(0deg 0% 42% / 8%);
-    border-radius: 5px;
-    padding: 3px 8px;
-    margin: 0 4px;
+    padding: 0 8px 0 0;
+    font-size: 15px;
+}
+.entity-tag--small {
     font-size: 14px;
 }
 
