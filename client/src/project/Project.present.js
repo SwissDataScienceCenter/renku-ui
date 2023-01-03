@@ -34,12 +34,12 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCodeBranch, faExclamationTriangle, faInfoCircle, faPlay, faStar as faStarSolid, faUserClock
+  faCodeBranch, faExclamationTriangle, faInfoCircle, faPlay, faPlug, faStar as faStarSolid, faUserClock
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "../utils/helpers/url";
 import { SpecialPropVal } from "../model/Model";
-import { Notebooks, ShowSession, StartNotebookServer } from "../notebooks";
+import { Notebooks, NotebooksHelper, ShowSession, StartNotebookServer } from "../notebooks";
 import Issue from "../collaboration/issue/Issue";
 import {
   CollaborationList, collaborationListTypeMap
@@ -69,6 +69,7 @@ import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
 
 import "./Project.css";
+import { useSelector } from "react-redux";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -476,11 +477,29 @@ class ProjectViewHeaderOverview extends Component {
 
 function StartSessionButton(props) {
   const { launchNotebookUrl, sessionAutostartUrl } = props;
+  const currentSessions = useSelector((state) => state.stateModel.notebooks?.notebooks?.all);
+  let isRunningSession = false;
+  if (currentSessions) {
+    Object.keys(currentSessions).forEach( sessionName => {
+      const session = currentSessions[sessionName];
+      const annotations = NotebooksHelper.cleanAnnotations(session.annotations, "renku.io");
+      const autoStartUrl = Url.get(Url.pages.project.session.autostart, {
+        namespace: annotations["namespace"],
+        path: annotations["projectName"],
+      });
+      if (autoStartUrl === sessionAutostartUrl)
+        isRunningSession = true;
+    });
+  }
+
+  const sessionButton = isRunningSession ?
+    <><FontAwesomeIcon icon={faPlug} className="fa-rotate-90" /> Connect </> :
+    <><FontAwesomeIcon icon={faPlay} /> Start </>;
 
   const defaultAction = (
     <Link
       className="btn btn-rk-green btn-sm btn-icon-text" to={sessionAutostartUrl}>
-      <FontAwesomeIcon icon={faPlay} /> Start
+      {sessionButton}
     </Link>
   );
   return (
