@@ -26,6 +26,7 @@ import EntityDescription from "../entities/Description";
 import EntityTags from "../entities/Tags";
 import VisibilityIcon from "../entities/VisibilityIcon";
 import { EntityButton } from "../entities/Buttons";
+import { stylesByItemType } from "../../helpers/HelperFunctions";
 
 const Link = require("react-router-dom").Link;
 
@@ -40,29 +41,34 @@ function ListCard(
     creators,
     slug,
     itemType,
-    visibility
+    visibility,
+    imageUrl
   }: ListElementProps) {
 
+  const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
+  const colorByType = stylesByItemType(itemType);
   return (
     <div data-cy="list-card" className="col text-decoration-none p-2 rk-search-result-card">
       <Link to={url} className="col text-decoration-none">
         <div className="card card-entity">
-          <div className={`card-header-entity card-header-entity--${itemType}`}>
-            <div className="d-flex justify-content-between align-items-center m-3">
-              <EntityLabel type={itemType} workflowType={null} />
-              <VisibilityIcon visibility={visibility} />
-            </div>
-            <div className="card-bg-title">{title}</div>
+          <div style={imageStyles}
+            className={`card-header-entity ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
+            {!imageUrl ? <div className="card-bg-title">{title}</div> : null}
           </div>
           <EntityButton type={itemType} slug={url} />
           <div className="card-body">
             <div className="card-title text-truncate lh-sm" data-cy="list-card-title">
               {title}
             </div>
-            <Slug display="list" slug={slug} />
+            <Slug multiline={false} slug={slug} />
             <EntityCreators display="list" creators={creators} itemType={itemType} />
-            <EntityDescription description={description} isHeightFixed={true} showSuggestion={false} />
+            <EntityDescription
+              description={description} isHeightFixed={true} showSuggestion={false} className="text-rk-text-light" />
             <EntityTags tagList={tagList} multiline={false} />
+            <div className="d-flex align-items-center gap-3 card-small-text">
+              <EntityLabel type={itemType} workflowType={null} />
+              <VisibilityIcon visibility={visibility} className={colorByType.colorText} />
+            </div>
             <p className="card-text my-1">
               <TimeCaption caption={labelCaption || "Updated"} time={timeCaption} className="text-rk-text-light"/>
             </p>

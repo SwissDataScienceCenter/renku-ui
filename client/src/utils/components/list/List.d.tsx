@@ -27,6 +27,7 @@ export interface ListElementProps {
   type?: ListDisplayType;
   url: string;
   visibility: Visibilities,
+  imageUrl?: string;
 }
 
 export interface VisibilityIconProps {

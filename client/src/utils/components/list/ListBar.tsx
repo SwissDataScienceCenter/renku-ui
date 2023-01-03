@@ -52,7 +52,7 @@ function ListBar(
     <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
       <div className="title d-inline-block text-truncate">
         {title}
-        <Slug display="grid" slug={slug} />
+        <Slug multiline={false} slug={slug} />
       </div>
       <EntityCreators display="grid" creators={creators} itemType={itemType} />
       <div className="description card-description text-truncate text-rk-text d-flex">
