@@ -43,6 +43,7 @@ export interface EntityHeaderProps {
   description: string;
   devAccess: boolean;
   email?: string;
+  hideEmptyTags?: boolean;
   itemType: EntityType;
   labelCaption: string;
   launchNotebookUrl: string;
@@ -61,7 +62,7 @@ export interface EntityHeaderProps {
 }
 
 function EntityHeader({
-  creators, description, devAccess, itemType, labelCaption, launchNotebookUrl, links,
+  creators, description, devAccess, hideEmptyTags = false, itemType, labelCaption, launchNotebookUrl, links,
   otherButtons, sessionAutostartUrl, showFullHeader = true, slug, statusButton, tagList, timeCaption,
   title, url, visibility, imageUrl
 }: EntityHeaderProps) {
@@ -78,6 +79,7 @@ function EntityHeader({
       <div className="entity-image">
         <div style={imageStyles}
           className={`header-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
+          <div className="card-bg-title card-bg-title--small">{title}</div>
         </div>
       </div>
       <div className="entity-time-tags">
@@ -86,7 +88,7 @@ function EntityHeader({
           showTooltip={true}
           time={timeCaption}
           className="text-rk-text-light"/>
-        <EntityTags tagList={tagList} multiline={true} />
+        <EntityTags tagList={tagList} multiline={true} hideEmptyTags={hideEmptyTags} />
       </div>
       <div className="entity-action d-flex align-items-baseline gap-1">
         {mainButton}

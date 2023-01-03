@@ -389,18 +389,19 @@ export default function DatasetView(props) {
       }
       <div className="mb-4">
         <EntityHeader
-          title={dataset.title}
-          description=""
-          itemType="dataset"
-          tagList={dataset.keywords}
           creators={dataset?.published?.creator}
-          labelCaption={datasetPublished ? "Published" : "Created"}
-          timeCaption={timeCaption}
+          description=""
           devAccess={false}
-          url={dataset.identifier}
+          hideEmptyTags={true}
+          imageUrl={imageUrl}
+          itemType="dataset"
+          labelCaption={datasetPublished ? "Published" : "Created"}
           links={linksHeader}
           otherButtons={[deleteOption, modifyButton, addToProject]}
-          imageUrl={imageUrl}
+          tagList={dataset.keywords}
+          timeCaption={timeCaption}
+          title={dataset.title}
+          url={dataset.identifier}
         />
       </div>
       <DisplayMetadata

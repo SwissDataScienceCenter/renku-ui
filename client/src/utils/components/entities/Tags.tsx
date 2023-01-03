@@ -28,11 +28,12 @@ import { RootStateOrAny, useSelector } from "react-redux";
  */
 
 export interface EntityTagsProps {
+  hideEmptyTags: boolean;
+  multiline: boolean;
   tagList: string[];
-  multiline: boolean
 }
 
-function EntityTags ({ tagList, multiline }: EntityTagsProps) {
+function EntityTags ({ hideEmptyTags, multiline, tagList }: EntityTagsProps) {
   const ref = useRef(null);
   const multilineStyles = multiline ? "d-flex flex-wrap text-rk-text-light" : "text-truncate text-dark";
   const isUpdatingValue = useSelector((state: RootStateOrAny ) =>
@@ -45,6 +46,9 @@ function EntityTags ({ tagList, multiline }: EntityTagsProps) {
       </div>
     );
   }
+
+  if (!tagList?.length && hideEmptyTags)
+    return null;
 
   const tooltip = tagList?.length > 0 ?
     <ThrottledTooltip target={ref} tooltip={tagList?.map(tag => `#${tag}`).join(", ")} /> : null;
