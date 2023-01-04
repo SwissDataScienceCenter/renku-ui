@@ -44,6 +44,12 @@ nav.navbar {
   }
 }
 
+.navbar-nav {
+  --bs-navbar-color: rgba(255, 255, 255, 0.55);
+  --bs-navbar-active-color: rgba(255, 255, 255, 1);
+  --bs-navbar-hover-color: rgba(255, 255, 255, 0.75);
+}
+
 .container-fluid.renku-container {
   align-items: center;
 }
