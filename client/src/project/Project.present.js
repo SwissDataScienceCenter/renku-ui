@@ -270,22 +270,23 @@ function ProjectViewHeaderMinimal(props) {
   return (
     <Fragment>
       <EntityHeader
-        title={props.metadata.title}
-        visibility={props.metadata.visibility}
-        description={props.metadata.description}
-        itemType="project"
-        slug={slug}
-        tagList={props.metadata.tagList}
         creators={props.metadata.owner ? [props.metadata.owner] : []}
-        labelCaption={"Updated"}
-        timeCaption={props.metadata.lastActivityAt}
-        launchNotebookUrl={props.launchNotebookUrl}
-        sessionAutostartUrl={props.sessionAutostartUrl}
+        description={props.metadata.description}
         devAccess={props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
-        url={projectUrl}
-        links={linksHeader}
-        statusButton={statusButton}
+        hideEmptyTags={true}
         imageUrl={props.metadata.avatarUrl}
+        itemType="project"
+        labelCaption={"Updated"}
+        launchNotebookUrl={props.launchNotebookUrl}
+        links={linksHeader}
+        sessionAutostartUrl={props.sessionAutostartUrl}
+        slug={slug}
+        statusButton={statusButton}
+        tagList={props.metadata.tagList}
+        timeCaption={props.metadata.lastActivityAt}
+        title={props.metadata.title}
+        url={projectUrl}
+        visibility={props.metadata.visibility}
       />
     </Fragment>);
 }
