@@ -109,7 +109,7 @@ function DisplayFiles(props) {
 }
 
 function DisplayProjects(props) {
-  if (props?.projects === undefined) return null;
+  if (props.projects === undefined || !Array.isArray(props.projects)) return null;
   return <Card key="datasetProjectDetails" className="border-rk-light mb-4">
     <CardHeader className="bg-white p-3 ps-4">Projects using this dataset</CardHeader>
     <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
@@ -122,7 +122,7 @@ function DisplayProjects(props) {
           </tr>
         </thead>
         <tbody>
-          {props.projects?.map((project, index) =>
+          {props.projects.map((project, index) =>
             <tr data-cy="project-using-dataset" key={project.name + index}>
               <td className="text-break">
                 <Link to={`${props.projectsUrl}/${project.path}`}>
