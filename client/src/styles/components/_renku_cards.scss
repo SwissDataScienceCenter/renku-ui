@@ -16,6 +16,7 @@
   height: 198px;
   border-radius: 8px 8px 0 0;
   background-size: cover;
+  overflow: hidden;
 }
 .card-header-entity--large {
   height: 130px;
@@ -75,9 +76,9 @@
 }
 
 .card-bg-title--small {
-  position: absolute;
   font-size: 100px;
-  margin-top: 30px;
+  margin-top: 0;
+  padding-top: 30px;
 }
 
 .card-title {
