@@ -1,5 +1,19 @@
 # Changes
 
+## [2.15.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.14.0...2.15.0) (2023-01-04)
+
+### Bug Fixes
+
+* **client:** improve layout of entity headers and cards ([#2265](https://github.com/SwissDataScienceCenter/renku-ui/issues/2265))
+
+### Features
+
+* improve styling of button with menu and group button ([#2200](https://github.com/SwissDataScienceCenter/renku-ui/issues/2200), [#2243](https://github.com/SwissDataScienceCenter/renku-ui/issues/2243))
+* retrieve namespaces owned only when forking a project ([#2027](https://github.com/SwissDataScienceCenter/renku-ui/issues/2027), [#2187](https://github.com/SwissDataScienceCenter/renku-ui/issues/2187))
+* improve source highlighting in file preview ([#2175](https://github.com/SwissDataScienceCenter/renku-ui/issues/2175), [#2233](https://github.com/SwissDataScienceCenter/renku-ui/issues/2233))
+* restore projects and datasets images  ([#2179](https://github.com/SwissDataScienceCenter/renku-ui/issues/2179), [#2231](https://github.com/SwissDataScienceCenter/renku-ui/issues/2231))
+
+
 ## [2.14.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.13.0...2.14.0) (2022-12-16)
 
 ### Bug Fixes
