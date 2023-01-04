@@ -113,7 +113,7 @@ function ProjectDatasetLockAlert({ lockStatus }) {
  *
  * @param {Object} webhook - project.webhook store object
  * @param {bool} migration_required - whether it's necessary to migrate the project or not
-  * @param {bool} docker_update_possible - whether it's necessary to migrate the docker image or not
+ * @param {bool} docker_update_possible - whether it's necessary to migrate the docker image or not
  * @param {Object} history - react history object
  * @param {string} overviewStatusUrl - overview status url
  */
@@ -475,31 +475,53 @@ class ProjectViewHeaderOverview extends Component {
   }
 }
 
+
+function getShowSessionURL(annotations, serverName) {
+  return Url.get(Url.pages.project.session.show, {
+    namespace: annotations["namespace"],
+    path: annotations["projectName"],
+    server: serverName,
+  });
+}
+
+/**
+ * Validate if a session is running calculating the startSessionURL and comparing with the given autostartSessionUrl
+ *
+ * @param {object} sessions - sessions object that should contain annotations for each session
+ * @param {string} startSessionUrl - start session url to check if it exists in sessions object
+ * @returns {boolean | object} if session exist return session object including show session url otherwise return false
+ */
+function getSessionRunning(sessions, startSessionUrl) {
+  let sessionRunning = false;
+  Object.keys(sessions).forEach( sessionName => {
+    const session = sessions[sessionName];
+    const annotations = NotebooksHelper.cleanAnnotations(session.annotations, "renku.io");
+    const autoStartUrl = Url.get(Url.pages.project.session.autostart, {
+      namespace: annotations["namespace"],
+      path: annotations["projectName"],
+    });
+    if (autoStartUrl === startSessionUrl)
+      sessionRunning = { ...session, showSessionURL: getShowSessionURL(annotations, session.name) };
+  });
+  return sessionRunning;
+}
+
 function StartSessionButton(props) {
   const { launchNotebookUrl, sessionAutostartUrl } = props;
   const currentSessions = useSelector((state) => state.stateModel.notebooks?.notebooks?.all);
-  let isRunningSession = false;
-  if (currentSessions) {
-    Object.keys(currentSessions).forEach( sessionName => {
-      const session = currentSessions[sessionName];
-      const annotations = NotebooksHelper.cleanAnnotations(session.annotations, "renku.io");
-      const autoStartUrl = Url.get(Url.pages.project.session.autostart, {
-        namespace: annotations["namespace"],
-        path: annotations["projectName"],
-      });
-      if (autoStartUrl === sessionAutostartUrl)
-        isRunningSession = true;
-    });
-  }
+  const localSessionRunning = currentSessions ? getSessionRunning(currentSessions, sessionAutostartUrl) : false;
 
-  const sessionButton = isRunningSession ?
-    <><FontAwesomeIcon icon={faPlug} className="fa-rotate-90" /> Connect </> :
-    <><FontAwesomeIcon icon={faPlay} /> Start </>;
+  const sessionIcon = !localSessionRunning ?
+    <><FontAwesomeIcon icon={faPlay} /> Start </> :
+    <><FontAwesomeIcon icon={faPlug} size="lg" className="fa-rotate-90" /> Connect </>;
+
+  const sessionLink = !localSessionRunning ?
+    sessionAutostartUrl : localSessionRunning.showSessionURL;
 
   const defaultAction = (
     <Link
-      className="btn btn-rk-green btn-sm btn-icon-text" to={sessionAutostartUrl}>
-      {sessionButton}
+      className="btn btn-rk-green btn-sm btn-icon-text" to={sessionLink}>
+      {sessionIcon}
     </Link>
   );
   return (
