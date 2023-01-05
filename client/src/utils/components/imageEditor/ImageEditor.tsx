@@ -8,7 +8,6 @@ interface ImageEditorProps {
   file: File;
   imageEditionState: ImageEditionState;
   setImageEditionState: Function;
-  disabledControls: boolean;
 }
 
 const CARD_IMAGE_DIMENSIONS = {
@@ -31,7 +30,7 @@ export function getPicaInstance() {
   return picaInstance;
 }
 
-function ImageEditor({ onSave, file, imageEditionState, setImageEditionState, disabledControls }: ImageEditorProps) {
+function ImageEditor({ onSave, file, imageEditionState, setImageEditionState }: ImageEditorProps) {
   const editorRef = useRef<AvatarEditor | null>(null);
 
   // saving the image when the position changes can be launched multiple times in one second
@@ -110,11 +109,11 @@ function ImageEditor({ onSave, file, imageEditionState, setImageEditionState, di
 
   const controls = (
     <div className="d-flex gap-1 align-items-center">
-      <Button className="editor-control-btn" disabled={disabledControls}
+      <Button className="editor-control-btn"
         onClick={(e: any) => modifyImage(e, "zoomIn")}><ZoomIn /></Button>
-      <Button className="editor-control-btn" disabled={disabledControls || imageEditionState.scale <= 1}
+      <Button className="editor-control-btn" disabled={imageEditionState.scale <= 1}
         onClick={(e: any) => modifyImage(e, "zoomOut")}><ZoomOut /></Button>
-      <Button className="editor-control-btn" disabled={disabledControls}
+      <Button className="editor-control-btn"
         onClick={(e: any) => modifyImage(e, "restore")}>
         <ArrowClockwise /></Button>
     </div>

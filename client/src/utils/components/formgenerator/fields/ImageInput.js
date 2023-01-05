@@ -61,7 +61,7 @@ function ImagePreview(
   const imageSize = { width: 133, height: 77, borderRadius: "8px" };
   const imageStyle = { ...imageSize, objectFit: "cover" };
   const imagePreviewStyle = { ...imageStyle, backgroundColor: "#C4C4C4", borderRadius: "8px" };
-  // const displayValue = selected[Prop.NAME] ?? "Current Image";
+  const displayValue = selected[Prop.NAME] ?? "Current Image";
   const isImageSelected = (selectedIndex > -1 && selected[Prop.URL]);
   const isNewFileUploaded = selected[Prop.URL] && selected[Prop.FILE];
 
@@ -70,29 +70,27 @@ function ImagePreview(
       reviewFile(fileModified, maxSize, setSizeAlert, options, setInputs, name);
   };
 
-  // const image = isImageSelected ?
-  //   <img src={selected[Prop.URL]} alt={displayValue} style={imageStyle} /> :
-  //   (<div style={imagePreviewStyle}
-  //     className="d-flex justify-content-center align-items-center text-white">
-  //     <div>No Image Yet</div>
-  //   </div>);
+  const image = isImageSelected ?
+    (<>
+      <img src={selected[Prop.URL]} alt={displayValue} style={imageStyle} />
+      <small className="text-muted">Current image</small>
+    </>) :
+    (<div style={imagePreviewStyle}
+      className="d-flex justify-content-center align-items-center text-white">
+      <div>No Image Yet</div>
+    </div>);
 
-  const imageEditor = isImageSelected && !disabled ?
+
+  const imageEditor = isNewFileUploaded && !disabled ?
     <ImageEditor
-      file={originalImageInput || selected[Prop.URL]}
+      file={originalImageInput}
       onSave={onChangeImage}
       imageEditionState={imageEditionState}
-      setImageEditionState={setImageEditionState}
-      disabledControls={!isNewFileUploaded}
-    /> : null;
-  const imageView = !isImageSelected ? (
+      setImageEditionState={setImageEditionState} /> : null;
+  const imageView = !isNewFileUploaded ? (
     <div style={imageSize}>
       <div className="d-flex justify-content-around card">
-        <div style={imageSize}>
-          <div style={imagePreviewStyle} className="d-flex justify-content-center align-items-center text-white">
-            <div>No Image Yet</div>
-          </div>
-        </div>
+        <div style={imageSize}>{image}</div>
       </div>
     </div>
   ) : null;
@@ -100,7 +98,6 @@ function ImagePreview(
   return (<div className="m-auto">
     {imageView}
     {imageEditor}
-    {isImageSelected && !isNewFileUploaded ? <small>Upload a new image to edit</small> : null}
   </div>);
 }
 

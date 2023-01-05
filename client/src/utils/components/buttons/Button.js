@@ -22,7 +22,7 @@
  *  Button code and presentation.
  */
 
-import React, { Fragment, useRef, useState } from "react";
+import React, { Fragment, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
