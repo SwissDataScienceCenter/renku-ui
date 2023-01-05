@@ -16,6 +16,7 @@
 }
 
 .container-entity-header {
+    --bs-card-title-spacer-y: 0.5rem;
     display: grid;
     grid-template-columns: 250px auto 200px 160px;
     grid-template-rows: auto auto auto;
