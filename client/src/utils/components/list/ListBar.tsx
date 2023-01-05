@@ -58,7 +58,7 @@ function ListBar(
       <div className="description card-description text-truncate text-rk-text d-flex">
         {description}
       </div>
-      <EntityTags tagList={tagList} multiline={false} />
+      <EntityTags tagList={tagList} multiline={false} hideEmptyTags={false} />
       {
         timeCaption ?
           <div className="mt-auto">

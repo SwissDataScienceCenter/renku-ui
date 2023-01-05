@@ -64,7 +64,7 @@ function ListCard(
             <EntityCreators display="list" creators={creators} itemType={itemType} />
             <EntityDescription
               description={description} isHeightFixed={true} showSuggestion={false} className="text-rk-text-light" />
-            <EntityTags tagList={tagList} multiline={false} />
+            <EntityTags tagList={tagList} multiline={false} hideEmptyTags={false} />
             <div className="d-flex align-items-center gap-3 card-small-text">
               <EntityLabel type={itemType} workflowType={null} />
               <VisibilityIcon visibility={visibility} className={colorByType.colorText} />
