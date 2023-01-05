@@ -1,12 +1,14 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import AvatarEditor, { Position } from "react-avatar-editor";
-import { Button, ZoomIn, ZoomOut } from "../../ts-wrappers";
+import { ArrowClockwise, Button, ZoomIn, ZoomOut } from "../../ts-wrappers";
+import picaFn from "pica";
 
 interface ImageEditorProps {
   onSave?: Function;
   file: File;
   imageEditionState: ImageEditionState;
   setImageEditionState: Function;
+  disabledControls: boolean;
 }
 
 const CARD_IMAGE_DIMENSIONS = {
@@ -19,47 +21,61 @@ export type ImageEditionState = {
   positions: Position
 };
 
-function ImageEditor({ onSave, file, imageEditionState, setImageEditionState }: ImageEditorProps) {
-  const editorRef = useRef<AvatarEditor | null>(null);
-  const onPositionChange = (positions: Position) => {
-    setImageEditionState({ ...imageEditionState, positions });
-  };
+let picaInstance: any;
+export function getPicaInstance() {
+  if (picaInstance)
+    return picaInstance;
 
-  const handleResize = (
+  picaInstance = picaFn();
+
+  return picaInstance;
+}
+
+function ImageEditor({ onSave, file, imageEditionState, setImageEditionState, disabledControls }: ImageEditorProps) {
+  const editorRef = useRef<AvatarEditor | null>(null);
+
+  // saving the image when the position changes can be launched multiple times in one second
+  // that's why we use onMouseUp for that case and here for when the scale value changes
+  useEffect(() => {
+    if (imageEditionState.scale)
+      saveImage();
+  }, [imageEditionState.scale]); //eslint-disable-line
+
+  const scaleImage = async (
     canvas: HTMLCanvasElement,
     width: number,
     height: number,
     scale = 1,
     positions: Position,
-    type: string ) => {
+    imageType: string ) => {
     const offScreenCanvas = document.createElement("canvas");
     const newWidth = width * scale;
     const newHeight = height * scale;
     offScreenCanvas.width = newWidth;
     offScreenCanvas.height = newHeight;
     offScreenCanvas?.getContext("2d")?.drawImage(canvas, positions.x, positions.y, newWidth, newHeight);
-    return offScreenCanvas.toDataURL(type, 0.9);
+
+    // Use pica to resize image
+    const picaInstance = getPicaInstance();
+    return picaInstance.resize(canvas, offScreenCanvas, { alpha: true })
+      .then( (result: any) => picaInstance.toBlob(result, imageType, 0.90));
   };
 
   const generateImageFile = (blob: Blob, name: string, type: string) => {
-    if (!blob)
-      return null;
     return new File([blob], name, { type });
   };
 
-  const onClickSave = async () => {
+  const saveImage = async () => {
     if (editorRef && editorRef.current) {
-      // resize image to card size
-      const canvas = editorRef.current.getImage();
-      const scaledImage = handleResize(canvas,
-        CARD_IMAGE_DIMENSIONS.width,
-        CARD_IMAGE_DIMENSIONS.height,
-        imageEditionState.scale,
-        imageEditionState.positions,
-        file.type);
       try {
-        const blob = await (await fetch(scaledImage)).blob();
-        const imageFile = generateImageFile(blob, file.name, file.type );
+        const canvas = editorRef.current.getImage();
+        const blobScaledImage = await scaleImage(canvas,
+          CARD_IMAGE_DIMENSIONS.width,
+          CARD_IMAGE_DIMENSIONS.height,
+          imageEditionState.scale,
+          imageEditionState.positions,
+          file.type);
+        const imageFile = generateImageFile(blobScaledImage, file.name, file.type);
         if (onSave)
           onSave(imageFile);
       }
@@ -70,25 +86,37 @@ function ImageEditor({ onSave, file, imageEditionState, setImageEditionState }: 
     }
   };
 
-  const zoom = (direction: "up" | "down", e: any) => {
-    e.preventDefault();
-    switch (direction) {
-      case "up":
+  const modifyImage = (e: any, action: "zoomIn" | "zoomOut" | "changePosition" | "restore", values?: unknown) => {
+    if (e)
+      e.preventDefault();
+    switch (action) {
+      case "zoomIn":
         setImageEditionState({ ...imageEditionState, scale: imageEditionState.scale + 0.1 });
         break;
-      case "down":
+      case "zoomOut":
         setImageEditionState({ ...imageEditionState, scale: imageEditionState.scale - 0.1 });
+        break;
+      case "changePosition":
+        setImageEditionState({ ...imageEditionState, positions: values });
+        break;
+      case "restore":
+        setImageEditionState({
+          scale: 1,
+          positions: { x: 0, y: 0 }
+        });
         break;
     }
   };
 
   const controls = (
     <div className="d-flex gap-1 align-items-center">
-      <small>Zoom</small>
-      <Button className="editor-control-btn" onClick={(e: any) => zoom("up", e)}><ZoomIn /></Button>
-      <Button className="editor-control-btn" onClick={(e: any) => zoom("down", e)}
-        disabled={imageEditionState.scale <= 1}><ZoomOut /></Button>
-      <Button className="btn-save-editor fs-small px-3 py-1" onClick={onClickSave}>Save</Button>
+      <Button className="editor-control-btn" disabled={disabledControls}
+        onClick={(e: any) => modifyImage(e, "zoomIn")}><ZoomIn /></Button>
+      <Button className="editor-control-btn" disabled={disabledControls || imageEditionState.scale <= 1}
+        onClick={(e: any) => modifyImage(e, "zoomOut")}><ZoomOut /></Button>
+      <Button className="editor-control-btn" disabled={disabledControls}
+        onClick={(e: any) => modifyImage(e, "restore")}>
+        <ArrowClockwise /></Button>
     </div>
   );
 
@@ -108,7 +136,9 @@ function ImageEditor({ onSave, file, imageEditionState, setImageEditionState }: 
         scale={imageEditionState.scale}
         position={imageEditionState.positions}
         rotate={0}
-        onPositionChange={onPositionChange}
+        onImageReady={saveImage}
+        onMouseUp={saveImage}
+        onPositionChange={(position) => modifyImage(undefined, "changePosition", position)}
       />
       {controls}
     </div>
