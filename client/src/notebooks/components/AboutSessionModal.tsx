@@ -19,15 +19,17 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
+import EntityHeader from "../../utils/components/entityHeader/EntityHeader";
+import Time from "../../utils/helpers/Time";
 import { InfoCircle, Modal, ModalBody, ModalHeader } from "../../utils/ts-wrappers";
 import { EntityType } from "../../utils/components/entities/Entities";
-import EntityHeader from "../../utils/components/entityHeader/EntityHeader";
 import { ACCESS_LEVELS } from "../../api-client";
-import "./SessionModal.css";
 import { NotebookServerRow } from "../Notebooks.present";
-import Time from "../../utils/helpers/Time";
 import { Notebook, ProjectMetadata } from "./Session";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
+import { Docs } from "../../utils/constants/Docs";
+
+import "./SessionModal.css";
 
 /**
  *  renku-ui
@@ -80,12 +82,12 @@ const AboutSessionModal = ({ toggleModal, isOpen, projectMetadata, notebook }: A
       <div className="d-flex flex-column gap-1">
         <ExternalLink
           className="mx-1 text-rk-green text-decoration-none d-flex align-items-center gap-2"
-          role="link" url="https://renku.readthedocs.io/en/latest/topic-guides/session-basics.html">
+          role="link" url={Docs.rtdTopicGuide("sessions/session-basics.html")}>
           <InfoCircle /> How to use sessions
         </ExternalLink>
         <ExternalLink
           className="mx-1 text-rk-green text-decoration-none d-flex align-items-center gap-2"
-          role="link" url="https://renku.readthedocs.io/en/latest/introduction/index.html">
+          role="link" url={Docs.READ_THE_DOCS_INTRODUCTION}>
           <InfoCircle /> About Renku
         </ExternalLink>
       </div>
