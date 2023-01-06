@@ -23,16 +23,31 @@ Below, we explain each of those components in greater detail and guidelines for 
 
 To develop on this codebase, you will want the following tools installed.
 
+|                                                                      |                                                                     |
+|----------------------------------------------------------------------|---------------------------------------------------------------------|
+| [node](https://nodejs.org/en/)                                       | Node JavaScript execution environment                               |
+| [npm](https://github.com/npm/cli)                                    | Node package manager                                                |
+| [nvm](https://github.com/nvm-sh/nvm)                                 | NVM or some similar tool for managing node versions                 |
+
+Node is a requirement; when you install node, you will probably also get npm automatically. Though not absolutely necessary, we recommend using a **node version manager** like nvm to manage node/npm installations.
+
+However you get it, you need the node version specified in the [Dockerfile](https://github.com/SwissDataScienceCenter/renku-ui/blob/master/client/Dockerfile).
+
+## Recommended tools
+
+If you are content with testing your changes using Cypress, all you need is node. If you want to develop and test your changes against a real RenkuLab deployment, then you will need a few more tools.
+
+|                                                                      |                                                                     |
+|----------------------------------------------------------------------|---------------------------------------------------------------------|
+| [kubectl](https://kubernetes.io/docs/tasks/tools/)                   | K8s command-line tool                                               |
+| [telepresence](https://www.telepresence.io/docs/latest/quick-start/) | Tool for redirecting requests to your local development environment |
+
+Kubectl and telepresence will allow you to inject code running on your development machine into a K8s deployment. These two tools will be sufficient if you do not need to deploy the renku application into K8s yourself. If you **do** need to do that, then you will additionally need:
 
 |                                                                      |                                                                     |
 |----------------------------------------------------------------------|---------------------------------------------------------------------|
 | [docker](https://www.docker.com)                                     | For building containers                                             |
 | [helm](https://helm.sh)                                              | For packaging things for K8s                                        |
-| [kubectl](https://kubernetes.io/docs/tasks/tools/)                   | K8s command-line tool                                               |
-| [nvm](https://github.com/nvm-sh/nvm)                                 | NVM or some similar tool for managing node environments             |
-| [telepresence](https://www.telepresence.io/docs/latest/quick-start/) | Tool for redirecting requests to your local development environment |
-
-You should use your **node version manager** to install the node version specified in the [Dockerfile](https://github.com/SwissDataScienceCenter/renku-ui/blob/master/client/Dockerfile).
 
 
 # Client
@@ -156,9 +171,11 @@ It commonly happens that there are multiple components and multiple state intera
 
 # Server
 
-The server is the [Express-based](https://expressjs.com) back-end for the RenkuLab UI. At first, the front-end would interact directly with back-end services, but this structure imposed some limitations and complications, so we introduced a server component with the sole responsibility of serving the UI and simplifying interactions with the other backend services.
+The server is the [Express-based](https://expressjs.com) back-end for the RenkuLab UI. The main responsibilities of the server are managing user tokens acting handling requests for information from other backend services.
 
-In many cases, the server just forwards requests to the appropriate service, and is therefore a much smaller and simpler codebase than the client. Where appropriate, though, the server can be used to implement logic or interact with multiple services to provide a more unified view to the client. The server manages websockets to send asynchronous notifications to clients when important events occur.
+User access tokens are retrieved, stored, and renewed in the server for reasons of safety and also because this allows the server to interact with and poll other resources on behalf of the user.
+
+Though the server is the first receipient of service requests from the client, in many cases, the server just forwards requests to the appropriate service. For this reason, the codebase is much smaller and simpler than the client. In some cases though, the server can implement logic or interact with multiple services to provide a more unified view to the client. The server also manages websockets to send asynchronous notifications to clients when important events occur.
 
 ## Tool Stack
 
