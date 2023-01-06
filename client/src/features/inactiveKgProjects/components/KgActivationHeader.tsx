@@ -15,15 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ExternalLink } from "../../../utils/components/ExternalLinks";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+
+import { ExternalLink } from "../../../utils/components/ExternalLinks";
 import { ThrottledTooltip } from "../../../utils/components/Tooltip";
-import React from "react";
+import { Docs } from "../../../utils/constants/Docs";
 
 function KgActivationHeader() {
-  const docKg = "https://renku.readthedocs.io/en/latest/topic-guides/miscellaneous/knowledge-graph.html";
+  const docKg = Docs.rtdTopicGuide("miscellaneous/knowledge-graph.html");
   const tooltip = (
     <>
       The Renku Knowledge Graph captures the relationships between projects, datasets, metadata, and more.<br/>
