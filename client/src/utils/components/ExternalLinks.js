@@ -103,8 +103,8 @@ function ExternalLink(props) {
       (<sup><FontAwesomeIcon icon={iconType} size={props.iconSize} color="dark" /></sup>) :
       (<FontAwesomeIcon icon={iconType} size={props.iconSize} color="dark" />);
     displayTitle = props.iconAfter ?
-      (<span>{props.title} {icon}</span>) :
-      (<span className="btn-icon-text">{icon} {props.title}</span>);
+      (<span className="btn-icon-text-after">{props.title}{icon}</span>) :
+      (<span className="btn-icon-text">{icon}{props.title}</span>);
   }
   const myProps = { ...props, title: displayTitle };
   if (role === "link" || role === "text")
@@ -150,7 +150,7 @@ function IconLink(props) {
 function ExternalIconLinkWithTooltip(props) {
   const [uniqueId, ] = useState(`external-icon-link-${_.uniqueId()}`);
 
-  let className = "icon-link";
+  let className = "btn-icon-text icon-link";
   if (props.className)
     className += ` ${props.className}`;
 
@@ -158,18 +158,18 @@ function ExternalIconLinkWithTooltip(props) {
     <a href={props.url} role="button"
       className={props.className}
       target="_blank" rel="noreferrer noopener">
-      <FontAwesomeIcon className={className} icon={props.icon} id={uniqueId} /> {props.title}
+      <FontAwesomeIcon className={className} icon={props.icon} id={uniqueId} />{props.title}
     </a>
     <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
   </span>;
 }
 
 function ExternalIconLinkWithoutTooltip(props) {
-  let className = "";
+  let className = "btn-icon-text";
   if (props.className)
     className += ` ${props.className}`;
   return <a href={props.url} target="_blank" rel="noreferrer noopener" className={className}>
-    <FontAwesomeIcon icon={props.icon} /> {props.title}
+    <FontAwesomeIcon icon={props.icon} />{props.title}
   </a>;
 }
 

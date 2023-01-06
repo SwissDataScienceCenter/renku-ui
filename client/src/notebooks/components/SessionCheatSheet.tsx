@@ -22,7 +22,7 @@ import React, { useEffect, useState } from "react";
 import "./SessionCheatSheet.css";
 import * as cheatsheetJson from "./cheatsheet.json";
 import { ExternalDocsLink } from "../../utils/components/ExternalLinks";
-import { RenkuPythonDocs } from "../../utils/constants/Docs";
+import { Docs, RenkuPythonDocs } from "../../utils/constants/Docs";
 import { Clipboard } from "../../utils/components/Clipboard";
 import { Col } from "../../utils/ts-wrappers";
 
@@ -86,12 +86,11 @@ function LearnMore() {
     <CommandsRow>
       <div>
         For a more detailed overview of common commands, see the {" "}
-        {/* eslint-disable-next-line max-len */}
         <ExternalDocsLink url={`${RenkuPythonDocs.READ_THE_DOCS_ROOT}/_static/cheatsheet/cheatsheet.pdf`}
           title="renku python cheat sheet"/>.
       </div>
       <div>
-        The <ExternalDocsLink url={`${RenkuPythonDocs.READ_THE_DOCS_ROOT}/reference/commands.html`}
+        The <ExternalDocsLink url={Docs.rtdPythonReferencePage("commands")}
           title="Renku documentation" /> covers much more.
       </div>
     </CommandsRow>
