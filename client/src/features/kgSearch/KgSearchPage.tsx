@@ -89,7 +89,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
   const { client } = useContext(AppContext);
   const user = useSelector((state: any) => state.stateModel.user);
   const dispatch = useDispatch();
-  const searchRequest = {
+  let searchRequest = {
     phrase,
     sort,
     page,
@@ -110,11 +110,15 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
     dispatch(removeFilters());
   };
 
+  // ? Temporary workaround to prevent showing older projects first on empty "Best Match" searches
+  if (searchRequest.phrase === "" && searchRequest.sort === SortingOptions.DescMatchingScore)
+    searchRequest.sort = SortingOptions.DescDate;
+
   const { data, isFetching, isLoading, error } = useSearchEntitiesQuery(searchRequest);
   const filter = (
     <>
       { isOpenFilter ?
-        <Col className="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-2 pb-2">
+        <Col className="col-12 col-lg-3 col-xl-2 pb-2">
           <div className="d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block filter-container">
             <FilterEntitySearch
               valuesDate={valuesDate} author={author} type={type} visibility={visibility} isLoggedUser={isLoggedUser} />
@@ -147,7 +151,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
           />
         </Col>
         {filter}
-        <Col className="col-12 col-sm-12 col-md-12 col-lg-9 col-xl-10 mx-auto">
+        <Col className="col-12 col-lg-9 col-xl-10 mx-auto">
           <SearchResultsContent
             data={data}
             isFetching={isFetching}
@@ -156,7 +160,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
             onRemoveFilters={onRemoveFilters}
             error={error}
           />
-          <div className="d-sm-block d-md-none d-lg-none d-xl-none d-xxl-none">
+          <div className="d-sm-block d-md-none">
             <ModalFilter
               author={author}
               type={type}

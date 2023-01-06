@@ -41,12 +41,12 @@ export enum SortingOptions {
 /* eslint-enable no-unused-vars */
 
 interface SortingItems {
+  DescMatchingScore: string;
+  AscMatchingScore: string;
+  DescDate: string;
+  AscDate: string;
   AscTitle: string;
   DescTitle: string;
-  AscDate: string;
-  DescDate: string;
-  AscMatchingScore: string;
-  DescMatchingScore: string;
 }
 
 export interface SortingInputProps {
@@ -57,8 +57,7 @@ export interface SortingInputProps {
 
 type SortOptionsStrings = keyof typeof SortingOptions;
 
-const SortingEntities = (
-  { setSort, styleType, sort } : SortingInputProps) => {
+const SortingEntities = ({ setSort, styleType, sort } : SortingInputProps) => {
 
   const changeSorting = (value: SortOptionsStrings) => {
     if (setSort)
@@ -66,12 +65,12 @@ const SortingEntities = (
   };
 
   const items: SortingItems = {
-    AscTitle: "Title: A - Z",
-    DescTitle: "Title: Z - A",
-    AscDate: "Old - New",
-    DescDate: "New - Old",
-    AscMatchingScore: "Low Relevance",
-    DescMatchingScore: "Relevance"
+    DescMatchingScore: "Best match",
+    DescDate: "Recently modified",
+    AscDate: "Least recently modified",
+    AscTitle: "Title: A to Z",
+    DescTitle: "Title: Z to A",
+    AscMatchingScore: "Lowest relevance"
   };
 
   const options = [];

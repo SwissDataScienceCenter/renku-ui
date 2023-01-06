@@ -95,9 +95,8 @@ const SearchResultsContent = (
 
   const breakPointColumns = {
     default: 3,
-    1100: 2,
-    700: 2,
-    500: 1
+    1250: 2,
+    700: 1
   };
 
   const changePage = (value: number) => {
@@ -107,9 +106,7 @@ const SearchResultsContent = (
 
   return (
     <>
-      <Masonry
-        className="rk-search-result-grid mb-4"
-        breakpointCols= {breakPointColumns}>
+      <Masonry className="rk-search-result-grid mb-4" breakpointCols={breakPointColumns}>
         {rows}
       </Masonry>
       <Pagination
