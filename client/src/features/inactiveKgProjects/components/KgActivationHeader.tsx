@@ -23,7 +23,7 @@ import { ThrottledTooltip } from "../../../utils/components/Tooltip";
 import React from "react";
 
 function KgActivationHeader() {
-  const docKg = "https://renku.readthedocs.io/en/latest/topic-guides/knowledge-graph.html";
+  const docKg = "https://renku.readthedocs.io/en/latest/topic-guides/miscellaneous/knowledge-graph.html";
   const tooltip = (
     <>
       The Renku Knowledge Graph captures the relationships between projects, datasets, metadata, and more.<br/>
