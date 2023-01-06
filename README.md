@@ -249,6 +249,19 @@ For the default mode of the script, you will need to attach a debugger to finish
 
 With this configuration, after running `run-telepresence.sh` you should invoke the _Run > Start Debugging_ in VS Code to attach the debugger.
 
+# Troubleshooting
+
+## Telepresence
+
+Telepresence 2 has greatly improved robustness to network problems and is much more reliable than the earlier version. Still, sometimes situations arise that cause problems for telepresence. When that happens, the best course of action is to quit and restart telepresence:
+
+```
+$ telepresence quit -ur
+$ telepresence connect
+```
+
+If that is not sufficient, you may need use the activity monitor to find and kill zombie telepresence processes before restarting.
+
 # Site navigation map
 Note: stroke-dasharray when the link is only for anonymous users
 
