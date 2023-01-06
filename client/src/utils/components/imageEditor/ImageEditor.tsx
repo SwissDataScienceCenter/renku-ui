@@ -21,6 +21,10 @@ export type ImageEditionState = {
 };
 
 let picaInstance: any;
+
+// Resize images in browser
+// select the best of available technologies: webworkers, webassembly, createImageBitmap, pure JS.
+// ref: https://github.com/nodeca/pica
 export function getPicaInstance() {
   if (picaInstance)
     return picaInstance;
