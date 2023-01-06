@@ -92,15 +92,8 @@ $borderRadius: 1000px;
 
 .btn-secondary, .btn-info, .btn-warning {
   color: $rk-white;
-  &:hover {
-    color: $rk-white;
-  }
-
-  &:active {
-    color: $rk-white;
-  }
-
-  &:focus {
+  --bs-btn-active-color: #{$rk-white};
+  &:hover, &:focus, &:active, &.active {
     color: $rk-white;
   }
   &.disabled{
@@ -160,6 +153,7 @@ $borderRadius: 1000px;
 
 .btn-rk-green {
   @extend .btn-rk;
+  --bs-btn-active-color: white;
 }
 
 .rk-btn-group-light {
@@ -193,7 +187,7 @@ $borderRadius: 1000px;
   background-color: white;
   color: $rk-blue;
 
-  &:hover, &:focus, &.active {
+  &:hover, &:focus, &:active, &.active {
     background-color: transparent;
     color: $rk-blue;
   }
@@ -201,8 +195,11 @@ $borderRadius: 1000px;
 .btn-outline-rk-green {
   background-color: white;
   color: $rk-green;
+  --bs-btn-active-color: #{$rk-green-highlight};
+  --bs-btn-active-bg: transparent;
+  --bs-btn-active-border-color: #{$rk-green};
 
-  &:hover, &:focus, &.active {
+  &:hover, &:focus, &:active, &.active {
     background-color: transparent;
     color: $rk-green-highlight;
     border-color: $rk-green;
@@ -217,7 +214,7 @@ $borderRadius: 1000px;
   color: $rk-pink;
   border-color: $rk-pink;
 
-  &:hover, &:focus, &.active {
+  &:hover, &:focus, &:active, &.active {
     background-color: transparent;
     color: $rk-pink-highlight;
     border-color: $rk-pink;
@@ -242,7 +239,7 @@ $borderRadius: 1000px;
   color: $rk-pink;
   border-color: $rk-pink;
 
-  &:hover, &:focus, &.active {
+  &:hover, &:focus, &:active, &.active {
     background-color: $rk-pink-highlight;
     color: white;
   }
