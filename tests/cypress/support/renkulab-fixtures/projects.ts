@@ -261,7 +261,11 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         body: { message: "Hook valid" }
       }).as(validationName);
       cy.intercept("/ui-server/api/projects/*/graph/status", {
-        body: { done: 1, total: 1, progress: 100.0 }
+        body: {
+          activated: true,
+          progress: { done: 5, total: 5, percentage: 100.0 },
+          details: { status: "success", message: "triples store" }
+        }
       });
       cy.intercept(`/ui-server/api/renku/${coreVersion}/version`, {
         body: {
@@ -351,6 +355,18 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       const fixture = this.useMockedData ? { fixture: result } : undefined;
       cy.intercept(
         `/ui-server/api/groups/${namespace}`,
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    getStatusProcessing(finished = false, name = "getStatusProcessing") {
+      const result = finished ?
+        "project/project-status-done.json" :
+        "project/project-status-processing.json";
+      const fixture = this.useMockedData ? { fixture: result } : undefined;
+      cy.intercept(
+        "/ui-server/api/projects/*/graph/status",
         fixture
       ).as(name);
       return this;
