@@ -45,6 +45,7 @@ interface KgSearchResult {
   path: string;
   type: EntityType;
   visibility: Visibilities;
+  images: any[];
 }
 
 interface ListResponse<T> {

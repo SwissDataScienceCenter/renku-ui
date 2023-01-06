@@ -21,6 +21,7 @@ import { ListElementProps } from "../components/list/List.d";
 import { Url } from "./url";
 import { dateFilterTypes } from "../components/dateFilter/DateFilter";
 import _ from "lodash";
+import { getDatasetImageUrl } from "../../dataset/DatasetFunctions";
 
 const getDatasetIdentifier = (links: KgSearchResultLink[]) => {
   const details = links.filter(link => link.rel === "details");
@@ -58,6 +59,7 @@ export const mapSearchResultToEntity =
       itemType: entity.type,
       slug: entity.type === EntityType.Project ? entity.namespace : "",
       visibility: entity.visibility,
+      imageUrl: getDatasetImageUrl(entity.images)
     };
   };
 
