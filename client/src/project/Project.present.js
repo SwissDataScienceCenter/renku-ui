@@ -34,7 +34,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCodeBranch, faExclamationTriangle, faInfoCircle, faPlay, faPlug, faStar as faStarSolid, faUserClock
+  faCodeBranch, faExclamationTriangle, faInfoCircle, faStar as faStarSolid, faUserClock
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "../utils/helpers/url";
@@ -69,7 +69,7 @@ import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
 
 import "./Project.css";
-import { useSelector } from "react-redux";
+import { StartSessionLink } from "../utils/components/entities/Buttons";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -489,7 +489,8 @@ function getShowSessionURL(annotations, serverName) {
  *
  * @param {object} sessions - sessions object that should contain annotations for each session
  * @param {string} startSessionUrl - start session url to check if it exists in sessions object
- * @returns {boolean | object} if session exist return session object including show session url otherwise return false
+ * @returns {boolean | object.showSessionURL} if session exist return
+ * session object including show session url otherwise return false
  */
 function getSessionRunning(sessions, startSessionUrl) {
   let sessionRunning = false;
@@ -508,22 +509,7 @@ function getSessionRunning(sessions, startSessionUrl) {
 
 function StartSessionButton(props) {
   const { launchNotebookUrl, sessionAutostartUrl } = props;
-  const currentSessions = useSelector((state) => state.stateModel.notebooks?.notebooks?.all);
-  const localSessionRunning = currentSessions ? getSessionRunning(currentSessions, sessionAutostartUrl) : false;
-
-  const sessionIcon = !localSessionRunning ?
-    <><FontAwesomeIcon icon={faPlay} /> Start </> :
-    <><FontAwesomeIcon icon={faPlug} size="lg" className="fa-rotate-90" /> Connect </>;
-
-  const sessionLink = !localSessionRunning ?
-    sessionAutostartUrl : localSessionRunning.showSessionURL;
-
-  const defaultAction = (
-    <Link
-      className="btn btn-rk-green btn-sm btn-icon-text" to={sessionLink}>
-      {sessionIcon}
-    </Link>
-  );
+  const defaultAction = <StartSessionLink sessionAutostartUrl={sessionAutostartUrl} />;
   return (
     <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="rk-green" isPrincipal={true}>
       <DropdownItem>
@@ -1461,4 +1447,5 @@ export default { ProjectView };
 
 // For testing
 export { filterPaths };
-export { ProjectSuggestActions, ProjectSuggestionDataset, ProjectSuggestionReadme, StartSessionButton };
+export { ProjectSuggestActions, ProjectSuggestionDataset, ProjectSuggestionReadme, StartSessionButton,
+  getSessionRunning };
