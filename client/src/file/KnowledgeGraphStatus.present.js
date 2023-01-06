@@ -45,15 +45,16 @@ function KnowledgeGraphStatus(props) {
   const { error, progress, webhookJustCreated } = props;
   if (error != null) {
     return <MigrationWarnAlert>
-      Knowledge Graph integration must be activated to view the lineage, but&nbsp;
+      Knowledge Graph integration must be activated to view the lineage, but
       there is a problem with the knowledge graph integration for this project. To resolve this problem,
-      you should contact the development team on&nbsp;
+      you should contact the development team on {" "}
       <a href={Links.GITTER}
-        target="_blank" rel="noreferrer noopener">Gitter</a> or&nbsp;
+        target="_blank" rel="noreferrer noopener">Gitter</a> or{" "}
       <a href={Links.GITHUB}
         target="_blank" rel="noreferrer noopener">GitHub</a>.
     </MigrationWarnAlert>;
   }
+
   if (progress == null) {
     return (
       <Loader />
@@ -111,7 +112,7 @@ function KnowledgeGraphStatus(props) {
     return (
       <div>
         <Alert color="primary">
-          <p>Knowledge Graph is building... {parseInt(progress)}%</p>
+          <p>Knowledge Graph is building... {progress}%</p>
           <Progress value={progress} />
         </Alert>
       </div>
