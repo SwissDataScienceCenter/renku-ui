@@ -196,3 +196,24 @@ describe("display a session with error", () => {
   });
 
 });
+
+describe("display a session when session is being stopped", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects().projectTest();
+    fixtures.getSessionsStopping();
+    cy.visit("/projects/e2e/local-test-project/sessions");
+  });
+
+  it("display main action disabled", () => {
+    fixtures.getLogs("getLogs", "");
+    cy.wait("@getSessionsStopping");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
+    cy.get_cy("stopping-btn").should("be.disabled");
+    cy.get_cy("stopping-btn").should("be.visible");
+  });
+
+});
