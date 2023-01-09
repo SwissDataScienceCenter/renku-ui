@@ -1,5 +1,17 @@
 # Changes
 
+# [2.16.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.15.0...2.16.0) (2023-01-09)
+
+### Features
+
+* update realtime the KG status indexing percentage ([#2255](https://github.com/SwissDataScienceCenter/renku-ui/issues/2255))
+* refresh the developer documentation ([#2165](https://github.com/SwissDataScienceCenter/renku-ui/issues/2165), [#2275](https://github.com/SwissDataScienceCenter/renku-ui/issues/2275))
+
+### BREAKING CHANGES
+
+* Requires renku-graph v2.26.0 or greater
+
+
 ## [2.15.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.14.0...2.15.0) (2023-01-04)
 
 ### Bug Fixes
