@@ -56,14 +56,14 @@ class RenkuNavLink extends Component {
   }
 
   render() {
-    const { previous, title } = this.props;
+    const { previous, title, icon } = this.props;
     const to = previous ?
       { "pathname": this.props.to, "state": { previous } } :
       this.props.to;
     const exact = (this.props.exact != null) ? this.props.exact : true;
     return (
       <NavLink exact={exact} to={to} isActive={this.isActive} tag={RRNavLink}
-        id={this.props.id} className={this.props.className}>{title}</NavLink>
+        id={this.props.id} className={this.props.className}>{icon} {title}</NavLink>
     );
   }
 }
