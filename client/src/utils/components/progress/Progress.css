@@ -34,7 +34,6 @@
 
 .progress-bar {
     height: var(--progress_height);
-    background-color: #E6E9ED;
     width: 100%;
     overflow: hidden;
     position: relative;

@@ -514,7 +514,7 @@ class ProjectViewHeader extends Component {
 class ProjectNav extends Component {
   render() {
     return (
-      <div className="pb-3 rk-search-bar pt-4 mt-1">
+      <div className="pb-3 rk-search-bar pt-4 mt-1" data-cy="project-navbar">
         <Col className="d-flex pb-2 mb-1 justify-content-start" md={12} lg={12}>
           <Nav pills className="nav-pills-underline">
             <NavItem>
@@ -617,7 +617,7 @@ class ProjectViewOverviewNav extends Component {
     //   <RenkuNavLink to={`${this.props.overviewUrl}/results`} title="Results" />
     // </NavItem>
     return (
-      <Nav className="flex-column nav-light nav-pills-underline">
+      <Nav className="flex-column nav-light nav-pills-underline" data-cy="project-overview-nav">
         <NavItem>
           <RenkuNavLink to={this.props.baseUrl} title="General" id="nav-overview-general" />
         </NavItem>
@@ -638,12 +638,12 @@ class ProjectViewOverviewNav extends Component {
 class ProjectViewOverview extends Component {
   render() {
     const { projectCoordinator } = this.props;
-    return <Col key="overview">
+    return <Col key="overview" data-cy="project-overview">
       <Row>
         <Col key="nav" sm={12} md={2}>
           <ProjectViewOverviewNav {...this.props} />
         </Col>
-        <Col key="content" sm={12} md={10}>
+        <Col key="content" sm={12} md={10} data-cy="project-overview-content">
           <Switch>
             <Route exact path={this.props.baseUrl} render={props => {
               return <ProjectViewGeneral readme={this.props.data.readme} {...this.props} />;
