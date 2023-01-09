@@ -29,7 +29,7 @@ import {
 import _ from "lodash";
 
 import { DatasetError } from "./DatasetError";
-import { getDatasetAuthors, getDatasetImageUrl } from "./DatasetFunctions";
+import { getDatasetAuthors, getDatasetImageUrl, getUpdatedDatasetImage } from "./DatasetFunctions";
 import DeleteDataset from "../project/datasets/delete/index";
 import Time from "../utils/helpers/Time";
 import FileExplorer from "../utils/components/FileExplorer";
@@ -374,9 +374,8 @@ export default function DatasetView(props) {
     new Date(datasetDate.replace(/ /g, "T")) :
     "";
 
-  const imageUrl = dataset.mediaContent ? dataset.mediaContent :
-    dataset.images?.length > 0 ?
-      getDatasetImageUrl(dataset.images) : undefined;
+  const imageUrl = dataset.mediaContent ? getUpdatedDatasetImage(dataset.mediaContent, datasetDate) :
+    dataset.images?.length > 0 ? getUpdatedDatasetImage(getDatasetImageUrl(dataset.images), datasetDate) : undefined;
 
   return (<div className={props.insideProject ? "row" : "container-xxl renku-container py-4 mt-2"}>
     <Col>
