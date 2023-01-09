@@ -27,11 +27,21 @@ import { configureStore } from "@reduxjs/toolkit";
 import { projectKgApi } from "../../features/projects/ProjectKgApi";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import { projectApi } from "../../features/projects/ProjectApi";
+import { kgSearchApi } from "../../features/kgSearch";
+import kgSearchFormSlice from "../../features/kgSearch/KgSearchSlice";
+import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
+import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
+import kgInactiveProjectsSlice from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 
 function createStore(renkuStateModelReducer, name = "renku") {
+  renkuStateModelReducer[kgSearchApi.reducerPath] = kgSearchApi.reducer;
+  renkuStateModelReducer[projectApi.reducerPath] = projectApi.reducer;
   renkuStateModelReducer[projectKgApi.reducerPath] = projectKgApi.reducer;
   renkuStateModelReducer[sessionSidecarApi.reducerPath] = sessionSidecarApi.reducer;
-  renkuStateModelReducer[projectApi.reducerPath] = projectApi.reducer;
+  renkuStateModelReducer[recentUserActivityApi.reducerPath] = recentUserActivityApi.reducer;
+  renkuStateModelReducer[inactiveKgProjectsApi.reducerPath] = inactiveKgProjectsApi.reducer;
+  renkuStateModelReducer[kgSearchFormSlice.name] = kgSearchFormSlice.reducer;
+  renkuStateModelReducer[kgInactiveProjectsSlice.name] = kgInactiveProjectsSlice.reducer;
   // For the moment, disable the custom middleware, since it causes
   // problems for our app.
   const store = configureStore({
@@ -40,9 +50,13 @@ function createStore(renkuStateModelReducer, name = "renku") {
       getDefaultMiddleware({
         immutableCheck: false,
         serializableCheck: false,
-      }).concat(projectKgApi.middleware)
+      })
+        .concat(kgSearchApi.middleware)
+        .concat(inactiveKgProjectsApi.middleware)
+        .concat(projectApi.middleware)
+        .concat(projectKgApi.middleware)
         .concat(sessionSidecarApi.middleware)
-        .concat(projectApi.middleware),
+        .concat(recentUserActivityApi.middleware),
   });
   return store;
 }

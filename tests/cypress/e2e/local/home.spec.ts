@@ -56,7 +56,6 @@ describe("display the landing page", () => {
   it("displays the landing page header", () => {
     let projects;
     cy.wait("@getUser");
-    cy.wait("@getProjects");
     cy.wait("@getLastVisitedProjects").then( result => projects = result.response.body.projects);
 
     const findProject = (path, projects) => {
