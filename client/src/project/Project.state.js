@@ -529,26 +529,39 @@ class ProjectCoordinator {
   }
 
   fetchGraphStatus(client) {
-    return client.checkGraphStatus(this.get("metadata.id"))
+    const projectId = this.get("metadata.id");
+    if (!projectId)
+      return null;
+    return client.checkGraphStatus(projectId)
       .then((resp) => {
-        let progress;
-        if (resp.progress == null)
-          progress = GraphIndexingStatus.NO_PROGRESS;
+        // extract the percentage
+        const progress = resp?.progress ?? null;
+        let percentage;
+        if (progress.percentage == null)
+          percentage = GraphIndexingStatus.NO_PROGRESS;
 
-        if (resp.progress === 0 || resp.progress)
-          progress = resp.progress;
-        this.set("webhook.progress", progress);
-        return progress;
+        if (progress.percentage === 0 || progress.percentage)
+          percentage = progress.percentage;
+        this.setObject({
+          webhook: {
+            progress: percentage,
+            data: resp ? resp : {}
+          }
+        });
+        return percentage;
       })
       .catch((err) => {
         if (err.case === API_ERRORS.notFoundError) {
-          const progress = GraphIndexingStatus.NO_WEBHOOK;
-          this.set("webhook.progress", progress);
-          return progress;
+          const percentage = GraphIndexingStatus.NO_WEBHOOK;
+          this.setObject({
+            webhook: {
+              progress: percentage,
+              error: err ? err : {}
+            }
+          });
+          return percentage;
         }
-
         throw err;
-
       });
   }
 

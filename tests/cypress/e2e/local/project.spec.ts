@@ -32,14 +32,37 @@ describe("display a project", () => {
   it("displays the project overview page", () => {
     cy.wait("@getProject");
     cy.wait("@getReadme");
-    // Check that the project header is shown
-    cy.get("[data-cy='header-project']").should("be.visible");
-    // Check that the readme is shown
-    cy.get("[data-cy='project-readme']").should("contain.text", "local test project");
+    cy.get_cy("header-project").should("be.visible");
+    cy.get_cy("project-readme").should("be.visible").should("contain.text", "local test project");
+    cy.get_cy("project-title").should("be.visible").should("contain.text", "local-test-project");
+  });
 
-    // Check that the title is correct
-    cy.get("[data-cy='project-title']").first()
-      .should("contain.text", "local-test-project");
+  it("displays lock correctly", () => {
+    fixtures.projectLockStatus({ locked: true });
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    cy.wait("@getProjectLockStatus");
+    cy.get_cy("project-overview-content").contains("project is currently being modified").should("exist");
+    fixtures.projectLockStatus({ locked: false });
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    cy.wait("@getProjectLockStatus");
+    cy.get_cy("project-overview-content").contains("project is currently being modified").should("not.exist");
+  });
+
+  it("displays the project KG status updates", () => {
+    cy.get_cy("project-overview-nav").contains("a", "Status").should("exist").click();
+    cy.url().should("include", "/projects/e2e/local-test-project/overview/status");
+    cy.get_cy("project-overview-content").contains("Knowledge Graph integration is active.").should("exist");
+    fixtures.getStatusProcessing();
+    cy.get_cy("project-overview-nav").contains("a", "Status").should("exist").click();
+    cy.wait("@getStatusProcessing");
+    cy.get_cy("project-overview-content").contains("Knowledge Graph integration is active.").should("not.exist");
+    cy.get_cy("project-overview-content").contains("Knowledge Graph is building").should("exist");
+    cy.get_cy("project-overview-content").contains("40%").should("exist");
+    fixtures.getStatusProcessing(true);
+    cy.get_cy("project-overview-nav").contains("a", "Status").should("exist").click();
+    cy.wait("@getStatusProcessing");
+    cy.get_cy("project-overview-content").contains("Knowledge Graph is building").should("not.exist");
+    cy.get_cy("project-overview-content").contains("Knowledge Graph integration is active.").should("exist");
   });
 
   it("update project settings overview", () => {
@@ -211,23 +234,6 @@ describe("display migration information", () => {
     cy.contains("error occurred").should("be.visible");
     cy.contains("[Show details]").should("be.visible");
   });
-});
-
-describe("display lock status", () => {
-  const fixtures = new Fixtures(cy);
-  beforeEach(() => {
-    fixtures.config().versions().userTest();
-    fixtures.projects().landingUserProjects().projectTest();
-    fixtures.projectMigrationUpToDate();
-    cy.visit("/projects/e2e/local-test-project");
-  });
-
-  it("displays nothing for non-locked project", () => {
-    fixtures.projectLockStatus();
-    cy.visit("/projects/e2e/local-test-project/");
-    cy.contains("currently being modified").should("not.exist");
-  });
-
 });
 
 describe("display migration information for anon user", () => {
