@@ -35,7 +35,7 @@ import { ButtonDropdown } from "reactstrap";
 import { Loader } from "../../utils/components/Loader";
 import { MarkdownTextExcerpt } from "../../utils/components/markdown/RenkuMarkdown";
 import ListDisplay from "../../utils/components/List";
-import { getDatasetImageUrl } from "../DatasetFunctions";
+import { getDatasetImageUrl, getUpdatedDatasetImage } from "../DatasetFunctions";
 
 
 function OrderByDropdown(props) {
@@ -183,6 +183,7 @@ class DatasetsRows extends Component {
       const projectsCount = dataset.projectsCount > 1
         ? `In ${dataset.projectsCount} projects`
         : `In ${dataset.projectsCount} project`;
+      const datasetImage = dataset.images?.length > 0 ? getDatasetImageUrl(dataset.images) : undefined;
 
       return {
         id: dataset.identifier,
@@ -201,7 +202,7 @@ class DatasetsRows extends Component {
         labelCaption: projectsCount + ". Created",
         creators: dataset.published !== undefined && dataset.published.creator !== undefined ?
           dataset.published.creator : null,
-        imageUrl: dataset.images?.length > 0 ? getDatasetImageUrl(dataset.images) : undefined,
+        imageUrl: getUpdatedDatasetImage(datasetImage, dataset.date),
       };
     });
 
