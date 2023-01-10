@@ -198,8 +198,8 @@ class Notebooks extends Component {
   }
 
   componentWillUnmount() {
-    this.coordinator.reset();
-    this.coordinator.fetchNotebooks();
+    // this.coordinator.reset();
+    // this.coordinator.fetchNotebooks();
     this.coordinator.stopNotebookPolling();
   }
 
@@ -342,10 +342,15 @@ class StartNotebookServer extends Component {
       startServer: this.startServer.bind(this),
       setObjectStoresConfiguration: this.setObjectStoresConfiguration.bind(this),
       toggleMergedBranches: this.toggleMergedBranches.bind(this),
-      toggleShowObjectStoresConfigModal: this.toggleShowObjectStoresConfigModal.bind(this)
+      toggleShowObjectStoresConfigModal: this.toggleShowObjectStoresConfigModal.bind(this),
+      resetNotebookList: this.resetNotebookList.bind(this)
     };
   }
 
+  resetNotebookList() {
+    this.coordinator.reset();
+    this.coordinator.fetchNotebooks();
+  }
   async componentDidMount() {
     this._isMounted = true;
     if (!this.props.blockAnonymous) {
@@ -359,23 +364,24 @@ class StartNotebookServer extends Component {
   }
 
   componentWillUnmount() {
-    this.coordinator.reset();
-    this.coordinator.fetchNotebooks();
     this.coordinator.stopNotebookPolling();
     this.coordinator.stopCiPolling();
     this._isMounted = false;
   }
 
   async componentDidUpdate(previousProps) {
-    if (this.state.scope)
-      this.coordinator.setNotebookFilters(this.state.scope);
     // TODO: temporary fix to prevent issue with component rerendered multiple times at the first url load
     if (this.state.first &&
       StatusHelper.isUpdating(previousProps.fetchingBranches) &&
       !StatusHelper.isUpdating(this.props.fetchingBranches)) {
       this.setState({ first: false });
-      if (this._isMounted)
+      if (this._isMounted) {
         this.refreshBranches().then(r => this.selectBranchWhenReady());
+        if (this.state.scope) {
+          this.coordinator.setNotebookFilters(this.state.scope);
+          this.coordinator.fetchNotebooks();
+        }
+      }
     }
   }
 

@@ -678,7 +678,8 @@ const NotebookServerRowAction = memo((props) => {
     const state = scope?.filePath ? { filePath: scope?.filePath } : undefined;
     defaultAction = (
       <Link data-cy="open-session" className="btn btn-outline-rk-green" to={{ pathname: props.localUrl, state }}>
-        Open
+        <div className="d-flex gap-2 text-rk-green">
+          <img src="/connectGreen.svg" className="rk-icon rk-icon-md" />Connect </div>
       </Link>);
     actions.openExternal = (<DropdownItem href={props.url} target="_blank" >
       <FontAwesomeIcon className="text-rk-green" icon={faExternalLinkAlt} /> Open in new tab
