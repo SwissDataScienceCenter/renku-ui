@@ -177,12 +177,9 @@ class Notebooks extends Component {
     this.coordinator.reset();
     this.userLogged = this.userModel.get("logged");
 
-    if (props.scope)
-      this.coordinator.setNotebookFilters(props.scope, true);
-
-
     this.state = {
-      showingLogs: false
+      showingLogs: false,
+      scope: props.scope
     };
 
     this.handlers = {
@@ -194,11 +191,15 @@ class Notebooks extends Component {
   }
 
   componentDidMount() {
+    if (this.state.scope)
+      this.coordinator.setNotebookFilters(this.state.scope, true);
     if (!this.props.blockAnonymous)
       this.coordinator.startNotebookPolling();
   }
 
   componentWillUnmount() {
+    this.coordinator.reset();
+    this.coordinator.fetchNotebooks();
     this.coordinator.stopNotebookPolling();
   }
 
@@ -323,6 +324,7 @@ class StartNotebookServer extends Component {
       branchDelay: false, // used in setBranchWhenReady
       showShareLinkModal: props.location?.state?.showShareLinkModal,
       filePath: props.location?.state?.filePath,
+      scope: props.scope
     };
 
     this.handlers = {
@@ -357,12 +359,16 @@ class StartNotebookServer extends Component {
   }
 
   componentWillUnmount() {
+    this.coordinator.reset();
+    this.coordinator.fetchNotebooks();
     this.coordinator.stopNotebookPolling();
     this.coordinator.stopCiPolling();
     this._isMounted = false;
   }
 
   async componentDidUpdate(previousProps) {
+    if (this.state.scope)
+      this.coordinator.setNotebookFilters(this.state.scope);
     // TODO: temporary fix to prevent issue with component rerendered multiple times at the first url load
     if (this.state.first &&
       StatusHelper.isUpdating(previousProps.fetchingBranches) &&

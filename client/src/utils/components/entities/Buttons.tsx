@@ -17,7 +17,7 @@
  */
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { faPen, faPlay, faCog, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { EntityType } from "./Entities";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -32,6 +32,7 @@ interface StartSessionLinkProps {
 function StartSessionLink({ sessionAutostartUrl }: StartSessionLinkProps) {
   const currentSessions = useSelector((state: RootStateOrAny) => state.stateModel.notebooks?.notebooks?.all);
   const localSessionRunning = currentSessions ? getSessionRunning(currentSessions, sessionAutostartUrl) : false;
+  const history = useHistory();
 
   const sessionIcon = !localSessionRunning ?
     <><FontAwesomeIcon icon={faPlay} /> Start </> :
@@ -40,11 +41,17 @@ function StartSessionLink({ sessionAutostartUrl }: StartSessionLinkProps) {
   const sessionLink = !localSessionRunning ?
     sessionAutostartUrl : localSessionRunning.showSessionURL;
 
+  const handleClick = (e: React.MouseEvent<HTMLElement>, url: string) => {
+    e.preventDefault();
+    history.push(url);
+  };
+
   return (
-    <Link
-      className="btn btn-rk-green btn-sm btn-icon-text" to={sessionLink}>
+    <Button
+      className="btn btn-rk-green btn-sm btn-icon-text"
+      onClick={(e: React.MouseEvent<HTMLElement>) => handleClick(e, sessionLink)}>
       {sessionIcon}
-    </Link>
+    </Button>
   );
 }
 
