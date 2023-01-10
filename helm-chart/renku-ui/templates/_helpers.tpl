@@ -72,3 +72,14 @@ Hack for calling templates in a fake scope (until this is solved https://github.
 {{- $template := index . 2 }}
 {{- include $template (dict "Chart" (dict "Name" $subchart) "Values" (index $dot.Values $subchart) "Release" $dot.Release "Capabilities" $dot.Capabilities) }}
 {{- end }}
+
+{{/*
+Return the appropriate apiVersion for autoscaling.
+*/}}
+{{- define "autoscaling.apiVersion" -}}
+{{- if semverCompare ">1.23-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- print "autoscaling/v2" -}}
+{{- else -}}
+{{- print "autoscaling/v2beta2" -}}
+{{- end -}}
+{{- end -}}
