@@ -79,7 +79,7 @@ function EntityHeader({
       <div className="entity-image">
         <div style={imageStyles}
           className={`header-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
-          <div className="card-bg-title card-bg-title--small">{title}</div>
+          {!imageUrl ? <div className="card-bg-title card-bg-title--small">{title}</div> : null}
         </div>
       </div>
       <div className="entity-time-tags">
