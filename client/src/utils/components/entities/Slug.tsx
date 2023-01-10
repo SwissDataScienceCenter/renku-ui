@@ -31,7 +31,7 @@ export interface SlugProps {
 }
 
 function Slug({ multiline, slug }: SlugProps) {
-  if (!slug) return null;
+  if (!slug) slug = "";
   if (multiline) {
     return <div className="card-text text-rk-text-light">
       {slug}

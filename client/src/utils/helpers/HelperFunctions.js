@@ -310,6 +310,11 @@ function isURL(str) {
   return !!pattern.test(str);
 }
 
+function hasSpecialCharacters(text) {
+  const spCharts = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/; // eslint-disable-line
+  return spCharts.test(text);
+}
+
 /**
  * Refresh the data when they are not available or older than `tolerance`, preventing simultaneous invokations.
  *
@@ -443,5 +448,6 @@ export {
   capitalizeFirstLetter, checkRenkuCoreSupport, generateZip, computeVisibilities,
   slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown,
   simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleCharacters,
-  convertUnicodeToAscii, refreshIfNecessary, sleep, toCapitalized, stylesByItemType, AUTOSAVED_PREFIX
+  convertUnicodeToAscii, refreshIfNecessary, sleep, toCapitalized, stylesByItemType, AUTOSAVED_PREFIX,
+  hasSpecialCharacters
 };

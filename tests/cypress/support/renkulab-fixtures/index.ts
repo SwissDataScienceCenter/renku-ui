@@ -28,7 +28,8 @@ import { Session } from "./session";
 import { Sessions } from "./sessions";
 import { User } from "./user";
 import { Workflows } from "./workflows";
+import { KgSearch } from "./kgSearch";
 
-const Fixtures = NewProject(NewSession(Sessions(Datasets(Projects(Session(User(Workflows(BaseFixtures))))))));
+const Fixtures = NewProject(NewSession(Sessions(Datasets(Projects(Session(User(Workflows(KgSearch(BaseFixtures)))))))));
 
 export default Fixtures;
