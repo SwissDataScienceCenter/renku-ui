@@ -23,7 +23,7 @@ import { faPen, faPlay, faCog, faTrash } from "@fortawesome/free-solid-svg-icons
 import { ThrottledTooltip } from "../Tooltip";
 import { EntityType } from "./Entities";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, UncontrolledTooltip } from "../../ts-wrappers";
+import { Button, Funnel, FunnelFill, UncontrolledTooltip } from "../../ts-wrappers";
 import { stylesByItemType } from "../../helpers/HelperFunctions";
 
 /**
@@ -47,7 +47,7 @@ function EntityButton({ type, slug }: EntityButtonProps) {
     case "project":
       handleClick = (e: any) => {
         e.preventDefault();
-        history.push(`/projects/${slug}/sessions/new?autostart=1`);
+        history.push(`${slug}/sessions/new?autostart=1`);
       };
       return (
         <>
@@ -117,4 +117,27 @@ function EntityModifyButton({ url, itemType }: EntityModifyButtonProps) {
   }
 }
 
-export { EntityButton, EntityModifyButton, EntityDeleteButtonButton };
+interface FilterButtonProps {
+  isOpen: boolean;
+  toggle: any;
+}
+function FilterButton({ isOpen, toggle }: FilterButtonProps) {
+  if (isOpen) {
+    return (
+      <div
+        onClick={toggle}
+        data-cy="filter-button-hide"
+        className="button-filter-box text-rk-green d-flex align-items-center gap-2 cursor-pointer">
+        <FunnelFill /> Hide Filters
+      </div>);
+  }
+
+  return <div
+    onClick={toggle}
+    data-cy="filter-button-show"
+    className="button-filter-box d-flex align-items-center gap-2 cursor-pointer">
+    <Funnel /> Show Filters
+  </div>;
+}
+
+export { EntityButton, EntityModifyButton, EntityDeleteButtonButton, FilterButton };

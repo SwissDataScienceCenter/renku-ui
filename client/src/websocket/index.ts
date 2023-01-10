@@ -19,6 +19,8 @@
 import { checkWsServerMessage, WsMessage, WsServerMessage } from "./WsMessages";
 import { handleUserInit, handleUserUiVersion, handleUserError } from "./handlers/userHandlers";
 import { handleSessionsStatus } from "./handlers/sessionStatusHandler";
+import { handleKgActivationStatus } from "./handlers/kgActivationStatusHandler";
+import { InactiveKgProjects } from "../features/inactiveKgProjects/InactiveKgProjects";
 import { StateModel } from "../model";
 import APIClient from "../api-client";
 
@@ -50,6 +52,13 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
         required: ["version"],
         optional: ["start", "message"],
         handler: handleUserUiVersion
+      }
+    ],
+    "activation": [
+      {
+        required: null,
+        optional: ["message"],
+        handler: handleKgActivationStatus
       }
     ],
     "ack": [
@@ -92,8 +101,10 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
  * @param fullModel - global model
  * @param getLocation - function to get location
  * @param client - api client
+ * @param notifications - global notifications service
  */
-function setupWebSocket(webSocketUrl: string, fullModel: StateModel, getLocation: Function, client: APIClient) {
+function setupWebSocket(
+  webSocketUrl: string, fullModel: StateModel, getLocation: Function, client: APIClient, notifications: any) {
   const model = fullModel.subModel("webSocket");
   const webSocket = new WebSocket(webSocketUrl);
   model.setObject({ open: false, reconnect: { retrying: false } });
@@ -111,14 +122,34 @@ function setupWebSocket(webSocketUrl: string, fullModel: StateModel, getLocation
     targetWebSocket.send(JSON.stringify(new WsMessage({}, "pullSessionStatus")));
   }
 
+  function resumePendingKgActivation(model: any, socket: any) {
+    const state = model?.reduxStore?.getState();
+    // kgInactiveProjects
+    const projectsInProgress = state?.kgInactiveProjects;
+    const projectIds = projectsInProgress?.filter((project: InactiveKgProjects) => {
+      return project.progressActivation !== null && project.progressActivation !== 100;
+    }). map( (p: InactiveKgProjects) => p.id );
+
+    if (projectIds.length) {
+      const message = JSON.stringify(new WsMessage({ projects: projectIds }, "pullKgActivationStatus"));
+      socket.send(message);
+    }
+  }
+
+  function resumePendingProcesses(model: any, socket: any) {
+    resumePendingKgActivation(model, socket);
+  }
+
   webSocket.onopen = (status) => {
     // start pinging regularly when the connection is open
     const target = status.target as WebSocket;
-    const webSocketOpen = target && target["readyState"] ? true : false;
+    const webSocketOpen = !!(target && target["readyState"]);
     if (webSocketOpen) {
       model.setObject({ open: true, error: false, lastReceived: null });
       // request session status
       startPullingSessionStatus(webSocket);
+      // resume running processes
+      resumePendingProcesses(fullModel, webSocket);
     }
 
     // Start a ping loop -- this should keep the connection alive
@@ -141,7 +172,7 @@ function setupWebSocket(webSocketUrl: string, fullModel: StateModel, getLocation
     model.setObject(wsData);
 
     if (data.code === 1006 || data.code === 4000)
-      retryConnection(webSocketUrl, fullModel, getLocation, client);
+      retryConnection(webSocketUrl, fullModel, getLocation, client, notifications);
   };
 
   webSocket.onmessage = (message) => {
@@ -175,7 +206,7 @@ function setupWebSocket(webSocketUrl: string, fullModel: StateModel, getLocation
       // execute the command
       try {
         // ? Mind we are passing the full model, not just model
-        const outcome = handler(serverMessage.data, webSocket, fullModel, getLocation, client);
+        const outcome = handler(serverMessage.data, webSocket, fullModel, getLocation, client, notifications);
         if (outcome && model.get("error"))
           model.set("error", false);
         else if (!outcome && !model.get("error"))
@@ -254,8 +285,10 @@ function getWsServerMessageHandler(
  * @param fullModel - global model
  * @param getLocation - function to get location
  * @param client - api client
+ * @param notifications - global notifications service
  */
-function retryConnection(webSocketUrl: string, fullModel: StateModel, getLocation: Function, client: APIClient) {
+function retryConnection(
+  webSocketUrl: string, fullModel: StateModel, getLocation: Function, client: APIClient, notifications: any) {
   const reconnectModel = fullModel.subModel("webSocket.reconnect");
   const reconnectData = reconnectModel.get("");
   // reset timer after 1 hour
@@ -267,7 +300,7 @@ function retryConnection(webSocketUrl: string, fullModel: StateModel, getLocatio
   reconnectData.retrying = true;
   const delay = (reconnectPenaltyFactor ** reconnectData.attempts) * reconnectIntervalMs;
   reconnectModel.setObject(reconnectData);
-  setTimeout(() => setupWebSocket(webSocketUrl, fullModel, getLocation, client), delay);
+  setTimeout(() => setupWebSocket(webSocketUrl, fullModel, getLocation, client, notifications), delay);
 }
 
 
