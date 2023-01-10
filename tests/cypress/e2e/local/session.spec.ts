@@ -149,6 +149,8 @@ describe("display a session", () => {
     fixtures.getSidecarHealth().getGitStatusError();
     cy.gui_open_session();
     // pull changes
+    // Due to a bootstrap update, necessary to click button twice in cypress tests
+    cy.get_cy("pull-changes-button").click();
     cy.get_cy("pull-changes-button").click();
     cy.get(".modal-dialog").should("exist");
     cy.get(".modal-dialog").get("h5").contains("Refresh Session").should("be.visible");
