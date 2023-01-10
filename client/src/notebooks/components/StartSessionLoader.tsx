@@ -22,6 +22,7 @@ import ProgressStepsIndicator, { StatusStepProgressBar } from "../../utils/compo
 import { RootStateOrAny, useSelector } from "react-redux";
 import { GoBackButton } from "../../utils/components/buttons/Button";
 import { ProgressStyle, ProgressType } from "../../utils/components/progress/Progress";
+import { getSessionRunningByProjectName } from "../../utils/helpers/SessionFunctions";
 
 interface CIStatus {
   ongoing: boolean;
@@ -41,15 +42,17 @@ interface StartNotebookAutostartLoaderProps {
   notebooks: Record<string, any>;
   options: Record<string, any>;
   backUrl: string;
+  filters: Record<string, any>;
 }
 function StartNotebookAutostartLoader(props: StartNotebookAutostartLoaderProps) {
-  const { ci, data, notebooks, options, backUrl } = props;
+  const { ci, data, notebooks, options, backUrl, filters } = props;
   const ciStatus = NotebooksHelper.checkCiStatus(ci) as CIStatus;
   const [fetching, setFetching] = useState<StatusFetching>({
     ci: !ciStatus.ongoing,
     data: !!data.fetched,
     options: !!options.fetched
   });
+  const isSessionVisible = getSessionRunningByProjectName(notebooks.all, filters.namespace, filters.project);
   const [steps, setSteps] = useState([
     {
       id: 0,
@@ -65,7 +68,12 @@ function StartNotebookAutostartLoader(props: StartNotebookAutostartLoaderProps) 
       id: 2,
       status: StatusStepProgressBar.WAITING,
       step: "Checking existing sessions"
-    }
+    },
+    {
+      id: 3,
+      status: StatusStepProgressBar.WAITING,
+      step: "Getting session information"
+    },
   ]);
 
   useEffect(() => {
@@ -85,8 +93,11 @@ function StartNotebookAutostartLoader(props: StartNotebookAutostartLoaderProps) 
     if (notebooks.fetched !== false)
       statuses[2].status = StatusStepProgressBar.READY;
 
+    if (isSessionVisible)
+      statuses[3].status = StatusStepProgressBar.READY;
+
     setSteps(statuses);
-  }, [fetching]); //eslint-disable-line
+  }, [fetching, isSessionVisible]); //eslint-disable-line
 
   useEffect(() => {
     setFetching({

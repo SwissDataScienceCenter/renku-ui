@@ -59,7 +59,7 @@ function RunningPullSessionBody(props: PullSessionProps) {
   if (isLoading)
     body = <CenteredLoader />;
 
-  else if (error != null || data == null || data.status !== "running")
+  else if (error != null || data == null || data.status !== "running" || data.error)
     body = <NoSidecarBody closeModal={closeModal} />;
 
   else body = <PullSessionStatusBody closeModal={closeModal} isOpen={isOpen} sessionName={serverName} />;
@@ -97,9 +97,9 @@ function PullSessionStatusBody({ closeModal, isOpen, sessionName }: PullSessionS
   };
 
   if (isFetching || data == null) return <CenteredLoader />;
-  if (error) return <NoSidecarBody closeModal={closeModal} />;
+  if (error || data.error) return <NoSidecarBody closeModal={closeModal} />;
   if (succeeded === false) return <PullSessionFailedBody closeModal={closeModal} />;
-  if (succeeded === true) return <PullSessionUpToDateBody closeModal={closeModal}/>;
+  if (succeeded === true) return <PullSessionUpToDateBody closeModal={closeModal} />;
   if (data.result.behind < 1) return <PullSessionUpToDateBody closeModal={closeModal} />;
   if (!data.result.clean || data.result.ahead > 0)
     return <PullSessionDivergedBody clean={data.result.clean} closeModal={closeModal} />;

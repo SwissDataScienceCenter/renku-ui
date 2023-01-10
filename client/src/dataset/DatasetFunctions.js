@@ -52,11 +52,27 @@ function getDatasetAuthors(dataset) {
  */
 function getDatasetImageUrl(images) {
   try {
-    return images[0]["_links"][0].href;
+    // images could contain previous image url, so we get the last in the array.
+    const index = images?.length - 1;
+    return images[index]["_links"][0].href;
   }
   catch {
     return undefined;
   }
 }
 
-export { mapDataset, getDatasetAuthors, getDatasetImageUrl };
+/**
+ * Returns image url with extra parameter to avoid outdated cached url
+ *
+ * @param {string} imageUrl - Url image
+ * @param {string} lastUpdateDate - last url update
+ */
+function getUpdatedDatasetImage(imageUrl, lastUpdateDate) {
+  if (!imageUrl)
+    return undefined;
+
+  const lastUpdate = new Date(lastUpdateDate).getTime();
+  return `${imageUrl}?${lastUpdate}`;
+}
+
+export { mapDataset, getDatasetAuthors, getDatasetImageUrl, getUpdatedDatasetImage };

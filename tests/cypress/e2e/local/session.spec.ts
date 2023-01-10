@@ -143,6 +143,17 @@ describe("display a session", () => {
       .contains("It is not possible to offer a one-click refresh for this session.").should("be.visible");
   });
 
+  it("pull changes button -- sidecar error`", () => {
+    fixtures.getSidecarHealth().getGitStatusError();
+    cy.gui_open_session();
+    // pull changes
+    cy.get_cy("pull-changes-button").click();
+    cy.get(".modal-dialog").should("exist");
+    cy.get(".modal-dialog").get("h5").contains("Refresh Session").should("be.visible");
+    cy.get(".modal-dialog").get("div")
+      .contains("It is not possible to offer a one-click refresh for this session.").should("be.visible");
+  });
+
   it("pull changes button -- session clean", () => {
     fixtures.getSidecarHealth().getGitStatusClean();
     cy.gui_open_session();
