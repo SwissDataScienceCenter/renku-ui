@@ -684,6 +684,13 @@ const NotebookServerRowAction = memo((props) => {
       <FontAwesomeIcon className="text-rk-green" icon={faExternalLinkAlt} /> Open in new tab
     </DropdownItem>);
   }
+  else if (status === SessionStatus.stopping) {
+    defaultAction = (
+      <Button data-cy="stopping-btn" className="btn btn-outline-rk-green" disabled={true}>
+        Stopping...
+      </Button>);
+    actions.stop = null;
+  }
   else {
     const classes = { className: "text-nowrap btn-outline-rk-green" };
     defaultAction = (<Button data-cy="stop-session-button" {...classes} onClick={() => props.stopNotebook(name)}>
@@ -693,7 +700,8 @@ const NotebookServerRowAction = memo((props) => {
 
   return (
     <ButtonWithMenu
-      className="sessionsButton" size="sm" default={defaultAction} color="rk-green">
+      className="sessionsButton" size="sm" default={defaultAction} color="rk-green"
+      disabled={status === SessionStatus.stopping}>
       {actions.openExternal}
       {actions.logs}
       {actions.stop}

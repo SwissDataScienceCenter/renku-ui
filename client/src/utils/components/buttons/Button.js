@@ -52,7 +52,7 @@ function ButtonWithMenu(props) {
 
   const options = props.children ?
     (<>
-      <DropdownToggle data-cy="more-menu" className={`${props.className} ${classes}`} >
+      <DropdownToggle data-cy="more-menu" className={`${props.className} ${classes}`} disabled={props.disabled}>
         <ChevronDown data-cy="more-options-button" size="20" className="btn-with-menu-icon" />
       </DropdownToggle>
       <DropdownMenu className="btn-with-menu-options" end>
