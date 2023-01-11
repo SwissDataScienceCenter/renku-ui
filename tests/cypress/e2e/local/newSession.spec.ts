@@ -125,7 +125,20 @@ describe("launch sessions", () => {
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
     cy.contains("Configure Cloud Storage").should("be.visible").click();
-    cy.contains("Object Store Configuration").should("be.visible");
-  });
+    cy.contains("Cloud Storage Configuration").should("be.visible");
 
+    // Test endpoint validation
+    cy.contains("Please enter an valid URL for the endpoint").should("be.visible");
+    cy.get("#s3-endpoint-0").type("url");
+    cy.contains("Please enter an valid URL for the endpoint").should("be.visible");
+    cy.get("#s3-endpoint-0").type(".com");
+    cy.contains("Please enter an valid URL for the endpoint").should("not.exist");
+
+    // Test bucket validation
+    cy.contains("Please enter a valid bucket name").should("be.visible");
+    cy.get("#s3-bucket-0").type("ab");
+    cy.contains("Please enter a valid bucket name").should("be.visible");
+    cy.get("#s3-bucket-0").type("c");
+    cy.contains("Please enter a valid bucket name").should("not.exist");
+  });
 });
