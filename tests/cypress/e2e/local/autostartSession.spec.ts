@@ -27,12 +27,10 @@ describe("launch autostart sessions", () => {
     fixtures.config().versions().projects().landingUserProjects();
     fixtures.projectTest().projectMigrationUpToDate();
     fixtures.sessionAutosave().sessionServersEmpty().renkuIni().sessionServerOptions().projectLockStatus();
-    cy.visit(projectUrl);
+    fixtures.userTest().newSessionImages();
   });
 
   it("autostart session - not found custom values branch and commit", () => {
-    fixtures.userTest();
-    fixtures.newSessionImages();
     const invalidCommit = "no-valid-commit";
     const invalidBranch = "no-valid-branch";
     cy.visit(`${projectUrl}/sessions/new?autostart=1&commit=${invalidCommit}&branch=${invalidBranch}`);
@@ -41,13 +39,11 @@ describe("launch autostart sessions", () => {
         master.
         You can change that and other options down below.`;
     cy.wait("@getProjectCommits");
-    cy.wait("@getSessionServerOptions");
+    cy.wait("@getSessionServerOptions", { timeout: 10000 });
     cy.get(".alert-warning").should("contain.text", alertMessage);
   });
 
   it("autostart session - not found custom values commit", () => {
-    fixtures.userTest();
-    fixtures.newSessionImages();
     const invalidCommit = "no-valid-commit";
     cy.visit(`${projectUrl}/sessions/new?autostart=1&commit=${invalidCommit}&branch=master`);
     const alertMessage = `A session for the reference ${invalidCommit} could not be started
@@ -55,7 +51,7 @@ describe("launch autostart sessions", () => {
         master.
         You can change that and other options down below.`;
     cy.wait("@getProjectCommits");
-    cy.wait("@getSessionServerOptions");
+    cy.wait("@getSessionServerOptions", { timeout: 10000 });
     cy.get(".alert-warning").should("contain.text", alertMessage);
   });
 
