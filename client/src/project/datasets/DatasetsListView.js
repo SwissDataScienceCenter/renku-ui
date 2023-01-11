@@ -9,6 +9,7 @@ import { MarkdownTextExcerpt } from "../../utils/components/markdown/RenkuMarkdo
 import { Loader } from "../../utils/components/Loader";
 import ListDisplay from "../../utils/components/List";
 import { ThrottledTooltip } from "../../utils/components/Tooltip";
+import { getUpdatedDatasetImage } from "../../dataset/DatasetFunctions";
 
 function datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, dataset) {
   const kgCaption =
@@ -34,7 +35,7 @@ function datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, datase
     timeCaption: timeCaption,
     labelCaption: `${kgCaption}. Created `,
     creators: dataset.creators,
-    imageUrl: dataset.mediaContent
+    imageUrl: getUpdatedDatasetImage(dataset?.mediaContent, timeCaption)
   };
 }
 

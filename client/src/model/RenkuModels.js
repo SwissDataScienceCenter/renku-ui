@@ -618,9 +618,9 @@ const datasetFormSchema = new Schema({
     label: "Image",
     edit: true,
     type: FormGenerator.FieldTypes.IMAGE,
-    maxSize: 200 * 1024,
+    maxSize: 10000 * 1024,
     format: "image/png,image/jpeg,image/gif,image/tiff",
-    help: "JPG, PNG, and JPEG files are allowed, up to 200KB.",
+    help: "JPG, PNG, and JPEG files are allowed, up to 10MB.",
     value: {
       options: [],
       selected: -1

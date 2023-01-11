@@ -59,6 +59,16 @@ function Sessions<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    getSessionsStopping(name = "getSessionsStopping", namespace = "*", resultFile = "sessions/sessionStopping.json") {
+      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
+
+      cy.intercept(
+        "/ui-server/api/notebooks/servers?namespace=" + namespace,
+        fixture
+      ).as(name);
+      return this;
+    }
+
     getLogs(name = "getLogs", resultFile = "sessions/logs.json") {
       const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
       cy.intercept(
@@ -176,8 +186,26 @@ function Sessions<T extends FixturesConstructor>(Parent: T) {
       ).as(name);
       return this;
     }
-  };
 
+    getGitStatusError(name = "getGitStatus") {
+      const fixture = {
+        body: {
+          "error": {
+            "code": -32000,
+            // eslint-disable-next-line max-len
+            "message": "Running a git command failed with the error: fatal: could not read Username for 'https://gitlab.dev.renku.ch': No such device or address\n"
+          },
+          "id": 0,
+          "jsonrpc": "2.0"
+        } };
+
+      cy.intercept(
+        "/sessions/*/sidecar/jsonrpc",
+        fixture
+      ).as(name);
+      return this;
+    }
+  };
 }
 
 export { Sessions };

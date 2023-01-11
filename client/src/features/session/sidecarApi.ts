@@ -1,6 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-type HealthState = { status: string };
+type HealthState = { status: string,
+  error?: {
+    code: number;
+    message: string;
+  };
+};
 
 interface SidecarRequestArgs {
   serverName: string;
@@ -24,6 +29,10 @@ interface GitStatusResult extends JsonRpcResult {
     commit: string;
     status: string;
   };
+  error?: {
+    code: number;
+    message: string;
+  };
 }
 
 interface RenkuOpResult extends JsonRpcResult {
@@ -36,7 +45,6 @@ interface RenkuOpResult extends JsonRpcResult {
 
 interface SaveResult extends RenkuOpResult {}
 interface PullResult extends RenkuOpResult {}
-
 export const sessionSidecarApi = createApi({
   reducerPath: "sessionSidecarApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/sessions/" }),

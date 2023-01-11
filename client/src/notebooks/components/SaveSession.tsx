@@ -64,7 +64,7 @@ function RunningSaveSessionBody(props: SaveSessionProps) {
   else if (isLoading)
     body = <CenteredLoader />;
 
-  else if (error != null || data == null || data.status !== "running")
+  else if (error != null || data == null || data.status !== "running" || data.error)
     body = <NoSidecarBody closeModal={closeModal} />;
 
   else body = <SaveSessionStatusBody closeModal={closeModal} isOpen={isOpen} sessionName={serverName} />;
@@ -118,7 +118,7 @@ function SaveSessionStatusBody({ closeModal, isOpen, sessionName }: SaveSessionS
   };
 
   if (isFetching || data == null) return <CenteredLoader />;
-  if (error) return <NoSidecarBody closeModal={closeModal} />;
+  if (error || data.error) return <NoSidecarBody closeModal={closeModal} />;
   if (data.result.behind > 0)
     return <SaveSessionNoFFBody closeModal={closeModal} gitStatus={data} isOpen={isOpen} sessionName={sessionName} />;
   if (succeeded === false) return <SaveSessionFailedBody closeModal={closeModal} />;

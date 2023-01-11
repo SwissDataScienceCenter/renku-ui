@@ -72,6 +72,8 @@ import {
   Funnel as WrappedFunnel,
   FunnelFill as WrappedFunnelFull,
   Balloon as WrappedBalloon,
+  ZoomIn as WrappedZoomIn,
+  ZoomOut as WrappedZoomOut,
 } from "react-bootstrap-icons";
 
 import { FormGroup as WrappedFormGroup, Input as WrappedInput, InputGroup as WrappedInputGroup } from "reactstrap";
@@ -360,6 +362,14 @@ function Balloon(props) {
   return <WrappedBalloon {...props} />;
 }
 
+function ZoomIn(props) {
+  return <WrappedZoomIn {...props} />;
+}
+
+function ZoomOut(props) {
+  return <WrappedZoomOut {...props} />;
+}
+
 export { ArrowClockwise };
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
 export { Alert, Badge, Button, ButtonDropdown, ButtonGroup, Progress, CheckCircleFill, XCircleFill };
@@ -370,6 +380,6 @@ export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
 export { ArrowLeft, Briefcase, CardList, Diagram3, Download, Globe, HddStack, InfoCircle, Journals, Lock };
 export { People, Save, StopCircle, Balloon, Person };
-export { Nav, NavItem, NavLink, TabContent, TabPane };
+export { Nav, NavItem, NavLink, TabContent, TabPane, ZoomIn, ZoomOut };
 export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, ChevronDown, Diagram2, XLg };
 export { Funnel, FunnelFill };

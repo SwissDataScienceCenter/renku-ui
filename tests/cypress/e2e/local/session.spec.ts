@@ -143,6 +143,17 @@ describe("display a session", () => {
       .contains("It is not possible to offer a one-click refresh for this session.").should("be.visible");
   });
 
+  it("pull changes button -- sidecar error`", () => {
+    fixtures.getSidecarHealth().getGitStatusError();
+    cy.gui_open_session();
+    // pull changes
+    cy.get_cy("pull-changes-button").click();
+    cy.get(".modal-dialog").should("exist");
+    cy.get(".modal-dialog").get("h5").contains("Refresh Session").should("be.visible");
+    cy.get(".modal-dialog").get("div")
+      .contains("It is not possible to offer a one-click refresh for this session.").should("be.visible");
+  });
+
   it("pull changes button -- session clean", () => {
     fixtures.getSidecarHealth().getGitStatusClean();
     cy.gui_open_session();
@@ -193,6 +204,27 @@ describe("display a session with error", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
     cy.get_cy("stop-session-button").should("be.visible");
+  });
+
+});
+
+describe("display a session when session is being stopped", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects().projectTest();
+    fixtures.getSessionsStopping();
+    cy.visit("/projects/e2e/local-test-project/sessions");
+  });
+
+  it("display main action disabled", () => {
+    fixtures.getLogs("getLogs", "");
+    cy.wait("@getSessionsStopping");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
+    cy.get_cy("stopping-btn").should("be.disabled");
+    cy.get_cy("stopping-btn").should("be.visible");
   });
 
 });
