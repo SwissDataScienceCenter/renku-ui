@@ -307,7 +307,8 @@ describe("rendering", () => {
     const props = {
       client,
       model,
-      match: { params: { server: "server-session-fake-name" } }
+      match: { params: { server: "server-session-fake-name" } },
+      notebookServersUrl: "fake-url-server"
     };
 
     const div = document.createElement("div");

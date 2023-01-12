@@ -227,18 +227,36 @@ type CodePreviewProps = {
   fileExtension: string
 }
 
+function escapeHTML(unsafe: string) {
+  return unsafe?.replace(/[&<"']/g, function(m: any) {
+    switch (m) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case '"':
+        return "&quot;";
+      default:
+        return "&#039;";
+    }
+  });
+}
+
 function CodePreview(props: CodePreviewProps) {
 
   const codeBlock = React.useRef<HTMLPreElement>(null);
   React.useEffect(() => {
-    if (codeBlock.current) hljs.highlightBlock(codeBlock.current);
+    if (codeBlock.current) {
+      codeBlock.current.innerHTML = escapeHTML(codeBlock.current.innerHTML);
+      hljs.highlightElement(codeBlock.current);
+    }
   }, [codeBlock]);
 
   const languageName = extensionToHljsName(props.fileExtension);
 
   return (
     <pre ref={codeBlock} className={`hljs language-${languageName} bg-white`}>
-      <code>{atobUTF8(props.content)}</code>
+      {atobUTF8(props.content)}
     </pre>
   );
 

@@ -82,7 +82,7 @@ function ComponentStatusIndicator(props) {
       break;
   }
 
-  if (indicator == null) return <span></span>;
+  if (!indicator) return <span></span>;
   return <Badge color={indicator.color}>{indicator.icon}</Badge>;
 }
 

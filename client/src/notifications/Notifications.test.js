@@ -115,11 +115,23 @@ describe("setup and use notification system", () => {
 });
 
 
-describe("rendering", () => {
-  const model = new StateModel(globalSchema);
-  const props = { client, model };
-  const notifications = new NotificationsManager(model, client, fakeLocation);
-  addMultipleNotifications(notifications, 1);
+const model = new StateModel(globalSchema);
+const props = { client, model };
+const notifications = new NotificationsManager(model, client, fakeLocation);
+addMultipleNotifications(notifications, 1);
+
+describe("rendering NotificationsPage", () => {
+  it("renders NotificationsPage", () => {
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+    ReactDOM.render(
+      <MemoryRouter>
+        <NotificationsPage {...props} notifications={notifications} />
+      </MemoryRouter>, div);
+  });
+});
+
+describe("rendering Notification", () => {
   const notification = model.get("notifications.all")[0];
   const settings = model.get("notifications.toast");
 
@@ -133,20 +145,6 @@ describe("rendering", () => {
     unmountComponentAtNode(div);
     div.remove();
     div = null;
-  });
-
-  it("renders NotificationsPage", () => {
-    ReactDOM.render(
-      <MemoryRouter>
-        <NotificationsPage {...props} notifications={notifications} />
-      </MemoryRouter>, div);
-  });
-
-  it("renders NotificationsMenu", () => {
-    ReactDOM.render(
-      <MemoryRouter>
-        <NotificationsMenu {...props} notifications={notifications} />
-      </MemoryRouter>, div);
   });
 
   it("renders Notification", () => {
@@ -169,6 +167,17 @@ describe("rendering", () => {
     ReactDOM.render(
       <MemoryRouter>
         <Notification type="custom" present={(<div><span>empty</span></div>)} />
+      </MemoryRouter>, div);
+  });
+});
+
+describe("rendering NotificationsMenu", () => {
+  it("renders NotificationsMenu", () => {
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+    ReactDOM.render(
+      <MemoryRouter>
+        <NotificationsMenu {...props} notifications={notifications} />
       </MemoryRouter>, div);
   });
 });

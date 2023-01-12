@@ -16,3 +16,10 @@ if (global.document) {
     }
   });
 }
+if (global.console) {
+  global.console = {
+    ...console,
+    log: jest.fn(),
+    debug: jest.fn(),
+  };
+}

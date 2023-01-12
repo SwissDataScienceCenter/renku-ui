@@ -141,11 +141,11 @@ describe("rendering", () => {
   };
 
   for (const user of users) {
-    it(`renders NewProject without crashing for ${user.type} user`, async () => {
+    it(`renders NewProject without crashing for ${user.type} user`, () => {
       const div = document.createElement("div");
       // Fix UncontrolledTooltip error. https://github.com/reactstrap/reactstrap/issues/773
       document.body.appendChild(div);
-      await act(async () => {
+      act( () => {
         ReactDOM.render(
           <Provider store={model.reduxStore}>
             <MemoryRouter>
@@ -158,8 +158,7 @@ describe("rendering", () => {
                 />
               </AppContext.Provider>
             </MemoryRouter>
-          </Provider>
-          , div);
+          </Provider>, div);
       });
     });
   }
