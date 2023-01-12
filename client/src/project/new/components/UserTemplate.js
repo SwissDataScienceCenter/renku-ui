@@ -23,10 +23,12 @@
  *  UserTemplate field group component
  */
 import React, { Component, Fragment } from "react";
-import { Docs, Links } from "../../../utils/constants/Docs";
 import { Button, FormGroup, FormText, Input } from "reactstrap";
+
+import { Docs, Links } from "../../../utils/constants/Docs";
 import { ErrorLabel, InputHintLabel, InputLabel } from "../../../utils/components/formlabels/FormLabels";
 import { CoreErrorAlert } from "../../../utils/components/errors/CoreErrorAlert";
+import { ExternalLink } from "../../../utils/components/ExternalLinks";
 
 const ErrorTemplateFeedback = ({ templates, meta, input }) => {
   if (input.userRepo)
@@ -117,10 +119,7 @@ class UserTemplate extends Component {
     if (config.repositories && config.repositories.length)
       refExample = config.repositories[0].ref;
     const templatesDocs = (
-      <a href={Docs.rtdReferencePage("templates.html")}
-        target="_blank" rel="noopener noreferrer">
-        Renku templates
-      </a>
+      <ExternalLink role="text" title="Renku templates" url={Docs.rtdReferencePage("templates.html")} />
     );
     return (
       <Fragment>

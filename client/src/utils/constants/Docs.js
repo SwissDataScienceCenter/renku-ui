@@ -6,7 +6,7 @@
  */
 
 
-const READ_THE_DOCS_ROOT = "https://renku.readthedocs.io/en/latest";
+const READ_THE_DOCS_ROOT = "https://renku.readthedocs.io/en/stable";
 
 const Docs = {
   READ_THE_DOCS_DEVELOPER: `${READ_THE_DOCS_ROOT}/developer`,
@@ -32,7 +32,7 @@ const Links = {
   HOMEPAGE: "https://datascience.ch",
 };
 
-const REKNU_PYTHON_READ_THE_DOCS_ROOT = "https://renku-python.readthedocs.io/en/latest";
+const REKNU_PYTHON_READ_THE_DOCS_ROOT = "https://renku-python.readthedocs.io/en/stable";
 
 const RenkuPythonDocs = {
   READ_THE_DOCS_ROOT: REKNU_PYTHON_READ_THE_DOCS_ROOT,
