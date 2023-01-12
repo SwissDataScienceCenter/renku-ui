@@ -165,7 +165,7 @@ client:
           url: ""
     # The default is to show the tutorial from the docs, but can also link to an
     # internal project
-    tutorialLink: https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html
+    tutorialLink: https://renku.readthedocs.io/en/stable/tutorials/01_firststeps.html
     # Projects to highlight on the homepage
     projects: []
   canary:

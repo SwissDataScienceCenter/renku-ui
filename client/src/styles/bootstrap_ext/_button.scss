@@ -245,9 +245,23 @@ $borderRadius: 1000px;
   }
 }
 
-.btn-icon-text svg {
-  margin-right: 12px;
+.btn-icon-text {
+  svg {
+    margin-right: 6px;
+  }
+  sup svg {
+    margin-right: 4px;
+  }
 }
+
+.btn-icon-text-after {
+  svg {
+    margin-left: 6px;
+  }
+  sup svg {
+    margin-left: 4px;
+  }
+} 
 
 .btn-with-menu .btn-with-menu-icon {
   margin-right: 0;

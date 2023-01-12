@@ -669,7 +669,7 @@ function SessionConfigAdvanced(props) {
       Fixing
       an image can yield improvements, but it can also lead to sessions not working in the expected
       way. <ExternalLink role="text" title="Please consult the documentation"
-        url={Docs.rtdTopicGuide("customizing-sessions.html")} /> before changing this setting.
+        url={Docs.rtdTopicGuide("sessions/customizing-sessions.html")} /> before changing this setting.
     </WarnAlert>) :
     null;
   return (
