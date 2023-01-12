@@ -260,8 +260,8 @@ function NoWorkflows() {
       <InfoAlert timeout={0}>
         <p>Renku workflows is a key feature of Renku to make code and processing pipelines reusable.</p>
         <p>
-          <ExternalDocsLink url={Docs.rtdTopicGuide("workflows.html")} title="Check out our documentation" />{" "}
-          on workflows if you wish to learn more about this feature.
+          <ExternalDocsLink url={Docs.rtdTopicGuide("workflows/workflow-browser.html")}
+            title="Check out our documentation" /> on workflows if you wish to learn more about this feature.
         </p>
       </InfoAlert>
     </div>

@@ -18,13 +18,14 @@
 
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Button, Alert, Progress } from "reactstrap";
 
 import { GraphIndexingStatus } from "../project/Project";
 import { MigrationSuccessAlert, MigrationWarnAlert } from "../project/status/MigrationUtils";
 import { Loader } from "../utils/components/Loader";
 import { Docs, Links } from "../utils/constants/Docs";
+import { ExternalLink } from "../utils/components/ExternalLinks";
 
 function KnowledgeGraphPrivateInfo(props) {
   if (!props.isPrivate) return null;
@@ -33,10 +34,8 @@ function KnowledgeGraphPrivateInfo(props) {
       This is a private project. Though contents remain private,
       the Knowledge Graph may make some metadata public. Only activate if that is acceptable.
       <br />
-      <a href={Docs.rtdTopicGuide("knowledge-graph.html")}
-        target="_blank" rel="noopener noreferrer">
-        <FontAwesomeIcon icon={faExternalLinkAlt} /> Read more about the Knowledge Graph integration.
-      </a>
+      <ExternalLink url={Docs.rtdTopicGuide("miscellaneous/knowledge-graph.html")} showLinkIcon={true}
+        title="Read more about the Knowledge Graph integration." role="link" />
     </p>
   );
 }
