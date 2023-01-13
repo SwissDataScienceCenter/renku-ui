@@ -60,11 +60,19 @@ body {
     font-weight: 400;
     text-decoration: none;
 }
+
 .btn-rk-green:hover {
     color: white;
     background-color: #26a57f;
     border-color: #1aa077;
 }
+
+.btn-rk-green:active {
+    color: white;
+    background-color: #26a57f;
+    border-color: #1aa077;
+}
+
 .content {
     background-position: center;
     background-size: cover;
