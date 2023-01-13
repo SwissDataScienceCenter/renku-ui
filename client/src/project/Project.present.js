@@ -189,6 +189,7 @@ class ForkProjectModal extends Component {
           client={this.props.client}
           forkedId={this.props.id}
           forkedTitle={this.props.title}
+          projectVisibility={this.props.projectVisibility}
           toggleModal={this.toggleFunction}
         />
       );
@@ -1007,6 +1008,7 @@ function ProjectCollaborationFork(props) {
         client={props.client}
         forkedId={props.metadata.id}
         forkedTitle={props.metadata.title}
+        projectVisibility={props.metadata.visibility}
         toggleModal={null}
       />
     </Col>

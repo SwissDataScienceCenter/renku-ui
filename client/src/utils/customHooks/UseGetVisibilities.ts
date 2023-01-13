@@ -26,16 +26,18 @@ import { useGetGroupByPathQuery } from "../../features/projects/ProjectApi";
  *  UseGetVisibilities.ts
  *  hook to get visibilities and fetch groups if the namespace is of type group
  */
-function useGetVisibilities(namespace: any) {
-  const { data, isFetching, isLoading } =
-    useGetGroupByPathQuery(namespace?.full_path, { skip: !namespace || namespace?.kind !== "group" });
+function useGetVisibilities(namespace: any, bound: string | undefined) {
+  const { data, isFetching, isLoading } = useGetGroupByPathQuery(namespace?.full_path, {
+    skip: !namespace || namespace?.kind !== "group",
+  });
   const [availableVisibilities, setAvailableVisibilities] = useState<any>(null);
 
   useEffect(() => {
-    if (isFetching || isLoading || !namespace)
-      return;
+    if (isFetching || isLoading || !namespace) return;
 
     let options: string[] = [];
+    if (bound) options.push(bound);
+
     if (namespace?.kind === "user") {
       options.push("public");
       setAvailableVisibilities(computeVisibilities(options));
@@ -44,7 +46,7 @@ function useGetVisibilities(namespace: any) {
       options.push(data.visibility);
       setAvailableVisibilities(computeVisibilities(options));
     }
-  }, [isFetching, isLoading, data, namespace]);
+  }, [bound, isFetching, isLoading, data, namespace]);
 
   return { availableVisibilities, isFetchingVisibilities: isFetching };
 }

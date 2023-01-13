@@ -90,7 +90,7 @@ function addForkNotification(notifications, url, info, startingLocation, success
 
 
 function ForkProject(props) {
-  const { client, forkedId, forkedTitle, toggleModal } = props;
+  const { client, forkedId, forkedTitle, projectVisibility, toggleModal } = props;
   const namespaces = useGetNamespaces(true);
   const { projectsMember, isFetchingProjects } = useGetUserProjects();
 
@@ -107,7 +107,7 @@ function ForkProject(props) {
   const [forkVisibilityError, setForkVisibilityError] = useState(null);
   const [forkUrl, setForkUrl] = useState(null);
 
-  const { availableVisibilities, isFetchingVisibilities } = useGetVisibilities(fullNamespace);
+  const { availableVisibilities, isFetchingVisibilities } = useGetVisibilities(fullNamespace, projectVisibility);
   const { logged, data: { username } = null } = useSelector( (state) => state.stateModel.user);
 
   const history = useHistory();

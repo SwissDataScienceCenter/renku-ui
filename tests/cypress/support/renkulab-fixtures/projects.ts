@@ -301,15 +301,21 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         readmeName: "getReadme",
         validationName: "getValidation",
         coreVersion: 8
+      },
+      overrides = {
+        visibility: "public"
       }
     ) {
       const { projectName } = names;
-      cy.intercept(
-        "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true&doNotTrack=*",
-        {
-          fixture: "project/test-project.json"
-        }
-      ).as(projectName);
+      const { visibility } = overrides;
+      cy.fixture("project/test-project.json").then((project) => {
+        project["visibility"] = visibility;
+        cy.intercept(
+          "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true&doNotTrack=*",
+          project
+        ).as(projectName);
+      });
+
       return this.projectTestContents(names);
     }
 
