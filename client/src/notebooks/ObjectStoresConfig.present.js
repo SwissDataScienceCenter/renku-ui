@@ -26,6 +26,9 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Map, List } from "immutable";
 
 import { ExternalLink } from "../utils/components/ExternalLinks";
+import { isURL } from "../utils/helpers/HelperFunctions";
+
+import "./ObjectStoresConfig.scss";
 
 function S3ExplanationLink({ title }) {
   const theTitle = title ?? "S3-compatible storage";
@@ -71,11 +74,13 @@ function ObjectStoresConfigurationButton({ objectStoresConfiguration, toggleShow
  * @param {object} cloudStoreConfig
  */
 function isCloudStorageEndpointValid(cloudStoreConfig) {
-  return (cloudStoreConfig["endpoint"].length > 0);
+  if (cloudStoreConfig["endpoint"].length < 1) return false;
+  if (!isURL(cloudStoreConfig["endpoint"])) return false;
+  return true;
 }
 
 function EndpointMessage({ validationState }) {
-  if (!validationState.endpoint) return <FormFeedback>Please enter an endpoint</FormFeedback>;
+  if (!validationState.endpoint) return <FormFeedback>Please enter a valid URL for the endpoint</FormFeedback>;
   return (validationState.bucket) ?
     <FormText>Data mounted at:</FormText> :
     null;
@@ -84,15 +89,23 @@ function EndpointMessage({ validationState }) {
 function BucketMessage({ credentials, validationState }) {
   return (validationState.bucket) ?
     <FormText>/cloudstorage/{credentials.bucket}</FormText> :
-    <FormFeedback>Please enter an bucket</FormFeedback>;
+    <FormFeedback>Please enter a{" "}
+      <ExternalLink role="text"
+        title="valid bucket name"
+        url="https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html" />
+    </FormFeedback>;
 }
 
 /**
  * Check if the bucket is valid.
  * @param {object} cloudStoreConfig
- */
+*/
 function isCloudStorageBucketValid(cloudStoreConfig) {
-  return (cloudStoreConfig["bucket"].length > 0);
+  const bucketPattern = new RegExp("^([a-z]|\\d)([a-z]|\\d|\\.|-){1,61}([a-z]|\\d)$", "gsm");
+  const bucket = cloudStoreConfig["bucket"];
+  if (bucket.length < 1) return false;
+  return bucketPattern.test(bucket);
+
 }
 
 function ObjectStoreRow({ credentials, index, onChangeValue, onDeleteValue }) {
@@ -105,7 +118,7 @@ function ObjectStoreRow({ credentials, index, onChangeValue, onDeleteValue }) {
     bucket: isCloudStorageBucketValid(credentials),
   };
 
-  return <tr>
+  return <tr className="cloud-storage-row">
     <td>
       <FormGroup>
         <Input placeholder="endpoint" type="text" autoComplete="text"
@@ -309,9 +322,10 @@ function ObjectStoresConfigurationModal({ objectStoresConfiguration, showObjectS
   return <div>
     <Modal
       size="xl"
+      fullscreen="lg"
       isOpen={showObjectStoreModal}
       toggle={onClose}>
-      <ModalHeader toggle={onClose}>Object Store Configuration</ModalHeader>
+      <ModalHeader toggle={onClose}>Cloud Storage Configuration</ModalHeader>
       <ModalBody>
         <p>
           Provide credentials to use <S3ExplanationLink title="S3-compatible storage" /> like{" "}
@@ -336,3 +350,6 @@ function ObjectStoresConfigurationModal({ objectStoresConfiguration, showObjectS
 
 
 export { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal };
+
+// For tests
+export { isCloudStorageBucketValid, isCloudStorageEndpointValid };
