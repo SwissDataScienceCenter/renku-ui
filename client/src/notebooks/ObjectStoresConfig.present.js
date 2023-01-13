@@ -80,7 +80,7 @@ function isCloudStorageEndpointValid(cloudStoreConfig) {
 }
 
 function EndpointMessage({ validationState }) {
-  if (!validationState.endpoint) return <FormFeedback>Please enter an valid URL for the endpoint</FormFeedback>;
+  if (!validationState.endpoint) return <FormFeedback>Please enter a valid URL for the endpoint</FormFeedback>;
   return (validationState.bucket) ?
     <FormText>Data mounted at:</FormText> :
     null;
@@ -322,6 +322,7 @@ function ObjectStoresConfigurationModal({ objectStoresConfiguration, showObjectS
   return <div>
     <Modal
       size="xl"
+      fullscreen="lg"
       isOpen={showObjectStoreModal}
       toggle={onClose}>
       <ModalHeader toggle={onClose}>Cloud Storage Configuration</ModalHeader>
