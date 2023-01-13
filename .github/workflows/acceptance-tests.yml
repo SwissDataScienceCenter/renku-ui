@@ -92,8 +92,17 @@ jobs:
           renku_graph: "${{ needs.check-deploy.outputs.renku-graph }}"
           renku_notebooks: "${{ needs.check-deploy.outputs.renku-notebooks }}"
           extra_values: "${{ needs.check-deploy.outputs.extra-values }}"
+
+  delay-tests:
+    needs: deploy-pr
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Wait for PR deployment to be ready
+        run: sleep 60s
+        shell: bash
+
   run-acceptance-tests:
-    needs: [check-deploy, deploy-pr]
+    needs: [check-deploy, deploy-pr, delay-tests]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
     runs-on: ubuntu-20.04
     steps:
@@ -106,8 +115,9 @@ jobs:
           s3-results-access-key: ${{ secrets.ACCEPTANCE_TESTS_BUCKET_ACCESS_KEY }}
           s3-results-secret-key: ${{ secrets.ACCEPTANCE_TESTS_BUCKET_SECRET_KEY }}
           test-timeout-mins: "80"
+
   run-cypress-acceptance-tests:
-    needs: [check-deploy, deploy-pr]
+    needs: [check-deploy, deploy-pr, delay-tests]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-cypress-enabled == 'true'
     runs-on: ubuntu-20.04
     steps:
@@ -119,8 +129,9 @@ jobs:
           renku-release: renku-ci-ui-${{ github.event.number }}
           test-user-password: ${{ secrets.RENKU_BOT_DEV_PASSWORD }}
           renku: ${{ env.RENKU }}
+
   run-e2e:
-    needs: [check-deploy, deploy-pr]
+    needs: [check-deploy, deploy-pr, delay-tests]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && (needs.check-deploy.outputs.test-enabled == 'true' || needs.check-deploy.outputs.test-cypress-enabled == 'true')
     runs-on: ubuntu-22.04
     steps:
