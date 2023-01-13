@@ -33,7 +33,11 @@ import { recentUserActivityApi } from "../../features/recentUserActivity/RecentU
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import kgInactiveProjectsSlice from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 
-function createStore(renkuStateModelReducer, name = "renku") {
+function createStore(renkuStateModelReducer, _name = "renku") {
+  return createStoreWithEnhancers(renkuStateModelReducer);
+}
+
+function createStoreWithEnhancers(renkuStateModelReducer, enhancers = undefined) {
   renkuStateModelReducer[kgSearchApi.reducerPath] = kgSearchApi.reducer;
   renkuStateModelReducer[projectApi.reducerPath] = projectApi.reducer;
   renkuStateModelReducer[projectKgApi.reducerPath] = projectKgApi.reducer;
@@ -57,6 +61,7 @@ function createStore(renkuStateModelReducer, name = "renku") {
         .concat(projectKgApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(recentUserActivityApi.middleware),
+    enhancers
   });
   return store;
 }
@@ -69,3 +74,4 @@ function createStore(renkuStateModelReducer, name = "renku") {
 // }
 
 export { createStore };
+export { createStoreWithEnhancers };
