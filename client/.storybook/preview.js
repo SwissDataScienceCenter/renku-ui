@@ -6,7 +6,9 @@ import "../src/styles/index.scss";
 import AppContext from '../src/utils/context/appContext';
 import {createStoreWithEnhancers} from "../src/utils/helpers/EnhancedState.js";
 
-const store = createStoreWithEnhancers({}, [withReduxEnhancer]);
+// This how the documentation recommends introducing the store into storybook
+// https://storybook.js.org/addons/@dreamworld/addon-redux/
+export const store = createStoreWithEnhancers({}, [withReduxEnhancer]);
 
 
 export const parameters = {
