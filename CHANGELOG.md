@@ -1,5 +1,20 @@
 # Changes
 
+# [3.0.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.16.0...3.0.0) (2023-01-17)
+
+### Features
+
+* ⭐ introduce a new cross entity search page, phasing out the projects and datasets pages ([#1894](https://github.com/SwissDataScienceCenter/renku-ui/issues/1894))
+* add a simple image editor for dataset avatars ([#2180](https://github.com/SwissDataScienceCenter/renku-ui/issues/2180), [#2246](https://github.com/SwissDataScienceCenter/renku-ui/issues/2246))
+* disable action button in sessions when stopping ([#2278](https://github.com/SwissDataScienceCenter/renku-ui/issues/2278), [#2284](https://github.com/SwissDataScienceCenter/renku-ui/issues/2284))
+* update documentation links and target the stable release ([#2276](https://github.com/SwissDataScienceCenter/renku-ui/issues/2276))
+* add object store input validation ([#2210](https://github.com/SwissDataScienceCenter/renku-ui/issues/2210), [#2287](https://github.com/SwissDataScienceCenter/renku-ui/issues/2287))
+
+### Bug Fixes
+
+* handle errors on sessions interaction ([#2269](https://github.com/SwissDataScienceCenter/renku-ui/issues/2269), [#2169](https://github.com/SwissDataScienceCenter/renku-ui/issues/2169))
+* remove idle time when moving to step two on the starting session page ([#2279](https://github.com/SwissDataScienceCenter/renku-ui/issues/2279), [#2282](https://github.com/SwissDataScienceCenter/renku-ui/issues/2282))
+
 # [2.16.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.15.0...2.16.0) (2023-01-09)
 
 ### Features
