@@ -35,6 +35,8 @@ import { LoginHelper, Login } from "./index";
 const location = { pathname: "", state: "", previous: "", search: "" };
 const history = { location, replace: () => {} };
 const url = "https://fakedev.renku.ch/";
+delete window.location;
+window.location = { reload: jest.fn() };
 
 // Mock localStorage event generator
 function dispatchFakeStorageEvent(key, newValue) {
@@ -49,7 +51,6 @@ function dispatchFakeStorageEvent(key, newValue) {
 
 describe("rendering", () => {
   const params = { BASE_URL: "https://fake" };
-
   it("renders Login", async () => {
     const props = {
       params,
@@ -99,6 +100,8 @@ describe("LoginHelper functions", () => {
   it("setupListener", async () => {
     localStorage.clear();
     sessionStorage.clear();
+    delete window.location;
+    window.location = { reload: jest.fn() };
 
     LoginHelper.setupListener();
     expect(Object.keys(sessionStorage.__STORE__).length).toBe(0);

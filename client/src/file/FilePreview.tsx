@@ -20,6 +20,8 @@ import hljs from "highlight.js";
 import React from "react";
 import { CardBody } from "reactstrap";
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
+import DOMPurify from "dompurify";
+
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
 import { FileNoPreview, StyledNotebook } from "./File.present";
@@ -228,20 +230,21 @@ type CodePreviewProps = {
 }
 
 function CodePreview(props: CodePreviewProps) {
-
   const codeBlock = React.useRef<HTMLPreElement>(null);
   React.useEffect(() => {
-    if (codeBlock.current) hljs.highlightBlock(codeBlock.current);
+    if (codeBlock.current) {
+      codeBlock.current.innerHTML = DOMPurify.sanitize(codeBlock.current.innerHTML);
+      hljs.highlightBlock(codeBlock.current);
+    }
   }, [codeBlock]);
 
   const languageName = extensionToHljsName(props.fileExtension);
 
   return (
     <pre ref={codeBlock} className={`hljs language-${languageName} bg-white`}>
-      <code>{atobUTF8(props.content)}</code>
+      {atobUTF8(props.content)}
     </pre>
   );
-
 }
 
 type JupyterNotebookContainerProps = {
