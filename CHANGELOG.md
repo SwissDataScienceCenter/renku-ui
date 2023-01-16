@@ -8,6 +8,7 @@
 * add a simple image editor for dataset avatars ([#2180](https://github.com/SwissDataScienceCenter/renku-ui/issues/2180), [#2246](https://github.com/SwissDataScienceCenter/renku-ui/issues/2246))
 * disable action button in sessions when stopping ([#2278](https://github.com/SwissDataScienceCenter/renku-ui/issues/2278), [#2284](https://github.com/SwissDataScienceCenter/renku-ui/issues/2284))
 * update documentation links and target the stable release ([#2276](https://github.com/SwissDataScienceCenter/renku-ui/issues/2276))
+* add object store input validation ([#2210](https://github.com/SwissDataScienceCenter/renku-ui/issues/2210), [#2287](https://github.com/SwissDataScienceCenter/renku-ui/issues/2287))
 
 ### Bug Fixes
 
