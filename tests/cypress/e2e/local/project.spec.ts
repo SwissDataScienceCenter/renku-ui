@@ -181,12 +181,36 @@ describe("display a project", () => {
   });
 });
 
+describe("fork a project", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = true;
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects();
+    fixtures.projectLockStatus().projectMigrationUpToDate();
+    fixtures.namespaces();
+    cy.visit("/projects/e2e/local-test-project");
+  });
+
+  it("displays fork modal correctly", () => {
+    fixtures.projectTest(undefined, { visibility: "private" });
+    cy.wait("@getProject");
+    cy.get("#fork-project").click();
+    cy.wait("@getNamespaces");
+    cy.get_cy("visibility-private").should("be.enabled");
+    cy.get_cy("visibility-internal").should("be.disabled");
+    cy.get_cy("visibility-public").should("be.disabled");
+
+  });
+});
+
 describe("display migration information", () => {
   const fixtures = new Fixtures(cy);
 
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
+    fixtures.namespaces();
     cy.visit("/projects/e2e/local-test-project");
   });
 
