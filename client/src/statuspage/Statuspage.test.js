@@ -24,7 +24,7 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 
 import { statuspage as fakeStatuspage } from "../api-client/test-samples";
@@ -44,23 +44,20 @@ describe("rendering", () => {
   it("renders StatuspageBanner", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
+    const root = createRoot(div);
+    root.render(
       <MemoryRouter>
         <StatuspageBanner store={model.reduxStore} model={model} location={location} />
-      </MemoryRouter>,
-      div
-    );
+      </MemoryRouter>);
   });
 
   it("renders StatuspageDetails", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
+    const root = createRoot(div);
+    root.render(
       <MemoryRouter>
         <StatuspageDisplay store={model.reduxStore} model={model} />
-      </MemoryRouter>,
-      div
-    );
+      </MemoryRouter>);
   });
 });
-

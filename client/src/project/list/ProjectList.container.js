@@ -157,7 +157,7 @@ function useLocation(location, params, setParams, setTargetUser) {
 
     const newParams = { ...newParamsFull, section: newSection };
     if (_.isEqual(newParams, params))
-      return null;
+      return undefined;
 
     setParams(p => {
       const newParams = { ...p, ...newParamsFull, section: newSection };
