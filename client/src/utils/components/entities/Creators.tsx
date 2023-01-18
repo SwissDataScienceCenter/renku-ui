@@ -38,8 +38,9 @@ export interface EntityCreatorsProps {
   creators: EntityCreator[];
   itemType: EntityType;
   includeIcon?: boolean;
+  className? : string;
 }
-function EntityCreators({ display, creators, itemType, includeIcon }: EntityCreatorsProps) {
+function EntityCreators({ display, creators, itemType, includeIcon, className }: EntityCreatorsProps) {
   let creatorsText;
   const stylesByItem = stylesByItemType(itemType);
   if (!creators) {
@@ -61,9 +62,9 @@ function EntityCreators({ display, creators, itemType, includeIcon }: EntityCrea
 
   if (display === "list") {
     return (
-      <div className={`card-text ${stylesByItem.colorText}`}>
+      <div className={`card-text d-flex align-items-center ${stylesByItem.colorText} ${className}`}>
         {icon}
-        {creatorsText}
+        <span>{creatorsText}</span>
       </div>
     );
   }

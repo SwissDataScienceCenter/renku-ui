@@ -40,25 +40,27 @@ export interface EntityDescriptionProps {
   urlChangeDescription?: string;
 
   className?: string;
+
+  numberLines?: number;
 }
 
 function EntityDescription(
-  { description, isHeightFixed = true, hasDevAccess, showSuggestion, urlChangeDescription, className }
+  { description, isHeightFixed = true, hasDevAccess, showSuggestion, urlChangeDescription, className, numberLines = 3 }
     : EntityDescriptionProps) {
   const descriptionStyles: CSSProperties = {
     overflow: "hidden",
     textOverflow: "ellipsis",
     display: "-webkit-box",// eslint-disable-line
-    lineClamp: isHeightFixed ? 3 : undefined,
-    WebkitLineClamp: isHeightFixed ? 3 : undefined,// eslint-disable-line
+    lineClamp: isHeightFixed ? numberLines : undefined,
+    WebkitLineClamp: isHeightFixed ? numberLines : undefined,// eslint-disable-line
     WebkitBoxOrient: "vertical",// eslint-disable-line
     margin: "12px 0 0 0",
-    minHeight: isHeightFixed ? "75px" : undefined,
-    height: isHeightFixed ? "75px" : undefined,
+    minHeight: isHeightFixed ? `${25 * numberLines}px` : undefined,
+    height: isHeightFixed ? `${25 * numberLines}px` : undefined,
   };
 
   const isUpdatingValue = useSelector((state: RootStateOrAny ) =>
-    state.stateModel.project?.metadata?.description?.updating);
+    state.stateModel?.project?.metadata?.description?.updating);
   if (isUpdatingValue) {
     return (
       <div className="card-text text-rk-text-light" style={descriptionStyles} data-cy="updating-description">
