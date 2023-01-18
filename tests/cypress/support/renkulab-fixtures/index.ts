@@ -21,6 +21,7 @@
  */
 import BaseFixtures from "./fixtures";
 import { Datasets } from "./datasets";
+import { Global } from "./global";
 import { NewProject } from "./newProject";
 import { NewSession } from "./newSession";
 import { Projects } from "./projects";
@@ -30,6 +31,26 @@ import { User } from "./user";
 import { Workflows } from "./workflows";
 import { KgSearch } from "./kgSearch";
 
-const Fixtures = NewProject(NewSession(Sessions(Datasets(Projects(Session(User(Workflows(KgSearch(BaseFixtures)))))))));
+const Fixtures = NewProject(
+  NewSession(
+    Sessions(
+      Datasets(
+        Projects(
+          Session(
+            User(
+              Workflows(
+                KgSearch(
+                  Global(
+                    BaseFixtures
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+);
 
 export default Fixtures;

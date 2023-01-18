@@ -34,49 +34,6 @@ class Fixtures {
   set useMockedData(value) {
     this._useMockedData = !!value;
   }
-
-  config(name = "getConfig") {
-    cy.intercept("/config.json", {
-      fixture: "config.json"
-    }).as(name);
-    return this;
-  }
-
-  versions( names = {
-    coreVersionsName: "getCoreVersions",
-    uiVersionName: "getUiVersion",
-  }) {
-    const {
-      coreVersionsName,
-      uiVersionName,
-    } = names;
-    cy.intercept("/ui-server/api/versions", {
-      fixture: "version-ui.json"
-    }).as(uiVersionName);
-    cy.intercept("/ui-server/api/renku/version", {
-      fixture: "version-core.json"
-    }).as(coreVersionsName);
-
-    return this;
-  }
-
-  namespaces(name = "getNamespaces") {
-    cy.intercept("/ui-server/api/namespaces?*", {
-      fixture: "namespaces.json"
-    }).as(name);
-    return this;
-  }
-
-  templates(error = false, urlSource = "*", name = "getTemplates") {
-    const fixture = error ?
-      "errors/core-error-1101.json" :
-      "templates.json";
-    cy.intercept(
-      "/ui-server/api/renku/templates.read_manifest?" + urlSource,
-      { fixture }
-    ).as(name);
-    return this;
-  }
 }
 
 export default Fixtures;

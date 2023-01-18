@@ -89,13 +89,22 @@ describe("display the maintenance page", () => {
     cy.visit("/");
   });
 
-  it.only("displays status page information", () => {
+  it("displays an error when trying to get status page information", () => {
+    // ! we plan to change this behavior and ignore statuspage info when unavailable #2283
+    new Fixtures(cy).config().versions().renkuDown();
+    cy.visit("/");
     cy.get("h1").should("have.length", 1);
-    cy.get("h1")
-      .first()
-      .should("have.text", " RenkuLab Down"); // The space in the string is necessary
-    cy.get("h3")
-      .first()
-      .should("have.text", "RenkuLab Status");
+    cy.get("h1").contains("RenkuLab Down").should("be.visible");
+    cy.get(".alert-content").contains("Could not retrieve status information").should("be.visible");
+  });
+
+  it("displays status page information", () => {
+    new Fixtures(cy).config().versions().getStatuspageInfo();
+    cy.visit("/");
+    cy.wait("@getStatuspageInfo");
+    cy.get("h1").should("have.length", 1);
+    cy.get("h1").contains("RenkuLab Down").should("be.visible");
+    cy.get("h3").contains("RenkuLab Status").should("be.visible");
+    cy.get("h4").contains("Scheduled Maintenance Details").should("be.visible");
   });
 });

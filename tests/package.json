@@ -12,7 +12,7 @@
     "e2e:run": "cypress run --e2e --browser=chrome",
     "e2e:headless": "cypress run --e2e --browser=chrome --headless",
     "lint": "eslint --max-warnings=0 cypress/",
-    "start:local": "npm --prefix ../client run start"
+    "start:local": "npm --prefix ../client run start-js"
   },
   "author": "",
   "devDependencies": {
