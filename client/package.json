@@ -8,7 +8,7 @@
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
     "@fortawesome/free-regular-svg-icons": "^5.15.3",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
-    "@fortawesome/react-fontawesome": "^0.1.14",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@popperjs/core": "^2.10.1",
     "@reduxjs/toolkit": "^1.9.1",
     "@renku/ckeditor5-build-renku": "0.0.6",
