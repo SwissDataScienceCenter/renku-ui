@@ -24,7 +24,7 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
@@ -145,8 +145,9 @@ describe("rendering", () => {
       const div = document.createElement("div");
       // Fix UncontrolledTooltip error. https://github.com/reactstrap/reactstrap/issues/773
       document.body.appendChild(div);
+      const root = createRoot(div);
       act( () => {
-        ReactDOM.render(
+        root.render(
           <Provider store={model.reduxStore}>
             <MemoryRouter>
               <AppContext.Provider value={appContext}>
@@ -158,7 +159,7 @@ describe("rendering", () => {
                 />
               </AppContext.Provider>
             </MemoryRouter>
-          </Provider>, div);
+          </Provider>);
       });
     });
   }

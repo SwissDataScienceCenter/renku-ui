@@ -121,6 +121,7 @@ class NamespacesAutosuggest extends Component {
   }
 
   getSectionSuggestions(suggestion) {
+    if (!suggestion) return [];
     return suggestion.namespaces;
   }
 

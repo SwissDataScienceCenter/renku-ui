@@ -24,7 +24,7 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
@@ -56,7 +56,8 @@ describe("rendering", () => {
 
   it("renders new without crashing", () => {
     const div = document.createElement("div");
-    ReactDOM.render(<Issue.New location={{ pathname: "/projects/1/issue_new" }} user={user} model={model}/>, div);
+    const root = createRoot(div);
+    root.render(<Issue.New location={{ pathname: "/projects/1/issue_new" }} user={user} model={model}/>);
   });
   it("renders list without crashing", () => {
     const baseUrl = "base";
@@ -66,6 +67,7 @@ describe("rendering", () => {
       issueUrl: `${baseUrl}/collaboration/issues/:issueIid(\\d+)`,
     };
     const div = document.createElement("div");
+    const root = createRoot(div);
     const fakeHistory = createMemoryHistory({
       initialEntries: ["/"],
       initialIndex: 0,
@@ -78,7 +80,7 @@ describe("rendering", () => {
     const props = {
       externalUrl: "https://dev.renku.ch/gitlab"
     };
-    ReactDOM.render(
+    root.render(
       <MemoryRouter>
         <CollaborationList
           {...props}
@@ -91,17 +93,16 @@ describe("rendering", () => {
           location={fakeHistory.location}
           fetchElements={client.getProjectIssues}
         />
-      </MemoryRouter>
-      , div);
+      </MemoryRouter>);
   });
   it("renders view without crashing", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
+    const root = createRoot(div);
+    root.render(
       <MemoryRouter>
         <Issue.View id="1" client={client} user={user} />
-      </MemoryRouter>
-      , div);
+      </MemoryRouter>);
   });
   it("renders iframe when url is valid", async () => {
     const mockValidUrl = "https://dev.renku.ch/gitlab";

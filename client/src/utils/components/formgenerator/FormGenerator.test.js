@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Schema } from "../../../model";
 import { StateModel, globalSchema } from "../../../model";
 import FormGenerator, { FormGenerator as FormPanel } from "./";
@@ -69,18 +69,17 @@ describe("rendering on create", () => {
     const div = document.createElement("div");
     div.setAttribute("id", "FormPanelRender");
     document.body.appendChild(div);
+    const root = createRoot(div);
 
     const submitCallback = e =>
       Object.values(schema)
         .map(m => m.label + ": " + m.value + ",\n")
         .join("");
 
-    ReactDOM.render(
+    root.render(
       <FormPanel title="Create Dataset" submitLoader={false} btnName="Create Dataset"
         submitCallback={submitCallback} model={schema} modelTop={model}
-        formLocation="/projects/namespace/project-name/datasets/new"/>,
-      div
-    );
+        formLocation="/projects/namespace/project-name/datasets/new"/>);
   });
 });
 
@@ -99,18 +98,17 @@ describe("rendering on modify", () => {
 
   it("renders modify form without crashing", () => {
     const div = document.createElement("div");
+    const root = createRoot(div);
 
     const submitCallback = e =>
       Object.values(schema)
         .map(m => m.label + ": " + m.value + ",\n")
         .join("");
 
-    ReactDOM.render(
+    root.render(
       <FormPanel title="Modify Dataset" submitLoader={false} btnName="Create Dataset"
         submitCallback={submitCallback} model={schema} edit={true} modelTop={model}
-        formLocation="/projects/namespace/project-name/datasets/new"/>,
-      div
-    );
+        formLocation="/projects/namespace/project-name/datasets/new"/>);
   });
 });
 

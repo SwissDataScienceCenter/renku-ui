@@ -24,7 +24,7 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 
 import { Maintenance } from "./Maintenance";
@@ -36,26 +36,24 @@ describe("rendering", () => {
   it("renders Maintenance without info", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
+    const root = createRoot(div);
+    root.render(
       <Provider store={model.reduxStore}>
         <MemoryRouter>
           <Maintenance info={null} />
         </MemoryRouter>
-      </Provider>,
-      div
-    );
+      </Provider>);
   });
 
   it("renders Maintenance with info", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
+    const root = createRoot(div);
+    root.render(
       <Provider store={model.reduxStore}>
         <MemoryRouter>
           <Maintenance info={"Important info"} />
         </MemoryRouter>
-      </Provider>,
-      div
-    );
+      </Provider>);
   });
 });

@@ -24,8 +24,8 @@
  */
 
 import React from "react";
+import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
-import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 
 import { NamespaceProjects } from "./index";
@@ -40,10 +40,11 @@ describe("rendering", () => {
 
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(<MemoryRouter>
+      root.render(<MemoryRouter>
         <NamespaceProjects {...props} />
-      </MemoryRouter>, div);
+      </MemoryRouter>);
     });
   });
 });

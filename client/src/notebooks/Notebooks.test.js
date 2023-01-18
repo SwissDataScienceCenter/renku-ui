@@ -23,7 +23,7 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 
@@ -297,10 +297,11 @@ describe("rendering", () => {
   it("renders NotebooksDisabled", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
+    const root = createRoot(div);
+    root.render(
       <MemoryRouter>
         <NotebooksDisabled location={fakeLocation} />
-      </MemoryRouter>, div);
+      </MemoryRouter>);
   });
 
   it("renders ShowSession", async () => {
@@ -313,13 +314,14 @@ describe("rendering", () => {
 
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <ShowSession {...props} urlNewSession="new_session"/>
           </MemoryRouter>
-        </Provider>, div);
+        </Provider>);
     });
   });
 
@@ -331,23 +333,24 @@ describe("rendering", () => {
 
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <MemoryRouter>
           <Notebooks {...props} standalone={true} urlNewSession="new_session"/>
-        </MemoryRouter>, div);
+        </MemoryRouter>);
     });
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <MemoryRouter>
           <Notebooks {...props} standalone={false} urlNewSession="new_session"/>
-        </MemoryRouter>, div);
+        </MemoryRouter>);
     });
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <MemoryRouter>
           <Notebooks {...props} standalone={true} scope={scope} urlNewSession="new_session"/>
-        </MemoryRouter>, div);
+        </MemoryRouter>);
     });
   });
 
@@ -371,31 +374,32 @@ describe("rendering", () => {
 
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <StartNotebookServer {...props} />
           </MemoryRouter>
-        </Provider>, div);
+        </Provider>);
     });
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <StartNotebookServer {...props} scope={scope} />
           </MemoryRouter>
-        </Provider>, div);
+        </Provider>);
     });
     // autostart session
     const autostartFakeLocation = { pathname: "", search: "autostart=1" };
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <StartNotebookServer {...props} location={autostartFakeLocation} />
           </MemoryRouter>
-        </Provider>, div);
+        </Provider>);
     });
   });
 
@@ -410,11 +414,12 @@ describe("rendering", () => {
 
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <MemoryRouter>
           <CheckNotebookStatus {...props} />
-        </MemoryRouter>, div);
+        </MemoryRouter>);
     });
   });
 });

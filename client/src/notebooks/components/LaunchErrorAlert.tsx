@@ -31,7 +31,7 @@ function LaunchErrorBackendAlert({ launchError }: LaunchErrorProps) {
     <WarnAlert>
       The attempt to start a session failed with the following error:
       <div>
-        <code>{launchError}</code>
+        <code>{JSON.stringify(launchError)}</code>
       </div>
       This could be an intermittent issue, so you should try a second time, and
       the session will hopefully start. If the problem persists, you can{" "}
