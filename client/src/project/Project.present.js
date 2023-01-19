@@ -34,12 +34,12 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCodeBranch, faExclamationTriangle, faInfoCircle, faPlay, faStar as faStarSolid, faUserClock
+  faCodeBranch, faExclamationTriangle, faInfoCircle, faStar as faStarSolid, faUserClock
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "../utils/helpers/url";
 import { SpecialPropVal } from "../model/Model";
-import { Notebooks, ShowSession, StartNotebookServer } from "../notebooks";
+import { Notebooks, NotebooksHelper, ShowSession, StartNotebookServer } from "../notebooks";
 import Issue from "../collaboration/issue/Issue";
 import {
   CollaborationList, collaborationListTypeMap
@@ -69,6 +69,7 @@ import EntityHeader from "../utils/components/entityHeader/EntityHeader";
 import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
 
 import "./Project.css";
+import { StartSessionLink } from "../utils/components/entities/Buttons";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -112,7 +113,7 @@ function ProjectDatasetLockAlert({ lockStatus }) {
  *
  * @param {Object} webhook - project.webhook store object
  * @param {bool} migration_required - whether it's necessary to migrate the project or not
-  * @param {bool} docker_update_possible - whether it's necessary to migrate the docker image or not
+ * @param {bool} docker_update_possible - whether it's necessary to migrate the docker image or not
  * @param {Object} history - react history object
  * @param {string} overviewStatusUrl - overview status url
  */
@@ -474,15 +475,41 @@ class ProjectViewHeaderOverview extends Component {
   }
 }
 
+
+function getShowSessionURL(annotations, serverName) {
+  return Url.get(Url.pages.project.session.show, {
+    namespace: annotations["namespace"],
+    path: annotations["projectName"],
+    server: serverName,
+  });
+}
+
+/**
+ * Validate if a session is running calculating the startSessionURL and comparing with the given autostartSessionUrl
+ *
+ * @param {object} sessions - sessions object that should contain annotations for each session
+ * @param {string} startSessionUrl - start session url to check if it exists in sessions object
+ * @returns {boolean | object.showSessionURL} if session exist return
+ * session object including show session url otherwise return false
+ */
+function getSessionRunning(sessions, startSessionUrl) {
+  let sessionRunning = false;
+  Object.keys(sessions).forEach( sessionName => {
+    const session = sessions[sessionName];
+    const annotations = NotebooksHelper.cleanAnnotations(session.annotations, "renku.io");
+    const autoStartUrl = Url.get(Url.pages.project.session.autostart, {
+      namespace: annotations["namespace"],
+      path: annotations["projectName"],
+    });
+    if (autoStartUrl === startSessionUrl)
+      sessionRunning = { ...session, showSessionURL: getShowSessionURL(annotations, session.name) };
+  });
+  return sessionRunning;
+}
+
 function StartSessionButton(props) {
   const { launchNotebookUrl, sessionAutostartUrl } = props;
-
-  const defaultAction = (
-    <Link
-      className="btn btn-rk-green btn-sm btn-icon-text" to={sessionAutostartUrl}>
-      <FontAwesomeIcon icon={faPlay} /> Start
-    </Link>
-  );
+  const defaultAction = <StartSessionLink sessionAutostartUrl={sessionAutostartUrl} />;
   return (
     <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="rk-green" isPrincipal={true}>
       <DropdownItem>
@@ -1420,4 +1447,5 @@ export default { ProjectView };
 
 // For testing
 export { filterPaths };
-export { ProjectSuggestActions, ProjectSuggestionDataset, ProjectSuggestionReadme, StartSessionButton };
+export { ProjectSuggestActions, ProjectSuggestionDataset, ProjectSuggestionReadme, StartSessionButton,
+  getSessionRunning };

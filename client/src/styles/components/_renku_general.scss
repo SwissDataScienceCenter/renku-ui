@@ -98,3 +98,11 @@ a:focus-visible, svg:focus, svg:focus-visible {
   border-color: #f5f6fa !important;
   color: #3A3A3D !important;
 }
+
+.rk-icon {
+  &-md {
+    width: 20px;
+    height: auto;
+  }
+}
+

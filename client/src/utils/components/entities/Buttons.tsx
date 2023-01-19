@@ -16,15 +16,44 @@
  * limitations under the License.
  */
 
-import React, { useRef } from "react";
+import React from "react";
 import { Link, useHistory } from "react-router-dom";
-import { CardButton } from "../buttons/Button";
 import { faPen, faPlay, faCog, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { ThrottledTooltip } from "../Tooltip";
 import { EntityType } from "./Entities";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Funnel, FunnelFill, UncontrolledTooltip } from "../../ts-wrappers";
 import { stylesByItemType } from "../../helpers/HelperFunctions";
+import { RootStateOrAny, useSelector } from "react-redux";
+import { getSessionRunning } from "../../../project/Project.present";
+
+interface StartSessionLinkProps {
+  sessionAutostartUrl: string;
+}
+function StartSessionLink({ sessionAutostartUrl }: StartSessionLinkProps) {
+  const currentSessions = useSelector((state: RootStateOrAny) => state.stateModel.notebooks?.notebooks?.all);
+  const localSessionRunning = currentSessions ? getSessionRunning(currentSessions, sessionAutostartUrl) : false;
+  const history = useHistory();
+
+  const sessionIcon = !localSessionRunning ?
+    <><FontAwesomeIcon icon={faPlay} /> Start </> :
+    <div className="d-flex gap-2"><img src="/connect.svg" className="rk-icon rk-icon-md" /> Connect </div>;
+
+  const sessionLink = !localSessionRunning ?
+    sessionAutostartUrl : localSessionRunning.showSessionURL;
+
+  const handleClick = (e: React.MouseEvent<HTMLElement>, url: string) => {
+    e.preventDefault();
+    history.push(url);
+  };
+
+  return (
+    <Button
+      className="btn btn-rk-green btn-sm btn-icon-text"
+      onClick={(e: React.MouseEvent<HTMLElement>) => handleClick(e, sessionLink)}>
+      {sessionIcon}
+    </Button>
+  );
+}
 
 /**
  *  renku-ui
@@ -39,26 +68,11 @@ export interface EntityButtonProps {
 }
 
 function EntityButton({ type, slug }: EntityButtonProps) {
-  const history = useHistory();
-  const carButtonRef = useRef(null);
-  let handleClick;
 
   switch (type) {
     case "project":
-      handleClick = (e: any) => {
-        e.preventDefault();
-        history.push(`${slug}/sessions/new?autostart=1`);
-      };
-      return (
-        <>
-          <div ref={carButtonRef} className="card-button">
-            <CardButton color="rk-green" icon={faPlay} handleClick={handleClick} />
-          </div>
-          <ThrottledTooltip
-            target={carButtonRef}
-            tooltip="Start a session of this project" />
-        </>
-      );
+      return <div className="card-button">
+        <StartSessionLink sessionAutostartUrl={`${slug}/sessions/new?autostart=1`} /></div>;
     case "dataset":
       return null; // no defined yet
     default:
@@ -140,4 +154,4 @@ function FilterButton({ isOpen, toggle }: FilterButtonProps) {
   </div>;
 }
 
-export { EntityButton, EntityModifyButton, EntityDeleteButtonButton, FilterButton };
+export { EntityButton, EntityModifyButton, EntityDeleteButtonButton, FilterButton, StartSessionLink };

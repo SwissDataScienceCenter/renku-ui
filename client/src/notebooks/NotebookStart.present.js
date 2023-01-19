@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, useState } from "react";
+import React, { Component, Fragment, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Badge, Button, ButtonGroup, Col, Collapse, DropdownItem, Form, FormGroup, FormText, Input, Label,
@@ -130,6 +130,12 @@ function StartNotebookServer(props) {
   const setNotebookEnvVariables = (variables) => {
     props.handlers.setNotebookEnvVariables(variables);
   };
+  useEffect(() => {
+    return () => {
+      if (props.handlers.resetNotebookList)
+        props.handlers.resetNotebookList();
+    };
+  }, []); //eslint-disable-line
 
   const toggleShareLinkModal = () => setShowShareLinkModal(!showShareLinkModal);
 

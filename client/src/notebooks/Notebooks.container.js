@@ -177,12 +177,9 @@ class Notebooks extends Component {
     this.coordinator.reset();
     this.userLogged = this.userModel.get("logged");
 
-    if (props.scope)
-      this.coordinator.setNotebookFilters(props.scope, true);
-
-
     this.state = {
-      showingLogs: false
+      showingLogs: false,
+      scope: props.scope
     };
 
     this.handlers = {
@@ -194,11 +191,15 @@ class Notebooks extends Component {
   }
 
   componentDidMount() {
+    if (this.state.scope)
+      this.coordinator.setNotebookFilters(this.state.scope, true);
     if (!this.props.blockAnonymous)
       this.coordinator.startNotebookPolling();
   }
 
   componentWillUnmount() {
+    this.coordinator.reset();
+    this.coordinator.fetchNotebooks();
     this.coordinator.stopNotebookPolling();
   }
 
@@ -323,6 +324,7 @@ class StartNotebookServer extends Component {
       branchDelay: false, // used in setBranchWhenReady
       showShareLinkModal: props.location?.state?.showShareLinkModal,
       filePath: props.location?.state?.filePath,
+      scope: props.scope
     };
 
     this.handlers = {
@@ -340,10 +342,15 @@ class StartNotebookServer extends Component {
       startServer: this.startServer.bind(this),
       setObjectStoresConfiguration: this.setObjectStoresConfiguration.bind(this),
       toggleMergedBranches: this.toggleMergedBranches.bind(this),
-      toggleShowObjectStoresConfigModal: this.toggleShowObjectStoresConfigModal.bind(this)
+      toggleShowObjectStoresConfigModal: this.toggleShowObjectStoresConfigModal.bind(this),
+      resetNotebookList: this.resetNotebookList.bind(this)
     };
   }
 
+  resetNotebookList() {
+    this.coordinator.reset();
+    this.coordinator.fetchNotebooks();
+  }
   async componentDidMount() {
     this._isMounted = true;
     if (!this.props.blockAnonymous) {
@@ -368,8 +375,13 @@ class StartNotebookServer extends Component {
       StatusHelper.isUpdating(previousProps.fetchingBranches) &&
       !StatusHelper.isUpdating(this.props.fetchingBranches)) {
       this.setState({ first: false });
-      if (this._isMounted)
+      if (this._isMounted) {
         this.refreshBranches().then(r => this.selectBranchWhenReady());
+        if (this.state.scope) {
+          this.coordinator.setNotebookFilters(this.state.scope);
+          this.coordinator.fetchNotebooks();
+        }
+      }
     }
   }
 
