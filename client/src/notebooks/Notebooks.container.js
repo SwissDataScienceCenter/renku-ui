@@ -198,8 +198,8 @@ class Notebooks extends Component {
   }
 
   componentWillUnmount() {
-    // this.coordinator.reset();
-    // this.coordinator.fetchNotebooks();
+    this.coordinator.reset();
+    this.coordinator.fetchNotebooks();
     this.coordinator.stopNotebookPolling();
   }
 

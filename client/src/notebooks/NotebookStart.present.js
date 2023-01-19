@@ -132,8 +132,8 @@ function StartNotebookServer(props) {
   };
   useEffect(() => {
     return () => {
-      // if (props.handlers.resetNotebookList)
-      //   props.handlers.resetNotebookList();
+      if (props.handlers.resetNotebookList)
+        props.handlers.resetNotebookList();
     };
   }, []); //eslint-disable-line
 
