@@ -186,7 +186,7 @@ function ProjectListSearch(props) {
     <Row className="justify-content-lg-between justify-content-md-center pb-2">
       {navBar}
       <Col md={12} lg={7} className="pb-2">
-        <Form inline onSubmit={e => { e.preventDefault(); searchWithValues(); }}
+        <Form onSubmit={e => { e.preventDefault(); searchWithValues(); }}
           className={navBarJustify}
           size="sm">
           <Col className="col-auto">

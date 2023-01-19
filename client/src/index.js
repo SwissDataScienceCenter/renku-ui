@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { connect, Provider } from "react-redux";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "bootstrap";
@@ -31,6 +31,8 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
   const privacyRead = privacyResp.text();
 
   Promise.all([configRead, privacyRead]).then(values => {
+    const container = document.getElementById("root");
+    const root = createRoot(container);
     const [params, privacy] = values;
 
     // adjust boolean param values
@@ -51,7 +53,7 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
     // show maintenance page when necessary
     const maintenance = params["MAINTENANCE"];
     if (maintenance) {
-      ReactDOM.render(<Maintenance info={maintenance} />, document.getElementById("root"));
+      root.render(<Maintenance info={maintenance} />, document.getElementById("root"));
       return;
     }
 
@@ -99,7 +101,7 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
 
     // Render UI application
     const VisibleApp = connect(mapStateToProps)(uiApplication);
-    ReactDOM.render(
+    root.render(
       <Provider store={model.reduxStore}>
         <Router>
           <Route render={props => {
@@ -111,8 +113,7 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
             );
           }} />
         </Router>
-      </Provider>,
-      document.getElementById("root")
+      </Provider>
     );
   });
 });
