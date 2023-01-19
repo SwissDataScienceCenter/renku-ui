@@ -223,11 +223,12 @@ server:
     #      - chart-example.local
 
   ## Configure autoscaling
-  autoscaling:
-    enabled: true
-    minReplicas: 1
-    maxReplicas: 5
-    cpuUtilization: 95
+  # configure autoscale only where needed
+  # autoscaling:
+  #   enabled: true
+  #   minReplicas: 2
+  #   maxReplicas: 5
+  #   cpuUtilization: 70
 
   resources:
     requests:
