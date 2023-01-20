@@ -23,3 +23,4 @@ if (global.console) {
     debug: jest.fn(),
   };
 }
+global.IS_REACT_ACT_ENVIRONMENT = true;

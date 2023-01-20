@@ -24,6 +24,7 @@
  */
 import React from "react";
 import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
@@ -61,8 +62,9 @@ describe("Dataset functions", () => {
 
   it("renders datasets list view without crashing", async () => {
     const div = document.createElement("div");
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <DatasetList key="datasets"
@@ -73,15 +75,15 @@ describe("Dataset functions", () => {
               model={model}
             />
           </MemoryRouter>
-        </Provider>
-        , div);
+        </Provider>);
     });
   });
 
   it("renders dataset view without crashing", async () => {
     const div = document.createElement("div");
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <ShowDataset
@@ -98,8 +100,7 @@ describe("Dataset functions", () => {
               selectedDataset="79215657-4319-4fcf-82b9-58267f2a1db8"
             />
           </MemoryRouter>
-        </Provider>
-        , div);
+        </Provider>);
     });
   });
 

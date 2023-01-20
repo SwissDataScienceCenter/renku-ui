@@ -24,6 +24,7 @@
  */
 
 import React from "react";
+import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
@@ -46,10 +47,11 @@ describe("rendering", () => {
 
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(<MemoryRouter>
+      root.render(<MemoryRouter>
         <ProjectSettingsNav {...props} />
-      </MemoryRouter>, div);
+      </MemoryRouter>);
     });
   });
 
@@ -60,13 +62,14 @@ describe("rendering", () => {
 
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <ProjectSettingsGeneral {...props} />
           </MemoryRouter>
-        </Provider>, div);
+        </Provider>);
     });
   });
 
@@ -80,13 +83,14 @@ describe("rendering", () => {
 
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <ProjectSettingsSessions {...props} />
           </MemoryRouter>
-        </Provider>, div);
+        </Provider>);
     });
   });
 });

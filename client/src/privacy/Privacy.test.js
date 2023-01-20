@@ -25,6 +25,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
 
@@ -63,13 +64,13 @@ describe("rendering", () => {
     for (const content of contents) {
       const div = document.createElement("div");
       document.body.appendChild(div);
-      ReactDOM.render(
+      const root = createRoot(div);
+      root.render(
         <MemoryRouter>
           <RoutedContent
             history={fakeHistory}
             content={content} />
-        </MemoryRouter>,
-        div);
+        </MemoryRouter>);
     }
   });
 
@@ -79,14 +80,14 @@ describe("rendering", () => {
         const params = getParams(false, content, layout);
         const div = document.createElement("div");
         document.body.appendChild(div);
-        ReactDOM.render(
+        const root = createRoot(div);
+        root.render(
           <MemoryRouter>
             <Cookie
               history={fakeHistory}
               params={params}
             />
-          </MemoryRouter>,
-          div);
+          </MemoryRouter>);
       }
     }
   });
@@ -96,11 +97,11 @@ describe("rendering", () => {
       const params = getParams(statement, false, false);
       const div = document.createElement("div");
       document.body.appendChild(div);
-      ReactDOM.render(
+      const root = createRoot(div);
+      root.render(
         <MemoryRouter>
           <Privacy params={params} />
-        </MemoryRouter>,
-        div);
+        </MemoryRouter>);
     }
   });
 });

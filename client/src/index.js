@@ -53,7 +53,7 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
     // show maintenance page when necessary
     const maintenance = params["MAINTENANCE"];
     if (maintenance) {
-      root.render(<Maintenance info={maintenance} />, document.getElementById("root"));
+      root.render(<Maintenance info={maintenance} />);
       return;
     }
 

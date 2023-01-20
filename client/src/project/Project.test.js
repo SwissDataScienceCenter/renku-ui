@@ -25,6 +25,8 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
+import { act } from "react-dom/test-utils";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
@@ -85,10 +87,11 @@ describe("test ProjectCoordinator related components", () => {
 
   it("test withProjectMapped higher order function", () => {
     const div = document.createElement("div");
+    const root = createRoot(div);
     const categories = ["commits", "metadata"];
     const CommitsConnected = withProjectMapped(OverviewCommitsBody, categories);
 
-    ReactDOM.render(
+    root.render(
       <Provider store={model.reduxStore}>
         <MemoryRouter>
           <CommitsConnected
@@ -96,8 +99,7 @@ describe("test ProjectCoordinator related components", () => {
             location={fakeHistory.location}
             projectCoordinator={projectCoordinator} />
         </MemoryRouter>
-      </Provider>
-      , div);
+      </Provider>);
   });
 });
 
@@ -108,7 +110,8 @@ describe("rendering", () => {
 
   it("renders view without crashing for anonymous user", () => {
     const div = document.createElement("div");
-    ReactDOM.render(
+    const root = createRoot(div);
+    root.render(
       <Provider store={model.reduxStore}>
         <MemoryRouter>
           <Project.View
@@ -120,12 +123,12 @@ describe("rendering", () => {
             location={fakeHistory.location}
             match={{ params: { id: "1" }, url: "/projects/1/" }} />
         </MemoryRouter>
-      </Provider>
-      , div);
+      </Provider>);
   });
   it("renders view without crashing for logged user", () => {
     const div = document.createElement("div");
-    ReactDOM.render(
+    const root = createRoot(div);
+    root.render(
       <Provider store={model.reduxStore}>
         <MemoryRouter>
           <Project.View
@@ -137,8 +140,7 @@ describe("rendering", () => {
             location={fakeHistory.location}
             match={{ params: { id: "1" }, url: "/projects/1/" }} />
         </MemoryRouter>
-      </Provider>
-      , div);
+      </Provider>);
   });
 });
 
@@ -201,14 +203,18 @@ describe("rendering ProjectVersionStatus", () => {
     user: { logged: true },
   };
 
-  it("shows bouncer if loading", () => {
+  it("shows bouncer if loading", async () => {
     const allProps = { ...props };
     allProps.loading = true;
     const div = document.createElement("div");
+    document.body.appendChild(div);
+    const root = createRoot(div);
 
-    ReactDOM.render(
-      <ProjectVersionStatus key="suggestions" {...allProps} />
-      , div);
+    await act(async () => {
+      root.render(
+        <ProjectVersionStatus key="suggestions" {...allProps} />);
+    });
+
 
     expect(div.children.length).toBe(2);
     const bouncers = div.querySelectorAll(".bouncer");
@@ -251,11 +257,13 @@ describe("rendering ProjectVersionStatus", () => {
     };
 
     const div = document.createElement("div");
-    ReactDOM.render(
-      <MemoryRouter>
-        <ProjectVersionStatus key="suggestions" {...allProps} />
-      </MemoryRouter>
-      , div);
+    const root = createRoot(div);
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <ProjectVersionStatus key="suggestions" {...allProps} />
+        </MemoryRouter>);
+    });
     expect(div.children.length).toBe(2);
 
     const bouncers = div.querySelectorAll(".bouncer");
