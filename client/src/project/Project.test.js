@@ -24,7 +24,6 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
 import { act } from "react-dom/test-utils";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";

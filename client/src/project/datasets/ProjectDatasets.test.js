@@ -25,7 +25,6 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
 import { createRoot } from "react-dom/client";
 import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
