@@ -84,12 +84,12 @@ function formattedResourceList(resources) {
 function SessionLogs(props) {
   const { fetchLogs, notebook, tab } = props;
   const { logs } = notebook;
-  const sessionName = notebook.data.name;
+  const sessionNameA = notebook.data.name;
 
   if (tab !== SESSION_TABS.logs)
     return null;
 
-  return <LogsSessionLogs fetchLogs={fetchLogs} logs={logs} name={sessionName} />;
+  return <LogsSessionLogs fetchLogs={fetchLogs} logs={logs} name={sessionNameA} />;
 }
 
 function SessionJupyter(props) {
