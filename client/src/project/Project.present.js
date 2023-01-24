@@ -484,7 +484,8 @@ function getSessionRunning(sessions, startSessionUrl) {
 
 function StartSessionButton(props) {
   const { launchNotebookUrl, sessionAutostartUrl } = props;
-  const defaultAction = <StartSessionLink sessionAutostartUrl={sessionAutostartUrl} />;
+  const defaultAction = (
+    <StartSessionLink sessionAutostartUrl={sessionAutostartUrl} className="session-link-group" />);
   return (
     <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="rk-green" isPrincipal={true}>
       <DropdownItem>
