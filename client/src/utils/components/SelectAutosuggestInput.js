@@ -81,6 +81,7 @@ function SelectAutosuggestInput({ name, label, existingValue, alert, options,
   };
 
   const getSectionSuggestions = (section)=>{
+    if (!section) return [];
     return section.suggestions;
   };
 

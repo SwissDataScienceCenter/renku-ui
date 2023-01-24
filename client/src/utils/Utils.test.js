@@ -24,7 +24,7 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 
 import { StateModel, globalSchema } from "../model";
@@ -44,21 +44,22 @@ import { fixRelativePath } from "./components/markdown/RenkuMarkdownWithPathTran
 describe("Render React components and functions", () => {
   it("render RefreshButton", () => {
     const div = document.createElement("div");
+    const root = createRoot(div);
     const fakeAction = () => { return false; };
 
-    ReactDOM.render(
+    root.render(
       <MemoryRouter>
         <RefreshButton action={fakeAction} updating={false} />
-      </MemoryRouter>
-      , div);
+      </MemoryRouter>);
   });
 
   it("render CommitsView", () => {
     const div = document.createElement("div");
+    const root = createRoot(div);
     const projectModel = new StateModel(globalSchema);
     const commits = projectModel.get("project.commits");
 
-    ReactDOM.render(
+    root.render(
       <MemoryRouter>
         <CommitsView
           commits={commits.list}
@@ -67,8 +68,7 @@ describe("Render React components and functions", () => {
           urlRepository="https://fakeUrl.ne/gitlab"
           urlDiff="https://fakeUrl.ne/gitlab/commit/"
         />
-      </MemoryRouter>
-      , div);
+      </MemoryRouter>);
   });
 });
 

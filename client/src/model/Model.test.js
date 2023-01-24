@@ -25,7 +25,7 @@
 
 
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 
 import { Schema, StateModel, StateKind } from "./Model";
 import { createStore } from "redux";
@@ -214,8 +214,9 @@ describe("update react state", () => {
   }
   it("updates complex state", () => {
     const div = document.createElement("div");
-    ReactDOM.render(
-      <TestReactStateComponent/>, div);
+    const root = createRoot(div);
+    root.render(
+      <TestReactStateComponent/>);
   });
 });
 
@@ -267,8 +268,9 @@ describe("update connected redux store", () => {
 
   it("updates complex state", () => {
     const div = document.createElement("div");
-    ReactDOM.render(
-      <TestReduxStateComponent/>, div);
+    const root = createRoot(div);
+    root.render(
+      <TestReduxStateComponent/>);
   });
 });
 

@@ -25,7 +25,7 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 
@@ -90,7 +90,8 @@ describe("rendering", () => {
       visibility: { accessLevel: ACCESS_LEVELS.MAINTAINER }
     };
     const div = document.createElement("div");
-    ReactDOM.render(
+    const root = createRoot(div);
+    root.render(
       <Provider store={model.reduxStore}>
         <MemoryRouter>
           <AppContext.Provider value={appContext}>
@@ -99,14 +100,14 @@ describe("rendering", () => {
             />
           </AppContext.Provider>
         </MemoryRouter>
-      </Provider>
-      , div);
+      </Provider>);
   });
 
   it("renders NewDataset form without crashing", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
+    const root = createRoot(div);
+    root.render(
       <MemoryRouter>
         <ChangeDataset
           client={client}
@@ -118,14 +119,14 @@ describe("rendering", () => {
           params={{ UPLOAD_THRESHOLD: { soft: 104857600 } }}
           user={loggedUser}
         />
-      </MemoryRouter>
-      , div);
+      </MemoryRouter>);
   });
 
   it("renders DatasetImport form without crashing", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
+    const root = createRoot(div);
+    root.render(
       <MemoryRouter>
         <DatasetImport
           client={client}
@@ -136,7 +137,6 @@ describe("rendering", () => {
           model={model}
           user={loggedUser}
         />
-      </MemoryRouter>
-      , div);
+      </MemoryRouter>);
   });
 });

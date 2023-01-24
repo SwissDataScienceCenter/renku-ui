@@ -24,7 +24,7 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 
 import { testClient as client } from "../api-client";
@@ -104,23 +104,23 @@ describe("rendering", () => {
       const div = document.createElement("div");
       // * fix for tooltips https://github.com/reactstrap/reactstrap/issues/773#issuecomment-357409863
       document.body.appendChild(div);
+      const root = createRoot(div);
       const branches = { all: { standard: [] }, fetch: () => {} };
-      ReactDOM.render(
+      root.render(
         <MemoryRouter>
           <JupyterButton user={user.data} branches={branches} {...props} />
-        </MemoryRouter>,
-        div
+        </MemoryRouter>
       );
     });
 
     it(`renders ShowFile for ${user.type} user`, () => {
       const div = document.createElement("div");
       document.body.appendChild(div);
-      ReactDOM.render(
+      const root = createRoot(div);
+      root.render(
         <MemoryRouter>
           <ShowFile user={user.data} {...props} />
-        </MemoryRouter>,
-        div
+        </MemoryRouter>
       );
     });
 
@@ -130,11 +130,11 @@ describe("rendering", () => {
         const previewThreshold = props.params.PREVIEW_THRESHOLD;
         const div = document.createElement("div");
         document.body.appendChild(div);
-        ReactDOM.render(
+        const root = createRoot(div);
+        root.render(
           <MemoryRouter>
             <FilePreview file={fileProps} previewThreshold={previewThreshold} />
-          </MemoryRouter>,
-          div
+          </MemoryRouter>
         );
       });
     }
@@ -157,11 +157,11 @@ describe("rendering pdf -- console suppressed!", () => {
     const previewThreshold = { PREVIEW_THRESHOLD: { soft: 1048576, hard: 10485760 } };
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
+    const root = createRoot(div);
+    root.render(
       <MemoryRouter>
         <FilePreview file={filePdf} previewThreshold={previewThreshold} />
-      </MemoryRouter>,
-      div
+      </MemoryRouter>
     );
   });
 });

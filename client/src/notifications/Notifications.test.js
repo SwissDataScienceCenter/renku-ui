@@ -24,7 +24,8 @@
  */
 
 import React from "react";
-import ReactDOM, { unmountComponentAtNode } from "react-dom";
+import { unmountComponentAtNode } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 
 import {
@@ -124,10 +125,11 @@ describe("rendering NotificationsPage", () => {
   it("renders NotificationsPage", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
+    const root = createRoot(div);
+    root.render(
       <MemoryRouter>
         <NotificationsPage {...props} notifications={notifications} />
-      </MemoryRouter>, div);
+      </MemoryRouter>);
   });
 });
 
@@ -136,10 +138,11 @@ describe("rendering Notification", () => {
   const settings = model.get("notifications.toast");
 
   // setup a DOM element as a render target and cleanup on exit
-  let div;
+  let div, root;
   beforeEach(() => {
     div = document.createElement("div");
     document.body.appendChild(div);
+    root = createRoot(div);
   });
   afterEach(() => {
     unmountComponentAtNode(div);
@@ -148,36 +151,37 @@ describe("rendering Notification", () => {
   });
 
   it("renders Notification", () => {
-    ReactDOM.render(
+    root.render(
       <MemoryRouter>
         <Notification type="dropdown" notification={notification} markRead={() => null} />
-      </MemoryRouter>, div);
+      </MemoryRouter>);
 
-    ReactDOM.render(
+    root.render(
       <MemoryRouter>
         <Notification type="complete" notification={notification} markRead={() => null} />
-      </MemoryRouter>, div);
+      </MemoryRouter>);
 
     const closeToast = (<CloseToast settings={settings} markRead={() => true} />);
-    ReactDOM.render(
+    root.render(
       <MemoryRouter>
         <Notification type="toast" notification={notification} markRead={() => null} closeToast={closeToast} />
-      </MemoryRouter>, div);
+      </MemoryRouter>);
 
-    ReactDOM.render(
+    root.render(
       <MemoryRouter>
         <Notification type="custom" present={(<div><span>empty</span></div>)} />
-      </MemoryRouter>, div);
+      </MemoryRouter>);
   });
 });
 
 describe("rendering NotificationsMenu", () => {
   it("renders NotificationsMenu", () => {
     const div = document.createElement("div");
+    const root = createRoot(div);
     document.body.appendChild(div);
-    ReactDOM.render(
+    root.render(
       <MemoryRouter>
         <NotificationsMenu {...props} notifications={notifications} />
-      </MemoryRouter>, div);
+      </MemoryRouter>);
   });
 });

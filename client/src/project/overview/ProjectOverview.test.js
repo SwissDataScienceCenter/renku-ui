@@ -24,7 +24,7 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
@@ -48,33 +48,33 @@ describe("rendering", () => {
   it("renders ProjectOverviewCommits", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     const allProps = {
       history: fakeHistory,
       location: fakeHistory.location,
       ...props
     };
-    ReactDOM.render(
+    root.render(
       <Provider store={model.reduxStore}>
         <MemoryRouter>
           <ProjectOverviewCommits {...allProps} />
         </MemoryRouter>
-      </Provider>,
-      div);
+      </Provider>);
   });
 
   it("renders ProjectOverviewStats", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     const allProps = {
       branches: [],
       ...props
     };
-    ReactDOM.render(
+    root.render(
       <Provider store={model.reduxStore}>
         <MemoryRouter>
           <ProjectOverviewStats {...allProps} />
         </MemoryRouter>
-      </Provider>,
-      div);
+      </Provider>);
   });
 });
