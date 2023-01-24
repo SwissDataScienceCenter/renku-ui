@@ -28,8 +28,9 @@ import { getSessionRunning } from "../../../project/Project.present";
 
 interface StartSessionLinkProps {
   sessionAutostartUrl: string;
+  className?: string;
 }
-function StartSessionLink({ sessionAutostartUrl }: StartSessionLinkProps) {
+function StartSessionLink({ sessionAutostartUrl, className }: StartSessionLinkProps) {
   const currentSessions = useSelector((state: RootStateOrAny) => state.stateModel.notebooks?.notebooks?.all);
   const localSessionRunning = currentSessions ? getSessionRunning(currentSessions, sessionAutostartUrl) : false;
   const history = useHistory();
@@ -48,7 +49,7 @@ function StartSessionLink({ sessionAutostartUrl }: StartSessionLinkProps) {
 
   return (
     <Button
-      className="btn btn-rk-green btn-sm btn-icon-text"
+      className={`btn btn-rk-green btn-sm btn-icon-text start-session-button ${className}`}
       onClick={(e: React.MouseEvent<HTMLElement>) => handleClick(e, sessionLink)}>
       {sessionIcon}
     </Button>

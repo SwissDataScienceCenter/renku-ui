@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,14 +16,17 @@
  * limitations under the License.
  */
 
+import { useGetRecentlyVisitedProjectsQuery } from "../../features/projects/ProjectApi";
+
 /**
- *  renku-ui
+ *  useGetRecentlyVisitedProjects custom hook
  *
- *  landing
- *  Components for the landing page
+ *  useGetRecentlyVisitedProjects.ts
+ *  hook to fetch recent visited projects
  */
+function useGetRecentlyVisitedProjects(projectsCount: number) {
+  const { data, isFetching, refetch } = useGetRecentlyVisitedProjectsQuery(projectsCount);
+  return { projects: data, isFetchingProjects: isFetching, refetchProjects: refetch };
+}
 
-import AnonymousHome from "./AnonymousHome";
-import { RenkuNavBar, FooterNavbar, MaintenanceNavBar } from "./NavBar";
-
-export { AnonymousHome, FooterNavbar, MaintenanceNavBar, RenkuNavBar };
+export default useGetRecentlyVisitedProjects;
