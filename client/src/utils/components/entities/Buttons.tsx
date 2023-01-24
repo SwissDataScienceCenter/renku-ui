@@ -19,6 +19,7 @@
 import React from "react";
 import { Link, useHistory } from "react-router-dom";
 import { faPen, faPlay, faCog, faTrash } from "@fortawesome/free-solid-svg-icons";
+
 import { EntityType } from "./Entities";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Funnel, FunnelFill, UncontrolledTooltip } from "../../ts-wrappers";
