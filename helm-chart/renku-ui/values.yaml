@@ -226,9 +226,9 @@ server:
   # configure autoscale only where needed
   autoscaling:
     enabled: false
-  #   minReplicas: 2
-  #   maxReplicas: 5
-  #   cpuUtilization: 70
+    # minReplicas: 2
+    # maxReplicas: 5
+    # cpuUtilization: 70
 
   resources:
     requests:
