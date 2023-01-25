@@ -8,7 +8,7 @@
 
 ### Bug Fixes
 
-* restrict visibility on fork ([#2296](https://github.com/SwissDataScienceCenter/renku-ui/issues/2296), [#2299](https://github.com/SwissDataScienceCenter/renku-ui/issues/2299))
+* restrict visibility options to be compatible with namespace and parent project in fork dialog ([#2296](https://github.com/SwissDataScienceCenter/renku-ui/issues/2296), [#2299](https://github.com/SwissDataScienceCenter/renku-ui/issues/2299))
 
 # [3.0.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.16.0...3.0.0) (2023-01-17)
 
