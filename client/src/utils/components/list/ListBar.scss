@@ -80,13 +80,15 @@
     gap: 0 20px;
     grid-auto-flow: row;
     background-color: white;
-    padding: 20px;
+    margin: 0 15px;
+    padding: 30px 0 17px 0;
+    border-bottom: black 1px dashed;
     grid-auto-rows: 1fr;
     grid-template-columns: 126px fit-content(80px) auto auto 180px;
     grid-template-rows: auto auto auto;
     grid-template-areas:
         "entity-image entity-title entity-title entity-title entity-action"
-        "entity-image entity-description entity-description entity-description entity-description"
+        "entity-image entity-description entity-description entity-description entity-action"
         "entity-image entity-type-visibility entity-creators entity-creators entity-date";
 
     .card-bg-title--small {
@@ -94,6 +96,18 @@
         margin-top: 0;
         padding-top: 30px;
     }
+
+    .entity-description {
+        height: 20px;
+    }
+
+    .entity-description p {
+        line-height: 22px;
+    }
+}
+
+.container-entity-listBar:last-child {
+    border-bottom: none;
 }
 
 @media (max-width: 992px) {
@@ -118,7 +132,8 @@
         grid-template-columns: 126px auto 140px;
         grid-template-rows: auto auto auto auto auto;
         gap: 0 10px;
-        padding: 15px;
+        margin: 0 15px;
+        padding: 30px 0;
         grid-template-areas:
             "entity-title entity-title entity-title"
             "entity-type-visibility entity-type-visibility entity-action"

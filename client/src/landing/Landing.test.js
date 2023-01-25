@@ -24,52 +24,60 @@
  */
 
 import React from "react";
-import { createRoot } from "react-dom/client";
+import ReactDOM from "react-dom";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 
 import { testClient as client } from "../api-client";
 import { generateFakeUser } from "../user/User.test";
-import Landing from "./Landing";
 import { StateModel, globalSchema } from "../model";
 import { Provider } from "react-redux";
+import Dashboard from "../features/dashboard/Dashboard";
+import { AnonymousHome } from "./index";
 
 describe("rendering", () => {
   const anonymousUser = generateFakeUser(true);
-  const loggedUser = generateFakeUser();
   const model = new StateModel(globalSchema);
+  const location = { pathname: "", state: "", previous: "", search: "" };
 
   it("renders home without crashing for anonymous user", async () => {
     const div = document.createElement("div");
-    const root = createRoot(div);
+    const params = {
+      "UI_SHORT_SHA": "development"
+    };
+    const homeCustomized = {
+      custom: { enabled: false },
+      tutorialLink: "fake-tutorial-link",
+      projects: null,
+      urlMap: {
+        siteStatusUrl: `fake-siteStatusUrl`,
+      }
+    };
     await act(async () => {
-      root.render(
+      ReactDOM.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
-            <Landing.Home
-              welcomePage={btoa("## Welcome to Renku")}
+            <AnonymousHome client={client}
               user={anonymousUser}
               model={model}
-              client={client} />
+              location={location}
+              homeCustomized={homeCustomized}
+              params={params}
+            />
           </MemoryRouter>
-        </Provider>);
+        </Provider>, div);
     });
   });
 
   it("renders home without crashing for logged user", async () => {
     const div = document.createElement("div");
-    const root = createRoot(div);
     await act(async () => {
-      root.render(
+      ReactDOM.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
-            <Landing.Home
-              welcomePage={btoa("## Welcome to Renku")}
-              user={loggedUser}
-              model={model}
-              client={client} />
+            <Dashboard />
           </MemoryRouter>
-        </Provider>);
+        </Provider>, div);
     });
   });
 });
