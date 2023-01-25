@@ -31,7 +31,7 @@ import { InputGroup } from "reactstrap";
 import { ImageFieldPropertyName as Prop } from "./stockimages";
 import { formatBytes } from "../../../helpers/HelperFunctions";
 import { ErrorLabel, InputHintLabel, InputLabel } from "../../formlabels/FormLabels";
-import ImageEditor from "../../imageEditor/ImageEditor";
+import ImageEditor, { CARD_IMAGE_DIMENSIONS } from "../../imageEditor/ImageEditor";
 
 function userInputOption(options) {
   let userInput = options.find(o => o[Prop.STOCK] === false);
@@ -210,8 +210,11 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
   }
   else {
     helpValue = (helpIsString) ? help : help["file"];
-    if (helpValue == null && maxSize != null)
-      helpValue = `Select an image file (max size ${formatBytes(maxSize)})`;
+    if (helpValue == null && maxSize != null) {
+      helpValue = <span>Select an image file (max size {formatBytes(maxSize)}).<br />
+      Images will be cropped to {CARD_IMAGE_DIMENSIONS.width}px &times; {CARD_IMAGE_DIMENSIONS.height}px.
+      </span>;
+    }
     inputValue = fileInputValue(value);
     onModeButtonClick = () => fileInput.current.click();
     onInputChange = onModeButtonClick;
@@ -253,11 +256,10 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
  * @param {string} format The allowed formats. Defaults to "image/*"
  * @param {boolean} disabled True if the component is not editable
  * @param {boolean} required True if a value is required
- * @param {boolean} optional True if a value is optional
  * @param {boolean} submitting True if a a submit process is in progress
  */
-function ImageInput(
-  {
+function ImageInput(props) {
+  const {
     name,
     label,
     value,
@@ -269,9 +271,8 @@ function ImageInput(
     format = "image/*",
     disabled = false,
     required = false,
-    optional,
-    submitting,
-  }) {
+    submitting
+  } = props;
   const [sizeAlert, setSizeAlert] = useState(null);
   const [originalImageInput, setOriginalImageInput] = useState(null);
   const options = value.options;
@@ -293,10 +294,10 @@ function ImageInput(
     </div>
   );
 
-  return [
+  return <>
     <Row key="row-title">
       <InputLabel className="ps-3" text={label} isRequired={required} />
-    </Row>,
+    </Row>
     <Row key="row-content" className="field-group">
       <Col xs={12}>
         <div className="d-block d-md-flex d-lg-flex gap-5">
@@ -311,7 +312,7 @@ function ImageInput(
         </div>
       </Col>
     </Row>
-  ];
+  </>;
 }
 
 export default ImageInput;

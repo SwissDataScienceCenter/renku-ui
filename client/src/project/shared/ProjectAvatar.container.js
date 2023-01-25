@@ -30,6 +30,7 @@ import ImageInput, { ImageFieldPropertyName as Prop } from "../../utils/componen
 import { ImageInputMode } from "../../utils/components/formgenerator/fields/ImageInput";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
 import { InlineSubmitButton } from "../../utils/components/buttons/Button";
+import { PROJECT_AVATAR_MAX_SIZE } from "../new/components/NewProjectAvatar";
 
 const CURRENT_AVATAR_NAME = "[Current Avatar]";
 
@@ -121,14 +122,13 @@ function ProjectAvatarEdit({ avatarUrl, onAvatarChange, externalUrl, settingsRea
       .catch(e => { setAlert(e.errorData.message.avatar); });
   };
 
-  const maxSize = 200 * 1024; // 200KB
   // format: image/png, image/jpeg, image/gif, image/tiff
   return <div className="mb-3">
     <ImageInput name="project-avatar"
       label="Project Avatar"
       value={value}
       help={null}
-      maxSize={maxSize}
+      maxSize={PROJECT_AVATAR_MAX_SIZE}
       alert={alert}
       modes={[ImageInputMode.FILE]}
       format="image/png,image/jpeg,image/gif,image/tiff"

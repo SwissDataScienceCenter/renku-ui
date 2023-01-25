@@ -74,6 +74,8 @@ const ErrorLabel = ({ text, children }: LabelProps) => {
 };
 
 const SuccessLabel = ({ text, children }: LabelProps) => {
+  if (!text) return null;
+  if (text.length < 1) return null;
   return (
     <FormFeedback className="success-feedback">
       <FontAwesomeIcon icon={faCheck} /> {text} {children}

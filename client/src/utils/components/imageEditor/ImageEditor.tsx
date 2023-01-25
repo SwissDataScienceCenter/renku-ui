@@ -149,3 +149,4 @@ function ImageEditor({ onSave, file, imageEditionState, setImageEditionState }: 
 }
 
 export default ImageEditor;
+export { CARD_IMAGE_DIMENSIONS };

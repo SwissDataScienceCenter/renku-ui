@@ -47,6 +47,7 @@ import TemplateVariables from "./components/TemplateVariables";
 import { FormErrors, FormWarnings } from "./components/FormValidations";
 import SubmitFormButton from "./components/SubmitFormButton";
 import AppContext from "../../utils/context/appContext";
+import NewProjectAvatar from "./components/NewProjectAvatar";
 
 import "./Project.style.css";
 
@@ -256,6 +257,7 @@ const NewProjectForm = ({
       <ProjectIdentifier input={input} isRequired={true} />
       <Description handlers={handlers} meta={meta} input={input} />
       <Visibility handlers={handlers} meta={meta} input={input} />
+      <NewProjectAvatar onAvatarChange={handlers.onAvatarChange} />
       {config.custom ? <TemplateSource handlers={handlers} input={input} isRequired={true} /> : null}
       {userRepo ? (
         <UserTemplate meta={meta} handlers={handlers} config={config} templates={templates} input={input} />
