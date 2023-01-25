@@ -185,12 +185,12 @@ class OverviewCommits extends Component {
           </span>
           <div>
             {badge}
-            <RefreshButton action={commits.refresh} updating={commits.fetching} message="Refresh commits" />
+            <RefreshButton action={commits.refresh} updating={commits.fetching}
+              message="Refresh commits" dataCy="refresh-commits" />
             {buttonGit}
           </div>
         </CardHeader>
         <CardBody className="p-4 pt-3 pb-3 lh-lg">
-          {/* <CardBody className="p-0 lh-lg"> */}
           {body}
           {info}
         </CardBody>

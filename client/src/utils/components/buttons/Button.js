@@ -82,16 +82,21 @@ function ButtonWithMenu(props) {
  * @param {function} props.action - function to trigger when clicking on the button
  * @param {boolean} [props.updating] - pilot the spin, should be true when performing the action
  * @param {boolean} [props.message] - tooltip message to trigger on hover
+ * @param {boolean} [props.dataCy] - add data-cy property
  */
 function RefreshButton(props) {
   const id = "button_" + simpleHash(props.action.toString());
   const tooltip = props.message ?
     (<UncontrolledTooltip key="tooltip" placement="top" target={id}>{props.message}</UncontrolledTooltip>) :
     null;
+  let extraProps = {};
+  if (props.dataCy)
+    extraProps["data-cy"] = props.dataCy;
 
   return (
     <Fragment>
-      <Button key="button" className="ms-2 p-0" color="link" size="sm" id={id} onClick={() => props.action()}>
+      <Button key="button" className="ms-2 p-0" color="link" size="sm" id={id}
+        onClick={() => props.action()} {...extraProps}>
         <FontAwesomeIcon icon={faSyncAlt} spin={props.updating} />
       </Button>
       {tooltip}
