@@ -24,8 +24,8 @@ import { useGetRecentlyVisitedProjectsQuery } from "../../features/projects/Proj
  *  useGetRecentlyVisitedProjects.ts
  *  hook to fetch recent visited projects
  */
-function useGetRecentlyVisitedProjects(cantProjects: number) {
-  const { data, isFetching, refetch } = useGetRecentlyVisitedProjectsQuery(cantProjects);
+function useGetRecentlyVisitedProjects(projectsCount: number) {
+  const { data, isFetching, refetch } = useGetRecentlyVisitedProjectsQuery(projectsCount);
   return { projects: data, isFetchingProjects: isFetching, refetchProjects: refetch };
 }
 

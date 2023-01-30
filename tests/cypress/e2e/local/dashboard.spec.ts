@@ -43,13 +43,13 @@ describe("dashboard", () => {
     cy.wait("@getNoActiveProjects");
 
     cy.get_cy("dashboard-title").should("have.text", "Renku Dashboard - E2E User");
-    cy.get_cy("project-alert").should("contain.text", "You don’t have any project yet.");
-    cy.get_cy("projects-container").should("contain.text", "You have no current project yet");
+    cy.get_cy("project-alert").should("contain.text", "You do not have any projects yet");
+    cy.get_cy("projects-container").should("contain.text", "You do not have any recently-visited projects");
     cy.get_cy("explore-other-projects-btn").should("be.visible");
     cy.get_cy("inactive-kg-project-alert").should("exist");
   });
 
-  it("user does not has own project but has visited projects", () => {
+  it("user does not have own project but has visited projects", () => {
     fixtures.projects()
       .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
       .getLastVisitedProjects();
@@ -73,12 +73,12 @@ describe("dashboard", () => {
         const projectData = firstProject.response?.body;
         cy.get_cy("list-card-title").first().should("have.text", projectData.name);
         cy.get_cy("explore-other-projects-btn").should("be.visible");
-        cy.get_cy("project-alert").should("contain.text", "You don’t have any project yet.");
+        cy.get_cy("project-alert").should("contain.text", "You do not have any projects yet");
         cy.get_cy("inactive-kg-project-alert").should("not.exist");
       });
   });
 
-  it("user does has own projects and recently visited projects", () => {
+  it("user has own projects and recently visited projects", () => {
     fixtures.projects()
       .entitySearch("getEntities", "kgSearch/search.json", "7")
       .getLastVisitedProjects("getLastVisitedProjects", "projects/last-visited-projects-5.json");

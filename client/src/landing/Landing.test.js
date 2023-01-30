@@ -24,7 +24,8 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
+
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 
@@ -42,6 +43,7 @@ describe("rendering", () => {
 
   it("renders home without crashing for anonymous user", async () => {
     const div = document.createElement("div");
+    const root = createRoot(div);
     const params = {
       "UI_SHORT_SHA": "development"
     };
@@ -54,7 +56,7 @@ describe("rendering", () => {
       }
     };
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <AnonymousHome client={client}
@@ -65,19 +67,20 @@ describe("rendering", () => {
               params={params}
             />
           </MemoryRouter>
-        </Provider>, div);
+        </Provider>);
     });
   });
 
   it("renders home without crashing for logged user", async () => {
     const div = document.createElement("div");
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <Dashboard />
           </MemoryRouter>
-        </Provider>, div);
+        </Provider>);
     });
   });
 });

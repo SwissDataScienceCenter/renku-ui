@@ -44,7 +44,7 @@ function ProjectAlert({ total }: ProjectAlertProps) {
   return total === 0 ?
     <InfoAlert timeout={0}>
       <div data-cy="project-alert" className="mb-0" style={{ textAlign: "justify" }}>
-        <h3><strong>You don’t have any project yet.</strong></h3>
+        <h3><strong>You do not have any projects yet.</strong></h3>
         <p>If you are here for your first time, we recommend you go to through our{" "}
           <ExternalLink role="text" title="tutorial" className="fw-bold"
             url={Docs.READ_THE_DOCS_TUTORIALS_STARTING} />.{" "}
@@ -156,7 +156,7 @@ function ProjectsDashboard( { userName }: ProjectsDashboardProps ) {
   else {
     projectsToShow = projects?.length > 0 ?
       <ProjectListRows projects={projects} gridDisplay={false} />
-      : <p className="rk-dashboard-section-header">You have no current project yet</p>;
+      : <p className="rk-dashboard-section-header">You do not have any recently-visited projects</p>;
   }
   const otherProjectsBtn = totalUserProjects === undefined ? null :
     <OtherProjectsButton totalOwnProjects={totalUserProjects} />;

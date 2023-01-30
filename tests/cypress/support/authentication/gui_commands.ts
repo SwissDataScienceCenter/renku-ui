@@ -17,6 +17,7 @@
  */
 
 import { User } from "./user.interfaces";
+import "../../support/utils";
 
 Cypress.Commands.add("gui_kc_login", (user: User, startFromHome = false) => {
   if (startFromHome) {
@@ -70,7 +71,7 @@ Cypress.Commands.add("gui_kc_register", (user: User) => {
 Cypress.Commands.add("gui_is_welcome_page_logged_user", (user: User) => {
   cy.url().then( () => {
     cy.url().should("be.equal", Cypress.config("baseUrl"));
-    cy.get("[data-cy='dashboard-title']").contains(`Renku Dashboard - ${user.firstname} ${user.lastname}`);
+    cy.get_cy("dashboard-title").contains(`Renku Dashboard - ${user.firstname} ${user.lastname}`);
   });
 });
 
