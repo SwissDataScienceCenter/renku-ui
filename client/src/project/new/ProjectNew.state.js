@@ -80,6 +80,9 @@ class NewProjectCoordinator {
     this.client = client;
     this.model = model;
     this.projectsModel = projectsModel;
+
+    // Cannot store avatarFile in the model
+    this.avatarFile = null;
   }
 
   _setTemplateVariables(currentInput, value) {
@@ -344,11 +347,19 @@ class NewProjectCoordinator {
 
   resetInput() {
     const pristineInput = newProjectSchema.createInitialized().input;
+    this.avatarFile = null;
     this.model.setObject({ input: pristineInput });
   }
 
   setProperty(property, value) {
     const currentInput = this.model.get("input");
+    // if the property is tha avatar, handle it a little differently
+    if (property === "avatar") {
+      this.avatarFile = value;
+      // We do not need to track this change in the model
+      const updateObj = { meta: { avatar: value?.name } };
+      return updateObj;
+    }
     // check if the value needs to be updated
     if (currentInput[property] === value)
       return;
@@ -620,29 +631,53 @@ class NewProjectCoordinator {
     else {
       modelUpdates.meta.creation.projectUpdated = true;
     }
-
-    // activate knowledge graph
-    modelUpdates.meta.creation.kgError = "";
-    if (input.knowledgeGraph) {
-      modelUpdates.meta.creation.kgUpdating = true;
-      this.model.setObject(modelUpdates);
-
-      // get project id for the KG query
-      try {
-        const result = await this.client.getProject(slug);
-        const succeeded = await this.client.createGraphWebhook(result.data.all.id);
-        if (succeeded)
-          modelUpdates.meta.creation.kgUpdated = true;
-        else
-          modelUpdates.meta.creation.kgError = "Knowledge Graph activation failed on server side.";
-      }
-      catch (error) {
-        modelUpdates.meta.creation.kgError = error.message ? error.message : "Unknown error.";
-      }
-      modelUpdates.meta.creation.kgUpdating = false;
+    // Get the project -- we need it do so some other operations
+    let newProjectResult;
+    try {
+      newProjectResult = await this.client.getProject(slug);
     }
-    else {
-      modelUpdates.meta.creation.kgUpdated = true;
+    catch (error) {
+      modelUpdates.meta.creation.projectError = error.message ? error.message : error;
+    }
+
+    if (newProjectResult != null) {
+      // upload the project avatar if there is one
+      if (this.avatarFile != null) {
+        modelUpdates.meta.creation.projectUpdating = true;
+        this.model.setObject(modelUpdates);
+        try {
+          await this.client.setAvatar(newProjectResult.data.all.id, this.avatarFile);
+          modelUpdates.meta.creation.projectUpdated = true;
+        }
+        catch (error) {
+          modelUpdates.meta.creation.projectError = error.message ? error.message : error;
+        }
+        modelUpdates.meta.creation.projectUpdating = false;
+        this.model.setObject(modelUpdates);
+      }
+
+      // activate knowledge graph
+      modelUpdates.meta.creation.kgError = "";
+      if (input.knowledgeGraph) {
+        modelUpdates.meta.creation.kgUpdating = true;
+        this.model.setObject(modelUpdates);
+
+        // get project id for the KG query
+        try {
+          const succeeded = await this.client.createGraphWebhook(newProjectResult.data.all.id);
+          if (succeeded)
+            modelUpdates.meta.creation.kgUpdated = true;
+          else
+            modelUpdates.meta.creation.kgError = "Knowledge Graph activation failed on server side.";
+        }
+        catch (error) {
+          modelUpdates.meta.creation.kgError = error.message ? error.message : "Unknown error.";
+        }
+        modelUpdates.meta.creation.kgUpdating = false;
+      }
+      else {
+        modelUpdates.meta.creation.kgUpdated = true;
+      }
     }
 
     // reset all the input/errors if creation was successful

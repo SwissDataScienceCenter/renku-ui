@@ -357,6 +357,20 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    updateAvatar(args = { projectId: 43781, name: "updateAvatar", result: "project/update-project.json" }) {
+      const { projectId, name, result } = args;
+      cy.fixture(result).then((project) => {
+        project["avatar"] = "avatar-url";
+        cy.intercept(
+          "PUT",
+          `/ui-server/api/projects/${projectId}`,
+          project
+        ).as(name);
+      });
+
+      return this;
+    }
+
     getNamespace(namespace = "", name = "getNamespace", result = "projects/namespace-128.json") {
       const fixture = this.useMockedData ? { fixture: result } : undefined;
       cy.intercept(

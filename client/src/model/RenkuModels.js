@@ -618,9 +618,10 @@ const datasetFormSchema = new Schema({
     label: "Image",
     edit: true,
     type: FormGenerator.FieldTypes.IMAGE,
-    maxSize: 10000 * 1024,
+    maxSize: 10 * 1024 * 1024,
     format: "image/png,image/jpeg,image/gif,image/tiff",
-    help: "JPG, PNG, and JPEG files are allowed, up to 10MB.",
+    // Image input should apply the default help text
+    help: undefined,
     value: {
       options: [],
       selected: -1

@@ -116,6 +116,29 @@ describe("Add new project", () => {
     cy.contains("You'll be redirected to the new project page when the creation is completed.").should("be.visible");
     cy.get_cy("create-project-form").should("not.exist");
   });
+
+  it("create a new project with an avatar", () => {
+    fixtures
+      .templates()
+      .createProject()
+      .project(newProjectPath, "getNewProject", "projects/project.json", false)
+      .updateProject(newProjectPath)
+      .updateAvatar();
+    cy.wait("@getTemplates");
+    cy.get("#project-avatar-file-input-hidden").selectFile("cypress/fixtures/avatars/avatar.png", { force: true });
+    cy.gui_create_project(newProjectTitle);
+    cy.wait("@createProject");
+    cy.wait("@getNewProject");
+    cy.wait("@updateProject").should(result => {
+      const request = result.request.body;
+      expect(request).to.have.property("name");
+    });
+    cy.wait("@updateAvatar").should(result => {
+      const request = result.request.body;
+      expect(request.byteLength).to.lessThan(200 * 1024 * 1024);
+    });
+    cy.url().should("include", `projects/${newProjectPath}`);
+  });
 });
 
 describe("Add new project shared link", () => {

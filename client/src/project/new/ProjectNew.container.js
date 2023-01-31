@@ -545,6 +545,10 @@ function NewProject(props) {
     });
   };
 
+  const onAvatarChange = (avatarFile) => {
+    setProperty("avatar", avatarFile);
+  };
+
   // create handlers
   const handlers = {
     createEncodedUrl,
@@ -552,6 +556,7 @@ function NewProject(props) {
     getTemplates,
     getUserTemplates,
     goToProject,
+    onAvatarChange,
     onSubmit,
     removeAutomated,
     resetCreationResult,
