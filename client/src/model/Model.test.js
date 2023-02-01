@@ -26,6 +26,7 @@
 
 import React, { Component } from "react";
 import { createRoot } from "react-dom/client";
+import { act } from "react-test-renderer";
 
 import { Schema, StateModel, StateKind } from "./Model";
 import { createStore } from "redux";
@@ -212,11 +213,12 @@ describe("update react state", () => {
       return null;
     }
   }
-  it("updates complex state", () => {
+  it("updates complex state", async () => {
     const div = document.createElement("div");
     const root = createRoot(div);
-    root.render(
-      <TestReactStateComponent/>);
+    await act(async () => {
+      root.render(<TestReactStateComponent />);
+    });
   });
 });
 
@@ -266,11 +268,12 @@ describe("update connected redux store", () => {
     }
   }
 
-  it("updates complex state", () => {
+  it("updates complex state", async () => {
     const div = document.createElement("div");
     const root = createRoot(div);
-    root.render(
-      <TestReduxStateComponent/>);
+    await act(async () => {
+      root.render(<TestReduxStateComponent />);
+    });
   });
 });
 

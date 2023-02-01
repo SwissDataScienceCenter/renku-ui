@@ -294,14 +294,16 @@ describe("rendering", () => {
   };
   const fakeLocation = { pathname: "" };
 
-  it("renders NotebooksDisabled", () => {
+  it("renders NotebooksDisabled", async () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
     const root = createRoot(div);
-    root.render(
-      <MemoryRouter>
-        <NotebooksDisabled location={fakeLocation} />
-      </MemoryRouter>);
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <NotebooksDisabled location={fakeLocation} />
+        </MemoryRouter>);
+    });
   });
 
   it("renders ShowSession", async () => {

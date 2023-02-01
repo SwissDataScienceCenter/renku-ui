@@ -27,6 +27,7 @@ import React from "react";
 import { unmountComponentAtNode } from "react-dom";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
+import { act } from "react-test-renderer";
 
 import {
   NotificationsManager, NotificationsMenu, NotificationsInfo, NotificationsPage, Notification
@@ -122,14 +123,17 @@ const notifications = new NotificationsManager(model, client, fakeLocation);
 addMultipleNotifications(notifications, 1);
 
 describe("rendering NotificationsPage", () => {
-  it("renders NotificationsPage", () => {
+  it("renders NotificationsPage", async () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
     const root = createRoot(div);
-    root.render(
-      <MemoryRouter>
-        <NotificationsPage {...props} notifications={notifications} />
-      </MemoryRouter>);
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <NotificationsPage {...props} notifications={notifications} />
+        </MemoryRouter>
+      );
+    });
   });
 });
 
@@ -139,49 +143,70 @@ describe("rendering Notification", () => {
 
   // setup a DOM element as a render target and cleanup on exit
   let div, root;
-  beforeEach(() => {
-    div = document.createElement("div");
-    document.body.appendChild(div);
-    root = createRoot(div);
+  beforeEach(async () => {
+    await act(async () => {
+      div = document.createElement("div");
+      document.body.appendChild(div);
+      root = createRoot(div);
+    });
   });
-  afterEach(() => {
-    unmountComponentAtNode(div);
-    div.remove();
-    div = null;
+  afterEach(async () => {
+    await act(async () => {
+      root.unmount(div);
+      div.remove();
+      div = null;
+    });
   });
 
-  it("renders Notification", () => {
-    root.render(
-      <MemoryRouter>
-        <Notification type="dropdown" notification={notification} markRead={() => null} />
-      </MemoryRouter>);
+  it("renders Notification", async () => {
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <Notification type="dropdown" notification={notification} markRead={() => null} />
+        </MemoryRouter>
+      );
+    });
 
-    root.render(
-      <MemoryRouter>
-        <Notification type="complete" notification={notification} markRead={() => null} />
-      </MemoryRouter>);
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <Notification type="complete" notification={notification} markRead={() => null} />
+        </MemoryRouter>
+      );
+    });
 
-    const closeToast = (<CloseToast settings={settings} markRead={() => true} />);
-    root.render(
-      <MemoryRouter>
-        <Notification type="toast" notification={notification} markRead={() => null} closeToast={closeToast} />
-      </MemoryRouter>);
+    await act(async () => {
+      const closeToast = (<CloseToast settings={settings} markRead={() => true} />);
 
-    root.render(
-      <MemoryRouter>
-        <Notification type="custom" present={(<div><span>empty</span></div>)} />
-      </MemoryRouter>);
+      root.render(
+        <MemoryRouter>
+          <Notification type="toast" notification={notification} markRead={() => null} closeToast={closeToast} />
+        </MemoryRouter>
+      );
+    });
+
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <Notification type="custom" present={(<div><span>empty</span></div>)} />
+        </MemoryRouter>
+      );
+    });
   });
 });
 
 describe("rendering NotificationsMenu", () => {
-  it("renders NotificationsMenu", () => {
+  it("renders NotificationsMenu", async () => {
     const div = document.createElement("div");
     const root = createRoot(div);
     document.body.appendChild(div);
-    root.render(
-      <MemoryRouter>
-        <NotificationsMenu {...props} notifications={notifications} />
-      </MemoryRouter>);
+
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <NotificationsMenu {...props} notifications={notifications} />
+        </MemoryRouter>
+      );
+    });
   });
 });

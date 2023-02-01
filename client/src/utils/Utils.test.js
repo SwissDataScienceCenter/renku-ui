@@ -26,6 +26,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
+import { act } from "react-test-renderer";
 
 import { StateModel, globalSchema } from "../model";
 import { Time } from "./helpers/Time";
@@ -42,33 +43,39 @@ import { fixRelativePath } from "./components/markdown/RenkuMarkdownWithPathTran
 
 
 describe("Render React components and functions", () => {
-  it("render RefreshButton", () => {
+  it("render RefreshButton", async () => {
     const div = document.createElement("div");
     const root = createRoot(div);
     const fakeAction = () => { return false; };
 
-    root.render(
-      <MemoryRouter>
-        <RefreshButton action={fakeAction} updating={false} />
-      </MemoryRouter>);
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <RefreshButton action={fakeAction} updating={false} />
+        </MemoryRouter>
+      );
+    });
   });
 
-  it("render CommitsView", () => {
+  it("render CommitsView", async () => {
     const div = document.createElement("div");
     const root = createRoot(div);
     const projectModel = new StateModel(globalSchema);
     const commits = projectModel.get("project.commits");
 
-    root.render(
-      <MemoryRouter>
-        <CommitsView
-          commits={commits.list}
-          fetched={commits.fetched}
-          fetching={commits.fetching}
-          urlRepository="https://fakeUrl.ne/gitlab"
-          urlDiff="https://fakeUrl.ne/gitlab/commit/"
-        />
-      </MemoryRouter>);
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <CommitsView
+            commits={commits.list}
+            fetched={commits.fetched}
+            fetching={commits.fetching}
+            urlRepository="https://fakeUrl.ne/gitlab"
+            urlDiff="https://fakeUrl.ne/gitlab/commit/"
+          />
+        </MemoryRouter>
+      );
+    });
   });
 });
 

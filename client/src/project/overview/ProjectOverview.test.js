@@ -28,6 +28,7 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
+import { act } from "react-test-renderer";
 
 import { StateModel, globalSchema } from "../../model";
 import { testClient as client } from "../../api-client";
@@ -45,7 +46,7 @@ describe("rendering", () => {
     projectCoordinator: new ProjectCoordinator(client, model.subModel("project"))
   };
 
-  it("renders ProjectOverviewCommits", () => {
+  it("renders ProjectOverviewCommits", async () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
     const root = createRoot(div);
@@ -54,15 +55,18 @@ describe("rendering", () => {
       location: fakeHistory.location,
       ...props
     };
-    root.render(
-      <Provider store={model.reduxStore}>
-        <MemoryRouter>
-          <ProjectOverviewCommits {...allProps} />
-        </MemoryRouter>
-      </Provider>);
+    await act(async () => {
+      root.render(
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <ProjectOverviewCommits {...allProps} />
+          </MemoryRouter>
+        </Provider>
+      );
+    });
   });
 
-  it("renders ProjectOverviewStats", () => {
+  it("renders ProjectOverviewStats", async () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
     const root = createRoot(div);
@@ -70,11 +74,14 @@ describe("rendering", () => {
       branches: [],
       ...props
     };
-    root.render(
-      <Provider store={model.reduxStore}>
-        <MemoryRouter>
-          <ProjectOverviewStats {...allProps} />
-        </MemoryRouter>
-      </Provider>);
+    await act(async () => {
+      root.render(
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <ProjectOverviewStats {...allProps} />
+          </MemoryRouter>
+        </Provider>
+      );
+    });
   });
 });

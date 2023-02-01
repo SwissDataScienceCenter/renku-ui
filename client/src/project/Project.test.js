@@ -84,21 +84,24 @@ describe("test ProjectCoordinator related components", () => {
     expect(Object.keys(projectCategoryMapped).every(i => descendantKeys.includes(i))).toBeTruthy();
   });
 
-  it("test withProjectMapped higher order function", () => {
+  it("test withProjectMapped higher order function", async () => {
     const div = document.createElement("div");
     const root = createRoot(div);
     const categories = ["commits", "metadata"];
     const CommitsConnected = withProjectMapped(OverviewCommitsBody, categories);
 
-    root.render(
-      <Provider store={model.reduxStore}>
-        <MemoryRouter>
-          <CommitsConnected
-            history={fakeHistory}
-            location={fakeHistory.location}
-            projectCoordinator={projectCoordinator} />
-        </MemoryRouter>
-      </Provider>);
+    await act(async () => {
+      root.render(
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <CommitsConnected
+              history={fakeHistory}
+              location={fakeHistory.location}
+              projectCoordinator={projectCoordinator} />
+          </MemoryRouter>
+        </Provider>
+      );
+    });
   });
 });
 
@@ -107,39 +110,46 @@ describe("rendering", () => {
   const loggedUser = generateFakeUser();
   const model = new StateModel(globalSchema);
 
-  it("renders view without crashing for anonymous user", () => {
+  it("renders view without crashing for anonymous user", async () => {
     const div = document.createElement("div");
     const root = createRoot(div);
-    root.render(
-      <Provider store={model.reduxStore}>
-        <MemoryRouter>
-          <Project.View
-            id="1"
-            client={client}
-            user={anonymousUser}
-            model={model}
-            history={fakeHistory}
-            location={fakeHistory.location}
-            match={{ params: { id: "1" }, url: "/projects/1/" }} />
-        </MemoryRouter>
-      </Provider>);
+    await act(async () => {
+      root.render(
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <Project.View
+              id="1"
+              client={client}
+              user={anonymousUser}
+              model={model}
+              history={fakeHistory}
+              location={fakeHistory.location}
+              match={{ params: { id: "1" }, url: "/projects/1/" }} />
+          </MemoryRouter>
+        </Provider>
+      );
+    });
   });
-  it("renders view without crashing for logged user", () => {
+
+  it("renders view without crashing for logged user", async () => {
     const div = document.createElement("div");
     const root = createRoot(div);
-    root.render(
-      <Provider store={model.reduxStore}>
-        <MemoryRouter>
-          <Project.View
-            id="1"
-            client={client}
-            model={model}
-            history={fakeHistory}
-            user={loggedUser}
-            location={fakeHistory.location}
-            match={{ params: { id: "1" }, url: "/projects/1/" }} />
-        </MemoryRouter>
-      </Provider>);
+    await act(async () => {
+      root.render(
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <Project.View
+              id="1"
+              client={client}
+              model={model}
+              history={fakeHistory}
+              user={loggedUser}
+              location={fakeHistory.location}
+              match={{ params: { id: "1" }, url: "/projects/1/" }} />
+          </MemoryRouter>
+        </Provider>
+      );
+    });
   });
 });
 
@@ -210,8 +220,7 @@ describe("rendering ProjectVersionStatus", () => {
     const root = createRoot(div);
 
     await act(async () => {
-      root.render(
-        <ProjectVersionStatus key="suggestions" {...allProps} />);
+      root.render(<ProjectVersionStatus key="suggestions" {...allProps} />);
     });
 
 
@@ -261,7 +270,8 @@ describe("rendering ProjectVersionStatus", () => {
       root.render(
         <MemoryRouter>
           <ProjectVersionStatus key="suggestions" {...allProps} />
-        </MemoryRouter>);
+        </MemoryRouter>
+      );
     });
     expect(div.children.length).toBe(2);
 
