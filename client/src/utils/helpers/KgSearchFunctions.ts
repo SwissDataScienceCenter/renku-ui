@@ -23,9 +23,14 @@ import { DateFilterTypes } from "../components/dateFilter/DateFilter";
 import _ from "lodash";
 import { getDatasetImageUrl } from "../../dataset/DatasetFunctions";
 
-const getDatasetIdentifier = (links: KgSearchResultLink[]) => {
-  const details = links.filter((link) => link.rel === "details");
-  return details.length > 0 ? details[0].href.split("/", -1).at(-1) : "";
+const getDatasetIdentifier = (links: KgSearchResultLink[]): string => {
+  try {
+    const details = links.filter(link => link.rel === "details");
+    return details.length > 0 ? details[0].href.split("/", -1).at(-1) ?? "" : "";
+  }
+  catch {
+    return "";
+  }
 };
 
 const getDatasetUrl = (links: KgSearchResultLink[]) => {
@@ -48,7 +53,9 @@ export const mapSearchResultToEntity = (entity: KgSearchResult, history: any): L
       })
       : [{ name: entity.creator }];
 
+  const id = entity.type === EntityType.Dataset ? getDatasetIdentifier(entity._links) : entity.path;
   return {
+    id,
     url,
     title: entity.name,
     description: entity.description,

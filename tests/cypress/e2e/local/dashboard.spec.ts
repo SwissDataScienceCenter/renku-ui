@@ -71,7 +71,8 @@ describe("dashboard", () => {
       .then( (results) => {
         const firstProject = findProject(projects[0], results);
         const projectData = firstProject.response?.body;
-        cy.get_cy("list-card-title").first().should("have.text", projectData.name);
+        cy.get_cy("projects-container").find('[data-cy="list-card-title"]')
+          .first().should("have.text", projectData.name);
         cy.get_cy("explore-other-projects-btn").should("be.visible");
         cy.get_cy("project-alert").should("contain.text", "You do not have any projects yet");
         cy.get_cy("inactive-kg-project-alert").should("not.exist");
@@ -102,10 +103,44 @@ describe("dashboard", () => {
       .then( (results) => {
         const firstProject = findProject(projects[0], results);
         const projectData = firstProject.response?.body;
-        cy.get_cy("list-card-title").first().should("have.text", projectData.name);
+        cy.get_cy("projects-container").find('[data-cy="list-card-title"]')
+          .first().should("have.text", projectData.name);
         cy.get_cy("project-alert").should("not.exist");
         cy.get_cy("explore-other-projects-btn").should("not.exist");
         cy.get_cy("view-my-projects-btn").should("be.visible");
       });
+  });
+
+  it("user does has own datasets", () => {
+    fixtures.projects()
+      .entitySearch("getEntitiesProjects", "kgSearch/search.json", "7")
+      .entitySearch("getDatasets", "kgSearch/datasetsSearch.json", "10",
+        "?&sort=date:desc&page=1&per_page=3&type=dataset&creator=E2E%20User")
+      .getLastVisitedProjects("getLastVisitedProjects", "projects/last-visited-projects-5.json");
+
+    cy.visit("/");
+    cy.wait("@getUser");
+    cy.wait("@getLastVisitedProjects");
+    cy.wait("@getDatasets");
+    cy.get_cy("dataset-container").get_cy("list-card-title").first().should("have.text", "nw-dataset-an");
+    cy.get_cy("explore-other-datasets-btn").should("not.exist");
+    cy.get_cy("view-my-datasets-btn").should("be.visible");
+  });
+
+  it("user doesn't has own datasets", () => {
+    fixtures.projects()
+      .entitySearch("getEntitiesProjects", "kgSearch/search.json", "7")
+      .entitySearch("getDatasets", "kgSearch/emptySearch.json", "0",
+        "?&sort=date:desc&page=1&per_page=3&type=dataset&creator=E2E%20User")
+      .getLastVisitedProjects("getLastVisitedProjects", "projects/last-visited-projects-5.json");
+
+    cy.visit("/");
+    cy.wait("@getUser");
+    cy.wait("@getLastVisitedProjects");
+    cy.wait("@getDatasets");
+    cy.get_cy("dataset-container").find('[data-cy="list-card-title"]').should("have.length", 0);
+    cy.get_cy("dataset-container").should("contain.text", "You have no datasets");
+    cy.get_cy("explore-other-datasets-btn").should("be.visible");
+    cy.get_cy("view-my-datasets-btn").should("not.exist");
   });
 });
