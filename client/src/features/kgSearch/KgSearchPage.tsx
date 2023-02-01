@@ -30,9 +30,9 @@ import { KgAuthor } from "./KgSearch";
 import { TypeEntitySelection } from "../../utils/components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../utils/components/visibilityFilter/VisibilityFilter";
 import { DatesFilter } from "../../utils/components/dateFilter/DateFilter";
-import { ProjectsInactiveKGWarning } from "../../landing/Landing.present";
 import QuickNav from "../../utils/components/quicknav";
 import AppContext from "../../utils/context/appContext";
+import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
 
 interface SearchPageProps {
   isLoggedUser: boolean;

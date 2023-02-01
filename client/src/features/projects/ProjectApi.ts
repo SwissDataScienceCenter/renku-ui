@@ -17,12 +17,12 @@
  */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { formatProjectMetadata, ProjectMetadata } from "../../utils/helpers/ProjectFunctions";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 interface QueryParams {
   per_page: number;
   endCursor: string;
 }
-
 
 interface MemberProjectResponse {
   data: ProjectMetadata[];
@@ -103,9 +103,50 @@ export const projectApi = createApi({
       },
       keepUnusedDataFor: 5,
     }),
-  })
+    getRecentlyVisitedProjects: builder.query<any, number>({
+      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
+        // get list of projects recently visited
+        const projectListRequest = await fetchWithBQ(`/last-projects/${_arg}`);
+        if (projectListRequest.error)
+          return { error: projectListRequest.error as FetchBaseQueryError };
+        const resultProjects = projectListRequest.data as any;
+        const projects = resultProjects.projects;
+
+        if (projects?.length > 0) {
+          // if the user has recent projects get the project information
+          const projectRequests = [];
+          for (const project of projects) {
+            projectRequests
+              .push(fetchWithBQ(`/projects/${encodeURIComponent(project)}?statistics=false&doNotTrack=true`));
+          }
+
+          try {
+            const resultAllProjectData = await Promise.allSettled(projectRequests);
+            const projectList = [];
+            for (const projectData of resultAllProjectData) {
+              if (projectData.status === "fulfilled")
+                projectList.push(formatProjectMetadata(projectData.value.data));
+            }
+            return { data: projectList };
+          }
+          catch (e) {
+            return { error: e as FetchBaseQueryError };
+          }
+        }
+        else {
+          return { data: [] };
+        }
+      },
+    }),
+  }),
+  refetchOnMountOrArgChange: 3,
 });
 
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
-export const { useGetNamespacesQuery, useGetGroupByPathQuery, useGetMemberProjectsQuery } = projectApi;
+export const {
+  useGetNamespacesQuery,
+  useGetGroupByPathQuery,
+  useGetMemberProjectsQuery,
+  useGetRecentlyVisitedProjectsQuery
+} = projectApi;
