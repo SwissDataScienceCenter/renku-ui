@@ -18,7 +18,6 @@
 
 import React from "react";
 import Masonry from "react-masonry-css";
-import { useHistory } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSadCry } from "@fortawesome/free-solid-svg-icons";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
@@ -78,7 +77,6 @@ const EmptyResult = ({ onRemoveFilters, error } : EmptyResultProps) => {
 
 const SearchResultsContent = (
   { data, isFetching, isLoading, onPageChange, onRemoveFilters, error }: SearchResultProps) => {
-  const history = useHistory();
   if (isLoading) return <Loader />;
   if (isFetching) return <Loader />;
   if (data == null) return <Loader />;
@@ -89,7 +87,7 @@ const SearchResultsContent = (
 
   const rows = data.results
     .map((result, index) => {
-      const entityProps = mapSearchResultToEntity(result, history);
+      const entityProps = mapSearchResultToEntity(result);
       return <ListCard key={`entity-${index}`} {...entityProps} />;
     });
 

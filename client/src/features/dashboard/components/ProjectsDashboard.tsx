@@ -112,6 +112,7 @@ function ProjectListRows({ projects, gridDisplay }: ProjectListProps) {
 
   return <Fragment>
     <ListDisplay
+      key="list-projects"
       itemsType="project"
       search={null}
       currentPage={null}

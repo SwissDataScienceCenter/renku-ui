@@ -33,9 +33,9 @@ function KgSearch<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    entitySearch(name = "getEntities", fixture = "kgSearch/search.json", total = "7") {
+    entitySearch(name = "getEntities", fixture = "kgSearch/search.json", total = "7", params = "*") {
       cy.intercept(
-        "/ui-server/api/kg/entities*",
+        `/ui-server/api/kg/entities${params}`,
         {
           fixture,
           headers: {
