@@ -36,19 +36,17 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    getLastVisitedProjects(name = "getLastVisitedProjects") {
-      cy.intercept("/ui-server/api/last-projects/4", {
-        fixture: "projects/last-visited-projects.json"
+    getLastVisitedProjects(name = "getLastVisitedProjects", fixture = "projects/last-visited-projects.json") {
+      cy.intercept("/ui-server/api/last-projects/*", {
+        fixture
       }).as(name);
       return this;
     }
 
-    projects(name = "getProjects") {
+    projects(name = "getProjects", fixture = "projects.json") {
       cy.intercept(
         "/ui-server/api/projects?query=last_activity_at&per_page=100&starred=true&page=1",
-        {
-          fixture: "projects.json"
-        }
+        { fixture }
       ).as(name);
       return this;
     }

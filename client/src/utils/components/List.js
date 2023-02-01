@@ -65,7 +65,7 @@ function ListDisplay(props) {
     </div>
     :
     <div>
-      <div className="mb-4 d-flex flex-column gap-3">{rows}</div>
+      <div className="my-sm-2 my-md-4 d-flex flex-column gap-3">{rows}</div>
       <Pagination currentPage={currentPage} perPage={perPage} totalItems={totalItems} onPageChange={onPageChange}
         className="d-flex justify-content-center rk-search-pagination"/>
     </div>;
