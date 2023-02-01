@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useDispatch } from "react-redux";
 
 import { KgAuthor } from "../../../features/kgSearch/KgSearch";
-import { setAuthor, setDates, setType, setVisibility } from "../../../features/kgSearch/KgSearchSlice";
+import { useKgSearchState } from "../../../features/kgSearch/KgSearchState";
 import { TypeEntityFilter, TypeEntitySelection } from "../typeEntityFilter/TypeEntityFilter";
 import { AuthorFilter } from "../authorFilter/AuthorFilter";
 import { VisibilitiesFilter, VisibilityFilter } from "../visibilityFilter/VisibilityFilter";
@@ -42,16 +41,16 @@ export interface FilterProps {
 }
 
 const FilterEntitySearch = ({ author, type, visibility, isLoggedUser, valuesDate }: FilterProps) => {
-  const dispatch = useDispatch();
+  const { setAuthor, setDates, setType, setVisibility } = useKgSearchState();
   const authorComponent = isLoggedUser ? (
     <div><AuthorFilter
-      handler={(value: KgAuthor) => dispatch(setAuthor(value))}
+      handler={(value: KgAuthor) => setAuthor(value)}
       value={author} /></div>
   ) : null;
 
   const visibilityComponent = isLoggedUser ? (
     <div><VisibilityFilter
-      handler={(value: VisibilitiesFilter) => dispatch(setVisibility(value))}
+      handler={(value: VisibilitiesFilter) => setVisibility(value)}
       value={visibility} /></div>
   ) : null;
 
@@ -59,12 +58,12 @@ const FilterEntitySearch = ({ author, type, visibility, isLoggedUser, valuesDate
     <>
       <div className="filter-box">
         <div><TypeEntityFilter
-          handler={(value: TypeEntitySelection) => dispatch(setType(value))}
+          handler={(value: TypeEntitySelection) => setType(value)}
           value={type} /></div>
         {authorComponent}
         {visibilityComponent}
         <div>
-          <DateFilter values={valuesDate} handler={(dates: DatesFilter) => dispatch(setDates(dates))} />
+          <DateFilter values={valuesDate} handler={(dates: DatesFilter) => setDates(dates)} />
         </div>
       </div>
     </>

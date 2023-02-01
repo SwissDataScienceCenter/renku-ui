@@ -17,7 +17,7 @@
  */
 
 import React, { useContext, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { Col, Modal, ModalBody, ModalHeader, Row } from "../../utils/ts-wrappers";
 import SortingEntities, { SortingOptions } from "../../utils/components/sortingEntities/SortingEntities";
@@ -25,7 +25,7 @@ import { FilterEntitySearch } from "../../utils/components/entitySearchFilter/En
 import { SearchResultsHeader } from "../../utils/components/searchResultsHeader/SearchResultsHeader";
 import { SearchResultsContent } from "../../utils/components/searchResultsContent/SearchResultsContent";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
-import { setPage, setSort, removeFilters, useKgSearchFormSelector } from "./KgSearchSlice";
+import { useKgSearchState } from "./KgSearchState";
 import { KgAuthor } from "./KgSearch";
 import { TypeEntitySelection } from "../../utils/components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../utils/components/visibilityFilter/VisibilityFilter";
@@ -80,14 +80,12 @@ const ModalFilter = ({
 };
 
 function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
-  const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = useKgSearchFormSelector(
-    (state) => state.kgSearchForm
-  );
+  const { searchState, setPage, setSort, removeFilters } = useKgSearchState();
+  const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = searchState;
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(true);
   const { client } = useContext(AppContext);
   const user = useSelector((state: any) => state.stateModel.user);
-  const dispatch = useDispatch();
   let searchRequest = {
     phrase,
     sort,
@@ -105,9 +103,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
     until,
     type: typeDate
   };
-  const onRemoveFilters = () => {
-    dispatch(removeFilters());
-  };
+  const onRemoveFilters = () => { removeFilters(); };
 
   // ? Temporary workaround to prevent showing older projects first on empty "Best Match" searches
   if (searchRequest.phrase === "" && searchRequest.sort === SortingOptions.DescMatchingScore)
@@ -146,7 +142,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
             toggleFilter={() => setIsOpenFilter(!isOpenFilter)}
             toggleFilterModal={setIsOpenFilterModal}
             isOpenFilterModal={isOpenFilterModal}
-            handleSort={(value: SortingOptions) => dispatch(setSort(value))}
+            handleSort={(value: SortingOptions) => setSort(value)}
           />
         </Col>
         {filter}
@@ -155,7 +151,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
             data={data}
             isFetching={isFetching}
             isLoading={isLoading}
-            onPageChange={(value: number) => dispatch(setPage(value))}
+            onPageChange={(value: number) => setPage(value)}
             onRemoveFilters={onRemoveFilters}
             error={error}
           />
@@ -165,7 +161,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
               type={type}
               visibility={visibility}
               sort={sort}
-              handleSort={(value: SortingOptions) => dispatch(setSort(value))}
+              handleSort={(value: SortingOptions) => setSort(value)}
               isOpen={isOpenFilterModal}
               onToggle={() => setIsOpenFilterModal(!isOpenFilterModal)}
               isLoggedUser={isLoggedUser}

@@ -40,6 +40,18 @@ export enum SortingOptions {
 }
 /* eslint-enable no-unused-vars */
 
+export function stringToSortingOption(str: string) {
+  switch (str) {
+    case "name:asc": return SortingOptions.AscTitle;
+    case "name:desc": return SortingOptions.DescTitle;
+    case "date:asc": return SortingOptions.AscDate;
+    case "date:desc": return SortingOptions.DescDate;
+    case "matchingScore:asc": return SortingOptions.AscMatchingScore;
+    case "matchingScore:desc": return SortingOptions.DescMatchingScore;
+    default: return undefined;
+  }
+}
+
 interface SortingItems {
   DescMatchingScore: string;
   AscMatchingScore: string;
