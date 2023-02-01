@@ -47,6 +47,7 @@ export default {
 export const ListBarProject = (args: ListElementProps) => (
   <>
     <ListBar
+      id={args.id}
       url={args.url}
       title={args.title}
       description={args.description}
@@ -62,6 +63,7 @@ export const ListBarProject = (args: ListElementProps) => (
   </>
 );
 ListBarProject.args = {
+  id: "test-namespace/test-url",
   url: "projects/test-namespace/test-url",
   title: "test project",
   description: descriptionExample,
@@ -80,6 +82,7 @@ ListBarProject.args = {
 export const ListBarDataset = (args: ListElementProps) => (
   <>
     <ListBar
+      id={args.id}
       url={args.url}
       title={args.title}
       description={args.description}
@@ -96,6 +99,7 @@ export const ListBarDataset = (args: ListElementProps) => (
 );
 
 ListBarDataset.args = {
+  id: "datasets/abcdefg",
   url: "datasets/abcdefg",
   title: "test dataset",
   description: "",
