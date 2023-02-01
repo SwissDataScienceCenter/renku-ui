@@ -22,7 +22,7 @@ import { VisibilitiesFilter } from "../../utils/components/visibilityFilter/Visi
 import { TypeEntitySelection } from "../../utils/components/typeEntityFilter/TypeEntityFilter";
 import { SortingOptions } from "../../utils/components/sortingEntities/SortingEntities";
 
-type SearchEntitiesQueryParams = {
+export type SearchEntitiesQueryParams = {
   phrase: string;
   sort: SortingOptions;
   page: number;

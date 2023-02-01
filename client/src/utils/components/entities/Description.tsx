@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, Fragment, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { RootStateOrAny, useSelector } from "react-redux";
+import { RenkuMarkdown } from "../markdown/RenkuMarkdown";
 
 /**
  *  renku-ui
@@ -28,7 +29,7 @@ import { RootStateOrAny, useSelector } from "react-redux";
  */
 
 export interface EntityDescriptionProps {
-  description: string;
+  description: string | ReactNode;
 
   /** when the height is fixed for card design */
   isHeightFixed: boolean;
@@ -54,10 +55,16 @@ function EntityDescription(
     lineClamp: isHeightFixed ? numberLines : undefined,
     WebkitLineClamp: isHeightFixed ? numberLines : undefined,// eslint-disable-line
     WebkitBoxOrient: "vertical",// eslint-disable-line
-    margin: "12px 0 0 0",
     minHeight: isHeightFixed ? `${25 * numberLines}px` : undefined,
     height: isHeightFixed ? `${25 * numberLines}px` : undefined,
   };
+
+  const markdownDescription = description && typeof description === "string" ?
+    <Fragment>
+      <RenkuMarkdown markdownText={description} singleLine={numberLines === 1} style={descriptionStyles}/>
+      <span className="ms-1">{description.includes("\n") ? " [...]" : ""}</span>
+    </Fragment>
+    : description ;
 
   const isUpdatingValue = useSelector((state: RootStateOrAny ) =>
     state.stateModel?.project?.metadata?.description?.updating);
@@ -70,8 +77,8 @@ function EntityDescription(
   }
 
   return (<div className={`card-text ${className}`}
-    style={descriptionStyles} data-cy="entity-description">
-    {description ? description :
+    style={{ ...descriptionStyles, margin: "12px 0 0 0" }} data-cy="entity-description">
+    {description ? markdownDescription :
       showSuggestion && hasDevAccess && urlChangeDescription ?
         <i>(This project has no description.
           You can provide one <Link to={urlChangeDescription}>here</Link>.)</i> : null }

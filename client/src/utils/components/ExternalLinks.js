@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
@@ -148,7 +148,7 @@ function IconLink(props) {
 }
 
 function ExternalIconLinkWithTooltip(props) {
-  const [uniqueId, ] = useState(`external-icon-link-${_.uniqueId()}`);
+  const ref = useRef(null);
 
   let className = "btn-icon-text icon-link";
   if (props.className)
@@ -156,11 +156,11 @@ function ExternalIconLinkWithTooltip(props) {
 
   return <span>
     <a href={props.url} role="button"
-      className={props.className}
+      className={props.className} ref={ref}
       target="_blank" rel="noreferrer noopener">
-      <FontAwesomeIcon className={className} icon={props.icon} id={uniqueId} />{props.title}
+      <FontAwesomeIcon className={className} icon={props.icon} />{props.title}
     </a>
-    <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
+    <ThrottledTooltip target={ref} tooltip={props.tooltip} />
   </span>;
 }
 

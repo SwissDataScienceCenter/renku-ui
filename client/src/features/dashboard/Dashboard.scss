@@ -1,0 +1,53 @@
+.rk-dashboard {
+  h1{
+    font-size: 24px;
+    margin-bottom: 30px;
+  }
+  h3{
+    font-size: 20px;
+  }
+  .rk-dashboard-title {
+    font-size: 27px;
+    font-weight: bold;
+  }
+  .rk-dashboard-project {
+    background-color: white;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  .rk-dashboard-project {
+    padding-right: 23px;
+    padding-left: 23px;
+  }
+  .rk-dashboard-section-header {
+    padding-right: 0;
+    padding-left: 0;
+  }
+  .rk-dashboard-link--text {
+    display: inline-block;
+  }
+
+  @media (max-width: 650px) {
+    h1{
+      font-size: 20px;
+      margin-bottom: 30px;
+    }
+    h3{
+      font-size: 18px;
+    }
+    .rk-dashboard-title {
+      font-size: 24px;
+    }
+    .rk-dashboard-project {
+      padding-right: 0;
+      padding-left: 0;
+    }
+    .rk-dashboard-section-header {
+      padding-right: 15px;
+      padding-left: 15px;
+    }
+    .rk-dashboard-link--text {
+      display: none;
+    }
+  }
+}

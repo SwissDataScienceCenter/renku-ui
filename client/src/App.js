@@ -28,12 +28,13 @@ import { Helmet } from "react-helmet";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useSelector } from "react-redux";
 
 import Project from "./project/Project";
 import { ProjectList } from "./project/list";
 import { NewProject } from "./project/new";
 import DatasetList from "./dataset/list/DatasetList.container";
-import { AnonymousHome, Landing, RenkuNavBar, FooterNavbar } from "./landing";
+import { AnonymousHome, RenkuNavBar, FooterNavbar } from "./landing";
 import { Notebooks } from "./notebooks";
 import { Login, LoginHelper } from "./authentication";
 import Help from "./help";
@@ -52,7 +53,7 @@ import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
 import SearchPage from "./features/kgSearch/KgSearchPage";
 import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
-import { useSelector } from "react-redux";
+import Dashboard from "./features/dashboard/Dashboard";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize ? "container-xxl py-4 mt-2 renku-container" : "w-100";
@@ -91,12 +92,7 @@ function CentralContentContainer(props) {
         <Route exact path={Url.get(Url.pages.landing)} render={
           p => (props.user.logged) ?
             <ContainerWrap>
-              <Landing.Home
-                key="landing" welcomePage={props.params["WELCOME_PAGE"]}
-                user={props.user}
-                client={props.client}
-                model={props.model}
-                {...p} />
+              <Dashboard />
             </ContainerWrap> : null
         } />
         <Route path={Url.get(Url.pages.help)} render={
