@@ -28,13 +28,18 @@ import { createRoot } from "react-dom/client";
 
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
-
+import AppContext from "../utils/context/appContext";
 import { testClient as client } from "../api-client";
 import { generateFakeUser } from "../user/User.test";
 import { StateModel, globalSchema } from "../model";
 import { Provider } from "react-redux";
 import Dashboard from "../features/dashboard/Dashboard";
 import { AnonymousHome } from "./index";
+
+const appContext = {
+  client: client,
+  location: { pathname: "" },
+};
 
 describe("rendering", () => {
   const anonymousUser = generateFakeUser(true);
@@ -58,15 +63,17 @@ describe("rendering", () => {
     await act(async () => {
       root.render(
         <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <AnonymousHome client={client}
-              user={anonymousUser}
-              model={model}
-              location={location}
-              homeCustomized={homeCustomized}
-              params={params}
-            />
-          </MemoryRouter>
+          <AppContext.Provider value={appContext}>
+            <MemoryRouter>
+              <AnonymousHome client={client}
+                user={anonymousUser}
+                model={model}
+                location={location}
+                homeCustomized={homeCustomized}
+                params={params}
+              />
+            </MemoryRouter>
+          </AppContext.Provider>
         </Provider>);
     });
   });
@@ -77,9 +84,11 @@ describe("rendering", () => {
     await act(async () => {
       root.render(
         <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <Dashboard />
-          </MemoryRouter>
+          <AppContext.Provider value={appContext}>
+            <MemoryRouter>
+              <Dashboard />
+            </MemoryRouter>
+          </AppContext.Provider>
         </Provider>);
     });
   });

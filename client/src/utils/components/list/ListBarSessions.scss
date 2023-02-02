@@ -1,0 +1,154 @@
+.container-sessions {
+  display: grid;
+  grid-template-columns: 126px fit-content(80px) fit-content(200px) auto auto fit-content(50px) 150px;
+  grid-template-rows: auto auto auto;
+  grid-auto-rows: 1fr;
+  gap: 0 20px;
+  margin: 0;
+  padding: 30px 15px 17px 15px;
+  background-color: var(--bs-body-bg);
+  grid-auto-flow: row;
+  grid-template-areas:
+    "entity-image entity-title entity-title entity-title session-icon session-icon entity-action"
+    "entity-image entity-description entity-description entity-description session-resources session-resources session-resources"
+    "entity-image entity-type-visibility entity-creators entity-date session-info session-time session-time";
+
+  .card-bg-title--small {
+    font-size: 50px;
+    margin-top: 0;
+    padding-top: 30px;
+  }
+
+  .entity-description {
+    height: 20px;
+  }
+
+  .entity-description p {
+    line-height: 22px;
+  }
+
+  .session-resources, .session-time, .session-info, .session-icon {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+  }
+
+  .listBar-entity-date {
+    align-self: center;
+    justify-content: start;
+  }
+
+  .session-icon, .session-time {
+    align-items: center;
+  }
+
+  .session-icon-details {
+    display: none;
+  }
+}
+
+.entity-image { grid-area: entity-image; }
+.entity-type-visibility { grid-area: entity-type-visibility; }
+.entity-creators { grid-area: entity-creators; }
+.entity-action { grid-area: entity-action; }
+.session-resources { grid-area: session-resources; }
+.session-time { grid-area: session-time; }
+.session-info { grid-area: session-info; }
+.entity-date { grid-area: entity-date; }
+.entity-description { grid-area: entity-description; }
+.session-icon { grid-area: session-icon; }
+.entity-title { grid-area: entity-title; }
+
+@media (max-width: 992px) {
+  .container-sessions {
+    display: grid;
+    grid-auto-rows: 1fr;
+    grid-template-columns: 126px fit-content(80px)  auto 160px;
+    grid-template-rows: auto auto auto auto;
+    gap: 0 20px;
+    grid-template-areas:
+    "entity-title entity-title entity-title entity-action"
+    "entity-image entity-creators session-icon session-icon"
+    "entity-image entity-description session-resources session-resources"
+    "entity-image entity-type-visibility session-time session-time";
+
+    .session-icon-details {
+      display: block;
+      margin-left: 5px;
+    }
+
+    .session-info, .entity-date {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 620px) {
+  .container-sessions {
+    display: grid;
+    grid-auto-rows: 1fr;
+    grid-template-columns: 126px auto 140px;
+    grid-template-rows: auto auto auto auto auto;
+    gap: 0 10px;
+    padding: 20px 10px;
+    margin: 0 5px;
+    grid-template-areas:
+      "entity-title entity-title entity-title"
+      "entity-type-visibility entity-type-visibility entity-action"
+      "entity-image session-icon session-icon"
+      "entity-image session-resources session-resources"
+      "entity-creators session-time session-time";
+
+    .entity-title, .entity-type-visibility, .entity-action {
+      margin-bottom: 10px;
+    }
+    .entity-action {
+      justify-content: end;
+    }
+    .entity-type-visibility {
+      gap: 10px;
+    }
+    .card-title {
+      font-size: 20px;
+    }
+    .entity-title--slug {
+      font-size: 18px;
+    }
+    .entity-description {
+      display: none;
+    }
+    .listBar-title {
+      width: 99%;
+    }
+  }
+}
+
+@media (max-width: 370px) {
+  .container-sessions {
+    display: grid;
+    grid-auto-rows: 1fr;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto auto auto auto auto auto auto;
+    gap: 0 10px;
+    grid-template-areas:
+      "entity-title"
+      "entity-action"
+      "session-icon"
+      "entity-image"
+      "entity-type-visibility"
+      "entity-creators"
+      "session-resources"
+      "session-time";
+
+    .entity-title, .entity-action, .entity-image, .session-icon {
+      margin-bottom: 8px;
+    }
+    .entity-type-visibility {
+      margin-bottom: 0;
+    }
+    .entity-action, .session-icon, .session-resources, .session-time {
+      justify-content: start;
+    }
+  }
+}
+

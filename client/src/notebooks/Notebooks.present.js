@@ -540,7 +540,7 @@ class NotebookServerRowCompact extends Component {
   }
 }
 
-function getStatusObject(status, defaultImage) {
+export function getStatusObject(status, defaultImage) {
   switch (status) {
     case SessionStatus.running:
       return {
@@ -714,5 +714,5 @@ NotebookServerRowAction.displayName = "NotebookServerRowAction";
 export {
   CheckNotebookIcon, Notebooks, NotebooksDisabled, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,
   StartNotebookServer, mergeEnumOptions, SessionJupyter, NotebookServerRowFull, NotebookServerRow,
-  SESSION_TABS, SessionLogs
+  SESSION_TABS, SessionLogs, NotebookServerRowCommitInfo
 };
