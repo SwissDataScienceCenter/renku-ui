@@ -36,7 +36,6 @@ export interface VisibilityIconProps {
 }
 const VisibilityIcon = ({ visibility, className }: VisibilityIconProps) => {
   const ref = useRef(null);
-  // @ts-ignore
   const { client } = useContext(AppContext);
   if (!visibility) return null;
   const icon = {
