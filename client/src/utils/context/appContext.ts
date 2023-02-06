@@ -18,6 +18,13 @@
 
 import React from "react";
 
-const AppContext = React.createContext(null);
+type IAppContext = {
+  client: any;
+  params: unknown;
+  location: unknown;
+};
+
+const AppContext = React.createContext<IAppContext>({ client: undefined, params: undefined, location: undefined });
 
 export default AppContext;
+export type { IAppContext };

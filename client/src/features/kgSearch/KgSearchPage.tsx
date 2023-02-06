@@ -85,7 +85,6 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
   );
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(true);
-  // @ts-ignore
   const { client } = useContext(AppContext);
   const user = useSelector((state: any) => state.stateModel.user);
   const dispatch = useDispatch();
