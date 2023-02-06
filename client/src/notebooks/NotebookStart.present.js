@@ -1274,6 +1274,7 @@ class CheckNotebookIcon extends Component {
         null;
       const target = {
         pathname: this.props.launchNotebookUrl,
+        search: "?autostart=1&notebook=" + encodeURIComponent(filePath),
         state: { successUrl }
       };
       tooltip = "Start a session";
