@@ -111,7 +111,7 @@
 
 .container-sessions {
     display: grid;
-    grid-template-columns: 126px fit-content(80px) fit-content(200px) auto auto fit-content(50px) 150px;
+    grid-template-columns: 126px fit-content(80px) fit-content(200px) auto auto fit-content(30px) 150px;
     grid-template-rows: auto auto auto;
     grid-auto-rows: 1fr;
     gap: 0 20px;
@@ -153,8 +153,8 @@
         align-items: center;
     }
 
-    .text-session-status {
-        width: 55px;
+    .session-status-text {
+        width: 60px;
     }
 
     .session-time {
@@ -195,7 +195,7 @@
         .session-info, .entity-date {
             display: none;
         }
-        .text-session-status {
+        .session-status-text {
             width: 100%;
         }
         .session-time {
@@ -287,7 +287,7 @@
         .session-resources {
             display: none;
         }
-        .text-session-status {
+        .session-status-text {
             width: 100%;
         }
         .session-time {
@@ -358,7 +358,7 @@
         .session-resources, .session-info {
             display: none;
         }
-        .text-session-status {
+        .session-status-text {
             width: 100%;
         }
         .session-time {

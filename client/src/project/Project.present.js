@@ -476,7 +476,7 @@ class ProjectViewHeaderOverview extends Component {
 }
 
 
-function getShowSessionURL(annotations, serverName) {
+export function getShowSessionURL(annotations, serverName) {
   return Url.get(Url.pages.project.session.show, {
     namespace: annotations["namespace"],
     path: annotations["projectName"],

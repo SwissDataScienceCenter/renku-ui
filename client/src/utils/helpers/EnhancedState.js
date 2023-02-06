@@ -32,6 +32,7 @@ import kgSearchFormSlice from "../../features/kgSearch/KgSearchSlice";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import kgInactiveProjectsSlice from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
+import { sessionApi } from "../../features/session/sessionApi";
 
 function createStore(renkuStateModelReducer, _name = "renku") {
   return createStoreWithEnhancers(renkuStateModelReducer);
@@ -42,6 +43,7 @@ function createStoreWithEnhancers(renkuStateModelReducer, enhancers = undefined)
   renkuStateModelReducer[projectApi.reducerPath] = projectApi.reducer;
   renkuStateModelReducer[projectKgApi.reducerPath] = projectKgApi.reducer;
   renkuStateModelReducer[sessionSidecarApi.reducerPath] = sessionSidecarApi.reducer;
+  renkuStateModelReducer[sessionApi.reducerPath] = sessionApi.reducer;
   renkuStateModelReducer[recentUserActivityApi.reducerPath] = recentUserActivityApi.reducer;
   renkuStateModelReducer[inactiveKgProjectsApi.reducerPath] = inactiveKgProjectsApi.reducer;
   renkuStateModelReducer[kgSearchFormSlice.name] = kgSearchFormSlice.reducer;
@@ -60,7 +62,8 @@ function createStoreWithEnhancers(renkuStateModelReducer, enhancers = undefined)
         .concat(projectApi.middleware)
         .concat(projectKgApi.middleware)
         .concat(sessionSidecarApi.middleware)
-        .concat(recentUserActivityApi.middleware),
+        .concat(recentUserActivityApi.middleware)
+        .concat(sessionApi.middleware),
     enhancers
   });
   return store;

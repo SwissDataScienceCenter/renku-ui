@@ -18,13 +18,17 @@
 
 import React from "react";
 import { Link, useHistory } from "react-router-dom";
-import { faPen, faPlay, faCog, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faPlay, faCog, faTrash, faStopCircle, faFileAlt } from "@fortawesome/free-solid-svg-icons";
 import { EntityType } from "./Entities";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Funnel, FunnelFill, UncontrolledTooltip } from "../../ts-wrappers";
+import { Button, Funnel, FunnelFill, StopCircle, UncontrolledTooltip } from "../../ts-wrappers";
 import { stylesByItemType } from "../../helpers/HelperFunctions";
 import { RootStateOrAny, useSelector } from "react-redux";
-import { getSessionRunning } from "../../../project/Project.present";
+import { getSessionRunning, getShowSessionURL } from "../../../project/Project.present";
+import { ButtonWithMenu } from "../buttons/Button";
+import { DropdownItem } from "reactstrap";
+import { SessionStatus } from "../../constants/Notebooks";
+import { Notebook } from "../../../notebooks/components/Session";
 
 interface StartSessionLinkProps {
   sessionAutostartUrl: string;
@@ -155,4 +159,69 @@ function FilterButton({ isOpen, toggle }: FilterButtonProps) {
   </div>;
 }
 
-export { EntityButton, EntityModifyButton, EntityDeleteButtonButton, FilterButton, StartSessionLink };
+interface SessionMainButtonProps {
+  notebook: Notebook["data"];
+  sessionStatus: string;
+  setSessionStatus: Function;
+  setServerLogs: Function;
+  stopSession: Function;
+}
+function SessionButton(
+  { notebook, sessionStatus, setSessionStatus, setServerLogs, stopSession }: SessionMainButtonProps) {
+  const history = useHistory();
+
+  const sessionLink = getShowSessionURL(notebook.annotations, notebook.name);
+  const handleClick = (e: React.MouseEvent<HTMLElement>, url: string) => {
+    e.preventDefault();
+    history.push(url);
+  };
+
+  const stopSessionHandler = (e: React.MouseEvent<HTMLElement>, serverName: string) => {
+    e.preventDefault();
+    setSessionStatus(SessionStatus.stopping);
+    stopSession({ serverName });
+  };
+
+  const connectButton = (
+    <Button
+      className={`btn btn-rk-green btn-sm btn-icon-text start-session-button session-link-group`}
+      onClick={(e: React.MouseEvent<HTMLElement>) => handleClick(e, sessionLink)}>
+      <div className="d-flex gap-2"><img src="/connect.svg" className="rk-icon rk-icon-md" /> Connect </div>
+    </Button>
+  );
+
+  const stopButton = (
+    <Button
+      className={`btn btn-rk-green btn-sm btn-icon-text start-session-button session-link-group`}
+      onClick={(e: React.MouseEvent<HTMLElement>) => stopSessionHandler(e, notebook.name)}
+      disabled={sessionStatus === "stopping"}>
+      <div className="d-flex align-items-center gap-2"><StopCircle className="text-rk-dark" title="stop"/>
+        Stop</div>
+    </Button>
+  );
+
+  const defaultAction = sessionStatus === "starting" || sessionStatus === "running" ?
+    connectButton : sessionStatus === "failed" || sessionStatus === "stopping" ? stopButton : null;
+  const logsButton = <DropdownItem onClick={(e: React.MouseEvent<HTMLElement>) => setServerLogs(notebook.name)}>
+    <FontAwesomeIcon className="text-rk-green" icon={faFileAlt} /> Get logs
+  </DropdownItem>;
+
+  return (
+    <ButtonWithMenu
+      disabled={sessionStatus === "stopping"}
+      className="startButton" size="sm" default={defaultAction} color="rk-green" isPrincipal={true}>
+      {sessionStatus === "starting" || sessionStatus === "running" ?
+        (<>
+          <DropdownItem onClick={(e: React.MouseEvent<HTMLElement>) => stopSessionHandler(e, notebook.name)}>
+            <FontAwesomeIcon className="text-rk-green" icon={faStopCircle} /> Stop
+          </DropdownItem>
+          <DropdownItem divider />
+          {logsButton}
+        </>)
+        : logsButton
+      }
+    </ButtonWithMenu>
+  );
+}
+
+export { EntityButton, EntityModifyButton, EntityDeleteButtonButton, FilterButton, StartSessionLink, SessionButton };
