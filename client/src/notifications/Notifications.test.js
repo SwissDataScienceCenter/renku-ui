@@ -24,7 +24,6 @@
  */
 
 import React from "react";
-import { unmountComponentAtNode } from "react-dom";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 import { act } from "react-test-renderer";
