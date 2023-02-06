@@ -29,6 +29,8 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
+// ? We need to mock the response there
+// import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
 
 import { StateModel, globalSchema } from "../model";
 import Project, { mapProjectFeatures, withProjectMapped } from "./Project";
@@ -109,10 +111,24 @@ describe("rendering", () => {
   const anonymousUser = generateFakeUser(true);
   const loggedUser = generateFakeUser();
   const model = new StateModel(globalSchema);
+  let div, root;
+
+  beforeEach(async () => {
+    await act(async () => {
+      div = document.createElement("div");
+      document.body.appendChild(div);
+      root = createRoot(div);
+    });
+  });
+  afterEach(async () => {
+    await act(async () => {
+      root.unmount(div);
+      div.remove();
+      div = null;
+    });
+  });
 
   it("renders view without crashing for anonymous user", async () => {
-    const div = document.createElement("div");
-    const root = createRoot(div);
     await act(async () => {
       root.render(
         <Provider store={model.reduxStore}>
