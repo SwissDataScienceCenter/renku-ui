@@ -389,6 +389,13 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       ).as(name);
       return this;
     }
+
+    getProjectCommits(name = "getProjectCommits", fixture = "project/test-project-commits.json") {
+      cy.intercept(
+        "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=100&page=1",
+        { fixture }
+      ).as(name);
+    }
   };
 }
 

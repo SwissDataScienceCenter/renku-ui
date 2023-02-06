@@ -111,36 +111,41 @@ describe("dashboard", () => {
       });
   });
 
-  it("user does has own datasets", () => {
+  it("user has sessions to display in dashboard", () => {
     fixtures.projects()
-      .entitySearch("getEntitiesProjects", "kgSearch/search.json", "7")
-      .entitySearch("getDatasets", "kgSearch/datasetsSearch.json", "10",
-        "?&sort=date:desc&page=1&per_page=3&type=dataset&creator=E2E%20User")
-      .getLastVisitedProjects("getLastVisitedProjects", "projects/last-visited-projects-5.json");
+      .entitySearch("getEntities", "kgSearch/search.json", "7")
+      .getLastVisitedProjects("getLastVisitedProjects", "projects/last-visited-projects-5.json")
+      .sessionServers()
+      .getProjectCommits();
+    const files = {
+      "dalatinrofrau/flights-usa": 55402,
+      "dalatinrofrau/corrupted-project-session-error": 78277,
+      "lorenzo.cavazzi.tech/readme-file-dev": 30929,
+      "e2e/testing-datasets": 43781,
+      "e2e/local-test-project": 39646,
+      "e2e/nuevo-project": 44966,
+      "e2e/local-test-project-2": 44967,
+    };
+    // fixture landing page project data
+    for (const filesKey in files)
+      fixtures.project(filesKey, "getProject", `projects/project_${files[filesKey]}.json`, false);
 
-    cy.visit("/");
+    cy.visit("/sessions");
     cy.wait("@getUser");
+    cy.wait("@getSessionServers");
+    cy.get_cy("link-home").click();
     cy.wait("@getLastVisitedProjects");
-    cy.wait("@getDatasets");
-    cy.get_cy("dataset-container").get_cy("list-card-title").first().should("have.text", "nw-dataset-an");
-    cy.get_cy("explore-other-datasets-btn").should("not.exist");
-    cy.get_cy("view-my-datasets-btn").should("be.visible");
-  });
+    cy.wait(
+      ["@getProject", "@getProject", "@getProject", "@getProject", "@getProject", "@getProject", "@getProject"])
+      .then( () => {
+        cy.get_cy("container-session").should("have.length", 2);
+        cy.get_cy("container-session").first().find(".session-time").should("contain.text", "Error");
+        cy.get_cy("container-session").first().find(".session-info").should("contain.text", "master");
+        cy.get_cy("container-session").first().find(".session-icon").should("have.text", "Error");
+        cy.get_cy("container-session").first().find(".entity-action")
+          .find("button").first().should("contain.text", "Connect");
 
-  it("user doesn't has own datasets", () => {
-    fixtures.projects()
-      .entitySearch("getEntitiesProjects", "kgSearch/search.json", "7")
-      .entitySearch("getDatasets", "kgSearch/emptySearch.json", "0",
-        "?&sort=date:desc&page=1&per_page=3&type=dataset&creator=E2E%20User")
-      .getLastVisitedProjects("getLastVisitedProjects", "projects/last-visited-projects-5.json");
 
-    cy.visit("/");
-    cy.wait("@getUser");
-    cy.wait("@getLastVisitedProjects");
-    cy.wait("@getDatasets");
-    cy.get_cy("dataset-container").find('[data-cy="list-card-title"]').should("have.length", 0);
-    cy.get_cy("dataset-container").should("contain.text", "You have no datasets");
-    cy.get_cy("explore-other-datasets-btn").should("be.visible");
-    cy.get_cy("view-my-datasets-btn").should("not.exist");
+      });
   });
 });

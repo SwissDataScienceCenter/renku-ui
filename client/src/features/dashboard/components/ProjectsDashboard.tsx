@@ -15,24 +15,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React, { Fragment, useContext, useEffect, useState } from "react";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { setAuthor, setType } from "../../kgSearch/KgSearchSlice";
+import { EntityType } from "../../kgSearch";
+import { KgAuthor } from "../../kgSearch/KgSearch";
 import { SearchEntitiesQueryParams, useSearchEntitiesQuery } from "../../kgSearch/KgSearchApi";
 import { SortingOptions } from "../../../utils/components/sortingEntities/SortingEntities";
 import { InfoAlert } from "../../../utils/components/Alert";
-import React, { Fragment } from "react";
 import { Docs } from "../../../utils/constants/Docs";
 import { ExternalLink } from "../../../utils/components/ExternalLinks";
-import { Link, useHistory } from "react-router-dom";
 import { urlMap } from "../../../project/list/ProjectList.container";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Url } from "../../../utils/helpers/url";
 import ListDisplay from "../../../utils/components/List";
 import { Loader } from "../../../utils/components/Loader";
-import { useDispatch } from "react-redux";
-import { setAuthor, setType } from "../../kgSearch/KgSearchSlice";
-import { KgAuthor } from "../../kgSearch/KgSearch";
 import { Button } from "../../../utils/ts-wrappers";
 import useGetRecentlyVisitedProjects from "../../../utils/customHooks/useGetRecentlyVisitedProjects";
+import AppContext from "../../../utils/context/appContext";
+import { formatProjectMetadata } from "../../../utils/helpers/ProjectFunctions";
+import ListBarSession from "../../../utils/components/list/ListBarSessions";
+import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionFunctions";
+import { Notebook } from "../../../notebooks/components/Session";
 
 interface ProjectAlertProps {
   total?: number;
@@ -71,14 +78,14 @@ function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
   };
   return totalOwnProjects > 0 ?
     (
-      <div className="d-flex justify-content-center">
+      <div className="d-flex justify-content-center mt-2">
         <Button data-cy="view-my-projects-btn" className="btn btn-outline-rk-green"
           onClick={(e: React.MouseEvent<HTMLElement>) => handleOnClick(e, "user")}>
           <div className="d-flex gap-2 text-rk-green">
             <img src="/frame.svg" className="rk-icon rk-icon-md" />View all my Projects</div>
         </Button></div>
     ) :
-    (<div className="d-flex justify-content-center">
+    (<div className="d-flex justify-content-center mt-4">
       <Button data-cy="explore-other-projects-btn" className="btn btn-outline-rk-green"
         onClick={(e: React.MouseEvent<HTMLElement>) => handleOnClick(e, "all")}>
         <div className="d-flex gap-2 text-rk-green">
@@ -86,29 +93,31 @@ function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
       </Button></div>);
 }
 
+function getProjectFormatted(project: Record<string, any>) {
+  const namespace = project.namespace ? project.namespace.full_path : "";
+  const path = project.path;
+  const url = Url.get(Url.pages.project, { namespace, path });
+  return {
+    id: project.id,
+    url: url,
+    itemType: "project",
+    title: project.name,
+    creators: project.owner ? [project.owner] : [project.namespace],
+    slug: project.path_with_namespace,
+    description: project.description,
+    tagList: project.tag_list,
+    timeCaption: project.last_activity_at,
+    imageUrl: project.avatar_url,
+    visibility: project.visibility
+  };
+}
+
 interface ProjectListProps {
-  projects: any [];
+  projects: Record<string, any>[];
   gridDisplay: boolean;
 }
 function ProjectListRows({ projects, gridDisplay }: ProjectListProps) {
-  const projectItems = projects.map(project => {
-    const namespace = project.namespace ? project.namespace.full_path : "";
-    const path = project.path;
-    const url = Url.get(Url.pages.project, { namespace, path });
-    return {
-      id: project.id,
-      url: url,
-      itemType: "project",
-      title: project.name,
-      creators: project.owner ? [project.owner] : [project.namespace],
-      slug: project.path_with_namespace,
-      description: project.description,
-      tagList: project.tag_list,
-      timeCaption: project.last_activity_at,
-      imageUrl: project.avatar_url,
-      visibility: project.visibility
-    };
-  });
+  const projectItems = projects?.map(project => getProjectFormatted(project));
 
   return <Fragment>
     <ListDisplay
@@ -148,7 +157,10 @@ function ProjectsDashboard( { userName }: ProjectsDashboardProps ) {
     userName,
   };
   const { data, isFetching, isLoading, error } = useSearchEntitiesQuery(searchRequest);
-  const { projects, isFetchingProjects } = useGetRecentlyVisitedProjects(TOTAL_RECENTLY_VISITED_PROJECT);
+  const currentSessions = useSelector((state: RootStateOrAny) => state.stateModel.notebooks?.notebooks?.all);
+  const sessionsFormatted = getFormattedSessionsAnnotations(currentSessions);
+  const { projects, isFetchingProjects } =
+    useGetRecentlyVisitedProjects(TOTAL_RECENTLY_VISITED_PROJECT, sessionsFormatted);
   const totalUserProjects = isFetching || isLoading || !data || error ? undefined : data.total;
   let projectsToShow;
   if (isFetchingProjects) {
@@ -157,7 +169,8 @@ function ProjectsDashboard( { userName }: ProjectsDashboardProps ) {
   else {
     projectsToShow = projects?.length > 0 ?
       <ProjectListRows projects={projects} gridDisplay={false} />
-      : <p className="rk-dashboard-section-header">You do not have any recently-visited projects</p>;
+      : sessionsFormatted.length === 0 ?
+        <p className="rk-dashboard-section-header">You do not have any recently-visited projects</p> : null;
   }
   const otherProjectsBtn = totalUserProjects === undefined ? null :
     <OtherProjectsButton totalOwnProjects={totalUserProjects} />;
@@ -172,12 +185,55 @@ function ProjectsDashboard( { userName }: ProjectsDashboardProps ) {
             <span className="rk-dashboard-link--text">Create a new project</span>
           </Link>
         </div>
+        {<SessionsToShow currentSessions={sessionsFormatted} />}
         {projectsToShow}
         {otherProjectsBtn}
       </div>
     </>
   );
 
+}
+
+
+interface SessionProject extends Record<string, any>{
+  notebook: Notebook["data"];
+}
+interface SessionsToShowProps {
+  currentSessions: Notebook["data"][];
+}
+function SessionsToShow({ currentSessions }: SessionsToShowProps) {
+  const [items, setItems] = useState<SessionProject[]>([]);
+  // @ts-ignore
+  const { client } = useContext(AppContext);
+
+  useEffect( () => {
+    const getProjectCurrentSessions = async () => {
+      const sessionProject: SessionProject[] = [];
+      for (const session of currentSessions) {
+        const fetchProject =
+          await client.getProject(`${session.annotations["namespace"]}/${session.annotations["projectName"]}`);
+        const project = getProjectFormatted(formatProjectMetadata(fetchProject?.data?.all));
+        sessionProject.push({ ...project, notebook: session });
+      }
+      setItems(sessionProject);
+    };
+    getProjectCurrentSessions();
+  }, [currentSessions]); // eslint-disable-line
+
+
+  // get project info
+  if (items) {
+    const element = items.map( (item: SessionProject) => {
+      return <ListBarSession notebook={item.notebook}
+        key={`session-${ item.id }`} labelCaption="" tagList={item.tagList}
+        visibility={item.visibility} slug={item.slug} creators={item.creators}
+        timeCaption={item.timeCaption} description={item.description} id={item.id}
+        url={item.url} title={item.title} itemType={EntityType.Project} imageUrl={item.imageUrl}
+      />;
+    });
+    return <div className="session-list">{element}</div>;
+  }
+  return <Loader />;
 }
 
 export { ProjectsDashboard };
