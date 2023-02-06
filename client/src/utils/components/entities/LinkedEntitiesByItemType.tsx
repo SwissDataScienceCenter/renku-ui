@@ -96,10 +96,19 @@ function LinkedEntitiesByItemType({ itemType, links, devAccess, url }: LinkedEnt
       </small> : null }
       {
         links.data
-          .map(link =>
-            <div className="d-grid" key={link.title}><Link
-              className={`${stylesByItem.colorText} linked-entities-link text-truncate`}
-              to={link.url}>{dataByItem[itemType].icon}{link.title}</Link></div>)
+          .map(link => {
+            // ? URl without the final slash aren't working well with the current Datasets elements
+            const fixedUrl = link.url.endsWith("/") ?
+              link.url :
+              link.url + "/";
+            return (
+              <div className="d-grid" key={link.title}>
+                <Link className={`${stylesByItem.colorText} linked-entities-link text-truncate`}
+                  to={fixedUrl}>{dataByItem[itemType].icon}{link.title}
+                </Link>
+              </div>
+            );
+          })
       }
       {links.total > 3 ?
         <SeeMoreByType itemType={itemType} text={dataByItem[itemType].seeMore} linkTo={links.linkAll} />
