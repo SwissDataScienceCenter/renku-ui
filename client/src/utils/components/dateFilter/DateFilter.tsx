@@ -44,15 +44,9 @@ export enum DateFilterTypes {
 /* eslint-enable no-unused-vars */
 
 export function stringToDateFilter(str: string) {
-  switch (str) {
-    case "all": return DateFilterTypes.all;
-    case "custom": return DateFilterTypes.custom;
-    case "last90days": return DateFilterTypes.last90days;
-    case "lastMonth": return DateFilterTypes.lastMonth;
-    case "lastWeek": return DateFilterTypes.lastWeek;
-    case "older": return DateFilterTypes.older;
-    default: return undefined;
-  }
+  return Object.values(DateFilterTypes).includes(str as DateFilterTypes) ?
+    str as DateFilterTypes :
+    undefined;
 }
 
 export function dateFilterTypeToSinceAndUntil(typeDate: DateFilterTypes) {
