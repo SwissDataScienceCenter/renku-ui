@@ -19,12 +19,12 @@
 import { EntityType, KgSearchResult, KgSearchResultLink } from "../../features/kgSearch";
 import { ListElementProps } from "../components/list/List.d";
 import { Url } from "./url";
-import { dateFilterTypes } from "../components/dateFilter/DateFilter";
+import { DateFilterTypes } from "../components/dateFilter/DateFilter";
 import _ from "lodash";
 import { getDatasetImageUrl } from "../../dataset/DatasetFunctions";
 
 const getDatasetIdentifier = (links: KgSearchResultLink[]) => {
-  const details = links.filter(link => link.rel === "details");
+  const details = links.filter((link) => link.rel === "details");
   return details.length > 0 ? details[0].href.split("/", -1).at(-1) : "";
 };
 
@@ -38,49 +38,48 @@ const getProjectUrl = (path: string) => {
   return `${projectBase}/${path}`;
 };
 
-export const mapSearchResultToEntity =
-  (entity: KgSearchResult, history: any): ListElementProps => {
-    const url = entity.type === EntityType.Dataset ?
-      getDatasetUrl(entity._links) :
-      getProjectUrl(entity.path);
+export const mapSearchResultToEntity = (entity: KgSearchResult, history: any): ListElementProps => {
+  const url = entity.type === EntityType.Dataset ? getDatasetUrl(entity._links) : getProjectUrl(entity.path);
 
-    const creators = entity.type === EntityType.Dataset ?
-      entity.creators?.map( (c: string) => { return { name: c }; }) :
-      [{ name: entity.creator }];
+  const creators =
+    entity.type === EntityType.Dataset
+      ? entity.creators?.map((c: string) => {
+        return { name: c };
+      })
+      : [{ name: entity.creator }];
 
-    return {
-      url,
-      title: entity.name,
-      description: entity.description,
-      tagList: entity.keywords,
-      timeCaption: entity.date,
-      labelCaption: "Created",
-      creators,
-      itemType: entity.type,
-      slug: entity.type === EntityType.Project ? entity.namespace : "",
-      visibility: entity.visibility,
-      imageUrl: getDatasetImageUrl(entity.images)
-    };
+  return {
+    url,
+    title: entity.name,
+    description: entity.description,
+    tagList: entity.keywords,
+    timeCaption: entity.date,
+    labelCaption: "Created",
+    creators,
+    itemType: entity.type,
+    slug: entity.type === EntityType.Project ? entity.namespace : "",
+    visibility: entity.visibility,
+    imageUrl: getDatasetImageUrl(entity.images),
   };
+};
 
 export interface FiltersProperties {
   type: {
     project: boolean;
     dataset: boolean;
-  },
+  };
   author: string;
   visibility: {
     private: boolean;
     public: boolean;
     internal: boolean;
-  },
+  };
   since: string;
   until: string;
-  typeDate: dateFilterTypes;
+  typeDate: DateFilterTypes;
 }
 
-export function hasInitialFilterValues( filters: FiltersProperties) {
-
+export function hasInitialFilterValues(filters: FiltersProperties) {
   const filterInitialState: FiltersProperties = {
     type: {
       project: true,
@@ -94,7 +93,7 @@ export function hasInitialFilterValues( filters: FiltersProperties) {
     },
     since: "",
     until: "",
-    typeDate: dateFilterTypes.all
+    typeDate: DateFilterTypes.all,
   };
 
   return _.isEqual(filterInitialState, filters);

@@ -33,6 +33,15 @@ export interface VisibilitiesFilter {
   private: boolean;
 }
 
+export function arrayToVisibilitiesFilter(value: string[]) {
+  if (value.length < 1) return { public: true, internal: true, private: true };
+  const visibilities: VisibilitiesFilter = { public: false, internal: false, private: false };
+  if (value.includes("public")) visibilities["public"] = true;
+  if (value.includes("internal")) visibilities["internal"] = true;
+  if (value.includes("private")) visibilities["private"] = true;
+  return visibilities;
+}
+
 export interface VisibilityFilterProps {
   handler: Function,
   value: VisibilitiesFilter
