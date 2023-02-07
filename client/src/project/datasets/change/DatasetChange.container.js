@@ -24,7 +24,6 @@
  */
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Button } from "reactstrap";
 import _ from "lodash";
 
 import { datasetFormSchema } from "../../../model/RenkuModels";
@@ -36,6 +35,7 @@ import FormGenerator from "../../../utils/components/formgenerator/";
 import { mapDataset } from "../../../dataset/index";
 import { CoreErrorAlert } from "../../../utils/components/errors/CoreErrorAlert";
 import { CoreError } from "../../../utils/components/errors/CoreErrorHelpers";
+import { ExternalLink } from "../../../utils/components/ExternalLinks";
 
 
 let dsFormSchema = _.cloneDeep(datasetFormSchema);
@@ -113,11 +113,6 @@ function ChangeDataset(props) {
   const onCancel = (e, handlers) => {
     handlers.removeDraft();
     props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
-  };
-
-  const goToCollaboration = (handlers) => {
-    handlers.removeDraft();
-    props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/collaboration/mergerequests` });
   };
 
   function setNewJobStatus(localJob, remoteJobsList) {
@@ -285,9 +280,10 @@ function ChangeDataset(props) {
               Create a merge request to bring the changes from <strong>{response.data.result.remote_branch}</strong>
               {" "} into <strong>{props.defaultBranch}</strong> to see the dataset in your project.
               <br/><br/>
-              You can do this in the {" "}
-              <Button color="warning" size="sm" onClick={()=>goToCollaboration(handlers)}>
-                collaboration / MR tab</Button>
+              This can be done on the{" "}
+              <ExternalLink className="btn-warning" size="sm" title="Merge Requests"
+                url={`${props.externalUrl}/-/merge_requests`} />{" "}
+              tab of the GitLab UI.
             </div>
           );
         }
