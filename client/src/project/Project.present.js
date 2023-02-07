@@ -70,6 +70,7 @@ import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
 
 import "./Project.css";
 import { StartSessionLink } from "../utils/components/entities/Buttons";
+import GitLabConnectButton, { externalUrlToGitLabIdeUrl } from "./components/GitLabConnect";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -148,26 +149,6 @@ class ProjectStatusIcon extends Component {
       </span>
     );
   }
-}
-
-function GitLabConnectButton(props) {
-  const size = (props.size) ? props.size : "md";
-  const { userLogged, gitlabIDEUrl } = props;
-  if (!props.externalUrl)
-    return null;
-  const gitlabProjectButton = <ExternalLink className="btn-outline-rk-green"
-    url={props.externalUrl} title="View in GitLab" />;
-
-  const onClick = () => window.open(gitlabIDEUrl, "_blank");
-  const gitlabIDEButton = userLogged ?
-    (<DropdownItem onClick={onClick} size={size}>View in Web IDE</DropdownItem>) :
-    null;
-
-  let button = gitlabIDEButton ?
-    (<ButtonWithMenu color="rk-green" default={gitlabProjectButton} size={size}>{gitlabIDEButton}</ButtonWithMenu>) :
-    (<ExternalLink className="btn-outline-rk-green" url={props.externalUrl} size={size} title="View in GitLab" />);
-
-  return (<div>{button}</div>);
 }
 
 class ForkProjectModal extends Component {
@@ -303,8 +284,7 @@ function ProjectSuggestionReadme({ commits, commitsReadme, externalUrl, metadata
 
   if (countCommitsReadme > 1 || (!isReadmeCommitInitial && countCommitsReadme !== 0)) return null;
 
-  const gitlabIDEUrl = externalUrl !== "" && externalUrl.includes("/gitlab/") ?
-    externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
+  const gitlabIDEUrl = externalUrlToGitLabIdeUrl(externalUrl);
   const addReadmeUrl = `${gitlabIDEUrl}/edit/${metadata.defaultBranch}/-/README.md`;
   return <li><p style={{ fontSize: "smaller" }}>
     <a className="mx-1" href={addReadmeUrl} target="_blank" rel="noopener noreferrer">
@@ -427,8 +407,7 @@ class ProjectViewHeaderOverview extends Component {
       }
     }
 
-    const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
-      this.props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
+    const gitlabIDEUrl = externalUrlToGitLabIdeUrl(this.props.externalUrl);
     const forkProjectDisabled = metadata.accessLevel < ACCESS_LEVELS.REPORTER
     && metadata.visibility === "private";
 
