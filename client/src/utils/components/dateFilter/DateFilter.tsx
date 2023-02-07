@@ -33,7 +33,7 @@ export interface DateFilterProps {
 }
 
 /* eslint-disable no-unused-vars */
-export enum dateFilterTypes {
+export enum DateFilterTypes {
   all = "all",
   custom = "custom",
   last90days = "last90days",
@@ -41,13 +41,48 @@ export enum dateFilterTypes {
   lastWeek = "lastWeek",
   older = "older" // before 90 days
 }
+/* eslint-enable no-unused-vars */
+
+export function stringToDateFilter(str: string) {
+  return Object.values(DateFilterTypes).includes(str as DateFilterTypes) ?
+    str as DateFilterTypes :
+    undefined;
+}
+
+export function dateFilterTypeToSinceAndUntil(typeDate: DateFilterTypes) {
+  let from, to;
+  const today = new Date();
+  switch (typeDate) {
+    case DateFilterTypes.last90days:
+      to = today;
+      from = new Date(new Date().setDate(to.getDate() - 90));
+      break;
+    case DateFilterTypes.lastMonth:
+      to = today;
+      from = new Date(new Date().setDate(to.getDate() - 30));
+      break;
+    case DateFilterTypes.lastWeek:
+      to = today;
+      from = new Date(new Date().setDate(to.getDate() - 7));
+      break;
+    case DateFilterTypes.older:
+      to = new Date(new Date().setDate(today.getDate() - 90));
+      break;
+    default:
+      from = "";
+      to = "";
+      break;
+  }
+  const since = from ? Time.toIsoString(from, "date") : "";
+  const until = to ? Time.toIsoString(to, "date") : "";
+  return { since, until };
+}
 
 export interface DatesFilter {
   since?: string;
   until?: string;
-  type?: dateFilterTypes;
+  type?: DateFilterTypes;
 }
-/* eslint-enable no-unused-vars */
 
 const DateFilter = ({ handler, values }: DateFilterProps) => {
   const [dates, setDates] = useState<DatesFilter>({});
@@ -61,59 +96,35 @@ const DateFilter = ({ handler, values }: DateFilterProps) => {
       handler(dates);
   }, [dates]); // eslint-disable-line
 
-  const changeDateType = (typeDate: dateFilterTypes) => {
-    let from, to;
-    const today = new Date();
-    switch (typeDate) {
-      case dateFilterTypes.last90days:
-        to = today;
-        from = new Date(new Date().setDate(to.getDate() - 90));
-        break;
-      case dateFilterTypes.lastMonth:
-        to = today;
-        from = new Date(new Date().setDate(to.getDate() - 30));
-        break;
-      case dateFilterTypes.lastWeek:
-        to = today;
-        from = new Date(new Date().setDate(to.getDate() - 7));
-        break;
-      case dateFilterTypes.older:
-        to = new Date(new Date().setDate(today.getDate() - 90));
-        break;
-      default:
-        from = "";
-        to = "";
-        break;
-    }
+  const changeDateType = (typeDate: DateFilterTypes) => {
+    const { since, until } = dateFilterTypeToSinceAndUntil(typeDate);
 
-    setDates({
-      since: from ? Time.toIsoString(from, "date") : "",
-      until: to ? Time.toIsoString(to, "date") : "",
-      type: typeDate,
-    });
+    setDates({ since, until, type: typeDate, });
   };
 
   const items = [
-    { title: "All", value: dateFilterTypes.all },
-    { title: "Last Week", value: dateFilterTypes.lastWeek },
-    { title: "Last Month", value: dateFilterTypes.lastMonth },
-    { title: "Last 90 days", value: dateFilterTypes.last90days },
-    { title: "Older", value: dateFilterTypes.older },
-    { title: "Custom", value: dateFilterTypes.custom },
+    { title: "All", value: DateFilterTypes.all },
+    { title: "Last Week", value: DateFilterTypes.lastWeek },
+    { title: "Last Month", value: DateFilterTypes.lastMonth },
+    { title: "Last 90 days", value: DateFilterTypes.last90days },
+    { title: "Older", value: DateFilterTypes.older },
+    { title: "Custom", value: DateFilterTypes.custom },
   ];
-  const datesInput = values.type === dateFilterTypes.custom ?
+  const datesInput = values.type === DateFilterTypes.custom ?
     <>
       <div>
         <label className="px-2 author-label">From:</label>
         <Input type="date" name="start"
           max={new Date().toISOString().split("T")[0]}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setDates({ ...dates, since: e.target.value })}/>
+          onChange={(e: ChangeEvent<HTMLInputElement>) => setDates({ ...dates, since: e.target.value })}
+          value={dates.since} />
       </div>
       <div>
         <label className="px-2 author-label">To:</label>
         <Input type="date" name="end"
           max={new Date().toISOString().split("T")[0]}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setDates({ ...dates, until: e.target.value })}/>
+          onChange={(e: ChangeEvent<HTMLInputElement>) => setDates({ ...dates, until: e.target.value })}
+          value={dates.until} />
       </div>
     </>
     : null;
@@ -126,7 +137,7 @@ const DateFilter = ({ handler, values }: DateFilterProps) => {
           type="radio"
           name="date-filter"
           value={item.value}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => changeDateType(e.target.value as dateFilterTypes)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => changeDateType(e.target.value as DateFilterTypes)}
           className="author-input"
           checked={values.type === item.value}
           data-cy={nameInput}/>

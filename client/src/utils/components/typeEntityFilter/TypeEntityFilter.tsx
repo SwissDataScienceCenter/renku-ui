@@ -31,6 +31,14 @@ export interface TypeEntitySelection {
   dataset: boolean;
 }
 
+export function arrayToTypeEntitySelection(value: string[]) {
+  if (value.length < 1) return { project: true, dataset: true };
+  const type: TypeEntitySelection = { project: false, dataset: false };
+  if (value.includes("project")) type["project"] = true;
+  if (value.includes("dataset")) type["dataset"] = true;
+  return type;
+}
+
 export interface TypeFilterProps {
   handler: Function;
   value: TypeEntitySelection
