@@ -168,7 +168,6 @@ function ListBarSession(
     logs,
   }: ListBarSessionProps) {
 
-  // @ts-ignore
   const { client } = useContext(AppContext);
   const [commit, setCommit] = useState(null);
   const [sessionStatus, setSessionStatus] = useState(SessionStatus.starting);

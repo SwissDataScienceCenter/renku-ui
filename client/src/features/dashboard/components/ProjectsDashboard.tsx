@@ -204,7 +204,6 @@ interface SessionsToShowProps {
   currentSessions: Notebook["data"][];
 }
 function SessionsToShow({ currentSessions }: SessionsToShowProps) {
-  // @ts-ignore
   const { client } = useContext(AppContext);
   const [items, setItems] = useState<any[]>([]);
   // serverLogs
