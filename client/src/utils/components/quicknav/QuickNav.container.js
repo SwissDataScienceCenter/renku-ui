@@ -20,12 +20,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory, withRouter } from "react-router-dom";
 
-import {
-  setMyDatasets,
-  setMyProjects,
-  setPhrase,
-  useKgSearchFormSelector
-} from "../../../features/kgSearch/KgSearchSlice";
+import { useKgSearchState } from "../../../features/kgSearch/KgSearchState";
 import { QuickNavPresent } from "./QuickNav.present";
 import { TOTAL_QUERIES, useSearchLastQueriesQuery } from "../../../features/recentUserActivity/RecentUserActivityApi";
 
@@ -50,7 +45,8 @@ export const defaultAnonymousSuggestionQuickBar = {
 const QuickNavContainerWithRouter = ({ user }) => {
   const history = useHistory();
   const dispatch = useDispatch();
-  const { phrase } = useKgSearchFormSelector((state) => state.kgSearchForm);
+  const { searchState, setPhrase, setMyDatasets, setMyProjects } = useKgSearchState();
+  const phrase = searchState.phrase;
   const [currentPhrase, setCurrentPhrase] = useState("");
   const { data, isFetching, isLoading, refetch } = useSearchLastQueriesQuery(TOTAL_QUERIES);
 
@@ -96,7 +92,7 @@ const QuickNavContainerWithRouter = ({ user }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    dispatch(setPhrase(currentPhrase));
+    setPhrase(currentPhrase);
     refetchLastQueries(e.currentTarget);
     if (history.location.pathname === "/search")
       return;
@@ -121,7 +117,7 @@ const QuickNavContainerWithRouter = ({ user }) => {
     }
 
     if (suggestion && suggestion?.type === "last-queries" && event.type === "click") {
-      dispatch(setPhrase(suggestion.label));
+      setPhrase(suggestion.label);
       setCurrentPhrase(suggestion.label);
       refetchLastQueries(event.currentTarget);
     }

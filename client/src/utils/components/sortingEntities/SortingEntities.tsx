@@ -40,6 +40,12 @@ export enum SortingOptions {
 }
 /* eslint-enable no-unused-vars */
 
+export function stringToSortingOption(str: string) {
+  return Object.values(SortingOptions).includes(str as SortingOptions) ?
+    str as SortingOptions :
+    undefined;
+}
+
 interface SortingItems {
   DescMatchingScore: string;
   AscMatchingScore: string;
