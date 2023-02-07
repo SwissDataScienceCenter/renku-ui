@@ -54,8 +54,9 @@ function createDateObject(commit) {
 }
 
 function createCommitsObjects(commits) {
-  const enhancedCommits = commits.reduce(
-    (data, commit) => {
+  const enhancedCommits = commits
+    .sort((el1, el2) => el1.committed_date < el2.committed_date ? 1 : -1)
+    .reduce((data, commit) => {
       if (!data.lastDate || !Time.isSameDay(data.lastDate, commit.committed_date)) {
         data.lastDate = commit.committed_date;
         data.list.push(createDateObject(commit));
@@ -63,10 +64,7 @@ function createCommitsObjects(commits) {
       data.list.push({ ...commit, type: CommitElement.COMMIT });
 
       return data;
-    },
-    { lastDate: null, list: [] }
-  );
-
+    }, { lastDate: null, list: [] });
   return enhancedCommits.list;
 }
 
