@@ -59,4 +59,4 @@ function TimeCaption(
   );
 }
 
-export { TimeCaption };
+export { TimeCaption, displayTimeFromDate };

@@ -41,7 +41,6 @@ import { ThrottledTooltip } from "../utils/components/Tooltip";
 import { SessionStatus } from "../utils/constants/Notebooks";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
-import Time from "../utils/helpers/Time";
 
 import LaunchErrorAlert from "./components/LaunchErrorAlert";
 import { NotebooksHelper } from "./index";
@@ -49,6 +48,7 @@ import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from 
 import EnvironmentVariables from "./components/EnviromentVariables";
 import { useSelector } from "react-redux";
 import { StartNotebookAutostartLoader, StartNotebookLoader } from "./components/StartSessionLoader";
+import CommitSelector from "../utils/components/commitSelector/CommitSelector";
 
 function ProjectSessionLockAlert({ lockStatus }) {
   if (lockStatus == null) return null;
@@ -723,7 +723,7 @@ class StartNotebookPipelinesContent extends Component {
 class StartNotebookCommits extends Component {
   render() {
     const { commits, fetching, autosaved } = this.props.data;
-    const { delays, disabled, filters } = this.props;
+    const { delays, filters } = this.props;
 
     if (fetching)
       return (<FormGroup><Label>Updating commits... <Loader size="14" inline="true" /></Label></FormGroup>);
@@ -734,16 +734,6 @@ class StartNotebookCommits extends Component {
       commits.slice(0, filters.displayedCommits) :
       commits;
     const autosavedCommits = autosaved.map(autosaveObject => autosaveObject.autosave.commit);
-    const commitOptions = filteredCommits.map((commit) => {
-      const star = autosavedCommits.includes(commit.id.substr(0, 7)) ?
-        "*" :
-        "";
-      return (
-        <option key={commit.id} value={commit.id}>
-          {commit.short_id}{star} - {commit.author_name} - {Time.toIsoTimezoneString(commit.committed_date)}
-        </option>
-      );
-    });
     let commitComment = null;
     if (filters.commit && filters.commit.id) {
       const autosaveExists = autosavedCommits.includes(filters.commit.id.substr(0, 7)) ?
@@ -767,12 +757,8 @@ class StartNotebookCommits extends Component {
           <StartNotebookCommitsUpdate {...this.props} />
           <StartNotebookCommitsOptions {...this.props} />
         </Label>
-        <Input type="select" id="selectCommit" name="selectCommit" disabled={disabled}
-          value={filters.commit && filters.commit.id ? filters.commit.id : ""}
-          onChange={(event) => { this.props.handlers.setCommit(event.target.value); }}>
-          <option disabled hidden></option>
-          {commitOptions}
-        </Input>
+        <CommitSelector commits={filteredCommits}
+          onChange={(commitId) => { this.props.handlers.setCommit(commitId); }} />
         {commitComment}
       </FormGroup>
     );

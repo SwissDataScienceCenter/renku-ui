@@ -1,0 +1,156 @@
+.rk-commit-selector__suggestion {
+  border-bottom: 1px dotted #A3A3A3;
+
+  .commit-row {
+    display: flex;
+    gap: 10px;
+    flex-flow: row;
+    flex-wrap: nowrap;
+    align-items: center;
+
+    &-id {
+      min-width: 80px;
+      font-weight: bold;
+    }
+    &-author {
+      min-width: 150px;
+    }
+    &-date {
+      min-width: 200px;
+    }
+    &-box-message {
+      .commit-row-icon {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+}
+
+.rk-commit-selector__suggestions-container {
+  height: 0;
+}
+
+.rk-commit-selector__suggestion:last-of-type {
+  border-bottom: none;
+}
+
+.rk-commit-selector__suggestions-list {
+  background-color: var(--bs-body-bg);
+}
+
+.react-autosuggest__container .rk-commit-selector__suggestions-container--open {
+  background-color: transparent;
+  margin-top: -38px;
+}
+
+.selected-commit {
+  padding: 3px 1rem 5px 1rem;
+  background-color: white;
+  border: 1px solid var(--bs-rk-border-input);
+  border-radius: 8px;
+  height: 48px;
+  font-size: 0.875rem;
+
+  &--open {
+    border-radius: 8px 8px 0 0;
+    border: 1px solid var(--bs-rk-green);
+  }
+
+  .commit-row {
+    display: flex;
+    gap: 10px;
+    flex-flow: row;
+    flex-wrap: nowrap;
+    align-items: center;
+
+    &-id {
+      min-width: 80px;
+      font-weight: bold;
+      .commit-row-icon {
+        display: none;
+      }
+    }
+    &-author {
+      min-width: 150px;
+    }
+    &-date {
+      min-width: 200px;
+    }
+    &-box-message {
+      display: flex;
+      justify-content: space-between;
+      flex-grow: 1;
+      gap: 10px;
+    }
+    span {
+      display: block;
+      padding: 10px 20px;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .selected-commit .commit-row-author, .rk-commit-selector__suggestion .commit-row-author {
+    width: 100px;
+    min-width: 100px;
+  }
+  .selected-commit .commit-row-date, .rk-commit-selector__suggestion .commit-row-date {
+    width: 150px;
+    min-width: 150px;
+    .time-caption {
+      padding: 10px 5px;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .selected-commit .commit-row-date, .rk-commit-selector__suggestion .commit-row-date {
+    width: 100px;
+    min-width: 100px;
+    .time-caption {
+      padding: 10px 0;
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .selected-commit, .rk-commit-selector__suggestion .selected-commit {
+    height: auto;
+    padding: 10px 1rem 20px 1rem;
+  }
+  .selected-commit .commit-row, .rk-commit-selector__suggestion .commit-row {
+    flex-flow: column;
+    gap: 3px;
+    align-items: flex-start;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .selected-commit .commit-row-author, .rk-commit-selector__suggestion .commit-row-author {
+    width: 100%;
+    min-width: 100%;
+  }
+  .selected-commit .commit-row-date, .rk-commit-selector__suggestion .commit-row-date {
+    width: 100%;
+    min-width: 100%;
+    .time-caption {
+      padding: 0;
+    }
+  }
+  .selected-commit .commit-row-id {
+    justify-content: space-between;
+    display: flex;
+    align-self: normal;
+
+    .commit-row-icon {
+      display: block;
+    }
+  }
+  .selected-commit .commit-row-box-message, .rk-commit-selector__suggestion .commit-row-message {
+    display: block;
+    width: 90%;
+    .commit-row-icon {
+      display: none;
+    }
+  }
+}
