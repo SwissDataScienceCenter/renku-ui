@@ -30,7 +30,7 @@ import EntityLabel from "../entities/Label";
 import { useCallback } from "react";
 import { EntityType } from "../../../features/kgSearch";
 
-function getMainActionByEntity(entityType: EntityType, slug: string) {
+export function getMainActionByEntity(entityType: EntityType, slug: string) {
   const sessionAutostartUrl = `/projects/${slug}/sessions/new?autostart=1`;
   const launchNotebookUrl = `/projects/${slug}/sessions/new`;
   switch (entityType) {

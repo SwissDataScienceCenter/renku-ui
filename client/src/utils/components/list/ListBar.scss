@@ -23,7 +23,6 @@
     font-weight: bold;
 }
 
-
 .listBar-entity-image {
     max-width: 126px;
     height: 77px;
@@ -110,6 +109,59 @@
     border-bottom: none;
 }
 
+.container-sessions {
+    display: grid;
+    grid-template-columns: 126px fit-content(80px) fit-content(200px) auto auto fit-content(50px) 150px;
+    grid-template-rows: auto auto auto;
+    grid-auto-rows: 1fr;
+    gap: 0 20px;
+    margin: 0;
+    padding: 30px 15px 17px 15px;
+    background-color: var(--bs-body-bg);
+    grid-auto-flow: row;
+    grid-template-areas:
+    "entity-image entity-title entity-title entity-title session-icon session-icon entity-action"
+    "entity-image entity-description entity-description entity-description session-resources session-resources session-resources"
+    "entity-image entity-type-visibility entity-creators entity-date session-time session-time session-time";
+
+    .card-bg-title--small {
+        font-size: 50px;
+        margin-top: 0;
+        padding-top: 30px;
+    }
+
+    .entity-description {
+        height: 20px;
+    }
+
+    .entity-description p {
+        line-height: 22px;
+    }
+
+    .session-resources, .session-time, .session-info, .session-icon {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .listBar-entity-date {
+        align-self: center;
+        justify-content: start;
+    }
+
+    .session-icon, .session-time {
+        align-items: center;
+    }
+
+    .text-session-status {
+        width: 55px;
+    }
+
+    .session-time {
+        gap: 10px;
+    }
+}
+
 @media (max-width: 992px) {
     .container-entity-listBar {
         display: grid;
@@ -123,9 +175,38 @@
             "entity-image entity-description entity-description"
             "entity-image entity-type-visibility entity-date";
     }
+    .container-sessions {
+        display: grid;
+        grid-auto-rows: 1fr;
+        grid-template-columns: 126px fit-content(80px)  auto 160px;
+        grid-template-rows: auto auto auto auto;
+        gap: 0 20px;
+        grid-template-areas:
+    "entity-title entity-title entity-title entity-action"
+    "entity-image entity-creators session-icon session-icon"
+    "entity-image entity-description session-resources session-resources"
+    "entity-image entity-type-visibility session-time session-time";
+
+        .session-icon-details {
+            display: block;
+            margin-left: 5px;
+        }
+
+        .session-info, .entity-date {
+            display: none;
+        }
+        .text-session-status {
+            width: 100%;
+        }
+        .session-time {
+            flex-direction: row-reverse;
+            gap: 5px;
+            justify-content: flex-start;
+        }
+    }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 620px) {
     .container-entity-listBar {
         display: grid;
         grid-auto-rows: 1fr;
@@ -166,6 +247,55 @@
     .listBar-title {
         width: 99%;
     }
+
+    .container-sessions {
+        display: grid;
+        grid-auto-rows: 1fr;
+        grid-template-columns: 126px auto 140px;
+        grid-template-rows: auto auto auto auto auto;
+        gap: 0 10px;
+        padding: 20px 10px;
+        margin: 0 5px;
+        grid-template-areas:
+      "entity-title entity-title entity-title"
+      "entity-type-visibility entity-type-visibility entity-action"
+      "entity-image session-icon session-icon"
+      "entity-image session-resources session-resources"
+      "entity-creators session-time session-time";
+
+        .entity-title, .entity-type-visibility, .entity-action {
+            margin-bottom: 10px;
+        }
+        .entity-action {
+            justify-content: end;
+        }
+        .entity-type-visibility {
+            gap: 10px;
+        }
+        .card-title {
+            font-size: 20px;
+        }
+        .entity-title--slug {
+            font-size: 18px;
+        }
+        .entity-description, .session-info {
+            display: none;
+        }
+        .listBar-title {
+            width: 99%;
+        }
+        .session-resources {
+            display: none;
+        }
+        .text-session-status {
+            width: 100%;
+        }
+        .session-time {
+            flex-direction: row-reverse;
+            gap: 5px;
+            justify-content: flex-start;
+        }
+    }
 }
 
 @media (max-width: 370px) {
@@ -199,6 +329,44 @@
         justify-content: start;
         margin-top: 5px;
     }
+
+    .container-sessions {
+        display: grid;
+        grid-auto-rows: 1fr;
+        grid-template-columns: auto;
+        grid-template-rows: auto auto auto auto auto auto auto auto;
+        gap: 0 10px;
+        grid-template-areas:
+      "entity-title"
+      "entity-action"
+      "session-icon"
+      "entity-image"
+      "entity-type-visibility"
+      "entity-creators"
+      "session-resources"
+      "session-time";
+
+        .entity-title, .entity-action, .entity-image, .session-icon {
+            margin-bottom: 8px;
+        }
+        .entity-type-visibility {
+            margin-bottom: 0;
+        }
+        .entity-action, .session-icon, .session-resources, .session-time {
+            justify-content: start;
+        }
+        .session-resources, .session-info {
+            display: none;
+        }
+        .text-session-status {
+            width: 100%;
+        }
+        .session-time {
+            flex-direction: row-reverse;
+            gap: 5px;
+            justify-content: flex-start;
+        }
+    }
 }
 
 .entity-image { grid-area: entity-image; }
@@ -208,3 +376,7 @@
 .entity-type-visibility { grid-area: entity-type-visibility; }
 .entity-creators { grid-area: entity-creators; }
 .entity-date { grid-area: entity-date; }
+
+.session-resources { grid-area: session-resources; }
+.session-time { grid-area: session-time; }
+.session-icon { grid-area: session-icon; }
