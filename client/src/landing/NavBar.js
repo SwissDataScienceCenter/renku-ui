@@ -274,7 +274,7 @@ class LoggedInNavBar extends Component {
       <Fragment>
         <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
           <Navbar color="primary" className="container-fluid flex-wrap flex-lg-nowrap renku-container">
-            <Link id="link-home" to="/" className="navbar-brand me-2 pb-0 pt-0">
+            <Link id="link-home" data-cy="link-home" to="/" className="navbar-brand me-2 pb-0 pt-0">
               <img src={logo} alt="Renku" height="50" className="d-block" />
             </Link>
             <NavbarToggler onClick={this.toggle} className="border-0">
