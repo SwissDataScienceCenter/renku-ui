@@ -30,7 +30,6 @@ interface MemberProjectResponse {
   hasNextPage: boolean;
 }
 
-
 export const projectApi = createApi({
   reducerPath: "projects",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
