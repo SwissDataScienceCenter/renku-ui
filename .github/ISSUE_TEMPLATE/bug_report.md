@@ -1,8 +1,8 @@
 ---
-name: Bug report
+name: "\U0001F41E Bug report"
 about: Create a report to help us improve
 title: ''
-labels: bug
+labels: bug, status/triage
 assignees: ''
 
 ---
@@ -33,7 +33,7 @@ guide you through providing information necessary to fix the problem.
 
 - renkulab url
 - operating system and version
-- browser and version 
+- browser and version
 
 
 <details><summary>Browser Output</summary>

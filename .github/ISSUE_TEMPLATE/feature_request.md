@@ -1,6 +1,7 @@
 ---
-name: Feature request
+name: "\U0001F381 Feature request"
 about: Suggest an idea for this project
+labels: status/triage
 
 ---
 
