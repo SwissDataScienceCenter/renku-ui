@@ -19,27 +19,29 @@ import { SearchEntitiesQueryParams, useSearchEntitiesQuery } from "../../kgSearc
 import { SortingOptions } from "../../../utils/components/sortingEntities/SortingEntities";
 import React, { Fragment } from "react";
 import { useHistory } from "react-router-dom";
-import { Url } from "../../../utils/helpers/url";
 import ListDisplay from "../../../utils/components/List";
 import { Loader } from "../../../utils/components/Loader";
-import { useDispatch } from "react-redux";
-import { setAuthor, setType } from "../../kgSearch/KgSearchSlice";
 import { KgAuthor } from "../../kgSearch/KgSearch";
 import { Button } from "../../../utils/ts-wrappers";
 import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
+import {
+  kgSearchInitialState,
+  stateToSearchString
+} from "../../kgSearch/KgSearchState";
+import { Url } from "../../../utils/helpers/url";
 
 
 interface OtherDatasetsButtonProps {
   totalDatasets: number;
 }
 function OtherDatasetsButton({ totalDatasets }: OtherDatasetsButtonProps) {
-  const dispatch = useDispatch();
   const history = useHistory();
   const handleOnClick = (e: React.MouseEvent<HTMLElement>, author: KgAuthor) => {
     e.preventDefault();
-    dispatch(setAuthor(author));
-    dispatch(setType({ project: false, dataset: true }));
-    history.push(Url.get(Url.pages.searchEntities));
+    const newState = { ...kgSearchInitialState,
+      type: { project: false, dataset: true }, author };
+    const paramsUrlStr = stateToSearchString(newState);
+    history.push(`${Url.get(Url.pages.searchEntities)}?${paramsUrlStr}`);
   };
   return totalDatasets > MAX_DATASETS_TO_SHOW ?
     (

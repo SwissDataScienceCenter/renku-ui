@@ -347,4 +347,4 @@ function useKgSearchState() {
   };
 }
 
-export { useKgSearchState };
+export { useKgSearchState, initialState as kgSearchInitialState, stateToSearchString };

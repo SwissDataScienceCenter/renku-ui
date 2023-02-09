@@ -16,12 +16,11 @@
  * limitations under the License.
  */
 import React, { Fragment, useContext, useEffect, useState } from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { RootStateOrAny, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { setAuthor, setType } from "../../kgSearch/KgSearchSlice";
 import { EntityType } from "../../kgSearch";
 import { KgAuthor } from "../../kgSearch/KgSearch";
 import { SearchEntitiesQueryParams, useSearchEntitiesQuery } from "../../kgSearch/KgSearchApi";
@@ -42,6 +41,7 @@ import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionF
 import { Notebook } from "../../../notebooks/components/Session";
 import useGetSessionLogs from "../../../utils/customHooks/UseGetSessionLogs";
 import { useStopSessionMutation } from "../../session/sessionApi";
+import { kgSearchInitialState, stateToSearchString } from "../../kgSearch/KgSearchState";
 
 interface ProjectAlertProps {
   total?: number;
@@ -70,13 +70,13 @@ interface OtherProjectsButtonProps {
   totalOwnProjects: number;
 }
 function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
-  const dispatch = useDispatch();
   const history = useHistory();
   const handleOnClick = (e: React.MouseEvent<HTMLElement>, author: KgAuthor) => {
     e.preventDefault();
-    dispatch(setType({ project: true, dataset: false }));
-    dispatch(setAuthor(author));
-    history.push(Url.get(Url.pages.searchEntities));
+    const newState = { ...kgSearchInitialState,
+      type: { project: true, dataset: false }, author };
+    const paramsUrlStr = stateToSearchString(newState);
+    history.push(`${Url.get(Url.pages.searchEntities)}?${paramsUrlStr}`);
   };
   return totalOwnProjects > 0 ?
     (
@@ -209,12 +209,15 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
   // serverLogs
   const [serverLogs, setServerLogs] = useState("");
   const [showLogs, setShowLogs] = useState<boolean>(false);
+  const [loadingSessions, setLoadingSessions] = useState<boolean>(false);
   const { logs, fetchLogs } = useGetSessionLogs(serverLogs, showLogs);
   //stop session
   const [stopSession] = useStopSessionMutation();
 
   useEffect( () => {
     const getProjectCurrentSessions = async () => {
+      if (items.length !== currentSessions.length)
+        setLoadingSessions(true);
       const sessionProject: SessionProject[] = [];
       for (const session of currentSessions) {
         const fetchProject =
@@ -222,12 +225,14 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
         const project = getProjectFormatted(formatProjectMetadata(fetchProject?.data?.all));
         sessionProject.push({ ...project, notebook: session });
       }
+      setLoadingSessions(false);
       setItems(sessionProject);
     };
     getProjectCurrentSessions();
   }, [currentSessions]); // eslint-disable-line
 
-
+  if (loadingSessions)
+    return <Loader />;
   // get project info
   if (items) {
     const element = items.map( (item: SessionProject) => {
@@ -242,7 +247,7 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
     });
     return <div className="session-list">{element}</div>;
   }
-  return <Loader />;
+  return null;
 }
 
 export { ProjectsDashboard };

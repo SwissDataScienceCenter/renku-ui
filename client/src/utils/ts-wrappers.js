@@ -61,6 +61,7 @@ import {
   HddStack as WrappedHddStack,
   Globe as WrappedGlobe,
   People as WrappedPeople,
+  Shield as WrappedShield,
   Person as WrappedPerson,
   Lock as WrappedLock,
   Download as WrappedDownload,
@@ -370,6 +371,10 @@ function ZoomOut(props) {
   return <WrappedZoomOut {...props} />;
 }
 
+function Shield(props) {
+  return <WrappedShield {...props} />;
+}
+
 export { ArrowClockwise };
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
 export { Alert, Badge, Button, ButtonDropdown, ButtonGroup, Progress, CheckCircleFill, XCircleFill };
@@ -382,4 +387,4 @@ export { ArrowLeft, Briefcase, CardList, Diagram3, Download, Globe, HddStack, In
 export { People, Save, StopCircle, Balloon, Person };
 export { Nav, NavItem, NavLink, TabContent, TabPane, ZoomIn, ZoomOut };
 export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, ChevronDown, Diagram2, XLg };
-export { Funnel, FunnelFill };
+export { Funnel, FunnelFill, Shield };

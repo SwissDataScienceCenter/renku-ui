@@ -54,6 +54,7 @@ import { setupWebSocket } from "./websocket";
 import SearchPage from "./features/kgSearch/KgSearchPage";
 import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
 import Dashboard from "./features/dashboard/Dashboard";
+import { Redirect } from "react-router";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize ? "container-xxl py-4 mt-2 renku-container" : "w-100";
@@ -141,14 +142,18 @@ function CentralContentContainer(props) {
           />}
         />
         <Route exact path="/sessions" render={
-          p => <ContainerWrap><Notebooks
-            key="sessions"
-            standalone={true}
-            client={props.client}
-            model={props.model}
-            blockAnonymous={blockAnonymous}
-            {...p}
-          /></ContainerWrap>}
+          p => (
+            !user.logged ?
+              <ContainerWrap><Notebooks
+                key="sessions"
+                standalone={true}
+                client={props.client}
+                model={props.model}
+                blockAnonymous={blockAnonymous}
+                {...p}
+              /></ContainerWrap> :
+              <Redirect to="/"/>
+          )}
         />
         <Route path="/datasets/:identifier/add" render={
           p => <AddDataset

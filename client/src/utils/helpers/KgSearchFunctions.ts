@@ -43,7 +43,7 @@ const getProjectUrl = (path: string) => {
   return `${projectBase}/${path}`;
 };
 
-export const mapSearchResultToEntity = (entity: KgSearchResult, history: any): ListElementProps => {
+export const mapSearchResultToEntity = (entity: KgSearchResult): ListElementProps => {
   const url = entity.type === EntityType.Dataset ? getDatasetUrl(entity._links) : getProjectUrl(entity.path);
 
   const creators =
