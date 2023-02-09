@@ -40,10 +40,6 @@ import {
 import { Url } from "../utils/helpers/url";
 import { SpecialPropVal } from "../model/Model";
 import { Notebooks, NotebooksHelper, ShowSession, StartNotebookServer } from "../notebooks";
-import Issue from "../collaboration/issue/Issue";
-import {
-  CollaborationList, collaborationListTypeMap
-} from "../collaboration/lists/CollaborationList.container";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
@@ -528,10 +524,6 @@ class ProjectNav extends Component {
               <RenkuNavLink to={this.props.baseUrl} alternate={this.props.overviewUrl} title="Overview" />
             </NavItem>
             <NavItem>
-              <RenkuNavLink exact={false} to={this.props.issuesUrl}
-                alternate={this.props.collaborationUrl} title="Collaboration" />
-            </NavItem>
-            <NavItem>
               <RenkuNavLink exact={false} to={this.props.filesUrl} title="Files" />
             </NavItem>
             <NavItem>
@@ -908,118 +900,6 @@ function ProjectViewWorkflows(props) {
   );
 }
 
-class ProjectViewCollaborationNav extends Component {
-  render() {
-    // CR: This is necessary to get spacing to work correctly; do not understand why.
-    const navItemStyle = { padding: "8px 0px" };
-    return <Nav className="flex-column nav-light nav-pills-underline">
-      <NavItem style={navItemStyle}>
-        <RenkuNavLink to={this.props.issuesUrl} matchPath={true} title="Issues" className="d-inline" />
-      </NavItem>
-      <NavItem style={navItemStyle}>
-        <RenkuNavLink to={this.props.mergeRequestsOverviewUrl} matchPath={true}
-          title="Merge Requests" className="d-inline" />
-      </NavItem>
-      <NavItem style={navItemStyle}>
-        <RenkuNavLink to={this.props.forkUrl} matchPath={true}
-          title="Fork" className="d-inline" />
-      </NavItem>
-    </Nav>;
-  }
-}
-
-class ProjectViewCollaboration extends Component {
-  render() {
-    return <Col key="collaborationContent">
-      <Switch>
-        <Route path={this.props.mergeRequestUrl} render={props =>
-          <ProjectMergeRequestList mrIid={props.match.params.mrIid} {...this.props} />} />
-        <Route path={this.props.mergeRequestsOverviewUrl} render={props =>
-          <ProjectMergeRequestList {...this.props} />} />
-        <Route exact path={this.props.issueNewUrl} render={props =>
-          <Issue.New {...props} model={this.props.model}
-            projectPathWithNamespace={this.props.metadata.pathWithNamespace}
-            client={this.props.client} />} />
-        <Route path={this.props.issueUrl} render={props =>
-          <ProjectIssuesList issueIid={props.match.params.issueIid} {...this.props} />} />
-        <Route path={this.props.issuesUrl} render={props =>
-          <ProjectIssuesList {...this.props} />} />
-        <Route path={this.props.forkUrl} render={props =>
-          <ProjectCollaborationFork {...this.props} />} />
-      </Switch>
-    </Col>;
-  }
-}
-
-class ProjectIssuesList extends Component {
-
-  render() {
-    return <Row>
-      <Col key="nav" sm={12} md={2}>
-        <ProjectViewCollaborationNav {...this.props} />
-      </Col>
-      <Col key="issuesList" sm={12} md={10}>
-        <CollaborationList
-          key="issuesList"
-          listType={collaborationListTypeMap.ISSUES}
-          externalUrl={this.props.externalUrl}
-          collaborationUrl={this.props.collaborationUrl}
-          issueNewUrl={this.props.issueNewUrl}
-          projectId={this.props.metadata.id}
-          user={this.props.user}
-          location={this.props.location}
-          thingIid={this.props.issueIid}
-          client={this.props.client}
-          history={this.props.history}
-          fetchElements={this.props.client.getProjectIssues}
-        />
-      </Col>
-    </Row>;
-  }
-}
-
-class ProjectMergeRequestList extends Component {
-
-  render() {
-    return <Row>
-      <Col key="nav" sm={12} md={2}>
-        <ProjectViewCollaborationNav {...this.props} />
-      </Col>
-      <Col sm={12} md={10}>
-        <CollaborationList
-          collaborationUrl={this.props.collaborationUrl}
-          externalUrl={this.props.externalUrl}
-          listType={collaborationListTypeMap.MREQUESTS}
-          projectId={this.props.metadata.id}
-          user={this.props.user}
-          location={this.props.location}
-          client={this.props.client}
-          thingIid={this.props.mrIid}
-          history={this.props.history}
-          mergeRequestsOverviewUrl={this.props.mergeRequestsOverviewUrl}
-          fetchElements={this.props.client.getMergeRequests}
-        />
-      </Col>
-    </Row>;
-  }
-}
-
-function ProjectCollaborationFork(props) {
-  return <Row>
-    <Col key="nav" sm={12} md={2}>
-      <ProjectViewCollaborationNav {...props} />
-    </Col>
-    <Col sm={12} md={10}>
-      <ForkProject
-        client={props.client}
-        forkedId={props.metadata.id}
-        forkedTitle={props.metadata.title}
-        projectVisibility={props.metadata.visibility}
-        toggleModal={null}
-      />
-    </Col>
-  </Row>;
-}
 
 class ProjectViewFiles extends Component {
   componentDidMount() {
@@ -1403,8 +1283,6 @@ function ProjectView(props) {
             render={() => <ProjectViewOverview key="overview" {...props} />} />
           <Route path={props.overviewUrl}
             render={() => <ProjectViewOverview key="overview" {...props} />} />
-          <Route path={props.collaborationUrl}
-            render={() => <ProjectViewCollaboration key="collaboration" {...props} />} />
           <Route path={props.filesUrl}
             render={() => <ProjectViewFiles key="files" {...props} />} />
           <Route path={props.datasetsUrl}

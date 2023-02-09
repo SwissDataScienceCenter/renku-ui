@@ -30,10 +30,8 @@ import _ from "lodash";
 import Present from "./Project.present";
 import { GraphIndexingStatus, ProjectCoordinator, MigrationStatus } from "./Project.state";
 import { ProjectsCoordinator } from "./shared";
-import Issue from "../collaboration/issue/Issue";
 import { FileLineage } from "../file";
 import { ACCESS_LEVELS } from "../api-client";
-import { MergeRequest } from "../collaboration/merge-request";
 import { ShowFile } from "../file";
 import ShowDataset from "../dataset/Dataset.container";
 import ChangeDataset from "./datasets/change/index";
@@ -54,13 +52,6 @@ const subRoutes = {
   datasetsAdd: "datasets/new",
   dataset: "datasets/:datasetId",
   datasetEdit: "datasets/:datasetId/modify",
-  issueNew: "issue_new",
-  collaboration: "collaboration",
-  issues: "collaboration/issues",
-  issue: "collaboration/issues/:issueId(\\d+)",
-  mrs: "collaboration/mergerequests",
-  mr: "collaboration/mergerequests/:mrIid(\\d+)",
-  fork: "collaboration/fork",
   files: "files",
   fileContent: "blob",
   notebook: "files/blob/:filePath([^.]+.ipynb)",
@@ -251,8 +242,8 @@ class View extends Component {
 
 
       // in case the route fails it tests weather it could be a projectId route
-      const routes = ["overview", "issues", "issue_new", "files", "lineage", "notebooks", "collaboration",
-        "data", "workflows", "settings", "pending", "launchNotebook", "notebookServers", "datasets", "sessions"];
+      const routes = ["overview", "files", "lineage", "notebooks", "data", "workflows", "settings",
+        "pending", "launchNotebook", "notebookServers", "datasets", "sessions"];
       const potentialProjectId = pathComponents.projectPathWithNamespace.split("/")[0];
       const potentialRoute = pathComponents.projectPathWithNamespace.split("/")[1];
 
@@ -399,7 +390,6 @@ class View extends Component {
     const baseUrl = pathComponents.baseUrl;
     const filesUrl = `${baseUrl}/files`;
     const fileContentUrl = `${filesUrl}/blob`;
-    const collaborationUrl = `${baseUrl}/collaboration`;
     const datasetsUrl = `${baseUrl}/datasets`;
     const workflowsUrl = `${baseUrl}/workflows`;
 
@@ -415,16 +405,6 @@ class View extends Component {
       newDatasetUrl: `${datasetsUrl}/new`,
       datasetUrl: `${datasetsUrl}/:datasetId`,
       editDatasetUrl: `${datasetsUrl}/:datasetId/modify`,
-      issueNewUrl: `${collaborationUrl}/issues/issue_new`,
-      collaborationUrl: collaborationUrl,
-      issuesUrl: `${collaborationUrl}/issues`,
-      issueUrl: `${collaborationUrl}/issues/:issueIid`,
-      mergeRequestsOverviewUrl: `${collaborationUrl}/mergerequests`,
-      mergeRequestUrl: `${collaborationUrl}/mergerequests/:mrIid(\\d+)`,
-      mergeRequestDiscussionUrl: `${collaborationUrl}/mergerequests/:mrIid(\\d+)/discussion`,
-      mergeRequestChangesUrl: `${collaborationUrl}/mergerequests/:mrIid(\\d+)/changes`,
-      mergeRequestCommitsUrl: `${collaborationUrl}/mergerequests/:mrIid(\\d+)/commits`,
-      forkUrl: `${collaborationUrl}/fork`,
       filesUrl: filesUrl,
       fileContentUrl: fileContentUrl,
       lineagesUrl: `${filesUrl}/lineage`,
@@ -435,8 +415,6 @@ class View extends Component {
       workflowUrl: `${workflowsUrl}/:id`,
       settingsUrl: `${baseUrl}/settings`,
       settingsSessionsUrl: `${baseUrl}/settings/sessions`,
-      mrOverviewUrl: `${baseUrl}/pending`,
-      mrUrl: `${baseUrl}/pending/:mrIid`,
       launchNotebookUrl: `${baseUrl}/sessions/new`,
       sessionAutostartUrl: `${baseUrl}/sessions/new?autostart=1`,
       notebookServersUrl: `${baseUrl}/sessions`,
@@ -458,36 +436,7 @@ class View extends Component {
       };
     };
 
-    const updateProjectView = this.forceUpdate.bind(this);
-
     return {
-      mrView: (p) => {
-        const subProps = getSubProps();
-        const subUrls = this.getSubUrls();
-        return <MergeRequest
-          key="mr" {...subProps}
-          match={p.match}
-          iid={p.match.params.mrIid}
-          updateProjectState={this.fetchAll.bind(this)}
-          mergeRequestsOverviewUrl={subUrls.mergeRequestsOverviewUrl}
-          mergeRequestUrl={subUrls.mergeRequestUrl}
-          mergeRequestDiscussionUrl={subUrls.mergeRequestDiscussionUrl}
-          mergeRequestChangesUrl={subUrls.mergeRequestChangesUrl}
-          mergeRequestCommitsUrl={subUrls.mergeRequestCommitsUrl}
-        />;
-      },
-
-      issueView: (p) => {
-        const projectPathWithNamespace = this.projectCoordinator.get("metadata.pathWithNamespace");
-        const subProps = getSubProps();
-        const subUrls = this.getSubUrls();
-        return <Issue.View key="issue" {...subProps}
-          issueIid={p.match.params.issueIid}
-          updateProjectView={updateProjectView}
-          projectPath={projectPathWithNamespace}
-          issuesUrl={subUrls.issuesUrl}
-        />;
-      },
 
       lineageView: (p) => {
         const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
