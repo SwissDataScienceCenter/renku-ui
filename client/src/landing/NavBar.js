@@ -127,16 +127,6 @@ class RenkuToolbarItemPlus extends Component {
   render() {
     // Display the Issue/Notebook server related header options only if a project is active.
     const activeProjectPathWithNamespace = getActiveProjectPathWithNamespace(this.props.currentPath);
-    const issueDropdown = activeProjectPathWithNamespace ?
-      (
-        <DropdownItem className="p-0">
-          <Link className="dropdown-item" id="navbar-issue-new"
-            to={`/projects/${activeProjectPathWithNamespace}/collaboration/issues/issue_new`}>
-            Issue
-          </Link>
-        </DropdownItem>
-      )
-      : null;
     const datasetDropdown = activeProjectPathWithNamespace ?
       (
         <DropdownItem className="p-0">
@@ -163,7 +153,6 @@ class RenkuToolbarItemPlus extends Component {
         </DropdownToggle>
         <DropdownMenu className="plus-menu btn-with-menu-options" end key="plus-bar" aria-labelledby="plus-menu">
           {projectDropdown}
-          {issueDropdown}
           {datasetDropdown}
         </DropdownMenu>
       </Fragment>

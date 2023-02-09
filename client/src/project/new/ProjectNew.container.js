@@ -182,7 +182,6 @@ function ForkProject(props) {
   // fork operations including fork, status check, redirect
   const fork = async () => {
     // TODO: re-add notifications after #1585 is addressed-- for some reason the project's sub-components
-    // TODO: ("mrView", "issuesVIew", ...) trigger a re-render after adding a notification, losing local states.
 
     const path = slugFromTitle(title, true);
     // const startingLocation = history.location.pathname;

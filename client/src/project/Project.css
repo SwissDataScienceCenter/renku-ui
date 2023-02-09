@@ -70,25 +70,9 @@ Button.alert-link {
   width:0;
 }
 
-.selected-issue {
-  color: black;
-  font-weight:bold;
-  text-decoration-line: underline;
-}
-
 .badge-renku-light{
   color: #fff;
   background-color: #8a8a8a;
-}
-
-
-.mr-title{
-  display:inline-block;
-  width:60%;
-  max-width:61%;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  overflow:hidden;
 }
 
 .display-block{
