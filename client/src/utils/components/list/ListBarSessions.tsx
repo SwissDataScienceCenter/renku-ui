@@ -24,7 +24,6 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 import { ListElementProps } from "./List.d";
 import "./ListBar.scss";
-import { getMainActionByEntity } from "./ListBar";
 import { ExternalLink } from "../ExternalLinks";
 import { TimeCaption } from "../TimeCaption";
 import VisibilityIcon from "../entities/VisibilityIcon";
@@ -37,6 +36,8 @@ import { stylesByItemType } from "../../helpers/HelperFunctions";
 import AppContext from "../../context/appContext";
 import Time from "../../helpers/Time";
 import { getStatusObject } from "../../../notebooks/Notebooks.present";
+import { SessionButton } from "../entities/Buttons";
+import { EnvironmentLogs, IFetchableLogs, ILogs } from "../Logs";
 import { Notebook } from "../../../notebooks/components/Session";
 
 /** Helper function for formatting the resource list */
@@ -81,7 +82,7 @@ function SessionStatusIcon ({ status, data, sessionId, errorSession, defaultImag
     <div id={sessionId}
       className={`d-flex align-items-center gap-1 ${status === SessionStatus.failed ? "cursor-pointer" : ""}`} >
       <Badge color={data.color} >{data.icon}</Badge>
-      <span className={`text-${data.color} small text-session-status`}>{data.text}</span>
+      <span className={`text-${data.color} small session-status-text`}>{data.text}</span>
       {popover}
     </div>);
 }
@@ -139,6 +140,12 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
  */
 interface ListBarSessionProps extends ListElementProps {
   notebook: Notebook["data"];
+  showLogs: boolean;
+  setShowLogs: Function;
+  setServerLogs: Function;
+  stopSession: Function;
+  fetchLogs: IFetchableLogs["fetchLogs"];
+  logs: ILogs | undefined;
 }
 function ListBarSession(
   { id,
@@ -153,17 +160,22 @@ function ListBarSession(
     visibility,
     imageUrl,
     notebook,
+    showLogs,
+    setShowLogs,
+    setServerLogs,
+    stopSession,
+    fetchLogs,
+    logs,
   }: ListBarSessionProps) {
 
-  // @ts-ignore
   const { client } = useContext(AppContext);
   const [commit, setCommit] = useState(null);
+  const [sessionStatus, setSessionStatus] = useState(SessionStatus.starting);
   const history = useHistory();
-  const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    history.push(url);
-  }, [url]); //eslint-disable-line
 
+  useEffect(() => {
+    setSessionStatus(notebook?.status?.state);
+  }, [notebook?.status?.state]);
   useEffect(() => {
     client.getCommits(id, notebook.annotations.branch).then(
       (commitsFetched: Record<string, any>) => {
@@ -178,18 +190,24 @@ function ListBarSession(
     );
   }, [notebook.annotations]); // eslint-disable-line
 
+  const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    history.push(url);
+  }, [url]); //eslint-disable-line
+  const toggleLogs = (serverName: string) => {
+    setShowLogs(!showLogs);
+    setServerLogs(serverName);
+  };
 
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);
-  const mainButton = getMainActionByEntity(itemType, slug);
 
   /* session part */
   const resources = notebook.resources?.requests;
   const startTime = Time.toIsoTimezoneString(notebook.started, "datetime-short");
   const sessionId = notebook.name;
-  const data = getStatusObject(notebook?.status?.state, notebook.annotations["default_image_used"]) ;
-  const sessionTimeLabel = notebook?.status?.state === SessionStatus.running ? `${data.text} since ` : data.text;
-  // session component
+  const statusData = getStatusObject(sessionStatus, notebook.annotations["default_image_used"]) ;
+  const sessionTimeLabel = sessionStatus === SessionStatus.running ? `${statusData.text} since ` : statusData.text;
   const sessionDetailsPopover = commit ? <SessionDetailsPopOver commit={commit} image={notebook.image} /> : null;
 
   return (
@@ -230,8 +248,10 @@ function ListBarSession(
           time={timeCaption}
           className="text-rk-text-light text-truncate"/>
       </div>
-      <div className={`entity-action d-flex align-items-baseline gap-1 ${!mainButton ? "d-none" : ""}`}>
-        {mainButton}
+      <div className="entity-action d-flex align-items-baseline gap-1">
+        <SessionButton
+          notebook={notebook} sessionStatus={sessionStatus}
+          setSessionStatus={setSessionStatus} setServerLogs={toggleLogs} stopSession={stopSession} />
       </div>
       <div className="session-resources text-truncate"><ResourceList resources={resources} /></div>
       <div className="session-time text-truncate">
@@ -249,9 +269,16 @@ function ListBarSession(
       </div>
       <div className="session-icon">
         <SessionStatusIcon
-          status={notebook.status?.state} data={data} defaultImage={notebook.annotations["default_image_used"]}
+          status={sessionStatus} data={statusData} defaultImage={notebook.annotations["default_image_used"]}
           errorSession={notebook.status.message || ""} sessionId={sessionId} />
       </div>
+      <EnvironmentLogs
+        fetchLogs={fetchLogs}
+        toggleLogs={toggleLogs}
+        logs={logs}
+        name={notebook.name}
+        annotations={notebook.annotations}
+      />
     </div>);
 }
 

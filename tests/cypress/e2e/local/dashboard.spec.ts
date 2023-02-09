@@ -143,7 +143,7 @@ describe("dashboard", () => {
         cy.get_cy("container-session").first().find(".session-info").should("contain.text", "master");
         cy.get_cy("container-session").first().find(".session-icon").should("have.text", "Error");
         cy.get_cy("container-session").first().find(".entity-action")
-          .find("button").first().should("contain.text", "Connect");
+          .find("button").first().should("contain.text", "Stop");
 
 
       });

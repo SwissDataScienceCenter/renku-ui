@@ -286,8 +286,9 @@ class LoggedInNavBar extends Component {
                   <RenkuNavLink to="/search" title="Search" id="link-search"
                     icon={searchIcon} className="d-flex gap-2 align-items-center" />
                 </NavItem>
-                <NavItem className="nav-item col-4 col-lg-auto pe-lg-4">
-                  <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
+                <NavItem id="link-dashboard" data-cy="link-dashboard" to="/"
+                  className="nav-item col-4 col-lg-auto pe-lg-4">
+                  <RenkuNavLink to="/" title="Dashboard" id="link-dashboard" />
                 </NavItem>
                 <NavItem className="nav-item col-1 col-lg-auto">
                   <RenkuToolbarItemPlus currentPath={this.props.location.pathname} />

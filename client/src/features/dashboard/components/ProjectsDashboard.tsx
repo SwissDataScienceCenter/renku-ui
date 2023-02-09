@@ -40,6 +40,8 @@ import { formatProjectMetadata } from "../../../utils/helpers/ProjectFunctions";
 import ListBarSession from "../../../utils/components/list/ListBarSessions";
 import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionFunctions";
 import { Notebook } from "../../../notebooks/components/Session";
+import useGetSessionLogs from "../../../utils/customHooks/UseGetSessionLogs";
+import { useStopSessionMutation } from "../../session/sessionApi";
 
 interface ProjectAlertProps {
   total?: number;
@@ -202,9 +204,14 @@ interface SessionsToShowProps {
   currentSessions: Notebook["data"][];
 }
 function SessionsToShow({ currentSessions }: SessionsToShowProps) {
-  const [items, setItems] = useState<SessionProject[]>([]);
-  // @ts-ignore
   const { client } = useContext(AppContext);
+  const [items, setItems] = useState<any[]>([]);
+  // serverLogs
+  const [serverLogs, setServerLogs] = useState("");
+  const [showLogs, setShowLogs] = useState<boolean>(false);
+  const { logs, fetchLogs } = useGetSessionLogs(serverLogs, showLogs);
+  //stop session
+  const [stopSession] = useStopSessionMutation();
 
   useEffect( () => {
     const getProjectCurrentSessions = async () => {
@@ -229,6 +236,8 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
         visibility={item.visibility} slug={item.slug} creators={item.creators}
         timeCaption={item.timeCaption} description={item.description} id={item.id}
         url={item.url} title={item.title} itemType={EntityType.Project} imageUrl={item.imageUrl}
+        showLogs={showLogs} setShowLogs={setShowLogs} setServerLogs={setServerLogs}
+        stopSession={stopSession} fetchLogs={fetchLogs} logs={logs}
       />;
     });
     return <div className="session-list">{element}</div>;
