@@ -104,37 +104,28 @@ class TreeNode extends Component {
     const eltClassName = order + " " + hidden;
     if (this.props.node.jsonObj !== null) {
       elementToRender = this.props.insideProject ?
-        <div className={eltClassName}>
+        <div className={`fs-element ${eltClassName}`} data-cy="dataset-fs-element">
           <Link to= {`${this.props.lineageUrl}/${this.props.node.jsonObj.atLocation}`} >
-            <div className="fs-element" data-cy="dataset-fs-element">
-              {icon} {this.props.node.name}
-            </div>
+            {icon} {this.props.node.name}
           </Link>
         </div>
         :
-        <div className={eltClassName}>
-          <div className="fs-element" data-cy="dataset-fs-element" style={{ cursor: "default" }}>
-            {icon} {this.props.node.name}
-          </div>
+        <div className={`fs-element ${eltClassName}`} data-cy="dataset-fs-element" style={{ cursor: "default" }}>
+          <a>{icon} {this.props.node.name}</a>
         </div>
       ;
     }
     else {
-      elementToRender = this.state.childrenOpen ?
-        <div className={eltClassName} >
-          <div className="fs-element" data-cy="dataset-fs-folder" onClick={this.handleIconClick} >
-            {icon} {this.props.node.name}
-          </div>
-          <div className="ps-3">
-            {children}
-          </div>
+      const secondElement = this.state.childrenOpen ?
+        (<div className="ps-3">{children}</div>) :
+        null;
+
+      elementToRender = (<>
+        <div className={`fs-element ${eltClassName}`} data-cy="dataset-fs-folder" onClick={this.handleIconClick}>
+          <a>{icon} {this.props.node.name}</a>
         </div>
-        :
-        <div className={eltClassName} >
-          <div className="fs-element" data-cy="dataset-fs-folder" onClick={this.handleIconClick}>
-            {icon} {this.props.node.name}
-          </div>
-        </div>;
+        {secondElement}
+      </>);
     }
     return elementToRender;
   }
