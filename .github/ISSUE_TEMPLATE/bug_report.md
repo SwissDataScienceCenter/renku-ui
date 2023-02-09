@@ -14,30 +14,19 @@ guide you through providing information necessary to fix the problem.
 
 ## Description
 
-<!--Describe the bug clearly and concisely. Include screenshots if possible-->
+<!--
+Describe the bug clearly and concisely. Include screenshots if possible and/or
+copy-paste any relevant error.
+-->
 
 ## Reproduce
 
-<!--Describe step-by-step instructions to reproduce the behavior-->
+<!--
+Describe step-by-step instructions to reproduce the behavior.
+Consider adding a link to an example and including information on the browser and the OS.
+-->
 
-1. Go to '...'
-2. Click on '...'
-3. Scroll down to '...'
-4. See error '...'
-
-
-
-## Context
-
-<!--Complete the following for context, and add any other relevant context-->
-
-- renkulab url
-- operating system and version
-- browser and version
-
-
-<details><summary>Browser Output</summary>
-<pre>
-If possible, paste the output from your browser Javascript console here.
-</pre>
-</details>
+1. Go to "http://renkulab.io/relevant-page"
+2. Click on "..."
+3. Scroll down to "..."
+4. See error "..."
