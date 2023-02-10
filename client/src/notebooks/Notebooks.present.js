@@ -425,36 +425,38 @@ class NotebookServerRowFull extends Component {
     </span>) : null;
 
     return (
-      <div className="d-flex flex-row bg-white border-0 border-radius-8
-        rk-search-result rk-search-result-100 cursor-auto overflow-visible">
-        <span className={this.props.standalone ? "me-3 mt-2" : "me-3 mt-1"}>{icon}</span>
-        <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
-          <div className="project d-inline-block text-truncate">
-            {project}
+      <div className="d-flex flex-row justify-content-between bg-white border-0 border-radius-8
+        rk-search-result rk-search-result-100 cursor-auto">
+        <div className="d-flex flex-grow-1">
+          <span className={this.props.standalone ? "me-3 mt-2" : "me-3 mt-1"}>{icon}</span>
+          <div className="d-flex flex-column align-items-start  overflow-hidden">
+            <div className="project d-inline-block text-truncate">
+              {project}
+            </div>
+            <table>
+              <tbody className="gx-4 text-rk-text">
+                <tr>
+                  <td className="text-dark fw-bold">Branch</td>
+                  <td className="text-dark">{branch}</td>
+                </tr>
+                <tr>
+                  <td className="text-dark fw-bold">Commit</td>
+                  <td className="text-dark">{commit}</td>
+                </tr>
+                <tr>
+                  <td className="pe-3 text-dark fw-bold">Resources</td>
+                  <td className="text-dark">{resourceList}</td>
+                </tr>
+                <tr>
+                  <td colSpan="2">{statusOut}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <table>
-            <tbody className="gx-4 text-rk-text">
-              <tr>
-                <td className="text-dark fw-bold">Branch</td>
-                <td className="text-dark">{branch}</td>
-              </tr>
-              <tr>
-                <td className="text-dark fw-bold">Commit</td>
-                <td className="text-dark">{commit}</td>
-              </tr>
-              <tr>
-                <td className="pe-3 text-dark fw-bold">Resources</td>
-                <td className="text-dark">{resourceList}</td>
-              </tr>
-              <tr>
-                <td colSpan="2">{statusOut}</td>
-              </tr>
-            </tbody>
-          </table>
-        </Col>
-        <Col className="d-flex align-items-end flex-column flex-shrink-0">
+        </div>
+        <div>
           {action}
-        </Col>
+        </div>
       </div>
     );
   }
