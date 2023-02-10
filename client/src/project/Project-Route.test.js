@@ -57,18 +57,6 @@ describe("basic route extraction", () => {
     expect(pathComponents.baseUrl).toEqual("/projects/namespace/project-name");
     expect(pathComponents.namespace).toEqual("namespace");
   });
-  it("handles project-with-namespace issues listing", () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/project-name/collaboration/issues");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/project-name");
-    expect(pathComponents.baseUrl).toEqual("/projects/namespace/project-name");
-    expect(pathComponents.namespace).toEqual("namespace");
-  });
-  it("handles project-with-namespace issue display", () => {
-    const pathComponents = splitProjectSubRoute("/projects/namespace/project-name/collaboration/issues/1/");
-    expect(pathComponents.projectPathWithNamespace).toEqual("namespace/project-name");
-    expect(pathComponents.baseUrl).toEqual("/projects/namespace/project-name");
-    expect(pathComponents.namespace).toEqual("namespace");
-  });
   it("handles project-with-namespace datasets listing", () => {
     const pathComponents = splitProjectSubRoute("/projects/namespace/project-name/datasets/issues");
     expect(pathComponents.projectPathWithNamespace).toEqual("namespace/project-name");

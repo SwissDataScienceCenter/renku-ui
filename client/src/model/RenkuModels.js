@@ -631,46 +631,6 @@ const datasetFormSchema = new Schema({
   }
 });
 
-const issueFormSchema = new Schema({
-  title: {
-    initial: "",
-    name: "title",
-    label: "Title",
-    type: FormGenerator.FieldTypes.TEXT,
-    placeholder: "A brief name to identify the issue",
-    validators: [{
-      id: "text-length",
-      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: "Text is too short"
-    }]
-  },
-  description: {
-    initial: "",
-    name: "description",
-    label: "Description",
-    type: FormGenerator.FieldTypes.TEXT_EDITOR,
-    outputType: "markdown",
-    placeholder: "A brief name to identify the issue",
-    help: "A description of the issue helps users understand it and is highly recommended.",
-    validators: [{
-      id: "textarea-length",
-      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: "Description can't be empty"
-    }]
-  },
-  visibility: {
-    initial: "public",
-    name: "visibility",
-    label: "Visibility",
-    type: FormGenerator.FieldTypes.SELECT,
-    options: [
-      { value: "public", name: "Public" },
-      { value: "restricted", name: "Restricted" }
-    ],
-    validators: []
-  }
-});
-
 const datasetImportFormSchema = new Schema({
   uri: {
     initial: "",
@@ -744,7 +704,7 @@ const formGeneratorSchema = new Schema({
 
 export {
   datasetFormSchema, datasetSchema, datasetImportFormSchema, environmentSchema,
-  formGeneratorSchema, issueFormSchema, newProjectSchema, notebooksSchema, notificationsSchema,
+  formGeneratorSchema, newProjectSchema, notebooksSchema, notificationsSchema,
   projectSchema, projectsSchema, statuspageSchema, userSchema, webSocketSchema, workflowSchema,
   workflowsSchema
 };
