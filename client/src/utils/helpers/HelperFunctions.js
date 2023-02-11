@@ -158,6 +158,7 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
     tables: true,
     tasklists: true, // eslint-disable-line
     disableForced4SpacesIndentedSublists: true, // eslint-disable-line
+    literalMidWordUnderscores: true,
     emoji: true
   };
   const showdownClasses = {
