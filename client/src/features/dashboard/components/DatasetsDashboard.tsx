@@ -18,16 +18,13 @@
 import { SearchEntitiesQueryParams, useSearchEntitiesQuery } from "../../kgSearch/KgSearchApi";
 import { SortingOptions } from "../../../utils/components/sortingEntities/SortingEntities";
 import React, { Fragment } from "react";
-import { useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 import ListDisplay from "../../../utils/components/List";
 import { Loader } from "../../../utils/components/Loader";
 import { KgAuthor } from "../../kgSearch/KgSearch";
-import { Button } from "../../../utils/ts-wrappers";
 import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
-import {
-  kgSearchInitialState,
-  stateToSearchString
-} from "../../kgSearch/KgSearchState";
+import { stateToSearchString } from "../../kgSearch/KgSearchState";
 import { Url } from "../../../utils/helpers/url";
 
 
@@ -35,29 +32,24 @@ interface OtherDatasetsButtonProps {
   totalDatasets: number;
 }
 function OtherDatasetsButton({ totalDatasets }: OtherDatasetsButtonProps) {
-  const history = useHistory();
-  const handleOnClick = (e: React.MouseEvent<HTMLElement>, author: KgAuthor) => {
-    e.preventDefault();
-    const newState = { ...kgSearchInitialState,
-      type: { project: false, dataset: true }, author };
-    const paramsUrlStr = stateToSearchString(newState);
-    history.push(`${Url.get(Url.pages.searchEntities)}?${paramsUrlStr}`);
-  };
+  const projectFilters = { type: { project: false, dataset: true } };
+  const paramsUrlStrMyDatasets = stateToSearchString({ ...projectFilters, author: "user" as KgAuthor });
+  const paramsUrlStrExploreDatasets = stateToSearchString({ ...projectFilters, author: "all" as KgAuthor });
   return totalDatasets > MAX_DATASETS_TO_SHOW ?
     (
       <div className="d-flex justify-content-center">
-        <Button data-cy="view-my-datasets-btn" className="btn btn-outline-rk-pink"
-          onClick={(e: React.MouseEvent<HTMLElement>) => handleOnClick(e, "user")}>
+        <Link to={`${Url.get(Url.pages.searchEntities)}?${paramsUrlStrMyDatasets}`}
+          data-cy="view-my-datasets-btn" className="btn btn-outline-rk-pink">
           <div className="d-flex gap-2 text-rk-pink">
             <img src="/frame-pink.svg" className="rk-icon rk-icon-md" />View all my Datasets</div>
-        </Button></div>
+        </Link></div>
     ) :
     (<div className="d-flex justify-content-center">
-      <Button data-cy="explore-other-datasets-btn" className="btn btn-outline-rk-pink"
-        onClick={(e: React.MouseEvent<HTMLElement>) => handleOnClick(e, "all")}>
+      <Link to={`${Url.get(Url.pages.searchEntities)}?${paramsUrlStrExploreDatasets}`}
+        data-cy="explore-other-datasets-btn" className="btn btn-outline-rk-pink">
         <div className="d-flex gap-2 text-rk-pink">
           <img src="/explore-pink.svg" className="rk-icon rk-icon-md" />Explore other Datasets</div>
-      </Button></div>);
+      </Link></div>);
 }
 
 interface DatasetListProps {

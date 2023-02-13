@@ -17,7 +17,7 @@
  */
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -32,7 +32,6 @@ import { urlMap } from "../../../project/list/ProjectList.container";
 import { Url } from "../../../utils/helpers/url";
 import ListDisplay from "../../../utils/components/List";
 import { Loader } from "../../../utils/components/Loader";
-import { Button } from "../../../utils/ts-wrappers";
 import useGetRecentlyVisitedProjects from "../../../utils/customHooks/useGetRecentlyVisitedProjects";
 import AppContext from "../../../utils/context/appContext";
 import { formatProjectMetadata } from "../../../utils/helpers/ProjectFunctions";
@@ -41,7 +40,7 @@ import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionF
 import { Notebook } from "../../../notebooks/components/Session";
 import useGetSessionLogs from "../../../utils/customHooks/UseGetSessionLogs";
 import { useStopSessionMutation } from "../../session/sessionApi";
-import { kgSearchInitialState, stateToSearchString } from "../../kgSearch/KgSearchState";
+import { stateToSearchString } from "../../kgSearch/KgSearchState";
 
 interface ProjectAlertProps {
   total?: number;
@@ -70,29 +69,24 @@ interface OtherProjectsButtonProps {
   totalOwnProjects: number;
 }
 function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
-  const history = useHistory();
-  const handleOnClick = (e: React.MouseEvent<HTMLElement>, author: KgAuthor) => {
-    e.preventDefault();
-    const newState = { ...kgSearchInitialState,
-      type: { project: true, dataset: false }, author };
-    const paramsUrlStr = stateToSearchString(newState);
-    history.push(`${Url.get(Url.pages.searchEntities)}?${paramsUrlStr}`);
-  };
+  const projectFilters = { type: { project: true, dataset: false } };
+  const paramsUrlStrMyProjects = stateToSearchString({ ...projectFilters, author: "user" as KgAuthor });
+  const paramsUrlStrExploreProjects = stateToSearchString({ ...projectFilters, author: "all" as KgAuthor });
   return totalOwnProjects > 0 ?
     (
       <div className="d-flex justify-content-center mt-2">
-        <Button data-cy="view-my-projects-btn" className="btn btn-outline-rk-green"
-          onClick={(e: React.MouseEvent<HTMLElement>) => handleOnClick(e, "user")}>
+        <Link to={`${Url.get(Url.pages.searchEntities)}?${paramsUrlStrMyProjects}`}
+          data-cy="view-my-projects-btn" className="btn btn-outline-rk-green">
           <div className="d-flex gap-2 text-rk-green">
             <img src="/frame.svg" className="rk-icon rk-icon-md" />View all my Projects</div>
-        </Button></div>
+        </Link></div>
     ) :
     (<div className="d-flex justify-content-center mt-4">
-      <Button data-cy="explore-other-projects-btn" className="btn btn-outline-rk-green"
-        onClick={(e: React.MouseEvent<HTMLElement>) => handleOnClick(e, "all")}>
+      <Link to={`${Url.get(Url.pages.searchEntities)}?${paramsUrlStrExploreProjects}`}
+        data-cy="explore-other-projects-btn" className="btn btn-outline-rk-green">
         <div className="d-flex gap-2 text-rk-green">
           <img src="/explore.svg" className="rk-icon rk-icon-md" />Explore other Projects</div>
-      </Button></div>);
+      </Link></div>);
 }
 
 function getProjectFormatted(project: Record<string, any>) {

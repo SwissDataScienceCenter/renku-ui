@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useHistory } from "react-router-dom";
-import { Fragment, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { Fragment, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { Badge, PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+const Link = require("react-router-dom").Link;
 
 import { ListElementProps } from "./List.d";
 import "./ListBar.scss";
@@ -171,7 +171,6 @@ function ListBarSession(
   const { client } = useContext(AppContext);
   const [commit, setCommit] = useState(null);
   const [sessionStatus, setSessionStatus] = useState(SessionStatus.starting);
-  const history = useHistory();
 
   useEffect(() => {
     setSessionStatus(notebook?.status?.state);
@@ -190,10 +189,6 @@ function ListBarSession(
     );
   }, [notebook.annotations]); // eslint-disable-line
 
-  const handleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    history.push(url);
-  }, [url]); //eslint-disable-line
   const toggleLogs = (serverName: string) => {
     setShowLogs(!showLogs);
     setServerLogs(serverName);
@@ -213,25 +208,31 @@ function ListBarSession(
   return (
     <div className="container-sessions" data-cy="container-session">
       <div className="entity-image">
-        <div style={imageStyles} onClick={handleClick}
-          className={`cursor-pointer listBar-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
-          {!imageUrl ? <div className="card-bg-title card-bg-title--small">{title}</div> : null}
-        </div>
+        <Link to={url} className="text-decoration-none">
+          <div style={imageStyles}
+            className={`cursor-pointer listBar-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
+            {!imageUrl ? <div className="card-bg-title card-bg-title--small">{title}</div> : null}
+          </div>
+        </Link>
       </div>
-      <div className="entity-title text-truncate cursor-pointer" onClick={handleClick} data-cy={`${itemType}-title`}>
-        <div className="listBar-title text-truncate">
-          <span className="card-title text-truncate" data-cy="list-card-title">{title}</span>
-          <span className="entity-title--slug text-truncate">{slug}</span>
-        </div>
+      <div className="entity-title text-truncate cursor-pointer" data-cy={`${itemType}-title`}>
+        <Link to={url} className="text-decoration-none">
+          <div className="listBar-title text-truncate">
+            <span className="card-title text-truncate" data-cy="list-card-title">{title}</span>
+            <span className="entity-title--slug text-truncate">{slug}</span>
+          </div>
+        </Link>
       </div>
-      <div className="entity-description cursor-pointer" onClick={handleClick}>
-        <EntityDescription
-          description={description} isHeightFixed={true}
-          showSuggestion={false}
-          urlChangeDescription={`${url}/settings`}
-          className="text-rk-dark m-0"
-          numberLines={1}
-        />
+      <div className="entity-description cursor-pointer">
+        <Link to={url} className="text-decoration-none">
+          <EntityDescription
+            description={description} isHeightFixed={true}
+            showSuggestion={false}
+            urlChangeDescription={`${url}/settings`}
+            className="text-rk-dark m-0"
+            numberLines={1}
+          />
+        </Link>
       </div>
       <div className="entity-type-visibility align-items-baseline">
         <EntityLabel type={itemType} workflowType={null} />

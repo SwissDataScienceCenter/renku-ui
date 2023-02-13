@@ -24,7 +24,7 @@ export const parameters = {
 export const decorators = [
   (Story) => {
     const appContext = {
-      client: {baseUrl: "https://dev.renku.ch"},
+      client: {baseUrl: "http://localhost"},
       params: {},
       location: "location"
     };

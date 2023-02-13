@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useHistory } from "react-router-dom";
+const Link = require("react-router-dom").Link;
 
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./List.d";
@@ -27,7 +27,6 @@ import { stylesByItemType } from "../../helpers/HelperFunctions";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
-import { useCallback } from "react";
 import { EntityType } from "../../../features/kgSearch";
 
 export function getMainActionByEntity(entityType: EntityType, slug: string) {
@@ -57,12 +56,6 @@ function ListBar(
     imageUrl
   }: ListElementProps) {
 
-  const history = useHistory();
-  const handleClick = useCallback((e: any) => {
-    e.preventDefault();
-    history.push(url);
-  }, [url]); //eslint-disable-line
-
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);
   const mainButton = getMainActionByEntity(itemType, slug);
@@ -70,25 +63,31 @@ function ListBar(
   return (
     <div className="container-entity-listBar">
       <div className="entity-image">
-        <div style={imageStyles} onClick={handleClick}
-          className={`cursor-pointer listBar-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
-          {!imageUrl ? <div className="card-bg-title card-bg-title--small">{title}</div> : null}
-        </div>
+        <Link to={url} className="text-decoration-none">
+          <div style={imageStyles}
+            className={`cursor-pointer listBar-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
+            {!imageUrl ? <div className="card-bg-title card-bg-title--small">{title}</div> : null}
+          </div>
+        </Link>
       </div>
-      <div className="entity-title text-truncate cursor-pointer" onClick={handleClick} data-cy={`${itemType}-title`}>
-        <div className="listBar-title text-truncate">
-          <span className="card-title text-truncate" data-cy="list-card-title">{title}</span>
-          <span className="entity-title--slug text-truncate">{slug}</span>
-        </div>
+      <div className="entity-title text-truncate cursor-pointer" data-cy={`${itemType}-title`}>
+        <Link to={url} className="text-decoration-none">
+          <div className="listBar-title text-truncate">
+            <span className="card-title text-truncate" data-cy="list-card-title">{title}</span>
+            <span className="entity-title--slug text-truncate">{slug}</span>
+          </div>
+        </Link>
       </div>
-      <div className="entity-description cursor-pointer" onClick={handleClick}>
-        <EntityDescription
-          description={description} isHeightFixed={true}
-          showSuggestion={false}
-          urlChangeDescription={`${url}/settings`}
-          className="text-rk-dark m-0"
-          numberLines={1}
-        />
+      <div className="entity-description cursor-pointer">
+        <Link to={url} className="text-decoration-none">
+          <EntityDescription
+            description={description} isHeightFixed={true}
+            showSuggestion={false}
+            urlChangeDescription={`${url}/settings`}
+            className="text-rk-dark m-0"
+            numberLines={1}
+          />
+        </Link>
       </div>
       <div className="entity-type-visibility align-items-baseline">
         <EntityLabel type={itemType} workflowType={null} />
