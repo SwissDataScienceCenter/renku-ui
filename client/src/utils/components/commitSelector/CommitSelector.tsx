@@ -21,6 +21,7 @@ import Autosuggest, { ChangeEvent, SuggestionSelectedEventData } from "react-aut
 import "./CommitSelector.scss";
 import { TimeCaption } from "../TimeCaption";
 import { ChevronDown, ChevronUp } from "../../ts-wrappers";
+import { Loader } from "../Loader";
 
 
 const CommitSelectorTheme = {
@@ -50,9 +51,10 @@ interface Commit {
 }
 interface CommitSelectorProps {
   commits: Commit[];
+  disabled: boolean;
   onChange: Function;
 }
-function CommitSelector({ commits, onChange }: CommitSelectorProps) {
+function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
   const [suggestionList, setSuggestionList] = useState<Commit[]>(commits);
   const [selectedCommit, setSelectedCommit] =
     useState<Commit | undefined>(suggestionList.length > 0 ? suggestionList[0] : undefined);
@@ -119,7 +121,7 @@ function CommitSelector({ commits, onChange }: CommitSelectorProps) {
           <div className="commit-row-id">
             {selectedCommit.short_id}
             <div className="commit-row-icon">
-              {isSelectorOpened ? <ChevronDown size="20" /> : <ChevronUp size="20" /> }
+              {!isSelectorOpened ? <ChevronDown size="20" /> : <ChevronUp size="20" /> }
             </div>
           </div>
           <div className="commit-row-author text-truncate">{selectedCommit.author_name}</div>
@@ -130,13 +132,16 @@ function CommitSelector({ commits, onChange }: CommitSelectorProps) {
           <div className="commit-row-box-message text-truncate">
             <div className="commit-row-message text-truncate">{selectedCommit.message}</div>
             <div className="commit-row-icon">
-              {isSelectorOpened ? <ChevronDown size="20" /> : <ChevronUp size="20" /> }
+              {!isSelectorOpened ? <ChevronDown size="20" /> : <ChevronUp size="20" /> }
             </div>
           </div>
         </div>
       </div>
     </div>
   ) : null;
+
+  if (disabled)
+    return <Loader />;
 
   return (
     <>

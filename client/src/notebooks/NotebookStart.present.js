@@ -757,7 +757,7 @@ class StartNotebookCommits extends Component {
           <StartNotebookCommitsUpdate {...this.props} />
           <StartNotebookCommitsOptions {...this.props} />
         </Label>
-        <CommitSelector commits={filteredCommits}
+        <CommitSelector commits={filteredCommits} disabled={this.props.disabled}
           onChange={(commitId) => { this.props.handlers.setCommit(commitId); }} />
         {commitComment}
       </FormGroup>
