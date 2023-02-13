@@ -425,8 +425,8 @@ class NotebookServerRowFull extends Component {
     </span>) : null;
 
     return (
-      <div className="d-flex flex-row justify-content-between bg-white border-0 border-radius-8
-        rk-search-result rk-search-result-100 cursor-auto">
+      <div data-cy="session-container" className="d-flex flex-row justify-content-between bg-white border-0
+        border-radius-8 rk-search-result rk-search-result-100 cursor-auto">
         <div className="d-flex flex-grow-1">
           <span className={this.props.standalone ? "me-3 mt-2" : "me-3 mt-1"}>{icon}</span>
           <div className="d-flex flex-column align-items-start  overflow-hidden">

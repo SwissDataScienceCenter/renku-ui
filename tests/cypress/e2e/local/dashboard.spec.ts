@@ -115,6 +115,7 @@ describe("dashboard", () => {
     fixtures.projects()
       .entitySearch("getEntities", "kgSearch/search.json", "7")
       .getLastVisitedProjects("getLastVisitedProjects", "projects/last-visited-projects-5.json")
+      .getSessions()
       .sessionServers()
       .getProjectCommits();
     const files = {
@@ -130,10 +131,16 @@ describe("dashboard", () => {
     for (const filesKey in files)
       fixtures.project(filesKey, "getProject", `projects/project_${files[filesKey]}.json`, false);
 
-    cy.visit("/sessions");
+    fixtures.project("lorenzo.cavazzi.tech/readme-file-dev", "getFirstProject", "projects/project_30929.json", true);
+    cy.visit("projects/lorenzo.cavazzi.tech/readme-file-dev/sessions");
+    cy.wait("@getFirstProject");
+
     cy.wait("@getUser");
+    cy.wait("@getSessions");
+    cy.get_cy("session-container").should("be.visible");
+    // eslint-disable-next-line cypress/no-force
+    cy.get_cy("link-home").click({ force: true });
     cy.wait("@getSessionServers");
-    cy.get_cy("link-home").click();
     cy.wait("@getLastVisitedProjects");
     cy.wait(
       ["@getProject", "@getProject", "@getProject", "@getProject", "@getProject", "@getProject", "@getProject"])
