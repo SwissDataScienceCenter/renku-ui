@@ -13,7 +13,11 @@
     "es6": true,
     "jest/globals": true
   },
-  "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:jest/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:jest/recommended"
+  ],
   "plugins": ["react", "react-hooks", "jest", "spellcheck"],
   "settings": {
     "react": {
@@ -179,7 +183,7 @@
           "localhost",
           "maintenances",
           "mathbf",
-          "mathjax3",
+          "mathjax",
           "mergerequests",
           "mongodb",
           "monospace",

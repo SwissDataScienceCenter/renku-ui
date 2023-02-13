@@ -4,7 +4,6 @@ import React from "react";
 import { IpynbRenderer } from "react-ipynb-renderer";
 import type { BaseProps, CellType, LanguageType } from "react-ipynb-renderer";
 
-
 type BaseIpynb = BaseProps["ipynb"];
 interface IIpynb extends BaseIpynb {
   metadata?: {
@@ -13,14 +12,14 @@ interface IIpynb extends BaseIpynb {
     kernelspec?: {
       language?: string;
     };
-  }
+  };
 }
 
 interface CellWithMetadata extends CellType {
   metadata?: {
     hide_input?: boolean;
     inputHidden?: boolean;
-  }
+  };
 }
 
 interface NotebookRenderProps {
@@ -31,36 +30,32 @@ interface NotebookRenderProps {
   sourceClassName: string;
 }
 
-
 function processedNotebook(notebook: IIpynb): IIpynb {
   const allInputHidden = notebook.metadata?.hide_input || false;
   const cells = notebook.cells.map((cell) => {
     const c = { ...cell } as unknown as CellWithMetadata;
-    const inputHidden = allInputHidden || (c.metadata?.inputHidden) || (c.metadata?.hide_input);
+    const inputHidden = allInputHidden || c.metadata?.inputHidden || c.metadata?.hide_input;
     if (inputHidden) {
       if (c.cell_type === "code") {
         delete c["input"];
         delete c["source"];
       }
     }
-    c.outputs = c.outputs?.map(o => {
+    c.outputs = c.outputs?.map((o) => {
       const oCopy = { ...o };
-      if (Object.keys(oCopy.data ?? {}).length == 0)
-        oCopy.data = undefined;
+      if (Object.keys(oCopy.data ?? {}).length == 0) oCopy.data = undefined;
       return oCopy;
     });
 
-
     return c;
   });
-  const result = { ...notebook, cells, };
+  const result = { ...notebook, cells };
   return result;
 }
 
 // Converts style in string to JSON object
 
 export default function NotebookRender(props: NotebookRenderProps) {
-
   const notebook = props.notebook as unknown as IIpynb;
   const language = notebook.metadata?.kernelspec?.language ?? "python";
 
@@ -70,17 +65,13 @@ export default function NotebookRender(props: NotebookRenderProps) {
       syntaxTheme="prism"
       language={language as LanguageType}
       bgTransparent={false}
-      formulaOptions={{ // optional
-        mathjax3: {
+      markdownOptions={{
+        mathjaxOptions: {
           // https://docs.mathjax.org/en/v3.0-latest/options/input/tex.html
           tex: {
             tags: "ams",
           },
-        }
-      }}
-      mdiOptions={{
-        html: true,
-        linkify: true,
+        },
       }}
     />
   );
