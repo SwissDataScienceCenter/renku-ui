@@ -66,7 +66,7 @@
     "sass": "^1.57.1",
     "showdown": "^2.1.0",
     "showdown-highlight": "^2.1.8",
-    "showdown-katex": "^0.8.0",
+    "showdown-katex": "^0.6.0",
     "showdown-mermaid": "0.0.1",
     "styled-jsx": "^5.1.0",
     "uuid": "^3.3.3",
