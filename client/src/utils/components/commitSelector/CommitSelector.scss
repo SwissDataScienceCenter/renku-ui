@@ -14,9 +14,11 @@
     }
     &-author {
       min-width: 150px;
+      width: 150px;
     }
     &-date {
       min-width: 200px;
+      width: 200px;
     }
     &-box-message {
       .commit-row-icon {
@@ -40,8 +42,13 @@
 }
 
 .react-autosuggest__container .rk-commit-selector__suggestions-container--open {
-  background-color: transparent;
+  background-color: var(--bs-body-bg);
   margin-top: -38px;
+}
+
+.rk-commit-selector__suggestions-container .input-commit-selector {
+  margin-top: -72px;
+  height: 48px;
 }
 
 .selected-commit {
@@ -73,9 +80,11 @@
     }
     &-author {
       min-width: 150px;
+      width: 150px;
     }
     &-date {
       min-width: 200px;
+      width: 200px;
     }
     &-box-message {
       display: flex;
@@ -115,6 +124,10 @@
 }
 
 @media (max-width: 500px) {
+  .rk-commit-selector__suggestions-container .input-commit-selector {
+    margin-top: -172px;
+    height: 148px;
+  }
   .selected-commit, .rk-commit-selector__suggestion .selected-commit {
     height: auto;
     padding: 10px 1rem 20px 1rem;

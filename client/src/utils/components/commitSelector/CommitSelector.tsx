@@ -17,7 +17,7 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import Autosuggest, { ChangeEvent, SuggestionSelectedEventData } from "react-autosuggest";
+import Autosuggest, { ChangeEvent, ShouldRenderReasons, SuggestionSelectedEventData } from "react-autosuggest";
 import "./CommitSelector.scss";
 import { TimeCaption } from "../TimeCaption";
 import { ChevronDown, ChevronUp } from "../../ts-wrappers";
@@ -102,21 +102,25 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
     onChange: handleChange,
   };
 
-  const clickOnSelector = () => {
-    if (inputRef.current) {
-      const input = inputRef.current as HTMLInputElement | null;
-      input?.focus();
-      setIsSelectorOpened(true);
-    }
+  const shouldRenderSuggestions = (value: string, reason: ShouldRenderReasons) => {
+    return reason === "input-focused" || isSelectorOpened;
+  };
+
+  const clickOnSelector = (isOpen: boolean) => {
+    setIsSelectorOpened(!isOpen);
   };
 
   const renderInputComponent = (inputProps: Record<string, any>) => {
-    return <input {...inputProps} ref={inputRef} className="opacity-0" />;
+    return <input
+      {...inputProps}
+      ref={inputRef}
+      onClick={() => clickOnSelector(isSelectorOpened)}
+      className="opacity-0 input-commit-selector" />;
   };
 
   const selector = selectedCommit ? (
     <div className={`selected-commit cursor-pointer ${isSelectorOpened ? "selected-commit--open" : ""}`}>
-      <div onClick={clickOnSelector}>
+      <div>
         <div className="commit-row">
           <div className="commit-row-id">
             {selectedCommit.short_id}
@@ -155,7 +159,7 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
         renderSuggestion={renderSuggestion}
         inputProps={inputProps}
         multiSection={false}
-        shouldRenderSuggestions={() => true}
+        shouldRenderSuggestions={shouldRenderSuggestions}
         renderInputComponent={renderInputComponent}
         theme={CommitSelectorTheme}
         focusInputOnSuggestionClick={false}
