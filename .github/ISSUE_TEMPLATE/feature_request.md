@@ -1,6 +1,7 @@
 ---
-name: Feature request
+name: "\U0001F381 Feature request"
 about: Suggest an idea for this project
+labels: status/triage
 
 ---
 
@@ -11,17 +12,14 @@ guide you through providing information necessary to specify the feature.
 
 ## Motivation
 
-<!--Is your feature request related to a problem or completely new functionality? Please describe.-->
-<!--E.g., I'm always frustrated when I need to [...], I would like to do [...] from the project page.-->
+<!--
+Is your feature request related to a problem or a completely new functionality? Please describe.
+E.G. I'm always frustrated when I need to [...], I would like to do [...] from the project page.
+-->
 
 ## Proposal
 
-<!--If you have thought about a solution, please describe it.-->
-
-
-## Context
-
 <!--
-If you have any other information you wish to add, including screenshots
-or mockups, feel free to do so.
+If you have thought about a solution, please describe it.
+Feel free to include any relevant information, screenshots, mockups, ...
 -->
