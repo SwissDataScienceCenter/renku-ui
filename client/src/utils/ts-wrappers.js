@@ -56,6 +56,7 @@ import {
   CaretDownFill as WrappedCaretDownFill,
   CaretRightFill as WrappedCaretRightFill,
   ChevronDown as WrappedChevronDown,
+  ChevronUp as WrappedChevronUp,
   Diagram2 as WrappedDiagram2,
   Diagram3 as WrappedDiagram3,
   HddStack as WrappedHddStack,
@@ -145,6 +146,10 @@ function CaretRightFill(props) {
 
 function ChevronDown(props) {
   return <WrappedChevronDown {...props} />;
+}
+
+function ChevronUp(props) {
+  return <WrappedChevronUp {...props} />;
 }
 
 function Diagram2(props) {
@@ -386,5 +391,5 @@ export { UncontrolledPopover, UncontrolledTooltip };
 export { ArrowLeft, Briefcase, CardList, Diagram3, Download, Globe, HddStack, InfoCircle, Journals, Lock };
 export { People, Save, StopCircle, Balloon, Person };
 export { Nav, NavItem, NavLink, TabContent, TabPane, ZoomIn, ZoomOut };
-export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, ChevronDown, Diagram2, XLg };
+export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, ChevronDown, Diagram2, XLg, ChevronUp };
 export { Funnel, FunnelFill, Shield };
