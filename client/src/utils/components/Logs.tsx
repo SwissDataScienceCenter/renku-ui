@@ -39,15 +39,17 @@ import { LOG_ERROR_KEY } from "../../notebooks/Notebooks.state";
 import { faSyncAlt
 } from "@fortawesome/free-solid-svg-icons";
 
-interface ILogs {
+export interface ILogs {
   data: Record<string, string>;
   fetching: boolean;
   fetched: boolean;
-  show: string;
+  show: string | boolean;
 }
 
 function getLogsToShow(logs: ILogs) {
   const logsWithData: Record<string, string> = {};
+  if (!logs || logs.data === undefined)
+    return logsWithData;
   if (logs.data && typeof logs.data !== "string") {
     Object.keys(logs.data).map(key => {
       if (logs.data[key].length > 0)
@@ -57,7 +59,7 @@ function getLogsToShow(logs: ILogs) {
   return logsWithData;
 }
 
-interface IFetchableLogs {
+export interface IFetchableLogs {
   fetchLogs: (name: string, fullLogs?: boolean) => Promise<ILogs["data"]>;
   logs: ILogs;
 }
@@ -267,13 +269,13 @@ function SessionLogs(props: LogBodyProps) {
 interface EnvironmentLogsProps {
   annotations: Record<string, string>;
   fetchLogs: IFetchableLogs["fetchLogs"];
-  logs: ILogs;
+  logs?: ILogs;
   name: string;
   toggleLogs: (name:string) => unknown;
 }
 const EnvironmentLogs = ({ logs, name, toggleLogs, fetchLogs, annotations }: EnvironmentLogsProps) => {
 
-  if (!logs.show || logs.show !== name)
+  if (!logs?.show || logs?.show !== name || !logs)
     return null;
 
   return (

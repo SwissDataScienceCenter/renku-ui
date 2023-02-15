@@ -15,6 +15,7 @@ export enum ListDisplayType {
 /* eslint-enable no-unused-vars */
 
 export interface ListElementProps {
+  id?: string;
   creators: EntityCreator[];
   description: string;
   itemType: EntityType;

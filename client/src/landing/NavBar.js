@@ -274,7 +274,7 @@ class LoggedInNavBar extends Component {
       <Fragment>
         <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
           <Navbar color="primary" className="container-fluid flex-wrap flex-lg-nowrap renku-container">
-            <Link id="link-home" to="/" className="navbar-brand me-2 pb-0 pt-0">
+            <Link id="link-home" data-cy="link-home" to="/" className="navbar-brand me-2 pb-0 pt-0">
               <img src={logo} alt="Renku" height="50" className="d-block" />
             </Link>
             <NavbarToggler onClick={this.toggle} className="border-0">
@@ -286,8 +286,9 @@ class LoggedInNavBar extends Component {
                   <RenkuNavLink to="/search" title="Search" id="link-search"
                     icon={searchIcon} className="d-flex gap-2 align-items-center" />
                 </NavItem>
-                <NavItem className="nav-item col-4 col-lg-auto pe-lg-4">
-                  <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
+                <NavItem id="link-dashboard" data-cy="link-dashboard" to="/"
+                  className="nav-item col-4 col-lg-auto pe-lg-4">
+                  <RenkuNavLink to="/" title="Dashboard" id="link-dashboard" />
                 </NavItem>
                 <NavItem className="nav-item col-1 col-lg-auto">
                   <RenkuToolbarItemPlus currentPath={this.props.location.pathname} />
