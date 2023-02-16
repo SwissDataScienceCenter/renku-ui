@@ -1,5 +1,30 @@
 # Changes
 
+# [3.2.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.1.0...3.2.0) (2023-02-16)
+
+
+### Features
+
+* ⭐ add a new dashboard for logged-in users, showing running sessions, last accessed projects, and own datasets ([#2286](https://github.com/SwissDataScienceCenter/renku-ui/issues/2286), [#2332](https://github.com/SwissDataScienceCenter/renku-ui/issues/2332), [#2302](https://github.com/SwissDataScienceCenter/renku-ui/issues/2302), [#2307](https://github.com/SwissDataScienceCenter/renku-ui/issues/2307), [#2303](https://github.com/SwissDataScienceCenter/renku-ui/issues/2303), [#2320](https://github.com/SwissDataScienceCenter/renku-ui/issues/2320), [#2304](https://github.com/SwissDataScienceCenter/renku-ui/issues/2304), [#2330](https://github.com/SwissDataScienceCenter/renku-ui/issues/2330), [#2305](https://github.com/SwissDataScienceCenter/renku-ui/issues/2305), [#2333](https://github.com/SwissDataScienceCenter/renku-ui/issues/2333), [#2305](https://github.com/SwissDataScienceCenter/renku-ui/issues/2305), [#2350](https://github.com/SwissDataScienceCenter/renku-ui/issues/2350))
+* show commit messages on the dropdown when starting a session ([#2240](https://github.com/SwissDataScienceCenter/renku-ui/issues/2240), [#2362](https://github.com/SwissDataScienceCenter/renku-ui/issues/2362))
+* allow creating a new project with an avatar ([#2181](https://github.com/SwissDataScienceCenter/renku-ui/issues/2181), [#2331](https://github.com/SwissDataScienceCenter/renku-ui/issues/2331))
+* remove the collaboration tab and add links to GitLab's issues and merge requests pages ([#2256](https://github.com/SwissDataScienceCenter/renku-ui/issues/2256), [#2365](https://github.com/SwissDataScienceCenter/renku-ui/issues/2365))
+* make searches sharable by storing parameters in the URL ([#2257](https://github.com/SwissDataScienceCenter/renku-ui/issues/2257), [#2351](https://github.com/SwissDataScienceCenter/renku-ui/issues/2351))
+
+### Bug Fixes
+
+* fix markdown to HTML conversion problems with underscores in links and math formulas ([#1719](https://github.com/SwissDataScienceCenter/renku-ui/issues/1719), [#2308](https://github.com/SwissDataScienceCenter/renku-ui/issues/2308), [#2371](https://github.com/SwissDataScienceCenter/renku-ui/issues/2371), [#2374](https://github.com/SwissDataScienceCenter/renku-ui/issues/2374))
+* restore auto-starting a session when previewing a notebook ([#2344](https://github.com/SwissDataScienceCenter/renku-ui/issues/2344))
+* prevent failures when accessing datasets from the project header links ([#2357](https://github.com/SwissDataScienceCenter/renku-ui/issues/2357))
+* align elements correctly in the datasets file browser ([#2318](https://github.com/SwissDataScienceCenter/renku-ui/issues/2318))
+* sort commits to prevent random order ([#2347](https://github.com/SwissDataScienceCenter/renku-ui/issues/2347))
+
+### Notices
+
+**We have upgraded the tooling we use to render notebooks, and this may affect how math expressions appear.** Please take a look at the [3.2.0 Release Notes in GitHub](https://github.com/SwissDataScienceCenter/renku-ui/releases/tag/3.2.0) for details.
+
+
+
 # [3.1.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.0.0...3.1.0) (2023-01-24)
 
 ### Features
