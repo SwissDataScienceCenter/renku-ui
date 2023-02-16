@@ -35,8 +35,10 @@ $borderRadius: 1000px;
   border-left: 1px solid;
 }
 
-.btn-with-menu-options svg {
-  margin-right: 12px;
+.btn-with-menu-options {
+  svg, .btn-with-menu-margin {
+    margin-right: 12px;
+  }
 }
 
 .input-group .btn {

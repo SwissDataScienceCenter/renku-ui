@@ -56,3 +56,34 @@
     height: auto;
   }
 }
+
+.fill-green {
+  fill: $rk-green;
+  stroke: $rk-green;
+}
+
+.fill-dark {
+  fill: $rk-dark;
+  stroke: $rk-dark;
+}
+
+.fill-danger {
+  fill: $rk-danger;
+  stroke: $rk-danger;
+}
+
+// ? Reference for CSS filters: https://stackoverflow.com/a/53336754/1303090
+.filter-green {
+  // rgb(0,149,104) #009568
+  filter: invert(38%) sepia(93%) saturate(5671%) hue-rotate(154deg) brightness(101%) contrast(101%);
+}
+
+.filter-dark {
+  // rgb(58, 58, 61) #3A3A3D
+  filter: invert(20%) sepia(8%) saturate(300%) hue-rotate(201deg) brightness(91%) contrast(86%);
+}
+.filter-danger {
+  // #B40A3C
+  filter: invert(11%) sepia(85%) saturate(5698%) hue-rotate(336deg) brightness(84%) contrast(96%);
+}
+

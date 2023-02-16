@@ -94,17 +94,18 @@ function getProjectFormatted(project: Record<string, any>) {
   const path = project.path;
   const url = Url.get(Url.pages.project, { namespace, path });
   return {
-    id: project.id,
-    url: url,
-    itemType: "project",
-    title: project.name,
     creators: project.owner ? [project.owner] : [project.namespace],
-    slug: project.path_with_namespace,
     description: project.description,
+    gitUrl: project.http_url_to_repo,
+    id: project.id,
+    imageUrl: project.avatar_url,
+    itemType: "project",
+    slug: project.path_with_namespace,
     tagList: project.tag_list,
     timeCaption: project.last_activity_at,
-    imageUrl: project.avatar_url,
-    visibility: project.visibility
+    title: project.name,
+    url: url,
+    visibility: project.visibility,
   };
 }
 
@@ -208,7 +209,7 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
   //stop session
   const [stopSession] = useStopSessionMutation();
 
-  useEffect( () => {
+  useEffect(() => {
     const getProjectCurrentSessions = async () => {
       if (items.length !== currentSessions.length)
         setLoadingSessions(true);
@@ -229,9 +230,9 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
     return <Loader />;
   // get project info
   if (items) {
-    const element = items.map( (item: SessionProject) => {
-      return <ListBarSession notebook={item.notebook}
-        key={`session-${ item.id }`} labelCaption="" tagList={item.tagList}
+    const element = items.map((item: SessionProject) => {
+      return <ListBarSession notebook={item.notebook} fullPath={item.slug} gitUrl={item.gitUrl}
+        key={`session-${item.id}`} labelCaption="" tagList={item.tagList}
         visibility={item.visibility} slug={item.slug} creators={item.creators}
         timeCaption={item.timeCaption} description={item.description} id={item.id}
         url={item.url} title={item.title} itemType={EntityType.Project} imageUrl={item.imageUrl}
