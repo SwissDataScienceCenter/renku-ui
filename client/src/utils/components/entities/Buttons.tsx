@@ -16,19 +16,28 @@
  * limitations under the License.
  */
 
+/**
+ *  renku-ui
+ *
+ *  Entity Buttons.tsx
+ *  Entity Button component
+ */
+
 import React from "react";
+import { RootStateOrAny, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
-import { faPen, faPlay, faCog, faTrash, faStopCircle, faFileAlt } from "@fortawesome/free-solid-svg-icons";
-import { EntityType } from "./Entities";
+import { DropdownItem } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPen, faPlay, faCog, faTrash, faStopCircle, faFileAlt } from "@fortawesome/free-solid-svg-icons";
+
+import { EntityType } from "./Entities";
 import { Button, Funnel, FunnelFill, StopCircle, UncontrolledTooltip } from "../../ts-wrappers";
 import { stylesByItemType } from "../../helpers/HelperFunctions";
-import { RootStateOrAny, useSelector } from "react-redux";
 import { getSessionRunning, getShowSessionURL } from "../../../project/Project.present";
 import { ButtonWithMenu } from "../buttons/Button";
-import { DropdownItem } from "reactstrap";
 import { SessionStatus } from "../../constants/Notebooks";
 import { Notebook } from "../../../notebooks/components/Session";
+import { SshDropdown } from "../../components/ssh/ssh";
 
 interface StartSessionLinkProps {
   sessionAutostartUrl: string;
@@ -59,13 +68,6 @@ function StartSessionLink({ sessionAutostartUrl, className }: StartSessionLinkPr
     </Button>
   );
 }
-
-/**
- *  renku-ui
- *
- *  Entity Buttons.tsx
- *  Entity Button component
- */
 
 export interface EntityButtonProps {
   type: EntityType;
@@ -160,14 +162,17 @@ function FilterButton({ isOpen, toggle }: FilterButtonProps) {
 }
 
 interface SessionMainButtonProps {
+  fullPath: string;
+  gitUrl: string
   notebook: Notebook["data"];
   sessionStatus: string;
   setSessionStatus: Function;
   setServerLogs: Function;
   stopSession: Function;
 }
-function SessionButton(
-  { notebook, sessionStatus, setSessionStatus, setServerLogs, stopSession }: SessionMainButtonProps) {
+function SessionButton({
+  fullPath, gitUrl, notebook, sessionStatus, setSessionStatus, setServerLogs, stopSession
+}: SessionMainButtonProps) {
   const history = useHistory();
 
   const sessionLink = getShowSessionURL(notebook.annotations, notebook.name);
@@ -184,7 +189,7 @@ function SessionButton(
 
   const connectButton = (
     <Button
-      className={`btn btn-rk-green btn-sm btn-icon-text start-session-button session-link-group`}
+      className="btn btn-rk-green btn-sm btn-icon-text start-session-button session-link-group"
       onClick={(e: React.MouseEvent<HTMLElement>) => handleClick(e, sessionLink)}>
       <div className="d-flex gap-2"><img src="/connect.svg" className="rk-icon rk-icon-md" /> Connect </div>
     </Button>
@@ -192,7 +197,7 @@ function SessionButton(
 
   const stopButton = (
     <Button
-      className={`btn btn-rk-green btn-sm btn-icon-text start-session-button session-link-group`}
+      className="btn btn-rk-green btn-sm btn-icon-text start-session-button session-link-group"
       onClick={(e: React.MouseEvent<HTMLElement>) => stopSessionHandler(e, notebook.name)}
       disabled={sessionStatus === "stopping"}>
       <div className="d-flex align-items-center gap-2"><StopCircle className="text-rk-dark" title="stop"/>
@@ -202,9 +207,11 @@ function SessionButton(
 
   const defaultAction = sessionStatus === "starting" || sessionStatus === "running" ?
     connectButton : sessionStatus === "failed" || sessionStatus === "stopping" ? stopButton : null;
-  const logsButton = <DropdownItem onClick={(e: React.MouseEvent<HTMLElement>) => setServerLogs(notebook.name)}>
-    <FontAwesomeIcon className="text-rk-green" icon={faFileAlt} /> Get logs
-  </DropdownItem>;
+  const logsButton = (
+    <DropdownItem onClick={(e: React.MouseEvent<HTMLElement>) => setServerLogs(notebook.name)}>
+      <FontAwesomeIcon className="text-rk-green fa-w-14" icon={faFileAlt} /> Get logs
+    </DropdownItem>
+  );
 
   return (
     <ButtonWithMenu
@@ -217,6 +224,7 @@ function SessionButton(
           </DropdownItem>
           <DropdownItem divider />
           {logsButton}
+          <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />
         </>)
         : logsButton
       }

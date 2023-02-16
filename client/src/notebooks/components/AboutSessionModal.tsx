@@ -50,21 +50,21 @@ const AboutSessionModal = ({ toggleModal, isOpen, projectMetadata, notebook }: A
     <div>
       <h3 className="text-rk-text-light">Project</h3>
       <EntityHeader
-        title={projectMetadata.title}
-        visibility={projectMetadata.visibility}
+        creators={projectMetadata.owner ? [projectMetadata.owner] : []}
         description={projectMetadata.description}
+        devAccess={projectMetadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
+        fullPath={projectMetadata.path_with_namespace ?? projectMetadata.pathWithNamespace}
+        gitUrl={projectMetadata.externalUrl}
+        imageUrl={projectMetadata.avatarUrl}
         itemType={"project" as EntityType}
+        labelCaption={"Updated"}
+        showFullHeader={false}
         slug={slug}
         tagList={projectMetadata.tagList}
-        creators={projectMetadata.owner ? [projectMetadata.owner] : []}
-        labelCaption={"Updated"}
         timeCaption={projectMetadata.lastActivityAt}
-        launchNotebookUrl={""}
-        sessionAutostartUrl={""}
-        devAccess={projectMetadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
+        title={projectMetadata.title}
         url={`projects/${slug}`}
-        showFullHeader={false}
-        imageUrl={projectMetadata.avatarUrl}
+        visibility={projectMetadata.visibility}
       />
     </div>
   );
