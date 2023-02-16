@@ -64,9 +64,9 @@
     "remark-math": "^5.1.1",
     "remark-rehype": "^10.1.0",
     "sass": "^1.57.1",
-    "showdown": "^1.9.1",
+    "showdown": "^2.1.0",
     "showdown-highlight": "^2.1.8",
-    "showdown-katex": "0.6.0",
+    "showdown-katex": "^0.6.0",
     "showdown-mermaid": "0.0.1",
     "styled-jsx": "^5.1.0",
     "uuid": "^3.3.3",
@@ -160,6 +160,9 @@
     "react-inspector": {
       "react": "$react",
       "react-dom": "$react-dom"
+    },
+    "showdown-katex": {
+      "showdown": "^2.1.0"
     }
   },
   "browserslist": [
