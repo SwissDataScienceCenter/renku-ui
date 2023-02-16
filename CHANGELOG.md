@@ -9,12 +9,12 @@
 * show commit messages on the dropdown when starting a session ([#2240](https://github.com/SwissDataScienceCenter/renku-ui/issues/2240), [#2362](https://github.com/SwissDataScienceCenter/renku-ui/issues/2362))
 * allow creating a new project with an avatar ([#2181](https://github.com/SwissDataScienceCenter/renku-ui/issues/2181), [#2331](https://github.com/SwissDataScienceCenter/renku-ui/issues/2331))
 * remove the collaboration tab and add links to GitLab's issues and merge requests pages ([#2256](https://github.com/SwissDataScienceCenter/renku-ui/issues/2256), [#2365](https://github.com/SwissDataScienceCenter/renku-ui/issues/2365))
-* store search parameters in the URL ([#2257](https://github.com/SwissDataScienceCenter/renku-ui/issues/2257), [#2351](https://github.com/SwissDataScienceCenter/renku-ui/issues/2351))
+* make searches sharable by storing parameters in the URL ([#2257](https://github.com/SwissDataScienceCenter/renku-ui/issues/2257), [#2351](https://github.com/SwissDataScienceCenter/renku-ui/issues/2351))
 
 ### Bug Fixes
 
 * fix markdown to HTML conversion problems with underscores in links and math formulas ([#1719](https://github.com/SwissDataScienceCenter/renku-ui/issues/1719), [#2308](https://github.com/SwissDataScienceCenter/renku-ui/issues/2308), [#2371](https://github.com/SwissDataScienceCenter/renku-ui/issues/2371), [#2374](https://github.com/SwissDataScienceCenter/renku-ui/issues/2374))
-* restore auto-starting a session when pre-viewing a notebook ([#2344](https://github.com/SwissDataScienceCenter/renku-ui/issues/2344))
+* restore auto-starting a session when previewing a notebook ([#2344](https://github.com/SwissDataScienceCenter/renku-ui/issues/2344))
 * prevent failures when accessing datasets from the project header links ([#2357](https://github.com/SwissDataScienceCenter/renku-ui/issues/2357))
 * align elements correctly in the datasets file browser ([#2318](https://github.com/SwissDataScienceCenter/renku-ui/issues/2318))
 * sort commits to prevent random order ([#2347](https://github.com/SwissDataScienceCenter/renku-ui/issues/2347))
