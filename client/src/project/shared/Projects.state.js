@@ -32,10 +32,6 @@ class ProjectsCoordinator {
     this.model = model;
   }
 
-  _starredProjectMetadata(project) {
-    return formatProjectMetadata(project);
-  }
-
   async getFeatured() {
     if (this.model.get("featured.fetching"))
       return;
@@ -43,12 +39,12 @@ class ProjectsCoordinator {
     this.model.set("featured.fetching", true);
     const params = { query: "last_activity_at", per_page: 100 };
     const promiseStarred = this.client.getAllProjects({ ...params, starred: true })
-      .then(resp => resp.map((project) => this._starredProjectMetadata(project)))
+      .then(resp => resp.map((project) => formatProjectMetadata(project)))
       .catch(() => []);
 
     const promiseMember = this.client.getAllProjectsGraphQL(params)
       .then(resp => {
-        return resp.map((project) => this._starredProjectMetadata(project));
+        return resp.map((project) => formatProjectMetadata(project));
       })
       .catch(() => []);
 

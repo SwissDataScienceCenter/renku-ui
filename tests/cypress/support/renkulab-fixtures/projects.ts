@@ -51,6 +51,14 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    projectsGraphQl(name = "getProjectsGraphQl", fixture = "projects.json") {
+      cy.intercept(
+        "/ui-server/api/graphql",
+        { fixture }
+      ).as(name);
+      return this;
+    }
+
     project(path = "", name = "getProject", result = "projects/project.json", statistics = true) {
       const fixture = this.useMockedData ? { fixture: result } : undefined;
       cy.intercept(

@@ -30,6 +30,25 @@ interface MemberProjectResponse {
   hasNextPage: boolean;
 }
 
+function convertProjects(response: any): MemberProjectResponse {
+  try {
+    const projects = response?.data?.projects?.nodes;
+    const pageInfo = response?.data?.projects?.pageInfo;
+    const data = projects?.map((project: any) => formatProjectMetadata(project));
+    return {
+      endCursor: pageInfo.endCursor,
+      hasNextPage: pageInfo.hasNextPage,
+      data,
+    };
+  }
+  catch (e) {
+    return {
+      data: [],
+      endCursor: "",
+      hasNextPage: false,
+    };
+  }
+}
 
 export const projectApi = createApi({
   reducerPath: "projects",
@@ -42,11 +61,11 @@ export const projectApi = createApi({
       query: (projectPath) => {
         const urlEncodedPath = encodeURIComponent(projectPath);
         return { url: `/groups/${urlEncodedPath}`, method: "GET" };
-      }
+      },
     }),
     getMemberProjects: builder.query<any, QueryParams>({
-      query: (queryParams: QueryParams ) => {
-        const params = { "variables": null, "operationName": null };
+      query: (queryParams: QueryParams) => {
+        const params = { variables: null, operationName: null };
         let query = `{
           projects(membership: true, first:${queryParams.per_page}, after:"${queryParams.endCursor}") {
             pageInfo {
@@ -71,44 +90,68 @@ export const projectApi = createApi({
           }
         }`;
         let headers = {
-          "Accept": "application/json",
+          Accept: "application/json",
           "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest"
+          "X-Requested-With": "XMLHttpRequest",
         };
         return {
           url: `/graphql`,
           method: "POST",
           body: JSON.stringify({ ...params, query }),
-          headers: new Headers(headers)
+          headers: new Headers(headers),
         };
       },
-      transformResponse: (response: any): MemberProjectResponse => {
-        try {
-          const projects = response?.data?.projects?.nodes;
-          const pageInfo = response?.data?.projects?.pageInfo;
-          const data = projects?.map((project: any) => formatProjectMetadata(project));
-          return {
-            endCursor: pageInfo.endCursor,
-            hasNextPage: pageInfo.hasNextPage,
-            data,
-          };
-        }
-        catch (e) {
-          return {
-            data: [],
-            endCursor: "",
-            hasNextPage: false,
-          };
-        }
+      transformResponse: convertProjects,
+      keepUnusedDataFor: 5,
+    }),
+    getStarredProjects: builder.query<any, QueryParams>({
+      query: (queryParams: QueryParams) => {
+        const params = { variables: null, operationName: null };
+        let query = `{
+          currentUser {
+            starredProjects(first:${queryParams.per_page}, after:"${queryParams.endCursor}") {
+              pageInfo {
+                endCursor
+                hasNextPage
+              }
+              nodes {
+                id
+                name
+                fullPath
+                namespace {
+                  fullPath
+                }
+                path,
+                httpUrlToRepo,
+                userPermissions {
+                  adminProject,
+                  pushCode,
+                  removeProject
+                }
+              }
+            }
+          }
+        }`;
+        let headers = {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        };
+        return {
+          url: `/graphql`,
+          method: "POST",
+          body: JSON.stringify({ ...params, query }),
+          headers: new Headers(headers),
+        };
       },
+      transformResponse: convertProjects,
       keepUnusedDataFor: 5,
     }),
     getRecentlyVisitedProjects: builder.query<any, number>({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
         // get list of projects recently visited
         const projectListRequest = await fetchWithBQ(`/last-projects/${_arg}`);
-        if (projectListRequest.error)
-          return { error: projectListRequest.error as FetchBaseQueryError };
+        if (projectListRequest.error) return { error: projectListRequest.error as FetchBaseQueryError };
         const resultProjects = projectListRequest.data as any;
         const projects = resultProjects.projects;
 
@@ -116,17 +159,17 @@ export const projectApi = createApi({
           // if the user has recent projects get the project information
           const projectRequests = [];
           for (const project of projects) {
-            projectRequests
-              .push(fetchWithBQ(`/projects/${encodeURIComponent(project)}?statistics=false&doNotTrack=true`));
+            projectRequests.push(
+              fetchWithBQ(`/projects/${encodeURIComponent(project)}?statistics=false&doNotTrack=true`)
+            );
           }
 
           try {
             const resultAllProjectData = await Promise.allSettled(projectRequests);
             const projectList = [];
-            for (const projectData of resultAllProjectData) {
-              if (projectData.status === "fulfilled")
-                projectList.push(formatProjectMetadata(projectData.value.data));
-            }
+            for (const projectData of resultAllProjectData)
+              if (projectData.status === "fulfilled") projectList.push(formatProjectMetadata(projectData.value.data));
+
             return { data: projectList };
           }
           catch (e) {
@@ -148,5 +191,6 @@ export const {
   useGetNamespacesQuery,
   useGetGroupByPathQuery,
   useGetMemberProjectsQuery,
-  useGetRecentlyVisitedProjectsQuery
+  useGetRecentlyVisitedProjectsQuery,
+  useGetStarredProjectsQuery,
 } = projectApi;

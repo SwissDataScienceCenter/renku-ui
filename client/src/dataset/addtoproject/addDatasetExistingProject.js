@@ -16,18 +16,16 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { Button } from "reactstrap";
 
 import { AddDatasetStatus } from "./addDatasetStatus";
 import { ACCESS_LEVELS } from "../../api-client";
-import { ProjectsCoordinator } from "../../project/shared";
 import SelectAutosuggestInput from "../../utils/components/SelectAutosuggestInput";
 import { Loader } from "../../utils/components/Loader";
-import AppContext from "../../utils/context/appContext";
 import { groupBy } from "../../utils/helpers/HelperFunctions";
-import { useSelector } from "react-redux";
+import { useGetMemberProjectsQuery } from "../../features/projects/ProjectApi.ts";
 
 /**
  *  incubator-renku-ui
@@ -36,21 +34,22 @@ import { useSelector } from "react-redux";
  *  Component for add dataset to existing project
  */
 
-const AddDatasetExistingProject = (
-  { dataset, model, handlers, isDatasetValid, currentStatus, importingDataset, project }) => {
-
+const AddDatasetExistingProject = ({
+  dataset,
+  model,
+  handlers,
+  isDatasetValid,
+  currentStatus,
+  importingDataset,
+  project,
+}) => {
   const [existingProject, setExistingProject] = useState(null);
-  const [isProjectListReady, setIsProjectListReady] = useState(false);
-  const [projectsCoordinator, setProjectsCoordinator] = useState(null);
-  const user = useSelector( (state) => state.stateModel.user);
-  const { client } = useContext(AppContext);
   const mounted = useRef(false);
   const setCurrentStatus = handlers.setCurrentStatus;
   let projectsMonitorJob = null;
 
-  useEffect(() => {
-    setProjectsCoordinator(new ProjectsCoordinator(client, model.subModel("projects")));
-  }, [client, model]);
+  const queryParams = { per_page: 100 };
+  const { data: memberProjects, isLoading: isLoadingMemberProjects } = useGetMemberProjectsQuery(queryParams);
 
   useEffect(() => {
     mounted.current = true;
@@ -61,64 +60,39 @@ const AddDatasetExistingProject = (
     };
   }, [setCurrentStatus, projectsMonitorJob]);
 
-  useEffect( () => {
-    if (existingProject)
-      handlers.validateProject(existingProject, false); // validate origin only when start import
-    else
-      setCurrentStatus(null);
+  useEffect(() => {
+    if (existingProject) handlers.validateProject(existingProject, false);
+    // validate origin only when start import
+    else setCurrentStatus(null);
   }, [existingProject]); // eslint-disable-line
 
-  useEffect(() => {
-    if (dataset && projectsCoordinator && user.logged) {
-      const featured = projectsCoordinator.model.get("featured");
-      if (!featured.featured && !featured.fetching)
-        projectsCoordinator.getFeatured();
-      monitorProjectList();
-    }
-  }, [dataset, projectsCoordinator]); // eslint-disable-line
-
-  // monitor to check when the list of projects is ready
-  const monitorProjectList = () => {
-    const INTERVAL = 1000;
-    projectsMonitorJob = setInterval(() => {
-      if (!projectsCoordinator) return;
-      const featured = projectsCoordinator.model.get("featured");
-      const isReady = !(!featured.fetched || (!featured.starred.length && !featured.member.length));
-      setIsProjectListReady(isReady);
-      if (isReady)
-        clearInterval(projectsMonitorJob);
-    }, INTERVAL);
-  };
-
   const startImportDataset = () => handlers.submitCallback(existingProject);
-  const onSuggestionsFetchRequested = ( value, setSuggestions ) => {
-    const featured = projectsCoordinator.model.get("featured");
-    if (!featured.fetched || (!featured.starred.length && !featured.member.length))
-      return;
+  const onSuggestionsFetchRequested = (value, setSuggestions) => {
+    if (!memberProjects || isLoadingMemberProjects) return;
+    const featured = { member: memberProjects.data };
 
     const regex = new RegExp(value, "i");
-    const searchDomain = featured.member.filter((project)=> {
+    const searchDomain = featured.member.filter((project) => {
       return project.access_level >= ACCESS_LEVELS.MAINTAINER;
     });
 
     const hits = {};
     const groupedSuggestions = [];
 
-    searchDomain.forEach(d => {
+    searchDomain.forEach((d) => {
       if (regex.exec(d.path_with_namespace) != null) {
         hits[d.path_with_namespace] = {
-          "value": d.http_url_to_repo,
-          "name": d.path_with_namespace,
-          "subgroup": d.path_with_namespace.split("/")[0],
-          "id": d.id
+          value: d.http_url_to_repo,
+          name: d.path_with_namespace,
+          subgroup: d.path_with_namespace.split("/")[0],
+          id: d.id,
         };
       }
     });
 
-    const hitValues = Object.values(hits).sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-    const groupedHits = groupBy(hitValues, item => item.subgroup);
-    for (const [key, val] of groupedHits)
-      groupedSuggestions.push({ title: key, suggestions: val });
+    const hitValues = Object.values(hits).sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+    const groupedHits = groupBy(hitValues, (item) => item.subgroup);
+    for (const [key, val] of groupedHits) groupedSuggestions.push({ title: key, suggestions: val });
 
     setCurrentStatus(null);
     setSuggestions(groupedSuggestions);
@@ -126,45 +100,51 @@ const AddDatasetExistingProject = (
   const customHandlers = { onSuggestionsFetchRequested };
 
   let suggestionInput;
+  const isProjectListReady = (memberProjects != null) != null && !isLoadingMemberProjects;
   if (isProjectListReady && isDatasetValid && currentStatus?.status !== "importing") {
-    suggestionInput = (<SelectAutosuggestInput
-      existingValue={existingProject?.name || null}
-      name="project"
-      label="Project"
-      placeholder="Select a project..."
-      customHandlers={customHandlers}
-      setInputs={setExistingProject}
-      disabled={importingDataset || currentStatus?.status === "inProcess"}
-    />);
+    suggestionInput = (
+      <SelectAutosuggestInput
+        existingValue={existingProject?.name || null}
+        name="project"
+        label="Project"
+        placeholder="Select a project..."
+        customHandlers={customHandlers}
+        setInputs={setExistingProject}
+        disabled={importingDataset || currentStatus?.status === "inProcess"}
+      />
+    );
   }
   else if (isDatasetValid === null || isDatasetValid === false || currentStatus?.status === "importing") {
     suggestionInput = null;
   }
   else {
-    suggestionInput = <div><Loader size="14" inline="true" />{" "}Loading projects...</div>;
+    suggestionInput = (
+      <div>
+        <Loader size="14" inline="true" /> Loading projects...
+      </div>
+    );
   }
   /* buttons */
-  const addDatasetButton = currentStatus?.status === "importing" ? null : (
-    <div className="mt-4 d-flex justify-content-end">
-      <Button
-        data-cy="add-dataset-submit-button"
-        color="rk-pink"
-        className="text-white"
-        disabled={currentStatus?.status !== "validProject"}
-        onClick={startImportDataset}>
-        Add Dataset to existing Project
-      </Button>
-    </div>
-  );
+  const addDatasetButton =
+    currentStatus?.status === "importing" ? null : (
+      <div className="mt-4 d-flex justify-content-end">
+        <Button
+          data-cy="add-dataset-submit-button"
+          color="rk-pink"
+          className="text-white"
+          disabled={currentStatus?.status !== "validProject"}
+          onClick={startImportDataset}
+        >
+          Add Dataset to existing Project
+        </Button>
+      </div>
+    );
 
   const onSubmit = (e) => e.preventDefault();
 
-  const addDatasetStatus = currentStatus ?
-    <AddDatasetStatus
-      status={currentStatus.status}
-      text={currentStatus?.text || null}
-      projectName={project?.name}
-    /> : null;
+  const addDatasetStatus = currentStatus ? (
+    <AddDatasetStatus status={currentStatus.status} text={currentStatus?.text || null} projectName={project?.name} />
+  ) : null;
 
   if (!dataset) return null;
 
