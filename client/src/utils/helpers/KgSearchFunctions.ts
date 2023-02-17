@@ -23,9 +23,14 @@ import { DateFilterTypes } from "../components/dateFilter/DateFilter";
 import _ from "lodash";
 import { getDatasetImageUrl } from "../../dataset/DatasetFunctions";
 
-const getDatasetIdentifier = (links: KgSearchResultLink[]) => {
-  const details = links.filter((link) => link.rel === "details");
-  return details.length > 0 ? details[0].href.split("/", -1).at(-1) : "";
+const getDatasetIdentifier = (links: KgSearchResultLink[]): string => {
+  try {
+    const details = links.filter(link => link.rel === "details");
+    return details.length > 0 ? details[0].href.split("/", -1).at(-1) ?? "" : "";
+  }
+  catch {
+    return "";
+  }
 };
 
 const getDatasetUrl = (links: KgSearchResultLink[]) => {
@@ -38,7 +43,7 @@ const getProjectUrl = (path: string) => {
   return `${projectBase}/${path}`;
 };
 
-export const mapSearchResultToEntity = (entity: KgSearchResult, history: any): ListElementProps => {
+export const mapSearchResultToEntity = (entity: KgSearchResult): ListElementProps => {
   const url = entity.type === EntityType.Dataset ? getDatasetUrl(entity._links) : getProjectUrl(entity.path);
 
   const creators =
@@ -48,7 +53,9 @@ export const mapSearchResultToEntity = (entity: KgSearchResult, history: any): L
       })
       : [{ name: entity.creator }];
 
+  const id = entity.type === EntityType.Dataset ? getDatasetIdentifier(entity._links) : entity.path;
   return {
+    id,
     url,
     title: entity.name,
     description: entity.description,

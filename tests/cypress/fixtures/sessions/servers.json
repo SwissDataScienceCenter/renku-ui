@@ -1,0 +1,133 @@
+{
+  "servers": {
+    "dalatinrof-corrupted-2dproject-2dse-f3938977": {
+      "annotations": {
+        "renku.io/branch": "master",
+        "renku.io/commit-sha": "172a784d465a7bd45bacc165df2b64a591ac6b18",
+        "renku.io/default_image_used": "False",
+        "renku.io/git-host": "gitlab.dev.renku.ch",
+        "renku.io/gitlabProjectId": "78277",
+        "renku.io/namespace": "dalatinrofrau",
+        "renku.io/projectName": "corrupted-project-session-error",
+        "renku.io/repository": "https://gitlab.dev.renku.ch/dalatinrofrau/corrupted-project-session-error",
+        "renku.io/servername": "dalatinrof-corrupted-2dproject-2dse-f3938977",
+        "renku.io/username": "dalatinrofrau@gmail.com"
+      },
+      "image": "registry.dev.renku.ch/dalatinrofrau/corrupted-project-session-error:0c81c7a",
+      "name": "dalatinrof-corrupted-2dproject-2dse-f3938977",
+      "resources": {
+        "requests": {
+          "cpu": 0.25,
+          "gpu": 1,
+          "memory": "2G",
+          "storage": "2G"
+        },
+        "usage": {}
+      },
+      "started": "2023-01-27T13:55:44+00:00",
+      "state": {
+        "pod_name": "dalatinrof-corrupted-2dproject-2dse-f3938977-0"
+      },
+      "status": {
+        "details": [
+          {
+            "status": "ready",
+            "step": "Initialization"
+          },
+          {
+            "status": "ready",
+            "step": "Downloading server image"
+          },
+          {
+            "status": "ready",
+            "step": "Cloning and configuring the repository"
+          },
+          {
+            "status": "ready",
+            "step": "Git credentials services"
+          },
+          {
+            "status": "ready",
+            "step": "Authentication and proxying services"
+          },
+          {
+            "status": "ready",
+            "step": "Auxiliary session services"
+          },
+          {
+            "status": "failed",
+            "step": "Starting session"
+          }
+        ],
+        "message": "The image does not contain the required command to start the server. Please make sure your Dockerfile is correct and up-to-date.",
+        "readyNumContainers": 6,
+        "state": "failed",
+        "totalNumContainers": 7
+      },
+      "url": "https://renku-ci-ui-2333.dev.renku.ch/sessions/dalatinrof-corrupted-2dproject-2dse-f3938977"
+    },
+    "dalatinrof-flights-2dusa-51d6c930": {
+      "annotations": {
+        "renku.io/branch": "master",
+        "renku.io/commit-sha": "172a784d465a7bd45bacc165df2b64a591ac6b18",
+        "renku.io/default_image_used": "False",
+        "renku.io/git-host": "gitlab.dev.renku.ch",
+        "renku.io/gitlabProjectId": "55402",
+        "renku.io/namespace": "dalatinrofrau",
+        "renku.io/projectName": "flights-usa",
+        "renku.io/repository": "https://gitlab.dev.renku.ch/dalatinrofrau/flights-usa",
+        "renku.io/servername": "dalatinrof-flights-2dusa-51d6c930",
+        "renku.io/username": "dalatinrofrau@gmail.com"
+      },
+      "image": "registry.dev.renku.ch/dalatinrofrau/flights-usa:5d0515c",
+      "name": "dalatinrof-flights-2dusa-51d6c930",
+      "resources": {
+        "requests": {
+          "cpu": 0.1,
+          "memory": "1G"
+        },
+        "usage": {}
+      },
+      "started": "2023-02-01T09:43:52+00:00",
+      "state": {
+        "pod_name": "dalatinrof-flights-2dusa-51d6c930-0"
+      },
+      "status": {
+        "details": [
+          {
+            "status": "ready",
+            "step": "Initialization"
+          },
+          {
+            "status": "ready",
+            "step": "Downloading server image"
+          },
+          {
+            "status": "ready",
+            "step": "Cloning and configuring the repository"
+          },
+          {
+            "status": "ready",
+            "step": "Git credentials services"
+          },
+          {
+            "status": "ready",
+            "step": "Authentication and proxying services"
+          },
+          {
+            "status": "ready",
+            "step": "Auxiliary session services"
+          },
+          {
+            "status": "ready",
+            "step": "Starting session"
+          }
+        ],
+        "readyNumContainers": 7,
+        "state": "running",
+        "totalNumContainers": 7
+      },
+      "url": "https://renku-ci-ui-2333.dev.renku.ch/sessions/dalatinrof-flights-2dusa-51d6c930"
+    }
+  }
+}

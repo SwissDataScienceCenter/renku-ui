@@ -84,6 +84,20 @@ Some linting errors can be automatically fixed by running
 
 We suggest using an IDE that supports eslint (like [VS Code](https://code.visualstudio.com) or similar) and configuring your IDE to integrate with our eslint configuration so that any linting errors will be displayed as you develop rather than waiting for the CI pipeline to flag them.
 
+### Utilities
+
+We are using [Craco](https://craco.js.org) to override default settings from
+[Create React App](https://create-react-app.dev).
+This means that Jest cannot be run outside of Craco's context.
+
+If you ever need to debug your tests using advanced features like `node --expose-gc`
+or `node --inspect-brk`, you have to reference jest from
+`./node_modules/@craco/craco/dist/bin/jest`.
+
+The following example shows how to check for memory leaks:
+
+    $ node --expose-gc ./node_modules/@craco/craco/dist/bin/jest --runInBand --logHeapUsage *
+
 ## Developing
 
 As you would expect for a React-based project, you can install the client using `npm`.

@@ -182,7 +182,6 @@ function ForkProject(props) {
   // fork operations including fork, status check, redirect
   const fork = async () => {
     // TODO: re-add notifications after #1585 is addressed-- for some reason the project's sub-components
-    // TODO: ("mrView", "issuesVIew", ...) trigger a re-render after adding a notification, losing local states.
 
     const path = slugFromTitle(title, true);
     // const startingLocation = history.location.pathname;
@@ -352,7 +351,8 @@ class NewProjectWrapper extends Component {
   constructor(props) {
     super(props);
     this.coordinator = new NewProjectCoordinator(
-      this.props.client, this.props.model.subModel("newProject"), this.props.model.subModel("projects"));
+      this.props.client, this.props.model.subModel("newProject"), this.props.model.subModel("projects")
+    );
   }
 
   render() {
@@ -378,17 +378,14 @@ function NewProject(props) {
    * Start fetching templates and get automatedData
    */
   useEffect(() => {
-    if (!coordinator)
+    if (!coordinator || !user.logged)
       return;
     coordinator.setConfig(params["TEMPLATES"].custom, params["TEMPLATES"].repositories);
     coordinator.resetInput();
     coordinator.getTemplates();
     removeAutomated();
-    if (!user.logged)
-      coordinator.resetAutomated();
-    else
-      extractAutomatedData();
-  }, []); // eslint-disable-line
+    extractAutomatedData();
+  }, []); // eslint-disable-line  react-hooks/exhaustive-deps
 
   /*
    * Start Auto fill form when namespaces are ready
@@ -402,22 +399,23 @@ function NewProject(props) {
    * Validate form when projects/namespace are ready or the auto fill form finished
    */
   useEffect(() => {
-    if (namespaces.fetching || (newProject.automated.received && !newProject.automated.finished))
+    if (!user.logged || namespaces.fetching || (newProject.automated.received && !newProject.automated.finished))
       return;
     validateForm(null, null, true);
-  }, [ //eslint-disable-line
+  }, [ // eslint-disable-line react-hooks/exhaustive-deps
     namespaces.list,
     namespaces.fetching,
     projectsMember,
     isFetchingProjects,
     newProject.automated.received,
-    newProject.automated.finished]);
+    newProject.automated.finished
+  ]);
 
   /*
    * Calculate visibilities when namespace change
    */
   useEffect(() => {
-    if (!namespace)
+    if (!namespace || !user.logged)
       return;
 
     if (!availableVisibilities || isFetchingVisibilities) {
@@ -427,7 +425,7 @@ function NewProject(props) {
     coordinator?.setVisibilities(availableVisibilities, namespace);
     setProperty("namespace", namespace.full_path);
     setProperty("visibility", availableVisibilities.default);
-  }, [ namespace, availableVisibilities, isFetchingVisibilities ]); // eslint-disable-line
+  }, [namespace, availableVisibilities, isFetchingVisibilities]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const extractAutomatedData = () => {
     const searchParams = getSearchParams();

@@ -17,7 +17,7 @@
  */
 
 import React, { useContext, useRef } from "react";
-import { Globe, People, Lock } from "../../ts-wrappers";
+import { Globe, Lock, Shield } from "../../ts-wrappers";
 
 import AppContext from "../../context/appContext";
 import { ThrottledTooltip } from "../Tooltip";
@@ -41,7 +41,7 @@ const VisibilityIcon = ({ visibility, className }: VisibilityIconProps) => {
   const icon = {
     public: <Globe />,
     private: <Lock />,
-    internal: <People />
+    internal: <Shield />
   };
   const baseUrl = client.baseUrl;
   const { hostname } = baseUrl ? new URL(baseUrl) : { hostname: "renkulab.io" };

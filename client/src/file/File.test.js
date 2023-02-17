@@ -26,6 +26,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
+import { act } from "react-test-renderer";
 
 import { testClient as client } from "../api-client";
 import { generateFakeUser } from "../user/User.test";
@@ -100,42 +101,48 @@ describe("rendering", () => {
   };
 
   for (let user of users) {
-    it(`renders JupyterButton for ${user.type} user`, () => {
+    it(`renders JupyterButton for ${user.type} user`, async () => {
       const div = document.createElement("div");
       // * fix for tooltips https://github.com/reactstrap/reactstrap/issues/773#issuecomment-357409863
       document.body.appendChild(div);
       const root = createRoot(div);
-      const branches = { all: { standard: [] }, fetch: () => {} };
-      root.render(
-        <MemoryRouter>
-          <JupyterButton user={user.data} branches={branches} {...props} />
-        </MemoryRouter>
-      );
+      const branches = { all: { standard: [] }, fetch: () => { } };
+      await act(async () => {
+        root.render(
+          <MemoryRouter>
+            <JupyterButton user={user.data} branches={branches} {...props} />
+          </MemoryRouter>
+        );
+      });
     });
 
-    it(`renders ShowFile for ${user.type} user`, () => {
+    it(`renders ShowFile for ${user.type} user`, async () => {
       const div = document.createElement("div");
       document.body.appendChild(div);
       const root = createRoot(div);
-      root.render(
-        <MemoryRouter>
-          <ShowFile user={user.data} {...props} />
-        </MemoryRouter>
-      );
+      await act(async () => {
+        root.render(
+          <MemoryRouter>
+            <ShowFile user={user.data} {...props} />
+          </MemoryRouter>
+        );
+      });
     });
 
     for (let key of Object.keys(file)) {
-      it(`renders FilePreview for ${user.type} user - case ${key}`, () => {
+      it(`renders FilePreview for ${user.type} user - case ${key}`, async () => {
         const fileProps = file[key];
         const previewThreshold = props.params.PREVIEW_THRESHOLD;
         const div = document.createElement("div");
         document.body.appendChild(div);
         const root = createRoot(div);
-        root.render(
-          <MemoryRouter>
-            <FilePreview file={fileProps} previewThreshold={previewThreshold} />
-          </MemoryRouter>
-        );
+        await act(async () => {
+          root.render(
+            <MemoryRouter>
+              <FilePreview file={fileProps} previewThreshold={previewThreshold} />
+            </MemoryRouter>
+          );
+        });
       });
     }
   }
@@ -153,16 +160,18 @@ describe("rendering pdf -- console suppressed!", () => {
     content: "JVBERi0xLjAKMSAwIG9iajw8L1BhZ2VzIDIgMCBSPj5lbmRvYmogMiAwIG9iajw8L0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iaiAzIDAgb2JqPDwvTWVkaWFCb3hbMCAwIDMgM10+PmVuZG9iagp0cmFpbGVyPDwvUm9vdCAxIDAgUj4+Cg=="
   };
 
-  it("renders FilePreview for pdf", () => {
+  it("renders FilePreview for pdf", async () => {
     const previewThreshold = { PREVIEW_THRESHOLD: { soft: 1048576, hard: 10485760 } };
     const div = document.createElement("div");
     document.body.appendChild(div);
     const root = createRoot(div);
-    root.render(
-      <MemoryRouter>
-        <FilePreview file={filePdf} previewThreshold={previewThreshold} />
-      </MemoryRouter>
-    );
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <FilePreview file={filePdf} previewThreshold={previewThreshold} />
+        </MemoryRouter>
+      );
+    });
   });
 });
 

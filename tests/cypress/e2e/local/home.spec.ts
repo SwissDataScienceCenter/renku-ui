@@ -34,44 +34,6 @@ describe("display the home page", () => {
   });
 });
 
-describe("display the landing page", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
-  beforeEach(() => {
-    fixtures.config().versions().userTest();
-    fixtures.projects().getLastVisitedProjects().landingUserProjects();
-    const files = {
-      "lorenzo.cavazzi.tech/readme-file-dev": 30929,
-      "e2e/nuevo-projecto": 44966,
-      "e2e/testing-datasets": 43781,
-      "e2e/local-test-project": 39646
-    };
-    // fixture landing page project data
-    for (const filesKey in files)
-      fixtures.project(filesKey, "projectLanding", `projects/project_${files[filesKey]}.json`, false);
-
-    cy.visit("/");
-  });
-
-  it("displays the landing page header", () => {
-    let projects;
-    cy.wait("@getUser");
-    cy.wait("@getLastVisitedProjects").then( result => projects = result.response.body.projects);
-
-    const findProject = (path, projects) => {
-      return projects.find( result => result.response.body.path_with_namespace === path);
-    };
-
-    cy.get("h3").first().should("have.text", "e2e @ Renku");
-    cy.wait(["@projectLanding", "@projectLanding", "@projectLanding", "@projectLanding"])
-      .then( (results) => {
-        const firstProject = findProject(projects[0], results);
-        const projectData = firstProject.response?.body;
-        cy.get_cy("list-card-title").first().should("have.text", projectData.name);
-      });
-  });
-});
-
 describe("404 page", () => {
   beforeEach(() => {
     new Fixtures(cy).config().versions().userNone();

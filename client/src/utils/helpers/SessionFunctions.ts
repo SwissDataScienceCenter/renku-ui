@@ -17,7 +17,7 @@
  */
 import { NotebooksHelper } from "../../notebooks";
 
-interface Session {
+export interface Session {
   annotations: Record<string, unknown>;
   name: string;
 }
@@ -32,4 +32,20 @@ function getSessionRunningByProjectName(sessions: Record<string, Session>, names
   return sessionRunning;
 }
 
-export { getSessionRunningByProjectName };
+interface NotebookAnnotations {
+  default_image_used: string;
+  branch: string;
+  "commit-sha": string;
+  gitlabProjectId: string;
+}
+function getFormattedSessionsAnnotations(sessions: Record<string, Session>) {
+  const sessionsFormatted: any[] = [];
+  for (const sessionKey of Object.keys(sessions)) {
+    const session = sessions[sessionKey];
+    const annotations = NotebooksHelper.cleanAnnotations(session.annotations, "renku.io") as NotebookAnnotations;
+    sessionsFormatted.push({ ...session, annotations });
+  }
+  return sessionsFormatted;
+}
+
+export { getSessionRunningByProjectName, getFormattedSessionsAnnotations };

@@ -16,64 +16,98 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Col } from "../../ts-wrappers";
+const Link = require("react-router-dom").Link;
+
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./List.d";
-import "./ListBar.css";
-import Slug from "../entities/Slug";
-import EntityCreators from "../entities/Creators";
-import EntityTags from "../entities/Tags";
+import "./ListBar.scss";
 import VisibilityIcon from "../entities/VisibilityIcon";
-const Link = require("react-router-dom").Link;
+import { StartSessionButton } from "../../../project/Project.present";
+import { stylesByItemType } from "../../helpers/HelperFunctions";
+import EntityCreators from "../entities/Creators";
+import EntityDescription from "../entities/Description";
+import EntityLabel from "../entities/Label";
+import { EntityType } from "../../../features/kgSearch";
+
+export function getMainActionByEntity(entityType: EntityType, slug: string) {
+  const sessionAutostartUrl = `/projects/${slug}/sessions/new?autostart=1`;
+  const launchNotebookUrl = `/projects/${slug}/sessions/new`;
+  switch (entityType) {
+    case EntityType.Project:
+      return launchNotebookUrl && sessionAutostartUrl ?
+        <StartSessionButton launchNotebookUrl={launchNotebookUrl} sessionAutostartUrl={sessionAutostartUrl} /> : null;
+    case EntityType.Dataset:
+      return null;
+    default:
+      return null;
+  }
+}
 
 function ListBar(
   { url,
     title,
     description,
-    tagList,
     timeCaption,
     labelCaption,
-    mediaContent,
     creators,
     slug,
     itemType,
-    visibility
+    visibility,
+    imageUrl
   }: ListElementProps) {
 
-  return <Link className="d-flex flex-row rk-search-result" to={url}>
-    <div className="me-3 mt-2 d-flex flex-column align-items-center">
-      <div>
-        <span className={"circle " + itemType}> </span>
-      </div>
-      <div>
-        <VisibilityIcon visibility={visibility} className="card-visibility-icon--bar" />
-      </div>
-    </div>
-    <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
-      <div className="title d-inline-block text-truncate">
-        {title}
-        <Slug multiline={false} slug={slug} />
-      </div>
-      <EntityCreators display="grid" creators={creators} itemType={itemType} />
-      <div className="description card-description text-truncate text-rk-text d-flex">
-        {description}
-      </div>
-      <EntityTags tagList={tagList} multiline={false} hideEmptyTags={false} />
-      {
-        timeCaption ?
-          <div className="mt-auto">
-            <TimeCaption caption={labelCaption || "Updated"} time={timeCaption} className="text-secondary"/>
+  const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
+  const colorByType = stylesByItemType(itemType);
+  const mainButton = getMainActionByEntity(itemType, slug);
+
+  return (
+    <div className="container-entity-listBar">
+      <div className="entity-image">
+        <Link to={url} className="text-decoration-none">
+          <div style={imageStyles}
+            className={`cursor-pointer listBar-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
+            {!imageUrl ? <div className="card-bg-title card-bg-title--small">{title}</div> : null}
           </div>
-          : null
-      }
-    </Col>
-    <Col className="d-flex justify-content-end align-self-center flex-shrink-0">
-      {mediaContent ?
-        <img src={mediaContent} alt=" " className="card-img-bottom"/>
-        : null
-      }
-    </Col>
-  </Link>;
+        </Link>
+      </div>
+      <div className="entity-title text-truncate cursor-pointer" data-cy={`${itemType}-title`}>
+        <Link to={url} className="text-decoration-none">
+          <div className="listBar-title text-truncate">
+            <span className="card-title text-truncate" data-cy="list-card-title">{title}</span>
+            <span className="entity-title--slug text-truncate">{slug}</span>
+          </div>
+        </Link>
+      </div>
+      <div className="entity-description cursor-pointer">
+        <Link to={url} className="text-decoration-none">
+          <EntityDescription
+            description={description} isHeightFixed={true}
+            showSuggestion={false}
+            urlChangeDescription={`${url}/settings`}
+            className="text-rk-dark m-0"
+            numberLines={1}
+          />
+        </Link>
+      </div>
+      <div className="entity-type-visibility align-items-baseline">
+        <EntityLabel type={itemType} workflowType={null} />
+        { visibility ? (<VisibilityIcon visibility={visibility} className={colorByType.colorText} />) : null }
+      </div>
+      <div className="entity-creators align-items-baseline text-truncate">
+        <EntityCreators display="list" creators={creators} itemType={itemType}
+          includeIcon={true} className="listBar-entity-creators" />
+      </div>
+      <div className="entity-date listBar-entity-date">
+        <TimeCaption
+          caption={labelCaption || "Updated"}
+          showTooltip={true}
+          time={timeCaption}
+          className="text-rk-text-light text-truncate"/>
+      </div>
+      <div className={`entity-action d-flex align-items-baseline gap-1 ${!mainButton ? "d-none" : ""}`}>
+        {mainButton}
+      </div>
+    </div>);
 }
 
 export default ListBar;

@@ -47,33 +47,13 @@ const methods = {
   getProjectFile: {
     response: samples.projectNotebookFile
   },
-  getProjectIssues: {
-    response: {
-      data: samples.issues
-    }
-  },
-  getProjectIssue: {
-    response: {
-      data: samples.issues[0]
-    }
-  },
   getModifiedFiles: {
-    response: {
-      data: []
-    }
-  },
-  getContributions: {
     response: {
       data: []
     }
   },
   getRepositoryTree: {
     response: []
-  },
-  getMergeRequests: {
-    response: {
-      data: []
-    }
   },
   getBranches: {
     response: {

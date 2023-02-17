@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "private": true,
   "dependencies": {
     "@ckeditor/ckeditor5-react": "^5.0.5",
@@ -43,7 +43,7 @@
     "react-cookie-consent": "^8.0.1",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
-    "react-ipynb-renderer": "^1.1.0",
+    "react-ipynb-renderer": "^2.0.1",
     "react-js-pagination": "^3.0.2",
     "react-katex": "^3.0.1",
     "react-markdown": "^8.0.4",
@@ -64,9 +64,9 @@
     "remark-math": "^5.1.1",
     "remark-rehype": "^10.1.0",
     "sass": "^1.57.1",
-    "showdown": "^1.9.1",
+    "showdown": "^2.1.0",
     "showdown-highlight": "^2.1.8",
-    "showdown-katex": "0.6.0",
+    "showdown-katex": "^0.6.0",
     "showdown-mermaid": "0.0.1",
     "styled-jsx": "^5.1.0",
     "uuid": "^3.3.3",
@@ -104,10 +104,11 @@
     "@types/dompurify": "^2.4.0",
     "@types/dropzone": "^5.7.4",
     "@types/jest": "^27.4.1",
+    "@types/lodash": "^4.14.191",
     "@types/node": "^17.0.21",
     "@types/pica": "^9.0.1",
-    "@types/lodash": "^4.14.191",
     "@types/react": "^18.0.26",
+    "@types/react-autosuggest": "^10.1.6",
     "@types/react-avatar-editor": "^13.0.0",
     "@types/react-dom": "^18.0.10",
     "@types/react-pdf": "^6.2.0",
@@ -159,6 +160,9 @@
     "react-inspector": {
       "react": "$react",
       "react-dom": "$react-dom"
+    },
+    "showdown-katex": {
+      "showdown": "^2.1.0"
     }
   },
   "browserslist": [

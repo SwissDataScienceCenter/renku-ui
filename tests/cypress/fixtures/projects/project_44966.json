@@ -1,10 +1,10 @@
 {
   "id":44966,
   "description":null,
-  "name":"nuevo-projecto",
-  "name_with_namespace":"E2E User / nuevo-projecto",
-  "path":"nuevo-projecto",
-  "path_with_namespace":"e2e/nuevo-projecto",
+  "name":"nuevo-project",
+  "name_with_namespace":"E2E User / nuevo-project",
+  "path":"nuevo-project",
+  "path_with_namespace":"e2e/nuevo-project",
   "created_at":"2022-02-21T19:38:25.512Z",
   "default_branch":"master",
   "tag_list":[

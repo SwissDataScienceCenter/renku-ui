@@ -11,6 +11,13 @@ a:focus-visible, svg:focus, svg:focus-visible {
   padding-left: 2em;
 }
 
+@media (max-width: 394px) {
+  .container-xxl.renku-container {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+}
+
 .rk-navbar {
   background-color: $primary;
 }
