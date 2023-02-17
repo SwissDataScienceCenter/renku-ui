@@ -28,6 +28,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
+import { act } from "react-test-renderer";
 
 import { MemoryRouter } from "react-router-dom";
 import { ACCESS_LEVELS, testClient as client } from "../../api-client";
@@ -69,7 +70,7 @@ describe("rendering", () => {
     spy.mockRestore();
   });
 
-  it("renders datasets list without crashing", () => {
+  it("renders datasets list without crashing", async () => {
     const props = {
       client: client,
       datasets_kg: [],
@@ -91,52 +92,64 @@ describe("rendering", () => {
     };
     const div = document.createElement("div");
     const root = createRoot(div);
-    root.render(
-      <Provider store={model.reduxStore}>
+    await act(async () => {
+      root.render(
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <AppContext.Provider value={appContext}>
+              <DatasetsListView
+                {...props}
+              />
+            </AppContext.Provider>
+          </MemoryRouter>
+        </Provider>
+      );
+    });
+
+  });
+
+  it("renders NewDataset form without crashing", async () => {
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+    const root = createRoot(div);
+    await act(async () => {
+      root.render(
         <MemoryRouter>
-          <AppContext.Provider value={appContext}>
-            <DatasetsListView
-              {...props}
-            />
-          </AppContext.Provider>
+          <ChangeDataset
+            client={client}
+            edit={false}
+            location={fakeHistory}
+            maintainer={ACCESS_LEVELS.maintainer}
+            migration={migration}
+            model={model}
+            params={{ UPLOAD_THRESHOLD: { soft: 104857600 } }}
+            user={loggedUser}
+          />
         </MemoryRouter>
-      </Provider>);
+      );
+    });
+
   });
 
-  it("renders NewDataset form without crashing", () => {
+  it("renders DatasetImport form without crashing", async () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
     const root = createRoot(div);
-    root.render(
-      <MemoryRouter>
-        <ChangeDataset
-          client={client}
-          edit={false}
-          location={fakeHistory}
-          maintainer={ACCESS_LEVELS.maintainer}
-          migration={migration}
-          model={model}
-          params={{ UPLOAD_THRESHOLD: { soft: 104857600 } }}
-          user={loggedUser}
-        />
-      </MemoryRouter>);
-  });
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <DatasetImport
+            client={client}
+            edit={false}
+            location={fakeHistory}
+            maintainer={ACCESS_LEVELS.maintainer}
+            migration={migration}
+            model={model}
+            user={loggedUser}
+          />
+        </MemoryRouter>
+      );
+    });
 
-  it("renders DatasetImport form without crashing", () => {
-    const div = document.createElement("div");
-    document.body.appendChild(div);
-    const root = createRoot(div);
-    root.render(
-      <MemoryRouter>
-        <DatasetImport
-          client={client}
-          edit={false}
-          location={fakeHistory}
-          maintainer={ACCESS_LEVELS.maintainer}
-          migration={migration}
-          model={model}
-          user={loggedUser}
-        />
-      </MemoryRouter>);
   });
 });

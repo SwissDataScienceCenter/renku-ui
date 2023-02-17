@@ -26,6 +26,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
+import { act } from "react-test-renderer";
 
 import { statuspage as fakeStatuspage } from "../api-client/test-samples";
 import { StateModel, globalSchema } from "../model";
@@ -41,23 +42,29 @@ describe("rendering", () => {
   model.subModel("statuspage").setObject(statusSummary);
   const location = { pathname: "" };
 
-  it("renders StatuspageBanner", () => {
+  it("renders StatuspageBanner", async () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
     const root = createRoot(div);
-    root.render(
-      <MemoryRouter>
-        <StatuspageBanner store={model.reduxStore} model={model} location={location} />
-      </MemoryRouter>);
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <StatuspageBanner store={model.reduxStore} model={model} location={location} />
+        </MemoryRouter>
+      );
+    });
   });
 
-  it("renders StatuspageDetails", () => {
+  it("renders StatuspageDetails", async () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
     const root = createRoot(div);
-    root.render(
-      <MemoryRouter>
-        <StatuspageDisplay store={model.reduxStore} model={model} />
-      </MemoryRouter>);
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <StatuspageDisplay store={model.reduxStore} model={model} />
+        </MemoryRouter>
+      );
+    });
   });
 });
