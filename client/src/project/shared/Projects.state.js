@@ -23,7 +23,6 @@
  *  Projects controller code.
  */
 
-import { computeVisibilities } from "../../utils/helpers/HelperFunctions";
 import { formatProjectMetadata } from "../../utils/helpers/ProjectFunctions";
 
 
@@ -66,61 +65,6 @@ class ProjectsCoordinator {
       });
       return { starred: values[0], member: values[1] };
     });
-  }
-
-  _setLandingProjects(projectList, lastVisited) {
-    this.model.setObject({
-      landingProjects: {
-        fetched: new Date(),
-        fetching: false,
-        list: { $set: projectList },
-        lastVisited,
-      }
-    });
-  }
-
-  async _getOwnProjectsForLanding() {
-    let projectList = [];
-    const params = { order_by: "last_activity_at", per_page: 5, membership: true };
-    const landingProjects = await this.client.getProjects({ ...params });
-    projectList = landingProjects?.data?.map((project) => this._starredProjectMetadata(project)) ?? [];
-    this._setLandingProjects(projectList, false);
-  }
-
-  updateStarred(project, isStarred) {
-    const starred = this.model.get("featured.starred");
-    let newStarred;
-    if (isStarred) {
-      newStarred = [...starred, this._starredProjectMetadata(project)];
-    }
-    else {
-      const indexToRemove = starred.map(project => project.id).indexOf(project.id);
-      newStarred = [
-        ...starred.slice(0, indexToRemove),
-        ...starred.slice(indexToRemove + 1)
-      ];
-    }
-    this.model.set("featured.starred", newStarred);
-    return newStarred;
-  }
-
-  async getVisibilities(namespace, projectVisibility) {
-    let availableVisibilities = null;
-    let options = projectVisibility ? [projectVisibility] : [];
-    if (!namespace)
-      return null;
-
-    if (namespace?.kind === "user") {
-      options.push("public");
-      return computeVisibilities(options);
-    }
-    else if (namespace?.kind === "group") {
-      // get group visibility
-      const group = await this.client.getGroupByPath(namespace.full_path).then(r => r.data);
-      options.push(group.visibility);
-      return computeVisibilities(options);
-    }
-    return availableVisibilities;
   }
 }
 
