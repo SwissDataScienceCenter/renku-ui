@@ -1,4 +1,4 @@
-FROM node:18.12.1-alpine3.16 as builder
+FROM node:18.14.0-alpine3.16 as builder
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY src /app/src/
 RUN npm install --silent && \
     npm run-script build
 
-FROM node:18.12.1-alpine3.16
+FROM node:18.14.0-alpine3.16
 
 COPY --from=builder /app/dist app/dist
 COPY --from=builder /app/node_modules app/node_modules
