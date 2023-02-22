@@ -57,7 +57,7 @@
     "react-sticky": "^6.0.3",
     "react-toastify": "^6.2.0",
     "reactstrap": "^9.1.5",
-    "redux": "^4.1.2",
+    "redux": "^4.2.1",
     "redux-thunk": "^2.2.0",
     "rehype-katex": "^6.0.2",
     "rehype-stringify": "^9.0.3",
