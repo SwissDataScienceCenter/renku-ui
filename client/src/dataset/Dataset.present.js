@@ -370,9 +370,7 @@ export default function DatasetView(props) {
   const datasetPublished = dataset.published?.datePublished;
   const datasetDate = datasetPublished ? dataset.published.datePublished : dataset.created;
   const linksHeader = getLinksDatasetHeader(dataset.usedIn);
-  const timeCaption = (datasetDate != null) ?
-    new Date(datasetDate.replace(/ /g, "T")) :
-    "";
+  const timeCaption = (datasetDate != null) ? new Date(datasetDate) : "";
 
   const imageUrl = dataset.mediaContent ? getUpdatedDatasetImage(dataset.mediaContent, datasetDate) :
     dataset.images?.length > 0 ? getUpdatedDatasetImage(getDatasetImageUrl(dataset.images), datasetDate) : undefined;

@@ -48,7 +48,7 @@ function TimeCaption(
 
   const ref = useRef(null);
   const tooltip = showTooltip && time ?
-    <ThrottledTooltip target={ref} tooltip={Time.toIsoString(time)} /> : null;
+    <ThrottledTooltip target={ref} tooltip={Time.toIsoTimezoneString(time)} /> : null;
 
   return (
     <>

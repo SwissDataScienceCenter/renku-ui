@@ -17,7 +17,7 @@ function datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, datase
       "In the Knowledge Graph"
       : "Not in the Knowledge Graph";
   const timeCaption = (dataset.created_at != null) ?
-    new Date(dataset.created_at.replace(/ /g, "T")) :
+    new Date(dataset.created_at) :
     "";
   return {
     id: dataset.name,
