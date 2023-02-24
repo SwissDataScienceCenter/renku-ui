@@ -25,9 +25,9 @@
 
 import React, { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
+import { Redirect } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
 
 import Project from "./project/Project";
@@ -45,7 +45,6 @@ import { NotificationsManager, NotificationsPage } from "./notifications";
 import { StyleGuide } from "./styleguide";
 import { Url } from "./utils/helpers/url";
 import { Unavailable } from "./Maintenance";
-import "./App.css";
 import { Loader } from "./utils/components/Loader";
 import { AddDataset } from "./dataset/addtoproject/DatasetAdd.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
@@ -53,8 +52,10 @@ import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
 import SearchPage from "./features/kgSearch/KgSearchPage";
 import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
-import Dashboard from "./features/dashboard/Dashboard";
-import { Redirect } from "react-router";
+import { Dashboard } from "./features/dashboard/Dashboard";
+
+import "./App.css";
+import "react-toastify/dist/ReactToastify.css";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize ? "container-xxl py-4 mt-2 renku-container" : "w-100";
@@ -93,7 +94,7 @@ function CentralContentContainer(props) {
         <Route exact path={Url.get(Url.pages.landing)} render={
           p => (props.user.logged) ?
             <ContainerWrap>
-              <Dashboard />
+              <Dashboard model={props.model} user={props.user} client={props.client} />
             </ContainerWrap> : null
         } />
         <Route path={Url.get(Url.pages.help)} render={

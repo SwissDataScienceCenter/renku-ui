@@ -33,7 +33,7 @@ import { testClient as client } from "../api-client";
 import { generateFakeUser } from "../user/User.test";
 import { StateModel, globalSchema } from "../model";
 import { Provider } from "react-redux";
-import Dashboard from "../features/dashboard/Dashboard";
+import { Dashboard } from "../features/dashboard/Dashboard";
 import { AnonymousHome } from "./index";
 
 const appContext = {
@@ -65,12 +65,13 @@ describe("rendering", () => {
         <Provider store={model.reduxStore}>
           <AppContext.Provider value={appContext}>
             <MemoryRouter>
-              <AnonymousHome client={client}
-                user={anonymousUser}
-                model={model}
-                location={location}
+              <AnonymousHome
+                client={client}
                 homeCustomized={homeCustomized}
+                location={location}
+                model={model}
                 params={params}
+                user={anonymousUser}
               />
             </MemoryRouter>
           </AppContext.Provider>
@@ -79,6 +80,7 @@ describe("rendering", () => {
   });
 
   it("renders home without crashing for logged user", async () => {
+    const loggedUser = generateFakeUser();
     const div = document.createElement("div");
     const root = createRoot(div);
     await act(async () => {
@@ -86,7 +88,7 @@ describe("rendering", () => {
         <Provider store={model.reduxStore}>
           <AppContext.Provider value={appContext}>
             <MemoryRouter>
-              <Dashboard />
+              <Dashboard client={client} model={model} user={loggedUser} />
             </MemoryRouter>
           </AppContext.Provider>
         </Provider>);
