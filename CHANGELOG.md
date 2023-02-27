@@ -1,5 +1,17 @@
 # Changes
 
+# [3.3.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.2.0...3.3.0) (2023-02-27)
+
+### Features
+
+* show instructions on how to connect via SSH on deployments supporting it ([#2324](https://github.com/SwissDataScienceCenter/renku-ui/issues/2324), [#2376](https://github.com/SwissDataScienceCenter/renku-ui/issues/2376))
+
+### Bug Fixes
+
+* fetch sessions early to prevent flashing the the dashboard after a few seconds ([#2400](https://github.com/SwissDataScienceCenter/renku-ui/issues/2400))
+* show and use timezone aware dates ([#2388](https://github.com/SwissDataScienceCenter/renku-ui/issues/2388))
+
+
 # [3.2.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.1.0...3.2.0) (2023-02-16)
 
 
