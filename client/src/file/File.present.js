@@ -73,7 +73,7 @@ class FileCard extends React.Component {
               </div>
               <div className="caption">
                 {this.props.commit.author_name} &nbsp;
-                {Time.toIsoString(this.props.commit.committed_date)}
+                {Time.toIsoTimezoneString(this.props.commit.committed_date)}
               </div>
             </div>
           </ListGroupItem>

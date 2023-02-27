@@ -73,8 +73,8 @@ export function dateFilterTypeToSinceAndUntil(typeDate: DateFilterTypes) {
       to = "";
       break;
   }
-  const since = from ? Time.toIsoString(from, "date") : "";
-  const until = to ? Time.toIsoString(to, "date") : "";
+  const since = from ? Time.toIsoTimezoneString(from, "date") : "";
+  const until = to ? Time.toIsoTimezoneString(to, "date") : "";
   return { since, until };
 }
 
@@ -115,14 +115,14 @@ const DateFilter = ({ handler, values }: DateFilterProps) => {
       <div>
         <label className="px-2 author-label">From:</label>
         <Input type="date" name="start"
-          max={new Date().toISOString().split("T")[0]}
+          max={Time.toIsoTimezoneString(new Date(), "date")}
           onChange={(e: ChangeEvent<HTMLInputElement>) => setDates({ ...dates, since: e.target.value })}
           value={dates.since} />
       </div>
       <div>
         <label className="px-2 author-label">To:</label>
         <Input type="date" name="end"
-          max={new Date().toISOString().split("T")[0]}
+          max={Time.toIsoTimezoneString(new Date(), "date")}
           onChange={(e: ChangeEvent<HTMLInputElement>) => setDates({ ...dates, until: e.target.value })}
           value={dates.until} />
       </div>
