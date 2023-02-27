@@ -66,9 +66,9 @@ describe("dashboard", () => {
     cy.visit("/");
     let projects;
     cy.wait("@getUser");
-    cy.wait("@getLastVisitedProjects").then( result => projects = result.response.body.projects);
+    cy.wait("@getLastVisitedProjects").then(result => projects = result.response.body.projects);
     cy.wait(["@projectLanding", "@projectLanding", "@projectLanding", "@projectLanding"])
-      .then( (results) => {
+      .then((results) => {
         const firstProject = findProject(projects[0], results);
         const projectData = firstProject.response?.body;
         cy.get_cy("projects-container").find('[data-cy="list-card-title"]')
@@ -97,10 +97,10 @@ describe("dashboard", () => {
     cy.visit("/");
     let projects;
     cy.wait("@getUser");
-    cy.wait("@getLastVisitedProjects").then( result => projects = result.response.body.projects);
+    cy.wait("@getLastVisitedProjects").then(result => projects = result.response.body.projects);
     cy.wait(
       ["@getProject", "@getProject", "@getProject", "@getProject", "@getProject"])
-      .then( (results) => {
+      .then((results) => {
         const firstProject = findProject(projects[0], results);
         const projectData = firstProject.response?.body;
         cy.get_cy("projects-container").find('[data-cy="list-card-title"]')
@@ -115,8 +115,7 @@ describe("dashboard", () => {
     fixtures.projects()
       .entitySearch("getEntities", "kgSearch/search.json", "7")
       .getLastVisitedProjects("getLastVisitedProjects", "projects/last-visited-projects-5.json")
-      .getSessions()
-      .sessionServers()
+      .getSessions("getSessions", "*", "sessions/sessionsWithError.json")
       .getProjectCommits();
     const files = {
       "dalatinrofrau/flights-usa": 55402,
@@ -138,21 +137,14 @@ describe("dashboard", () => {
     cy.wait("@getUser");
     cy.wait("@getSessions");
     cy.get_cy("session-container").should("be.visible");
-    // eslint-disable-next-line cypress/no-force
-    cy.get_cy("link-home").click({ force: true });
-    cy.wait("@getSessionServers");
+    cy.get_cy("link-home").click({ force: true }); // eslint-disable-line cypress/no-force
     cy.wait("@getLastVisitedProjects");
-    cy.wait(
-      ["@getProject", "@getProject", "@getProject", "@getProject", "@getProject", "@getProject", "@getProject"])
-      .then( () => {
-        cy.get_cy("container-session").should("have.length", 2);
-        cy.get_cy("container-session").first().find(".session-time").should("contain.text", "Error");
-        cy.get_cy("container-session").first().find(".session-info").should("contain.text", "master");
-        cy.get_cy("container-session").first().find(".session-icon").should("have.text", "Error");
-        cy.get_cy("container-session").first().find(".entity-action")
-          .find("button").first().should("contain.text", "Stop");
-
-
-      });
+    cy.get_cy("container-session").should("have.length", 2);
+    cy.get_cy("container-session").should("have.length", 2);
+    cy.get_cy("container-session").first().find(".session-time").should("contain.text", "Error");
+    cy.get_cy("container-session").first().find(".session-info").should("contain.text", "master");
+    cy.get_cy("container-session").first().find(".session-icon").should("have.text", "Error");
+    cy.get_cy("container-session").first().find(".entity-action")
+      .find("button").first().should("contain.text", "Stop");
   });
 });

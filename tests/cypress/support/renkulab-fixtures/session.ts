@@ -73,16 +73,6 @@ function Session<T extends FixturesConstructor>(Parent: T) {
       });
       return this;
     }
-
-    sessionServers(name = "getSessionServers", fixture = "sessions/servers.json") {
-      cy.intercept(
-        "/ui-server/api/notebooks/servers",
-        {
-          fixture
-        }
-      ).as(name);
-      return this;
-    }
   };
 }
 
