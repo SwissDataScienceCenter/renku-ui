@@ -38,7 +38,7 @@ interface NotebooksVersion {
   version: string;
   anonymousSessionsEnabled: boolean;
   sshEnabled: boolean;
-  cloudstorageEnabled: boolean;
+  cloudStorageEnabled: boolean;
 }
 
 export type { NotebooksVersion, NotebooksVersionResponse };

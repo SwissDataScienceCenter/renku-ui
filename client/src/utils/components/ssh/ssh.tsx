@@ -39,6 +39,13 @@ import rkIconSsh from "../../../styles/icons/ssh.svg";
 import rkIconSshTicked from "../../../styles/icons/ssh-ticked.svg";
 import rkIconSshCross from "../../../styles/icons/ssh-cross.svg";
 
+
+const docsIconStyle = {
+  showLinkIcon: true,
+  iconAfter: true,
+  iconSup: true
+};
+
 interface SshDropdownProps {
   fullPath: string;
   gitUrl: string;
@@ -57,10 +64,31 @@ function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
 
   return (
     <DropdownItem onClick={(e: React.MouseEvent<HTMLElement>) => handleClick(e)}>
-      <img src={rkIconSsh} className="rk-icon rk-icon-md btn-with-menu-margin filter-green" />Start SSH session
+      <img src={rkIconSsh} className="rk-icon rk-icon-md btn-with-menu-margin filter-green" />Connect with SSH
     </DropdownItem>
   );
 }
+
+
+interface SshCommandProps {
+  command: string;
+}
+
+function SshCommand({ command }: SshCommandProps) {
+  return (
+    <Table size="sm">
+      <tbody>
+        <tr>
+          <td>
+            <code className="break-word">{command}</code>
+          </td>
+          <td style={{ width: 1 }}><Clipboard clipboardText={command} /></td>
+        </tr>
+      </tbody>
+    </Table>
+  );
+}
+
 
 function SshModal() {
   const [localMigration, setLocalMigration] = useState({ data: {}, fetched: false, fetching: false });
@@ -134,7 +162,7 @@ function SshModal() {
       </p>
       <p>
         Please refer to{" "}
-        <ExternalDocsLink url={Docs.rtdHowToGuide("renkulab/ssh-into-sessions.html")}
+        <ExternalDocsLink {...docsIconStyle} url={Docs.rtdHowToGuide("renkulab/ssh-into-sessions.html")}
           title="our documentation" /> to get further information.
       </p>
       <GeneralErrorMessage
@@ -160,46 +188,66 @@ function SshModal() {
         <p>
           To update your project, go to{" "}
           <Link to={updateUrl} onClick={() => closeModal()}>Overview Status</Link>
-          {" "}then come back to this window to view the commands to connect remotely to sessions.
+          {" "}then click again on the {'"'}Connect with SSH{'"'} button to view the commands to
+          connect remotely via SSH.
         </p>
         <InfoAlert dismissible={false} timeout={0}>
           Still not working? This might be because your project has a custom template.
-          See <ExternalDocsLink url={Docs.rtdHowToGuide("renkulab/ssh-into-sessions.html")}
+          See <ExternalDocsLink {...docsIconStyle} url={Docs.rtdHowToGuide("renkulab/ssh-into-sessions.html")}
             title="our documentation" /> for more information.
         </InfoAlert>
       </>
     );
   }
   else {
-    const command = "renku session ssh-setup";
+    // const command = "renku session ssh-setup";
+    const command = {
+      login: `renku login ${window.location.origin}`,
+      clone: `renku clone ${projectCurrentGitUrl || projectToShowGitUrl}.git`,
+      start: "renku session start -p renkulab --ssh",
+      open: "renku session open --ssh <session-id>"
+    };
     modalBody = (
       <>
-        <p>
-          <img src={rkIconSshTicked} className="rk-icon rk-icon-md filter-green me-2" />
-          Your project supports SSH.
-        </p>
-        <p>
-          You can now switch to your local CLI and run the following command to set up the project
-          correctly. Then follow the instructions to connect.
-        </p>
+        <div>
+          <p>
+            <img src={rkIconSshTicked} className="rk-icon rk-icon-md filter-green me-2" />
+            <b>Your project supports SSH.</b>
+          </p>
+          <p>
+            You can start and connect to RenkuLab sessions from any machine using
+            the <ExternalDocsLink {...docsIconStyle} url={Docs.rtdHowToGuide(
+              "renkulab/ssh-into-sessions.html#set-up-your-local-system-for-ssh-access"
+            )}title="Renku CLI" />.
+            Here is how:
+          </p>
+        </div>
 
-        <Table size="sm">
-          <tbody>
-            <tr>
-              <td><code className="break-word">{command}</code></td>
-              <td style={{ width: 1 }}><Clipboard clipboardText={command} /></td>
-            </tr>
-          </tbody>
-        </Table>
+        <div>
+          <p className="mb-1">1. Log in to RenkuLab:</p>
+          <SshCommand command={command.login} />
+        </div>
+        <div>
+          <p className="mb-1">2. Clone the repository on your machine:</p>
+          <SshCommand command={command.clone} />
+        </div>
+        <div>
+          <p className="mb-1">3. Run the following command within that repository:</p>
+          <SshCommand command={command.start} />
+        </div>
+        <div>
+          <p className="mb-1">4. Open the session:</p>
+          <SshCommand command={command.open} />
+        </div>
 
         <p>
           If you need help, you can read here{" "}
-          <ExternalDocsLink url={Docs.rtdHowToGuide("renkulab/ssh-into-sessions.html")}
+          <ExternalDocsLink {...docsIconStyle} url={Docs.rtdHowToGuide("renkulab/ssh-into-sessions.html")}
             title="our documentation on SSH" />.
         </p>
         <InfoAlert dismissible={false} timeout={0}>
-          Note that currently running sessions might not work with SSH yet, and you could be asked
-          to start a new one.
+          If this is your first time using SSH with sessions, any currently running sessions will
+          not be SSH-compatible. You need to start a new session, as shown in the steps above.
         </InfoAlert>
       </>
     );
@@ -213,7 +261,7 @@ function SshModal() {
     </span>);
 
   return (
-    <Modal isOpen={displayModal.show} toggle={toggleModal} className="">
+    <Modal isOpen={displayModal.show} toggle={toggleModal} size="lg">
       <ModalHeader toggle={toggleModal}>{title}</ModalHeader>
       <ModalBody>{modalBody}</ModalBody>
     </Modal>

@@ -42,7 +42,7 @@ export const versionsApi = createApi({
           version: singleVersion?.version ?? "unavailable",
           anonymousSessionsEnabled: singleVersion?.data?.anonymousSessionsEnabled ?? false,
           sshEnabled: singleVersion?.data?.sshEnabled ?? false,
-          cloudstorageEnabled:
+          cloudStorageEnabled:
             (singleVersion?.data?.cloudstorageEnabled?.azure_blob ?? false) ||
             (singleVersion?.data?.cloudstorageEnabled?.s3 ?? false)
         } as NotebooksVersion;
@@ -53,7 +53,7 @@ export const versionsApi = createApi({
           version: "unavailable",
           anonymousSessionsEnabled: false,
           sshEnabled: false,
-          cloudstorageEnabled: false
+          cloudStorageEnabled: false
         } as NotebooksVersion;
       },
     }),

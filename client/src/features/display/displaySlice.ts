@@ -35,22 +35,17 @@ export const displaySlice = createSlice({
   initialState,
   reducers: {
     showSshModal: (state, action: PayloadAction<ProjectConfig>) => {
-      return {
-        ...state, modals: {
-          ...state.modals, ssh: {
-            ...state.modals.ssh,
-            show: true,
-            projectPath: action.payload.projectPath,
-            gitUrl: action.payload.gitUrl,
-          }
-        }
+      state.modals.ssh = {
+        show: true,
+        projectPath: action.payload.projectPath,
+        gitUrl: action.payload.gitUrl,
       };
     },
     hideSshModal: (state) => {
-      return { ...state, modals: { ...state.modals, ssh: { ...state.modals.ssh, show: false } } };
+      state.modals.ssh.show = false;
     },
     toggleSshModal: (state) => {
-      return { ...state, modals: { ...state.modals, ssh: { ...state.modals.ssh, show: !state.modals.ssh.show } } };
+      state.modals.ssh.show = !state.modals.ssh.show;
     },
 
     reset: () => initialState
