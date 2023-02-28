@@ -183,12 +183,12 @@ function SshModal() {
       <>
         <p>
           <img src={rkIconSshCross} className="rk-icon rk-icon-md filter-dark me-2" />
-          Your project needs to be updated to support SSH.
+          <b>Your project needs to be updated to support SSH.</b>
         </p>
         <p>
           To update your project, go to{" "}
           <Link to={updateUrl} onClick={() => closeModal()}>Overview Status</Link>
-          {" "}then click again on the {'"'}Connect with SSH{'"'} button to view the commands to
+          {" "}then click again on the <i>Connect with SSH</i> button to view the commands to
           connect remotely via SSH.
         </p>
         <InfoAlert dismissible={false} timeout={0}>
