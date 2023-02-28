@@ -29,13 +29,12 @@ import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
 import { EntityType } from "../../../features/kgSearch";
 
-export function getMainActionByEntity(entityType: EntityType, slug: string) {
-  const sessionAutostartUrl = `/projects/${slug}/sessions/new?autostart=1`;
-  const launchNotebookUrl = `/projects/${slug}/sessions/new`;
+export function getMainActionByEntity(entityType: EntityType, slug: string, gitUrl?: string) {
   switch (entityType) {
     case EntityType.Project:
-      return launchNotebookUrl && sessionAutostartUrl ?
-        <StartSessionButton launchNotebookUrl={launchNotebookUrl} sessionAutostartUrl={sessionAutostartUrl} /> : null;
+      return slug && gitUrl ?
+        (<StartSessionButton fullPath={slug} gitUrl={gitUrl} />) :
+        null;
     case EntityType.Dataset:
       return null;
     default:
@@ -43,22 +42,12 @@ export function getMainActionByEntity(entityType: EntityType, slug: string) {
   }
 }
 
-function ListBar(
-  { url,
-    title,
-    description,
-    timeCaption,
-    labelCaption,
-    creators,
-    slug,
-    itemType,
-    visibility,
-    imageUrl
-  }: ListElementProps) {
-
+function ListBar({
+  creators, description, gitUrl = "", imageUrl, itemType, labelCaption, slug, timeCaption, title, url, visibility
+}: ListElementProps) {
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);
-  const mainButton = getMainActionByEntity(itemType, slug);
+  const mainButton = getMainActionByEntity(itemType, slug, gitUrl);
 
   return (
     <div className="container-entity-listBar">

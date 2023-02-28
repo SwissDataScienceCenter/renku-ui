@@ -39,17 +39,18 @@ import "./EntityHeader.scss";
 import { stylesByItemType } from "../../helpers/HelperFunctions";
 
 export interface EntityHeaderProps {
+  client?: any;
   creators: EntityCreator[];
   description: string;
   devAccess: boolean;
   email?: string;
+  fullPath?: string;
+  gitUrl?: string;
   hideEmptyTags?: boolean;
   itemType: EntityType;
   labelCaption: string;
-  launchNotebookUrl: string;
   links?: EntityLinksHeader;
   otherButtons?: React.ReactNode[];
-  sessionAutostartUrl: string;
   showFullHeader?: boolean;
   slug?: string | React.ReactNode;
   statusButton?: React.ReactNode;
@@ -62,13 +63,13 @@ export interface EntityHeaderProps {
 }
 
 function EntityHeader({
-  creators, description, devAccess, hideEmptyTags = false, itemType, labelCaption, launchNotebookUrl, links,
-  otherButtons, sessionAutostartUrl, showFullHeader = true, slug, statusButton, tagList, timeCaption,
-  title, url, visibility, imageUrl
+  creators, description, devAccess, fullPath, gitUrl, hideEmptyTags = false, imageUrl, itemType,
+  labelCaption, links, otherButtons, showFullHeader = true, slug, statusButton, tagList, timeCaption,
+  title, url, visibility
 }: EntityHeaderProps) {
-
-  const mainButton = launchNotebookUrl && sessionAutostartUrl ?
-    <StartSessionButton launchNotebookUrl={launchNotebookUrl} sessionAutostartUrl={sessionAutostartUrl} /> : null;
+  const mainButton = fullPath && gitUrl ?
+    (<StartSessionButton fullPath={fullPath} gitUrl={gitUrl} />) :
+    null;
 
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);

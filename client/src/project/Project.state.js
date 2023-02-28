@@ -234,10 +234,10 @@ const MigrationMixin = {
   async fetchMigrationCheck(client, gitUrl, defaultBranch = null) {
     const migrationData = await client.checkMigration(gitUrl, defaultBranch);
     if (migrationData?.error) {
-      this.set("migration.check.check_error", migrationData.error);
+      this.set("migration.check", { check_error: migrationData.error, gitUrl });
       return migrationData.error;
     }
-    this.set("migration.check", { ...migrationData.result, check_error: null });
+    this.set("migration.check", { ...migrationData.result, check_error: null, gitUrl });
     return migrationData.result;
   },
   async migrateProject(client, gitUrl, defaultBranch = null, options) {

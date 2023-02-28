@@ -32,6 +32,8 @@ import { recentUserActivityApi } from "../../features/recentUserActivity/RecentU
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import kgInactiveProjectsSlice from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { sessionApi } from "../../features/session/sessionApi";
+import { versionsApi } from "../../features/versions/versionsApi";
+import displaySlice from "../../features/display/displaySlice";
 
 function createStore(renkuStateModelReducer, _name = "renku") {
   return createStoreWithEnhancers(renkuStateModelReducer);
@@ -46,8 +48,10 @@ function createStoreWithEnhancers(renkuStateModelReducer, enhancers = undefined)
   renkuStateModelReducer[recentUserActivityApi.reducerPath] = recentUserActivityApi.reducer;
   renkuStateModelReducer[inactiveKgProjectsApi.reducerPath] = inactiveKgProjectsApi.reducer;
   renkuStateModelReducer[kgInactiveProjectsSlice.name] = kgInactiveProjectsSlice.reducer;
-  // For the moment, disable the custom middleware, since it causes
-  // problems for our app.
+  renkuStateModelReducer[versionsApi.reducerPath] = versionsApi.reducer;
+  renkuStateModelReducer[displaySlice.name] = displaySlice.reducer;
+
+  // For the moment, disable the custom middleware, since it causes problems for our app.
   const store = configureStore({
     reducer: renkuStateModelReducer,
     middleware: (getDefaultMiddleware) =>
@@ -61,7 +65,8 @@ function createStoreWithEnhancers(renkuStateModelReducer, enhancers = undefined)
         .concat(projectKgApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(recentUserActivityApi.middleware)
-        .concat(sessionApi.middleware),
+        .concat(sessionApi.middleware)
+        .concat(versionsApi.middleware),
     enhancers
   });
   return store;

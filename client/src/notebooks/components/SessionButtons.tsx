@@ -16,17 +16,18 @@
  * limitations under the License.
  */
 
-import { Link } from "react-router-dom";
-import { ArrowClockwise, ArrowLeft, Briefcase, Button, Journals, Save, StopCircle } from "../../utils/ts-wrappers";
-import React from "react";
-import { ThrottledTooltip } from "../../utils/components/Tooltip";
-
 /**
  *  renku-ui
  *
  *  SessionButtons.tsx
  *  SessionButtons components.
  */
+
+import React from "react";
+import { Link } from "react-router-dom";
+
+import { ArrowClockwise, ArrowLeft, Briefcase, Button, Journals, Save, StopCircle } from "../../utils/ts-wrappers";
+import { ThrottledTooltip } from "../../utils/components/Tooltip";
 
 interface GoBackProps {
   urlBack: string;

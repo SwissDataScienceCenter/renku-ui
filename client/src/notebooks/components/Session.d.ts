@@ -60,14 +60,15 @@ export interface Notebook {
 }
 
 export interface ProjectMetadata {
-  path_with_namespace?: string;
-  pathWithNamespace?: string;
-  title: string;
-  visibility: "public" | "internal" | "private";
-  description: string;
-  tagList: string[];
-  owner?: EntityCreator;
-  lastActivityAt: string;
   accessLevel: number;
   avatarUrl?: string;
+  description: string;
+  externalUrl?: string;
+  lastActivityAt: string;
+  owner?: EntityCreator;
+  pathWithNamespace?: string;
+  path_with_namespace?: string;
+  tagList: string[];
+  title: string;
+  visibility: "public" | "internal" | "private";
 }
