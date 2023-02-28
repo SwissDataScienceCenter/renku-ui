@@ -139,34 +139,21 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
  * Session View
  */
 interface ListBarSessionProps extends ListElementProps {
-  notebook: Notebook["data"];
-  showLogs: boolean;
-  setShowLogs: Function;
-  setServerLogs: Function;
-  stopSession: Function;
   fetchLogs: IFetchableLogs["fetchLogs"];
+  fullPath: string;
+  gitUrl: string;
   logs: ILogs | undefined;
+  notebook: Notebook["data"];
+  setServerLogs: Function;
+  setShowLogs: Function;
+  showLogs: boolean;
+  stopSession: Function;
 }
-function ListBarSession(
-  { id,
-    url,
-    title,
-    description,
-    timeCaption,
-    labelCaption,
-    creators,
-    slug,
-    itemType,
-    visibility,
-    imageUrl,
-    notebook,
-    showLogs,
-    setShowLogs,
-    setServerLogs,
-    stopSession,
-    fetchLogs,
-    logs,
-  }: ListBarSessionProps) {
+
+function ListBarSession({
+  creators, description, fetchLogs, fullPath, gitUrl, id, imageUrl, itemType, labelCaption, logs, notebook,
+  setServerLogs, setShowLogs, showLogs, slug, stopSession, timeCaption, title, url, visibility
+}: ListBarSessionProps) {
 
   const { client } = useContext(AppContext);
   const [commit, setCommit] = useState(null);
@@ -251,7 +238,7 @@ function ListBarSession(
       </div>
       <div className="entity-action d-flex align-items-baseline gap-1">
         <SessionButton
-          notebook={notebook} sessionStatus={sessionStatus}
+          fullPath={fullPath} gitUrl={gitUrl} notebook={notebook} sessionStatus={sessionStatus}
           setSessionStatus={setSessionStatus} setServerLogs={toggleLogs} stopSession={stopSession} />
       </div>
       <div className="session-resources text-truncate"><ResourceList resources={resources} /></div>

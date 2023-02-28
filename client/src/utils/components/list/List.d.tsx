@@ -15,9 +15,11 @@ export enum ListDisplayType {
 /* eslint-enable no-unused-vars */
 
 export interface ListElementProps {
-  id?: string;
   creators: EntityCreator[];
   description: string;
+  gitUrl?: string;
+  id?: string;
+  imageUrl?: string;
   itemType: EntityType;
   labelCaption: string;
   mediaContent?: any;
@@ -28,7 +30,6 @@ export interface ListElementProps {
   type?: ListDisplayType;
   url: string;
   visibility: Visibilities,
-  imageUrl?: string;
 }
 
 export interface VisibilityIconProps {

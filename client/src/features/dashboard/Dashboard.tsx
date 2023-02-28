@@ -23,6 +23,7 @@ import { ProjectsDashboard } from "./components/ProjectsDashboard";
 import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
 import { DatasetDashboard } from "./components/DatasetsDashboard";
 import { NotebooksCoordinator } from "../../notebooks";
+import { SshModal } from "../../utils/components/ssh/ssh";
 
 import "./Dashboard.scss";
 
@@ -49,6 +50,7 @@ function Dashboard() {
       <ProjectsInactiveKGWarning />
       <ProjectsDashboard userName={user?.data.name} />
       <DatasetDashboard userName={user?.data.name} />
+      <SshModal />
     </div>
   );
 }

@@ -62,11 +62,13 @@ import { NotFound } from "../not-found/NotFound.present";
 import { ContainerWrap } from "../App";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
 import EntityHeader from "../utils/components/entityHeader/EntityHeader";
+import { SshDropdown, SshModal } from "../utils/components/ssh/ssh";
 import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
-
-import "./Project.css";
 import { StartSessionLink } from "../utils/components/entities/Buttons";
 import GitLabConnectButton, { externalUrlToGitLabIdeUrl } from "./components/GitLabConnect";
+
+import "./Project.css";
+import rkIconStartWithOptions from "../styles/icons/start-with-options.svg";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -239,26 +241,27 @@ function ProjectViewHeaderMinimal(props) {
   />);
 
   const forkedFromText = (isForkedFromProject(props.forkedFromProject)) ?
-    <Fragment>{" "}<b key="forked">forked</b>{" from "} {props.forkedFromLink}</Fragment> :
+    (<>{" "}<b key="forked">forked</b>{" from "} {props.forkedFromLink}</>) :
     null;
   const forkedFrom = (forkedFromText) ?
-    <Fragment><span className="text-rk-text fs-small">{forkedFromText}</span><br /></Fragment> :
+    (<><span className="text-rk-text fs-small">{forkedFromText}</span><br /></>) :
     null;
   const slug = <>{props.metadata.pathWithNamespace} {forkedFrom}</>;
 
   return (
-    <Fragment>
+    <>
       <EntityHeader
+        client={props.client}
         creators={props.metadata.owner ? [props.metadata.owner] : []}
         description={props.metadata.description}
         devAccess={props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
+        fullPath={props.metadata.pathWithNamespace}
+        gitUrl={props.externalUrl}
         hideEmptyTags={true}
         imageUrl={props.metadata.avatarUrl}
         itemType="project"
         labelCaption={"Updated"}
-        launchNotebookUrl={props.launchNotebookUrl}
         links={linksHeader}
-        sessionAutostartUrl={props.sessionAutostartUrl}
         slug={slug}
         statusButton={statusButton}
         tagList={props.metadata.tagList}
@@ -267,7 +270,8 @@ function ProjectViewHeaderMinimal(props) {
         url={projectUrl}
         visibility={props.metadata.visibility}
       />
-    </Fragment>);
+      <SshModal />
+    </>);
 }
 
 function ProjectSuggestionReadme({ commits, commitsReadme, externalUrl, metadata }) {
@@ -482,16 +486,31 @@ function getSessionRunning(sessions, startSessionUrl) {
   return sessionRunning;
 }
 
+/**
+ * Show session button with dropdown
+ * @param {string} fullPath - project full path
+ * @param {string} gitUrl - project git URL
+ */
 function StartSessionButton(props) {
-  const { launchNotebookUrl, sessionAutostartUrl } = props;
+  const { fullPath, gitUrl } = props;
+  const projectData = { namespace: "", path: fullPath };
+  const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, projectData);
+  const launchNotebookUrl = Url.get(Url.pages.project.session.new, projectData);
+
   const defaultAction = (
     <StartSessionLink sessionAutostartUrl={sessionAutostartUrl} className="session-link-group" />);
   return (
-    <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="rk-green" isPrincipal={true}>
-      <DropdownItem>
-        <Link className="text-decoration-none" to={launchNotebookUrl}>Start with options</Link>
-      </DropdownItem>
-    </ButtonWithMenu>
+    <>
+      <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="rk-green" isPrincipal={true}>
+        <DropdownItem>
+          <Link className="text-decoration-none" to={launchNotebookUrl}>
+            <img src={rkIconStartWithOptions} className="rk-icon rk-icon-md btn-with-menu-margin" />
+            Start with options
+          </Link>
+        </DropdownItem>
+        <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />
+      </ButtonWithMenu>
+    </>
   );
 }
 
