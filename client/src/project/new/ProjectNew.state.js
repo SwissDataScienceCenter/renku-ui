@@ -165,7 +165,6 @@ class NewProjectCoordinator {
   /**
    * Get all the auto-fill content and fill in the provided data.
    * @param {object} [automatedObject] - pass the up-to-date `automated` object to optimize performance.
-   * @param {ProjectsCoordinator} [projectsCoordinator] - fetch visibilities
    * @param {object} [namespaces] - up-to-date namespaces
    * @param {object} [availableVisibilities] - available visibilities
    * @param {function} [setNamespace] - function to set a new namespace, it is necessary to calculate the visibilities

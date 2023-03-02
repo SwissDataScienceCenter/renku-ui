@@ -29,7 +29,6 @@ import _ from "lodash";
 
 import Present from "./Project.present";
 import { GraphIndexingStatus, ProjectCoordinator, MigrationStatus } from "./Project.state";
-import { ProjectsCoordinator } from "./shared";
 import { FileLineage } from "../file";
 import { ACCESS_LEVELS } from "../api-client";
 import { ShowFile } from "../file";
@@ -212,8 +211,6 @@ class View extends Component {
     const currentSearch = qs.parse(props.location.search);
     this.autostart = currentSearch?.autostart;
     this.customBranch = currentSearch?.branch;
-    // TODO: Could move projectsCoordinator once ProjectModel goes away
-    this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
     this.projectCoordinator = new ProjectCoordinator(props.client, props.model.subModel("project"));
     this.datasetCoordinator = new DatasetCoordinator(props.client, props.model.subModel("dataset"));
     this.notebookCoordinator = new NotebooksCoordinator(props.client, props.model.subModel("notebooks"));
