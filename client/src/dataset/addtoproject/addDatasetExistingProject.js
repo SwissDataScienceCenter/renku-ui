@@ -25,7 +25,7 @@ import { ACCESS_LEVELS } from "../../api-client";
 import SelectAutosuggestInput from "../../utils/components/SelectAutosuggestInput";
 import { Loader } from "../../utils/components/Loader";
 import { groupBy } from "../../utils/helpers/HelperFunctions";
-import { useGetMemberProjectsQuery } from "../../features/projects/ProjectApi.ts";
+import { useGetMemberProjectsQuery } from "../../features/projects/ProjectsApi.ts";
 
 /**
  *  incubator-renku-ui

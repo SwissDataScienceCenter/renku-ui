@@ -104,49 +104,6 @@ export const projectApi = createApi({
       transformResponse: convertProjects,
       keepUnusedDataFor: 5,
     }),
-    getStarredProjects: builder.query<any, QueryParams>({
-      query: (queryParams: QueryParams) => {
-        const params = { variables: null, operationName: null };
-        let query = `{
-          currentUser {
-            starredProjects(first:${queryParams.per_page}, after:"${queryParams.endCursor}") {
-              pageInfo {
-                endCursor
-                hasNextPage
-              }
-              nodes {
-                id
-                name
-                fullPath
-                namespace {
-                  fullPath
-                }
-                path,
-                httpUrlToRepo,
-                userPermissions {
-                  adminProject,
-                  pushCode,
-                  removeProject
-                }
-              }
-            }
-          }
-        }`;
-        let headers = {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest",
-        };
-        return {
-          url: `/graphql`,
-          method: "POST",
-          body: JSON.stringify({ ...params, query }),
-          headers: new Headers(headers),
-        };
-      },
-      transformResponse: convertProjects,
-      keepUnusedDataFor: 5,
-    }),
     getRecentlyVisitedProjects: builder.query<any, number>({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
         // get list of projects recently visited
@@ -192,5 +149,4 @@ export const {
   useGetGroupByPathQuery,
   useGetMemberProjectsQuery,
   useGetRecentlyVisitedProjectsQuery,
-  useGetStarredProjectsQuery,
 } = projectApi;

@@ -26,7 +26,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { projectKgApi } from "../../features/projects/ProjectKgApi";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
-import { projectApi } from "../../features/projects/ProjectApi";
+import { projectApi } from "../../features/projects/ProjectsApi";
 import { kgSearchApi } from "../../features/kgSearch";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
@@ -67,7 +67,7 @@ function createStoreWithEnhancers(renkuStateModelReducer, enhancers = undefined)
         .concat(recentUserActivityApi.middleware)
         .concat(sessionApi.middleware)
         .concat(versionsApi.middleware),
-    enhancers
+    enhancers,
   });
   return store;
 }
