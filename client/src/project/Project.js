@@ -174,7 +174,6 @@ function refreshTrigger(thing) {
 function mapProjectStateToProps(state, ownProps) {
   const projectCoordinator = ownProps.projectCoordinator;
   const pathComponents = splitProjectSubRoute(ownProps.match.url);
-  const starred = ownProps.getStarred();
   const accessLevel = projectCoordinator.get("metadata.accessLevel");
   const settingsReadOnly = accessLevel < ACCESS_LEVELS.MAINTAINER;
   const externalUrl = projectCoordinator.get("metadata.externalUrl");
@@ -190,7 +189,6 @@ function mapProjectStateToProps(state, ownProps) {
     projectPathWithNamespace: pathComponents.projectPathWithNamespace,
     projectId: pathComponents.projectId,
     namespace: pathComponents.namespace,
-    starred,
     settingsReadOnly,
     externalUrl,
     canCreateMR,
@@ -221,13 +219,6 @@ class View extends Component {
     this.notebookCoordinator = new NotebooksCoordinator(props.client, props.model.subModel("notebooks"));
     // reset filter file path when load a new project
     this.notebookCoordinator.setNotebookFilePath(null);
-
-    // fetch useful projects data in not yet loaded
-    if (this.props.user.logged) {
-      const featured = props.model.get("projects.featured");
-      if (!featured.fetched && !featured.fetching)
-        this.projectsCoordinator.getFeatured();
-    }
   }
 
   componentDidMount() {
@@ -374,14 +365,6 @@ class View extends Component {
     const webhookStatus = this.projectCoordinator.get("webhook");
     return webhookStatus.status || (webhookStatus.created && webhookStatus.stop)
       || webhookStatus.progress === GraphIndexingStatus.MAX_VALUE;
-  }
-
-  getStarred() {
-    const featured = this.props.model.get("projects.featured");
-    // return null until data are available
-    if (!featured.fetched)
-      return null;
-    return featured.starred.map((project) => project.id).indexOf(this.projectCoordinator.get("metadata.id")) >= 0;
   }
 
   getSubUrls() {
@@ -681,16 +664,6 @@ class View extends Component {
     onAvatarChange: (avatarFile) => {
       return this.projectCoordinator.setAvatar(this.props.client, avatarFile);
     },
-    onStar: () => {
-      const starred = this.getStarred();
-      return this.projectCoordinator.star(this.props.client, starred).then((project) => {
-        // we know it worked, we can manually change star status without querying APIs
-        if (project && project.star_count != null)
-          this.projectCoordinator.setStars(project.star_count);
-
-        return true;
-      });
-    },
     onProjectRefresh: (e) => {
       e.preventDefault();
       this.fetchAll();
@@ -753,7 +726,6 @@ class View extends Component {
       ...this.getSubUrls(),
     };
     return <ConnectedProjectView
-      getStarred={this.getStarred.bind(this)}
       isGraphReady={this.isGraphReady.bind(this)}
       projectCoordinator={this.projectCoordinator}
       {...this.subComponents(props)}
