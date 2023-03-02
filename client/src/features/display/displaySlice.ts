@@ -53,5 +53,5 @@ export const displaySlice = createSlice({
 });
 
 export const { showSshModal, hideSshModal, toggleSshModal, reset } = displaySlice.actions;
-export const useInactiveProjectSelector: TypedUseSelectorHook<Display> = useSelector;
+export const useDisplaySelector: TypedUseSelectorHook<Display> = useSelector;
 export default displaySlice;

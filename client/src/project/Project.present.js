@@ -862,8 +862,9 @@ function ProjectViewWorkflows(props) {
     "";
 
   return (
-    <WorkflowsList client={props.client} fullPath={props.projectPathWithNamespace} model={props.model}
-      reference={reference} repositoryUrl={props.externalUrl} versionUrl={props.migration?.core?.versionUrl} />
+    <WorkflowsList fullPath={props.projectPathWithNamespace} reference={reference}
+      repositoryUrl={props.externalUrl} versionUrl={props.migration?.core?.versionUrl}
+    />
   );
 }
 

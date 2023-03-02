@@ -195,9 +195,7 @@ function mapProjectStateToProps(state, ownProps) {
     // fields (mostly non-project) that should trigger a re-render
     triggerDataset: refreshTrigger(state.stateModel.dataset),
     triggerForm: isOnDatasetEditPage ? {} : null,
-    triggerNotebooks: refreshTrigger(state.stateModel.notebooks),
-    triggerWorkflow: refreshTrigger(state.stateModel.workflow),
-    triggerWorkflows: refreshTrigger(state.stateModel.workflows)
+    triggerNotebooks: refreshTrigger(state.stateModel.notebooks)
   };
 }
 

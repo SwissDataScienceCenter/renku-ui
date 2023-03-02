@@ -28,7 +28,6 @@ import addProjectMethods from "./project";
 import addRepositoryMethods from "./repository";
 import addTemplatesMethods from "./templates";
 import addUserMethods from "./user";
-import addWorkflowsMethods from "./workflows";
 import processPaginationHeaders from "./pagination";
 import testClient from "./test-client";
 import { APIError, alertAPIErrors, API_ERRORS } from "./errors";
@@ -77,7 +76,6 @@ class APIClient {
     addRepositoryMethods(this);
     addTemplatesMethods(this);
     addUserMethods(this);
-    addWorkflowsMethods(this);
   }
 
   /**

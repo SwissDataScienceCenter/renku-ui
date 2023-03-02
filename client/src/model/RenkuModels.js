@@ -175,27 +175,6 @@ const webSocketSchema = new Schema({
   }
 });
 
-const workflowSchema = new Schema({
-  details: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
-  target: { [Prop.INITIAL]: "" },
-  error: { [Prop.INITIAL]: null },
-  fetched: { [Prop.INITIAL]: null },
-  fetching: { [Prop.INITIAL]: false },
-  expanded: { [Prop.INITIAL]: {} }
-});
-
-const workflowsSchema = new Schema({
-  list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
-  target: { [Prop.INITIAL]: "" },
-  error: { [Prop.INITIAL]: null },
-  fetched: { [Prop.INITIAL]: null },
-  fetching: { [Prop.INITIAL]: false },
-  expanded: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
-  showInactive: { [Prop.INITIAL]: false },
-  orderAscending: { [Prop.INITIAL]: true },
-  orderProperty: { [Prop.INITIAL]: "workflowType" }
-});
-
 const projectSchema = new Schema({
   branches: {
     [Prop.SCHEMA]: new Schema({
@@ -705,6 +684,5 @@ const formGeneratorSchema = new Schema({
 export {
   datasetFormSchema, datasetSchema, datasetImportFormSchema, environmentSchema,
   formGeneratorSchema, newProjectSchema, notebooksSchema, notificationsSchema,
-  projectSchema, projectsSchema, statuspageSchema, userSchema, webSocketSchema, workflowSchema,
-  workflowsSchema
+  projectSchema, projectsSchema, statuspageSchema, userSchema, webSocketSchema
 };
