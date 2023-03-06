@@ -82,7 +82,7 @@ function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl }: Workf
   const waiting = !versionUrlAvailable || workflowsQuery.isLoading;
 
   // Fetch workflow details
-  const skipDetails = (!versionUrlAvailable || !repositoryUrl || !selected) ? true : false;
+  const skipDetails = (skipList || !selected) ? true : false;
   const workflowDetailQuery = useGetWorkflowDetailQuery(
     { coreUrl: versionUrl, gitUrl: repositoryUrl, workflowId: selected, reference, fullPath },
     { skip: skipDetails }

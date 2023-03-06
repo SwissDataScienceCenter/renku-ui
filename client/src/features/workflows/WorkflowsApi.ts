@@ -18,7 +18,9 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import { WorkflowListElement, WorkflowPlan, WorkflowDetails } from "./Workflows";
+import {
+  WorkflowDetails, WorkflowDetailsRequestParams, WorkflowListElement, WorkflowPlan, WorkflowRequestParams
+} from "./Workflows";
 import { Url } from "../../utils/helpers/url";
 
 const PLANS_PREFIX = "/plans/";
@@ -86,9 +88,7 @@ export const workflowsApi = createApi({
   reducerPath: "workflowsApi",
   baseQuery: fetchBaseQuery({ baseUrl: "" }),
   endpoints: (builder) => ({
-    getWorkflowList: builder.query<WorkflowPlan[], {
-      coreUrl: string, gitUrl: string, reference: string, fullPath: string
-    }>({
+    getWorkflowList: builder.query<WorkflowPlan[], WorkflowRequestParams>({
       query: (data) => {
         let url = `/renku${data.coreUrl}/workflow_plans.list`;
         let params: Record<string, any> = { git_url: data.gitUrl };
@@ -106,9 +106,7 @@ export const workflowsApi = createApi({
           return response.error;
       }
     }),
-    getWorkflowDetail: builder.query<WorkflowDetails, {
-      coreUrl: string, gitUrl: string, workflowId: string, reference: string, fullPath: string
-    }>({
+    getWorkflowDetail: builder.query<WorkflowDetails, WorkflowDetailsRequestParams>({
       query: (data) => {
         let url = `/renku${data.coreUrl}/workflow_plans.show`;
         const workflowFullId = PLANS_PREFIX + data.workflowId;
@@ -128,6 +126,8 @@ export const workflowsApi = createApi({
       }
     }),
   }),
+  refetchOnMountOrArgChange: 20,
+  keepUnusedDataFor: 5,
 });
 
 export const { useGetWorkflowDetailQuery, useGetWorkflowListQuery } = workflowsApi;

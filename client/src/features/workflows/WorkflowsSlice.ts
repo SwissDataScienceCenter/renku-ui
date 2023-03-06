@@ -48,11 +48,10 @@ export const workflowsSlice = createSlice({
   initialState,
   reducers: {
     toggleExpanded(state, action: PayloadAction<WorkflowsTogglePayload>) {
-      const expandedCurrent = [...state.expanded];
-      if (expandedCurrent.includes(action.payload.workflowId))
-        state.expanded = expandedCurrent.filter((e: any) => e !== action.payload.workflowId);
+      if (state.expanded.includes(action.payload.workflowId))
+        state.expanded = state.expanded.filter((e: any) => e !== action.payload.workflowId);
       else
-        state.expanded = [...expandedCurrent, action.payload.workflowId];
+        state.expanded = [...state.expanded, action.payload.workflowId];
     },
     toggleInactive(state) {
       state.showInactive = !state.showInactive;

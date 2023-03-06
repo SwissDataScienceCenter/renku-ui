@@ -16,12 +16,14 @@
  * limitations under the License.
  */
 
+import { WorkflowType } from "../../utils/components/entities";
+
+
 export interface Creator {
   affiliation: string,
   email: string,
   name: string
 }
-
 
 // ***** Workflows ***** //
 
@@ -37,7 +39,7 @@ export interface WorkflowPlan {
   name: string,
   number_of_executions: number,
   touches_existing_files: boolean,
-  type: "Plan" | "CompositePlan"
+  type: WorkflowType
 }
 
 export interface WorkflowListElement {
@@ -55,11 +57,11 @@ export interface WorkflowListElement {
   urlSingle: string,
   uniqueId: string,
   workflowId: string,
-  workflowType: "Plan" | "CompositePlan"
+  workflowType: WorkflowType
 }
 
 
-// ***** Workflow ***** //
+// ***** Workflow details ***** //
 
 interface WorkflowDetailsCommon {
   annotations: string
@@ -74,7 +76,7 @@ interface WorkflowDetailsCommon {
   name: string,
   renkuCommand: string?,
   touches_existing_files: boolean,
-  type: "Plan" | "CompositePlan"
+  type: WorkflowType
 }
 
 export interface WorkflowDetailsStep extends WorkflowDetailsCommon {
@@ -85,7 +87,7 @@ export interface WorkflowDetailsStep extends WorkflowDetailsCommon {
   number_of_executions: number,
   outputs: Record<string, any>,
   parameters: string[],
-  type: "CompositePlan"
+  type: WorkflowType.CompositePlan
 }
 
 export interface WorkflowDetailsComposite extends WorkflowDetailsCommon {
@@ -94,13 +96,13 @@ export interface WorkflowDetailsComposite extends WorkflowDetailsCommon {
   links: Record<string, any>,
   mappings: Record<string, any>,
   plans: Record<string, any>,
-  type: "Plan"
+  type: WorkflowType.Plan
 }
 
 export type WorkflowDetails = WorkflowDetailsStep | WorkflowDetailsComposite;
 
 
-// ***** Workflow local slices ***** //
+// ***** Workflow local slices and API parameters ***** //
 
 export interface WorkflowsDisplay {
   details: Record<string, any>, // TODO: add the Details section types
@@ -109,3 +111,16 @@ export interface WorkflowsDisplay {
   orderProperty: string,
   showInactive: boolean,
 }
+
+export interface WorkflowRequestParams {
+  coreUrl: string;
+  gitUrl: string;
+  reference: string;
+  fullPath: string;
+}
+
+export interface WorkflowDetailsRequestParams extends WorkflowRequestParams {
+  workflowId: string
+}
+
+export { WorkflowType };
