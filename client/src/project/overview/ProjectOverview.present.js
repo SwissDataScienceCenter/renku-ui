@@ -102,14 +102,6 @@ class OverviewStats extends Component {
                     </td>
                   </tr>
                   <tr>
-                    <th className="align-middle" scope="row">Number of Stars</th>
-                    <td className="px-3 px-lg-4 align-middle">{metadata.starCount}</td>
-                    <td>
-                      <ExternalLink role="text" showLinkIcon={true}
-                        url={`${metadata.repositoryUrl}/-/starrers`} title="Stars in GitLab" />
-                    </td>
-                  </tr>
-                  <tr>
                     <th className="align-middle" scope="row">Number of Commits</th>
                     <td className="px-3 px-lg-4 align-middle">{commitsCount}</td>
                     <td>
