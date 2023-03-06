@@ -32,9 +32,8 @@ import {
   Modal, Row, Nav, NavItem, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCodeBranch, faExclamationTriangle, faInfoCircle, faStar as faStarSolid, faUserClock
+  faCodeBranch, faExclamationTriangle, faInfoCircle, faUserClock
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "../utils/helpers/url";
@@ -361,51 +360,10 @@ const ProjectSuggestActions = (props) => {
 class ProjectViewHeaderOverview extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      updating_star: false
-    };
-  }
-
-  star(event) {
-    event.preventDefault();
-    // do nothing if the star state is not yet loaded
-    if (this.props.starred == null && this.props.user?.logged)
-      return;
-    this.setState({ updating_star: true });
-    this.props.onStar().then(
-      result => {
-        this.setState({ updating_star: false });
-      });
   }
 
   render() {
     const metadata = this.props.metadata;
-    const logged = this.props.user?.logged;
-
-    let starElement;
-    let starText;
-    if (this.state.updating_star) {
-      starElement = (<Loader className="mr-2" inline size={14} />);
-      if (this.props.starred)
-        starText = "un-starring...";
-      else
-        starText = "starring...";
-    }
-    else {
-      const starred = this.props.starred;
-      if (starred == null && logged) {
-        starElement = (<Loader inline size={14} />);
-        starText = "";
-      }
-      else if (starred) {
-        starText = "";
-        starElement = (<FontAwesomeIcon icon={faStarSolid} />);
-      }
-      else {
-        starText = "";
-        starElement = (<FontAwesomeIcon icon={faStarRegular} />);
-      }
-    }
 
     const gitlabIDEUrl = externalUrlToGitLabIdeUrl(this.props.externalUrl);
     const forkProjectDisabled = metadata.accessLevel < ACCESS_LEVELS.REPORTER
@@ -432,17 +390,6 @@ class ProjectViewHeaderOverview extends Component {
                 forksCount={metadata.forksCount}
                 externalUrl={this.props.externalUrl}
               />
-              <div id="project-stars">
-                <Button
-                  className="btn-outline-rk-green btn-icon-text"
-                  disabled={this.state.updating_star || this.props.starred == null && logged}
-                  onClick={this.star.bind(this)}>
-                  {starElement} {starText} {metadata.starCount}
-                </Button>
-                <ThrottledTooltip
-                  target="project-stars"
-                  tooltip="Stars" />
-              </div>
               <GitLabConnectButton
                 externalUrl={this.props.externalUrl}
                 gitlabIDEUrl={gitlabIDEUrl}

@@ -18,7 +18,7 @@
 
 import { useEffect, useState } from "react";
 import { computeVisibilities } from "../helpers/HelperFunctions";
-import { useGetGroupByPathQuery } from "../../features/projects/ProjectApi";
+import { useGetGroupByPathQuery } from "../../features/projects/ProjectsApi";
 
 /**
  *  useGetVisibilities custom hook

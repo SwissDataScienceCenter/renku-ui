@@ -30,7 +30,7 @@ describe("Add dataset to existing project", () => {
 
   beforeEach(() => {
     fixtures.config().versions().userTest();
-    fixtures.projects().landingUserProjects("getLandingUserProjects", "projects/member-projects.json");
+    fixtures.landingUserProjects("getLandingUserProjects", "projects/member-projects.json");
     fixtures.datasetById(datasetIdentifier);
     fixtures.project(pathOrigin, "getProject", "projects/project.json", false).cacheProjectList();
     fixtures.interceptMigrationCheck("migrationCheckDatasetProject", "projects/migration-check_43781.json", "*");
@@ -38,7 +38,6 @@ describe("Add dataset to existing project", () => {
     fixtures.importJobCompleted();
     cy.visit(`datasets/${datasetIdentifier}/add`);
     cy.wait("@getLandingUserProjects");
-    cy.wait("@getProjects");
     cy.wait("@getDatasetById");
     cy.wait("@getProject");
     cy.wait("@migrationCheckDatasetProject");
