@@ -220,13 +220,6 @@ const ProjectAttributesMixin = {
         this.set("metadata.tagList", temporalTags); // to refresh view
         this.set("metadata.pendingRefresh", true);
       });
-  },
-  setStars(num) {
-    this.set("metadata.starCount", num);
-  },
-  async star(client, starred) {
-    return client.starProject(this.get("metadata.id"), starred)
-      .then((resp) => resp.data);
   }
 };
 
@@ -385,7 +378,6 @@ function metadataFromData(data) {
     pathWithNamespace: data.all.path_with_namespace,
     repositoryUrl: data.all.web_url,
     sshUrl: data.metadata.system.ssh_url,
-    starCount: data.all.star_count,
     tagList: { $set: data.metadata.system.tag_list }, // fix empty tag_list not updating
     title: data.metadata.core.title,
     visibility: data.metadata.visibility.level, // this is computed in carveProject

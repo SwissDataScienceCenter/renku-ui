@@ -25,7 +25,5 @@
 
 import { ProjectAvatarEdit } from "./ProjectAvatar.container";
 import { ProjectTags, ProjectTagList } from "./ProjectTag.container";
-import { ProjectsCoordinator } from "./Projects.state";
 
 export { ProjectAvatarEdit, ProjectTags, ProjectTagList };
-export { ProjectsCoordinator };

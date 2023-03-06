@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { useGetMemberProjectsQuery } from "../../features/projects/ProjectApi";
+import { useGetMemberProjectsQuery } from "../../features/projects/ProjectsApi";
 
 /**
  *  useGetProjects custom hook
@@ -34,25 +34,20 @@ function useGetUserProjects() {
   // continue fetching if there is more data
   useEffect(() => {
     if (data) {
-      if (data?.hasNextPage)
-        setEndCursor(data.endCursor);
-      else
-        setIsFetchingProjects(isFetching);
+      if (data?.hasNextPage) setEndCursor(data.endCursor);
+      else setIsFetchingProjects(isFetching);
     }
     else {
       setIsFetchingProjects(isFetching);
     }
-  }, [ data?.hasNextPage, data?.endCursor, isFetching ]); //eslint-disable-line
+  }, [data?.hasNextPage, data?.endCursor, isFetching]); //eslint-disable-line
 
   // concat projects if is endCursor is not an initial value
   useEffect(() => {
-    if (isFetching)
-      return;
-    if (endCursor === "")
-      setProjectsMembers(data?.data);
-    else
-      setProjectsMembers([...projectsMember, ...data.data]);
-  }, [ data?.data, isFetching, endCursor ]); //eslint-disable-line
+    if (isFetching) return;
+    if (endCursor === "") setProjectsMembers(data?.data);
+    else setProjectsMembers([...projectsMember, ...data.data]);
+  }, [data?.data, isFetching, endCursor]); //eslint-disable-line
 
   return { projectsMember, isFetchingProjects, refetchUserProjects: refetch };
 }

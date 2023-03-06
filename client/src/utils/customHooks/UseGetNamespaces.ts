@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-
-import { useGetNamespacesQuery } from "../../features/projects/ProjectApi";
+import { useGetNamespacesQuery } from "../../features/projects/ProjectsApi";
 
 /**
  *  useGetNamespaces custom hook
@@ -32,7 +31,7 @@ function useGetNamespaces(ownedOnly: boolean) {
     list: data ?? [],
     fetching: isFetching,
     fetched: !isFetching && !isLoading,
-    refetchNamespaces: refetch
+    refetchNamespaces: refetch,
   };
 }
 

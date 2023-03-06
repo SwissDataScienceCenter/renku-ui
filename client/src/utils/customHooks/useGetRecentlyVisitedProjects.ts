@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { useGetRecentlyVisitedProjectsQuery } from "../../features/projects/ProjectApi";
+import { useGetRecentlyVisitedProjectsQuery } from "../../features/projects/ProjectsApi";
 import { Session } from "../helpers/SessionFunctions";
 /**
  *  useGetRecentlyVisitedProjects custom hook
@@ -26,21 +26,21 @@ import { Session } from "../helpers/SessionFunctions";
  */
 function useGetRecentlyVisitedProjects(projectsCount: number, currentSessions: Session[]) {
   // number of projects to fetch according to current sessions to avoid duplication
-  const totalProjectsToRequest = currentSessions?.length >= projectsCount ?
-    currentSessions.length + 3 : projectsCount;
+  const totalProjectsToRequest = currentSessions?.length >= projectsCount ? currentSessions.length + 3 : projectsCount;
   const totalProjectsToReturn = currentSessions?.length >= projectsCount ? 3 : projectsCount - currentSessions.length;
   const { data, isFetching, refetch } = useGetRecentlyVisitedProjectsQuery(totalProjectsToRequest);
   let projectsToShow = data;
   if (!isFetching && data?.length > 0 && currentSessions?.length > 0) {
-    const sessionProjectIds = currentSessions.map( (session: Session) => session.annotations["gitlabProjectId"]);
+    const sessionProjectIds = currentSessions.map((session: Session) => session.annotations["gitlabProjectId"]);
     projectsToShow = data
-      .filter((project: Record<string, any>) =>
-        !sessionProjectIds?.includes(`${project.id}`)).splice(0, totalProjectsToReturn);
+      .filter((project: Record<string, any>) => !sessionProjectIds?.includes(`${project.id}`))
+      .splice(0, totalProjectsToReturn);
   }
   return {
     projects: projectsToShow,
     isFetchingProjects: isFetching,
-    refetchProjects: refetch };
+    refetchProjects: refetch,
+  };
 }
 
 export default useGetRecentlyVisitedProjects;
