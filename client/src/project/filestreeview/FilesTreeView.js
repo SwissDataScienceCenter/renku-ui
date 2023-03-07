@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { StickyContainer, Sticky } from "react-sticky";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faFolder as faFolderClosed, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
 import { Button, ButtonGroup } from "reactstrap";
@@ -97,33 +96,31 @@ class TreeNode extends Component {
   }
 }
 
-class TreeContainer extends Component {
-  render() {
-    const { style, fileView, toLineage, toFile, tree } = this.props;
+function TreeContainer(props) {
+  const { style, fileView, toLineage, toFile, tree } = props;
 
-    const togglePage = () => {
-      if (fileView) this.props.history.push(toLineage);
-      else this.props.history.push(toFile);
-    };
+  const togglePage = () => {
+    if (fileView) props.history.push(toLineage);
+    else props.history.push(toFile);
+  };
 
-    return (
-      <div className="d-flex flex-column" style={style}>
-        <div className="d-block form-rk-green">
-          <ButtonGroup className="d-flex">
-            <Button onClick={togglePage} active={fileView}>
-              Contents
-            </Button>
-            <Button onClick={togglePage} active={!fileView}>
-              Lineage
-            </Button>
-          </ButtonGroup>
-        </div>
-        <div id="tree-content" className="mb-3 p-2">
-          {tree}
-        </div>
+  return (
+    <div className="d-flex flex-column" style={style}>
+      <div className="d-block form-rk-green">
+        <ButtonGroup className="d-flex">
+          <Button onClick={togglePage} active={fileView}>
+            Contents
+          </Button>
+          <Button onClick={togglePage} active={!fileView}>
+            Lineage
+          </Button>
+        </ButtonGroup>
       </div>
-    );
-  }
+      <div id="tree-content" className="mb-3 p-2">
+        {tree}
+      </div>
+    </div>
+  );
 }
 
 class FilesTreeView extends Component {
@@ -192,38 +189,9 @@ class FilesTreeView extends Component {
     }
 
     return (
-      // This components make the file tree sticky on scroll and fix the max-height
-      <StickyContainer>
-        <Sticky topOffset={-10}>
-          {({ style, calculatedHeight, distanceFromTop }) => {
-            // fix to trigger the computation
-            if (calculatedHeight === undefined) {
-              if (window.scrollY) { window.scrollTo(window.scrollX, window.scrollY + 1); }
-              else {
-                setTimeout(() => {
-                  window.scrollTo(window.scrollX, window.scrollY + 1);
-                }, 10);
-              }
-            }
-
-            // fix the tree scroll
-            const { last } = treeStructure;
-            if (last && calculatedHeight === undefined && this.props.currentUrl.endsWith(last.path)) {
-              setTimeout(() => {
-                const treeElem = document.getElementById("tree-content");
-                if (treeElem) treeElem.scrollTo(treeElem.scrollLeft, last.scrollTop);
-              }, 10);
-            }
-
-            // adjust applied style
-            const deltaDistance = distanceFromTop && distanceFromTop > 0 ? distanceFromTop : 0;
-            const maxHeight = window.innerHeight - 80 - deltaDistance;
-            const treeStyle = { ...style, maxHeight, top: 10, transform: "" };
-
-            return <TreeContainer history={this.props.history} {...treeProps} style={treeStyle} />;
-          }}
-        </Sticky>
-      </StickyContainer>
+      <div className="tree-container">
+        <TreeContainer history={this.props.history} {...treeProps} />
+      </div>
     );
   }
 }
