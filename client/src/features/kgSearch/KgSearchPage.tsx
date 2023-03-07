@@ -105,10 +105,6 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
   };
   const onRemoveFilters = () => { removeFilters(); };
 
-  // ? Temporary workaround to prevent showing older projects first on empty "Best Match" searches
-  if (searchRequest.phrase === "" && searchRequest.sort === SortingOptions.DescMatchingScore)
-    searchRequest.sort = SortingOptions.DescDate;
-
   const { data, isFetching, isLoading, error } = useSearchEntitiesQuery(searchRequest);
   const filter = (
     <>
