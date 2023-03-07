@@ -27,21 +27,6 @@ export interface Creator {
 
 // ***** Workflows ***** //
 
-export interface WorkflowPlan {
-  children: string[],
-  created: Date,
-  creators: Creator[],
-  description: string,
-  duration: number,
-  id: string,
-  keywords: string[],
-  last_executed: Date,
-  name: string,
-  number_of_executions: number,
-  touches_existing_files: boolean,
-  type: WorkflowType
-}
-
 export interface WorkflowListElement {
   active: boolean,
   authors: string,

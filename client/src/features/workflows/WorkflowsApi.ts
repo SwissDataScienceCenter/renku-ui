@@ -19,7 +19,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import {
-  WorkflowDetails, WorkflowDetailsRequestParams, WorkflowListElement, WorkflowPlan, WorkflowRequestParams
+  WorkflowDetails, WorkflowDetailsRequestParams, WorkflowListElement, WorkflowRequestParams
 } from "./Workflows";
 import { Url } from "../../utils/helpers/url";
 
@@ -88,7 +88,7 @@ export const workflowsApi = createApi({
   reducerPath: "workflowsApi",
   baseQuery: fetchBaseQuery({ baseUrl: "" }),
   endpoints: (builder) => ({
-    getWorkflowList: builder.query<WorkflowPlan[], WorkflowRequestParams>({
+    getWorkflowList: builder.query<WorkflowListElement[], WorkflowRequestParams>({
       query: (data) => {
         let url = `/renku${data.coreUrl}/workflow_plans.list`;
         let params: Record<string, any> = { git_url: data.gitUrl };
@@ -103,7 +103,8 @@ export const workflowsApi = createApi({
         if (response.result)
           return adjustWorkflowsList(response.result.plans, arg.fullPath);
         else if (response.error)
-          return response.error;
+          throw new Error(JSON.stringify(response.error));
+        throw new Error("Unexpected response");
       }
     }),
     getWorkflowDetail: builder.query<WorkflowDetails, WorkflowDetailsRequestParams>({
@@ -122,8 +123,9 @@ export const workflowsApi = createApi({
         if (response.result)
           return adjustWorkflowDetails(response.result, arg.fullPath);
         else if (response.error)
-          return response.error;
-      }
+          throw new Error(JSON.stringify(response.error));
+        throw new Error("Unexpected response");
+      },
     }),
   }),
   refetchOnMountOrArgChange: 20,

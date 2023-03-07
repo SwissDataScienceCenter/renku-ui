@@ -44,6 +44,19 @@ interface WorkflowsListProps {
   versionUrl: string;
 }
 
+function deserializeError(error: any) {
+  if (!error || !error?.message)
+    return null;
+  if (error.message && error.message.startsWith("{") && error.message.endsWith("}")) {
+    try {
+      return JSON.parse(error.message);
+    }
+    catch {
+      return error.message;
+    }
+  }
+}
+
 function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
   // Get the workflow id from the query parameters
   const { id }: Record<string, string> = useParams();
@@ -71,7 +84,7 @@ function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl }: Workf
   );
   const workflows = {
     list: workflowsQuery.data,
-    error: workflowsQuery.error,
+    error: deserializeError(workflowsQuery.error),
     fetched: workflowsQuery.data !== null && !workflowsQuery.isLoading,
     fetching: workflowsQuery.isFetching || workflowsQuery.isLoading,
     expanded: workflowsDisplay.expanded,
@@ -89,7 +102,7 @@ function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl }: Workf
   );
   const workflow = {
     details: workflowDetailQuery.data,
-    error: workflowDetailQuery.error,
+    error: deserializeError(workflowDetailQuery.error),
     fetched: workflowDetailQuery.data !== null && !workflowDetailQuery.isLoading,
     fetching: workflowDetailQuery.isFetching || workflowDetailQuery.isLoading,
     expanded: workflowsDisplay.details,
