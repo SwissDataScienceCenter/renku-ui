@@ -84,6 +84,12 @@ const setDates = (query: string, since?: string, until?: string) => {
   return query;
 };
 
+const setSort = (query: string, sort: SortingOptions) => {
+  if (sort === SortingOptions.DescDate || sort === SortingOptions.AscDate)
+    return `${query}&sort=${sort}`;
+  return `${query}&sort=${sort}&sort=${SortingOptions.DescDate}`;
+};
+
 // Define a service using a base URL and expected endpoints
 export const kgSearchApi = createApi({
   reducerPath: "kgSearchApi",
@@ -107,13 +113,13 @@ export const kgSearchApi = createApi({
       }) => {
         const url = `entities?${getPhrase(
           phrase
-        )}&sort=${sort}&page=${page}&per_page=${perPage}`;
-        return setDates(
+        )}&page=${page}&per_page=${perPage}`;
+        return setSort(setDates(
           setAuthorInQuery(
             setVisibilityInQuery(setTypeInQuery(url, type), visibility),
             author,
             userName
-          ), since, until);
+          ), since, until), sort);
       },
       transformResponse: (
         response: KgSearchResult[],
