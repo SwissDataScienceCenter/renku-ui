@@ -1,79 +1,71 @@
 /*
   TODO - MAKE SCSS
 */
-.icon-link{
+.icon-link {
   color: #838383; /* $rk-text */
   margin-left: 10px;
   font-size: larger;
   height: auto;
 }
 
-.icon-link:hover{
-  color: #01192D; /* $primary $rk-blue */
+.icon-link:hover {
+  color: #01192d; /* $primary $rk-blue */
   cursor: pointer;
 }
 
-.fs-element{
-  color: #3D3D3D; /* $rk-dark */
+.fs-element {
+  color: #3d3d3d; /* $rk-dark */
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  padding:1px;
+  padding: 1px;
   padding-left: 6px;
-  padding-right:2px;
+  padding-right: 2px;
   font-size: medium;
   display: flex;
 }
 
-.fs-element a{
-  color:#3D3D3D; /* $rk-dark */
+.fs-element a {
+  color: #3d3d3d; /* $rk-dark */
   text-decoration: none;
   width: 100%;
 }
 
-.tree-header-title{
+.tree-header-title {
   position: relative;
   top: 2px;
 }
 
-.fs-element:hover{
-  background-color:#e9ecef;
+.fs-element:hover {
+  background-color: #e9ecef;
   border-radius: 0.15rem;
   cursor: pointer;
 }
 
-.fs-element .icon-lineage{
+.fs-element .icon-lineage {
   padding: 6px;
 }
 
-.selected-file{
+.selected-file {
   background-color: #e9ecef;
 }
 
-.order-first{
-  order:1;
+.order-first {
+  order: 1;
 }
 
-.scroll-x{
+.scroll-x {
   overflow-x: auto;
   /* overflow-x: scroll; */
 }
 
-.order-second{
-  order:2;
+.order-second {
+  order: 2;
 }
 
-.order-third{
-  order:3;
+.order-third {
+  order: 3;
 }
-
-/* TODO - do we need this???
-.tree-container{
-  display: flex;
-  flex-direction: column;
-  font-size: 2rem;
-  font-weight: 300;
-} */
 
 .tree-content {
   overflow-y: auto;
