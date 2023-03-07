@@ -24,8 +24,8 @@ import ws from "ws";
 import config from "./config";
 import logger from "./logger";
 import routes from "./routes";
-import { Authenticator } from "./authentication";
-import { registerAuthenticationRoutes } from "./authentication/routes";
+import NoOpAuthenticator from "./noop-authentication";
+import { IAuthenticator } from "./interfaces";
 import { RedisStorage } from "./storage/RedisStorage";
 import { errorHandler } from "./utils/errorHandler";
 import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
@@ -62,12 +62,13 @@ initializeSentry(app);
 const storage = new RedisStorage();
 
 // configure authenticator
-const authenticator = new Authenticator(storage);
+const authenticator: IAuthenticator = new NoOpAuthenticator();
 const authPromise = authenticator.init();
 authPromise.then(() => {
   logger.info("Authenticator started");
 
-  registerAuthenticationRoutes(app, authenticator);
+  // Not neeeded because the oauth login flow is handled by the gateway now
+  // registerAuthenticationRoutes(app, authenticator);
   // The error handler middleware is needed here because the registration of authentication
   // routes is asynchronous and the middleware has to be registered after them
   app.use(errorHandlerMiddleware);

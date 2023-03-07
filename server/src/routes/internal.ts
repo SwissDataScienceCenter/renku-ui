@@ -19,12 +19,13 @@
 import express from "express";
 import logger from "../logger";
 
-import { Authenticator } from "../authentication";
+import { IAuthenticator } from "../interfaces";
+import { Storage } from "../storage";
 
 
 let storageFailures = 0;
 
-function registerInternalRoutes(app: express.Application, authenticator: Authenticator): void {
+function registerInternalRoutes(app: express.Application, authenticator: IAuthenticator, storage: Storage): void {
   // define a route handler for the default home page
   app.get("/", (req, res) => {
     res.send("UI server up and working -- internal route '/'");
@@ -38,7 +39,7 @@ function registerInternalRoutes(app: express.Application, authenticator: Authent
   // define a route handler for the liveness probe
   app.get("/liveness", async (req, res) => {
     // Check storage status
-    const storageStatus = authenticator.storage.getStatus();
+    const storageStatus = storage.getStatus();
     if (storageStatus !== "ready")
       storageFailures++;
     else if (storageFailures !== 0)
@@ -58,7 +59,7 @@ function registerInternalRoutes(app: express.Application, authenticator: Authent
   // define a route handler for the startup probe
   app.get("/startup", (req, res) => {
     // check if storage is ready
-    if (!authenticator.storage.ready)
+    if (!storage.ready)
       res.status(503).send("Storage (i.e. Redis) not ready");
     // check if authenticator is ready
     else if (!authenticator.ready)

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,23 +16,13 @@
  * limitations under the License.
  */
 
-import express from "express";
+import { TokenSet } from "openid-client";
 
-import config from "../config";
-import registerInternalRoutes from "./internal";
-import registerApiRoutes from "./apis";
-import { IAuthenticator } from "../interfaces";
-import { Storage } from "../storage";
-
-function register(app: express.Application, prefix: string, authenticator: IAuthenticator, storage: Storage): void {
-  registerInternalRoutes(app, authenticator, storage);
-
-  // Testing ingress
-  app.get(prefix, (req, res) => {
-    res.send("UI server up and running");
-  });
-
-  registerApiRoutes(app, prefix + config.routes.api, authenticator, storage);
+interface IAuthenticator {
+  ready: boolean
+  getTokens: (sessionId: string, autoRefresh: boolean) => Promise<TokenSet>
+  refreshTokens: (sessionId: string, tokens?: TokenSet, removeIfFailed?: boolean) => Promise<TokenSet>
+  init: () => Promise<boolean>
 }
 
-export default { register };
+export { IAuthenticator };

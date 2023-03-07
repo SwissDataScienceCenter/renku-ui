@@ -22,9 +22,8 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 
 import config from "../config";
 import logger from "../logger";
-import { Authenticator } from "../authentication";
+import { IAuthenticator } from "../interfaces";
 import { renkuAuth } from "../authentication/middleware";
-import { getCookieValueByName, serializeCookie } from "../utils";
 import { validateCSP } from "../utils/url";
 import { lastProjectsMiddleware } from "../utils/middlewares/lastProjectsMiddleware";
 import { lastSearchQueriesMiddleware } from "../utils/middlewares/lastSearchQueriesMiddleware";
@@ -45,72 +44,15 @@ const proxyMiddleware = createProxyMiddleware({
     logger.debug(`rewriting path from "${path}" to "${rewrittenPath}" and routing to ${config.deployment.gatewayUrl}`);
     return rewrittenPath;
   },
-  onProxyReq: (clientReq) => {
-    // remove unnecessary cookies to avoid gateway conflicts with auth tokens
-    const existingCookie = clientReq.getHeader("cookie") as string;
-    const newCookies: Array<string> = [];
-    if (existingCookie) {
-      clientReq.removeHeader("cookie");
-      for (const cookieName of config.server.keepCookies) {
-        const cookieValue: string = getCookieValueByName(
-          existingCookie,
-          cookieName
-        );
-        if (cookieValue) {
-          newCookies.push(
-            serializeCookie(cookieName, existingCookie[cookieName])
-          );
-        }
-      }
-    }
-    // add anon-id to cookies when the proper header is set.
-    const anonId = clientReq.getHeader(config.auth.cookiesAnonymousKey);
-    if (anonId) {
-      // ? the anon-id MUST start with a letter to prevent k8s limitations
-      const fullAnonId = config.auth.anonPrefix + anonId;
-      newCookies.push(
-        serializeCookie(config.auth.cookiesAnonymousKey, fullAnonId)
-      );
-    }
-    if (newCookies.length > 0)
-      clientReq.setHeader("cookie", newCookies.join("; "));
-  },
   onProxyRes: (clientRes, req: express.Request, res: express.Response) => {
     // Add CORS for sentry
     res.setHeader("Access-Control-Allow-Headers", "sentry-trace");
-
-    // handle auth expiration -- we change the response status to avoid browser caching
-    const expHeader = req.get(config.auth.invalidHeaderField);
-    if (expHeader != null) {
-      clientRes.headers[config.auth.invalidHeaderField] = expHeader;
-      if (expHeader === config.auth.invalidHeaderExpired) {
-        // We return a different response to prevent side effects from caching mechanism on 30x responses
-        logger.warn(`Authentication expired when trying to reach ${req.originalUrl}. Attaching auth headers.`);
-        res.status(500);
-        res.setHeader(config.auth.invalidHeaderField, expHeader);
-        res.json({ error: "Invalid authentication tokens" });
-      }
-    }
-
-    // Prevent gateway from setting anon-id cookies. That's not needed in the UI anymore
-    const setCookie = null ?? clientRes.headers["set-cookie"];
-    if (setCookie == null || !setCookie.length)
-      return;
-    const allowedSetCookie = [];
-    for (const cookie of setCookie) {
-      if (!cookie.startsWith(config.auth.cookiesAnonymousKey))
-        allowedSetCookie.push(cookie);
-    }
-    if (!allowedSetCookie.length)
-      clientRes.headers["set-cookie"] = null;
-    else
-      clientRes.headers["set-cookie"] = allowedSetCookie;
   }
 });
 
 
 function registerApiRoutes(app: express.Application,
-  prefix: string, authenticator: Authenticator, storage: Storage): void {
+  prefix: string, authenticator: IAuthenticator, storage: Storage): void {
 
   // Locally defined APIs
   if (config.sentry.enabled && config.sentry.debugMode) {

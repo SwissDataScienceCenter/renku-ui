@@ -21,7 +21,7 @@ import { TokenSet } from "openid-client";
 
 import config from "../config";
 import logger from "../logger";
-import { Authenticator } from "./index";
+import { IAuthenticator } from "../interfaces";
 import { getOrCreateSessionId } from "./routes";
 import { serializeCookie } from "../utils";
 import { WsMessage } from "../websocket/WsMessages";
@@ -60,7 +60,7 @@ function addAuthInvalid(req: express.Request): void {
 }
 
 
-function renkuAuth(authenticator: Authenticator) {
+function renkuAuth(authenticator: IAuthenticator) {
   return async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> => {
     // get or create session
     const sessionId = getOrCreateSessionId(req, res);
@@ -80,6 +80,11 @@ function renkuAuth(authenticator: Authenticator) {
       }
     }
 
+    if (tokens && tokens.access_token == "do-not-inject") {
+      // Nothing should be injected or passed on, authentication done in gateway
+      next();
+    }
+
     if (tokens)
       addAuthToken(req, tokens.access_token);
     else
@@ -89,7 +94,7 @@ function renkuAuth(authenticator: Authenticator) {
   };
 }
 
-async function wsRenkuAuth(authenticator: Authenticator, sessionId: string):
+async function wsRenkuAuth(authenticator: IAuthenticator, sessionId: string):
   Promise<WsMessage | Record<string, string>> {
   let tokens: TokenSet;
   try {
@@ -102,6 +107,11 @@ async function wsRenkuAuth(authenticator: Authenticator, sessionId: string):
     if (expired)
       throw new Error("expired");
     throw error;
+  }
+
+  if (tokens && tokens.access_token == "do-not-inject") {
+    // Nothing should be injected or passed on, authentication done in gateway
+    return {};
   }
 
   if (tokens) {

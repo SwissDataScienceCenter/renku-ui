@@ -30,7 +30,8 @@ const SERVER = {
   keepCookies: JSON.parse(process.env.SERVER_KEEP_COOKIES || "[]")
 };
 
-const gatewayUrl = process.env.GATEWAY_URL || urlJoin(SERVER.url ?? "", "/api");
+// Http url for the k8s gateway service - not full external url of the gateway
+const gatewayUrl = process.env.GATEWAY_URL || "http://renku-gateway-auth";
 
 const DEPLOYMENT = {
   gatewayUrl,

@@ -23,7 +23,7 @@ import config from "../config";
 import logger from "../logger";
 import { checkWsClientMessage, WsMessage, WsClientMessage } from "./WsMessages";
 import { Storage } from "../storage";
-import { Authenticator } from "../authentication";
+import { IAuthenticator } from "../interfaces";
 import { wsRenkuAuth } from "../authentication/middleware";
 import { getCookieValueByName } from "../utils";
 import { handlerRequestServerVersion, heartbeatRequestServerVersion } from "./handlers/clientVersion";
@@ -107,7 +107,7 @@ const shortLoopFunctions: Array<Function> = [ // eslint-disable-line
  * @param apiClient - api to fetch data
  */
 async function channelLongLoop(
-  sessionId: string, authenticator: Authenticator, storage: Storage, apiClient: APIClient) {
+  sessionId: string, authenticator: IAuthenticator, storage: Storage, apiClient: APIClient) {
   const infoPrefix = `${sessionId} - long loop:`;
 
   // checking user
@@ -160,7 +160,7 @@ async function channelLongLoop(
  * @param apiClient - api client
  */
 async function channelShortLoop(
-  sessionId: string, authenticator: Authenticator, storage: Storage, apiClient: APIClient) {
+  sessionId: string, authenticator: IAuthenticator, storage: Storage, apiClient: APIClient) {
   const infoPrefix = `${sessionId} - short loop:`;
 
   // checking user
@@ -217,7 +217,7 @@ async function channelShortLoop(
  * @param apiClient - api client
  */
 function configureWebsocket(
-  server: ws.Server, authenticator: Authenticator, storage: Storage, apiClient: APIClient): void {
+  server: ws.Server, authenticator: IAuthenticator, storage: Storage, apiClient: APIClient): void {
   server.on("connection", async (socket, request) => {
     // ? Should we Upgrade here? And verify the Origin since same-origin policy doesn't work for WS?
 
@@ -385,7 +385,7 @@ function getWsClientMessageHandler(
  * @returns error with WsMessage or headers
  */
 async function getAuthHeaders(
-  authenticator: Authenticator, sessionId: string, infoPrefix = ""
+  authenticator: IAuthenticator, sessionId: string, infoPrefix = ""
 ): Promise<WsMessage | Record<string, string>> {
   try {
     const authHeaders = await wsRenkuAuth(authenticator, sessionId);
