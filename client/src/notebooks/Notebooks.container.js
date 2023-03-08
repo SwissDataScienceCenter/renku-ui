@@ -765,10 +765,10 @@ class StartNotebookServer extends Component {
     history.push({ pathname: localUrl, search: "", state: { ...state, redirectFromStartServer: true } });
   }
 
-  internalStartServer() {
+  internalStartServer(forceBaseImage = false) {
     // The core internal logic extracted here for re-use
     const { location, history } = this.props;
-    return this.coordinator.startServer().then((data) => {
+    return this.coordinator.startServer(forceBaseImage).then((data) => {
       this.setState({ "starting": false });
       // redirect user when necessary
       if (!history || !location)
@@ -789,16 +789,16 @@ class StartNotebookServer extends Component {
     });
   }
 
-  startServer() {
+  startServer(forceBaseImage = false) {
     //* Data from notebooks/servers endpoint needs some time to update properly.
     //* To avoid flickering UI, just set a temporary state and display a loading wheel.
     this.setState({ "starting": true, launchError: null });
-    this.internalStartServer().catch((error) => {
+    this.internalStartServer(forceBaseImage).catch((error) => {
       if (error.cause && error.cause.response && error.cause.response.status) {
         if (error.cause.response.status === 500) {
           // Some failures just go away. Try again to see if it works the second time.
           setTimeout(() => {
-            this.internalStartServer().catch((error) => {
+            this.internalStartServer(forceBaseImage).catch((error) => {
               this.handleNotebookStartError(error);
             });
           }, 3000);
