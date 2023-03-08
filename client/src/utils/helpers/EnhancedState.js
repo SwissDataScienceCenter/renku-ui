@@ -34,6 +34,8 @@ import kgInactiveProjectsSlice from "../../features/inactiveKgProjects/inactiveK
 import { sessionApi } from "../../features/session/sessionApi";
 import { versionsApi } from "../../features/versions/versionsApi";
 import displaySlice from "../../features/display/displaySlice";
+import { workflowsApi } from "../../features/workflows/WorkflowsApi";
+import workflowsSlice from "../../features/workflows/WorkflowsSlice";
 
 function createStore(renkuStateModelReducer, _name = "renku") {
   return createStoreWithEnhancers(renkuStateModelReducer);
@@ -50,6 +52,8 @@ function createStoreWithEnhancers(renkuStateModelReducer, enhancers = undefined)
   renkuStateModelReducer[kgInactiveProjectsSlice.name] = kgInactiveProjectsSlice.reducer;
   renkuStateModelReducer[versionsApi.reducerPath] = versionsApi.reducer;
   renkuStateModelReducer[displaySlice.name] = displaySlice.reducer;
+  renkuStateModelReducer[workflowsApi.reducerPath] = workflowsApi.reducer;
+  renkuStateModelReducer[workflowsSlice.name] = workflowsSlice.reducer;
 
   // For the moment, disable the custom middleware, since it causes problems for our app.
   const store = configureStore({
@@ -66,8 +70,9 @@ function createStoreWithEnhancers(renkuStateModelReducer, enhancers = undefined)
         .concat(sessionSidecarApi.middleware)
         .concat(recentUserActivityApi.middleware)
         .concat(sessionApi.middleware)
-        .concat(versionsApi.middleware),
-    enhancers,
+        .concat(versionsApi.middleware)
+        .concat(workflowsApi.middleware),
+    enhancers
   });
   return store;
 }

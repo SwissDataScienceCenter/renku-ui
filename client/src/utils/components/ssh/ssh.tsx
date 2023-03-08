@@ -26,7 +26,7 @@ import { Modal, ModalBody, ModalHeader, Table } from "../../../utils/ts-wrappers
 import { Loader } from "../../../utils/components/Loader";
 import { useGetNotebooksQuery } from "../../../features/versions/versionsApi";
 import {
-  displaySlice, hideSshModal, showSshModal, toggleSshModal, useInactiveProjectSelector
+  displaySlice, hideSshModal, showSshModal, toggleSshModal, useDisplaySelector
 } from "../../../features/display";
 import { Url } from "../../../utils/helpers/url";
 import { InfoAlert } from "../../../utils/components/Alert";
@@ -94,7 +94,7 @@ function SshModal() {
   const [localMigration, setLocalMigration] = useState({ data: {}, fetched: false, fetching: false });
   let useLocalMigration = false;
   const { client } = useContext(AppContext);
-  const displayModal = useInactiveProjectSelector((state: RootStateOrAny) => state[displaySlice.name].modals.ssh);
+  const displayModal = useDisplaySelector((state: RootStateOrAny) => state[displaySlice.name].modals.ssh);
   const location = useLocation();
   const dispatch = useDispatch();
 
