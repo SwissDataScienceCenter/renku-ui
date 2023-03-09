@@ -20,6 +20,13 @@ import { EntityCreator } from "../entities/Creators";
 import { SessionStatusData } from "./StartSessionProgressBar";
 
 interface NotebookAnnotations {
+  branch: string;
+  "commit-sha": string;
+  default_image_used: boolean;
+  namespace: string;
+  gitlabProjectId: number;
+  projectName: string;
+  repository: string;
   [key: string]: string;
 }
 
