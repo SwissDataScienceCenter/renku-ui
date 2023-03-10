@@ -165,7 +165,9 @@ describe("display a project", () => {
     cy.contains("01-CountFlights.ipynb").click();
     cy.wait("@getCountFlights");
     // look for python output
-    cy.contains("There were 4951 flights to Austin, TX in Jan 2019.").should("be.visible");
+    cy.contains("There were 4951 flights to Austin, TX in Jan 2019.")
+      .scrollIntoView()
+      .should("be.visible");
   });
 
   it("displays project file > python file", () => {

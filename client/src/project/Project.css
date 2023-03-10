@@ -12,88 +12,88 @@ Button.alert-link {
 }
 .warningLabel > svg {
   vertical-align: top;
-  margin-top: 0.20rem;
+  margin-top: 0.2rem;
 }
 
-.selected-dataset{
+.selected-dataset {
   font-weight: normal;
   background-color: #e9ecef;
 }
 
-.selected-dataset .fs-element{
+.selected-dataset .fs-element {
   background-color: #e9ecef;
 }
 
-.datasetDescriptionText{
+.datasetDescriptionText {
   font-size: 14px;
   margin-block-start: 0.5em;
   margin-block-end: 0.5em;
-  overflow: hidden; 
+  overflow: hidden;
   -webkit-box-orient: vertical;
 }
 
-.margin-no-triangle{
-  margin-left:15px;
+.margin-no-triangle {
+  margin-left: 15px;
 }
 
 .triangle-border {
-  background:#fff;
+  background: #fff;
 }
 
 .triangle-border.left {
-  margin-left:15px;
+  margin-left: 15px;
 }
 
 .triangle-border.left:before {
-  top:20px;
-  bottom:auto;
-  position:absolute;
+  top: 20px;
+  bottom: auto;
+  position: absolute;
   left: -10px;
-  margin:auto;
+  margin: auto;
   height: 20px;
   width: 20px;
-  border:1px solid #fff;
-  transform:rotate(45deg);
+  border: 1px solid #fff;
+  transform: rotate(45deg);
   background-color: #fff;
-  border-bottom:1px solid rgba(0, 0, 0, 0.125);
-  border-left:1px solid rgba(0, 0, 0, 0.125);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  border-left: 1px solid rgba(0, 0, 0, 0.125);
 }
 
 .triangle-border:before {
-  content:"";
-  position:absolute;
-  bottom:-20px;
-  left:40px;
-  border-width:20px 20px 0;
-  border-style:solid;
-  display:block;
-  width:0;
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  left: 40px;
+  border-width: 20px 20px 0;
+  border-style: solid;
+  display: block;
+  width: 0;
 }
 
-.badge-renku-light{
+.badge-renku-light {
   color: #fff;
   background-color: #8a8a8a;
 }
 
-.display-block{
+.display-block {
   visibility: display;
 }
 
-.display-none{
+.display-none {
   display: none;
 }
 
-.issue-text-crop{
+.issue-text-crop {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.dropdown-toggle.removeArrow{
-  content:none !important;
+.dropdown-toggle.removeArrow {
+  content: none !important;
 }
-.dropdown-toggle.removeArrow::after{
-  content:none !important;
+.dropdown-toggle.removeArrow::after {
+  content: none !important;
 }
 
 .variableWidthColLeft {
@@ -102,7 +102,10 @@ Button.alert-link {
   min-width: 200px;
   width: 20%;
   height: fit-content;
-  padding-bottom:2rem;
+  padding-bottom: 2rem;
+  align-self: flex-start;
+  position: sticky;
+  top: 10px;
 }
 
 @media (max-width: 576px) {
@@ -112,6 +115,7 @@ Button.alert-link {
     width: 100%;
     padding-right: 12px !important;
     margin-bottom: 12px !important;
+    position: static;
   }
 }
 
@@ -119,6 +123,9 @@ Button.alert-link {
   flex: 1 1 0;
   overflow: auto;
   min-width: 320px;
+  align-self: flex-start;
+  position: sticky;
+  top: 10px;
 }
 
 .variableWidthColLeft::-webkit-resizer {
