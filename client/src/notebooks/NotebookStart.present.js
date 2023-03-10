@@ -1099,7 +1099,7 @@ class ServerOptionLaunch extends Component {
     this.setState({ showModal: !this.state.showModal });
   }
 
-  checkServer() {
+  checkServer(forceBaseImage = false) {
     const { filters } = this.props;
     const { autosaved } = this.props.data;
     const selectedBranchName = filters.branch.name;
@@ -1111,7 +1111,7 @@ class ServerOptionLaunch extends Component {
       this.toggleModal();
     }
     else {
-      this.props.handlers.startServer();
+      this.props.handlers.startServer(forceBaseImage);
     }
   }
 
@@ -1150,7 +1150,7 @@ class ServerOptionLaunch extends Component {
 
     const startBaseButton = (hasImage) ?
       null :
-      <Button key="start-base" color="primary" onClick={this.checkServer}>
+      <Button key="start-base" color="primary" onClick={() => this.checkServer(true)}>
         Start with base image
       </Button>;
 

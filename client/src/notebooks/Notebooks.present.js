@@ -20,15 +20,15 @@ import React, { Component, Fragment, memo } from "react";
 import Media from "react-media";
 import { Link, useHistory } from "react-router-dom";
 import {
-  Badge, Button, Col, DropdownItem, PopoverBody, PopoverHeader, Row, UncontrolledPopover
+  Button, Col, DropdownItem, PopoverBody, PopoverHeader, Row, UncontrolledPopover
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCheckCircle, faExclamationTriangle, faExternalLinkAlt, faFileAlt,
-  faInfoCircle, faPlus, faStopCircle, faTimesCircle
+  faExternalLinkAlt, faFileAlt, faInfoCircle, faPlus, faStopCircle
 } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 
+import { SessionListRowStatus, SessionListRowStatusIcon } from "./components/SessionListStatus";
 import { NotebooksHelper } from "./index";
 import {
   CheckNotebookIcon, StartNotebookServer, mergeEnumOptions, ServerOptionBoolean, ServerOptionEnum,
@@ -43,7 +43,6 @@ import { ButtonWithMenu } from "../utils/components/buttons/Button";
 import { TimeCaption } from "../utils/components/TimeCaption";
 import { Loader } from "../utils/components/Loader";
 import { InfoAlert, } from "../utils/components/Alert";
-import { Clipboard } from "../utils/components/Clipboard";
 import LoginAlert from "../utils/components/loginAlert/LoginAlert";
 import { EnvironmentLogs, SessionLogs as LogsSessionLogs } from "../utils/components/Logs";
 import { SessionStatus } from "../utils/constants/Notebooks";
@@ -379,7 +378,7 @@ class NotebookServerRowFull extends Component {
     } = this.props;
 
     const icon = <div className="align-middle">
-      <NotebooksServerRowStatusIcon
+      <SessionListRowStatusIcon
         details={details} status={status} uid={uid} image={image} annotations={annotations}
       />
     </div>;
@@ -402,7 +401,7 @@ class NotebookServerRowFull extends Component {
 
     const resourceList = formattedResourceList(resources);
 
-    const statusOut = <NotebooksServerRowStatus
+    const statusOut = <SessionListRowStatus
       details={details} status={status} uid={uid} startTime={this.props.startTime} annotations={annotations}/>;
 
     const action = showMenu ? (<span className="mb-auto">
@@ -470,7 +469,7 @@ class NotebookServerRowCompact extends Component {
     } = this.props;
 
     const icon = <span>
-      <NotebooksServerRowStatusIcon
+      <SessionListRowStatusIcon
         details={details} status={status} uid={uid} image={image} annotations={annotations}
       />
     </span>;
@@ -500,7 +499,7 @@ class NotebookServerRowCompact extends Component {
       <br />
     </Fragment>);
     const statusOut = (<span>
-      <NotebooksServerRowStatus
+      <SessionListRowStatus
         spaced={true}
         details={details}
         status={status}
@@ -541,111 +540,6 @@ class NotebookServerRowCompact extends Component {
     );
   }
 }
-
-export function getStatusObject(status, defaultImage) {
-  switch (status) {
-    case SessionStatus.running:
-      return {
-        color: defaultImage ?
-          "warning" :
-          "success",
-        icon: defaultImage ?
-          (<FontAwesomeIcon icon={faExclamationTriangle} inverse={true} size="lg" />) :
-          (<FontAwesomeIcon icon={faCheckCircle} size="lg" />),
-        text: "Running"
-      };
-    case SessionStatus.starting:
-      return {
-        color: "warning",
-        icon: <Loader size="16" inline="true" />,
-        text: "Starting..."
-      };
-    case SessionStatus.stopping:
-      return {
-        color: "warning",
-        icon: <Loader size="16" inline="true" />,
-        text: "Stopping..."
-      };
-    case SessionStatus.failed:
-      return {
-        color: "danger",
-        icon: <FontAwesomeIcon icon={faTimesCircle} size="lg" />,
-        text: "Error"
-      };
-    default:
-      return {
-        color: "danger",
-        icon: <FontAwesomeIcon icon={faExclamationTriangle} size="lg" />,
-        text: "Unknown"
-      };
-  }
-}
-
-class NotebooksServerRowStatus extends Component {
-  render() {
-    const { status, details, uid, annotations, startTime } = this.props;
-    const data = getStatusObject(status, annotations.default_image_used);
-    const textColor = {
-      "running": "text-secondary",
-      "failed": "text-danger",
-      "starting": "text-secondary",
-      "stopping": "text-secondary",
-    };
-
-    const textStatus = status === SessionStatus.running ? `${data.text} since ${startTime}` : data.text;
-
-    const extraInfo = details.message ?
-      (<>
-        {" "}<FontAwesomeIcon id={uid} icon={faInfoCircle} />
-        <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
-          <PopoverHeader>Kubernetes pod status</PopoverHeader>
-          <PopoverBody>
-            <span>{details.message}</span><br />
-          </PopoverBody>
-        </UncontrolledPopover>
-      </>) : null;
-
-    return <>
-      <span className={`time-caption font-weight-bold ${textColor[status]}`}>
-        {textStatus}
-        {extraInfo}
-      </span>
-    </>;
-  }
-}
-
-class NotebooksServerRowStatusIcon extends Component {
-  render() {
-    const { status, uid, image, annotations } = this.props;
-    const data = getStatusObject(status, annotations.default_image_used);
-    const classes = this.props.spaced ?
-      "text-nowrap p-1 mb-2" :
-      "text-nowrap p-1";
-    const id = `${uid}-status`;
-    const policy = annotations.default_image_used ?
-      (<span><br /><span className="font-weight-bold">Warning:</span> a fallback image was used.</span>) :
-      null;
-
-    const popover = !image || status !== SessionStatus.running ?
-      null :
-      (
-        <UncontrolledPopover target={id} trigger="legacy" placement="bottom">
-          <PopoverHeader>Details</PopoverHeader>
-          <PopoverBody>
-            <span className="font-weight-bold">Image source:</span> {image}
-            <span className="ms-1"><Clipboard clipboardText={image} /></span>
-            {policy}
-          </PopoverBody>
-        </UncontrolledPopover>
-      );
-
-    return (<div>
-      <Badge id={id} color={data.color} className={classes}>{data.icon}</Badge>
-      {popover}
-    </div>);
-  }
-}
-
 class NotebookServerRowProject extends Component {
   render() {
     const { annotations } = this.props;
