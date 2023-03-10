@@ -1252,7 +1252,7 @@ class NotebooksCoordinator {
 
 
   // * Change notebook status * //
-  startServer() {
+  startServer(forceBaseImage = false) {
     const options = {
       serverOptions: this.model.get("filters.options"),
     };
@@ -1266,7 +1266,7 @@ class NotebooksCoordinator {
     const branch = filters.branch && filters.branch.name ? filters.branch.name : filters.defaultBranch;
     const commit = filters.commit && filters.commit.id ? filters.commit.id : "latest";
     const projectOptions = this.model.get("options.project");
-    const image = projectOptions.image ?
+    const image = projectOptions.image && !forceBaseImage ?
       projectOptions.image :
       null;
     const env_variables = formatEnvironmentVariables(this.model.get("filters.environment_variables"));
