@@ -35,7 +35,8 @@ import { SessionStatus } from "../../constants/Notebooks";
 import { stylesByItemType } from "../../helpers/HelperFunctions";
 import AppContext from "../../context/appContext";
 import Time from "../../helpers/Time";
-import { getStatusObject } from "../../../notebooks/Notebooks.present";
+import { getStatusObject } from "../../../notebooks/components/SessionListStatus";
+import type { SessionRunningStatus } from "../../../notebooks/components/SessionListStatus";
 import { SessionButton } from "../entities/Buttons";
 import { EnvironmentLogs, IFetchableLogs, ILogs } from "../Logs";
 import { Notebook } from "../../../notebooks/components/Session";
@@ -47,9 +48,13 @@ interface ResourceListProps {
 function ResourceList({ resources }: ResourceListProps) {
   const resourcesKeys = Object.keys(resources);
   const items = resourcesKeys.map((name, index) => {
-    return (<span key={name} className="text-nowrap">
-      <span className="fw-bold">{resources[name]} </span>
-      {name}{resourcesKeys.length - 1 === index ? " " : " | " }</span>);
+    return (
+      <span key={name} className="text-nowrap">
+        <span className="fw-bold">{resources[name]} </span>
+        {name}
+        {resourcesKeys.length - 1 === index ? " " : " | "}
+      </span>
+    );
   });
   return <div className="text-truncate">{items}</div>;
 }
@@ -63,14 +68,14 @@ interface SessionStatusIconProps {
   };
   sessionId: string;
   errorSession: string;
-  defaultImage: string;
+  defaultImage: boolean;
 }
-function SessionStatusIcon ({ status, data, sessionId, errorSession, defaultImage }: SessionStatusIconProps) {
+function SessionStatusIcon({ status, data, sessionId, errorSession, defaultImage }: SessionStatusIconProps) {
   const policy = defaultImage ? <div>A fallback image was used.</div> : null;
-  const popover = status === SessionStatus.failed || (status === SessionStatus.running && defaultImage) ?
-    (
+  const popover =
+    status === SessionStatus.failed || (status === SessionStatus.running && defaultImage) ? (
       <UncontrolledPopover target={sessionId} trigger="hover" placement="bottom">
-        <PopoverHeader>{ status === SessionStatus.failed ? "Error Details" : "Warning Details" }</PopoverHeader>
+        <PopoverHeader>{status === SessionStatus.failed ? "Error Details" : "Warning Details"}</PopoverHeader>
         <PopoverBody>
           {errorSession}
           {policy}
@@ -79,25 +84,27 @@ function SessionStatusIcon ({ status, data, sessionId, errorSession, defaultImag
     ) : null;
 
   return (
-    <div id={sessionId}
-      className={`d-flex align-items-center gap-1 ${status === SessionStatus.failed ? "cursor-pointer" : ""}`} >
-      <Badge color={data.color} >{data.icon}</Badge>
+    <div
+      id={sessionId}
+      className={`d-flex align-items-center gap-1 ${status === SessionStatus.failed ? "cursor-pointer" : ""}`}
+    >
+      <Badge color={data.color}>{data.icon}</Badge>
       <span className={`text-${data.color} small session-status-text`}>{data.text}</span>
       {popover}
-    </div>);
+    </div>
+  );
 }
-
 
 /*
  * Session Details PopOver
  */
 interface SessionDetailsPopOverProps {
   commit: {
-    "author_name": string;
-    "committed_date": string;
+    author_name: string;
+    committed_date: string;
     message: string;
     id: string;
-    "web_url": string;
+    web_url: string;
   };
   image: string;
 }
@@ -108,17 +115,23 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
   const content = (
     <Fragment>
       <h3 className="fs-6 fw-bold">Image Source:</h3>
-      <span>{image} <Clipboard clipboardText={image} /></span>
+      <span>
+        {image} <Clipboard clipboardText={image} />
+      </span>
       <h3 className="fs-6 fw-bold mt-2">Commit Details:</h3>
       <span className="fw-bold">Author:</span>
-      <span>{commit.author_name}</span><br />
+      <span>{commit.author_name}</span>
+      <br />
       <span>
-        <span className="fw-bold">Date:</span>
-        {" "}<span>{Time.toIsoTimezoneString(commit.committed_date, "datetime-short")}</span>
-        {" "}<TimeCaption caption="~" endPunctuation=" " time={commit.committed_date} /><br />
+        <span className="fw-bold">Date:</span>{" "}
+        <span>{Time.toIsoTimezoneString(commit.committed_date, "datetime-short")}</span>{" "}
+        <TimeCaption caption="~" endPunctuation=" " time={commit.committed_date} />
+        <br />
       </span>
-      <span className="fw-bold">Message:</span> <span>{commit.message}</span><br />
-      <span className="fw-bold">Full SHA:</span> <span>{commit.id}</span><br />
+      <span className="fw-bold">Message:</span> <span>{commit.message}</span>
+      <br />
+      <span className="fw-bold">Full SHA:</span> <span>{commit.id}</span>
+      <br />
       <span className="fw-bold me-1">Details:</span>
       <ExternalLink url={commit.web_url} title="Open commit in GitLab" role="text" showLinkIcon={true} />
     </Fragment>
@@ -126,7 +139,7 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
 
   return (
     <span>
-      <FontAwesomeIcon ref={ref} icon={faInfoCircle}/>
+      <FontAwesomeIcon ref={ref} icon={faInfoCircle} />
       <UncontrolledPopover target={ref} trigger="hover" placement="bottom">
         <PopoverHeader>Session Information</PopoverHeader>
         <PopoverBody>{content}</PopoverBody>
@@ -151,10 +164,27 @@ interface ListBarSessionProps extends ListElementProps {
 }
 
 function ListBarSession({
-  creators, description, fetchLogs, fullPath, gitUrl, id, imageUrl, itemType, labelCaption, logs, notebook,
-  setServerLogs, setShowLogs, showLogs, slug, stopSession, timeCaption, title, url, visibility
+  creators,
+  description,
+  fetchLogs,
+  fullPath,
+  gitUrl,
+  id,
+  imageUrl,
+  itemType,
+  labelCaption,
+  logs,
+  notebook,
+  setServerLogs,
+  setShowLogs,
+  showLogs,
+  slug,
+  stopSession,
+  timeCaption,
+  title,
+  url,
+  visibility,
 }: ListBarSessionProps) {
-
   const { client } = useContext(AppContext);
   const [commit, setCommit] = useState(null);
   const [sessionStatus, setSessionStatus] = useState(SessionStatus.starting);
@@ -163,17 +193,14 @@ function ListBarSession({
     setSessionStatus(notebook?.status?.state);
   }, [notebook?.status?.state]);
   useEffect(() => {
-    client.getCommits(id, notebook.annotations.branch).then(
-      (commitsFetched: Record<string, any>) => {
-        if (commitsFetched.data?.length > 0) {
-          const sessionCommit =
-            commitsFetched.data.filter((commit: Record<string, any>) =>
-              commit.id === notebook.annotations["commit-sha"]);
-          if (sessionCommit.length > 0)
-            setCommit(sessionCommit[0]);
-        }
+    client.getCommits(id, notebook.annotations.branch).then((commitsFetched: Record<string, any>) => {
+      if (commitsFetched.data?.length > 0) {
+        const sessionCommit = commitsFetched.data.filter(
+          (commit: Record<string, any>) => commit.id === notebook.annotations["commit-sha"]
+        );
+        if (sessionCommit.length > 0) setCommit(sessionCommit[0]);
       }
-    );
+    });
   }, [notebook.annotations]); // eslint-disable-line
 
   const toggleLogs = (serverName: string) => {
@@ -188,7 +215,7 @@ function ListBarSession({
   const resources = notebook.resources?.requests;
   const startTime = Time.toIsoTimezoneString(notebook.started, "datetime-short");
   const sessionId = notebook.name;
-  const statusData = getStatusObject(sessionStatus, notebook.annotations["default_image_used"]) ;
+  const statusData = getStatusObject(sessionStatus as SessionRunningStatus, notebook.annotations["default_image_used"]);
   const sessionTimeLabel = sessionStatus === SessionStatus.running ? `${statusData.text} since ` : statusData.text;
   const sessionDetailsPopover = commit ? <SessionDetailsPopOver commit={commit} image={notebook.image} /> : null;
 
@@ -196,8 +223,10 @@ function ListBarSession({
     <div className="container-sessions" data-cy="container-session">
       <div className="entity-image">
         <Link to={url} className="text-decoration-none">
-          <div style={imageStyles}
-            className={`cursor-pointer listBar-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
+          <div
+            style={imageStyles}
+            className={`cursor-pointer listBar-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}
+          >
             {!imageUrl ? <div className="card-bg-title card-bg-title--small">{title}</div> : null}
           </div>
         </Link>
@@ -205,7 +234,9 @@ function ListBarSession({
       <div className="entity-title text-truncate cursor-pointer" data-cy={`${itemType}-title`}>
         <Link to={url} className="text-decoration-none">
           <div className="listBar-title text-truncate">
-            <span className="card-title text-truncate" data-cy="list-card-title">{title}</span>
+            <span className="card-title text-truncate" data-cy="list-card-title">
+              {title}
+            </span>
             <span className="entity-title--slug text-truncate">{slug}</span>
           </div>
         </Link>
@@ -213,7 +244,8 @@ function ListBarSession({
       <div className="entity-description cursor-pointer">
         <Link to={url} className="text-decoration-none">
           <EntityDescription
-            description={description} isHeightFixed={true}
+            description={description}
+            isHeightFixed={true}
             showSuggestion={false}
             urlChangeDescription={`${url}/settings`}
             className="text-rk-dark m-0"
@@ -223,29 +255,43 @@ function ListBarSession({
       </div>
       <div className="entity-type-visibility align-items-baseline">
         <EntityLabel type={itemType} workflowType={null} />
-        { visibility ? (<VisibilityIcon visibility={visibility} className={colorByType.colorText} />) : null }
+        {visibility ? <VisibilityIcon visibility={visibility} className={colorByType.colorText} /> : null}
       </div>
       <div className="entity-creators align-items-baseline text-truncate">
-        <EntityCreators display="list" creators={creators} itemType={itemType}
-          includeIcon={true} className="listBar-entity-creators" />
+        <EntityCreators
+          display="list"
+          creators={creators}
+          itemType={itemType}
+          includeIcon={true}
+          className="listBar-entity-creators"
+        />
       </div>
       <div className="entity-date listBar-entity-date">
         <TimeCaption
           caption={labelCaption || "Updated"}
           showTooltip={true}
           time={timeCaption}
-          className="text-rk-text-light text-truncate"/>
+          className="text-rk-text-light text-truncate"
+        />
       </div>
       <div className="entity-action d-flex align-items-baseline gap-1">
         <SessionButton
-          fullPath={fullPath} gitUrl={gitUrl} notebook={notebook} sessionStatus={sessionStatus}
-          setSessionStatus={setSessionStatus} setServerLogs={toggleLogs} stopSession={stopSession} />
+          fullPath={fullPath}
+          gitUrl={gitUrl}
+          notebook={notebook}
+          sessionStatus={sessionStatus}
+          setSessionStatus={setSessionStatus}
+          setServerLogs={toggleLogs}
+          stopSession={stopSession}
+        />
       </div>
-      <div className="session-resources text-truncate"><ResourceList resources={resources} /></div>
+      <div className="session-resources text-truncate">
+        <ResourceList resources={resources} />
+      </div>
       <div className="session-time text-truncate">
         <div className="d-flex">
           <span className="session-info">
-            Branch<span className="text-decoration-underline mx-1">{ notebook.annotations["branch"] }</span>
+            Branch<span className="text-decoration-underline mx-1">{notebook.annotations["branch"]}</span>
           </span>
           <div className="session-icon-details">{sessionDetailsPopover}</div>
         </div>
@@ -253,12 +299,17 @@ function ListBarSession({
           caption={sessionTimeLabel || ""}
           showTooltip={true}
           time={startTime}
-          className="text-rk-text-light text-truncate"/>
+          className="text-rk-text-light text-truncate"
+        />
       </div>
       <div className="session-icon">
         <SessionStatusIcon
-          status={sessionStatus} data={statusData} defaultImage={notebook.annotations["default_image_used"]}
-          errorSession={notebook.status.message || ""} sessionId={sessionId} />
+          status={sessionStatus}
+          data={statusData}
+          defaultImage={notebook.annotations["default_image_used"]}
+          errorSession={notebook.status.message || ""}
+          sessionId={sessionId}
+        />
       </div>
       <EnvironmentLogs
         fetchLogs={fetchLogs}
@@ -267,7 +318,8 @@ function ListBarSession({
         name={notebook.name}
         annotations={notebook.annotations}
       />
-    </div>);
+    </div>
+  );
 }
 
 export default ListBarSession;
