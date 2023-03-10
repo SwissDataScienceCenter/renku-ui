@@ -126,7 +126,7 @@ function SessionListRowStatusIconPopover({
   if (status !== SessionStatus.running && status !== SessionStatus.failed) return null;
   if (status === SessionStatus.failed) {
     return (
-      <UncontrolledPopover target={id} trigger="legacy" placement="bottom">
+      <UncontrolledPopover target={id} trigger="legacy" placement="right">
         <PopoverHeader>Kubernetes pod status</PopoverHeader>
         <PopoverBody>
           <span>{details.message}</span>
