@@ -33,8 +33,8 @@ import { faDiscourse, faGithub, faGitter } from "@fortawesome/free-brands-svg-ic
 
 import { WhatsNew1_0_0 as WhatsNew } from "./WhatsNew";
 import { StatuspageDisplay, isStatusConfigured } from "../statuspage";
-import { RenkuNavLink } from "../utils/components/RenkuNavLink";
-import { ExternalDocsLink, ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
+import { RenkuNavLink } from "../components/RenkuNavLink";
+import { ExternalDocsLink, ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 
 class HelpNav extends Component {

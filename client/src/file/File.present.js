@@ -32,10 +32,10 @@ import { formatBytes } from "../utils/helpers/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 import { Label } from "reactstrap";
 import _ from "lodash";
-import { Clipboard } from "../utils/components/Clipboard";
-import { ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
-import { Loader } from "../utils/components/Loader";
-import NotebookPreview from "../utils/components/notebook";
+import { Clipboard } from "../components/Clipboard";
+import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
+import { Loader } from "../components/Loader";
+import NotebookPreview from "../components/notebook";
 
 const commitMessageLengthLimit = 120;
 

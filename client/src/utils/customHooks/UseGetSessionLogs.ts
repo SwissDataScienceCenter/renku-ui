@@ -17,7 +17,7 @@
  */
 import { useEffect, useState } from "react";
 import { useGetLogsQuery } from "../../features/session/sessionApi";
-import { ILogs } from "../components/Logs";
+import { ILogs } from "../../components/Logs";
 
 /**
  *  useGetSessionLogs custom hook

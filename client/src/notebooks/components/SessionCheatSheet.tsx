@@ -21,9 +21,9 @@ import React, { useEffect, useState } from "react";
 
 import "./SessionCheatSheet.css";
 import * as cheatsheetJson from "./cheatsheet.json";
-import { ExternalDocsLink } from "../../utils/components/ExternalLinks";
+import { ExternalDocsLink } from "../../components/ExternalLinks";
 import { Docs, RenkuPythonDocs } from "../../utils/constants/Docs";
-import { Clipboard } from "../../utils/components/Clipboard";
+import { Clipboard } from "../../components/Clipboard";
 import { Col } from "../../utils/ts-wrappers";
 
 interface CommandDescProps {

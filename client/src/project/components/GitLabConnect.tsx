@@ -1,8 +1,8 @@
 import React from "react";
 import { DropdownItem } from "reactstrap";
 
-import { ExternalLink } from "../../utils/components/ExternalLinks";
-import { ButtonWithMenu } from "../../utils/components/buttons/Button";
+import { ExternalLink } from "../../components/ExternalLinks";
+import { ButtonWithMenu } from "../../components/buttons/Button";
 
 function externalUrlToGitLabIdeUrl(externalUrl: string) {
   if (externalUrl.includes("/gitlab/")) return externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/");

@@ -23,9 +23,9 @@ import { Button, Alert, Progress } from "reactstrap";
 
 import { GraphIndexingStatus } from "../project/Project";
 import { MigrationSuccessAlert, MigrationWarnAlert } from "../project/status/MigrationUtils";
-import { Loader } from "../utils/components/Loader";
+import { Loader } from "../components/Loader";
 import { Docs, Links } from "../utils/constants/Docs";
-import { ExternalLink } from "../utils/components/ExternalLinks";
+import { ExternalLink } from "../components/ExternalLinks";
 
 function KnowledgeGraphPrivateInfo(props) {
   if (!props.isPrivate) return null;

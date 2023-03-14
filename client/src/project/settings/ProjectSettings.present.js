@@ -39,16 +39,16 @@ import { ACCESS_LEVELS } from "../../api-client";
 import { ProjectAvatarEdit, ProjectTags, } from "../shared";
 import { NotebooksHelper, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange } from "../../notebooks";
 import { Url } from "../../utils/helpers/url";
-import { RenkuNavLink } from "../../utils/components/RenkuNavLink";
-import { Clipboard } from "../../utils/components/Clipboard";
-import { Loader } from "../../utils/components/Loader";
-import { WarnAlert } from "../../utils/components/Alert";
-import { CoreErrorAlert } from "../../utils/components/errors/CoreErrorAlert";
-import { ExternalLink } from "../../utils/components/ExternalLinks";
-import LoginAlert from "../../utils/components/loginAlert/LoginAlert";
+import { RenkuNavLink } from "../../components/RenkuNavLink";
+import { Clipboard } from "../../components/Clipboard";
+import { Loader } from "../../components/Loader";
+import { WarnAlert } from "../../components/Alert";
+import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
+import { ExternalLink } from "../../components/ExternalLinks";
+import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { Docs } from "../../utils/constants/Docs";
-import { SuccessLabel } from "../../utils/components/formlabels/FormLabels";
-import { InlineSubmitButton } from "../../utils/components/buttons/Button";
+import { SuccessLabel } from "../../components/formlabels/FormLabels";
+import { InlineSubmitButton } from "../../components/buttons/Button";
 
 
 //** Navigation **//

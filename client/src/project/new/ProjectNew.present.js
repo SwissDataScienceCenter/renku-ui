@@ -29,11 +29,11 @@ import { Button, Form, FormText, ModalBody, ModalFooter, ModalHeader } from "rea
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
-import { Loader } from "../../utils/components/Loader";
-import { ErrorAlert, WarnAlert } from "../../utils/components/Alert";
-import LoginAlert from "../../utils/components/loginAlert/LoginAlert";
-import FormSchema from "../../utils/components/formschema/FormSchema";
-import ProgressIndicator, { ProgressStyle, ProgressType } from "../../utils/components/progress/Progress";
+import { Loader } from "../../components/Loader";
+import { ErrorAlert, WarnAlert } from "../../components/Alert";
+import LoginAlert from "../../components/loginAlert/LoginAlert";
+import FormSchema from "../../components/formschema/FormSchema";
+import ProgressIndicator, { ProgressStyle, ProgressType } from "../../components/progress/Progress";
 import Automated from "./components/Automated";
 import Title from "./components/Title";
 import Description from "./components/Description";

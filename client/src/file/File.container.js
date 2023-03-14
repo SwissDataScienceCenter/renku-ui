@@ -20,7 +20,7 @@ import React, { Component } from "react";
 
 import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent } from "./File.present";
 import { API_ERRORS } from "../api-client";
-import { ShareLinkSessionIcon } from "../utils/components/shareLinkSession/ShareLinkSession";
+import { ShareLinkSessionIcon } from "../components/shareLinkSession/ShareLinkSession";
 
 
 class JupyterNotebookContainer extends Component {

@@ -22,8 +22,8 @@ import { Button } from "reactstrap";
 
 import { AddDatasetStatus } from "./addDatasetStatus";
 import { ACCESS_LEVELS } from "../../api-client";
-import SelectAutosuggestInput from "../../utils/components/SelectAutosuggestInput";
-import { Loader } from "../../utils/components/Loader";
+import SelectAutosuggestInput from "../../components/SelectAutosuggestInput";
+import { Loader } from "../../components/Loader";
 import { groupBy } from "../../utils/helpers/HelperFunctions";
 import { useGetMemberProjectsQuery } from "../../features/projects/ProjectsApi.ts";
 

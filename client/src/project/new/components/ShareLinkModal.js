@@ -22,7 +22,7 @@
  *  Share Link Modal component to create a project
  */
 import React, { useEffect, useState } from "react";
-import { Clipboard } from "../../../utils/components/Clipboard";
+import { Clipboard } from "../../../components/Clipboard";
 import {
   FormGroup,
   FormText,

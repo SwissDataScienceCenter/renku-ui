@@ -28,7 +28,7 @@ import { connect } from "react-redux";
 import { Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
-import { WarnAlert } from "../utils/components/Alert";
+import { WarnAlert } from "../components/Alert";
 
 
 /**

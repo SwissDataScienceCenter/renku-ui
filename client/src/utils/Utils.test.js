@@ -30,8 +30,8 @@ import { act } from "react-test-renderer";
 
 import { StateModel, globalSchema } from "../model";
 import { Time } from "./helpers/Time";
-import { RefreshButton } from "./components/buttons/Button";
-import { CommitsUtils, CommitsView } from "./components/commits/Commits";
+import { RefreshButton } from "../components/buttons/Button";
+import { CommitsUtils, CommitsView } from "../components/commits/Commits";
 import {
   convertUnicodeToAscii, formatBytes,
   parseINIString, refreshIfNecessary, sanitizedHTMLFromMarkdown,
@@ -39,7 +39,7 @@ import {
   verifyTitleCharacters,
   slugFromTitle,
 } from "./helpers/HelperFunctions";
-import { fixRelativePath } from "./components/markdown/RenkuMarkdownWithPathTranslation";
+import { fixRelativePath } from "../components/markdown/RenkuMarkdownWithPathTranslation";
 
 
 describe("Render React components and functions", () => {

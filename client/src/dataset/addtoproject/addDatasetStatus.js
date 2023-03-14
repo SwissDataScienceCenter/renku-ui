@@ -21,9 +21,9 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
-import { ErrorAlert } from "../../utils/components/Alert";
-import { Loader } from "../../utils/components/Loader";
-import ProgressIndicator, { ProgressStyle, ProgressType } from "../../utils/components/progress/Progress";
+import { ErrorAlert } from "../../components/Alert";
+import { Loader } from "../../components/Loader";
+import ProgressIndicator, { ProgressStyle, ProgressType } from "../../components/progress/Progress";
 
 
 /**

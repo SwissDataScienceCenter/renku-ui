@@ -19,7 +19,7 @@
 import React from "react";
 
 import { Button, Col, Row } from "../../utils/ts-wrappers";
-import { Loader } from "../../utils/components/Loader";
+import { Loader } from "../../components/Loader";
 
 
 function commitsPhrasing(numberOfCommits: number) {

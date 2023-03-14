@@ -29,15 +29,15 @@ import {
   faInfoCircle, faLink, faRedo, faSyncAlt, faUserClock
 } from "@fortawesome/free-solid-svg-icons";
 
-import { ErrorAlert, InfoAlert, SuccessAlert, WarnAlert } from "../utils/components/Alert";
-import { ButtonWithMenu } from "../utils/components/buttons/Button";
-import { Clipboard } from "../utils/components/Clipboard";
-import { ExternalLink } from "../utils/components/ExternalLinks";
-import { JupyterIcon } from "../utils/components/Icon";
-import { Loader } from "../utils/components/Loader";
-import { ShareLinkSessionModal } from "../utils/components/shareLinkSession/ShareLinkSession";
+import { ErrorAlert, InfoAlert, SuccessAlert, WarnAlert } from "../components/Alert";
+import { ButtonWithMenu } from "../components/buttons/Button";
+import { Clipboard } from "../components/Clipboard";
+import { ExternalLink } from "../components/ExternalLinks";
+import { JupyterIcon } from "../components/Icon";
+import { Loader } from "../components/Loader";
+import { ShareLinkSessionModal } from "../components/shareLinkSession/ShareLinkSession";
 import { Docs } from "../utils/constants/Docs";
-import { ThrottledTooltip } from "../utils/components/Tooltip";
+import { ThrottledTooltip } from "../components/Tooltip";
 import { SessionStatus } from "../utils/constants/Notebooks";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
@@ -48,7 +48,7 @@ import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from 
 import EnvironmentVariables from "./components/EnviromentVariables";
 import { useSelector } from "react-redux";
 import { StartNotebookAutostartLoader, StartNotebookLoader } from "./components/StartSessionLoader";
-import CommitSelector from "../utils/components/commitSelector/CommitSelector";
+import CommitSelector from "../components/commitSelector/CommitSelector";
 
 function ProjectSessionLockAlert({ lockStatus }) {
   if (lockStatus == null) return null;

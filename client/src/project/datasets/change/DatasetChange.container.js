@@ -29,13 +29,13 @@ import _ from "lodash";
 import { datasetFormSchema } from "../../../model/RenkuModels";
 import DatasetChange from "./DatasetChange.present";
 import { JobStatusMap } from "../../../job/Job";
-import { FILE_STATUS } from "../../../utils/components/formgenerator/fields/FileUploaderInput";
-import { ImageFieldPropertyName as Prop } from "../../../utils/components/formgenerator/fields/ImageInput";
-import FormGenerator from "../../../utils/components/formgenerator/";
+import { FILE_STATUS } from "../../../components/formgenerator/fields/FileUploaderInput";
+import { ImageFieldPropertyName as Prop } from "../../../components/formgenerator/fields/ImageInput";
+import FormGenerator from "../../../components/formgenerator";
 import { mapDataset } from "../../../dataset/index";
-import { CoreErrorAlert } from "../../../utils/components/errors/CoreErrorAlert";
-import { CoreError } from "../../../utils/components/errors/CoreErrorHelpers";
-import { ExternalLink } from "../../../utils/components/ExternalLinks";
+import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
+import { CoreError } from "../../../components/errors/CoreErrorHelpers";
+import { ExternalLink } from "../../../components/ExternalLinks";
 
 
 let dsFormSchema = _.cloneDeep(datasetFormSchema);

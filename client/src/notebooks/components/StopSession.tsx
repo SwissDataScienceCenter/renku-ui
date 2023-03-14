@@ -18,7 +18,7 @@
 
 import React, { Fragment, useState } from "react";
 import { Button, Col, FormText, Modal, ModalBody, ModalHeader, Row, Save } from "../../utils/ts-wrappers";
-import { Loader } from "../../utils/components/Loader";
+import { Loader } from "../../components/Loader";
 import { Notebook } from "./Session";
 
 interface StopSessionProps {

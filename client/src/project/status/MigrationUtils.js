@@ -21,8 +21,8 @@ import { Link } from "react-router-dom";
 import { faGithub, faGitter } from "@fortawesome/free-brands-svg-icons";
 
 import { MigrationStatus } from "../Project";
-import { ErrorAlert, InfoAlert, SuccessAlert, WarnAlert } from "../../utils/components/Alert";
-import { ExternalIconLink, ExternalLink } from "../../utils/components/ExternalLinks";
+import { ErrorAlert, InfoAlert, SuccessAlert, WarnAlert } from "../../components/Alert";
+import { ExternalIconLink, ExternalLink } from "../../components/ExternalLinks";
 import { Links } from "../../utils/constants/Docs";
 
 

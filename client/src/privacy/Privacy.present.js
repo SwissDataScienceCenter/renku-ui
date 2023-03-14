@@ -25,8 +25,8 @@
 
 import React, { Component } from "react";
 import CookieConsent from "react-cookie-consent";
-import { WarnAlert } from "../utils/components/Alert";
-import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
+import { WarnAlert } from "../components/Alert";
+import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
 
 /**
  * Return the HTML content with support for react routing

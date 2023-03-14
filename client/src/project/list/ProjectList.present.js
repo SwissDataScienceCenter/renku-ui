@@ -36,10 +36,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Url } from "../../utils/helpers/url";
 import "../Project.css";
 import { Label } from "reactstrap";
-import { Loader } from "../../utils/components/Loader";
-import { RenkuNavLink } from "../../utils/components/RenkuNavLink";
-import { MarkdownTextExcerpt } from "../../utils/components/markdown/RenkuMarkdown";
-import ListDisplay from "../../utils/components/List";
+import { Loader } from "../../components/Loader";
+import { RenkuNavLink } from "../../components/RenkuNavLink";
+import { MarkdownTextExcerpt } from "../../components/markdown/RenkuMarkdown";
+import ListDisplay from "../../components/List";
 
 function ProjectListRows(props) {
   const { currentPage, perPage, projects, search, totalItems, gridDisplay } = props;

@@ -28,7 +28,7 @@ import Autosuggest from "react-autosuggest";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button, FormGroup, UncontrolledTooltip } from "reactstrap";
-import { InputHintLabel, InputLabel, LoadingLabel } from "../../../utils/components/formlabels/FormLabels";
+import { InputHintLabel, InputLabel, LoadingLabel } from "../../../components/formlabels/FormLabels";
 
 /**
  * Generate refresh button

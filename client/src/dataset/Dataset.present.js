@@ -32,16 +32,16 @@ import { DatasetError } from "./DatasetError";
 import { getDatasetAuthors, getDatasetImageUrl, getUpdatedDatasetImage } from "./DatasetFunctions";
 import DeleteDataset from "../project/datasets/delete/index";
 import Time from "../utils/helpers/Time";
-import FileExplorer from "../utils/components/FileExplorer";
-import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
-import { ExternalLink } from "../utils/components/ExternalLinks";
-import { ErrorAlert, WarnAlert } from "../utils/components/Alert";
-import { Loader } from "../utils/components/Loader";
-import { ThrottledTooltip } from "../utils/components/Tooltip";
-import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
-import { CoreError } from "../utils/components/errors/CoreErrorHelpers";
-import EntityHeader from "../utils/components/entityHeader/EntityHeader";
-import { EntityDeleteButtonButton } from "../utils/components/entities/Buttons";
+import FileExplorer from "../components/FileExplorer";
+import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
+import { ExternalLink } from "../components/ExternalLinks";
+import { ErrorAlert, WarnAlert } from "../components/Alert";
+import { Loader } from "../components/Loader";
+import { ThrottledTooltip } from "../components/Tooltip";
+import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
+import { CoreError } from "../components/errors/CoreErrorHelpers";
+import EntityHeader from "../components/entityHeader/EntityHeader";
+import { EntityDeleteButtonButton } from "../components/entities/Buttons";
 
 
 function DisplayFiles(props) {

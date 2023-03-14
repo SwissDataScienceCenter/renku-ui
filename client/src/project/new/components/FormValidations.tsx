@@ -23,8 +23,8 @@
  *  FormValidation.tsx
  *  FormValidation components.
  */
-import { capitalize } from "../../../utils/components/formgenerator/FormGenerator.present";
-import { ErrorLabel, HelperLabel } from "../../../utils/components/formlabels/FormLabels";
+import { capitalize } from "../../../components/formgenerator/FormGenerator.present";
+import { ErrorLabel, HelperLabel } from "../../../components/formlabels/FormLabels";
 import React from "react";
 import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
 

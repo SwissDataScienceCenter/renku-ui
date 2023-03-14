@@ -23,8 +23,8 @@ import { Link } from "react-router-dom";
 
 import { AddDatasetStatus } from "./addDatasetStatus";
 import { NewProject } from "../../project/new";
-import { Loader } from "../../utils/components/Loader";
-import { WarnAlert } from "../../utils/components/Alert";
+import { Loader } from "../../components/Loader";
+import { WarnAlert } from "../../components/Alert";
 import AppContext from "../../utils/context/appContext";
 
 /**

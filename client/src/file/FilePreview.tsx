@@ -26,8 +26,8 @@ import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
 import { FileNoPreview, StyledNotebook } from "./File.present";
 import { atobUTF8 } from "../utils/helpers/Encoding";
-import { encodeImageBase64 } from "../utils/components/markdown/RenkuMarkdownWithPathTranslation";
-import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
+import { encodeImageBase64 } from "../components/markdown/RenkuMarkdownWithPathTranslation";
+import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
 
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];
 const CODE_EXTENSIONS = [

@@ -38,7 +38,7 @@ import AppContext from "../../utils/context/appContext";
 import useGetNamespaces from "../../utils/customHooks/UseGetNamespaces";
 import useGetUserProjects from "../../utils/customHooks/UseGetProjects";
 import useGetVisibilities from "../../utils/customHooks/UseGetVisibilities";
-import { Loader } from "../../utils/components/Loader";
+import { Loader } from "../../components/Loader";
 
 const CUSTOM_REPO_NAME = "Custom";
 

@@ -24,7 +24,7 @@
  */
 import React from "react";
 import { Button, ButtonGroup, FormGroup } from "../../../utils/ts-wrappers";
-import { InputLabel } from "../../../utils/components/formlabels/FormLabels";
+import { InputLabel } from "../../../components/formlabels/FormLabels";
 import { NewProjectInputs } from "./newProject.d";
 
 interface TemplateSourceProps {

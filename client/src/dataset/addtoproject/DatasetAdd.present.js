@@ -35,8 +35,8 @@ import { AddDatasetExistingProject } from "./addDatasetExistingProject";
 import { AddDatasetNewProject } from "./addDatasetNewProject";
 import { getDatasetAuthors } from "../DatasetFunctions";
 import { DatasetError } from "../DatasetError";
-import { Loader } from "../../utils/components/Loader";
-import LoginAlert from "../../utils/components/loginAlert/LoginAlert";
+import { Loader } from "../../components/Loader";
+import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { ContainerWrap } from "../../App";
 
 function HeaderAddDataset({ dataset }) {

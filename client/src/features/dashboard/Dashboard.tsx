@@ -23,7 +23,7 @@ import { ProjectsDashboard } from "./components/ProjectsDashboard";
 import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
 import { DatasetDashboard } from "./components/DatasetsDashboard";
 import { NotebooksCoordinator } from "../../notebooks";
-import { SshModal } from "../../utils/components/ssh/ssh";
+import { SshModal } from "../../components/ssh/ssh";
 
 import "./Dashboard.scss";
 

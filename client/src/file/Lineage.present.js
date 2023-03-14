@@ -30,8 +30,8 @@ import { formatBytes } from "../utils/helpers/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 
 import "./Lineage.css";
-import { ExternalIconLink } from "../utils/components/ExternalLinks";
-import { Clipboard } from "../utils/components/Clipboard";
+import { ExternalIconLink } from "../components/ExternalLinks";
+import { Clipboard } from "../components/Clipboard";
 
 function cropLabelStart(limit, label) {
   if (label.length > limit)

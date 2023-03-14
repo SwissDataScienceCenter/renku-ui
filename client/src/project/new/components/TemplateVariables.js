@@ -22,11 +22,11 @@
  *  Template Variables field group component
  */
 import React, { Component } from "react";
-import { capitalize } from "../../../utils/components/formgenerator/FormGenerator.present";
+import { capitalize } from "../../../components/formgenerator/FormGenerator.present";
 import { Button, FormGroup, Input, Label, UncontrolledTooltip } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUndo } from "@fortawesome/free-solid-svg-icons";
-import { InputHintLabel, InputLabel } from "../../../utils/components/formlabels/FormLabels";
+import { InputHintLabel, InputLabel } from "../../../components/formlabels/FormLabels";
 
 /**
  * Create a "restore default" button.

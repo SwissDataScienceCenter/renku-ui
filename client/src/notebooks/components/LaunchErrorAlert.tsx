@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { WarnAlert } from "../../utils/components/Alert";
+import { WarnAlert } from "../../components/Alert";
 import { NotebooksHelper } from "../index";
 
 interface LaunchErrorProps {

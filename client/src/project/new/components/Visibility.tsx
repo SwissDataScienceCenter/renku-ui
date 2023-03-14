@@ -22,7 +22,7 @@
  *  Visibility field group component
  */
 import React from "react";
-import VisibilityInput from "../../../utils/components/visibility/Visibility";
+import VisibilityInput from "../../../components/visibility/Visibility";
 import { FormGroup } from "../../../utils/ts-wrappers";
 import {
   NewProjectHandlers,

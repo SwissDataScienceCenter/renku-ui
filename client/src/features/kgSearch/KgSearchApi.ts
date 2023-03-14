@@ -18,9 +18,9 @@
 import { FetchBaseQueryMeta } from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { KgAuthor, KgSearchResult, ListResponse } from "./KgSearch";
-import { VisibilitiesFilter } from "../../utils/components/visibilityFilter/VisibilityFilter";
-import { TypeEntitySelection } from "../../utils/components/typeEntityFilter/TypeEntityFilter";
-import { SortingOptions } from "../../utils/components/sortingEntities/SortingEntities";
+import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
+import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
+import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
 
 export type SearchEntitiesQueryParams = {
   phrase: string;
