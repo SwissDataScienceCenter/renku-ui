@@ -135,7 +135,7 @@
     "react-test-renderer": "^18.2.0",
     "styled-components": "^5.3.5",
     "typescript": "^4.5.2",
-    "webpack": "^5.75.0"
+    "webpack": "^5.76.0"
   },
   "overrides": {
     "@storybook/addon-docs": {
