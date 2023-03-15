@@ -25,7 +25,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Map, List } from "immutable";
 
-import { ExternalLink } from "../utils/components/ExternalLinks";
+import { ExternalLink } from "../components/ExternalLinks";
 import { isURL } from "../utils/helpers/HelperFunctions";
 
 import "./ObjectStoresConfig.scss";

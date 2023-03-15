@@ -3,8 +3,8 @@ import { Badge, PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstr
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faExclamationTriangle, faInfoCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
-import { Loader } from "../../utils/components/Loader";
-import { Clipboard } from "../../utils/components/Clipboard";
+import { Loader } from "../../components/Loader";
+import { Clipboard } from "../../components/Clipboard";
 import { SessionStatus } from "../../utils/constants/Notebooks";
 import type { NotebookAnnotations } from "./Session";
 

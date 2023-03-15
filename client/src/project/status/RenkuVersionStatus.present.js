@@ -25,10 +25,10 @@ import { AskMaintainer, ManualUpdateInstructions, MigrationSuccessAlert, Migrati
   isMigrationFailure, isMigrationCheckLoading } from "./MigrationUtils";
 import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS, RENKU_UPDATE_MODE } from "./MigrationUtils";
 import { MigrationStatus } from "../Project";
-import { Loader } from "../../utils/components/Loader";
+import { Loader } from "../../components/Loader";
 import { Docs } from "../../utils/constants/Docs";
-import { CoreErrorAlert } from "../../utils/components/errors/CoreErrorAlert";
-import { CoreError } from "../../utils/components/errors/CoreErrorHelpers";
+import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
+import { CoreError } from "../../components/errors/CoreErrorHelpers";
 
 
 function updateNotRequired(renkuVersionStatus) {

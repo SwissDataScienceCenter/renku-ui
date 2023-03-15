@@ -17,9 +17,9 @@
  */
 
 import { EntityType, KgSearchResult, KgSearchResultLink } from "../../features/kgSearch";
-import { ListElementProps } from "../components/list/List.d";
+import { ListElementProps } from "../../components/list/List.d";
 import { Url } from "./url";
-import { DateFilterTypes } from "../components/dateFilter/DateFilter";
+import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
 import _ from "lodash";
 import { getDatasetImageUrl } from "../../dataset/DatasetFunctions";
 

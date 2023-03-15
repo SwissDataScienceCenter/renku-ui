@@ -20,7 +20,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { Loader } from "../../utils/components/Loader";
+import { Loader } from "../../components/Loader";
 import { Balloon, Briefcase, Table } from "../../utils/ts-wrappers";
 import "./inactiveKgProjects.css";
 import {

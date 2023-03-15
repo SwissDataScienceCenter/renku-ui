@@ -28,20 +28,20 @@ import {
   DropdownMenu, DropdownToggle, Input, Journals, Label, People, Row, Table,
   UncontrolledTooltip, XLg
 } from "../utils/ts-wrappers";
-import EntityCreators from "../utils/components/entities/Creators";
+import EntityCreators from "../components/entities/Creators";
 import Time from "../utils/helpers/Time";
-import { Clipboard } from "../utils/components/Clipboard";
-import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
+import { Clipboard } from "../components/Clipboard";
+import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
 import { Docs } from "../utils/constants/Docs";
-import { EntityType } from "../utils/components/entities/Entities";
-import { ExternalDocsLink, ExternalLink, IconLink } from "../utils/components/ExternalLinks";
-import { Loader } from "../utils/components/Loader";
+import { EntityType } from "../components/entities/Entities";
+import { ExternalDocsLink, ExternalLink, IconLink } from "../components/ExternalLinks";
+import { Loader } from "../components/Loader";
 import { Url } from "../utils/helpers/url";
-import { TreeBrowser, TreeDetails, TreeElement } from "../utils/components/Tree";
-import { InfoAlert, WarnAlert } from "../utils/components/Alert";
+import { TreeBrowser, TreeDetails, TreeElement } from "../components/Tree";
+import { InfoAlert, WarnAlert } from "../components/Alert";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
 import "./Workflows.scss";
-import InformativeIcon from "../utils/components/InformativeIcon";
+import InformativeIcon from "../components/InformativeIcon";
 
 /** BROWSER **/
 

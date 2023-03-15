@@ -27,7 +27,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import { ArrowClockwise, ArrowLeft, Briefcase, Button, Journals, Save, StopCircle } from "../../utils/ts-wrappers";
-import { ThrottledTooltip } from "../../utils/components/Tooltip";
+import { ThrottledTooltip } from "../../components/Tooltip";
 
 interface GoBackProps {
   urlBack: string;

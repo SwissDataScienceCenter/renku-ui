@@ -19,7 +19,7 @@
 import React from "react";
 
 import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "../../utils/ts-wrappers";
-import { Loader } from "../../utils/components/Loader";
+import { Loader } from "../../components/Loader";
 import { useGitStatusQuery, useHealthQuery, useRenkuPullMutation } from "../../features/session/sidecarApi";
 import type { GitStatusResult } from "../../features/session/sidecarApi";
 

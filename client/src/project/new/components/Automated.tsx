@@ -30,9 +30,9 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row } from "../../../utils/ts-wrappers";
 import { Alert, Button, Fade, Modal, ModalBody, ModalHeader } from "../../../utils/ts-wrappers";
 
-import { ErrorAlert, WarnAlert } from "../../../utils/components/Alert";
+import { ErrorAlert, WarnAlert } from "../../../components/Alert";
 import { Url } from "../../../utils/helpers/url";
-import { Loader } from "../../../utils/components/Loader";
+import { Loader } from "../../../components/Loader";
 
 const Link = require("react-router-dom").Link;
 

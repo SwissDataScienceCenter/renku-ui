@@ -20,17 +20,17 @@ import React, { useContext, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { Col, Modal, ModalBody, ModalHeader, Row } from "../../utils/ts-wrappers";
-import SortingEntities, { SortingOptions } from "../../utils/components/sortingEntities/SortingEntities";
-import { FilterEntitySearch } from "../../utils/components/entitySearchFilter/EntitySearchFilter";
-import { SearchResultsHeader } from "../../utils/components/searchResultsHeader/SearchResultsHeader";
-import { SearchResultsContent } from "../../utils/components/searchResultsContent/SearchResultsContent";
+import SortingEntities, { SortingOptions } from "../../components/sortingEntities/SortingEntities";
+import { FilterEntitySearch } from "../../components/entitySearchFilter/EntitySearchFilter";
+import { SearchResultsHeader } from "../../components/searchResultsHeader/SearchResultsHeader";
+import { SearchResultsContent } from "../../components/searchResultsContent/SearchResultsContent";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
 import { useKgSearchState } from "./KgSearchState";
 import { KgAuthor } from "./KgSearch";
-import { TypeEntitySelection } from "../../utils/components/typeEntityFilter/TypeEntityFilter";
-import { VisibilitiesFilter } from "../../utils/components/visibilityFilter/VisibilityFilter";
-import { DatesFilter } from "../../utils/components/dateFilter/DateFilter";
-import QuickNav from "../../utils/components/quicknav";
+import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
+import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
+import { DatesFilter } from "../../components/dateFilter/DateFilter";
+import QuickNav from "../../components/quicknav";
 import AppContext from "../../utils/context/appContext";
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
 

@@ -34,11 +34,11 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import { StatusHelper } from "../../model/Model";
-import { CommitsView } from "../../utils/components/commits/Commits";
-import { Loader } from "../../utils/components/Loader";
-import { ExternalLink } from "../../utils/components/ExternalLinks";
-import { RefreshButton } from "../../utils/components/buttons/Button";
-import { Pagination } from "../../utils/components/Pagination";
+import { CommitsView } from "../../components/commits/Commits";
+import { Loader } from "../../components/Loader";
+import { ExternalLink } from "../../components/ExternalLinks";
+import { RefreshButton } from "../../components/buttons/Button";
+import { Pagination } from "../../components/Pagination";
 
 
 class OverviewStats extends Component {

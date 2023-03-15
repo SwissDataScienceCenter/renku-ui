@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Visibilities } from "../../utils/components/visibility/Visibility";
+import { Visibilities } from "../../components/visibility/Visibility";
 
 interface KgSearchResultLink {
   rel: string;

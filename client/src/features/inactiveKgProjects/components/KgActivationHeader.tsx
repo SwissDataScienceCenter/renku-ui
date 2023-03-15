@@ -19,8 +19,8 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 
-import { ExternalLink } from "../../../utils/components/ExternalLinks";
-import { ThrottledTooltip } from "../../../utils/components/Tooltip";
+import { ExternalLink } from "../../../components/ExternalLinks";
+import { ThrottledTooltip } from "../../../components/Tooltip";
 import { Docs } from "../../../utils/constants/Docs";
 
 function KgActivationHeader() {

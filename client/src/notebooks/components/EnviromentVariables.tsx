@@ -19,7 +19,7 @@ import React, { ChangeEvent } from "react";
 import { Button, Col, FormGroup, Input, Label, Row } from "../../utils/ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { ErrorLabel, InputLabel } from "../../utils/components/formlabels/FormLabels";
+import { ErrorLabel, InputLabel } from "../../components/formlabels/FormLabels";
 
 interface EnvironmentVariablesProps {
   environmentVariables: EnvVariablesField[];

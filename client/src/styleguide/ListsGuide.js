@@ -20,8 +20,8 @@ import React, { Fragment } from "react";
 
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader } from "reactstrap";
-import { TimeCaption } from "../utils/components/TimeCaption";
-import { Pagination } from "../utils/components/Pagination";
+import { TimeCaption } from "../components/TimeCaption";
+import { Pagination } from "../components/Pagination";
 
 function createDateGradient() {
   const now = new Date();

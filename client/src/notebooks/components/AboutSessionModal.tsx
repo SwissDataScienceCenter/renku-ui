@@ -19,14 +19,14 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import EntityHeader from "../../utils/components/entityHeader/EntityHeader";
+import EntityHeader from "../../components/entityHeader/EntityHeader";
 import Time from "../../utils/helpers/Time";
 import { InfoCircle, Modal, ModalBody, ModalHeader } from "../../utils/ts-wrappers";
-import { EntityType } from "../../utils/components/entities/Entities";
+import { EntityType } from "../../components/entities/Entities";
 import { ACCESS_LEVELS } from "../../api-client";
 import { NotebookServerRow } from "../Notebooks.present";
 import { Notebook, ProjectMetadata } from "./Session";
-import { ExternalLink } from "../../utils/components/ExternalLinks";
+import { ExternalLink } from "../../components/ExternalLinks";
 import { Docs } from "../../utils/constants/Docs";
 
 import "./SessionModal.css";

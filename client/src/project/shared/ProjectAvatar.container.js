@@ -26,10 +26,10 @@
 import { Button } from "reactstrap";
 import React, { useEffect, useState } from "react";
 
-import ImageInput, { ImageFieldPropertyName as Prop } from "../../utils/components/formgenerator/fields/ImageInput";
-import { ImageInputMode } from "../../utils/components/formgenerator/fields/ImageInput";
-import { ExternalLink } from "../../utils/components/ExternalLinks";
-import { InlineSubmitButton } from "../../utils/components/buttons/Button";
+import ImageInput, { ImageFieldPropertyName as Prop } from "../../components/formgenerator/fields/ImageInput";
+import { ImageInputMode } from "../../components/formgenerator/fields/ImageInput";
+import { ExternalLink } from "../../components/ExternalLinks";
+import { InlineSubmitButton } from "../../components/buttons/Button";
 import { PROJECT_AVATAR_MAX_SIZE } from "../new/components/NewProjectAvatar";
 
 const CURRENT_AVATAR_NAME = "[Current Avatar]";

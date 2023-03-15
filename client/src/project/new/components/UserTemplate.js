@@ -26,9 +26,9 @@ import React, { Component, Fragment } from "react";
 import { Button, FormGroup, FormText, Input } from "reactstrap";
 
 import { Docs, Links } from "../../../utils/constants/Docs";
-import { ErrorLabel, InputHintLabel, InputLabel } from "../../../utils/components/formlabels/FormLabels";
-import { CoreErrorAlert } from "../../../utils/components/errors/CoreErrorAlert";
-import { ExternalLink } from "../../../utils/components/ExternalLinks";
+import { ErrorLabel, InputHintLabel, InputLabel } from "../../../components/formlabels/FormLabels";
+import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
+import { ExternalLink } from "../../../components/ExternalLinks";
 
 const ErrorTemplateFeedback = ({ templates, meta, input }) => {
   if (input.userRepo)

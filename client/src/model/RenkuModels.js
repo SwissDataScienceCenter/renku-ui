@@ -24,7 +24,7 @@
  */
 
 import { Schema, PropertyName as Prop } from "./Model";
-import FormGenerator from "../utils/components/formgenerator/";
+import FormGenerator from "../components/formgenerator";
 
 const userSchema = new Schema({
   fetched: { initial: null, mandatory: true },

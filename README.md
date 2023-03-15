@@ -179,9 +179,15 @@ Key points around this include:
 
 ### **Group shared code into features**
 
-[Features](https://redux.js.org/faq/code-structure) should be used to group together UI components and state manipulation code.
+Based on [these suggestions from Redux](https://redux.js.org/faq/code-structure), we decided to use a few folders to bundle functions and components together, broadly following the "Feature folders" style.
 
-It commonly happens that there are multiple components and multiple state interactions that center around one shared slice and/or one backend API. These should be grouped into a feature to make this structure easier to work with.
+Here are the folders in `/client/src`  where to place new components:
+
+* `features`: create/use sub-folders to contain files identifying single features. These sometimes correspond to Renku abstractions, like "Projects", "Datasets", "Sessions", or to cross-entity features such as "Search" and "Dashboard". All RTK queries should be triggered by components in this folder. Most of the actions to save data in the Redux store slices should be defined here as well.
+* `components`: add here components that can be reused in different contexts. If something is clearly a shared component (E.G. `RenkuAlert`), put it here. If it's not obvious, and currently used by just one component, you can leave it in the `feature` folder (follow the principle: do not over-engineer it too early). Mind that we also store most of the temporary values in the Redux store, so you can define actions here if necessary.
+* `utils`: put here anything generic that doesn't fall into the previous categories (E.G. constants, helper functions, wrappers).
+
+Picking the perfect place isn't always straightforward and our current folder structure still has many outdated components that don't follow the convention. We plan to move them when already touching the code for other changes.
 
 # Server
 

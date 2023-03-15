@@ -23,11 +23,11 @@ import {
   ManualUpdateInstructions, MigrationSuccessAlert, MigrationWarnAlert, isMigrationFailure, isMigrationCheckLoading
 } from "./MigrationUtils";
 import { MigrationStatus } from "../Project";
-import { ExternalLink } from "../../utils/components/ExternalLinks";
-import { Loader } from "../../utils/components/Loader";
+import { ExternalLink } from "../../components/ExternalLinks";
+import { Loader } from "../../components/Loader";
 import { Docs } from "../../utils/constants/Docs";
-import { CoreErrorAlert } from "../../utils/components/errors/CoreErrorAlert";
-import { CoreError } from "../../utils/components/errors/CoreErrorHelpers";
+import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
+import { CoreError } from "../../components/errors/CoreErrorHelpers";
 
 
 const TEMPLATE_VERSION_SCENARIOS = {

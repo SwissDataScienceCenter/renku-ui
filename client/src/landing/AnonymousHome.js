@@ -63,9 +63,9 @@ import logo_ETH from "./Logos/ETH.svg";
 import logo_SDSC from "./Logos/SDSC.svg";
 
 
-import { RenkuNavLink } from "../utils/components/RenkuNavLink";
-import { ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
-import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
+import { RenkuNavLink } from "../components/RenkuNavLink";
+import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
+import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
 import { Docs } from "../utils/constants/Docs";
 import { Search } from "react-bootstrap-icons";
 

@@ -18,7 +18,7 @@
 import { RootStateOrAny, useSelector } from "react-redux";
 import { useInactiveProjectSelector } from "../../inactiveKgProjects/inactiveKgProjectsSlice";
 import useGetInactiveProjects from "../../../utils/customHooks/UseGetInactiveProjects";
-import { WarnAlert } from "../../../utils/components/Alert";
+import { WarnAlert } from "../../../components/Alert";
 import { Link } from "react-router-dom";
 import React from "react";
 

@@ -26,7 +26,7 @@ import React, { MouseEventHandler, useState } from "react";
 import ShareLinkModal from "./ShareLinkModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
-import { ButtonWithMenu } from "../../../utils/components/buttons/Button";
+import { ButtonWithMenu } from "../../../components/buttons/Button";
 import { Button, DropdownItem } from "../../../utils/ts-wrappers";
 import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
 

@@ -5,10 +5,10 @@ import { Button, Row, Col } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
 import "../filestreeview/treeviewstyle.css";
 import { SpecialPropVal } from "../../model";
-import { MarkdownTextExcerpt } from "../../utils/components/markdown/RenkuMarkdown";
-import { Loader } from "../../utils/components/Loader";
-import ListDisplay from "../../utils/components/List";
-import { ThrottledTooltip } from "../../utils/components/Tooltip";
+import { MarkdownTextExcerpt } from "../../components/markdown/RenkuMarkdown";
+import { Loader } from "../../components/Loader";
+import ListDisplay from "../../components/List";
+import { ThrottledTooltip } from "../../components/Tooltip";
 import { getUpdatedDatasetImage } from "../../dataset/DatasetFunctions";
 
 function datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, dataset) {

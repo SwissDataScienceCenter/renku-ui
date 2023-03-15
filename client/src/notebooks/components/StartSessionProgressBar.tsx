@@ -21,7 +21,7 @@ import ProgressStepsIndicator, {
   ProgressType,
   StatusStepProgressBar,
   StepsProgressBar
-} from "../../utils/components/progress/ProgressSteps";
+} from "../../components/progress/ProgressSteps";
 import { Button } from "../../utils/ts-wrappers";
 
 

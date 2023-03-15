@@ -25,8 +25,8 @@
 
 import React, { useEffect, useState } from "react";
 
-import ImageInput from "../../../utils/components/formgenerator/fields/ImageInput";
-import { ImageInputMode } from "../../../utils/components/formgenerator/fields/ImageInput";
+import ImageInput from "../../../components/formgenerator/fields/ImageInput";
+import { ImageInputMode } from "../../../components/formgenerator/fields/ImageInput";
 
 // 3 MB -- GitLab has a 200kB limit, but a 3 MB file should be small enough after cropping
 const PROJECT_AVATAR_MAX_SIZE = 3 * 1024 * 1024;

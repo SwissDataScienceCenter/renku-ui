@@ -23,7 +23,7 @@
  *  New Project definitions
  */
 
-import { Visibilities } from "../../../utils/components/visibility/Visibility";
+import { Visibilities } from "../../../components/visibility/Visibility";
 
 interface NewProjectMeta {
   validation: {

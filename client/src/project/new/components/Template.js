@@ -22,7 +22,7 @@
  *  Template field group component
  */
 import React, { Component } from "react";
-import TemplateSelector from "../../../utils/components/templateSelector/TemplateSelector";
+import TemplateSelector from "../../../components/templateSelector/TemplateSelector";
 import { FormGroup } from "reactstrap";
 
 class Template extends Component {

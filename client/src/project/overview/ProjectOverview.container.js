@@ -27,7 +27,7 @@ import React, { Component } from "react";
 
 import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
-import { Loader } from "../../utils/components/Loader";
+import { Loader } from "../../components/Loader";
 
 import { withProjectMapped } from "../Project";
 import {

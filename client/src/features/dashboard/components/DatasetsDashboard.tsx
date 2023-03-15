@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 import { SearchEntitiesQueryParams, useSearchEntitiesQuery } from "../../kgSearch/KgSearchApi";
-import { SortingOptions } from "../../../utils/components/sortingEntities/SortingEntities";
+import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 
-import ListDisplay from "../../../utils/components/List";
-import { Loader } from "../../../utils/components/Loader";
+import ListDisplay from "../../../components/List";
+import { Loader } from "../../../components/Loader";
 import { KgAuthor } from "../../kgSearch/KgSearch";
 import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
 import { stateToSearchString } from "../../kgSearch/KgSearchState";

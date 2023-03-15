@@ -22,8 +22,8 @@
  *  Project Title field group component
  */
 import * as React from "react";
-import { ExternalLink } from "../../../utils/components/ExternalLinks";
-import FieldGroup from "../../../utils/components/FieldGroups";
+import { ExternalLink } from "../../../components/ExternalLinks";
+import FieldGroup from "../../../components/FieldGroups";
 import { NewProjectHandlers, NewProjectInputs, NewProjectMeta } from "./newProject.d";
 
 interface TitleProps {

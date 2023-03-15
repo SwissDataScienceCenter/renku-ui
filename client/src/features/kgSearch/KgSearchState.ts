@@ -23,19 +23,19 @@ import type { History } from "history";
 import {
   TypeEntitySelection,
   arrayToTypeEntitySelection,
-} from "../../utils/components/typeEntityFilter/TypeEntityFilter";
+} from "../../components/typeEntityFilter/TypeEntityFilter";
 import {
   VisibilitiesFilter,
   arrayToVisibilitiesFilter,
-} from "../../utils/components/visibilityFilter/VisibilityFilter";
-import { SortingOptions, stringToSortingOption } from "../../utils/components/sortingEntities/SortingEntities";
+} from "../../components/visibilityFilter/VisibilityFilter";
+import { SortingOptions, stringToSortingOption } from "../../components/sortingEntities/SortingEntities";
 import { KgAuthor } from "./KgSearch";
 import {
   DateFilterTypes,
   DatesFilter,
   dateFilterTypeToSinceAndUntil,
   stringToDateFilter,
-} from "../../utils/components/dateFilter/DateFilter";
+} from "../../components/dateFilter/DateFilter";
 
 export interface KgSearchFormState {
   author: KgAuthor;

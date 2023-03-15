@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { WorkflowType } from "../../utils/components/entities";
+import { WorkflowType } from "../../components/entities";
 
 
 export interface Creator {

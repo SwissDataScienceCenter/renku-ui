@@ -23,7 +23,7 @@
  *  Description field group component
  */
 import * as React from "react";
-import FieldGroup from "../../../utils/components/FieldGroups";
+import FieldGroup from "../../../components/FieldGroups";
 import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
 
 interface DescriptionProps {

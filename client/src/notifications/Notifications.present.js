@@ -36,8 +36,8 @@ import {
 import { NotificationsInfo } from ".";
 
 import "./Notifications.css";
-import { ExternalLink } from "../utils/components/ExternalLinks";
-import { TimeCaption } from "../utils/components/TimeCaption";
+import { ExternalLink } from "../components/ExternalLinks";
+import { TimeCaption } from "../components/TimeCaption";
 
 
 /**

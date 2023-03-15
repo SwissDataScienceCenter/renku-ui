@@ -26,11 +26,11 @@
 
 import React, { useState } from "react";
 import { Col, Alert, Button } from "reactstrap";
-import { FormGenerator } from "../../../utils/components/formgenerator";
+import { FormGenerator } from "../../../components/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import FormSchema from "../../../utils/components/formschema/FormSchema";
+import FormSchema from "../../../components/formschema/FormSchema";
 
 function DatasetImport(props) {
   const [showHeader, setShowHeader] = useState(true);

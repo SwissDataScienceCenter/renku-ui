@@ -18,8 +18,8 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
-import { ErrorAlert } from "../utils/components/Alert";
-import LoginAlert from "../utils/components/loginAlert/LoginAlert";
+import { ErrorAlert } from "../components/Alert";
+import LoginAlert from "../components/loginAlert/LoginAlert";
 import NotFound from "../not-found";
 import { Url } from "../utils/helpers/url";
 

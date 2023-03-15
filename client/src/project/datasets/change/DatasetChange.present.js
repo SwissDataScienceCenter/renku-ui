@@ -30,9 +30,9 @@ import { Col, Alert, Button } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import FormGenerator from "../../../utils/components/formgenerator/FormGenerator.container";
-import { Loader } from "../../../utils/components/Loader";
-import FormSchema from "../../../utils/components/formschema/FormSchema";
+import FormGenerator from "../../../components/formgenerator/FormGenerator.container";
+import { Loader } from "../../../components/Loader";
+import FormSchema from "../../../components/formschema/FormSchema";
 
 function DatasetChange(props) {
   const [showHeader, setShowHeader] = useState(true);

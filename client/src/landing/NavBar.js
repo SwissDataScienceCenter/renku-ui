@@ -49,10 +49,10 @@ import { NotificationsMenu } from "../notifications";
 import { LoginHelper } from "../authentication";
 import { StatuspageBanner } from "../statuspage";
 import "./NavBar.css";
-import { UserAvatar } from "../utils/components/Avatar";
-import { ExternalDocsLink, ExternalLink } from "../utils/components/ExternalLinks";
-import { RenkuNavLink } from "../utils/components/RenkuNavLink";
-import { Loader } from "../utils/components/Loader";
+import { UserAvatar } from "../components/Avatar";
+import { ExternalDocsLink, ExternalLink } from "../components/ExternalLinks";
+import { RenkuNavLink } from "../components/RenkuNavLink";
+import { Loader } from "../components/Loader";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 import { useSelector } from "react-redux";
 

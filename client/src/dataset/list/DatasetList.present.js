@@ -32,9 +32,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ButtonDropdown } from "reactstrap";
-import { Loader } from "../../utils/components/Loader";
-import { MarkdownTextExcerpt } from "../../utils/components/markdown/RenkuMarkdown";
-import ListDisplay from "../../utils/components/List";
+import { Loader } from "../../components/Loader";
+import { MarkdownTextExcerpt } from "../../components/markdown/RenkuMarkdown";
+import ListDisplay from "../../components/List";
 import { getDatasetImageUrl, getUpdatedDatasetImage } from "../DatasetFunctions";
 
 

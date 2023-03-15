@@ -18,10 +18,10 @@
 
 import { NotebooksHelper } from "../Notebooks.state";
 import React, { useEffect, useState } from "react";
-import ProgressStepsIndicator, { StatusStepProgressBar } from "../../utils/components/progress/ProgressSteps";
+import ProgressStepsIndicator, { StatusStepProgressBar } from "../../components/progress/ProgressSteps";
 import { RootStateOrAny, useSelector } from "react-redux";
-import { GoBackButton } from "../../utils/components/buttons/Button";
-import { ProgressStyle, ProgressType } from "../../utils/components/progress/Progress";
+import { GoBackButton } from "../../components/buttons/Button";
+import { ProgressStyle, ProgressType } from "../../components/progress/Progress";
 import { getSessionRunningByProjectName } from "../../utils/helpers/SessionFunctions";
 
 interface CIStatus {
