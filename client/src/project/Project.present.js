@@ -195,7 +195,9 @@ class ForkProjectModal extends Component {
     ];
     return (
       <Fragment>
-        <RoundButtonGroup buttons={buttons}/>
+        <RoundButtonGroup>
+          {buttons}
+        </RoundButtonGroup>
         <Modal isOpen={this.state.open} toggle={this.toggleFunction}>
           {content}
         </Modal>

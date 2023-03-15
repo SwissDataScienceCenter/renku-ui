@@ -121,7 +121,9 @@ const optionsGroupButton = [
 ];
 export const roundButtonGroup = () => (
   <>
-    <RoundButtonGroup buttons={optionsGroupButton} />
+    <RoundButtonGroup>
+      {optionsGroupButton}
+    </RoundButtonGroup>
   </>
 );
 
