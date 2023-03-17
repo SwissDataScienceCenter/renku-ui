@@ -24,7 +24,7 @@ import {
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faExternalLinkAlt, faFileAlt, faInfoCircle, faPlus, faStopCircle
+  faExternalLinkAlt, faFileAlt, faInfoCircle, faPlus, faStop
 } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 
@@ -44,7 +44,7 @@ import { TimeCaption } from "../components/TimeCaption";
 import { Loader } from "../components/Loader";
 import { InfoAlert, } from "../components/Alert";
 import LoginAlert from "../components/loginAlert/LoginAlert";
-import { EnvironmentLogs, SessionLogs as LogsSessionLogs } from "../components/Logs";
+import { EnvironmentLogsPresent, SessionLogs as LogsSessionLogs } from "../components/Logs";
 import { SessionStatus } from "../utils/constants/Notebooks";
 
 import "./Notebooks.css";
@@ -414,7 +414,7 @@ class NotebookServerRowFull extends Component {
         url={url}
         scope={this.props.scope}
       />
-      <EnvironmentLogs
+      <EnvironmentLogsPresent
         fetchLogs={this.props.fetchLogs}
         toggleLogs={this.props.toggleLogs}
         logs={this.props.logs}
@@ -517,7 +517,7 @@ class NotebookServerRowCompact extends Component {
         toggleLogs={this.props.toggleLogs}
         url={url}
       />
-      <EnvironmentLogs
+      <EnvironmentLogsPresent
         fetchLogs={this.props.fetchLogs}
         toggleLogs={this.props.toggleLogs}
         logs={logs}
@@ -558,15 +558,17 @@ const NotebookServerRowAction = memo((props) => {
     logs: null
   };
   let defaultAction = null;
-  actions.logs = (<DropdownItem data-cy="session-log-button" onClick={() => props.toggleLogs(name)} color="secondary">
-    <FontAwesomeIcon className="text-rk-green" icon={faFileAlt} /> Get logs
-  </DropdownItem>);
+  actions.logs = (
+    <DropdownItem data-cy="session-log-button" onClick={() => props.toggleLogs(name)} color="secondary">
+      <FontAwesomeIcon className="text-rk-green" icon={faFileAlt} /> Get logs
+    </DropdownItem>
+  );
 
   if (status !== SessionStatus.stopping) {
     actions.stop = <Fragment>
       <DropdownItem divider />
       <DropdownItem onClick={() => props.stopNotebook(name)}>
-        <FontAwesomeIcon className="text-rk-green" icon={faStopCircle} /> Stop
+        <FontAwesomeIcon className="text-rk-green" icon={faStop} /> Stop
       </DropdownItem>
     </Fragment>;
   }
@@ -575,23 +577,33 @@ const NotebookServerRowAction = memo((props) => {
     defaultAction = (
       <Link data-cy="open-session" className="btn btn-outline-rk-green" to={{ pathname: props.localUrl, state }}>
         <div className="d-flex gap-2 text-rk-green">
-          <img src="/connectGreen.svg" className="rk-icon rk-icon-md" />Connect </div>
-      </Link>);
-    actions.openExternal = (<DropdownItem href={props.url} target="_blank" >
-      <FontAwesomeIcon className="text-rk-green" icon={faExternalLinkAlt} /> Open in new tab
-    </DropdownItem>);
+          <img src="/connectGreen.svg" className="rk-icon rk-icon-md" /> Connect
+        </div>
+      </Link>
+    );
+    actions.openExternal = (
+      <DropdownItem href={props.url} target="_blank">
+        <FontAwesomeIcon className="text-rk-green" icon={faExternalLinkAlt} /> Open in new tab
+      </DropdownItem>
+    );
   }
   else if (status === SessionStatus.stopping) {
     defaultAction = (
-      <Button data-cy="stopping-btn" className="btn btn-outline-rk-green" disabled={true}>
+      <Button data-cy="stopping-btn" className="btn-outline-rk-green" disabled={true}>
         Stopping...
-      </Button>);
+      </Button>
+    );
     actions.stop = null;
   }
   else {
     const classes = { className: "text-nowrap btn-outline-rk-green" };
-    defaultAction = (<Button data-cy="stop-session-button" {...classes} onClick={() => props.stopNotebook(name)}>
-      <FontAwesomeIcon className="text-rk-green" icon={faStopCircle} /> Stop</Button>);
+    defaultAction = (
+      <Button data-cy="stop-session-button" {...classes} onClick={() => props.stopNotebook(name)}>
+        <div className="d-flex gap-2 text-rk-green">
+          <FontAwesomeIcon className="m-auto" icon={faStop} /> Stop
+        </div>
+      </Button>
+    );
     actions.stop = null;
   }
 

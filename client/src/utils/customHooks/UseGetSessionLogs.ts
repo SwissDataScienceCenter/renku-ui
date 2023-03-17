@@ -26,8 +26,10 @@ import { ILogs } from "../../components/Logs";
  *  hook to fetch logs by serverName
  */
 function useGetSessionLogs(serverName: string, show: boolean | string) {
-  const { data, isFetching, isLoading, error, refetch } =
-    useGetLogsQuery({ serverName, lines: 250 }, { skip: serverName === "" });
+  const { data, isFetching, isLoading, error, refetch } = useGetLogsQuery(
+    { serverName, lines: 250 },
+    { skip: !serverName }
+  );
   const [logs, setLogs] = useState<ILogs | undefined>(undefined);
   const fetchLogs = () => {
     return refetch().then((result) => {
@@ -40,8 +42,8 @@ function useGetSessionLogs(serverName: string, show: boolean | string) {
   useEffect(() => {
     setLogs({
       data,
-      fetched: !isFetching && !error,
-      fetching: isFetching || isLoading,
+      fetched: !isLoading && !error && data,
+      fetching: isFetching,
       show: show ? serverName : false,
     });
   }, [ data, show, isFetching, isLoading, serverName ]); //eslint-disable-line

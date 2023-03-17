@@ -18,7 +18,7 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
-import { Display, ProjectConfig } from "./display";
+import { Display, ProjectConfig, SessionConfig } from "./display";
 
 const initialState: Display = {
   modals: {
@@ -26,6 +26,10 @@ const initialState: Display = {
       show: false,
       projectPath: "",
       gitUrl: ""
+    },
+    sessionLogs: {
+      show: false,
+      targetServer: ""
     }
   }
 };
@@ -46,6 +50,22 @@ export const displaySlice = createSlice({
     },
     toggleSshModal: (state) => {
       state.modals.ssh.show = !state.modals.ssh.show;
+    },
+
+    showSessionLogsModal: (state, action: PayloadAction<SessionConfig>) => {
+      state.modals.sessionLogs = {
+        show: true,
+        targetServer: action.payload.targetServer,
+      };
+    },
+    hideSessionLogsModal: (state) => {
+      state.modals.sessionLogs.show = false;
+    },
+    toggleSessionLogsModal: (state, action: PayloadAction<SessionConfig>) => {
+      state.modals.sessionLogs = {
+        show: !state.modals.sessionLogs.show,
+        targetServer: action.payload.targetServer ?? "",
+      };
     },
 
     reset: () => initialState

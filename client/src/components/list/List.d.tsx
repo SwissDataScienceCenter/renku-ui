@@ -23,6 +23,7 @@ export interface ListElementProps {
   itemType: EntityType;
   labelCaption: string;
   mediaContent?: any;
+  path?: string;
   slug: string;
   tagList: string[];
   timeCaption: string;

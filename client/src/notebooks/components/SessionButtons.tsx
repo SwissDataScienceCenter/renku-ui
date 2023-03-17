@@ -25,8 +25,10 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStop } from "@fortawesome/free-solid-svg-icons";
 
-import { ArrowClockwise, ArrowLeft, Briefcase, Button, Journals, Save, StopCircle } from "../../utils/ts-wrappers";
+import { ArrowClockwise, ArrowLeft, Briefcase, Button, Journals, Save } from "../../utils/ts-wrappers";
 import { ThrottledTooltip } from "../../components/Tooltip";
 
 interface GoBackProps {
@@ -48,8 +50,9 @@ function StopSessionBtn({ toggleStopSession }: StopSessionProps) {
   return (
     <div>
       <Button id="stop-session-button" data-cy="stop-session-button"
-        className="border-0 bg-transparent text-dark p-0 no-focus" onClick={() => toggleStopSession()}>
-        <StopCircle className="text-rk-dark" title="stop"/></Button>
+        className="border-0 bg-transparent text-dark p-0 mt-1 no-focus" onClick={() => toggleStopSession()}>
+        <FontAwesomeIcon className="text-rk-dark" icon={faStop} />
+      </Button>
       <ThrottledTooltip
         target="stop-session-button"
         tooltip="Stop session" />
