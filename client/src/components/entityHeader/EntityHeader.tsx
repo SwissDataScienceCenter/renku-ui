@@ -83,9 +83,10 @@ function EntityHeader({
 
   // Set the main button based on running sessions
   let mainButton = null;
-  if (fullPath && gitUrl && sessions.fetched) {
+  if (fullPath && gitUrl) {
     if (!notebook) {
-      mainButton = (<StartSessionDropdownButton fullPath={fullPath} gitUrl={gitUrl} />);
+      const loading = !sessions.fetched && sessions.fetching ? true : false;
+      mainButton = (<StartSessionDropdownButton fullPath={fullPath} gitUrl={gitUrl} loading={loading} />);
     }
     else {
       const showLogs = () => {

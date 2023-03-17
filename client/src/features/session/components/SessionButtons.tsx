@@ -42,13 +42,16 @@ import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg
 interface StartSessionDropdownButtonProps {
   fullPath: string;
   gitUrl: string;
+  loading?: boolean;
 }
-function StartSessionDropdownButton({ fullPath, gitUrl }: StartSessionDropdownButtonProps) {
+function StartSessionDropdownButton({
+  fullPath, gitUrl, loading = false
+}: StartSessionDropdownButtonProps) {
   const projectData = { namespace: "", path: fullPath };
   const launchNotebookUrl = Url.get(Url.pages.project.session.new, projectData);
 
   const defaultAction = (
-    <StartSessionButton fullPath={fullPath} className="session-link-group" />
+    <StartSessionButton className="session-link-group" fullPath={fullPath} loading={loading} />
   );
   return (
     <>
@@ -69,9 +72,12 @@ function StartSessionDropdownButton({ fullPath, gitUrl }: StartSessionDropdownBu
 interface StartSessionButtonProps {
   className?: string;
   fullPath: string;
-  showAsLink?: boolean
+  loading?: boolean;
+  showAsLink?: boolean;
 }
-function StartSessionButton({ className, fullPath, showAsLink = true }: StartSessionButtonProps) {
+function StartSessionButton({
+  className, fullPath, loading = false, showAsLink = true
+}: StartSessionButtonProps) {
   const projectData = { namespace: "", path: fullPath };
   const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, projectData);
 
@@ -79,18 +85,26 @@ function StartSessionButton({ className, fullPath, showAsLink = true }: StartSes
   const localSessionRunning = currentSessions ? getSessionRunning(currentSessions, sessionAutostartUrl) as any : false;
   const history = useHistory();
 
-  const sessionIcon = !localSessionRunning ?
-    (<><FontAwesomeIcon icon={faPlay} /> Start </>) :
-    (<div className="d-flex gap-2"><img src="/connect.svg" className="rk-icon rk-icon-md" /> Connect </div>);
+  let content = null;
+  if (loading) {
+    content = (<span>Loading...</span>);
+  }
+  else {
+    content = !localSessionRunning ?
+      (<><FontAwesomeIcon icon={faPlay} /> Start </>) :
+      (<div className="d-flex gap-2"><img src="/connect.svg" className="rk-icon rk-icon-md" /> Connect </div>);
+  }
 
   const sessionLink = !localSessionRunning ?
     sessionAutostartUrl :
     localSessionRunning.showSessionURL;
 
   const localClass = `btn btn-sm btn-rk-green btn-icon-text start-session-button ${className}`;
-  if (showAsLink)
-    return (<Link to={sessionLink} className={localClass}>{sessionIcon}</Link>);
-  return (<Button onClick={() => history.push(sessionLink)} className={localClass}>{sessionIcon}</Button>);
+  if (showAsLink && !loading)
+    return (<Link to={sessionLink} className={localClass}>{content}</Link>);
+  return (
+    <Button disabled={loading} onClick={() => history.push(sessionLink)} className={localClass}>{content}</Button>
+  );
 }
 
 
