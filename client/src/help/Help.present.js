@@ -264,31 +264,31 @@ class HelpContent extends Component {
         exact
         path={this.props.url.base}
         key="base"
-        render={props => <HelpGetting key="getting" {...this.props} />}
+        render={() => <HelpGetting key="getting" {...this.props} />}
       />,
       <Route
         path={this.props.url.getting}
         key="getting"
-        render={props => <HelpGetting key="getting" {...this.props} />}
+        render={() => <HelpGetting key="getting" {...this.props} />}
       />,
 
       <Route
         path={this.props.url.documentation}
         key="documentation"
-        render={props => <HelpDocumentation key="documentation" {...this.props} />}
+        render={() => <HelpDocumentation key="documentation" {...this.props} />}
       />,
       <Route
         path={this.props.url.features}
         key="features"
-        render={props => <HelpFeatures key="features" {...this.props} />}
+        render={() => <HelpFeatures key="features" {...this.props} />}
       />,
       <Route
         path={this.props.url.status} key="status"
-        render={props => <StatuspageDisplay key="status" model={this.props.model} />} />,
+        render={() => <StatuspageDisplay key="status" model={this.props.model} />} />,
       <Route
         path={this.props.url.changes}
         key="changes"
-        render={props => <HelpChanges key="changes" {...this.props} />}
+        render={() => <HelpChanges key="changes" {...this.props} />}
       />,
     ];
   }

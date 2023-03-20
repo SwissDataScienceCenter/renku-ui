@@ -33,7 +33,9 @@ import { LoginHelper, Login } from "./index";
 
 // Mock relevant react objects
 const location = { pathname: "", state: "", previous: "", search: "" };
-const history = { location, replace: () => {} };
+const history = { location, replace: () => {
+  // eslint-disable-line @typescript-eslint/no-empty-function
+} };
 const url = "https://fakedev.renku.ch/";
 delete window.location;
 window.location = { reload: jest.fn() };

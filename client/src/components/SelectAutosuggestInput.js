@@ -135,7 +135,7 @@ function SelectAutosuggestInput({ name, label, existingValue, alert, options,
       renderSuggestion={renderSuggestion}
       inputProps={inputProps}
       theme={theme}
-      shouldRenderSuggestions={(v) => true}
+      shouldRenderSuggestions={() => true}
       onSuggestionSelected={onSuggestionSelected}
       focusInputOnSuggestionClick={false}
     />

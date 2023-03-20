@@ -21,6 +21,9 @@ import { Url } from "./url";
 
 // ? Consider moving this under /features/session(s)/helpers
 
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export interface Session {
   annotations: Record<string, unknown>;
   name: string;

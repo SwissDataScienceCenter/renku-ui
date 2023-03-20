@@ -22,7 +22,12 @@ import APIClient from "../../api-client";
 import { StateModel } from "../../model";
 
 function handleSessionsStatus(
-  data: Record<string, unknown>, webSocket: WebSocket, model: StateModel, getLocation: Function, client: APIClient) {
+  data: Record<string, unknown>,
+  webSocket: WebSocket,
+  model: StateModel,
+  getLocation: Function, // eslint-disable-line @typescript-eslint/ban-types
+  client: APIClient
+) {
   if (data.message as boolean && client && model) {
     const location = getLocation();
 

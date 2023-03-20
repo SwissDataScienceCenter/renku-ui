@@ -53,7 +53,7 @@ function OtherDatasetsButton({ totalDatasets }: OtherDatasetsButtonProps) {
 }
 
 interface DatasetListProps {
-  datasets: any [];
+  datasets: any []; // eslint-disable-line @typescript-eslint/no-explicit-any
   gridDisplay: boolean;
 }
 function DatasetListRows({ datasets, gridDisplay }: DatasetListProps) {

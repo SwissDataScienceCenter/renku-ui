@@ -19,7 +19,9 @@
 import { WsMessage } from "../WsMessages";
 
 
-function handleUserInit(data: Record<string, unknown>, webSocket: WebSocket, model: any): boolean {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+function handleUserInit(data: Record<string, unknown>, webSocket: WebSocket): boolean {
   if (data?.message && (data.message as string).toLowerCase().includes("connection established")) {
     // send request for getting the UI version
     webSocket.send(JSON.stringify(new WsMessage({ requestServerVersion: true }, "init")));
@@ -29,7 +31,7 @@ function handleUserInit(data: Record<string, unknown>, webSocket: WebSocket, mod
 
 function handleUserUiVersion(data: Record<string, unknown>, webSocket: WebSocket, model: any): boolean {
   const localModel = model.subModel("environment.uiVersion");
-  let envValues: Record<string, any> = {};
+  const envValues: Record<string, any> = {};
 
   if (data.start != null) {
     if (data.start)

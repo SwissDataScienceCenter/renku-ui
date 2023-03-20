@@ -175,7 +175,7 @@ function RenkuVersionManualUpdateSection({
 }
 
 function RenkuVersionStatusBody({
-  externalUrl, launchNotebookUrl, logged, maintainer, migration, onMigrateProject, statistics
+  externalUrl, launchNotebookUrl, maintainer, migration, onMigrateProject, statistics
 }) {
   const fullVersionStatus = migrationCheckToRenkuVersionStatus(migration.check);
   const { renkuVersionStatus, updateMode } = fullVersionStatus;

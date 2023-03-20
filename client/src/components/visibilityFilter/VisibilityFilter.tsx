@@ -43,7 +43,7 @@ export function arrayToVisibilitiesFilter(value: string[]) {
 }
 
 export interface VisibilityFilterProps {
-  handler: Function,
+  handler: Function, // eslint-disable-line @typescript-eslint/ban-types
   value: VisibilitiesFilter
 }
 

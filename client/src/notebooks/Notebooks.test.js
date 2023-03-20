@@ -371,7 +371,9 @@ describe("rendering", () => {
       branches: [],
       autosaved: [],
       location: fakeLocation,
-      refreshBranches: () => { },
+      refreshBranches: () => {
+        // eslint-disable-line @typescript-eslint/no-empty-function
+      },
     };
 
     const div = document.createElement("div");

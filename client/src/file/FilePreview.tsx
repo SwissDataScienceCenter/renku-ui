@@ -149,7 +149,7 @@ function FilePreview(props: FilePreviewProps) {
 
   // Markdown
   if ("md" === fileType) {
-    let content = atobUTF8(props.file.content);
+    const content = atobUTF8(props.file.content);
     return (
       <CardBody key="file preview" className="pb-0 bg-white">
         <RenkuMarkdown
@@ -182,6 +182,7 @@ function FilePreview(props: FilePreviewProps) {
   if (fileIsCode) {
     return (
       <CardBody key="file preview" className="pb-0 bg-white">
+        {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
         <CodePreview content={props.file.content} fileExtension={getFileExtension()!} />
       </CardBody>
     );

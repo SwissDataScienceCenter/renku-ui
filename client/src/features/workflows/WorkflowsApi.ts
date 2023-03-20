@@ -25,6 +25,9 @@ import { Url } from "../../utils/helpers/url";
 
 const PLANS_PREFIX = "/plans/";
 
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * Convert creators list into a single string
  * @param creators - array of Creators
@@ -90,8 +93,8 @@ export const workflowsApi = createApi({
   endpoints: (builder) => ({
     getWorkflowList: builder.query<WorkflowListElement[], WorkflowRequestParams>({
       query: (data) => {
-        let url = `/renku${data.coreUrl}/workflow_plans.list`;
-        let params: Record<string, any> = { git_url: data.gitUrl };
+        const url = `/renku${data.coreUrl}/workflow_plans.list`;
+        const params: Record<string, any> = { git_url: data.gitUrl };
         if (data.reference)
           params.branch = data.reference;
         return {
@@ -109,9 +112,9 @@ export const workflowsApi = createApi({
     }),
     getWorkflowDetail: builder.query<WorkflowDetails, WorkflowDetailsRequestParams>({
       query: (data) => {
-        let url = `/renku${data.coreUrl}/workflow_plans.show`;
+        const url = `/renku${data.coreUrl}/workflow_plans.show`;
         const workflowFullId = PLANS_PREFIX + data.workflowId;
-        let params: Record<string, any> = { git_url: data.gitUrl, plan_id: workflowFullId };
+        const params: Record<string, any> = { git_url: data.gitUrl, plan_id: workflowFullId };
         if (data.reference)
           params.branch = data.reference;
         return {

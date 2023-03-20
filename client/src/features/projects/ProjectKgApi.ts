@@ -21,6 +21,9 @@ const headers = {
   Accept: "application/ld+json"
 };
 
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export const projectKgApi = createApi({
   reducerPath: "projectKgApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/kg" }),

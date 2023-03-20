@@ -34,6 +34,7 @@ interface ProjectMetadata {
   visibility: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function formatProjectMetadata(project: any): ProjectMetadata {
   let accessLevel = 0;
   // check permissions from v4 API

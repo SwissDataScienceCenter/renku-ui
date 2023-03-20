@@ -36,7 +36,7 @@ import { TimeCaption } from "../components/TimeCaption";
 import { RenkuNavLink } from "../components/RenkuNavLink";
 
 
-function Overview(props) {
+function Overview() {
   return <Fragment>
     <h2>Overview</h2>
     <p>The style guide explains the different elements of the RenkuLab UI, how they should
@@ -45,7 +45,7 @@ function Overview(props) {
   </Fragment>;
 }
 
-function FontsGuide(props) {
+function FontsGuide() {
   return <Fragment>
     <h2>Fonts / Typography</h2>
     <p><b>Font</b> <a href="https://www.ffonts.net">Calcutta</a></p>

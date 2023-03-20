@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
+
 import ProgressStepsIndicator, {
   ProgressStyle,
   ProgressType,
@@ -39,7 +40,7 @@ export interface SessionStatusData {
 interface StartSessionProgressBarProps {
   sessionStatus?: SessionStatusData;
   isAutoSave?: boolean;
-  toggleLogs: Function;
+  toggleLogs: Function; // eslint-disable-line @typescript-eslint/ban-types
   includeStepInTitle?: boolean;
 }
 const StartSessionProgressBar = (

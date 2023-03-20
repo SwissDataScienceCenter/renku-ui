@@ -153,7 +153,7 @@ function ForkProject(props) {
 
   // monitor namespace changes to calculate visibility
   useEffect(() => {
-    const getVisibilities = async (namespace) => {
+    const getVisibilities = async () => {
       // empty values to display fetching
       setVisibilities(null);
       setVisibility(null);

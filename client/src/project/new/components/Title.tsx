@@ -51,7 +51,7 @@ const Title = ({ handlers, meta, input }: TitleProps) => {
       feedback={error}
       invalid={!!error && !input.titlePristine}
       isRequired={true}
-      onChange={(e: any) => handlers.setProperty("title", e.target.value)} />
+      onChange={(e) => handlers.setProperty("title", e.target.value)} />
   );
 };
 

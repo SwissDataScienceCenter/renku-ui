@@ -1,13 +1,16 @@
 import React, { useEffect, useRef } from "react";
 import AvatarEditor, { Position } from "react-avatar-editor";
-import { ArrowClockwise, Button, ZoomIn, ZoomOut } from "../../utils/ts-wrappers";
 import picaFn from "pica";
 
+import { ArrowClockwise, Button, ZoomIn, ZoomOut } from "../../utils/ts-wrappers";
+
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface ImageEditorProps {
-  onSave?: Function;
+  onSave?: Function; // eslint-disable-line @typescript-eslint/ban-types
   file: File;
   imageEditionState: ImageEditionState;
-  setImageEditionState: Function;
+  setImageEditionState: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
 const CARD_IMAGE_DIMENSIONS = {

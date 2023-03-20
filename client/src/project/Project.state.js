@@ -86,7 +86,7 @@ const DatasetsMixin = {
         this.setObject({ datasets: updatedState });
         return datasets;
       })
-      .catch(err => {
+      .catch(() => {
         const datasets = [];
         const updatedState = { datasets_kg: { $set: datasets }, transient: { requests: { datasets_kg: false } } };
         this.setObject({ datasets: updatedState });

@@ -28,7 +28,7 @@ import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
 
 interface DescriptionProps {
   handlers: {
-    setProperty: Function
+    setProperty: Function // eslint-disable-line @typescript-eslint/ban-types
   };
   meta: NewProjectMeta;
   input: NewProjectInputs;

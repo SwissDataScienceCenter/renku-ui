@@ -23,10 +23,14 @@
  *  FormValidation.tsx
  *  FormValidation components.
  */
+import React from "react";
+
 import { capitalize } from "../../../components/formgenerator/FormGenerator.present";
 import { ErrorLabel, HelperLabel } from "../../../components/formlabels/FormLabels";
-import React from "react";
 import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
+
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface FormWarningsProps {
   meta: NewProjectMeta | any;

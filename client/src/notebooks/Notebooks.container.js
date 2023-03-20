@@ -376,7 +376,7 @@ class StartNotebookServer extends Component {
       !StatusHelper.isUpdating(this.props.fetchingBranches)) {
       this.setState({ first: false });
       if (this._isMounted) {
-        this.refreshBranches().then(r => this.selectBranchWhenReady());
+        this.refreshBranches().then(() => this.selectBranchWhenReady());
         if (this.state.scope) {
           this.coordinator.setNotebookFilters(this.state.scope);
           this.coordinator.fetchNotebooks();
@@ -638,7 +638,9 @@ class StartNotebookServer extends Component {
     if (this._isMounted) {
       const { accessLevel, user } = this.props;
       await this.coordinator.fetchNotebookOptions(); // TODO: this should not be here
-      const callback = () => { };
+      const callback = () => {
+        // eslint-disable-line @typescript-eslint/no-empty-function
+      };
       const owner = accessLevel >= ACCESS_LEVELS.DEVELOPER;
       await this.coordinator.fetchOrPollCi(force, user.logged, owner, callback);
       this.triggerAutoStart();
@@ -891,7 +893,7 @@ class StartNotebookServer extends Component {
   }
 }
 
-function mapNotebookStatusStateToProps(state, ownProps) {
+function mapNotebookStatusStateToProps(state) {
   const subState = state.stateModel.notebooks;
 
   const notebookKeys = Object.keys(subState.notebooks.all);
@@ -956,7 +958,7 @@ class CheckNotebookStatus extends Component {
     this.coordinator.stopNotebookPolling();
   }
 
-  mapStateToProps(state, ownProps) {
+  mapStateToProps(state) {
     const subState = state.stateModel.notebooks;
 
     const notebookKeys = Object.keys(subState.notebooks.all);

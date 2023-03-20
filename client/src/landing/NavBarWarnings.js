@@ -35,7 +35,7 @@ import { WarnAlert } from "../components/Alert";
  * Container component for the warning banners
  */
 function NavBarWarnings(props) {
-  function mapStateToProps(state, ownProps) {
+  function mapStateToProps(state) {
     return { environment: state.stateModel.environment };
   }
 

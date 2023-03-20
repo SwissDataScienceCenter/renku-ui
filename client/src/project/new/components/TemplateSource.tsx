@@ -29,7 +29,7 @@ import { NewProjectInputs } from "./newProject.d";
 
 interface TemplateSourceProps {
   handlers: {
-    setProperty: Function;
+    setProperty: Function; // eslint-disable-line @typescript-eslint/ban-types
   };
   input: NewProjectInputs;
   isRequired: boolean;
@@ -44,14 +44,14 @@ const TemplateSource = ({ handlers, input, isRequired }: TemplateSourceProps) =>
         <Button
           active={!input.userRepo}
           data-cy="renkulab-source-button"
-          onClick={(_e: unknown) => handlers.setProperty("userRepo", false)}
+          onClick={() => handlers.setProperty("userRepo", false)}
         >
           RenkuLab
         </Button>
         <Button
           active={!!input.userRepo}
           data-cy="custom-source-button"
-          onClick={(_e: unknown) => handlers.setProperty("userRepo", true)}
+          onClick={() => handlers.setProperty("userRepo", true)}
         >
           Custom
         </Button>

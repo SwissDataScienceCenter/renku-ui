@@ -319,7 +319,7 @@ function Section5(props) {
     </div>;
 }
 
-function Section6(props) {
+function Section6() {
   const backgroundUrl = VisualFooter;
   return <div id="rk-anon-home-section6"
     style={{
@@ -365,7 +365,7 @@ function Section6(props) {
   </div>;
 }
 
-function SectionFeatures(props) {
+function SectionFeatures() {
   return <div className="rk-anon-home-section-bg-white" id="rk-anon-home-section-features">
     <div className="rk-anon-home-section-content mb-5">
       <Row className="rk-pt-m">
@@ -469,7 +469,7 @@ function SectionFeatures(props) {
   </div>;
 }
 
-function SectionUseCases(props) {
+function SectionUseCases() {
   return <div className="rk-anon-home-section-bg-gray" id="rk-anon-home-section-use-cases">
     <div className="rk-anon-home-section-content">
       <Row className="rk-pt-m">

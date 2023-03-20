@@ -51,7 +51,7 @@ function EntityButton({ type, slug }: EntityButtonProps) {
 
 export interface EntityDeleteButtonProps {
   itemType: "project" | "dataset";
-  action: Function
+  action: Function // eslint-disable-line @typescript-eslint/ban-types
 }
 function EntityDeleteButtonButton({ itemType, action }: EntityDeleteButtonProps) {
   const styles = stylesByItemType(itemType);
@@ -101,7 +101,7 @@ function EntityModifyButton({ url, itemType }: EntityModifyButtonProps) {
 
 interface FilterButtonProps {
   isOpen: boolean;
-  toggle: any;
+  toggle: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 function FilterButton({ isOpen, toggle }: FilterButtonProps) {
   if (isOpen) {

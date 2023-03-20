@@ -81,7 +81,7 @@ function ProjectAvatarSubmitButtons(
     { !updated ?
       <div>
         <Button disabled={submitting} className="btn-outline-rk-green"
-          onClick={(e) => { onCancel(); }}>
+          onClick={() => { onCancel(); }}>
           Cancel
         </Button>
       </div> : null }

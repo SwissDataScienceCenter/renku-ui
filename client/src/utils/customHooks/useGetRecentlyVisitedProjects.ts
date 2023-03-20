@@ -32,8 +32,8 @@ function useGetRecentlyVisitedProjects(projectsCount: number, currentSessions: S
   let projectsToShow = data;
   if (!isFetching && data?.length > 0 && currentSessions?.length > 0) {
     const sessionProjectIds = currentSessions.map((session: Session) => session.annotations["gitlabProjectId"]);
-    projectsToShow = data
-      .filter((project: Record<string, any>) => !sessionProjectIds?.includes(`${project.id}`))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    projectsToShow = data.filter((project: Record<string, any>) => !sessionProjectIds?.includes(`${project.id}`))
       .splice(0, totalProjectsToReturn);
   }
   return {

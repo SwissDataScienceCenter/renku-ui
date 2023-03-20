@@ -33,7 +33,7 @@ import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
 interface SubmitFormButtonProps {
   createDataAvailable: boolean;
   handlers: {
-    createEncodedUrl: Function;
+    createEncodedUrl: Function; // eslint-disable-line @typescript-eslint/ban-types
     onSubmit: MouseEventHandler<HTMLButtonElement>;
   };
   importingDataset: boolean;

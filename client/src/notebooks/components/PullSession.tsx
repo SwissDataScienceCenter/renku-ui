@@ -30,7 +30,7 @@ import type { CloseModalProps, ModalProps } from "./Sidecar";
 interface PullSessionProps extends ModalProps {
   isSessionReady: boolean;
   notebook: Notebook;
-  urlList: any;
+  urlList: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 function PullSession(props: PullSessionProps) {
@@ -157,7 +157,7 @@ function PullSessionUpToDateBody({ closeModal }: CloseModalProps) {
 
 interface PullSessionBodyProps extends PullSessionStatusBodyProps {
   gitStatus: GitStatusResult;
-  pullSession: Function;
+  pullSession: Function; // eslint-disable-line @typescript-eslint/ban-types
   pulling: boolean;
 }
 

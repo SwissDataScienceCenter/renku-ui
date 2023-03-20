@@ -28,7 +28,7 @@ import { KgAuthor } from "../../features/kgSearch/KgSearch";
  */
 
 export interface AuthorFilterProps {
-  handler: Function;
+  handler: Function; // eslint-disable-line @typescript-eslint/ban-types
   value: KgAuthor;
 }
 

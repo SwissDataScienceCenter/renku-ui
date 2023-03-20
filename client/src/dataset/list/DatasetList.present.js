@@ -293,7 +293,7 @@ function DatasetList(props) {
     </Row>
     <Switch>
       <Route exact path={urlMap.datasetsUrl}
-        render={p => <DatasetsSearch {...props} />} />
+        render={() => <DatasetsSearch {...props} />} />
       <Route component={NotFoundInsideDataset} />
     </Switch>
   </Fragment>;

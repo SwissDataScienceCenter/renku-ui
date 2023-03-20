@@ -26,6 +26,8 @@
 import { UrlRule, Url, getSearchParams, isSessionUrl } from "./Url";
 
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 describe("UrlRule private class", () => {
   it("Initialization values and errors", () => {
     // Verify all the parameters, and try to trigger all possible errors based on wrong parameters.
@@ -51,9 +53,9 @@ describe("UrlRule private class", () => {
     expect(rule.required).toHaveLength(2);
 
     // validation
-    expect(() => new UrlRule((data) => "/", ["input1", "input2"], "wrong_type"))
+    expect((data) => new UrlRule((data) => "/", ["input1", "input2"], "wrong_type"))
       .toThrow("optional <validation> parameter must be a function");
-    rule = new UrlRule((data) => "/", ["input1", "input2"], (data) => true);
+    rule = new UrlRule((data) => "/", ["input1", "input2"], () => true);
     expect(rule.validation).toBeInstanceOf(Function);
 
     // examples

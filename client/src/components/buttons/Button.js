@@ -135,7 +135,7 @@ function GoBackButton(props) {
  */
 
 function InlineSubmitButton(
-  { id, isSubmitting, isDone, isReadOnly, doneText, submittingText,
+  { id, isSubmitting, isDone, isReadOnly, doneText,
     text, onSubmit, pristine, tooltipPristine, className, isMainButton }) {
   if (isDone)
     return <SuccessLabel text={doneText} />;

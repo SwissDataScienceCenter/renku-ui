@@ -18,6 +18,9 @@
 
 import { updateProgress } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 function handleKgActivationStatus(data: Record<string, unknown>, webSocket: WebSocket, model: any, notifications: any) {
   if (data.message) {
     const statuses = JSON.parse(data.message as string);

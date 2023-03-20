@@ -28,7 +28,7 @@ import Time from "../../utils/helpers/Time";
  */
 
 export interface DateFilterProps {
-  handler: Function;
+  handler: Function; // eslint-disable-line @typescript-eslint/ban-types
   values: DatesFilter;
 }
 

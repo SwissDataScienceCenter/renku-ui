@@ -36,7 +36,6 @@ import { useGetMemberProjectsQuery } from "../../features/projects/ProjectsApi.t
 
 const AddDatasetExistingProject = ({
   dataset,
-  model,
   handlers,
   isDatasetValid,
   currentStatus,

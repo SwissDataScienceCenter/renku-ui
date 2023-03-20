@@ -19,6 +19,8 @@
 import { WorkflowType } from "../../components/entities";
 
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export interface Creator {
   affiliation: string,
   email: string,

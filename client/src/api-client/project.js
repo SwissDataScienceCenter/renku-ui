@@ -31,7 +31,7 @@ function getApiUrlFromRepoUrl(url) {
     return url.replace("http://", "http://api.");
 }
 
-function buildTreeLazy(name, treeNode, jsonObj, hash, currentPath, gitAttributes, openFilePath) {
+function buildTreeLazy(name, treeNode, jsonObj, hash, currentPath, gitAttributes) {
   if (name.length === 0)
     return;
 
@@ -264,7 +264,7 @@ function addProjectMethods(client) {
       headers: headers
     }).then(resp => {
       return resp.data.import_status;
-    }).catch((error) => "error");
+    }).catch(() => "error");
   };
 
   client.forkProject = async (sourceId, targetTitle, targetPath, targetNamespace) => {

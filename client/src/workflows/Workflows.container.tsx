@@ -37,6 +37,8 @@ const WorkflowsSorting = {
   workflowType: "Workflow type"
 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 interface WorkflowsListProps {
   fullPath: string;
   reference: string;

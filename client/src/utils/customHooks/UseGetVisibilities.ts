@@ -20,6 +20,8 @@ import { useEffect, useState } from "react";
 import { computeVisibilities } from "../helpers/HelperFunctions";
 import { useGetGroupByPathQuery } from "../../features/projects/ProjectsApi";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  *  useGetVisibilities custom hook
  *
@@ -35,7 +37,7 @@ function useGetVisibilities(namespace: any, bound: string | undefined) {
   useEffect(() => {
     if (isFetching || isLoading || !namespace) return;
 
-    let options: string[] = [];
+    const options: string[] = [];
     if (bound) options.push(bound);
 
     if (namespace?.kind === "user") {

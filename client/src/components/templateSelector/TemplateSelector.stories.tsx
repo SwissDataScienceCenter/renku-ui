@@ -100,7 +100,7 @@ const templates: ProjectTemplate[] = [
     id: "Renku/bioc-minimal",
     name: "R-Bioconductor (3.14) Project",
     parentRepo: "Renku",
-    parentTemplate: "bioc-minimal",
+    parentTemplate: "bioc-minimal", // eslint-disable-line spellcheck/spell-checker
     variables: {}
   },
   {
@@ -110,7 +110,7 @@ const templates: ProjectTemplate[] = [
     id: "Renku/julia-minimal",
     name: "Basic Julia (1.7.1) Project",
     parentRepo: "Renku",
-    parentTemplate: "julia-minimal",
+    parentTemplate: "julia-minimal", // eslint-disable-line spellcheck/spell-checker
     variables: {},
   },
   {

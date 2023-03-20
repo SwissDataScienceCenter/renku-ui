@@ -31,6 +31,9 @@ import { faStop } from "@fortawesome/free-solid-svg-icons";
 import { ArrowClockwise, ArrowLeft, Briefcase, Button, Journals, Save } from "../../utils/ts-wrappers";
 import { ThrottledTooltip } from "../../components/Tooltip";
 
+
+/* eslint-disable @typescript-eslint/ban-types */
+
 interface GoBackProps {
   urlBack: string;
 }

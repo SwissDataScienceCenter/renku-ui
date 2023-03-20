@@ -16,6 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ *  renku-ui
+ *
+ *  AboutSessionModal.tsx
+ *  AboutSessionModal component
+ */
+
 import React from "react";
 import { useSelector } from "react-redux";
 
@@ -31,15 +38,11 @@ import { Docs } from "../../utils/constants/Docs";
 
 import "./SessionModal.css";
 
-/**
- *  renku-ui
- *
- *  AboutSessionModal.tsx
- *  AboutSessionModal component
- */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export interface AboutSessionModalProp {
-  toggleModal: Function;
+  toggleModal: Function; // eslint-disable-line @typescript-eslint/ban-types
   isOpen: boolean;
   projectMetadata: ProjectMetadata;
   notebook: Notebook;

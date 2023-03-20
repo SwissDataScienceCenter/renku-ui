@@ -20,7 +20,7 @@ import React, { Fragment } from "react";
 import { Table } from "reactstrap";
 
 
-function ColorsGuide(props) {
+function ColorsGuide() {
   return <Fragment>
     <h2>Colors</h2>
     <h3>Base Colors</h3>

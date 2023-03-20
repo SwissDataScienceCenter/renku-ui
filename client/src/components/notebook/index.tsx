@@ -26,7 +26,7 @@ interface NotebookRenderProps {
   displayOrder: string[];
   notebook: IIpynb;
   theme: "light" | "dark";
-  showPrompt: Boolean;
+  showPrompt: boolean;
   sourceClassName: string;
 }
 

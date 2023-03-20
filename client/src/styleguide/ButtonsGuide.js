@@ -25,7 +25,7 @@ import { Clipboard } from "../components/Clipboard";
 import { ButtonWithMenu, GoBackButton } from "../components/buttons/Button";
 import { ExternalLink } from "../components/ExternalLinks";
 
-function Switch(props) {
+function Switch() {
   const [mode, setMode] = useState(0);
   function toggleMode() {
     if (mode === 0)
@@ -49,10 +49,12 @@ function Switch(props) {
 }
 
 
-function ButtonsGuide(props) {
+function ButtonsGuide() {
 
   const defaultButton = <Button size="sm" color="primary">Default</Button>;
-  const menuItem = <DropdownItem onClick={() => { }}>Menu Item</DropdownItem>;
+  const menuItem = <DropdownItem onClick={() => {
+    // eslint-disable-line @typescript-eslint/no-empty-function
+  }}>Menu Item</DropdownItem>;
   const buttonWithMenu = <ButtonWithMenu size="sm" default={defaultButton}>{menuItem}</ButtonWithMenu>;
 
   return <Fragment>

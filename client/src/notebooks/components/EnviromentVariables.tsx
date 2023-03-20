@@ -23,7 +23,7 @@ import { ErrorLabel, InputLabel } from "../../components/formlabels/FormLabels";
 
 interface EnvironmentVariablesProps {
   environmentVariables: EnvVariablesField[];
-  setEnvironmentVariables: Function;
+  setEnvironmentVariables: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
 export interface EnvVariablesField {
@@ -33,13 +33,13 @@ export interface EnvVariablesField {
 
 function EnvironmentVariables({ environmentVariables, setEnvironmentVariables }: EnvironmentVariablesProps) {
   const handleFormChange = (index: number, name: "key" | "value", value: string) => {
-    let data: EnvVariablesField[] = [...environmentVariables];
+    const data: EnvVariablesField[] = [...environmentVariables];
     data[index][name] = value;
     setEnvironmentVariables(data);
   };
 
   const addFields = () => {
-    let object = { key: "", value: "" };
+    const object = { key: "", value: "" };
     setEnvironmentVariables([...environmentVariables, object]);
   };
 
@@ -50,7 +50,7 @@ function EnvironmentVariables({ environmentVariables, setEnvironmentVariables }:
   };
 
   const removeFields = (index: number) => {
-    let data = [...environmentVariables];
+    const data = [...environmentVariables];
     data.splice(index, 1);
     setEnvironmentVariables(data);
   };

@@ -93,7 +93,7 @@ const options = [
   <Button key="button-a">Option A</Button>,
   <Button key="button-B">Option B</Button>
 ];
-export const menuWithOptionPrimary = (args: LabelsProps) => (
+export const menuWithOptionPrimary = () => (
   <>
     <ButtonWithMenu
       default={defaultAction}
@@ -104,7 +104,7 @@ export const menuWithOptionPrimary = (args: LabelsProps) => (
   </>
 );
 const defaultActionSecondary = <Button key="button-a" className="btn-outline-rk-green">Main Action</Button>;
-export const menuWithOptionSecondary = (args: LabelsProps) => (
+export const menuWithOptionSecondary = () => (
   <>
     <ButtonWithMenu
       default={defaultActionSecondary}
@@ -119,7 +119,7 @@ const optionsGroupButton = [
   <Button key="button-x" className="btn-outline-rk-green">Option X</Button>,
   <Button key="button-y" className="btn-outline-rk-green">Option y</Button>
 ];
-export const roundButtonGroup = (args: LabelsProps) => (
+export const roundButtonGroup = () => (
   <>
     <RoundButtonGroup buttons={optionsGroupButton} />
   </>

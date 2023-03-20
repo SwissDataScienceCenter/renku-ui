@@ -16,11 +16,10 @@
  * limitations under the License.
  */
 import * as React from "react";
-const Link = require("react-router-dom").Link;
+import { Link } from "react-router-dom";
 
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./List.d";
-import "./ListBar.scss";
 import VisibilityIcon from "../entities/VisibilityIcon";
 import { StartSessionDropdownButton } from "../../features/session/components/SessionButtons";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
@@ -28,6 +27,9 @@ import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
 import { EntityType } from "../../features/kgSearch";
+
+import "./ListBar.scss";
+
 
 export function getMainActionByEntity(entityType: EntityType, slug: string, gitUrl?: string) {
   switch (entityType) {

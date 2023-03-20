@@ -57,7 +57,7 @@ export interface ProjectTemplate {
   description: string;
   icon?: string;
   name: string;
-  variables?: Object;
+  variables?: Object; // eslint-disable-line @typescript-eslint/ban-types
   parentRepo?: string;
   parentTemplate?: string;
 }
@@ -66,7 +66,7 @@ export interface TemplateSelectorProps {
   repositories: Repository[];
 
   /** To be executed when a template is selected  */
-  select: Function;
+  select: Function; // eslint-disable-line @typescript-eslint/ban-types
 
   selected: string;
 
@@ -91,7 +91,7 @@ export interface TemplateSelectorProps {
 
 interface TemplateGalleryRowProps {
   repository: Repository;
-  select: Function;
+  select: Function; // eslint-disable-line @typescript-eslint/ban-types
   selected: string;
   templates: ProjectTemplate[];
   isInvalid?: boolean;

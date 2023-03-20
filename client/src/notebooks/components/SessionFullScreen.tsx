@@ -16,6 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ *  renku-ui
+ *
+ *  SessionFullScreen.tsx
+ *  SessionFullScreen component.
+ */
+
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
@@ -39,12 +46,8 @@ import PullSession from "./PullSession";
 
 const logo = "/static/public/img/logo.svg";
 
-/**
- *  renku-ui
- *
- *  SessionFullScreen.tsx
- *  SessionFullScreen component.
- */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface ShowSessionFullscreenProps {
   accessLevel: number;

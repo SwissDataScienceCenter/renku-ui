@@ -40,7 +40,7 @@ export function arrayToTypeEntitySelection(value: string[]) {
 }
 
 export interface TypeFilterProps {
-  handler: Function;
+  handler: Function; // eslint-disable-line @typescript-eslint/ban-types
   value: TypeEntitySelection
 }
 

@@ -137,7 +137,7 @@ class ProjectSettingsSessionsMapper extends Component {
     return this.notebooksCoordinator.fetchNotebookOptions(true);
   }
 
-  mapStateToProps(state, ownProps) {
+  mapStateToProps(state) {
     return {
       backend: state.stateModel.project.migration.core,
       options: state.stateModel.notebooks.options,

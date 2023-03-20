@@ -31,7 +31,7 @@ import { Badge, UncontrolledTooltip } from "../../utils/ts-wrappers";
 
 
 interface EntityChildrenProps {
-  childrenElements?: any[];
+  childrenElements?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
   itemType: EntityType;
 }
 

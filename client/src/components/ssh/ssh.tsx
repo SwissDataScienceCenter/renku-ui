@@ -58,12 +58,12 @@ function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
   if (error || isLoading || !data?.sshEnabled)
     return null;
 
-  const handleClick = (e: React.MouseEvent<HTMLElement>) => {
+  const handleClick = () => {
     dispatch(showSshModal({ projectPath: fullPath, gitUrl }));
   };
 
   return (
-    <DropdownItem onClick={(e: React.MouseEvent<HTMLElement>) => handleClick(e)}>
+    <DropdownItem onClick={() => handleClick()}>
       <img src={rkIconSsh} className="rk-icon rk-icon-md btn-with-menu-margin filter-green" />Connect with SSH
     </DropdownItem>
   );
@@ -99,7 +99,7 @@ function SshModal() {
   const dispatch = useDispatch();
 
   const notebooksSupport = useGetNotebooksQuery(null); // { data, isLoading, error }
-  let coreSupport = useSelector((state: RootStateOrAny) => state.stateModel.project.migration.check);
+  const coreSupport = useSelector((state: RootStateOrAny) => state.stateModel.project.migration.check);
 
   // return early if we don't need to display the modal
   if (!displayModal.show)
@@ -125,6 +125,7 @@ function SshModal() {
   const projectToShowGitUrl = cleanGitUrl(displayModal.gitUrl);
   if (useLocalMigration && projectCurrentGitUrl !== projectToShowGitUrl && !localMigration.fetching) {
     setLocalMigration({ data: { gitUrl: projectToShowGitUrl }, fetched: false, fetching: true });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     client.checkMigration(projectToShowGitUrl).then((resp: any) => {
       if (resp?.result)
         setLocalMigration({ fetched: true, fetching: false, data: { ...resp.result, gitUrl: projectToShowGitUrl } });

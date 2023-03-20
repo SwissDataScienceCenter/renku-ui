@@ -82,6 +82,7 @@ function StartSessionButton({
   const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, projectData);
 
   const currentSessions = useSelector((state: RootStateOrAny) => state.stateModel.notebooks?.notebooks?.all);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const localSessionRunning = currentSessions ? getSessionRunning(currentSessions, sessionAutostartUrl) as any : false;
   const history = useHistory();
 
@@ -112,8 +113,8 @@ interface SessionMainButtonProps {
   fullPath: string;
   gitUrl: string
   notebook: Notebook["data"];
-  showLogs: Function;
-  stopSessionCallback?: Function;
+  showLogs: Function; // eslint-disable-line @typescript-eslint/ban-types
+  stopSessionCallback?: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 function SessionButton({
   fullPath, gitUrl, notebook, showLogs, stopSessionCallback = undefined

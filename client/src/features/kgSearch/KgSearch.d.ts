@@ -45,7 +45,7 @@ interface KgSearchResult {
   path: string;
   type: EntityType;
   visibility: Visibilities;
-  images: any[];
+  images: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 interface ListResponse<T> {
