@@ -109,6 +109,56 @@ jobs:
           name: cypress-videos
           path: tests/cypress/videos
           retention-days: 3
+  
+  run-e2e-alternative-1:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cypress run
+        uses: cypress-io/github-action@v4
+        with:
+          browser: chrome
+          build: npm run build-client
+          start: npm run e2e
+          working-directory: tests
+      - uses: actions/upload-artifact@v3
+        if: failure() # Cypress screenshots will be generated only if the test failed, thus we store screenshots only on failures
+        with:
+          name: cypress-screenshots
+          path: tests/cypress/screenshots
+          retention-days: 7
+      - uses: actions/upload-artifact@v3
+        if: always() # Cypress test video is always captured, so this action uses "always()" condition
+        with:
+          name: cypress-videos
+          path: tests/cypress/videos
+          retention-days: 3
+
+  run-e2e-alternative-2:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cypress run
+        uses: cypress-io/github-action@v4
+        with:
+          browser: chrome
+          build: npm run build-client
+          start: npm run start-wait
+          working-directory: tests
+      - uses: actions/upload-artifact@v3
+        if: failure() # Cypress screenshots will be generated only if the test failed, thus we store screenshots only on failures
+        with:
+          name: cypress-screenshots
+          path: tests/cypress/screenshots
+          retention-days: 7
+      - uses: actions/upload-artifact@v3
+        if: always() # Cypress test video is always captured, so this action uses "always()" condition
+        with:
+          name: cypress-videos
+          path: tests/cypress/videos
+          retention-days: 3
 
   test-chart:
     runs-on: ubuntu-22.04
