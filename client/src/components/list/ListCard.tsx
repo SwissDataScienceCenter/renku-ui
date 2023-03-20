@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 import * as React from "react";
+
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./List.d";
-import "./ListCard.css";
 import EntityLabel from "../entities/Label";
 import Slug from "../entities/Slug";
 import EntityCreators from "../entities/Creators";
@@ -28,23 +28,14 @@ import VisibilityIcon from "../entities/VisibilityIcon";
 import { EntityButton } from "../entities/Buttons";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 
+import "./ListCard.css";
+
+
 const Link = require("react-router-dom").Link;
 
-function ListCard(
-  {
-    url,
-    title,
-    description,
-    tagList,
-    timeCaption,
-    labelCaption,
-    creators,
-    slug,
-    itemType,
-    visibility,
-    imageUrl
-  }: ListElementProps) {
-
+function ListCard({
+  creators, description, imageUrl, itemType, labelCaption, path, slug, tagList, timeCaption, title, url, visibility
+}: ListElementProps) {
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);
   return (
@@ -55,7 +46,7 @@ function ListCard(
             className={`card-header-entity ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
             {!imageUrl ? <div className="card-bg-title">{title}</div> : null}
           </div>
-          <EntityButton type={itemType} slug={url} />
+          <EntityButton type={itemType} slug={path as string} />
           <div className="card-body">
             <div className="card-title text-truncate lh-sm" data-cy="list-card-title">
               {title}
@@ -70,14 +61,13 @@ function ListCard(
               <VisibilityIcon visibility={visibility} className={colorByType.colorText} />
             </div>
             <p className="card-text my-1">
-              <TimeCaption caption={labelCaption || "Updated"} time={timeCaption} className="text-rk-text-light"/>
+              <TimeCaption caption={labelCaption || "Updated"} time={timeCaption} className="text-rk-text-light" />
             </p>
           </div>
         </div>
       </Link>
     </div>
   );
-
 }
 
 export default ListCard;

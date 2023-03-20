@@ -28,6 +28,7 @@ import { SshModal } from "../../components/ssh/ssh";
 import "./Dashboard.scss";
 
 class DashboardWrapper extends Component {
+  // ? Temporary wrapper to fetch sessions at least once when opening the dashboard.
   constructor(props: any) {
     super(props);
     const notebooksModel = props.model.subModel("notebooks");

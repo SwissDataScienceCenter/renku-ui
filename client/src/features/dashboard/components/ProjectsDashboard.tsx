@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 import React, { Fragment, useContext, useEffect, useState } from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { EntityType } from "../../kgSearch";
 import { KgAuthor } from "../../kgSearch/KgSearch";
@@ -38,9 +38,9 @@ import { formatProjectMetadata } from "../../../utils/helpers/ProjectFunctions";
 import ListBarSession from "../../../components/list/ListBarSessions";
 import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionFunctions";
 import { Notebook } from "../../../notebooks/components/Session";
-import useGetSessionLogs from "../../../utils/customHooks/UseGetSessionLogs";
-import { useStopSessionMutation } from "../../session/sessionApi";
 import { stateToSearchString } from "../../kgSearch/KgSearchState";
+import { displaySlice, useDisplaySelector } from "../../display";
+import { EnvironmentLogs } from "../../../components/Logs";
 
 interface ProjectAlertProps {
   total?: number;
@@ -192,27 +192,24 @@ function ProjectsDashboard( { userName }: ProjectsDashboardProps ) {
 }
 
 
-interface SessionProject extends Record<string, any>{
+interface SessionProject extends Record<string, any> {
   notebook: Notebook["data"];
 }
 interface SessionsToShowProps {
   currentSessions: Notebook["data"][];
 }
 function SessionsToShow({ currentSessions }: SessionsToShowProps) {
-  const { client } = useContext(AppContext);
+  const displayModal = useDisplaySelector((state: RootStateOrAny) => state[displaySlice.name].modals.sessionLogs);
   const [items, setItems] = useState<any[]>([]);
-  // serverLogs
-  const [serverLogs, setServerLogs] = useState("");
-  const [showLogs, setShowLogs] = useState<boolean>(false);
-  const [loadingSessions, setLoadingSessions] = useState<boolean>(false);
-  const { logs, fetchLogs } = useGetSessionLogs(serverLogs, showLogs);
-  //stop session
-  const [stopSession] = useStopSessionMutation();
+  const { client } = useContext(AppContext);
+
+  const dispatch = useDispatch();
+  const showLogs = (target: string) => {
+    dispatch(displaySlice.actions.showSessionLogsModal({ targetServer: target }));
+  };
 
   useEffect(() => {
     const getProjectCurrentSessions = async () => {
-      if (items.length !== currentSessions.length)
-        setLoadingSessions(true);
       const sessionProject: SessionProject[] = [];
       for (const session of currentSessions) {
         const fetchProject =
@@ -220,25 +217,26 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
         const project = getProjectFormatted(formatProjectMetadata(fetchProject?.data?.all));
         sessionProject.push({ ...project, notebook: session });
       }
-      setLoadingSessions(false);
       setItems(sessionProject);
     };
     getProjectCurrentSessions();
   }, [currentSessions]); // eslint-disable-line
 
-  if (loadingSessions)
-    return <Loader />;
-  // get project info
   if (items) {
     const element = items.map((item: SessionProject) => {
-      return <ListBarSession notebook={item.notebook} fullPath={item.slug} gitUrl={item.gitUrl}
-        key={`session-${item.id}`} labelCaption="" tagList={item.tagList}
-        visibility={item.visibility} slug={item.slug} creators={item.creators}
-        timeCaption={item.timeCaption} description={item.description} id={item.id}
-        url={item.url} title={item.title} itemType={EntityType.Project} imageUrl={item.imageUrl}
-        showLogs={showLogs} setShowLogs={setShowLogs} setServerLogs={setServerLogs}
-        stopSession={stopSession} fetchLogs={fetchLogs} logs={logs}
-      />;
+      return <>
+        <EnvironmentLogs
+          name={displayModal.targetServer}
+          annotations={item.notebook?.annotations ?? {}}
+        />
+        <ListBarSession notebook={item.notebook} fullPath={item.slug} gitUrl={item.gitUrl}
+          key={`session-${item.id}`} labelCaption="" tagList={item.tagList}
+          visibility={item.visibility} slug={item.slug} creators={item.creators}
+          timeCaption={item.timeCaption} description={item.description} id={item.id}
+          url={item.url} title={item.title} itemType={EntityType.Project} imageUrl={item.imageUrl}
+          showLogs={showLogs}
+        />
+      </>;
     });
     return <div className="session-list">{element}</div>;
   }

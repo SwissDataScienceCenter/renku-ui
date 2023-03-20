@@ -54,19 +54,21 @@ export const mapSearchResultToEntity = (entity: KgSearchResult): ListElementProp
       : [{ name: entity.creator }];
 
   const id = entity.type === EntityType.Dataset ? getDatasetIdentifier(entity._links) : entity.path;
+
   return {
-    id,
-    url,
-    title: entity.name,
+    creators,
     description: entity.description,
+    id,
+    imageUrl: getDatasetImageUrl(entity.images),
+    itemType: entity.type,
+    labelCaption: "Created",
+    path: EntityType.Project ? entity.path : "",
+    slug: entity.type === EntityType.Project ? entity.namespace : "",
     tagList: entity.keywords,
     timeCaption: entity.date,
-    labelCaption: "Created",
-    creators,
-    itemType: entity.type,
-    slug: entity.type === EntityType.Project ? entity.namespace : "",
+    title: entity.name,
+    url,
     visibility: entity.visibility,
-    imageUrl: getDatasetImageUrl(entity.images),
   };
 };
 

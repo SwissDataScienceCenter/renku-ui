@@ -17,27 +17,23 @@
  */
 
 
-import "./Logs.css";
 import React, { useEffect } from "react";
+import { RootStateOrAny, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSave } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  Nav,
-  NavItem,
-  NavLink,
-  TabContent,
-  TabPane
+  Button, Modal, ModalBody, ModalHeader, Nav, NavItem, NavLink, TabContent, TabPane
 } from "reactstrap";
+
 import { Loader } from "./Loader";
 import { capitalizeFirstLetter, generateZip } from "../utils/helpers/HelperFunctions";
 import { LOG_ERROR_KEY } from "../notebooks/Notebooks.state";
+import { displaySlice, useDisplaySelector } from "../features/display";
+import useGetSessionLogs from "../utils/customHooks/UseGetSessionLogs";
+import { NotebooksHelper } from "../notebooks";
 
-import { faSyncAlt
-} from "@fortawesome/free-solid-svg-icons";
+import "./Logs.css";
+
 
 export interface ILogs {
   data: Record<string, string>;
@@ -258,25 +254,50 @@ function SessionLogs(props: LogBodyProps) {
 }
 
 /**
+ * Sessions logs container integrating state and actions
+ *
+ * @param {string} name - server name
+ * @param {object} annotations - list of cleaned annotations
+ */
+interface EnvironmentLogsProps {
+  annotations: Record<string, string>;
+  name: string;
+}
+const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
+  const displayModal = useDisplaySelector((state: RootStateOrAny) => state[displaySlice.name].modals.sessionLogs);
+  const { logs, fetchLogs } = useGetSessionLogs(displayModal.targetServer, displayModal.show);
+  const dispatch = useDispatch();
+  const toggleLogs = function (target: string) {
+    dispatch(displaySlice.actions.toggleSessionLogsModal({ targetServer: target }));
+  };
+
+  return (<EnvironmentLogsPresent
+    fetchLogs={fetchLogs} toggleLogs={toggleLogs} logs={logs} name={name} annotations={annotations}
+  />);
+};
+
+/**
  * Simple environment logs container
  *
  * @param {function} fetchLogs - async function to get logs as an array string
  * @param {function} toggleLogs - toggle logs visibility and fetch logs on show
  * @param {object} logs - log object from redux store enhanced with `show` property
  * @param {string} name - server name
- * @param {object} annotations - list of cleaned annotations
+ * @param {object} annotations - list of annotations
  */
-interface EnvironmentLogsProps {
+interface EnvironmentLogsPresentProps {
   annotations: Record<string, string>;
   fetchLogs: IFetchableLogs["fetchLogs"];
   logs?: ILogs;
   name: string;
   toggleLogs: (name:string) => unknown;
 }
-const EnvironmentLogs = ({ logs, name, toggleLogs, fetchLogs, annotations }: EnvironmentLogsProps) => {
+const EnvironmentLogsPresent = ({ logs, name, toggleLogs, fetchLogs, annotations }: EnvironmentLogsPresentProps) => {
 
   if (!logs?.show || logs?.show !== name || !logs)
     return null;
+
+  const cleanAnnotations: Record<string, string> = NotebooksHelper.cleanAnnotations(annotations, "renku.io");
 
   return (
     <Modal
@@ -288,8 +309,8 @@ const EnvironmentLogs = ({ logs, name, toggleLogs, fetchLogs, annotations }: Env
         <div>Logs</div>
         <div className="fs-5 fw-normal">
           <small>
-            {annotations["namespace"]}/{annotations["projectName"]}{" "}
-          [{annotations["branch"]}@{annotations["commit-sha"].substring(0, 8)}]
+            {cleanAnnotations["namespace"]}/{cleanAnnotations["projectName"]}{" "}
+          [{cleanAnnotations["branch"]}@{cleanAnnotations["commit-sha"].substring(0, 8)}]
           </small>
         </div>
       </ModalHeader>
@@ -302,4 +323,4 @@ const EnvironmentLogs = ({ logs, name, toggleLogs, fetchLogs, annotations }: Env
   );
 };
 
-export { EnvironmentLogs, SessionLogs };
+export { EnvironmentLogs, EnvironmentLogsPresent, SessionLogs };

@@ -28,8 +28,7 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Link, Route, Switch } from "react-router-dom";
 import {
-  Alert, Button, Card, CardBody, CardHeader, Col, DropdownItem,
-  Modal, Row, Nav, NavItem, UncontrolledTooltip
+  Alert, Button, Card, CardBody, CardHeader, Col, Modal, Row, Nav, NavItem, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -38,7 +37,7 @@ import {
 
 import { Url } from "../utils/helpers/url";
 import { SpecialPropVal } from "../model/Model";
-import { Notebooks, NotebooksHelper, ShowSession, StartNotebookServer } from "../notebooks";
+import { Notebooks, ShowSession, StartNotebookServer } from "../notebooks";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
@@ -49,7 +48,7 @@ import { ForkProject } from "./new";
 import { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions } from "./settings";
 import { WorkflowsList } from "../workflows";
 import { ExternalLink } from "../components/ExternalLinks";
-import { ButtonWithMenu, GoBackButton, RoundButtonGroup } from "../components/buttons/Button";
+import { GoBackButton, RoundButtonGroup } from "../components/buttons/Button";
 import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../components/Alert";
 import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
@@ -61,13 +60,13 @@ import { NotFound } from "../not-found/NotFound.present";
 import { ContainerWrap } from "../App";
 import { ThrottledTooltip } from "../components/Tooltip";
 import EntityHeader from "../components/entityHeader/EntityHeader";
-import { SshDropdown, SshModal } from "../components/ssh/ssh";
+import { SshModal } from "../components/ssh/ssh";
 import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
-import { StartSessionLink } from "../components/entities/Buttons";
 import GitLabConnectButton, { externalUrlToGitLabIdeUrl } from "./components/GitLabConnect";
+import { NotebooksCoordinator } from "../notebooks";
 
 import "./Project.css";
-import rkIconStartWithOptions from "../styles/icons/start-with-options.svg";
+
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -401,66 +400,6 @@ class ProjectViewHeaderOverview extends Component {
   }
 }
 
-
-export function getShowSessionURL(annotations, serverName) {
-  return Url.get(Url.pages.project.session.show, {
-    namespace: annotations["namespace"],
-    path: annotations["projectName"],
-    server: serverName,
-  });
-}
-
-/**
- * Validate if a session is running calculating the startSessionURL and comparing with the given autostartSessionUrl
- *
- * @param {object} sessions - sessions object that should contain annotations for each session
- * @param {string} startSessionUrl - start session url to check if it exists in sessions object
- * @returns {boolean | object.showSessionURL} if session exist return
- * session object including show session url otherwise return false
- */
-function getSessionRunning(sessions, startSessionUrl) {
-  let sessionRunning = false;
-  Object.keys(sessions).forEach( sessionName => {
-    const session = sessions[sessionName];
-    const annotations = NotebooksHelper.cleanAnnotations(session.annotations, "renku.io");
-    const autoStartUrl = Url.get(Url.pages.project.session.autostart, {
-      namespace: annotations["namespace"],
-      path: annotations["projectName"],
-    });
-    if (autoStartUrl === startSessionUrl)
-      sessionRunning = { ...session, showSessionURL: getShowSessionURL(annotations, session.name) };
-  });
-  return sessionRunning;
-}
-
-/**
- * Show session button with dropdown
- * @param {string} fullPath - project full path
- * @param {string} gitUrl - project git URL
- */
-function StartSessionButton(props) {
-  const { fullPath, gitUrl } = props;
-  const projectData = { namespace: "", path: fullPath };
-  const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, projectData);
-  const launchNotebookUrl = Url.get(Url.pages.project.session.new, projectData);
-
-  const defaultAction = (
-    <StartSessionLink sessionAutostartUrl={sessionAutostartUrl} className="session-link-group" />);
-  return (
-    <>
-      <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="rk-green" isPrincipal={true}>
-        <DropdownItem>
-          <Link className="text-decoration-none" to={launchNotebookUrl}>
-            <img src={rkIconStartWithOptions} className="rk-icon rk-icon-md btn-with-menu-margin" />
-            Start with options
-          </Link>
-        </DropdownItem>
-        <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />
-      </ButtonWithMenu>
-    </>
-  );
-}
-
 function isForkedFromProject(forkedFromProject) {
   return forkedFromProject && Object.keys(forkedFromProject).length > 0;
 }
@@ -473,6 +412,15 @@ function ForkedFromLink({ forkedFromProject, projectsUrl }) {
 }
 
 class ProjectViewHeader extends Component {
+  constructor(props) {
+    // ? Temporary workaround to fetch sessions at least once when opening the project header.
+    super(props);
+    const notebooksModel = props.model.subModel("notebooks");
+    const userModel = props.model.subModel("user");
+    const notebookCoordinator = new NotebooksCoordinator(props.client, notebooksModel, userModel);
+    notebookCoordinator.fetchNotebooks();
+  }
+
   render() {
     const forkedFromLink = <ForkedFromLink
       forkedFromProject={this.props.forkedFromProject}
@@ -1269,8 +1217,7 @@ function ProjectView(props) {
 }
 
 export default { ProjectView };
+export { ProjectSuggestActions, ProjectSuggestionDataset, ProjectSuggestionReadme };
 
 // For testing
 export { filterPaths };
-export { ProjectSuggestActions, ProjectSuggestionDataset, ProjectSuggestionReadme, StartSessionButton,
-  getSessionRunning };

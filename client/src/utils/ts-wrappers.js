@@ -68,7 +68,6 @@ import {
   Download as WrappedDownload,
   Save as WrappedSave,
   Journals as WrappedJournals,
-  StopCircle as WrappedStopCircle,
   InfoCircle as WrappedInfoCircle,
   XCircleFill as WrappedXCircleFill,
   Funnel as WrappedFunnel,
@@ -288,10 +287,6 @@ function ArrowLeft(props) {
   return <WrappedArrowLeft {...props} />;
 }
 
-function StopCircle(props) {
-  return <WrappedStopCircle {...props} />;
-}
-
 function InfoCircle(props) {
   return <WrappedInfoCircle {...props} />;
 }
@@ -389,7 +384,7 @@ export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
 export { ArrowLeft, Briefcase, CardList, Diagram3, Download, Globe, HddStack, InfoCircle, Journals, Lock };
-export { People, Save, StopCircle, Balloon, Person };
+export { People, Save, Balloon, Person };
 export { Nav, NavItem, NavLink, TabContent, TabPane, ZoomIn, ZoomOut };
 export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, ChevronDown, Diagram2, XLg, ChevronUp };
 export { Funnel, FunnelFill, Shield };

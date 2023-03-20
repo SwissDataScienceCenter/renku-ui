@@ -22,7 +22,7 @@ import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./List.d";
 import "./ListBar.scss";
 import VisibilityIcon from "../entities/VisibilityIcon";
-import { StartSessionButton } from "../../project/Project.present";
+import { StartSessionDropdownButton } from "../../features/session/components/SessionButtons";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
@@ -33,7 +33,7 @@ export function getMainActionByEntity(entityType: EntityType, slug: string, gitU
   switch (entityType) {
     case EntityType.Project:
       return slug && gitUrl ?
-        (<StartSessionButton fullPath={slug} gitUrl={gitUrl} />) :
+        (<StartSessionDropdownButton fullPath={slug} gitUrl={gitUrl} />) :
         null;
     case EntityType.Dataset:
       return null;

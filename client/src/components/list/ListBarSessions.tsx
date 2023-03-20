@@ -37,8 +37,7 @@ import AppContext from "../../utils/context/appContext";
 import Time from "../../utils/helpers/Time";
 import { getStatusObject } from "../../notebooks/components/SessionListStatus";
 import type { SessionRunningStatus } from "../../notebooks/components/SessionListStatus";
-import { SessionButton } from "../entities/Buttons";
-import { EnvironmentLogs, IFetchableLogs, ILogs } from "../Logs";
+import { SessionButton } from "../../features/session/components/SessionButtons";
 import { Notebook } from "../../notebooks/components/Session";
 
 /** Helper function for formatting the resource list */
@@ -152,46 +151,27 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
  * Session View
  */
 interface ListBarSessionProps extends ListElementProps {
-  fetchLogs: IFetchableLogs["fetchLogs"];
   fullPath: string;
   gitUrl: string;
-  logs: ILogs | undefined;
   notebook: Notebook["data"];
-  setServerLogs: Function;
-  setShowLogs: Function;
-  showLogs: boolean;
-  stopSession: Function;
+  showLogs: Function;
 }
 
 function ListBarSession({
-  creators,
-  description,
-  fetchLogs,
-  fullPath,
-  gitUrl,
-  id,
-  imageUrl,
-  itemType,
-  labelCaption,
-  logs,
-  notebook,
-  setServerLogs,
-  setShowLogs,
-  showLogs,
-  slug,
-  stopSession,
-  timeCaption,
-  title,
-  url,
-  visibility,
+  creators, description, fullPath, gitUrl, id, imageUrl, itemType, labelCaption, notebook,
+  showLogs, slug, timeCaption, title, url, visibility,
 }: ListBarSessionProps) {
   const { client } = useContext(AppContext);
   const [commit, setCommit] = useState(null);
-  const [sessionStatus, setSessionStatus] = useState(SessionStatus.starting);
 
+  const [sessionStatus, setSessionStatus] = useState(SessionStatus.starting);
   useEffect(() => {
     setSessionStatus(notebook?.status?.state);
   }, [notebook?.status?.state]);
+  const forceSessionStatus = (status: string) => {
+    setSessionStatus(status);
+  };
+
   useEffect(() => {
     client.getCommits(id, notebook.annotations.branch).then((commitsFetched: Record<string, any>) => {
       if (commitsFetched.data?.length > 0) {
@@ -202,11 +182,6 @@ function ListBarSession({
       }
     });
   }, [notebook.annotations]); // eslint-disable-line
-
-  const toggleLogs = (serverName: string) => {
-    setShowLogs(!showLogs);
-    setServerLogs(serverName);
-  };
 
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);
@@ -279,10 +254,8 @@ function ListBarSession({
           fullPath={fullPath}
           gitUrl={gitUrl}
           notebook={notebook}
-          sessionStatus={sessionStatus}
-          setSessionStatus={setSessionStatus}
-          setServerLogs={toggleLogs}
-          stopSession={stopSession}
+          showLogs={showLogs}
+          stopSessionCallback={(server: string, status: string) => forceSessionStatus(status)}
         />
       </div>
       <div className="session-resources text-truncate">
@@ -311,13 +284,6 @@ function ListBarSession({
           sessionId={sessionId}
         />
       </div>
-      <EnvironmentLogs
-        fetchLogs={fetchLogs}
-        toggleLogs={toggleLogs}
-        logs={logs}
-        name={notebook.name}
-        annotations={notebook.annotations}
-      />
     </div>
   );
 }
