@@ -17,9 +17,9 @@
  * limitations under the License.
  */
 
-import "../../support/utils";
-import Fixtures from "../../support/renkulab-fixtures";
-import "../../support/datasets/gui_commands";
+import "../support/utils";
+import Fixtures from "../support/renkulab-fixtures";
+import "../support/datasets/gui_commands";
 
 describe("display a dataset", () => {
   const fixtures = new Fixtures(cy);

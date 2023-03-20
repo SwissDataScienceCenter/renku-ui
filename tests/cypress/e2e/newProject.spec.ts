@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-import "../../support/utils";
-import Fixtures from "../../support/renkulab-fixtures";
-import "../../support/datasets/gui_commands";
-import "../../support/projects/gui_commands";
+import "../support/utils";
+import Fixtures from "../support/renkulab-fixtures";
+import "../support/datasets/gui_commands";
+import "../support/projects/gui_commands";
 
 describe("Add new project", () => {
   const fixtures = new Fixtures(cy);

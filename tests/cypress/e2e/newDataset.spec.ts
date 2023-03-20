@@ -17,8 +17,8 @@
  * limitations under the License.
  */
 
-import Fixtures from "../../support/renkulab-fixtures";
-import "../../support/datasets/gui_commands";
+import Fixtures from "../support/renkulab-fixtures";
+import "../support/datasets/gui_commands";
 import "cypress-file-upload";
 
 describe("Project new dataset", () => {

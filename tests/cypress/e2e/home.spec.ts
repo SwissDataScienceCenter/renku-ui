@@ -17,8 +17,8 @@
  * limitations under the License.
  */
 
-import Fixtures from "../../support/renkulab-fixtures";
-import "../../support/utils";
+import Fixtures from "../support/renkulab-fixtures";
+import "../support/utils";
 
 describe("display the home page", () => {
   beforeEach(() => {

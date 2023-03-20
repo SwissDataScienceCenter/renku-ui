@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import "./authentication/gui_commands";
-import { User } from "./authentication/user.interfaces";
 import "./projects/gui_commands";
 import "cypress-file-upload";
 import { Dataset } from "./datasets/gui_commands";
@@ -27,9 +25,6 @@ declare global {
   namespace Cypress {
     interface Chainable {
       get_cy(element: string): Chainable;
-      gui_kc_login(user: User, startFromHome: boolean): void;
-      gui_kc_register(user: User): void;
-      gui_is_welcome_page_logged_user(user: User): void;
       gui_logout(): void;
       gui_search_dataset(datasetName: string, fixtures, resultFile): void;
       gui_new_dataset(newDataset: Dataset): void;
