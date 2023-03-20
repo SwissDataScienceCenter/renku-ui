@@ -9,7 +9,8 @@
     "e2e": "start-server-and-test start 3000 cypress",
     "e2e:headless": "start-server-and-test start 3000 cypress:headless",
     "lint": "eslint --max-warnings=0 cypress/",
-    "start": "npm --prefix ../client run start-js"
+    "start": "npm --prefix ../client run start-js",
+    "build-client": "npm --prefix ../client install && npm --prefix ../client run build"
   },
   "author": "Swiss Data Science Center",
   "devDependencies": {
