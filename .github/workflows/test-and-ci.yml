@@ -94,7 +94,7 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           browser: chrome
-          build: npm run build-client
+          build: cd ../client && npm install && npm run build
           start: npm run start
           working-directory: tests
       - uses: actions/upload-artifact@v3
