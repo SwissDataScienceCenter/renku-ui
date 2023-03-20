@@ -27,13 +27,12 @@ import React, { Component } from "react";
 
 import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
-import { Loader } from "../../components/Loader";
-
 import { withProjectMapped } from "../Project";
 import {
   OverviewCommits as OverviewCommitsPresent, OverviewStats as OverviewStatsPresent
 } from "./ProjectOverview.present";
 import ProjectVersionStatus from "../status/ProjectVersionStatus.present";
+import { ProjectKnowledgeGraphStatus } from "../../features/project";
 
 
 /**
@@ -126,20 +125,23 @@ class OverviewCommits extends Component {
 }
 
 function ProjectKGStatus(props) {
-  const loading = false;
-
-  let body = null;
-  if (loading)
-    body = (<Loader />);
-  else
-    body = props.kgStatusView(true);
-
   return (
     <Card className="border-rk-light">
       <CardHeader className="bg-white p-3 ps-4">Knowledge Graph Integration</CardHeader>
       <CardBody className="p-4 pt-3 pb-3 lh-lg">
         <Row>
-          <Col>{body}</Col>
+          <Col>
+            <ProjectKnowledgeGraphStatus
+              createGraphWebhook={props.createGraphWebhook}
+              displaySuccessMessage={true}
+              fetchDatasets={props.fetchDatasets}
+              fetchGraphStatus={props.fetchGraphStatus}
+              graphStatus={props.graphStatus}
+              history={props.history}
+              location={props.location}
+              model={props.model}
+            />
+          </Col>
         </Row>
       </CardBody>
     </Card>

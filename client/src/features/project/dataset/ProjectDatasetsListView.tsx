@@ -2,16 +2,19 @@ import React, { Fragment, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Button, Row, Col } from "reactstrap";
 
-import { ACCESS_LEVELS } from "../../api-client";
-import "../filestreeview/treeviewstyle.css";
-import { SpecialPropVal } from "../../model";
-import { MarkdownTextExcerpt } from "../../components/markdown/RenkuMarkdown";
-import { Loader } from "../../components/Loader";
-import ListDisplay from "../../components/List";
-import { ThrottledTooltip } from "../../components/Tooltip";
-import { getUpdatedDatasetImage } from "../../dataset/DatasetFunctions";
+import { ACCESS_LEVELS } from "../../../api-client";
+import { SpecialPropVal } from "../../../model";
+import { MarkdownTextExcerpt } from "../../../components/markdown/RenkuMarkdown";
+import { Loader } from "../../../components/Loader";
+import ListDisplay from "../../../components/List";
+import { ThrottledTooltip } from "../../../components/Tooltip";
+import { getUpdatedDatasetImage } from "../../../dataset/DatasetFunctions";
 
-function datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, dataset) {
+import type { IDataset } from "../Project";
+
+
+function datasetToDict(datasetsUrl: string, dataset_kg: IDataset | undefined, graphStatus: boolean,
+  gridDisplay: boolean, dataset: IDataset) {
   const kgCaption =
     dataset_kg !== undefined && graphStatus === true ?
       "In the Knowledge Graph"
@@ -40,7 +43,15 @@ function datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, datase
 }
 
 
-function DatasetList({ datasets, datasets_kg, datasetsUrl, graphStatus }) {
+type DatasetListProps = {
+    datasets: IDataset[];
+    datasets_kg: IDataset[];
+    datasetsUrl: string;
+    graphStatus: boolean;
+}
+
+
+function DatasetList({ datasets, datasets_kg, datasetsUrl, graphStatus }: DatasetListProps) {
   if (datasets == null ) return <Loader />;
 
   const gridDisplay = true;
@@ -61,7 +72,13 @@ function DatasetList({ datasets, datasets_kg, datasetsUrl, graphStatus }) {
   />;
 }
 
-function AddDatasetButton({ accessLevel, locked, newDatasetUrl }) {
+type AddDatasetButtonProps = {
+  accessLevel: number;
+  locked: boolean;
+  newDatasetUrl: string;
+}
+
+function AddDatasetButton({ accessLevel, locked, newDatasetUrl }: AddDatasetButtonProps) {
   if (accessLevel < ACCESS_LEVELS.MAINTAINER) return null;
   if (locked) {
     return <div id="add-dataset-button">
@@ -81,31 +98,44 @@ function AddDatasetButton({ accessLevel, locked, newDatasetUrl }) {
   </div>;
 }
 
-export default function DatasetsListView(props) {
+type DatasetsListViewProps = {
+  accessLevel: number;
+  datasets: IDataset[];
+  datasets_kg: IDataset[] | string;
+  datasetsUrl: string;
+  graphStatus: boolean;
+  locked: boolean;
+  newDatasetUrl: string;
+}
+
+export default function DatasetsListView(props: DatasetsListViewProps) {
 
   const datasets = useMemo(()=>props.datasets, [props.datasets]);
 
   if (props.datasets_kg === SpecialPropVal.UPDATING)
     return <Loader />;
 
-  return [ <Row key="header" className="pt-2 pb-3">
-    <Col className="d-flex mb-2 justify-content-between">
-      <h3 className="me-4">Datasets List</h3>
-      <AddDatasetButton
-        accessLevel={props.accessLevel}
-        locked={props.locked}
-        newDatasetUrl={props.newDatasetUrl} />
-    </Col>
-  </Row>
-  , <Row key="datasetsList">
-    <Col xs={12}>
-      <DatasetList
-        datasets={datasets}
-        datasets_kg={props.datasets_kg}
-        datasetsUrl={props.datasetsUrl}
-        graphStatus={props.graphStatus} />
-    </Col>
-  </Row>
-  ];
+  const datasets_kg = props.datasets_kg as IDataset[];
+
+  return <>
+    <Row key="header" className="pt-2 pb-3">
+      <Col className="d-flex mb-2 justify-content-between">
+        <h3 className="me-4">Datasets List</h3>
+        <AddDatasetButton
+          accessLevel={props.accessLevel}
+          locked={props.locked}
+          newDatasetUrl={props.newDatasetUrl} />
+      </Col>
+    </Row>
+    <Row key="datasetsList">
+      <Col xs={12}>
+        <DatasetList
+          datasets={datasets}
+          datasets_kg={datasets_kg}
+          datasetsUrl={props.datasetsUrl}
+          graphStatus={props.graphStatus} />
+      </Col>
+    </Row>
+  </>;
 
 }
