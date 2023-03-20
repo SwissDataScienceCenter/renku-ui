@@ -17,8 +17,8 @@
  * limitations under the License.
  */
 
-import Fixtures from "../../support/renkulab-fixtures";
-import "../../support/utils";
+import Fixtures from "../support/renkulab-fixtures";
+import "../support/utils";
 
 const findProject = (path, projects) => {
   return projects.find( result => result.response.body.path_with_namespace === path);

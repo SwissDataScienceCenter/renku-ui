@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../../support/renkulab-fixtures";
-import "../../support/utils";
-import "../../support/workflows/gui_commands";
+import Fixtures from "../support/renkulab-fixtures";
+import "../support/utils";
+import "../support/workflows/gui_commands";
 
 describe("iteract with workflows", () => {
   const fixtures = new Fixtures(cy);

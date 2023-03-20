@@ -16,8 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "../../support/utils";
-import Fixtures from "../../support/renkulab-fixtures";
+import "../support/utils";
+import Fixtures from "../support/renkulab-fixtures";
 
 describe("display a project", () => {
   const fixtures = new Fixtures(cy);
