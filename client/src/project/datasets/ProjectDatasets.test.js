@@ -27,7 +27,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { createMemoryHistory } from "history";
-import { Provider } from "react-redux";
 import { act } from "react-test-renderer";
 
 import { MemoryRouter } from "react-router-dom";
@@ -35,9 +34,7 @@ import { ACCESS_LEVELS, testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
 import ChangeDataset from "./change/index";
 import DatasetImport from "./import/index";
-import DatasetsListView from "./DatasetsListView";
 import { generateFakeUser } from "../../user/User.test";
-import AppContext from "../../utils/context/appContext";
 
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
@@ -49,13 +46,6 @@ describe("rendering", () => {
     initialIndex: 0,
   });
   const migration = { core: { versionUrl: "" } };
-  const templates = { custom: false, repositories: [{}] };
-  const fakeLocation = { pathname: "" };
-  const appContext = {
-    client: client,
-    params: { "TEMPLATES": templates },
-    location: fakeLocation,
-  };
 
   fakeHistory.push({
     pathname: "/projects/namespace/project-name/datasets/new"
@@ -70,44 +60,6 @@ describe("rendering", () => {
 
   afterEach(() => {
     spy.mockRestore();
-  });
-
-  it("renders datasets list without crashing", async () => {
-    const props = {
-      client: client,
-      datasets_kg: [],
-      datasets: [{
-        "title": "Test dataset title",
-        "identifier": "79215657-4319-4fcf-82b9-58267f2a1db8",
-        "name": "test-dataset-name",
-        "created_at": "2021-06-04 04:20:24.287936+00:00",
-        "creators": [{
-          "name": "First, Creator",
-          "email": null,
-          "affiliation": "Some Affiliation",
-        }]
-      }],
-      graphStatus: false,
-      migration,
-      user: loggedUser,
-      visibility: { accessLevel: ACCESS_LEVELS.MAINTAINER }
-    };
-    const div = document.createElement("div");
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <AppContext.Provider value={appContext}>
-              <DatasetsListView
-                {...props}
-              />
-            </AppContext.Provider>
-          </MemoryRouter>
-        </Provider>
-      );
-    });
-
   });
 
   it("renders NewDataset form without crashing", async () => {

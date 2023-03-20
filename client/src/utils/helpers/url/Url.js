@@ -326,6 +326,12 @@ const Url = {
           "/projects/group/subgroup/path/files/blob/target",
         ]
       ),
+      lineage: new UrlRule(
+        projectPageUrlBuilder("/files/lineage/"), ["namespace", "path", "target"], null, [
+          "/projects/namespace/path/files/lineage/target",
+          "/projects/group/subgroup/path/files/lineage/target",
+        ]
+      ),
       session: {
         base: new UrlRule(
           projectPageUrlBuilder("/sessions"), ["namespace", "path"], null, [

@@ -23,22 +23,29 @@
  *  Presentational components.
  */
 
-
-import React, { Component, Fragment, useState, useEffect } from "react";
+import React, { Component, Fragment, useEffect } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import {
-  Alert, Button, Card, CardBody, CardHeader, Col, Modal, Row, Nav, NavItem, UncontrolledTooltip
+  Alert,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Modal,
+  Row,
+  Nav,
+  NavItem,
+  UncontrolledTooltip,
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCodeBranch, faExclamationTriangle, faInfoCircle, faUserClock
-} from "@fortawesome/free-solid-svg-icons";
+import { faCodeBranch, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "../utils/helpers/url";
 import { SpecialPropVal } from "../model/Model";
 import { Notebooks, ShowSession, StartNotebookServer } from "../notebooks";
 import FilesTreeView from "./filestreeview/FilesTreeView";
-import DatasetsListView from "./datasets/DatasetsListView";
+import { ProjectDatasetsView } from "../features/project";
 import { ACCESS_LEVELS } from "../api-client";
 import { shouldDisplayVersionWarning } from "./status/MigrationUtils.js";
 import { NamespaceProjects } from "../namespace";
@@ -49,8 +56,7 @@ import { WorkflowsList } from "../workflows";
 import { ExternalLink } from "../components/ExternalLinks";
 import { GoBackButton, RoundButtonGroup } from "../components/buttons/Button";
 import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
-import { ErrorAlert, InfoAlert, WarnAlert } from "../components/Alert";
-import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
+import { InfoAlert } from "../components/Alert";
 import { RenkuNavLink } from "../components/RenkuNavLink";
 import { Loader } from "../components/Loader";
 import { TimeCaption } from "../components/TimeCaption";
@@ -62,14 +68,13 @@ import { SshModal } from "../components/ssh/ssh";
 import GitLabConnectButton, { externalUrlToGitLabIdeUrl } from "./components/GitLabConnect";
 import { NotebooksCoordinator } from "../notebooks";
 import ProjectPageTitle from "../features/project/ProjectPageTitle";
-import { ProjectEntityHeader } from "../features/project";
+import { ProjectEntityHeader, ProjectFileLineage, ProjectFileView } from "../features/project";
 
 import "./Project.css";
 
-
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
-  const result = paths.filter(p => blacklist.every(b => p.match(b) === null));
+  const result = paths.filter((p) => blacklist.every((b) => p.match(b) === null));
   return result;
 }
 
@@ -80,28 +85,13 @@ function isRequestPending(props, request) {
 }
 
 function webhookError(props) {
-  if (props == null || props === SpecialPropVal.UPDATING || props === true || props === false)
-    return false;
+  if (props == null || props === SpecialPropVal.UPDATING || props === true || props === false) return false;
 
   return true;
 }
 
 function isKgDown(webhook) {
-  return webhook === false ||
-    (webhook.status === false && webhook.created !== true) ||
-    webhookError(webhook.status);
-}
-
-function ProjectDatasetLockAlert({ lockStatus }) {
-  if (lockStatus == null) return null;
-  const isLocked = lockStatus.locked;
-  if (!isLocked) return null;
-
-  return <WarnAlert>
-    <FontAwesomeIcon icon={faUserClock} />{" "}
-    <i>Project is being modified. Datasets cannot be created or edited{" "}
-      until the action completes.</i>
-  </WarnAlert>;
+  return webhook === false || (webhook.status === false && webhook.created !== true) || webhookError(webhook.status);
 }
 
 /**
@@ -120,22 +110,18 @@ class ProjectStatusIcon extends Component {
 
     const warningSignForVersionDisplayed = shouldDisplayVersionWarning(migration);
 
-    if (!warningSignForVersionDisplayed && !kgDown)
-      return null;
+    if (!warningSignForVersionDisplayed && !kgDown) return null;
 
-    const versionInfo = warningSignForVersionDisplayed ?
-      "Current project is outdated. " :
-      null;
-    const kgInfo = kgDown ?
-      "Knowledge Graph integration not active. " :
-      null;
+    const versionInfo = warningSignForVersionDisplayed ? "Current project is outdated. " : null;
+    const kgInfo = kgDown ? "Knowledge Graph integration not active. " : null;
 
     return (
       <span className="warningLabel cursor-pointer" style={{ verticalAlign: "text-bottom" }}>
         <FontAwesomeIcon
           icon={faExclamationTriangle}
           onClick={() => history.push(overviewStatusUrl)}
-          id="warningStatusLink" />
+          id="warningStatusLink"
+        />
         <UncontrolledTooltip placement="top" target="warningStatusLink">
           {versionInfo}
           {kgInfo}
@@ -173,24 +159,28 @@ class ForkProjectModal extends Component {
     }
 
     const buttons = [
-      <Button className="btn-outline-rk-green" id="fork-project" key="fork-project"
-        disabled={this.props.forkProjectDisabled} onClick={this.toggleFunction}>
+      <Button
+        className="btn-outline-rk-green"
+        id="fork-project"
+        key="fork-project"
+        disabled={this.props.forkProjectDisabled}
+        onClick={this.toggleFunction}
+      >
         Fork
-        <ThrottledTooltip
-          target="fork-project"
-          tooltip="Fork this project" />
+        <ThrottledTooltip target="fork-project" tooltip="Fork this project" />
       </Button>,
       <Button
         id="project-forks"
         key="counter-forks"
         className="btn-outline-rk-green btn-icon-text"
         disabled={this.props.forkProjectDisabled}
-        href={`${this.props.externalUrl}/-/forks`} target="_blank" rel="noreferrer noopener">
+        href={`${this.props.externalUrl}/-/forks`}
+        target="_blank"
+        rel="noreferrer noopener"
+      >
         <FontAwesomeIcon size="sm" icon={faCodeBranch} /> {this.props.forksCount}
-        <ThrottledTooltip
-          target="project-forks"
-          tooltip="Forks" />
-      </Button>
+        <ThrottledTooltip target="project-forks" tooltip="Forks" />
+      </Button>,
     ];
     return (
       <Fragment>
@@ -205,22 +195,24 @@ class ForkProjectModal extends Component {
   }
 }
 
-
 function getLinksProjectHeader(datasets, datasetsUrl, errorGettingDatasets) {
-  const status = errorGettingDatasets ? "error" :
-    datasets.transient === undefined || datasets.core === "is_updating" ? "pending" : "done";
+  const status = errorGettingDatasets
+    ? "error"
+    : datasets.transient === undefined || datasets.core === "is_updating"
+      ? "pending"
+      : "done";
   const linksHeader = {
     data: [],
     status: status,
     total: 0,
-    linkAll: datasetsUrl
+    linkAll: datasetsUrl,
   };
   if (datasets.transient !== undefined && datasets.core !== "is_updating" && datasets.core?.datasets?.length > 0) {
     linksHeader.total = datasets.core.datasets.length;
-    datasets.core.datasets.slice(0, 3).map( dataset => {
+    datasets.core.datasets.slice(0, 3).map((dataset) => {
       linksHeader.data.push({
         title: dataset.title,
-        url: `${datasetsUrl}/${encodeURIComponent(dataset.name)}`
+        url: `${datasetsUrl}/${encodeURIComponent(dataset.name)}`,
       });
     });
   }
@@ -240,13 +232,24 @@ function ProjectViewHeaderMinimal(props) {
   />);
   const isInKg = props.isGraphReady;
 
-  const forkedFromText = (isForkedFromProject(props.forkedFromProject)) ?
-    (<>{" "}<b key="forked">forked</b>{" from "} {props.forkedFromLink}</>) :
-    null;
-  const forkedFrom = (forkedFromText) ?
-    (<><span className="text-rk-text fs-small">{forkedFromText}</span><br /></>) :
-    null;
-  const slug = <>{props.metadata.pathWithNamespace} {forkedFrom}</>;
+  const forkedFromText = isForkedFromProject(props.forkedFromProject) ? (
+    <>
+      {" "}
+      <b key="forked">forked</b>
+      {" from "} {props.forkedFromLink}
+    </>
+  ) : null;
+  const forkedFrom = forkedFromText ? (
+    <>
+      <span className="text-rk-text fs-small">{forkedFromText}</span>
+      <br />
+    </>
+  ) : null;
+  const slug = (
+    <>
+      {props.metadata.pathWithNamespace} {forkedFrom}
+    </>
+  );
 
   return (
     <>
@@ -272,7 +275,8 @@ function ProjectViewHeaderMinimal(props) {
         visibility={props.metadata.visibility}
       />
       <SshModal />
-    </>);
+    </>
+  );
 }
 
 function ProjectSuggestionReadme({ commits, commitsReadme, externalUrl, metadata }) {
@@ -287,31 +291,38 @@ function ProjectSuggestionReadme({ commits, commitsReadme, externalUrl, metadata
 
   const gitlabIDEUrl = externalUrlToGitLabIdeUrl(externalUrl);
   const addReadmeUrl = `${gitlabIDEUrl}/edit/${metadata.defaultBranch}/-/README.md`;
-  return <li><p style={{ fontSize: "smaller" }}>
-    <a className="mx-1" href={addReadmeUrl} target="_blank" rel="noopener noreferrer">
-      <strong className="suggestionTitle">Edit README.md</strong>
-    </a>
-    Use the README to explain your project to others, letting them understand what you want
-    to do and what you have already accomplished.
-  </p></li>;
+  return (
+    <li>
+      <p style={{ fontSize: "smaller" }}>
+        <a className="mx-1" href={addReadmeUrl} target="_blank" rel="noopener noreferrer">
+          <strong className="suggestionTitle">Edit README.md</strong>
+        </a>
+        Use the README to explain your project to others, letting them understand what you want to do and what you have
+        already accomplished.
+      </p>
+    </li>
+  );
 }
 
 function ProjectSuggestionDataset(props) {
   const datasets = props.datasets.core;
-  const isLoadingDatasets = typeof (datasets) === "string" || datasets?.datasets === null;
+  const isLoadingDatasets = typeof datasets === "string" || datasets?.datasets === null;
   let hasDatasets = !isLoadingDatasets ? datasets.datasets?.length > 0 : true;
 
   if (hasDatasets) return null;
-  return <li><p style={{ fontSize: "smaller" }}>
-    <Link className="mx-1" to={props.newDatasetUrl}>
-      <strong className="suggestionTitle">Add some datasets</strong>
-    </Link>
-    Datasets let you work with data in a structured way, facilitating easier sharing.
-    You can create a new dataset with data you already have, or importing one from another
-    Renku project or from a public data repository such as
-    <ExternalLink className="mx-1" url="https://zenodo.org/" title="Zenodo" role="link" /> or
-    <ExternalLink className="mx-1" url="https://dataverse.harvard.edu/" title="Dataverse" role="link" />.</p></li>;
-
+  return (
+    <li>
+      <p style={{ fontSize: "smaller" }}>
+        <Link className="mx-1" to={props.newDatasetUrl}>
+          <strong className="suggestionTitle">Add some datasets</strong>
+        </Link>
+        Datasets let you work with data in a structured way, facilitating easier sharing. You can create a new dataset
+        with data you already have, or importing one from another Renku project or from a public data repository such as
+        <ExternalLink className="mx-1" url="https://zenodo.org/" title="Zenodo" role="link" /> or
+        <ExternalLink className="mx-1" url="https://dataverse.harvard.edu/" title="Dataverse" role="link" />.
+      </p>
+    </li>
+  );
 }
 
 const ProjectSuggestActions = (props) => {
@@ -326,30 +337,24 @@ const ProjectSuggestActions = (props) => {
     isReadmeCommitInitial = firstCommit.id === commitsReadme.list[0].id;
   }
 
-  const isLoadingDatasets = typeof (datasets) === "string" || datasets?.datasets === null;
+  const isLoadingDatasets = typeof datasets === "string" || datasets?.datasets === null;
   let hasDatasets = !isLoadingDatasets ? datasets.datasets?.length > 0 : true;
-  const isLoadingData = !commits.fetched ||
-    !commitsReadme.fetched ||
-    countCommitsReadme === null ||
-    isLoadingDatasets;
+  const isLoadingData = !commits.fetched || !commitsReadme.fetched || countCommitsReadme === null || isLoadingDatasets;
 
   useEffect(() => {
-    if (props.metadata.id !== null)
-      props.fetchReadmeCommits();
+    if (props.metadata.id !== null) props.fetchReadmeCommits();
   }, []); // eslint-disable-line
 
   const cHasDataset = countCommitsReadme > 1 && hasDatasets;
   const cCombo = !isReadmeCommitInitial && hasDatasets && countCommitsReadme !== 0;
   const isLocked = props.lockStatus?.locked ?? true;
-  if (!isProjectMaintainer || isLoadingData || countTotalCommits > 4 || cHasDataset || cCombo || isLocked)
-    return null;
-
+  if (!isProjectMaintainer || isLoadingData || countTotalCommits > 4 || cHasDataset || cCombo || isLocked) return null;
 
   return (
     <InfoAlert timeout={0}>
       <div className="mb-0" style={{ textAlign: "justify" }}>
-        <strong>Welcome</strong> to your new Renku project!
-        It looks like this project is just getting started, so here are some suggestions to help you.  <br/>
+        <strong>Welcome</strong> to your new Renku project! It looks like this project is just getting started, so here
+        are some suggestions to help you. <br />
         <ul className="my-2">
           <ProjectSuggestionReadme {...props} />
           <ProjectSuggestionDataset {...props} />
@@ -368,8 +373,7 @@ class ProjectViewHeaderOverview extends Component {
     const metadata = this.props.metadata;
 
     const gitlabIDEUrl = externalUrlToGitLabIdeUrl(this.props.externalUrl);
-    const forkProjectDisabled = metadata.accessLevel < ACCESS_LEVELS.REPORTER
-    && metadata.visibility === "private";
+    const forkProjectDisabled = metadata.accessLevel < ACCESS_LEVELS.REPORTER && metadata.visibility === "private";
 
     return (
       <Fragment>
@@ -377,7 +381,7 @@ class ProjectViewHeaderOverview extends Component {
           <Col className="col-12">
             <div className="d-flex gap-1 gap-md-3 justify-content-end flex-wrap">
               <div className="pt-1">
-                <TimeCaption key="time-caption" time={this.props.metadata.lastActivityAt} className="text-rk-text"/>
+                <TimeCaption key="time-caption" time={this.props.metadata.lastActivityAt} className="text-rk-text" />
               </div>
               <ForkProjectModal
                 client={this.props.client}
@@ -395,11 +399,13 @@ class ProjectViewHeaderOverview extends Component {
               <GitLabConnectButton
                 externalUrl={this.props.externalUrl}
                 gitlabIDEUrl={gitlabIDEUrl}
-                userLogged={this.props.user.logged} />
+                userLogged={this.props.user.logged}
+              />
             </div>
           </Col>
         </Row>
-      </Fragment>);
+      </Fragment>
+    );
   }
 }
 
@@ -409,9 +415,11 @@ function isForkedFromProject(forkedFromProject) {
 
 function ForkedFromLink({ forkedFromProject, projectsUrl }) {
   if (!isForkedFromProject(forkedFromProject)) return null;
-  return <Link key="forkedFrom" to={`${projectsUrl}/${forkedFromProject.pathWithNamespace}`}>
-    {forkedFromProject.pathWithNamespace || "no title"}
-  </Link>;
+  return (
+    <Link key="forkedFrom" to={`${projectsUrl}/${forkedFromProject.pathWithNamespace}`}>
+      {forkedFromProject.pathWithNamespace || "no title"}
+    </Link>
+  );
 }
 
 class ProjectViewHeader extends Component {
@@ -425,9 +433,9 @@ class ProjectViewHeader extends Component {
   }
 
   render() {
-    const forkedFromLink = <ForkedFromLink
-      forkedFromProject={this.props.forkedFromProject}
-      projectsUrl={this.props.projectsUrl} />;
+    const forkedFromLink = (
+      <ForkedFromLink forkedFromProject={this.props.forkedFromProject} projectsUrl={this.props.projectsUrl} />
+    );
     return <ProjectViewHeaderMinimal key="minimalHeader" forkedFromLink={forkedFromLink} {...this.props} />;
   }
 }
@@ -467,20 +475,22 @@ class ProjectFilesNav extends Component {
   render() {
     const loading = isRequestPending(this.props, "filesTree");
     const allFiles = this.props.filesTree || [];
-    if ((loading && Object.keys(allFiles).length < 1) || this.props.filesTree === undefined)
-      return <Loader />;
+    if ((loading && Object.keys(allFiles).length < 1) || this.props.filesTree === undefined) return <Loader />;
 
-    return <FilesTreeView
-      data={this.props.filesTree}
-      lineageUrl={this.props.lineagesUrl}
-      projectUrl={this.props.fileContentUrl}
-      setOpenFolder={this.props.setOpenFolder}
-      setLastNode={this.props.setLastNode}
-      hash={this.props.filesTree.hash}
-      fileView={this.props.filesTreeView}
-      currentUrl={this.props.location.pathname}
-      history={this.props.history}
-      limitHeight={true} />;
+    return (
+      <FilesTreeView
+        data={this.props.filesTree}
+        lineageUrl={this.props.lineagesUrl}
+        projectUrl={this.props.fileContentUrl}
+        setOpenFolder={this.props.setOpenFolder}
+        setLastNode={this.props.setLastNode}
+        hash={this.props.filesTree.hash}
+        fileView={this.props.filesTreeView}
+        currentUrl={this.props.location.pathname}
+        history={this.props.history}
+        limitHeight={true}
+      />
+    );
   }
 }
 
@@ -492,15 +502,14 @@ class ProjectViewReadme extends Component {
   render() {
     const readmeText = this.props.readme.text;
     const loading = isRequestPending(this.props, "readme");
-    if (loading && readmeText === "")
-      return <Loader />;
+    if (loading && readmeText === "") return <Loader />;
 
     return (
       <Card className="border-rk-light">
         <CardHeader className="bg-white p-3 ps-4">README.md</CardHeader>
         <CardBody style={{ overflow: "auto" }} className="p-4" data-cy="project-readme">
           <RenkuMarkdown
-            projectPathWithNamespace = {this.props.metadata.pathWithNamespace}
+            projectPathWithNamespace={this.props.metadata.pathWithNamespace}
             filePath={""}
             fixRelativePaths={true}
             branch={this.props.metadata.defaultBranch}
@@ -517,17 +526,16 @@ class ProjectViewReadme extends Component {
 function ProjectViewGeneral(props) {
   const forkedFromLink = <ForkedFromLink forkedFromProject={props.metadata.forkedFromProject} />;
 
-  return <Fragment>
-    <ProjectViewHeaderOverview
-      key="overviewHeader"
-      forkedFromLink={forkedFromLink} {...props} />
-    <ProjectSuggestActions {...props} />
-    <ProjectViewReadme {...props} />
-  </Fragment>;
+  return (
+    <Fragment>
+      <ProjectViewHeaderOverview key="overviewHeader" forkedFromLink={forkedFromLink} {...props} />
+      <ProjectSuggestActions {...props} />
+      <ProjectViewReadme {...props} />
+    </Fragment>
+  );
 }
 
 class ProjectViewOverviewNav extends Component {
-
   render() {
     // Add when results are handled:
     // <NavItem>
@@ -555,270 +563,69 @@ class ProjectViewOverviewNav extends Component {
 class ProjectViewOverview extends Component {
   render() {
     const { projectCoordinator } = this.props;
-    return <Col key="overview" data-cy="project-overview">
-      <Row>
-        <Col key="nav" sm={12} md={2}>
-          <ProjectViewOverviewNav {...this.props} />
-        </Col>
-        <Col key="content" sm={12} md={10} data-cy="project-overview-content">
-          <Switch>
-            <Route exact path={this.props.baseUrl} render={() => {
-              return <ProjectViewGeneral readme={this.props.data.readme} {...this.props} />;
-            }} />
-            <Route exact path={this.props.statsUrl} render={() =>
-              <ProjectOverviewStats
-                projectCoordinator={projectCoordinator}
-                branches={this.props.branches.standard}
+    return (
+      <Col key="overview" data-cy="project-overview">
+        <Row>
+          <Col key="nav" sm={12} md={2}>
+            <ProjectViewOverviewNav {...this.props} />
+          </Col>
+          <Col key="content" sm={12} md={10} data-cy="project-overview-content">
+            <Switch>
+              <Route
+                exact
+                path={this.props.baseUrl}
+                render={() => {
+                  return <ProjectViewGeneral readme={this.props.data.readme} {...this.props} />;
+                }}
               />
-            }
-            />
-            <Route exact path={this.props.overviewCommitsUrl} render={props =>
-              <ProjectOverviewCommits
-                location={this.props.location}
-                history={props.history}
-                projectCoordinator={projectCoordinator}
-              />}
-            />
-            <Route exact path={this.props.overviewStatusUrl} render={() =>
-              <ProjectOverviewVersion {...this.props} isLoading={isRequestPending(this.props, "readme")} />
-            } />
-          </Switch>
-        </Col>
-      </Row>
-    </Col>;
-  }
-}
-
-class ProjectDatasetsNav extends Component {
-
-  render() {
-    const coreDatasets = this.props.datasets.core.datasets;
-    if (coreDatasets == null) return null;
-    if (coreDatasets.error != null) return null;
-    if (coreDatasets.length === 0) return null;
-
-    return <DatasetsListView
-      datasets_kg={this.props.datasets.datasets_kg}
-      datasets={this.props.datasets.core.datasets}
-      datasetsUrl={this.props.datasetsUrl}
-      locked={this.props.lockStatus?.locked ?? true}
-      newDatasetUrl={this.props.newDatasetUrl}
-      accessLevel={this.props.metadata.accessLevel}
-      graphStatus={this.props.isGraphReady}
-    />;
-  }
-}
-
-function ProjectAddDataset(props) {
-
-  const [newDataset, setNewDataset] = useState(true);
-  function toggleNewDataset() {
-    setNewDataset(!newDataset);
-  }
-
-  return <Col>
-    { newDataset ?
-      props.newDataset({ ...props, toggleNewDataset }) :
-      props.importDataset({ ...props, toggleNewDataset })
-    }
-  </Col>;
-}
-
-function EmptyDatasets({ locked, membership, newDatasetUrl }) {
-  return <Alert timeout={0} color="primary">
-    No datasets found for this project.
-    { membership && !locked ?
-      <div>
-        <br />
-        <FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or
-        added the datasets try refreshing the page. <br /><br />
-        You can also click on the button to{" "}
-        <Link className="btn btn-primary btn-sm" to={newDatasetUrl}>
-          Add a Dataset
-        </Link>
-      </div>
-      : null
-    }
-  </Alert>;
-}
-
-/**
- * Shows a warning Alert when Renku version is outdated or Knowledge Graph integration is not active.
- *
- * @param {Object} webhook - project.webhook store object
- * @param {Object} history - react history object
- * @param {string} overviewStatusUrl - overview status url
- */
-function ProjectStatusAlert(props) {
-  const { webhook, overviewStatusUrl, history } = props;
-  const kgDown = isKgDown(webhook);
-
-  if (!kgDown)
-    return null;
-
-  const kgInfo = kgDown ?
-    <span>
-      <strong>Knowledge Graph integration not active. </strong>
-      This means that some operations on datasets are not possible, we recommend activating it.
-    </span> :
-    null;
-
-  return (
-    <WarnAlert>
-      {kgInfo}
-      <br />
-      <br />
-      <Button color="warning" onClick={() => history.push(overviewStatusUrl)}>
-        See details
-      </Button>
-    </WarnAlert>
-  );
-}
-
-function ProjectViewDatasets(props) {
-
-  const kgDown = isKgDown(props.webhook);
-
-  const migrationMessage = <ProjectStatusAlert
-    history={props.history}
-    overviewStatusUrl={props.overviewStatusUrl}
-    webhook={props.webhook}
-  />;
-
-  useEffect(() => {
-    props.fetchGraphStatus();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    const datasetsLoading = props.datasets.core === SpecialPropVal.UPDATING;
-    if (datasetsLoading || !props.migration.core.fetched || props.migration.core.fetching)
-      return;
-
-    if (props.datasets.core.datasets === null)
-      props.fetchDatasets(props.location.state && props.location.state.reload);
-  }, [props.migration.core.fetched, props.datasets.core]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  if (props.migration.core.fetched && !props.migration.core.backendAvailable) {
-    const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {
-      namespace: props.metadata.namespace,
-      path: props.metadata.path,
-    });
-    const updateInfo = props.metadata.accessLevel >= ACCESS_LEVELS.DEVELOPER ?
-      "Updating this project" :
-      "Asking a project maintainer to update this project (or forking and updating it)";
-    return (
-      <div>
-        <WarnAlert dismissible={false}>
-          <p>
-            <b>Datasets have limited functionality</b> because the project is not compatible with
-            this RenkuLab instance.
-          </p>
-          <p>You can search for datasets, but you cannot interact with them from the project page.</p>
-          <p>
-            {updateInfo} should resolve the problem.
-            <br />The <Link to={overviewStatusUrl}>Project status</Link> page provides further information.
-          </p>
-        </WarnAlert>
-      </div>
+              <Route
+                exact
+                path={this.props.statsUrl}
+                render={() => (
+                  <ProjectOverviewStats
+                    projectCoordinator={projectCoordinator}
+                    branches={this.props.branches.standard}
+                  />
+                )}
+              />
+              <Route
+                exact
+                path={this.props.overviewCommitsUrl}
+                render={(props) => (
+                  <ProjectOverviewCommits
+                    location={this.props.location}
+                    history={props.history}
+                    projectCoordinator={projectCoordinator}
+                  />
+                )}
+              />
+              <Route
+                exact
+                path={this.props.overviewStatusUrl}
+                render={() => (
+                  <ProjectOverviewVersion {...this.props} isLoading={isRequestPending(this.props, "readme")} />
+                )}
+              />
+            </Switch>
+          </Col>
+        </Row>
+      </Col>
     );
   }
-
-  const checkingBackend = props.migration.core.fetching || !props.migration.core.fetched;
-  if (checkingBackend) {
-    return (
-      <div>
-        <p>Checking project version and RenkuLab compatibility...</p>
-        <Loader />
-      </div>
-    );
-  }
-
-  const loadingDatasets = props.datasets.core === SpecialPropVal.UPDATING || props.datasets.core === undefined;
-  if (loadingDatasets) {
-    return (
-      <div>
-        <p>Loading datasets...</p>
-        <Loader />
-      </div>
-    );
-  }
-
-  if (props.datasets.core.error || props.datasets.core.datasets?.error) {
-    const error = props.datasets.core.error ?
-      props.datasets.core.error :
-      props.datasets.core.datasets?.error;
-    let errorObject;
-    if (error.code) {
-      errorObject = (<CoreErrorAlert error={error}/>);
-    }
-    else {
-      errorObject = (
-        <ErrorAlert>
-          There was an error fetching the datasets, please try{" "}
-          <Button color="danger" size="sm" onClick={() => window.location.reload()}> reloading </Button>
-          {" "}the page.
-        </ErrorAlert>
-      );
-    }
-    return (<Col sm={12} data-cy="error-datasets-modal">{errorObject}</Col>);
-  }
-
-  if (props.datasets.core.datasets != null && props.datasets.core.datasets.length === 0
-    && props.location.pathname !== props.newDatasetUrl) {
-    return <Col sm={12}>
-      {migrationMessage}
-      <ProjectDatasetLockAlert lockStatus={props.lockStatus} />
-      <EmptyDatasets
-        locked={props.lockStatus?.locked ?? true}
-        membership={props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
-        newDatasetUrl={props.newDatasetUrl}
-      />
-    </Col>;
-  }
-
-  return <Col sm={12}>
-    {migrationMessage}
-    <ProjectDatasetLockAlert lockStatus={props.lockStatus} />
-    <Switch>
-      <Route path={props.newDatasetUrl}
-        render={() =>[
-          <Col key="btn" md={12}>
-            <GoBackButton data-cy="go-back-dataset" label="Back to list" url={props.datasetsUrl}/>
-          </Col>,
-          <ProjectAddDataset key="projectsAddDataset" {...props} />
-        ]}/>
-      <Route path={props.editDatasetUrl}
-        render={p => [
-          <Col key="btn" md={12}>
-            <GoBackButton label="Back to dataset" url={`${props.datasetsUrl}/${p.match.params.datasetId}/`}/>
-          </Col>,
-          props.editDataset({ ...props, ...p })]
-        }/>
-      <Route path={props.datasetUrl} render={p =>[
-        <Col key="btn" md={12}>
-          <GoBackButton key="btn" label={`Back to ${props.metadata.pathWithNamespace}`} url={props.datasetsUrl}/>
-        </Col>,
-        props.datasetView(p, !kgDown, props.location)
-      ]} />
-      <Route exact path={props.datasetsUrl} render={() =>
-        <ProjectDatasetsNav {...props} />
-      }/>
-    </Switch>
-  </Col>;
 }
 
 function ProjectViewWorkflows(props) {
-  const reference = props.metadata?.defaultBranch ?
-    props.metadata?.defaultBranch :
-    "";
+  const reference = props.metadata?.defaultBranch ? props.metadata?.defaultBranch : "";
 
   return (
-    <WorkflowsList fullPath={props.projectPathWithNamespace} reference={reference}
-      repositoryUrl={props.externalUrl} versionUrl={props.migration?.core?.versionUrl}
+    <WorkflowsList
+      fullPath={props.projectPathWithNamespace}
+      reference={reference}
+      repositoryUrl={props.externalUrl}
+      versionUrl={props.migration?.core?.versionUrl}
     />
   );
 }
-
 
 class ProjectViewFiles extends Component {
   componentDidMount() {
@@ -832,12 +639,31 @@ class ProjectViewFiles extends Component {
       </div>,
       <div key="content" className="flex-shrink-1 variableWidthColRight">
         <Switch>
-          <Route path={this.props.lineageUrl}
-            render={p => this.props.lineageView(p)} />
-          <Route path={this.props.fileContentUrl}
-            render={props => this.props.fileView(props)} />
+          <Route path={this.props.lineageUrl} render={(p) =>
+            <ProjectFileLineage
+              client={this.props.client}
+              fetchBranches={() => this.props.projectCoordinator.fetchBranches()}
+              fetchGraphStatus={this.props.fetchGraphStatus}
+              filePath={p.match.params.filePath}
+              history={this.props.history}
+              location={p.location}
+              model={this.props.model}
+            />
+          } />
+          <Route path={this.props.fileContentUrl} render={(p) =>
+            <ProjectFileView
+              client={this.props.client}
+              fetchBranches={() => this.props.projectCoordinator.fetchBranches()}
+              fetchGraphStatus={this.props.fetchGraphStatus}
+              filePath={p.match.params.filePath}
+              history={this.props.history}
+              location={p.location}
+              model={this.props.model}
+              params={this.props.params}
+            />
+          } />
         </Switch>
-      </div>
+      </div>,
     ];
   }
 }
@@ -849,29 +675,42 @@ const ProjectSessions = (props) => {
   const backButtonLabel = locationFrom ? backNotebookLabel : `Back to ${props.metadata.pathWithNamespace}`;
   const backUrl = locationFrom ?? props.baseUrl;
 
-  const backButton = (<GoBackButton label={backButtonLabel} url={backUrl} />);
+  const backButton = <GoBackButton label={backButtonLabel} url={backUrl} />;
 
   return [
     <Col key="content" xs={12}>
       <Switch>
-        <Route exact path={props.notebookServersUrl}
-          render={() => <>
-            {backButton}
-            <ProjectNotebookServers {...props} />
-          </>} />
-        <Route path={props.launchNotebookUrl}
+        <Route
+          exact
+          path={props.notebookServersUrl}
+          render={() => (
+            <>
+              {backButton}
+              <ProjectNotebookServers {...props} />
+            </>
+          )}
+        />
+        <Route
+          path={props.launchNotebookUrl}
           render={() => (
             <ProjectStartNotebookServer
-              key="startNotebookForm" {...props} backUrl={backUrl} defaultBackButton={backButton} />
-          )} />
-        <Route path={props.sessionShowUrl}
-          render={p => (
+              key="startNotebookForm"
+              {...props}
+              backUrl={backUrl}
+              defaultBackButton={backButton}
+            />
+          )}
+        />
+        <Route
+          path={props.sessionShowUrl}
+          render={(p) => (
             <Fragment>
               <ProjectShowSession {...props} match={p.match} />
             </Fragment>
-          )} />
+          )}
+        />
       </Switch>
-    </Col>
+    </Col>,
   ];
 };
 
@@ -881,14 +720,19 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
     return (
       <InfoAlert timeout={0} key="permissions-warning">
         <p>
-          As
-          an anonymous user, you can start <ExternalLink role="text" title="Sessions"
-            url={Docs.rtdHowToGuide("renkulab/session-stopping-and-saving.html")} />, but
-          you cannot save your work.
+          As an anonymous user, you can start{" "}
+          <ExternalLink
+            role="text"
+            title="Sessions"
+            url={Docs.rtdHowToGuide("renkulab/session-stopping-and-saving.html")}
+          />
+          , but you cannot save your work.
         </p>
         <p className="mb-0">
-          <Link className="btn btn-primary btn-sm" to={to}>Log in</Link> for
-          full access.
+          <Link className="btn btn-primary btn-sm" to={to}>
+            Log in
+          </Link>{" "}
+          for full access.
         </p>
       </InfoAlert>
     );
@@ -897,21 +741,25 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
     return (
       <InfoAlert timeout={0} key="permissions-warning">
         <p>
-          You have limited permissions for this
-          project. You can launch a session, but you will not be able to save
-          any changes. If you want to save your work, consider one of the following:
+          You have limited permissions for this project. You can launch a session, but you will not be able to save any
+          changes. If you want to save your work, consider one of the following:
         </p>
         <ul className="mb-0">
           <li>
             <Link className="btn btn-primary btn-sm" color="primary" to={forkUrl}>
               Fork the project
-            </Link> and start a session from your fork.
+            </Link>{" "}
+            and start a session from your fork.
           </li>
           <li className="pt-1">
-            <ExternalLink size="sm" title="Contact a maintainer"
-              url={`${externalUrl}/-/project_members`} /> and ask them
-            to <ExternalLink role="text" title="grant you the necessary permissions"
-              url={Docs.rtdHowToGuide("renkulab/collaboration.html")} />.
+            <ExternalLink size="sm" title="Contact a maintainer" url={`${externalUrl}/-/project_members`} /> and ask
+            them to{" "}
+            <ExternalLink
+              role="text"
+              title="grant you the necessary permissions"
+              url={Docs.rtdHowToGuide("renkulab/collaboration.html")}
+            />
+            .
           </li>
         </ul>
       </InfoAlert>
@@ -920,16 +768,24 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
   return null;
 }
 
-
 class ProjectShowSession extends Component {
   render() {
     const {
-      blockAnonymous, client, externalUrl, history, launchNotebookUrl, location, match,
-      metadata, model, notifications, forkUrl, user, notebookServersUrl
+      blockAnonymous,
+      client,
+      externalUrl,
+      history,
+      launchNotebookUrl,
+      location,
+      match,
+      metadata,
+      model,
+      notifications,
+      forkUrl,
+      user,
+      notebookServersUrl,
     } = this.props;
-    const warning = notebookWarning(
-      user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl
-    );
+    const warning = notebookWarning(user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl);
 
     return (
       <ShowSession
@@ -953,21 +809,24 @@ class ProjectShowSession extends Component {
 
 class ProjectNotebookServers extends Component {
   render() {
-    const {
-      client, metadata, model, user, forkUrl, location, externalUrl, launchNotebookUrl,
-      blockAnonymous
-    } = this.props;
-    const warning = notebookWarning(
-      user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl
-    );
+    const { client, metadata, model, user, forkUrl, location, externalUrl, launchNotebookUrl, blockAnonymous } =
+      this.props;
+    const warning = notebookWarning(user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl);
 
     return (
-      <Notebooks standalone={false} client={client} model={model} location={location}
+      <Notebooks
+        standalone={false}
+        client={client}
+        model={model}
+        location={location}
         message={warning}
         urlNewSession={launchNotebookUrl}
         blockAnonymous={blockAnonymous}
-        scope={{ namespace: this.props.metadata.namespace, project: this.props.metadata.path,
-          defaultBranch: this.props.metadata.defaultBranch }}
+        scope={{
+          namespace: this.props.metadata.namespace,
+          project: this.props.metadata.path,
+          defaultBranch: this.props.metadata.defaultBranch,
+        }}
       />
     );
   }
@@ -976,23 +835,38 @@ class ProjectNotebookServers extends Component {
 class ProjectStartNotebookServer extends Component {
   render() {
     const {
-      branches, client, commits, model, user, forkUrl, externalUrl, location, metadata,
-      fetchBranches, fetchCommits, notebookServersUrl, history, blockAnonymous, notifications,
-      projectCoordinator, lockStatus, backUrl, defaultBackButton
+      branches,
+      client,
+      commits,
+      model,
+      user,
+      forkUrl,
+      externalUrl,
+      location,
+      metadata,
+      fetchBranches,
+      fetchCommits,
+      notebookServersUrl,
+      history,
+      blockAnonymous,
+      notifications,
+      projectCoordinator,
+      lockStatus,
+      backUrl,
+      defaultBackButton,
     } = this.props;
-    const warning = notebookWarning(
-      user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl
-    );
+    const warning = notebookWarning(user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl);
 
-    const locationEnhanced = location && location.state && location.state.successUrl ?
-      location :
-      {
-        ...this.props.location,
-        state: {
-          ...this.props.location.state,
-          successUrl: notebookServersUrl
-        }
-      };
+    const locationEnhanced =
+      location && location.state && location.state.successUrl
+        ? location
+        : {
+          ...this.props.location,
+          state: {
+            ...this.props.location.state,
+            successUrl: notebookServersUrl,
+          },
+        };
 
     const scope = {
       defaultBranch: this.props.metadata.defaultBranch,
@@ -1040,12 +914,16 @@ function ProjectSettings(props) {
         </Col>
         <Col key="content" sm={12} md={10}>
           <Switch>
-            <Route exact path={props.settingsUrl}
+            <Route
+              exact
+              path={props.settingsUrl}
               render={() => {
                 return <ProjectSettingsGeneral {...props} />;
               }}
             />
-            <Route exact path={props.settingsSessionsUrl}
+            <Route
+              exact
+              path={props.settingsSessionsUrl}
               render={() => {
                 return <ProjectSettingsSessions {...props} />;
               }}
@@ -1061,91 +939,100 @@ class ProjectViewNotFound extends Component {
   render() {
     let tip;
     if (this.props.logged) {
-      tip = (<>
-        <p>
-          If you are sure the project exists,
-          you may want to try the following:
-        </p>
-        <ul className="mb-0">
-          <li>Do you have multiple accounts? Are you logged in with the right user?</li>
-          <li>
-            If you received this link from someone, ask that person to make sure you have access to the project.
-          </li>
-        </ul></>);
+      tip = (
+        <>
+          <p>If you are sure the project exists, you may want to try the following:</p>
+          <ul className="mb-0">
+            <li>Do you have multiple accounts? Are you logged in with the right user?</li>
+            <li>
+              If you received this link from someone, ask that person to make sure you have access to the project.
+            </li>
+          </ul>
+        </>
+      );
     }
     else {
       const to = Url.get(Url.pages.login.link, { pathname: this.props.location.pathname });
-      tip = <>
-        <p>
-          You might need to be logged in to see this project.
-          Please try to <Link className="btn btn-secondary btn-sm" to={to}>Log in</Link>
-        </p>
-      </>;
+      tip = (
+        <>
+          <p>
+            You might need to be logged in to see this project. Please try to{" "}
+            <Link className="btn btn-secondary btn-sm" to={to}>
+              Log in
+            </Link>
+          </p>
+        </>
+      );
     }
 
     // eslint-disable-next-line max-len
-    const notFoundDescription = <>
-      <p>We could not find project with path <i>{this.props.projectPathWithNamespace}</i>.</p>
-      <p>It is possible that the project has been deleted by its owner or you do not have permission to access it.</p>
-    </>;
+    const notFoundDescription = (
+      <>
+        <p>
+          We could not find project with path <i>{this.props.projectPathWithNamespace}</i>.
+        </p>
+        <p>It is possible that the project has been deleted by its owner or you do not have permission to access it.</p>
+      </>
+    );
     return (
-      <NotFound
-        title="Project not found" description={notFoundDescription}>
+      <NotFound title="Project not found" description={notFoundDescription}>
         {tip}
-      </NotFound>);
+      </NotFound>
+    );
   }
 }
 
 class ProjectViewLoading extends Component {
   render() {
-    const info = this.props.projectId ?
-      <h3>Identifying project number {this.props.projectId}...</h3> :
-      <h3>Loading project {this.props.projectPathWithNamespace}...</h3>;
-    return <Row>
-      <Col>
-        {info}
-        <Loader />
-      </Col>
-    </Row>;
+    const info = this.props.projectId ? (
+      <h3>Identifying project number {this.props.projectId}...</h3>
+    ) : (
+      <h3>Loading project {this.props.projectPathWithNamespace}...</h3>
+    );
+    return (
+      <Row>
+        <Col>
+          {info}
+          <Loader />
+        </Col>
+      </Row>
+    );
   }
 }
 
 class NotFoundInsideProject extends Component {
   render() {
-    return <Col key="notFound">
-      <Row>
-        <Col xs={12} md={12}>
-          <Alert color="primary">
-            <h4>404 - Page not found</h4>
-            The URL
-            <strong> {this.props.location.pathname.replace(this.props.match.url, "")} </strong>
-            was not found inside this project. You can explore the current project using the tabs on top.
-          </Alert>
-        </Col>
-      </Row>
-    </Col>;
+    return (
+      <Col key="notFound">
+        <Row>
+          <Col xs={12} md={12}>
+            <Alert color="primary">
+              <h4>404 - Page not found</h4>
+              The URL
+              <strong> {this.props.location.pathname.replace(this.props.match.url, "")} </strong>
+              was not found inside this project. You can explore the current project using the tabs on top.
+            </Alert>
+          </Col>
+        </Row>
+      </Col>
+    );
   }
 }
 
 function ProjectView(props) {
   const available = props.metadata ? props.metadata.exists : null;
-  const projectPathWithNamespaceOrId = props.projectPathWithNamespace ?
-    props.projectPathWithNamespace
+  const projectPathWithNamespaceOrId = props.projectPathWithNamespace
+    ? props.projectPathWithNamespace
     : props.projectId;
 
   if (props.namespace && !props.projectPathWithNamespace) {
-    return (
-      <NamespaceProjects
-        namespace={props.namespace}
-        client={props.client}
-      />
-    );
+    return <NamespaceProjects namespace={props.namespace} client={props.client} />;
   }
   else if (available == null || available === SpecialPropVal.UPDATING || props.projectId) {
     return (
-      <ContainerWrap><ProjectViewLoading
-        projectPathWithNamespace={props.projectPathWithNamespace}
-        projectId={props.projectId} /></ContainerWrap>
+      <ContainerWrap>
+        <ProjectViewLoading projectPathWithNamespace={props.projectPathWithNamespace} projectId={props.projectId} />
+      </ContainerWrap>
     );
   }
   else if (available === false) {
@@ -1154,7 +1041,8 @@ function ProjectView(props) {
       <ProjectViewNotFound
         projectPathWithNamespace={projectPathWithNamespaceOrId}
         logged={logged}
-        location={props.location} />
+        location={props.location}
+      />
     );
   }
   const cleanSessionUrl = props.location.pathname.split("/").slice(0, -1).join("/") + "/:server";
@@ -1166,17 +1054,14 @@ function ProjectView(props) {
       projectTitle={props.metadata.title} />,
     <ContainerWrap key="project-content" fullSize={isShowSession}>
       <Switch key="projectHeader">
-        <Route exact path={props.baseUrl}
-          render={() => <ProjectViewHeader {...props} minimalistHeader={false}/>} />
-        <Route path={props.overviewUrl}
-          render={() => <ProjectViewHeader {...props} minimalistHeader={false}/>} />
+        <Route exact path={props.baseUrl} render={() => <ProjectViewHeader {...props} minimalistHeader={false} />} />
+        <Route path={props.overviewUrl} render={() => <ProjectViewHeader {...props} minimalistHeader={false} />} />
         <Route path={props.notebookServersUrl} render={() => null} />
         <Route path={props.editDatasetUrl} render={() => null} />
         <Route path={props.datasetUrl} render={() => null} />
         <Route path={props.sessionShowUrl} render={() => null} />
-        <Route path={props.newDatasetUrl} component={() =>
-          <ProjectViewHeader {...props} minimalistHeader={true}/>} />
-        <Route component={()=><ProjectViewHeader {...props} minimalistHeader={true}/>} />
+        <Route path={props.newDatasetUrl} component={() => <ProjectViewHeader {...props} minimalistHeader={true} />} />
+        <Route component={() => <ProjectViewHeader {...props} minimalistHeader={true} />} />
       </Switch>
       <Switch key="projectNav">
         <Route path={props.notebookServersUrl} render={() => null} />
@@ -1184,28 +1069,24 @@ function ProjectView(props) {
         <Route path={props.datasetUrl} render={() => null} />
         <Route path={props.sessionShowUrl} render={() => null} />
         <Route path={props.newDatasetUrl} component={() => <ProjectNav key="nav" {...props} />} />
-        <Route component={() =><ProjectNav key="nav" {...props} />} />
+        <Route component={() => <ProjectNav key="nav" {...props} />} />
       </Switch>
       <Row key="content">
         <Switch>
-          <Route exact path={props.baseUrl}
-            render={() => <ProjectViewOverview key="overview" {...props} />} />
-          <Route path={props.overviewUrl}
-            render={() => <ProjectViewOverview key="overview" {...props} />} />
-          <Route path={props.filesUrl}
-            render={() => <ProjectViewFiles key="files" {...props} />} />
-          <Route path={props.datasetsUrl}
-            render={() => <ProjectViewDatasets key="datasets" {...props} />} />
-          <Route path={[props.workflowUrl, props.workflowsUrl]}
-            render={() => <ProjectViewWorkflows key="workflows" {...props} />} />
-          <Route path={props.settingsUrl}
-            render={() => <ProjectSettings key="settings" {...props} />} />
-          <Route path={props.notebookServersUrl}
-            render={() => <ProjectSessions key="sessions" {...props} />} />
+          <Route exact path={props.baseUrl} render={() => <ProjectViewOverview key="overview" {...props} />} />
+          <Route path={props.overviewUrl} render={() => <ProjectViewOverview key="overview" {...props} />} />
+          <Route path={props.filesUrl} render={() => <ProjectViewFiles key="files" {...props} />} />
+          <Route path={props.datasetsUrl} render={() => <ProjectDatasetsView key="datasets" {...props} />} />
+          <Route
+            path={[props.workflowUrl, props.workflowsUrl]}
+            render={() => <ProjectViewWorkflows key="workflows" {...props} />}
+          />
+          <Route path={props.settingsUrl} render={() => <ProjectSettings key="settings" {...props} />} />
+          <Route path={props.notebookServersUrl} render={() => <ProjectSessions key="sessions" {...props} />} />
           <Route component={NotFoundInsideProject} />
         </Switch>
       </Row>
-    </ContainerWrap>
+    </ContainerWrap>,
   ];
 }
 

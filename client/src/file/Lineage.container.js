@@ -157,6 +157,9 @@ class FileLineage extends Component {
     const client = this.props.client;
     const branch = this.props.branch;
     let filePath = this.props.gitFilePath;
+    // The projectId has not yet been retrieved; this function will be called again
+    if (this.props.projectId == null) return;
+
     client.getRepositoryFile(this.props.projectId, filePath, branch, "base64")
       .catch(e => {
         if (!this._isMounted) return null;

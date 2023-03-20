@@ -65,7 +65,7 @@ function getDatasetImageUrl(images) {
  * Returns image url with extra parameter to avoid outdated cached url
  *
  * @param {string} imageUrl - Url image
- * @param {string} lastUpdateDate - last url update
+ * @param {string | Date} lastUpdateDate - last url update
  */
 function getUpdatedDatasetImage(imageUrl, lastUpdateDate) {
   if (!imageUrl)
