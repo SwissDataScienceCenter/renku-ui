@@ -1,6 +1,22 @@
 # Changes
 
-# [3.3.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.2.0...3.3.0) (2023-02-27)
+## [3.4.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.3.0...3.4.0) (2023-03-21)
+
+### Features
+
+* unify dashboard and headers session buttons ([#2401](https://github.com/SwissDataScienceCenter/renku-ui/issues/2401), [#2393](https://github.com/SwissDataScienceCenter/renku-ui/issues/2393)
+* make components sticky when scrolling long files on the file viewer ([#2406](https://github.com/SwissDataScienceCenter/renku-ui/issues/2406), [#2412](https://github.com/SwissDataScienceCenter/renku-ui/issues/2412))
+* always re-sort equal results by descending date ([#2373](https://github.com/SwissDataScienceCenter/renku-ui/issues/2373))
+* improve the display of session error information ([#2396](https://github.com/SwissDataScienceCenter/renku-ui/issues/2396), [#2411](https://github.com/SwissDataScienceCenter/renku-ui/issues/2411))
+* convert the projects coordinator -- projects stars from GitLab will not be usable anymore ([#2384](https://github.com/SwissDataScienceCenter/renku-ui/issues/2384))
+
+### Bug Fixes
+
+* prevent listing projects twice on the dashboard ([#2316](https://github.com/SwissDataScienceCenter/renku-ui/issues/2316), [#2408](https://github.com/SwissDataScienceCenter/renku-ui/issues/2408))
+* start sessions with base images when pinned images are missing ([#2410](https://github.com/SwissDataScienceCenter/renku-ui/issues/2410))
+
+
+## [3.3.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.2.0...3.3.0) (2023-02-27)
 
 ### Features
 
@@ -12,7 +28,7 @@
 * show and use timezone aware dates ([#2388](https://github.com/SwissDataScienceCenter/renku-ui/issues/2388))
 
 
-# [3.2.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.1.0...3.2.0) (2023-02-16)
+## [3.2.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.1.0...3.2.0) (2023-02-16)
 
 
 ### Features
@@ -37,7 +53,7 @@
 
 
 
-# [3.1.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.0.0...3.1.0) (2023-01-24)
+## [3.1.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.0.0...3.1.0) (2023-01-24)
 
 ### Features
 
@@ -47,7 +63,7 @@
 
 * restrict visibility options to be compatible with namespace and parent project in fork dialog ([#2296](https://github.com/SwissDataScienceCenter/renku-ui/issues/2296), [#2299](https://github.com/SwissDataScienceCenter/renku-ui/issues/2299))
 
-# [3.0.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.16.0...3.0.0) (2023-01-17)
+## [3.0.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.16.0...3.0.0) (2023-01-17)
 
 ### Features
 
@@ -62,7 +78,7 @@
 * handle errors on sessions interaction ([#2269](https://github.com/SwissDataScienceCenter/renku-ui/issues/2269), [#2169](https://github.com/SwissDataScienceCenter/renku-ui/issues/2169))
 * remove idle time when moving to step two on the starting session page ([#2279](https://github.com/SwissDataScienceCenter/renku-ui/issues/2279), [#2282](https://github.com/SwissDataScienceCenter/renku-ui/issues/2282))
 
-# [2.16.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.15.0...2.16.0) (2023-01-09)
+## [2.16.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.15.0...2.16.0) (2023-01-09)
 
 ### Features
 
