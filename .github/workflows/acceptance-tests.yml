@@ -92,10 +92,11 @@ jobs:
           renku_graph: "${{ needs.check-deploy.outputs.renku-graph }}"
           renku_notebooks: "${{ needs.check-deploy.outputs.renku-notebooks }}"
           extra_values: "${{ needs.check-deploy.outputs.extra-values }}"
-  run-acceptance-tests:
+
+  run-selenium-acceptance-tests:
     needs: [check-deploy, deploy-pr]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: SwissDataScienceCenter/renku-actions/test-renku@v1.4.2
         with:
@@ -105,11 +106,12 @@ jobs:
           persist: "${{ needs.check-deploy.outputs.persist }}"
           s3-results-access-key: ${{ secrets.ACCEPTANCE_TESTS_BUCKET_ACCESS_KEY }}
           s3-results-secret-key: ${{ secrets.ACCEPTANCE_TESTS_BUCKET_SECRET_KEY }}
-          test-timeout-mins: "80"
+          test-timeout-mins: "60"
+
   run-cypress-acceptance-tests:
     needs: [check-deploy, deploy-pr]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-cypress-enabled == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Extract renku repo ref
         run: echo "RENKU=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
@@ -119,36 +121,6 @@ jobs:
           renku-release: renku-ci-ui-${{ github.event.number }}
           test-user-password: ${{ secrets.RENKU_BOT_DEV_PASSWORD }}
           renku: ${{ env.RENKU }}
-  run-e2e:
-    needs: [check-deploy, deploy-pr]
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && (needs.check-deploy.outputs.test-enabled == 'true' || needs.check-deploy.outputs.test-cypress-enabled == 'true')
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Cypress run
-        uses: cypress-io/github-action@v4
-        env:
-          CYPRESS_BASE_URL: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch/
-          GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
-          CYPRESS_USER: ${{ secrets.CYPRESS_USER }}
-        with:
-          browser: chrome
-          working-directory: tests
-        # Cypress screenshots will be generated only if the test failed, thus we store screenshots only on failures
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: cypress-screenshots
-          path: tests/cypress/screenshots
-          retention-days: 7
-      # Cypress test video is always captured, so this action uses "always()" condition
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: cypress-videos
-          path: tests/cypress/videos
-          retention-days: 3
 
   cleanup:
     needs: check-deploy

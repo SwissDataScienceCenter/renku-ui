@@ -1,20 +1,18 @@
 {
-  "name": "acceptance-tests",
-  "version": "0.0.1",
-  "description": "Acceptance tests for Renku",
+  "name": "e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end tests for the Renku UI client",
   "main": "index.js",
   "scripts": {
-    "cypress:local": "cypress open --e2e --browser=chrome --config-file cypress.local.config.ts",
-    "cypress:local-headless": "cypress run --e2e --headless --config-file cypress.local.config.ts --spec '**/local/*'",
-    "e2e": "cypress open --e2e --browser=chrome",
-    "e2e:local": "start-server-and-test start:local 3000 cypress:local",
-    "e2e:local-headless": "start-server-and-test start:local 3000 cypress:local-headless",
-    "e2e:run": "cypress run --e2e --browser=chrome",
-    "e2e:headless": "cypress run --e2e --browser=chrome --headless",
+    "cypress": "cypress open --e2e --browser=chrome --config-file cypress.config.ts",
+    "cypress:headless": "cypress run --e2e --headless --config-file cypress.config.ts --spec '**/*'",
+    "e2e": "start-server-and-test start 3000 cypress",
+    "e2e:headless": "start-server-and-test start 3000 cypress:headless",
     "lint": "eslint --max-warnings=0 cypress/",
-    "start:local": "npm --prefix ../client run start-js"
+    "start": "npm --prefix ../client run start-js",
+    "install-client": "npm --prefix ../client install"
   },
-  "author": "",
+  "author": "Swiss Data Science Center",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.6.0",
     "@typescript-eslint/parser": "^5.6.0",
