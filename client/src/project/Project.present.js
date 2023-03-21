@@ -25,7 +25,6 @@
 
 
 import React, { Component, Fragment, useState, useEffect } from "react";
-import { Helmet } from "react-helmet";
 import { Link, Route, Switch } from "react-router-dom";
 import {
   Alert, Button, Card, CardBody, CardHeader, Col, Modal, Row, Nav, NavItem, UncontrolledTooltip
@@ -59,11 +58,11 @@ import { Docs } from "../utils/constants/Docs";
 import { NotFound } from "../not-found/NotFound.present";
 import { ContainerWrap } from "../App";
 import { ThrottledTooltip } from "../components/Tooltip";
-import EntityHeader from "../components/entityHeader/EntityHeader";
 import { SshModal } from "../components/ssh/ssh";
-import { useProjectJsonLdQuery } from "../features/projects/ProjectKgApi";
 import GitLabConnectButton, { externalUrlToGitLabIdeUrl } from "./components/GitLabConnect";
 import { NotebooksCoordinator } from "../notebooks";
+import ProjectPageTitle from "../features/project/ProjectPageTitle";
+import { ProjectEntityHeader } from "../features/project";
 
 import "./Project.css";
 
@@ -239,6 +238,7 @@ function ProjectViewHeaderMinimal(props) {
     overviewStatusUrl={props.overviewStatusUrl}
     migration={props.migration}
   />);
+  const isInKg = props.isGraphReady;
 
   const forkedFromText = (isForkedFromProject(props.forkedFromProject)) ?
     (<>{" "}<b key="forked">forked</b>{" from "} {props.forkedFromLink}</>) :
@@ -250,15 +250,16 @@ function ProjectViewHeaderMinimal(props) {
 
   return (
     <>
-      <EntityHeader
+      <ProjectEntityHeader
         client={props.client}
         creators={props.metadata.owner ? [props.metadata.owner] : []}
-        description={props.metadata.description}
+        description={{ value: props.metadata.description }}
         devAccess={props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
         fullPath={props.metadata.pathWithNamespace}
         gitUrl={props.externalUrl}
         hideEmptyTags={true}
         imageUrl={props.metadata.avatarUrl}
+        isInKg={isInKg}
         itemType="project"
         labelCaption={"Updated"}
         links={linksHeader}
@@ -1132,8 +1133,6 @@ function ProjectView(props) {
     props.projectPathWithNamespace
     : props.projectId;
 
-  const { data, isFetching, isLoading } = useProjectJsonLdQuery(props.projectPathWithNamespace);
-
   if (props.namespace && !props.projectPathWithNamespace) {
     return (
       <NamespaceProjects
@@ -1158,21 +1157,13 @@ function ProjectView(props) {
         location={props.location} />
     );
   }
-  const projectTitle = props.metadata.title;
-  const projectPath = props.metadata.pathWithNamespace;
-  const projectDesc = props.metadata.description;
-  const pageTitle = projectDesc ?
-    `${projectTitle} • Project • ${projectPath} • ${projectDesc}` :
-    `${projectTitle} • Project • ${projectPath}`;
-  const jsonLd = !isFetching && !isLoading && data ?
-    <script type="application/ld+json">{JSON.stringify(data)}</script> : null;
   const cleanSessionUrl = props.location.pathname.split("/").slice(0, -1).join("/") + "/:server";
   const isShowSession = cleanSessionUrl === props.sessionShowUrl;
+  const isInKg = props.isGraphReady;
   return [
-    <Helmet key="page-title">
-      <title>{pageTitle}</title>
-      {jsonLd}
-    </Helmet>,
+    <ProjectPageTitle key="page-title" isInKg={isInKg}
+      projectPathWithNamespace={props.metadata.pathWithNamespace}
+      projectTitle={props.metadata.title} />,
     <ContainerWrap key="project-content" fullSize={isShowSession}>
       <Switch key="projectHeader">
         <Route exact path={props.baseUrl}

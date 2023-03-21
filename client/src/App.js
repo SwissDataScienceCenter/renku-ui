@@ -30,7 +30,7 @@ import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
 
-import Project from "./project/Project";
+import { Project } from "./project";
 import { ProjectList } from "./project/list";
 import { NewProject } from "./project/new";
 import DatasetList from "./dataset/list/DatasetList.container";

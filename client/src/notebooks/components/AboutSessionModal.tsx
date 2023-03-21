@@ -54,7 +54,7 @@ const AboutSessionModal = ({ toggleModal, isOpen, projectMetadata, notebook }: A
       <h3 className="text-rk-text-light">Project</h3>
       <EntityHeader
         creators={projectMetadata.owner ? [projectMetadata.owner] : []}
-        description={projectMetadata.description}
+        description={{ value: projectMetadata.description }}
         devAccess={projectMetadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
         fullPath={projectMetadata.path_with_namespace ?? projectMetadata.pathWithNamespace}
         gitUrl={projectMetadata.externalUrl}

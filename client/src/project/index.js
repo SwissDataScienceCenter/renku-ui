@@ -25,5 +25,8 @@
 
 import { ProjectCoordinator } from "./Project.state";
 import { withProjectMapped } from "./Project";
+import ProjectView from "./ProjectV2";
 
-export { ProjectCoordinator, withProjectMapped };
+const Project = { View: ProjectView };
+
+export { Project, ProjectCoordinator, withProjectMapped };

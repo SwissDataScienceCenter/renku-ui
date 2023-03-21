@@ -387,7 +387,6 @@ export default function DatasetView(props) {
       <div className="mb-4">
         <EntityHeader
           creators={dataset?.published?.creator}
-          description=""
           devAccess={false}
           hideEmptyTags={true}
           imageUrl={imageUrl}

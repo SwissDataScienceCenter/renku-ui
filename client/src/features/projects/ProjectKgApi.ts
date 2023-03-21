@@ -17,23 +17,119 @@
  */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const headers = {
-  Accept: "application/ld+json"
+type JsonLdValue<T> = {
+  "@value": T;
 };
 
+type JsonLdDate = {
+  "@type": string;
+  "@value": string;
+};
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+type KgJsonLdResponse = {
+  "@id": string;
+  "@type": string[];
+  "https://swissdatasciencecenter.github.io/renku-ontology#projectPath": JsonLdValue<string>;
+  "http://schema.org/description": JsonLdValue<string>;
+  "http://schema.org/dateModified": JsonLdDate;
+  "http://schema.org/identifier": JsonLdValue<number>;
+  "http://schema.org/creator": {
+    "@id": string;
+    "@type": string[];
+    "http://schema.org/email": JsonLdValue<string>;
+    "http://schema.org/name": JsonLdValue<string>;
+  };
+  "http://schema.org/schemaVersion": JsonLdValue<string>;
+  "https://swissdatasciencecenter.github.io/renku-ontology#projectVisibility": JsonLdValue<string>;
+  "http://schema.org/name": JsonLdValue<string>;
+  "http://schema.org/image": string[];
+  "http://schema.org/keywords": string[];
+};
+
+type KgMetadataLink = {
+  rel: string;
+  href: string;
+};
+
+type KgDateString = string; // ISO 8601 UTC date string, e.g., "2021-03-10T14:38:20.368Z"
+
+type KgMetadataResponse = {
+  version: string;
+  description: string;
+  _links: KgMetadataLink[];
+  identifier: number;
+  path: string;
+  name: string;
+  visibility: "public" | "internal" | "private";
+  created: {
+    creator: {
+      email: string;
+      name: string;
+    };
+    dateCreated: KgDateString;
+  };
+  updatedAt: KgDateString;
+  urls: {
+    readme: string;
+    ssh: string;
+    http: string;
+    web: string;
+  };
+  forking: {
+    forksCount: number;
+  };
+  keywords: string[];
+  starsCount: number;
+  permissions: {
+    projectAccess: {
+      level: {
+        name: string;
+        value: number;
+      };
+    };
+  };
+  images: string[];
+  statistics: {
+    commitsCount: number;
+    storageSize: number;
+    repositorySize: number;
+    lfsObjectsSize: number;
+    jobArtifactsSize: number;
+  };
+};
+
+type ProjectKgContent = "ld+json" | "json";
+
+type ProjectKgParams = {
+  projectPath?: string;
+};
+
+function kgProjectRequestHeaders(content: ProjectKgContent) {
+  return {
+    Accept: `application/${content}`,
+  };
+}
 
 export const projectKgApi = createApi({
   reducerPath: "projectKgApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/kg" }),
   endpoints: (builder) => ({
-    projectJsonLd: builder.query<any, string>({
-      query: (projectPath) => ({ url: `projects/${projectPath}`, headers }),
-    })
-  })
+    projectJsonLd: builder.query<KgJsonLdResponse, ProjectKgParams>({
+      query: (params) => ({
+        url: `projects/${params.projectPath}`,
+        headers: kgProjectRequestHeaders("ld+json"),
+      }),
+    }),
+    projectMetadata: builder.query<KgMetadataResponse, ProjectKgParams>({
+      query: (params) => ({
+        url: `projects/${params.projectPath}`,
+        headers: kgProjectRequestHeaders("json"),
+      }),
+    }),
+  }),
 });
 
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
-export const { useProjectJsonLdQuery } = projectKgApi;
+export const { useProjectJsonLdQuery, useProjectMetadataQuery } = projectKgApi;
+export type { ProjectKgContent };
