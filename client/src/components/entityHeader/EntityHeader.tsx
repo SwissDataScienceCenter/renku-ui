@@ -46,7 +46,7 @@ import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 export interface EntityHeaderProps {
   client?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   creators: EntityCreator[];
-  description: string;
+  description?: {value: string, isLoading?: boolean};
   devAccess: boolean;
   email?: string;
   fullPath?: string;
@@ -66,6 +66,7 @@ export interface EntityHeaderProps {
   visibility?: "public" | "internal" | "private";
   imageUrl?: string;
 }
+
 
 function EntityHeader({
   creators, description, devAccess, fullPath, gitUrl, hideEmptyTags = false, imageUrl, itemType,
@@ -106,7 +107,6 @@ function EntityHeader({
   const envLogs = itemType === "project" ?
     (<EnvironmentLogs name={displayModal.targetServer} annotations={notebook?.annotations ?? {}} />) :
     null;
-
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);
 
@@ -148,7 +148,7 @@ function EntityHeader({
           <Creators display="list" creators={creators} itemType={itemType} includeIcon={true} />
           <Slug multiline={true} slug={slug ?? ""} />
           <EntityDescription
-            description={description} isHeightFixed={false}
+            description={description?.value} isHeightFixed={false}
             showSuggestion={true} hasDevAccess={devAccess}
             urlChangeDescription={`${url}/settings`}
             className="text-rk-dark"
