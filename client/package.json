@@ -3,7 +3,7 @@
   "version": "3.4.0",
   "private": true,
   "dependencies": {
-    "@ckeditor/ckeditor5-react": "^5.0.5",
+    "@ckeditor/ckeditor5-react": "^5.1.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
     "@fortawesome/free-regular-svg-icons": "^5.15.3",
