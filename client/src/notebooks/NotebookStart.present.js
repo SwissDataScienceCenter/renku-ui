@@ -405,7 +405,9 @@ class StartNotebookBranchesOptions extends Component {
     return [
       <Button key="button" className="ms-2 p-0" color="link" size="sm"
         id="branchOptionsButton" disabled={this.props.disabled}
-        onClick={() => { }}>
+        onClick={() => {
+          // eslint-disable-line @typescript-eslint/no-empty-function
+        }}>
         <FontAwesomeIcon icon={faCogs} />
       </Button>,
       <UncontrolledTooltip key="tooltip" placement="top" target="branchOptionsButton">
@@ -785,7 +787,9 @@ class StartNotebookCommitsOptions extends Component {
     return [
       <Button key="button" className="ms-2 p-0" color="link" size="sm"
         id="commitOptionsButton" disabled={this.props.disabled}
-        onClick={() => { }}>
+        onClick={() => {
+          // eslint-disable-line @typescript-eslint/no-empty-function
+        }}>
         <FontAwesomeIcon icon={faCogs} />
       </Button>,
       <UncontrolledTooltip key="tooltip" placement="top" target="commitOptionsButton">
@@ -1030,7 +1034,7 @@ class ServerOptionEnum extends Component {
 
     return (
       <ButtonGroup>
-        {options.map((optionName, i) => {
+        {options.map((optionName) => {
           let color = "rk-white";
           if (optionName === selected) {
             color = this.props.warning != null && this.props.warning === optionName ?

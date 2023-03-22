@@ -33,7 +33,7 @@ interface SaveSessionProps extends ModalProps {
   isSessionReady: boolean;
   isLogged: boolean;
   notebook: Notebook;
-  urlList: any;
+  urlList: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 function SaveSession(props: SaveSessionProps) {
@@ -168,7 +168,7 @@ function SaveSessionNoFFBody({ closeModal, gitStatus }: SaveSessionBodyProps) {
 
 interface MessageFormProps {
   commitMessage?: string;
-  setCommitMessage: Function;
+  setCommitMessage: Function; // eslint-disable-line @typescript-eslint/ban-types
   gitStatus: GitStatusResult;
   saving: boolean;
 }

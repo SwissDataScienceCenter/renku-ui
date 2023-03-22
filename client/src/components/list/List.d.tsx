@@ -22,7 +22,7 @@ export interface ListElementProps {
   imageUrl?: string;
   itemType: EntityType;
   labelCaption: string;
-  mediaContent?: any;
+  mediaContent?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   path?: string;
   slug: string;
   tagList: string[];
@@ -43,5 +43,5 @@ export interface EntityIconProps {
 
 export interface EntityButtonProps {
   entityType?: EntityType;
-  handler?: Function;
+  handler?: Function; // eslint-disable-line @typescript-eslint/ban-types
 }

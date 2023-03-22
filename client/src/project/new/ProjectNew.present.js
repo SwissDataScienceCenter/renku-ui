@@ -373,12 +373,7 @@ class Creation extends Component {
             needed.
           </p>
           <p>Error details: {creation.projectError}</p>
-          <Button
-            color="primary"
-            onClick={(e) => {
-              handlers.goToProject();
-            }}
-          >
+          <Button color="primary" onClick={() => handlers.goToProject()}>
             Go to the project
           </Button>
         </div>
@@ -393,12 +388,7 @@ class Creation extends Component {
         <div>
           <p>An error occurred while activating the knowledge graph. You can activate it later to get the lineage.</p>
           <p>Error details: {creation.kgError}</p>
-          <Button
-            color="primary"
-            onClick={(e) => {
-              handlers.goToProject();
-            }}
-          >
+          <Button color="primary" onClick={() => handlers.goToProject()}>
             Go to the project
           </Button>
         </div>

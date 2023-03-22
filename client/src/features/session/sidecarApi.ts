@@ -43,8 +43,8 @@ interface RenkuOpResult extends JsonRpcResult {
   };
 }
 
-interface SaveResult extends RenkuOpResult {}
-interface PullResult extends RenkuOpResult {}
+type SaveResult = RenkuOpResult
+type PullResult = RenkuOpResult
 export const sessionSidecarApi = createApi({
   reducerPath: "sessionSidecarApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/sessions/" }),

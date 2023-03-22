@@ -38,7 +38,7 @@ function EntityExecutions({
   display, executions, itemType, lastExecuted, showLastExecution = true, showOnlyLastExecution = false, workflowId
 }: EntityExecutionsProps) {
   if (itemType !== "workflow") return null;
-  let executionLast = lastExecuted != null ?
+  const executionLast = lastExecuted != null ?
     (<TimeCaption noCaption={true} endPunctuation="" time={lastExecuted} className="text-rk-text-light"/>) :
     null;
   let executionContent: React.ReactNode;

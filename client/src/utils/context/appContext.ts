@@ -19,7 +19,7 @@
 import React from "react";
 
 type IAppContext = {
-  client: any;
+  client: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   params: unknown;
   location: unknown;
 };

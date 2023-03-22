@@ -22,6 +22,8 @@ import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { WorkflowsDisplay } from "./Workflows";
 
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 type RootStateWorkflowsDisplay = WorkflowsDisplay;
 const initialState: WorkflowsDisplay = {
   details: {},

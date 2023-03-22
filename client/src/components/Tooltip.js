@@ -45,7 +45,7 @@ import _ from "lodash";
 
 
 // Non-throttled toggling
-function standardToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastToggleTime) {
+function standardToggler(tooltipOpen, setTooltipOpen) {
   return () => {
     return setTooltipOpen(!tooltipOpen);
   };

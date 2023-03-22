@@ -29,7 +29,7 @@ import "./Dashboard.scss";
 
 class DashboardWrapper extends Component {
   // ? Temporary wrapper to fetch sessions at least once when opening the dashboard.
-  constructor(props: any) {
+  constructor(props: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
     super(props);
     const notebooksModel = props.model.subModel("notebooks");
     const userModel = props.model.subModel("user");

@@ -31,7 +31,7 @@ function createDateGradient() {
   return { twoH, oneD, twoD };
 }
 
-function TileListGuide(props) {
+function TileListGuide() {
   const dateGradient = createDateGradient();
   return <Fragment>
     <h3>Tile lists</h3>
@@ -66,7 +66,7 @@ function TileListGuide(props) {
   </Fragment>;
 }
 
-function RowListGuide(props) {
+function RowListGuide() {
   const dateGradient = createDateGradient();
   return <Fragment>
     <h3>Row lists</h3>
@@ -102,8 +102,10 @@ function RowListGuide(props) {
   </Fragment>;
 }
 
-function PaginationGuide(props) {
-  const onPageChange = () => {};
+function PaginationGuide() {
+  const onPageChange = () => {
+    // eslint-disable-line @typescript-eslint/no-empty-function
+  };
   return <Fragment>
     <h3>Pagination</h3>
     <Pagination currentPage={2} perPage={10} totalItems={100} onPageChange={onPageChange}
@@ -111,7 +113,7 @@ function PaginationGuide(props) {
   </Fragment>;
 }
 
-function TablesGuide(props) {
+function TablesGuide() {
   return <Fragment>
     <h3>Tables</h3>
     <p>Use tables to show tables of information like metadata fields and
@@ -151,7 +153,7 @@ function TablesGuide(props) {
 }
 
 
-function ListsGuide(props) {
+function ListsGuide() {
   return <Fragment>
     <h2>Lists and Tables</h2>
     <TileListGuide />

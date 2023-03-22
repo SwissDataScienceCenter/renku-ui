@@ -63,7 +63,9 @@ describe("rendering", () => {
 
   beforeEach(() => {
     // ckeditor dumps some junk to the console.error. Ignore it.
-    spy = jest.spyOn(console, "error").mockImplementation(() => { });
+    spy = jest.spyOn(console, "error").mockImplementation(() => {
+      // eslint-disable-line @typescript-eslint/ban-types
+    });
   });
 
   afterEach(() => {

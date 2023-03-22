@@ -25,10 +25,10 @@ interface ResultHeaderProps {
   total?: number;
   phrase?: string;
   sort: SortingOptions;
-  handleSort: Function;
+  handleSort: Function; // eslint-disable-line @typescript-eslint/ban-types
   isFiltersOpened: boolean;
-  toggleFilter: Function;
-  toggleFilterModal: Function;
+  toggleFilter: Function; // eslint-disable-line @typescript-eslint/ban-types
+  toggleFilterModal: Function; // eslint-disable-line @typescript-eslint/ban-types
   isOpenFilterModal: boolean;
 }
 const SearchResultsHeader = ({

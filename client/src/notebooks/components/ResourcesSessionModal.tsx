@@ -33,12 +33,12 @@ import SessionCheatSheetGenerated from "./SessionCheatSheet";
  */
 
 export interface ResourcesSessionModelProp {
-  toggleModal: Function;
+  toggleModal: Function; // eslint-disable-line @typescript-eslint/ban-types
   isOpen: boolean;
   handlers: SessionHandlers;
   notebook: Notebook;
   defaultBranch: string;
-  setActiveTab: Function;
+  setActiveTab: Function; // eslint-disable-line @typescript-eslint/ban-types
   activeTab: string;
 }
 const ResourcesSessionModel =
@@ -87,12 +87,12 @@ const ResourcesSessionModel =
   };
 
 interface ResourcesProps {
-  handlers: any;
+  handlers: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   notebook: Notebook;
   defaultBranch: string;
   activeTab: string;
 }
-const Resources = ({ handlers, notebook, defaultBranch, activeTab }: ResourcesProps) => {
+const Resources = ({ handlers, notebook, activeTab }: ResourcesProps) => {
 
   const fetchLogs = (_sessionName: string, fullLogs = false) => {
     if (!notebook.available)

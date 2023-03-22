@@ -44,7 +44,7 @@ import "./EntityHeader.scss";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 
 export interface EntityHeaderProps {
-  client?: any;
+  client?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   creators: EntityCreator[];
   description: string;
   devAccess: boolean;
@@ -77,8 +77,8 @@ function EntityHeader({
   const sessions = useSelector((state: RootStateOrAny) => state.stateModel.notebooks?.notebooks);
   const projectData = { namespace: "", path: fullPath };
   const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, projectData);
-  const notebook = sessions.fetched && sessions.all ?
-    getSessionRunning(sessions.all, sessionAutostartUrl) as any :
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const notebook = sessions.fetched && sessions.all ? getSessionRunning(sessions.all, sessionAutostartUrl) as any :
     false;
 
   // Set the main button based on running sessions

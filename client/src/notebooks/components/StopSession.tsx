@@ -17,16 +17,19 @@
  */
 
 import React, { Fragment, useState } from "react";
+
 import { Button, Col, FormText, Modal, ModalBody, ModalHeader, Row, Save } from "../../utils/ts-wrappers";
 import { Loader } from "../../components/Loader";
 import { Notebook } from "./Session";
+
+/* eslint-disable @typescript-eslint/ban-types */
 
 interface StopSessionProps {
   stopNotebook: Function;
   closeModal: Function;
   isOpen: boolean;
   notebook: Notebook;
-  urlList: any;
+  urlList: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 function StopSession({ stopNotebook, notebook, urlList, closeModal, isOpen }: StopSessionProps) {
   const [stopping, setStopping] = useState(false);

@@ -739,7 +739,7 @@ class View extends Component {
  *     selected categories. Try to avoid it, only for compatibility with old components.
  */
 function mapProjectFeatures(projectCoordinator, features = [], parentProperty = null) {
-  let mapStateToProps = function (state) {
+  let mapStateToProps = function () {
     const projectState = projectCoordinator.get();
     if (!features || !features.length)
       features = Object.keys(projectState);

@@ -160,7 +160,7 @@ class RenkuToolbarItemPlus extends Component {
   }
 }
 
-function RenkuToolbarHelpMenu(props) {
+function RenkuToolbarHelpMenu() {
 
   return <UncontrolledDropdown className="nav-item dropdown">
     <Fragment>
@@ -257,7 +257,7 @@ class LoggedInNavBar extends Component {
     });
   }
 
-  handleSelect(eventKey, event) {
+  handleSelect(eventKey) {
     let nextRoute = null;
     switch (eventKey) {
       case "new.projects":

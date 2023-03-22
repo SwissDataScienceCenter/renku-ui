@@ -651,7 +651,7 @@ class NotebooksCoordinator {
     }
     this.model.setObject({ logs });
     return this.client.getNotebookServerLogs(serverName, lines)
-      .catch(e => ({ [LOG_ERROR_KEY]: "Logs currently not available. Try again in a minute..." }))
+      .catch(() => ({ [LOG_ERROR_KEY]: "Logs currently not available. Try again in a minute..." }))
       .then((data) => {
         let updatedLogs = { fetching: false };
         if (!full) {

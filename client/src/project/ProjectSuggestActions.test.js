@@ -54,7 +54,9 @@ describe("rendering ProjectSuggestActions", () => {
     ...projectSchema.createInitialized(),
     projectCoordinator,
     model: {},
-    fetchDatasets: () => {},
+    fetchDatasets: () => {
+      // eslint-disable-line @typescript-eslint/ban-types
+    },
     metadata: { accessLevel: ACCESS_LEVELS.MAINTAINER, defaultBranch: "master", id: 12345 }
   };
 

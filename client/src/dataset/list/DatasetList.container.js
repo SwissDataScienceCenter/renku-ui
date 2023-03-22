@@ -173,7 +173,7 @@ class List extends Component {
     this.model.cancelSearch();
   }
 
-  mapStateToProps(ownProps) {
+  mapStateToProps() {
     return {
       searchQuery: this.model.get("query"),
       loading: this.model.get("loading"),

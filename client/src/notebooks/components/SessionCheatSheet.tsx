@@ -138,7 +138,7 @@ interface SessionCheatSheetGeneratedProps {
 function SessionCheatSheetGenerated({ version }: SessionCheatSheetGeneratedProps) {
   const [groups, setGroups] = useState<GroupCommand[]>([]);
   useEffect(() => {
-    const cheatSheet: CheatSheetFile = getCheatSheetByVersion(version);
+    const cheatSheet: CheatSheetFile = getCheatSheetByVersion();
     const uiGroups = cheatsheetJsonToUIGroups(cheatSheet);
     setGroups(uiGroups);
   }, [version]);
@@ -151,7 +151,7 @@ function SessionCheatSheetGenerated({ version }: SessionCheatSheetGeneratedProps
   </div>;
 }
 
-function getCheatSheetByVersion(version?: string): CheatSheetFile {
+function getCheatSheetByVersion(): CheatSheetFile {
   return cheatsheetJson as unknown as CheatSheetFile;
 }
 

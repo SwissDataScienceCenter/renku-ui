@@ -37,12 +37,12 @@ interface SearchResultProps {
   data?: ListResponse<KgSearchResult>;
   isFetching: boolean;
   isLoading: boolean;
-  onPageChange: Function;
-  onRemoveFilters: Function;
+  onPageChange: Function; // eslint-disable-line @typescript-eslint/ban-types
+  onRemoveFilters: Function; // eslint-disable-line @typescript-eslint/ban-types
   error?: FetchBaseQueryError | SerializedError;
 }
 interface EmptyResultProps {
-  onRemoveFilters: Function;
+  onRemoveFilters: Function; // eslint-disable-line @typescript-eslint/ban-types
   error?: FetchBaseQueryError | SerializedError;
 }
 const EmptyResult = ({ onRemoveFilters, error } : EmptyResultProps) => {

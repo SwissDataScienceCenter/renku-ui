@@ -179,7 +179,7 @@ function ImageContentInputMode({ name, modes, mode, setMode, onClick, color }) {
     <DropdownToggle split color="primary" />
     <DropdownMenu>
       {
-        modes.map((m, i) => {
+        modes.map((m) => {
           return <DropdownItem key={m}
             onClick={() => setMode(m)}>{m}</DropdownItem>;
         })
@@ -205,8 +205,12 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
     helpValue = helpIsString ? help : help["url"];
     inputValue = urlInputValue(value);
     onInputChange = (e) => onUrlInputChange(name, options, setInputs, e);
-    onModeButtonClick = () => { };
-    onDrop = () => { };
+    onModeButtonClick = () => {
+      // eslint-disable-line @typescript-eslint/no-empty-function
+    };
+    onDrop = () => {
+      // eslint-disable-line @typescript-eslint/no-empty-function
+    };
   }
   else {
     helpValue = (helpIsString) ? help : help["file"];

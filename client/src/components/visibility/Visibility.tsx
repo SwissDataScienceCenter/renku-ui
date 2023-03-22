@@ -66,7 +66,7 @@ export interface VisibilityInputProps {
   disabled?: boolean;
 
   /** To be executed when a value change */
-  onChange: Function;
+  onChange: Function; // eslint-disable-line @typescript-eslint/ban-types
 
   /** Input name
    * @default visibility

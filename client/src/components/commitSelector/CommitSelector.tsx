@@ -18,11 +18,15 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Autosuggest, { ChangeEvent, ShouldRenderReasons, SuggestionSelectedEventData } from "react-autosuggest";
-import "./CommitSelector.scss";
+
 import { TimeCaption } from "../TimeCaption";
 import { ChevronDown, ChevronUp } from "../../utils/ts-wrappers";
 import { Loader } from "../Loader";
 
+import "./CommitSelector.scss";
+
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 const CommitSelectorTheme = {
   container: "react-autosuggest__container rk-commit-selector__suggestions-container",
@@ -52,7 +56,7 @@ interface Commit {
 interface CommitSelectorProps {
   commits: Commit[];
   disabled: boolean;
-  onChange: Function;
+  onChange: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
   const [suggestionList, setSuggestionList] = useState<Commit[]>(commits);
@@ -77,7 +81,9 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
     onChange(newValue);
   };
 
-  const onSuggestionsFetchRequested = () => {};
+  const onSuggestionsFetchRequested = () => {
+    // eslint-disable-line @typescript-eslint/no-empty-function
+  };
   const onSuggestionsClearRequested = () => {
     setIsSelectorOpened(false);
   };

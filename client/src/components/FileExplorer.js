@@ -69,7 +69,7 @@ class TreeNode extends Component {
     this.handleIconClick = this.handleIconClick.bind(this);
   }
 
-  handleIconClick(e) {
+  handleIconClick() {
     this.props.setOpenFolder(this.props.path);
     this.setState((prevState) => ({ childrenOpen: !prevState.childrenOpen }));
   }
@@ -85,7 +85,7 @@ class TreeNode extends Component {
     const hidden = this.props.node.name.startsWith(".") ? " hidden-folder " : "";
 
     const children = this.props.node.children ?
-      this.props.node.children.map((node, index) => {
+      this.props.node.children.map((node) => {
         return <TreeNode
           path={node.path}
           key={node.path}
@@ -138,7 +138,7 @@ function FilesTreeView(props) {
   useEffect(()=>{
     if (props.data.tree && tree === undefined) {
       setTree(
-        props.data.tree.map((node, index) => {
+        props.data.tree.map((node) => {
           return <TreeNode
             key={node.path}
             node={node}

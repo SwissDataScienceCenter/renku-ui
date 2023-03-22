@@ -124,7 +124,6 @@ export const kgSearchApi = createApi({
       transformResponse: (
         response: KgSearchResult[],
         meta: FetchBaseQueryMeta,
-        arg: SearchEntitiesQueryParams
       ) => {
         // Left here temporarily in case we want to use headers
         const headers = meta.response?.headers;

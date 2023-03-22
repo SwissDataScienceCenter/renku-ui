@@ -224,7 +224,9 @@ describe("rendering ProjectVersionStatus", () => {
     loading: false,
     metadata: { accessLevel: ACCESS_LEVELS.MAINTAINER, defaultBranch: "master", id: 12345 },
     migration: { check: {}, core: {} },
-    onMigrationProject: () => {},
+    onMigrationProject: () => {
+      // eslint-disable-line @typescript-eslint/ban-types
+    },
     user: { logged: true },
   };
 

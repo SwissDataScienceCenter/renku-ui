@@ -57,7 +57,7 @@ interface SortingItems {
 
 export interface SortingInputProps {
   sort: SortingOptions | null;
-  setSort: Function;
+  setSort: Function; // eslint-disable-line @typescript-eslint/ban-types
   styleType: "mobile" | "desk"
 }
 

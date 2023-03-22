@@ -58,7 +58,9 @@ describe("rendering on create", () => {
 
   beforeEach(() => {
     // ckeditor dumps some junk to the console.error. Ignore it.
-    spy = jest.spyOn(console, "error").mockImplementation(() => { });
+    spy = jest.spyOn(console, "error").mockImplementation(() => {
+      // eslint-disable-line @typescript-eslint/no-empty-function
+    });
   });
 
   afterEach(() => {
@@ -71,7 +73,7 @@ describe("rendering on create", () => {
     document.body.appendChild(div);
     const root = createRoot(div);
 
-    const submitCallback = e =>
+    const submitCallback = () =>
       Object.values(schema)
         .map(m => m.label + ": " + m.value + ",\n")
         .join("");
@@ -89,7 +91,9 @@ describe("rendering on modify", () => {
 
   beforeEach(() => {
     // ckeditor dumps some junk to the console.error. Ignore it.
-    spy = jest.spyOn(console, "error").mockImplementation(() => { });
+    spy = jest.spyOn(console, "error").mockImplementation(() => {
+      // eslint-disable-line @typescript-eslint/no-empty-function
+    });
   });
 
   afterEach(() => {
@@ -100,7 +104,7 @@ describe("rendering on modify", () => {
     const div = document.createElement("div");
     const root = createRoot(div);
 
-    const submitCallback = e =>
+    const submitCallback = () =>
       Object.values(schema)
         .map(m => m.label + ": " + m.value + ",\n")
         .join("");

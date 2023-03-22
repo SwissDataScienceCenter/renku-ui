@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { Link } from "react-router-dom";
 
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./List.d";
@@ -30,8 +31,6 @@ import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 
 import "./ListCard.css";
 
-
-const Link = require("react-router-dom").Link;
 
 function ListCard({
   creators, description, imageUrl, itemType, labelCaption, path, slug, tagList, timeCaption, title, url, visibility

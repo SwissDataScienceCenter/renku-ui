@@ -19,6 +19,9 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { formatProjectMetadata, ProjectMetadata } from "../../utils/helpers/ProjectFunctions";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 interface QueryParams {
   per_page: number;
   endCursor: string;
@@ -66,7 +69,7 @@ export const projectApi = createApi({
     getMemberProjects: builder.query<any, QueryParams>({
       query: (queryParams: QueryParams) => {
         const params = { variables: null, operationName: null };
-        let query = `{
+        const query = `{
           projects(membership: true, first:${queryParams.per_page}, after:"${queryParams.endCursor}") {
             pageInfo {
               endCursor
@@ -89,7 +92,7 @@ export const projectApi = createApi({
             }
           }
         }`;
-        let headers = {
+        const headers = {
           Accept: "application/json",
           "Content-Type": "application/json",
           "X-Requested-With": "XMLHttpRequest",

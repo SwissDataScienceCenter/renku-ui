@@ -42,6 +42,9 @@ import { stateToSearchString } from "../../kgSearch/KgSearchState";
 import { displaySlice, useDisplaySelector } from "../../display";
 import { EnvironmentLogs } from "../../../components/Logs";
 
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 interface ProjectAlertProps {
   total?: number;
 }

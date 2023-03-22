@@ -64,7 +64,7 @@ interface ProjectFilters {
 interface ShareLinkSessionModalProps {
   filters: ProjectFilters;
   showModal: boolean;
-  toggleModal: Function;
+  toggleModal: Function; // eslint-disable-line @typescript-eslint/ban-types
   notebookFilePath: string;
   environmentVariables: EnvVariablesField[];
 }
@@ -190,7 +190,7 @@ const ShareLinkSessionModal = ({ filters, showModal, toggleModal, notebookFilePa
 interface ShareLinkSessionOpenFileModalProps {
   filters: ProjectFilters;
   showModal: boolean;
-  toggleModal: Function;
+  toggleModal: Function; // eslint-disable-line @typescript-eslint/ban-types
   filePath: string;
   launchNotebookUrl: string;
 }

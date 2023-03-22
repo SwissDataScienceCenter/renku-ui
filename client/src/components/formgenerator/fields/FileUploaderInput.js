@@ -506,7 +506,9 @@ function FileUploaderInput({
       </thead>
       <tbody className={disabled ? "disabled-input" : ""}>
         {currentFiles.map((file, index) => (
-          <tr key={file.file_name + "file"} onClick={() => { }}>
+          <tr key={file.file_name + "file"} onClick={() => {
+            // eslint-disable-line @typescript-eslint/no-empty-function
+          }}>
             <td>{index + 1}</td>
             <td data-cy="file-name-column">
               <span>{file.file_name}</span>

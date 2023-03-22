@@ -29,13 +29,16 @@ const timeoutIntervalMs = 45 * 1000; // ? set to 0 to disable
 const reconnectIntervalMs = 10 * 1000;
 const reconnectPenaltyFactor = 1.5;
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
+
 
 // *** Accepted messages ***
 
 interface MessageData {
   required: Array<string> | null;
   optional: Array<string> | null;
-  handler: Function; // eslint-disable-line
+  handler: Function;
 }
 
 const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
@@ -65,7 +68,9 @@ const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
       {
         required: null,
         optional: ["message"],
-        handler: () => { }
+        handler: () => {
+          // eslint-disable-line @typescript-eslint/no-empty-function
+        }
       }
     ],
     "error": [
@@ -242,7 +247,7 @@ function setupWebSocket(
  */
 function getWsServerMessageHandler(
   acceptedMessages: Record<string, Record<string, Array<MessageData>>>, serverMessage: WsServerMessage
-): Function | string { // eslint-disable-line
+): Function | string {
   if (!acceptedMessages[serverMessage.scope])
     return `Scope '${serverMessage.scope}' is not supported.`;
   const acceptedScopeMessages = acceptedMessages[serverMessage.scope];

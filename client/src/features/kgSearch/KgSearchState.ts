@@ -37,6 +37,10 @@ import {
   stringToDateFilter,
 } from "../../components/dateFilter/DateFilter";
 
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 export interface KgSearchFormState {
   author: KgAuthor;
   page: number;

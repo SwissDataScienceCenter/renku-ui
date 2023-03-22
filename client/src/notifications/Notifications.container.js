@@ -168,7 +168,7 @@ class NotificationsMenu extends Component {
 
   markAllRead() { this.coordinator.markAllRead(); }
 
-  mapStateToProps(state, ownProps) {
+  mapStateToProps(state) {
     return {
       handlers: this.handlers,
       notifications: state.stateModel.notifications.all,
@@ -208,7 +208,7 @@ class NotificationsPage extends Component {
 
   markAllRead() { this.coordinator.markAllRead(); }
 
-  mapStateToProps(state, ownProps) {
+  mapStateToProps(state) {
     return {
       handlers: this.handlers,
       notifications: state.stateModel.notifications.all,

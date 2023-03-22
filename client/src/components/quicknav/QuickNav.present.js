@@ -31,7 +31,7 @@ class QuickNavPresent extends Component {
     this.onSectionTitle = this.doSectionTitle.bind(this);
   }
 
-  doRenderSuggestion(suggestion, { query, isHighlighted }) {
+  doRenderSuggestion(suggestion, { isHighlighted }) {
     const style = { padding: "5px 0", borderBottom: "1px solid #e1e4e8" };
 
     if (suggestion.type === "last-queries") {

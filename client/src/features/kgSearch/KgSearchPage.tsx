@@ -34,10 +34,13 @@ import QuickNav from "../../components/quicknav";
 import AppContext from "../../utils/context/appContext";
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
 
+
+/* eslint-disable @typescript-eslint/ban-types */
+
 interface SearchPageProps {
   isLoggedUser: boolean;
   userName?: string;
-  model: any;
+  model: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 interface ModalFilterProps {
@@ -85,8 +88,9 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(true);
   const { client } = useContext(AppContext);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const user = useSelector((state: any) => state.stateModel.user);
-  let searchRequest = {
+  const searchRequest = {
     phrase,
     sort,
     page,
@@ -119,6 +123,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
     </>
   );
 
+  // eslint-disable-next-line
   // @ts-ignore
   const searchNav = <QuickNav client={client} model={model} user={user} />;
   return (

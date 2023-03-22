@@ -27,7 +27,9 @@
 const FAKE = {
   url: "https://12345abcde@sentry.dev.renku.ch/5",
   namespace: "fake_namespace",
-  promise: new Promise(() => { }),
+  promise: new Promise(() => {
+    // eslint-disable-line @typescript-eslint/no-empty-function
+  }),
   version: "0.0",
 };
 
@@ -36,7 +38,7 @@ describe("Sentry settings", () => {
   let Sentry;
   beforeEach(() => {
     jest.isolateModules(() => {
-      Sentry = require("./Sentry").Sentry;
+      Sentry = require("./Sentry").Sentry; // eslint-disable-line @typescript-eslint/no-var-requires
     });
   });
 
@@ -89,7 +91,7 @@ describe("Helper functions", () => {
   let getRelease;
   beforeEach(() => {
     jest.isolateModules(() => {
-      getRelease = require("./Sentry").getRelease;
+      getRelease = require("./Sentry").getRelease; // eslint-disable-line @typescript-eslint/no-var-requires
     });
   });
 

@@ -35,7 +35,7 @@ function CenteredLoader() {
 }
 
 interface CloseModalProps {
-  closeModal: Function;
+  closeModal: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
 interface ModalProps extends CloseModalProps {

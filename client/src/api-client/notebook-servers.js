@@ -52,7 +52,7 @@ function addNotebookServersMethods(client) {
       headers,
       queryParams: parameters
     }, "text")
-      .then(resp => {
+      .then(() => {
         return true;
       });
   };

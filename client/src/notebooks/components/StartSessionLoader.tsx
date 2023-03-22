@@ -16,13 +16,17 @@
  * limitations under the License.
  */
 
-import { NotebooksHelper } from "../Notebooks.state";
 import React, { useEffect, useState } from "react";
-import ProgressStepsIndicator, { StatusStepProgressBar } from "../../components/progress/ProgressSteps";
 import { RootStateOrAny, useSelector } from "react-redux";
+
+import { NotebooksHelper } from "../Notebooks.state";
+import ProgressStepsIndicator, { StatusStepProgressBar } from "../../components/progress/ProgressSteps";
 import { GoBackButton } from "../../components/buttons/Button";
 import { ProgressStyle, ProgressType } from "../../components/progress/Progress";
 import { getSessionRunningByProjectName } from "../../utils/helpers/SessionFunctions";
+
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface CIStatus {
   ongoing: boolean;
@@ -77,7 +81,7 @@ function StartNotebookAutostartLoader(props: StartNotebookAutostartLoaderProps) 
   ]);
 
   useEffect(() => {
-    let fetched = !notebooks.fetched ? [] : Object.keys(fetching).filter((k ) => {
+    const fetched = !notebooks.fetched ? [] : Object.keys(fetching).filter((k ) => {
       const key = k as keyof StatusFetching;
       return fetching[key];
     });

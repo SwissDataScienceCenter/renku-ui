@@ -106,7 +106,9 @@ describe("rendering", () => {
       // * fix for tooltips https://github.com/reactstrap/reactstrap/issues/773#issuecomment-357409863
       document.body.appendChild(div);
       const root = createRoot(div);
-      const branches = { all: { standard: [] }, fetch: () => { } };
+      const branches = { all: { standard: [] }, fetch: () => {
+        // eslint-disable-line @typescript-eslint/no-empty-function
+      } };
       await act(async () => {
         root.render(
           <MemoryRouter>
@@ -150,8 +152,12 @@ describe("rendering", () => {
 
 describe("rendering pdf -- console suppressed!", () => {
   beforeEach(() => {
-    jest.spyOn(console, "log").mockImplementation(() => {});
-    jest.spyOn(console, "error").mockImplementation(() => {});
+    jest.spyOn(console, "log").mockImplementation(() => {
+      // eslint-disable-line @typescript-eslint/no-empty-function
+    });
+    jest.spyOn(console, "error").mockImplementation(() => {
+      // eslint-disable-line @typescript-eslint/no-empty-function
+    });
   });
 
   const filePdf = {

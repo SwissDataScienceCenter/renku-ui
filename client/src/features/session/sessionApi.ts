@@ -40,7 +40,7 @@ export const sessionApi = createApi({
         };
       },
     }),
-    getLogs: builder.query<any, GetLogsArgs>({
+    getLogs: builder.query<any, GetLogsArgs>({ // eslint-disable-line @typescript-eslint/no-explicit-any
       query: (args) => {
         return {
           url: `logs/${args.serverName}`,

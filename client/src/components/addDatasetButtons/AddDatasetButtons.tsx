@@ -27,7 +27,7 @@ import { Button, ButtonGroup } from "../../utils/ts-wrappers";
 
 export interface AddDatasetButtonsProps {
   optionSelected: "addDataset" | "importDataset";
-  toggleNewDataset? : Function;
+  toggleNewDataset? : Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
 const AddDatasetButtons = ({ optionSelected, toggleNewDataset }: AddDatasetButtonsProps) => {

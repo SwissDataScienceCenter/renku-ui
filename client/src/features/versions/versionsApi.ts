@@ -20,6 +20,9 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
 import { NotebooksVersion, NotebooksVersionResponse } from "./versions";
 
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export const versionsApi = createApi({
   reducerPath: "versions",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/" }),
@@ -27,7 +30,7 @@ export const versionsApi = createApi({
   keepUnusedDataFor: 0,
   endpoints: (builder) => ({
     getNotebooks: builder.query<NotebooksVersion, any>({
-      query: (args) => {
+      query: () => {
         return {
           url: "notebooks/version",
         };
@@ -47,7 +50,7 @@ export const versionsApi = createApi({
             (singleVersion?.data?.cloudstorageEnabled?.s3 ?? false)
         } as NotebooksVersion;
       },
-      transformErrorResponse: (baseQueryReturnValue, meta, arg) => {
+      transformErrorResponse: () => {
         return {
           name: "error",
           version: "unavailable",

@@ -16,14 +16,13 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { Link } from "react-router-dom";
 import { Fragment, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { Badge, PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-const Link = require("react-router-dom").Link;
 
 import { ListElementProps } from "./List.d";
-import "./ListBar.scss";
 import { ExternalLink } from "../ExternalLinks";
 import { TimeCaption } from "../TimeCaption";
 import VisibilityIcon from "../entities/VisibilityIcon";
@@ -39,6 +38,11 @@ import { getStatusObject } from "../../notebooks/components/SessionListStatus";
 import type { SessionRunningStatus } from "../../notebooks/components/SessionListStatus";
 import { SessionButton } from "../../features/session/components/SessionButtons";
 import { Notebook } from "../../notebooks/components/Session";
+
+
+import "./ListBar.scss";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /** Helper function for formatting the resource list */
 interface ResourceListProps {
@@ -154,7 +158,7 @@ interface ListBarSessionProps extends ListElementProps {
   fullPath: string;
   gitUrl: string;
   notebook: Notebook["data"];
-  showLogs: Function;
+  showLogs: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
 function ListBarSession({

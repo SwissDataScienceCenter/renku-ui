@@ -45,6 +45,9 @@ import InformativeIcon from "../components/InformativeIcon";
 
 /** BROWSER **/
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
+
 interface WorkflowsTreeBrowserProps {
   ascending: boolean;
   expanded: string[];
@@ -310,9 +313,7 @@ function WorkflowDetail({
           backElement={backElement}
           fullPath={fullPath}
           setDetailExpanded={setDetailExpanded}
-          waiting={waiting}
           workflow={workflow}
-          workflowId={workflowId}
           workflows={workflows}
         />
       </TreeDetails>
@@ -363,14 +364,12 @@ interface WorkflowTreeDetailsProps {
   backElement: React.ReactNode;
   fullPath: string;
   setDetailExpanded: Function;
-  waiting: boolean;
   workflow: Record<string, any>;
-  workflowId: string;
   workflows: Record<string, any>;
 }
 
 function WorkflowTreeDetail({
-  backElement, fullPath, setDetailExpanded, waiting, workflow, workflowId, workflows
+  backElement, fullPath, setDetailExpanded, workflow, workflows
 }: WorkflowTreeDetailsProps) {
   const details = workflow.details ? workflow.details : {};
   const isComposite = details.type === "Plan" ? false : true;
@@ -532,12 +531,14 @@ function WorkflowDetailVisualizer({
       (w: Record<string, any>) => childrenWorkflowsIds.includes(w.id)
     );
     const childrenWorkflowsElements = childrenWorkflowsObjects.map((w: any) => {
-      let newProps: Record<string, any> = {
+      const newProps: Record<string, any> = {
         embed: true,
         expanded: [],
         items: workflows.list,
         uniqueId: `wf-children-details-${w.workflowId}`,
-        toggleExpanded: () => { }
+        toggleExpanded: () => {
+          // eslint-disable-line @typescript-eslint/no-empty-function
+        }
       };
       return (<TreeElement key={"wf-children-details-" + w.workflowId} {...w} {...newProps} />);
     });
@@ -557,7 +558,7 @@ function WorkflowDetailVisualizer({
           <Row className="mt-2">
             <Col xs={12} lg={5}>
               <VisualizerMappings data={details.mappings} expanded={expanded}
-                setDetailExpanded={setDetailExpanded} workflows={workflows} />
+                setDetailExpanded={setDetailExpanded} />
             </Col>
             <Col xs={12} lg={7}>
               <VisualizerMappingExpanded data={expanded} workflows={workflows} />
@@ -598,11 +599,10 @@ interface VisualizerMappingsProps {
   data: Record<string, any>[]
   expanded: Record<string, any>
   setDetailExpanded: Function;
-  workflows: Record<string, any>;
 }
 
 function VisualizerMappings({
-  data, expanded, setDetailExpanded, workflows
+  data, expanded, setDetailExpanded
 }: VisualizerMappingsProps) {
   if (!data?.length)
     return (<p className="m-2"><UnavailableDetail /></p>);
@@ -632,7 +632,7 @@ function VisualizerLinks({
   if (!data?.length)
     return (<p className="m-2"><UnavailableDetail /></p>);
 
-  let links = data.map((t: any, num: number) => {
+  const links = data.map((t: any, num: number) => {
     const targets = t.sinks.map((target: any, targetCounter: number) => {
       const targetKey = simpleHash(target.id + target.name + num + targetCounter);
       return (<VisualizerLocalResource key={targetKey} data={target} workflows={workflows} />);
@@ -713,7 +713,7 @@ function VisualizerCommandEntity({ element, expanded, setDetailExpanded }: Visua
   const elemClass = (expanded.type === element.type && expanded.name === element.name) ?
     "selected" : "";
   let valueClass = "";
-  let link: React.ReactNode = null;
+  const link: React.ReactNode = null;
   if (element.encoding_format && !element.exists)
     valueClass = "text-rk-text-light";
   return (

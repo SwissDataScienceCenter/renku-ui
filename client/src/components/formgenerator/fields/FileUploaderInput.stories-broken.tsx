@@ -17,6 +17,7 @@
  */
 import * as React from "react";
 import { Story } from "@storybook/react";
+
 import FileUploaderInput from "./FileUploaderInput";
 
 export default {
@@ -26,7 +27,7 @@ export default {
   },
 };
 
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Template: Story<any> = (args) => <FileUploaderInput {...args} />;
 
 export const Default = Template.bind({});

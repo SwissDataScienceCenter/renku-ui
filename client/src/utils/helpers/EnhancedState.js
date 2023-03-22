@@ -37,7 +37,7 @@ import displaySlice from "../../features/display/displaySlice";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import workflowsSlice from "../../features/workflows/WorkflowsSlice";
 
-function createStore(renkuStateModelReducer, _name = "renku") {
+function createStore(renkuStateModelReducer) {
   return createStoreWithEnhancers(renkuStateModelReducer);
 }
 

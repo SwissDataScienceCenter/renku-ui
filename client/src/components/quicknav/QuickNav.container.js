@@ -99,9 +99,13 @@ const QuickNavContainerWithRouter = ({ user }) => {
     history.push("/search");
   };
 
-  const onSuggestionsFetchRequested = () => {};
+  const onSuggestionsFetchRequested = () => {
+    // eslint-disable-line @typescript-eslint/no-empty-function
+  };
 
-  const onSuggestionsClearRequested = () => {};
+  const onSuggestionsClearRequested = () => {
+    // eslint-disable-line @typescript-eslint/no-empty-function
+  };
 
   const onChange = (event, { newValue }) => {
     setCurrentPhrase(newValue);
@@ -123,7 +127,9 @@ const QuickNavContainerWithRouter = ({ user }) => {
     }
   };
 
-  const onSuggestionHighlighted = () => {};
+  const onSuggestionHighlighted = () => {
+    // eslint-disable-line @typescript-eslint/no-empty-function
+  };
 
   const callbacks = {
     onChange,

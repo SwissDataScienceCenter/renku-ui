@@ -250,7 +250,7 @@ function ProjectListUsersFilter(props) {
   return (list);
 }
 
-function verifyRules(params, searchInMap, sectionsMap) {
+function verifyRules(params, searchInMap) {
   if (params.searchIn === searchInMap.projects.value || !params.searchIn) {
     if (params.query && params.query.length < 3)
       return "You can either leave the filter empty to browse all projects or enter at least 3 characters to filter.";

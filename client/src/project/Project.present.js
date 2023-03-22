@@ -559,10 +559,10 @@ class ProjectViewOverview extends Component {
         </Col>
         <Col key="content" sm={12} md={10} data-cy="project-overview-content">
           <Switch>
-            <Route exact path={this.props.baseUrl} render={props => {
+            <Route exact path={this.props.baseUrl} render={() => {
               return <ProjectViewGeneral readme={this.props.data.readme} {...this.props} />;
             }} />
-            <Route exact path={this.props.statsUrl} render={props =>
+            <Route exact path={this.props.statsUrl} render={() =>
               <ProjectOverviewStats
                 projectCoordinator={projectCoordinator}
                 branches={this.props.branches.standard}
@@ -576,7 +576,7 @@ class ProjectViewOverview extends Component {
                 projectCoordinator={projectCoordinator}
               />}
             />
-            <Route exact path={this.props.overviewStatusUrl} render={props =>
+            <Route exact path={this.props.overviewStatusUrl} render={() =>
               <ProjectOverviewVersion {...this.props} isLoading={isRequestPending(this.props, "readme")} />
             } />
           </Switch>
@@ -778,7 +778,7 @@ function ProjectViewDatasets(props) {
     <ProjectDatasetLockAlert lockStatus={props.lockStatus} />
     <Switch>
       <Route path={props.newDatasetUrl}
-        render={p =>[
+        render={() =>[
           <Col key="btn" md={12}>
             <GoBackButton data-cy="go-back-dataset" label="Back to list" url={props.datasetsUrl}/>
           </Col>,
@@ -797,7 +797,7 @@ function ProjectViewDatasets(props) {
         </Col>,
         props.datasetView(p, !kgDown, props.location)
       ]} />
-      <Route exact path={props.datasetsUrl} render={p =>
+      <Route exact path={props.datasetsUrl} render={() =>
         <ProjectDatasetsNav {...props} />
       }/>
     </Switch>
@@ -852,12 +852,12 @@ const ProjectSessions = (props) => {
     <Col key="content" xs={12}>
       <Switch>
         <Route exact path={props.notebookServersUrl}
-          render={p => <>
+          render={() => <>
             {backButton}
             <ProjectNotebookServers {...props} />
           </>} />
         <Route path={props.launchNotebookUrl}
-          render={p => (
+          render={() => (
             <ProjectStartNotebookServer
               key="startNotebookForm" {...props} backUrl={backUrl} defaultBackButton={backButton} />
           )} />
@@ -1038,12 +1038,12 @@ function ProjectSettings(props) {
         <Col key="content" sm={12} md={10}>
           <Switch>
             <Route exact path={props.settingsUrl}
-              render={renderProps => {
+              render={() => {
                 return <ProjectSettingsGeneral {...props} />;
               }}
             />
             <Route exact path={props.settingsSessionsUrl}
-              render={renderProps => {
+              render={() => {
                 return <ProjectSettingsSessions {...props} />;
               }}
             />

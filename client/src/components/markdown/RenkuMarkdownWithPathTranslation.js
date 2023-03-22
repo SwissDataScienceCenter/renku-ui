@@ -164,7 +164,7 @@ function RenkuMarkdownWithPathTranslation(props) {
           fetchedFiles.push(
             props.client.getRepositoryFile(props.projectId, cleanPath, branch, "base64")
               .then(d => { block.data = d; return block; })
-              .catch(error => { block.isOpened = false; block.filePreview = false; return block; })
+              .catch(() => { block.isOpened = false; block.filePreview = false; return block; })
           );
         }
       }

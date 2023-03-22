@@ -31,6 +31,8 @@ import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { IconLink } from "./ExternalLinks";
 
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 interface TreeBrowserProps {
   emptyElement: React.ReactNode;
   expanded: string[];
@@ -38,7 +40,7 @@ interface TreeBrowserProps {
   items: Record<string, any>;
   selected: string;
   shrunk: boolean;
-  toggleExpanded: Function;
+  toggleExpanded: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
 function TreeBrowser({
@@ -48,7 +50,7 @@ function TreeBrowser({
     return (<>{emptyElement}</>);
 
   const treeElements = items.map((item: any) => {
-    let newProps: Record<string, any> = { expanded, highlightedProp, items, selected, shrunk, toggleExpanded };
+    const newProps: Record<string, any> = { expanded, highlightedProp, items, selected, shrunk, toggleExpanded };
     return (<TreeElement key={item.uniqueId} {...item} {...newProps} />);
   });
 
@@ -109,12 +111,12 @@ function TreeElement({
     }
   }
 
-  let childrenItems = items.filter((item: any) => children.includes(item.id));
+  const childrenItems = items.filter((item: any) => children.includes(item.id));
   let childrenNodes: React.ReactNode[] = [];
   if (childrenItems.length && expanded.includes(uniqueId)) {
     childrenNodes = childrenItems.map((item: any) => {
       const childUniqueId = simpleHash(uniqueId + item.uniqueId);
-      let newProps: Record<string, any> = {
+      const newProps: Record<string, any> = {
         expanded, highlightedProp, items, indentation: indentation + 1, selected, shrunk,
         toggleExpanded, uniqueId: childUniqueId
       };

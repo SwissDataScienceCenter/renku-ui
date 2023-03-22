@@ -22,19 +22,17 @@
  *  Automated.tsx
  *  Automated Project component
  */
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 import { Col, Row } from "../../../utils/ts-wrappers";
 import { Alert, Button, Fade, Modal, ModalBody, ModalHeader } from "../../../utils/ts-wrappers";
-
 import { ErrorAlert, WarnAlert } from "../../../components/Alert";
 import { Url } from "../../../utils/helpers/url";
 import { Loader } from "../../../components/Loader";
 
-const Link = require("react-router-dom").Link;
 
 interface Project {
   title?: string;
@@ -57,11 +55,11 @@ interface AutomatedData extends Project {
 
 interface AutomatedProps {
   automated: AutomatedData;
-  removeAutomated: Function;
+  removeAutomated: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
 interface AutomatedModalProps {
-  removeAutomated: Function;
+  removeAutomated: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
 function Automated({ automated, removeAutomated }: AutomatedProps) {

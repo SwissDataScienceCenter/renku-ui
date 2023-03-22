@@ -26,6 +26,7 @@ import { useGetMemberProjectsQuery } from "../../features/projects/ProjectsApi";
  *  hook to fetch member projects
  */
 function useGetUserProjects() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [projectsMember, setProjectsMembers] = useState<any[]>([]);
   const [endCursor, setEndCursor] = useState("");
   const [isFetchingProjects, setIsFetchingProjects] = useState(false);

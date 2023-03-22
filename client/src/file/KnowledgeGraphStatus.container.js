@@ -89,7 +89,7 @@ class KnowledgeGraphStatus extends Component {
 
   createWebhook(e) {
     this.setState({ webhookJustCreated: true });
-    this.props.createGraphWebhook(e).then((data) => {
+    this.props.createGraphWebhook(e).then(() => {
       if (this._isMounted) {
         // remember that the graph status endpoint is not updated instantly, better adding a short timeout
         setTimeout(() => {

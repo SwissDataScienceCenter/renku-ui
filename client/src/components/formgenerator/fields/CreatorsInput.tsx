@@ -45,7 +45,7 @@ export interface CreatorInputProps {
   label: string,
   value?: Creator[],
   alert?: string,
-  setInputs: Function,
+  setInputs: Function, // eslint-disable-line @typescript-eslint/ban-types
   help?: ReactNode,
   disabled?: boolean
 }
@@ -53,8 +53,8 @@ export interface CreatorInputProps {
 interface CreatorFormProps {
   creator: Creator;
   disabled: boolean;
-  setCreator: Function;
-  deleteCreator: Function;
+  setCreator: Function; // eslint-disable-line @typescript-eslint/ban-types
+  deleteCreator: Function; // eslint-disable-line @typescript-eslint/ban-types
   default: boolean;
 }
 

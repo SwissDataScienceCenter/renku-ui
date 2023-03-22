@@ -157,7 +157,7 @@ class NamespacesAutosuggest extends Component {
     this.setState({ suggestions: [] });
   };
 
-  onSuggestionSelected = (event, { suggestionValue, method }) => {
+  onSuggestionSelected = (event, { suggestionValue }) => {
     this.setState({ value: suggestionValue });
     const namespace = this.props.namespaces.list.filter(ns => ns.full_path === suggestionValue)[0];
     this.props.handlers.setNamespace(namespace);
@@ -208,7 +208,7 @@ class NamespacesAutosuggest extends Component {
         getSectionSuggestions={this.getSectionSuggestions}
         renderSuggestion={this.renderSuggestion}
         renderSectionTitle={this.renderSectionTitle}
-        shouldRenderSuggestions={(v) => true}
+        shouldRenderSuggestions={() => true}
         inputProps={inputProps}
         theme={theme}
       />

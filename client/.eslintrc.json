@@ -15,10 +15,11 @@
   },
   "extends": [
     "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
     "plugin:jest/recommended"
   ],
-  "plugins": ["react", "react-hooks", "jest", "spellcheck"],
+  "plugins": ["react", "react-hooks", "jest", "spellcheck", "@typescript-eslint"],
   "settings": {
     "react": {
       "version": "detect"
@@ -127,6 +128,7 @@
           "autostart",
           "autosuggest",
           "backend",
+          "bioconductor",
           "bool",
           "borderless",
           "calc",
@@ -202,6 +204,7 @@
           "nowrap",
           "nteract",
           "nullable",
+          "oauth2",
           "objectstores",
           "onloadend",
           "onopen",
@@ -213,6 +216,7 @@
           "prepend",
           "presentational",
           "profiler",
+          "proxying",
           "Pupikofer",
           "pygments",
           "react",

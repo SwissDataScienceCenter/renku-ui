@@ -34,6 +34,9 @@ import KgActivationHeader from "./components/KgActivationHeader";
 import ActivationProgress from "./components/ActivationProgress";
 import useGetInactiveProjects from "../../utils/customHooks/UseGetInactiveProjects";
 
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export interface InactiveKgProjects {
   id: number;
   title: string;
@@ -78,14 +81,14 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
 
 
   const onMasterCheck = (isChecked: boolean) => {
-    let tempList = projectList.map((project) => {
+    const tempList = projectList.map((project) => {
       return { ...project, selected: isChecked };
     });
     dispatch(addFullList(tempList));
   };
 
   const onItemCheck = (isChecked: boolean, item: InactiveKgProjects) => {
-    let tempList = projectList.map((project) => {
+    const tempList = projectList.map((project) => {
       if (project.id === item.id)
         return { ...project, selected: isChecked };
       return project;

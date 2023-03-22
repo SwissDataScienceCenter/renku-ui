@@ -92,7 +92,7 @@ function CentralContentContainer(props) {
         <Route exact path="/login" render={
           p => <ContainerWrap><Login key="login" {...p} {...props} /></ContainerWrap>} />
         <Route exact path={Url.get(Url.pages.landing)} render={
-          p => (props.user.logged) ?
+          () => (props.user.logged) ?
             <ContainerWrap>
               <Dashboard model={props.model} user={props.user} client={props.client} />
             </ContainerWrap> : null
