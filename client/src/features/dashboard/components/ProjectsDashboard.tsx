@@ -225,7 +225,7 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
     getProjectCurrentSessions();
   }, [currentSessions]); // eslint-disable-line
 
-  if (items) {
+  if (items?.length) {
     const element = items.map((item: SessionProject) => {
       return <>
         <EnvironmentLogs
