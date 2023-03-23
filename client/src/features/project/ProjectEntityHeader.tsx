@@ -27,12 +27,13 @@ type ProjectEntityHeaderProps = EntityHeaderProps & { isInKg: boolean };
 function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
   const { fullPath } = props;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  const { data: _kgData } = useProjectMetadataQuery(
+  const { data: kgData, isError, isLoading } = useProjectMetadataQuery(
     { projectPath: fullPath },
     { skip: !fullPath || props.isInKg != true }
   );
-  return <EntityHeader {...props} />;
+  if (isError) return <EntityHeader {...props} />;
+  const description = { value: kgData?.description ?? "", isLoading };
+  return <EntityHeader {...props} description={description} />;
 }
 
 export default ProjectEntityHeader;
