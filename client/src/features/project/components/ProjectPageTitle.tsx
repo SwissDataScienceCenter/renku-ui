@@ -19,7 +19,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 
-import { useProjectJsonLdQuery, useProjectMetadataQuery } from "../projects/ProjectKgApi";
+import { useProjectJsonLdQuery, useProjectMetadataQuery } from "../../projects/ProjectKgApi";
 
 type ProjectJsonLdProps = {
   isInKg: boolean;

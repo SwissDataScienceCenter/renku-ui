@@ -18,9 +18,9 @@
 
 import * as React from "react";
 
-import { useProjectMetadataQuery } from "../projects/ProjectKgApi";
-import EntityHeader from "../../components/entityHeader/EntityHeader";
-import type { EntityHeaderProps } from "../../components/entityHeader/EntityHeader";
+import { useProjectMetadataQuery } from "../../projects/ProjectKgApi";
+import EntityHeader from "../../../components/entityHeader/EntityHeader";
+import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
 
 type ProjectEntityHeaderProps = EntityHeaderProps & { isInKg: boolean };
 

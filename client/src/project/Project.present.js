@@ -67,8 +67,8 @@ import { ThrottledTooltip } from "../components/Tooltip";
 import { SshModal } from "../components/ssh/ssh";
 import GitLabConnectButton, { externalUrlToGitLabIdeUrl } from "./components/GitLabConnect";
 import { NotebooksCoordinator } from "../notebooks";
-import ProjectPageTitle from "../features/project/ProjectPageTitle";
 import { ProjectEntityHeader, ProjectFileLineage, ProjectFileView } from "../features/project";
+import ProjectPageTitle from "../features/project/components/ProjectPageTitle";
 
 import "./Project.css";
 
