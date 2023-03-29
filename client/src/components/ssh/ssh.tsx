@@ -189,8 +189,8 @@ function SshModal() {
         <p>
           To update your project, go to{" "}
           <Link to={updateUrl} onClick={() => closeModal()}>Overview Status</Link>
-          {" "}then click again on the <i>Connect with SSH</i> button to view the commands to
-          connect remotely via SSH.
+          {" "}and update the Template Version. Then, click again on the <i>Connect with SSH</i> button to view
+          the commands to connect remotely via SSH.
         </p>
         <InfoAlert dismissible={false} timeout={0}>
           Still not working? This might be because your project has a custom template.
