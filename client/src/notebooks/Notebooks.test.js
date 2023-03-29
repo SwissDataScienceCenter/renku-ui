@@ -69,6 +69,14 @@ const simplifiedGlobalOptions = {
 describe("notebook server clean annotation", () => {
   const domain = ExpectedAnnotations.domain;
   const baseAnnotations = ExpectedAnnotations[domain].default;
+
+  const namespace = "myCoolNamespace";
+  const branch = "anotherBranch";
+  const projectName = "funkyProject";
+  const repository = `https://fake.repo/${namespace}/${projectName}`;
+  const defaultImageUsedText = "True";
+  const defaultImageUsedBool = true;
+
   it("renku.io default", () => {
     const fakeAnswer = {};
     const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, domain);
@@ -76,13 +84,6 @@ describe("notebook server clean annotation", () => {
     expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
   });
   it("renku.io mixed", () => {
-    const namespace = "myCoolNamespace";
-    const branch = "anotherBranch";
-    const projectName = "funkyProject";
-    const repository = `https://fake.repo/${namespace}/${projectName}`;
-    const defaultImageUsedText = "True";
-    const defaultImageUsedBool = true;
-
     const fakeAnswer = {
       [`${domain}/namespace`]: namespace,
       [`${domain}/branch`]: branch,
@@ -91,6 +92,35 @@ describe("notebook server clean annotation", () => {
       [`${domain}/default_image_used`]: defaultImageUsedText,
     };
     const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, domain);
+    const expectedAnnotations = {
+      ...baseAnnotations, namespace, branch, projectName, repository, default_image_used: defaultImageUsedBool
+    };
+    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
+  });
+  it("renku.io occasionally missing.", () => {
+    const fakeAnswer = {
+      [`${domain}/namespace`]: namespace,
+      branch: branch,
+      [`${domain}/projectName`]: projectName,
+      repository: repository,
+      default_image_used: defaultImageUsedText,
+    };
+    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, domain);
+    const expectedAnnotations = {
+      ...baseAnnotations, namespace, branch, projectName, repository, default_image_used: defaultImageUsedBool
+    };
+    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
+  });
+  it("renku.io double-clean", () => {
+    const fakeAnswer = {
+      [`${domain}/namespace`]: namespace,
+      [`${domain}/branch`]: branch,
+      [`${domain}/projectName`]: projectName,
+      [`${domain}/repository`]: repository,
+      [`${domain}/default_image_used`]: defaultImageUsedText,
+    };
+    const firstPassAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, domain);
+    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(firstPassAnnotations, domain);
     const expectedAnnotations = {
       ...baseAnnotations, namespace, branch, projectName, repository, default_image_used: defaultImageUsedBool
     };

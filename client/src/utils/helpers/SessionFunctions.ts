@@ -32,7 +32,7 @@ function getSessionRunningByProjectName(sessions: Record<string, Session>, names
   let sessionRunning: boolean | unknown = false;
   Object.keys(sessions).forEach( (sessionName: string) => {
     const session = sessions[sessionName];
-    const annotations = NotebooksHelper.cleanAnnotations(session.annotations, "renku.io") as any;
+    const annotations = NotebooksHelper.cleanAnnotations(session.annotations) as any;
     if (annotations["namespace"] === namespace && annotations["projectName"] === projectName)
       sessionRunning = session;
   });
@@ -49,7 +49,7 @@ function getFormattedSessionsAnnotations(sessions: Record<string, Session>) {
   const sessionsFormatted: any[] = [];
   for (const sessionKey of Object.keys(sessions)) {
     const session = sessions[sessionKey];
-    const annotations = NotebooksHelper.cleanAnnotations(session.annotations, "renku.io") as NotebookAnnotations;
+    const annotations = NotebooksHelper.cleanAnnotations(session.annotations) as NotebookAnnotations;
     sessionsFormatted.push({ ...session, annotations });
   }
   return sessionsFormatted;
@@ -75,7 +75,7 @@ function getSessionRunning(sessions: Record<string, any>, startSessionUrl: strin
   let sessionRunning = false;
   Object.keys(sessions).forEach( sessionName => {
     const session = sessions[sessionName];
-    const annotations = NotebooksHelper.cleanAnnotations(session.annotations, "renku.io") as Record <string, string>;
+    const annotations = NotebooksHelper.cleanAnnotations(session.annotations) as Record <string, string>;
     const autoStartUrl = Url.get(Url.pages.project.session.autostart, {
       namespace: annotations["namespace"],
       path: annotations["projectName"],

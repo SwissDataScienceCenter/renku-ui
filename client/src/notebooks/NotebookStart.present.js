@@ -828,7 +828,7 @@ function StartNotebookOptions(props) {
   if (Object.keys(all).length > 0) {
     const currentCommit = filters.commit?.id;
     const currentNotebook = Object.keys(all).find(k => {
-      const annotations = NotebooksHelper.cleanAnnotations(all[k].annotations, "renku.io");
+      const annotations = NotebooksHelper.cleanAnnotations(all[k].annotations);
       if (annotations["commit-sha"] === currentCommit)
         return true;
       return false;
@@ -875,7 +875,7 @@ class StartNotebookOptionsRunning extends Component {
 
     const status = notebook.status?.state;
     if (status === SessionStatus.running) {
-      const annotations = NotebooksHelper.cleanAnnotations(notebook.annotations, "renku.io");
+      const annotations = NotebooksHelper.cleanAnnotations(notebook.annotations);
       const localUrl = Url.get(Url.pages.project.session.show, {
         namespace: annotations["namespace"],
         path: annotations["projectName"],
@@ -1234,7 +1234,7 @@ class CheckNotebookIcon extends Component {
     if (notebook) {
       const status = notebook.status?.state;
       if (status === SessionStatus.running) {
-        const annotations = NotebooksHelper.cleanAnnotations(notebook.annotations, "renku.io");
+        const annotations = NotebooksHelper.cleanAnnotations(notebook.annotations);
         const sessionUrl = Url.get(Url.pages.project.session.show, {
           namespace: annotations["namespace"],
           path: annotations["projectName"],
