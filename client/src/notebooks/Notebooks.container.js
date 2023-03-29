@@ -612,7 +612,7 @@ class StartNotebookServer extends Component {
           if (anyNotebook && validNotebooks) {
             // get the first session with a valid commit -- that should almost always be the case for running sessions
             Object.keys(notebooks.all).find(k => {
-              const annotations = NotebooksHelper.cleanAnnotations(notebooks.all[k].annotations, "renku.io");
+              const annotations = NotebooksHelper.cleanAnnotations(notebooks.all[k].annotations);
               const targetCommit = commits.find(commit => commit.id === annotations["commit-sha"]);
               if (targetCommit) {
                 commit = targetCommit;
@@ -758,7 +758,7 @@ class StartNotebookServer extends Component {
   }
 
   redirectToShowSession(data, state, history) {
-    const annotations = NotebooksHelper.cleanAnnotations(data.annotations, "renku.io");
+    const annotations = NotebooksHelper.cleanAnnotations(data.annotations);
     const localUrl = Url.get(Url.pages.project.session.show, {
       namespace: annotations["namespace"],
       path: annotations["projectName"],

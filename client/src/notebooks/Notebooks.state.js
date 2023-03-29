@@ -97,12 +97,12 @@ const NotebooksHelper = {
     let cleaned = {};
     const prefix = `${domain}/`;
     ExpectedAnnotations[domain].required.forEach(annotation => {
-      if (annotations[prefix + annotation] !== undefined) {
-        let value = annotations[prefix + annotation];
+      if (annotations[prefix + annotation] !== undefined || annotations[annotation] !== undefined) {
+        let value = annotations[prefix + annotation] ?? annotations[annotation];
         // convert text boolean where a boolean is expected
         if (annotation === "default_image_used") {
-          const origValue = annotations[prefix + annotation];
-          if (origValue && typeof origValue === "string" && origValue.toLowerCase() === "true")
+          const origValue = annotations[prefix + annotation] ?? annotations[annotation];
+          if (origValue && (typeof origValue === "string" && origValue.toLowerCase() === "true") || origValue === true)
             value = true;
           else
             value = false;

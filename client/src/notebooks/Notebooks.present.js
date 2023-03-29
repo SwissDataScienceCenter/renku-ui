@@ -272,7 +272,7 @@ class NotebookServerRow extends Component {
     if (!this.props.annotations)
       return null;
 
-    const annotations = NotebooksHelper.cleanAnnotations(this.props.annotations, "renku.io");
+    const annotations = NotebooksHelper.cleanAnnotations(this.props.annotations);
     const status = this.props.status.state;
     const details = {
       message: this.props.status.message
