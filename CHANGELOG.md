@@ -1,5 +1,16 @@
 # Changes
 
+## [3.4.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.4.0...3.4.1) (2023-03-30)
+
+### Features
+
+* retrieve project metadata from KG on project access ([#2337](https://github.com/SwissDataScienceCenter/renku-ui/issues/2337), [#2414](https://github.com/SwissDataScienceCenter/renku-ui/issues/2414))
+
+### Bug Fixes
+
+* fix the session URL on the dashboard ([#2444](https://github.com/SwissDataScienceCenter/renku-ui/issues/2444))
+
+
 ## [3.4.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.3.0...3.4.0) (2023-03-21)
 
 ### Features

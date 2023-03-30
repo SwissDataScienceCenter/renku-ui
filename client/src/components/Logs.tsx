@@ -297,7 +297,7 @@ const EnvironmentLogsPresent = ({ logs, name, toggleLogs, fetchLogs, annotations
   if (!logs?.show || logs?.show !== name || !logs)
     return null;
 
-  const cleanAnnotations: Record<string, string> = NotebooksHelper.cleanAnnotations(annotations, "renku.io");
+  const cleanAnnotations: Record<string, string> = NotebooksHelper.cleanAnnotations(annotations);
 
   return (
     <Modal

@@ -127,7 +127,7 @@ function SessionButton({
     setSessionStatus(notebook?.status?.state);
   }, [notebook?.status?.state]);
 
-  const cleanAnnotations = NotebooksHelper.cleanAnnotations(notebook.annotations, "renku.io");
+  const cleanAnnotations = NotebooksHelper.cleanAnnotations(notebook.annotations);
   const sessionLink = getShowSessionURL(cleanAnnotations, notebook.name);
   const handleClick = (url: string) => { history.push(url); };
 
