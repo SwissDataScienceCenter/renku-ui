@@ -43,11 +43,9 @@ class Time {
     const date = this.parseDate(inputDate);
     const readableDate = date.toISOString().substring(0, 19).replace("T", " ");
     if (type === "datetime") return readableDate + " " + timeZone;
-    else if (type === "datetime-short")
-      return readableDate.substring(0, 16) + " " + timeZone;
+    else if (type === "datetime-short") return readableDate.substring(0, 16) + " " + timeZone;
     else if (type === "date") return readableDate.substring(0, 10);
-    else if (type === "time")
-      return readableDate.substring(11) + " " + timeZone;
+    else if (type === "time") return readableDate.substring(11) + " " + timeZone;
 
     throw new Error(`Unknown type "${type}"`);
   }
@@ -62,9 +60,7 @@ class Time {
       timeZoneOffsetInHours
     )}`;
 
-    const isoDate = new Date(
-      date.getTime() - date.getTimezoneOffset() * 60000
-    ).toISOString();
+    const isoDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString();
 
     return this.toIsoString(isoDate, timeZone, type);
   }
@@ -85,9 +81,7 @@ class Time {
       "November",
       "December",
     ];
-    return (
-      months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear()
-    );
+    return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
   }
 
   static isSameDay(inputDate1, inputDate2, locale = true) {
@@ -126,12 +120,8 @@ class Time {
       d3FormatString: null,
     }
   ) {
-    if (d3FormatString !== null)
-      return d3TimeFormat.timeFormat(d3FormatString)(dt);
-    return `${dt.toLocaleDateString()} ${dt.toLocaleTimeString(
-      [],
-      localeTimeOptions
-    )}`;
+    if (d3FormatString !== null) return d3TimeFormat.timeFormat(d3FormatString)(dt);
+    return `${dt.toLocaleDateString()} ${dt.toLocaleTimeString([], localeTimeOptions)}`;
   }
 
   /**
@@ -146,12 +136,10 @@ class Time {
     if (currentValue < 60) return `${currentValue} seconds`;
     currentValue = currentValue / 60;
     if (currentValue >= 1 && currentValue < 2) return "1 minute";
-    if (currentValue >= 2 && currentValue < 60)
-      return `${parseInt(currentValue)} minutes`;
+    if (currentValue >= 2 && currentValue < 60) return `${parseInt(currentValue)} minutes`;
     currentValue = currentValue / 60;
     if (currentValue >= 1 && currentValue < 2) return "1 hour";
-    if (currentValue >= 2 && currentValue <= 24)
-      return `${parseInt(currentValue)} hours`;
+    if (currentValue >= 2 && currentValue <= 24) return `${parseInt(currentValue)} hours`;
     return "> 24 hours";
   }
 }
