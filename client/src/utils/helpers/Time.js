@@ -47,7 +47,7 @@ class Time {
     const timeZone = `GMT${timeZoneOffsetInHours >= 0 ? "-" : "+"}${Math.abs(
       timeZoneOffsetInHours
     )}`;
-  
+
     const readableDate = date.toISOString().substring(0, 19).replace("T", " ");
 
     if (type === "datetime") return readableDate;
