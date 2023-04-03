@@ -25,50 +25,69 @@
 
 import * as d3TimeFormat from "d3-time-format";
 
-
 class Time {
   static isDate(date) {
     return date instanceof Date && !isNaN(date);
   }
 
   static parseDate(date) {
-    if (this.isDate(date))
-      return date;
+    if (this.isDate(date)) return date;
 
     const convertedDate = new Date(date);
-    if (this.isDate(convertedDate))
-      return convertedDate;
+    if (this.isDate(convertedDate)) return convertedDate;
 
-    throw (new Error("Invalid date"));
+    throw new Error("Invalid date");
   }
 
-  static toIsoString(inputDate, type = "datetime") {
+  static toIsoString(inputDate, timeZone, type = "datetime") {
     const date = this.parseDate(inputDate);
     const readableDate = date.toISOString().substring(0, 19).replace("T", " ");
-    if (type === "datetime")
-      return readableDate;
+    if (type === "datetime") return readableDate + " " + timeZone;
     else if (type === "datetime-short")
-      return readableDate.substring(0, 16);
-    else if (type === "date")
-      return readableDate.substring(0, 10);
+      return readableDate.substring(0, 16) + " " + timeZone;
+    else if (type === "date") return readableDate.substring(0, 10);
     else if (type === "time")
-      return readableDate.substring(11);
+      return readableDate.substring(11) + " " + timeZone;
 
-    throw (new Error(`Unknown type "${type}"`));
+    throw new Error(`Unknown type "${type}"`);
   }
 
   static toIsoTimezoneString(inputDate, type = "datetime") {
     // add the timezone manually and then convert to ISO string
     const date = this.parseDate(inputDate);
-    const isoDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
-    return this.toIsoString(isoDate, type);
+
+    const timeZoneOffsetInMinutes = date.getTimezoneOffset();
+    const timeZoneOffsetInHours = timeZoneOffsetInMinutes / 60;
+    const timeZone = `GMT${timeZoneOffsetInHours >= 0 ? "-" : "+"}${Math.abs(
+      timeZoneOffsetInHours
+    )}`;
+
+    const isoDate = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000
+    ).toISOString();
+
+    return this.toIsoString(isoDate, timeZone, type);
   }
 
   static getReadableDate(inputDate) {
     const date = this.parseDate(inputDate);
-    let months = ["January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"];
-    return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+    let months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    return (
+      months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear()
+    );
   }
 
   static isSameDay(inputDate1, inputDate2, locale = true) {
@@ -76,13 +95,17 @@ class Time {
     const date2 = this.parseDate(inputDate2);
 
     if (locale) {
-      return date1.getFullYear() === date2.getFullYear() &&
+      return (
+        date1.getFullYear() === date2.getFullYear() &&
         date1.getMonth() === date2.getMonth() &&
-        date1.getDate() === date2.getDate();
+        date1.getDate() === date2.getDate()
+      );
     }
-    return date1.getUTCFullYear() === date2.getUTCFullYear() &&
+    return (
+      date1.getUTCFullYear() === date2.getUTCFullYear() &&
       date1.getUTCMonth() === date2.getUTCMonth() &&
-      date1.getUTCDate() === date2.getUTCDate();
+      date1.getUTCDate() === date2.getUTCDate()
+    );
   }
 
   /**
@@ -96,12 +119,19 @@ class Time {
    *   The d3FormatString should be of the form https://github.com/d3/d3-time-format.
    *   If the d3FormatString is not null, it is used, otherwise, the locale formatting is used
    */
-  static formatDateTime(dt,
-    { localeTimeOptions, d3FormatString } =
-    { localeTimeOptions: { hour: "2-digit", minute: "2-digit" }, d3FormatString: null } ) {
+  static formatDateTime(
+    dt,
+    { localeTimeOptions, d3FormatString } = {
+      localeTimeOptions: { hour: "2-digit", minute: "2-digit" },
+      d3FormatString: null,
+    }
+  ) {
     if (d3FormatString !== null)
       return d3TimeFormat.timeFormat(d3FormatString)(dt);
-    return `${dt.toLocaleDateString()} ${dt.toLocaleTimeString([], localeTimeOptions)}`;
+    return `${dt.toLocaleDateString()} ${dt.toLocaleTimeString(
+      [],
+      localeTimeOptions
+    )}`;
   }
 
   /**
@@ -111,20 +141,15 @@ class Time {
    */
   static getDuration(seconds) {
     let currentValue = parseInt(seconds);
-    if (currentValue < 1)
-      return "< 1 second";
-    if (currentValue === 1)
-      return "1 second";
-    if (currentValue < 60)
-      return `${currentValue} seconds`;
+    if (currentValue < 1) return "< 1 second";
+    if (currentValue === 1) return "1 second";
+    if (currentValue < 60) return `${currentValue} seconds`;
     currentValue = currentValue / 60;
-    if (currentValue >= 1 && currentValue < 2)
-      return "1 minute";
+    if (currentValue >= 1 && currentValue < 2) return "1 minute";
     if (currentValue >= 2 && currentValue < 60)
       return `${parseInt(currentValue)} minutes`;
     currentValue = currentValue / 60;
-    if (currentValue >= 1 && currentValue < 2)
-      return "1 hour";
+    if (currentValue >= 1 && currentValue < 2) return "1 hour";
     if (currentValue >= 2 && currentValue <= 24)
       return `${parseInt(currentValue)} hours`;
     return "> 24 hours";
