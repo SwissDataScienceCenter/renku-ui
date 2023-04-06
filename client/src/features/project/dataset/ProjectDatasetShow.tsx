@@ -5,6 +5,7 @@ import { ACCESS_LEVELS } from "../../../api-client";
 import DatasetView from "../../../dataset/Dataset.present";
 import { Url } from "../../../utils/helpers/url";
 
+import { useGetDatasetFilesQuery } from "../projectCoreApi";
 import type { IDataset, IDatasetFiles, IMigration, StateModelProject } from "../Project.d";
 
 type IDatasetCoordinator = {
@@ -12,7 +13,7 @@ type IDatasetCoordinator = {
   fetchDatasetFilesFromCoreService: (id: string, httpProjectUrl: string, versionUrl: string) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get(key: string): any;
-}
+};
 
 type ProjectDatasetShowProps = {
   datasetCoordinator: unknown;
@@ -44,7 +45,7 @@ type ProjectDatasetViewProps = {
   projectInsideKg: boolean;
   projectPathWithNamespace: string;
   projectsUrl: string;
-}
+};
 
 function findDataset(name: string, datasets: IDataset[]) {
   return datasets.find((d) => d.name === name);
@@ -56,11 +57,20 @@ function findDatasetId(name: string, datasets: IDataset[]) {
 }
 
 function ProjectDatasetView(props: ProjectDatasetViewProps) {
-
-  const [dataset, setDataset] = React.useState<IDataset|undefined>(undefined);
-  const [datasetFiles, setDatasetFiles] = React.useState<IDatasetFiles|undefined>(undefined);
-
+  const [dataset, setDataset] = React.useState<IDataset | undefined>(undefined);
   const migration = props.migration;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const versionUrl = migration.core.versionUrl!;
+  const datasetName = dataset?.name;
+  const {
+    data: datasetFiles,
+    error: filesFetchError,
+    isFetching: isFilesFetching,
+  } = useGetDatasetFilesQuery(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    { git_url: props.httpProjectUrl, name: datasetName!, versionUrl },
+    { skip: !datasetName }
+  );
 
   // Use Effect to calculate dataset
   React.useEffect(() => {
@@ -72,37 +82,10 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
       const currentDataset = props.datasetCoordinator.get("metadata");
       const datasetId = findDatasetId(props.datasetId, props.datasets);
       // fetch dataset data when the need data is ready (datasets list when is insideProject)
-      if (datasetId && props.datasets && (!currentDataset || !currentDataset?.fetching))
-        fetchDatasets(datasetId);
-      else
-        setDataset(currentDataset);
+      if (datasetId && props.datasets && (!currentDataset || !currentDataset?.fetching)) fetchDatasets(datasetId);
+      else setDataset(currentDataset);
     }
-  }, [
-    props.datasetCoordinator,
-    props.datasets,
-    props.datasetId,
-    props.graphStatus ]);
-
-
-  // use effect to calculate files
-  React.useEffect(() => {
-    const fetchFiles = (name: string, httpProjectUrl: string, versionUrl: string) => {
-      props.datasetCoordinator.fetchDatasetFilesFromCoreService(name, httpProjectUrl, versionUrl);
-    };
-
-    if (props.datasetCoordinator && dataset?.identifier !== undefined &&
-      (!datasetFiles || !datasetFiles.fetched)) {
-      const isFilesFetching = props.datasetCoordinator.get("files")?.fetching;
-      if (migration.core.fetched && migration.core.backendAvailable && !isFilesFetching) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const versionUrl = migration.core.versionUrl!;
-        fetchFiles(dataset?.name, props.httpProjectUrl, versionUrl);
-      }
-    }
-  }, [
-    dataset, props.httpProjectUrl, migration.core.backendAvailable, migration.core.fetched,
-    migration.core.versionUrl, props.datasetCoordinator, datasetFiles
-  ]);
+  }, [props.datasetCoordinator, props.datasets, props.datasetId, props.graphStatus]);
 
   const currentDataset = useSelector((state: RootStateOrAny) => state.stateModel.dataset?.metadata);
   React.useEffect(() => {
@@ -110,45 +93,41 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     const currentIdentifier = currentDataset?.identifier;
     if (currentIdentifier === datasetId && currentIdentifier !== dataset?.identifier && !currentDataset.fetching)
       setDataset(currentDataset);
-    if (currentDataset.fetchError && !currentDataset.fetching)
-      setDataset(currentDataset);
-  }, [ currentDataset, dataset, props.datasetId, props.datasets ]);
-
-  const currentFiles = useSelector((state: RootStateOrAny) => state.stateModel.dataset?.files);
-  React.useEffect(() => {
-    if (!currentDataset.fetching && !currentFiles.fetching)
-      setDatasetFiles(currentFiles);
-  }, [ currentDataset.fetching, currentFiles, datasetFiles ]);
-
+    if (currentDataset.fetchError && !currentDataset.fetching) setDataset(currentDataset);
+  }, [currentDataset, dataset, props.datasetId, props.datasets]);
 
   const loadingDatasets = dataset == null || dataset?.fetching || !dataset?.fetched;
-  return <DatasetView
-    client={undefined}
-    dataset={dataset}
-    files={datasetFiles}
-    datasets={props.datasets}
-    fetchError={undefined}
-    fetchedKg={undefined}
-    fileContentUrl={props.fileContentUrl}
-    history={props.history}
-    httpProjectUrl={props.httpProjectUrl}
-    identifier={undefined}
-    insideProject={true}
-    lineagesUrl={props.lineagesUrl}
-    loadingDatasets={loadingDatasets}
-    location={props.location}
-    lockStatus={props.lockStatus}
-    logged={props.logged}
-    maintainer={props.maintainer}
-    migration={migration}
-    model={props.model}
-    overviewStatusUrl={props.overviewStatusUrl}
-    progress={undefined}
-    projectId={props.projectId}
-    projectInsideKg={props.projectInsideKg}
-    projectPathWithNamespace={props.projectPathWithNamespace}
-    projectsUrl={props.projectsUrl}
-  />;
+  return (
+    <DatasetView
+      client={undefined}
+      dataset={dataset}
+      files={datasetFiles}
+      isFilesFetching={isFilesFetching}
+      filesFetchError={filesFetchError}
+      datasets={props.datasets}
+      fetchError={undefined}
+      fetchedKg={undefined}
+      fileContentUrl={props.fileContentUrl}
+      history={props.history}
+      httpProjectUrl={props.httpProjectUrl}
+      identifier={undefined}
+      insideProject={true}
+      lineagesUrl={props.lineagesUrl}
+      loadingDatasets={loadingDatasets}
+      location={props.location}
+      lockStatus={props.lockStatus}
+      logged={props.logged}
+      maintainer={props.maintainer}
+      migration={migration}
+      model={props.model}
+      overviewStatusUrl={props.overviewStatusUrl}
+      progress={undefined}
+      projectId={props.projectId}
+      projectInsideKg={props.projectInsideKg}
+      projectPathWithNamespace={props.projectPathWithNamespace}
+      projectsUrl={props.projectsUrl}
+    />
+  );
 }
 
 function ProjectDatasetShow(props: ProjectDatasetShowProps) {

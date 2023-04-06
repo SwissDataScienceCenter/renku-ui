@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { formatProjectMetadata, ProjectMetadata } from "../../utils/helpers/ProjectFunctions";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
+import type { IDatasetFile } from "./Project.d";
+// import { formatProjectMetadata, ProjectMetadata } from "../../utils/helpers/ProjectFunctions";
+// import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -26,9 +27,24 @@ interface CoreServiceParams {
   versionUrl?: string;
 }
 
-interface GetDatasetFilesParams extends CoreServiceParams{
-    git_url: string;
+interface GetDatasetFilesParams extends CoreServiceParams {
+  git_url: string;
+  name: string;
+}
+
+interface GetDatasetFilesResponse {
+  result: {
+    files: IDatasetFile[];
     name: string;
+  };
+  error: {
+    userMessage?: string;
+    reason?: string;
+  };
+}
+
+interface IDatasetFiles {
+  hasPart: { name: string; atLocation: string }[];
 }
 
 function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
@@ -45,11 +61,11 @@ export const projectCoreApi = createApi({
   reducerPath: "projectCore",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
   endpoints: (builder) => ({
-    getDatasetFiles: builder.query<any, GetDatasetFilesParams>({
+    getDatasetFiles: builder.query<IDatasetFiles, GetDatasetFilesParams>({
       query: (params: GetDatasetFilesParams) => {
         const queryParams = { git_url: params.git_url, name: params.name };
         const headers = {
-          "Accept": "application/json",
+          Accept: "application/json",
           "Content-Type": "application/json",
           "X-Requested-With": "XMLHttpRequest",
         };
@@ -59,12 +75,16 @@ export const projectCoreApi = createApi({
           headers: new Headers(headers),
         };
       },
+      transformResponse: (response: GetDatasetFilesResponse) => {
+        if (response.error) throw new Error(response.error.userMessage ?? response.error.reason);
+
+        const files = response.result.files.map((file) => ({ name: file.name, atLocation: file.path }));
+        return { hasPart: files };
+      },
     }),
   }),
 });
 
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
-export const {
-  useGetDatasetFilesQuery,
-} = projectCoreApi;
+export const { useGetDatasetFilesQuery } = projectCoreApi;
