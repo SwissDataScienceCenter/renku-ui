@@ -623,6 +623,7 @@ function ProjectViewWorkflows(props) {
       reference={reference}
       repositoryUrl={props.externalUrl}
       versionUrl={props.migration?.core?.versionUrl}
+      coreMigrationRequired={!!props.migration?.check?.core_compatibility_status?.migration_required}
     />
   );
 }

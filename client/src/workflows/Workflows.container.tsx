@@ -44,6 +44,7 @@ interface WorkflowsListProps {
   reference: string;
   repositoryUrl: string;
   versionUrl: string;
+  coreMigrationRequired: boolean;
 }
 
 function deserializeError(error: any) {
@@ -59,14 +60,14 @@ function deserializeError(error: any) {
   }
 }
 
-function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
+function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl, coreMigrationRequired }: WorkflowsListProps) {
   // Get the workflow id from the query parameters
   const { id }: Record<string, string> = useParams();
   const selected = id;
 
   // Verify backend support and availability
   const unsupported = !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
-  const versionUrlAvailable = !versionUrl ? false : true;
+  const versionUrlAvailable = !!versionUrl;
 
   // Configure the functions to dispatch workflowsDisplay changes
   const dispatch = useDispatch();
@@ -79,7 +80,7 @@ function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl }: Workf
   const workflowsDisplay = useWorkflowsSelector((state: RootStateOrAny) => state[workflowsSlice.name]);
 
   // Fetch workflow list
-  const skipList = (!versionUrlAvailable || !repositoryUrl) ? true : false;
+  const skipList = !versionUrlAvailable || !repositoryUrl || coreMigrationRequired;
   const workflowsQuery = useGetWorkflowListQuery(
     { coreUrl: versionUrl, gitUrl: repositoryUrl, reference, fullPath },
     { skip: skipList }

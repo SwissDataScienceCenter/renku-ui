@@ -27,6 +27,7 @@ describe("iteract with workflows", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
     fixtures.projectLockStatus().projectMigrationUpToDate();
+    // fixtures.projectLockStatus().projectMigrationRequired();
   });
 
   it("get list of workflow and interact", () => {
