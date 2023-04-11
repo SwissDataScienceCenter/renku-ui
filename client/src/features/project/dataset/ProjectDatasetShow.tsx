@@ -5,11 +5,11 @@ import { ACCESS_LEVELS } from "../../../api-client";
 import DatasetView from "../../../dataset/Dataset.present";
 import { Url } from "../../../utils/helpers/url";
 
-import { useGetDatasetFilesQuery } from "../projectCoreApi";
-import type { IDataset, IMigration, StateModelProject } from "../Project.d";
+import { useGetDatasetFilesQuery, useGetDatasetKgQuery } from "../projectCoreApi";
+import type { DatasetCore, DatasetKg, IDataset, IMigration, StateModelProject } from "../Project.d";
 
 type IDatasetCoordinator = {
-  fetchDataset: (id: string, datasets: IDataset[], fetchKG: boolean) => void;
+  fetchDataset: (id: string, datasets: DatasetCore[], fetchKG: boolean) => void;
   fetchDatasetFilesFromCoreService: (id: string, httpProjectUrl: string, versionUrl: string) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get(key: string): any;
@@ -27,7 +27,7 @@ type ProjectDatasetShowProps = {
 
 type ProjectDatasetViewProps = {
   datasetCoordinator: IDatasetCoordinator;
-  datasets: IDataset[];
+  datasets: DatasetCore[];
   datasetId: string;
   fileContentUrl: string;
   graphStatus: boolean;
@@ -47,22 +47,56 @@ type ProjectDatasetViewProps = {
   projectsUrl: string;
 };
 
-function findDataset(name: string, datasets: IDataset[]) {
+function findDataset(name: string, datasets: DatasetCore[]) {
   return datasets.find((d) => d.name === name);
 }
 
-function findDatasetId(name?: string, datasets?: IDataset[]) {
+function findDatasetId(name?: string, datasets?: DatasetCore[]) {
   if (name == null || datasets == null) return undefined;
   const dataset = findDataset(name, datasets);
   return dataset?.identifier;
 }
 
+function mergeCoreAndKgDatasets(coreDataset?: DatasetCore, kgDataset?: DatasetKg) {
+  if (coreDataset == null) {
+    if (kgDataset == null) return undefined;
+    const dataset: IDataset = { exists: true, insideKg: true, ...kgDataset };
+    return dataset;
+  }
+
+  const dataset: IDataset = {
+    created: coreDataset.created_at,
+    exists: true,
+    insideKg: kgDataset != null,
+    ...coreDataset,
+  };
+  dataset.published = {
+    creator: coreDataset.creators,
+  };
+  if (kgDataset) {
+    dataset.url = kgDataset.url;
+    dataset.sameAs = kgDataset.sameAs;
+    dataset.usedIn = kgDataset.usedIn;
+    dataset.published.datePublished =
+      kgDataset.published && kgDataset.published.datePublished ? kgDataset.published.datePublished : undefined;
+  }
+  return dataset;
+}
+
 function ProjectDatasetView(props: ProjectDatasetViewProps) {
+  const coreDataset = findDataset(props.datasetId, props.datasets);
   const datasetId = findDatasetId(props.datasetId, props.datasets);
   const migration = props.migration;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const versionUrl = migration.core.versionUrl!;
-  const currentDataset = useSelector((state: RootStateOrAny) => state.stateModel.dataset?.metadata);
+  const {
+    data: kgDataset,
+    error: kgFetchError,
+    isFetching: isKgFetching,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  } = useGetDatasetKgQuery({ id: datasetId! }, { skip: !datasetId });
+  const currentDataset = mergeCoreAndKgDatasets(coreDataset, kgDataset);
+  //  const { }
   const datasetName = currentDataset?.name;
   const {
     data: datasetFiles,
@@ -74,24 +108,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     { skip: !datasetName }
   );
 
-  // Use Effect to calculate dataset
-  React.useEffect(() => {
-    const fetchDatasets = (id: string) => {
-      const fetchKG = props.graphStatus;
-      props.datasetCoordinator.fetchDataset(id, props.datasets, fetchKG);
-    };
-    // We cannot yet fetch the dataset
-    if (props.datasetCoordinator == null || props.datasets == null) return;
-    const currentIdentifier = currentDataset?.identifier;
-    if (datasetId != null && datasetId != currentIdentifier && (!currentDataset || !currentDataset?.fetching))
-      fetchDatasets(datasetId);
-  }, [currentDataset, datasetId, props.datasetCoordinator, props.datasets, props.graphStatus]);
-
-  const loadingDatasets =
-    currentDataset == null ||
-    currentDataset.identifier !== datasetId ||
-    currentDataset?.fetching ||
-    !currentDataset?.fetched;
+  const loadingDatasets = currentDataset == null || currentDataset.identifier !== datasetId || isKgFetching;
   return (
     <DatasetView
       client={undefined}
@@ -100,12 +117,12 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
       isFilesFetching={isFilesFetching}
       filesFetchError={filesFetchError}
       datasets={props.datasets}
-      fetchError={undefined}
-      fetchedKg={undefined}
+      fetchError={kgFetchError}
+      fetchedKg={kgDataset != null}
       fileContentUrl={props.fileContentUrl}
       history={props.history}
       httpProjectUrl={props.httpProjectUrl}
-      identifier={undefined}
+      identifier={datasetId}
       insideProject={true}
       lineagesUrl={props.lineagesUrl}
       loadingDatasets={loadingDatasets}
@@ -151,7 +168,7 @@ function ProjectDatasetShow(props: ProjectDatasetShowProps) {
   return (
     <ProjectDatasetView
       key="datasetPreview"
-      datasets={datasets as IDataset[]}
+      datasets={datasets as DatasetCore[]}
       datasetCoordinator={props.datasetCoordinator as IDatasetCoordinator}
       datasetId={props.datasetId}
       fileContentUrl={fileContentUrl}

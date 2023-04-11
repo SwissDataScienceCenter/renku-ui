@@ -1,24 +1,61 @@
-type IDataset = {
+/*!
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+interface Creator {
+  affiliation: string | null;
+  email: string;
+}
+
+type DatasetAbstract = {
   annotations: string[];
-  created_at: string; // could be created?
-  creators: { affiliation: string | null; email: string }[];
   description: string;
-  exists?: boolean;
-  hasPart?: boolean;
   identifier: string;
-  insideKg: boolean;
-  keywords: string;
+  keywords: string[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mediaContent: any;
   name: string;
-  published: string;
-  sameAs?: string;
   title: string;
-  url?: string;
-  usedIn?: string;
-  fetching: boolean;
-  fetched: boolean;
 };
+
+interface DatasetCore extends DatasetAbstract {
+  creators: Creator[];
+  created_at: string;
+}
+
+interface DatasetKg extends DatasetAbstract {
+  created: string;
+  hasPart: Part[];
+  published: Published;
+  url: string;
+  usedIn: UsedIn;
+  sameAs?: string;
+}
+
+interface IDataset extends DatasetAbstract {
+  created: string;
+  exists: boolean;
+  insideKg: boolean;
+  hasPart?: Part[];
+  published?: Published;
+  sameAs?: string;
+  url?: string;
+  usedIn?: UsedIn;
+}
 
 type IDatasetFiles = {
   fetched: boolean;
@@ -70,6 +107,15 @@ type IMigration = {
   migration_error: unknown | null;
 };
 
+interface Part {
+  atLocation: string;
+}
+
+interface Published {
+  creator: Creator[];
+  datePublished?: string;
+}
+
 type StateModelProject = {
   branches: unknown;
   datasets: {
@@ -100,4 +146,15 @@ type StateModelProject = {
   };
 };
 
-export type { IDataset, IDatasetFile, IDatasetFiles, IMigration, StateModelProject };
+type UsedIn = {
+  _links: [
+    {
+      rel: string;
+      href: string;
+    }
+  ];
+  path: string;
+  name: string;
+};
+
+export type { DatasetCore, DatasetKg, IDataset, IDatasetFile, IDatasetFiles, IMigration, StateModelProject };

@@ -17,7 +17,7 @@
  */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import type { IDatasetFile } from "./Project.d";
+import type { DatasetKg, IDatasetFile } from "./Project.d";
 // import { formatProjectMetadata, ProjectMetadata } from "../../utils/helpers/ProjectFunctions";
 // import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
@@ -41,6 +41,10 @@ interface GetDatasetFilesResponse {
     userMessage?: string;
     reason?: string;
   };
+}
+
+interface GetDatasetKgParams {
+  id: string;
 }
 
 interface IDatasetFiles {
@@ -82,9 +86,23 @@ export const projectCoreApi = createApi({
         return { hasPart: files };
       },
     }),
+    getDatasetKg: builder.query<DatasetKg, GetDatasetKgParams>({
+      query: (params: GetDatasetKgParams) => {
+        const headers = {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        };
+        return {
+          url: `/kg/datasets/${params.id}`,
+          method: "GET",
+          headers: new Headers(headers),
+        };
+      },
+    }),
   }),
 });
 
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
-export const { useGetDatasetFilesQuery } = projectCoreApi;
+export const { useGetDatasetFilesQuery, useGetDatasetKgQuery } = projectCoreApi;
