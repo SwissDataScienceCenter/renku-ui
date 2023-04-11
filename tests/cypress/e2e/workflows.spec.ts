@@ -27,13 +27,12 @@ describe("iteract with workflows", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
     fixtures.projectLockStatus().projectMigrationUpToDate();
-    // fixtures.projectLockStatus().projectMigrationRequired();
   });
 
   it("get list of workflow and interact", () => {
-    fixtures.getWorkflows("workflows/workflows-list-links-mappings.json");
     cy.visit("/projects/e2e/local-test-project/workflows");
     cy.get_cy("workflows-page").should("exist");
+    fixtures.getWorkflows("workflows/workflows-list-links-mappings.json");
     cy.wait("@getWorkflows");
     cy.get_cy("workflows-browser").should("exist").children().should("have.length", 4);
     cy.get_cy("workflows-browser").children().first().contains("pipeline");
