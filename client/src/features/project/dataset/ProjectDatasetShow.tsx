@@ -6,7 +6,7 @@ import DatasetView from "../../../dataset/Dataset.present";
 import { Url } from "../../../utils/helpers/url";
 
 import { useGetDatasetFilesQuery } from "../projectCoreApi";
-import type { IDataset, IDatasetFiles, IMigration, StateModelProject } from "../Project.d";
+import type { IDataset, IMigration, StateModelProject } from "../Project.d";
 
 type IDatasetCoordinator = {
   fetchDataset: (id: string, datasets: IDataset[], fetchKG: boolean) => void;
@@ -51,17 +51,19 @@ function findDataset(name: string, datasets: IDataset[]) {
   return datasets.find((d) => d.name === name);
 }
 
-function findDatasetId(name: string, datasets: IDataset[]) {
+function findDatasetId(name?: string, datasets?: IDataset[]) {
+  if (name == null || datasets == null) return undefined;
   const dataset = findDataset(name, datasets);
   return dataset?.identifier;
 }
 
 function ProjectDatasetView(props: ProjectDatasetViewProps) {
-  const [dataset, setDataset] = React.useState<IDataset | undefined>(undefined);
+  const datasetId = findDatasetId(props.datasetId, props.datasets);
   const migration = props.migration;
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const versionUrl = migration.core.versionUrl!;
-  const datasetName = dataset?.name;
+  const currentDataset = useSelector((state: RootStateOrAny) => state.stateModel.dataset?.metadata);
+  const datasetName = currentDataset?.name;
   const {
     data: datasetFiles,
     error: filesFetchError,
@@ -78,29 +80,22 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
       const fetchKG = props.graphStatus;
       props.datasetCoordinator.fetchDataset(id, props.datasets, fetchKG);
     };
-    if (props.datasetCoordinator) {
-      const currentDataset = props.datasetCoordinator.get("metadata");
-      const datasetId = findDatasetId(props.datasetId, props.datasets);
-      // fetch dataset data when the need data is ready (datasets list when is insideProject)
-      if (datasetId && props.datasets && (!currentDataset || !currentDataset?.fetching)) fetchDatasets(datasetId);
-      else setDataset(currentDataset);
-    }
-  }, [props.datasetCoordinator, props.datasets, props.datasetId, props.graphStatus]);
-
-  const currentDataset = useSelector((state: RootStateOrAny) => state.stateModel.dataset?.metadata);
-  React.useEffect(() => {
-    const datasetId = findDatasetId(props.datasetId, props.datasets);
+    // We cannot yet fetch the dataset
+    if (props.datasetCoordinator == null || props.datasets == null) return;
     const currentIdentifier = currentDataset?.identifier;
-    if (currentIdentifier === datasetId && currentIdentifier !== dataset?.identifier && !currentDataset.fetching)
-      setDataset(currentDataset);
-    if (currentDataset.fetchError && !currentDataset.fetching) setDataset(currentDataset);
-  }, [currentDataset, dataset, props.datasetId, props.datasets]);
+    if (datasetId != null && datasetId != currentIdentifier && (!currentDataset || !currentDataset?.fetching))
+      fetchDatasets(datasetId);
+  }, [currentDataset, datasetId, props.datasetCoordinator, props.datasets, props.graphStatus]);
 
-  const loadingDatasets = dataset == null || dataset?.fetching || !dataset?.fetched;
+  const loadingDatasets =
+    currentDataset == null ||
+    currentDataset.identifier !== datasetId ||
+    currentDataset?.fetching ||
+    !currentDataset?.fetched;
   return (
     <DatasetView
       client={undefined}
-      dataset={dataset}
+      dataset={currentDataset}
       files={datasetFiles}
       isFilesFetching={isFilesFetching}
       filesFetchError={filesFetchError}
