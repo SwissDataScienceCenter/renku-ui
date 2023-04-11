@@ -62,7 +62,7 @@
     "rehype-stringify": "^9.0.3",
     "remark-math": "^5.1.1",
     "remark-rehype": "^10.1.0",
-    "sass": "^1.58.3",
+    "sass": "^1.59.3",
     "showdown": "^2.1.0",
     "showdown-highlight": "^2.1.8",
     "showdown-katex": "^0.6.0",
