@@ -21,12 +21,9 @@ import { RootStateOrAny, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import { WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent } from "./Workflows.present";
-import { checkRenkuCoreSupport } from "../utils/helpers/HelperFunctions";
 import { useGetWorkflowDetailQuery, useGetWorkflowListQuery } from "../features/workflows/WorkflowsApi";
 import { workflowsSlice, useWorkflowsSelector } from "../features/workflows/WorkflowsSlice";
 
-
-const MIN_CORE_VERSION_WORKFLOWS = 9;
 
 const WorkflowsSorting = {
   authors: "Authors",
@@ -45,6 +42,7 @@ interface WorkflowsListProps {
   repositoryUrl: string;
   versionUrl: string;
   coreMigrationRequired: boolean;
+  backendAvailable: boolean;
 }
 
 function deserializeError(error: any) {
@@ -60,14 +58,13 @@ function deserializeError(error: any) {
   }
 }
 
-function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl, coreMigrationRequired }: WorkflowsListProps) {
+function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl, backendAvailable }: WorkflowsListProps) {
   // Get the workflow id from the query parameters
   const { id }: Record<string, string> = useParams();
   const selected = id;
 
   // Verify backend support and availability
-  const unsupported = !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
-  const versionUrlAvailable = !!versionUrl;
+  const unsupported = !backendAvailable;
 
   // Configure the functions to dispatch workflowsDisplay changes
   const dispatch = useDispatch();
@@ -80,7 +77,7 @@ function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl, coreMig
   const workflowsDisplay = useWorkflowsSelector((state: RootStateOrAny) => state[workflowsSlice.name]);
 
   // Fetch workflow list
-  const skipList = !versionUrlAvailable || !repositoryUrl || coreMigrationRequired;
+  const skipList = !versionUrl || !repositoryUrl || unsupported;
   const workflowsQuery = useGetWorkflowListQuery(
     { coreUrl: versionUrl, gitUrl: repositoryUrl, reference, fullPath },
     { skip: skipList }
@@ -95,7 +92,7 @@ function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl, coreMig
     orderAscending: workflowsDisplay.orderAscending,
     orderProperty: workflowsDisplay.orderProperty,
   };
-  const waiting = !versionUrlAvailable || workflowsQuery.isLoading;
+  const waiting = !versionUrl || workflowsQuery.isLoading;
 
   // Fetch workflow details
   const skipDetails = (skipList || !selected) ? true : false;
