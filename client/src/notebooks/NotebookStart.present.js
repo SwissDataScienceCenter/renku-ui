@@ -47,7 +47,7 @@ import { NotebooksHelper } from "./index";
 import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from "./ObjectStoresConfig.present";
 import EnvironmentVariables from "./components/EnviromentVariables";
 import { useSelector } from "react-redux";
-import { ServerOptionEnum } from './components/StartNotebookServerOptions';
+import { ServerOptionEnum } from "./components/StartNotebookServerOptions";
 import { StartNotebookAutostartLoader, StartNotebookLoader } from "./components/StartSessionLoader";
 import CommitSelector from "../components/commitSelector/CommitSelector";
 

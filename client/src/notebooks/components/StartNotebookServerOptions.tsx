@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -47,62 +47,59 @@ const ServerOptionEnum = <T extends string | number>({
       ? [...options, selected]
       : options;
 
-  // if (selected && options && options.length && !options.includes(selected))
-  //   options = options.concat(selected);
-  if (safeOptions.length === 1)
+  if (safeOptions.length === 1) {
     return (
       <Badge className="btn-outline-rk-green text-white">
         {safeOptions[0]}
       </Badge>
     );
+  }
 
   if (safeOptions.length > 5) {
     const picked = selected ? selected : options[0];
 
     let color: string | undefined = "rk-white";
-        if (picked === selected) {
-          color =
-            props.warning != null && props.warning === picked
-              ? "danger"
-              : undefined;
-        }
-        const size = props.size ? props.size : null;
+    if (picked === selected) {
+      color =
+        props.warning != null && props.warning === picked
+          ? "danger"
+          : undefined;
+    }
+    color = "danger";
+    const size = props.size ? props.size : null;
 
     return (
-      <UncontrolledButtonDropdown group direction="down">
-        <Button color={color}
-            className="btn-outline-rk-green"
-            size={size} active tag="div">{picked}</Button>
-        <DropdownToggle caret className="btn-outline-rk-green btn-rk-white"></DropdownToggle>
+      <UncontrolledDropdown direction="down">
+        <DropdownToggle caret className="btn-outline-rk-green btn-rk-white" size={size} color={color}>{picked}</DropdownToggle>
         <DropdownMenu>
           <ButtonGroup vertical className="w-100">
-          {safeOptions.map((optionName) => {
-            let color: string | undefined = "rk-white";
-            if (optionName === selected) {
-              color =
+            {safeOptions.map((optionName) => {
+              let color: string | undefined = "rk-white";
+              if (optionName === selected) {
+                color =
                 props.warning != null && props.warning === optionName
                   ? "danger"
                   : undefined;
-            }
-            const size = props.size ? props.size : null;
-            return (
-              <DropdownItem
-                key={optionName}
-                color={color}
-                className="btn-outline-rk-green btn-rk-white btn"
-                size={size}
-                disabled={disabled}
-                active={optionName === selected}
-                onClick={(event) => props.onChange(event, optionName)}
-                style={{border: 'unset !important'}}
-              >
-                {optionName}
-              </DropdownItem>
-            );
-          })}
+              }
+              const size = props.size ? props.size : null;
+              return (
+                <DropdownItem
+                  key={optionName}
+                  color={color}
+                  className="btn-outline-rk-green btn-rk-white btn"
+                  size={size}
+                  disabled={disabled}
+                  active={optionName === selected}
+                  onClick={(event) => props.onChange(event, optionName)}
+                  style={{ border: "unset !important" }}
+                >
+                  {optionName}
+                </DropdownItem>
+              );
+            })}
           </ButtonGroup>
         </DropdownMenu>
-      </UncontrolledButtonDropdown>
+      </UncontrolledDropdown>
     );
   }
 
