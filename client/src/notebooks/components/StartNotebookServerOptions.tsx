@@ -27,6 +27,8 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 
+import styles from './StartNotebookServerOptions.module.scss';
+
 interface ServerOptionEnumProps<T extends string | number> {
   disabled: boolean;
   onChange: (
@@ -67,13 +69,12 @@ const ServerOptionEnum = <T extends string | number>({
     if (picked === selected) {
       color = warning != null && warning === picked ? "danger" : undefined;
     }
-    color = "danger";
 
     return (
-      <UncontrolledDropdown direction="down">
+      <UncontrolledDropdown direction="down" className={styles.dropdown}>
         <DropdownToggle
           caret
-          className="btn-outline-rk-green btn-rk-white"
+          className="btn-outline-rk-green"
           size={size ?? undefined}
           color={color}
         >
@@ -93,7 +94,7 @@ const ServerOptionEnum = <T extends string | number>({
                 <DropdownItem
                   key={optionName}
                   color={color}
-                  className="btn-outline-rk-green btn-rk-white btn"
+                  className="btn-outline-rk-green btn"
                   size={size ?? undefined}
                   disabled={disabled}
                   active={optionName === selected}
