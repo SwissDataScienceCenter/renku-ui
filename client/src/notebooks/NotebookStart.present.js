@@ -1137,9 +1137,11 @@ class ServerOptionLaunch extends Component {
         onClick={this.props.toggleShareLinkModal}>
         <FontAwesomeIcon className="text-rk-green" icon={faLink} /> Create link</DropdownItem>
     );
-    const startButton = <Button key="start-session" color="rk-green" disabled={!hasImage} onClick={this.checkServer}>
-      Start session
-    </Button>;
+    const startButton = (
+      <Button key="start-session" color="rk-green" disabled={!hasImage} onClick={() => this.checkServer(false)}>
+        Start session
+      </Button>
+    );
     const startButtonWithMenu = <ButtonWithMenu key="button-menu" color="rk-green" default={startButton}
       direction="up" isPrincipal={true}>
       {createLink}
@@ -1214,7 +1216,9 @@ class AutosavedDataModal extends Component {
             <p>Please refer to this {docsLink} to get further information.</p>
           </ModalBody>
           <ModalFooter>
-            <Button className="btn-rk-green" onClick={this.props.handlers.startServer}>Launch session</Button>
+            <Button className="btn-rk-green" onClick={() => this.props.handlers.startServer(false)}>
+              Launch session
+            </Button>
           </ModalFooter>
         </Modal>
       </div>
