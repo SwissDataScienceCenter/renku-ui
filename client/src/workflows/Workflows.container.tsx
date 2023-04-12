@@ -21,9 +21,12 @@ import { RootStateOrAny, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import { WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent } from "./Workflows.present";
+import { checkRenkuCoreSupport } from "../utils/helpers/HelperFunctions";
 import { useGetWorkflowDetailQuery, useGetWorkflowListQuery } from "../features/workflows/WorkflowsApi";
 import { workflowsSlice, useWorkflowsSelector } from "../features/workflows/WorkflowsSlice";
 
+
+const MIN_CORE_VERSION_WORKFLOWS = 9;
 
 const WorkflowsSorting = {
   authors: "Authors",
@@ -63,7 +66,7 @@ function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl, backend
   const selected = id;
 
   // Verify backend support and availability
-  const unsupported = !backendAvailable;
+  const unsupported = !backendAvailable || !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
 
   // Configure the functions to dispatch workflowsDisplay changes
   const dispatch = useDispatch();
