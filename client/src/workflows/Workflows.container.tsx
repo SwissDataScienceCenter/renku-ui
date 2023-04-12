@@ -41,7 +41,6 @@ interface WorkflowsListProps {
   reference: string;
   repositoryUrl: string;
   versionUrl: string;
-  coreMigrationRequired: boolean;
   backendAvailable: boolean;
 }
 
