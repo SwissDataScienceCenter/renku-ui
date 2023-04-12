@@ -127,9 +127,10 @@ export const projectApi = createApi({
           try {
             const resultAllProjectData = await Promise.allSettled(projectRequests);
             const projectList = [];
-            for (const projectData of resultAllProjectData)
+            for (const projectData of resultAllProjectData) {
               if (projectData.status === "fulfilled" && !projectData.value.error)
                 projectList.push(formatProjectMetadata(projectData.value.data));
+            }
 
             return { data: projectList };
           }
