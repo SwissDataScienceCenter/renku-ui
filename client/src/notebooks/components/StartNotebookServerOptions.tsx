@@ -24,24 +24,29 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
-  UncontrolledButtonDropdown,
   UncontrolledDropdown,
 } from "reactstrap";
 
 interface ServerOptionEnumProps<T extends string | number> {
   disabled: boolean;
+  onChange: (
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    optionName: T
+  ) => void;
   options: T[];
-  selected: T | null | undefined;
+  selected?: T | null | undefined;
+  size?: string | null | undefined;
+  warning?: T | null | undefined;
 }
 
 const ServerOptionEnum = <T extends string | number>({
   disabled,
+  onChange,
   options,
   selected,
-  ...props
-}: ServerOptionEnumProps<T> & { [key: string]: any }) => {
-  console.log({ props: { disabled, options, selected, ...props } });
-
+  size,
+  warning,
+}: ServerOptionEnumProps<T>) => {
   const safeOptions =
     selected && options && options.length && !options.includes(selected)
       ? [...options, selected]
@@ -60,37 +65,39 @@ const ServerOptionEnum = <T extends string | number>({
 
     let color: string | undefined = "rk-white";
     if (picked === selected) {
-      color =
-        props.warning != null && props.warning === picked
-          ? "danger"
-          : undefined;
+      color = warning != null && warning === picked ? "danger" : undefined;
     }
     color = "danger";
-    const size = props.size ? props.size : null;
 
     return (
       <UncontrolledDropdown direction="down">
-        <DropdownToggle caret className="btn-outline-rk-green btn-rk-white" size={size} color={color}>{picked}</DropdownToggle>
+        <DropdownToggle
+          caret
+          className="btn-outline-rk-green btn-rk-white"
+          size={size ?? undefined}
+          color={color}
+        >
+          {picked}
+        </DropdownToggle>
         <DropdownMenu>
           <ButtonGroup vertical className="w-100">
             {safeOptions.map((optionName) => {
               let color: string | undefined = "rk-white";
               if (optionName === selected) {
                 color =
-                props.warning != null && props.warning === optionName
-                  ? "danger"
-                  : undefined;
+                  warning != null && warning === optionName
+                    ? "danger"
+                    : undefined;
               }
-              const size = props.size ? props.size : null;
               return (
                 <DropdownItem
                   key={optionName}
                   color={color}
                   className="btn-outline-rk-green btn-rk-white btn"
-                  size={size}
+                  size={size ?? undefined}
                   disabled={disabled}
                   active={optionName === selected}
-                  onClick={(event) => props.onChange(event, optionName)}
+                  onClick={(event) => onChange(event, optionName)}
                   style={{ border: "unset !important" }}
                 >
                   {optionName}
@@ -109,20 +116,17 @@ const ServerOptionEnum = <T extends string | number>({
         let color: string | undefined = "rk-white";
         if (optionName === selected) {
           color =
-            props.warning != null && props.warning === optionName
-              ? "danger"
-              : undefined;
+            warning != null && warning === optionName ? "danger" : undefined;
         }
-        const size = props.size ? props.size : null;
         return (
           <Button
             key={optionName}
             color={color}
             className="btn-outline-rk-green"
-            size={size}
+            size={size ?? undefined}
             disabled={disabled}
             active={optionName === selected}
-            onClick={(event) => props.onChange(event, optionName)}
+            onClick={(event) => onChange(event, optionName)}
           >
             {optionName}
           </Button>

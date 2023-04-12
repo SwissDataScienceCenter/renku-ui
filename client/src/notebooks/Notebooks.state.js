@@ -161,8 +161,6 @@ const NotebooksHelper = {
       return defaults;
     }, {});
 
-    console.log({ globalDefaults });
-
     // Overwrite renku defaults
     if (projectOptions && projectOptions.default && Object.keys(projectOptions.default)) {
       for (const [key, value] of Object.entries(projectOptions.default)) {
@@ -555,9 +553,7 @@ class NotebooksCoordinator {
 
     return this.client.getNotebookServerOptions(anonymous)
       .then((globalOptions) => {
-        console.log({ globalOptions });
         globalOptions["cpu_request"]["options"].push(...[2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 24, 32]);
-        console.log({ globalOptions });
 
         this.model.set("options.global", globalOptions);
         this.setDefaultOptions(globalOptions, null);
