@@ -80,6 +80,8 @@
     "eject": "craco eject",
     "lint": "eslint --max-warnings=0 src/",
     "lint-fix": "eslint src/ --fix",
+    "format-changed": "pretty-quick",
+    "format-commit-check": "pretty-quick --staged --check",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
   },
@@ -130,6 +132,8 @@
     "mermaid": "^9.1.3",
     "node-fetch": "^2.6.7",
     "pica": "^9.0.1",
+    "prettier": "^2.8.7",
+    "pretty-quick": "^3.1.3",
     "react-docgen-typescript": "^2.2.2",
     "react-error-overlay": "^6.0.9",
     "react-scripts": "5.0.1",

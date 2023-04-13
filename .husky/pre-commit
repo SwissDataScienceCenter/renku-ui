@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+set -e
+
+# For now, only warn about non-formatted files
+cd ./client
+npm run format-commit-check || true
+cd ..
