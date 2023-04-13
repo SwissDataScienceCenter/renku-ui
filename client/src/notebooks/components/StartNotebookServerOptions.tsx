@@ -74,7 +74,6 @@ export const ServerOptionEnum = <T extends string | number>({
     if (picked === selected)
       color = warning != null && warning === picked ? "danger" : undefined;
 
-
     return (
       <UncontrolledDropdown direction="down" className={styles.dropdown}>
         <DropdownToggle
@@ -142,8 +141,10 @@ export const ServerOptionEnum = <T extends string | number>({
   );
 };
 
-const approximateButtonGroupSizeInPixels = <T extends string | number>(options: T[]): number =>
-// padding in x direction
-  (options.length * 2 * 10) +
+const approximateButtonGroupSizeInPixels = <T extends string | number>(
+  options: T[]
+): number =>
+  // padding in x direction
+  options.length * 2 * 10 +
   // safe approximate character size
-  (options.map(opt => `${opt}`).reduce((len, opt) => len + opt.length, 0) * 12);
+  options.map((opt) => `${opt}`).reduce((len, opt) => len + opt.length, 0) * 12;
