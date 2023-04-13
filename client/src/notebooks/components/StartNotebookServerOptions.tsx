@@ -27,7 +27,9 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 
-import styles from './StartNotebookServerOptions.module.scss';
+import styles from "./StartNotebookServerOptions.module.scss";
+
+const FORM_MAX_WIDTH = 250; // pixels;
 
 interface ServerOptionEnumProps<T extends string | number> {
   disabled: boolean;
@@ -41,7 +43,7 @@ interface ServerOptionEnumProps<T extends string | number> {
   warning?: T | null | undefined;
 }
 
-const ServerOptionEnum = <T extends string | number>({
+export const ServerOptionEnum = <T extends string | number>({
   disabled,
   onChange,
   options,
@@ -62,13 +64,16 @@ const ServerOptionEnum = <T extends string | number>({
     );
   }
 
-  if (safeOptions.length > 5) {
+  const approxSize = approximateButtonGroupSizeInPixels(safeOptions);
+  const useDropdown = approxSize > FORM_MAX_WIDTH;
+
+  if (useDropdown) {
     const picked = selected ? selected : options[0];
 
     let color: string | undefined = "rk-white";
-    if (picked === selected) {
+    if (picked === selected)
       color = warning != null && warning === picked ? "danger" : undefined;
-    }
+
 
     return (
       <UncontrolledDropdown direction="down" className={styles.dropdown}>
@@ -137,4 +142,8 @@ const ServerOptionEnum = <T extends string | number>({
   );
 };
 
-export { ServerOptionEnum };
+const approximateButtonGroupSizeInPixels = <T extends string | number>(options: T[]): number =>
+// padding in x direction
+  (options.length * 2 * 10) +
+  // safe approximate character size
+  (options.map(opt => `${opt}`).reduce((len, opt) => len + opt.length, 0) * 12);

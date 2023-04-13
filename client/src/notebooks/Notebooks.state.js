@@ -553,9 +553,6 @@ class NotebooksCoordinator {
 
     return this.client.getNotebookServerOptions(anonymous)
       .then((globalOptions) => {
-        // globalOptions["cpu_request"]["options"].push(...[2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 24, 32]);
-        globalOptions["cpu_request"]["options"].push(...[2, 3, 4, 5, 6]);
-
         this.model.set("options.global", globalOptions);
         this.setDefaultOptions(globalOptions, null);
 
