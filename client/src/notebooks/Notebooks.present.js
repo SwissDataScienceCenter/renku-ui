@@ -616,7 +616,8 @@ const NotebookServerRowAction = memo((props) => {
       {actions.stop}
     </ButtonWithMenu>
   );
-}, _.isEqual);
+},
+_.isEqual);
 NotebookServerRowAction.displayName = "NotebookServerRowAction";
 
 export {
