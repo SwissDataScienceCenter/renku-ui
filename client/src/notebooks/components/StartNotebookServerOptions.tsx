@@ -78,7 +78,7 @@ const ServerOptionEnum = <T extends string | number>({
           size={size ?? undefined}
           color={color}
         >
-          {picked}
+          <span>{picked}</span>
         </DropdownToggle>
         <DropdownMenu>
           <ButtonGroup vertical className="w-100">

@@ -1,8 +1,20 @@
 .dropdown {
   :global .btn.dropdown-toggle {
     border-radius: 8px;
+    border-width: 2.5px;
+    min-width: 160px;
     padding: 5px 10px;
     font-weight: bold;
+
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+
+    & span {
+      flex-grow: 1;
+    }
 
     &::after {
       margin-left: 6px;
@@ -22,6 +34,7 @@
 
       &.active {
         font-weight: bold;
+        border-width: 2.5px;
       }
     }
   }
