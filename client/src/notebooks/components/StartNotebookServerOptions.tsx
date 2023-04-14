@@ -144,7 +144,7 @@ export const ServerOptionEnum = <T extends string | number>({
 const approximateButtonGroupSizeInPixels = <T extends string | number>(
   options: T[]
 ): number =>
-  // padding in x direction
-  options.length * 2 * 10 +
-  // safe approximate character size
-  options.map((opt) => `${opt}`).reduce((len, opt) => len + opt.length, 0) * 12;
+    // padding in x direction
+    options.length * 2 * 10 +
+    // safe approximate character size
+    options.map((opt) => `${opt}`).reduce((len, opt) => len + opt.length, 0) * 12;
