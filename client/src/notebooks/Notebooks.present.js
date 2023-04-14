@@ -100,7 +100,9 @@ function SessionJupyter(props) {
     const status = notebook.data.status.state;
     if (status === SessionStatus.running) {
       const locationFilePath = history?.location?.state?.filePath;
-      const notebookUrl = locationFilePath ? `${notebook.data.url}/lab/tree/${locationFilePath}` : notebook.data.url;
+      const notebookUrl = locationFilePath ?
+        appendCustomUrlPath(notebook.data.url, `/lab/tree/${locationFilePath}`)
+        : notebook.data.url;
       content = (
         <iframe id="session-iframe" title="session iframe" src={notebookUrl}
           style={{ display: ready ? "block" : "none" }}
@@ -115,6 +117,22 @@ function SessionJupyter(props) {
   }
   return content;
 }
+
+const appendCustomUrlPath = (notebookUrl, customUrlPath) => {
+  try {
+    const baseUrl = new URL(notebookUrl);
+    if (!baseUrl.pathname.endsWith("/"))
+      baseUrl.pathname = `${baseUrl.pathname}/`;
+    const withFullPath = new URL(customUrlPath.startsWith("/") ? `.${customUrlPath}` : customUrlPath, baseUrl);
+    baseUrl.pathname = withFullPath.pathname;
+    return baseUrl.href;
+  }
+  catch (error) {
+    if (error instanceof TypeError)
+      return notebookUrl;
+    throw error;
+  }
+};
 
 class NotebooksDisabled extends Component {
   render() {
