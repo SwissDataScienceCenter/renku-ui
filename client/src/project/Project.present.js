@@ -132,6 +132,40 @@ class ProjectStatusIcon extends Component {
   }
 }
 
+function ToggleForkModalButton({ forkProjectDisabled, showForkCount, toggleModal }) {
+  // display the button a bit differently if showForkCount == false
+  if (showForkCount == false) {
+    return (
+      <Button id="fork-project" color="primary" size="sm" disabled={forkProjectDisabled} onClick={toggleModal}>
+        Fork the project
+      </Button>
+    );
+  }
+  return (
+    <Button id="fork-project" className="btn-outline-rk-green" disabled={forkProjectDisabled} onClick={toggleModal}>
+      <FontAwesomeIcon size="sm" icon={faCodeBranch} /> Fork
+      <ThrottledTooltip target="fork-project" tooltip="Fork" />
+    </Button>
+  );
+}
+
+function ForkCountButton({ forkProjectDisabled, externalUrl, forksCount }) {
+  return (
+    <Button
+      id="project-forks"
+      key="counter-forks"
+      className="btn-outline-rk-green btn-icon-text"
+      disabled={forkProjectDisabled}
+      href={`${externalUrl}/-/forks`}
+      target="_blank"
+      rel="noreferrer noopener"
+    >
+      {forksCount}
+      <ThrottledTooltip target="project-forks" tooltip="Forks" />
+    </Button>
+  );
+}
+
 class ForkProjectModal extends Component {
   constructor(props) {
     super(props);
@@ -157,36 +191,31 @@ class ForkProjectModal extends Component {
         />
       );
     }
-
-    const buttons = [
-      <Button
-        className="btn-outline-rk-green"
-        id="fork-project"
-        key="fork-project"
-        disabled={this.props.forkProjectDisabled}
-        onClick={this.toggleFunction}
-      >
-        Fork
-        <ThrottledTooltip target="fork-project" tooltip="Fork this project" />
-      </Button>,
-      <Button
-        id="project-forks"
-        key="counter-forks"
-        className="btn-outline-rk-green btn-icon-text"
-        disabled={this.props.forkProjectDisabled}
-        href={`${this.props.externalUrl}/-/forks`}
-        target="_blank"
-        rel="noreferrer noopener"
-      >
-        <FontAwesomeIcon size="sm" icon={faCodeBranch} /> {this.props.forksCount}
-        <ThrottledTooltip target="project-forks" tooltip="Forks" />
-      </Button>,
-    ];
+    // Treat undefined as true
+    const buttons =
+      this.props.showForkCount === false ? (
+        <ToggleForkModalButton
+          forkProjectDisabled={this.props.forkProjectDisabled}
+          showForkCount={false}
+          toggleModal={this.toggleFunction}
+        />
+      ) : (
+        <RoundButtonGroup>
+          <ToggleForkModalButton
+            forkProjectDisabled={this.props.forkProjectDisabled}
+            showForkCount={true}
+            toggleModal={this.toggleFunction}
+          />
+          <ForkCountButton
+            externalUrl={this.props.externalUrl}
+            forksCount={this.props.forksCount}
+            forkProjectDisabled={this.props.forkProjectDisabled}
+          />
+        </RoundButtonGroup>
+      );
     return (
       <Fragment>
-        <RoundButtonGroup>
-          {buttons}
-        </RoundButtonGroup>
+        {buttons}
         <Modal isOpen={this.state.open} toggle={this.toggleFunction}>
           {content}
         </Modal>
@@ -194,6 +223,7 @@ class ForkProjectModal extends Component {
     );
   }
 }
+
 
 function getLinksProjectHeader(datasets, datasetsUrl, errorGettingDatasets) {
   const status = errorGettingDatasets
@@ -715,7 +745,7 @@ const ProjectSessions = (props) => {
   ];
 };
 
-function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externalUrl) {
+function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externalUrl, props) {
   if (!userLogged) {
     const to = Url.get(Url.pages.login.link, { pathname: postLoginUrl });
     return (
@@ -747,9 +777,21 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
         </p>
         <ul className="mb-0">
           <li>
-            <Link className="btn btn-primary btn-sm" color="primary" to={forkUrl}>
-              Fork the project
-            </Link>{" "}
+            <ForkProjectModal
+              className="btn btn-primary btn-sm"
+              client={props.client}
+              history={props.history}
+              model={props.model}
+              notifications={props.notifications}
+              title={props.metadata && props.metadata.title ? props.metadata.title : ""}
+              id={props.metadata && props.metadata.id ? props.metadata.id : 0}
+              forkProjectDisabled={false}
+              projectVisibility={props.metadata.visibility}
+              user={props.user}
+              externalUrl={props.externalUrl}
+              showForkCount={false}
+            />
+            {" "}
             and start a session from your fork.
           </li>
           <li className="pt-1">
@@ -786,7 +828,8 @@ class ProjectShowSession extends Component {
       user,
       notebookServersUrl,
     } = this.props;
-    const warning = notebookWarning(user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl);
+    const warning = notebookWarning(user.logged, metadata.accessLevel, forkUrl,
+      location.pathname, externalUrl, this.props);
 
     return (
       <ShowSession
@@ -812,7 +855,8 @@ class ProjectNotebookServers extends Component {
   render() {
     const { client, metadata, model, user, forkUrl, location, externalUrl, launchNotebookUrl, blockAnonymous } =
       this.props;
-    const warning = notebookWarning(user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl);
+    const warning = notebookWarning(user.logged, metadata.accessLevel, forkUrl,
+      location.pathname, externalUrl, this.props);
 
     return (
       <Notebooks
