@@ -29,7 +29,7 @@ import _ from "lodash";
 
 import Present from "./Project.present";
 import { GraphIndexingStatus, ProjectCoordinator, MigrationStatus } from "./Project.state";
-import { ACCESS_LEVELS } from "../api-client";
+import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
 import qs from "query-string";
 import { DatasetCoordinator } from "../dataset/Dataset.state";
 import { NotebooksCoordinator } from "../notebooks";
@@ -324,7 +324,30 @@ class View extends Component {
     this.props.client.getProjectById(projectId)
       .then((project) => {
         this.props.history.push("/projects/" + project.data.metadata.core.path_with_namespace);
+      }).catch((error) => {
+        // console.error({error: {...error}});
+        // console.log(error.case);
+        // return Promise.reject(error);
+        if (error.case === API_ERRORS.notFoundError) {
+          // this.set("metadata.exists", false);
+          console.log('this.projectCoordinator.set("metadata.exists", false);');
+          this.projectCoordinator.set("metadata.exists", false);
+          // this.projectCoordinator.fetchProject(this.props.client, "1");
+          // this.fetchAll();
+          // this.checkGraphWebhook();
+          // this.fetchBranches();
+          // this.props.history.push(`/projects/aldjfjnvniowernvcm/wofhndalvkmawdfh`);
+          return;
+        }
+        throw error;
       });
+
+      // .catch(err => {
+      //   if (err.case === API_ERRORS.notFoundError)
+      //     this.set("metadata.exists", false);
+
+      //   else throw err;
+      // });
   }
 
   redirectAfterFetchFails(projectPathWithNamespace, urlInsideProject) {
