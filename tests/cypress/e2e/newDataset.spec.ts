@@ -172,6 +172,34 @@ describe("Project new dataset", () => {
   });
 });
 
+describe("Project new dataset without access", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = true;
+  const projectPath = "e2e/local-test-project";
+
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects().projectTestObserver();
+    fixtures.projectLockStatus();
+    fixtures.cacheProjectList();
+    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectDatasetList();
+    fixtures.createDataset();
+    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectMigrationUpToDate({
+      queryUrl: "*",
+      fixtureName: "getMigration",
+    });
+    fixtures.projectLockStatus();
+  });
+
+  it("correctly handles missing access", () => {
+    cy.visit(`projects/${projectPath}/datasets/new`);
+    cy.wait("@getProject");
+    cy.contains("If you were recently given access").should("be.visible");
+  });
+});
+
 describe("Project import dataset", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
