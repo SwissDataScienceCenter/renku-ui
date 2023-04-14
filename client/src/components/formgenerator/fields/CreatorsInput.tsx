@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+// TODO(@ciyer): remove this file as part of the Dataset refactor
+
 /**
  *  renku-ui
  *
@@ -41,11 +43,11 @@ import {
   InputLabel,
 } from "../../formlabels/FormLabels";
 
-interface Creator {
+export interface Creator {
   id: number;
   name: string;
-  email: string;
-  affiliation: string;
+  email?: string;
+  affiliation?: string;
   identifier?: string;
   default?: boolean;
 }

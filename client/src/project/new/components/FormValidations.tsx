@@ -73,12 +73,13 @@ interface FormErrorFieldsProps {
   errorFields: string[];
 }
 const FormErrorFields = ({ errorFields }: FormErrorFieldsProps) => {
-  const plural = errorFields.length > 1 ? "s" : "";
+  const filteredFields = errorFields.filter((field) => field !== "Name");
+  const plural = filteredFields.length > 1 ? "s" : "";
   return (
     <div className="mt-1 text-end">
       <ErrorLabel text={""}>
         Please fix problems in the following field{plural}:{" "}
-        <span className="fw-bold">{errorFields.join(", ")}</span>
+        <span className="fw-bold">{filteredFields.join(", ")}</span>
       </ErrorLabel>
     </div>
   );

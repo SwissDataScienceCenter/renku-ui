@@ -63,9 +63,9 @@ export default function ShowDataset(props) {
         props.datasets &&
         (!currentDataset || !currentDataset?.fetching)
       )
-        fetchDatasets(datasetId);
+        fetchDataset(datasetId);
       else if (!props.insideProject && props.identifier)
-        fetchDatasets(datasetId);
+        fetchDataset(datasetId);
       else setDataset(currentDataset);
     }
   }, [
