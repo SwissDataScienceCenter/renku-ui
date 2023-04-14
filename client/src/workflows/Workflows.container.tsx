@@ -44,6 +44,7 @@ interface WorkflowsListProps {
   reference: string;
   repositoryUrl: string;
   versionUrl: string;
+  backendAvailable: boolean;
 }
 
 function deserializeError(error: any) {
@@ -59,14 +60,13 @@ function deserializeError(error: any) {
   }
 }
 
-function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
+function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl, backendAvailable }: WorkflowsListProps) {
   // Get the workflow id from the query parameters
   const { id }: Record<string, string> = useParams();
   const selected = id;
 
   // Verify backend support and availability
-  const unsupported = !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
-  const versionUrlAvailable = !versionUrl ? false : true;
+  const unsupported = !backendAvailable || !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
 
   // Configure the functions to dispatch workflowsDisplay changes
   const dispatch = useDispatch();
@@ -79,7 +79,7 @@ function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl }: Workf
   const workflowsDisplay = useWorkflowsSelector((state: RootStateOrAny) => state[workflowsSlice.name]);
 
   // Fetch workflow list
-  const skipList = (!versionUrlAvailable || !repositoryUrl) ? true : false;
+  const skipList = !versionUrl || !repositoryUrl || unsupported;
   const workflowsQuery = useGetWorkflowListQuery(
     { coreUrl: versionUrl, gitUrl: repositoryUrl, reference, fullPath },
     { skip: skipList }
@@ -94,7 +94,7 @@ function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl }: Workf
     orderAscending: workflowsDisplay.orderAscending,
     orderProperty: workflowsDisplay.orderProperty,
   };
-  const waiting = !versionUrlAvailable || workflowsQuery.isLoading;
+  const waiting = !versionUrl || workflowsQuery.isLoading;
 
   // Fetch workflow details
   const skipDetails = (skipList || !selected) ? true : false;
