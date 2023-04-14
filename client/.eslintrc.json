@@ -19,7 +19,13 @@
     "plugin:react/recommended",
     "plugin:jest/recommended"
   ],
-  "plugins": ["react", "react-hooks", "jest", "spellcheck", "@typescript-eslint"],
+  "plugins": [
+    "react",
+    "react-hooks",
+    "jest",
+    "spellcheck",
+    "@typescript-eslint"
+  ],
   "settings": {
     "react": {
       "version": "detect"
@@ -224,6 +230,7 @@
           "Ravey",
           "rect",
           "redux",
+          "reduxjs",
           "remark2rehype",
           "renderer",
           "renderers",

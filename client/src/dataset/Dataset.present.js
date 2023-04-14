@@ -46,16 +46,21 @@ import { EntityDeleteButtonButton } from "../components/entities/Buttons";
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
-  if (props.files?.fetching || props.loadingDatasets) return "LOADING FILES...";
+  if (props.isFilesFetching || props.loadingDatasets) return "LOADING FILES...";
 
 
-  if (props.files.fetchError !== null) {
-    const error = props.files.fetchError;
+  if (props.filesFetchError != null) {
+    const error = props.filesFetchError;
     let errorObject;
-    if (CoreError.isValid(error))
+    if (CoreError.isValid(error)) {
       errorObject = (<CoreErrorAlert error={error}/>);
-    else
-      errorObject = (<span><strong>Error fetching dataset files:</strong> {props.files.fetchError.message}</span>);
+    }
+    else {
+      errorObject = (<span>
+        <strong>Error fetching dataset files:</strong>{" "}
+        {JSON.stringify(props.filesFetchError)}
+      </span>);
+    }
 
     return (
       <Card key="datasetDetails" className="border-rk-light mb-4">
@@ -419,6 +424,8 @@ export default function DatasetView(props) {
         fileContentUrl={props.fileContentUrl}
         lineagesUrl={props.lineagesUrl}
         files={props.files}
+        isFilesFetching={props.isFilesFetching}
+        filesFetchError={props.filesFetchError}
         insideProject={props.insideProject}
         loadingDatasets={props.loadingDatasets}
       />
