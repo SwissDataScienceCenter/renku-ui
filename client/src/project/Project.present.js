@@ -1113,7 +1113,6 @@ function ProjectView(props) {
         <Route path={props.editDatasetUrl} render={() => null} />
         <Route path={props.datasetUrl} render={() => null} />
         <Route path={props.sessionShowUrl} render={() => null} />
-        <Route path={props.newDatasetUrl} component={() => <ProjectNav key="nav" {...props} />} />
         <Route component={() => <ProjectNav key="nav" {...props} />} />
       </Switch>
       <Row key="content">
