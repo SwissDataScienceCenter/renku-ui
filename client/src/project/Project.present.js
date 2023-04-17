@@ -900,7 +900,8 @@ class ProjectStartNotebookServer extends Component {
       backUrl,
       defaultBackButton,
     } = this.props;
-    const warning = notebookWarning(user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl);
+    const warning = notebookWarning(user.logged, metadata.accessLevel, forkUrl,
+      location.pathname, externalUrl, this.props);
 
     const locationEnhanced =
       location && location.state && location.state.successUrl
