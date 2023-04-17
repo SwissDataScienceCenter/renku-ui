@@ -37,9 +37,9 @@ const NotFound = (props) => {
     <div className="not-found-box">
       <div className="container-xxl pt-5 renku-container">
         <div className="not-found-box-text">
-          <h1 className="title">404</h1>
-          <h3 className="subtitle">{title}</h3>
-          <p>{description}</p>
+          <h1 className="title" data-cy="not-found-title">404</h1>
+          <h3 className="subtitle" data-cy="not-found-subtitle">{title}</h3>
+          <p data-cy="not-found-description">{description}</p>
           <div className="mt-5">
             <Link to="/">
               <Button className="btn-rk-green btn-icon-text">
@@ -48,7 +48,7 @@ const NotFound = (props) => {
             </Link>
           </div>
         </div>
-        {props.children == null ? null : <div className="not-found-box-text mt-4">{props.children}</div>}
+        {props.children == null ? null : <div className="not-found-box-text mt-4" data-cy="not-found-children">{props.children}</div>}
       </div>
     </div>
   );
