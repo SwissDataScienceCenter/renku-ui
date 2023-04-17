@@ -320,6 +320,16 @@ $borderRadius: 1000px;
   }
 }
 
+.btn-group-vertical:not(.btn-with-menu, .round-button-group) {
+  button:first-of-type {
+    border-radius: 8px 8px 0 0;
+  }
+
+  button:last-of-type {
+    border-radius: 0 0 8px 8px;
+  }
+}
+
 .btn-round {
   border-radius: 1000px;
   width: 50px;

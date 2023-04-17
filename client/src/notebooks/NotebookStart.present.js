@@ -19,7 +19,7 @@
 import React, { Component, Fragment, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Badge, Button, ButtonGroup, Col, Collapse, DropdownItem, Form, FormGroup, FormText, Input, Label,
+  Badge, Button, Col, Collapse, DropdownItem, Form, FormGroup, FormText, Input, Label,
   Modal, ModalBody, ModalFooter, ModalHeader, PopoverBody, PopoverHeader,
   Row, UncontrolledPopover, UncontrolledTooltip
 } from "reactstrap";
@@ -47,6 +47,7 @@ import { NotebooksHelper } from "./index";
 import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from "./ObjectStoresConfig.present";
 import EnvironmentVariables from "./components/EnviromentVariables";
 import { useSelector } from "react-redux";
+import { ServerOptionEnum } from "./components/StartNotebookServerOptions";
 import { StartNotebookAutostartLoader, StartNotebookLoader } from "./components/StartSessionLoader";
 import CommitSelector from "../components/commitSelector/CommitSelector";
 
@@ -1019,38 +1020,6 @@ class StartNotebookServerOptions extends Component {
     return renderedServerOptions.length ?
       <Row>{renderedServerOptions.concat(globalWarning)}</Row> :
       <label>Notebook options not available</label>;
-  }
-}
-
-class ServerOptionEnum extends Component {
-  render() {
-    const { disabled, selected } = this.props;
-    let { options } = this.props;
-
-    if (selected && options && options.length && !options.includes(selected))
-      options = options.concat(selected);
-    if (options.length === 1)
-      return (<Badge className="btn-outline-rk-green text-white">{this.props.options[0]}</Badge>);
-
-    return (
-      <ButtonGroup>
-        {options.map((optionName) => {
-          let color = "rk-white";
-          if (optionName === selected) {
-            color = this.props.warning != null && this.props.warning === optionName ?
-              "danger" :
-              undefined;
-          }
-          const size = this.props.size ? this.props.size : null;
-          return (
-            <Button
-              key={optionName} color={color} className="btn-outline-rk-green" size={size}
-              disabled={disabled} active={optionName === selected}
-              onClick={event => this.props.onChange(event, optionName)}>{optionName}</Button>
-          );
-        })}
-      </ButtonGroup>
-    );
   }
 }
 

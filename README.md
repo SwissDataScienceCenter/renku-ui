@@ -189,6 +189,12 @@ Here are the folders in `/client/src`  where to place new components:
 
 Picking the perfect place isn't always straightforward and our current folder structure still has many outdated components that don't follow the convention. We plan to move them when already touching the code for other changes.
 
+### **Use of CSS modules**
+
+[CSS modules](https://github.com/css-modules/css-modules) can be used to apply CSS styles locally and avoid leaking
+styles to the whole web application.
+[Create React App supports CSS modules out of the box](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet).
+
 # Server
 
 The server is the [Express-based](https://expressjs.com) back-end for the RenkuLab UI. The main responsibilities of the server are managing user tokens acting handling requests for information from other backend services.
