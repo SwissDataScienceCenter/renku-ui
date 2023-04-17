@@ -325,29 +325,12 @@ class View extends Component {
       .then((project) => {
         this.props.history.push("/projects/" + project.data.metadata.core.path_with_namespace);
       }).catch((error) => {
-        // console.error({error: {...error}});
-        // console.log(error.case);
-        // return Promise.reject(error);
         if (error.case === API_ERRORS.notFoundError) {
-          // this.set("metadata.exists", false);
-          console.log('this.projectCoordinator.set("metadata.exists", false);');
           this.projectCoordinator.set("metadata.exists", false);
-          // this.projectCoordinator.fetchProject(this.props.client, "1");
-          // this.fetchAll();
-          // this.checkGraphWebhook();
-          // this.fetchBranches();
-          // this.props.history.push(`/projects/aldjfjnvniowernvcm/wofhndalvkmawdfh`);
           return;
         }
         throw error;
       });
-
-      // .catch(err => {
-      //   if (err.case === API_ERRORS.notFoundError)
-      //     this.set("metadata.exists", false);
-
-      //   else throw err;
-      // });
   }
 
   redirectAfterFetchFails(projectPathWithNamespace, urlInsideProject) {

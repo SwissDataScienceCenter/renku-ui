@@ -48,7 +48,11 @@ const NotFound = (props) => {
             </Link>
           </div>
         </div>
-        {props.children == null ? null : <div className="not-found-box-text mt-4" data-cy="not-found-children">{props.children}</div>}
+        {props.children == null ? null : (
+          <div className="not-found-box-text mt-4" data-cy="not-found-children">
+            {props.children}
+          </div>
+        )}
       </div>
     </div>
   );

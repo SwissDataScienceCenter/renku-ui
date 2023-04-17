@@ -1071,14 +1071,6 @@ function ProjectView(props) {
     ? props.projectPathWithNamespace
     : props.projectId;
 
-  console.log({
-    available,
-    namespace: props.namespace,
-    projectPathWithNamespace: props.projectPathWithNamespace,
-    projectId: props.projectId,
-    cond: (available == null || available === SpecialPropVal.UPDATING || props.projectId),
-  });
-
   if (props.namespace && !props.projectPathWithNamespace) {
     return <NamespaceProjects namespace={props.namespace} client={props.client} />;
   }
@@ -1090,7 +1082,6 @@ function ProjectView(props) {
     );
   }
   else if (available === false) {
-    console.log(' <ProjectViewNotFound />')
     const { logged } = props.user;
     return (
       <ProjectViewNotFound
