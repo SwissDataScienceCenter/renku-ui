@@ -25,36 +25,53 @@
 
 import * as d3TimeFormat from "d3-time-format";
 
+
 class Time {
   static isDate(date) {
     return date instanceof Date && !isNaN(date);
   }
 
   static parseDate(date) {
-    if (this.isDate(date)) return date;
+    if (this.isDate(date))
+      return date;
 
     const convertedDate = new Date(date);
-    if (this.isDate(convertedDate)) return convertedDate;
+    if (this.isDate(convertedDate))
+      return convertedDate;
 
     throw new Error("Invalid date");
   }
 
   static toIsoString(inputDate, type = "datetime") {
     const date = this.parseDate(inputDate);
-    //get the timezone of the date
-    const timeZoneOffsetInMinutes = date.getTimezoneOffset();
-    const timeZoneOffsetInHours = timeZoneOffsetInMinutes / 60;
-    const timeZone = `GMT${timeZoneOffsetInHours >= 0 ? "-" : "+"}${Math.abs(
-      timeZoneOffsetInHours
-    )}`;
 
+    // const year = date.getFullYear().toString();
+    // const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    // const day = date.getDate().toString().padStart(2, "0");
+    // const hours = date.getHours().toString().padStart(2, "0");
+    // const minutes = date.getMinutes().toString().padStart(2, "0");
+    // const seconds = date.getSeconds().toString().padStart(2, "0");
+
+    // const readableDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     const readableDate = date.toISOString().substring(0, 19).replace("T", " ");
 
-    if (type === "datetime") return readableDate;
-    else if (type === "datetime-short") return readableDate.substring(0, 16);
-    else if (type === "date") return readableDate.substring(0, 10);
-    else if (type === "time") return readableDate.substring(11);
-    else if (type === "datetime-timezone") return readableDate + " " + timeZone;
+    if (type === "datetime") {
+      return readableDate;
+    }
+    else if (type === "datetime-short") {
+      return readableDate.substring(0, 16);
+    }
+    else if (type === "date") {
+      return readableDate.substring(0, 10);
+    }
+    else if (type === "time") {
+      return readableDate.substring(11);
+    }
+    else if (type === "datetime-timezone" || type === "datetime-full") {
+      const timeZoneOffsetHours = date.getTimezoneOffset() / 60;
+      const timeZone = `GMT${timeZoneOffsetHours >= 0 ? "-" : "+"}${Math.abs(timeZoneOffsetHours)}`;
+      return readableDate + " " + timeZone;
+    }
     throw new Error(`Unknown type "${type}"`);
   }
 
@@ -120,7 +137,8 @@ class Time {
       d3FormatString: null,
     }
   ) {
-    if (d3FormatString !== null) return d3TimeFormat.timeFormat(d3FormatString)(dt);
+    if (d3FormatString !== null)
+      return d3TimeFormat.timeFormat(d3FormatString)(dt);
     return `${dt.toLocaleDateString()} ${dt.toLocaleTimeString([], localeTimeOptions)}`;
   }
 
@@ -131,15 +149,22 @@ class Time {
    */
   static getDuration(seconds) {
     let currentValue = parseInt(seconds);
-    if (currentValue < 1) return "< 1 second";
-    if (currentValue === 1) return "1 second";
-    if (currentValue < 60) return `${currentValue} seconds`;
+    if (currentValue < 1)
+      return "< 1 second";
+    if (currentValue === 1)
+      return "1 second";
+    if (currentValue < 60)
+      return `${currentValue} seconds`;
     currentValue = currentValue / 60;
-    if (currentValue >= 1 && currentValue < 2) return "1 minute";
-    if (currentValue >= 2 && currentValue < 60) return `${parseInt(currentValue)} minutes`;
+    if (currentValue >= 1 && currentValue < 2)
+      return "1 minute";
+    if (currentValue >= 2 && currentValue < 60)
+      return `${parseInt(currentValue)} minutes`;
     currentValue = currentValue / 60;
-    if (currentValue >= 1 && currentValue < 2) return "1 hour";
-    if (currentValue >= 2 && currentValue <= 24) return `${parseInt(currentValue)} hours`;
+    if (currentValue >= 1 && currentValue < 2)
+      return "1 hour";
+    if (currentValue >= 2 && currentValue <= 24)
+      return `${parseInt(currentValue)} hours`;
     return "> 24 hours";
   }
 }
