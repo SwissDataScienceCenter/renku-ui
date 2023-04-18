@@ -184,7 +184,6 @@ describe("display a project", () => {
 
   it("displays project file > notebook > can start a session", () => {
     fixtures.projectFiles();
-
     cy.intercept("/ui-server/api/notebooks/servers*", {
       body: { servers: {} },
     }).as("getSessions");
@@ -195,8 +194,7 @@ describe("display a project", () => {
     cy.contains("01-CountFlights.ipynb").should("be.visible");
     cy.contains("01-CountFlights.ipynb").click();
     cy.wait("@getCountFlights");
-
-    cy.get("#checkNotebookIcon", { timeout: 20_000 })
+    cy.get("#checkNotebookIcon", { timeout: 10_000 })
       .should("be.visible")
       .children("a")
       .should(($a) => {
@@ -208,7 +206,6 @@ describe("display a project", () => {
 
   it("displays project file > notebook > anon user can start a session", () => {
     fixtures.userNone().projectFiles();
-
     cy.intercept("/ui-server/api/notebooks/servers*", {
       body: { servers: {} },
     }).as("getSessions");
@@ -219,8 +216,7 @@ describe("display a project", () => {
     cy.contains("01-CountFlights.ipynb").should("be.visible");
     cy.contains("01-CountFlights.ipynb").click();
     cy.wait("@getCountFlights");
-
-    cy.get("#checkNotebookIcon", { timeout: 20_000 })
+    cy.get("#checkNotebookIcon")
       .should("be.visible")
       .children("a")
       .should(($a) => {
