@@ -28,7 +28,7 @@ import { Link } from "react-router-dom";
 import { Row, Col } from "reactstrap";
 import { Loader } from "../components/Loader";
 import { ExternalLink } from "../components/ExternalLinks";
-import NotFound from "../not-found";
+import { NotFound } from "../not-found";
 
 const NamespaceProjects = (props) => {
   const { namespace } = props;

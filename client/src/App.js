@@ -38,7 +38,7 @@ import { AnonymousHome, RenkuNavBar, FooterNavbar } from "./landing";
 import { Notebooks } from "./notebooks";
 import { Login, LoginHelper } from "./authentication";
 import Help from "./help";
-import NotFound from "./not-found";
+import { NotFound } from "./not-found";
 import ShowDataset from "./dataset/Dataset.container";
 import { Cookie, Privacy } from "./privacy";
 import { NotificationsManager, NotificationsPage } from "./notifications";
@@ -64,10 +64,6 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 
 function CentralContentContainer(props) {
   const { notifications, user, socket } = props;
-
-  useEffect(() => {
-    console.log("leafty - dev");
-  }, []);
 
   if (!props.user.logged && (props.location.pathname === Url.get(Url.pages.landing))) {
     return <AnonymousHome client={props.client}
