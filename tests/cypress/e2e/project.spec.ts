@@ -19,14 +19,14 @@
 import "../support/utils";
 import Fixtures from "../support/renkulab-fixtures";
 
-describe.only("display a project - not found", () => {
+describe("display a project - not found", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions();
   });
 
-  it("displays the project not found page when the name is incorrect", () => {
+  it("displays the project not found page when the name is incorrect - logged user", () => {
     fixtures.userTest().errorProject("e2e/not-found-test-project");
     cy.visit("/projects/e2e/not-found-test-project");
 
@@ -50,7 +50,7 @@ describe.only("display a project - not found", () => {
       );
   });
 
-  it("displays the project not found page when the name is incorrect", () => {
+  it("displays the project not found page when the name is incorrect - anon user", () => {
     fixtures.userNone().errorProject("e2e/not-found-test-project");
     cy.visit("/projects/e2e/not-found-test-project");
 
@@ -74,7 +74,7 @@ describe.only("display a project - not found", () => {
       );
   });
 
-  it("displays the project not found page when the name is incorrect", () => {
+  it("displays the project not found page when the numeric id is incorrect - logged user", () => {
     fixtures.userTest().errorProject("12345");
     cy.visit("/projects/12345");
 
@@ -98,7 +98,7 @@ describe.only("display a project - not found", () => {
       );
   });
 
-  it("displays the project not found page when the name is incorrect", () => {
+  it("displays the project not found page when the numeric id is incorrect - anon user", () => {
     fixtures.userNone().errorProject("12345");
     cy.visit("/projects/12345");
 
