@@ -41,29 +41,30 @@ class Time {
 
   static toIsoString(inputDate, type = "datetime") {
     const date = this.parseDate(inputDate);
+    //get the timezone of the date
+    const timeZoneOffsetInMinutes = date.getTimezoneOffset();
+    const timeZoneOffsetInHours = timeZoneOffsetInMinutes / 60;
+    const timeZone = `GMT${timeZoneOffsetInHours >= 0 ? "-" : "+"}${Math.abs(
+      timeZoneOffsetInHours
+    )}`;
+
     const readableDate = date.toISOString().substring(0, 19).replace("T", " ");
+
     if (type === "datetime") return readableDate;
     else if (type === "datetime-short") return readableDate.substring(0, 16);
     else if (type === "date") return readableDate.substring(0, 10);
     else if (type === "time") return readableDate.substring(11);
-
+    else if (type === "datetime-timezone") return readableDate + " " + timeZone;
     throw new Error(`Unknown type "${type}"`);
   }
 
   static toIsoTimezoneString(inputDate, type = "datetime") {
-    try {
-      // add the timezone manually and then convert to ISO string
-      const date = this.parseDate(inputDate);
-      const isoDate = new Date(
-        date.getTime() - date.getTimezoneOffset() * 60000
-      ).toISOString();
-      return this.toIsoString(isoDate, type);
-    } catch (error) {
-      if (error.message === "Invalid date") {
-        return "Invalid date";
-      }
-      throw error;
-    }
+    // add the timezone manually and then convert to ISO string
+    const date = this.parseDate(inputDate);
+    const isoDate = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000
+    ).toISOString();
+    return this.toIsoString(isoDate, type);
   }
 
   static getReadableDate(inputDate) {
