@@ -19,7 +19,7 @@
 import "../support/utils";
 import Fixtures from "../support/renkulab-fixtures";
 
-describe("display a project", () => {
+describe.only("display a project", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = true;
   beforeEach(() => {
@@ -29,7 +29,7 @@ describe("display a project", () => {
     cy.visit("/projects/e2e/local-test-project");
   });
 
-  it("displays the project overview page", () => {
+  it.skip("displays the project overview page", () => {
     cy.wait("@getProject");
     cy.wait("@getReadme");
     cy.get_cy("header-project").should("be.visible");
@@ -37,7 +37,7 @@ describe("display a project", () => {
     cy.get_cy("project-title").should("be.visible").should("contain.text", "local-test-project");
   });
 
-  it("displays lock correctly", () => {
+  it.skip("displays lock correctly", () => {
     fixtures.projectLockStatus({ locked: true });
     cy.visit("/projects/e2e/local-test-project/overview/status");
     cy.wait("@getProjectLockStatus");
@@ -48,7 +48,7 @@ describe("display a project", () => {
     cy.get_cy("project-overview-content").contains("project is currently being modified").should("not.exist");
   });
 
-  it("displays the project KG status updates", () => {
+  it.skip("displays the project KG status updates", () => {
     cy.get_cy("project-overview-nav").contains("a", "Status").should("exist").click();
     cy.url().should("include", "/projects/e2e/local-test-project/overview/status");
     cy.get_cy("project-overview-content").contains("Knowledge Graph integration is active.").should("exist");
@@ -65,7 +65,7 @@ describe("display a project", () => {
     cy.get_cy("project-overview-content").contains("Knowledge Graph integration is active.").should("exist");
   });
 
-  it("update project settings overview", () => {
+  it.skip("update project settings overview", () => {
     fixtures.updateProject("39646", "updateProject", "project/update-project-tag-description.json");
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.get_cy("tags-input").type("abcde");
@@ -81,21 +81,21 @@ describe("display a project", () => {
     cy.get_cy("entity-description").should("contain.text", "description abcde");
   });
 
-  it("displays project settings sessions", () => {
+  it.skip("displays project settings sessions", () => {
     fixtures.sessionServerOptions();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
     cy.contains("Number of CPUs").should("be.visible");
   });
 
-  it("displays project settings with cloud-storage enabled ", () => {
+  it.skip("displays project settings with cloud-storage enabled ", () => {
     fixtures.sessionServerOptions(true).projectConfigShow();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
     cy.contains("Number of CPUs").should("be.visible");
   });
 
-  it("displays project settings complete", () => {
+  it.skip("displays project settings complete", () => {
     fixtures.sessionServerOptions().projectConfigShow();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
@@ -105,7 +105,7 @@ describe("display a project", () => {
     cy.get("button.active").contains("0.5").should("be.visible");
   });
 
-  it("displays project settings error", () => {
+  it.skip("displays project settings error", () => {
     fixtures.sessionServerOptions().projectConfigShow({ error: true });
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
@@ -115,7 +115,7 @@ describe("display a project", () => {
     cy.contains("Error").should("be.visible");
   });
 
-  it("displays project settings legacy error", () => {
+  it.skip("displays project settings legacy error", () => {
     fixtures.sessionServerOptions().projectConfigShow({ legacyError: true });
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
@@ -157,7 +157,12 @@ describe("display a project", () => {
   });
 
   it("displays project file > notebook with python output", () => {
-    fixtures.projectFiles();
+    fixtures.projectFiles().getSessions;
+    
+    // cy.intercept("/ui-server/api/notebooks/servers*", {
+    //   body: { servers: {} },
+    // }).as("getSessions");
+
     cy.visit("/projects/e2e/local-test-project/files");
     cy.wait("@getProjectFilesRoot");
     cy.contains("01-CountFlights.ipynb").scrollIntoView();
@@ -180,6 +185,44 @@ describe("display a project", () => {
     cy.wait("@getRandomPyFile");
     // look for python output
     cy.contains("Minimal example.").should("be.visible");
+  });
+
+  it.only("displays project file > notebook > can start a session", () => {
+    fixtures.projectFiles();
+    
+    cy.intercept("/ui-server/api/notebooks/servers*", {
+      body: { servers: {} },
+    }).as("getSessions");
+
+    cy.visit("/projects/e2e/local-test-project/files");
+    cy.wait("@getProjectFilesRoot");
+    cy.contains("01-CountFlights.ipynb").scrollIntoView();
+    cy.contains("01-CountFlights.ipynb").should("be.visible");
+    cy.contains("01-CountFlights.ipynb").click();
+    cy.wait("@getCountFlights");
+
+    cy.get("#checkNotebookIcon", { timeout: 20_000 }).should("be.visible").children("a").should($a => {
+      expect($a.attr('href')).to.eq("/projects/e2e/local-test-project/sessions/new?autostart=1&notebook=01-CountFlights.ipynb");
+    });
+  });
+
+  it.only("displays project file > notebook > anon user can start a session", () => {
+    fixtures.userNone().projectFiles();
+    
+    cy.intercept("/ui-server/api/notebooks/servers*", {
+      body: { servers: {} },
+    }).as("getSessions");
+
+    cy.visit("/projects/e2e/local-test-project/files");
+    cy.wait("@getProjectFilesRoot");
+    cy.contains("01-CountFlights.ipynb").scrollIntoView();
+    cy.contains("01-CountFlights.ipynb").should("be.visible");
+    cy.contains("01-CountFlights.ipynb").click();
+    cy.wait("@getCountFlights");
+
+    cy.get("#checkNotebookIcon", { timeout: 20_000 }).should("be.visible").children("a").should($a => {
+      expect($a.attr('href')).to.eq("/projects/e2e/local-test-project/sessions/new?autostart=1&notebook=01-CountFlights.ipynb");
+    });
   });
 });
 

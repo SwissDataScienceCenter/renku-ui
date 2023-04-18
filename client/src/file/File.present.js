@@ -432,7 +432,7 @@ const StyledNotebook = memo((props) => {
 }, _.isEqual);
 StyledNotebook.displayName = "StyledNotebook";
 
-const JupyterButtonPresent = ({ props }) => {
+const JupyterButtonPresent = (props) => {
   if (!props.access) {
     return (
       <CheckNotebookIcon
