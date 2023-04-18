@@ -194,7 +194,7 @@ describe("display a project", () => {
     cy.contains("01-CountFlights.ipynb").should("be.visible");
     cy.contains("01-CountFlights.ipynb").click();
     cy.wait("@getCountFlights");
-    cy.get("#checkNotebookIcon", { timeout: 10_000 })
+    cy.get("[data-cy='check-notebook-icon']", { timeout: 10_000 })
       .should("be.visible")
       .children("a")
       .should(($a) => {
@@ -216,7 +216,7 @@ describe("display a project", () => {
     cy.contains("01-CountFlights.ipynb").should("be.visible");
     cy.contains("01-CountFlights.ipynb").click();
     cy.wait("@getCountFlights");
-    cy.get("#checkNotebookIcon")
+    cy.get_cy("check-notebook-icon")
       .should("be.visible")
       .children("a")
       .should(($a) => {

@@ -1271,7 +1271,7 @@ const CheckNotebookIcon = ({
 
   return (
     <>
-      <span id="checkNotebookIcon" className={aligner}>
+      <span id="checkNotebookIcon" className={aligner} data-cy="check-notebook-icon">
         {link}
       </span>
       <ThrottledTooltip target="checkNotebookIcon" tooltip={tooltip} />
