@@ -1,5 +1,5 @@
 .template-card:hover {
-    border: 1px solid;
+    box-shadow: 0 0 0 1px var(--bs-rk-green), 0 4.0px 10.0px 0 rgba(0, 0, 0, 0.1);
     border-color: var(--bs-rk-green);
 }
 
@@ -12,18 +12,19 @@
 }
 
 .template--active:hover {
-    border-color: #009568;
+    border-color: var(--bs-rk-green);
 }
 
 .template--active:hover .card-footer {
-    border-color: #009568;
-    color: #009568;
+    border-color: var(--bs-rk-green);
+    color: var(--bs-rk-green);
     background-color: white;
 }
 
 .template--active.selected {
-    border: 2.5px solid #009568;
-    color: #009568;
+    box-shadow: 0 0 0 2px var(--bs-rk-green), 0 4.0px 10.0px 0 rgba(0, 0, 0, 0.1);
+    border-color: var(--bs-rk-green);
+    color: var(--bs-rk-green);
 }
 
 .template-card img {
