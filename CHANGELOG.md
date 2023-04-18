@@ -1,5 +1,21 @@
 # Changes
 
+## [3.4.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.4.1...3.4.2) (2023-04-18)
+
+### Features
+
+* use dropdown for session options when the number of choices is too large for a button group ([#2461](https://github.com/SwissDataScienceCenter/renku-ui/issues/2461), [#2237](https://github.com/SwissDataScienceCenter/renku-ui/issues/2237))
+
+### Bug Fixes
+
+* prevent dropping pinned images ([#2466](https://github.com/SwissDataScienceCenter/renku-ui/issues/2466), [#2458](https://github.com/SwissDataScienceCenter/renku-ui/issues/2458))
+* ignore deleted projects when showing the dashboard ([#2465](https://github.com/SwissDataScienceCenter/renku-ui/issues/2465), [#2437](https://github.com/SwissDataScienceCenter/renku-ui/issues/2437))
+* make the sessions list fork button work ([#2451](https://github.com/SwissDataScienceCenter/renku-ui/issues/2451), ([#2452](https://github.com/SwissDataScienceCenter/renku-ui/issues/2452))
+* remove conspicuous commas in the add dataset screen ([#2472](https://github.com/SwissDataScienceCenter/renku-ui/issues/2472))
+* skip the workflow list query if the backend does not support the project ([#2460](https://github.com/SwissDataScienceCenter/renku-ui/issues/2460), [#2443](https://github.com/SwissDataScienceCenter/renku-ui/issues/2443))
+* fix notebookWarning broken invocation ([#2474](https://github.com/SwissDataScienceCenter/renku-ui/issues/2474))
+
+
 ## [3.4.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.4.0...3.4.1) (2023-03-30)
 
 ### Features
