@@ -1215,8 +1215,6 @@ const CheckNotebookIcon = ({
     icon,
     aligner = null;
   if (notebook) {
-    console.log('if notebook');
-
     const status = notebook.status?.state;
     if (status === SessionStatus.running) {
       const annotations = NotebooksHelper.cleanAnnotations(
@@ -1231,7 +1229,8 @@ const CheckNotebookIcon = ({
       tooltip = "Connect to JupyterLab";
       icon = <JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />;
       link = <Link to={{ pathname: sessionUrl, state }}>{icon}</Link>;
-    } else if (
+    }
+    else if (
       status === SessionStatus.starting ||
       status === SessionStatus.stopping
     ) {
@@ -1241,7 +1240,8 @@ const CheckNotebookIcon = ({
           : "The session is starting, please wait...";
       aligner = "pb-1";
       link = loader;
-    } else {
+    }
+    else {
       tooltip = "Check session status";
       icon = (
         <JupyterIcon
@@ -1251,7 +1251,8 @@ const CheckNotebookIcon = ({
       );
       link = <Link to={launchNotebookUrl}>{icon}</Link>;
     }
-  } else {
+  }
+  else {
     const successUrl = location ? location.pathname : null;
     const target = {
       pathname: launchNotebookUrl,
