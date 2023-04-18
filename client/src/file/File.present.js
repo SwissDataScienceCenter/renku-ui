@@ -435,7 +435,12 @@ StyledNotebook.displayName = "StyledNotebook";
 class JupyterButtonPresent extends React.Component {
   render() {
     if (!this.props.access)
-      return <CheckNotebookIcon fetched={true} launchNotebookUrl={this.props.launchNotebookUrl} />;
+      return <CheckNotebookIcon
+      fetched={true}
+      location={this.props.location}
+      launchNotebookUrl={this.props.launchNotebookUrl}
+      filePath={this.props.filePath}
+      />;
 
     if (this.props.updating)
       return (<span className="ms-2 pb-1"><Loader size="19" inline="true" /></span>);
