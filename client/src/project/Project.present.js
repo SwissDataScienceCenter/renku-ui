@@ -1020,9 +1020,6 @@ class NotFoundInsideProject extends Component {
 
 function ProjectView(props) {
   const available = props.metadata ? props.metadata.exists : null;
-  // const projectPathWithNamespaceOrId = props.projectPathWithNamespace
-  //   ? props.projectPathWithNamespace
-  //   : props.projectId;
 
   if (props.namespace && !props.projectPathWithNamespace) {
     return <NamespaceProjects namespace={props.namespace} client={props.client} />;
