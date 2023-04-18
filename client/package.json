@@ -29,7 +29,7 @@
     "human-time": "^0.0.2",
     "immutability-helper": "^3.0.1",
     "immutable": "^4.3.0",
-    "jquery": "^3.6.3",
+    "jquery": "^3.6.4",
     "jszip": "^3.10.1",
     "npm-run-all": "^4.1.5",
     "popper.js": "^1.16.0",
