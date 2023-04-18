@@ -1252,7 +1252,20 @@ class CheckNotebookIcon extends Component {
       </>
     );
   }
+<<<<<<< HEAD
 }
+=======
+
+  return (
+    <>
+      <span id="checkNotebookIcon" className={aligner} data-cy="check-notebook-icon">
+        {link}
+      </span>
+      <ThrottledTooltip target="checkNotebookIcon" tooltip={tooltip} />
+    </>
+  );
+};
+>>>>>>> 81e167e5... use data-cy
 
 export {
   CheckNotebookIcon, StartNotebookServer, mergeEnumOptions, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,
