@@ -141,7 +141,7 @@ describe("Add dataset to new project", () => {
 
 });
 
-describe.only("Invalid dataset", () => {
+describe("Invalid dataset", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   beforeEach(() => {
