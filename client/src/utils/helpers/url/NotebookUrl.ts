@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,13 +16,26 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  utils/url
- *  Components for the Url helper class
- */
+export const appendCustomUrlPath = (args: {
+  notebookUrl: string;
+  customUrlPath: string;
+}): string => {
+  const { notebookUrl, customUrlPath } = args;
+  if (!customUrlPath) return notebookUrl;
 
-import { Url, getSearchParams } from "./Url";
-
-export { Url, getSearchParams };
+  try {
+    const baseUrl = new URL(notebookUrl);
+    if (!baseUrl.pathname.endsWith("/"))
+      baseUrl.pathname = `${baseUrl.pathname}/`;
+    const withFullPath = new URL(
+      customUrlPath.startsWith("/") ? `.${customUrlPath}` : customUrlPath,
+      baseUrl
+    );
+    baseUrl.pathname = withFullPath.pathname;
+    return baseUrl.href;
+  }
+  catch (error) {
+    if (error instanceof TypeError) return notebookUrl;
+    throw error;
+  }
+};
