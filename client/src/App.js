@@ -38,7 +38,7 @@ import { AnonymousHome, RenkuNavBar, FooterNavbar } from "./landing";
 import { Notebooks } from "./notebooks";
 import { Login, LoginHelper } from "./authentication";
 import Help from "./help";
-import NotFound from "./not-found";
+import { NotFound } from "./not-found";
 import ShowDataset from "./dataset/Dataset.container";
 import { Cookie, Privacy } from "./privacy";
 import { NotificationsManager, NotificationsPage } from "./notifications";
