@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,23 +16,26 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  NotFound.container.js
- *  Container components for not-found
- */
+export const appendCustomUrlPath = (args: {
+  notebookUrl: string;
+  customUrlPath: string;
+}): string => {
+  const { notebookUrl, customUrlPath } = args;
+  if (!customUrlPath) return notebookUrl;
 
-import React, { Component } from "react";
-
-import { NotFound as NotFoundPresent } from "./NotFound.present";
-
-class NotFound extends Component {
-  render() {
-    return (
-      <NotFoundPresent {...this.props} />
+  try {
+    const baseUrl = new URL(notebookUrl);
+    if (!baseUrl.pathname.endsWith("/"))
+      baseUrl.pathname = `${baseUrl.pathname}/`;
+    const withFullPath = new URL(
+      customUrlPath.startsWith("/") ? `.${customUrlPath}` : customUrlPath,
+      baseUrl
     );
+    baseUrl.pathname = withFullPath.pathname;
+    return baseUrl.href;
   }
-}
-
-export { NotFound };
+  catch (error) {
+    if (error instanceof TypeError) return notebookUrl;
+    throw error;
+  }
+};

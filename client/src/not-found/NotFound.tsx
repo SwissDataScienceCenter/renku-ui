@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,27 +19,50 @@
 /**
  *  renku-ui
  *
- *  NotFound.present.js
- *  Presentational components for not-found
+ *  not-found
+ *  Components for the not-found page
  */
 
-import React from "react";
+import React, { ReactNode } from "react";
+import { faHome } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import { Button } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
 import "./NotFound.css";
 
-const NotFound = (props) => {
-  const title = props.title ?? "Page not found";
-  const description = props.description ?? "We cannot seem to find the page you are looking for, sorry!";
+interface NotFoundProps {
+  title?: string;
+  description?: string | ReactNode;
+  children?: ReactNode;
+}
+
+export const NotFound = ({
+  title: title_,
+  description: description_,
+  children,
+}: NotFoundProps) => {
+  const title = title_ ?? "Page not found";
+  const description =
+    description_ ??
+    "We cannot seem to find the page you are looking for, sorry!";
+  const descriptionType = typeof description;
+  const Tag =
+    descriptionType === "string" ||
+    descriptionType === "number" ||
+    descriptionType === "boolean"
+      ? "p"
+      : "div";
   return (
     <div className="not-found-box">
       <div className="container-xxl pt-5 renku-container">
         <div className="not-found-box-text">
-          <h1 className="title">404</h1>
-          <h3 className="subtitle">{title}</h3>
-          <p>{description}</p>
+          <h1 className="title" data-cy="not-found-title">
+            404
+          </h1>
+          <h3 className="subtitle" data-cy="not-found-subtitle">
+            {title}
+          </h3>
+          <Tag data-cy="not-found-description">{description}</Tag>
           <div className="mt-5">
             <Link to="/">
               <Button className="btn-rk-green btn-icon-text">
@@ -48,10 +71,12 @@ const NotFound = (props) => {
             </Link>
           </div>
         </div>
-        {props.children == null ? null : <div className="not-found-box-text mt-4">{props.children}</div>}
+        {children == null ? null : (
+          <div className="not-found-box-text mt-4" data-cy="not-found-children">
+            {children}
+          </div>
+        )}
       </div>
     </div>
   );
 };
-
-export { NotFound };
