@@ -20,7 +20,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import { ErrorAlert } from "../components/Alert";
 import LoginAlert from "../components/loginAlert/LoginAlert";
-import NotFound from "../not-found";
+import { NotFound } from "../not-found";
 import { Url } from "../utils/helpers/url";
 
 /**

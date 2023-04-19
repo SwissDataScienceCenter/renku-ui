@@ -19,20 +19,8 @@
 /**
  *  renku-ui
  *
- *  NotFound.container.js
- *  Container components for not-found
+ *  not-found
+ *  Components for the not-found page
  */
 
-import React, { Component } from "react";
-
-import { NotFound as NotFoundPresent } from "./NotFound.present";
-
-class NotFound extends Component {
-  render() {
-    return (
-      <NotFoundPresent {...this.props} />
-    );
-  }
-}
-
-export { NotFound };
+export { NotFound } from "./NotFound";
