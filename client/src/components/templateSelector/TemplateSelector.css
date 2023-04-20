@@ -1,5 +1,5 @@
 .template-card:hover {
-    box-shadow: 0 0 0 1px var(--bs-rk-green), 0 4.0px 10.0px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 1px var(--bs-rk-green), var(--rk-box-shadow);
     border-color: var(--bs-rk-green);
 }
 
@@ -22,7 +22,7 @@
 }
 
 .template--active.selected {
-    box-shadow: 0 0 0 2px var(--bs-rk-green), 0 4.0px 10.0px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 2px var(--bs-rk-green), var(--rk-box-shadow);
     border-color: var(--bs-rk-green);
     color: var(--bs-rk-green);
 }
