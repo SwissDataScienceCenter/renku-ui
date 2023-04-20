@@ -36,7 +36,7 @@ import {
 } from "./NotebookStart.present";
 import { formatBytes, simpleHash } from "../utils/helpers/HelperFunctions";
 import Time from "../utils/helpers/Time";
-import { Url } from "../utils/helpers/url";
+import { Url, appendCustomUrlPath } from "../utils/helpers/url";
 import Sizes from "../utils/constants/Media";
 import { ExternalLink } from "../components/ExternalLinks";
 import { ButtonWithMenu } from "../components/buttons/Button";
@@ -100,7 +100,12 @@ function SessionJupyter(props) {
     const status = notebook.data.status.state;
     if (status === SessionStatus.running) {
       const locationFilePath = history?.location?.state?.filePath;
-      const notebookUrl = locationFilePath ? `${notebook.data.url}/lab/tree/${locationFilePath}` : notebook.data.url;
+      const notebookUrl = locationFilePath
+        ? appendCustomUrlPath({
+          notebookUrl: notebook.data.url,
+          customUrlPath: `/lab/tree/${locationFilePath}`,
+        })
+        : notebook.data.url;
       content = (
         <iframe id="session-iframe" title="session iframe" src={notebookUrl}
           style={{ display: ready ? "block" : "none" }}

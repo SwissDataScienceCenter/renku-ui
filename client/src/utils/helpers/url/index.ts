@@ -23,6 +23,5 @@
  *  Components for the Url helper class
  */
 
-import { Url, getSearchParams } from "./Url";
-
-export { Url, getSearchParams };
+export { appendCustomUrlPath } from "./NotebookUrl";
+export { Url, getSearchParams } from "./Url";

@@ -59,9 +59,9 @@ import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
 import { InfoAlert } from "../components/Alert";
 import { RenkuNavLink } from "../components/RenkuNavLink";
 import { Loader } from "../components/Loader";
+import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
 import { TimeCaption } from "../components/TimeCaption";
 import { Docs } from "../utils/constants/Docs";
-import { NotFound } from "../not-found/NotFound.present";
 import { ContainerWrap } from "../App";
 import { ThrottledTooltip } from "../components/Tooltip";
 import { SshModal } from "../components/ssh/ssh";
@@ -981,53 +981,6 @@ function ProjectSettings(props) {
   );
 }
 
-class ProjectViewNotFound extends Component {
-  render() {
-    let tip;
-    if (this.props.logged) {
-      tip = (
-        <>
-          <p>If you are sure the project exists, you may want to try the following:</p>
-          <ul className="mb-0">
-            <li>Do you have multiple accounts? Are you logged in with the right user?</li>
-            <li>
-              If you received this link from someone, ask that person to make sure you have access to the project.
-            </li>
-          </ul>
-        </>
-      );
-    }
-    else {
-      const to = Url.get(Url.pages.login.link, { pathname: this.props.location.pathname });
-      tip = (
-        <>
-          <p>
-            You might need to be logged in to see this project. Please try to{" "}
-            <Link className="btn btn-secondary btn-sm" to={to}>
-              Log in
-            </Link>
-          </p>
-        </>
-      );
-    }
-
-    // eslint-disable-next-line max-len
-    const notFoundDescription = (
-      <>
-        <p>
-          We could not find project with path <i>{this.props.projectPathWithNamespace}</i>.
-        </p>
-        <p>It is possible that the project has been deleted by its owner or you do not have permission to access it.</p>
-      </>
-    );
-    return (
-      <NotFound title="Project not found" description={notFoundDescription}>
-        {tip}
-      </NotFound>
-    );
-  }
-}
-
 class ProjectViewLoading extends Component {
   render() {
     const info = this.props.projectId ? (
@@ -1067,14 +1020,11 @@ class NotFoundInsideProject extends Component {
 
 function ProjectView(props) {
   const available = props.metadata ? props.metadata.exists : null;
-  const projectPathWithNamespaceOrId = props.projectPathWithNamespace
-    ? props.projectPathWithNamespace
-    : props.projectId;
 
   if (props.namespace && !props.projectPathWithNamespace) {
     return <NamespaceProjects namespace={props.namespace} client={props.client} />;
   }
-  else if (available == null || available === SpecialPropVal.UPDATING || props.projectId) {
+  else if (available == null || available === SpecialPropVal.UPDATING || (props.projectId && available !== false)) {
     return (
       <ContainerWrap>
         <ProjectViewLoading projectPathWithNamespace={props.projectPathWithNamespace} projectId={props.projectId} />
@@ -1085,8 +1035,9 @@ function ProjectView(props) {
     const { logged } = props.user;
     return (
       <ProjectViewNotFound
-        projectPathWithNamespace={projectPathWithNamespaceOrId}
-        logged={logged}
+        userLogged={logged}
+        projectPathWithNamespace={props.projectPathWithNamespace}
+        projectId={props.projectId}
         location={props.location}
       />
     );

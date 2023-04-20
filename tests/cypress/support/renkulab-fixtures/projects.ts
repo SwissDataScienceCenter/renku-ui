@@ -107,6 +107,12 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         `/ui-server/api/projects/${encodeURIComponent(path)}?statistics=*`,
         fixture
       ).as(name);
+
+      cy.intercept(
+        "/ui-server/api/projects/null/repository/branches?per_page=100&page=1",
+        { statusCode: 404 }
+      ).as("getErrorProjectBranches");
+
       return this;
     }
 
