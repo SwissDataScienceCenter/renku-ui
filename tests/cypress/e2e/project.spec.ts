@@ -261,7 +261,7 @@ describe("display a project", () => {
   });
 
   it("displays project file > notebook with python output", () => {
-    fixtures.projectFiles();
+    fixtures.projectFiles().getSessions;
     cy.visit("/projects/e2e/local-test-project/files");
     cy.wait("@getProjectFilesRoot");
     cy.contains("01-CountFlights.ipynb").scrollIntoView();
@@ -284,6 +284,50 @@ describe("display a project", () => {
     cy.wait("@getRandomPyFile");
     // look for python output
     cy.contains("Minimal example.").should("be.visible");
+  });
+
+  it("displays project file > notebook > can start a session", () => {
+    fixtures.projectFiles();
+    cy.intercept("/ui-server/api/notebooks/servers*", {
+      body: { servers: {} },
+    }).as("getSessions");
+
+    cy.visit("/projects/e2e/local-test-project/files");
+    cy.wait("@getProjectFilesRoot");
+    cy.contains("01-CountFlights.ipynb").scrollIntoView();
+    cy.contains("01-CountFlights.ipynb").should("be.visible");
+    cy.contains("01-CountFlights.ipynb").click();
+    cy.wait("@getCountFlights");
+    cy.get("[data-cy='check-notebook-icon']", { timeout: 10_000 })
+      .should("be.visible")
+      .children("a")
+      .should(($a) => {
+        expect($a.attr("href")).to.eq(
+          "/projects/e2e/local-test-project/sessions/new?autostart=1&notebook=01-CountFlights.ipynb"
+        );
+      });
+  });
+
+  it("displays project file > notebook > anon user can start a session", () => {
+    fixtures.userNone().projectFiles();
+    cy.intercept("/ui-server/api/notebooks/servers*", {
+      body: { servers: {} },
+    }).as("getSessions");
+
+    cy.visit("/projects/e2e/local-test-project/files");
+    cy.wait("@getProjectFilesRoot");
+    cy.contains("01-CountFlights.ipynb").scrollIntoView();
+    cy.contains("01-CountFlights.ipynb").should("be.visible");
+    cy.contains("01-CountFlights.ipynb").click();
+    cy.wait("@getCountFlights");
+    cy.get_cy("check-notebook-icon")
+      .should("be.visible")
+      .children("a")
+      .should(($a) => {
+        expect($a.attr("href")).to.eq(
+          "/projects/e2e/local-test-project/sessions/new?autostart=1&notebook=01-CountFlights.ipynb"
+        );
+      });
   });
 });
 

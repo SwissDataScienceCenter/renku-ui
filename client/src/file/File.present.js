@@ -432,26 +432,37 @@ const StyledNotebook = memo((props) => {
 }, _.isEqual);
 StyledNotebook.displayName = "StyledNotebook";
 
-class JupyterButtonPresent extends React.Component {
-  render() {
-    if (!this.props.access)
-      return <CheckNotebookIcon fetched={true} launchNotebookUrl={this.props.launchNotebookUrl} />;
-
-    if (this.props.updating)
-      return (<span className="ms-2 pb-1"><Loader size="19" inline="true" /></span>);
-
+const JupyterButtonPresent = (props) => {
+  if (!props.access) {
     return (
-      <CheckNotebookStatus
-        client={this.props.client}
-        model={this.props.model}
-        scope={this.props.scope}
-        location={this.props.location}
-        launchNotebookUrl={this.props.launchNotebookUrl}
-        filePath={this.props.filePath}
+      <CheckNotebookIcon
+        fetched={true}
+        location={props.location}
+        launchNotebookUrl={props.launchNotebookUrl}
+        filePath={props.filePath}
       />
     );
   }
-}
+
+  if (props.updating) {
+    return (
+      <span className="ms-2 pb-1">
+        <Loader size="19" inline="true" />
+      </span>
+    );
+  }
+
+  return (
+    <CheckNotebookStatus
+      client={props.client}
+      model={props.model}
+      scope={props.scope}
+      location={props.location}
+      launchNotebookUrl={props.launchNotebookUrl}
+      filePath={props.filePath}
+    />
+  );
+};
 
 export {
   JupyterButtonPresent, FileNoPreview, NotebookSourceDisplayMode, ShowFile, StyledNotebook,
