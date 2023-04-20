@@ -23,7 +23,7 @@
  *  Project settings presentational components.
  */
 
-import React, { Component, Fragment, useEffect, useState } from "react";
+import React, { Component, Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Button, Col, Collapse, Form, FormGroup,
@@ -70,12 +70,6 @@ function ProjectSettingsNav(props) {
 //** General settings **//
 
 function ProjectSettingsGeneral(props) {
-  useEffect(() => {
-    return function cleanup () {
-      props?.fetchProject(true);
-    };
-  }, []); // eslint-disable-line
-
   const gitCommands = (
     <>
       <RepositoryClone {...props} />

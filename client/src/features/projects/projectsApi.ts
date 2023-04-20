@@ -53,7 +53,7 @@ function convertProjects(response: any): MemberProjectResponse {
   }
 }
 
-export const projectApi = createApi({
+export const projectsApi = createApi({
   reducerPath: "projects",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
   endpoints: (builder) => ({
@@ -154,4 +154,4 @@ export const {
   useGetGroupByPathQuery,
   useGetMemberProjectsQuery,
   useGetRecentlyVisitedProjectsQuery,
-} = projectApi;
+} = projectsApi;

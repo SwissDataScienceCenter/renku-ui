@@ -16,23 +16,17 @@
  * limitations under the License.
  */
 
-import * as React from "react";
-
-import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
-import EntityHeader from "../../../components/entityHeader/EntityHeader";
-import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
-
-type ProjectEntityHeaderProps = EntityHeaderProps & { isInKg: boolean };
-
-function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
-  const { fullPath } = props;
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  const { data: _kgData } = useProjectMetadataQuery(
-    { projectPath: fullPath },
-    { skip: !fullPath || props.isInKg != true }
-  );
-  return <EntityHeader {...props} />;
+interface CoreErrorContent {
+  code: number;
+  devMessage: string;
+  devReference?: string;
+  sentry?: string;
+  userMessage: string;
+  userReference?: string;
 }
 
-export default ProjectEntityHeader;
+interface CoreErrorResponse {
+  error: CoreErrorContent
+}
+
+export type { CoreErrorContent, CoreErrorResponse };

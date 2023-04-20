@@ -24,36 +24,42 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { projectKgApi } from "../../features/projects/ProjectKgApi";
-import { sessionSidecarApi } from "../../features/session/sidecarApi";
-import { projectApi } from "../../features/projects/ProjectsApi";
-import { projectCoreApi } from "../../features/project/projectCoreApi";
+
+import displaySlice from "../../features/display/displaySlice";
 import { kgSearchApi } from "../../features/kgSearch";
-import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import kgInactiveProjectsSlice from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
+import { projectCoreApi } from "../../features/project/projectCoreApi";
+import { projectKgApi } from "../../features/project/projectKgApi";
+import { projectsApi } from "../../features/projects/projectsApi";
+import { projectsKgApi } from "../../features/projects/projectsKgApi";
+import { projectVersionApi } from "../../features/project/projectVersionApi";
+import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import { sessionApi } from "../../features/session/sessionApi";
+import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import { versionsApi } from "../../features/versions/versionsApi";
-import displaySlice from "../../features/display/displaySlice";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import workflowsSlice from "../../features/workflows/WorkflowsSlice";
+
 
 function createStore(renkuStateModelReducer) {
   return createStoreWithEnhancers(renkuStateModelReducer);
 }
 
 function createStoreWithEnhancers(renkuStateModelReducer, enhancers = undefined) {
-  renkuStateModelReducer[kgSearchApi.reducerPath] = kgSearchApi.reducer;
-  renkuStateModelReducer[projectApi.reducerPath] = projectApi.reducer;
-  renkuStateModelReducer[projectCoreApi.reducerPath] = projectCoreApi.reducer;
-  renkuStateModelReducer[projectKgApi.reducerPath] = projectKgApi.reducer;
-  renkuStateModelReducer[sessionSidecarApi.reducerPath] = sessionSidecarApi.reducer;
-  renkuStateModelReducer[sessionApi.reducerPath] = sessionApi.reducer;
-  renkuStateModelReducer[recentUserActivityApi.reducerPath] = recentUserActivityApi.reducer;
+  renkuStateModelReducer[displaySlice.name] = displaySlice.reducer;
   renkuStateModelReducer[inactiveKgProjectsApi.reducerPath] = inactiveKgProjectsApi.reducer;
   renkuStateModelReducer[kgInactiveProjectsSlice.name] = kgInactiveProjectsSlice.reducer;
+  renkuStateModelReducer[kgSearchApi.reducerPath] = kgSearchApi.reducer;
+  renkuStateModelReducer[projectCoreApi.reducerPath] = projectCoreApi.reducer;
+  renkuStateModelReducer[projectKgApi.reducerPath] = projectKgApi.reducer;
+  renkuStateModelReducer[projectsKgApi.reducerPath] = projectsKgApi.reducer;
+  renkuStateModelReducer[projectsApi.reducerPath] = projectsApi.reducer;
+  renkuStateModelReducer[projectVersionApi.reducerPath] = projectVersionApi.reducer;
+  renkuStateModelReducer[recentUserActivityApi.reducerPath] = recentUserActivityApi.reducer;
+  renkuStateModelReducer[sessionApi.reducerPath] = sessionApi.reducer;
+  renkuStateModelReducer[sessionSidecarApi.reducerPath] = sessionSidecarApi.reducer;
   renkuStateModelReducer[versionsApi.reducerPath] = versionsApi.reducer;
-  renkuStateModelReducer[displaySlice.name] = displaySlice.reducer;
   renkuStateModelReducer[workflowsApi.reducerPath] = workflowsApi.reducer;
   renkuStateModelReducer[workflowsSlice.name] = workflowsSlice.reducer;
 
@@ -65,13 +71,15 @@ function createStoreWithEnhancers(renkuStateModelReducer, enhancers = undefined)
         immutableCheck: false,
         serializableCheck: false,
       })
-        .concat(kgSearchApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
-        .concat(projectApi.middleware)
+        .concat(kgSearchApi.middleware)
         .concat(projectCoreApi.middleware)
         .concat(projectKgApi.middleware)
-        .concat(sessionSidecarApi.middleware)
+        .concat(projectsKgApi.middleware)
+        .concat(projectsApi.middleware)
+        .concat(projectVersionApi.middleware)
         .concat(recentUserActivityApi.middleware)
+        .concat(sessionSidecarApi.middleware)
         .concat(sessionApi.middleware)
         .concat(versionsApi.middleware)
         .concat(workflowsApi.middleware),
