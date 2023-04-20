@@ -1196,63 +1196,88 @@ class AutosavedDataModal extends Component {
 }
 
 // * CheckNotebookIcon code * //
-class CheckNotebookIcon extends Component {
-  render() {
-    const { fetched, notebook, location, filePath } = this.props;
-    const loader = (<span className="ms-2 pb-1"><Loader size="19" inline="true" /></span>);
-    if (!fetched)
-      return loader;
+const CheckNotebookIcon = ({
+  fetched,
+  notebook,
+  location,
+  filePath,
+  launchNotebookUrl,
+}) => {
+  const loader = (
+    <span className="ms-2 pb-1">
+      <Loader size="19" inline="true" />
+    </span>
+  );
+  if (!fetched) return loader;
 
-    let tooltip, link, icon, aligner = null;
-    if (notebook) {
-      const status = notebook.status?.state;
-      if (status === SessionStatus.running) {
-        const annotations = NotebooksHelper.cleanAnnotations(notebook.annotations);
-        const sessionUrl = Url.get(Url.pages.project.session.show, {
-          namespace: annotations["namespace"],
-          path: annotations["projectName"],
-          server: notebook.name,
-        });
-        const state = { from: location.pathname, filePath };
-        tooltip = "Connect to JupyterLab";
-        icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />);
-        link = <Link to={{ pathname: sessionUrl, state }} >{icon}</Link>;
-      }
-      else if (status === SessionStatus.starting || status === SessionStatus.stopping) {
-        tooltip = status === SessionStatus.stopping ?
-          "The session is stopping, please wait..." :
-          "The session is starting, please wait...";
-        aligner = "pb-1";
-        link = loader;
-      }
-      else {
-        tooltip = "Check session status";
-        icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" grayscale={true} />);
-        link = (<Link to={this.props.launchNotebookUrl}>{icon}</Link>);
-      }
+  let tooltip,
+    link,
+    icon,
+    aligner = null;
+  if (notebook) {
+    const status = notebook.status?.state;
+    if (status === SessionStatus.running) {
+      const annotations = NotebooksHelper.cleanAnnotations(
+        notebook.annotations
+      );
+      const sessionUrl = Url.get(Url.pages.project.session.show, {
+        namespace: annotations["namespace"],
+        path: annotations["projectName"],
+        server: notebook.name,
+      });
+      const state = { from: location.pathname, filePath };
+      tooltip = "Connect to JupyterLab";
+      icon = <JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />;
+      link = <Link to={{ pathname: sessionUrl, state }}>{icon}</Link>;
+    }
+    else if (
+      status === SessionStatus.starting ||
+      status === SessionStatus.stopping
+    ) {
+      tooltip =
+        status === SessionStatus.stopping
+          ? "The session is stopping, please wait..."
+          : "The session is starting, please wait...";
+      aligner = "pb-1";
+      link = loader;
     }
     else {
-      const successUrl = location ?
-        location.pathname :
-        null;
-      const target = {
-        pathname: this.props.launchNotebookUrl,
-        search: "?autostart=1&notebook=" + encodeURIComponent(filePath),
-        state: { successUrl }
-      };
-      tooltip = "Start a session";
-      icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" grayscale={true} />);
-      link = (<Link to={target}>{icon}</Link>);
+      tooltip = "Check session status";
+      icon = (
+        <JupyterIcon
+          svgClass="svg-inline--fa fa-w-16 icon-link"
+          grayscale={true}
+        />
+      );
+      link = <Link to={launchNotebookUrl}>{icon}</Link>;
     }
-
-    return (
-      <>
-        <span id="checkNotebookIcon" className={aligner}>{link}</span>
-        <ThrottledTooltip target="checkNotebookIcon" tooltip={tooltip} />
-      </>
-    );
   }
-}
+  else {
+    const successUrl = location ? location.pathname : null;
+    const target = {
+      pathname: launchNotebookUrl,
+      search: "?autostart=1&notebook=" + encodeURIComponent(filePath),
+      state: { successUrl },
+    };
+    tooltip = "Start a session";
+    icon = (
+      <JupyterIcon
+        svgClass="svg-inline--fa fa-w-16 icon-link"
+        grayscale={true}
+      />
+    );
+    link = <Link to={target}>{icon}</Link>;
+  }
+
+  return (
+    <>
+      <span id="checkNotebookIcon" className={aligner} data-cy="check-notebook-icon">
+        {link}
+      </span>
+      <ThrottledTooltip target="checkNotebookIcon" tooltip={tooltip} />
+    </>
+  );
+};
 
 export {
   CheckNotebookIcon, StartNotebookServer, mergeEnumOptions, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,

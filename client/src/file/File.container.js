@@ -89,12 +89,15 @@ class JupyterButton extends React.Component {
 
   render() {
     const { branches, file, user } = this.props;
+    const filePath = file && file.file_path ? file.file_path : file || "";
 
     // anonymous users can't currently use this feature
     if (!user.logged) {
       return (
         <JupyterButtonPresent
           access={false}
+          filePath={filePath}
+          location={this.props.location}
           launchNotebookUrl={this.props.launchNotebookUrl}
         />
       );
@@ -103,14 +106,6 @@ class JupyterButton extends React.Component {
     let updating = false;
     if (branches.all.fetching || !branches.all.standard.length)
       updating = true;
-
-    let filePath = "";
-    if (file) {
-      if (file.file_path)
-        filePath = file.file_path;
-      else
-        filePath = file;
-    }
 
     return (
       <JupyterButtonPresent
