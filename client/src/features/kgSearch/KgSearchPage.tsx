@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import React, { useContext, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 
 import { Col, Modal, ModalBody, ModalHeader, Row } from "../../utils/ts-wrappers";
 import SortingEntities, { SortingOptions } from "../../components/sortingEntities/SortingEntities";
@@ -26,13 +26,14 @@ import { SearchResultsHeader } from "../../components/searchResultsHeader/Search
 import { SearchResultsContent } from "../../components/searchResultsContent/SearchResultsContent";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
 import { useKgSearchState } from "./KgSearchState";
-import { KgAuthor } from "./KgSearch";
+import { KgAuthor, KgSearchState } from "./KgSearch";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 import { DatesFilter } from "../../components/dateFilter/DateFilter";
 import QuickNav from "../../components/quicknav";
 import AppContext from "../../utils/context/appContext";
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
+import { kgSearchSlice } from "./KgSearchSlice";
 
 
 /* eslint-disable @typescript-eslint/ban-types */
@@ -83,6 +84,18 @@ const ModalFilter = ({
 };
 
 function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
+
+  const kgSearchState = useSelector((state: RootStateOrAny) => state[kgSearchSlice.name] as KgSearchState);
+  const dispatch = useDispatch();
+
+  const setPhrase = useCallback((phrase: string) => dispatch(kgSearchSlice.actions.setPhrase(phrase)), [dispatch]);
+
+  useEffect(() => {
+    console.log({ setPhrase })
+  }, [setPhrase]);
+
+  console.log({ kgSearchState });
+
   const { searchState, setPage, setSort, removeFilters } = useKgSearchState();
   const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = searchState;
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);

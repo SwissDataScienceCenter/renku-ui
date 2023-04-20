@@ -37,6 +37,7 @@ import { versionsApi } from "../../features/versions/versionsApi";
 import displaySlice from "../../features/display/displaySlice";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import workflowsSlice from "../../features/workflows/WorkflowsSlice";
+import { kgSearchSlice } from "../../features/kgSearch/KgSearchSlice";
 
 function createStore(renkuStateModelReducer) {
   return createStoreWithEnhancers(renkuStateModelReducer);
@@ -44,6 +45,7 @@ function createStore(renkuStateModelReducer) {
 
 function createStoreWithEnhancers(renkuStateModelReducer, enhancers = undefined) {
   renkuStateModelReducer[kgSearchApi.reducerPath] = kgSearchApi.reducer;
+  renkuStateModelReducer[kgSearchSlice.name] = kgSearchSlice.reducer;
   renkuStateModelReducer[projectApi.reducerPath] = projectApi.reducer;
   renkuStateModelReducer[projectCoreApi.reducerPath] = projectCoreApi.reducer;
   renkuStateModelReducer[projectKgApi.reducerPath] = projectKgApi.reducer;
