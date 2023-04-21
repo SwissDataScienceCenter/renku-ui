@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { Col, Modal, ModalBody, ModalHeader, Row } from "../../utils/ts-wrappers";
@@ -25,7 +25,6 @@ import { FilterEntitySearch } from "../../components/entitySearchFilter/EntitySe
 import { SearchResultsHeader } from "../../components/searchResultsHeader/SearchResultsHeader";
 import { SearchResultsContent } from "../../components/searchResultsContent/SearchResultsContent";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
-import { searchStringToStateV2, stateToSearchStringV2 } from "./KgSearchState";
 import { KgAuthor } from "./KgSearch";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
@@ -33,8 +32,7 @@ import { DatesFilter } from "../../components/dateFilter/DateFilter";
 import QuickNav from "../../components/quicknav";
 import AppContext from "../../utils/context/appContext";
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
-import { useKgSearchSlice } from "./KgSearchSlice";
-import { useHistory, useLocation } from "react-router";
+import { useKgSearchBrowserHistory, useKgSearchSlice } from "./KgSearchSlice";
 
 
 /* eslint-disable @typescript-eslint/ban-types */
@@ -85,27 +83,10 @@ const ModalFilter = ({
 };
 
 function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
-  const { kgSearchState, updateFromSearchString, setPage, setSort, reset } = useKgSearchSlice();
+  const { kgSearchState, setPage, setSort, reset } = useKgSearchSlice();
   const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = kgSearchState;
 
-  const location = useLocation();
-  const history = useHistory();
-
-  useEffect(() => {
-    const prevSearch = history.location.search.slice(1);
-    const prevSearchState = searchStringToStateV2(prevSearch);
-    const normalizedPrevSearch = stateToSearchStringV2(prevSearchState);
-
-    const newSearch = stateToSearchStringV2(kgSearchState);
-
-    if (newSearch !== normalizedPrevSearch)
-      history.push({ search: newSearch });
-
-  }, [history, kgSearchState]);
-
-  useEffect(() => {
-    updateFromSearchString(location.search);
-  }, [location.search, updateFromSearchString]);
+  useKgSearchBrowserHistory();
 
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(true);

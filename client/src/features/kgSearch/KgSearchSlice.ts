@@ -21,10 +21,11 @@ import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { KgAuthor, KgSearchState } from "./KgSearch";
 import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
 import { DateFilterTypes, DatesFilter } from "../../components/dateFilter/DateFilter";
-import { searchStringToStateV2 } from "./KgSearchState";
-import { useCallback } from "react";
+import { searchStringToStateV2, stateToSearchStringV2 } from "./KgSearchState";
+import { useCallback, useEffect } from "react";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
+import { useHistory, useLocation } from "react-router";
 
 const initialState: KgSearchState = {
   author: "all",
@@ -152,4 +153,26 @@ export const useKgSearchSlice = () => {
     setVisibility,
     reset,
   };
+};
+
+export const useKgSearchBrowserHistory = (): void => {
+  const { kgSearchState, updateFromSearchString } = useKgSearchSlice();
+
+  const location = useLocation();
+  const history = useHistory();
+
+  useEffect(() => {
+    const prevSearch = history.location.search.slice(1);
+    const prevSearchState = searchStringToStateV2(prevSearch);
+    const normalizedPrevSearch = stateToSearchStringV2(prevSearchState);
+
+    const newSearch = stateToSearchStringV2(kgSearchState);
+
+    if (newSearch !== normalizedPrevSearch)
+      history.push({ search: newSearch });
+  }, [history, kgSearchState]);
+
+  useEffect(() => {
+    updateFromSearchString(location.search);
+  }, [location.search, updateFromSearchString]);
 };
