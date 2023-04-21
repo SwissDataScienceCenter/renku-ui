@@ -25,7 +25,7 @@ import { FilterEntitySearch } from "../../components/entitySearchFilter/EntitySe
 import { SearchResultsHeader } from "../../components/searchResultsHeader/SearchResultsHeader";
 import { SearchResultsContent } from "../../components/searchResultsContent/SearchResultsContent";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
-import { useKgSearchState } from "./KgSearchState";
+import { searchStringToStateV2, stateToSearchStringV2, useKgSearchState } from "./KgSearchState";
 import { KgAuthor, KgSearchState } from "./KgSearch";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
@@ -33,7 +33,8 @@ import { DatesFilter } from "../../components/dateFilter/DateFilter";
 import QuickNav from "../../components/quicknav";
 import AppContext from "../../utils/context/appContext";
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
-import { kgSearchSlice } from "./KgSearchSlice";
+import { kgSearchSlice, useKgSearchSlice } from "./KgSearchSlice";
+import { useHistory, useLocation } from "react-router";
 
 
 /* eslint-disable @typescript-eslint/ban-types */
@@ -84,20 +85,57 @@ const ModalFilter = ({
 };
 
 function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
+  // const kgSearchState = useSelector((state: RootStateOrAny) => state[kgSearchSlice.name] as KgSearchState);
+  // const dispatch = useDispatch();
+  // const setPhrase = useCallback((phrase: string) => dispatch(kgSearchSlice.actions.setPhrase(phrase)), [dispatch]);
+  // console.log({ kgSearchState });
 
-  const kgSearchState = useSelector((state: RootStateOrAny) => state[kgSearchSlice.name] as KgSearchState);
-  const dispatch = useDispatch();
+  const { kgSearchState, updateFromSearchString, setPage, setSort, reset } = useKgSearchSlice();
+  const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = kgSearchState;
+  // console.log({ kgSearchState });
 
-  const setPhrase = useCallback((phrase: string) => dispatch(kgSearchSlice.actions.setPhrase(phrase)), [dispatch]);
+  const location = useLocation();
+  const history = useHistory();
 
   useEffect(() => {
-    console.log({ setPhrase })
-  }, [setPhrase]);
+    console.log({ kgSearchState });
 
-  console.log({ kgSearchState });
+    const prevSearch = history.location.search.slice(1);
+    const prevSearchState = searchStringToStateV2(prevSearch);
+    const normalizedPrevSearch = stateToSearchStringV2(prevSearchState);
 
-  const { searchState, setPage, setSort, removeFilters } = useKgSearchState();
-  const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = searchState;
+    const newSearch = stateToSearchStringV2(kgSearchState);
+
+    console.log({ prevSearch, normalizedPrevSearch, newSearch});
+
+     if (newSearch !== normalizedPrevSearch) {
+      console.log("history.push()", { prevSearch: normalizedPrevSearch, newSearch });
+      history.push({ search: newSearch });
+    }
+
+    // const newSearch = stateToSearchStringV2(kgSearchState);
+    // // console.log({ prevSearch, newSearch });
+    // if (newSearch !== prevSearch) {
+    //   console.log("history.push()", { prevSearch, newSearch });
+    //   history.push({ search: newSearch });
+    // }
+  }, [history, kgSearchState]);
+
+  useEffect(() => {
+    console.log("location.search", { search: location.search });
+  }, [location.search])
+
+  useEffect(() => {
+    const ret = history.listen((location, action) => {
+      console.log("listener", location.search, action);
+      updateFromSearchString(location.search);
+    });
+    return ret;
+  }, [history, updateFromSearchString]);
+
+  // const { searchState, setPage, setSort, removeFilters } = useKgSearchState();
+  // const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = searchState;
+
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(true);
   const { client } = useContext(AppContext);
@@ -120,7 +158,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
     until,
     type: typeDate
   };
-  const onRemoveFilters = () => { removeFilters(); };
+  // const onRemoveFilters = () => { removeFilters(); };
 
   const { data, isFetching, isLoading, error } = useSearchEntitiesQuery(searchRequest);
   const filter = (
@@ -166,7 +204,8 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
             isFetching={isFetching}
             isLoading={isLoading}
             onPageChange={(value: number) => setPage(value)}
-            onRemoveFilters={onRemoveFilters}
+            // onRemoveFilters={onRemoveFilters}
+            onRemoveFilters={reset}
             error={error}
           />
           <div className="d-sm-block d-md-none">

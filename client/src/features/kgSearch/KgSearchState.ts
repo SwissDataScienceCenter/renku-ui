@@ -29,7 +29,7 @@ import {
   arrayToVisibilitiesFilter,
 } from "../../components/visibilityFilter/VisibilityFilter";
 import { SortingOptions, stringToSortingOption } from "../../components/sortingEntities/SortingEntities";
-import { KgAuthor } from "./KgSearch";
+import { KgAuthor, KgSearchState } from "./KgSearch";
 import {
   DateFilterTypes,
   DatesFilter,
@@ -204,6 +204,30 @@ function searchStringToState(searchString: string): KgSearchFormState {
   };
 }
 
+export const searchStringToStateV2 = (searchString: string): KgSearchState => {
+  const queryParams = new URLSearchParams(searchString);
+  const author = queryParameterStateValue(queryParams, "author");
+  const page = queryParameterStateValue(queryParams, "page");
+  const perPage = queryParameterStateValue(queryParams, "perPage");
+  const phrase = queryParameterStateValue(queryParams, "phrase");
+  const sort = queryParameterStateValue(queryParams, "sort");
+  const type = queryParameterStateValue(queryParams, "type");
+  const visibility = queryParameterStateValue(queryParams, "visibility");
+  const { since, typeDate, until } = queryParameterDateStateValue(queryParams);
+  return {
+    phrase,
+    sort,
+    page,
+    perPage,
+    type,
+    author,
+    visibility,
+    since,
+    until,
+    typeDate,
+  };
+};
+
 function isInitialEqualToObject(
   key: KgStateTypeKey | KgStateVisibilityKey,
   value?: TypeEntitySelection | VisibilitiesFilter | null
@@ -218,6 +242,59 @@ function isInitialEqualToObject(
 }
 
 function stateToSearchString(state: Partial<KgSearchFormState>): string {
+  const stateMap: string[][] = [];
+  for (const key of stringKeys) {
+    const val = state[key];
+    if (val != null && val !== initialState[key]) stateMap.push([key, val]);
+  }
+  for (const key of numKeys) {
+    const val = state[key];
+    if (val != null && val !== initialState[key]) stateMap.push([key, val.toString()]);
+  }
+  {
+    const key = "sort";
+    const val = state[key];
+    if (val != null && val !== initialState[key]) stateMap.push([key, val.toString()]);
+  }
+  {
+    const key = "author";
+    const val = state[key];
+    if (val != null && val !== initialState[key]) stateMap.push([key, val.toString()]);
+  }
+  {
+    const key = "typeDate";
+    const val = state[key];
+    if (val != null && val !== initialState[key]) stateMap.push([key, val.toString()]);
+  }
+  for (const key of dateBoundsKey) {
+    const typeDate = state["typeDate"];
+    const val = state[key];
+    // Only set the bounds if the date is custom, otherwise they are computed
+    if (typeDate === DateFilterTypes.custom) stateMap.push([key, val?.toString() ?? ""]);
+  }
+  {
+    const key = "type";
+    const val = state[key];
+    if (!isInitialEqualToObject(key, val)) {
+      Object.keys(val!).forEach((k) => {
+        if (val![k as keyof typeof val] === true) stateMap.push([key, k]);
+      });
+    }
+  }
+  {
+    const key = "visibility";
+    const val = state[key];
+    if (!isInitialEqualToObject(key, val)) {
+      Object.keys(val!).forEach((k) => {
+        if (val![k as keyof typeof val] === true) stateMap.push([key, k]);
+      });
+    }
+  }
+  const searchParams = new URLSearchParams(stateMap);
+  return searchParams.toString();
+}
+
+export const stateToSearchStringV2 = (state: Partial<KgSearchState>): string  => {
   const stateMap: string[][] = [];
   for (const key of stringKeys) {
     const val = state[key];

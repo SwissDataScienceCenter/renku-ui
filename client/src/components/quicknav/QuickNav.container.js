@@ -23,6 +23,7 @@ import { useHistory, withRouter } from "react-router-dom";
 import { useKgSearchState } from "../../features/kgSearch/KgSearchState";
 import { QuickNavPresent } from "./QuickNav.present";
 import { TOTAL_QUERIES, useSearchLastQueriesQuery } from "../../features/recentUserActivity/RecentUserActivityApi";
+import { useKgSearchSlice } from "../../features/kgSearch/KgSearchSlice";
 
 export const defaultSuggestionQuickBar = {
   title: "",
@@ -44,9 +45,14 @@ export const defaultAnonymousSuggestionQuickBar = {
 
 const QuickNavContainerWithRouter = ({ user }) => {
   const history = useHistory();
-  const dispatch = useDispatch();
-  const { searchState, setPhrase, setMyDatasets, setMyProjects } = useKgSearchState();
-  const phrase = searchState.phrase;
+
+  // const dispatch = useDispatch();
+  // const { searchState, setPhrase, setMyDatasets, setMyProjects } = useKgSearchState();
+  // const phrase = searchState.phrase;
+
+  const { kgSearchState, setPhrase, setMyDatasets, setMyProjects } = useKgSearchSlice();
+  const phrase = kgSearchState.phrase;
+
   const [currentPhrase, setCurrentPhrase] = useState("");
   const { data, isFetching, isLoading, refetch } = useSearchLastQueriesQuery(TOTAL_QUERIES);
 
@@ -113,11 +119,15 @@ const QuickNavContainerWithRouter = ({ user }) => {
 
   const onSuggestionSelected = (event, { suggestion }) => {
     if (suggestion && suggestion?.type === "fixed") {
-      if (suggestion.id === "link-datasets")
-        dispatch(setMyDatasets());
+      if (suggestion.id === "link-datasets") {
+        // dispatch(setMyDatasets());
+        setMyDatasets();
+      }
 
-      if (suggestion.id === "link-projects")
-        dispatch(setMyProjects());
+      if (suggestion.id === "link-projects") {
+        // dispatch(setMyProjects());
+        setMyProjects();
+      }
     }
 
     if (suggestion && suggestion?.type === "last-queries" && event.type === "click") {

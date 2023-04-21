@@ -24,6 +24,7 @@ import { AuthorFilter } from "../authorFilter/AuthorFilter";
 import { VisibilitiesFilter, VisibilityFilter } from "../visibilityFilter/VisibilityFilter";
 import "./EntitySearchFilter.css";
 import { DateFilter, DatesFilter } from "../dateFilter/DateFilter";
+import { useKgSearchSlice } from "../../features/kgSearch/KgSearchSlice";
 
 /**
  *  renku-ui
@@ -41,7 +42,9 @@ export interface FilterProps {
 }
 
 const FilterEntitySearch = ({ author, type, visibility, isLoggedUser, valuesDate }: FilterProps) => {
-  const { setAuthor, setDates, setType, setVisibility } = useKgSearchState();
+  // const { setAuthor, setDates, setType, setVisibility } = useKgSearchState();
+  const { setAuthor, setDates, setType, setVisibility } = useKgSearchSlice();
+
   const authorComponent = isLoggedUser ? (
     <div><AuthorFilter
       handler={(value: KgAuthor) => setAuthor(value)}
@@ -63,7 +66,7 @@ const FilterEntitySearch = ({ author, type, visibility, isLoggedUser, valuesDate
         {authorComponent}
         {visibilityComponent}
         <div>
-          <DateFilter values={valuesDate} handler={(dates: DatesFilter) => setDates(dates)} />
+          {/* <DateFilter values={valuesDate} handler={(dates: DatesFilter) => setDates(dates)} /> */}
         </div>
       </div>
     </>
