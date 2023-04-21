@@ -294,7 +294,7 @@ function stateToSearchString(state: Partial<KgSearchFormState>): string {
   return searchParams.toString();
 }
 
-export const stateToSearchStringV2 = (state: Partial<KgSearchState>): string  => {
+export const stateToSearchStringV2 = (state: Partial<KgSearchState>): string => {
   const stateMap: string[][] = [];
   for (const key of stringKeys) {
     const val = state[key];
@@ -345,7 +345,7 @@ export const stateToSearchStringV2 = (state: Partial<KgSearchState>): string  =>
   }
   const searchParams = new URLSearchParams(stateMap);
   return searchParams.toString();
-}
+};
 
 function pushStateUpdate(searchState: Partial<KgSearchFormState>, history: History<unknown>, resetPage = true) {
   if (resetPage === true) searchState.page = 1;

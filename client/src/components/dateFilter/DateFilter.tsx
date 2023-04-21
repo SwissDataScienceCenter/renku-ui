@@ -15,9 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import React, { ChangeEvent } from "react";
 import { Input } from "../../utils/ts-wrappers";
-import { ChangeEvent, useEffect, useState } from "react";
 import Time from "../../utils/helpers/Time";
 
 /**
@@ -86,23 +85,6 @@ export interface DatesFilter {
 }
 
 const DateFilter = ({ /*handler,*/ onDatesChange, values }: DateFilterProps) => {
-  // const [dates, setDates] = useState<DatesFilter>({});
-
-  // useEffect(() => {
-  //   setDates(values);
-  // }, []); // eslint-disable-line
-
-  // useEffect(() => {
-  //   if (handler)
-  //     handler(dates);
-  // }, [dates]); // eslint-disable-line
-
-  // const changeDateType = (typeDate: DateFilterTypes) => {
-  //   const { since, until } = dateFilterTypeToSinceAndUntil(typeDate);
-
-  //   setDates({ since, until, type: typeDate, });
-  // };
-
   const changeDateType = React.useCallback((typeDate: DateFilterTypes) => {
     const { since, until } = dateFilterTypeToSinceAndUntil(typeDate);
     onDatesChange({ since, until, type: typeDate, });

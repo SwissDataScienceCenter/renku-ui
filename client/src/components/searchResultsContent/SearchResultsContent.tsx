@@ -31,7 +31,6 @@ import { Loader } from "../Loader";
 import ListCard from "../list/ListCard";
 import { Pagination } from "../Pagination";
 import { Button } from "../../utils/ts-wrappers";
-import { useKgSearchState } from "../../features/kgSearch/KgSearchState";
 import { useKgSearchSlice } from "../../features/kgSearch/KgSearchSlice";
 
 interface SearchResultProps {
@@ -47,13 +46,6 @@ interface EmptyResultProps {
   error?: FetchBaseQueryError | SerializedError;
 }
 const EmptyResult = ({ onRemoveFilters, error } : EmptyResultProps) => {
-  // const { searchState } = useKgSearchState();
-  // const { phrase, type, author, visibility, since, until, typeDate } = searchState;
-  // const removeFilters = () => {
-  //   if (onRemoveFilters)
-  //     onRemoveFilters();
-  // };
-
   const { kgSearchState } = useKgSearchSlice();
   const { phrase, type, author, visibility, since, until, typeDate } = kgSearchState;
   const removeFilters = () => {

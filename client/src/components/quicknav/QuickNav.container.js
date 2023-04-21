@@ -17,10 +17,8 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { useHistory, withRouter } from "react-router-dom";
 
-import { useKgSearchState } from "../../features/kgSearch/KgSearchState";
 import { QuickNavPresent } from "./QuickNav.present";
 import { TOTAL_QUERIES, useSearchLastQueriesQuery } from "../../features/recentUserActivity/RecentUserActivityApi";
 import { useKgSearchSlice } from "../../features/kgSearch/KgSearchSlice";

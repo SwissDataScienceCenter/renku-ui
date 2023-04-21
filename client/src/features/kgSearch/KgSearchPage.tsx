@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import React, { useContext, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 import { Col, Modal, ModalBody, ModalHeader, Row } from "../../utils/ts-wrappers";
 import SortingEntities, { SortingOptions } from "../../components/sortingEntities/SortingEntities";
@@ -25,15 +25,15 @@ import { FilterEntitySearch } from "../../components/entitySearchFilter/EntitySe
 import { SearchResultsHeader } from "../../components/searchResultsHeader/SearchResultsHeader";
 import { SearchResultsContent } from "../../components/searchResultsContent/SearchResultsContent";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
-import { searchStringToStateV2, stateToSearchStringV2, useKgSearchState } from "./KgSearchState";
-import { KgAuthor, KgSearchState } from "./KgSearch";
+import { searchStringToStateV2, stateToSearchStringV2 } from "./KgSearchState";
+import { KgAuthor } from "./KgSearch";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 import { DatesFilter } from "../../components/dateFilter/DateFilter";
 import QuickNav from "../../components/quicknav";
 import AppContext from "../../utils/context/appContext";
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
-import { kgSearchSlice, useKgSearchSlice } from "./KgSearchSlice";
+import { useKgSearchSlice } from "./KgSearchSlice";
 import { useHistory, useLocation } from "react-router";
 
 
@@ -85,20 +85,14 @@ const ModalFilter = ({
 };
 
 function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
-  // const kgSearchState = useSelector((state: RootStateOrAny) => state[kgSearchSlice.name] as KgSearchState);
-  // const dispatch = useDispatch();
-  // const setPhrase = useCallback((phrase: string) => dispatch(kgSearchSlice.actions.setPhrase(phrase)), [dispatch]);
-  // console.log({ kgSearchState });
-
   const { kgSearchState, updateFromSearchString, setPage, setSort, reset } = useKgSearchSlice();
   const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = kgSearchState;
-  // console.log({ kgSearchState });
 
   const location = useLocation();
   const history = useHistory();
 
   useEffect(() => {
-    console.log({ kgSearchState });
+    // console.log({ kgSearchState });
 
     const prevSearch = history.location.search.slice(1);
     const prevSearchState = searchStringToStateV2(prevSearch);
@@ -106,36 +100,18 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
 
     const newSearch = stateToSearchStringV2(kgSearchState);
 
-    console.log({ prevSearch, normalizedPrevSearch, newSearch});
+    // console.log({ prevSearch, normalizedPrevSearch, newSearch });
 
-     if (newSearch !== normalizedPrevSearch) {
-      console.log("history.push()", { prevSearch: normalizedPrevSearch, newSearch });
+    if (newSearch !== normalizedPrevSearch) {
+      // console.log("history.push()", { prevSearch: normalizedPrevSearch, newSearch });
       history.push({ search: newSearch });
     }
-
-    // const newSearch = stateToSearchStringV2(kgSearchState);
-    // // console.log({ prevSearch, newSearch });
-    // if (newSearch !== prevSearch) {
-    //   console.log("history.push()", { prevSearch, newSearch });
-    //   history.push({ search: newSearch });
-    // }
   }, [history, kgSearchState]);
 
   useEffect(() => {
-    console.log("location.search", { search: location.search });
+    // console.log("location.search", { search: location.search });
     updateFromSearchString(location.search);
-  }, [location.search])
-
-  // useEffect(() => {
-  //   const ret = history.listen((location, action) => {
-  //     console.log("listener", location.search, action);
-  //     updateFromSearchString(location.search);
-  //   });
-  //   return ret;
-  // }, [history, updateFromSearchString]);
-
-  // const { searchState, setPage, setSort, removeFilters } = useKgSearchState();
-  // const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = searchState;
+  }, [location.search, updateFromSearchString]);
 
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(true);
