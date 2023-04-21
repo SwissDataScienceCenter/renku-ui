@@ -21,12 +21,12 @@ import { Button, Card, CardBody, Col, Collapse, Row, UncontrolledTooltip } from 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
- faArrowAltCircleUp,  faCheckCircle, faExclamationCircle, faInfoCircle, faTimesCircle
+  faArrowAltCircleUp, faCheckCircle, faExclamationCircle, faInfoCircle, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 import { ChevronDown, ChevronUp } from "../../../utils/ts-wrappers";
 import { CoreErrorContent } from "../../../utils/definitions";
-import { CoreSectionError, ProjectIndexingStatusResponse } from "../Project";
+import { CoreSectionError, MigrationStatus, ProjectIndexingStatusResponse } from "../Project";
 import { ProjectIndexingStatuses } from "../ProjectEnums";
 import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";
 import { projectVersionApi } from "../projectVersionApi";
@@ -39,6 +39,58 @@ import { Docs } from "../../../utils/constants/Docs";
 
 import styles from "./ProjectSettings.module.scss";
 
+
+// ****** INTERFACES AND ENUMS ****** //
+/* eslint-disable no-multi-spaces */
+export enum ProjectMigrationLevel {
+  Level1 = "1-all-good",            // ? success
+  Level2 = "2-some-info-no-update", // ? info
+  Level3 = "3-minor-update",        // ? info
+  Level4 = "4-suggested-update",    // ? warning
+  Level5 = "5-required-update",     // ? danger
+  LevelE = "error",                 // ? danger
+  LevelX = "x-unknown"              // ? danger
+}
+
+export enum ProjectIndexingLevel {
+  Level1 = "1-all-good",            // ? success
+  Level2 = "2-some-info-no-update", // ? info
+  Level5 = "5-required-update",     // ? danger
+  LevelE = "error",                 // ? danger
+  LevelX = "x-unknown"              // ? danger
+}
+/* eslint-enable no-multi-spaces */
+
+function getMigrationLevel(migrationStatus: MigrationStatus): ProjectMigrationLevel {
+  // ? REF: https://www.notion.so/Project-status-889f7a0f16574c84a4b7af344683623b
+  if (migrationStatus.errorProject)
+    return ProjectMigrationLevel.LevelE;
+  const { details } = migrationStatus;
+  if (!details || !details.project_supported)
+    return ProjectMigrationLevel.LevelX;
+  // level 1, 2 or 3
+  const coreCompatibility = details.core_compatibility_status.type === "detail" ?
+    details.core_compatibility_status : null;
+  const dockerfileRenku = details.dockerfile_renku_status.type === "detail" ?
+    details.dockerfile_renku_status : null;
+  const template = details.template_status.type === "detail" ?
+    details.template_status : null;
+  const templateError = details.template_status.type === "error" ?
+    details.template_status : null;
+  // level 1, 2, 3
+  if (coreCompatibility?.migration_required) {
+    // if (details.dockerfile_renku_status.type === "detail" && )
+    if (!dockerfileRenku?.newer_renku_available && !templateError && !template?.newer_template_available)
+      return ProjectMigrationLevel.Level1;
+    // ! CONTINUE FROM HERE
+  }
+  // level >=4
+
+  return ProjectMigrationLevel.LevelX;
+}
+
+
+// ****** SETTINGS COMPONENTS ****** //
 
 interface ProjectSettingsGeneralWrapperProps {
   client: unknown;
@@ -132,12 +184,16 @@ interface KnowledgeGraphProps {
   projectId: number;
 }
 function KnowledgeGraph({ projectId }: KnowledgeGraphProps) {
+  const LONG_POLLING = 2 * 60 * 1000;
+  const NO_POLLING = 0;
+  const SHORT_POLLING = 5 * 1000;
+
   const [showDetails, setShowDetails] = useState(false);
   const [pollingInterval, setPollingInterval] = useState(0);
   const toggleShowDetails = () => setShowDetails(!showDetails);
 
   const skip = !projectId;
-  const { data, isLoading, isUninitialized, error } = projectKgApi.useGetProjectIndexingStatusQuery(
+  const { data, isLoading, isUninitialized, error, refetch } = projectKgApi.useGetProjectIndexingStatusQuery(
     projectId, { refetchOnMountOrArgChange: 20, skip, pollingInterval }
   );
   const [activateIndexing, activateIndexingStatus] = projectKgApi.useActivateIndexingMutation();
@@ -146,11 +202,13 @@ function KnowledgeGraph({ projectId }: KnowledgeGraphProps) {
   useEffect(() => {
     if (!isUninitialized && !isLoading) {
       if (!data?.activated)
-        setPollingInterval(30000);
+        setPollingInterval(LONG_POLLING);
+      else if (data?.details?.status === ProjectIndexingStatuses.InProgress)
+        setPollingInterval(SHORT_POLLING);
       else
-        setPollingInterval(0);
+        setPollingInterval(NO_POLLING);
     }
-  }, [data, isUninitialized, isLoading]);
+  }, [data, isUninitialized, isLoading, LONG_POLLING, NO_POLLING, SHORT_POLLING]);
 
   if (isLoading || skip)
     return (<SettingsPropsCard><Loader /></SettingsPropsCard>);
@@ -175,6 +233,7 @@ function KnowledgeGraph({ projectId }: KnowledgeGraphProps) {
     icon = faExclamationCircle;
   }
   else if (data?.progress?.done !== data?.progress?.total) {
+    title = "Knowledge Graph metadata (processing)";
     level = "info";
   }
   else if (data.details?.status === ProjectIndexingStatuses.Failure) {
@@ -184,11 +243,26 @@ function KnowledgeGraph({ projectId }: KnowledgeGraphProps) {
   const canUpdate = !data?.activated ? // ! && user.hasPermissions
     true :
     false;
-  const buttonAction = () => activateIndexing(projectId);
   const buttonIcon = faArrowAltCircleUp;
-  const buttonText = canUpdate ?
+  let buttonDisabled = false;
+  let buttonText = canUpdate ?
     "Activate" :
     undefined;
+  if (activateIndexingStatus.isLoading) {
+    buttonDisabled = true;
+    buttonText = "Activating";
+  }
+  // ! activateIndexingStatus.isError
+  const buttonAction = () => {
+    buttonText = "Activating";
+    buttonDisabled = true;
+    activateIndexing(projectId).then(() => {
+      buttonText = "Activating";
+      buttonDisabled = true;
+      setTimeout(() => { refetch(); }, 2000);
+    });
+  };
+
   // ! TODO: update button
   // ! --> only for users with permissions!
   // ! TODO continue from here
@@ -196,6 +270,7 @@ function KnowledgeGraph({ projectId }: KnowledgeGraphProps) {
     <>
       <CompositeTitle
         buttonAction={buttonAction}
+        buttonDisabled={buttonDisabled}
         buttonIcon={buttonIcon}
         buttonText={buttonText}
         icon={icon}
@@ -305,6 +380,7 @@ function ProjectSettingsGeneralCoreError({ errorData }: ProjectSettingsGeneralCo
 
 interface CompositeTitleProps {
   buttonAction?: () => void;
+  buttonDisabled?: boolean;
   buttonIcon?: IconProp;
   buttonText?: string;
   level?: string;
@@ -315,7 +391,7 @@ interface CompositeTitleProps {
   toggleShowDetails: () => void
 }
 function CompositeTitle({
-  buttonAction, buttonIcon, buttonText, level, loading, icon, showDetails, title, toggleShowDetails
+  buttonAction, buttonDisabled, buttonIcon, buttonText, level, loading, icon, showDetails, title, toggleShowDetails
 }: CompositeTitleProps) {
   const finalIcon = loading ?
     (<Loader inline={true} size={14} />) :
@@ -332,15 +408,16 @@ function CompositeTitle({
       (<FontAwesomeIcon icon={buttonIcon} />) :
       null;
     const finalButtonText = (<>{finalButtonIcon} {buttonText}</>);
+    const buttonActionStyle = { disabled: buttonDisabled, color: level, size: "sm" };
     if (buttonAction)
-      button = (<Button color={level} size="sm" onClick={() => buttonAction()}>{finalButtonText}</Button>);
+      button = (<Button {...buttonActionStyle} onClick={() => buttonAction()}>{finalButtonText}</Button>);
     else // ? this case _should_ not happen
-      button = (<Button color={level} size="sm">{finalButtonText}</Button>);
+      button = (<Button {...buttonActionStyle}>{finalButtonText}</Button>);
   }
 
   return (<>
     <div className={styles.projectStatusSection}>
-      <h5 className="d-flex align-items-center w-100">
+      <h5 className="d-flex align-items-center w-100 mb-0">
         <div className={`me-2 ${color}`}>{finalIcon}</div>
         <div>{title}</div>
         <div className="mx-3 cursor-pointer" onClick={() => toggleShowDetails()}>{caret}</div>

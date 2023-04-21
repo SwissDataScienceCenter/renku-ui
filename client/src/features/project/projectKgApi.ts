@@ -36,7 +36,7 @@ export const projectKgApi = createApi({
     activateIndexing: builder.mutation<ProjectActivateIndexingResponse, number>({
       query: (projectId) => {
         return {
-          url: `webhooks/projects/${projectId}/webhooksAAA`,
+          url: `webhooks/projects/${projectId}/webhooks`,
           method: "POST"
           // validateStatus: (response) => response.status < 400 || response.status === 404
         };
