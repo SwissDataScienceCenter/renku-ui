@@ -66,8 +66,12 @@ a:focus-visible, svg:focus, svg:focus-visible {
   word-break: break-word;
 }
 
+:root {
+  --rk-box-shadow: #{$rk-box-shadow};
+}
+
 .box-shadow-cards {
-  box-shadow: 0 4.0px 10.0px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: var(--rk-box-shadow);
 }
 
 .dropdown-item:active {
