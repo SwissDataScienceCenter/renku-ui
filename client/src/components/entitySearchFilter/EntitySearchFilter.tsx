@@ -64,9 +64,7 @@ const FilterEntitySearch = ({ author, type, visibility, isLoggedUser, valuesDate
         {authorComponent}
         {visibilityComponent}
         <div>
-          <DateFilter values={valuesDate}
-          // handler={(dates: DatesFilter) => setDates(dates)
-            onDatesChange={setDates} />
+          <DateFilter dates={valuesDate} onDatesChange={setDates} />
         </div>
       </div>
     </>

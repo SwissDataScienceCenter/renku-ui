@@ -44,10 +44,6 @@ export const defaultAnonymousSuggestionQuickBar = {
 const QuickNavContainerWithRouter = ({ user }) => {
   const history = useHistory();
 
-  // const dispatch = useDispatch();
-  // const { searchState, setPhrase, setMyDatasets, setMyProjects } = useKgSearchState();
-  // const phrase = searchState.phrase;
-
   const { kgSearchState, setPhrase, setMyDatasets, setMyProjects } = useKgSearchSlice();
   const phrase = kgSearchState.phrase;
 
@@ -117,15 +113,13 @@ const QuickNavContainerWithRouter = ({ user }) => {
 
   const onSuggestionSelected = (event, { suggestion }) => {
     if (suggestion && suggestion?.type === "fixed") {
-      if (suggestion.id === "link-datasets") {
-        // dispatch(setMyDatasets());
+      if (suggestion.id === "link-datasets")
         setMyDatasets();
-      }
 
-      if (suggestion.id === "link-projects") {
-        // dispatch(setMyProjects());
+
+      if (suggestion.id === "link-projects")
         setMyProjects();
-      }
+
     }
 
     if (suggestion && suggestion?.type === "last-queries" && event.type === "click") {

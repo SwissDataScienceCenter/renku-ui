@@ -27,8 +27,7 @@ import Time from "../../utils/helpers/Time";
  */
 
 export interface DateFilterProps {
-  // handler: Function; // eslint-disable-line @typescript-eslint/ban-types
-  values: DatesFilter;
+  dates: DatesFilter;
   onDatesChange: (dates: DatesFilter) => void;
 }
 
@@ -84,7 +83,7 @@ export interface DatesFilter {
   type?: DateFilterTypes;
 }
 
-const DateFilter = ({ /*handler,*/ onDatesChange, values }: DateFilterProps) => {
+const DateFilter = ({ onDatesChange, dates }: DateFilterProps) => {
   const changeDateType = React.useCallback((typeDate: DateFilterTypes) => {
     const { since, until } = dateFilterTypeToSinceAndUntil(typeDate);
     onDatesChange({ since, until, type: typeDate, });
@@ -98,21 +97,21 @@ const DateFilter = ({ /*handler,*/ onDatesChange, values }: DateFilterProps) => 
     { title: "Older", value: DateFilterTypes.older },
     { title: "Custom", value: DateFilterTypes.custom },
   ];
-  const datesInput = values.type === DateFilterTypes.custom ?
+  const datesInput = dates.type === DateFilterTypes.custom ?
     <>
       <div>
         <label className="px-2 author-label">From:</label>
         <Input type="date" name="start"
           max={Time.toIsoTimezoneString(new Date(), "date")}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => onDatesChange({ ...values, since: e.target.value })}
-          value={values.since} />
+          onChange={(e: ChangeEvent<HTMLInputElement>) => onDatesChange({ ...dates, since: e.target.value })}
+          value={dates.since} />
       </div>
       <div>
         <label className="px-2 author-label">To:</label>
         <Input type="date" name="end"
           max={Time.toIsoTimezoneString(new Date(), "date")}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => onDatesChange({ ...values, until: e.target.value })}
-          value={values.until} />
+          onChange={(e: ChangeEvent<HTMLInputElement>) => onDatesChange({ ...dates, until: e.target.value })}
+          value={dates.until} />
       </div>
     </>
     : null;
@@ -127,7 +126,7 @@ const DateFilter = ({ /*handler,*/ onDatesChange, values }: DateFilterProps) => 
           value={item.value}
           onChange={(e: ChangeEvent<HTMLInputElement>) => changeDateType(e.target.value as DateFilterTypes)}
           className="author-input"
-          checked={values.type === item.value}
+          checked={dates.type === item.value}
           data-cy={nameInput}/>
         <label className="px-2 author-label cursor-pointer"
           onClick={() => changeDateType(item.value)}>{item.title}</label>

@@ -92,24 +92,18 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
   const history = useHistory();
 
   useEffect(() => {
-    // console.log({ kgSearchState });
-
     const prevSearch = history.location.search.slice(1);
     const prevSearchState = searchStringToStateV2(prevSearch);
     const normalizedPrevSearch = stateToSearchStringV2(prevSearchState);
 
     const newSearch = stateToSearchStringV2(kgSearchState);
 
-    // console.log({ prevSearch, normalizedPrevSearch, newSearch });
-
-    if (newSearch !== normalizedPrevSearch) {
-      // console.log("history.push()", { prevSearch: normalizedPrevSearch, newSearch });
+    if (newSearch !== normalizedPrevSearch)
       history.push({ search: newSearch });
-    }
+
   }, [history, kgSearchState]);
 
   useEffect(() => {
-    // console.log("location.search", { search: location.search });
     updateFromSearchString(location.search);
   }, [location.search, updateFromSearchString]);
 
@@ -135,7 +129,6 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
     until,
     type: typeDate
   };
-  // const onRemoveFilters = () => { removeFilters(); };
 
   const { data, isFetching, isLoading, error } = useSearchEntitiesQuery(searchRequest);
   const filter = (

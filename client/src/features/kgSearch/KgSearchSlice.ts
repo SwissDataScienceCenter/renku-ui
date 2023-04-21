@@ -121,6 +121,7 @@ export const kgSearchSlice = createSlice({
 
 export const useKgSearchSlice = () => {
   const kgSearchState = useSelector((state: RootStateOrAny) => state[kgSearchSlice.name] as KgSearchState);
+
   const dispatch = useDispatch();
 
   const updateFromSearchString = useCallback((search: string) =>

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import React from "react";
 import { ChangeEvent } from "react";
 import { Input, Label } from "../../utils/ts-wrappers";
 
@@ -64,9 +64,6 @@ export interface SortingInputProps {
 type SortOptionsStrings = keyof typeof SortingOptions;
 
 const SortingEntities = ({ setSort, styleType, sort } : SortingInputProps) => {
-
-  // console.log({ setSort, styleType, sort });
-
   const changeSorting = (value: SortOptionsStrings) => {
     if (setSort)
       setSort(SortingOptions[value]);
@@ -89,10 +86,6 @@ const SortingEntities = ({ setSort, styleType, sort } : SortingInputProps) => {
   }
   const SortOptionByValue = Object.keys(SortingOptions)[Object.values(SortingOptions).indexOf(sort as SortingOptions)];
 
-  // React.useEffect(() => {
-  //   console.log({SortOptionByValue});
-  // }, [SortOptionByValue]);
-
   return (
     <>
       <div className={styleType === "desk" ?
@@ -105,7 +98,6 @@ const SortingEntities = ({ setSort, styleType, sort } : SortingInputProps) => {
           type="select"
           className="sorting-input"
           name="sorting"
-          // defaultValue={SortOptionByValue}
           value={SortOptionByValue}
           onChange={(event: ChangeEvent<HTMLInputElement>) => changeSorting(event.target.value as SortOptionsStrings)}>
           {options}
