@@ -65,7 +65,7 @@ type SortOptionsStrings = keyof typeof SortingOptions;
 
 const SortingEntities = ({ setSort, styleType, sort } : SortingInputProps) => {
 
-  console.log({ setSort, styleType, sort });
+  // console.log({ setSort, styleType, sort });
 
   const changeSorting = (value: SortOptionsStrings) => {
     if (setSort)
@@ -89,9 +89,9 @@ const SortingEntities = ({ setSort, styleType, sort } : SortingInputProps) => {
   }
   const SortOptionByValue = Object.keys(SortingOptions)[Object.values(SortingOptions).indexOf(sort as SortingOptions)];
 
-  React.useEffect(() => {
-    console.log({SortOptionByValue});
-  }, [SortOptionByValue]);
+  // React.useEffect(() => {
+  //   console.log({SortOptionByValue});
+  // }, [SortOptionByValue]);
 
   return (
     <>

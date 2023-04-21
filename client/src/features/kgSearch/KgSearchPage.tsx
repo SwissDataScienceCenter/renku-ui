@@ -123,15 +123,16 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
 
   useEffect(() => {
     console.log("location.search", { search: location.search });
+    updateFromSearchString(location.search);
   }, [location.search])
 
-  useEffect(() => {
-    const ret = history.listen((location, action) => {
-      console.log("listener", location.search, action);
-      updateFromSearchString(location.search);
-    });
-    return ret;
-  }, [history, updateFromSearchString]);
+  // useEffect(() => {
+  //   const ret = history.listen((location, action) => {
+  //     console.log("listener", location.search, action);
+  //     updateFromSearchString(location.search);
+  //   });
+  //   return ret;
+  // }, [history, updateFromSearchString]);
 
   // const { searchState, setPage, setSort, removeFilters } = useKgSearchState();
   // const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = searchState;

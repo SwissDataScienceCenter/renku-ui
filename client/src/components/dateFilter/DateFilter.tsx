@@ -28,8 +28,9 @@ import Time from "../../utils/helpers/Time";
  */
 
 export interface DateFilterProps {
-  handler: Function; // eslint-disable-line @typescript-eslint/ban-types
+  // handler: Function; // eslint-disable-line @typescript-eslint/ban-types
   values: DatesFilter;
+  onDatesChange: (dates: DatesFilter) => void;
 }
 
 /* eslint-disable no-unused-vars */
@@ -84,23 +85,28 @@ export interface DatesFilter {
   type?: DateFilterTypes;
 }
 
-const DateFilter = ({ handler, values }: DateFilterProps) => {
-  const [dates, setDates] = useState<DatesFilter>({});
+const DateFilter = ({ /*handler,*/ onDatesChange, values }: DateFilterProps) => {
+  // const [dates, setDates] = useState<DatesFilter>({});
 
-  useEffect(() => {
-    setDates(values);
-  }, []); // eslint-disable-line
+  // useEffect(() => {
+  //   setDates(values);
+  // }, []); // eslint-disable-line
 
-  useEffect(() => {
-    if (handler)
-      handler(dates);
-  }, [dates]); // eslint-disable-line
+  // useEffect(() => {
+  //   if (handler)
+  //     handler(dates);
+  // }, [dates]); // eslint-disable-line
 
-  const changeDateType = (typeDate: DateFilterTypes) => {
+  // const changeDateType = (typeDate: DateFilterTypes) => {
+  //   const { since, until } = dateFilterTypeToSinceAndUntil(typeDate);
+
+  //   setDates({ since, until, type: typeDate, });
+  // };
+
+  const changeDateType = React.useCallback((typeDate: DateFilterTypes) => {
     const { since, until } = dateFilterTypeToSinceAndUntil(typeDate);
-
-    setDates({ since, until, type: typeDate, });
-  };
+    onDatesChange({ since, until, type: typeDate, });
+  }, [onDatesChange]);
 
   const items = [
     { title: "All", value: DateFilterTypes.all },
@@ -116,15 +122,15 @@ const DateFilter = ({ handler, values }: DateFilterProps) => {
         <label className="px-2 author-label">From:</label>
         <Input type="date" name="start"
           max={Time.toIsoTimezoneString(new Date(), "date")}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setDates({ ...dates, since: e.target.value })}
-          value={dates.since} />
+          onChange={(e: ChangeEvent<HTMLInputElement>) => onDatesChange({ ...values, since: e.target.value })}
+          value={values.since} />
       </div>
       <div>
         <label className="px-2 author-label">To:</label>
         <Input type="date" name="end"
           max={Time.toIsoTimezoneString(new Date(), "date")}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setDates({ ...dates, until: e.target.value })}
-          value={dates.until} />
+          onChange={(e: ChangeEvent<HTMLInputElement>) => onDatesChange({ ...values, until: e.target.value })}
+          value={values.until} />
       </div>
     </>
     : null;
