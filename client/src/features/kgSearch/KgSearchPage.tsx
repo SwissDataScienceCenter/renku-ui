@@ -153,7 +153,6 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
             isFetching={isFetching}
             isLoading={isLoading}
             onPageChange={(value: number) => setPage(value)}
-            // onRemoveFilters={onRemoveFilters}
             onRemoveFilters={reset}
             error={error}
           />
