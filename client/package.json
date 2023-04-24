@@ -80,6 +80,7 @@
     "eject": "craco eject",
     "lint": "eslint --max-warnings=0 src/",
     "lint-fix": "eslint src/ --fix",
+    "format": "prettier -w src",
     "format-changed": "pretty-quick",
     "format-commit-check": "pretty-quick --staged --check",
     "storybook": "start-storybook -p 6006 -s public",
