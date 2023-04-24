@@ -21,7 +21,7 @@ import { useHistory, withRouter } from "react-router-dom";
 
 import { QuickNavPresent } from "./QuickNav.present";
 import { TOTAL_QUERIES, useSearchLastQueriesQuery } from "../../features/recentUserActivity/RecentUserActivityApi";
-import { useKgSearchSlice } from "../../features/kgSearch/KgSearchSlice";
+import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
 
 export const defaultSuggestionQuickBar = {
   title: "",
@@ -44,7 +44,7 @@ export const defaultAnonymousSuggestionQuickBar = {
 const QuickNavContainerWithRouter = ({ user }) => {
   const history = useHistory();
 
-  const { kgSearchState, setPhrase, setMyDatasets, setMyProjects } = useKgSearchSlice();
+  const { kgSearchState, reducers: { setPhrase, setMyDatasets, setMyProjects } } = useKgSearchContext();
   const phrase = kgSearchState.phrase;
 
   const [currentPhrase, setCurrentPhrase] = useState("");

@@ -32,7 +32,7 @@ import { DatesFilter } from "../../components/dateFilter/DateFilter";
 import QuickNav from "../../components/quicknav";
 import AppContext from "../../utils/context/appContext";
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
-import { useKgSearchBrowserHistory, useKgSearchSlice } from "./KgSearchSlice";
+import { KgSearchContextProvider, useKgSearchContext } from "./KgSearchContext";
 
 
 /* eslint-disable @typescript-eslint/ban-types */
@@ -83,10 +83,8 @@ const ModalFilter = ({
 };
 
 function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
-  const { kgSearchState, setPage, setSort, reset } = useKgSearchSlice();
+  const { kgSearchState, reducers: { setPage, setSort, reset } } = useKgSearchContext();
   const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = kgSearchState;
-
-  useKgSearchBrowserHistory();
 
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(true);
@@ -178,4 +176,10 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
   );
 }
 
-export default SearchPage;
+const SearchPageWrapped = (props: SearchPageProps) => {
+  return <KgSearchContextProvider>
+    <SearchPage {...props} />
+  </KgSearchContextProvider>;
+};
+
+export default SearchPageWrapped;

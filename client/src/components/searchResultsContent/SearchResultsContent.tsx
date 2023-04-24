@@ -31,7 +31,7 @@ import { Loader } from "../Loader";
 import ListCard from "../list/ListCard";
 import { Pagination } from "../Pagination";
 import { Button } from "../../utils/ts-wrappers";
-import { useKgSearchSlice } from "../../features/kgSearch/KgSearchSlice";
+import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
 
 interface SearchResultProps {
   data?: ListResponse<KgSearchResult>;
@@ -46,7 +46,7 @@ interface EmptyResultProps {
   error?: FetchBaseQueryError | SerializedError;
 }
 const EmptyResult = ({ onRemoveFilters, error } : EmptyResultProps) => {
-  const { kgSearchState } = useKgSearchSlice();
+  const { kgSearchState } = useKgSearchContext();
   const { phrase, type, author, visibility, since, until, typeDate } = kgSearchState;
   const removeFilters = () => {
     if (onRemoveFilters)
