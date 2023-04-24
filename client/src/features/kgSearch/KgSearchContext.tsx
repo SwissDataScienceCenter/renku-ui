@@ -32,7 +32,7 @@ import { SortingOptions } from "../../components/sortingEntities/SortingEntities
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 import { KgAuthor, KgSearchState } from "./KgSearch";
-import { searchStringToStateV2, stateToSearchStringV2 } from "./KgSearchState";
+import { defaultSearchState, searchStringToStateV2, stateToSearchStringV2 } from "./KgSearchState";
 
 interface KgSearchContextType {
   kgSearchState: KgSearchState;
@@ -50,18 +50,18 @@ interface KgSearchContextType {
   };
 }
 
-const defaultSearchState: KgSearchState = {
-  author: "all",
-  page: 1,
-  perPage: 24,
-  phrase: "",
-  since: "",
-  sort: SortingOptions.DescMatchingScore,
-  type: { project: true, dataset: false },
-  typeDate: DateFilterTypes.all,
-  until: "",
-  visibility: { private: true, public: true, internal: true },
-};
+// const defaultSearchState: KgSearchState = {
+//   author: "all",
+//   page: 1,
+//   perPage: 24,
+//   phrase: "",
+//   since: "",
+//   sort: SortingOptions.DescMatchingScore,
+//   type: { project: true, dataset: false },
+//   typeDate: DateFilterTypes.all,
+//   until: "",
+//   visibility: { private: true, public: true, internal: true },
+// };
 
 const KgSearchContext = createContext<KgSearchContextType | null>(null);
 
