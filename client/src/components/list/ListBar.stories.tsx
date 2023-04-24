@@ -33,8 +33,8 @@ const exampleCreators = [
     web_url: "https://gitlab.dev.renku.ch/dalatinrofrau",
   },
 ];
-// eslint-disable-next-line
 const descriptionExample =
+  // eslint-disable-next-line spellcheck/spell-checker
   "Lorem ipsum dolor siter gd amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad ut aliquip ex ea.";
 export default {
   title: "components/ListBar",

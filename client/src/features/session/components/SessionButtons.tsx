@@ -107,9 +107,9 @@ function StartSessionButton({
   const currentSessions = useSelector(
     (state: RootStateOrAny) => state.stateModel.notebooks?.notebooks?.all
   );
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const localSessionRunning = currentSessions
-    ? (getSessionRunning(currentSessions, sessionAutostartUrl) as any)
+    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (getSessionRunning(currentSessions, sessionAutostartUrl) as any)
     : false;
   const history = useHistory();
 

@@ -40,8 +40,8 @@ export const sessionApi = createApi({
         };
       },
     }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getLogs: builder.query<any, GetLogsArgs>({
-      // eslint-disable-line @typescript-eslint/no-explicit-any
       query: (args) => {
         return {
           url: `logs/${args.serverName}`,

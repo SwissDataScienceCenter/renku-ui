@@ -50,11 +50,11 @@ function registerValidSW(swUrl) {
     // A bit annoying, but it will go away for proper deployments using https.
     .register(swUrl)
     .then((registration) => {
+      // eslint-disable-next-line spellcheck/spell-checker
       registration.onupdatefound = () => {
-        // eslint-disable-line
         const installingWorker = registration.installing;
+        // eslint-disable-next-line spellcheck/spell-checker
         installingWorker.onstatechange = () => {
-          // eslint-disable-line
           if (installingWorker.state === "installed") {
             if (navigator.serviceWorker.controller) {
               // At this point, the old content will have been purged and
@@ -88,8 +88,8 @@ function checkValidServiceWorker(swUrl) {
       ) {
         // No service worker found. Probably a different app. Reload the page.
         navigator.serviceWorker.ready.then((registration) => {
+          // eslint-disable-next-line spellcheck/spell-checker
           registration.unregister().then(() => {
-            // eslint-disable-line
             window.location.reload();
           });
         });
@@ -103,8 +103,8 @@ function checkValidServiceWorker(swUrl) {
     });
 }
 
+// eslint-disable-next-line spellcheck/spell-checker
 export function unregister() {
-  // eslint-disable-line
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.ready.then((registration) => {
       registration.unregister(); // eslint-disable-line

@@ -195,10 +195,10 @@ function RenkuMarkdownWithPathTranslation(props) {
     return Promise.all(fetchedFiles).then((filesRefsWithFiles) => {
       if (!isCancelled.current) {
         setFilesRefs((prevFilesRefs) =>
-          //eslint-disable-next-line
+          //eslint-disable-next-line max-nested-callbacks
           prevFilesRefs.map((pb) => {
-            //eslint-disable-next-line
             let newBlock = filesRefsWithFiles.find(
+              //eslint-disable-next-line max-nested-callbacks
               (bf) => bf.iBlock === pb.iBlock
             );
             return newBlock !== undefined ? newBlock : pb;

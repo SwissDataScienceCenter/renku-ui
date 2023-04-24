@@ -163,8 +163,8 @@ function sentryInit(
   }
 
   // Prevent sending data to Sentry when manually moving to a different URL.
+  // eslint-disable-next-line spellcheck/spell-checker, @typescript-eslint/no-unused-vars
   window.addEventListener("beforeunload", (event) => {
-    // eslint-disable-line
     disableSentry = true;
   });
 

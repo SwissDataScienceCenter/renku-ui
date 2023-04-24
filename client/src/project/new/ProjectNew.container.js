@@ -433,46 +433,53 @@ function NewProject(props) {
   /*
    * Start Auto fill form when namespaces are ready
    */
-  useEffect(() => {
-    if (
-      automatedData &&
-      !namespaces?.fetching &&
-      !newProject.automated.finished
-    )
-      coordinator?.setAutomated(
-        automatedData,
-        undefined,
-        namespaces,
-        availableVisibilities,
-        setNamespace
-      );
-  }, [
-    automatedData,
-    namespaces.list,
-    namespaces.fetching,
-    newProject.automated.finished,
-  ]); // eslint-disable-line
+  useEffect(
+    () => {
+      if (
+        automatedData &&
+        !namespaces?.fetching &&
+        !newProject.automated.finished
+      )
+        coordinator?.setAutomated(
+          automatedData,
+          undefined,
+          namespaces,
+          availableVisibilities,
+          setNamespace
+        );
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      automatedData,
+      namespaces.list,
+      namespaces.fetching,
+      newProject.automated.finished,
+    ]
+  );
 
   /*
    * Validate form when projects/namespace are ready or the auto fill form finished
    */
-  useEffect(() => {
-    if (
-      !user.logged ||
-      namespaces.fetching ||
-      (newProject.automated.received && !newProject.automated.finished)
-    )
-      return;
-    validateForm(null, null, true);
-  }, [
-    // eslint-disable-line react-hooks/exhaustive-deps
-    namespaces.list,
-    namespaces.fetching,
-    projectsMember,
-    isFetchingProjects,
-    newProject.automated.received,
-    newProject.automated.finished,
-  ]);
+  useEffect(
+    () => {
+      if (
+        !user.logged ||
+        namespaces.fetching ||
+        (newProject.automated.received && !newProject.automated.finished)
+      )
+        return;
+      validateForm(null, null, true);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      namespaces.list,
+      namespaces.fetching,
+      projectsMember,
+      isFetchingProjects,
+      newProject.automated.received,
+      newProject.automated.finished,
+    ]
+  );
 
   /*
    * Calculate visibilities when namespace change

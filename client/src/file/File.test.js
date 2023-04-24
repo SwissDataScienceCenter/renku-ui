@@ -92,8 +92,8 @@ describe("rendering", () => {
     },
     lfs: {
       file_name: "doesNotMatter",
-      // eslint-disable-next-line
       content:
+        // eslint-disable-next-line spellcheck/spell-checker
         "dmVyc2lvbiBodHRwczovL2dpdC1sZnMuZ2l0aHViLmNvbS9zcGVjL3YxCm9pZCBzaGEyNTY6NGMzYjM5Mj",
     },
     sizeBig: {
@@ -174,8 +174,8 @@ describe("rendering pdf -- console suppressed!", () => {
 
   const filePdf = {
     file_name: "text.pdf",
-    // eslint-disable-next-line
     content:
+      // eslint-disable-next-line spellcheck/spell-checker
       "JVBERi0xLjAKMSAwIG9iajw8L1BhZ2VzIDIgMCBSPj5lbmRvYmogMiAwIG9iajw8L0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iaiAzIDAgb2JqPDwvTWVkaWFCb3hbMCAwIDMgM10+PmVuZG9iagp0cmFpbGVyPDwvUm9vdCAxIDAgUj4+Cg==",
   };
 

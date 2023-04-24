@@ -44,8 +44,8 @@ interface WsServerMessage {
   data: Record<string, unknown>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function checkWsServerMessage(obj: any): obj is WsServerMessage {
-  // eslint-disable-line
   return (
     "timestamp" in obj &&
     obj.timestamp != null &&

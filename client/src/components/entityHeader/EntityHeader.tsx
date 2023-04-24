@@ -103,10 +103,10 @@ function EntityHeader({
     Url.pages.project.session.autostart,
     projectData
   );
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const notebook =
     sessions.fetched && sessions.all
-      ? (getSessionRunning(sessions.all, sessionAutostartUrl) as any)
+      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (getSessionRunning(sessions.all, sessionAutostartUrl) as any)
       : false;
 
   // Set the main button based on running sessions

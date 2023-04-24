@@ -41,12 +41,12 @@ export const inactiveKgProjectsApi = createApi({
     >({
       query: (params: InactiveProjectParams) =>
         `users/${params.userId}/projects?state=NOT_ACTIVATED&per_page=${params.perPage}&page=${params.page}`,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       transformResponse: (response: any, meta) => {
-        // eslint-disable-line @typescript-eslint/no-explicit-any
         let projects = [];
         if (response) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           projects = response.map((p: any) => {
-            // eslint-disable-line @typescript-eslint/no-explicit-any
             return {
               id: p.id,
               title: p.name,

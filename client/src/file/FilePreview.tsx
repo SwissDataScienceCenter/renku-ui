@@ -243,9 +243,9 @@ function FilePreview(props: FilePreviewProps) {
   if (fileIsCode) {
     return (
       <CardBody key="file preview" className="pb-0 bg-white">
-        {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
         <CodePreview
           content={props.file.content}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           fileExtension={getFileExtension()!}
         />
       </CardBody>

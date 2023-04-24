@@ -45,9 +45,9 @@ function useGetRecentlyVisitedProjects(
     const sessionProjectIds = currentSessions.map(
       (session: Session) => session.annotations["gitlabProjectId"]
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     projectsToShow = data
       .filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (project: Record<string, any>) =>
           !sessionProjectIds?.includes(`${project.id}`)
       )
