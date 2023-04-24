@@ -3,7 +3,6 @@
 
 set -e
 
-# For now, only warn about non-formatted files
 cd ./client
-npm run format-commit-check || true
+npm run format-commit 
 cd ..
