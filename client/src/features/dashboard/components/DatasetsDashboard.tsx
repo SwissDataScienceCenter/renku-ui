@@ -24,7 +24,7 @@ import ListDisplay from "../../../components/List";
 import { Loader } from "../../../components/Loader";
 import { KgAuthor } from "../../kgSearch/KgSearch";
 import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
-import { stateToSearchStringV2 as stateToSearchString } from "../../kgSearch/KgSearchState";
+import { stateToSearchString } from "../../kgSearch/KgSearchState";
 import { Url } from "../../../utils/helpers/url";
 
 

@@ -81,7 +81,7 @@ export const defaultSearchState: KgSearchState = {
   visibility: { private: true, public: true, internal: true },
 };
 
-export const searchStringToStateV2 = (searchString: string): KgSearchState => {
+export const searchStringToState = (searchString: string): KgSearchState => {
   const queryParams = new URLSearchParams(searchString);
   const author = queryParameterStateValue(queryParams, "author");
   const page = queryParameterStateValue(queryParams, "page");
@@ -172,7 +172,7 @@ const isVisibilityKey = (key: unknown): key is KgStateVisibilityKey => {
   return key === "visibility";
 };
 
-export const stateToSearchStringV2 = (state: Partial<KgSearchState>): string => {
+export const stateToSearchString = (state: Partial<KgSearchState>): string => {
   const stateMap: string[][] = [];
   for (const key of stringKeys) {
     const val = state[key];

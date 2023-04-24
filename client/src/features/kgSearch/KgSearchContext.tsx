@@ -32,7 +32,7 @@ import { SortingOptions } from "../../components/sortingEntities/SortingEntities
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 import { KgAuthor, KgSearchState } from "./KgSearch";
-import { defaultSearchState, searchStringToStateV2, stateToSearchStringV2 } from "./KgSearchState";
+import { defaultSearchState, searchStringToState, stateToSearchString } from "./KgSearchState";
 
 interface KgSearchContextType {
   kgSearchState: KgSearchState;
@@ -50,19 +50,6 @@ interface KgSearchContextType {
   };
 }
 
-// const defaultSearchState: KgSearchState = {
-//   author: "all",
-//   page: 1,
-//   perPage: 24,
-//   phrase: "",
-//   since: "",
-//   sort: SortingOptions.DescMatchingScore,
-//   type: { project: true, dataset: false },
-//   typeDate: DateFilterTypes.all,
-//   until: "",
-//   visibility: { private: true, public: true, internal: true },
-// };
-
 const KgSearchContext = createContext<KgSearchContextType | null>(null);
 
 interface KgSearchContextProviderProps {
@@ -76,13 +63,13 @@ export const KgSearchContextProvider = ({
   const history = useHistory();
 
   const kgSearchState = useMemo(() => {
-    const state = searchStringToStateV2(location.search);
+    const state = searchStringToState(location.search);
     return state;
   }, [location.search]);
 
   const setAuthor = useCallback(
     (author: KgAuthor) => {
-      const search = stateToSearchStringV2({
+      const search = stateToSearchString({
         ...kgSearchState,
         author,
         page: 1,
@@ -93,7 +80,7 @@ export const KgSearchContextProvider = ({
   );
   const setDates = useCallback(
     (dates: DatesFilter) => {
-      const search = stateToSearchStringV2({
+      const search = stateToSearchString({
         ...kgSearchState,
         since: dates.since ?? "",
         until: dates.until ?? "",
@@ -105,7 +92,7 @@ export const KgSearchContextProvider = ({
     [history, kgSearchState]
   );
   const setMyProjects = useCallback(() => {
-    const search = stateToSearchStringV2({
+    const search = stateToSearchString({
       ...kgSearchState,
       type: { project: true, dataset: false },
       author: "user",
@@ -115,7 +102,7 @@ export const KgSearchContextProvider = ({
     history.push({ search });
   }, [history, kgSearchState]);
   const setMyDatasets = useCallback(() => {
-    const search = stateToSearchStringV2({
+    const search = stateToSearchString({
       ...kgSearchState,
       type: { project: false, dataset: true },
       author: "user",
@@ -126,7 +113,7 @@ export const KgSearchContextProvider = ({
   }, [history, kgSearchState]);
   const setPhrase = useCallback(
     (phrase: string) => {
-      const search = stateToSearchStringV2({
+      const search = stateToSearchString({
         ...kgSearchState,
         phrase,
         page: 1,
@@ -137,28 +124,28 @@ export const KgSearchContextProvider = ({
   );
   const setPage = useCallback(
     (page: number) => {
-      const search = stateToSearchStringV2({ ...kgSearchState, page });
+      const search = stateToSearchString({ ...kgSearchState, page });
       history.push({ search });
     },
     [history, kgSearchState]
   );
   const setSort = useCallback(
     (sort: SortingOptions) => {
-      const search = stateToSearchStringV2({ ...kgSearchState, sort, page: 1 });
+      const search = stateToSearchString({ ...kgSearchState, sort, page: 1 });
       history.push({ search });
     },
     [history, kgSearchState]
   );
   const setType = useCallback(
     (type: TypeEntitySelection) => {
-      const search = stateToSearchStringV2({ ...kgSearchState, type, page: 1 });
+      const search = stateToSearchString({ ...kgSearchState, type, page: 1 });
       history.push({ search });
     },
     [history, kgSearchState]
   );
   const setVisibility = useCallback(
     (visibility: VisibilitiesFilter) => {
-      const search = stateToSearchStringV2({
+      const search = stateToSearchString({
         ...kgSearchState,
         visibility,
         page: 1,
@@ -168,7 +155,7 @@ export const KgSearchContextProvider = ({
     [history, kgSearchState]
   );
   const reset = useCallback(() => {
-    const search = stateToSearchStringV2(defaultSearchState);
+    const search = stateToSearchString(defaultSearchState);
     history.push({ search });
   }, [history]);
 

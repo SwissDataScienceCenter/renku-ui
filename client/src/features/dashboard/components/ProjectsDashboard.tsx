@@ -38,7 +38,7 @@ import { formatProjectMetadata } from "../../../utils/helpers/ProjectFunctions";
 import ListBarSession from "../../../components/list/ListBarSessions";
 import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionFunctions";
 import { Notebook } from "../../../notebooks/components/Session";
-import { stateToSearchStringV2 as stateToSearchString } from "../../kgSearch/KgSearchState";
+import { stateToSearchString } from "../../kgSearch/KgSearchState";
 import { displaySlice, useDisplaySelector } from "../../display";
 import { EnvironmentLogs } from "../../../components/Logs";
 
