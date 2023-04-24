@@ -36,11 +36,14 @@ import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { ErrorAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Docs } from "../../../utils/constants/Docs";
+import { ACCESS_LEVELS } from "../../../api-client";
 
 import styles from "./ProjectSettings.module.scss";
 
 
-// ****** INTERFACES AND ENUMS ****** //
+// ****** INTERFACES, ENUMS, CONST ****** //
+const TemplateSourceRenku = "renku";
+
 /* eslint-disable no-multi-spaces */
 export enum ProjectMigrationLevel {
   Level1 = "1-all-good",            // ? success
@@ -61,14 +64,18 @@ export enum ProjectIndexingLevel {
 }
 /* eslint-enable no-multi-spaces */
 
-function getMigrationLevel(migrationStatus: MigrationStatus): ProjectMigrationLevel {
+export function getMigrationLevel(
+  migrationStatus: MigrationStatus | undefined,
+  backendAvailable: boolean
+): ProjectMigrationLevel | null {
   // ? REF: https://www.notion.so/Project-status-889f7a0f16574c84a4b7af344683623b
+  if (!migrationStatus)
+    return null;
   if (migrationStatus.errorProject)
     return ProjectMigrationLevel.LevelE;
   const { details } = migrationStatus;
   if (!details || !details.project_supported)
     return ProjectMigrationLevel.LevelX;
-  // level 1, 2 or 3
   const coreCompatibility = details.core_compatibility_status.type === "detail" ?
     details.core_compatibility_status : null;
   const dockerfileRenku = details.dockerfile_renku_status.type === "detail" ?
@@ -77,14 +84,26 @@ function getMigrationLevel(migrationStatus: MigrationStatus): ProjectMigrationLe
     details.template_status : null;
   const templateError = details.template_status.type === "error" ?
     details.template_status : null;
-  // level 1, 2, 3
+  // level 5 && 4 -- mind that a level 5 could be temporarily classified as 4 if backendAvailable is still undefined
   if (coreCompatibility?.migration_required) {
-    // if (details.dockerfile_renku_status.type === "detail" && )
-    if (!dockerfileRenku?.newer_renku_available && !templateError && !template?.newer_template_available)
-      return ProjectMigrationLevel.Level1;
-    // ! CONTINUE FROM HERE
+    if (backendAvailable !== false)
+      return ProjectMigrationLevel.Level4;
+    return ProjectMigrationLevel.Level5;
   }
-  // level >=4
+  // level 3
+  // ! double check what to do in case !automated_dockerfile_update and later !automated_template_update
+  if (!coreCompatibility?.migration_required &&
+    (dockerfileRenku?.newer_renku_available || template?.newer_template_available)
+  )
+    return ProjectMigrationLevel.Level3;
+  // level 2 && 1
+  if (!dockerfileRenku?.newer_renku_available) {
+    // template missing/error
+    if (templateError || !template?.template_source || template?.template_source === TemplateSourceRenku)
+      return ProjectMigrationLevel.Level2;
+    if (!templateError && !template?.newer_template_available)
+      return ProjectMigrationLevel.Level1;
+  }
 
   return ProjectMigrationLevel.LevelX;
 }
@@ -95,18 +114,32 @@ function getMigrationLevel(migrationStatus: MigrationStatus): ProjectMigrationLe
 interface ProjectSettingsGeneralWrapperProps {
   client: unknown;
   metadata: {
+    accessLevel: number;
     defaultBranch: string;
     externalUrl: string;
     id: number;
     [key: string]: unknown;
   };
+  migration: {
+    core: {
+      backendAvailable: boolean;
+      fetched: Date;
+      [key: string]: unknown;
+    }
+    [key: string]: unknown;
+  }
   [key: string]: unknown;
 }
 function ProjectSettingsGeneralWrapper(props: ProjectSettingsGeneralWrapperProps) {
+  const isMaintainer = props.metadata?.accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
+  const checkingSupport = props.migration?.core?.fetched ? false : true;
   return (<>
     <ProjectSettingsGeneral
       branch={props.metadata?.defaultBranch}
+      checkingSupport={checkingSupport}
       gitUrl={props.metadata?.externalUrl}
+      isMaintainer={isMaintainer}
+      isSupported={props.migration?.core?.backendAvailable}
       projectId={props.metadata?.id}
     />
     <ProjectSettingsGeneralLegacy {...props} />
@@ -117,18 +150,29 @@ export { ProjectSettingsGeneralWrapper as ProjectSettingsGeneral };
 
 interface ProjectSettingsGeneralProps {
   branch?: string;
+  checkingSupport: boolean;
   gitUrl: string;
   projectId: number;
+  isMaintainer: boolean;
+  isSupported: boolean;
 }
-function ProjectSettingsGeneral({ branch, gitUrl, projectId }: ProjectSettingsGeneralProps) {
+function ProjectSettingsGeneral({
+  branch, checkingSupport, gitUrl, isMaintainer, isSupported, projectId
+}: ProjectSettingsGeneralProps) {
   return (
     <Card className="border-rk-light mb-4">
       <CardBody> {/* className="lh-lg" */}
         <Row>
           <Col>
             <h4 className="mb-3">Project status</h4>
-            <MigrationStatus branch={branch} gitUrl={gitUrl} />
-            <KnowledgeGraph projectId={projectId} />
+            <ProjectMigrationStatus
+              branch={branch}
+              checkingSupport={checkingSupport}
+              gitUrl={gitUrl}
+              isMaintainer={isMaintainer}
+              isSupported={isSupported}
+            />
+            <ProjectKnowledgeGraph projectId={projectId} isMaintainer={isMaintainer} />
           </Col>
         </Row>
       </CardBody>
@@ -139,18 +183,35 @@ function ProjectSettingsGeneral({ branch, gitUrl, projectId }: ProjectSettingsGe
 
 // ****** MIGRATION STATUS ****** //
 
-interface MigrationStatusProps {
+interface ProjectMigrationStatusProps {
   branch?: string;
+  checkingSupport: boolean;
   gitUrl: string;
+  isMaintainer: boolean;
+  isSupported: boolean;
 }
-function MigrationStatus({ branch, gitUrl }: MigrationStatusProps) {
+function ProjectMigrationStatus({
+  branch, checkingSupport, gitUrl, isMaintainer, isSupported
+}: ProjectMigrationStatusProps) {
+  const [showDetails, setShowDetails] = useState(false);
+  const toggleShowDetails = () => setShowDetails(!showDetails);
+
   const skip = !gitUrl || !branch;
   const { data, isLoading, error } = projectVersionApi.useGetMigrationStatusQuery(
     { gitUrl, branch }, { skip }
   );
 
-  if (isLoading || skip)
-    return (<SettingsPropsCard><Loader /></SettingsPropsCard>);
+  if (isLoading || skip || checkingSupport) {
+    return (
+      <CompositeTitle
+        icon={faTimesCircle}
+        loading={true}
+        showDetails={showDetails}
+        title="Fetching project data..."
+        toggleShowDetails={toggleShowDetails}
+      />
+    );
+  }
 
   // ? This is a very unexpected error from the core service, we don't need more precision.
   if (error) {
@@ -163,16 +224,76 @@ function MigrationStatus({ branch, gitUrl }: MigrationStatusProps) {
     );
   }
 
-  // ! TODO: expand error handling
+  // ! TODO: expand expected error handling -- maybe re-using the Row elements?
   if (data?.errorProject)
     return (<ProjectSettingsGeneralCoreError errorData={data.error as CoreErrorContent | CoreSectionError} />);
 
+  // ! TODO: handle user permissions
+  const migrationLevel = getMigrationLevel(data, isSupported);
+  // // console.log(migrationLevel);
+
+  let icon = faInfoCircle;
+  let level = "danger";
+  let title = "Unknown status";
+  if (migrationLevel === ProjectMigrationLevel.Level4) {
+    icon = faExclamationCircle;
+    level = "warning";
+    title = "Update suggested";
+  }
+  else if (migrationLevel === ProjectMigrationLevel.Level3) {
+    icon = faExclamationCircle;
+    level = "info";
+    title = "Update available";
+  }
+  // if (!data?.activated) {
+  //   title = "Activate Knowledge Graph integration";
+  //   level = "danger";
+  //   icon = faExclamationCircle;
+  // }
+  // else if (data?.progress?.done !== data?.progress?.total) {
+  //   title = "Knowledge Graph metadata (processing)";
+  //   level = "info";
+  // }
+  // else if (data.details?.status === ProjectIndexingStatuses.Failure) {
+  //   level = "info";
+  // }
+
+  const buttonIcon = faArrowAltCircleUp;
+  let buttonDisabled = false;
+  let buttonText = "Update";
+  if (!isMaintainer) {
+    buttonDisabled = true;
+    buttonText = "Update-able";
+  }
+  // // if (activateIndexingStatus.isLoading) {
+  // //   buttonDisabled = true;
+  // //   buttonText = "Activating";
+  // // }
+  const buttonAction = () => {
+    return null;
+    // // buttonText = "Activating";
+    // // buttonDisabled = true;
+    // // activateIndexing(projectId).then(() => {
+    // //   buttonText = "Activating";
+    // //   buttonDisabled = true;
+    // //   setTimeout(() => { refetch(); }, 2000);
+    // // });
+  };
+
   return (
     <>
-      <h5>Up-to-date or not</h5>
-      <p>Loading: {isLoading ? "true" : "false"}</p>
-      <p>Skipping: {skip ? "true" : "false"}</p>
-      <p>data Migration: {JSON.stringify(data)}</p>
+      <CompositeTitle
+        buttonAction={buttonAction}
+        buttonDisabled={buttonDisabled}
+        buttonIcon={buttonIcon}
+        buttonText={buttonText}
+        icon={icon}
+        level={level}
+        loading={isLoading}
+        showDetails={showDetails}
+        title={title}
+        toggleShowDetails={toggleShowDetails}
+      />
     </>
   );
 }
@@ -180,10 +301,11 @@ function MigrationStatus({ branch, gitUrl }: MigrationStatusProps) {
 
 // ****** KNOWLEDGE GRAPH ****** //
 
-interface KnowledgeGraphProps {
+interface ProjectKnowledgeGraphProps {
+  isMaintainer: boolean;
   projectId: number;
 }
-function KnowledgeGraph({ projectId }: KnowledgeGraphProps) {
+function ProjectKnowledgeGraph({ isMaintainer, projectId }: ProjectKnowledgeGraphProps) {
   const LONG_POLLING = 2 * 60 * 1000;
   const NO_POLLING = 0;
   const SHORT_POLLING = 5 * 1000;
@@ -210,8 +332,17 @@ function KnowledgeGraph({ projectId }: KnowledgeGraphProps) {
     }
   }, [data, isUninitialized, isLoading, LONG_POLLING, NO_POLLING, SHORT_POLLING]);
 
-  if (isLoading || skip)
-    return (<SettingsPropsCard><Loader /></SettingsPropsCard>);
+  if (isLoading || skip) {
+    return (
+      <CompositeTitle
+        icon={faTimesCircle}
+        loading={true}
+        showDetails={showDetails}
+        title="Fetching project metadata..."
+        toggleShowDetails={toggleShowDetails}
+      />
+    );
+  }
 
   // ! TODO: expand error handling
   if (error) {
@@ -252,7 +383,6 @@ function KnowledgeGraph({ projectId }: KnowledgeGraphProps) {
     buttonDisabled = true;
     buttonText = "Activating";
   }
-  // ! activateIndexingStatus.isError
   const buttonAction = () => {
     buttonText = "Activating";
     buttonDisabled = true;
@@ -263,9 +393,8 @@ function KnowledgeGraph({ projectId }: KnowledgeGraphProps) {
     });
   };
 
-  // ! TODO: update button
-  // ! --> only for users with permissions!
-  // ! TODO continue from here
+  // ! TODO: only for users with permissions!
+  // ! TODO: handle errors on click: activateIndexingStatus.isError
   return (
     <>
       <CompositeTitle
@@ -420,8 +549,13 @@ function CompositeTitle({
       <h5 className="d-flex align-items-center w-100 mb-0">
         <div className={`me-2 ${color}`}>{finalIcon}</div>
         <div>{title}</div>
-        <div className="mx-3 cursor-pointer" onClick={() => toggleShowDetails()}>{caret}</div>
-        <div className="ms-auto">{button}</div>
+        { loading ?
+          null :
+          (<>
+            <div className="mx-3 cursor-pointer" onClick={() => toggleShowDetails()}>{caret}</div>
+            <div className="ms-auto">{button}</div>
+          </>)
+        }
       </h5>
     </div>
   </>);

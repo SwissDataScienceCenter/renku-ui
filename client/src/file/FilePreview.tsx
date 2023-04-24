@@ -19,7 +19,7 @@
 import hljs from "highlight.js";
 import React from "react";
 import { CardBody } from "reactstrap";
-import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
+import { Document, Page } from "react-pdf";
 import DOMPurify from "dompurify";
 
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";

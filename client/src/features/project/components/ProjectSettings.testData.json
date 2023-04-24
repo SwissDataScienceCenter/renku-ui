@@ -1,0 +1,297 @@
+{
+  "results": [
+  {
+    "expectedResult": "LevelX",
+    "data": {
+      "errorProject": false,
+      "errorTemplate": false,
+      "details": {
+        "core_compatibility_status": {
+          "current_metadata_version": "10",
+          "migration_required": false,
+          "project_metadata_version": null,
+          "type": "detail"
+        },
+        "core_renku_version": "2.3.2.dev39+gf89f481d",
+        "dockerfile_renku_status": {
+          "automated_dockerfile_update": false,
+          "dockerfile_renku_version": "unknown",
+          "latest_renku_version": "2.3.2.dev39+gf89f481d",
+          "newer_renku_available": false,
+          "type": "detail"
+        },
+        "project_renku_version": ">=2.4.0",
+        "project_supported": false,
+        "template_status": {
+          "automated_template_update": false,
+          "latest_template_version": "unknown",
+          "newer_template_available": false,
+          "project_template_version": "unknown",
+          "ssh_supported": false,
+          "template_id": "unknown",
+          "template_ref": "unknown",
+          "template_source": "unknown",
+          "type": "detail"
+        }
+      }
+    }
+  },
+  {
+    "expectedResult": "Level5",
+    "data": {
+      "errorProject": false,
+      "errorTemplate": true,
+      "details": {
+        "core_compatibility_status": {
+          "current_metadata_version": "10",
+          "migration_required": true,
+          "project_metadata_version": "5",
+          "type": "detail"
+        },
+        "core_renku_version": "2.3.2.dev39+gf89f481d",
+        "dockerfile_renku_status": {
+          "automated_dockerfile_update": false,
+          "dockerfile_renku_version": null,
+          "latest_renku_version": "2.3.2.dev39+gf89f481d",
+          "newer_renku_available": null,
+          "type": "detail"
+        },
+        "project_renku_version": "pre-0.11.0",
+        "project_supported": true,
+        "template_status": {
+          "code": 2900,
+          "devMessage": "Renku service internal error. Further information: Cannot get project",
+          "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.ui.service.errors.ProgramInternalError",
+          "type": "error",
+          "userMessage": "Our servers generated an unexpected error while processing data."
+        }
+      },
+      "error": {
+        "code": 2900,
+        "devMessage": "Renku service internal error. Further information: Cannot get project",
+        "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.ui.service.errors.ProgramInternalError",
+        "type": "error",
+        "userMessage": "Our servers generated an unexpected error while processing data."
+      }
+    }
+  },
+  {
+    "expectedResult": "Level5",
+    "data": {
+      "errorProject": false,
+      "errorTemplate": true,
+      "details": {
+        "core_compatibility_status": {
+          "current_metadata_version": "10",
+          "migration_required": true,
+          "project_metadata_version": "8",
+          "type": "detail"
+        },
+        "core_renku_version": "2.3.2.dev39+gf89f481d",
+        "dockerfile_renku_status": {
+          "automated_dockerfile_update": true,
+          "dockerfile_renku_version": "0.16.2",
+          "latest_renku_version": "2.3.2.dev39+gf89f481d",
+          "newer_renku_available": true,
+          "type": "detail"
+        },
+        "project_renku_version": "0.16.2",
+        "project_supported": true,
+        "template_status": {
+          "code": 2900,
+          "devMessage": "Renku service internal error. Further information: Cannot get project",
+          "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.ui.service.errors.ProgramInternalError",
+          "type": "error",
+          "userMessage": "Our servers generated an unexpected error while processing data."
+        }
+      },
+      "error": {
+        "code": 2900,
+        "devMessage": "Renku service internal error. Further information: Cannot get project",
+        "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.ui.service.errors.ProgramInternalError",
+        "type": "error",
+        "userMessage": "Our servers generated an unexpected error while processing data."
+      }
+    }
+  },
+  {
+    "expectedResult": "Level3",
+    "data": {
+      "errorProject": false,
+      "errorTemplate": false,
+      "details": {
+        "core_compatibility_status": {
+          "current_metadata_version": "10",
+          "migration_required": false,
+          "project_metadata_version": "10",
+          "type": "detail"
+        },
+        "core_renku_version": "2.3.2.dev39+gf89f481d",
+        "dockerfile_renku_status": {
+          "automated_dockerfile_update": true,
+          "dockerfile_renku_version": "2.0.1",
+          "latest_renku_version": "2.3.2.dev39+gf89f481d",
+          "newer_renku_available": true,
+          "type": "detail"
+        },
+        "project_renku_version": "2.0.1",
+        "project_supported": true,
+        "template_status": {
+          "automated_template_update": true,
+          "latest_template_version": "0.5.0",
+          "newer_template_available": true,
+          "project_template_version": "0.3.5",
+          "ssh_supported": false,
+          "template_id": "python-minimal",
+          "template_ref": "0.3.5",
+          "template_source": "renku",
+          "type": "detail"
+        }
+      }
+    }
+  },
+  {
+    "expectedResult": "Level3",
+    "data": {
+      "errorProject": false,
+      "errorTemplate": false,
+      "details": {
+        "core_compatibility_status": {
+          "current_metadata_version": "10",
+          "migration_required": false,
+          "project_metadata_version": "10",
+          "type": "detail"
+        },
+        "core_renku_version": "2.3.2.dev39+gf89f481d",
+        "dockerfile_renku_status": {
+          "automated_dockerfile_update": true,
+          "dockerfile_renku_version": "2.3.0",
+          "latest_renku_version": "2.3.2.dev39+gf89f481d",
+          "newer_renku_available": true,
+          "type": "detail"
+        },
+        "project_renku_version": "2.3.0",
+        "project_supported": true,
+        "template_status": {
+          "automated_template_update": true,
+          "latest_template_version": "0.6.0",
+          "newer_template_available": true,
+          "project_template_version": "0.5.0",
+          "ssh_supported": true,
+          "template_id": "python-minimal",
+          "template_ref": "0.5.0",
+          "template_source": "https://github.com/SwissDataScienceCenter/renku-project-template",
+          "type": "detail"
+        }
+      }
+    }
+  },
+  {
+    "expectedResult": "Level3",
+    "data": {
+      "errorProject": false,
+      "errorTemplate": false,
+      "details": {
+        "core_compatibility_status": {
+          "current_metadata_version": "10",
+          "migration_required": false,
+          "project_metadata_version": "10",
+          "type": "detail"
+        },
+        "core_renku_version": "2.3.2.dev39+gf89f481d",
+        "dockerfile_renku_status": {
+          "automated_dockerfile_update": true,
+          "dockerfile_renku_version": "2.3.2",
+          "latest_renku_version": "2.3.2.dev39+gf89f481d",
+          "newer_renku_available": false,
+          "type": "detail"
+        },
+        "project_renku_version": "2.3.2",
+        "project_supported": true,
+        "template_status": {
+          "automated_template_update": true,
+          "latest_template_version": "0.6.0",
+          "newer_template_available": true,
+          "project_template_version": "0.3.0",
+          "ssh_supported": false,
+          "template_id": "python-minimal",
+          "template_ref": "0.3.0",
+          "template_source": "https://github.com/SwissDataScienceCenter/renku-project-template",
+          "type": "detail"
+        }
+      }
+    }
+  },
+  {
+    "expectedResult": "Level2",
+    "data": {
+      "errorProject": false,
+      "errorTemplate": false,
+      "details": {
+        "core_compatibility_status": {
+          "current_metadata_version": "10",
+          "migration_required": false,
+          "project_metadata_version": "10",
+          "type": "detail"
+        },
+        "core_renku_version": "2.3.2.dev39+gf89f481d",
+        "dockerfile_renku_status": {
+          "automated_dockerfile_update": true,
+          "dockerfile_renku_version": "2.3.2",
+          "latest_renku_version": "2.3.2.dev39+gf89f481d",
+          "newer_renku_available": false,
+          "type": "detail"
+        },
+        "project_renku_version": "2.3.2",
+        "project_supported": true,
+        "template_status": {
+          "automated_template_update": true,
+          "latest_template_version": "0.5.0",
+          "newer_template_available": false,
+          "project_template_version": "0.5.0",
+          "ssh_supported": true,
+          "template_id": "python-minimal",
+          "template_ref": "0.5.0",
+          "template_source": "renku",
+          "type": "detail"
+        }
+      }
+    }
+  },
+  {
+    "expectedResult": "Level1",
+    "data": {
+      "errorProject": false,
+      "errorTemplate": false,
+      "details": {
+        "core_compatibility_status": {
+          "current_metadata_version": "10",
+          "migration_required": false,
+          "project_metadata_version": "10",
+          "type": "detail"
+        },
+        "core_renku_version": "2.3.2.dev39+gf89f481d",
+        "dockerfile_renku_status": {
+          "automated_dockerfile_update": true,
+          "dockerfile_renku_version": "2.3.2",
+          "latest_renku_version": "2.3.2.dev39+gf89f481d",
+          "newer_renku_available": false,
+          "type": "detail"
+        },
+        "project_renku_version": "2.3.2",
+        "project_supported": true,
+        "template_status": {
+          "automated_template_update": true,
+          "latest_template_version": "0.6.0",
+          "newer_template_available": false,
+          "project_template_version": "0.6.0",
+          "ssh_supported": true,
+          "template_id": "python-minimal",
+          "template_ref": "0.6.0",
+          "template_source": "https://github.com/SwissDataScienceCenter/renku-project-template",
+          "type": "detail"
+        }
+      }
+    }
+  }
+]}
