@@ -216,6 +216,10 @@ function App(props) {
   const [notifications, setNotifications] = useState(null);
 
   useEffect(() => {
+    console.log("leafty - dev")
+  }, [])
+
+  useEffect(() => {
     const getLocation = () => props.location;
     const notificationManager = new NotificationsManager(props.model, props.client, getLocation);
     setNotifications(notificationManager);

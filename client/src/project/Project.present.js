@@ -647,13 +647,17 @@ class ProjectViewOverview extends Component {
 function ProjectViewWorkflows(props) {
   const reference = props.metadata?.defaultBranch ? props.metadata?.defaultBranch : "";
 
+  useEffect(() => {
+    console.log({ migration: props.migration })
+  }, [props.migration])
+
   return (
     <WorkflowsList
       fullPath={props.projectPathWithNamespace}
       reference={reference}
       repositoryUrl={props.externalUrl}
       versionUrl={props.migration?.core?.versionUrl}
-      backendAvailable={!!props.migration?.core?.backendAvailable}
+      backendAvailable={props.migration?.core?.backendAvailable}
     />
   );
 }

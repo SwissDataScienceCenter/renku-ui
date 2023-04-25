@@ -441,7 +441,7 @@ function checkRenkuCoreSupport(minimumVersion, coreUrl) {
     parseInt(coreUrl.replace(/^\/+|\/+$/g, "")) :
     0;
   const unsupported = projectVersion && projectVersion < minimumVersion ? true : false;
-  return !unsupported;
+  return !unsupported ;
 }
 
 
