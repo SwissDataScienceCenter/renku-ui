@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from "react";
+import React from "react";
 import { RootStateOrAny, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -44,7 +44,7 @@ interface WorkflowsListProps {
   reference: string;
   repositoryUrl: string;
   versionUrl: string;
-  backendAvailable: boolean | null;
+  backendAvailable: boolean | null | undefined;
 }
 
 function deserializeError(error: any) {
@@ -66,7 +66,8 @@ function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl, backend
   const selected = id;
 
   // Verify backend support and availability
-  const unsupported = backendAvailable === false || !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
+  const unsupported = (backendAvailable != null && !backendAvailable) ||
+    !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
 
   // Configure the functions to dispatch workflowsDisplay changes
   const dispatch = useDispatch();
@@ -80,9 +81,6 @@ function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl, backend
 
   // Fetch workflow list
   const skipList = !versionUrl || !repositoryUrl || unsupported;
-  useEffect(() => {
-    console.log({ skipList, versionUrl , repositoryUrl , unsupported, backendAvailable , checkRenkuCoreSupport: checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl)})
-  }, [backendAvailable, repositoryUrl, skipList, unsupported, versionUrl])
   const workflowsQuery = useGetWorkflowListQuery(
     { coreUrl: versionUrl, gitUrl: repositoryUrl, reference, fullPath },
     { skip: skipList }
@@ -116,10 +114,6 @@ function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl, backend
   const selectedAvailable =
     (!!workflows.list?.find((w: any) => w.workflowId === selected)) ||
     !!(workflow.details?.latest && !!workflows.list?.find((w: any) => w.id === workflow.details?.latest));
-
-  useEffect(() => {
-    console.log({ unsupported, workflows })
-  }, [ unsupported, workflows])
 
   return (
     <WorkflowsTreeBrowserPresent
