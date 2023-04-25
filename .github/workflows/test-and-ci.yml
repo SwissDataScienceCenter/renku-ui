@@ -31,6 +31,10 @@ jobs:
         npm test
       env:
         CI: true
+    - name: Run format client
+      run: |
+        cd client
+        npm run format-check
     - name: Run lint client
       run: |
         cd client
