@@ -225,14 +225,12 @@ const ProjectAttributesMixin = {
 
 const MigrationMixin = {
   async fetchMigrationCheck(client, gitUrl, defaultBranch = null) {
-    console.log("fetchMigrationCheck:pre", this.get('migration.check'))
     const migrationData = await client.checkMigration(gitUrl, defaultBranch);
     if (migrationData?.error) {
       this.set("migration.check", { check_error: migrationData.error, gitUrl });
       return migrationData.error;
     }
     this.set("migration.check", { ...migrationData.result, check_error: null, gitUrl });
-    console.log("fetchMigrationCheck:post", this.get('migration.check'))
     return migrationData.result;
   },
   async migrateProject(client, gitUrl, defaultBranch = null, options) {
