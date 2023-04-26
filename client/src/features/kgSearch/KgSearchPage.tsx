@@ -25,7 +25,6 @@ import { FilterEntitySearch } from "../../components/entitySearchFilter/EntitySe
 import { SearchResultsHeader } from "../../components/searchResultsHeader/SearchResultsHeader";
 import { SearchResultsContent } from "../../components/searchResultsContent/SearchResultsContent";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
-import { useKgSearchState } from "./KgSearchState";
 import { KgAuthor } from "./KgSearch";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
@@ -33,6 +32,7 @@ import { DatesFilter } from "../../components/dateFilter/DateFilter";
 import QuickNav from "../../components/quicknav";
 import AppContext from "../../utils/context/appContext";
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
+import { KgSearchContextProvider, useKgSearchContext } from "./KgSearchContext";
 
 
 /* eslint-disable @typescript-eslint/ban-types */
@@ -83,8 +83,9 @@ const ModalFilter = ({
 };
 
 function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
-  const { searchState, setPage, setSort, removeFilters } = useKgSearchState();
-  const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = searchState;
+  const { kgSearchState, reducers: { setPage, setSort, reset } } = useKgSearchContext();
+  const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = kgSearchState;
+
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(true);
   const { client } = useContext(AppContext);
@@ -107,7 +108,6 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
     until,
     type: typeDate
   };
-  const onRemoveFilters = () => { removeFilters(); };
 
   const { data, isFetching, isLoading, error } = useSearchEntitiesQuery(searchRequest);
   const filter = (
@@ -153,7 +153,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
             isFetching={isFetching}
             isLoading={isLoading}
             onPageChange={(value: number) => setPage(value)}
-            onRemoveFilters={onRemoveFilters}
+            onRemoveFilters={reset}
             error={error}
           />
           <div className="d-sm-block d-md-none">
@@ -175,4 +175,10 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
   );
 }
 
-export default SearchPage;
+const SearchPageWrapped = (props: SearchPageProps) => {
+  return <KgSearchContextProvider>
+    <SearchPage {...props} />
+  </KgSearchContextProvider>;
+};
+
+export default SearchPageWrapped;

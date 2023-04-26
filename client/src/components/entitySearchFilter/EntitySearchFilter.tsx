@@ -15,15 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import React from "react";
 
 import { KgAuthor } from "../../features/kgSearch/KgSearch";
-import { useKgSearchState } from "../../features/kgSearch/KgSearchState";
 import { TypeEntityFilter, TypeEntitySelection } from "../typeEntityFilter/TypeEntityFilter";
 import { AuthorFilter } from "../authorFilter/AuthorFilter";
 import { VisibilitiesFilter, VisibilityFilter } from "../visibilityFilter/VisibilityFilter";
 import "./EntitySearchFilter.css";
 import { DateFilter, DatesFilter } from "../dateFilter/DateFilter";
+import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
 
 /**
  *  renku-ui
@@ -41,7 +41,8 @@ export interface FilterProps {
 }
 
 const FilterEntitySearch = ({ author, type, visibility, isLoggedUser, valuesDate }: FilterProps) => {
-  const { setAuthor, setDates, setType, setVisibility } = useKgSearchState();
+  const { reducers: { setAuthor, setDates, setType, setVisibility } } = useKgSearchContext();
+
   const authorComponent = isLoggedUser ? (
     <div><AuthorFilter
       handler={(value: KgAuthor) => setAuthor(value)}
@@ -63,7 +64,7 @@ const FilterEntitySearch = ({ author, type, visibility, isLoggedUser, valuesDate
         {authorComponent}
         {visibilityComponent}
         <div>
-          <DateFilter values={valuesDate} handler={(dates: DatesFilter) => setDates(dates)} />
+          <DateFilter dates={valuesDate} onDatesChange={setDates} />
         </div>
       </div>
     </>
