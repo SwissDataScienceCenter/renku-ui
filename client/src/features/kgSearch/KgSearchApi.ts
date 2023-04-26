@@ -90,6 +90,8 @@ const setSort = (query: string, sort: SortingOptions) => {
   return `${query}&sort=${sort}&sort=${SortingOptions.DescDate}`;
 };
 
+const KG_SEARCH_API_REFETCH_AFTER_DURATION_S = 30;
+
 // Define a service using a base URL and expected endpoints
 export const kgSearchApi = createApi({
   reducerPath: "kgSearchApi",
@@ -150,7 +152,7 @@ export const kgSearchApi = createApi({
       }
     })
   }),
-  refetchOnMountOrArgChange: 3,
+  refetchOnMountOrArgChange: KG_SEARCH_API_REFETCH_AFTER_DURATION_S,
 });
 
 // Export hooks for usage in function components, which are

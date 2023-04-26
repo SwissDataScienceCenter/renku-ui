@@ -15,14 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Visibilities } from "../../components/visibility/Visibility";
 
-interface KgSearchResultLink {
+import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
+import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
+import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
+import { Visibilities } from "../../components/visibility/Visibility";
+import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
+
+export interface KgSearchResultLink {
   rel: string;
   href: string;
 }
 
-type KgAuthor = "user" | "all";
+export type KgAuthor = "user" | "all";
 
 // These are used by the TS compiler does not realize it.
 /* eslint-disable no-unused-vars */
@@ -32,7 +37,7 @@ export enum EntityType {
 }
 /* eslint-enable no-unused-vars */
 
-interface KgSearchResult {
+export interface KgSearchResult {
   _links: KgSearchResultLink[];
   creators: string[];
   creator: string;
@@ -48,7 +53,7 @@ interface KgSearchResult {
   images: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-interface ListResponse<T> {
+export interface ListResponse<T> {
   page: number;
   perPage: number;
   total: number;
@@ -56,6 +61,15 @@ interface ListResponse<T> {
   results: T[];
 }
 
-export const TOTAL_RESULT_PER_PAGE = 20;
-
-export type { ListResponse, KgAuthor, KgSearchResult, KgSearchResultLink };
+export interface KgSearchState {
+  author: KgAuthor;
+  page: number;
+  perPage: number;
+  phrase: string;
+  since: string;
+  sort: SortingOptions;
+  type: TypeEntitySelection;
+  typeDate: DateFilterTypes;
+  until: string;
+  visibility: VisibilitiesFilter;
+}
