@@ -73,5 +73,3 @@ export interface KgSearchState {
   until: string;
   visibility: VisibilitiesFilter;
 }
-
-export const TOTAL_RESULT_PER_PAGE = 20;
