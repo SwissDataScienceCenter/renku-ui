@@ -62,9 +62,7 @@ export default {
 //     <LoginAlert {...args} />
 //   </MemoryRouter>
 // );
-const Template: Story<LoginAlertProps> = (args) => (
-  <LoginAlert {...args} />
-);
+const Template: Story<LoginAlertProps> = (args) => <LoginAlert {...args} />;
 
 export const Complete = Template.bind({});
 Complete.args = {

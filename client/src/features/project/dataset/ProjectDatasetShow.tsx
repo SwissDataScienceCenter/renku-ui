@@ -5,12 +5,25 @@ import { ACCESS_LEVELS } from "../../../api-client";
 import DatasetView from "../../../dataset/Dataset.present";
 import { Url } from "../../../utils/helpers/url";
 
-import { useGetDatasetFilesQuery, useGetDatasetKgQuery } from "../projectCoreApi";
-import type { DatasetCore, DatasetKg, IDataset, IMigration, StateModelProject } from "../Project.d";
+import {
+  useGetDatasetFilesQuery,
+  useGetDatasetKgQuery,
+} from "../projectCoreApi";
+import type {
+  DatasetCore,
+  DatasetKg,
+  IDataset,
+  IMigration,
+  StateModelProject,
+} from "../Project.d";
 
 type IDatasetCoordinator = {
   fetchDataset: (id: string, datasets: DatasetCore[], fetchKG: boolean) => void;
-  fetchDatasetFilesFromCoreService: (id: string, httpProjectUrl: string, versionUrl: string) => void;
+  fetchDatasetFilesFromCoreService: (
+    id: string,
+    httpProjectUrl: string,
+    versionUrl: string
+  ) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get(key: string): any;
 };
@@ -57,7 +70,10 @@ function findDatasetId(name?: string, datasets?: DatasetCore[]) {
   return dataset?.identifier;
 }
 
-function mergeCoreAndKgDatasets(coreDataset?: DatasetCore, kgDataset?: DatasetKg) {
+function mergeCoreAndKgDatasets(
+  coreDataset?: DatasetCore,
+  kgDataset?: DatasetKg
+) {
   if (coreDataset == null) {
     if (kgDataset == null) return undefined;
     const dataset: IDataset = { exists: true, insideKg: true, ...kgDataset };
@@ -78,7 +94,9 @@ function mergeCoreAndKgDatasets(coreDataset?: DatasetCore, kgDataset?: DatasetKg
     dataset.sameAs = kgDataset.sameAs;
     dataset.usedIn = kgDataset.usedIn;
     dataset.published.datePublished =
-      kgDataset.published && kgDataset.published.datePublished ? kgDataset.published.datePublished : undefined;
+      kgDataset.published && kgDataset.published.datePublished
+        ? kgDataset.published.datePublished
+        : undefined;
   }
   return dataset;
 }
@@ -108,7 +126,10 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     { skip: !datasetName }
   );
 
-  const loadingDatasets = currentDataset == null || currentDataset.identifier !== datasetId || isKgFetching;
+  const loadingDatasets =
+    currentDataset == null ||
+    currentDataset.identifier !== datasetId ||
+    isKgFetching;
   return (
     <DatasetView
       client={undefined}
@@ -143,7 +164,9 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
 }
 
 function ProjectDatasetShow(props: ProjectDatasetShowProps) {
-  const project = useSelector((state: RootStateOrAny) => state.stateModel.project as StateModelProject);
+  const project = useSelector(
+    (state: RootStateOrAny) => state.stateModel.project as StateModelProject
+  );
   const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
@@ -157,12 +180,19 @@ function ProjectDatasetShow(props: ProjectDatasetShowProps) {
 
   const projectPath = projectMetadata.path;
   const projectNamespace = projectMetadata.namespace;
-  const projectUrlProps = { namespace: projectNamespace, path: projectPath, target: "" };
+  const projectUrlProps = {
+    namespace: projectNamespace,
+    path: projectPath,
+    target: "",
+  };
   const fileContentUrl = Url.get(Url.pages.project.file, projectUrlProps);
   const lineageUrl = Url.get(Url.pages.project.lineage, projectUrlProps);
   // Remove the trailing slash, since that is how downstream components expect it.
   const lineagesUrl = lineageUrl.substring(0, lineageUrl.length - 1);
-  const overviewStatusUrl = Url.get(Url.pages.project.overview.status, projectUrlProps);
+  const overviewStatusUrl = Url.get(
+    Url.pages.project.overview.status,
+    projectUrlProps
+  );
   const projectsUrl = Url.get(Url.pages.projects);
   if (props.datasetCoordinator == null) return null;
   return (

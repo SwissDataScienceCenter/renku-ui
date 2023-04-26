@@ -5,7 +5,6 @@
  *  Docs utils
  */
 
-
 const READ_THE_DOCS_ROOT = "https://renku.readthedocs.io/en/stable";
 
 const Docs = {
@@ -19,10 +18,18 @@ const Docs = {
   // eslint-disable-next-line
   READ_THE_DOCS_TUTORIALS_STARTING: `${READ_THE_DOCS_ROOT}/tutorials/01_firststeps.html`,
 
-  rtdHowToGuide(subPage) { return `${Docs.READ_THE_DOCS_HOW_TO_GUIDES}/${subPage}`; },
-  rtdPythonReferencePage(subPage) { return `${Docs.READ_THE_DOCS_RENKU_PYTHON}/docs/reference/${subPage}`; },
-  rtdReferencePage(subPage) { return `${Docs.READ_THE_DOCS_REFERENCE}/${subPage}`; },
-  rtdTopicGuide(subPage) { return `${Docs.READ_THE_DOCS_ROOT}/topic-guides/${subPage}`; },
+  rtdHowToGuide(subPage) {
+    return `${Docs.READ_THE_DOCS_HOW_TO_GUIDES}/${subPage}`;
+  },
+  rtdPythonReferencePage(subPage) {
+    return `${Docs.READ_THE_DOCS_RENKU_PYTHON}/docs/reference/${subPage}`;
+  },
+  rtdReferencePage(subPage) {
+    return `${Docs.READ_THE_DOCS_REFERENCE}/${subPage}`;
+  },
+  rtdTopicGuide(subPage) {
+    return `${Docs.READ_THE_DOCS_ROOT}/topic-guides/${subPage}`;
+  },
 };
 
 const Links = {
@@ -32,7 +39,8 @@ const Links = {
   HOMEPAGE: "https://datascience.ch",
 };
 
-const REKNU_PYTHON_READ_THE_DOCS_ROOT = "https://renku-python.readthedocs.io/en/stable";
+const REKNU_PYTHON_READ_THE_DOCS_ROOT =
+  "https://renku-python.readthedocs.io/en/stable";
 
 const RenkuPythonDocs = {
   READ_THE_DOCS_ROOT: REKNU_PYTHON_READ_THE_DOCS_ROOT,

@@ -48,16 +48,18 @@ function RenkuMarkdown(props) {
 
   const { singleLine, className, markdownText, style } = props;
   let classNameMarkdown = "text-break renku-markdown";
-  if (singleLine)
-    classNameMarkdown += " children-no-spacing";
-  if (className)
-    classNameMarkdown += " " + className;
+  if (singleLine) classNameMarkdown += " children-no-spacing";
+  if (className) classNameMarkdown += " " + className;
 
-  return <div
-    className={classNameMarkdown}
-    style={style}
-    dangerouslySetInnerHTML={{ __html: sanitizedHTMLFromMarkdown(markdownText, singleLine) }}>
-  </div>;
+  return (
+    <div
+      className={classNameMarkdown}
+      style={style}
+      dangerouslySetInnerHTML={{
+        __html: sanitizedHTMLFromMarkdown(markdownText, singleLine),
+      }}
+    ></div>
+  );
 }
 
 /**
@@ -73,12 +75,20 @@ function MarkdownTextExcerpt(props) {
   // const innerText = temp.textContent || temp.innerText || "";
   // return this.props.charsLimit !== undefined && innerText.length > this.props.charsLimit ?
   //   innerText.substr(0, this.props.charsLimit) + "..." : innerText;
-  const style = props.heightLimit ?
-    { maxHeight: `${props.heightLimit}ch` }
+  const style = props.heightLimit
+    ? { maxHeight: `${props.heightLimit}ch` }
     : { maxWidth: `${props.charsLimit}ch` };
-  const text = props.charsLimit && (props.markdownText.length > props.charsLimit) ?
-    props.markdownText.slice(0, props.charsLimit) + "..." : props.markdownText;
-  return <RenkuMarkdown markdownText={text} singleLine={props.singleLine || false} style={style} />;
+  const text =
+    props.charsLimit && props.markdownText.length > props.charsLimit
+      ? props.markdownText.slice(0, props.charsLimit) + "..."
+      : props.markdownText;
+  return (
+    <RenkuMarkdown
+      markdownText={text}
+      singleLine={props.singleLine || false}
+      style={style}
+    />
+  );
 }
 
 export { RenkuMarkdown, MarkdownTextExcerpt };

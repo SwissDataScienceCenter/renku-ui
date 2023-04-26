@@ -45,12 +45,16 @@ export interface EntityLinksHeader {
 export interface LinkedEntitiesByItemTypeProps {
   itemType: EntityType;
   links?: EntityLinksHeader;
-  devAccess: boolean,
-  url: string
+  devAccess: boolean;
+  url: string;
 }
-function LinkedEntitiesByItemType({ itemType, links, devAccess, url }: LinkedEntitiesByItemTypeProps) {
-  if (!links)
-    return null;
+function LinkedEntitiesByItemType({
+  itemType,
+  links,
+  devAccess,
+  url,
+}: LinkedEntitiesByItemTypeProps) {
+  if (!links) return null;
 
   const dataByItem = {
     project: {
@@ -67,7 +71,7 @@ function LinkedEntitiesByItemType({ itemType, links, devAccess, url }: LinkedEnt
       seeMore: "... see more projects in the section below",
       noLinks: "There are no projects using this dataset.",
       error: "Error obtaining projects",
-      icon: <Briefcase />
+      icon: <Briefcase />,
     },
     workflow: {
       title: "Linked composite workflows",
@@ -75,47 +79,70 @@ function LinkedEntitiesByItemType({ itemType, links, devAccess, url }: LinkedEnt
       seeMore: "",
       noLinks: "There are no composite workflows using this workflow.",
       error: "Error obtaining related workflows",
-      icon: <Briefcase />
-    }
+      icon: <Briefcase />,
+    },
   };
   const stylesByItem = stylesByItemType(itemType);
 
-  const addDatasetLink = devAccess && itemType === "project" ?
-    <div className=""><Link to={`${url}/datasets/new`} title="Add a dataset">Add a dataset...</Link></div> : null;
+  const addDatasetLink =
+    devAccess && itemType === "project" ? (
+      <div className="">
+        <Link to={`${url}/datasets/new`} title="Add a dataset">
+          Add a dataset...
+        </Link>
+      </div>
+    ) : null;
 
   return (
     <div className="linked-entities">
       <h3>{dataByItem[itemType].title}</h3>
-      <p className="text-rk-text-light mb-1">{dataByItem[itemType].description}</p>
-      {links.status === "pending" ? <LoadingLabel text="Loading links... " /> : null }
-      {links.status === "error" ? <small className="text-rk-text-light">
-        {dataByItem[itemType].error}.{" "}
-        { links.linkAll ?
-          <Link className="cursor-pointer text-rk-text-light" key="more-datasets" to={links.linkAll}>More info</Link>
-          : null }
-      </small> : null }
-      {
-        links.data
-          .map(link => {
-            // ? URl without the final slash aren't working well with the current Datasets elements
-            const fixedUrl = link.url.endsWith("/") ?
-              link.url :
-              link.url + "/";
-            return (
-              <div className="d-grid" key={link.title}>
-                <Link className={`${stylesByItem.colorText} linked-entities-link text-truncate`}
-                  to={fixedUrl}>{dataByItem[itemType].icon}{link.title}
-                </Link>
-              </div>
-            );
-          })
-      }
-      {links.total > 3 ?
-        <SeeMoreByType itemType={itemType} text={dataByItem[itemType].seeMore} linkTo={links.linkAll} />
-        : null
-      }
-      {links.status === "done" && links.data.length === 0 ?
-        <small className="text-rk-text-light">{dataByItem[itemType].noLinks} {addDatasetLink}</small> : null }
+      <p className="text-rk-text-light mb-1">
+        {dataByItem[itemType].description}
+      </p>
+      {links.status === "pending" ? (
+        <LoadingLabel text="Loading links... " />
+      ) : null}
+      {links.status === "error" ? (
+        <small className="text-rk-text-light">
+          {dataByItem[itemType].error}.{" "}
+          {links.linkAll ? (
+            <Link
+              className="cursor-pointer text-rk-text-light"
+              key="more-datasets"
+              to={links.linkAll}
+            >
+              More info
+            </Link>
+          ) : null}
+        </small>
+      ) : null}
+      {links.data.map((link) => {
+        // ? URl without the final slash aren't working well with the current Datasets elements
+        const fixedUrl = link.url.endsWith("/") ? link.url : link.url + "/";
+        return (
+          <div className="d-grid" key={link.title}>
+            <Link
+              className={`${stylesByItem.colorText} linked-entities-link text-truncate`}
+              to={fixedUrl}
+            >
+              {dataByItem[itemType].icon}
+              {link.title}
+            </Link>
+          </div>
+        );
+      })}
+      {links.total > 3 ? (
+        <SeeMoreByType
+          itemType={itemType}
+          text={dataByItem[itemType].seeMore}
+          linkTo={links.linkAll}
+        />
+      ) : null}
+      {links.status === "done" && links.data.length === 0 ? (
+        <small className="text-rk-text-light">
+          {dataByItem[itemType].noLinks} {addDatasetLink}
+        </small>
+      ) : null}
     </div>
   );
 }
@@ -128,12 +155,25 @@ interface SeeMoreByTypeProps {
 function SeeMoreByType({ itemType, text, linkTo }: SeeMoreByTypeProps) {
   switch (itemType) {
     case "project":
-      return <div className="mt-1">
-        {linkTo ? <Link
-          className="cursor-pointer text-rk-text-light"
-          key="more-datasets" to={linkTo}>{text}</Link> : null }</div>;
+      return (
+        <div className="mt-1">
+          {linkTo ? (
+            <Link
+              className="cursor-pointer text-rk-text-light"
+              key="more-datasets"
+              to={linkTo}
+            >
+              {text}
+            </Link>
+          ) : null}
+        </div>
+      );
     case "dataset":
-      return <div className="mt-1"><small className="text-rk-text-light">{text}</small></div>;
+      return (
+        <div className="mt-1">
+          <small className="text-rk-text-light">{text}</small>
+        </div>
+      );
     default:
       return null;
   }

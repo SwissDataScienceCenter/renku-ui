@@ -22,10 +22,8 @@ import { FilterEntitySearch, FilterProps } from "./EntitySearchFilter";
 export default {
   title: "components/FilterEntitySearch",
   component: FilterEntitySearch,
-  argTypes: {
-  },
+  argTypes: {},
 };
-
 
 const Template: Story<FilterProps> = (args) => <FilterEntitySearch {...args} />;
 

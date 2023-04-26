@@ -38,31 +38,52 @@ export interface EntityCreatorsProps {
   creators: EntityCreator[];
   itemType: EntityType;
   includeIcon?: boolean;
-  className? : string;
+  className?: string;
 }
-function EntityCreators({ display, creators, itemType, includeIcon, className }: EntityCreatorsProps) {
+function EntityCreators({
+  display,
+  creators,
+  itemType,
+  includeIcon,
+  className,
+}: EntityCreatorsProps) {
   let creatorsText;
   const stylesByItem = stylesByItemType(itemType);
   if (!creators) {
     creatorsText = <span className="fst-italic">Unknown creator</span>;
-  }
-  else {
-    creatorsText = creators.slice(0, 3)
-      .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : "")).join(", ");
-    if (creators.length > 3)
-      creatorsText += ", et al.";
+  } else {
+    creatorsText = creators
+      .slice(0, 3)
+      .map(
+        (creator) =>
+          creator.name +
+          (creator.affiliation ? ` (${creator.affiliation})` : "")
+      )
+      .join(", ");
+    if (creators.length > 3) creatorsText += ", et al.";
   }
 
-  const icon = includeIcon ?
-    creators.length > 1 ? <People size="20" className="me-2" /> : <Person className="me-2" size="20" />
-    : null;
+  const icon = includeIcon ? (
+    creators.length > 1 ? (
+      <People size="20" className="me-2" />
+    ) : (
+      <Person className="me-2" size="20" />
+    )
+  ) : null;
 
   if (display === "plain")
-    return (<>{icon}<span>{creatorsText}</span></>);
+    return (
+      <>
+        {icon}
+        <span>{creatorsText}</span>
+      </>
+    );
 
   if (display === "list") {
     return (
-      <div className={`card-text d-flex align-items-center ${stylesByItem.colorText} ${className}`}>
+      <div
+        className={`card-text d-flex align-items-center ${stylesByItem.colorText} ${className}`}
+      >
         {icon}
         <span>{creatorsText}</span>
       </div>
@@ -70,13 +91,12 @@ function EntityCreators({ display, creators, itemType, includeIcon, className }:
   }
 
   if (display === "tree") {
-    if (!creatorsText)
-      return null;
-    return (<p className="text-rk-text small">{creatorsText}</p>);
+    if (!creatorsText) return null;
+    return <p className="text-rk-text small">{creatorsText}</p>;
   }
 
   return (
-    <div className={`text-rk-text ${ stylesByItem.colorText }`}>
+    <div className={`text-rk-text ${stylesByItem.colorText}`}>
       <small style={{ display: "block" }} className="font-weight-light">
         {creatorsText}
       </small>

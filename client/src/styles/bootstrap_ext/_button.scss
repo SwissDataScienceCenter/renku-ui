@@ -36,7 +36,8 @@ $borderRadius: 1000px;
 }
 
 .btn-with-menu-options {
-  svg, .btn-with-menu-margin {
+  svg,
+  .btn-with-menu-margin {
     margin-right: 12px;
   }
 }
@@ -92,13 +93,18 @@ $borderRadius: 1000px;
   background-color: transparent;
 }
 
-.btn-secondary, .btn-info, .btn-warning {
+.btn-secondary,
+.btn-info,
+.btn-warning {
   color: $rk-white;
   --bs-btn-active-color: #{$rk-white};
-  &:hover, &:focus, &:active, &.active {
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
     color: $rk-white;
   }
-  &.disabled{
+  &.disabled {
     color: $rk-white;
   }
 }
@@ -107,25 +113,25 @@ $borderRadius: 1000px;
 }
 
 .btn-outline-secondary:hover {
-  color:$rk-white;
+  color: $rk-white;
 }
 
 .btn-rk-white {
   border-color: $rk-light;
-  color:$rk-text;
+  color: $rk-text;
   &:hover {
     border-color: $rk-light;
-    color:$rk-text;
+    color: $rk-text;
   }
 
   &:focus {
     border-color: $rk-light;
-    color:$rk-text;
+    color: $rk-text;
   }
 
   &:active {
     border-color: $rk-light;
-    color:$rk-text;
+    color: $rk-text;
   }
 }
 
@@ -149,7 +155,7 @@ $borderRadius: 1000px;
   }
 }
 
-.btn-rk-pink  {
+.btn-rk-pink {
   @extend .btn-rk;
 }
 
@@ -189,7 +195,10 @@ $borderRadius: 1000px;
   background-color: white;
   color: $rk-blue;
 
-  &:hover, &:focus, &:active, &.active {
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
     background-color: transparent;
     color: $rk-blue;
   }
@@ -201,7 +210,10 @@ $borderRadius: 1000px;
   --bs-btn-active-bg: transparent;
   --bs-btn-active-border-color: #{$rk-green};
 
-  &:hover, &:focus, &:active, &.active {
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
     background-color: transparent;
     color: $rk-green-highlight;
     border-color: $rk-green;
@@ -216,12 +228,15 @@ $borderRadius: 1000px;
   color: $rk-pink;
   border-color: $rk-pink;
 
-  &:hover, &:focus, &:active, &.active {
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
     background-color: transparent;
     color: $rk-pink-highlight;
     border-color: $rk-pink;
   }
-  &.disabled{
+  &.disabled {
     background-color: transparent;
     color: $rk-pink-highlight;
     border-color: $rk-pink-highlight;
@@ -231,7 +246,7 @@ $borderRadius: 1000px;
 
 .link-alert-warning {
   color: #605000;
-  &:focus{
+  &:focus {
     box-shadow: unset;
   }
 }
@@ -241,7 +256,10 @@ $borderRadius: 1000px;
   color: $rk-pink;
   border-color: $rk-pink;
 
-  &:hover, &:focus, &:active, &.active {
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
     background-color: $rk-pink-highlight;
     color: white;
   }
@@ -270,7 +288,7 @@ $borderRadius: 1000px;
 }
 
 .btn-with-menu-options {
-  background: #FFFFFF;
+  background: #ffffff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   border: none;
@@ -278,10 +296,12 @@ $borderRadius: 1000px;
   margin: 5px 0;
 }
 
-.btn-with-menu-options a, .btn-with-menu-options button {
+.btn-with-menu-options a,
+.btn-with-menu-options button {
   color: $rk-dark;
 }
-.btn-with-menu-options button:focus, .btn-with-menu-options button:active {
+.btn-with-menu-options button:focus,
+.btn-with-menu-options button:active {
   background-color: transparent;
 }
 
@@ -376,7 +396,7 @@ $borderRadius: 1000px;
 
 .editor-control-btn {
   border-radius: 4px;
-  background-color: #D9D9D9;
+  background-color: #d9d9d9;
   border: none;
   padding: 2px 8px;
   color: var(--bs-dark);

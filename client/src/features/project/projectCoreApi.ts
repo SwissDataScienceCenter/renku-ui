@@ -74,15 +74,22 @@ export const projectCoreApi = createApi({
           "X-Requested-With": "XMLHttpRequest",
         };
         return {
-          url: urlWithQueryParams(versionedUrlEndpoint("datasets.files_list", params.versionUrl), queryParams),
+          url: urlWithQueryParams(
+            versionedUrlEndpoint("datasets.files_list", params.versionUrl),
+            queryParams
+          ),
           method: "GET",
           headers: new Headers(headers),
         };
       },
       transformResponse: (response: GetDatasetFilesResponse) => {
-        if (response.error) throw new Error(response.error.userMessage ?? response.error.reason);
+        if (response.error)
+          throw new Error(response.error.userMessage ?? response.error.reason);
 
-        const files = response.result.files.map((file) => ({ name: file.name, atLocation: file.path }));
+        const files = response.result.files.map((file) => ({
+          name: file.name,
+          atLocation: file.path,
+        }));
         return { hasPart: files };
       },
     }),

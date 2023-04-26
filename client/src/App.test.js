@@ -31,9 +31,16 @@ describe("rendering", () => {
       root.render(
         <Provider store={model.reduxStore}>
           <Router>
-            <App client={client} model={model} user={user} location={fakeLocation} params={params} />
+            <App
+              client={client}
+              model={model}
+              user={user}
+              location={fakeLocation}
+              params={params}
+            />
           </Router>
-        </Provider>);
+        </Provider>
+      );
     });
   });
 
@@ -45,9 +52,16 @@ describe("rendering", () => {
       root.render(
         <Provider store={model.reduxStore}>
           <Router>
-            <App client={client} model={model} user={user} location={fakeLocation} params={params} />
+            <App
+              client={client}
+              model={model}
+              user={user}
+              location={fakeLocation}
+              params={params}
+            />
           </Router>
-        </Provider>);
+        </Provider>
+      );
     });
   });
 });

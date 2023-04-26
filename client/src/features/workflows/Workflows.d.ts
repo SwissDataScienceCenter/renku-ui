@@ -18,85 +18,82 @@
 
 import { WorkflowType } from "../../components/entities";
 
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export interface Creator {
-  affiliation: string,
-  email: string,
-  name: string
+  affiliation: string;
+  email: string;
+  name: string;
 }
 
 // ***** Workflows ***** //
 
 export interface WorkflowListElement {
-  active: boolean,
-  authors: string,
-  created: Date,
-  executions: number,
-  indentation: number,
-  itemType: "workflow",
-  lastExecuted: Date,
-  tagList: string[],
-  timeCaption: Date,
-  title: string,
-  url: string,
-  urlSingle: string,
-  uniqueId: string,
-  workflowId: string,
-  workflowType: WorkflowType
+  active: boolean;
+  authors: string;
+  created: Date;
+  executions: number;
+  indentation: number;
+  itemType: "workflow";
+  lastExecuted: Date;
+  tagList: string[];
+  timeCaption: Date;
+  title: string;
+  url: string;
+  urlSingle: string;
+  uniqueId: string;
+  workflowId: string;
+  workflowType: WorkflowType;
 }
-
 
 // ***** Workflow details ***** //
 
 interface WorkflowDetailsCommon {
-  annotations: string
-  created: Date,
-  creators: Creator[],
-  description: string,
-  duration: number
-  id: string,
-  keywords: string[],
-  latest: string,
-  latestUrl: string?,
-  name: string,
-  renkuCommand: string?,
-  touches_existing_files: boolean,
-  type: WorkflowType
+  annotations: string;
+  created: Date;
+  creators: Creator[];
+  description: string;
+  duration: number;
+  id: string;
+  keywords: string[];
+  latest: string;
+  latestUrl: string?;
+  name: string;
+  renkuCommand: string?;
+  touches_existing_files: boolean;
+  type: WorkflowType;
 }
 
 export interface WorkflowDetailsStep extends WorkflowDetailsCommon {
-  command: string,
-  full_command: string,
-  inputs: Record<string, any>,
-  last_executed: Date
-  number_of_executions: number,
-  outputs: Record<string, any>,
-  parameters: string[],
-  type: WorkflowType.CompositePlan
+  command: string;
+  full_command: string;
+  inputs: Record<string, any>;
+  last_executed: Date;
+  number_of_executions: number;
+  outputs: Record<string, any>;
+  parameters: string[];
+  type: WorkflowType.CompositePlan;
 }
 
 export interface WorkflowDetailsComposite extends WorkflowDetailsCommon {
-  description: string,
-  duration: number
-  links: Record<string, any>,
-  mappings: Record<string, any>,
-  plans: Record<string, any>,
-  type: WorkflowType.Plan
+  description: string;
+  duration: number;
+  links: Record<string, any>;
+  mappings: Record<string, any>;
+  plans: Record<string, any>;
+  type: WorkflowType.Plan;
 }
 
 export type WorkflowDetails = WorkflowDetailsStep | WorkflowDetailsComposite;
 
-
 // ***** Workflow local slices and API parameters ***** //
 
 export interface WorkflowsDisplay {
-  details: Record<string, any>, // TODO: add the Details section types
-  expanded: string[],
-  orderAscending: boolean,
-  orderProperty: string,
-  showInactive: boolean,
+  details: Record<string, any>; // TODO: add the Details section types
+  expanded: string[];
+  orderAscending: boolean;
+  orderProperty: string;
+  showInactive: boolean;
 }
 
 export interface WorkflowRequestParams {
@@ -107,7 +104,7 @@ export interface WorkflowRequestParams {
 }
 
 export interface WorkflowDetailsRequestParams extends WorkflowRequestParams {
-  workflowId: string
+  workflowId: string;
 }
 
 export { WorkflowType };

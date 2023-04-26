@@ -26,15 +26,18 @@ function addInstanceMethods(client) {
     const urlEncodedPath = encodeURIComponent(path);
     return client.clientFetch(`${client.baseUrl}/groups/${urlEncodedPath}`, {
       method: "GET",
-      headers
+      headers,
     });
   };
 
   client.isValidUrlForIframe = async (url) => {
-    const response = await renkuFetch(`${client.baseUrl}/allows-iframe/${encodeURIComponent(url)}`, {
-      method: "GET",
-      headers: new Headers({ "Accept": "application/json" })
-    });
+    const response = await renkuFetch(
+      `${client.baseUrl}/allows-iframe/${encodeURIComponent(url)}`,
+      {
+        method: "GET",
+        headers: new Headers({ Accept: "application/json" }),
+      }
+    );
     const data = await response.json();
     return data?.isIframeValid ?? false;
   };

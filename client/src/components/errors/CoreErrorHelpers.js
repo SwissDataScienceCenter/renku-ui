@@ -22,60 +22,45 @@
  *  Error helpers for errors coming from renku-core.
  */
 
-
 // * Identify core error * //
 
 function isCoreError(error) {
-  if (!error || !error.code)
-    return false;
-  if (error.code >= 1000 || error.code < 0)
-    return true;
+  if (!error || !error.code) return false;
+  if (error.code >= 1000 || error.code < 0) return true;
   return false;
 }
 
 function isCoreErrorNew(error) {
-  if (!error || !error.code)
-    return null;
-  if (error.code >= 1000)
-    return true;
+  if (!error || !error.code) return null;
+  if (error.code >= 1000) return true;
   return false;
 }
 
 function isCoreErrorLegacy(error) {
-  if (!error || !error.code)
-    return null;
-  if (error.code < 0)
-    return true;
+  if (!error || !error.code) return null;
+  if (error.code < 0) return true;
   return false;
 }
-
 
 // * Identify type of error -- only for new error format in core >= 9 * //
 
 function isCoreErrorInput(error) {
-  if (!error || !error.code)
-    return null;
-  if (error.code >= 1000 && error.code < 2000)
-    return true;
+  if (!error || !error.code) return null;
+  if (error.code >= 1000 && error.code < 2000) return true;
   return false;
 }
 
 function isCoreErrorTemporary(error) {
-  if (!error || !error.code)
-    return null;
-  if (error.code >= 2000 && error.code < 3000)
-    return true;
+  if (!error || !error.code) return null;
+  if (error.code >= 2000 && error.code < 3000) return true;
   return false;
 }
 
 function isCoreErrorBug(error) {
-  if (!error || !error.code)
-    return null;
-  if (error.code >= 3000)
-    return true;
+  if (!error || !error.code) return null;
+  if (error.code >= 3000) return true;
   return false;
 }
-
 
 const CoreError = {
   isBug: isCoreErrorBug,
@@ -83,7 +68,7 @@ const CoreError = {
   isLegacy: isCoreErrorLegacy,
   isNew: isCoreErrorNew,
   isTemporary: isCoreErrorTemporary,
-  isValid: isCoreError
+  isValid: isCoreError,
 };
 
 export { CoreError };

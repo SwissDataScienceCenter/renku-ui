@@ -20,7 +20,13 @@ import { FETCH_DEFAULT } from "./index";
 import { RETURN_TYPES } from "./utils";
 
 function addNotebookServersMethods(client) {
-  client.getNotebookServers = (namespace, project, branch, commit, anonymous = false) => {
+  client.getNotebookServers = (
+    namespace,
+    project,
+    branch,
+    commit,
+    anonymous = false
+  ) => {
     const headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/notebooks/servers`;
     let parameters = {};
@@ -29,16 +35,18 @@ function addNotebookServersMethods(client) {
     if (branch) parameters.branch = branch;
     if (commit) parameters.commit_sha = commit;
 
-    return client.clientFetch(
-      url,
-      { method: "GET", headers, queryParams: parameters },
-      FETCH_DEFAULT.returnType,
-      FETCH_DEFAULT.alertOnErr,
-      FETCH_DEFAULT.reLogin,
-      anonymous
-    ).then(resp => {
-      return { "data": resp.data.servers };
-    });
+    return client
+      .clientFetch(
+        url,
+        { method: "GET", headers, queryParams: parameters },
+        FETCH_DEFAULT.returnType,
+        FETCH_DEFAULT.alertOnErr,
+        FETCH_DEFAULT.reLogin,
+        anonymous
+      )
+      .then((resp) => {
+        return { data: resp.data.servers };
+      });
   };
 
   client.stopNotebookServer = (serverName, force = false) => {
@@ -47,11 +55,16 @@ function addNotebookServersMethods(client) {
     let parameters = {};
     if (force) parameters.force = true;
 
-    return client.clientFetch(url, {
-      method: "DELETE",
-      headers,
-      queryParams: parameters
-    }, "text")
+    return client
+      .clientFetch(
+        url,
+        {
+          method: "DELETE",
+          headers,
+          queryParams: parameters,
+        },
+        "text"
+      )
       .then(() => {
         return true;
       });
@@ -61,41 +74,59 @@ function addNotebookServersMethods(client) {
     const headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/notebooks/server_options`;
 
-    return client.clientFetch(
-      url,
-      { method: "GET", headers },
-      FETCH_DEFAULT.returnType,
-      FETCH_DEFAULT.alertOnErr,
-      FETCH_DEFAULT.reLogin,
-      anonymous
-    ).then((resp) => {
-      let { data } = resp;
+    return client
+      .clientFetch(
+        url,
+        { method: "GET", headers },
+        FETCH_DEFAULT.returnType,
+        FETCH_DEFAULT.alertOnErr,
+        FETCH_DEFAULT.reLogin,
+        anonymous
+      )
+      .then((resp) => {
+        let { data } = resp;
 
-      // ? rename defaultUrl to default_url to prevent conflicts later with project options
-      if (data && "defaultUrl" in data) {
-        data.default_url = data.defaultUrl;
-        delete data.defaultUrl;
-      }
+        // ? rename defaultUrl to default_url to prevent conflicts later with project options
+        if (data && "defaultUrl" in data) {
+          data.default_url = data.defaultUrl;
+          delete data.defaultUrl;
+        }
 
-      Object.keys(data).forEach(key => {
-        data[key].selected = data[key].default;
+        Object.keys(data).forEach((key) => {
+          data[key].selected = data[key].default;
+        });
+        return data;
       });
-      return data;
-    });
   };
 
-  client.startNotebook = (namespacePath, projectPath, branchName, commitId, image, options, env_variables = {}) => {
+  client.startNotebook = (
+    namespacePath,
+    projectPath,
+    branchName,
+    commitId,
+    image,
+    options,
+    env_variables = {}
+  ) => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     const url = `${client.baseUrl}/notebooks/servers`;
     let notebook;
 
     // ? rename default_url to legacy defaultUrl
-    if (options && options.serverOptions && "default_url" in options.serverOptions) {
+    if (
+      options &&
+      options.serverOptions &&
+      "default_url" in options.serverOptions
+    ) {
       options.serverOptions.defaultUrl = options.serverOptions.default_url;
       delete options.serverOptions.default_url;
     }
-    if (options && options.serverOptions && "notebook" in options.serverOptions) {
+    if (
+      options &&
+      options.serverOptions &&
+      "notebook" in options.serverOptions
+    ) {
       notebook = options.serverOptions.notebook;
       delete options.serverOptions.notebook;
     }
@@ -107,24 +138,30 @@ function addNotebookServersMethods(client) {
       branch: branchName,
       notebook,
       environment_variables: env_variables,
-      ...options
+      ...options,
     };
-    if (image)
-      parameters.image = image;
+    if (image) parameters.image = image;
 
-    return client.clientFetch(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(parameters)
-    }).then(resp => {
-      return resp.data;
-    }).catch(error => {
-      if (error.errorData && error.errorData.error && error.errorData.error.message) {
-        const err = new Error(error.errorData.error.message);
-        err.cause = error;
-        throw err;
-      }
-    });
+    return client
+      .clientFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(parameters),
+      })
+      .then((resp) => {
+        return resp.data;
+      })
+      .catch((error) => {
+        if (
+          error.errorData &&
+          error.errorData.error &&
+          error.errorData.error.message
+        ) {
+          const err = new Error(error.errorData.error.message);
+          err.cause = error;
+          throw err;
+        }
+      });
   };
 
   client.getNotebookServerLogs = (serverName, lines = 250) => {
@@ -132,13 +169,15 @@ function addNotebookServersMethods(client) {
     headers.append("Accept", "text/plain");
     const url = `${client.baseUrl}/notebooks/logs/${serverName}`;
 
-    return client.clientFetch(url, {
-      method: "GET",
-      headers,
-      queryParams: { max_lines: lines }
-    }).then((resp) => {
-      return resp.data;
-    });
+    return client
+      .clientFetch(url, {
+        method: "GET",
+        headers,
+        queryParams: { max_lines: lines },
+      })
+      .then((resp) => {
+        return resp.data;
+      });
   };
 
   client.getProjectAutosaves = async (namespace, project) => {
@@ -150,8 +189,7 @@ function addNotebookServersMethods(client) {
     let response;
     try {
       response = await client.clientFetch(url, { method: "GET", headers });
-    }
-    catch (errorResponse) {
+    } catch (errorResponse) {
       if (errorResponse?.errorData?.error?.message)
         return errorResponse.errorData.error.message;
 
@@ -168,12 +206,14 @@ function addNotebookServersMethods(client) {
 
     // the API doesn't return any response, hence returning `true` or `false` based on the response status
     try {
-      const response = await client.clientFetch(url, { method: "DELETE", headers }, RETURN_TYPES.full);
-      if (response.status >= 200 && response.status < 400)
-        return true;
+      const response = await client.clientFetch(
+        url,
+        { method: "DELETE", headers },
+        RETURN_TYPES.full
+      );
+      if (response.status >= 200 && response.status < 400) return true;
       return false;
-    }
-    catch (errorResponse) {
+    } catch (errorResponse) {
       return false;
     }
   };
@@ -183,10 +223,8 @@ function addNotebookServersMethods(client) {
     const url = `${client.baseUrl}/notebooks/images`;
 
     return client.simpleFetch(url, "GET", queryParams).then((resp) => {
-      if (resp.status === 200)
-        return true;
-      else if (resp.status === 404)
-        return false;
+      if (resp.status === 200) return true;
+      else if (resp.status === 404) return false;
 
       // Throw error for any other case
       throw new Error(`Error ${resp.status}`);

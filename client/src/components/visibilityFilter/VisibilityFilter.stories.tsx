@@ -22,12 +22,12 @@ import { VisibilityFilterProps, VisibilityFilter } from "./VisibilityFilter";
 export default {
   title: "components/VisibilityFilter",
   component: VisibilityFilter,
-  argTypes: {
-  },
+  argTypes: {},
 };
 
-
-const Template: Story<VisibilityFilterProps> = (args) => <VisibilityFilter {...args} />;
+const Template: Story<VisibilityFilterProps> = (args) => (
+  <VisibilityFilter {...args} />
+);
 
 export const Default = Template.bind({});
 Default.args = {};

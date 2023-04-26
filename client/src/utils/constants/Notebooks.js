@@ -27,7 +27,7 @@ const SessionStatus = {
   starting: "starting",
   running: "running",
   stopping: "stopping",
-  failed: "failed"
+  failed: "failed",
 };
 
 export { SessionStatus };

@@ -35,9 +35,9 @@
 }
 
 /* // all this should go to a new file in the scss folders */
-.react-autosuggest__suggestion > div{
-  margin-left:1rem;
-  margin-right:1rem;
+.react-autosuggest__suggestion > div {
+  margin-left: 1rem;
+  margin-right: 1rem;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
   border-bottom: 0px !important;
@@ -75,23 +75,22 @@
 }
 
 @media (min-width: 992px) {
-  .search-box{
+  .search-box {
     max-width: 500px;
   }
 }
 
 @media (min-width: 1080px) {
-  .search-box{
+  .search-box {
     max-width: 600px;
   }
 }
 
 @media (min-width: 1440px) {
-  .search-box{
+  .search-box {
     max-width: 800px;
   }
 }
-
 
 .suggestion-icon {
   margin-right: 20px;

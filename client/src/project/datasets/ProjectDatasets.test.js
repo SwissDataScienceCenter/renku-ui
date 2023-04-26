@@ -1,4 +1,3 @@
-
 /*!
  * Copyright 2020 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -48,7 +47,7 @@ describe("rendering", () => {
   const migration = { core: { versionUrl: "" } };
 
   fakeHistory.push({
-    pathname: "/projects/namespace/project-name/datasets/new"
+    pathname: "/projects/namespace/project-name/datasets/new",
   });
 
   beforeEach(() => {
@@ -82,7 +81,6 @@ describe("rendering", () => {
         </MemoryRouter>
       );
     });
-
   });
 
   it("renders DatasetImport form without crashing", async () => {
@@ -104,6 +102,5 @@ describe("rendering", () => {
         </MemoryRouter>
       );
     });
-
   });
 });

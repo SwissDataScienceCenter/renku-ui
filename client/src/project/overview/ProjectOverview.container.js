@@ -29,11 +29,11 @@ import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
 import { withProjectMapped } from "../Project";
 import {
-  OverviewCommits as OverviewCommitsPresent, OverviewStats as OverviewStatsPresent
+  OverviewCommits as OverviewCommitsPresent,
+  OverviewStats as OverviewStatsPresent,
 } from "./ProjectOverview.present";
 import ProjectVersionStatus from "../status/ProjectVersionStatus.present";
 import { ProjectKnowledgeGraphStatus } from "../../features/project";
-
 
 /**
  * Create a visualization of the project stats.
@@ -47,14 +47,14 @@ class OverviewStats extends Component {
     this.projectCoordinator = props.projectCoordinator;
 
     this.handlers = {
-      refreshStatistics: this.refreshStatistics.bind(this)
+      refreshStatistics: this.refreshStatistics.bind(this),
     };
   }
 
   componentDidMount() {
     const statistics = this.projectCoordinator.get("statistics");
     if (!statistics.fetching) {
-      const now = (new Date()).getTime();
+      const now = new Date().getTime();
       // refresh if not available or older than 10s
       if (!statistics.fetched || statistics.fetched.getTime() < now - 10 * 1000)
         this.refreshStatistics();
@@ -64,18 +64,21 @@ class OverviewStats extends Component {
   refreshStatistics() {
     // TODO: refresh all the necessary data once getBranches and getProject go into projectCoordinator
     const statistics = this.projectCoordinator.get("statistics");
-    if (!statistics.fetching)
-      this.projectCoordinator.fetchStatistics();
+    if (!statistics.fetching) this.projectCoordinator.fetchStatistics();
   }
 
   render() {
     const categories = ["statistics", "metadata"];
-    const OverviewStatsConnected = withProjectMapped(OverviewStatsPresent, categories);
+    const OverviewStatsConnected = withProjectMapped(
+      OverviewStatsPresent,
+      categories
+    );
     return (
       <OverviewStatsConnected
         projectCoordinator={this.projectCoordinator}
         branches={this.props.branches}
-      />);
+      />
+    );
   }
 }
 
@@ -92,14 +95,14 @@ class OverviewCommits extends Component {
     this.projectCoordinator = props.projectCoordinator;
 
     this.handlers = {
-      refreshCommits: this.refreshCommits.bind(this)
+      refreshCommits: this.refreshCommits.bind(this),
     };
   }
 
   componentDidMount() {
     const commits = this.projectCoordinator.get("commits");
     if (!commits.fetching) {
-      const now = (new Date()).getTime();
+      const now = new Date().getTime();
       // refresh if not available or older than 10s
       if (!commits.fetched || commits.fetched.getTime() < now - 10 * 1000)
         this.refreshCommits();
@@ -108,26 +111,31 @@ class OverviewCommits extends Component {
 
   refreshCommits() {
     const commits = this.projectCoordinator.get("commits");
-    if (!commits.fetching)
-      this.projectCoordinator.fetchCommits();
+    if (!commits.fetching) this.projectCoordinator.fetchCommits();
   }
 
   render() {
     const categories = ["commits", "metadata"];
-    const OverviewStatsConnected = withProjectMapped(OverviewCommitsPresent, categories);
+    const OverviewStatsConnected = withProjectMapped(
+      OverviewCommitsPresent,
+      categories
+    );
     return (
       <OverviewStatsConnected
         projectCoordinator={this.projectCoordinator}
         location={this.props.location}
         history={this.props.history}
-      />);
+      />
+    );
   }
 }
 
 function ProjectKGStatus(props) {
   return (
     <Card className="border-rk-light">
-      <CardHeader className="bg-white p-3 ps-4">Knowledge Graph Integration</CardHeader>
+      <CardHeader className="bg-white p-3 ps-4">
+        Knowledge Graph Integration
+      </CardHeader>
       <CardBody className="p-4 pt-3 pb-3 lh-lg">
         <Row>
           <Col>
@@ -164,10 +172,12 @@ class OverviewVersion extends Component {
   }
 
   render() {
-    return <>
-      <ProjectVersionStatus {...this.props} />
-      <ProjectKGStatus {...this.props} />
-    </>;
+    return (
+      <>
+        <ProjectVersionStatus {...this.props} />
+        <ProjectKGStatus {...this.props} />
+      </>
+    );
   }
 }
 

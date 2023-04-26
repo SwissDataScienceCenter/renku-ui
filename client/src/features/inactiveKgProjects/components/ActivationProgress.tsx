@@ -25,10 +25,18 @@ interface ActivationProgressProps {
 }
 function ActivationProgress({ project }: ActivationProgressProps) {
   if (project.progressActivation === -2)
-    return <small className="text-danger">There was an error in activating the KG. Please contact us for help. </small>;
+    return (
+      <small className="text-danger">
+        There was an error in activating the KG. Please contact us for help.{" "}
+      </small>
+    );
 
   if (project.progressActivation === -408)
-    return <small className="text-danger">Timeout fetching the activation status. Please contact us for help. </small>;
+    return (
+      <small className="text-danger">
+        Timeout fetching the activation status. Please contact us for help.{" "}
+      </small>
+    );
 
   if (project.progressActivation === 100)
     return <small className="text-success">Activated</small>;
@@ -37,23 +45,28 @@ function ActivationProgress({ project }: ActivationProgressProps) {
     return <small className="fst-italic">Inactive</small>;
 
   if (project.progressActivation === 0 || project.progressActivation === -1) {
-    return <Progress
-      animated
+    return (
+      <Progress
+        animated
+        striped
+        className="my-3"
+        color="rk-text"
+        style={{ height: "12px", width: "200px" }}
+        value={100}
+      />
+    );
+  }
+
+  return (
+    <Progress
       striped
+      animated
       className="my-3"
       color="rk-text"
       style={{ height: "12px", width: "200px" }}
-      value={100}
-    />;
-  }
-
-  return <Progress
-    striped animated
-    className="my-3"
-    color="rk-text"
-    style={{ height: "12px", width: "200px" }}
-    value={project.progressActivation}
-  />;
+      value={project.progressActivation}
+    />
+  );
 }
 
 export default ActivationProgress;

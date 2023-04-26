@@ -32,6 +32,6 @@ export default {
     SELECT: "select",
     CREATORS: "creators",
     KEYWORDS: "keywords",
-    IMAGE: "image"
-  }
+    IMAGE: "image",
+  },
 };

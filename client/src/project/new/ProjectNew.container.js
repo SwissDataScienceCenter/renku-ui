@@ -23,14 +23,30 @@
  *  Container components for new project
  */
 
-import React, { useEffect, useState, useRef, useContext, Component } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useContext,
+  Component,
+} from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { useHistory } from "react-router";
 
-import { NewProject as NewProjectPresent, ForkProject as ForkProjectPresent } from "./ProjectNew.present";
-import { validateTitle, checkTitleDuplicates, NewProjectCoordinator } from "./ProjectNew.state";
-import { gitLabUrlFromProfileUrl, slugFromTitle } from "../../utils/helpers/HelperFunctions";
+import {
+  NewProject as NewProjectPresent,
+  ForkProject as ForkProjectPresent,
+} from "./ProjectNew.present";
+import {
+  validateTitle,
+  checkTitleDuplicates,
+  NewProjectCoordinator,
+} from "./ProjectNew.state";
+import {
+  gitLabUrlFromProfileUrl,
+  slugFromTitle,
+} from "../../utils/helpers/HelperFunctions";
 import { Url, getSearchParams } from "../../utils/helpers/url";
 import { atobUTF8, btoaUTF8 } from "../../utils/helpers/Encoding";
 import { newProjectSchema } from "../../model/RenkuModels";
@@ -42,55 +58,56 @@ import { Loader } from "../../components/Loader";
 
 const CUSTOM_REPO_NAME = "Custom";
 
-
 /** helper function -- fork notifications */
 // TODO: restore after #1585
 // eslint-disable-next-line
-function addForkNotification(notifications, url, info, startingLocation, success = true,
-  excludeStarting = false, visibilityException = false) {
+function addForkNotification(
+  notifications,
+  url,
+  info,
+  startingLocation,
+  success = true,
+  excludeStarting = false,
+  visibilityException = false
+) {
   if (success && !visibilityException) {
-    const locations = excludeStarting ?
-      [url] :
-      [url, startingLocation];
+    const locations = excludeStarting ? [url] : [url, startingLocation];
     notifications.addSuccess(
       notifications.Topics.PROJECT_FORKED,
       `Project ${info.name} successfully created.`,
-      url, "Show project",
+      url,
+      "Show project",
       locations,
       `The project has been successfully forked to ${info.namespace}/${info.path}`
     );
-  }
-  else if (visibilityException) {
-    const locations = excludeStarting ?
-      [url] :
-      [url, startingLocation];
+  } else if (visibilityException) {
+    const locations = excludeStarting ? [url] : [url, startingLocation];
     notifications.addWarning(
       notifications.Topics.PROJECT_FORKED,
       `Project ${info.name} has been created with an exception.`,
-      url, "Show project",
+      url,
+      "Show project",
       locations,
       `The project has been successfully forked to ${info.namespace}/${info.path}
       although it was not possible to configure the visibility${visibilityException?.message}`
     );
-  }
-  else {
-    const locations = excludeStarting ?
-      [] :
-      [startingLocation];
+  } else {
+    const locations = excludeStarting ? [] : [startingLocation];
     notifications.addError(
       notifications.Topics.PROJECT_FORKED,
       "Forking operation did not complete.",
-      startingLocation, "Try again",
+      startingLocation,
+      "Try again",
       locations,
       "The fork operation did not run to completion. It is possible the project has been created, but some" +
-      "elements may have not been cloned properly."
+        "elements may have not been cloned properly."
     );
   }
 }
 
-
 function ForkProject(props) {
-  const { client, forkedId, forkedTitle, projectVisibility, toggleModal } = props;
+  const { client, forkedId, forkedTitle, projectVisibility, toggleModal } =
+    props;
   const namespaces = useGetNamespaces(true);
   const { projectsMember, isFetchingProjects } = useGetUserProjects();
 
@@ -107,25 +124,35 @@ function ForkProject(props) {
   const [forkVisibilityError, setForkVisibilityError] = useState(null);
   const [forkUrl, setForkUrl] = useState(null);
 
-  const { availableVisibilities, isFetchingVisibilities } = useGetVisibilities(fullNamespace, projectVisibility);
-  const { logged, data: { username } = null } = useSelector( (state) => state.stateModel.user);
+  const { availableVisibilities, isFetchingVisibilities } = useGetVisibilities(
+    fullNamespace,
+    projectVisibility
+  );
+  const { logged, data: { username } = null } = useSelector(
+    (state) => state.stateModel.user
+  );
 
   const history = useHistory();
   const location = useLocation();
 
-  useEffect(()=> {
+  useEffect(() => {
     if (!logged) {
-      const loginUrl = Url.get(Url.pages.login.link, { pathname: location.pathname });
+      const loginUrl = Url.get(Url.pages.login.link, {
+        pathname: location.pathname,
+      });
       history.push(loginUrl);
     }
   }, []); //eslint-disable-line
 
   // Monitor changes to projects list
   useEffect(() => {
-    if (!projectsMember || !projectsMember.length)
-      setProjectsPaths([]);
+    if (!projectsMember || !projectsMember.length) setProjectsPaths([]);
     else
-      setProjectsPaths(projectsMember.map(project => project.path_with_namespace.toLowerCase()));
+      setProjectsPaths(
+        projectsMember.map((project) =>
+          project.path_with_namespace.toLowerCase()
+        )
+      );
   }, [projectsMember]);
 
   // Monitor changes to title, namespace or projects slug list to check for errors
@@ -140,11 +167,16 @@ function ForkProject(props) {
       setError(validationError);
       return;
     }
-    const duplicateError = checkTitleDuplicates(title, namespace, projectsPaths);
+    const duplicateError = checkTitleDuplicates(
+      title,
+      namespace,
+      projectsPaths
+    );
     if (duplicateError) {
       setError(
-        "Title produces a project identifier (" + slugFromTitle(title, true) +
-        ") that is already taken in the selected namespace. Please select a different title or namespace."
+        "Title produces a project identifier (" +
+          slugFromTitle(title, true) +
+          ") that is already taken in the selected namespace. Please select a different title or namespace."
       );
       return;
     }
@@ -164,8 +196,7 @@ function ForkProject(props) {
     };
     if (fullNamespace && !isFetchingVisibilities) {
       getVisibilities(fullNamespace);
-    }
-    else {
+    } else {
       setVisibilities(null);
       setVisibility(null);
     }
@@ -176,7 +207,9 @@ function ForkProject(props) {
   useEffect(() => {
     // this keeps track of the component status
     mounted.current = true;
-    return () => { mounted.current = false; };
+    return () => {
+      mounted.current = false;
+    };
   });
 
   // fork operations including fork, status check, redirect
@@ -192,20 +225,28 @@ function ForkProject(props) {
       const forked = await client.forkProject(forkedId, title, path, namespace);
 
       // handle non-blocking errors from pipelines and hooks
-      if (forked.project.id && (forked.pipeline.errorData || forked.webhook.errorData)) {
+      if (
+        forked.project.id &&
+        (forked.pipeline.errorData || forked.webhook.errorData)
+      ) {
         // build the final URL -- that requires forked.project(.id) to be available
-        let newProjectData = { namespace: forked.project.namespace.full_path, path: forked.project.path };
+        let newProjectData = {
+          namespace: forked.project.namespace.full_path,
+          path: forked.project.path,
+        };
         setForkUrl(Url.get(Url.pages.project, newProjectData));
 
         let verboseError; // = "Project forked, but ";
         if (forked.pipeline.errorData) {
           verboseError = "Pipeline creation failed: ";
-          verboseError += "the forked project is available, but sessions may require building a Docker image.";
+          verboseError +=
+            "the forked project is available, but sessions may require building a Docker image.";
           throw new Error(verboseError);
         }
         if (forked.webhook.errorData) {
           verboseError = "Knowledge graph error: ";
-          verboseError = "the forked project is available, but the knowledge graph needs to be activated later.";
+          verboseError =
+            "the forked project is available, but the knowledge graph needs to be activated later.";
           throw new Error(verboseError);
         }
 
@@ -214,12 +255,12 @@ function ForkProject(props) {
 
       // wait for operations to finish
       let count;
-      const THRESHOLD = 100, DELTA = 3000;
+      const THRESHOLD = 100,
+        DELTA = 3000;
       for (count = 0; count < THRESHOLD; count++) {
-        await new Promise(r => setTimeout(r, DELTA)); // sleep
+        await new Promise((r) => setTimeout(r, DELTA)); // sleep
         const forkOperation = await client.getProjectStatus(forked.project.id);
-        if (forkOperation === "finished")
-          break;
+        if (forkOperation === "finished") break;
         else if (forkOperation === "failed" || forkOperation === "error")
           throw new Error("Cloning operation failed");
         else if (count === THRESHOLD - 1)
@@ -229,46 +270,43 @@ function ForkProject(props) {
       // set visibility value forked project
       let visibilityError;
       let visibilityErrorMessage;
-      await client.setVisibility(forked.project.id, visibility)
-        .catch((e) => {
-          visibilityError = true;
-          visibilityErrorMessage = e.errorData.message?.visibility_level ?
-            `, ${e.errorData.message?.visibility_level[0]}` :
-            `, not supported ${visibility} visibility.`;
-          setForkVisibilityError(visibilityErrorMessage);
-        });
+      await client.setVisibility(forked.project.id, visibility).catch((e) => {
+        visibilityError = true;
+        visibilityErrorMessage = e.errorData.message?.visibility_level
+          ? `, ${e.errorData.message?.visibility_level[0]}`
+          : `, not supported ${visibility} visibility.`;
+        setForkVisibilityError(visibilityErrorMessage);
+      });
 
       // Add notification. Mark it as read and redirect automatically only when the modal is still open
-      let newProjectData = { namespace: forked.project.namespace.full_path, path: forked.project.path };
+      let newProjectData = {
+        namespace: forked.project.namespace.full_path,
+        path: forked.project.path,
+      };
       const newUrl = Url.get(Url.pages.project, newProjectData);
       newProjectData.name = forked.project.name;
 
       if (mounted.current && !visibilityError) {
         // addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, false);
         history.push(newUrl);
-      }
-      else if (mounted.current && visibilityError) {
+      } else if (mounted.current && visibilityError) {
         setForking(false); // finish forking
         setForkUrl(newUrl); // allow display the button to go to the forked project
         return;
-      }
-      else {
+      } else {
         // addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, true,
         //  visibilityError ? { message: visibilityErrorMessage } : false);
       }
       return null; // this prevents further operations on non-mounted components
-    }
-    catch (e) {
+    } catch (e) {
       if (mounted.current) {
         setForkError(e.message);
         // addForkNotification(notifications, null, null, startingLocation, false, false);
-      }
-      else {
+      } else {
         // addForkNotification(notifications, null, null, startingLocation, false, true);
       }
     }
-    if (mounted.current)
-      setForking(false);
+    if (mounted.current) setForking(false);
   };
 
   // compatibility layer to re-use the UI components from new project creation
@@ -297,7 +335,7 @@ function ForkProject(props) {
   const adjustedHandlers = {
     getNamespaces: namespaces?.refetchNamespaces,
     setNamespace: setNamespaceP,
-    setProperty: setPropertyP
+    setProperty: setPropertyP,
   };
 
   return (
@@ -331,17 +369,17 @@ function ForkProject(props) {
  */
 function getDataFromParams(params) {
   // Unrecognized params: should we notify? Let's start without notifications.
-  if (!params || !Object.keys(params).length || !params.data)
-    return;
+  if (!params || !Object.keys(params).length || !params.data) return;
   const data = JSON.parse(atobUTF8(params.data));
-  if (!data || !Object.keys(data).length)
-    return;
+  if (!data || !Object.keys(data).length) return;
   // validate metadata
   const validKeys = Object.keys(newProjectSchema.createEmpty().automated.data);
   const keys = Object.keys(data);
   for (let key of keys) {
     if (!validKeys.includes(key))
-      throw new Error("unexpected project field in the encoded metadata: " + key);
+      throw new Error(
+        "unexpected project field in the encoded metadata: " + key
+      );
   }
   return data;
 }
@@ -351,13 +389,14 @@ class NewProjectWrapper extends Component {
   constructor(props) {
     super(props);
     this.coordinator = new NewProjectCoordinator(
-      this.props.client, this.props.model.subModel("newProject"), this.props.model.subModel("projects")
+      this.props.client,
+      this.props.model.subModel("newProject"),
+      this.props.model.subModel("projects")
     );
   }
 
   render() {
-    if (!this.props.client || !this.props.model)
-      return <Loader />;
+    if (!this.props.client || !this.props.model) return <Loader />;
     return <NewProject {...this.props} coordinator={this.coordinator} />;
   }
 }
@@ -371,16 +410,20 @@ function NewProject(props) {
   const [namespace, setNamespace] = useState(null);
   const [automatedData, setAutomatedData] = useState(null);
   const namespaces = useGetNamespaces(true);
-  const { projectsMember, isFetchingProjects, refetchUserProjects } = useGetUserProjects();
-  const { availableVisibilities, isFetchingVisibilities } = useGetVisibilities(namespace);
+  const { projectsMember, isFetchingProjects, refetchUserProjects } =
+    useGetUserProjects();
+  const { availableVisibilities, isFetchingVisibilities } =
+    useGetVisibilities(namespace);
 
   /*
    * Start fetching templates and get automatedData
    */
   useEffect(() => {
-    if (!coordinator || !user.logged)
-      return;
-    coordinator.setConfig(params["TEMPLATES"].custom, params["TEMPLATES"].repositories);
+    if (!coordinator || !user.logged) return;
+    coordinator.setConfig(
+      params["TEMPLATES"].custom,
+      params["TEMPLATES"].repositories
+    );
     coordinator.resetInput();
     coordinator.getTemplates();
     removeAutomated();
@@ -391,32 +434,51 @@ function NewProject(props) {
    * Start Auto fill form when namespaces are ready
    */
   useEffect(() => {
-    if (automatedData && !namespaces?.fetching && !newProject.automated.finished)
-      coordinator?.setAutomated(automatedData, undefined, namespaces, availableVisibilities, setNamespace);
-  }, [automatedData, namespaces.list, namespaces.fetching, newProject.automated.finished]); // eslint-disable-line
+    if (
+      automatedData &&
+      !namespaces?.fetching &&
+      !newProject.automated.finished
+    )
+      coordinator?.setAutomated(
+        automatedData,
+        undefined,
+        namespaces,
+        availableVisibilities,
+        setNamespace
+      );
+  }, [
+    automatedData,
+    namespaces.list,
+    namespaces.fetching,
+    newProject.automated.finished,
+  ]); // eslint-disable-line
 
   /*
    * Validate form when projects/namespace are ready or the auto fill form finished
    */
   useEffect(() => {
-    if (!user.logged || namespaces.fetching || (newProject.automated.received && !newProject.automated.finished))
+    if (
+      !user.logged ||
+      namespaces.fetching ||
+      (newProject.automated.received && !newProject.automated.finished)
+    )
       return;
     validateForm(null, null, true);
-  }, [ // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    // eslint-disable-line react-hooks/exhaustive-deps
     namespaces.list,
     namespaces.fetching,
     projectsMember,
     isFetchingProjects,
     newProject.automated.received,
-    newProject.automated.finished
+    newProject.automated.finished,
   ]);
 
   /*
    * Calculate visibilities when namespace change
    */
   useEffect(() => {
-    if (!namespace || !user.logged)
-      return;
+    if (!namespace || !user.logged) return;
 
     if (!availableVisibilities || isFetchingVisibilities) {
       coordinator?.resetVisibility(namespace);
@@ -438,8 +500,7 @@ function NewProject(props) {
           history.push(newUrl);
         }
       }
-    }
-    catch (e) {
+    } catch (e) {
       coordinator.setAutomated(null, e);
     }
   };
@@ -448,9 +509,20 @@ function NewProject(props) {
     coordinator?.resetAutomated(manuallyReset);
   };
 
-  const validateForm = (newInput = null, newTemplates = null, update = null) => {
+  const validateForm = (
+    newInput = null,
+    newTemplates = null,
+    update = null
+  ) => {
     const projects = { members: projectsMember, fetching: isFetchingProjects };
-    coordinator?.validate(newInput, newTemplates, update, projects, namespaces, isFetchingVisibilities);
+    coordinator?.validate(
+      newInput,
+      newTemplates,
+      update,
+      projects,
+      namespaces,
+      isFetchingVisibilities
+    );
   };
 
   const createEncodedUrl = (data) => {
@@ -470,11 +542,13 @@ function NewProject(props) {
 
   const getUserTemplates = () => {
     const targetRepository = model.get("newProject.meta.userTemplates");
-    const repositories = [{
-      name: CUSTOM_REPO_NAME,
-      url: targetRepository.url,
-      ref: targetRepository.ref
-    }];
+    const repositories = [
+      {
+        name: CUSTOM_REPO_NAME,
+        url: targetRepository.url,
+        ref: targetRepository.ref,
+      },
+    ];
     return coordinator.getTemplates(repositories, true);
   };
 
@@ -511,32 +585,31 @@ function NewProject(props) {
   };
 
   const sendProjectToAddDataset = (projectPath) => {
-    if (projectPath)
-      startImportDataset(projectPath);
+    if (projectPath) startImportDataset(projectPath);
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
 
     // validate -- we do this cause we don't show errors on pristine variables
-    if (coordinator?.invalidatePristine())
-      return;
+    if (coordinator?.invalidatePristine()) return;
     let validation = coordinator?.getValidation();
-    if (Object.keys(validation.errors).length || Object.keys(validation.warnings).length)
+    if (
+      Object.keys(validation.errors).length ||
+      Object.keys(validation.warnings).length
+    )
       return;
 
     // submit
     const gitlabUrl = gitLabUrlFromProfileUrl(user.data.web_url);
-    coordinator?.postProject(gitlabUrl).then(result => {
+    coordinator?.postProject(gitlabUrl).then((result) => {
       const { creation } = result.meta;
       if (creation.created) {
         refreshUserProjects();
         if (!creation.kgError && !creation.projectError) {
           const slug = `${creation.newNamespace}/${creation.newNameSlug}`;
-          if (importingDataset)
-            sendProjectToAddDataset(slug);
-          else
-            history.push(`/projects/${slug}`);
+          if (importingDataset) sendProjectToAddDataset(slug);
+          else history.push(`/projects/${slug}`);
           resetCreationResult();
         }
       }
@@ -572,12 +645,11 @@ function NewProject(props) {
     namespaces,
     user: {
       logged: user.logged,
-      username: user.data && user.data.username ? user.data.username : null
-    }
+      username: user.data && user.data.username ? user.data.username : null,
+    },
   };
 
-  if (!coordinator)
-    return <Loader />;
+  if (!coordinator) return <Loader />;
 
   return <NewProjectPresent {...newProps} />;
 }

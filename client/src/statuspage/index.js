@@ -24,6 +24,15 @@
  */
 
 import { StatuspageDisplay, StatuspageBanner } from "./Statuspage.container";
-import StatuspageAPI, { isStatusConfigured, pollStatuspage } from "./StatuspageAPI";
+import StatuspageAPI, {
+  isStatusConfigured,
+  pollStatuspage,
+} from "./StatuspageAPI";
 
-export { StatuspageAPI, StatuspageBanner, StatuspageDisplay, isStatusConfigured, pollStatuspage };
+export {
+  StatuspageAPI,
+  StatuspageBanner,
+  StatuspageDisplay,
+  isStatusConfigured,
+  pollStatuspage,
+};

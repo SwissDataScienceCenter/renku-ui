@@ -30,7 +30,7 @@ export interface ListElementProps {
   title: string;
   type?: ListDisplayType;
   url: string;
-  visibility: Visibilities,
+  visibility: Visibilities;
 }
 
 export interface VisibilityIconProps {

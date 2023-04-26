@@ -24,7 +24,7 @@ interface ProjectMetadata {
   description: string;
   tag_list?: string[];
   star_count: number;
-  owner: Record<string, string | number>
+  owner: Record<string, string | number>;
   last_activity_at: string;
   access_level: number;
   http_url_to_repo: string;
@@ -40,9 +40,15 @@ function formatProjectMetadata(project: any): ProjectMetadata {
   // check permissions from v4 API
   if (project?.permissions) {
     if (project?.permissions?.project_access)
-      accessLevel = Math.max(accessLevel, project.permissions.project_access.access_level);
+      accessLevel = Math.max(
+        accessLevel,
+        project.permissions.project_access.access_level
+      );
     if (project?.permissions?.group_access)
-      accessLevel = Math.max(accessLevel, project.permissions.group_access.access_level);
+      accessLevel = Math.max(
+        accessLevel,
+        project.permissions.group_access.access_level
+      );
   }
   // check permissions from GraphQL -- // ? REF: https://docs.gitlab.com/ee/user/permissions.html
   else if (project?.userPermissions) {
@@ -55,8 +61,12 @@ function formatProjectMetadata(project: any): ProjectMetadata {
   }
 
   // Project id can be a number e.g. 1234 or a string with the format: gid://gitlab/Project/1234
-  const projectFullId = typeof (project.id) === "number" ? [] : project.id.split("/");
-  const projectId = projectFullId.length > 1 ? projectFullId[projectFullId.length - 1] : project.id;
+  const projectFullId =
+    typeof project.id === "number" ? [] : project.id.split("/");
+  const projectId =
+    projectFullId.length > 1
+      ? projectFullId[projectFullId.length - 1]
+      : project.id;
 
   return {
     id: projectId,
@@ -68,14 +78,15 @@ function formatProjectMetadata(project: any): ProjectMetadata {
     owner: project.owner,
     last_activity_at: project.last_activity_at,
     access_level: accessLevel,
-    http_url_to_repo: project.http_url_to_repo ? project.http_url_to_repo : project.httpUrlToRepo,
+    http_url_to_repo: project.http_url_to_repo
+      ? project.http_url_to_repo
+      : project.httpUrlToRepo,
     namespace: project.namespace,
     path: project.path,
     avatar_url: project.avatar_url,
-    visibility: project.visibility
+    visibility: project.visibility,
   };
 }
 
 export { formatProjectMetadata };
 export type { ProjectMetadata };
-

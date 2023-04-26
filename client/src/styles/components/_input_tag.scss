@@ -8,31 +8,33 @@
 }
 
 .form-rk-green {
-  .input-tag:focus, .input-tag--active {
+  .input-tag:focus,
+  .input-tag--active {
     border: 1px solid var(--bs-rk-green);
   }
 }
 .form-rk-pink {
-  .input-tag:focus, .input-tag--active {
+  .input-tag:focus,
+  .input-tag--active {
     border: 1px solid var(--bs-rk-pink);
   }
 }
 
-.input-tag.disabled{
+.input-tag.disabled {
   background-color: #e9ecef;
   opacity: 1;
-  pointer-events:none;
+  pointer-events: none;
 }
 
 .input-tag input {
   border: none;
-	width: 100%;
+  width: 100%;
 }
 
-.input-tag input:disabled{
+.input-tag input:disabled {
   background-color: $rk-white;
   opacity: 1;
-  pointer-events:none;
+  pointer-events: none;
 }
 
 .input-tag input:focus {
@@ -48,8 +50,8 @@
   flex-wrap: wrap;
   margin: 0;
   padding: 0;
-	width: 100%;
-	height: 70%;
+  width: 100%;
+  height: 70%;
 }
 
 .input-tag__tags li {

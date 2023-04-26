@@ -41,9 +41,8 @@ interface FormHeaderProps {
 }
 
 const FormHeader = ({ title, description }: FormHeaderProps) => {
-  const desc = typeof description === "string" ?
-    <p>{description}</p> :
-    description;
+  const desc =
+    typeof description === "string" ? <p>{description}</p> : description;
   return (
     <>
       <h2 id="form-header">{title}</h2>
@@ -52,11 +51,20 @@ const FormHeader = ({ title, description }: FormHeaderProps) => {
   );
 };
 
-const FormSchema = ({ title, description, showHeader, children }: FormSchemaProps) => {
-  const header = showHeader ? <FormHeader title={title} description={description} /> : null;
+const FormSchema = ({
+  title,
+  description,
+  showHeader,
+  children,
+}: FormSchemaProps) => {
+  const header = showHeader ? (
+    <FormHeader title={title} description={description} />
+  ) : null;
   return (
     <Row>
-      <Col className="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-forms--header pb-2">{header}</Col>
+      <Col className="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-forms--header pb-2">
+        {header}
+      </Col>
       <Col className="col-12 col-sm-12 col-md-9 col-lg-9 col-xl-12">
         <div className="rk-forms">{children}</div>
       </Col>

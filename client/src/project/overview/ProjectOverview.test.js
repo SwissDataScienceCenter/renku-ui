@@ -43,7 +43,10 @@ const fakeHistory = createMemoryHistory({
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
   const props = {
-    projectCoordinator: new ProjectCoordinator(client, model.subModel("project"))
+    projectCoordinator: new ProjectCoordinator(
+      client,
+      model.subModel("project")
+    ),
   };
 
   it("renders ProjectOverviewCommits", async () => {
@@ -53,7 +56,7 @@ describe("rendering", () => {
     const allProps = {
       history: fakeHistory,
       location: fakeHistory.location,
-      ...props
+      ...props,
     };
     await act(async () => {
       root.render(
@@ -72,7 +75,7 @@ describe("rendering", () => {
     const root = createRoot(div);
     const allProps = {
       branches: [],
-      ...props
+      ...props,
     };
     await act(async () => {
       root.render(

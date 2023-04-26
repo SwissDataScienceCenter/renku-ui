@@ -31,39 +31,57 @@ import { NavLink } from "reactstrap";
  * if it matches either the to or alternate URL.
  */
 class RenkuNavLink extends Component {
-
   constructor() {
     super();
     this.isActive = this.testActive.bind(this);
   }
 
   testActive(match, location) {
-    const altArray = this.props.alternate ?
-      Array.isArray(this.props.alternate) ?
-        this.props.alternate : [this.props.alternate] : undefined;
-
+    const altArray = this.props.alternate
+      ? Array.isArray(this.props.alternate)
+        ? this.props.alternate
+        : [this.props.alternate]
+      : undefined;
 
     if (this.props.matchPath === true) {
-      let haveMatch = (match != null || location.pathname.startsWith(this.props.to));
+      let haveMatch =
+        match != null || location.pathname.startsWith(this.props.to);
       if (!altArray) return haveMatch;
-      return haveMatch || altArray.find(alt => location.pathname.startsWith(alt)) !== undefined;
+      return (
+        haveMatch ||
+        altArray.find((alt) => location.pathname.startsWith(alt)) !== undefined
+      );
     }
     let haveMatch = match != null;
     if (!altArray) return haveMatch;
     if (this.props.noSubPath)
-      return haveMatch || altArray.find(alt => location.pathname.endsWith(alt)) !== undefined;
-    return haveMatch || altArray.find(alt => location.pathname.startsWith(alt)) !== undefined;
+      return (
+        haveMatch ||
+        altArray.find((alt) => location.pathname.endsWith(alt)) !== undefined
+      );
+    return (
+      haveMatch ||
+      altArray.find((alt) => location.pathname.startsWith(alt)) !== undefined
+    );
   }
 
   render() {
     const { previous, title, icon } = this.props;
-    const to = previous ?
-      { "pathname": this.props.to, "state": { previous } } :
-      this.props.to;
-    const exact = (this.props.exact != null) ? this.props.exact : true;
+    const to = previous
+      ? { pathname: this.props.to, state: { previous } }
+      : this.props.to;
+    const exact = this.props.exact != null ? this.props.exact : true;
     return (
-      <NavLink exact={exact} to={to} isActive={this.isActive} tag={RRNavLink}
-        id={this.props.id} className={this.props.className}>{icon} {title}</NavLink>
+      <NavLink
+        exact={exact}
+        to={to}
+        isActive={this.isActive}
+        tag={RRNavLink}
+        id={this.props.id}
+        className={this.props.className}
+      >
+        {icon} {title}
+      </NavLink>
     );
   }
 }

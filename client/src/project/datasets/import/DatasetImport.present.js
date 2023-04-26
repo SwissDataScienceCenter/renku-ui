@@ -23,7 +23,6 @@
  *  Presentational components.
  */
 
-
 import React, { useState } from "react";
 import { Col, Alert, Button } from "reactstrap";
 import { FormGenerator } from "../../../components/formgenerator";
@@ -36,14 +35,26 @@ function DatasetImport(props) {
   const [showHeader, setShowHeader] = useState(true);
 
   if (props.accessLevel < ACCESS_LEVELS.MAINTAINER) {
-    return <Col sm={12} md={10} lg={8}>
-      <Alert timeout={0} color="primary">
-        Acces Denied. You don&apos;t have rights to import datasets for this project.<br /><br />
-        <FontAwesomeIcon icon={faInfoCircle} />  If you were recently given access to this project,
-        you might need to <Button size="sm" color="primary" onClick={() => window.location.reload()}>
-          refresh the page</Button> first.
-      </Alert>
-    </Col>;
+    return (
+      <Col sm={12} md={10} lg={8}>
+        <Alert timeout={0} color="primary">
+          Acces Denied. You don&apos;t have rights to import datasets for this
+          project.
+          <br />
+          <br />
+          <FontAwesomeIcon icon={faInfoCircle} /> If you were recently given
+          access to this project, you might need to{" "}
+          <Button
+            size="sm"
+            color="primary"
+            onClick={() => window.location.reload()}
+          >
+            refresh the page
+          </Button>{" "}
+          first.
+        </Alert>
+      </Col>
+    );
   }
 
   const form = (
@@ -60,13 +71,20 @@ function DatasetImport(props) {
       addDatasetOptionSelected="importDataset"
       setShowHeader={setShowHeader}
       className="form-rk-pink"
-    />);
+    />
+  );
 
   const title = "Import Dataset";
   const desc = (
     <span>
-      Import a published dataset from Zenodo, Dataverse, or from another Renku project. Use&nbsp;
-      <Button className="p-0" style={{ verticalAlign: "baseline" }} color="link" onClick={props.toggleNewDataset}>
+      Import a published dataset from Zenodo, Dataverse, or from another Renku
+      project. Use&nbsp;
+      <Button
+        className="p-0"
+        style={{ verticalAlign: "baseline" }}
+        color="link"
+        onClick={props.toggleNewDataset}
+      >
         <small>Create Dataset</small>
       </Button>
       &nbsp;to make a new dataset.
@@ -78,7 +96,6 @@ function DatasetImport(props) {
       {form}
     </FormSchema>
   );
-
 }
 
 export default DatasetImport;

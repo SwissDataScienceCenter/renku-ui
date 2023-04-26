@@ -1,6 +1,7 @@
-.commit-object, .commit-date {
+.commit-object,
+.commit-date {
   border-width: 1px 0 0 0;
-  padding: 0.50rem;
+  padding: 0.5rem;
 }
 
 .commit-object .commit-cut-message {
@@ -15,16 +16,16 @@
   font-weight: bold;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
-  background-color: #F5F5F5;
-  border:unset;
+  background-color: #f5f5f5;
+  border: unset;
 }
 
-.commit-date:first-of-type{
-  border-top: 1px solid #E4E7EA;
+.commit-date:first-of-type {
+  border-top: 1px solid #e4e7ea;
 }
 
-.commit-object{
-  border-bottom: 1px solid #E4E7EA;
+.commit-object {
+  border-bottom: 1px solid #e4e7ea;
   line-height: 1.5rem;
 }
 

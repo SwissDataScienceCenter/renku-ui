@@ -38,9 +38,7 @@ class CookieBanner extends Component {
   render() {
     const { layout, content } = this.props;
 
-    return (
-      <CookieConsent {...layout}>{content}</CookieConsent>
-    );
+    return <CookieConsent {...layout}>{content}</CookieConsent>;
   }
 }
 
@@ -48,15 +46,11 @@ class Privacy extends Component {
   render() {
     const { content } = this.props;
     if (!content || !content.length) {
-      return (
-        <WarnAlert>
-          There is no content for this page.
-        </WarnAlert>
-      );
+      return <WarnAlert>There is no content for this page.</WarnAlert>;
     }
 
     const stringContent = atob(content);
-    return (<RenkuMarkdown markdownText={stringContent} />);
+    return <RenkuMarkdown markdownText={stringContent} />;
   }
 }
 

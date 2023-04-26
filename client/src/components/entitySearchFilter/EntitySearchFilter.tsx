@@ -18,9 +18,15 @@
 import React from "react";
 
 import { KgAuthor } from "../../features/kgSearch/KgSearch";
-import { TypeEntityFilter, TypeEntitySelection } from "../typeEntityFilter/TypeEntityFilter";
+import {
+  TypeEntityFilter,
+  TypeEntitySelection,
+} from "../typeEntityFilter/TypeEntityFilter";
 import { AuthorFilter } from "../authorFilter/AuthorFilter";
-import { VisibilitiesFilter, VisibilityFilter } from "../visibilityFilter/VisibilityFilter";
+import {
+  VisibilitiesFilter,
+  VisibilityFilter,
+} from "../visibilityFilter/VisibilityFilter";
 import "./EntitySearchFilter.css";
 import { DateFilter, DatesFilter } from "../dateFilter/DateFilter";
 import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
@@ -40,27 +46,44 @@ export interface FilterProps {
   valuesDate: DatesFilter;
 }
 
-const FilterEntitySearch = ({ author, type, visibility, isLoggedUser, valuesDate }: FilterProps) => {
-  const { reducers: { setAuthor, setDates, setType, setVisibility } } = useKgSearchContext();
+const FilterEntitySearch = ({
+  author,
+  type,
+  visibility,
+  isLoggedUser,
+  valuesDate,
+}: FilterProps) => {
+  const {
+    reducers: { setAuthor, setDates, setType, setVisibility },
+  } = useKgSearchContext();
 
   const authorComponent = isLoggedUser ? (
-    <div><AuthorFilter
-      handler={(value: KgAuthor) => setAuthor(value)}
-      value={author} /></div>
+    <div>
+      <AuthorFilter
+        handler={(value: KgAuthor) => setAuthor(value)}
+        value={author}
+      />
+    </div>
   ) : null;
 
   const visibilityComponent = isLoggedUser ? (
-    <div><VisibilityFilter
-      handler={(value: VisibilitiesFilter) => setVisibility(value)}
-      value={visibility} /></div>
+    <div>
+      <VisibilityFilter
+        handler={(value: VisibilitiesFilter) => setVisibility(value)}
+        value={visibility}
+      />
+    </div>
   ) : null;
 
   return (
     <>
       <div className="filter-box">
-        <div><TypeEntityFilter
-          handler={(value: TypeEntitySelection) => setType(value)}
-          value={type} /></div>
+        <div>
+          <TypeEntityFilter
+            handler={(value: TypeEntitySelection) => setType(value)}
+            value={type}
+          />
+        </div>
         {authorComponent}
         {visibilityComponent}
         <div>

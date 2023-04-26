@@ -33,31 +33,54 @@ export interface EntityTagsProps {
   tagList: string[];
 }
 
-function EntityTags ({ hideEmptyTags, multiline, tagList }: EntityTagsProps) {
+function EntityTags({ hideEmptyTags, multiline, tagList }: EntityTagsProps) {
   const ref = useRef(null);
-  const multilineStyles = multiline ? "d-flex flex-wrap text-rk-text-light" : "text-truncate text-dark";
-  const isUpdatingValue = useSelector((state: RootStateOrAny ) =>
-    state.stateModel.project?.metadata?.tagList?.updating);
+  const multilineStyles = multiline
+    ? "d-flex flex-wrap text-rk-text-light"
+    : "text-truncate text-dark";
+  const isUpdatingValue = useSelector(
+    (state: RootStateOrAny) =>
+      state.stateModel.project?.metadata?.tagList?.updating
+  );
 
   if (isUpdatingValue) {
     return (
-      <div ref={ref} className={`tagList card-tags text-rk-text-light ${multilineStyles}`} data-cy="updating-tag-list">
-        <small><i>Updating list...</i></small>
+      <div
+        ref={ref}
+        className={`tagList card-tags text-rk-text-light ${multilineStyles}`}
+        data-cy="updating-tag-list"
+      >
+        <small>
+          <i>Updating list...</i>
+        </small>
       </div>
     );
   }
 
-  if (!tagList?.length && hideEmptyTags)
-    return null;
+  if (!tagList?.length && hideEmptyTags) return null;
 
-  const tooltip = tagList?.length > 0 ?
-    <ThrottledTooltip target={ref} tooltip={tagList?.map(tag => `#${tag}`).join(", ")} /> : null;
+  const tooltip =
+    tagList?.length > 0 ? (
+      <ThrottledTooltip
+        target={ref}
+        tooltip={tagList?.map((tag) => `#${tag}`).join(", ")}
+      />
+    ) : null;
   return (
     <>
-      <div ref={ref} data-cy="entity-tag-list"
-        className={`tagList card-tags ${multilineStyles}`}>
-        {tagList?.map(tag =>
-          <span key={tag} className={`entity-tag ${ multiline ? "entity-tag--small" : "" }`}>#{tag}</span>)}
+      <div
+        ref={ref}
+        data-cy="entity-tag-list"
+        className={`tagList card-tags ${multilineStyles}`}
+      >
+        {tagList?.map((tag) => (
+          <span
+            key={tag}
+            className={`entity-tag ${multiline ? "entity-tag--small" : ""}`}
+          >
+            #{tag}
+          </span>
+        ))}
       </div>
       {!multiline ? tooltip : null}
     </>
@@ -65,4 +88,3 @@ function EntityTags ({ hideEmptyTags, multiline, tagList }: EntityTagsProps) {
 }
 
 export default EntityTags;
-

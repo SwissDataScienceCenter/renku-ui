@@ -29,11 +29,16 @@ import Creators, { EntityCreator } from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityTags from "../entities/Tags";
 import EntityLabel from "../entities/Label";
-import LinkedEntitiesByItemType, { EntityLinksHeader } from "../entities/LinkedEntitiesByItemType";
+import LinkedEntitiesByItemType, {
+  EntityLinksHeader,
+} from "../entities/LinkedEntitiesByItemType";
 import Slug from "../entities/Slug";
 import VisibilityIcon from "../entities/VisibilityIcon";
 import { EntityType } from "../entities/Entities";
-import { StartSessionDropdownButton, SessionButton } from "../../features/session/components/SessionButtons";
+import {
+  StartSessionDropdownButton,
+  SessionButton,
+} from "../../features/session/components/SessionButtons";
 import { TimeCaption } from "../TimeCaption";
 import { EnvironmentLogs } from "../Logs";
 import { displaySlice, useDisplaySelector } from "../../features/display";
@@ -46,7 +51,7 @@ import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 export interface EntityHeaderProps {
   client?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   creators: EntityCreator[];
-  description?: {value: string, isLoading?: boolean};
+  description?: { value: string; isLoading?: boolean };
   devAccess: boolean;
   email?: string;
   fullPath?: string;
@@ -67,57 +72,106 @@ export interface EntityHeaderProps {
   imageUrl?: string;
 }
 
-
 function EntityHeader({
-  creators, description, devAccess, fullPath, gitUrl, hideEmptyTags = false, imageUrl, itemType,
-  labelCaption, links, otherButtons, showFullHeader = true, slug, statusButton, tagList, timeCaption,
-  title, url, visibility
+  creators,
+  description,
+  devAccess,
+  fullPath,
+  gitUrl,
+  hideEmptyTags = false,
+  imageUrl,
+  itemType,
+  labelCaption,
+  links,
+  otherButtons,
+  showFullHeader = true,
+  slug,
+  statusButton,
+  tagList,
+  timeCaption,
+  title,
+  url,
+  visibility,
 }: EntityHeaderProps) {
   // Find sessions
   const dispatch = useDispatch();
-  const sessions = useSelector((state: RootStateOrAny) => state.stateModel.notebooks?.notebooks);
+  const sessions = useSelector(
+    (state: RootStateOrAny) => state.stateModel.notebooks?.notebooks
+  );
   const projectData = { namespace: "", path: fullPath };
-  const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, projectData);
+  const sessionAutostartUrl = Url.get(
+    Url.pages.project.session.autostart,
+    projectData
+  );
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const notebook = sessions.fetched && sessions.all ? getSessionRunning(sessions.all, sessionAutostartUrl) as any :
-    false;
+  const notebook =
+    sessions.fetched && sessions.all
+      ? (getSessionRunning(sessions.all, sessionAutostartUrl) as any)
+      : false;
 
   // Set the main button based on running sessions
   let mainButton = null;
   if (fullPath && gitUrl) {
     if (!notebook) {
       const loading = !sessions.fetched && sessions.fetching ? true : false;
-      mainButton = (<StartSessionDropdownButton fullPath={fullPath} gitUrl={gitUrl} loading={loading} />);
-    }
-    else {
+      mainButton = (
+        <StartSessionDropdownButton
+          fullPath={fullPath}
+          gitUrl={gitUrl}
+          loading={loading}
+        />
+      );
+    } else {
       const showLogs = () => {
-        dispatch(displaySlice.actions.showSessionLogsModal({ targetServer: notebook.name }));
+        dispatch(
+          displaySlice.actions.showSessionLogsModal({
+            targetServer: notebook.name,
+          })
+        );
       };
-      mainButton = (<SessionButton
-        fullPath={fullPath}
-        gitUrl={gitUrl}
-        notebook={notebook}
-        showLogs={showLogs}
-      />);
+      mainButton = (
+        <SessionButton
+          fullPath={fullPath}
+          gitUrl={gitUrl}
+          notebook={notebook}
+          showLogs={showLogs}
+        />
+      );
     }
   }
 
   // Set up support for logs modal
-  const displayModal = useDisplaySelector((state: RootStateOrAny) => state[displaySlice.name].modals.sessionLogs);
-  const envLogs = itemType === "project" ?
-    (<EnvironmentLogs name={displayModal.targetServer} annotations={notebook?.annotations ?? {}} />) :
-    null;
+  const displayModal = useDisplaySelector(
+    (state: RootStateOrAny) => state[displaySlice.name].modals.sessionLogs
+  );
+  const envLogs =
+    itemType === "project" ? (
+      <EnvironmentLogs
+        name={displayModal.targetServer}
+        annotations={notebook?.annotations ?? {}}
+      />
+    ) : null;
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);
 
   return (
     <>
-      <div className={`container-entity-header ${!showFullHeader ? "container-entity-header-incomplete" : ""}`}
-        data-cy={`header-${itemType}`}>
+      <div
+        className={`container-entity-header ${
+          !showFullHeader ? "container-entity-header-incomplete" : ""
+        }`}
+        data-cy={`header-${itemType}`}
+      >
         <div className="entity-image">
-          <div style={imageStyles}
-            className={`header-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
-            {!imageUrl ? <div className="card-bg-title card-bg-title--small">{title}</div> : null}
+          <div
+            style={imageStyles}
+            className={`header-entity-image ${
+              !imageUrl ? `card-header-entity--${itemType}` : ""
+            }`}
+          >
+            {!imageUrl ? (
+              <div className="card-bg-title card-bg-title--small">{title}</div>
+            ) : null}
           </div>
         </div>
         <div className="entity-time-tags">
@@ -125,8 +179,13 @@ function EntityHeader({
             caption={labelCaption || "Updated"}
             showTooltip={true}
             time={timeCaption}
-            className="text-rk-text-light" />
-          <EntityTags tagList={tagList} multiline={true} hideEmptyTags={hideEmptyTags} />
+            className="text-rk-text-light"
+          />
+          <EntityTags
+            tagList={tagList}
+            multiline={true}
+            hideEmptyTags={hideEmptyTags}
+          />
         </div>
         <div className="entity-action d-flex align-items-baseline gap-1">
           {mainButton}
@@ -134,22 +193,43 @@ function EntityHeader({
         </div>
         <div className="entity-type-visibility align-items-baseline">
           <EntityLabel type={itemType} workflowType={null} />
-          {visibility ? (<VisibilityIcon visibility={visibility} className={colorByType.colorText} />) : null}
+          {visibility ? (
+            <VisibilityIcon
+              visibility={visibility}
+              className={colorByType.colorText}
+            />
+          ) : null}
         </div>
         <div className="entity-title" data-cy={`${itemType}-title`}>
-          <div className="card-title lh-sm d-flex align-items-baseline" data-cy="list-card-title" >
-            {statusButton}{title}
+          <div
+            className="card-title lh-sm d-flex align-items-baseline"
+            data-cy="list-card-title"
+          >
+            {statusButton}
+            {title}
           </div>
         </div>
         <div className="entity-other-links">
-          <LinkedEntitiesByItemType itemType={itemType} links={links} devAccess={devAccess} url={url} />
+          <LinkedEntitiesByItemType
+            itemType={itemType}
+            links={links}
+            devAccess={devAccess}
+            url={url}
+          />
         </div>
         <div className="entity-metadata">
-          <Creators display="list" creators={creators} itemType={itemType} includeIcon={true} />
+          <Creators
+            display="list"
+            creators={creators}
+            itemType={itemType}
+            includeIcon={true}
+          />
           <Slug multiline={true} slug={slug ?? ""} />
           <EntityDescription
-            description={description?.value} isHeightFixed={false}
-            showSuggestion={true} hasDevAccess={devAccess}
+            description={description?.value}
+            isHeightFixed={false}
+            showSuggestion={true}
+            hasDevAccess={devAccess}
             urlChangeDescription={`${url}/settings`}
             className="text-rk-dark"
           />

@@ -42,26 +42,33 @@ function Clipboard(props) {
   const isMounted = useRef(true);
   useEffect(() => {
     isMounted.current = true;
-    return () => { isMounted.current = false; };
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
   let className = "";
-  if (props.className)
-    className += ` ${props.className}`;
+  if (props.className) className += ` ${props.className}`;
 
   return (
-    <ReactClipboard component="a"
+    <ReactClipboard
+      component="a"
       data-clipboard-text={props.clipboardText}
-      onSuccess={
-        () => { setCopied(true); setTimeout(() => { if (isMounted.current) setCopied(false); }, timeoutDur); }
-      }
+      onSuccess={() => {
+        setCopied(true);
+        setTimeout(() => {
+          if (isMounted.current) setCopied(false);
+        }, timeoutDur);
+      }}
       className={className}
       style={{ textDecoration: "none" }}
-    > {
-        (copied) ?
-          <FontAwesomeIcon icon={faCheck} color="success" /> :
-          <FontAwesomeIcon icon={faCopy} />
-      }
+    >
+      {" "}
+      {copied ? (
+        <FontAwesomeIcon icon={faCheck} color="success" />
+      ) : (
+        <FontAwesomeIcon icon={faCopy} />
+      )}
     </ReactClipboard>
   );
 }

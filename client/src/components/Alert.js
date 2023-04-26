@@ -62,8 +62,7 @@ class RenkuAlert extends Component {
   addTimeout() {
     // add the timeout and keep track of the timeout variable to clear it when the alert
     // is manually closed
-    if (this.props.timeout === 0)
-      return;
+    if (this.props.timeout === 0) return;
 
     const timeout = this.props.timeout ? this.props.timeout : 10;
     const timeoutController = setTimeout(() => {
@@ -74,42 +73,41 @@ class RenkuAlert extends Component {
 
   removeTimeout() {
     // remove the timeout when component is closed to avoid double firing callback function
-    if (this.state.timeout !== null)
-      clearTimeout(this.state.timeout);
+    if (this.state.timeout !== null) clearTimeout(this.state.timeout);
   }
 
   onDismiss() {
     this.setState({ open: false });
     this.removeTimeout();
-    if (this.props.dismissCallback)
-      this.props.dismissCallback();
+    if (this.props.dismissCallback) this.props.dismissCallback();
   }
 
   getIcon() {
-    const icon = ({
-      "danger": <img alt="danger icon" src={rkDangerIcon} />,
-      "info": <img alt="info icon" src={rkInfoIcon} />,
-      "warning": <img alt="warning icon" src={rkWarningIcon} />,
-      "success": <img alt="success icon" src={rkSuccessIcon} />,
-    })[this.props.color];
+    const icon = {
+      danger: <img alt="danger icon" src={rkDangerIcon} />,
+      info: <img alt="info icon" src={rkInfoIcon} />,
+      warning: <img alt="warning icon" src={rkWarningIcon} />,
+      success: <img alt="success icon" src={rkSuccessIcon} />,
+    }[this.props.color];
 
-    return icon ? (
-      <div className="alert-icon">{icon}</div>
-    ) : "";
+    return icon ? <div className="alert-icon">{icon}</div> : "";
   }
 
   render() {
     const alertIcon = this.getIcon();
     if (this.props.hidden || this.state.hidden) return null;
     const isOpen = this.props.open ? this.props.open : this.state.open;
-    const toggle = (this.props.dismissible === false) ? null : this.onDismiss;
+    const toggle = this.props.dismissible === false ? null : this.onDismiss;
     return (
-      <Alert color={this.props.color} isOpen={isOpen} toggle={toggle} className={this.props.className}>
+      <Alert
+        color={this.props.color}
+        isOpen={isOpen}
+        toggle={toggle}
+        className={this.props.className}
+      >
         <div className="alert-content">
           {alertIcon}
-          <div>
-            {this.props.children}
-          </div>
+          <div>{this.props.children}</div>
         </div>
       </Alert>
     );
@@ -119,7 +117,7 @@ class RenkuAlert extends Component {
 function InfoAlert(props) {
   const { color = "info" } = props;
   return (
-    <RenkuAlert color={color} {...props} >
+    <RenkuAlert color={color} {...props}>
       {props.children}
     </RenkuAlert>
   );
@@ -128,7 +126,7 @@ function InfoAlert(props) {
 class SuccessAlert extends Component {
   render() {
     return (
-      <RenkuAlert color="success" {...this.props} >
+      <RenkuAlert color="success" {...this.props}>
         {this.props.children}
       </RenkuAlert>
     );
@@ -138,7 +136,7 @@ class SuccessAlert extends Component {
 class WarnAlert extends Component {
   render() {
     return (
-      <RenkuAlert color="warning" timeout={0} {...this.props} >
+      <RenkuAlert color="warning" timeout={0} {...this.props}>
         {this.props.children}
       </RenkuAlert>
     );
@@ -148,7 +146,7 @@ class WarnAlert extends Component {
 class ErrorAlert extends Component {
   render() {
     return (
-      <RenkuAlert color="danger" timeout={0} {...this.props} >
+      <RenkuAlert color="danger" timeout={0} {...this.props}>
         {this.props.children}
       </RenkuAlert>
     );

@@ -28,11 +28,14 @@ import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 
-import { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions } from "./index";
+import {
+  ProjectSettingsGeneral,
+  ProjectSettingsNav,
+  ProjectSettingsSessions,
+} from "./index";
 import { testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
 import { Provider } from "react-redux";
-
 
 const model = new StateModel(globalSchema);
 const fakeLocation = { pathname: "" };
@@ -41,22 +44,24 @@ describe("rendering", () => {
   it("renders ProjectSettingsNav", async () => {
     const props = {
       settingsUrl: "",
-      settingsSessionsUrl: ""
+      settingsSessionsUrl: "",
     };
 
     const div = document.createElement("div");
     document.body.appendChild(div);
     const root = createRoot(div);
     await act(async () => {
-      root.render(<MemoryRouter>
-        <ProjectSettingsNav {...props} />
-      </MemoryRouter>);
+      root.render(
+        <MemoryRouter>
+          <ProjectSettingsNav {...props} />
+        </MemoryRouter>
+      );
     });
   });
 
   it("renders ProjectSettingsGeneral", async () => {
     const props = {
-      metadata: {}
+      metadata: {},
     };
 
     const div = document.createElement("div");
@@ -68,7 +73,8 @@ describe("rendering", () => {
           <MemoryRouter>
             <ProjectSettingsGeneral {...props} />
           </MemoryRouter>
-        </Provider>);
+        </Provider>
+      );
     });
   });
 
@@ -77,7 +83,7 @@ describe("rendering", () => {
       client,
       location: fakeLocation,
       model,
-      store: model.reduxStore
+      store: model.reduxStore,
     };
 
     const div = document.createElement("div");
@@ -89,7 +95,8 @@ describe("rendering", () => {
           <MemoryRouter>
             <ProjectSettingsSessions {...props} />
           </MemoryRouter>
-        </Provider>);
+        </Provider>
+      );
     });
   });
 });

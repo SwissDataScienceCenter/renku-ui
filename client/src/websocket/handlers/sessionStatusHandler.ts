@@ -28,13 +28,17 @@ function handleSessionsStatus(
   getLocation: Function, // eslint-disable-line @typescript-eslint/ban-types
   client: APIClient
 ) {
-  if (data.message as boolean && client && model) {
+  if ((data.message as boolean) && client && model) {
     const location = getLocation();
 
     if (!isSessionUrl(location?.pathname)) {
       const notebooksModel = model.subModel("notebooks");
       const userModel = model.subModel("user");
-      const notebookCoordinator = new NotebooksCoordinator(client, notebooksModel, userModel);
+      const notebookCoordinator = new NotebooksCoordinator(
+        client,
+        notebooksModel,
+        userModel
+      );
       notebookCoordinator.fetchNotebooks();
     }
   }

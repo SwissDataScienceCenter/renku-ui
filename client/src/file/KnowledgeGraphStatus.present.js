@@ -22,7 +22,10 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Button, Alert, Progress } from "reactstrap";
 
 import { GraphIndexingStatus } from "../project/Project";
-import { MigrationSuccessAlert, MigrationWarnAlert } from "../project/status/MigrationUtils";
+import {
+  MigrationSuccessAlert,
+  MigrationWarnAlert,
+} from "../project/status/MigrationUtils";
 import { Loader } from "../components/Loader";
 import { Docs, Links } from "../utils/constants/Docs";
 import { ExternalLink } from "../components/ExternalLinks";
@@ -31,11 +34,15 @@ function KnowledgeGraphPrivateInfo(props) {
   if (!props.isPrivate) return null;
   return (
     <p className="font-italic small">
-      This is a private project. Though contents remain private,
-      the Knowledge Graph may make some metadata public. Only activate if that is acceptable.
+      This is a private project. Though contents remain private, the Knowledge
+      Graph may make some metadata public. Only activate if that is acceptable.
       <br />
-      <ExternalLink url={Docs.rtdTopicGuide("miscellaneous/knowledge-graph.html")} showLinkIcon={true}
-        title="Read more about the Knowledge Graph integration." role="link" />
+      <ExternalLink
+        url={Docs.rtdTopicGuide("miscellaneous/knowledge-graph.html")}
+        showLinkIcon={true}
+        title="Read more about the Knowledge Graph integration."
+        role="link"
+      />
     </p>
   );
 }
@@ -43,21 +50,26 @@ function KnowledgeGraphPrivateInfo(props) {
 function KnowledgeGraphStatus(props) {
   const { error, progress, webhookJustCreated } = props;
   if (error != null) {
-    return <MigrationWarnAlert>
-      Knowledge Graph integration must be activated to view the lineage, but
-      there is a problem with the knowledge graph integration for this project. To resolve this problem,
-      you should contact the development team on {" "}
-      <a href={Links.GITTER}
-        target="_blank" rel="noreferrer noopener">Gitter</a> or{" "}
-      <a href={Links.GITHUB}
-        target="_blank" rel="noreferrer noopener">GitHub</a>.
-    </MigrationWarnAlert>;
+    return (
+      <MigrationWarnAlert>
+        Knowledge Graph integration must be activated to view the lineage, but
+        there is a problem with the knowledge graph integration for this
+        project. To resolve this problem, you should contact the development
+        team on{" "}
+        <a href={Links.GITTER} target="_blank" rel="noreferrer noopener">
+          Gitter
+        </a>{" "}
+        or{" "}
+        <a href={Links.GITHUB} target="_blank" rel="noreferrer noopener">
+          GitHub
+        </a>
+        .
+      </MigrationWarnAlert>
+    );
   }
 
   if (progress == null) {
-    return (
-      <Loader />
-    );
+    return <Loader />;
   }
   if (progress === GraphIndexingStatus.NO_WEBHOOK) {
     if (webhookJustCreated) {
@@ -68,31 +80,37 @@ function KnowledgeGraphStatus(props) {
       );
     }
 
-    const action = props.maintainer ?
-      <Button color="warning" onClick={props.createWebhook}>Activate</Button> :
-      <span>You do not have sufficient rights, but a project owner can do this.</span>;
+    const action = props.maintainer ? (
+      <Button color="warning" onClick={props.createWebhook}>
+        Activate
+      </Button>
+    ) : (
+      <span>
+        You do not have sufficient rights, but a project owner can do this.
+      </span>
+    );
 
     return (
       <MigrationWarnAlert>
-        {props.warningMessage ?
-          props.warningMessage :
-          "Knowledge Graph integration must be activated to view the lineage."}
+        {props.warningMessage
+          ? props.warningMessage
+          : "Knowledge Graph integration must be activated to view the lineage."}
         <br />
         <KnowledgeGraphPrivateInfo isPrivate={props.isPrivate} />
         <br />
         {action}
       </MigrationWarnAlert>
     );
-
-  }
-  else if (progress === GraphIndexingStatus.NO_PROGRESS) {
+  } else if (progress === GraphIndexingStatus.NO_PROGRESS) {
     let forkedInfo = null;
     if (props.forked) {
       forkedInfo = (
         <div>
           <br />
-          <FontAwesomeIcon icon={faInfoCircle} /> <span className="font-italic">If you recently forked
-            this project, the graph integration will not finish until you create at least one commit.
+          <FontAwesomeIcon icon={faInfoCircle} />{" "}
+          <span className="font-italic">
+            If you recently forked this project, the graph integration will not
+            finish until you create at least one commit.
           </span>
         </div>
       );
@@ -106,8 +124,10 @@ function KnowledgeGraphStatus(props) {
         <Loader />
       </div>
     );
-  }
-  else if (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE) {
+  } else if (
+    progress >= GraphIndexingStatus.MIN_VALUE &&
+    progress < GraphIndexingStatus.MAX_VALUE
+  ) {
     return (
       <div>
         <Alert color="primary">
@@ -116,12 +136,12 @@ function KnowledgeGraphStatus(props) {
         </Alert>
       </div>
     );
-  }
-  else if (props.displaySuccessMessage) {
-    return <MigrationSuccessAlert>
-      Knowledge Graph integration is active.
-    </MigrationSuccessAlert>
-    ;
+  } else if (props.displaySuccessMessage) {
+    return (
+      <MigrationSuccessAlert>
+        Knowledge Graph integration is active.
+      </MigrationSuccessAlert>
+    );
   }
 
   return null;

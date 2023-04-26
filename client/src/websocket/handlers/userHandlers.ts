@@ -18,26 +18,35 @@
 
 import { WsMessage } from "../WsMessages";
 
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-function handleUserInit(data: Record<string, unknown>, webSocket: WebSocket): boolean {
-  if (data?.message && (data.message as string).toLowerCase().includes("connection established")) {
+function handleUserInit(
+  data: Record<string, unknown>,
+  webSocket: WebSocket
+): boolean {
+  if (
+    data?.message &&
+    (data.message as string).toLowerCase().includes("connection established")
+  ) {
     // send request for getting the UI version
-    webSocket.send(JSON.stringify(new WsMessage({ requestServerVersion: true }, "init")));
+    webSocket.send(
+      JSON.stringify(new WsMessage({ requestServerVersion: true }, "init"))
+    );
   }
   return true;
 }
 
-function handleUserUiVersion(data: Record<string, unknown>, webSocket: WebSocket, model: any): boolean {
+function handleUserUiVersion(
+  data: Record<string, unknown>,
+  webSocket: WebSocket,
+  model: any
+): boolean {
   const localModel = model.subModel("environment.uiVersion");
   const envValues: Record<string, any> = {};
 
   if (data.start != null) {
-    if (data.start)
-      envValues.webSocket = true;
-    else
-      envValues.webSocket = false;
+    if (data.start) envValues.webSocket = true;
+    else envValues.webSocket = false;
   }
   if (data.version != null) {
     envValues.lastReceived = new Date();
@@ -48,11 +57,17 @@ function handleUserUiVersion(data: Record<string, unknown>, webSocket: WebSocket
   return true;
 }
 
-function handleUserError(data: Record<string, unknown>, webSocket: WebSocket, model: any): boolean {
-  const message = data.message ?
-    "Error on WebSocket server: " + data.message :
-    "Unknown error on WebSocket server.";
-  model.subModel("webSocket").setObject({ error: true, errorObject: { message } });
+function handleUserError(
+  data: Record<string, unknown>,
+  webSocket: WebSocket,
+  model: any
+): boolean {
+  const message = data.message
+    ? "Error on WebSocket server: " + data.message
+    : "Unknown error on WebSocket server.";
+  model
+    .subModel("webSocket")
+    .setObject({ error: true, errorObject: { message } });
   return false;
 }
 

@@ -23,19 +23,17 @@
  *  Container component for removing a dataset.
  */
 
-
 import React, { useState } from "react";
 import DeleteDatasetPresent from "./DeleteDataset.present";
 
-
 function DeleteDataset(props) {
-
   const [serverErrors, setServerErrors] = useState(undefined);
   const [submitLoader, setSubmitLoader] = useState(false);
-  const [submitLoaderText, setSubmitLoaderText] = useState("Deleting dataset...");
+  const [submitLoaderText, setSubmitLoaderText] = useState(
+    "Deleting dataset..."
+  );
 
-
-  const closeModal = () =>{
+  const closeModal = () => {
     if (!submitLoader) {
       setServerErrors(undefined);
       props.setModalOpen(false);
@@ -46,18 +44,20 @@ function DeleteDataset(props) {
     setServerErrors(undefined);
     setSubmitLoader(true);
     setSubmitLoaderText("Deleting dataset...");
-    props.client.deleteDataset(props.httpProjectUrl, props.dataset.name, props.versionUrl)
-      .then(response => {
+    props.client
+      .deleteDataset(props.httpProjectUrl, props.dataset.name, props.versionUrl)
+      .then((response) => {
         if (response.data.error !== undefined) {
           setSubmitLoader(false);
           setServerErrors(response.data.error);
-        }
-        else {
-          setSubmitLoaderText("Dataset deleted, you will be redirected soon...");
+        } else {
+          setSubmitLoaderText(
+            "Dataset deleted, you will be redirected soon..."
+          );
           setSubmitLoader(false);
           props.history.push({
             pathname: `/projects/${props.projectPathWithNamespace}/datasets`,
-            state: { reload: true }
+            state: { reload: true },
           });
         }
       });

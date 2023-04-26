@@ -23,12 +23,14 @@
  *  Presentational components.
  */
 
-export const parseOnlyLetterAndSpace = expression => expression.replace(/[^A-Za-z ]/g, "");
-export const parseLength = (expression, length) => expression.substring(0, length);
+export const parseOnlyLetterAndSpace = (expression) =>
+  expression.replace(/[^A-Za-z ]/g, "");
+export const parseLength = (expression, length) =>
+  expression.substring(0, length);
 export const slugFromTitle = (title) => title.replace(/\s/g, "-").toLowerCase();
 
 export default {
   parseMaxLength: (input, maxLength) => parseLength(input, maxLength),
-  parseOnlyLetterAndSpace: input => parseOnlyLetterAndSpace(input),
-  slugFromTitle: input => slugFromTitle(input)
+  parseOnlyLetterAndSpace: (input) => parseOnlyLetterAndSpace(input),
+  slugFromTitle: (input) => slugFromTitle(input),
 };

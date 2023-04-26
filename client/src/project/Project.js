@@ -28,12 +28,15 @@ import { connect } from "react-redux";
 import _ from "lodash";
 
 import Present from "./Project.present";
-import { GraphIndexingStatus, ProjectCoordinator, MigrationStatus } from "./Project.state";
+import {
+  GraphIndexingStatus,
+  ProjectCoordinator,
+  MigrationStatus,
+} from "./Project.state";
 import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
 import qs from "query-string";
 import { DatasetCoordinator } from "../dataset/Dataset.state";
 import { NotebooksCoordinator } from "../notebooks";
-
 
 const subRoutes = {
   overview: "overview",
@@ -58,12 +61,14 @@ const subRoutes = {
   settingsSessions: "settings/sessions",
   sessions: "sessions",
   sessionNew: "sessions/new",
-  showSession: "sessions/show/:server"
+  showSession: "sessions/show/:server",
 };
 
 // SubRoutes grouped by depth
-const srMap = _.groupBy(Object.values(subRoutes), v => v.split("/").length);
-const maxSrMapDepth = Math.max(...Object.keys(srMap).map(k => Number.parseInt(k)));
+const srMap = _.groupBy(Object.values(subRoutes), (v) => v.split("/").length);
+const maxSrMapDepth = Math.max(
+  ...Object.keys(srMap).map((k) => Number.parseInt(k))
+);
 const projectIdRegex = /^\d+$/;
 
 /**
@@ -86,7 +91,10 @@ function accumulateIntoProjectPath(projectPathWithNamespace, comps) {
     if (matches) return projectPathWithNamespace;
   }
   // Add one level to the projectPathWithNamespace
-  return accumulateIntoProjectPath(`${projectPathWithNamespace}/${comps[0]}`, comps.slice(1));
+  return accumulateIntoProjectPath(
+    `${projectPathWithNamespace}/${comps[0]}`,
+    comps.slice(1)
+  );
 }
 
 function splitProjectSubRoute(subUrl) {
@@ -94,16 +102,16 @@ function splitProjectSubRoute(subUrl) {
     namespace: null,
     projectPathWithNamespace: null,
     projectId: null,
-    baseUrl: null
+    baseUrl: null,
   };
-  if (subUrl == null)
-    return result;
+  if (subUrl == null) return result;
 
   const baseUrl = subUrl.endsWith("/") ? subUrl.slice(0, -1) : subUrl;
-  const projectSubRoute = baseUrl.startsWith("/projects/") ? baseUrl.slice(10) : baseUrl;
+  const projectSubRoute = baseUrl.startsWith("/projects/")
+    ? baseUrl.slice(10)
+    : baseUrl;
   const comps = projectSubRoute.split("/");
-  if (comps.length < 1)
-    return result;
+  if (comps.length < 1) return result;
 
   // This could be a route that just provides a projectId
   if (projectIdRegex.test(comps[0])) {
@@ -119,15 +127,20 @@ function splitProjectSubRoute(subUrl) {
   result.projectPathWithNamespace = comps.slice(0, 2).join("/");
   if (comps.length > 2) {
     // We need to check if we need to accumulate more components into the projectPathWithNamespace
-    result.projectPathWithNamespace = accumulateIntoProjectPath(result.projectPathWithNamespace, comps.slice(2));
+    result.projectPathWithNamespace = accumulateIntoProjectPath(
+      result.projectPathWithNamespace,
+      comps.slice(2)
+    );
   }
 
   if (result.projectId != null) {
     result.baseUrl = `/projects/${result.projectId}`;
-  }
-  else {
+  } else {
     result.baseUrl = `/projects/${result.projectPathWithNamespace}`;
-    result.namespace = result.projectPathWithNamespace.slice(0, result.projectPathWithNamespace.lastIndexOf("/"));
+    result.namespace = result.projectPathWithNamespace.slice(
+      0,
+      result.projectPathWithNamespace.lastIndexOf("/")
+    );
   }
 
   return result;
@@ -140,12 +153,9 @@ function stripFetchingInfo(thing) {
     // We could make this more deeply recursive, but not necessary for now
     if (typeof thing[k] === "object") {
       result[k] = { ...thing[k] };
-      if (result[k].fetching !== undefined)
-        delete result[k].fetching;
-      if (result[k].fetched !== undefined)
-        delete result[k].fetched;
-    }
-    else {
+      if (result[k].fetching !== undefined) delete result[k].fetching;
+      if (result[k].fetched !== undefined) delete result[k].fetched;
+    } else {
       result[k] = thing[k];
     }
   }
@@ -169,8 +179,8 @@ function mapProjectStateToProps(state, ownProps) {
   const canCreateMR = accessLevel >= ACCESS_LEVELS.DEVELOPER;
   const isGraphReady = ownProps.isGraphReady();
   const pathname = ownProps.history.location.pathname;
-  const isOnDatasetEditPage = pathname.endsWith("datasets/new") || pathname.endsWith("modify");
-
+  const isOnDatasetEditPage =
+    pathname.endsWith("datasets/new") || pathname.endsWith("modify");
 
   return {
     ...projectCoordinator.get(),
@@ -185,10 +195,9 @@ function mapProjectStateToProps(state, ownProps) {
     // fields (mostly non-project) that should trigger a re-render
     triggerDataset: refreshTrigger(state.stateModel.dataset),
     triggerForm: isOnDatasetEditPage ? {} : null,
-    triggerNotebooks: refreshTrigger(state.stateModel.notebooks)
+    triggerNotebooks: refreshTrigger(state.stateModel.notebooks),
   };
 }
-
 
 // TODO: This component has grown too much and needs restructuring. One option would be to insert
 // TODO: another container component between this top-level project component and the presentational
@@ -199,33 +208,62 @@ class View extends Component {
     const currentSearch = qs.parse(props.location.search);
     this.autostart = currentSearch?.autostart;
     this.customBranch = currentSearch?.branch;
-    this.projectCoordinator = new ProjectCoordinator(props.client, props.model.subModel("project"));
-    this.datasetCoordinator = new DatasetCoordinator(props.client, props.model.subModel("dataset"));
-    this.notebookCoordinator = new NotebooksCoordinator(props.client, props.model.subModel("notebooks"));
+    this.projectCoordinator = new ProjectCoordinator(
+      props.client,
+      props.model.subModel("project")
+    );
+    this.datasetCoordinator = new DatasetCoordinator(
+      props.client,
+      props.model.subModel("dataset")
+    );
+    this.notebookCoordinator = new NotebooksCoordinator(
+      props.client,
+      props.model.subModel("notebooks")
+    );
     // reset filter file path when load a new project
     this.notebookCoordinator.setNotebookFilePath(null);
   }
 
   componentDidMount() {
     const pathComponents = splitProjectSubRoute(this.props.match.url);
-    if (pathComponents.projectPathWithNamespace == null && pathComponents.projectId != null)
+    if (
+      pathComponents.projectPathWithNamespace == null &&
+      pathComponents.projectId != null
+    )
       this.redirectProjectWithNumericId(pathComponents.projectId);
 
     if (pathComponents.projectPathWithNamespace != null) {
       // fetch only if user data are already loaded
-      if (this.props.user.fetched)
-        this.fetchAll();
-
+      if (this.props.user.fetched) this.fetchAll();
 
       // in case the route fails it tests weather it could be a projectId route
-      const routes = ["overview", "files", "lineage", "notebooks", "data", "workflows", "settings",
-        "pending", "launchNotebook", "notebookServers", "datasets", "sessions"];
-      const potentialProjectId = pathComponents.projectPathWithNamespace.split("/")[0];
-      const potentialRoute = pathComponents.projectPathWithNamespace.split("/")[1];
+      const routes = [
+        "overview",
+        "files",
+        "lineage",
+        "notebooks",
+        "data",
+        "workflows",
+        "settings",
+        "pending",
+        "launchNotebook",
+        "notebookServers",
+        "datasets",
+        "sessions",
+      ];
+      const potentialProjectId =
+        pathComponents.projectPathWithNamespace.split("/")[0];
+      const potentialRoute =
+        pathComponents.projectPathWithNamespace.split("/")[1];
 
       if (!isNaN(potentialProjectId) && routes.indexOf(potentialRoute) > 0) {
-        this.redirectAfterFetchFails(pathComponents.projectPathWithNamespace,
-          this.props.location.pathname.replace("/projects/" + potentialProjectId, ""));
+        this.redirectAfterFetchFails(
+          pathComponents.projectPathWithNamespace,
+          this.props.location.pathname.replace(
+            "/projects/" + potentialProjectId,
+            ""
+          )
+        );
       }
     }
   }
@@ -233,7 +271,10 @@ class View extends Component {
   componentDidUpdate(prevProps) {
     const prevPathComps = splitProjectSubRoute(prevProps.match.url);
     const pathComps = splitProjectSubRoute(this.props.match.url);
-    if (prevPathComps.projectPathWithNamespace !== pathComps.projectPathWithNamespace)
+    if (
+      prevPathComps.projectPathWithNamespace !==
+      pathComps.projectPathWithNamespace
+    )
       this.fetchAll();
   }
 
@@ -244,42 +285,73 @@ class View extends Component {
   async fetchProject() {
     // fetch the main project data, fetch branches and commits (exception for auto-starting links)
     const pathComponents = splitProjectSubRoute(this.props.match.url);
-    const projectData =
-      await this.projectCoordinator.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
+    const projectData = await this.projectCoordinator.fetchProject(
+      this.props.client,
+      pathComponents.projectPathWithNamespace
+    );
     this.fetchBranches();
     if (projectData && !this.autostart && !this.customBranch) {
       const defaultBranch = projectData?.all?.default_branch;
-      const commitOptions = defaultBranch ?
-        { branch: defaultBranch } :
-        {};
+      const commitOptions = defaultBranch ? { branch: defaultBranch } : {};
       this.projectCoordinator.fetchCommits(commitOptions);
     }
 
     return projectData;
   }
-  async fetchReadme() { return this.projectCoordinator.fetchReadme(this.props.client); }
-  async fetchModifiedFiles() { return this.projectCoordinator.fetchModifiedFiles(this.props.client); }
-  async fetchBranches() { return this.projectCoordinator.fetchBranches(); }
-  async fetchCommits(branch) { return this.projectCoordinator.fetchCommits({ branch }); }
-  async createGraphWebhook() { return this.projectCoordinator.createGraphWebhook(this.props.client); }
-  async fetchGraphWebhook() { this.projectCoordinator.fetchGraphWebhook(this.props.client, this.props.user); }
+  async fetchReadme() {
+    return this.projectCoordinator.fetchReadme(this.props.client);
+  }
+  async fetchModifiedFiles() {
+    return this.projectCoordinator.fetchModifiedFiles(this.props.client);
+  }
+  async fetchBranches() {
+    return this.projectCoordinator.fetchBranches();
+  }
+  async fetchCommits(branch) {
+    return this.projectCoordinator.fetchCommits({ branch });
+  }
+  async createGraphWebhook() {
+    return this.projectCoordinator.createGraphWebhook(this.props.client);
+  }
+  async fetchGraphWebhook() {
+    this.projectCoordinator.fetchGraphWebhook(
+      this.props.client,
+      this.props.user
+    );
+  }
   async fetchProjectFilesTree() {
-    return this.projectCoordinator.fetchProjectFilesTree(this.props.client, this.cleanCurrentURL());
+    return this.projectCoordinator.fetchProjectFilesTree(
+      this.props.client,
+      this.cleanCurrentURL()
+    );
   }
   async setProjectOpenFolder(filePath) {
     this.projectCoordinator.setProjectOpenFolder(this.props.client, filePath);
   }
   async fetchProjectDatasets(forceReFetch) {
-    return this.projectCoordinator.fetchProjectDatasets(this.props.client, forceReFetch);
+    return this.projectCoordinator.fetchProjectDatasets(
+      this.props.client,
+      forceReFetch
+    );
   }
   async fetchProjectDatasetsFromKg() {
-    return this.projectCoordinator.fetchProjectDatasetsFromKg(this.props.client);
+    return this.projectCoordinator.fetchProjectDatasetsFromKg(
+      this.props.client
+    );
   }
-  async fetchGraphStatus() { return this.projectCoordinator.fetchGraphStatus(this.props.client); }
-  saveProjectLastNode(nodeData) { this.projectCoordinator.saveProjectLastNode(nodeData); }
+  async fetchGraphStatus() {
+    return this.projectCoordinator.fetchGraphStatus(this.props.client);
+  }
+  saveProjectLastNode(nodeData) {
+    this.projectCoordinator.saveProjectLastNode(nodeData);
+  }
 
   async fetchMigrationCheck(gitUrl, defaultBranch) {
-    return this.projectCoordinator.fetchMigrationCheck(this.props.client, gitUrl, defaultBranch);
+    return this.projectCoordinator.fetchMigrationCheck(
+      this.props.client,
+      gitUrl,
+      defaultBranch
+    );
   }
   async fetchReadmeCommits() {
     return this.projectCoordinator.fetchReadmeCommits(this.props.client);
@@ -290,7 +362,9 @@ class View extends Component {
   }
 
   async fetchProjectLockStatus() {
-    return await this.projectCoordinator.fetchProjectLockStatus(this.props.user.logged);
+    return await this.projectCoordinator.fetchProjectLockStatus(
+      this.props.user.logged
+    );
   }
 
   async fetchAll() {
@@ -302,14 +376,17 @@ class View extends Component {
 
     if (projectData) {
       // check project webhook
-      if (this.props.user.logged)
-        this.checkGraphWebhook();
+      if (this.props.user.logged) this.checkGraphWebhook();
 
       // Check the supported core versions
       const gitUrl = projectData.all?.http_url_to_repo;
       const defaultBranch = projectData.all?.default_branch;
-      const migrationData = await this.fetchMigrationCheck(gitUrl, defaultBranch);
-      const projectVersion = migrationData.core_compatibility_status?.project_metadata_version;
+      const migrationData = await this.fetchMigrationCheck(
+        gitUrl,
+        defaultBranch
+      );
+      const projectVersion =
+        migrationData.core_compatibility_status?.project_metadata_version;
       await this.checkCoreAvailability(projectVersion);
       await this.fetchProjectDatasets();
       await this.fetchProjectLockStatus();
@@ -317,14 +394,23 @@ class View extends Component {
   }
 
   migrateProject(gitUrl, branch, options) {
-    this.projectCoordinator.migrateProject(this.props.client, gitUrl, branch, options);
+    this.projectCoordinator.migrateProject(
+      this.props.client,
+      gitUrl,
+      branch,
+      options
+    );
   }
 
   redirectProjectWithNumericId(projectId) {
-    this.props.client.getProjectById(projectId)
+    this.props.client
+      .getProjectById(projectId)
       .then((project) => {
-        this.props.history.push("/projects/" + project.data.metadata.core.path_with_namespace);
-      }).catch((error) => {
+        this.props.history.push(
+          "/projects/" + project.data.metadata.core.path_with_namespace
+        );
+      })
+      .catch((error) => {
         if (error.case === API_ERRORS.notFoundError) {
           this.projectCoordinator.set("metadata.exists", false);
           return;
@@ -334,15 +420,23 @@ class View extends Component {
   }
 
   redirectAfterFetchFails(projectPathWithNamespace, urlInsideProject) {
-    this.props.client.getProjectById(projectPathWithNamespace.split("/")[0])
+    this.props.client
+      .getProjectById(projectPathWithNamespace.split("/")[0])
       .then((project) => {
-        this.props.history.push("/projects/" + project.data.metadata.core.path_with_namespace + urlInsideProject);
+        this.props.history.push(
+          "/projects/" +
+            project.data.metadata.core.path_with_namespace +
+            urlInsideProject
+        );
       });
   }
 
   cleanCurrentURL() {
     const subUrls = this.getSubUrls();
-    if (subUrls.filesUrl === this.props.location.pathname || subUrls.filesUrl + "/" === this.props.location.pathname)
+    if (
+      subUrls.filesUrl === this.props.location.pathname ||
+      subUrls.filesUrl + "/" === this.props.location.pathname
+    )
       return "";
     return this.props.location.pathname
       .replace(this.props.match.projectPath, "")
@@ -350,12 +444,17 @@ class View extends Component {
       .replace(subUrls.fileContentUrl, "");
   }
 
-  checkGraphWebhook() { this.projectCoordinator.checkGraphWebhook(this.props.client); }
+  checkGraphWebhook() {
+    this.projectCoordinator.checkGraphWebhook(this.props.client);
+  }
 
   isGraphReady() {
     const webhookStatus = this.projectCoordinator.get("webhook");
-    return webhookStatus.status || (webhookStatus.created && webhookStatus.stop)
-      || webhookStatus.progress === GraphIndexingStatus.MAX_VALUE;
+    return (
+      webhookStatus.status ||
+      (webhookStatus.created && webhookStatus.stop) ||
+      webhookStatus.progress === GraphIndexingStatus.MAX_VALUE
+    );
   }
 
   getSubUrls() {
@@ -392,7 +491,7 @@ class View extends Component {
       launchNotebookUrl: `${baseUrl}/sessions/new`,
       sessionAutostartUrl: `${baseUrl}/sessions/new?autostart=1`,
       notebookServersUrl: `${baseUrl}/sessions`,
-      sessionShowUrl: `${baseUrl}/sessions/show/:server`
+      sessionShowUrl: `${baseUrl}/sessions/show/:server`,
     };
   }
 
@@ -401,7 +500,10 @@ class View extends Component {
       return this.projectCoordinator.setTags(this.props.client, tags);
     },
     onProjectDescriptionChange: (description) => {
-      return this.projectCoordinator.setDescription(this.props.client, description);
+      return this.projectCoordinator.setDescription(
+        this.props.client,
+        description
+      );
     },
     onAvatarChange: (avatarFile) => {
       return this.projectCoordinator.setAvatar(this.props.client, avatarFile);
@@ -448,32 +550,37 @@ class View extends Component {
     },
     fetchProject: (usePendingRefresh) => {
       if (usePendingRefresh) {
-        const pendingRefreshing = this.projectCoordinator.get("metadata.pendingRefresh");
+        const pendingRefreshing = this.projectCoordinator.get(
+          "metadata.pendingRefresh"
+        );
         if (pendingRefreshing) {
           this.projectCoordinator.fetchProject(this.props.client);
           this.projectCoordinator.set("metadata.pendingRefresh", false);
         }
-      }
-      else {
+      } else {
         this.projectCoordinator.fetchProject(this.props.client);
       }
-    }
+    },
   };
 
   render() {
-    const ConnectedProjectView = connect(mapProjectStateToProps)(Present.ProjectView);
+    const ConnectedProjectView = connect(mapProjectStateToProps)(
+      Present.ProjectView
+    );
     const props = {
       ...this.props,
       ...this.eventHandlers,
       ...this.getSubUrls(),
     };
-    return <ConnectedProjectView
-      isGraphReady={this.isGraphReady.bind(this)}
-      projectCoordinator={this.projectCoordinator}
-      {...props} />;
+    return (
+      <ConnectedProjectView
+        isGraphReady={this.isGraphReady.bind(this)}
+        projectCoordinator={this.projectCoordinator}
+        {...props}
+      />
+    );
   }
 }
-
 
 /**
  * Generate the appropriate mapStateToProps function to connect project components
@@ -484,36 +591,35 @@ class View extends Component {
  * @param {string} [parentProperty] - optional parent property where to include all the
  *     selected categories. Try to avoid it, only for compatibility with old components.
  */
-function mapProjectFeatures(projectCoordinator, features = [], parentProperty = null) {
+function mapProjectFeatures(
+  projectCoordinator,
+  features = [],
+  parentProperty = null
+) {
   let mapStateToProps = function () {
     const projectState = projectCoordinator.get();
-    if (!features || !features.length)
-      features = Object.keys(projectState);
+    if (!features || !features.length) features = Object.keys(projectState);
 
     // select categories
     let properties = { ...projectState };
-    properties = features.reduce(
-      (all, category) => {
-        if (projectState[category])
-          all[category] = { ...projectState[category] };
-        return all;
-      },
-      {}
-    );
+    properties = features.reduce((all, category) => {
+      if (projectState[category]) all[category] = { ...projectState[category] };
+      return all;
+    }, {});
 
     // add useful functions
     if (properties.commits)
-      properties.commits.refresh = () => { projectCoordinator.fetchCommits(); };
+      properties.commits.refresh = () => {
+        projectCoordinator.fetchCommits();
+      };
 
     // return the object
-    if (parentProperty)
-      return { [parentProperty]: { ...properties } };
+    if (parentProperty) return { [parentProperty]: { ...properties } };
     return { ...properties };
   };
 
   return mapStateToProps;
 }
-
 
 /**
  * Enhance a React component with project data mapped as properties.
@@ -532,11 +638,18 @@ function withProjectMapped(MappingComponent, features = [], passProps = true) {
       const MappedComponent = connect(mapFunction)(MappingComponent);
       const props = passProps ? this.props : {};
 
-      return (<MappedComponent projectCoordinator={projectCoordinator} {...props} />);
+      return (
+        <MappedComponent projectCoordinator={projectCoordinator} {...props} />
+      );
     }
   };
 }
 
-
 export default { View };
-export { GraphIndexingStatus, MigrationStatus, mapProjectFeatures, splitProjectSubRoute, withProjectMapped };
+export {
+  GraphIndexingStatus,
+  MigrationStatus,
+  mapProjectFeatures,
+  splitProjectSubRoute,
+  withProjectMapped,
+};

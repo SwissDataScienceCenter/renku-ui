@@ -41,15 +41,22 @@ class Template extends Component {
     const error = meta.validation.errors["template"];
     const invalid = error && !input.templatePristine;
 
-    const isFetching = (!input.userRepo && templates.fetching) || (input.userRepo && meta.userTemplates.fetching);
+    const isFetching =
+      (!input.userRepo && templates.fetching) ||
+      (input.userRepo && meta.userTemplates.fetching);
     const noFetchedUserRepo = input.userRepo && !meta.userTemplates.fetched;
     // Pass down templates and repository with the same format to the gallery component
     let listedTemplates, repositories;
     if (input.userRepo) {
       listedTemplates = meta.userTemplates.all;
-      repositories = [{ url: meta.userTemplates.url, ref: meta.userTemplates.ref, name: "Custom" }];
-    }
-    else {
+      repositories = [
+        {
+          url: meta.userTemplates.url,
+          ref: meta.userTemplates.ref,
+          name: "Custom",
+        },
+      ];
+    } else {
       listedTemplates = templates.all;
       repositories = config.repositories;
     }

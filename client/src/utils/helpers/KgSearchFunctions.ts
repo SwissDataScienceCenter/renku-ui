@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 
-import { EntityType, KgSearchResult, KgSearchResultLink } from "../../features/kgSearch";
+import {
+  EntityType,
+  KgSearchResult,
+  KgSearchResultLink,
+} from "../../features/kgSearch";
 import { ListElementProps } from "../../components/list/List.d";
 import { Url } from "./url";
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
@@ -25,10 +29,11 @@ import { getDatasetImageUrl } from "../../dataset/DatasetFunctions";
 
 const getDatasetIdentifier = (links: KgSearchResultLink[]): string => {
   try {
-    const details = links.filter(link => link.rel === "details");
-    return details.length > 0 ? details[0].href.split("/", -1).at(-1) ?? "" : "";
-  }
-  catch {
+    const details = links.filter((link) => link.rel === "details");
+    return details.length > 0
+      ? details[0].href.split("/", -1).at(-1) ?? ""
+      : "";
+  } catch {
     return "";
   }
 };
@@ -43,17 +48,25 @@ const getProjectUrl = (path: string) => {
   return `${projectBase}/${path}`;
 };
 
-export const mapSearchResultToEntity = (entity: KgSearchResult): ListElementProps => {
-  const url = entity.type === EntityType.Dataset ? getDatasetUrl(entity._links) : getProjectUrl(entity.path);
+export const mapSearchResultToEntity = (
+  entity: KgSearchResult
+): ListElementProps => {
+  const url =
+    entity.type === EntityType.Dataset
+      ? getDatasetUrl(entity._links)
+      : getProjectUrl(entity.path);
 
   const creators =
     entity.type === EntityType.Dataset
       ? entity.creators?.map((c: string) => {
-        return { name: c };
-      })
+          return { name: c };
+        })
       : [{ name: entity.creator }];
 
-  const id = entity.type === EntityType.Dataset ? getDatasetIdentifier(entity._links) : entity.path;
+  const id =
+    entity.type === EntityType.Dataset
+      ? getDatasetIdentifier(entity._links)
+      : entity.path;
 
   return {
     creators,

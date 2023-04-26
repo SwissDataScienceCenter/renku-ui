@@ -31,7 +31,6 @@ import {
   Table as WrappedTable,
 } from "reactstrap";
 
-
 import {
   Card as WrappedCard,
   CardBody as WrappedCardBody,
@@ -41,7 +40,7 @@ import {
   PopoverHeader as WrappedPopoverHeader,
   PopoverBody as WrappedPopoverBody,
   UncontrolledPopover as WrappedUncontrolledPopover,
-  UncontrolledTooltip as WrappedUncontrolledTooltip
+  UncontrolledTooltip as WrappedUncontrolledTooltip,
 } from "reactstrap";
 
 import {
@@ -77,7 +76,11 @@ import {
   ZoomOut as WrappedZoomOut,
 } from "react-bootstrap-icons";
 
-import { FormGroup as WrappedFormGroup, Input as WrappedInput, InputGroup as WrappedInputGroup } from "reactstrap";
+import {
+  FormGroup as WrappedFormGroup,
+  Input as WrappedInput,
+  InputGroup as WrappedInputGroup,
+} from "reactstrap";
 
 import {
   Nav as WrappedNav,
@@ -377,14 +380,62 @@ function Shield(props) {
 
 export { ArrowClockwise };
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
-export { Alert, Badge, Button, ButtonDropdown, ButtonGroup, Progress, CheckCircleFill, XCircleFill };
-export { Card, CardBody, CardFooter, CardHeader, CardText, Col, DropdownItem, DropdownMenu, DropdownToggle };
-export { FormFeedback, FormText, Fade, Form, FormGroup, Input, InputGroup, Label };
+export {
+  Alert,
+  Badge,
+  Button,
+  ButtonDropdown,
+  ButtonGroup,
+  Progress,
+  CheckCircleFill,
+  XCircleFill,
+};
+export {
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  CardText,
+  Col,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+};
+export {
+  FormFeedback,
+  FormText,
+  Fade,
+  Form,
+  FormGroup,
+  Input,
+  InputGroup,
+  Label,
+};
 export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
-export { ArrowLeft, Briefcase, CardList, Diagram3, Download, Globe, HddStack, InfoCircle, Journals, Lock };
+export {
+  ArrowLeft,
+  Briefcase,
+  CardList,
+  Diagram3,
+  Download,
+  Globe,
+  HddStack,
+  InfoCircle,
+  Journals,
+  Lock,
+};
 export { People, Save, Balloon, Person };
 export { Nav, NavItem, NavLink, TabContent, TabPane, ZoomIn, ZoomOut };
-export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, ChevronDown, Diagram2, XLg, ChevronUp };
+export {
+  Bookmarks,
+  CaretDownFill,
+  CaretRightFill,
+  Calendar4,
+  ChevronDown,
+  Diagram2,
+  XLg,
+  ChevronUp,
+};
 export { Funnel, FunnelFill, Shield };

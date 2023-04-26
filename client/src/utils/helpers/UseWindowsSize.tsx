@@ -32,7 +32,7 @@ function useWindowSize() {
     }
     window.addEventListener("resize", updateSize); // eslint-disable-line
     updateSize();
-    return () => window.removeEventListener("resize", updateSize);// eslint-disable-line
+    return () => window.removeEventListener("resize", updateSize); // eslint-disable-line
   }, []);
   return size;
 }

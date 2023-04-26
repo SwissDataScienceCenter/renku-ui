@@ -21,7 +21,6 @@ import { TypedUseSelectorHook, useSelector } from "react-redux";
 
 import { WorkflowsDisplay } from "./Workflows";
 
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 type RootStateWorkflowsDisplay = WorkflowsDisplay;
@@ -51,9 +50,10 @@ export const workflowsSlice = createSlice({
   reducers: {
     toggleExpanded(state, action: PayloadAction<WorkflowsTogglePayload>) {
       if (state.expanded.includes(action.payload.workflowId))
-        state.expanded = state.expanded.filter((e: any) => e !== action.payload.workflowId);
-      else
-        state.expanded = [...state.expanded, action.payload.workflowId];
+        state.expanded = state.expanded.filter(
+          (e: any) => e !== action.payload.workflowId
+        );
+      else state.expanded = [...state.expanded, action.payload.workflowId];
     },
     toggleInactive(state) {
       state.showInactive = !state.showInactive;
@@ -61,15 +61,19 @@ export const workflowsSlice = createSlice({
     toggleAscending(state) {
       state.orderAscending = !state.orderAscending;
     },
-    setOrderProperty(state, action: PayloadAction<WorkflowsSetOrderPropertyPayload>) {
+    setOrderProperty(
+      state,
+      action: PayloadAction<WorkflowsSetOrderPropertyPayload>
+    ) {
       state.orderProperty = action.payload.newProperty;
     },
     setDetail(state, action: PayloadAction<WorkflowsSetDetailPayload>) {
       state.details = action.payload.targetDetails;
     },
-    reset: () => initialState
+    reset: () => initialState,
   },
 });
 
-export const useWorkflowsSelector: TypedUseSelectorHook<RootStateWorkflowsDisplay> = useSelector;
+export const useWorkflowsSelector: TypedUseSelectorHook<RootStateWorkflowsDisplay> =
+  useSelector;
 export default workflowsSlice;

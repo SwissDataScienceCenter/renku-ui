@@ -33,7 +33,7 @@ export type KgAuthor = "user" | "all";
 /* eslint-disable no-unused-vars */
 export enum EntityType {
   Project = "project",
-  Dataset = "dataset"
+  Dataset = "dataset",
 }
 /* eslint-enable no-unused-vars */
 

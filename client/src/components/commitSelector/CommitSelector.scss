@@ -1,5 +1,5 @@
 .rk-commit-selector__suggestion {
-  border-bottom: 1px dotted #A3A3A3;
+  border-bottom: 1px dotted #a3a3a3;
 
   .commit-row {
     display: flex;
@@ -100,11 +100,13 @@
 }
 
 @media (max-width: 992px) {
-  .selected-commit .commit-row-author, .rk-commit-selector__suggestion .commit-row-author {
+  .selected-commit .commit-row-author,
+  .rk-commit-selector__suggestion .commit-row-author {
     width: 100px;
     min-width: 100px;
   }
-  .selected-commit .commit-row-date, .rk-commit-selector__suggestion .commit-row-date {
+  .selected-commit .commit-row-date,
+  .rk-commit-selector__suggestion .commit-row-date {
     width: 150px;
     min-width: 150px;
     .time-caption {
@@ -114,7 +116,8 @@
 }
 
 @media (max-width: 576px) {
-  .selected-commit .commit-row-date, .rk-commit-selector__suggestion .commit-row-date {
+  .selected-commit .commit-row-date,
+  .rk-commit-selector__suggestion .commit-row-date {
     width: 100px;
     min-width: 100px;
     .time-caption {
@@ -128,22 +131,26 @@
     margin-top: -172px;
     height: 148px;
   }
-  .selected-commit, .rk-commit-selector__suggestion .selected-commit {
+  .selected-commit,
+  .rk-commit-selector__suggestion .selected-commit {
     height: auto;
     padding: 10px 1rem 20px 1rem;
   }
-  .selected-commit .commit-row, .rk-commit-selector__suggestion .commit-row {
+  .selected-commit .commit-row,
+  .rk-commit-selector__suggestion .commit-row {
     flex-flow: column;
     gap: 3px;
     align-items: flex-start;
     padding-top: 10px;
     padding-bottom: 10px;
   }
-  .selected-commit .commit-row-author, .rk-commit-selector__suggestion .commit-row-author {
+  .selected-commit .commit-row-author,
+  .rk-commit-selector__suggestion .commit-row-author {
     width: 100%;
     min-width: 100%;
   }
-  .selected-commit .commit-row-date, .rk-commit-selector__suggestion .commit-row-date {
+  .selected-commit .commit-row-date,
+  .rk-commit-selector__suggestion .commit-row-date {
     width: 100%;
     min-width: 100%;
     .time-caption {
@@ -159,7 +166,8 @@
       display: block;
     }
   }
-  .selected-commit .commit-row-box-message, .rk-commit-selector__suggestion .commit-row-message {
+  .selected-commit .commit-row-box-message,
+  .rk-commit-selector__suggestion .commit-row-message {
     display: block;
     width: 90%;
     .commit-row-icon {

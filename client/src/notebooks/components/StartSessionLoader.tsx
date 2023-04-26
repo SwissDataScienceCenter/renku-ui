@@ -20,11 +20,15 @@ import React, { useEffect, useState } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
 import { NotebooksHelper } from "../Notebooks.state";
-import ProgressStepsIndicator, { StatusStepProgressBar } from "../../components/progress/ProgressSteps";
+import ProgressStepsIndicator, {
+  StatusStepProgressBar,
+} from "../../components/progress/ProgressSteps";
 import { GoBackButton } from "../../components/buttons/Button";
-import { ProgressStyle, ProgressType } from "../../components/progress/Progress";
+import {
+  ProgressStyle,
+  ProgressType,
+} from "../../components/progress/Progress";
 import { getSessionRunningByProjectName } from "../../utils/helpers/SessionFunctions";
-
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -40,7 +44,7 @@ interface StatusFetching {
 
 interface StartNotebookAutostartLoaderProps {
   ci: {
-    stage: Record<string, any>
+    stage: Record<string, any>;
   };
   data: Record<string, any>;
   notebooks: Record<string, any>;
@@ -48,57 +52,61 @@ interface StartNotebookAutostartLoaderProps {
   backUrl: string;
   filters: Record<string, any>;
 }
-function StartNotebookAutostartLoader(props: StartNotebookAutostartLoaderProps) {
+function StartNotebookAutostartLoader(
+  props: StartNotebookAutostartLoaderProps
+) {
   const { ci, data, notebooks, options, backUrl, filters } = props;
   const ciStatus = NotebooksHelper.checkCiStatus(ci) as CIStatus;
   const [fetching, setFetching] = useState<StatusFetching>({
     ci: !ciStatus.ongoing,
     data: !!data.fetched,
-    options: !!options.fetched
+    options: !!options.fetched,
   });
-  const isSessionVisible = getSessionRunningByProjectName(notebooks.all, filters.namespace, filters.project);
+  const isSessionVisible = getSessionRunningByProjectName(
+    notebooks.all,
+    filters.namespace,
+    filters.project
+  );
   const [steps, setSteps] = useState([
     {
       id: 0,
       status: StatusStepProgressBar.EXECUTING,
-      step: "Checking project data"
+      step: "Checking project data",
     },
     {
       id: 1,
       status: StatusStepProgressBar.WAITING,
-      step: "Checking GitLab jobs"
+      step: "Checking GitLab jobs",
     },
     {
       id: 2,
       status: StatusStepProgressBar.WAITING,
-      step: "Checking existing sessions"
+      step: "Checking existing sessions",
     },
     {
       id: 3,
       status: StatusStepProgressBar.WAITING,
-      step: "Getting session information"
+      step: "Getting session information",
     },
   ]);
 
   useEffect(() => {
-    const fetched = !notebooks.fetched ? [] : Object.keys(fetching).filter((k ) => {
-      const key = k as keyof StatusFetching;
-      return fetching[key];
-    });
-    if (!fetched.length)
-      return;
+    const fetched = !notebooks.fetched
+      ? []
+      : Object.keys(fetching).filter((k) => {
+          const key = k as keyof StatusFetching;
+          return fetching[key];
+        });
+    if (!fetched.length) return;
     const statuses = steps;
-    if (fetching.ci)
-      statuses[0].status = StatusStepProgressBar.READY;
+    if (fetching.ci) statuses[0].status = StatusStepProgressBar.READY;
 
-    if (fetching.options)
-      statuses[1].status = StatusStepProgressBar.READY;
+    if (fetching.options) statuses[1].status = StatusStepProgressBar.READY;
 
     if (notebooks.fetched !== false)
       statuses[2].status = StatusStepProgressBar.READY;
 
-    if (isSessionVisible)
-      statuses[3].status = StatusStepProgressBar.READY;
+    if (isSessionVisible) statuses[3].status = StatusStepProgressBar.READY;
 
     setSteps(statuses);
   }, [fetching, isSessionVisible]); //eslint-disable-line
@@ -107,14 +115,20 @@ function StartNotebookAutostartLoader(props: StartNotebookAutostartLoaderProps) 
     setFetching({
       ci: !ciStatus.ongoing,
       data: !!data.fetched,
-      options: !!options.fetched
+      options: !!options.fetched,
     });
-  }, [ ciStatus.ongoing, data.fetched, options.fetched ]);
+  }, [ciStatus.ongoing, data.fetched, options.fetched]);
 
-  const pathWithNamespace = useSelector( (state: RootStateOrAny) =>
-    state.stateModel.project?.metadata.pathWithNamespace);
+  const pathWithNamespace = useSelector(
+    (state: RootStateOrAny) =>
+      state.stateModel.project?.metadata.pathWithNamespace
+  );
   const backButtonSessions = (
-    <GoBackButton label={`Cancel Session Start & back to ${pathWithNamespace}`} url={backUrl} />);
+    <GoBackButton
+      label={`Cancel Session Start & back to ${pathWithNamespace}`}
+      url={backUrl}
+    />
+  );
   return (
     <>
       {backButtonSessions}
@@ -144,11 +158,13 @@ function StartNotebookLoader({ backUrl }: StartNotebookLoaderProps) {
           type={ProgressType.Determinate}
           style={ProgressStyle.Light}
           title="Step 1 of 2: Checking if launch is possible"
-          status={[{
-            id: 0,
-            status: StatusStepProgressBar.EXECUTING,
-            step: "Checking current sessions"
-          }]}
+          status={[
+            {
+              id: 0,
+              status: StatusStepProgressBar.EXECUTING,
+              step: "Checking current sessions",
+            },
+          ]}
         />
       </div>
     </>

@@ -1,7 +1,11 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile, faFolder as faFolderClosed, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
+import {
+  faFile,
+  faFolder as faFolderClosed,
+  faFolderOpen,
+} from "@fortawesome/free-solid-svg-icons";
 import { Button, ButtonGroup } from "reactstrap";
 
 import "./treeviewstyle.css";
@@ -40,25 +44,25 @@ class TreeNode extends Component {
   render() {
     const children = this.props.node.children
       ? this.props.node.children.map((node) => {
-        return (
-          <TreeNode
-            path={node.path}
-            key={node.path}
-            node={node}
-            childrenOpen={this.props.hash[node.path].childrenOpen}
-            projectUrl={this.props.projectUrl}
-            lineageUrl={this.props.lineageUrl}
-            setOpenFolder={this.props.setOpenFolder}
-            hash={this.props.hash}
-            fileView={this.props.fileView}
-            isLfs={this.props.hash[node.path].isLfs}
-            nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
-            currentUrl={this.props.currentUrl}
-            savePosition={this.props.savePosition}
-            history={this.props.history}
-          />
-        );
-      })
+          return (
+            <TreeNode
+              path={node.path}
+              key={node.path}
+              node={node}
+              childrenOpen={this.props.hash[node.path].childrenOpen}
+              projectUrl={this.props.projectUrl}
+              lineageUrl={this.props.lineageUrl}
+              setOpenFolder={this.props.setOpenFolder}
+              hash={this.props.hash}
+              fileView={this.props.fileView}
+              isLfs={this.props.hash[node.path].isLfs}
+              nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
+              currentUrl={this.props.currentUrl}
+              savePosition={this.props.savePosition}
+              history={this.props.history}
+            />
+          );
+        })
       : null;
 
     const icon =
@@ -72,16 +76,25 @@ class TreeNode extends Component {
         <FontAwesomeIcon className="link-rk-text" icon={faFile} />
       );
 
-    const order = this.props.node.type === "tree" ? "order-second" : "order-third";
+    const order =
+      this.props.node.type === "tree" ? "order-second" : "order-third";
     const hidden = this.props.node.name.startsWith(".") ? "rk-opacity-50" : "";
     const selected = this.props.nodeInsideIsSelected ? "selected-file" : "";
 
-    const urlPrefix = this.props.fileView ? this.props.projectUrl : this.props.lineageUrl;
+    const urlPrefix = this.props.fileView
+      ? this.props.projectUrl
+      : this.props.lineageUrl;
     const targetUrl = `${urlPrefix}/${this.props.node.jsonObj.path}`;
 
-    const clickHandler = this.props.node.type === "tree" ? this.handleIconClick : this.handleFileClick;
+    const clickHandler =
+      this.props.node.type === "tree"
+        ? this.handleIconClick
+        : this.handleFileClick;
 
-    const childrenOpen = children && this.state.childrenOpen ? <div className="ps-3">{children}</div> : null;
+    const childrenOpen =
+      children && this.state.childrenOpen ? (
+        <div className="ps-3">{children}</div>
+      ) : null;
 
     return (
       <div className={`${order} ${hidden} ${selected}`}>
@@ -149,32 +162,35 @@ class FilesTreeView extends Component {
     const tree =
       treeStructure.tree && treeStructure.loaded
         ? treeStructure.tree.map((node) => {
-          return (
-            <TreeNode
-              key={node.path}
-              node={node}
-              childrenOpen={treeStructure.hash[node.path].childrenOpen}
-              projectUrl={this.props.projectUrl}
-              lineageUrl={this.props.lineageUrl}
-              setOpenFolder={this.props.setOpenFolder}
-              path={node.path}
-              hash={this.props.data.hash}
-              fileView={fileView}
-              isLfs={treeStructure.hash[node.path].isLfs}
-              nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
-              currentUrl={this.props.currentUrl}
-              savePosition={this.savePosition.bind(this)}
-              history={this.props.history}
-            />
-          );
-        })
+            return (
+              <TreeNode
+                key={node.path}
+                node={node}
+                childrenOpen={treeStructure.hash[node.path].childrenOpen}
+                projectUrl={this.props.projectUrl}
+                lineageUrl={this.props.lineageUrl}
+                setOpenFolder={this.props.setOpenFolder}
+                path={node.path}
+                hash={this.props.data.hash}
+                fileView={fileView}
+                isLfs={treeStructure.hash[node.path].isLfs}
+                nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
+                currentUrl={this.props.currentUrl}
+                savePosition={this.savePosition.bind(this)}
+                history={this.props.history}
+              />
+            );
+          })
         : null;
 
     const { limitHeight } = this.props;
     const treeProps = { fileView, toLineage, toFile, tree };
 
     // return the plain component if there is no need to limit the height
-    if (!limitHeight) return <TreeContainer history={this.props.history} {...treeProps} style={{}} />;
+    if (!limitHeight)
+      return (
+        <TreeContainer history={this.props.history} {...treeProps} style={{}} />
+      );
 
     // on small devices, the file tree is positioned on top, therefore it's better to limit
     // the height based on the display size

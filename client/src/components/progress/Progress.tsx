@@ -78,7 +78,10 @@ const ProgressIndicator = ({
       </div>
     ) : (
       <div className="progress-bar">
-        <div className="progress-bar-determinate" style={{ width: `${percentage ?? 0}%` }}></div>
+        <div
+          className="progress-bar-determinate"
+          style={{ width: `${percentage ?? 0}%` }}
+        ></div>
       </div>
     );
 
@@ -92,7 +95,11 @@ const ProgressIndicator = ({
       <h2 className="progress-title">{title}</h2>
       <p className="pb-2">{description}</p>
       <div className="progress-indicator">
-        <div className={`progress-bar-box ${style === ProgressStyle.Light ? "progress-bar-box--light" : ""}`}>
+        <div
+          className={`progress-bar-box ${
+            style === ProgressStyle.Light ? "progress-bar-box--light" : ""
+          }`}
+        >
           {progressBar}
         </div>
         <p className="pt-1">

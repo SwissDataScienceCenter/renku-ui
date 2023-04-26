@@ -27,9 +27,9 @@ const useForm = (submitCallback, handlers, draft) => {
   const inputs = draft ? draft.currentFormModel : [];
   const setInputs = (newInputs) => handlers.addDraft(newInputs);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     if (e.isPersistent && e.isPersistent()) e.persist();
-    inputs.forEach(i => {
+    inputs.forEach((i) => {
       if (i.name === e.target.name) {
         i.value = i.type === "checkbox" ? e.target.checked : e.target.value;
         if (e.target.internalValues) i.internalValues = e.target.internalValues;
@@ -40,22 +40,27 @@ const useForm = (submitCallback, handlers, draft) => {
     setInputs([...inputs]);
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e && e.preventDefault();
-    inputs.forEach(i => validateInput(i));
-    let mappedInputs = inputs.reduce((map, obj)=>{
+    inputs.forEach((i) => validateInput(i));
+    let mappedInputs = inputs.reduce((map, obj) => {
       map[obj.name] = obj.value;
       return map;
     }, {});
-    inputs.some(i => i.alert) ? setInputs([...inputs]) : submitCallback(e, mappedInputs, handlers);
+    inputs.some((i) => i.alert)
+      ? setInputs([...inputs])
+      : submitCallback(e, mappedInputs, handlers);
   };
 
-  const parseInput = input => input.value = input.parseFun ? input.parseFun(input.value) : input.value;
+  const parseInput = (input) =>
+    (input.value = input.parseFun ? input.parseFun(input.value) : input.value);
 
-  const validateInput = input => {
+  const validateInput = (input) => {
     let alert = null;
-    input.validators && input.validators.forEach(
-      v => alert = v.isValidFun && !v.isValidFun(input) ? v.alert : alert);
+    input.validators &&
+      input.validators.forEach(
+        (v) => (alert = v.isValidFun && !v.isValidFun(input) ? v.alert : alert)
+      );
     input.alert = alert;
   };
 

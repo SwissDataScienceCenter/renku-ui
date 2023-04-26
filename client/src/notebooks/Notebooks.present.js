@@ -20,19 +20,36 @@ import React, { Component, Fragment, memo } from "react";
 import Media from "react-media";
 import { Link, useHistory } from "react-router-dom";
 import {
-  Button, Col, DropdownItem, PopoverBody, PopoverHeader, Row, UncontrolledPopover
+  Button,
+  Col,
+  DropdownItem,
+  PopoverBody,
+  PopoverHeader,
+  Row,
+  UncontrolledPopover,
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faExternalLinkAlt, faFileAlt, faInfoCircle, faPlus, faStop
+  faExternalLinkAlt,
+  faFileAlt,
+  faInfoCircle,
+  faPlus,
+  faStop,
 } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 
-import { SessionListRowStatus, SessionListRowStatusIcon } from "./components/SessionListStatus";
+import {
+  SessionListRowStatus,
+  SessionListRowStatusIcon,
+} from "./components/SessionListStatus";
 import { NotebooksHelper } from "./index";
 import {
-  CheckNotebookIcon, StartNotebookServer, mergeEnumOptions, ServerOptionBoolean, ServerOptionEnum,
-  ServerOptionRange
+  CheckNotebookIcon,
+  StartNotebookServer,
+  mergeEnumOptions,
+  ServerOptionBoolean,
+  ServerOptionEnum,
+  ServerOptionRange,
 } from "./NotebookStart.present";
 import { formatBytes, simpleHash } from "../utils/helpers/HelperFunctions";
 import Time from "../utils/helpers/Time";
@@ -42,27 +59,29 @@ import { ExternalLink } from "../components/ExternalLinks";
 import { ButtonWithMenu } from "../components/buttons/Button";
 import { TimeCaption } from "../components/TimeCaption";
 import { Loader } from "../components/Loader";
-import { InfoAlert, } from "../components/Alert";
+import { InfoAlert } from "../components/Alert";
 import LoginAlert from "../components/loginAlert/LoginAlert";
-import { EnvironmentLogsPresent, SessionLogs as LogsSessionLogs } from "../components/Logs";
+import {
+  EnvironmentLogsPresent,
+  SessionLogs as LogsSessionLogs,
+} from "../components/Logs";
 import { SessionStatus } from "../utils/constants/Notebooks";
 
 import "./Notebooks.css";
-
 
 // * Constants and helpers * //
 const SESSION_TABS = {
   session: "session",
   commands: "commands",
   logs: "logs",
-  docs: "docs"
+  docs: "docs",
 };
 
 const formatResources = function (resources) {
   if (resources.memory) {
-    const memory = !isNaN(resources.memory) ?
-      formatBytes(resources.memory) :
-      resources.memory;
+    const memory = !isNaN(resources.memory)
+      ? formatBytes(resources.memory)
+      : resources.memory;
     return { ...resources, memory };
   }
   return resources;
@@ -73,9 +92,13 @@ const formatResources = function (resources) {
 function formattedResourceList(resources) {
   const resourcesKeys = Object.keys(resources);
   const resourceList = resourcesKeys.map((name, index) => {
-    return (<span key={name} className="text-nowrap">
-      <span className="fw-bold">{resources[name]} </span>
-      {name}{resourcesKeys.length - 1 === index ? " " : " | " }</span>);
+    return (
+      <span key={name} className="text-nowrap">
+        <span className="fw-bold">{resources[name]} </span>
+        {name}
+        {resourcesKeys.length - 1 === index ? " " : " | "}
+      </span>
+    );
   });
   return resourceList;
 }
@@ -85,10 +108,11 @@ function SessionLogs(props) {
   const { logs } = notebook;
   const sessionName = notebook.data.name;
 
-  if (tab !== SESSION_TABS.logs)
-    return null;
+  if (tab !== SESSION_TABS.logs) return null;
 
-  return <LogsSessionLogs fetchLogs={fetchLogs} logs={logs} name={sessionName} />;
+  return (
+    <LogsSessionLogs fetchLogs={fetchLogs} logs={logs} name={sessionName} />
+  );
 }
 
 function SessionJupyter(props) {
@@ -102,20 +126,24 @@ function SessionJupyter(props) {
       const locationFilePath = history?.location?.state?.filePath;
       const notebookUrl = locationFilePath
         ? appendCustomUrlPath({
-          notebookUrl: notebook.data.url,
-          customUrlPath: `/lab/tree/${locationFilePath}`,
-        })
+            notebookUrl: notebook.data.url,
+            customUrlPath: `/lab/tree/${locationFilePath}`,
+          })
         : notebook.data.url;
       content = (
-        <iframe id="session-iframe" title="session iframe" src={notebookUrl}
+        <iframe
+          id="session-iframe"
+          title="session iframe"
+          src={notebookUrl}
           style={{ display: ready ? "block" : "none" }}
-          width="100%" height={height} referrerPolicy="origin"
+          width="100%"
+          height={height}
+          referrerPolicy="origin"
           sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
         />
       );
-    }
-    else if (status === SessionStatus.stopping) {
-      content = (<Loader />);
+    } else if (status === SessionStatus.stopping) {
+      content = <Loader />;
     }
   }
   return content;
@@ -123,9 +151,16 @@ function SessionJupyter(props) {
 
 class NotebooksDisabled extends Component {
   render() {
-    const textIntro = "This Renkulab deployment does not allow unauthenticated users to start sessions.";
+    const textIntro =
+      "This Renkulab deployment does not allow unauthenticated users to start sessions.";
     const textPost = "to use sessions.";
-    return (<LoginAlert logged={this.props.logged} textIntro={textIntro} textPost={textPost} />);
+    return (
+      <LoginAlert
+        logged={this.props.logged}
+        textIntro={textIntro}
+        textPost={textPost}
+      />
+    );
   }
 }
 
@@ -133,19 +168,17 @@ class NotebooksDisabled extends Component {
 class Notebooks extends Component {
   render() {
     const serverNumbers = Object.keys(this.props.notebooks.all).length;
-    const loading = this.props.notebooks.fetched ?
-      false :
-      true;
-    const message = this.props.message ?
-      (<div>{this.props.message}</div>) :
-      null;
+    const loading = this.props.notebooks.fetched ? false : true;
+    const message = this.props.message ? <div>{this.props.message}</div> : null;
 
     return (
       <Fragment>
         <Row className="pt-2 pb-3">
           <Col className="d-flex mb-2 justify-content-between">
-            <NotebooksHeader standalone={this.props.standalone}
-              urlNewSession={this.props.urlNewSession}/>
+            <NotebooksHeader
+              standalone={this.props.standalone}
+              urlNewSession={this.props.urlNewSession}
+            />
           </Col>
         </Row>
         <NotebookServers
@@ -167,59 +200,72 @@ class Notebooks extends Component {
           urlNewSession={this.props.urlNewSession}
         />
         {serverNumbers ? null : message}
-      </Fragment>);
+      </Fragment>
+    );
   }
 }
 
 class NotebooksHeader extends Component {
   render() {
     if (this.props.standalone)
-      return (<h2 className="sessions-title">Sessions</h2>);
+      return <h2 className="sessions-title">Sessions</h2>;
 
-    return (<Fragment>
-      <h3 className="sessions-title">Sessions</h3>
-      <div>
-        <Link className="btn btn-outline-rk-green btn-icon-text" role="button" to={this.props.urlNewSession}>
-          <FontAwesomeIcon icon={faPlus} />
-          New session
-        </Link>
-      </div>
-    </Fragment>);
+    return (
+      <Fragment>
+        <h3 className="sessions-title">Sessions</h3>
+        <div>
+          <Link
+            className="btn btn-outline-rk-green btn-icon-text"
+            role="button"
+            to={this.props.urlNewSession}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+            New session
+          </Link>
+        </div>
+      </Fragment>
+    );
   }
 }
 
 class NotebooksPopup extends Component {
   render() {
-    if (this.props.servers || this.props.loading)
-      return null;
+    if (this.props.servers || this.props.loading) return null;
 
-    let suggestion = (<span>
-      You can start a new session from the <i>Sessions</i> tab of a project.
-    </span>);
+    let suggestion = (
+      <span>
+        You can start a new session from the <i>Sessions</i> tab of a project.
+      </span>
+    );
     if (!this.props.standalone) {
       let newOutput = "New";
       if (this.props.urlNewSession) {
-        newOutput = (<Link className="btn btn-primary btn-sm" role="button" to={this.props.urlNewSession}>
-          New session</Link>);
+        newOutput = (
+          <Link
+            className="btn btn-primary btn-sm"
+            role="button"
+            to={this.props.urlNewSession}
+          >
+            New session
+          </Link>
+        );
       }
 
-      suggestion = (<span>
-        You can start a new session by clicking on the {newOutput} button on top.
-      </span>);
+      suggestion = (
+        <span>
+          You can start a new session by clicking on the {newOutput} button on
+          top.
+        </span>
+      );
     }
 
-    return (
-      <InfoAlert timeout={0}>
-        {suggestion}
-      </InfoAlert>
-    );
+    return <InfoAlert timeout={0}>{suggestion}</InfoAlert>;
   }
 }
 
 class NotebookServers extends Component {
   render() {
-    if (this.props.loading)
-      return <Loader />;
+    if (this.props.loading) return <Loader />;
 
     return (
       <div className="mb-4">
@@ -232,41 +278,46 @@ class NotebookServers extends Component {
 class NotebookServersList extends Component {
   render() {
     const serverNames = Object.keys(this.props.servers);
-    if (serverNames.length === 0)
-      return (<p>No currently running sessions.</p>);
+    if (serverNames.length === 0) return <p>No currently running sessions.</p>;
 
     const rows = serverNames.map((k, i) => {
       const validAnnotations = Object.keys(this.props.servers[k].annotations)
-        .filter(key => key.startsWith("renku.io"))
-        .reduce((obj, key) => { obj[key] = this.props.servers[k].annotations[key]; return obj; }, {});
+        .filter((key) => key.startsWith("renku.io"))
+        .reduce((obj, key) => {
+          obj[key] = this.props.servers[k].annotations[key];
+          return obj;
+        }, {});
       const resources = this.props.servers[k].resources?.requests;
-      const startTime = Time.toIsoTimezoneString(this.props.servers[k].started, "datetime-short");
+      const startTime = Time.toIsoTimezoneString(
+        this.props.servers[k].started,
+        "datetime-short"
+      );
 
-      return (<NotebookServerRow
-        key={i}
-        stopNotebook={this.props.stopNotebook}
-        fetchLogs={this.props.fetchLogs}
-        toggleLogs={this.props.toggleLogs}
-        fetchCommit={this.props.fetchCommit}
-        commits={this.props.commits}
-        logs={this.props.logs}
-        scope={this.props.scope}
-        standalone={this.props.standalone}
-        annotations={validAnnotations}
-        resources={resources}
-        image={this.props.servers[k].image}
-        name={this.props.servers[k].name}
-        startTime={startTime}
-        status={this.props.servers[k].status}
-        url={this.props.servers[k].url}
-      />);
+      return (
+        <NotebookServerRow
+          key={i}
+          stopNotebook={this.props.stopNotebook}
+          fetchLogs={this.props.fetchLogs}
+          toggleLogs={this.props.toggleLogs}
+          fetchCommit={this.props.fetchCommit}
+          commits={this.props.commits}
+          logs={this.props.logs}
+          scope={this.props.scope}
+          standalone={this.props.standalone}
+          annotations={validAnnotations}
+          resources={resources}
+          image={this.props.servers[k].image}
+          name={this.props.servers[k].name}
+          startTime={startTime}
+          status={this.props.servers[k].status}
+          url={this.props.servers[k].url}
+        />
+      );
     });
 
     return (
       <Fragment>
-        <div className="mb-4">
-          {rows}
-        </div>
+        <div className="mb-4">{rows}</div>
       </Fragment>
     );
   }
@@ -274,24 +325,31 @@ class NotebookServersList extends Component {
 
 class NotebookServerRow extends Component {
   render() {
-    if (!this.props.annotations)
-      return null;
+    if (!this.props.annotations) return null;
 
-    const annotations = NotebooksHelper.cleanAnnotations(this.props.annotations);
+    const annotations = NotebooksHelper.cleanAnnotations(
+      this.props.annotations
+    );
     const status = this.props.status.state;
     const details = {
-      message: this.props.status.message
+      message: this.props.status.message,
     };
-    const uid = "uid_" + simpleHash(annotations["namespace"] + annotations["projectName"]
-      + annotations["branch"] + annotations["commit-sha"]);
+    const uid =
+      "uid_" +
+      simpleHash(
+        annotations["namespace"] +
+          annotations["projectName"] +
+          annotations["branch"] +
+          annotations["commit-sha"]
+      );
     const resources = formatResources(this.props.resources);
     const repositoryLinks = {
       branch: `${annotations["repository"]}/tree/${annotations["branch"]}`,
-      commit: `${annotations["repository"]}/tree/${annotations["commit-sha"]}`
+      commit: `${annotations["repository"]}/tree/${annotations["commit-sha"]}`,
     };
-    const commitDetails = this.props.commits[annotations["commit-sha"]] ?
-      this.props.commits[annotations["commit-sha"]] :
-      null;
+    const commitDetails = this.props.commits[annotations["commit-sha"]]
+      ? this.props.commits[annotations["commit-sha"]]
+      : null;
     const image = this.props.image;
     const localUrl = Url.get(Url.pages.project.session.show, {
       namespace: annotations["namespace"],
@@ -302,15 +360,26 @@ class NotebookServerRow extends Component {
     const showMenu = this.props.showMenu ?? true;
 
     const newProps = {
-      annotations, commitDetails, details, image, localUrl, repositoryLinks, resources, status, uid, showMenu
+      annotations,
+      commitDetails,
+      details,
+      image,
+      localUrl,
+      repositoryLinks,
+      resources,
+      status,
+      uid,
+      showMenu,
     };
 
     return (
       <Media query={Sizes.md}>
-        {matches =>
-          matches ?
-            (<NotebookServerRowFull {...this.props} {...newProps} />) :
-            (<NotebookServerRowCompact {...this.props} {...newProps} />)
+        {(matches) =>
+          matches ? (
+            <NotebookServerRowFull {...this.props} {...newProps} />
+          ) : (
+            <NotebookServerRowCompact {...this.props} {...newProps} />
+          )
         }
       </Media>
     );
@@ -321,14 +390,13 @@ class NotebookServerRowCommitInfo extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isOpen: false
+      isOpen: false,
     };
   }
 
   toggle() {
     const willOpen = !this.state.isOpen;
-    if (willOpen && !this.props.commit)
-      this.props.fetchCommit(this.props.name);
+    if (willOpen && !this.props.commit) this.props.fetchCommit(this.props.name);
     this.setState({ isOpen: willOpen });
   }
 
@@ -337,102 +405,177 @@ class NotebookServerRowCommitInfo extends Component {
     const uid = `${this.props.uid}-commit`;
 
     let content;
-    if (!commit || !commit.data || !commit.data.id || (!commit.fetching && !commit.fetched)) {
-      content = (<span>Data not available.</span>);
-    }
-    else if (!commit.fetched && commit.fetching) {
-      content = (<span><Loader size="16" inline="true" /> Fetching data...</span>);
-    }
-    else {
+    if (
+      !commit ||
+      !commit.data ||
+      !commit.data.id ||
+      (!commit.fetching && !commit.fetched)
+    ) {
+      content = <span>Data not available.</span>;
+    } else if (!commit.fetched && commit.fetching) {
+      content = (
+        <span>
+          <Loader size="16" inline="true" /> Fetching data...
+        </span>
+      );
+    } else {
       content = (
         <Fragment>
-          <span className="fw-bold">Author:</span> <span>{commit.data.author_name}</span><br />
+          <span className="fw-bold">Author:</span>{" "}
+          <span>{commit.data.author_name}</span>
+          <br />
           <span>
-            <span className="fw-bold">Date:</span>
-            {" "}<span>{Time.toIsoTimezoneString(commit.data.committed_date, "datetime-short")}</span>
-            {" "}<TimeCaption caption="~" endPunctuation=" " time={commit.data.committed_date} />
+            <span className="fw-bold">Date:</span>{" "}
+            <span>
+              {Time.toIsoTimezoneString(
+                commit.data.committed_date,
+                "datetime-short"
+              )}
+            </span>{" "}
+            <TimeCaption
+              caption="~"
+              endPunctuation=" "
+              time={commit.data.committed_date}
+            />
             <br />
           </span>
-          <span className="fw-bold">Message:</span> <span>{commit.data.message}</span><br />
-          <span className="fw-bold">Full SHA:</span> <span>{commit.data.id}</span><br />
+          <span className="fw-bold">Message:</span>{" "}
+          <span>{commit.data.message}</span>
+          <br />
+          <span className="fw-bold">Full SHA:</span>{" "}
+          <span>{commit.data.id}</span>
+          <br />
           <span className="fw-bold me-1">Details:</span>
-          <ExternalLink url={commit.data.web_url} title="Open commit in GitLab" role="text" showLinkIcon={true} />
+          <ExternalLink
+            url={commit.data.web_url}
+            title="Open commit in GitLab"
+            role="text"
+            showLinkIcon={true}
+          />
         </Fragment>
       );
     }
 
     return (
       <span>
-        <FontAwesomeIcon id={uid} icon={faInfoCircle}/>
-        <UncontrolledPopover target={uid} trigger="legacy" placement="bottom"
-          isOpen={this.state.isOpen} toggle={() => this.toggle()}>
+        <FontAwesomeIcon id={uid} icon={faInfoCircle} />
+        <UncontrolledPopover
+          target={uid}
+          trigger="legacy"
+          placement="bottom"
+          isOpen={this.state.isOpen}
+          toggle={() => this.toggle()}
+        >
           <PopoverHeader>Commit details</PopoverHeader>
           <PopoverBody>{content}</PopoverBody>
         </UncontrolledPopover>
       </span>
     );
-
   }
 }
 
 class NotebookServerRowFull extends Component {
   render() {
     const {
-      annotations, details, status, url, uid, resources, repositoryLinks,
-      name, commitDetails, fetchCommit, image, showMenu = true
+      annotations,
+      details,
+      status,
+      url,
+      uid,
+      resources,
+      repositoryLinks,
+      name,
+      commitDetails,
+      fetchCommit,
+      image,
+      showMenu = true,
     } = this.props;
 
-    const icon = <div className="align-middle">
-      <SessionListRowStatusIcon
-        details={details} status={status} uid={uid} image={image} annotations={annotations}
-      />
-    </div>;
+    const icon = (
+      <div className="align-middle">
+        <SessionListRowStatusIcon
+          details={details}
+          status={status}
+          uid={uid}
+          image={image}
+          annotations={annotations}
+        />
+      </div>
+    );
 
-    const project = this.props.standalone ?
-      (<NotebookServerRowProject annotations={annotations} />) :
-      null;
+    const project = this.props.standalone ? (
+      <NotebookServerRowProject annotations={annotations} />
+    ) : null;
 
     const branch = (
-      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" showLinkIcon={true} />
+      <ExternalLink
+        url={repositoryLinks.branch}
+        title={annotations["branch"]}
+        role="text"
+        showLinkIcon={true}
+      />
     );
 
     const commit = (
       <Fragment>
-        <ExternalLink url={repositoryLinks.commit}
-          title={annotations["commit-sha"].substring(0, 8)} role="text" showLinkIcon={true} />
-        {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit} />
+        <ExternalLink
+          url={repositoryLinks.commit}
+          title={annotations["commit-sha"].substring(0, 8)}
+          role="text"
+          showLinkIcon={true}
+        />{" "}
+        <NotebookServerRowCommitInfo
+          uid={uid}
+          name={name}
+          commit={commitDetails}
+          fetchCommit={fetchCommit}
+        />
       </Fragment>
     );
 
     const resourceList = formattedResourceList(resources);
 
-    const statusOut = <SessionListRowStatus
-      details={details} status={status} uid={uid} startTime={this.props.startTime} annotations={annotations}/>;
-
-    const action = showMenu ? (<span className="mb-auto">
-      <NotebookServerRowAction
-        localUrl={this.props.localUrl}
-        name={this.props.name}
+    const statusOut = (
+      <SessionListRowStatus
+        details={details}
         status={status}
-        stopNotebook={this.props.stopNotebook}
-        toggleLogs={this.props.toggleLogs}
-        url={url}
-        scope={this.props.scope}
-      />
-      <EnvironmentLogsPresent
-        fetchLogs={this.props.fetchLogs}
-        toggleLogs={this.props.toggleLogs}
-        logs={this.props.logs}
-        name={this.props.name}
+        uid={uid}
+        startTime={this.props.startTime}
         annotations={annotations}
       />
-    </span>) : null;
+    );
+
+    const action = showMenu ? (
+      <span className="mb-auto">
+        <NotebookServerRowAction
+          localUrl={this.props.localUrl}
+          name={this.props.name}
+          status={status}
+          stopNotebook={this.props.stopNotebook}
+          toggleLogs={this.props.toggleLogs}
+          url={url}
+          scope={this.props.scope}
+        />
+        <EnvironmentLogsPresent
+          fetchLogs={this.props.fetchLogs}
+          toggleLogs={this.props.toggleLogs}
+          logs={this.props.logs}
+          name={this.props.name}
+          annotations={annotations}
+        />
+      </span>
+    ) : null;
 
     return (
-      <div data-cy="session-container" className="d-flex flex-row justify-content-between bg-white border-0
-        border-radius-8 rk-search-result rk-search-result-100 cursor-auto">
+      <div
+        data-cy="session-container"
+        className="d-flex flex-row justify-content-between bg-white border-0
+        border-radius-8 rk-search-result rk-search-result-100 cursor-auto"
+      >
         <div className="d-flex flex-grow-1">
-          <span className={this.props.standalone ? "me-3 mt-2" : "me-3 mt-1"}>{icon}</span>
+          <span className={this.props.standalone ? "me-3 mt-2" : "me-3 mt-1"}>
+            {icon}
+          </span>
           <div className="d-flex flex-column align-items-start  overflow-hidden">
             <div className="project d-inline-block text-truncate">
               {project}
@@ -458,9 +601,7 @@ class NotebookServerRowFull extends Component {
             </table>
           </div>
         </div>
-        <div>
-          {action}
-        </div>
+        <div>{action}</div>
       </div>
     );
   }
@@ -469,67 +610,113 @@ class NotebookServerRowFull extends Component {
 class NotebookServerRowCompact extends Component {
   render() {
     const {
-      annotations, commitDetails, details, fetchCommit, image, localUrl, logs, name, repositoryLinks,
-      resources, standalone, startTime, status, uid, url, showMenu = true
+      annotations,
+      commitDetails,
+      details,
+      fetchCommit,
+      image,
+      localUrl,
+      logs,
+      name,
+      repositoryLinks,
+      resources,
+      standalone,
+      startTime,
+      status,
+      uid,
+      url,
+      showMenu = true,
     } = this.props;
 
-    const icon = <span>
-      <SessionListRowStatusIcon
-        details={details} status={status} uid={uid} image={image} annotations={annotations}
-      />
-    </span>;
-    const project = standalone ?
-      (<Fragment>
+    const icon = (
+      <span>
+        <SessionListRowStatusIcon
+          details={details}
+          status={status}
+          uid={uid}
+          image={image}
+          annotations={annotations}
+        />
+      </span>
+    );
+    const project = standalone ? (
+      <Fragment>
         <span className="fw-bold">Project: </span>
-        <span><NotebookServerRowProject annotations={annotations} /></span>
+        <span>
+          <NotebookServerRowProject annotations={annotations} />
+        </span>
         <br />
-      </Fragment>) :
-      null;
-    const branch = (<Fragment>
-      <span className="fw-bold">Branch: </span>
-      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" showLinkIcon={true} />
-      <br />
-    </Fragment>);
-    const commit = (<Fragment>
-      <span className="fw-bold">Commit: </span>
-      <ExternalLink url={repositoryLinks.commit}
-        title={annotations["commit-sha"].substring(0, 8)} role="text" showLinkIcon={true} />
-      {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit}/>
-      <br />
-    </Fragment>);
+      </Fragment>
+    ) : null;
+    const branch = (
+      <Fragment>
+        <span className="fw-bold">Branch: </span>
+        <ExternalLink
+          url={repositoryLinks.branch}
+          title={annotations["branch"]}
+          role="text"
+          showLinkIcon={true}
+        />
+        <br />
+      </Fragment>
+    );
+    const commit = (
+      <Fragment>
+        <span className="fw-bold">Commit: </span>
+        <ExternalLink
+          url={repositoryLinks.commit}
+          title={annotations["commit-sha"].substring(0, 8)}
+          role="text"
+          showLinkIcon={true}
+        />{" "}
+        <NotebookServerRowCommitInfo
+          uid={uid}
+          name={name}
+          commit={commitDetails}
+          fetchCommit={fetchCommit}
+        />
+        <br />
+      </Fragment>
+    );
     const resourceList = formattedResourceList(resources);
-    const resourceObject = (<Fragment>
-      <span className="fw-bold">Resources: </span>
-      <span>{resourceList}</span>
-      <br />
-    </Fragment>);
-    const statusOut = (<span>
-      <SessionListRowStatus
-        spaced={true}
-        details={details}
-        status={status}
-        uid={uid}
-        startTime={startTime}
-        annotations={annotations}
-      />
-    </span>);
-    const action = showMenu ? (<span>
-      <NotebookServerRowAction
-        localUrl={localUrl}
-        name={name}
-        status={status}
-        stopNotebook={this.props.stopNotebook}
-        toggleLogs={this.props.toggleLogs}
-        url={url}
-      />
-      <EnvironmentLogsPresent
-        fetchLogs={this.props.fetchLogs}
-        toggleLogs={this.props.toggleLogs}
-        logs={logs}
-        name={name}
-        annotations={annotations}
-      />
-    </span>) : null;
+    const resourceObject = (
+      <Fragment>
+        <span className="fw-bold">Resources: </span>
+        <span>{resourceList}</span>
+        <br />
+      </Fragment>
+    );
+    const statusOut = (
+      <span>
+        <SessionListRowStatus
+          spaced={true}
+          details={details}
+          status={status}
+          uid={uid}
+          startTime={startTime}
+          annotations={annotations}
+        />
+      </span>
+    );
+    const action = showMenu ? (
+      <span>
+        <NotebookServerRowAction
+          localUrl={localUrl}
+          name={name}
+          status={status}
+          stopNotebook={this.props.stopNotebook}
+          toggleLogs={this.props.toggleLogs}
+          url={url}
+        />
+        <EnvironmentLogsPresent
+          fetchLogs={this.props.fetchLogs}
+          toggleLogs={this.props.toggleLogs}
+          logs={logs}
+          name={name}
+          annotations={annotations}
+        />
+      </span>
+    ) : null;
 
     return (
       <div className="rk-search-result-compact bg-white cursor-auto border-radius-8 border-0">
@@ -537,7 +724,7 @@ class NotebookServerRowCompact extends Component {
         {branch}
         {commit}
         {resourceObject}
-        <div className="d-inline-flex" >
+        <div className="d-inline-flex">
           {icon} &nbsp; {statusOut}
         </div>
         <div className="mt-1">{action}</div>
@@ -549,9 +736,16 @@ class NotebookServerRowProject extends Component {
   render() {
     const { annotations } = this.props;
     const fullPath = `${annotations["namespace"]}/${annotations["projectName"]}`;
-    const data = { namespace: annotations["namespace"], path: annotations["projectName"] };
+    const data = {
+      namespace: annotations["namespace"],
+      path: annotations["projectName"],
+    };
     const url = Url.get(Url.pages.project, data);
-    return (<Link to={url} className="title">{fullPath}</Link>);
+    return (
+      <Link to={url} className="title">
+        {fullPath}
+      </Link>
+    );
   }
 }
 
@@ -560,27 +754,37 @@ const NotebookServerRowAction = memo((props) => {
   const actions = {
     connect: null,
     stop: null,
-    logs: null
+    logs: null,
   };
   let defaultAction = null;
   actions.logs = (
-    <DropdownItem data-cy="session-log-button" onClick={() => props.toggleLogs(name)} color="secondary">
+    <DropdownItem
+      data-cy="session-log-button"
+      onClick={() => props.toggleLogs(name)}
+      color="secondary"
+    >
       <FontAwesomeIcon className="text-rk-green" icon={faFileAlt} /> Get logs
     </DropdownItem>
   );
 
   if (status !== SessionStatus.stopping) {
-    actions.stop = <Fragment>
-      <DropdownItem divider />
-      <DropdownItem onClick={() => props.stopNotebook(name)}>
-        <FontAwesomeIcon className="text-rk-green" icon={faStop} /> Stop
-      </DropdownItem>
-    </Fragment>;
+    actions.stop = (
+      <Fragment>
+        <DropdownItem divider />
+        <DropdownItem onClick={() => props.stopNotebook(name)}>
+          <FontAwesomeIcon className="text-rk-green" icon={faStop} /> Stop
+        </DropdownItem>
+      </Fragment>
+    );
   }
   if (status === SessionStatus.running || status === SessionStatus.starting) {
     const state = scope?.filePath ? { filePath: scope?.filePath } : undefined;
     defaultAction = (
-      <Link data-cy="open-session" className="btn btn-outline-rk-green" to={{ pathname: props.localUrl, state }}>
+      <Link
+        data-cy="open-session"
+        className="btn btn-outline-rk-green"
+        to={{ pathname: props.localUrl, state }}
+      >
         <div className="d-flex gap-2 text-rk-green">
           <img src="/connectGreen.svg" className="rk-icon rk-icon-md" /> Connect
         </div>
@@ -588,22 +792,29 @@ const NotebookServerRowAction = memo((props) => {
     );
     actions.openExternal = (
       <DropdownItem href={props.url} target="_blank">
-        <FontAwesomeIcon className="text-rk-green" icon={faExternalLinkAlt} /> Open in new tab
+        <FontAwesomeIcon className="text-rk-green" icon={faExternalLinkAlt} />{" "}
+        Open in new tab
       </DropdownItem>
     );
-  }
-  else if (status === SessionStatus.stopping) {
+  } else if (status === SessionStatus.stopping) {
     defaultAction = (
-      <Button data-cy="stopping-btn" className="btn-outline-rk-green" disabled={true}>
+      <Button
+        data-cy="stopping-btn"
+        className="btn-outline-rk-green"
+        disabled={true}
+      >
         Stopping...
       </Button>
     );
     actions.stop = null;
-  }
-  else {
+  } else {
     const classes = { className: "text-nowrap btn-outline-rk-green" };
     defaultAction = (
-      <Button data-cy="stop-session-button" {...classes} onClick={() => props.stopNotebook(name)}>
+      <Button
+        data-cy="stop-session-button"
+        {...classes}
+        onClick={() => props.stopNotebook(name)}
+      >
         <div className="d-flex gap-2 text-rk-green">
           <FontAwesomeIcon className="m-auto" icon={faStop} /> Stop
         </div>
@@ -614,8 +825,12 @@ const NotebookServerRowAction = memo((props) => {
 
   return (
     <ButtonWithMenu
-      className="sessionsButton" size="sm" default={defaultAction} color="rk-green"
-      disabled={status === SessionStatus.stopping}>
+      className="sessionsButton"
+      size="sm"
+      default={defaultAction}
+      color="rk-green"
+      disabled={status === SessionStatus.stopping}
+    >
       {actions.openExternal}
       {actions.logs}
       {actions.stop}
@@ -625,7 +840,18 @@ const NotebookServerRowAction = memo((props) => {
 NotebookServerRowAction.displayName = "NotebookServerRowAction";
 
 export {
-  CheckNotebookIcon, Notebooks, NotebooksDisabled, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,
-  StartNotebookServer, mergeEnumOptions, SessionJupyter, NotebookServerRowFull, NotebookServerRow,
-  SESSION_TABS, SessionLogs, NotebookServerRowCommitInfo
+  CheckNotebookIcon,
+  Notebooks,
+  NotebooksDisabled,
+  ServerOptionBoolean,
+  ServerOptionEnum,
+  ServerOptionRange,
+  StartNotebookServer,
+  mergeEnumOptions,
+  SessionJupyter,
+  NotebookServerRowFull,
+  NotebookServerRow,
+  SESSION_TABS,
+  SessionLogs,
+  NotebookServerRowCommitInfo,
 };

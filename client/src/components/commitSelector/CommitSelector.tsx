@@ -17,7 +17,11 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import Autosuggest, { ChangeEvent, ShouldRenderReasons, SuggestionSelectedEventData } from "react-autosuggest";
+import Autosuggest, {
+  ChangeEvent,
+  ShouldRenderReasons,
+  SuggestionSelectedEventData,
+} from "react-autosuggest";
 
 import { TimeCaption } from "../TimeCaption";
 import { ChevronDown, ChevronUp } from "../../utils/ts-wrappers";
@@ -25,11 +29,11 @@ import { Loader } from "../Loader";
 
 import "./CommitSelector.scss";
 
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const CommitSelectorTheme = {
-  container: "react-autosuggest__container rk-commit-selector__suggestions-container",
+  container:
+    "react-autosuggest__container rk-commit-selector__suggestions-container",
   containerOpen: "react-autosuggest__container--open",
   input: "react-autosuggest__input",
   inputOpen: "react-autosuggest__input--open",
@@ -37,13 +41,14 @@ const CommitSelectorTheme = {
   suggestionsContainer: "react-autosuggest__suggestions-container",
   suggestionsContainerOpen:
     "react-autosuggest__suggestions-container--open rk-commit-selector__suggestions-container--open",
-  suggestionsList: "react-autosuggest__suggestions-list rk-commit-selector__suggestions-list",
+  suggestionsList:
+    "react-autosuggest__suggestions-list rk-commit-selector__suggestions-list",
   suggestion: "react-autosuggest__suggestion rk-commit-selector__suggestion",
   suggestionFirst: "react-autosuggest__suggestion--first",
   suggestionHighlighted: "react-autosuggest__suggestion--highlighted",
   sectionContainer: "react-autosuggest__section-container",
   sectionContainerFirst: "react-autosuggest__section-container--first",
-  sectionTitle: "react-autosuggest__section-title"
+  sectionTitle: "react-autosuggest__section-title",
 };
 
 interface Commit {
@@ -60,8 +65,9 @@ interface CommitSelectorProps {
 }
 function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
   const [suggestionList, setSuggestionList] = useState<Commit[]>(commits);
-  const [selectedCommit, setSelectedCommit] =
-    useState<Commit | undefined>(suggestionList.length > 0 ? suggestionList[0] : undefined);
+  const [selectedCommit, setSelectedCommit] = useState<Commit | undefined>(
+    suggestionList.length > 0 ? suggestionList[0] : undefined
+  );
   const [selectedCommitId, setSelectedCommitId] = useState<string>("");
   const [isSelectorOpened, setIsSelectorOpened] = useState<boolean>(false);
   const inputRef = useRef(null);
@@ -70,13 +76,18 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
     setSelectedCommitId(commits.length ? commits[0].id : "");
   }, [commits]);
 
-
-  const onSuggestionSelected = (event: React.FormEvent<any>, data: SuggestionSelectedEventData<Commit>) => {
+  const onSuggestionSelected = (
+    event: React.FormEvent<any>,
+    data: SuggestionSelectedEventData<Commit>
+  ) => {
     setSelectedCommit(data.suggestion);
     setIsSelectorOpened(false);
   };
 
-  const handleChange = (event: React.FormEvent<HTMLElement>, { newValue }: ChangeEvent) => {
+  const handleChange = (
+    event: React.FormEvent<HTMLElement>,
+    { newValue }: ChangeEvent
+  ) => {
     setSelectedCommitId(newValue);
     onChange(newValue);
   };
@@ -92,12 +103,21 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
   const renderSuggestion = (suggestion: Commit) => (
     <div className="commit-row">
       <div className="commit-row-id">{suggestion.short_id}</div>
-      <div className="commit-row-author text-truncate">{suggestion.author_name}</div>
-      <div className="commit-row-date">
-        <TimeCaption key="time-caption" caption="authored" className="text-truncate"
-          time={suggestion.committed_date} endPunctuation=""/>
+      <div className="commit-row-author text-truncate">
+        {suggestion.author_name}
       </div>
-      <div className="commit-row-message text-truncate">{suggestion.message}</div>
+      <div className="commit-row-date">
+        <TimeCaption
+          key="time-caption"
+          caption="authored"
+          className="text-truncate"
+          time={suggestion.committed_date}
+          endPunctuation=""
+        />
+      </div>
+      <div className="commit-row-message text-truncate">
+        {suggestion.message}
+      </div>
     </div>
   );
 
@@ -108,7 +128,10 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
     onChange: handleChange,
   };
 
-  const shouldRenderSuggestions = (value: string, reason: ShouldRenderReasons) => {
+  const shouldRenderSuggestions = (
+    value: string,
+    reason: ShouldRenderReasons
+  ) => {
     return reason === "input-focused" || isSelectorOpened;
   };
 
@@ -117,32 +140,56 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
   };
 
   const renderInputComponent = (inputProps: Record<string, any>) => {
-    return <input
-      {...inputProps}
-      ref={inputRef}
-      onClick={() => clickOnSelector(isSelectorOpened)}
-      className="opacity-0 input-commit-selector" />;
+    return (
+      <input
+        {...inputProps}
+        ref={inputRef}
+        onClick={() => clickOnSelector(isSelectorOpened)}
+        className="opacity-0 input-commit-selector"
+      />
+    );
   };
 
   const selector = selectedCommit ? (
-    <div className={`selected-commit cursor-pointer ${isSelectorOpened ? "selected-commit--open" : ""}`}>
+    <div
+      className={`selected-commit cursor-pointer ${
+        isSelectorOpened ? "selected-commit--open" : ""
+      }`}
+    >
       <div>
         <div className="commit-row">
           <div className="commit-row-id">
             {selectedCommit.short_id}
             <div className="commit-row-icon">
-              {!isSelectorOpened ? <ChevronDown size="20" /> : <ChevronUp size="20" /> }
+              {!isSelectorOpened ? (
+                <ChevronDown size="20" />
+              ) : (
+                <ChevronUp size="20" />
+              )}
             </div>
           </div>
-          <div className="commit-row-author text-truncate">{selectedCommit.author_name}</div>
+          <div className="commit-row-author text-truncate">
+            {selectedCommit.author_name}
+          </div>
           <div className="commit-row-date">
-            <TimeCaption key="time-caption" caption="authored" className="text-truncate"
-              time={selectedCommit.committed_date} endPunctuation=""/>
+            <TimeCaption
+              key="time-caption"
+              caption="authored"
+              className="text-truncate"
+              time={selectedCommit.committed_date}
+              endPunctuation=""
+            />
           </div>
           <div className="commit-row-box-message text-truncate">
-            <div className="commit-row-message text-truncate">{selectedCommit.message}</div>
+            <div className="commit-row-message text-truncate">
+              {selectedCommit.message}
+            </div>
             <div className="commit-row-icon">
-              {!isSelectorOpened ? <ChevronDown size="20" /> : <ChevronUp size="20" /> }
+              {!isSelectorOpened ? (
+                <ChevronDown size="20" />
+              ) : (
+                <ChevronUp size="20" />
+              )}
             </div>
           </div>
         </div>
@@ -150,8 +197,7 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
     </div>
   ) : null;
 
-  if (disabled)
-    return <Loader />;
+  if (disabled) return <Loader />;
 
   return (
     <>
@@ -175,4 +221,3 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
 }
 
 export default CommitSelector;
-

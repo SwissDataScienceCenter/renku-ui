@@ -41,7 +41,13 @@ interface SubmitFormButtonProps {
   meta: NewProjectMeta;
 }
 
-const SubmitFormButton = ({ createDataAvailable, handlers, input, importingDataset, meta }: SubmitFormButtonProps) => {
+const SubmitFormButton = ({
+  createDataAvailable,
+  handlers,
+  input,
+  importingDataset,
+  meta,
+}: SubmitFormButtonProps) => {
   const [showModal, setShotModal] = useState(false);
   const toggleModal = () => {
     setShotModal((showModal) => !showModal);
@@ -57,8 +63,13 @@ const SubmitFormButton = ({ createDataAvailable, handlers, input, importingDatas
   );
 
   const createProject = (
-    <Button id="create-new-project" color="secondary" data-cy="create-project-button"
-      disabled={!createDataAvailable} onClick={handlers.onSubmit}>
+    <Button
+      id="create-new-project"
+      color="secondary"
+      data-cy="create-project-button"
+      disabled={!createDataAvailable}
+      onClick={handlers.onSubmit}
+    >
       {" "}
       Create project
     </Button>
@@ -70,11 +81,21 @@ const SubmitFormButton = ({ createDataAvailable, handlers, input, importingDatas
   );
   // when is also importing a new dataset show a different submit button
   const button = !importingDataset ? (
-    <ButtonWithMenu color="rk-green" default={createProject} direction="up" isPrincipal={true}>
+    <ButtonWithMenu
+      color="rk-green"
+      default={createProject}
+      direction="up"
+      isPrincipal={true}
+    >
       {createLink}
     </ButtonWithMenu>
   ) : (
-    <Button data-cy="add-dataset-submit-button" id="create-new-project" color="rk-pink" onClick={handlers.onSubmit}>
+    <Button
+      data-cy="add-dataset-submit-button"
+      id="create-new-project"
+      color="rk-pink"
+      onClick={handlers.onSubmit}
+    >
       Add Dataset New Project
     </Button>
   );

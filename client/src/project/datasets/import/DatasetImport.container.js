@@ -32,15 +32,15 @@ import _ from "lodash";
 let dsFormSchema = _.cloneDeep(datasetImportFormSchema);
 
 function ImportDataset(props) {
-
   const formLocation = props.location.pathname + "/import";
 
-  if (dsFormSchema == null)
-    dsFormSchema = _.cloneDeep(datasetImportFormSchema);
+  if (dsFormSchema == null) dsFormSchema = _.cloneDeep(datasetImportFormSchema);
 
   const onCancel = (e, handlers) => {
     handlers.removeDraft(props.location.pathname + "/import");
-    props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
+    props.history.push({
+      pathname: `/projects/${props.projectPathWithNamespace}/datasets`,
+    });
   };
 
   const redirectUser = () => {
@@ -48,19 +48,24 @@ function ImportDataset(props) {
     props.history.push({
       //we should do the redirect to the new dataset
       //but for this we need the dataset name in the response of the dataset.import operation :(
-      pathname: `/projects/${props.projectPathWithNamespace}/datasets`
-    })
-    ;
+      pathname: `/projects/${props.projectPathWithNamespace}/datasets`,
+    });
   };
 
   function handleJobResponse(job, monitorJob, cont, handlers) {
     if (job !== null && job !== undefined) {
       switch (job.state) {
         case "ENQUEUED":
-          handlers.setSubmitLoader({ value: true, text: ImportStateMessage.ENQUEUED });
+          handlers.setSubmitLoader({
+            value: true,
+            text: ImportStateMessage.ENQUEUED,
+          });
           break;
         case "IN_PROGRESS":
-          handlers.setSubmitLoader({ value: true, text: ImportStateMessage.IN_PROGRESS });
+          handlers.setSubmitLoader({
+            value: true,
+            text: ImportStateMessage.IN_PROGRESS,
+          });
           break;
         case "COMPLETED":
           handlers.setSubmitLoader({ value: false, text: "" });
@@ -69,11 +74,16 @@ function ImportDataset(props) {
           break;
         case "FAILED":
           handlers.setSubmitLoader({ value: false, text: "" });
-          handlers.setServerErrors(ImportStateMessage.FAILED + job.extras.error);
+          handlers.setServerErrors(
+            ImportStateMessage.FAILED + job.extras.error
+          );
           clearInterval(monitorJob);
           break;
         default:
-          handlers.setSubmitLoader({ value: false, text: ImportStateMessage.FAILED_NO_INFO });
+          handlers.setSubmitLoader({
+            value: false,
+            text: ImportStateMessage.FAILED_NO_INFO,
+          });
           handlers.setServerErrors(ImportStateMessage.FAILED_NO_INFO);
           clearInterval(monitorJob);
           break;
@@ -89,8 +99,9 @@ function ImportDataset(props) {
   const monitorJobStatusAndHandleResponse = (job_id, handlers) => {
     let cont = 0;
     let monitorJob = setInterval(() => {
-      props.client.getJobStatus(job_id, props.migration.core.versionUrl)
-        .then(job => {
+      props.client
+        .getJobStatus(job_id, props.migration.core.versionUrl)
+        .then((job) => {
           cont++;
           if (job !== undefined || cont === 50)
             handleJobResponse(job, monitorJob, cont, handlers);
@@ -101,31 +112,44 @@ function ImportDataset(props) {
   const submitCallback = (e, mappedInputs, handlers) => {
     handlers.setServerErrors(undefined);
     handlers.setServerWarnings(undefined);
-    handlers.setSubmitLoader({ value: true, text: ImportStateMessage.ENQUEUED });
-    props.client.datasetImport(props.httpProjectUrl, mappedInputs.uri, props.migration.core.versionUrl)
-      .then(response => {
+    handlers.setSubmitLoader({
+      value: true,
+      text: ImportStateMessage.ENQUEUED,
+    });
+    props.client
+      .datasetImport(
+        props.httpProjectUrl,
+        mappedInputs.uri,
+        props.migration.core.versionUrl
+      )
+      .then((response) => {
         if (response.data.error !== undefined) {
           const error = response.data.error;
           handlers.setSubmitLoader({ value: false, text: "" });
-          handlers.setServerErrors(error.userMessage ? error.userMessage : error.reason);
-        }
-        else {
-          monitorJobStatusAndHandleResponse(response.data.result.job_id, handlers);
+          handlers.setServerErrors(
+            error.userMessage ? error.userMessage : error.reason
+          );
+        } else {
+          monitorJobStatusAndHandleResponse(
+            response.data.result.job_id,
+            handlers
+          );
         }
       });
   };
 
-  return <DatasetImport
-    onCancel={onCancel}
-    submitCallback={submitCallback}
-    datasetImportFormSchema={dsFormSchema}
-    accessLevel={props.accessLevel}
-    formLocation={formLocation}
-    notifications={props.notifications}
-    model={props.model}
-    toggleNewDataset={props.toggleNewDataset}
-  />;
+  return (
+    <DatasetImport
+      onCancel={onCancel}
+      submitCallback={submitCallback}
+      datasetImportFormSchema={dsFormSchema}
+      accessLevel={props.accessLevel}
+      formLocation={formLocation}
+      notifications={props.notifications}
+      model={props.model}
+      toggleNewDataset={props.toggleNewDataset}
+    />
+  );
 }
-
 
 export default ImportDataset;

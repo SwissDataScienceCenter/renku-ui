@@ -28,43 +28,55 @@ function ProjectVersionStatusBody(props) {
   const logged = props.user.logged;
   const maintainer = props.metadata.accessLevel >= ACCESS_LEVELS.MAINTAINER;
   const onMigrateProject = async (options) => {
-    return await props.onMigrateProject(props.metadata?.httpUrl, props.metadata?.defaultBranch, options);
+    return await props.onMigrateProject(
+      props.metadata?.httpUrl,
+      props.metadata?.defaultBranch,
+      options
+    );
   };
 
-  return <Fragment>
-    <Card key="renkuVersion" className="border-rk-light mb-4">
-      <CardHeader className="bg-white p-3 ps-4">Renku Version</CardHeader>
-      <CardBody className="p-4 pt-3 pb-3 lh-lg">
-        <Row><Col>
-          <RenkuVersionStatus
-            externalUrl={props.externalUrl}
-            launchNotebookUrl={props.launchNotebookUrl}
-            loading={props.loading}
-            lockStatus={props.lockStatus}
-            logged={logged}
-            maintainer={maintainer}
-            migration={props.migration}
-            onMigrateProject={onMigrateProject}
-            statistics={props.statistics} />
-        </Col></Row>
-      </CardBody>
-    </Card>
-    <Card key="templateVersion" className="border-rk-light mb-4">
-      <CardHeader className="bg-white p-3 ps-4">Template Version</CardHeader>
-      <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
-        <Row><Col>
-          <TemplateStatus
-            externalUrl={props.externalUrl}
-            launchNotebookUrl={props.launchNotebookUrl}
-            loading={props.loading}
-            lockStatus={props.lockStatus}
-            logged={logged}
-            maintainer={maintainer}
-            migration={props.migration}
-            onMigrateProject={onMigrateProject} />
-        </Col></Row>
-      </CardBody>
-    </Card>
-  </Fragment>;
+  return (
+    <Fragment>
+      <Card key="renkuVersion" className="border-rk-light mb-4">
+        <CardHeader className="bg-white p-3 ps-4">Renku Version</CardHeader>
+        <CardBody className="p-4 pt-3 pb-3 lh-lg">
+          <Row>
+            <Col>
+              <RenkuVersionStatus
+                externalUrl={props.externalUrl}
+                launchNotebookUrl={props.launchNotebookUrl}
+                loading={props.loading}
+                lockStatus={props.lockStatus}
+                logged={logged}
+                maintainer={maintainer}
+                migration={props.migration}
+                onMigrateProject={onMigrateProject}
+                statistics={props.statistics}
+              />
+            </Col>
+          </Row>
+        </CardBody>
+      </Card>
+      <Card key="templateVersion" className="border-rk-light mb-4">
+        <CardHeader className="bg-white p-3 ps-4">Template Version</CardHeader>
+        <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
+          <Row>
+            <Col>
+              <TemplateStatus
+                externalUrl={props.externalUrl}
+                launchNotebookUrl={props.launchNotebookUrl}
+                loading={props.loading}
+                lockStatus={props.lockStatus}
+                logged={logged}
+                maintainer={maintainer}
+                migration={props.migration}
+                onMigrateProject={onMigrateProject}
+              />
+            </Col>
+          </Row>
+        </CardBody>
+      </Card>
+    </Fragment>
+  );
 }
 export default ProjectVersionStatusBody;

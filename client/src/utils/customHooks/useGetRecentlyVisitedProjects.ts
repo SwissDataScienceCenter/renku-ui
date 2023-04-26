@@ -24,16 +24,33 @@ import { Session } from "../helpers/SessionFunctions";
  *  useGetRecentlyVisitedProjects.ts
  *  hook to fetch recently visited projects and filter out those that have a session to avoid duplication
  */
-function useGetRecentlyVisitedProjects(projectsCount: number, currentSessions: Session[]) {
+function useGetRecentlyVisitedProjects(
+  projectsCount: number,
+  currentSessions: Session[]
+) {
   // number of projects to fetch according to current sessions to avoid duplication
-  const totalProjectsToRequest = currentSessions?.length >= projectsCount ? currentSessions.length + 3 : projectsCount;
-  const totalProjectsToReturn = currentSessions?.length >= projectsCount ? 3 : projectsCount - currentSessions.length;
-  const { data, isFetching, refetch } = useGetRecentlyVisitedProjectsQuery(totalProjectsToRequest);
+  const totalProjectsToRequest =
+    currentSessions?.length >= projectsCount
+      ? currentSessions.length + 3
+      : projectsCount;
+  const totalProjectsToReturn =
+    currentSessions?.length >= projectsCount
+      ? 3
+      : projectsCount - currentSessions.length;
+  const { data, isFetching, refetch } = useGetRecentlyVisitedProjectsQuery(
+    totalProjectsToRequest
+  );
   let projectsToShow = data;
   if (!isFetching && data?.length > 0 && currentSessions?.length > 0) {
-    const sessionProjectIds = currentSessions.map((session: Session) => session.annotations["gitlabProjectId"]);
+    const sessionProjectIds = currentSessions.map(
+      (session: Session) => session.annotations["gitlabProjectId"]
+    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    projectsToShow = data.filter((project: Record<string, any>) => !sessionProjectIds?.includes(`${project.id}`))
+    projectsToShow = data
+      .filter(
+        (project: Record<string, any>) =>
+          !sessionProjectIds?.includes(`${project.id}`)
+      )
       .splice(0, totalProjectsToReturn);
   }
   return {

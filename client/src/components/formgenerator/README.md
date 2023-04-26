@@ -19,19 +19,20 @@ Currently the form has 9 fields types:
 
 Field properties (shared):
 
-| field name  | default     | description                                     |
-| ----------- | ----------- | ----------------------------------------------- |
-| initial    | ""           | initial value                                   |
-| name       | "name"       | name of the field                               |
-| label      | "Name"       | label of the field                              |
-| edit       | false        | editable when the form is on edit mode          |
-| required   | true         | required or not                                 |
-| type       | TEXT         | field type (FormGenerator.FieldTypes)           |
-| help       | "Help text"  | help text for the field                         |
-| parseFun   | Parsers.slugFromTitle   |  parser function invoked after a change in the form |
-| validators | [see below]  | list of validator functions for the field, if they return false they display the alert message |
+| field name | default               | description                                                                                    |
+| ---------- | --------------------- | ---------------------------------------------------------------------------------------------- |
+| initial    | ""                    | initial value                                                                                  |
+| name       | "name"                | name of the field                                                                              |
+| label      | "Name"                | label of the field                                                                             |
+| edit       | false                 | editable when the form is on edit mode                                                         |
+| required   | true                  | required or not                                                                                |
+| type       | TEXT                  | field type (FormGenerator.FieldTypes)                                                          |
+| help       | "Help text"           | help text for the field                                                                        |
+| parseFun   | Parsers.slugFromTitle | parser function invoked after a change in the form                                             |
+| validators | [see below]           | list of validator functions for the field, if they return false they display the alert message |
 
 The validators defaults to the following:
+
 ```
 [{
   id: "name-length",
@@ -41,12 +42,12 @@ The validators defaults to the following:
 ```
 
 The fields can have properties that are not shared, like:
+
 - editOnClick (TEXT) used in text fields, a text field can be automatically filled (like the slug) and edited only on request.
 - outputType: used in the ckeditorfield, can be "markdown" or "html"
 - inside the file uploader: uploadFileFunction (call to the client to upload a file), filesOnUploader (initial files on uploader), notifyFunction (function to send a notification, used when a file upload returns an error), internalValues (several internal values that are stored in redux in case the user leaves and goes back to a form)
 - inside the image uploader: maxSize and format
 - options list of options used on the select field
-
 
 ### GENERATING A FORM
 
@@ -73,13 +74,14 @@ const singleFieldForm = new Schema({
 
 2. Import and clone the schema that we want to use
 
-```let dsFormSchema = _.cloneDeep(datasetFormSchema);```
+`let dsFormSchema = _.cloneDeep(datasetFormSchema);`
 
 3. Define the following functions
-	- initializeFunction(formSchema): in case something inside some field needs to set up when the form is initialized, we receive the parameter formSchema when it's called so we can initialize fields as needed.
-	- onCancel(e, handlers): this is used when we want to cancel the current operation. Usually we need to call `handlers.removeDraft()` in order to remove the current draft from the redux store.
-	- submitCallback(e, mappedInputs, handlers): this function receives as a parameter the event, the mappedInputs and the handlers. It should call the backend(client) and perform the operation. mappedInputs is a map that has field name and value, when doing `mappedInput.fieldName` we get the value of fieldName. This is useful for us to format the data before we call the client. The handlers can be used to: `setServerErrors`, `setServerWarnings`, `setDisableAll`(this disables all fields), `setSubmitLoader`(sets a loader and message when the submit operation is happening), `removeDraft`(when the operation is successful we need to remove the draft from the redux store) otherwise we leave it so that the user can access it.
-	- formatServerErrorsAndWarnings(errorOrWarning, isError): this function is optional, it can be used to format the errors and warnings in a custom way. It was created to handle the cases when the error returned by 	different endpoints are formatted in a different way or when we want to make some processing of this errors. It has two parameters, errorOrWarning is the body of the error or warning. Is error is a boolean value that says if we received an error or a warning (mostly used to define the color of the background of the alert).
+
+   - initializeFunction(formSchema): in case something inside some field needs to set up when the form is initialized, we receive the parameter formSchema when it's called so we can initialize fields as needed.
+   - onCancel(e, handlers): this is used when we want to cancel the current operation. Usually we need to call `handlers.removeDraft()` in order to remove the current draft from the redux store.
+   - submitCallback(e, mappedInputs, handlers): this function receives as a parameter the event, the mappedInputs and the handlers. It should call the backend(client) and perform the operation. mappedInputs is a map that has field name and value, when doing `mappedInput.fieldName` we get the value of fieldName. This is useful for us to format the data before we call the client. The handlers can be used to: `setServerErrors`, `setServerWarnings`, `setDisableAll`(this disables all fields), `setSubmitLoader`(sets a loader and message when the submit operation is happening), `removeDraft`(when the operation is successful we need to remove the draft from the redux store) otherwise we leave it so that the user can access it.
+   - formatServerErrorsAndWarnings(errorOrWarning, isError): this function is optional, it can be used to format the errors and warnings in a custom way. It was created to handle the cases when the error returned by different endpoints are formatted in a different way or when we want to make some processing of this errors. It has two parameters, errorOrWarning is the body of the error or warning. Is error is a boolean value that says if we received an error or a warning (mostly used to define the color of the background of the alert).
 
 4. Use the FormGenerator component in the following way:
 
@@ -100,7 +102,6 @@ const singleFieldForm = new Schema({
 ```
 
 5. All is set to use the generated form
-
 
 ### FORM DRAFTS
 

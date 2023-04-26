@@ -22,18 +22,17 @@ import { TypeEntityFilter, TypeFilterProps } from "./TypeEntityFilter";
 export default {
   title: "components/TypeEntityFilter",
   component: TypeEntityFilter,
-  argTypes: {
-
-  },
+  argTypes: {},
 };
 
-
-const Template: Story<TypeFilterProps> = (args) => <TypeEntityFilter {...args} />;
+const Template: Story<TypeFilterProps> = (args) => (
+  <TypeEntityFilter {...args} />
+);
 
 export const Default = Template.bind({});
 Default.args = {
   value: {
     project: true,
-    dataset: true
-  }
+    dataset: true,
+  },
 };

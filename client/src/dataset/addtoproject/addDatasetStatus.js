@@ -19,12 +19,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheck,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
-import ProgressIndicator, { ProgressStyle, ProgressType } from "../../components/progress/Progress";
-
+import ProgressIndicator, {
+  ProgressStyle,
+  ProgressType,
+} from "../../components/progress/Progress";
 
 /**
  *  incubator-renku-ui
@@ -37,18 +42,24 @@ function AddDatasetStatus(props) {
   const { status, text, projectName } = props;
   let statusProject = null;
   switch (status) {
-    case "errorNeedMigration" :
+    case "errorNeedMigration":
       statusProject = (
         <div>
-          <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>This project must be upgraded.</strong>
+          <FontAwesomeIcon icon={faExclamationTriangle} />{" "}
+          <strong>This project must be upgraded.</strong>
           <br />
-          The target project ({projectName}) needs to be upgraded before datasets can be imported into it.
+          The target project ({projectName}) needs to be upgraded before
+          datasets can be imported into it.
           <br />
-          <i className="pt-2"><Link to={`/projects/${projectName}/overview/status`}>More info</Link></i>
+          <i className="pt-2">
+            <Link to={`/projects/${projectName}/overview/status`}>
+              More info
+            </Link>
+          </i>
         </div>
       );
       break;
-    case "error" :
+    case "error":
       statusProject = (
         <ErrorAlert>
           <h3>Error</h3>
@@ -56,10 +67,14 @@ function AddDatasetStatus(props) {
         </ErrorAlert>
       );
       break;
-    case "inProcess" :
-      statusProject = <div><Loader size="14" inline="true" /> {text}</div>;
+    case "inProcess":
+      statusProject = (
+        <div>
+          <Loader size="14" inline="true" /> {text}
+        </div>
+      );
       break;
-    case "importing" :
+    case "importing":
       statusProject = (
         <ProgressIndicator
           type={ProgressType.Indeterminate}
@@ -71,17 +86,28 @@ function AddDatasetStatus(props) {
         />
       );
       break;
-    case "validProject" :
-      statusProject = <div><FontAwesomeIcon icon={faCheck} color={"var(--bs-success)"} /> {text}</div>;
+    case "validProject":
+      statusProject = (
+        <div>
+          <FontAwesomeIcon icon={faCheck} color={"var(--bs-success)"} /> {text}
+        </div>
+      );
       break;
-    case "completed" :
-      statusProject = <div><FontAwesomeIcon icon={faCheck} color={"var(--bs-success)"} /> {text}</div>;
+    case "completed":
+      statusProject = (
+        <div>
+          <FontAwesomeIcon icon={faCheck} color={"var(--bs-success)"} /> {text}
+        </div>
+      );
       break;
     default:
       statusProject = null;
   }
-  return statusProject ?
-    <div data-cy="import-dataset-status">{ statusProject }</div> : statusProject;
+  return statusProject ? (
+    <div data-cy="import-dataset-status">{statusProject}</div>
+  ) : (
+    statusProject
+  );
 }
 
 export { AddDatasetStatus };

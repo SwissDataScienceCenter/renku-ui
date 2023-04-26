@@ -22,14 +22,12 @@ import { AuthorFilter, AuthorFilterProps } from "./AuthorFilter";
 export default {
   title: "components/AuthorFilter",
   component: AuthorFilter,
-  argTypes: {
-  },
+  argTypes: {},
 };
-
 
 const Template: Story<AuthorFilterProps> = (args) => <AuthorFilter {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  value: "user"
+  value: "user",
 };

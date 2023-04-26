@@ -43,7 +43,6 @@ import _ from "lodash";
 //   };
 // }
 
-
 // Non-throttled toggling
 function standardToggler(tooltipOpen, setTooltipOpen) {
   return () => {
@@ -64,14 +63,26 @@ function ThrottledTooltip(props) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [lastToggleTime, setLastToggleTime] = useState(Date.now());
 
-  const toggle = standardToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastToggleTime);
+  const toggle = standardToggler(
+    tooltipOpen,
+    setTooltipOpen,
+    lastToggleTime,
+    setLastToggleTime
+  );
   const placement = props.placement ?? "top";
 
-  return <Tooltip
-    placement={placement} target={props.target} isOpen={tooltipOpen} toggle={toggle} autohide={props.autoHide ?? true}
-    delay={{ show: 25, hide: 250 }}>
-    {props.tooltip}
-  </Tooltip>;
+  return (
+    <Tooltip
+      placement={placement}
+      target={props.target}
+      isOpen={tooltipOpen}
+      toggle={toggle}
+      autohide={props.autoHide ?? true}
+      delay={{ show: 25, hide: 250 }}
+    >
+      {props.tooltip}
+    </Tooltip>
+  );
 }
 
 /**
@@ -86,16 +97,26 @@ function ThrottledTooltip(props) {
  * @param {string} [tooltip] - the text of the tooltip
  */
 function TooltipToggleButton(props) {
-  const [uniqueId, ] = useState(`tooltip-toggle-${_.uniqueId()}`);
+  const [uniqueId] = useState(`tooltip-toggle-${_.uniqueId()}`);
 
-  return <span onClick={props.onClick}>
-    {props.active ?
-      <FontAwesomeIcon id={uniqueId} className={`icon-link ${props.activeClass}`} icon={props.activeIcon}/>
-      :
-      <FontAwesomeIcon id={uniqueId} className={`icon-link ${props.inactiveClass}`} icon={props.inactiveIcon}/>
-    }
-    <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
-  </span>;
+  return (
+    <span onClick={props.onClick}>
+      {props.active ? (
+        <FontAwesomeIcon
+          id={uniqueId}
+          className={`icon-link ${props.activeClass}`}
+          icon={props.activeIcon}
+        />
+      ) : (
+        <FontAwesomeIcon
+          id={uniqueId}
+          className={`icon-link ${props.inactiveClass}`}
+          icon={props.inactiveIcon}
+        />
+      )}
+      <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
+    </span>
+  );
 }
 
 export { ThrottledTooltip, TooltipToggleButton };

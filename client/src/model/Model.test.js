@@ -23,7 +23,6 @@
  *  Tests for models.
  */
 
-
 import React, { Component } from "react";
 import { createRoot } from "react-dom/client";
 import { act } from "react-test-renderer";
@@ -31,11 +30,10 @@ import { act } from "react-test-renderer";
 import { Schema, StateModel, StateKind } from "./Model";
 import { createStore } from "redux";
 
-
 const simpleSchema = new Schema({
   name: { initial: "Jane Doe", mandatory: true },
   purpose: { initial: "", mandatory: false },
-  numbers: { schema: [], initial: [0, 1] }
+  numbers: { schema: [], initial: [0, 1] },
 });
 
 const simpleObject = { name: "Jane Doe", purpose: "", numbers: [0, 1] };
@@ -49,26 +47,30 @@ const arraySchema = new Schema({
 const arrayObject = {
   manyLetters: ["a", "b", "c"],
   manyNumbers: [],
-  manyThings: [{ ...simpleObject }]
+  manyThings: [{ ...simpleObject }],
 };
 
 const complexSchema = new Schema({
   basics: { schema: simpleSchema, mandatory: true },
-  subThing: { schema: { age: { initial: 0, mandatory: true } }, mandatory: true },
+  subThing: {
+    schema: { age: { initial: 0, mandatory: true } },
+    mandatory: true,
+  },
   createdAt: { initial: () => "right now" },
-  simpleThings: { schema: [simpleSchema], initial: [{ ...simpleObject }, { ...simpleObject, name: "Johnny" }] }
+  simpleThings: {
+    schema: [simpleSchema],
+    initial: [{ ...simpleObject }, { ...simpleObject, name: "Johnny" }],
+  },
 });
 
 const complexObject = {
   basics: { ...simpleObject },
   createdAt: "right now",
   subThing: { age: 0 },
-  simpleThings: [{ ...simpleObject }, { ...simpleObject, name: "Johnny" }]
+  simpleThings: [{ ...simpleObject }, { ...simpleObject, name: "Johnny" }],
 };
 
-
 describe("simple creation", () => {
-
   const emptyObject = { name: undefined, purpose: undefined, numbers: [] };
 
   it("creates empty object from schema", () => {
@@ -82,18 +84,26 @@ describe("simple creation", () => {
   it("creates initialized instance", () => {
     const store = createStore(simpleSchema.reducer());
     const simpleModel = new StateModel(simpleSchema, StateKind.REDUX, store);
-    expect(simpleModel.get()).toEqual((simpleObject));
+    expect(simpleModel.get()).toEqual(simpleObject);
   });
   it("creates instance from initial object", () => {
     const store = createStore(simpleSchema.reducer());
-    const initialObject = { ...simpleSchema.createInitialized(), name: "John Doe", numbers: [0, 1] };
-    const simpleModel = new StateModel(simpleSchema, StateKind.REDUX, store, initialObject);
+    const initialObject = {
+      ...simpleSchema.createInitialized(),
+      name: "John Doe",
+      numbers: [0, 1],
+    };
+    const simpleModel = new StateModel(
+      simpleSchema,
+      StateKind.REDUX,
+      store,
+      initialObject
+    );
     expect(simpleModel.get()).toEqual(initialObject);
   });
 });
 
 describe("array creation", () => {
-
   const emptyObject = {
     manyLetters: [],
     manyNumbers: [],
@@ -110,24 +120,31 @@ describe("array creation", () => {
   });
   it("creates instance from initial object", () => {
     const store = createStore(arraySchema.reducer());
-    const initialObject = { ...arraySchema.createInitialized(), manyNumbers: [0, 1, 0, 1] };
-    const arrayModel = new StateModel(arraySchema, StateKind.REDUX, store, initialObject);
+    const initialObject = {
+      ...arraySchema.createInitialized(),
+      manyNumbers: [0, 1, 0, 1],
+    };
+    const arrayModel = new StateModel(
+      arraySchema,
+      StateKind.REDUX,
+      store,
+      initialObject
+    );
     expect(arrayModel.get()).toEqual(initialObject);
   });
   it("creates initialized instance", () => {
     const store = createStore(arraySchema.reducer());
     const arrayModel = new StateModel(arraySchema, StateKind.REDUX, store);
-    expect(arrayModel.get()).toEqual((arrayObject));
+    expect(arrayModel.get()).toEqual(arrayObject);
   });
 });
 
 describe("complex creation", () => {
-
   const emptyObject = {
     basics: { name: undefined, purpose: undefined, numbers: [] },
     subThing: { age: undefined },
     createdAt: undefined,
-    simpleThings: []
+    simpleThings: [],
   };
 
   it("creates empty object from schema", () => {
@@ -140,43 +157,51 @@ describe("complex creation", () => {
   });
   it("creates instance from initial object", () => {
     const store = createStore(complexSchema.reducer());
-    const initialObject = { ...complexSchema.createInitialized(), subThing: { age: 1 } };
-    const complexModel = new StateModel(complexSchema, StateKind.REDUX, store, initialObject);
+    const initialObject = {
+      ...complexSchema.createInitialized(),
+      subThing: { age: 1 },
+    };
+    const complexModel = new StateModel(
+      complexSchema,
+      StateKind.REDUX,
+      store,
+      initialObject
+    );
     expect(complexModel.get()).toEqual(initialObject);
   });
   it("creates initialized instance", () => {
     const store = createStore(complexSchema.reducer());
     const complexModel = new StateModel(complexSchema, StateKind.REDUX, store);
-    expect(complexModel.get()).toEqual((complexObject));
+    expect(complexModel.get()).toEqual(complexObject);
   });
 });
 
-
 describe("validation", () => {
-
   const simpleErrors = {
     result: false,
-    errors: [{ name: "name must be provided and non-empty" }]
+    errors: [{ name: "name must be provided and non-empty" }],
   };
   const arrayErrors = {
     result: false,
     errors: [
       { manyNumbers: "manyNumbers must be an array" },
-      { manyThings: "manyThings[1] must be an object" }
-    ]
+      { manyThings: "manyThings[1] must be an object" },
+    ],
   };
   const complexErrors = {
     result: false,
     errors: [
       { name: "name must be provided and non-empty" },
       { subThing: "subThing must be an object" },
-      { name: "name must be provided and non-empty" }
-    ]
+      { name: "name must be provided and non-empty" },
+    ],
   };
 
   it("simple empty validates false", () => {
     const initializedThing = simpleSchema.createInitialized();
-    expect(simpleSchema.validate({ ...initializedThing, name: "" })).toEqual(simpleErrors);
+    expect(simpleSchema.validate({ ...initializedThing, name: "" })).toEqual(
+      simpleErrors
+    );
   });
   it("complex array validates false", () => {
     const initializedThing = arraySchema.createInitialized();
@@ -197,7 +222,12 @@ describe("update react state", () => {
   class TestReactStateComponent extends Component {
     constructor(props) {
       super(props);
-      this.model = new StateModel(complexSchema, StateKind.REACT, this, complexSchema.createInitialized());
+      this.model = new StateModel(
+        complexSchema,
+        StateKind.REACT,
+        this,
+        complexSchema.createInitialized()
+      );
     }
 
     UNSAFE_componentWillMount() {
@@ -207,9 +237,16 @@ describe("update react state", () => {
 
     render() {
       let updatedSimpleThings = [...complexObject.simpleThings];
-      updatedSimpleThings[0] = { ...complexObject.simpleThings[0], numbers: [0, 1, 2] };
+      updatedSimpleThings[0] = {
+        ...complexObject.simpleThings[0],
+        numbers: [0, 1, 2],
+      };
       // eslint-disable-next-line
-      expect(this.model.get()).toEqual({ ...complexObject, subThing: { age: 1 }, simpleThings: updatedSimpleThings });
+      expect(this.model.get()).toEqual({
+        ...complexObject,
+        subThing: { age: 1 },
+        simpleThings: updatedSimpleThings,
+      });
       return null;
     }
   }
@@ -232,12 +269,18 @@ describe("update disconnected redux store", () => {
   it("updates complex instance in redux store", () => {
     const store = createStore(complexSchema.reducer());
     const complexModel = new StateModel(complexSchema, StateKind.REDUX, store);
-    complexModel.setObject({ subThing: { age: 1 }, simpleThings: { 1: { name: "Jenny" } } });
+    complexModel.setObject({
+      subThing: { age: 1 },
+      simpleThings: { 1: { name: "Jenny" } },
+    });
 
     // Build the more complex comparison Object
     const comparisonObject = { ...complexObject, subThing: { age: 1 } };
     comparisonObject.simpleThings = [...comparisonObject.simpleThings];
-    comparisonObject.simpleThings[1] = { ...comparisonObject.simpleThings[1], name: "Jenny" };
+    comparisonObject.simpleThings[1] = {
+      ...comparisonObject.simpleThings[1],
+      name: "Jenny",
+    };
 
     expect(complexModel.get()).toEqual(comparisonObject);
   });
@@ -245,12 +288,14 @@ describe("update disconnected redux store", () => {
     const store = createStore(complexSchema.reducer());
     const complexModel = new StateModel(complexSchema, StateKind.REDUX, store);
     complexModel.set("subThing.age", 1);
-    expect(complexModel.get()).toEqual({ ...complexObject, subThing: { age: 1 } });
+    expect(complexModel.get()).toEqual({
+      ...complexObject,
+      subThing: { age: 1 },
+    });
   });
 });
 
 describe("update connected redux store", () => {
-
   class TestReduxStateComponent extends Component {
     constructor(props) {
       super(props);
@@ -263,7 +308,10 @@ describe("update connected redux store", () => {
 
     render() {
       // eslint-disable-next-line
-      expect(this.model.get()).toEqual({ ...complexObject, subThing: { age: 1 } });
+      expect(this.model.get()).toEqual({
+        ...complexObject,
+        subThing: { age: 1 },
+      });
       return null;
     }
   }
@@ -278,7 +326,10 @@ describe("update connected redux store", () => {
 });
 
 describe("update redux store using immutability-helper commands", () => {
-  const schema = new Schema({ complex: { schema: complexSchema }, array: { schema: arraySchema } });
+  const schema = new Schema({
+    complex: { schema: complexSchema },
+    array: { schema: arraySchema },
+  });
   let model = new StateModel(schema, StateKind.REDUX);
 
   // test object updates
@@ -306,7 +357,9 @@ describe("update redux store using immutability-helper commands", () => {
 
   it("update existing object with $set", () => {
     referenceObject = { name: "Max Mustermann" };
-    updateObject = { complex: { basics: { $set: { name: "Max Mustermann" } } } };
+    updateObject = {
+      complex: { basics: { $set: { name: "Max Mustermann" } } },
+    };
     // ? this replace the `basics` object entirely
     model.setObject(updateObject);
     expect(model.get("complex.basics")).toEqual(referenceObject);
@@ -370,17 +423,17 @@ describe("update redux store using immutability-helper commands", () => {
     // ? this mixes adding attributes to objects, resetting them, changing plain attributes
     model.setObject({
       array: {
-        manyLetters: { $set: ["d"] }
+        manyLetters: { $set: ["d"] },
       },
       complex: {
         basics: {
-          $set: { name: "Max Mustermann" }
+          $set: { name: "Max Mustermann" },
         },
         subThing: {
-          height: 200
+          height: 200,
         },
-        createdAt: "before"
-      }
+        createdAt: "before",
+      },
     });
     expect(model.get()).toEqual(referenceObject);
 
@@ -389,8 +442,8 @@ describe("update redux store using immutability-helper commands", () => {
       complex: {
         basics: {
           $unset: ["name"],
-        }
-      }
+        },
+      },
     });
     referenceObject.complex.basics = {};
     expect(model.get()).toEqual(referenceObject);
@@ -398,7 +451,10 @@ describe("update redux store using immutability-helper commands", () => {
 });
 
 describe("update subModel object using immutability-helper commands", () => {
-  const schema = new Schema({ complex: { schema: complexSchema }, array: { schema: arraySchema } });
+  const schema = new Schema({
+    complex: { schema: complexSchema },
+    array: { schema: arraySchema },
+  });
   let model = new StateModel(schema, StateKind.REDUX);
   const complexSubModel = model.subModel("complex");
 
@@ -443,7 +499,10 @@ describe("update subModel object using immutability-helper commands", () => {
 });
 
 describe("update layered subModel object using immutability-helper commands", () => {
-  const schema = new Schema({ complex: { schema: complexSchema }, array: { schema: arraySchema } });
+  const schema = new Schema({
+    complex: { schema: complexSchema },
+    array: { schema: arraySchema },
+  });
   let model = new StateModel(schema, StateKind.REDUX);
   const complexBasicsSubModel = model.subModel("complex.basics");
 
@@ -456,7 +515,7 @@ describe("update layered subModel object using immutability-helper commands", ()
   });
 
   it("reset existing object without $set", () => {
-    updateObject = { };
+    updateObject = {};
     // ? this doesn't overwrite the final object
     complexBasicsSubModel.setObject(updateObject);
     expect(model.get("complex.basics")).toEqual(referenceObject);

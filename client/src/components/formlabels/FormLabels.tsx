@@ -25,7 +25,10 @@
 import * as React from "react";
 import { FormText, FormFeedback, Label } from "../../utils/ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle, faCheck } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationTriangle,
+  faCheck,
+} from "@fortawesome/free-solid-svg-icons";
 
 import "./FormLabels.css";
 import { Loader } from "../Loader";
@@ -40,7 +43,11 @@ interface InputLabelProps extends LabelProps {
 }
 
 const InputLabel = ({ text, isRequired = false }: InputLabelProps) => {
-  const labelType = isRequired ? <span className="required-label">*</span> : <span> (Optional)</span>;
+  const labelType = isRequired ? (
+    <span className="required-label">*</span>
+  ) : (
+    <span> (Optional)</span>
+  );
   return (
     <Label>
       {text} {labelType}
@@ -83,4 +90,11 @@ const SuccessLabel = ({ text, children }: LabelProps) => {
   );
 };
 
-export { InputLabel, LoadingLabel, HelperLabel, InputHintLabel, ErrorLabel, SuccessLabel };
+export {
+  InputLabel,
+  LoadingLabel,
+  HelperLabel,
+  InputHintLabel,
+  ErrorLabel,
+  SuccessLabel,
+};

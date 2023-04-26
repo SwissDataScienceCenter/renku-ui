@@ -20,8 +20,11 @@ import WS from "jest-websocket-mock";
 
 import { StateModel, globalSchema } from "../../model";
 import { sleep } from "../../utils/helpers/HelperFunctions";
-import { handleUserInit, handleUserUiVersion, handleUserError } from "./userHandlers";
-
+import {
+  handleUserInit,
+  handleUserUiVersion,
+  handleUserError,
+} from "./userHandlers";
 
 describe("Test userHandlers functions", () => {
   const webSocketURL = "wss://localhost:1234";
@@ -79,7 +82,9 @@ describe("Test userHandlers functions", () => {
     handleUserUiVersion({ version: version + "1a" }, localWebSocket, fullModel);
     expect(localModel.get("lastValue")).not.toBe(version);
     expect(localModel.get("lastValue")).toBe(version + "1a");
-    expect(+new Date(localModel.get("lastReceived"))).toBeGreaterThan(lastReceived);
+    expect(+new Date(localModel.get("lastReceived"))).toBeGreaterThan(
+      lastReceived
+    );
   });
 
   it("Test handleUserError function", async () => {

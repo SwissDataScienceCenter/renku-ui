@@ -35,7 +35,11 @@ export interface VisibilitiesFilter {
 
 export function arrayToVisibilitiesFilter(value: string[]) {
   if (value.length < 1) return { public: true, internal: true, private: true };
-  const visibilities: VisibilitiesFilter = { public: false, internal: false, private: false };
+  const visibilities: VisibilitiesFilter = {
+    public: false,
+    internal: false,
+    private: false,
+  };
   if (value.includes("public")) visibilities["public"] = true;
   if (value.includes("internal")) visibilities["internal"] = true;
   if (value.includes("private")) visibilities["private"] = true;
@@ -43,23 +47,28 @@ export function arrayToVisibilitiesFilter(value: string[]) {
 }
 
 export interface VisibilityFilterProps {
-  handler: Function, // eslint-disable-line @typescript-eslint/ban-types
-  value: VisibilitiesFilter
+  handler: Function; // eslint-disable-line @typescript-eslint/ban-types
+  value: VisibilitiesFilter;
 }
 
 const VisibilityFilter = ({ handler, value }: VisibilityFilterProps) => {
-
   const selectVisibility = (visibilityKey: string, visibility: boolean) => {
-    if (!handler)
-      return;
+    if (!handler) return;
     const newValues = { ...value };
     switch (visibilityKey) {
-      case "public": newValues.public = visibility; break;
-      case "internal": newValues.internal = visibility; break;
-      case "private": newValues.private = visibility; break;
+      case "public":
+        newValues.public = visibility;
+        break;
+      case "internal":
+        newValues.internal = visibility;
+        break;
+      case "private":
+        newValues.private = visibility;
+        break;
     }
-    const somethingSelected = Object.values(newValues).filter( val => val);
-    if (somethingSelected.length) // there must always be something selected
+    const somethingSelected = Object.values(newValues).filter((val) => val);
+    if (somethingSelected.length)
+      // there must always be something selected
       handler(newValues);
   };
 
@@ -69,7 +78,7 @@ const VisibilityFilter = ({ handler, value }: VisibilityFilterProps) => {
     { title: "Private", value: "private", icon: <Lock color="#3A3A3D" /> },
   ];
 
-  const options = items.map(item => {
+  const options = items.map((item) => {
     const nameInput = `visibility-${item.value}`;
     const itemValueAsKey = item.value as keyof VisibilitiesFilter;
     return (
@@ -79,11 +88,19 @@ const VisibilityFilter = ({ handler, value }: VisibilityFilterProps) => {
           name={nameInput}
           checked={value ? value[itemValueAsKey] : false}
           value={item.value}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => selectVisibility(item.value, e.target.checked)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            selectVisibility(item.value, e.target.checked)
+          }
           className="visibility-input"
-          data-cy={nameInput}/>
-        <div className="px-2 visibility-label cursor-pointer d-flex align-items-center gap-2"
-          onClick={() => selectVisibility(item.value, !value[itemValueAsKey])}>{item.icon}{item.title}</div>
+          data-cy={nameInput}
+        />
+        <div
+          className="px-2 visibility-label cursor-pointer d-flex align-items-center gap-2"
+          onClick={() => selectVisibility(item.value, !value[itemValueAsKey])}
+        >
+          {item.icon}
+          {item.title}
+        </div>
       </div>
     );
   });

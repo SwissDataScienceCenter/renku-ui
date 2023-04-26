@@ -18,21 +18,26 @@
 
 import React, { Component } from "react";
 
-import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent } from "./File.present";
+import {
+  StyledNotebook,
+  JupyterButtonPresent,
+  ShowFile as ShowFilePresent,
+} from "./File.present";
 import { API_ERRORS } from "../api-client";
 import { ShareLinkSessionIcon } from "../components/shareLinkSession/ShareLinkSession";
-
 
 class JupyterNotebookContainer extends Component {
   render() {
     let filePath = this.props.filePath;
     if (filePath && filePath[0] !== "/") filePath = "/" + filePath;
 
-    return <StyledNotebook
-      fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, "")}
-      notebook={this.props.notebook}
-      client={this.props.client}
-    />;
+    return (
+      <StyledNotebook
+        fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, "")}
+        notebook={this.props.notebook}
+        client={this.props.client}
+      />
+    );
   }
 }
 
@@ -54,8 +59,7 @@ class JupyterButton extends React.Component {
     // fetch branches if needed
     if (this.props.user.logged) {
       const { branches } = this.props;
-      if (!branches.all.fetched || !branches.all.fetching)
-        branches.fetch();
+      if (!branches.all.fetched || !branches.all.fetching) branches.fetch();
     }
   }
 
@@ -64,14 +68,14 @@ class JupyterButton extends React.Component {
     const { branches, defaultBranch } = this.props;
 
     // return if we don't have branches (not fetched yet)
-    if (!branches.all.standard.length)
-      return null;
+    if (!branches.all.standard.length) return null;
 
     // return the full branch object corresponding to the default -- if any is set (this is generally the case)
     if (defaultBranch) {
-      const defaultBranchObject = branches.all.standard.find(branch => branch.name === defaultBranch);
-      if (defaultBranchObject)
-        return defaultBranchObject;
+      const defaultBranchObject = branches.all.standard.find(
+        (branch) => branch.name === defaultBranch
+      );
+      if (defaultBranchObject) return defaultBranchObject;
     }
 
     return branches.all.standard[0]?.name;
@@ -104,8 +108,7 @@ class JupyterButton extends React.Component {
     }
 
     let updating = false;
-    if (branches.all.fetching || !branches.all.standard.length)
-      updating = true;
+    if (branches.all.fetching || !branches.all.standard.length) updating = true;
 
     return (
       <JupyterButtonPresent
@@ -116,11 +119,11 @@ class JupyterButton extends React.Component {
         filePath={filePath}
         updating={updating}
         location={this.props.location}
-        launchNotebookUrl={this.props.launchNotebookUrl} />
+        launchNotebookUrl={this.props.launchNotebookUrl}
+      />
     );
   }
 }
-
 
 /**
  * File content display container component
@@ -145,45 +148,55 @@ class ShowFile extends React.Component {
   componentDidUpdate() {
     // save information about the file once available
     if (this.props.filesTree && this.props.filesTree.hash) {
-      const path = this.props.filePath.endsWith("/") ?
-        this.props.filePath.substring(0, this.props.filePath.length - 1) :
-        this.props.filePath;
+      const path = this.props.filePath.endsWith("/")
+        ? this.props.filePath.substring(0, this.props.filePath.length - 1)
+        : this.props.filePath;
       const fileInfo = this.props.filesTree.hash[path];
       if (fileInfo) {
-        if (!this.state.fileInfo)
-          this.setState({ fileInfo });
+        if (!this.state.fileInfo) this.setState({ fileInfo });
         else if (fileInfo.path !== this.state.fileInfo.path)
           this.setState({ fileInfo });
       }
     }
   }
 
-  componentWillUnmount() { this._isMounted = false; }
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
   retrieveFile() {
     const client = this.props.client;
     const branch = this.props.branch;
     let filePath = this.props.filePath;
-    client.getRepositoryFile(this.props.projectId, filePath, branch, "base64")
-      .catch(e => {
+    client
+      .getRepositoryFile(this.props.projectId, filePath, branch, "base64")
+      .catch((e) => {
         if (!this._isMounted) return null;
         if (e.case === API_ERRORS.notFoundError)
-          this.setState({ error: "ERROR 404: The file with path '" + this.props.filePath + "' does not exist." });
-
-        else this.setState({ error: "Could not load file with path " + this.props.filePath });
+          this.setState({
+            error:
+              "ERROR 404: The file with path '" +
+              this.props.filePath +
+              "' does not exist.",
+          });
+        else
+          this.setState({
+            error: "Could not load file with path " + this.props.filePath,
+          });
       })
-      .then(json => {
+      .then((json) => {
         if (!this._isMounted) return null;
-        if (!this.state.error)
-          this.setState({ file: json });
+        if (!this.state.error) this.setState({ file: json });
         return json;
-      }).then(fileJson => {
+      })
+      .then((fileJson) => {
         if (fileJson == null) return;
-        const commitId = fileJson.last_commit_id ?
-          fileJson.last_commit_id :
-          fileJson.commit_id;
+        const commitId = fileJson.last_commit_id
+          ? fileJson.last_commit_id
+          : fileJson.commit_id;
         return client.getRepositoryCommit(this.props.projectId, commitId);
-      }).then(commitJson => {
+      })
+      .then((commitJson) => {
         if (!this._isMounted) return null;
         this.setState({ commit: commitJson });
       });
@@ -196,10 +209,9 @@ class ShowFile extends React.Component {
     if (this.state.error !== null)
       filePath = this.props.filePath.split("\\").pop().split("/").pop();
 
-
     let buttonJupyter = null;
     if (this.props.filePath.endsWith(".ipynb"))
-      buttonJupyter = (<JupyterButton {...this.props} file={filePath}/>);
+      buttonJupyter = <JupyterButton {...this.props} file={filePath} />;
     const filters = {
       namespace: this.props.projectNamespace,
       project: this.props.projectPath,
@@ -207,44 +219,53 @@ class ShowFile extends React.Component {
       commit: this.state.commit,
     };
     const buttonShareLinkSession =
-      !this.state.fileInfo || this.state.fileInfo?.type === "tree" ? null :
-        (<ShareLinkSessionIcon
-          filters={filters} filePath={filePath} launchNotebookUrl={this.props.launchNotebookUrl} />);
+      !this.state.fileInfo || this.state.fileInfo?.type === "tree" ? null : (
+        <ShareLinkSessionIcon
+          filters={filters}
+          filePath={filePath}
+          launchNotebookUrl={this.props.launchNotebookUrl}
+        />
+      );
 
     let fileSize = this.state.file ? this.state.file.size : undefined;
 
     // If the file is LFS this means that to get the real file size we need to read
     // the file string we get with the LFS info
-    if (this.props.hashElement && this.props.hashElement.isLfs && this.state.file) {
+    if (
+      this.props.hashElement &&
+      this.props.hashElement.isLfs &&
+      this.state.file
+    ) {
       const splitFile = atob(this.state.file.content).split("size ");
-      if (splitFile.length === 2)
-        fileSize = splitFile[splitFile.length - 1];
+      if (splitFile.length === 2) fileSize = splitFile[splitFile.length - 1];
     }
 
     const previewThreshold = this.props.params.PREVIEW_THRESHOLD;
 
-    return <ShowFilePresent
-      externalUrl={this.props.externalUrl}
-      filePath={filePath}
-      gitLabFilePath={gitLabFilePath}
-      lineagesPath={this.props.lineagesPath}
-      branches={this.props.branches}
-      buttonJupyter={buttonJupyter}
-      buttonShareLinkSession={buttonShareLinkSession}
-      file={this.state.file}
-      commit={this.state.commit}
-      error={this.state.error}
-      projectId={this.props.projectId}
-      client={this.props.client}
-      insideProject={true}
-      projectPathWithNamespace={this.props.projectPathWithNamespace}
-      hashElement={this.props.hashElement}
-      fileSize={fileSize}
-      history={this.props.history}
-      previewThreshold={previewThreshold}
-      fileInfo={this.state.fileInfo}
-      branch={this.props.branch}
-    />;
+    return (
+      <ShowFilePresent
+        externalUrl={this.props.externalUrl}
+        filePath={filePath}
+        gitLabFilePath={gitLabFilePath}
+        lineagesPath={this.props.lineagesPath}
+        branches={this.props.branches}
+        buttonJupyter={buttonJupyter}
+        buttonShareLinkSession={buttonShareLinkSession}
+        file={this.state.file}
+        commit={this.state.commit}
+        error={this.state.error}
+        projectId={this.props.projectId}
+        client={this.props.client}
+        insideProject={true}
+        projectPathWithNamespace={this.props.projectPathWithNamespace}
+        hashElement={this.props.hashElement}
+        fileSize={fileSize}
+        history={this.props.history}
+        previewThreshold={previewThreshold}
+        fileInfo={this.state.fileInfo}
+        branch={this.props.branch}
+      />
+    );
   }
 }
 

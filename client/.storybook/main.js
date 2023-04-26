@@ -1,26 +1,26 @@
 module.exports = {
-  "stories": ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
-  "addons": [
+  stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
+  addons: [
     "@storybook/addon-links",
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
     "@storybook/preset-create-react-app",
-    "addon-redux"
+    "addon-redux",
   ],
-  "framework": "@storybook/react",
+  framework: "@storybook/react",
   typescript: {
-    reactDocgen: 'react-docgen-typescript',
+    reactDocgen: "react-docgen-typescript",
     reactDocgenTypescriptOptions: {
       compilerOptions: {
         allowSyntheticDefaultImports: false,
-        esModuleInterop: false
-      }
-    }
+        esModuleInterop: false,
+      },
+    },
   },
   core: {
-    builder: "@storybook/builder-webpack5"
+    builder: "@storybook/builder-webpack5",
   },
   docs: {
-    autodocs: true
-  }
+    autodocs: true,
+  },
 };

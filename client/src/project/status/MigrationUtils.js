@@ -21,40 +21,57 @@ import { Link } from "react-router-dom";
 import { faGithub, faGitter } from "@fortawesome/free-brands-svg-icons";
 
 import { MigrationStatus } from "../Project";
-import { ErrorAlert, InfoAlert, SuccessAlert, WarnAlert } from "../../components/Alert";
+import {
+  ErrorAlert,
+  InfoAlert,
+  SuccessAlert,
+  WarnAlert,
+} from "../../components/Alert";
 import { ExternalIconLink, ExternalLink } from "../../components/ExternalLinks";
 import { Links } from "../../utils/constants/Docs";
 
-
 function GeneralErrorMessage({ error_while, error_what, error_reason }) {
-  return <ErrorAlert>
-    <p>
-      Error while { error_while } the { error_what } version. Please reload the page to try again.
-      If the problem persists you should contact the development team on{" "}
-      <ExternalIconLink url={Links.GITTER} icon={faGitter} title="Gitter" />{" "}
-      or create an issue in {" "}
-      <ExternalIconLink url={`${Links.GITHUB}/issues`} icon={faGithub} title="GitHub" />.
-    </p>
-    <div><strong>Error Message</strong><pre style={{ whiteSpace: "pre-wrap" }}>{error_reason}</pre></div>
-  </ErrorAlert>;
+  return (
+    <ErrorAlert>
+      <p>
+        Error while {error_while} the {error_what} version. Please reload the
+        page to try again. If the problem persists you should contact the
+        development team on{" "}
+        <ExternalIconLink url={Links.GITTER} icon={faGitter} title="Gitter" />{" "}
+        or create an issue in{" "}
+        <ExternalIconLink
+          url={`${Links.GITHUB}/issues`}
+          icon={faGithub}
+          title="GitHub"
+        />
+        .
+      </p>
+      <div>
+        <strong>Error Message</strong>
+        <pre style={{ whiteSpace: "pre-wrap" }}>{error_reason}</pre>
+      </div>
+    </ErrorAlert>
+  );
 }
 
 function MigrationInfoAlert(props) {
-  return <InfoAlert timeout={0} dismissible={false}>
-    {props.children}
-  </InfoAlert>;
+  return (
+    <InfoAlert timeout={0} dismissible={false}>
+      {props.children}
+    </InfoAlert>
+  );
 }
 
 function MigrationSuccessAlert(props) {
-  return <SuccessAlert timeout={0} dismissible={false}>
-    {props.children}
-  </SuccessAlert>;
+  return (
+    <SuccessAlert timeout={0} dismissible={false}>
+      {props.children}
+    </SuccessAlert>
+  );
 }
 
 function MigrationWarnAlert(props) {
-  return <WarnAlert dismissible={false}>
-    {props.children}
-  </WarnAlert>;
+  return <WarnAlert dismissible={false}>{props.children}</WarnAlert>;
 }
 
 /**
@@ -66,8 +83,7 @@ function shouldDisplayVersionWarning(migration) {
   const { check_error, project_supported } = migration.check;
   if (isMigrationFailure({ check_error, migration_error, migration_status }))
     return true;
-  if (project_supported === false )
-    return true;
+  if (project_supported === false) return true;
 
   const { core_compatibility_status } = migration.check;
   const { migration_required } = core_compatibility_status;
@@ -88,12 +104,15 @@ const RENKU_UPDATE_MODE = {
   UPDATE_MANUAL: "UPDATE_MANUAL",
 };
 
-
-function migrationCheckToRenkuVersionStatus({ project_supported, dockerfile_renku_status, core_compatibility_status }) {
+function migrationCheckToRenkuVersionStatus({
+  project_supported,
+  dockerfile_renku_status,
+  core_compatibility_status,
+}) {
   if (project_supported === false) {
     return {
       renkuVersionStatus: RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED,
-      updateMode: RENKU_UPDATE_MODE.PROJECT_NOT_SUPPORTED
+      updateMode: RENKU_UPDATE_MODE.PROJECT_NOT_SUPPORTED,
     };
   }
 
@@ -101,15 +120,15 @@ function migrationCheckToRenkuVersionStatus({ project_supported, dockerfile_renk
   if (dockerfile_renku_status.newer_renku_available === false) {
     return {
       renkuVersionStatus: RENKU_VERSION_SCENARIOS.RENKU_UP_TO_DATE,
-      updateMode: RENKU_UPDATE_MODE.UP_TO_DATE
+      updateMode: RENKU_UPDATE_MODE.UP_TO_DATE,
     };
   }
-  const updateMode = (dockerfile_renku_status.automated_dockerfile_update) ?
-    RENKU_UPDATE_MODE.UPDATE_AUTO :
-    RENKU_UPDATE_MODE.UPDATE_MANUAL;
-  const renkuVersionStatus = (migration_required) ?
-    RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED :
-    RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED;
+  const updateMode = dockerfile_renku_status.automated_dockerfile_update
+    ? RENKU_UPDATE_MODE.UPDATE_AUTO
+    : RENKU_UPDATE_MODE.UPDATE_MANUAL;
+  const renkuVersionStatus = migration_required
+    ? RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED
+    : RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED;
   return { renkuVersionStatus, updateMode };
 }
 
@@ -119,48 +138,89 @@ function isMigrationCheckLoading(loading, migration) {
   return loading || fetching;
 }
 
-function isMigrationFailure({ check_error, migration_error, migration_status }) {
-  if (check_error)
-    return true;
+function isMigrationFailure({
+  check_error,
+  migration_error,
+  migration_status,
+}) {
+  if (check_error) return true;
   return migration_status === MigrationStatus.ERROR && migration_error;
 }
 
-function ShowMigrationFailure({ check_error, migration_error, migration_status }) {
+function ShowMigrationFailure({
+  check_error,
+  migration_error,
+  migration_status,
+}) {
   if (check_error) {
-    return <GeneralErrorMessage
-      error_while="checking"
-      error_what="project template"
-      error_reason={check_error.reason} />;
+    return (
+      <GeneralErrorMessage
+        error_while="checking"
+        error_what="project template"
+        error_reason={check_error.reason}
+      />
+    );
   }
-  if (migration_status === MigrationStatus.ERROR && migration_error
-    && (migration_error.dockerfile_update_failed || migration_error.migrations_failed)) {
-    return <GeneralErrorMessage
-      error_while="updating"
-      error_what="project template"
-      error_reason={migration_error.reason} />;
+  if (
+    migration_status === MigrationStatus.ERROR &&
+    migration_error &&
+    (migration_error.dockerfile_update_failed ||
+      migration_error.migrations_failed)
+  ) {
+    return (
+      <GeneralErrorMessage
+        error_while="updating"
+        error_what="project template"
+        error_reason={migration_error.reason}
+      />
+    );
   }
   return null;
 }
 
 function ManualUpdateInstructions({ docUrl, launchNotebookUrl, introText }) {
-  if (introText == null)
-    introText = "You";
+  if (introText == null) introText = "You";
 
-  return <p className="lh-sm">
-    {introText} can launch a <Link to={launchNotebookUrl}>session</Link> and follow the{" "}
-    <ExternalLink role="text" size="sm" url={docUrl} title="instructions for upgrading" />.
-  </p>;
+  return (
+    <p className="lh-sm">
+      {introText} can launch a <Link to={launchNotebookUrl}>session</Link> and
+      follow the{" "}
+      <ExternalLink
+        role="text"
+        size="sm"
+        url={docUrl}
+        title="instructions for upgrading"
+      />
+      .
+    </p>
+  );
 }
 
 function AskMaintainer({ externalUrl, title }) {
-  if (title == null)
-    title = "ask a project maintainer";
+  if (title == null) title = "ask a project maintainer";
 
-  return <ExternalLink role="text" size="sm" title={title} url={`${externalUrl}/-/project_members`} />;
+  return (
+    <ExternalLink
+      role="text"
+      size="sm"
+      title={title}
+      url={`${externalUrl}/-/project_members`}
+    />
+  );
 }
 
-export { AskMaintainer, GeneralErrorMessage, MigrationInfoAlert, MigrationSuccessAlert, MigrationWarnAlert };
+export {
+  AskMaintainer,
+  GeneralErrorMessage,
+  MigrationInfoAlert,
+  MigrationSuccessAlert,
+  MigrationWarnAlert,
+};
 export { ManualUpdateInstructions };
 export { ShowMigrationFailure, isMigrationFailure };
-export { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS, RENKU_UPDATE_MODE };
+export {
+  migrationCheckToRenkuVersionStatus,
+  RENKU_VERSION_SCENARIOS,
+  RENKU_UPDATE_MODE,
+};
 export { isMigrationCheckLoading, shouldDisplayVersionWarning };

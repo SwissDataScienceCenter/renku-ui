@@ -18,10 +18,14 @@
 
 import { updateProgress } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-function handleKgActivationStatus(data: Record<string, unknown>, webSocket: WebSocket, model: any, notifications: any) {
+function handleKgActivationStatus(
+  data: Record<string, unknown>,
+  webSocket: WebSocket,
+  model: any,
+  notifications: any
+) {
   if (data.message) {
     const statuses = JSON.parse(data.message as string);
     updateStatus(statuses, model.reduxStore);
@@ -31,7 +35,7 @@ function handleKgActivationStatus(data: Record<string, unknown>, webSocket: WebS
 }
 
 function updateStatus(kgActivation: any, store: any) {
-  Object.keys(kgActivation).forEach( (projectId: string) => {
+  Object.keys(kgActivation).forEach((projectId: string) => {
     const id = parseInt(projectId);
     if (id > 0) {
       const status = kgActivation[projectId] ?? null;
@@ -40,8 +44,11 @@ function updateStatus(kgActivation: any, store: any) {
   });
 }
 
-function processStatusForNotifications(statuses: Record<number, number>, notifications: any) {
-  Object.keys(statuses).forEach( (projectId: string) => {
+function processStatusForNotifications(
+  statuses: Record<number, number>,
+  notifications: any
+) {
+  Object.keys(statuses).forEach((projectId: string) => {
     const id = parseInt(projectId);
     if (id > 0) {
       const status = statuses[id] ?? null;

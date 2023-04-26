@@ -29,11 +29,16 @@ import "./Dashboard.scss";
 
 class DashboardWrapper extends Component {
   // ? Temporary wrapper to fetch sessions at least once when opening the dashboard.
-  constructor(props: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+  constructor(props: any) {
+    // eslint-disable-line @typescript-eslint/no-explicit-any
     super(props);
     const notebooksModel = props.model.subModel("notebooks");
     const userModel = props.model.subModel("user");
-    const notebookCoordinator = new NotebooksCoordinator(props.client, notebooksModel, userModel);
+    const notebookCoordinator = new NotebooksCoordinator(
+      props.client,
+      notebooksModel,
+      userModel
+    );
     notebookCoordinator.fetchNotebooks();
   }
 
@@ -43,7 +48,7 @@ class DashboardWrapper extends Component {
 }
 
 function Dashboard() {
-  const user = useSelector( (state: RootStateOrAny) => state.stateModel.user);
+  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
 
   return (
     <div className="rk-dashboard">

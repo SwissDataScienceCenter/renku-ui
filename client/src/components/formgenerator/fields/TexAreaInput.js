@@ -29,14 +29,33 @@ import { FormGroup, Input } from "reactstrap";
 import { FormText } from "../../../utils/ts-wrappers";
 import { ErrorLabel } from "../../formlabels/FormLabels";
 
-function TextareaInput({ name, label, type, value, alert, setInputs, help, disabled = false, required = false }) {
-  return <FormGroup className="field-group">
-    <FormLabel htmlFor={name} label={label} required={required}/>
-    <Input id={name} data-cy={`input-${name}`} name={name} type={type} value={value || ""}
-      onChange={setInputs} disabled={disabled}/>
-    {help && <FormText color="muted">{help}</FormText>}
-    {alert && <ErrorLabel text={alert} />}
-  </FormGroup>;
+function TextareaInput({
+  name,
+  label,
+  type,
+  value,
+  alert,
+  setInputs,
+  help,
+  disabled = false,
+  required = false,
+}) {
+  return (
+    <FormGroup className="field-group">
+      <FormLabel htmlFor={name} label={label} required={required} />
+      <Input
+        id={name}
+        data-cy={`input-${name}`}
+        name={name}
+        type={type}
+        value={value || ""}
+        onChange={setInputs}
+        disabled={disabled}
+      />
+      {help && <FormText color="muted">{help}</FormText>}
+      {alert && <ErrorLabel text={alert} />}
+    </FormGroup>
+  );
 }
 
 export default TextareaInput;

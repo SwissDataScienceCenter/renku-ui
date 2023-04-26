@@ -34,15 +34,14 @@ export interface AuthorFilterProps {
 
 const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
   const changeAuthor = (author: string) => {
-    if (handler)
-      handler(author);
+    if (handler) handler(author);
   };
   const items = [
     { title: "All", value: "all" },
     { title: "Owned by me", value: "user" },
   ];
 
-  const options = items.map(item => {
+  const options = items.map((item) => {
     const nameInput = `author-${item.value}`;
     return (
       <div className="form-rk-green d-flex align-items-center" key={nameInput}>
@@ -50,12 +49,19 @@ const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
           type="radio"
           name="author-filter"
           value={item.value}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => changeAuthor(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            changeAuthor(e.target.value)
+          }
           className="author-input"
           checked={value === item.value}
-          data-cy={nameInput}/>
-        <label className="author-label cursor-pointer"
-          onClick={() => changeAuthor(item.value)}>{item.title}</label>
+          data-cy={nameInput}
+        />
+        <label
+          className="author-label cursor-pointer"
+          onClick={() => changeAuthor(item.value)}
+        >
+          {item.title}
+        </label>
       </div>
     );
   });

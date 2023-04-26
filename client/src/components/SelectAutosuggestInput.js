@@ -31,27 +31,39 @@ import Autosuggest from "react-autosuggest";
 import { FormText } from "../utils/ts-wrappers";
 import { ErrorLabel } from "./formlabels/FormLabels";
 
-function SelectAutosuggestInput({ name, label, existingValue, alert, options,
-  placeholder, setInputs, help, customHandlers, disabled = false, required = false }) {
+function SelectAutosuggestInput({
+  name,
+  label,
+  existingValue,
+  alert,
+  options,
+  placeholder,
+  setInputs,
+  help,
+  customHandlers,
+  disabled = false,
+  required = false,
+}) {
   const [localValue, setLocalValue] = useState(null);
-  const [suggestions, setSuggestions ] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
 
   const getSuggestions = (value) => {
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
 
-    return inputLength === 0 ? options : options.filter(language =>
-      language.name.toLowerCase().includes(inputValue)
-    );
+    return inputLength === 0
+      ? options
+      : options.filter((language) =>
+          language.name.toLowerCase().includes(inputValue)
+        );
   };
 
-  const getSuggestionValue = suggestion => suggestion;
+  const getSuggestionValue = (suggestion) => suggestion;
 
-  const renderSuggestion = suggestion => <span>{suggestion.name}</span>;
+  const renderSuggestion = (suggestion) => <span>{suggestion.name}</span>;
 
   const onSuggestionSelected = (event, { suggestion, method }) => {
-    if (method === "enter")
-      event.preventDefault();
+    if (method === "enter") event.preventDefault();
     setLocalValue(suggestion.name);
     setInputs(suggestion);
   };
@@ -59,17 +71,14 @@ function SelectAutosuggestInput({ name, label, existingValue, alert, options,
   const onSuggestionsFetchRequested = ({ value }) => {
     if (customHandlers.onSuggestionsFetchRequested)
       customHandlers.onSuggestionsFetchRequested(value, setSuggestions);
-    else
-      setSuggestions(getSuggestions(value));
+    else setSuggestions(getSuggestions(value));
   };
 
   const onChange = (event, { newValue, method }) => {
-    if (method === "enter")
-      event.preventDefault();
+    if (method === "enter") event.preventDefault();
     if (method !== "type") {
       setLocalValue(newValue.name);
-    }
-    else {
+    } else {
       // If the user typed, store it as local input, otherwise set the selection
       setLocalValue(newValue);
     }
@@ -80,23 +89,26 @@ function SelectAutosuggestInput({ name, label, existingValue, alert, options,
     setSuggestions([]);
   };
 
-  const getSectionSuggestions = (section)=>{
+  const getSectionSuggestions = (section) => {
     if (!section) return [];
     return section.suggestions;
   };
 
-  const renderSectionTitle = (section)=>{
+  const renderSectionTitle = (section) => {
     return <strong>{section.title}</strong>;
   };
 
   // Allow to set existing value of it exist when load for first time the component
-  const defaultValue = localValue === null && existingValue?.length > 0 ? existingValue : localValue;
+  const defaultValue =
+    localValue === null && existingValue?.length > 0
+      ? existingValue
+      : localValue;
 
   const inputProps = {
     placeholder: placeholder,
     value: defaultValue || "",
     onChange: onChange,
-    disabled: disabled
+    disabled: disabled,
   };
 
   // See https://github.com/moroshko/react-autosuggest#themeProp
@@ -114,34 +126,36 @@ function SelectAutosuggestInput({ name, label, existingValue, alert, options,
     suggestionHighlighted: "react-autosuggest__suggestion--highlighted",
     sectionContainer: "react-autosuggest__section-container",
     sectionContainerFirst: "react-autosuggest__section-container--first",
-    sectionTitle: "react-autosuggest__section-title"
+    sectionTitle: "react-autosuggest__section-title",
   };
 
   // Override the input theme to match our visual style
   const theme = { ...defaultTheme, ...{ input: "form-control" } };
 
   /* TODO: allow grouped and non grouped field */
-  return <FormGroup>
-    <FormLabel htmlFor={name} label={label} required={required}/>
-    <Autosuggest
-      id={name}
-      suggestions={suggestions}
-      multiSection={true}
-      renderSectionTitle={renderSectionTitle}
-      getSectionSuggestions={getSectionSuggestions}
-      onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-      onSuggestionsClearRequested={onSuggestionsClearRequested}
-      getSuggestionValue={getSuggestionValue}
-      renderSuggestion={renderSuggestion}
-      inputProps={inputProps}
-      theme={theme}
-      shouldRenderSuggestions={() => true}
-      onSuggestionSelected={onSuggestionSelected}
-      focusInputOnSuggestionClick={false}
-    />
-    {help && <FormText color="muted">{help}</FormText>}
-    {alert && <ErrorLabel text={alert} />}
-  </FormGroup>;
+  return (
+    <FormGroup>
+      <FormLabel htmlFor={name} label={label} required={required} />
+      <Autosuggest
+        id={name}
+        suggestions={suggestions}
+        multiSection={true}
+        renderSectionTitle={renderSectionTitle}
+        getSectionSuggestions={getSectionSuggestions}
+        onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+        onSuggestionsClearRequested={onSuggestionsClearRequested}
+        getSuggestionValue={getSuggestionValue}
+        renderSuggestion={renderSuggestion}
+        inputProps={inputProps}
+        theme={theme}
+        shouldRenderSuggestions={() => true}
+        onSuggestionSelected={onSuggestionSelected}
+        focusInputOnSuggestionClick={false}
+      />
+      {help && <FormText color="muted">{help}</FormText>}
+      {alert && <ErrorLabel text={alert} />}
+    </FormGroup>
+  );
 }
 
 export default SelectAutosuggestInput;

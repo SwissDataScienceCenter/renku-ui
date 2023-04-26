@@ -31,7 +31,11 @@ import { InlineSubmitButton } from "../../components/buttons/Button";
 
 class ProjectTag extends Component {
   render() {
-    return <Badge className="badge--entity-card" color="rk-text">{this.props.tag}</Badge>;
+    return (
+      <Badge className="badge--entity-card" color="rk-text">
+        {this.props.tag}
+      </Badge>
+    );
   }
 }
 
@@ -46,7 +50,11 @@ function sortedTagList(tagListOrNull) {
 class ProjectTagList extends Component {
   render() {
     const tagList = sortedTagList(this.props.tagList);
-    return (tagList.length > 0) ? tagList.map(t => <ProjectTag key={t} tag={t} />) : <br />;
+    return tagList.length > 0 ? (
+      tagList.map((t) => <ProjectTag key={t} tag={t} />)
+    ) : (
+      <br />
+    );
   }
 }
 
@@ -64,7 +72,10 @@ class ProjectTags extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const update = { value: ProjectTags.tagListString(nextProps), pristine: true };
+    const update = {
+      value: ProjectTags.tagListString(nextProps),
+      pristine: true,
+    };
     return { ...update, ...prevState };
   }
 
@@ -76,17 +87,33 @@ class ProjectTags extends Component {
   handleSubmit(e) {
     e.preventDefault();
     this.setState({ value: this.state.value, updating: true });
-    this.props.onProjectTagsChange(this.state.value)
-      .then(() => {
-        this.setState({ value: this.state.value, updated: true, updating: false });
+    this.props.onProjectTagsChange(this.state.value).then(() => {
+      this.setState({
+        value: this.state.value,
+        updated: true,
+        updating: false,
       });
+    });
   }
 
   render() {
-    const inputField = this.props.settingsReadOnly || this.state.updating ?
-      <Input id="projectTags" readOnly value={this.state.value} data-cy="tags-input" /> :
-      <Input id="projectTags" value={this.state.value} onChange={this.onValueChange} data-cy="tags-input" />;
-    const submitButton = this.props.settingsReadOnly ? null :
+    const inputField =
+      this.props.settingsReadOnly || this.state.updating ? (
+        <Input
+          id="projectTags"
+          readOnly
+          value={this.state.value}
+          data-cy="tags-input"
+        />
+      ) : (
+        <Input
+          id="projectTags"
+          value={this.state.value}
+          onChange={this.onValueChange}
+          data-cy="tags-input"
+        />
+      );
+    const submitButton = this.props.settingsReadOnly ? null : (
       <InlineSubmitButton
         id="update-tag"
         className="updateProjectSettings"
@@ -98,17 +125,20 @@ class ProjectTags extends Component {
         isSubmitting={this.state.updating}
         pristine={this.state.pristine}
         tooltipPristine="Modify tag to update value"
-      />;
-    return <Form onSubmit={this.onSubmit}>
-      <FormGroup>
-        <Label for="projectTags">Project Tags</Label>
-        <div className="d-flex">
-          {inputField}
-          {submitButton}
-        </div>
-        <FormText>Comma-separated list of tags</FormText>
-      </FormGroup>
-    </Form>;
+      />
+    );
+    return (
+      <Form onSubmit={this.onSubmit}>
+        <FormGroup>
+          <Label for="projectTags">Project Tags</Label>
+          <div className="d-flex">
+            {inputField}
+            {submitButton}
+          </div>
+          <FormText>Comma-separated list of tags</FormText>
+        </FormGroup>
+      </Form>
+    );
   }
 }
 

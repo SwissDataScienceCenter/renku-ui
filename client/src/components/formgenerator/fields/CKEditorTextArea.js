@@ -32,37 +32,56 @@ import { Input } from "reactstrap";
 import { FormText } from "../../../utils/ts-wrappers";
 import { ErrorLabel } from "../../formlabels/FormLabels";
 
-
-function CktextareaInput(
-  { name, label, type, value, alert, setInputs, help, outputType, disabled, required = false }) {
+function CktextareaInput({
+  name,
+  label,
+  type,
+  value,
+  alert,
+  setInputs,
+  help,
+  outputType,
+  disabled,
+  required = false,
+}) {
   const [codeView, setCodeView] = useState(false);
 
-  const switchLabel = (outputType === "markdown") ? "Raw Markdown" : "Raw HTML";
+  const switchLabel = outputType === "markdown" ? "Raw Markdown" : "Raw HTML";
 
-  return <div>
-    <FormGroup className="field-group">
-      <div className="pb-2">
-        <FormLabel htmlFor={name} label={label} required={required} />
-        <div className="form-check form-switch float-end">
-          <Input
-            className="form-check-input rounded-pill"
-            type="switch"
-            id="CKEditorSwitch"
-            name="customSwitch"
-            checked={codeView}
-            onChange={() => { setCodeView(!codeView); }}
-          />
-          <Label check htmlFor="exampleCustomSwitch" className="form-check-label">
-            {switchLabel}
-          </Label>
+  return (
+    <div>
+      <FormGroup className="field-group">
+        <div className="pb-2">
+          <FormLabel htmlFor={name} label={label} required={required} />
+          <div className="form-check form-switch float-end">
+            <Input
+              className="form-check-input rounded-pill"
+              type="switch"
+              id="CKEditorSwitch"
+              name="customSwitch"
+              checked={codeView}
+              onChange={() => {
+                setCodeView(!codeView);
+              }}
+            />
+            <Label
+              check
+              htmlFor="exampleCustomSwitch"
+              className="form-check-label"
+            >
+              {switchLabel}
+            </Label>
+          </div>
         </div>
-      </div>
-      {
-        codeView === false ?
+        {codeView === false ? (
           <div data-cy={`ckeditor-${name}`}>
             <CKEditor
               id={name}
-              editor={outputType === "markdown" ? RenkuCKEditor.RenkuMarkdownEditor : RenkuCKEditor.RenkuHTMLEditor}
+              editor={
+                outputType === "markdown"
+                  ? RenkuCKEditor.RenkuMarkdownEditor
+                  : RenkuCKEditor.RenkuHTMLEditor
+              }
               type={type}
               data={value || ""}
               disabled={disabled}
@@ -70,18 +89,16 @@ function CktextareaInput(
               customConfig={{ height: 500 }}
               height={800}
               data-cy={`ckeditor-${name}`}
-              onChange={
-                (event, editor) => {
-                  const artificialEvent = {
-                    target: { name: name, value: editor.getData() },
-                    isPersistent: () => false
-                  };
-                  setInputs(artificialEvent);
-                }
-              }
+              onChange={(event, editor) => {
+                const artificialEvent = {
+                  target: { name: name, value: editor.getData() },
+                  isPersistent: () => false,
+                };
+                setInputs(artificialEvent);
+              }}
             />
           </div>
-          :
+        ) : (
           <Input
             id={name + "text-area"}
             name={name}
@@ -92,11 +109,12 @@ function CktextareaInput(
             onChange={setInputs}
             rows={value ? value.split("\n").length + 2 : 4}
           />
-      }
-      {help && <FormText color="muted">{help}</FormText>}
-      {alert && <ErrorLabel text={alert} />}
-    </FormGroup>
-  </div>;
+        )}
+        {help && <FormText color="muted">{help}</FormText>}
+        {alert && <ErrorLabel text={alert} />}
+      </FormGroup>
+    </div>
+  );
 }
 
 export default CktextareaInput;

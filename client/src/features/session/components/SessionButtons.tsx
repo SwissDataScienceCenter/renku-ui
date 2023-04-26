@@ -30,7 +30,10 @@ import { SessionStatus } from "../../../utils/constants/Notebooks";
 import { NotebooksHelper } from "../../../notebooks";
 import { Notebook } from "../../../notebooks/components/Session";
 import { useStopSessionMutation } from "../../../features/session/sessionApi";
-import { getShowSessionURL, getSessionRunning } from "../../../utils/helpers/SessionFunctions";
+import {
+  getShowSessionURL,
+  getSessionRunning,
+} from "../../../utils/helpers/SessionFunctions";
 
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 
@@ -45,20 +48,35 @@ interface StartSessionDropdownButtonProps {
   loading?: boolean;
 }
 function StartSessionDropdownButton({
-  fullPath, gitUrl, loading = false
+  fullPath,
+  gitUrl,
+  loading = false,
 }: StartSessionDropdownButtonProps) {
   const projectData = { namespace: "", path: fullPath };
   const launchNotebookUrl = Url.get(Url.pages.project.session.new, projectData);
 
   const defaultAction = (
-    <StartSessionButton className="session-link-group" fullPath={fullPath} loading={loading} />
+    <StartSessionButton
+      className="session-link-group"
+      fullPath={fullPath}
+      loading={loading}
+    />
   );
   return (
     <>
-      <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="rk-green" isPrincipal={true}>
+      <ButtonWithMenu
+        className="startButton"
+        size="sm"
+        default={defaultAction}
+        color="rk-green"
+        isPrincipal={true}
+      >
         <DropdownItem>
           <Link className="text-decoration-none" to={launchNotebookUrl}>
-            <img src={rkIconStartWithOptions} className="rk-icon rk-icon-md btn-with-menu-margin" />
+            <img
+              src={rkIconStartWithOptions}
+              className="rk-icon rk-icon-md btn-with-menu-margin"
+            />
             Start with options
           </Link>
         </DropdownItem>
@@ -68,7 +86,6 @@ function StartSessionDropdownButton({
   );
 }
 
-
 interface StartSessionButtonProps {
   className?: string;
   fullPath: string;
@@ -76,60 +93,94 @@ interface StartSessionButtonProps {
   showAsLink?: boolean;
 }
 function StartSessionButton({
-  className, fullPath, loading = false, showAsLink = true
+  className,
+  fullPath,
+  loading = false,
+  showAsLink = true,
 }: StartSessionButtonProps) {
   const projectData = { namespace: "", path: fullPath };
-  const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, projectData);
+  const sessionAutostartUrl = Url.get(
+    Url.pages.project.session.autostart,
+    projectData
+  );
 
-  const currentSessions = useSelector((state: RootStateOrAny) => state.stateModel.notebooks?.notebooks?.all);
+  const currentSessions = useSelector(
+    (state: RootStateOrAny) => state.stateModel.notebooks?.notebooks?.all
+  );
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const localSessionRunning = currentSessions ? getSessionRunning(currentSessions, sessionAutostartUrl) as any : false;
+  const localSessionRunning = currentSessions
+    ? (getSessionRunning(currentSessions, sessionAutostartUrl) as any)
+    : false;
   const history = useHistory();
 
   let content = null;
   if (loading) {
-    content = (<span>Loading...</span>);
-  }
-  else {
-    content = !localSessionRunning ?
-      (<><FontAwesomeIcon icon={faPlay} /> Start </>) :
-      (<div className="d-flex gap-2"><img src="/connect.svg" className="rk-icon rk-icon-md" /> Connect </div>);
+    content = <span>Loading...</span>;
+  } else {
+    content = !localSessionRunning ? (
+      <>
+        <FontAwesomeIcon icon={faPlay} /> Start{" "}
+      </>
+    ) : (
+      <div className="d-flex gap-2">
+        <img src="/connect.svg" className="rk-icon rk-icon-md" /> Connect{" "}
+      </div>
+    );
   }
 
-  const sessionLink = !localSessionRunning ?
-    sessionAutostartUrl :
-    localSessionRunning.showSessionURL;
+  const sessionLink = !localSessionRunning
+    ? sessionAutostartUrl
+    : localSessionRunning.showSessionURL;
 
   const localClass = `btn btn-sm btn-rk-green btn-icon-text start-session-button ${className}`;
   if (showAsLink && !loading)
-    return (<Link to={sessionLink} className={localClass}>{content}</Link>);
+    return (
+      <Link to={sessionLink} className={localClass}>
+        {content}
+      </Link>
+    );
   return (
-    <Button disabled={loading} onClick={() => history.push(sessionLink)} className={localClass}>{content}</Button>
+    <Button
+      disabled={loading}
+      onClick={() => history.push(sessionLink)}
+      className={localClass}
+    >
+      {content}
+    </Button>
   );
 }
 
-
 interface SessionMainButtonProps {
   fullPath: string;
-  gitUrl: string
+  gitUrl: string;
   notebook: Notebook["data"];
   showLogs: Function; // eslint-disable-line @typescript-eslint/ban-types
   stopSessionCallback?: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 function SessionButton({
-  fullPath, gitUrl, notebook, showLogs, stopSessionCallback = undefined
+  fullPath,
+  gitUrl,
+  notebook,
+  showLogs,
+  stopSessionCallback = undefined,
 }: SessionMainButtonProps) {
   const history = useHistory();
   const [stopSession] = useStopSessionMutation();
 
-  const [sessionStatus, setSessionStatus] = useState(notebook?.status?.state ?? "");
+  const [sessionStatus, setSessionStatus] = useState(
+    notebook?.status?.state ?? ""
+  );
   useEffect(() => {
     setSessionStatus(notebook?.status?.state);
   }, [notebook?.status?.state]);
 
-  const cleanAnnotations = NotebooksHelper.cleanAnnotations(notebook.annotations);
+  const cleanAnnotations = NotebooksHelper.cleanAnnotations(
+    notebook.annotations
+  );
   const sessionLink = getShowSessionURL(cleanAnnotations, notebook.name);
-  const handleClick = (url: string) => { history.push(url); };
+  const handleClick = (url: string) => {
+    history.push(url);
+  };
 
   const stopSessionHandler = (serverName: string) => {
     setSessionStatus(SessionStatus.stopping);
@@ -138,13 +189,13 @@ function SessionButton({
     stopSession({ serverName });
   };
 
-  const buttonClass = "btn-rk-green btn-sm btn-icon-text start-session-button session-link-group";
+  const buttonClass =
+    "btn-rk-green btn-sm btn-icon-text start-session-button session-link-group";
   const buttonIconClass = "rk-icon rk-icon-md";
   const dropdownIconClass = "text-rk-green fa-w-14";
 
   const connectButton = (
-    <Button
-      className={buttonClass} onClick={() => handleClick(sessionLink)}>
+    <Button className={buttonClass} onClick={() => handleClick(sessionLink)}>
       <div className="d-flex gap-2">
         <img src="/connect.svg" className={buttonIconClass} /> Connect
       </div>
@@ -153,37 +204,50 @@ function SessionButton({
 
   const stopButton = (
     <Button
-      className={buttonClass} onClick={() => stopSessionHandler(notebook.name)}
-      disabled={sessionStatus === "stopping"}>
+      className={buttonClass}
+      onClick={() => stopSessionHandler(notebook.name)}
+      disabled={sessionStatus === "stopping"}
+    >
       <div className="d-flex align-items-center gap-2">
         <FontAwesomeIcon className={buttonIconClass} icon={faStop} /> Stop
       </div>
     </Button>
   );
 
-  const defaultAction = sessionStatus === "starting" || sessionStatus === "running" ?
-    connectButton : sessionStatus === "failed" || sessionStatus === "stopping" ? stopButton : null;
+  const defaultAction =
+    sessionStatus === "starting" || sessionStatus === "running"
+      ? connectButton
+      : sessionStatus === "failed" || sessionStatus === "stopping"
+      ? stopButton
+      : null;
   const logsButton = (
     <DropdownItem onClick={() => showLogs(notebook.name)}>
-      <FontAwesomeIcon className={dropdownIconClass} icon={faFileAlt} /> Get logs
+      <FontAwesomeIcon className={dropdownIconClass} icon={faFileAlt} /> Get
+      logs
     </DropdownItem>
   );
 
   return (
     <ButtonWithMenu
       disabled={sessionStatus === "stopping"}
-      className="startButton" size="sm" default={defaultAction} color="rk-green" isPrincipal={true}>
-      {sessionStatus === "starting" || sessionStatus === "running" ?
-        (<>
+      className="startButton"
+      size="sm"
+      default={defaultAction}
+      color="rk-green"
+      isPrincipal={true}
+    >
+      {sessionStatus === "starting" || sessionStatus === "running" ? (
+        <>
           <DropdownItem onClick={() => stopSessionHandler(notebook.name)}>
             <FontAwesomeIcon className={dropdownIconClass} icon={faStop} /> Stop
           </DropdownItem>
           <DropdownItem divider />
           {logsButton}
           <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />
-        </>)
-        : logsButton
-      }
+        </>
+      ) : (
+        logsButton
+      )}
     </ButtonWithMenu>
   );
 }

@@ -34,7 +34,8 @@ function processedNotebook(notebook: IIpynb): IIpynb {
   const allInputHidden = notebook.metadata?.hide_input || false;
   const cells = notebook.cells.map((cell) => {
     const c = { ...cell } as unknown as CellWithMetadata;
-    const inputHidden = allInputHidden || c.metadata?.inputHidden || c.metadata?.hide_input;
+    const inputHidden =
+      allInputHidden || c.metadata?.inputHidden || c.metadata?.hide_input;
     if (inputHidden) {
       if (c.cell_type === "code") {
         delete c["input"];

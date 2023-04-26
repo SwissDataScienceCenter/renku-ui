@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-
 /**
  *  renku-ui
  *
@@ -26,9 +25,11 @@
 import React from "react";
 
 import { capitalize } from "../../../components/formgenerator/FormGenerator.present";
-import { ErrorLabel, HelperLabel } from "../../../components/formlabels/FormLabels";
+import {
+  ErrorLabel,
+  HelperLabel,
+} from "../../../components/formlabels/FormLabels";
 import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
-
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -39,8 +40,7 @@ interface FormWarningsProps {
 const FormWarnings = ({ meta }: FormWarningsProps) => {
   const warnings = Object.keys(meta.validation.warnings);
 
-  if (!warnings.length)
-    return null;
+  if (!warnings.length) return null;
 
   let message = "";
   for (const warningsKey of warnings)
@@ -53,20 +53,18 @@ const FormWarnings = ({ meta }: FormWarningsProps) => {
   );
 };
 
-
 interface FormErrorsProps {
   meta: NewProjectMeta | any;
   input: NewProjectInputs | any;
 }
 const FormErrors = ({ meta, input }: FormErrorsProps) => {
-  const errorFields = meta.validation.errors ?
-    Object.keys(meta.validation.errors)
-      .filter(field => !input[`${field}Pristine`]) // don't consider pristine fields
-      .map(field => capitalize(field)) :
-    [];
+  const errorFields = meta.validation.errors
+    ? Object.keys(meta.validation.errors)
+        .filter((field) => !input[`${field}Pristine`]) // don't consider pristine fields
+        .map((field) => capitalize(field))
+    : [];
 
-  if (!errorFields.length)
-    return null;
+  if (!errorFields.length) return null;
 
   return <FormErrorFields errorFields={errorFields} />;
 };
@@ -76,12 +74,14 @@ interface FormErrorFieldsProps {
 }
 const FormErrorFields = ({ errorFields }: FormErrorFieldsProps) => {
   const plural = errorFields.length > 1 ? "s" : "";
-  return (<div className="mt-1 text-end">
-    <ErrorLabel text={""}>
-      Please fix problems in the following field{plural}:{" "}
-      <span className="fw-bold">{errorFields.join(", ")}</span>
-    </ErrorLabel>
-  </div>);
+  return (
+    <div className="mt-1 text-end">
+      <ErrorLabel text={""}>
+        Please fix problems in the following field{plural}:{" "}
+        <span className="fw-bold">{errorFields.join(", ")}</span>
+      </ErrorLabel>
+    </div>
+  );
 };
 
 export { FormErrors, FormWarnings, FormErrorFields };

@@ -27,9 +27,16 @@ function KgActivationHeader() {
   const docKg = Docs.rtdTopicGuide("miscellaneous/knowledge-graph.html");
   const tooltip = (
     <>
-      The Renku Knowledge Graph captures the relationships between projects, datasets, metadata, and more.<br/>
-      <ExternalLink url={docKg} size="sm" role="link" className="link-rk-white"
-        title="Learn more about the Renku Knowledge Graph" />
+      The Renku Knowledge Graph captures the relationships between projects,
+      datasets, metadata, and more.
+      <br />
+      <ExternalLink
+        url={docKg}
+        size="sm"
+        role="link"
+        className="link-rk-white"
+        title="Learn more about the Renku Knowledge Graph"
+      />
     </>
   );
 
@@ -37,12 +44,18 @@ function KgActivationHeader() {
     <>
       <h1 className="activationHeader d-flex gap-2 my-3 align-items-center">
         Projects Inactive in the Knowledge Graph
-        <FontAwesomeIcon id="activation-question" className="cursor-pointer" size="sm" icon={faQuestionCircle} />
+        <FontAwesomeIcon
+          id="activation-question"
+          className="cursor-pointer"
+          size="sm"
+          icon={faQuestionCircle}
+        />
       </h1>
       <ThrottledTooltip
         target="activation-question"
         autoHide={false}
-        tooltip={tooltip} />
+        tooltip={tooltip}
+      />
     </>
   );
 }

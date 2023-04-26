@@ -19,7 +19,9 @@ type ProjectKnowledgeGraphStatusProps = {
 };
 
 function ProjectKnowledgeGraphStatus(props: ProjectKnowledgeGraphStatusProps) {
-  const project = useSelector((state: RootStateOrAny) => state.stateModel.project as StateModelProject);
+  const project = useSelector(
+    (state: RootStateOrAny) => state.stateModel.project as StateModelProject
+  );
   const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
@@ -32,17 +34,25 @@ function ProjectKnowledgeGraphStatus(props: ProjectKnowledgeGraphStatusProps) {
   const isPrivate = projectMetadata.visibility == "private";
 
   const forkedData = project.forkedFromProject;
-  const forked = forkedData != null && Object.keys(forkedData).length > 0 ? true : false;
+  const forked =
+    forkedData != null && Object.keys(forkedData).length > 0 ? true : false;
 
   const graphProgress = project.webhook.progress;
 
   const projectPath = projectMetadata.path;
   const projectNamespace = projectMetadata.namespace;
-  const projectUrlProps = { namespace: projectNamespace, path: projectPath, target: "" };
+  const projectUrlProps = {
+    namespace: projectNamespace,
+    path: projectPath,
+    target: "",
+  };
   const lineageUrl = Url.get(Url.pages.project.lineage, projectUrlProps);
   // Remove the trailing slash, since that is how downstream components expect it.
   const lineagesUrl = lineageUrl.substring(0, lineageUrl.length - 1);
-  const overviewStatusUrl = Url.get(Url.pages.project.overview.status, projectUrlProps);
+  const overviewStatusUrl = Url.get(
+    Url.pages.project.overview.status,
+    projectUrlProps
+  );
   const projectsUrl = Url.get(Url.pages.projects);
   return (
     <KnowledgeGraphStatus

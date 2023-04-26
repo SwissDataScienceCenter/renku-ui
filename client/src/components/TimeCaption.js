@@ -28,32 +28,41 @@ import Time from "../utils/helpers/Time";
  */
 
 function displayTimeFromDate(time) {
-  if (time == null || time === "")
-    return "at unknown time";
+  if (time == null || time === "") return "at unknown time";
 
   const timeDiff = (new Date() - new Date(time)) / 1000;
   const displayTime = timeDiff < 3 ? "just now" : human(timeDiff);
   return displayTime;
 }
 
-function TimeCaption(
-  { time, caption = "Updated", endCaption = "", endPunctuation = ".",
-    className = "", noCaption = false, showTooltip = false }) {
+function TimeCaption({
+  time,
+  caption = "Updated",
+  endCaption = "",
+  endPunctuation = ".",
+  className = "",
+  noCaption = false,
+  showTooltip = false,
+}) {
   // Take a time and caption and generate a span that shows it
   const displayTime = displayTimeFromDate(time);
-  const endCaptionStyled = (endCaption) ? " " + endCaption : "";
-  if (!noCaption)
-    className = "time-caption " + className;
-
+  const endCaptionStyled = endCaption ? " " + endCaption : "";
+  if (!noCaption) className = "time-caption " + className;
 
   const ref = useRef(null);
-  const tooltip = showTooltip && time ?
-    <ThrottledTooltip target={ref} tooltip={Time.toIsoTimezoneString(time)} /> : null;
+  const tooltip =
+    showTooltip && time ? (
+      <ThrottledTooltip target={ref} tooltip={Time.toIsoTimezoneString(time)} />
+    ) : null;
 
   return (
     <>
-      <span ref={ref}
-        className={className}>{noCaption ? "" : caption + " "}{displayTime}{endCaptionStyled}{endPunctuation}</span>
+      <span ref={ref} className={className}>
+        {noCaption ? "" : caption + " "}
+        {displayTime}
+        {endCaptionStyled}
+        {endPunctuation}
+      </span>
       {tooltip}
     </>
   );

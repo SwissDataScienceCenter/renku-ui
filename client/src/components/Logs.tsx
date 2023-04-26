@@ -16,24 +16,33 @@
  * limitations under the License.
  */
 
-
 import React, { useEffect } from "react";
 import { RootStateOrAny, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import {
-  Button, Modal, ModalBody, ModalHeader, Nav, NavItem, NavLink, TabContent, TabPane
+  Button,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
 } from "reactstrap";
 
 import { Loader } from "./Loader";
-import { capitalizeFirstLetter, generateZip } from "../utils/helpers/HelperFunctions";
+import {
+  capitalizeFirstLetter,
+  generateZip,
+} from "../utils/helpers/HelperFunctions";
 import { LOG_ERROR_KEY } from "../notebooks/Notebooks.state";
 import { displaySlice, useDisplaySelector } from "../features/display";
 import useGetSessionLogs from "../utils/customHooks/UseGetSessionLogs";
 import { NotebooksHelper } from "../notebooks";
 
 import "./Logs.css";
-
 
 export interface ILogs {
   data: Record<string, string>;
@@ -44,12 +53,10 @@ export interface ILogs {
 
 function getLogsToShow(logs: ILogs) {
   const logsWithData: Record<string, string> = {};
-  if (!logs || logs.data === undefined)
-    return logsWithData;
+  if (!logs || logs.data === undefined) return logsWithData;
   if (logs.data && typeof logs.data !== "string") {
-    Object.keys(logs.data).map(key => {
-      if (logs.data[key].length > 0)
-        logsWithData[key] = logs.data[key];
+    Object.keys(logs.data).map((key) => {
+      if (logs.data[key].length > 0) logsWithData[key] = logs.data[key];
     });
   }
   return logsWithData;
@@ -64,13 +71,18 @@ interface LogBodyProps extends IFetchableLogs {
   name: string;
 }
 
-const LogTabs = ({ logs }: { logs: Record<string, string>;}) => {
-  const [activeTab, setActiveTab] = React.useState<string|undefined>(undefined);
+const LogTabs = ({ logs }: { logs: Record<string, string> }) => {
+  const [activeTab, setActiveTab] = React.useState<string | undefined>(
+    undefined
+  );
   const [data, setData] = React.useState<Record<string, string> | null>(null);
 
   useEffect(() => {
     if (logs) {
-      const orderedLogs = logs && logs["jupyter-server"] ? { "jupyter-server": logs["jupyter-server"], ...logs } : logs;
+      const orderedLogs =
+        logs && logs["jupyter-server"]
+          ? { "jupyter-server": logs["jupyter-server"], ...logs }
+          : logs;
       setData(orderedLogs);
       if (activeTab == null) {
         const keys = Object.keys(orderedLogs);
@@ -79,23 +91,27 @@ const LogTabs = ({ logs }: { logs: Record<string, string>;}) => {
     }
   }, [logs, activeTab]);
 
-
   const getTitle = (name: string) => {
-    return name.split("-").map(word => capitalizeFirstLetter(word)).join(" ");
+    return name
+      .split("-")
+      .map((word) => capitalizeFirstLetter(word))
+      .join(" ");
   };
 
-  if (!data)
-    return null;
+  if (!data) return null;
 
   return (
     <div>
       <Nav pills className="nav-pills-underline log-nav bg-white">
-        { Object.keys(data).map( tab => {
+        {Object.keys(data).map((tab) => {
           return (
             <NavItem key={tab} data-cy="log-tab" role="button">
               <NavLink
                 className={activeTab === tab ? "active" : ""}
-                onClick={() => { setActiveTab(tab); }}>
+                onClick={() => {
+                  setActiveTab(tab);
+                }}
+              >
                 {getTitle(tab)}
               </NavLink>
             </NavItem>
@@ -103,13 +119,12 @@ const LogTabs = ({ logs }: { logs: Record<string, string>;}) => {
         })}
       </Nav>
       <TabContent activeTab={activeTab}>
-        { Object.keys(data).map(tab => {
+        {Object.keys(data).map((tab) => {
           return (
             <TabPane key={`log_${tab}`} tabId={tab}>
               <div className="d-flex flex-column">
-                <pre
-                  className="bg-primary text-white p-2 w-100 overflow-hidden log-container border-radius-8">
-                  { data[tab] }
+                <pre className="bg-primary text-white p-2 w-100 overflow-hidden log-container border-radius-8">
+                  {data[tab]}
                 </pre>
               </div>
             </TabPane>
@@ -128,32 +143,46 @@ interface LogDownloadButtonProps {
   size?: string;
 }
 
-const LogDownloadButton = ({ logs, downloading, save, size, color }: LogDownloadButtonProps) => {
-
+const LogDownloadButton = ({
+  logs,
+  downloading,
+  save,
+  size,
+  color,
+}: LogDownloadButtonProps) => {
   const canDownload = (logs: ILogs) => {
-    if (logs.fetching || downloading)
+    if (logs.fetching || downloading) return false;
+    if (!logs.data || typeof logs.data === "string") return false;
+    if (Object.keys(logs.data).length < 1 || logs.data[LOG_ERROR_KEY] != null)
       return false;
-    if (!logs.data || typeof logs.data === "string")
-      return false;
-    if (Object.keys(logs.data).length < 1 || logs.data[LOG_ERROR_KEY] != null) return false;
     return true;
   };
 
   return (
-    <Button data-cy="session-log-download-button" color={color ?? "rk-green"} size={size ?? "s"}
-      disabled={!canDownload(logs)} onClick={() => { save(); }}>
+    <Button
+      data-cy="session-log-download-button"
+      color={color ?? "rk-green"}
+      size={size ?? "s"}
+      disabled={!canDownload(logs)}
+      onClick={() => {
+        save();
+      }}
+    >
       <FontAwesomeIcon icon={faSave} />
-      { downloading ? " Downloading " : " Download"}
-      { downloading ? <Loader inline={true} size={16} /> : ""}
+      {downloading ? " Downloading " : " Download"}
+      {downloading ? <Loader inline={true} size={16} /> : ""}
     </Button>
   );
 };
 
-
-const useDownloadLogs = (logs: IFetchableLogs["logs"],
+const useDownloadLogs = (
+  logs: IFetchableLogs["logs"],
   fetchLogs: IFetchableLogs["fetchLogs"],
-  sessionName: string): [boolean|undefined, ()=>Promise<void>] => {
-  const [downloading, setDownloading] = React.useState<boolean|undefined>(undefined);
+  sessionName: string
+): [boolean | undefined, () => Promise<void>] => {
+  const [downloading, setDownloading] = React.useState<boolean | undefined>(
+    undefined
+  );
 
   const save = async () => {
     setDownloading(true);
@@ -188,15 +217,18 @@ function NoLogsAvailable(props: LogBodyProps) {
     <>
       <p data-cy="no-logs-message">No logs available for this pod yet.</p>
       <p>
-            You can try to{" "}
+        You can try to{" "}
         <Button
           data-cy="retry-logs-body"
           className="btn-outline-rk-green"
           size="sm"
-          onClick={() => { fetchLogs(name); }}>
-              refresh
-        </Button>
-        {" "}them after a while.
+          onClick={() => {
+            fetchLogs(name);
+          }}
+        >
+          refresh
+        </Button>{" "}
+        them after a while.
       </p>
     </>
   );
@@ -208,43 +240,65 @@ function SessionLogsBody(props: LogBodyProps) {
   if (!logs.fetched) {
     return (
       <p>
-          Logs unavailable. Please{" "}
-        <Button className="btn-outline-rk-green" size="sm" onClick={() => { fetchLogs(name); }}>download</Button>
-        {" "}them again.
+        Logs unavailable. Please{" "}
+        <Button
+          className="btn-outline-rk-green"
+          size="sm"
+          onClick={() => {
+            fetchLogs(name);
+          }}
+        >
+          download
+        </Button>{" "}
+        them again.
       </p>
     );
   }
   // The keys of logsWithData indicate which logs have data
   const logsWithData = getLogsToShow(logs);
-  if (Object.keys(logsWithData).length < 1 || !logs.data || logs.data[LOG_ERROR_KEY] != null)
+  if (
+    Object.keys(logsWithData).length < 1 ||
+    !logs.data ||
+    logs.data[LOG_ERROR_KEY] != null
+  )
     return <NoLogsAvailable fetchLogs={fetchLogs} logs={logs} name={name} />;
-  return <LogTabs logs={logsWithData}/>;
+  return <LogTabs logs={logsWithData} />;
 }
-
 
 function SessionLogs(props: LogBodyProps) {
   const { fetchLogs, logs } = props;
   const sessionName = props.name;
-  const [ downloading, save ] = useDownloadLogs(logs, fetchLogs, sessionName);
+  const [downloading, save] = useDownloadLogs(logs, fetchLogs, sessionName);
 
   useEffect(() => {
-    if (fetchLogs)
-      fetchLogs(sessionName);
+    if (fetchLogs) fetchLogs(sessionName);
   }, []); // eslint-disable-line
-
 
   // ? Having a minHeight prevent losing the vertical scroll position.
   // TODO: Revisit after #1219
   return (
     <>
       <div className="p-2 p-lg-3 text-nowrap">
-        <Button key="button" color="rk-green" size="sm" style={{ marginRight: 8 }}
-          id="session-refresh-logs" onClick={() => {
+        <Button
+          key="button"
+          color="rk-green"
+          size="sm"
+          style={{ marginRight: 8 }}
+          id="session-refresh-logs"
+          onClick={() => {
             fetchLogs(sessionName);
-          }} disabled={logs.fetching} >
+          }}
+          disabled={logs.fetching}
+        >
           <FontAwesomeIcon icon={faSyncAlt} /> Refresh logs
         </Button>
-        <LogDownloadButton logs={logs} downloading={downloading} save={save} size="sm" color="secondary"/>
+        <LogDownloadButton
+          logs={logs}
+          downloading={downloading}
+          save={save}
+          size="sm"
+          color="secondary"
+        />
       </div>
       <div className="p-2 p-lg-3 border-top">
         <SessionLogsBody fetchLogs={fetchLogs} logs={logs} name={sessionName} />
@@ -264,16 +318,29 @@ interface EnvironmentLogsProps {
   name: string;
 }
 const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
-  const displayModal = useDisplaySelector((state: RootStateOrAny) => state[displaySlice.name].modals.sessionLogs);
-  const { logs, fetchLogs } = useGetSessionLogs(displayModal.targetServer, displayModal.show);
+  const displayModal = useDisplaySelector(
+    (state: RootStateOrAny) => state[displaySlice.name].modals.sessionLogs
+  );
+  const { logs, fetchLogs } = useGetSessionLogs(
+    displayModal.targetServer,
+    displayModal.show
+  );
   const dispatch = useDispatch();
   const toggleLogs = function (target: string) {
-    dispatch(displaySlice.actions.toggleSessionLogsModal({ targetServer: target }));
+    dispatch(
+      displaySlice.actions.toggleSessionLogsModal({ targetServer: target })
+    );
   };
 
-  return (<EnvironmentLogsPresent
-    fetchLogs={fetchLogs} toggleLogs={toggleLogs} logs={logs} name={name} annotations={annotations}
-  />);
+  return (
+    <EnvironmentLogsPresent
+      fetchLogs={fetchLogs}
+      toggleLogs={toggleLogs}
+      logs={logs}
+      name={name}
+      annotations={annotations}
+    />
+  );
 };
 
 /**
@@ -290,27 +357,41 @@ interface EnvironmentLogsPresentProps {
   fetchLogs: IFetchableLogs["fetchLogs"];
   logs?: ILogs;
   name: string;
-  toggleLogs: (name:string) => unknown;
+  toggleLogs: (name: string) => unknown;
 }
-const EnvironmentLogsPresent = ({ logs, name, toggleLogs, fetchLogs, annotations }: EnvironmentLogsPresentProps) => {
+const EnvironmentLogsPresent = ({
+  logs,
+  name,
+  toggleLogs,
+  fetchLogs,
+  annotations,
+}: EnvironmentLogsPresentProps) => {
+  if (!logs?.show || logs?.show !== name || !logs) return null;
 
-  if (!logs?.show || logs?.show !== name || !logs)
-    return null;
-
-  const cleanAnnotations: Record<string, string> = NotebooksHelper.cleanAnnotations(annotations);
+  const cleanAnnotations: Record<string, string> =
+    NotebooksHelper.cleanAnnotations(annotations);
 
   return (
     <Modal
       isOpen={!!logs.show}
       className="bg-body modal-dynamic-width"
       scrollable={true}
-      toggle={() => { toggleLogs(name); }}>
-      <ModalHeader className="bg-body header-multiline" toggle={() => { toggleLogs(name); }} >
+      toggle={() => {
+        toggleLogs(name);
+      }}
+    >
+      <ModalHeader
+        className="bg-body header-multiline"
+        toggle={() => {
+          toggleLogs(name);
+        }}
+      >
         <div>Logs</div>
         <div className="fs-5 fw-normal">
           <small>
-            {cleanAnnotations["namespace"]}/{cleanAnnotations["projectName"]}{" "}
-          [{cleanAnnotations["branch"]}@{cleanAnnotations["commit-sha"].substring(0, 8)}]
+            {cleanAnnotations["namespace"]}/{cleanAnnotations["projectName"]} [
+            {cleanAnnotations["branch"]}@
+            {cleanAnnotations["commit-sha"].substring(0, 8)}]
           </small>
         </div>
       </ModalHeader>

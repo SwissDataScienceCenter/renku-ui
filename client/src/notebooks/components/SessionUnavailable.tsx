@@ -38,15 +38,20 @@ function SessionUnavailable({ filters, urlList }: SessionUnavailableProps) {
 
   return (
     <div className="p-2 p-lg-3 text-nowrap container-lg">
-      <p className="mt-2">The session you are trying to open is not available.</p>
+      <p className="mt-2">
+        The session you are trying to open is not available.
+      </p>
       <Alert color="primary">
         <p className="mb-0">
-          <FontAwesomeIcon size="lg" icon={faQuestionCircle} />
-          {" "}You should either{" "}
-          <Link className="btn btn-primary btn-sm" to={urlNew}>start a new session</Link>
-          {" "}or{" "}
-          <Link className="btn btn-primary btn-sm" to={urlList}>check the running sessions</Link>
-          {" "}
+          <FontAwesomeIcon size="lg" icon={faQuestionCircle} /> You should
+          either{" "}
+          <Link className="btn btn-primary btn-sm" to={urlNew}>
+            start a new session
+          </Link>{" "}
+          or{" "}
+          <Link className="btn btn-primary btn-sm" to={urlList}>
+            check the running sessions
+          </Link>{" "}
         </p>
       </Alert>
     </div>

@@ -17,7 +17,10 @@
  */
 import * as React from "react";
 import { Story } from "@storybook/react";
-import VisibilityInput, { Visibilities, VisibilityInputProps } from "./Visibility";
+import VisibilityInput, {
+  Visibilities,
+  VisibilityInputProps,
+} from "./Visibility";
 
 export default {
   title: "components/Visibility",
@@ -26,8 +29,9 @@ export default {
     namespaceVisibility: {
       options: Visibilities,
       control: { type: "select" },
-      description: "according to the namespace some options are automatically disabled unless the" +
-        "\"disabled\" option is activated which forces it to disable all the options"
+      description:
+        "according to the namespace some options are automatically disabled unless the" +
+        '"disabled" option is activated which forces it to disable all the options',
     },
     value: {
       options: Visibilities,
@@ -35,7 +39,7 @@ export default {
     },
     disabled: {
       control: { type: "boolean" },
-      description: "forces to disable all the options"
+      description: "forces to disable all the options",
     },
     isInvalid: {
       control: { type: "boolean" },
@@ -46,33 +50,34 @@ export default {
     },
     name: {
       control: {
-        type: "text"
+        type: "text",
       },
-      description: "To customize input name. Default: visibility"
-    }
+      description: "To customize input name. Default: visibility",
+    },
   },
 };
 
-
-const Template: Story<VisibilityInputProps> = (args) => <VisibilityInput {...args} />;
+const Template: Story<VisibilityInputProps> = (args) => (
+  <VisibilityInput {...args} />
+);
 
 export const Default = Template.bind({});
 Default.args = {
   namespaceVisibility: Visibilities.Public,
-  value: Visibilities.Internal
+  value: Visibilities.Internal,
 };
 
 export const NoNamespace = Template.bind({});
 NoNamespace.args = {
   namespaceVisibility: undefined,
-  name: "visibility2"
+  name: "visibility2",
 };
 
 export const Disabled = Template.bind({});
 Disabled.args = {
   namespaceVisibility: Visibilities.Public,
   disabled: true,
-  name: "visibility3"
+  name: "visibility3",
 };
 
 export const Invalid = Template.bind({});
@@ -80,11 +85,11 @@ Invalid.args = {
   namespaceVisibility: Visibilities.Public,
   isRequired: true,
   isInvalid: true,
-  name: "visibility4"
+  name: "visibility4",
 };
 
 export const Limited = Template.bind({});
 Limited.args = {
   namespaceVisibility: Visibilities.Private,
-  name: "visibility5"
+  name: "visibility5",
 };

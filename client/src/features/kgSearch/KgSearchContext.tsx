@@ -32,7 +32,11 @@ import { SortingOptions } from "../../components/sortingEntities/SortingEntities
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 import { KgAuthor, KgSearchState } from "./KgSearch";
-import { defaultSearchState, searchStringToState, stateToSearchString } from "./KgSearchState";
+import {
+  defaultSearchState,
+  searchStringToState,
+  stateToSearchString,
+} from "./KgSearchState";
 
 interface KgSearchContextType {
   kgSearchState: KgSearchState;

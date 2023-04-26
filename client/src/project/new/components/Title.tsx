@@ -24,7 +24,11 @@
 import * as React from "react";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import FieldGroup from "../../../components/FieldGroups";
-import { NewProjectHandlers, NewProjectInputs, NewProjectMeta } from "./newProject.d";
+import {
+  NewProjectHandlers,
+  NewProjectInputs,
+  NewProjectMeta,
+} from "./newProject.d";
 
 interface TitleProps {
   handlers: NewProjectHandlers;
@@ -34,11 +38,14 @@ interface TitleProps {
 
 const Title = ({ handlers, meta, input }: TitleProps) => {
   const error = meta.validation.errors["title"];
-  const url = "https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names";
+  const url =
+    "https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names";
 
   const help = (
-    <span>A brief name to identify the project. There are a
-      few <ExternalLink url={url} title="reserved names" role="link" /> you cannot use
+    <span>
+      A brief name to identify the project. There are a few{" "}
+      <ExternalLink url={url} title="reserved names" role="link" /> you cannot
+      use
     </span>
   );
 
@@ -51,7 +58,8 @@ const Title = ({ handlers, meta, input }: TitleProps) => {
       feedback={error}
       invalid={!!error && !input.titlePristine}
       isRequired={true}
-      onChange={(e) => handlers.setProperty("title", e.target.value)} />
+      onChange={(e) => handlers.setProperty("title", e.target.value)}
+    />
   );
 };
 

@@ -20,8 +20,11 @@ function datasetToDict(
   dataset: DatasetCore
 ) {
   const kgCaption =
-    dataset_kg !== undefined && graphStatus === true ? "In the Knowledge Graph" : "Not in the Knowledge Graph";
-  const timeCaption = dataset.created_at != null ? new Date(dataset.created_at) : "";
+    dataset_kg !== undefined && graphStatus === true
+      ? "In the Knowledge Graph"
+      : "Not in the Knowledge Graph";
+  const timeCaption =
+    dataset.created_at != null ? new Date(dataset.created_at) : "";
   return {
     id: dataset.name,
     url: `${datasetsUrl}/${encodeURIComponent(dataset.name)}/`,
@@ -36,7 +39,9 @@ function datasetToDict(
             singleLine={gridDisplay ? false : true}
             charsLimit={gridDisplay ? 200 : 100}
           />
-          <span className="ms-1">{dataset.description.includes("\n") ? " [...]" : ""}</span>
+          <span className="ms-1">
+            {dataset.description.includes("\n") ? " [...]" : ""}
+          </span>
         </Fragment>
       ) : null,
     timeCaption: timeCaption,
@@ -53,12 +58,19 @@ type DatasetListProps = {
   graphStatus: boolean;
 };
 
-function DatasetList({ datasets, datasets_kg, datasetsUrl, graphStatus }: DatasetListProps) {
+function DatasetList({
+  datasets,
+  datasets_kg,
+  datasetsUrl,
+  graphStatus,
+}: DatasetListProps) {
   if (datasets == null) return <Loader />;
 
   const gridDisplay = true;
   const datasetItems = datasets.map((d) => {
-    const dataset_kg = datasets_kg ? datasets_kg.find((dataset_kg) => dataset_kg.name === d.name) : undefined;
+    const dataset_kg = datasets_kg
+      ? datasets_kg.find((dataset_kg) => dataset_kg.name === d.name)
+      : undefined;
     return datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, d);
   });
   return (
@@ -80,12 +92,20 @@ type AddDatasetButtonProps = {
   newDatasetUrl: string;
 };
 
-function AddDatasetButton({ accessLevel, locked, newDatasetUrl }: AddDatasetButtonProps) {
+function AddDatasetButton({
+  accessLevel,
+  locked,
+  newDatasetUrl,
+}: AddDatasetButtonProps) {
   if (accessLevel < ACCESS_LEVELS.MAINTAINER) return null;
   if (locked) {
     return (
       <div id="add-dataset-button">
-        <Button data-cy="add-dataset-button" className="btn-outline-rk-pink" disabled={true}>
+        <Button
+          data-cy="add-dataset-button"
+          className="btn-outline-rk-pink"
+          disabled={true}
+        >
           Add Dataset
         </Button>
         <ThrottledTooltip
@@ -98,7 +118,11 @@ function AddDatasetButton({ accessLevel, locked, newDatasetUrl }: AddDatasetButt
 
   return (
     <div>
-      <Link className="btn btn-outline-rk-pink" role="button" to={newDatasetUrl}>
+      <Link
+        className="btn btn-outline-rk-pink"
+        role="button"
+        to={newDatasetUrl}
+      >
         Add Dataset
       </Link>
     </div>
@@ -128,7 +152,11 @@ export default function DatasetsListView(props: DatasetsListViewProps) {
       <Row key="header" className="pt-2 pb-3">
         <Col className="d-flex mb-2 justify-content-between">
           <h3 className="me-4">Datasets List</h3>
-          <AddDatasetButton accessLevel={props.accessLevel} locked={props.locked} newDatasetUrl={props.newDatasetUrl} />
+          <AddDatasetButton
+            accessLevel={props.accessLevel}
+            locked={props.locked}
+            newDatasetUrl={props.newDatasetUrl}
+          />
         </Col>
       </Row>
       <Row key="datasetsList">

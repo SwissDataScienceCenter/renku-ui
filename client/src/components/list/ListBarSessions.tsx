@@ -17,8 +17,20 @@
  */
 import * as React from "react";
 import { Link } from "react-router-dom";
-import { Fragment, ReactNode, useContext, useEffect, useRef, useState } from "react";
-import { Badge, PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
+import {
+  Fragment,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  Badge,
+  PopoverBody,
+  PopoverHeader,
+  UncontrolledPopover,
+} from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
@@ -38,7 +50,6 @@ import { getStatusObject } from "../../notebooks/components/SessionListStatus";
 import type { SessionRunningStatus } from "../../notebooks/components/SessionListStatus";
 import { SessionButton } from "../../features/session/components/SessionButtons";
 import { Notebook } from "../../notebooks/components/Session";
-
 
 import "./ListBar.scss";
 
@@ -73,12 +84,27 @@ interface SessionStatusIconProps {
   errorSession: string;
   defaultImage: boolean;
 }
-function SessionStatusIcon({ status, data, sessionId, errorSession, defaultImage }: SessionStatusIconProps) {
+function SessionStatusIcon({
+  status,
+  data,
+  sessionId,
+  errorSession,
+  defaultImage,
+}: SessionStatusIconProps) {
   const policy = defaultImage ? <div>A fallback image was used.</div> : null;
   const popover =
-    status === SessionStatus.failed || (status === SessionStatus.running && defaultImage) ? (
-      <UncontrolledPopover target={sessionId} trigger="hover" placement="bottom">
-        <PopoverHeader>{status === SessionStatus.failed ? "Error Details" : "Warning Details"}</PopoverHeader>
+    status === SessionStatus.failed ||
+    (status === SessionStatus.running && defaultImage) ? (
+      <UncontrolledPopover
+        target={sessionId}
+        trigger="hover"
+        placement="bottom"
+      >
+        <PopoverHeader>
+          {status === SessionStatus.failed
+            ? "Error Details"
+            : "Warning Details"}
+        </PopoverHeader>
         <PopoverBody>
           {errorSession}
           {policy}
@@ -89,10 +115,14 @@ function SessionStatusIcon({ status, data, sessionId, errorSession, defaultImage
   return (
     <div
       id={sessionId}
-      className={`d-flex align-items-center gap-1 ${status === SessionStatus.failed ? "cursor-pointer" : ""}`}
+      className={`d-flex align-items-center gap-1 ${
+        status === SessionStatus.failed ? "cursor-pointer" : ""
+      }`}
     >
       <Badge color={data.color}>{data.icon}</Badge>
-      <span className={`text-${data.color} small session-status-text`}>{data.text}</span>
+      <span className={`text-${data.color} small session-status-text`}>
+        {data.text}
+      </span>
       {popover}
     </div>
   );
@@ -127,8 +157,14 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
       <br />
       <span>
         <span className="fw-bold">Date:</span>{" "}
-        <span>{Time.toIsoTimezoneString(commit.committed_date, "datetime-short")}</span>{" "}
-        <TimeCaption caption="~" endPunctuation=" " time={commit.committed_date} />
+        <span>
+          {Time.toIsoTimezoneString(commit.committed_date, "datetime-short")}
+        </span>{" "}
+        <TimeCaption
+          caption="~"
+          endPunctuation=" "
+          time={commit.committed_date}
+        />
         <br />
       </span>
       <span className="fw-bold">Message:</span> <span>{commit.message}</span>
@@ -136,7 +172,12 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
       <span className="fw-bold">Full SHA:</span> <span>{commit.id}</span>
       <br />
       <span className="fw-bold me-1">Details:</span>
-      <ExternalLink url={commit.web_url} title="Open commit in GitLab" role="text" showLinkIcon={true} />
+      <ExternalLink
+        url={commit.web_url}
+        title="Open commit in GitLab"
+        role="text"
+        showLinkIcon={true}
+      />
     </Fragment>
   );
 
@@ -162,8 +203,21 @@ interface ListBarSessionProps extends ListElementProps {
 }
 
 function ListBarSession({
-  creators, description, fullPath, gitUrl, id, imageUrl, itemType, labelCaption, notebook,
-  showLogs, slug, timeCaption, title, url, visibility,
+  creators,
+  description,
+  fullPath,
+  gitUrl,
+  id,
+  imageUrl,
+  itemType,
+  labelCaption,
+  notebook,
+  showLogs,
+  slug,
+  timeCaption,
+  title,
+  url,
+  visibility,
 }: ListBarSessionProps) {
   const { client } = useContext(AppContext);
   const [commit, setCommit] = useState(null);
@@ -177,14 +231,17 @@ function ListBarSession({
   };
 
   useEffect(() => {
-    client.getCommits(id, notebook.annotations.branch).then((commitsFetched: Record<string, any>) => {
-      if (commitsFetched.data?.length > 0) {
-        const sessionCommit = commitsFetched.data.filter(
-          (commit: Record<string, any>) => commit.id === notebook.annotations["commit-sha"]
-        );
-        if (sessionCommit.length > 0) setCommit(sessionCommit[0]);
-      }
-    });
+    client
+      .getCommits(id, notebook.annotations.branch)
+      .then((commitsFetched: Record<string, any>) => {
+        if (commitsFetched.data?.length > 0) {
+          const sessionCommit = commitsFetched.data.filter(
+            (commit: Record<string, any>) =>
+              commit.id === notebook.annotations["commit-sha"]
+          );
+          if (sessionCommit.length > 0) setCommit(sessionCommit[0]);
+        }
+      });
   }, [notebook.annotations]); // eslint-disable-line
 
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
@@ -192,11 +249,22 @@ function ListBarSession({
 
   /* session part */
   const resources = notebook.resources?.requests;
-  const startTime = Time.toIsoTimezoneString(notebook.started, "datetime-short");
+  const startTime = Time.toIsoTimezoneString(
+    notebook.started,
+    "datetime-short"
+  );
   const sessionId = notebook.name;
-  const statusData = getStatusObject(sessionStatus as SessionRunningStatus, notebook.annotations["default_image_used"]);
-  const sessionTimeLabel = sessionStatus === SessionStatus.running ? `${statusData.text} since ` : statusData.text;
-  const sessionDetailsPopover = commit ? <SessionDetailsPopOver commit={commit} image={notebook.image} /> : null;
+  const statusData = getStatusObject(
+    sessionStatus as SessionRunningStatus,
+    notebook.annotations["default_image_used"]
+  );
+  const sessionTimeLabel =
+    sessionStatus === SessionStatus.running
+      ? `${statusData.text} since `
+      : statusData.text;
+  const sessionDetailsPopover = commit ? (
+    <SessionDetailsPopOver commit={commit} image={notebook.image} />
+  ) : null;
 
   return (
     <div className="container-sessions" data-cy="container-session">
@@ -204,16 +272,26 @@ function ListBarSession({
         <Link to={url} className="text-decoration-none">
           <div
             style={imageStyles}
-            className={`cursor-pointer listBar-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}
+            className={`cursor-pointer listBar-entity-image ${
+              !imageUrl ? `card-header-entity--${itemType}` : ""
+            }`}
           >
-            {!imageUrl ? <div className="card-bg-title card-bg-title--small">{title}</div> : null}
+            {!imageUrl ? (
+              <div className="card-bg-title card-bg-title--small">{title}</div>
+            ) : null}
           </div>
         </Link>
       </div>
-      <div className="entity-title text-truncate cursor-pointer" data-cy={`${itemType}-title`}>
+      <div
+        className="entity-title text-truncate cursor-pointer"
+        data-cy={`${itemType}-title`}
+      >
         <Link to={url} className="text-decoration-none">
           <div className="listBar-title text-truncate">
-            <span className="card-title text-truncate" data-cy="list-card-title">
+            <span
+              className="card-title text-truncate"
+              data-cy="list-card-title"
+            >
               {title}
             </span>
             <span className="entity-title--slug text-truncate">{slug}</span>
@@ -234,7 +312,12 @@ function ListBarSession({
       </div>
       <div className="entity-type-visibility align-items-baseline">
         <EntityLabel type={itemType} workflowType={null} />
-        {visibility ? <VisibilityIcon visibility={visibility} className={colorByType.colorText} /> : null}
+        {visibility ? (
+          <VisibilityIcon
+            visibility={visibility}
+            className={colorByType.colorText}
+          />
+        ) : null}
       </div>
       <div className="entity-creators align-items-baseline text-truncate">
         <EntityCreators
@@ -259,7 +342,9 @@ function ListBarSession({
           gitUrl={gitUrl}
           notebook={notebook}
           showLogs={showLogs}
-          stopSessionCallback={(server: string, status: string) => forceSessionStatus(status)}
+          stopSessionCallback={(server: string, status: string) =>
+            forceSessionStatus(status)
+          }
         />
       </div>
       <div className="session-resources text-truncate">
@@ -268,7 +353,10 @@ function ListBarSession({
       <div className="session-time text-truncate">
         <div className="d-flex">
           <span className="session-info">
-            Branch<span className="text-decoration-underline mx-1">{notebook.annotations["branch"]}</span>
+            Branch
+            <span className="text-decoration-underline mx-1">
+              {notebook.annotations["branch"]}
+            </span>
           </span>
           <div className="session-icon-details">{sessionDetailsPopover}</div>
         </div>

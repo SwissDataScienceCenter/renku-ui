@@ -28,7 +28,6 @@ import { mapDataset } from "./DatasetFunctions";
  */
 
 class DatasetCoordinator {
-
   constructor(client, model, notifications = null) {
     this.client = client;
     this.model = model;
@@ -42,7 +41,7 @@ class DatasetCoordinator {
   resetDataset() {
     const emptyModel = datasetSchema.createInitialized();
     this.model.baseModel.setObject({
-      [this.model.baseModelPath]: { $set: emptyModel }
+      [this.model.baseModelPath]: { $set: emptyModel },
     });
   }
 
@@ -61,20 +60,23 @@ class DatasetCoordinator {
         hasPart: files,
         fetched: new Date(),
         fetching: false,
-        fetchError: error
-      }
+        fetchError: error,
+      },
     });
   }
 
   setDataset(datasetKg, datasets, datasetId, datasetFiles) {
-    const data = mapDataset(datasets ?
-      datasets.find(dataset => dataset.identifier === datasetId)
-      : undefined
-    , datasetKg, datasetFiles);
+    const data = mapDataset(
+      datasets
+        ? datasets.find((dataset) => dataset.identifier === datasetId)
+        : undefined,
+      datasetKg,
+      datasetFiles
+    );
     const values = {
       ...data,
       fetched: new Date(),
-      fetching: false
+      fetching: false,
     };
 
     this.model.setObject({ metadata: values });
@@ -87,51 +89,57 @@ class DatasetCoordinator {
   }
 
   fetchDataset(datasetId, datasets, fetchKg) {
-    if (!datasetId)
-      return null;
+    if (!datasetId) return null;
 
     this.set("metadata.fetching", true);
-    if (!fetchKg)
-      return this.setDataset(undefined, datasets, datasetId);
+    if (!fetchKg) return this.setDataset(undefined, datasets, datasetId);
 
     return this.fetchDatasetKg(datasetId, datasets);
   }
 
   fetchDatasetKg(datasetId, datasets) {
-    return this.client.fetchDatasetFromKG(datasetId)
+    return this.client
+      .fetchDatasetFromKG(datasetId)
       .then((datasetInfo) => {
         if (datasetInfo !== undefined)
           return this.setDataset(datasetInfo, datasets, datasetId);
         return null;
-      }).catch(error => {
+      })
+      .catch((error) => {
         this.setDataset(undefined, datasets, datasetId);
         if (error.case === API_ERRORS.notFoundError)
-          this.set("metadata.fetchError", { code: 404, message: "dataset not found or missing permissions" });
+          this.set("metadata.fetchError", {
+            code: 404,
+            message: "dataset not found or missing permissions",
+          });
         else if (error.case === API_ERRORS.internalServerError)
-          this.set("metadata.fetchError", { code: 500, message: "cannot fetch selected dataset" });
+          this.set("metadata.fetchError", {
+            code: 500,
+            message: "cannot fetch selected dataset",
+          });
         else throw error;
       });
   }
 
   fetchDatasetFilesFromCoreService(name, httpProjectUrl, versionUrl) {
-    if (!name || !httpProjectUrl || !versionUrl)
-      return;
+    if (!name || !httpProjectUrl || !versionUrl) return;
 
     this.set("files.fetching", true);
-    return this.client.fetchDatasetFilesFromCoreService(name, httpProjectUrl, versionUrl)
-      .then(response => {
+    return this.client
+      .fetchDatasetFilesFromCoreService(name, httpProjectUrl, versionUrl)
+      .then((response) => {
         if (response.data.result) {
-          const files = response.data.result.files
-            .map(file => ({ name: file.name, atLocation: file.path }));
+          const files = response.data.result.files.map((file) => ({
+            name: file.name,
+            atLocation: file.path,
+          }));
           this.setDatasetFiles(files);
           return { hasPart: files };
-        }
-        else if (response.data?.error) {
+        } else if (response.data?.error) {
           const error = response.data.error;
           const message = error.userMessage ? error.userMessage : error.reason;
           this.setDatasetFiles([], { ...error, message });
-        }
-        else {
+        } else {
           this.setDatasetFiles([]);
         }
         return { hasPart: [] };

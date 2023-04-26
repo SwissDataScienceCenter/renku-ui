@@ -20,35 +20,70 @@ import React, { useEffect, useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
 
 import { QuickNavPresent } from "./QuickNav.present";
-import { TOTAL_QUERIES, useSearchLastQueriesQuery } from "../../features/recentUserActivity/RecentUserActivityApi";
+import {
+  TOTAL_QUERIES,
+  useSearchLastQueriesQuery,
+} from "../../features/recentUserActivity/RecentUserActivityApi";
 import { useKgSearchContext } from "../../features/kgSearch/KgSearchContext";
 
 export const defaultSuggestionQuickBar = {
   title: "",
   type: "fixed",
   suggestions: [
-    { type: "fixed", path: "", id: "link-projects", url: "/search", label: "My Projects", icon: "/project-icon.svg" },
-    { type: "fixed", path: "", id: "link-datasets", url: "/search", label: "My datasets", icon: "/dataset-icon.svg" },
-  ]
+    {
+      type: "fixed",
+      path: "",
+      id: "link-projects",
+      url: "/search",
+      label: "My Projects",
+      icon: "/project-icon.svg",
+    },
+    {
+      type: "fixed",
+      path: "",
+      id: "link-datasets",
+      url: "/search",
+      label: "My datasets",
+      icon: "/dataset-icon.svg",
+    },
+  ],
 };
 
 export const defaultAnonymousSuggestionQuickBar = {
   title: "",
   type: "fixed",
   suggestions: [
-    { type: "fixed", path: "", id: "link-projects", url: "/search", label: "Projects", icon: "/project-icon.svg" },
-    { type: "fixed", path: "", id: "link-datasets", url: "/search", label: "Datasets", icon: "/dataset-icon.svg" },
-  ]
+    {
+      type: "fixed",
+      path: "",
+      id: "link-projects",
+      url: "/search",
+      label: "Projects",
+      icon: "/project-icon.svg",
+    },
+    {
+      type: "fixed",
+      path: "",
+      id: "link-datasets",
+      url: "/search",
+      label: "Datasets",
+      icon: "/dataset-icon.svg",
+    },
+  ],
 };
 
 const QuickNavContainerWithRouter = ({ user }) => {
   const history = useHistory();
 
-  const { kgSearchState, reducers: { setPhrase, setMyDatasets, setMyProjects } } = useKgSearchContext();
+  const {
+    kgSearchState,
+    reducers: { setPhrase, setMyDatasets, setMyProjects },
+  } = useKgSearchContext();
   const phrase = kgSearchState.phrase;
 
   const [currentPhrase, setCurrentPhrase] = useState("");
-  const { data, isFetching, isLoading, refetch } = useSearchLastQueriesQuery(TOTAL_QUERIES);
+  const { data, isFetching, isLoading, refetch } =
+    useSearchLastQueriesQuery(TOTAL_QUERIES);
 
   useEffect(() => {
     setCurrentPhrase(decodeURIComponent(phrase));
@@ -64,7 +99,7 @@ const QuickNavContainerWithRouter = ({ user }) => {
           id: "last-queries",
           url: "/search",
           label: query,
-          query
+          query,
         });
       }
     }
@@ -73,14 +108,16 @@ const QuickNavContainerWithRouter = ({ user }) => {
       return {
         title: "",
         type: "last-queries",
-        suggestions: suggestionLastQueries
+        suggestions: suggestionLastQueries,
       };
     }
     return null;
   };
 
-  const lastQueriesSuggestions = user.logged && !isFetching && !isLoading && data && !data.error ?
-    getLastQueries(data?.queries) : null;
+  const lastQueriesSuggestions =
+    user.logged && !isFetching && !isLoading && data && !data.error
+      ? getLastQueries(data?.queries)
+      : null;
 
   const refetchLastQueries = (target) => {
     setTimeout(() => {
@@ -94,8 +131,7 @@ const QuickNavContainerWithRouter = ({ user }) => {
     e.preventDefault();
     setPhrase(currentPhrase);
     refetchLastQueries(e.currentTarget);
-    if (history.location.pathname === "/search")
-      return;
+    if (history.location.pathname === "/search") return;
     history.push("/search");
   };
 
@@ -113,16 +149,16 @@ const QuickNavContainerWithRouter = ({ user }) => {
 
   const onSuggestionSelected = (event, { suggestion }) => {
     if (suggestion && suggestion?.type === "fixed") {
-      if (suggestion.id === "link-datasets")
-        setMyDatasets();
+      if (suggestion.id === "link-datasets") setMyDatasets();
 
-
-      if (suggestion.id === "link-projects")
-        setMyProjects();
-
+      if (suggestion.id === "link-projects") setMyProjects();
     }
 
-    if (suggestion && suggestion?.type === "last-queries" && event.type === "click") {
+    if (
+      suggestion &&
+      suggestion?.type === "last-queries" &&
+      event.type === "click"
+    ) {
       setPhrase(suggestion.label);
       setCurrentPhrase(suggestion.label);
       refetchLastQueries(event.currentTarget);
@@ -140,15 +176,17 @@ const QuickNavContainerWithRouter = ({ user }) => {
     onSuggestionsClearRequested,
     onSuggestionSelected,
     onSuggestionHighlighted,
-    getSuggestionValue: (suggestion) => suggestion ? suggestion.path : "",
+    getSuggestionValue: (suggestion) => (suggestion ? suggestion.path : ""),
   };
 
-  return <QuickNavPresent
-    loggedIn={user ? user.logged : false}
-    value={currentPhrase}
-    callbacks={callbacks}
-    suggestions={lastQueriesSuggestions}
-  />;
+  return (
+    <QuickNavPresent
+      loggedIn={user ? user.logged : false}
+      value={currentPhrase}
+      callbacks={callbacks}
+      suggestions={lastQueriesSuggestions}
+    />
+  );
 };
 
 const QuickNavContainer = withRouter(QuickNavContainerWithRouter);

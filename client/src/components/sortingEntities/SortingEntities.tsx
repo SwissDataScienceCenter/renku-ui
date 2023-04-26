@@ -36,14 +36,14 @@ export enum SortingOptions {
   AscDate = "date:asc",
   DescDate = "date:desc",
   AscMatchingScore = "matchingScore:asc",
-  DescMatchingScore = "matchingScore:desc"
+  DescMatchingScore = "matchingScore:desc",
 }
 /* eslint-enable no-unused-vars */
 
 export function stringToSortingOption(str: string) {
-  return Object.values(SortingOptions).includes(str as SortingOptions) ?
-    str as SortingOptions :
-    undefined;
+  return Object.values(SortingOptions).includes(str as SortingOptions)
+    ? (str as SortingOptions)
+    : undefined;
 }
 
 interface SortingItems {
@@ -58,15 +58,14 @@ interface SortingItems {
 export interface SortingInputProps {
   sort: SortingOptions | null;
   setSort: Function; // eslint-disable-line @typescript-eslint/ban-types
-  styleType: "mobile" | "desk"
+  styleType: "mobile" | "desk";
 }
 
 type SortOptionsStrings = keyof typeof SortingOptions;
 
-const SortingEntities = ({ setSort, styleType, sort } : SortingInputProps) => {
+const SortingEntities = ({ setSort, styleType, sort }: SortingInputProps) => {
   const changeSorting = (value: SortOptionsStrings) => {
-    if (setSort)
-      setSort(SortingOptions[value]);
+    if (setSort) setSort(SortingOptions[value]);
   };
 
   const items: SortingItems = {
@@ -75,31 +74,45 @@ const SortingEntities = ({ setSort, styleType, sort } : SortingInputProps) => {
     AscDate: "Least recently modified",
     AscTitle: "Title: A to Z",
     DescTitle: "Title: Z to A",
-    AscMatchingScore: "Lowest relevance"
+    AscMatchingScore: "Lowest relevance",
   };
 
   const options = [];
   for (const key in items) {
-    options.push(<option
-      value={key} key={key}>
-      { items[key as keyof SortingItems] }</option>);
+    options.push(
+      <option value={key} key={key}>
+        {items[key as keyof SortingItems]}
+      </option>
+    );
   }
-  const SortOptionByValue = Object.keys(SortingOptions)[Object.values(SortingOptions).indexOf(sort as SortingOptions)];
+  const SortOptionByValue =
+    Object.keys(SortingOptions)[
+      Object.values(SortingOptions).indexOf(sort as SortingOptions)
+    ];
 
   return (
     <>
-      <div className={styleType === "desk" ?
-        "align-items-center d-none d-sm-none d-md-none d-lg-flex d-xl-flex d-xxl-flex"
-        : "sorting--mobile input-filter-box"}>
-        {styleType === "desk" ?
-          <Label className="mx-2 sorting-label--desk">Sort by</Label> :
-          <Label className="mx-2 filter-label my-2">Sort by</Label>}
+      <div
+        className={
+          styleType === "desk"
+            ? "align-items-center d-none d-sm-none d-md-none d-lg-flex d-xl-flex d-xxl-flex"
+            : "sorting--mobile input-filter-box"
+        }
+      >
+        {styleType === "desk" ? (
+          <Label className="mx-2 sorting-label--desk">Sort by</Label>
+        ) : (
+          <Label className="mx-2 filter-label my-2">Sort by</Label>
+        )}
         <Input
           type="select"
           className="sorting-input"
           name="sorting"
           value={SortOptionByValue}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => changeSorting(event.target.value as SortOptionsStrings)}>
+          onChange={(event: ChangeEvent<HTMLInputElement>) =>
+            changeSorting(event.target.value as SortOptionsStrings)
+          }
+        >
           {options}
         </Input>
       </div>

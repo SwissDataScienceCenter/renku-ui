@@ -32,7 +32,7 @@ export type SearchEntitiesQueryParams = {
   visibility?: VisibilitiesFilter;
   userName?: string;
   since?: string;
-  until?: string
+  until?: string;
 };
 
 function getHeaderFieldNumeric(headers: Headers, field: string): number {
@@ -77,10 +77,8 @@ const getPhrase = (phrase?: string) => {
 };
 
 const setDates = (query: string, since?: string, until?: string) => {
-  if (since)
-    query = `${query}&since=${since}`;
-  if (until)
-    query = `${query}&until=${until}`;
+  if (since) query = `${query}&since=${since}`;
+  if (until) query = `${query}&until=${until}`;
   return query;
 };
 
@@ -111,21 +109,27 @@ export const kgSearchApi = createApi({
         author,
         userName,
         since,
-        until
+        until,
       }) => {
         const url = `entities?${getPhrase(
           phrase
         )}&page=${page}&per_page=${perPage}`;
-        return setSort(setDates(
-          setAuthorInQuery(
-            setVisibilityInQuery(setTypeInQuery(url, type), visibility),
-            author,
-            userName
-          ), since, until), sort);
+        return setSort(
+          setDates(
+            setAuthorInQuery(
+              setVisibilityInQuery(setTypeInQuery(url, type), visibility),
+              author,
+              userName
+            ),
+            since,
+            until
+          ),
+          sort
+        );
       },
       transformResponse: (
         response: KgSearchResult[],
-        meta: FetchBaseQueryMeta,
+        meta: FetchBaseQueryMeta
       ) => {
         // Left here temporarily in case we want to use headers
         const headers = meta.response?.headers;
@@ -135,7 +139,7 @@ export const kgSearchApi = createApi({
             perPage: 0,
             total: 0,
             totalPages: 0,
-            results: []
+            results: [],
           };
         }
         const page = getHeaderFieldNumeric(headers, "page");
@@ -147,10 +151,10 @@ export const kgSearchApi = createApi({
           perPage,
           total,
           totalPages,
-          results: response
+          results: response,
         };
-      }
-    })
+      },
+    }),
   }),
   refetchOnMountOrArgChange: KG_SEARCH_API_REFETCH_AFTER_DURATION_S,
 });

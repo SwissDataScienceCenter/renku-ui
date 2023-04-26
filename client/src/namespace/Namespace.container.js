@@ -31,7 +31,7 @@ import { API_ERRORS } from "../api-client/errors";
 const userModel = {
   data: null,
   fetching: false,
-  fetched: false
+  fetched: false,
 };
 const groupModel = { ...userModel };
 
@@ -50,38 +50,35 @@ const NamespaceProjects = (props) => {
     let aborted = false;
     setUser({ fetching: true });
     setGroup({ fetching: true });
-    props.client.getGroupByPath(props.namespace)
-      .catch(error => {
-        if (error.case === API_ERRORS.notFoundError)
-          return { data: {} };
+    props.client
+      .getGroupByPath(props.namespace)
+      .catch((error) => {
+        if (error.case === API_ERRORS.notFoundError) return { data: {} };
         throw error;
       })
-      .then(resp => {
-        if (aborted)
-          return;
+      .then((resp) => {
+        if (aborted) return;
         const { data } = resp;
         setGroup({
           data: data,
           fetching: false,
-          fetched: new Date()
+          fetched: new Date(),
         });
       });
-    props.client.getUserByPath(props.namespace)
-      .then(resp => {
-        if (aborted)
-          return;
+    props.client.getUserByPath(props.namespace).then((resp) => {
+      if (aborted) return;
 
-        const data = resp.data && resp.data.length ?
-          resp.data[0] :
-          {};
-        setUser({
-          data: data,
-          fetching: false,
-          fetched: new Date()
-        });
+      const data = resp.data && resp.data.length ? resp.data[0] : {};
+      setUser({
+        data: data,
+        fetching: false,
+        fetched: new Date(),
       });
+    });
 
-    const cleanup = () => { aborted = true; };
+    const cleanup = () => {
+      aborted = true;
+    };
     return cleanup;
   }, [props.namespace, props.client]);
 

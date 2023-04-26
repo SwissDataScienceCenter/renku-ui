@@ -50,7 +50,7 @@ describe("rendering", () => {
     const div = document.createElement("div");
     const root = createRoot(div);
     const params = {
-      "UI_SHORT_SHA": "development"
+      UI_SHORT_SHA: "development",
     };
     const homeCustomized = {
       custom: { enabled: false },
@@ -58,7 +58,7 @@ describe("rendering", () => {
       projects: null,
       urlMap: {
         siteStatusUrl: `fake-siteStatusUrl`,
-      }
+      },
     };
     await act(async () => {
       root.render(
@@ -75,7 +75,8 @@ describe("rendering", () => {
               />
             </MemoryRouter>
           </AppContext.Provider>
-        </Provider>);
+        </Provider>
+      );
     });
   });
 
@@ -91,7 +92,8 @@ describe("rendering", () => {
               <Dashboard client={client} model={model} user={loggedUser} />
             </MemoryRouter>
           </AppContext.Provider>
-        </Provider>);
+        </Provider>
+      );
     });
   });
 });

@@ -17,7 +17,11 @@
  */
 import * as React from "react";
 import { Story } from "@storybook/react";
-import ProgressIndicator, { ProgressIndicatorProps, ProgressStyle, ProgressType } from "./Progress";
+import ProgressIndicator, {
+  ProgressIndicatorProps,
+  ProgressStyle,
+  ProgressType,
+} from "./Progress";
 
 export default {
   title: "components/ProgressIndicator",
@@ -25,7 +29,7 @@ export default {
   argTypes: {
     title: {
       control: { type: "text" },
-      description: "Main title"
+      description: "Main title",
     },
     description: {
       control: { type: "text" },
@@ -34,12 +38,12 @@ export default {
     style: {
       control: { type: "radio" },
       options: ProgressStyle,
-      description: "Style for background. Light or Dark"
+      description: "Style for background. Light or Dark",
     },
     type: {
       control: { type: "radio" },
       options: [ProgressType.Determinate, ProgressType.Indeterminate],
-      description: "Type of progress-bar. Indeterminate or Determinate"
+      description: "Type of progress-bar. Indeterminate or Determinate",
     },
     percentage: {
       control: {
@@ -50,17 +54,19 @@ export default {
     },
     currentStatus: {
       control: {
-        type: "text"
+        type: "text",
       },
     },
     feedback: {
       control: { type: "text" },
-      description: "Text to indicate next step after the process is completed"
-    }
+      description: "Text to indicate next step after the process is completed",
+    },
   },
 };
 
-const Template: Story<ProgressIndicatorProps> = (args) => <ProgressIndicator {...args} />;
+const Template: Story<ProgressIndicatorProps> = (args) => (
+  <ProgressIndicator {...args} />
+);
 export const Default = Template.bind({});
 Default.args = {
   title: "Creating Project",
@@ -80,7 +86,8 @@ Determinate.args = {
   description: "We've receive your project information. This may take a while.",
   percentage: 10,
   currentStatus: "Knowledge Graph is building... ",
-  feedback: "You'll be redirected to the new project page when the creation is completed.",
+  feedback:
+    "You'll be redirected to the new project page when the creation is completed.",
 };
 
 export const LightStyle = Template.bind({});
@@ -91,5 +98,6 @@ LightStyle.args = {
   description: "We've receive your project information. This may take a while.",
   percentage: 60,
   currentStatus: "Knowledge Graph is building... ",
-  feedback: "You'll be redirected to the new project page when the creation is completed.",
+  feedback:
+    "You'll be redirected to the new project page when the creation is completed.",
 };

@@ -21,25 +21,26 @@ import React from "react";
 import Time from "../../utils/helpers/Time";
 import { UncontrolledTooltip } from "../../utils/ts-wrappers";
 
-
 export interface EntityDurationProps {
   duration: number | null;
   workflowId: string;
 }
 
-function EntityDuration({
-  duration, workflowId
-}: EntityDurationProps) {
-  if (duration == null)
-    return null;
+function EntityDuration({ duration, workflowId }: EntityDurationProps) {
+  if (duration == null) return null;
   const elemId = `duration-${workflowId}`;
   const durationDesc = "Estimated runtime";
   return (
     <>
       <p id={elemId}>
-        <span className="text-rk-text small">Runs in</span> {Time.getDuration(duration)}
+        <span className="text-rk-text small">Runs in</span>{" "}
+        {Time.getDuration(duration)}
       </p>
-      <UncontrolledTooltip key={`duration-elem-${elemId}`} placement="top" target={elemId}>
+      <UncontrolledTooltip
+        key={`duration-elem-${elemId}`}
+        placement="top"
+        target={elemId}
+      >
         <span>{durationDesc}</span>
       </UncontrolledTooltip>
     </>

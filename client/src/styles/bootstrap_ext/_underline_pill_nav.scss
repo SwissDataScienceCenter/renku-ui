@@ -3,21 +3,20 @@
 $nav-pills-underline-link-active-color: $rk-text !default;
 $nav-pills-underline-link-hover-color: map-get($theme-colors, "dark") !default;
 
-$nav-pills-underline-bg:    transparent !default;
-$nav-pills-underline-active-bg:    transparent !default;
-$nav-pills-underline-hover-bg:    transparent !default;
+$nav-pills-underline-bg: transparent !default;
+$nav-pills-underline-active-bg: transparent !default;
+$nav-pills-underline-hover-bg: transparent !default;
 
-$nav-pills-underline-border-width:    1px !default;
-$nav-pills-underline-border-color:    map-get($theme-colors, "dark");
+$nav-pills-underline-border-width: 1px !default;
+$nav-pills-underline-border-color: map-get($theme-colors, "dark");
 
 .nav-pills-underline {
-
-  .nav-item{
+  .nav-item {
     padding: 0.5em 1em 0.5em 0;
   }
   .nav-link {
     @include border-radius(0);
-    padding:0;
+    padding: 0;
     color: $nav-pills-underline-link-active-color;
     &.active,
     .show > & {
@@ -39,8 +38,7 @@ $nav-pills-underline-border-color:    map-get($theme-colors, "dark");
     }
 
     > a.nav-link.active,
-    > a.nav-link.active:hover
-    {
+    > a.nav-link.active:hover {
       text-decoration: none;
       color: $nav-pills-underline-border-color;
       border-bottom-width: $nav-pills-underline-border-width;
@@ -54,8 +52,7 @@ $nav-pills-underline-border-color:    map-get($theme-colors, "dark");
     }
 
     // color
-    > a.nav-link:hover
-    {
+    > a.nav-link:hover {
       color: $nav-pills-underline-link-hover-color;
       border-bottom-color: $nav-pills-underline-link-hover-color;
       background-color: $nav-pills-underline-hover-bg !important;

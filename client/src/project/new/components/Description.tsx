@@ -28,7 +28,7 @@ import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
 
 interface DescriptionProps {
   handlers: {
-    setProperty: Function // eslint-disable-line @typescript-eslint/ban-types
+    setProperty: Function; // eslint-disable-line @typescript-eslint/ban-types
   };
   meta: NewProjectMeta;
   input: NewProjectInputs;
@@ -46,8 +46,10 @@ function Description({ handlers, meta, input }: DescriptionProps) {
       value={input.description ?? ""}
       help="Let people know what the project is about"
       isRequired={false}
-      feedback={error} invalid={isInvalid}
-      onChange={(e) => handlers.setProperty("description", e.target.value)} />
+      feedback={error}
+      invalid={isInvalid}
+      onChange={(e) => handlers.setProperty("description", e.target.value)}
+    />
   );
 }
 

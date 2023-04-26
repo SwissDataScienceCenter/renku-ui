@@ -17,10 +17,11 @@ let schema = new Schema({
     validators: [
       {
         id: "text-length",
-        isValidFun: input => FormGenerator.Validators.isAtLeastLength(input, 3),
-        alert: "Text is too short"
-      }
-    ]
+        isValidFun: (input) =>
+          FormGenerator.Validators.isAtLeastLength(input, 3),
+        alert: "Text is too short",
+      },
+    ],
   },
   description: {
     initial: "",
@@ -31,25 +32,25 @@ let schema = new Schema({
     validators: [
       {
         id: "textarea-length",
-        isValidFun: input => FormGenerator.Validators.isNotEmpty(input),
-        alert: "TextArea can't be empty"
-      }
-    ]
+        isValidFun: (input) => FormGenerator.Validators.isNotEmpty(input),
+        alert: "TextArea can't be empty",
+      },
+    ],
   },
   files: {
     initial: [],
     name: "files",
     label: "Files",
     edit: true,
-    type: FormGenerator.FieldTypes.FILES
+    type: FormGenerator.FieldTypes.FILES,
   },
   image: {
     initial: { options: DatasetImages, selected: -1 },
     name: "image",
     label: "Image",
     edit: false,
-    type: FormGenerator.FieldTypes.IMAGE
-  }
+    type: FormGenerator.FieldTypes.IMAGE,
+  },
 });
 
 describe("rendering on create", () => {
@@ -75,13 +76,20 @@ describe("rendering on create", () => {
 
     const submitCallback = () =>
       Object.values(schema)
-        .map(m => m.label + ": " + m.value + ",\n")
+        .map((m) => m.label + ": " + m.value + ",\n")
         .join("");
 
     root.render(
-      <FormPanel title="Create Dataset" submitLoader={false} btnName="Create Dataset"
-        submitCallback={submitCallback} model={schema} modelTop={model}
-        formLocation="/projects/namespace/project-name/datasets/new"/>);
+      <FormPanel
+        title="Create Dataset"
+        submitLoader={false}
+        btnName="Create Dataset"
+        submitCallback={submitCallback}
+        model={schema}
+        modelTop={model}
+        formLocation="/projects/namespace/project-name/datasets/new"
+      />
+    );
   });
 });
 
@@ -106,25 +114,39 @@ describe("rendering on modify", () => {
 
     const submitCallback = () =>
       Object.values(schema)
-        .map(m => m.label + ": " + m.value + ",\n")
+        .map((m) => m.label + ": " + m.value + ",\n")
         .join("");
 
     root.render(
-      <FormPanel title="Modify Dataset" submitLoader={false} btnName="Create Dataset"
-        submitCallback={submitCallback} model={schema} edit={true} modelTop={model}
-        formLocation="/projects/namespace/project-name/datasets/new"/>);
+      <FormPanel
+        title="Modify Dataset"
+        submitLoader={false}
+        btnName="Create Dataset"
+        submitCallback={submitCallback}
+        model={schema}
+        edit={true}
+        modelTop={model}
+        formLocation="/projects/namespace/project-name/datasets/new"
+      />
+    );
   });
 });
 
 describe("validators", () => {
   it("checks at least length true", () => {
-    expect(FormGenerator.Validators.isAtLeastLength({ value: "Hello World" }, 3)).toEqual(true);
+    expect(
+      FormGenerator.Validators.isAtLeastLength({ value: "Hello World" }, 3)
+    ).toEqual(true);
   });
   it("checks at least length false", () => {
-    expect(FormGenerator.Validators.isAtLeastLength({ value: "He" }, 3 )).toEqual(false);
+    expect(
+      FormGenerator.Validators.isAtLeastLength({ value: "He" }, 3)
+    ).toEqual(false);
   });
   it("checks that is filled true", () => {
-    expect(FormGenerator.Validators.isNotEmpty({ value: "AnyValue" })).toEqual(true);
+    expect(FormGenerator.Validators.isNotEmpty({ value: "AnyValue" })).toEqual(
+      true
+    );
   });
   it("checks that is filled false", () => {
     expect(FormGenerator.Validators.isNotEmpty({ value: "" })).toEqual(false);

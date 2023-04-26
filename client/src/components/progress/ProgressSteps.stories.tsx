@@ -18,7 +18,10 @@
 import * as React from "react";
 import { Story } from "@storybook/react";
 import { ProgressStyle, ProgressType } from "./Progress";
-import ProgressStepsIndicator, { ProgressStepsIndicatorProps, StepsProgressBar } from "./ProgressSteps";
+import ProgressStepsIndicator, {
+  ProgressStepsIndicatorProps,
+  StepsProgressBar,
+} from "./ProgressSteps";
 
 export default {
   title: "components/ProgressStepsIndicator",
@@ -26,7 +29,7 @@ export default {
   argTypes: {
     title: {
       control: { type: "text" },
-      description: "Main title"
+      description: "Main title",
     },
     description: {
       control: { type: "text" },
@@ -35,12 +38,12 @@ export default {
     style: {
       control: { type: "radio" },
       options: ProgressStyle,
-      description: "Style for background. Light or Dark"
+      description: "Style for background. Light or Dark",
     },
     type: {
       control: { type: "radio" },
       options: [ProgressType.Determinate, ProgressType.Indeterminate],
-      description: "Type of progress-bar. Indeterminate or Determinate"
+      description: "Type of progress-bar. Indeterminate or Determinate",
     },
     percentage: {
       control: {
@@ -51,48 +54,59 @@ export default {
     },
     message: {
       control: {
-        type: "text"
+        type: "text",
       },
     },
   },
 };
 const status = {
-  "details": [{
-    "id": 1,
-    "status": "ready",
-    "step": "Initialization"
-  }, {
-    "id": 2,
-    "status": "ready",
-    "step": "Downloading session image"
-  }, {
-    "id": 3,
-    "status": "executing",
-    "step": "Cloning and configuring the repository"
-  }, {
-    "id": 4,
-    "status": "waiting",
-    "step": "Git credentials services"
-  }, {
-    "id": 5,
-    "status": "waiting",
-    "step": "Authentication and proxying services"
-  }, {
-    "id": 6,
-    "status": "waiting",
-    "step": "Auxiliary session services"
-  }, {
-    "id": 7,
-    "status": "failed",
-    "step": "Starting session"
-  }],
-  "message": "Containers with non-ready statuses: git-proxy, git-sidecar, jupyter-server, oauth2-proxy.",
-  "readyNumContainers": 2,
-  "state": "starting",
-  "totalNumContainers": 7,
+  details: [
+    {
+      id: 1,
+      status: "ready",
+      step: "Initialization",
+    },
+    {
+      id: 2,
+      status: "ready",
+      step: "Downloading session image",
+    },
+    {
+      id: 3,
+      status: "executing",
+      step: "Cloning and configuring the repository",
+    },
+    {
+      id: 4,
+      status: "waiting",
+      step: "Git credentials services",
+    },
+    {
+      id: 5,
+      status: "waiting",
+      step: "Authentication and proxying services",
+    },
+    {
+      id: 6,
+      status: "waiting",
+      step: "Auxiliary session services",
+    },
+    {
+      id: 7,
+      status: "failed",
+      step: "Starting session",
+    },
+  ],
+  message:
+    "Containers with non-ready statuses: git-proxy, git-sidecar, jupyter-server, oauth2-proxy.",
+  readyNumContainers: 2,
+  state: "starting",
+  totalNumContainers: 7,
 };
 
-const Template: Story<ProgressStepsIndicatorProps> = (args) => <ProgressStepsIndicator {...args} />;
+const Template: Story<ProgressStepsIndicatorProps> = (args) => (
+  <ProgressStepsIndicator {...args} />
+);
 export const Default = Template.bind({});
 Default.args = {
   title: "Starting Session (continuing from autosave)",
@@ -101,4 +115,3 @@ Default.args = {
   style: ProgressStyle.Dark,
   status: status.details as StepsProgressBar[],
 };
-

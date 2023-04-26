@@ -31,12 +31,12 @@ interface Display {
       show: boolean;
       projectPath: string;
       gitUrl: string;
-    },
+    };
     sessionLogs: {
       show: boolean;
       targetServer: string;
-    }
-  },
+    };
+  };
 }
 
 export type { Display, ProjectConfig, SessionConfig };

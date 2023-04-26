@@ -26,14 +26,13 @@ import "./inactiveKgProjects.css";
 import {
   addFullList,
   updateProgress,
-  useInactiveProjectSelector
+  useInactiveProjectSelector,
 } from "./inactiveKgProjectsSlice";
 import AppContext from "../../utils/context/appContext";
 import { WsMessage } from "../../websocket/WsMessages";
 import KgActivationHeader from "./components/KgActivationHeader";
 import ActivationProgress from "./components/ActivationProgress";
 import useGetInactiveProjects from "../../utils/customHooks/UseGetInactiveProjects";
-
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -55,7 +54,9 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
   const [activating, setActivating] = useState(false);
   const user = useSelector((state: any) => state.stateModel.user);
   const websocket = useSelector((state: any) => state.stateModel.webSocket);
-  const { data, isFetching, isLoading, error } = useGetInactiveProjects(user?.data?.id);
+  const { data, isFetching, isLoading, error } = useGetInactiveProjects(
+    user?.data?.id
+  );
   const projectList = useInactiveProjectSelector(
     (state) => state.kgInactiveProjects
   );
@@ -70,15 +71,16 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
 
   // hook to calculate if still activating a project of the list
   useEffect(() => {
-    const inProgress = projectList.find( p => p.progressActivation !== 100 && p.progressActivation !== null);
-    const totalCompleted = projectList.filter(p => p.progressActivation === 100 || p.progressActivation === -2).length;
-    const totalSelected = projectList.filter(p => p.selected).length;
-    if (inProgress)
-      setActivating(true);
-    if (totalCompleted === totalSelected)
-      setActivating(false);
+    const inProgress = projectList.find(
+      (p) => p.progressActivation !== 100 && p.progressActivation !== null
+    );
+    const totalCompleted = projectList.filter(
+      (p) => p.progressActivation === 100 || p.progressActivation === -2
+    ).length;
+    const totalSelected = projectList.filter((p) => p.selected).length;
+    if (inProgress) setActivating(true);
+    if (totalCompleted === totalSelected) setActivating(false);
   }, [projectList]);
-
 
   const onMasterCheck = (isChecked: boolean) => {
     const tempList = projectList.map((project) => {
@@ -89,8 +91,7 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
 
   const onItemCheck = (isChecked: boolean, item: InactiveKgProjects) => {
     const tempList = projectList.map((project) => {
-      if (project.id === item.id)
-        return { ...project, selected: isChecked };
+      if (project.id === item.id) return { ...project, selected: isChecked };
       return project;
     });
     dispatch(addFullList(tempList));
@@ -99,60 +100,93 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
   const activateProjects = () => {
     setActivating(true);
     if (client && websocket.open && socket) {
-      const projectSelected = projectList.filter( p => p.selected && p.progressActivation !== 100);
-      for (let i = 0 ; i < projectSelected.length; i++) {
+      const projectSelected = projectList.filter(
+        (p) => p.selected && p.progressActivation !== 100
+      );
+      for (let i = 0; i < projectSelected.length; i++) {
         const projectId = projectSelected[i].id;
-        client.createGraphWebhook(projectId)
+        client
+          .createGraphWebhook(projectId)
           .then((activation: boolean) => {
             if (activation) {
               dispatch(updateProgress({ id: projectId, progress: 0 }));
-              const message = JSON.stringify(new WsMessage({ projects: [projectId] }, "pullKgActivationStatus"));
+              const message = JSON.stringify(
+                new WsMessage(
+                  { projects: [projectId] },
+                  "pullKgActivationStatus"
+                )
+              );
               socket.send(message);
             }
           })
-          .catch(() => dispatch(updateProgress({ id: projectSelected[i].id, progress: -2 })));
+          .catch(() =>
+            dispatch(
+              updateProgress({ id: projectSelected[i].id, progress: -2 })
+            )
+          );
       }
-    }
-    else {
+    } else {
       setActivating(false);
     }
   };
 
-  const totalSelected = (projectList.filter((p) => p.selected && p.progressActivation !== 100))?.length ?? 0;
-  const totalPending = (projectList.filter((p) => p.progressActivation !== 100))?.length ?? 0;
-  const activationButton = <button
-    className="btn btn-rk-green"
-    disabled={activating}
-    onClick={() => activateProjects()}>
-    { activating ? "Activating..." : `Activate ${totalSelected} ${totalSelected > 1 ? "projects" : "project"}` }
-  </button>;
-  const activatingPlaceholder = activating ?
-    <div className="small py-2 fst-italic">Activation may take several minutes, you can continue interacting with
-      the application and receive a notification when it is finished. Or restart the process at any time.</div> : null;
-
+  const totalSelected =
+    projectList.filter((p) => p.selected && p.progressActivation !== 100)
+      ?.length ?? 0;
+  const totalPending =
+    projectList.filter((p) => p.progressActivation !== 100)?.length ?? 0;
+  const activationButton = (
+    <button
+      className="btn btn-rk-green"
+      disabled={activating}
+      onClick={() => activateProjects()}
+    >
+      {activating
+        ? "Activating..."
+        : `Activate ${totalSelected} ${
+            totalSelected > 1 ? "projects" : "project"
+          }`}
+    </button>
+  );
+  const activatingPlaceholder = activating ? (
+    <div className="small py-2 fst-italic">
+      Activation may take several minutes, you can continue interacting with the
+      application and receive a notification when it is finished. Or restart the
+      process at any time.
+    </div>
+  ) : null;
 
   if (isFetching || isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center gap-2 flex-column fst-italic">
-        <Loader />Loading projects.
-      </div>);
+        <Loader />
+        Loading projects.
+      </div>
+    );
   }
 
   if (error) {
     return (
       <div className="d-flex justify-content-center align-items-center gap-2 flex-column fst-italic">
         Error loading projects, please refresh page to try again.
-      </div>);
+      </div>
+    );
   }
-  const totalActive = (projectList.filter((p) => p.progressActivation === 100))?.length ?? 0;
-  const content = projectList.length !== totalActive ?
-    (
+  const totalActive =
+    projectList.filter((p) => p.progressActivation === 100)?.length ?? 0;
+  const content =
+    projectList.length !== totalActive ? (
       <div className="col-md-12 p-4 border-radius-8 bg-white">
         <div className="pb-4">
           {activationButton}
           {activatingPlaceholder}
         </div>
-        <Table hover borderless responsive className="table inactive-kg-projects-table">
+        <Table
+          hover
+          borderless
+          responsive
+          className="table inactive-kg-projects-table"
+        >
           <thead>
             <tr>
               <th scope="col" className="align-middle">
@@ -165,17 +199,28 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
                   onChange={(e) => onMasterCheck(e.target.checked)}
                 />
               </th>
-              <th scope="col" className="text-rk-text small">Name</th>
-              <th scope="col" className="text-rk-text small">Namespace</th>
-              <th scope="col" className="text-rk-text small">Visibility</th>
-              <th scope="col" className="text-rk-text small">Status</th>
+              <th scope="col" className="text-rk-text small">
+                Name
+              </th>
+              <th scope="col" className="text-rk-text small">
+                Namespace
+              </th>
+              <th scope="col" className="text-rk-text small">
+                Visibility
+              </th>
+              <th scope="col" className="text-rk-text small">
+                Status
+              </th>
             </tr>
           </thead>
           <tbody>
             {projectList.map((project) => (
-              <tr key={project.id} className={project.selected ? "selected" : ""}>
+              <tr
+                key={project.id}
+                className={project.selected ? "selected" : ""}
+              >
                 <th scope="row">
-                  {project.progressActivation !== 100 ?
+                  {project.progressActivation !== 100 ? (
                     <input
                       type="checkbox"
                       checked={project.selected}
@@ -183,31 +228,38 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
                       disabled={activating}
                       id={`rowCheck${project.id}`}
                       onChange={(e) => onItemCheck(e.target.checked, project)}
-                    /> : null
-                  }
+                    />
+                  ) : null}
                 </th>
                 <td className="project-title-table">
-                  <Link to={`/projects/${project.namespaceWithPath}`}
-                    className="d-flex text-rk-green gap-1 text-decoration-none text-truncate align-items-center">
+                  <Link
+                    to={`/projects/${project.namespaceWithPath}`}
+                    className="d-flex text-rk-green gap-1 text-decoration-none text-truncate align-items-center"
+                  >
                     <Briefcase title="project" />
                     <span className="text-rk-green text-decoration-none text-truncate">
                       {project.title}
-                    </span></Link>
+                    </span>
+                  </Link>
                 </td>
-                <td className="project-title-table text-truncate">{project.namespaceWithPath}</td>
+                <td className="project-title-table text-truncate">
+                  {project.namespaceWithPath}
+                </td>
                 <td className="text-capitalize">{project.visibility}</td>
-                <td><ActivationProgress project={project} /></td>
+                <td>
+                  <ActivationProgress project={project} />
+                </td>
               </tr>
             ))}
           </tbody>
         </Table>
-
       </div>
-    ) :
-    (
+    ) : (
       <div className="col-md-12 p-4 border-radius-8 bg-white">
         <div className="d-flex justify-content-center align-items-center gap-2">
-          <Balloon size="30" /> All projects are in the Knowledge Graph.</div></div>
+          <Balloon size="30" /> All projects are in the Knowledge Graph.
+        </div>
+      </div>
     );
 
   return (
@@ -215,9 +267,7 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
       <div className="row">
         <KgActivationHeader />
       </div>
-      <div className="row">
-        {content}
-      </div>
+      <div className="row">{content}</div>
     </div>
   );
 }

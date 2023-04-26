@@ -37,7 +37,7 @@ const NotificationsInfo = {
     SESSION_START: "Session",
     PROJECT_API: "Project data",
     PROJECT_FORKED: "Project forked",
-    KG_ACTIVATION: "KG Activation"
+    KG_ACTIVATION: "KG Activation",
   },
 };
 
@@ -64,7 +64,16 @@ class NotificationsCoordinator {
    * @param {string} [longDesc] - detailed description of what happened.
    * @param {string} [forceRead] - mark the notification as read
    */
-  addNotification(level, topic, desc, link, linkText, awareLocations, longDesc, forceRead) {
+  addNotification(
+    level,
+    topic,
+    desc,
+    link,
+    linkText,
+    awareLocations,
+    longDesc,
+    forceRead
+  ) {
     const read = !!(forceRead || level === NotificationsInfo.Levels.INFO);
     const notification = {
       id: Math.random().toString(36).substring(2),
@@ -76,12 +85,11 @@ class NotificationsCoordinator {
       linkText,
       awareLocations,
       longDesc,
-      read
+      read,
     };
     const notifications = this.model.get("");
     let updateObject = { all: { $set: [...notifications.all, notification] } };
-    if (!read)
-      updateObject.unread = notifications.unread + 1;
+    if (!read) updateObject.unread = notifications.unread + 1;
     this.model.setObject(updateObject);
     return notification;
   }
@@ -99,7 +107,7 @@ class NotificationsCoordinator {
     if (changed) {
       this.model.setObject({
         all: { $set: updateAll },
-        unread: notifications.unread - 1
+        unread: notifications.unread - 1,
       });
     }
   }
@@ -117,7 +125,7 @@ class NotificationsCoordinator {
     if (changed) {
       this.model.setObject({
         all: { $set: updateAll },
-        unread: 0
+        unread: 0,
       });
     }
   }

@@ -41,25 +41,29 @@ const VisibilityIcon = ({ visibility, className }: VisibilityIconProps) => {
   const icon = {
     public: <Globe />,
     private: <Lock />,
-    internal: <Shield />
+    internal: <Shield />,
   };
   const baseUrl = client.baseUrl;
   const { hostname } = baseUrl ? new URL(baseUrl) : { hostname: "renkulab.io" };
 
   const tooltip = {
     public: "Public: Anyone can access your project.",
-    private: "Private: Only members explicitly added to this project can access it.",
-    internal: `Internal: Anyone signed-in to ${hostname} can access your project.` //pending for other deployments
+    private:
+      "Private: Only members explicitly added to this project can access it.",
+    internal: `Internal: Anyone signed-in to ${hostname} can access your project.`, //pending for other deployments
   };
 
-  return <>
-    <div ref={ref} className={`card-visibility-icon d-flex gap-2 align-items-baseline ${className}`}>
-      { icon[visibility] || "" } {capitalizeFirstLetter(visibility)}
-    </div>
-    <ThrottledTooltip
-      target={ref}
-      tooltip={tooltip[visibility]} />
-  </>;
+  return (
+    <>
+      <div
+        ref={ref}
+        className={`card-visibility-icon d-flex gap-2 align-items-baseline ${className}`}
+      >
+        {icon[visibility] || ""} {capitalizeFirstLetter(visibility)}
+      </div>
+      <ThrottledTooltip target={ref} tooltip={tooltip[visibility]} />
+    </>
+  );
 };
 
 export default VisibilityIcon;

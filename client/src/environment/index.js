@@ -18,5 +18,4 @@
 
 import { EnvironmentCoordinator } from "./EnvironmentCoordinator";
 
-
 export { EnvironmentCoordinator };

@@ -42,16 +42,23 @@ function createStore(renkuStateModelReducer) {
   return createStoreWithEnhancers(renkuStateModelReducer);
 }
 
-function createStoreWithEnhancers(renkuStateModelReducer, enhancers = undefined) {
+function createStoreWithEnhancers(
+  renkuStateModelReducer,
+  enhancers = undefined
+) {
   renkuStateModelReducer[kgSearchApi.reducerPath] = kgSearchApi.reducer;
   renkuStateModelReducer[projectApi.reducerPath] = projectApi.reducer;
   renkuStateModelReducer[projectCoreApi.reducerPath] = projectCoreApi.reducer;
   renkuStateModelReducer[projectKgApi.reducerPath] = projectKgApi.reducer;
-  renkuStateModelReducer[sessionSidecarApi.reducerPath] = sessionSidecarApi.reducer;
+  renkuStateModelReducer[sessionSidecarApi.reducerPath] =
+    sessionSidecarApi.reducer;
   renkuStateModelReducer[sessionApi.reducerPath] = sessionApi.reducer;
-  renkuStateModelReducer[recentUserActivityApi.reducerPath] = recentUserActivityApi.reducer;
-  renkuStateModelReducer[inactiveKgProjectsApi.reducerPath] = inactiveKgProjectsApi.reducer;
-  renkuStateModelReducer[kgInactiveProjectsSlice.name] = kgInactiveProjectsSlice.reducer;
+  renkuStateModelReducer[recentUserActivityApi.reducerPath] =
+    recentUserActivityApi.reducer;
+  renkuStateModelReducer[inactiveKgProjectsApi.reducerPath] =
+    inactiveKgProjectsApi.reducer;
+  renkuStateModelReducer[kgInactiveProjectsSlice.name] =
+    kgInactiveProjectsSlice.reducer;
   renkuStateModelReducer[versionsApi.reducerPath] = versionsApi.reducer;
   renkuStateModelReducer[displaySlice.name] = displaySlice.reducer;
   renkuStateModelReducer[workflowsApi.reducerPath] = workflowsApi.reducer;

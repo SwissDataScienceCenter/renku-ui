@@ -19,11 +19,21 @@ import * as React from "react";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Input } from "../../utils/ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGlobe, faLock, faUserFriends } from "@fortawesome/free-solid-svg-icons";
+import {
+  faGlobe,
+  faLock,
+  faUserFriends,
+} from "@fortawesome/free-solid-svg-icons";
 
 import "./Visibility.css";
 import { computeVisibilities } from "../../utils/helpers/HelperFunctions";
-import { ErrorLabel, HelperLabel, InputHintLabel, InputLabel, LoadingLabel } from "../formlabels/FormLabels";
+import {
+  ErrorLabel,
+  HelperLabel,
+  InputHintLabel,
+  InputLabel,
+  LoadingLabel,
+} from "../formlabels/FormLabels";
 
 /**
  *  renku-ui
@@ -151,26 +161,50 @@ const VisibilityInput = ({
     const isDisabled = disabled || disabledByNamespace;
 
     return (
-      <div className="visibility-box col-sm-12 col-md-4 col-lg-4 px-0" key={`visibility-${item.value}`}>
+      <div
+        className="visibility-box col-sm-12 col-md-4 col-lg-4 px-0"
+        key={`visibility-${item.value}`}
+      >
         <div className="d-flex">
-          <div className={isDisabled ? "cursor-not-allowed d-inline" : "d-inline"}>
+          <div
+            className={isDisabled ? "cursor-not-allowed d-inline" : "d-inline"}
+          >
             <Input
               type="radio"
               name={name}
               value={item.value}
               disabled={isDisabled}
               checked={visibility === item.value}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => changeVisibility(e.target.value)}
-              className={markInvalid && !isDisabled ? "visibility-input--error" : "visibility-input"}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                changeVisibility(e.target.value)
+              }
+              className={
+                markInvalid && !isDisabled
+                  ? "visibility-input--error"
+                  : "visibility-input"
+              }
               data-cy={`visibility-${item.value}`}
             />
           </div>
           <div
-            className={isDisabled ? "cursor-not-allowed px-2" : "cursor-pointer px-2"}
+            className={
+              isDisabled ? "cursor-not-allowed px-2" : "cursor-pointer px-2"
+            }
             onClick={() => changeVisibility(item.value, isDisabled)}
           >
-            <label className={isDisabled ? "cursor-not-allowed label-disabled" : "cursor-pointer"}>{item.title}</label>
-            <FontAwesomeIcon icon={item.icon} className={isDisabled ? "icon-disabled" : ""} />
+            <label
+              className={
+                isDisabled
+                  ? "cursor-not-allowed label-disabled"
+                  : "cursor-pointer"
+              }
+            >
+              {item.title}
+            </label>
+            <FontAwesomeIcon
+              icon={item.icon}
+              className={isDisabled ? "icon-disabled" : ""}
+            />
           </div>
         </div>
         <div onClick={() => changeVisibility(item.value, isDisabled)}>
@@ -182,14 +216,17 @@ const VisibilityInput = ({
 
   const disableByNamespaceOptions = {
     public: "",
-    private: "Public and Internal options are not available due to namespace restrictions",
+    private:
+      "Public and Internal options are not available due to namespace restrictions",
     internal: "Public is not available due to namespace restrictions",
   };
   const disabledByNamespace =
     namespaceVisibility !== Visibilities.Public ? (
       <InputHintLabel text={disableByNamespaceOptions[namespaceVisibility]} />
     ) : null;
-  const errorFeedback = markInvalid ? <ErrorLabel text="Please select visibility" /> : null;
+  const errorFeedback = markInvalid ? (
+    <ErrorLabel text="Please select visibility" />
+  ) : null;
 
   return (
     <>
