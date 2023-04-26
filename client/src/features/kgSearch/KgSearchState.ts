@@ -137,7 +137,6 @@ const queryParameterStateValue = <T extends KgStateSimpleKey>(qp: URLSearchParam
  * @param qp Query parameters
  * @returns since, typeDate, until
  */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 const queryParameterDateStateValue = (qp: URLSearchParams): Pick<KgSearchState, "since" | "typeDate" | "until"> => {
   const typeDateString = qp.get("typeDate");
   const typeDate = stringToDateFilter(typeDateString ?? "") ?? defaultSearchState.typeDate;
@@ -206,25 +205,24 @@ export const stateToSearchString = (state: Partial<KgSearchState>): string => {
   {
     const key = "type";
     const val = state[key];
-    if (!isInitialEqualToObject(key, val)) {
-      Object.keys(val!).forEach((k) => {
-        if (val![k as keyof typeof val] === true) stateMap.push([key, k]);
+    if (val != null && !isInitialEqualToObject(key, val)) {
+      Object.keys(val).forEach((k) => {
+        if (val[k as keyof typeof val] === true) stateMap.push([key, k]);
       });
     }
   }
   {
     const key = "visibility";
     const val = state[key];
-    if (!isInitialEqualToObject(key, val)) {
-      Object.keys(val!).forEach((k) => {
-        if (val![k as keyof typeof val] === true) stateMap.push([key, k]);
+    if (val != null && !isInitialEqualToObject(key, val)) {
+      Object.keys(val).forEach((k) => {
+        if (val[k as keyof typeof val] === true) stateMap.push([key, k]);
       });
     }
   }
   const searchParams = new URLSearchParams(stateMap);
   return searchParams.toString();
 };
-/* eslint-enable @typescript-eslint/no-non-null-assertion */
 
 function isInitialEqualToObject(
   key: KgStateTypeKey | KgStateVisibilityKey,
