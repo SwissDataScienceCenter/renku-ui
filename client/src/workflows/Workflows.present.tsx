@@ -306,7 +306,7 @@ function orderWorkflows(
 ) {
   const filtered = !showInactive
     ? workflows.filter((w) => w.active)
-    : workflows;
+    : [...workflows];
 
   // ? Pre-sort by a unique prop to guarantee consistency
   const preSorted = filtered.sort((a, b) =>
