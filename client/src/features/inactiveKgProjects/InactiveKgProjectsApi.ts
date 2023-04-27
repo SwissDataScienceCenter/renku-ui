@@ -18,7 +18,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { InactiveKgProjects } from "./InactiveKgProjects";
 
-
 interface InactiveKgProjectsResponse {
   data: InactiveKgProjects[];
   nextPage?: number | undefined;
@@ -36,33 +35,37 @@ export const inactiveKgProjectsApi = createApi({
   reducerPath: "inactiveKgProjectsApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/kg" }),
   endpoints: (builder) => ({
-    getInactiveKgProjects: builder.query<InactiveKgProjectsResponse, InactiveProjectParams>({
+    getInactiveKgProjects: builder.query<
+      InactiveKgProjectsResponse,
+      InactiveProjectParams
+    >({
       query: (params: InactiveProjectParams) =>
         `users/${params.userId}/projects?state=NOT_ACTIVATED&per_page=${params.perPage}&page=${params.page}`,
-      transformResponse: (response: any, meta) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transformResponse: (response: any, meta) => {
         let projects = [];
         if (response) {
-          projects = response
-            .map( (p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-              return {
-                id: p.id,
-                title: p.name,
-                namespaceWithPath: p.path,
-                description: p.description ?? "",
-                visibility: p.visibility,
-                selected: true,
-                progressActivation: null,
-              };
-            });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          projects = response.map((p: any) => {
+            return {
+              id: p.id,
+              title: p.name,
+              namespaceWithPath: p.path,
+              description: p.description ?? "",
+              visibility: p.visibility,
+              selected: true,
+              progressActivation: null,
+            };
+          });
         }
         const nextPage = meta?.response?.headers.get("next-page");
         return {
           data: projects,
           nextPage: nextPage ? parseInt(nextPage) : undefined,
           total: parseInt(meta?.response?.headers.get("total") ?? "0"),
-          page: parseInt(meta?.response?.headers.get("page") ?? "1")
+          page: parseInt(meta?.response?.headers.get("page") ?? "1"),
         };
-      }
+      },
     }),
   }),
 });

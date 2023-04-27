@@ -32,8 +32,15 @@ import { Row, Col } from "reactstrap";
 import { Alert, Badge, Table } from "reactstrap";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import { faMinusCircle, faTimesCircle, faWrench } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheckCircle,
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  faMinusCircle,
+  faTimesCircle,
+  faWrench,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Time } from "../utils/helpers/Time";
 import { Url } from "../utils/helpers/url";
@@ -41,7 +48,9 @@ import { WarnAlert } from "../components/Alert";
 import { Loader } from "../components/Loader";
 import { TimeCaption } from "../components/TimeCaption";
 
-function componentIsLoud(c) { return c["name"].toLowerCase() === "loud"; }
+function componentIsLoud(c) {
+  return c["name"].toLowerCase() === "loud";
+}
 
 function ComponentStatusIndicator(props) {
   const status = props.status;
@@ -50,31 +59,31 @@ function ComponentStatusIndicator(props) {
     case "operational":
       indicator = {
         color: "success",
-        icon: <FontAwesomeIcon icon={faCheckCircle} />
+        icon: <FontAwesomeIcon icon={faCheckCircle} />,
       };
       break;
     case "degraded_performance":
       indicator = {
         color: "warning",
-        icon: <FontAwesomeIcon icon={faMinusCircle} />
+        icon: <FontAwesomeIcon icon={faMinusCircle} />,
       };
       break;
     case "partial_outage":
       indicator = {
         color: "warning",
-        icon: <FontAwesomeIcon icon={faExclamationCircle} />
+        icon: <FontAwesomeIcon icon={faExclamationCircle} />,
       };
       break;
     case "major_outage":
       indicator = {
         color: "danger",
-        icon: <FontAwesomeIcon icon={faTimesCircle} />
+        icon: <FontAwesomeIcon icon={faTimesCircle} />,
       };
       break;
     case "under_maintenance":
       indicator = {
         color: "info",
-        icon: <FontAwesomeIcon icon={faWrench} />
+        icon: <FontAwesomeIcon icon={faWrench} />,
       };
       break;
     default:
@@ -92,13 +101,16 @@ function ComponentStatusIndicator(props) {
 function SiteStatusDetails(props) {
   const status = props.statuspage.status;
   if (status.indicator === "none") {
-    return <div>
-      <span className="text-success" >
-        <FontAwesomeIcon icon={faCheckCircle} />
-      </span> { status.description }
-    </div>;
+    return (
+      <div>
+        <span className="text-success">
+          <FontAwesomeIcon icon={faCheckCircle} />
+        </span>{" "}
+        {status.description}
+      </div>
+    );
   }
-  return <WarnAlert>{ status.description }</WarnAlert>;
+  return <WarnAlert>{status.description}</WarnAlert>;
 }
 
 /**
@@ -107,12 +119,16 @@ function SiteStatusDetails(props) {
 function SiteStatusLanding(props) {
   const status = props.statuspage.status;
   const siteStatusUrl = props.siteStatusUrl;
-  if (status.indicator === "none")
-    return null;
-  return <WarnAlert className="container-xxl renku-container">
-    RenkuLab is unstable: { status.description }. {" "}
-    See <b><Link to={siteStatusUrl}>RenkuLab Status</Link></b> for more details.
-  </WarnAlert>;
+  if (status.indicator === "none") return null;
+  return (
+    <WarnAlert className="container-xxl renku-container">
+      RenkuLab is unstable: {status.description}. See{" "}
+      <b>
+        <Link to={siteStatusUrl}>RenkuLab Status</Link>
+      </b>{" "}
+      for more details.
+    </WarnAlert>
+  );
 }
 
 /**
@@ -121,9 +137,7 @@ function SiteStatusLanding(props) {
  */
 function sortedMaintenances(maintenances) {
   return maintenances.sort((a, b) => {
-    return (new Date(a.scheduled_for) < new Date(b.scheduled_for)) ?
-      -1 :
-      1;
+    return new Date(a.scheduled_for) < new Date(b.scheduled_for) ? -1 : 1;
   });
 }
 
@@ -131,21 +145,19 @@ function maintenanceTimeFragment(first) {
   const scheduledDt = new Date(first.scheduled_for);
   const displayTime = human(scheduledDt);
   const maintenanceTimeFragment =
-    scheduledDt > new Date() ?
-      `Maintenance scheduled in ${displayTime}` :
-      `Maintenance started ${displayTime}`;
+    scheduledDt > new Date()
+      ? `Maintenance scheduled in ${displayTime}`
+      : `Maintenance started ${displayTime}`;
   return maintenanceTimeFragment;
 }
 
 function MaintenanceSummaryDetails(props) {
   const scheduled = sortedMaintenances(props.statuspage.scheduled_maintenances);
-  if (scheduled.length < 1)
-    return <span></span>;
+  if (scheduled.length < 1) return <span></span>;
   const first = scheduled[0];
   const mtf = maintenanceTimeFragment(first);
-  const summary =
-    `${mtf}. See below for information about the availability and limitations.`;
-  return <WarnAlert>{ summary }</WarnAlert>;
+  const summary = `${mtf}. See below for information about the availability and limitations.`;
+  return <WarnAlert>{summary}</WarnAlert>;
 }
 
 function MaintenanceInfo(props) {
@@ -153,97 +165,136 @@ function MaintenanceInfo(props) {
   const loud = props.loud;
   const mtf = maintenanceTimeFragment(maintenance);
   const command = maintenance["incident_updates"][0].body;
-  const displayCommand = (loud) ?
-    <div className="py-md-3"><b>{command}</b></div> :
-    null;
-  return <Fragment>
-    <FontAwesomeIcon icon={faWrench} /> { " "}
-    {mtf}: <i>{maintenance.name}</i>. { displayCommand }
-  </Fragment>;
+  const displayCommand = loud ? (
+    <div className="py-md-3">
+      <b>{command}</b>
+    </div>
+  ) : null;
+  return (
+    <Fragment>
+      <FontAwesomeIcon icon={faWrench} /> {mtf}: <i>{maintenance.name}</i>.{" "}
+      {displayCommand}
+    </Fragment>
+  );
 }
 
 function MaintenanceSummaryLanding(props) {
   const siteStatusUrl = props.siteStatusUrl;
   const scheduled = sortedMaintenances(props.statuspage.scheduled_maintenances);
-  if (scheduled.length < 1)
-    return <span></span>;
-  const loud = (props.loud != null) ? props.loud : false;
-  const alertStyle = (loud) ? { "fontSize": "larger" } : {};
+  if (scheduled.length < 1) return <span></span>;
+  const loud = props.loud != null ? props.loud : false;
+  const alertStyle = loud ? { fontSize: "larger" } : {};
   const first = scheduled[0];
   // Not use custom Alert due it use a custom icon
-  return <Alert color="warning" className="container-xxl renku-container">
-    <div style={alertStyle}><MaintenanceInfo maintenance={first} loud={loud} /></div>
-    <div style={alertStyle}>See <b><Link to={siteStatusUrl}>details</Link></b> { " "}
-      for information about the availability and limitations.
-    </div>
-  </Alert>;
+  return (
+    <Alert color="warning" className="container-xxl renku-container">
+      <div style={alertStyle}>
+        <MaintenanceInfo maintenance={first} loud={loud} />
+      </div>
+      <div style={alertStyle}>
+        See{" "}
+        <b>
+          <Link to={siteStatusUrl}>details</Link>
+        </b>{" "}
+        for information about the availability and limitations.
+      </div>
+    </Alert>
+  );
 }
 
 function ComponentStatusRow(props) {
   const status = props.component.status;
   const statusText = status.split("_").join(" ");
-  return <tr>
-    <td><ComponentStatusIndicator status={status} /></td>
-    <td>
-      <span style={{ textTransform: "capitalize" }}>{statusText}</span>
-    </td>
-    <td>{props.component.name}</td>
-  </tr>;
+  return (
+    <tr>
+      <td>
+        <ComponentStatusIndicator status={status} />
+      </td>
+      <td>
+        <span style={{ textTransform: "capitalize" }}>{statusText}</span>
+      </td>
+      <td>{props.component.name}</td>
+    </tr>
+  );
 }
-
 
 function ComponentStatusDetails(props) {
   const components = props.components;
-  return <Table>
-    <thead>
-      <tr><th width="10%"></th><th width="30%">Status</th><th>Component</th></tr>
-    </thead>
-    <tbody>
-      {
-        components.filter(c => !componentIsLoud(c)).map(c => <ComponentStatusRow key={c.id} component={c} />)
-      }
-    </tbody>
-  </Table>;
+  return (
+    <Table>
+      <thead>
+        <tr>
+          <th width="10%"></th>
+          <th width="30%">Status</th>
+          <th>Component</th>
+        </tr>
+      </thead>
+      <tbody>
+        {components
+          .filter((c) => !componentIsLoud(c))
+          .map((c) => (
+            <ComponentStatusRow key={c.id} component={c} />
+          ))}
+      </tbody>
+    </Table>
+  );
 }
 
 function ScheduledMaintenanceIncident(props) {
   const incident = props.incident;
-  return <Fragment>
-    <p>{incident.body} {" "}
-      <span className="time-caption" style={{ fontSize: "smaller" }}>Posted at {" "}
-        {Time.formatDateTime(Time.parseDate(incident.display_at))}
-      </span>
-    </p>
-  </Fragment>;
+  return (
+    <Fragment>
+      <p>
+        {incident.body}{" "}
+        <span className="time-caption" style={{ fontSize: "smaller" }}>
+          Posted at {Time.formatDateTime(Time.parseDate(incident.display_at))}
+        </span>
+      </p>
+    </Fragment>
+  );
 }
 
 function ScheduledMaintenanceDetails(props) {
   const maintenance = props.maintenance;
-  const maintenanceDuration = (new Date(maintenance.scheduled_until) - new Date(maintenance.scheduled_for)) / 1000;
+  const maintenanceDuration =
+    (new Date(maintenance.scheduled_until) -
+      new Date(maintenance.scheduled_for)) /
+    1000;
   // get the displayTime, but remove " ago" from it
   const displayTime = human(maintenanceDuration).slice(0, -4);
-  const incidents = maintenance.incident_updates.map((u) => <ScheduledMaintenanceIncident key={u.id} incident={u} />);
+  const incidents = maintenance.incident_updates.map((u) => (
+    <ScheduledMaintenanceIncident key={u.id} incident={u} />
+  ));
   return [
-    <h5 key="heading" className="border-bottom">{maintenance.name} {" "}
-      <span className="time-caption" style={{ fontSize: "smaller", fontWeight: "bold" }}>on {" "}
-        {Time.formatDateTime(Time.parseDate(maintenance.scheduled_for))} {" "}
-        for {displayTime}
+    <h5 key="heading" className="border-bottom">
+      {maintenance.name}{" "}
+      <span
+        className="time-caption"
+        style={{ fontSize: "smaller", fontWeight: "bold" }}
+      >
+        on {Time.formatDateTime(Time.parseDate(maintenance.scheduled_for))} for{" "}
+        {displayTime}
       </span>
     </h5>,
-    ...incidents
+    ...incidents,
   ];
 }
-
 
 function ScheduledMaintenance(props) {
   const maintenances = sortedMaintenances(props.maintenances);
   if (maintenances.length < 1) {
-    return <p>
-      <span className="text-success" >
-        <FontAwesomeIcon icon={faCheckCircle} />
-      </span> No scheduled maintenance.</p>;
+    return (
+      <p>
+        <span className="text-success">
+          <FontAwesomeIcon icon={faCheckCircle} />
+        </span>{" "}
+        No scheduled maintenance.
+      </p>
+    );
   }
-  return maintenances.map(s => <ScheduledMaintenanceDetails key={s.id} maintenance={s} />);
+  return maintenances.map((s) => (
+    <ScheduledMaintenanceDetails key={s.id} maintenance={s} />
+  ));
 }
 
 /**
@@ -252,34 +303,51 @@ function ScheduledMaintenance(props) {
  */
 function StatuspageDisplay(props) {
   const summary = props.statusSummary;
-  if (summary == null)
-    return <Loader />;
+  if (summary == null) return <Loader />;
   if (summary.not_configured) return null;
   if (summary.error != null) {
-    return <WarnAlert>Could not retrieve status information about this RenkuLab instance. {" "}
-      Please ask an administrator to check the statuspage.io configuration.</WarnAlert>;
+    return (
+      <WarnAlert>
+        Could not retrieve status information about this RenkuLab instance.{" "}
+        Please ask an administrator to check the statuspage.io configuration.
+      </WarnAlert>
+    );
   }
-  if (summary.statuspage == null)
-    return <Loader />;
-  return <Row>
-    <Col md={8}>
-      <h3>RenkuLab Status</h3>
-      <MaintenanceSummaryDetails statuspage={summary.statuspage} />
-      <SiteStatusDetails statuspage={summary.statuspage} />
-      <br />
-      <h4>Scheduled Maintenance Details</h4>
-      <ScheduledMaintenance maintenances={summary.statuspage.scheduled_maintenances} />
-      <br />
-      <h4>Component Details</h4>
-      <ComponentStatusDetails components={summary.statuspage.components} />
-      <br />
-      <p>
-        For further information, see <a href={summary.statuspage.page.url}>{summary.statuspage.page.url}</a>.<br />
-        <TimeCaption caption="Status retrieved" time={summary.retrieved_at} endPunctuation=";" />
-        {" "}<TimeCaption caption="last updated" time={summary.statuspage.page.updated_at} />
-      </p>
-    </Col>
-  </Row>;
+  if (summary.statuspage == null) return <Loader />;
+  return (
+    <Row>
+      <Col md={8}>
+        <h3>RenkuLab Status</h3>
+        <MaintenanceSummaryDetails statuspage={summary.statuspage} />
+        <SiteStatusDetails statuspage={summary.statuspage} />
+        <br />
+        <h4>Scheduled Maintenance Details</h4>
+        <ScheduledMaintenance
+          maintenances={summary.statuspage.scheduled_maintenances}
+        />
+        <br />
+        <h4>Component Details</h4>
+        <ComponentStatusDetails components={summary.statuspage.components} />
+        <br />
+        <p>
+          For further information, see{" "}
+          <a href={summary.statuspage.page.url}>
+            {summary.statuspage.page.url}
+          </a>
+          .<br />
+          <TimeCaption
+            caption="Status retrieved"
+            time={summary.retrieved_at}
+            endPunctuation=";"
+          />{" "}
+          <TimeCaption
+            caption="last updated"
+            time={summary.statuspage.page.updated_at}
+          />
+        </p>
+      </Col>
+    </Row>
+  );
 }
 
 /**
@@ -296,9 +364,9 @@ function displayLoud(statusSummary) {
   }
   // return true if any scheduled maintenance affects the "Loud" component
   const loudMaintenances =
-    statusSummary
-      .statuspage
-      .scheduled_maintenances.filter(maintenanceHasLoudComponent);
+    statusSummary.statuspage.scheduled_maintenances.filter(
+      maintenanceHasLoudComponent
+    );
   return loudMaintenances.length > 0;
 }
 
@@ -310,22 +378,29 @@ function displayLoud(statusSummary) {
  */
 function StatuspageBanner(props) {
   // Never show the banner on the status page
-  if (props.location.pathname === Url.get(Url.pages.help.status))
-    return null;
+  if (props.location.pathname === Url.get(Url.pages.help.status)) return null;
 
   const summary = props.statusSummary;
   if (summary == null || summary.statuspage == null || summary.not_configured)
     return null;
 
   const loud = displayLoud(summary);
-  if (!loud && (props.location.pathname !== Url.get(Url.pages.landing)))
+  if (!loud && props.location.pathname !== Url.get(Url.pages.landing))
     return null;
   const statuspage = summary.statuspage;
-  return <Fragment>
-    <SiteStatusLanding statuspage={statuspage} siteStatusUrl={props.siteStatusUrl} />
-    <MaintenanceSummaryLanding statuspage={statuspage} siteStatusUrl={props.siteStatusUrl} loud={loud} />
-  </Fragment>;
+  return (
+    <Fragment>
+      <SiteStatusLanding
+        statuspage={statuspage}
+        siteStatusUrl={props.siteStatusUrl}
+      />
+      <MaintenanceSummaryLanding
+        statuspage={statuspage}
+        siteStatusUrl={props.siteStatusUrl}
+        loud={loud}
+      />
+    </Fragment>
+  );
 }
-
 
 export { StatuspageDisplay, StatuspageBanner };

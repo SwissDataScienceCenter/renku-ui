@@ -28,7 +28,12 @@ import { useSelector } from "react-redux";
 
 import EntityHeader from "../../components/entityHeader/EntityHeader";
 import Time from "../../utils/helpers/Time";
-import { InfoCircle, Modal, ModalBody, ModalHeader } from "../../utils/ts-wrappers";
+import {
+  InfoCircle,
+  Modal,
+  ModalBody,
+  ModalHeader,
+} from "../../utils/ts-wrappers";
 import { EntityType } from "../../components/entities/Entities";
 import { ACCESS_LEVELS } from "../../api-client";
 import { NotebookServerRow } from "../Notebooks.present";
@@ -38,7 +43,6 @@ import { Docs } from "../../utils/constants/Docs";
 
 import "./SessionModal.css";
 
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export interface AboutSessionModalProp {
@@ -47,8 +51,14 @@ export interface AboutSessionModalProp {
   projectMetadata: ProjectMetadata;
   notebook: Notebook;
 }
-const AboutSessionModal = ({ toggleModal, isOpen, projectMetadata, notebook }: AboutSessionModalProp) => {
-  const slug = projectMetadata.path_with_namespace ?? projectMetadata.pathWithNamespace;
+const AboutSessionModal = ({
+  toggleModal,
+  isOpen,
+  projectMetadata,
+  notebook,
+}: AboutSessionModalProp) => {
+  const slug =
+    projectMetadata.path_with_namespace ?? projectMetadata.pathWithNamespace;
   const projectHeader = (
     <div>
       <h3 className="text-rk-text-light">Project</h3>
@@ -56,7 +66,10 @@ const AboutSessionModal = ({ toggleModal, isOpen, projectMetadata, notebook }: A
         creators={projectMetadata.owner ? [projectMetadata.owner] : []}
         description={{ value: projectMetadata.description }}
         devAccess={projectMetadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
-        fullPath={projectMetadata.path_with_namespace ?? projectMetadata.pathWithNamespace}
+        fullPath={
+          projectMetadata.path_with_namespace ??
+          projectMetadata.pathWithNamespace
+        }
         gitUrl={projectMetadata.externalUrl}
         imageUrl={projectMetadata.avatarUrl}
         itemType={"project" as EntityType}
@@ -85,12 +98,16 @@ const AboutSessionModal = ({ toggleModal, isOpen, projectMetadata, notebook }: A
       <div className="d-flex flex-column gap-1">
         <ExternalLink
           className="mx-1 text-rk-green text-decoration-none d-flex align-items-center gap-2"
-          role="link" url={Docs.rtdTopicGuide("sessions/session-basics.html")}>
+          role="link"
+          url={Docs.rtdTopicGuide("sessions/session-basics.html")}
+        >
           <InfoCircle /> How to use sessions
         </ExternalLink>
         <ExternalLink
           className="mx-1 text-rk-green text-decoration-none d-flex align-items-center gap-2"
-          role="link" url={Docs.READ_THE_DOCS_INTRODUCTION}>
+          role="link"
+          url={Docs.READ_THE_DOCS_INTRODUCTION}
+        >
           <InfoCircle /> About Renku
         </ExternalLink>
       </div>
@@ -102,8 +119,17 @@ const AboutSessionModal = ({ toggleModal, isOpen, projectMetadata, notebook }: A
       isOpen={isOpen}
       className="about-modal"
       scrollable={true}
-      toggle={() => { toggleModal(); }}>
-      <ModalHeader className="bg-body header-multiline" toggle={() => { toggleModal(); }} data-cy="modal-header" >
+      toggle={() => {
+        toggleModal();
+      }}
+    >
+      <ModalHeader
+        className="bg-body header-multiline"
+        toggle={() => {
+          toggleModal();
+        }}
+        data-cy="modal-header"
+      >
         About
       </ModalHeader>
       <ModalBody className="bg-body">
@@ -122,11 +148,19 @@ interface SessionHeaderProp {
 }
 function SessionHeader({ notebook }: SessionHeaderProp) {
   const validAnnotations = Object.keys(notebook.data.annotations)
-    .filter(key => key.startsWith("renku.io"))
-    .reduce((obj:any, key: any) => { obj[key] = notebook.data.annotations[key]; return obj; }, {});
+    .filter((key) => key.startsWith("renku.io"))
+    .reduce((obj: any, key: any) => {
+      obj[key] = notebook.data.annotations[key];
+      return obj;
+    }, {});
   const resources = notebook.data.resources?.requests;
-  const startTime = Time.toIsoTimezoneString(notebook.data.started, "datetime-short");
-  const commits = useSelector((state: any) => state.stateModel.notebooks.data.commits);
+  const startTime = Time.toIsoTimezoneString(
+    notebook.data.started,
+    "datetime-short"
+  );
+  const commits = useSelector(
+    (state: any) => state.stateModel.notebooks.data.commits
+  );
   const logs = useSelector((state: any) => state.stateModel.notebooks.logs);
 
   return (
@@ -141,7 +175,8 @@ function SessionHeader({ notebook }: SessionHeaderProp) {
       status={notebook.data.status}
       url={notebook.data.url}
       showMenu={false}
-    />);
+    />
+  );
 }
 
 export { AboutSessionModal };

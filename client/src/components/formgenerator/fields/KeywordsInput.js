@@ -31,15 +31,23 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { ErrorLabel } from "../../formlabels/FormLabels";
 import { FormText } from "../../../utils/ts-wrappers";
 
-function KeywordsInput(
-  { name, label, value, alert, setInputs, help, disabled = false, required = false, optional = false }) {
-
+function KeywordsInput({
+  name,
+  label,
+  value,
+  alert,
+  setInputs,
+  help,
+  disabled = false,
+  required = false,
+  optional = false,
+}) {
   const [tags, setTags] = React.useState(value);
   const [active, setActive] = React.useState(false);
   const tagInput = React.useRef(null);
 
   const removeTag = (i) => {
-    const newTags = [ ...tags ];
+    const newTags = [...tags];
     newTags.splice(i, 1);
     setTags(newTags);
   };
@@ -48,60 +56,76 @@ function KeywordsInput(
     const val = e.target.value;
     if (e.key === "Enter" && val) {
       e.preventDefault();
-      if (tags.find(tag => tag.toLowerCase() === val.toLowerCase()))
-        return;
+      if (tags.find((tag) => tag.toLowerCase() === val.toLowerCase())) return;
 
       setTags([...tags, val]);
       tagInput.current.value = null;
-    }
-    else if (e.key === "Enter") {
+    } else if (e.key === "Enter") {
       e.preventDefault();
       //If this is not here then the form will be submitted on enter
-    }
-    else if (e.key === "Backspace" && !val) {
+    } else if (e.key === "Backspace" && !val) {
       removeTag(tags.length - 1);
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     if (tags.length !== value.length) {
       const artificialEvent = {
         target: { name: name, value: tags },
-        isPersistent: () => false
+        isPersistent: () => false,
       };
       setInputs(artificialEvent);
     }
     //eslint-disable-next-line
   }, [tags]);
 
-
   const disabledClass = disabled === true ? "disabled" : "";
   const activeClass = active === true ? "input-tag--active" : "";
 
-  let tagsList = <div className={`input-tag ${disabledClass} ${activeClass}`} >
-    <ul className="input-tag__tags">
-      { tags.map((tag, i) => (
-        <li key={tag}>
-          {tag}
-          <FontAwesomeIcon size="sm" icon={faTimes} className="ms-2" onClick={() => removeTag(i)}/>
+  let tagsList = (
+    <div className={`input-tag ${disabledClass} ${activeClass}`}>
+      <ul className="input-tag__tags">
+        {tags.map((tag, i) => (
+          <li key={tag}>
+            {tag}
+            <FontAwesomeIcon
+              size="sm"
+              icon={faTimes}
+              className="ms-2"
+              onClick={() => removeTag(i)}
+            />
+          </li>
+        ))}
+        <li className="input-tag__tags__input">
+          <input
+            type="text"
+            onKeyDown={inputKeyDown}
+            onFocus={() => setActive(true)}
+            onBlur={() => setActive(false)}
+            ref={(c) => {
+              tagInput.current = c;
+            }}
+            disabled={disabled}
+            data-cy={`input-${name}`}
+          />
         </li>
-      ))}
-      <li className="input-tag__tags__input">
-        <input type="text" onKeyDown={inputKeyDown} onFocus={() => setActive(true)}
-          onBlur={() => setActive(false)}
-          ref={c => { tagInput.current = c; }}
-          disabled={disabled} data-cy={`input-${name}`}
-        />
-      </li>
-    </ul>
-  </div>;
+      </ul>
+    </div>
+  );
 
-  return <FormGroup className="field-group">
-    <FormLabel htmlFor={name} label={label} required={required} optional={optional} />
-    {tagsList}
-    {help && <FormText color="muted">{help}</FormText>}
-    {alert && <ErrorLabel text={alert} />}
-  </FormGroup>;
+  return (
+    <FormGroup className="field-group">
+      <FormLabel
+        htmlFor={name}
+        label={label}
+        required={required}
+        optional={optional}
+      />
+      {tagsList}
+      {help && <FormText color="muted">{help}</FormText>}
+      {alert && <ErrorLabel text={alert} />}
+    </FormGroup>
+  );
 }
 
 export default KeywordsInput;

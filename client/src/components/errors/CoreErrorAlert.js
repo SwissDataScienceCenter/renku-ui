@@ -30,73 +30,81 @@ import { ExternalLink } from "../ExternalLinks";
 import { CoreError } from "./CoreErrorHelpers";
 
 function CoreErrorAlert({
-  color = null, details = null, dismissible = false, error = {}, message = null, suggestion = null, title = null
+  color = null,
+  details = null,
+  dismissible = false,
+  error = {},
+  message = null,
+  suggestion = null,
+  title = null,
 }) {
   const [showError, setShowError] = useState(false);
 
   const toggleShowError = () => setShowError(!showError);
 
   // return null if there is no error
-  if (!CoreError.isValid(error))
-    return null;
+  if (!CoreError.isValid(error)) return null;
 
   // define parameters
   const legacy = CoreError.isLegacy(error);
   const hasDetails = details || legacy || error.userReference ? true : false;
 
   if (!color) {
-    if (legacy || !CoreError.isInput(error))
-      color = "danger";
-    else if (CoreError.isInput(error))
-      color = "warning";
-    else
-      color = "info";
+    if (legacy || !CoreError.isInput(error)) color = "danger";
+    else if (CoreError.isInput(error)) color = "warning";
+    else color = "info";
   }
 
   if (!message) {
-    if (legacy)
-      message = "An error occurred.";
-    else
-      message = error.userMessage;
+    if (legacy) message = "An error occurred.";
+    else message = error.userMessage;
   }
 
   if (!title) {
-    if (legacy || !CoreError.isInput(error))
-      title = "Error";
-    else
-      title = "Warning";
+    if (legacy || !CoreError.isInput(error)) title = "Error";
+    else title = "Warning";
   }
 
   let info = null;
   if (hasDetails) {
     if (details) {
-      info = (<code>{details}</code>);
-    }
-    else if (legacy) {
-      info = (<code>{error.reason}</code>);
-    }
-    else {
+      info = <code>{details}</code>;
+    } else if (legacy) {
+      info = <code>{error.reason}</code>;
+    } else {
       info = (
         <p className="mb-0">
           You can find more information about this error at the following link:
           <br />
-          <ExternalLink url={error.userReference} title={error.userReference} role="text" />
+          <ExternalLink
+            url={error.userReference}
+            title={error.userReference}
+            role="text"
+          />
         </p>
       );
     }
   }
 
-  const detailsObject = hasDetails ?
-    (<Fragment>
-      <Collapse className="mb-2" isOpen={showError}>{info}</Collapse>
-      <Button color="link" className="font-italic btn-sm" onClick={toggleShowError}>
+  const detailsObject = hasDetails ? (
+    <Fragment>
+      <Collapse className="mb-2" isOpen={showError}>
+        {info}
+      </Collapse>
+      <Button
+        color="link"
+        className="font-italic btn-sm"
+        onClick={toggleShowError}
+      >
         [{showError ? "Hide" : "Show"} details]
       </Button>
-    </Fragment>) :
-    null;
-  const suggestionObject = suggestion ?
-    (<div><small>{suggestion}</small></div>) :
-    null;
+    </Fragment>
+  ) : null;
+  const suggestionObject = suggestion ? (
+    <div>
+      <small>{suggestion}</small>
+    </div>
+  ) : null;
 
   return (
     <RenkuAlert color={color} dismissible={dismissible} timeout={0}>

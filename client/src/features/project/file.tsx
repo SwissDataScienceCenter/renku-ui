@@ -20,7 +20,9 @@ type ProjectFileLineageProps = {
 };
 
 function ProjectFileLineage(props: ProjectFileLineageProps) {
-  const project = useSelector((state: RootStateOrAny) => state.stateModel.project as StateModelProject);
+  const project = useSelector(
+    (state: RootStateOrAny) => state.stateModel.project as StateModelProject
+  );
   const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
@@ -33,25 +35,36 @@ function ProjectFileLineage(props: ProjectFileLineageProps) {
   const projectPathWithNamespace = projectMetadata.pathWithNamespace;
 
   const forkedData = project.forkedFromProject;
-  const forked = forkedData != null && Object.keys(forkedData).length > 0 ? true : false;
+  const forked =
+    forkedData != null && Object.keys(forkedData).length > 0 ? true : false;
 
   const branches = {
     all: project.branches,
-    fetch: props.fetchBranches
+    fetch: props.fetchBranches,
   };
 
   const graphProgress = project.webhook.progress;
 
   const projectPath = projectMetadata.path;
   const projectNamespace = projectMetadata.namespace;
-  const projectUrlProps = { namespace: projectNamespace, path: projectPath, target: "" };
+  const projectUrlProps = {
+    namespace: projectNamespace,
+    path: projectPath,
+    target: "",
+  };
   const fileContentUrl = Url.get(Url.pages.project.file, projectUrlProps);
   const lineageUrl = Url.get(Url.pages.project.lineage, projectUrlProps);
   // Remove the trailing slash, since that is how downstream components expect it.
   const lineagesUrl = lineageUrl.substring(0, lineageUrl.length - 1);
-  const overviewCommitsUrl = Url.get(Url.pages.project.overview.commits, projectUrlProps);
+  const overviewCommitsUrl = Url.get(
+    Url.pages.project.overview.commits,
+    projectUrlProps
+  );
   const sessionNewUrl = Url.get(Url.pages.project.session.new, projectUrlProps);
-  const gitFilePath = props.location.pathname.replace(lineageUrl + "/files/lineage/", "");
+  const gitFilePath = props.location.pathname.replace(
+    lineageUrl + "/files/lineage/",
+    ""
+  );
 
   return (
     <FileLineage
@@ -92,7 +105,9 @@ interface ProjectFileViewProps extends ProjectFileLineageProps {
 }
 
 function ProjectFileView(props: ProjectFileViewProps) {
-  const project = useSelector((state: RootStateOrAny) => state.stateModel.project as StateModelProject);
+  const project = useSelector(
+    (state: RootStateOrAny) => state.stateModel.project as StateModelProject
+  );
   const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
@@ -106,59 +121,68 @@ function ProjectFileView(props: ProjectFileViewProps) {
   const projectPathWithNamespace = projectMetadata.pathWithNamespace;
 
   const forkedData = project.forkedFromProject;
-  const forked = forkedData != null && Object.keys(forkedData).length > 0 ? true : false;
+  const forked =
+    forkedData != null && Object.keys(forkedData).length > 0 ? true : false;
 
   const branches = {
     all: project.branches,
-    fetch: props.fetchBranches
+    fetch: props.fetchBranches,
   };
 
   const graphProgress = project.webhook.progress;
 
   const projectPath = projectMetadata.path;
   const projectNamespace = projectMetadata.namespace;
-  const projectUrlProps = { namespace: projectNamespace, path: projectPath, target: "" };
+  const projectUrlProps = {
+    namespace: projectNamespace,
+    path: projectPath,
+    target: "",
+  };
   const fileContentUrl = Url.get(Url.pages.project.file, projectUrlProps);
   const lineageUrl = Url.get(Url.pages.project.lineage, projectUrlProps);
   // Remove the trailing slash, since that is how downstream components expect it.
   const lineagesUrl = lineageUrl.substring(0, lineageUrl.length - 1);
-  const overviewCommitsUrl = Url.get(Url.pages.project.overview.commits, projectUrlProps);
+  const overviewCommitsUrl = Url.get(
+    Url.pages.project.overview.commits,
+    projectUrlProps
+  );
   const sessionNewUrl = Url.get(Url.pages.project.session.new, projectUrlProps);
   const filePath = props.location.pathname.replace(fileContentUrl, "");
 
-  return ( <ShowFile
-    key="filePreview"
-    accessLevel={accessLevel}
-    branch={defaultBranch}
-    branches={branches}
-    client={props.client}
-    defaultBranch={defaultBranch}
-    externalUrl={externalUrl}
-    fileContentUrl={fileContentUrl}
-    filePath={filePath}
-    filesTree={filesTree}
-    forked={forked}
-    hashElement={filesTree ? filesTree.hash[props.filePath] : undefined}
-    history={props.history}
-    httpProjectUrl={httpProjectUrl}
-    insideProject={true}
-    lineagesPath={lineagesUrl}
-    lineagesUrl={lineagesUrl}
-    launchNotebookUrl={sessionNewUrl}
-    location={props.location}
-    maintainer={maintainer}
-    migration={migration}
-    model={props.model}
-    overviewCommitsUrl={overviewCommitsUrl}
-    params={props.params}
-    progress={graphProgress}
-    projectNamespace={projectNamespace}
-    projectId={projectId}
-    projectPath={projectPath}
-    projectPathWithNamespace={projectPathWithNamespace}
-    projectPathOnly={projectPath}
-    user={user}
-  />
+  return (
+    <ShowFile
+      key="filePreview"
+      accessLevel={accessLevel}
+      branch={defaultBranch}
+      branches={branches}
+      client={props.client}
+      defaultBranch={defaultBranch}
+      externalUrl={externalUrl}
+      fileContentUrl={fileContentUrl}
+      filePath={filePath}
+      filesTree={filesTree}
+      forked={forked}
+      hashElement={filesTree ? filesTree.hash[props.filePath] : undefined}
+      history={props.history}
+      httpProjectUrl={httpProjectUrl}
+      insideProject={true}
+      lineagesPath={lineagesUrl}
+      lineagesUrl={lineagesUrl}
+      launchNotebookUrl={sessionNewUrl}
+      location={props.location}
+      maintainer={maintainer}
+      migration={migration}
+      model={props.model}
+      overviewCommitsUrl={overviewCommitsUrl}
+      params={props.params}
+      progress={graphProgress}
+      projectNamespace={projectNamespace}
+      projectId={projectId}
+      projectPath={projectPath}
+      projectPathWithNamespace={projectPathWithNamespace}
+      projectPathOnly={projectPath}
+      user={user}
+    />
   );
 }
 

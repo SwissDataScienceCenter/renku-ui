@@ -35,7 +35,10 @@ import KeywordsInput from "./fields/KeywordsInput";
 import ImageInput from "./fields/ImageInput";
 import { Loader } from "../Loader";
 import "./FormGenerator.css";
-import ProgressIndicator, { ProgressStyle, ProgressType } from "../progress/Progress";
+import ProgressIndicator, {
+  ProgressStyle,
+  ProgressType,
+} from "../progress/Progress";
 import { FormErrorFields } from "../../project/new/components/FormValidations";
 import AddDatasetButtons from "../addDatasetButtons/AddDatasetButtons";
 
@@ -46,33 +49,59 @@ function capitalize(string) {
 function SubmitButtonGroup(props) {
   const { submitCallback, submitLoader, btnName, formClassName } = props;
   const { onCancel, cancelBtnName } = props;
-  const colorButton = formClassName === "form-rk-green" ? "rk-green" : "rk-pink";
-  const submitButton = submitCallback !== undefined ?
-    <Button
-      data-cy="submit-button"
-      type="submit" disabled={submitLoader} className="float-end mt-1" color={colorButton}>
-      {btnName}
-    </Button>
-    : null;
-  const cancelButton = onCancel !== undefined ?
-    <Button disabled={submitLoader} className={`float-end mt-1 me-1 btn-outline-${colorButton}`}
-      onClick={(e)=>onCancel(e, props.handlers)}>
-      {cancelBtnName ? cancelBtnName : "Cancel"}
-    </Button>
-    : null;
+  const colorButton =
+    formClassName === "form-rk-green" ? "rk-green" : "rk-pink";
+  const submitButton =
+    submitCallback !== undefined ? (
+      <Button
+        data-cy="submit-button"
+        type="submit"
+        disabled={submitLoader}
+        className="float-end mt-1"
+        color={colorButton}
+      >
+        {btnName}
+      </Button>
+    ) : null;
+  const cancelButton =
+    onCancel !== undefined ? (
+      <Button
+        disabled={submitLoader}
+        className={`float-end mt-1 me-1 btn-outline-${colorButton}`}
+        onClick={(e) => onCancel(e, props.handlers)}
+      >
+        {cancelBtnName ? cancelBtnName : "Cancel"}
+      </Button>
+    ) : null;
 
-  return <div>
-    { submitButton }
-    { cancelButton }
-  </div>;
+  return (
+    <div>
+      {submitButton}
+      {cancelButton}
+    </div>
+  );
 }
 
 function FormPanel({
-  btnName, draft, edit, formLocation, formatServerErrorsAndWarnings, handlers, inputs, loading,
-  onCancel, setInputs, setSubmit, submitCallback, addDatasetOptionSelected, versionUrl,
-  toggleNewDataset, showAddDatasetOptions, setShowHeader, className
+  btnName,
+  draft,
+  edit,
+  formLocation,
+  formatServerErrorsAndWarnings,
+  handlers,
+  inputs,
+  loading,
+  onCancel,
+  setInputs,
+  setSubmit,
+  submitCallback,
+  addDatasetOptionSelected,
+  versionUrl,
+  toggleNewDataset,
+  showAddDatasetOptions,
+  setShowHeader,
+  className,
 }) {
-
   const submitLoader = draft?.submitLoader && draft?.submitLoader.value;
   const hideButtons = draft?.hideButtons;
   const serverErrors = draft?.serverErrors;
@@ -81,8 +110,7 @@ function FormPanel({
   const disableAll = draft?.disableAll;
 
   useEffect(() => {
-    if (setShowHeader)
-      setShowHeader(!submitLoader);
+    if (setShowHeader) setShowHeader(!submitLoader);
   }, [submitLoader, setShowHeader]);
 
   const Components = {
@@ -96,11 +124,13 @@ function FormPanel({
     TextareaInput,
   };
 
-  const renderInput = input => {
+  const renderInput = (input) => {
     const Component = Components[capitalize(input.type) + "Input"];
-    const disabled = submitLoader || (input.edit === false && edit) || disableAll;
+    const disabled =
+      submitLoader || (input.edit === false && edit) || disableAll;
     return (
-      <Component {...input}
+      <Component
+        {...input}
         className="field-group"
         disabled={disabled}
         formLocation={formLocation}
@@ -115,54 +145,61 @@ function FormPanel({
 
   const extractErrorsAndWarnings = (errorOrWarning, isError) => {
     let content;
-    let formattedErrorOrWarning = formatServerErrorsAndWarnings ?
-      formatServerErrorsAndWarnings(errorOrWarning, isError) : errorOrWarning;
+    let formattedErrorOrWarning = formatServerErrorsAndWarnings
+      ? formatServerErrorsAndWarnings(errorOrWarning, isError)
+      : errorOrWarning;
 
     var htmlRegex = new RegExp(/^/);
     if (typeof formattedErrorOrWarning === "string") {
       content = <p>{formattedErrorOrWarning}</p>;
-    }
-    else {
-      if (htmlRegex.test(formattedErrorOrWarning)) { content = formattedErrorOrWarning; }
-      else {
-      //this could be improve to extract better the error message
-      //ideally we could map backend and frontend fields and put the error under the field
-        content = Object.keys(formattedErrorOrWarning).map(error =>
-          (<p key={error}>{`${error}: ${JSON.stringify(formattedErrorOrWarning[error])}`}</p>)
-        );
+    } else {
+      if (htmlRegex.test(formattedErrorOrWarning)) {
+        content = formattedErrorOrWarning;
+      } else {
+        //this could be improve to extract better the error message
+        //ideally we could map backend and frontend fields and put the error under the field
+        content = Object.keys(formattedErrorOrWarning).map((error) => (
+          <p key={error}>{`${error}: ${JSON.stringify(
+            formattedErrorOrWarning[error]
+          )}`}</p>
+        ));
       }
     }
-    const topMessage = isError ?
-      "Errors occurred while performing this operation."
+    const topMessage = isError
+      ? "Errors occurred while performing this operation."
       : "The operation was successful but there are some warning messages.";
-    return (<div>
-      <p>{topMessage}</p>
-      {content}
-    </div>);
+    return (
+      <div>
+        <p>{topMessage}</p>
+        {content}
+      </div>
+    );
   };
 
-  if (!inputs || inputs.length === 0 || loading)
-    return <Loader />;
+  if (!inputs || inputs.length === 0 || loading) return <Loader />;
 
-  const errorFields = inputs.filter(input => (input.alert != null) && (input.edit !== false));
+  const errorFields = inputs.filter(
+    (input) => input.alert != null && input.edit !== false
+  );
 
-  const errorMessage = (errorFields.length > 0) ?
-    <FormErrorFields errorFields={errorFields.map(d => d.label)} /> :
-    null;
-
+  const errorMessage =
+    errorFields.length > 0 ? (
+      <FormErrorFields errorFields={errorFields.map((d) => d.label)} />
+    ) : null;
 
   // add dataset options buttons (addDataset or ImportDataset)
   const addDatasetButtons = showAddDatasetOptions && !submitLoader && (
     <AddDatasetButtons
       optionSelected={addDatasetOptionSelected ?? "addDataset"}
-      toggleNewDataset={toggleNewDataset} />
+      toggleNewDataset={toggleNewDataset}
+    />
   );
 
   // customize the progress indicator when add/modify a dataset
   const titleProgress = edit ? "Editing dataset" : "Creating Dataset...";
-  const feedbackProgress = edit ?
-    "Once the process is completed, you will be redirected to the page " +
-    "of the dataset."
+  const feedbackProgress = edit
+    ? "Once the process is completed, you will be redirected to the page " +
+      "of the dataset."
     : "You'll be redirected to the new dataset page when the creation is completed.";
 
   return (
@@ -180,19 +217,29 @@ function FormPanel({
         <Form onSubmit={setSubmit} className={className}>
           <div className="d-flex flex-column">
             {addDatasetButtons}
-            {inputs.map(input => renderInput(input))}
-            {serverErrors ? <UncontrolledAlert color="danger">
-              {extractErrorsAndWarnings(serverErrors, true)}</UncontrolledAlert> : null}
-            {serverWarnings ? <UncontrolledAlert color="warning">
-              {extractErrorsAndWarnings(serverWarnings, false)}</UncontrolledAlert> : null}
-            {hideButtons === true ?
-              null
-              :
+            {inputs.map((input) => renderInput(input))}
+            {serverErrors ? (
+              <UncontrolledAlert color="danger">
+                {extractErrorsAndWarnings(serverErrors, true)}
+              </UncontrolledAlert>
+            ) : null}
+            {serverWarnings ? (
+              <UncontrolledAlert color="warning">
+                {extractErrorsAndWarnings(serverWarnings, false)}
+              </UncontrolledAlert>
+            ) : null}
+            {hideButtons === true ? null : (
               <SubmitButtonGroup
-                submitCallback={submitCallback} submitLoader={submitLoader} btnName={btnName} errorFields={errorFields}
-                onCancel={onCancel} cancelBtnName={secondaryButtonText} handlers={handlers} formClassName={className}
+                submitCallback={submitCallback}
+                submitLoader={submitLoader}
+                btnName={btnName}
+                errorFields={errorFields}
+                onCancel={onCancel}
+                cancelBtnName={secondaryButtonText}
+                handlers={handlers}
+                formClassName={className}
               />
-            }
+            )}
             {errorMessage}
           </div>
         </Form>

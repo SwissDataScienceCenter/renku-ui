@@ -17,16 +17,20 @@
  */
 import * as React from "react";
 import { Story } from "@storybook/react";
-import SortingEntities, { SortingInputProps, SortingOptions } from "./SortingEntities";
+import SortingEntities, {
+  SortingInputProps,
+  SortingOptions,
+} from "./SortingEntities";
 
 export default {
   title: "components/SortingEntities",
   component: SortingEntities,
-  argTypes: {}
+  argTypes: {},
 };
 
-
-const Template: Story<SortingInputProps> = (args) => <SortingEntities {...args} />;
+const Template: Story<SortingInputProps> = (args) => (
+  <SortingEntities {...args} />
+);
 
 export const Default = Template.bind({});
 Default.args = {

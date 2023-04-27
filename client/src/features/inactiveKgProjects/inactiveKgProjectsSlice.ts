@@ -36,20 +36,23 @@ export const kgInactiveProjectsSlice = createSlice({
       return action.payload;
     },
     updateList: (state, action: PayloadAction<InactiveKgProjects>) => {
-      return state.map(p => {
-        if (p.id === action.payload.id)
-          p = action.payload;
+      return state.map((p) => {
+        if (p.id === action.payload.id) p = action.payload;
         return p;
       });
     },
     updateProgress: (state, action: PayloadAction<ActivationStatus>) => {
-      return state.map(p => {
+      return state.map((p) => {
         if (p.id === action.payload.id)
-          p = { ...p, progressActivation: action.payload.progress, selected: true };
+          p = {
+            ...p,
+            progressActivation: action.payload.progress,
+            selected: true,
+          };
         return p;
       });
     },
-    reset: () => initialState
+    reset: () => initialState,
   },
 });
 

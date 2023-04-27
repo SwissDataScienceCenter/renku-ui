@@ -39,7 +39,6 @@ import immutableUpdate from "immutability-helper";
 import { createStore } from "../utils/helpers/EnhancedState";
 // import { Component } from 'react';
 
-
 const PropertyName = {
   SCHEMA: "schema",
   INITIAL: "initial",
@@ -63,36 +62,35 @@ const PropertyName = {
   MODES: "modes",
   MAXSIZE: "maxSize",
   FORMAT: "format",
-  OPTIONAL: "optional"
+  OPTIONAL: "optional",
 };
 
 // Named const for the bindings to the store.
 const StateKind = {
   REDUX: "redux_store",
-  REACT: "react_State"
+  REACT: "react_State",
 };
 
 // We currently need only one action type. The information about which
 // part of the state has to be modified is contained in the action payload.
 const ActionType = {
-  UPDATE: "update"
+  UPDATE: "update",
 };
 
 // Fields which are updating are set to this value.
 const SpecialPropVal = {
-  UPDATING: "is_updating"
+  UPDATING: "is_updating",
 };
 
 const StatusHelper = {
   isUpdating: (value) => {
     return value === SpecialPropVal.UPDATING ? true : false;
-  }
+  },
 };
 
 class FieldSpec {
   constructor(spec) {
     Object.keys(spec).forEach((prop) => {
-
       // We ignore properties which are not part of the known field specification properties.
       if (Object.values(PropertyName).indexOf(prop) < 0) return;
 
@@ -100,22 +98,20 @@ class FieldSpec {
       if (prop === PropertyName.SCHEMA && spec[prop] instanceof Array) {
         if (spec[prop][0] && !(spec[prop] instanceof Schema))
           this[prop] = [new Schema(spec[prop][0])];
-
-        else
-          this[prop] = [];
-
+        else this[prop] = [];
       }
       // Sub-objects in field spec definitions are turned into schema definitions.
-      else if (prop === PropertyName.SCHEMA && !(spec[prop] instanceof Schema)) {
+      else if (
+        prop === PropertyName.SCHEMA &&
+        !(spec[prop] instanceof Schema)
+      ) {
         this[prop] = new Schema(spec[prop]);
-      }
-      else {
+      } else {
         this[prop] = spec[prop];
       }
     });
   }
 }
-
 
 class Schema {
   constructor(obj) {
@@ -124,19 +120,26 @@ class Schema {
     });
   }
 
-  createEmpty(obj) { return createEmpty(this, obj); }
+  createEmpty(obj) {
+    return createEmpty(this, obj);
+  }
 
-  applyDefaults(obj) { return applyDefaults(this, obj); }
+  applyDefaults(obj) {
+    return applyDefaults(this, obj);
+  }
 
   createInitialized() {
     const emptyObject = this.createEmpty();
     return this.applyDefaults(emptyObject);
   }
 
-  validate(obj) { return validate(this, obj); }
+  validate(obj) {
+    return validate(this, obj);
+  }
 
   reducer() {
-    return (state = this.createEmpty(), action) => modelUpdateReducer(state, action);
+    return (state = this.createEmpty(), action) =>
+      modelUpdateReducer(state, action);
   }
 }
 
@@ -147,17 +150,21 @@ function getReduxState(reduxStore, slice) {
 }
 
 class ReduxStateModel {
-
   constructor(owner, stateBinding, stateHolder, initialState, slice = null) {
     this.stateBinding = stateBinding; // We know stateBinding === StateKind.REDUX
     this.reduxStore = stateHolder;
     this.slice = slice;
     // Initialize state
-    const updateObj = updateObjectFromObject(initialState, getReduxState(stateHolder, slice));
+    const updateObj = updateObjectFromObject(
+      initialState,
+      getReduxState(stateHolder, slice)
+    );
     this.immutableUpdate(updateObj, null);
   }
 
-  getStateObject() { return getReduxState(this.reduxStore, this.slice); }
+  getStateObject() {
+    return getReduxState(this.reduxStore, this.slice);
+  }
 
   immutableUpdate(updateObj, callback) {
     this.reduxStore.dispatch({
@@ -174,7 +181,6 @@ class ReduxStateModel {
 }
 
 class ReactStateModel {
-
   constructor(owner, stateBinding, stateHolder, initialState) {
     this.owner = owner;
     this.stateBinding = stateBinding; // We know stateBinding === StateKind.REACT
@@ -182,48 +188,68 @@ class ReactStateModel {
     this.reactComponent.state = initialState;
   }
 
-  getStateObject() { return this.reactComponent.state; }
-
-  immutableUpdate(updateObj, callback) {
-    this.reactComponent.setState((prevState) => immutableUpdate(prevState, updateObj), callback);
+  getStateObject() {
+    return this.reactComponent.state;
   }
 
+  immutableUpdate(updateObj, callback) {
+    this.reactComponent.setState(
+      (prevState) => immutableUpdate(prevState, updateObj),
+      callback
+    );
+  }
 }
 
 class StateModel {
-  constructor(schema, stateBinding = StateKind.REDUX, stateHolder = null, initialState = null) {
+  constructor(
+    schema,
+    stateBinding = StateKind.REDUX,
+    stateHolder = null,
+    initialState = null
+  ) {
     this.stateBinding = stateBinding;
     this.schema = schema;
 
     this._updatingPropVal = SpecialPropVal.UPDATING;
-    const initializedState = initialState ? initialState : schema.createInitialized();
+    const initializedState = initialState
+      ? initialState
+      : schema.createInitialized();
 
     if (stateBinding === StateKind.REDUX) {
       let slice = null;
       if (!stateHolder) {
         slice = "stateModel";
-        stateHolder = createStore({ [slice]: schema.reducer() }, this.constructor.name);
+        stateHolder = createStore(
+          { [slice]: schema.reducer() },
+          this.constructor.name
+        );
       }
-      this._stateModel = new ReduxStateModel(this, stateBinding, stateHolder, initializedState, slice);
+      this._stateModel = new ReduxStateModel(
+        this,
+        stateBinding,
+        stateHolder,
+        initializedState,
+        slice
+      );
       this.reduxStore = this._stateModel.reduxStore;
-    }
-    else if (stateBinding === StateKind.REACT) {
-      this._stateModel = new ReactStateModel(this, stateBinding, stateHolder, initializedState);
+    } else if (stateBinding === StateKind.REACT) {
+      this._stateModel = new ReactStateModel(
+        this,
+        stateBinding,
+        stateHolder,
+        initializedState
+      );
       this.reactComponent = this._stateModel.reactComponent;
-    }
-    else {
+    } else {
       throw new Error(`State binding ${stateBinding} not implemented`);
     }
   }
 
   get(propertyAccessorString) {
     const stateObject = this._stateModel.getStateObject();
-    if (!propertyAccessorString)
-      return stateObject;
-
+    if (!propertyAccessorString) return stateObject;
 
     return nestedPropertyAccess(propertyAccessorString, stateObject);
-
   }
 
   set(propertyAccessorString, value, callback) {
@@ -242,7 +268,6 @@ class StateModel {
   }
 
   immutableUpdate(updateObj, callback) {
-
     // TODO: Reconsider validation, for what and when it should be used.
     // const validation = this.schema.validate(immutableUpdate(this.get(), updateObj));
     // if (!validation.result) {
@@ -262,7 +287,6 @@ class StateModel {
   mapStateToProps = _mapStateToProps.bind(this);
 
   subModel = (path) => new SubModel(this, path);
-
 }
 
 // Note that the SubModel can not be implemented as a child class as an instance of a SubModel
@@ -278,7 +302,8 @@ class SubModel {
   }
 
   get(propAccessorString) {
-    const fullPropAccessorString = this.baseModelPath + (propAccessorString ? "." + propAccessorString : "");
+    const fullPropAccessorString =
+      this.baseModelPath + (propAccessorString ? "." + propAccessorString : "");
     return this.baseModel.get(fullPropAccessorString);
   }
 
@@ -293,7 +318,7 @@ class SubModel {
       leafObj[prop] = {};
       leafObj = leafObj[prop];
     });
-    Object.keys(obj).forEach((prop) => leafObj[prop] = obj[prop]);
+    Object.keys(obj).forEach((prop) => (leafObj[prop] = obj[prop]));
     this.baseModel.setObject(fullObj);
   }
 
@@ -304,39 +329,37 @@ class SubModel {
       leafOptions[prop] = {};
       leafOptions = leafOptions[prop];
     });
-    Object.keys(options).forEach((prop) => leafOptions[prop] = options[prop]);
+    Object.keys(options).forEach((prop) => (leafOptions[prop] = options[prop]));
     this.baseModel.setUpdating(fullOptions);
   }
 
   isUpdating(propAccessorString) {
-    const fullPropAccessorString = this.baseModelPath + (propAccessorString ? "." + propAccessorString : "");
+    const fullPropAccessorString =
+      this.baseModelPath + (propAccessorString ? "." + propAccessorString : "");
     return StatusHelper.isUpdating(this.baseModel.get(fullPropAccessorString));
   }
 
   mapStateToProps = _mapStateToProps.bind(this);
 
-  subModel = (path) => new SubModel(this.baseModel, this.baseModelPath + "." + path);
+  subModel = (path) =>
+    new SubModel(this.baseModel, this.baseModelPath + "." + path);
 }
-
 
 // The following functions are not exported and probably never called directly, we use
 // them to define Schema / StateModel object methods.
-
 
 // Create an empty object according to the schema
 // where all values are undefined
 function createEmpty(schema, newObj = {}) {
   Object.keys(schema).forEach((prop) => {
-    if (Object.hasOwnProperty.call(schema[prop], PropertyName.SCHEMA) &&
-      schema[prop][PropertyName.SCHEMA] instanceof Array)
+    if (
+      Object.hasOwnProperty.call(schema[prop], PropertyName.SCHEMA) &&
+      schema[prop][PropertyName.SCHEMA] instanceof Array
+    )
       newObj[prop] = [];
-
     else if (Object.hasOwnProperty.call(schema[prop], PropertyName.SCHEMA))
       newObj[prop] = createEmpty(schema[prop][PropertyName.SCHEMA]);
-
-    else
-      newObj[prop] = undefined;
-
+    else newObj[prop] = undefined;
   });
   return newObj;
 }
@@ -349,16 +372,17 @@ function applyDefaults(schema, obj) {
     if (initialValue !== undefined) {
       if (initialValue instanceof Function) {
         obj[prop] = initialValue();
-      }
-      else {
+      } else {
         // TODO: Add proper check here to make sure only JSON-serializable initial
         // TODO: values are accepted
         obj[prop] = JSON.parse(JSON.stringify(initialValue));
       }
     }
     // If the sub-schema is an array, we leave it empty, otherwise we apply the defaults to the sub-objects.
-    else if (Object.hasOwnProperty.call(schema[prop], PropertyName.SCHEMA)
-      && !(schema[prop][PropertyName.SCHEMA] instanceof Array)) {
+    else if (
+      Object.hasOwnProperty.call(schema[prop], PropertyName.SCHEMA) &&
+      !(schema[prop][PropertyName.SCHEMA] instanceof Array)
+    ) {
       schema[prop][PropertyName.SCHEMA].applyDefaults(obj[prop]);
     }
   });
@@ -374,28 +398,31 @@ function validate(schema, obj) {
   Object.keys(schema).forEach((prop) => {
     let subErrors = [];
     // schema[prop] contains another schema but the corresponding obj property is NOT an object itself.
-    if (Object.hasOwnProperty.call(schema[prop], PropertyName.SCHEMA) && !(obj[prop] instanceof Object)) {
+    if (
+      Object.hasOwnProperty.call(schema[prop], PropertyName.SCHEMA) &&
+      !(obj[prop] instanceof Object)
+    ) {
       subErrors = validateField(prop, schema[prop], obj[prop]);
     }
     // schema[prop] contains another schema which is not an array
-    else if (Object.hasOwnProperty.call(schema[prop], PropertyName.SCHEMA) &&
-      (schema[prop][PropertyName.SCHEMA] instanceof Schema)) {
+    else if (
+      Object.hasOwnProperty.call(schema[prop], PropertyName.SCHEMA) &&
+      schema[prop][PropertyName.SCHEMA] instanceof Schema
+    ) {
       subErrors = schema[prop][PropertyName.SCHEMA].validate(obj[prop]).errors;
     }
     // schema[prop] contains another schema which is an array
     else if (
-      Object.hasOwnProperty.call(schema[prop], PropertyName.SCHEMA)
-      && (schema[prop][PropertyName.SCHEMA] instanceof Array)
-      && (schema[prop][PropertyName.SCHEMA].length > 0)
+      Object.hasOwnProperty.call(schema[prop], PropertyName.SCHEMA) &&
+      schema[prop][PropertyName.SCHEMA] instanceof Array &&
+      schema[prop][PropertyName.SCHEMA].length > 0
     ) {
       subErrors = obj[prop]
         .map((el, i) => {
           if (el instanceof Object)
             return schema[prop][PropertyName.SCHEMA][0].validate(el).errors;
 
-
           return [{ [prop]: `${prop}[${i}] must be an object` }];
-
         })
         .reduce((arr1, arr2) => arr1.concat(arr2));
     }
@@ -413,12 +440,16 @@ function validate(schema, obj) {
 // TODO: Validation of mandatory sub-fields of non-mandatory fields seems to give unexpected results.
 function validateField(fieldName, fieldSpec, fieldValue) {
   const errors = [];
-  if (fieldSpec[PropertyName.SCHEMA] instanceof Array && !(fieldValue instanceof Array))
+  if (
+    fieldSpec[PropertyName.SCHEMA] instanceof Array &&
+    !(fieldValue instanceof Array)
+  )
     errors.push({ [fieldName]: `${fieldName} must be an array` });
-
-  else if (fieldSpec[PropertyName.SCHEMA] instanceof Object && !(fieldValue instanceof Object))
+  else if (
+    fieldSpec[PropertyName.SCHEMA] instanceof Object &&
+    !(fieldValue instanceof Object)
+  )
     errors.push({ [fieldName]: `${fieldName} must be an object` });
-
   else if (fieldSpec[PropertyName.MANDATORY] && isEmpty(fieldValue))
     errors.push({ [fieldName]: `${fieldName} must be provided and non-empty` });
 
@@ -451,15 +482,12 @@ function updateObjectFromString(propAccessorString, value) {
 function updateObjectFromObject(obj, currentObject) {
   let updateObj = {};
   Object.keys(obj).forEach((prop) => {
-    if (obj[prop] instanceof Date)
-      updateObj[prop] = { $set: obj[prop] };
+    if (obj[prop] instanceof Date) updateObj[prop] = { $set: obj[prop] };
     else if (obj[prop] instanceof Object && currentObject[prop])
       updateObj[prop] = updateObjectFromObject(obj[prop], currentObject[prop]);
     else if (prop[0] === "$" && prop.length && prop.length > 1)
       updateObj[prop] = obj[prop];
-    else
-      updateObj[prop] = { $set: obj[prop] };
-
+    else updateObj[prop] = { $set: obj[prop] };
   });
   return updateObj;
 }
@@ -471,11 +499,9 @@ function updateObjectFromOptions(options) {
   Object.keys(options).forEach((prop) => {
     if (options[prop] instanceof Object) {
       updateObj[prop] = updateObjectFromOptions(options[prop]);
-    }
-    else {
+    } else {
       if (options[prop] === true)
         updateObj[prop] = { $set: SpecialPropVal.UPDATING };
-
     }
   });
   return updateObj;
@@ -505,7 +531,12 @@ function _mapStateToProps(state, ownProps) {
   return { ...this.get(), ...ownProps };
 }
 
-
 export {
-  PropertyName, Schema, StateModel, StateKind, SubModel, SpecialPropVal, StatusHelper
+  PropertyName,
+  Schema,
+  StateModel,
+  StateKind,
+  SubModel,
+  SpecialPropVal,
+  StatusHelper,
 };

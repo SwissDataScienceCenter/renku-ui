@@ -27,30 +27,33 @@ export function ProjectsInactiveKGWarning() {
   const projectList = useInactiveProjectSelector(
     (state) => state.kgInactiveProjects
   );
-  const { data, isFetching, isLoading } = useGetInactiveProjects(user?.data?.id);
+  const { data, isFetching, isLoading } = useGetInactiveProjects(
+    user?.data?.id
+  );
 
-  if (!user.logged)
-    return null;
+  if (!user.logged) return null;
 
-  if (isLoading || isFetching || data?.length === 0)
-    return null;
+  if (isLoading || isFetching || data?.length === 0) return null;
 
   let totalProjects;
   if (projectList.length > 0) {
-    totalProjects = projectList.filter( p => p.progressActivation !== 100).length;
-    if (totalProjects === 0)
-      return null;
-  }
-  else {
+    totalProjects = projectList.filter(
+      (p) => p.progressActivation !== 100
+    ).length;
+    if (totalProjects === 0) return null;
+  } else {
     totalProjects = data?.length;
   }
 
-  return <WarnAlert>
-    <div data-cy="inactive-kg-project-alert">
-      You have {totalProjects} projects that are not in the Knowledge Graph.{" "}
-      <Link to="/inactive-kg-projects">Activate your projects</Link> to make them searchable on Renku.
-    </div>
-  </WarnAlert>;
+  return (
+    <WarnAlert>
+      <div data-cy="inactive-kg-project-alert">
+        You have {totalProjects} projects that are not in the Knowledge Graph.{" "}
+        <Link to="/inactive-kg-projects">Activate your projects</Link> to make
+        them searchable on Renku.
+      </div>
+    </WarnAlert>
+  );
 }
 
 export default ProjectsInactiveKGWarning;

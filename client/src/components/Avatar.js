@@ -38,11 +38,20 @@ class UserAvatar extends Component {
     const size = this.props.size || "lg";
     let widgetSize = { img: 36, fa: "2x" };
     switch (size) {
-      case "sm": widgetSize = { img: 18, fa: null }; break;
-      case "md": widgetSize = { img: 18 * 2, fa: "2x" }; break;
-      case "lg": widgetSize = { img: 18 * 3, fa: "3x" }; break;
-      case "xl": widgetSize = { img: 18 * 6, fa: "6x" }; break;
-      default: break;
+      case "sm":
+        widgetSize = { img: 18, fa: null };
+        break;
+      case "md":
+        widgetSize = { img: 18 * 2, fa: "2x" };
+        break;
+      case "lg":
+        widgetSize = { img: 18 * 3, fa: "3x" };
+        break;
+      case "xl":
+        widgetSize = { img: 18 * 6, fa: "6x" };
+        break;
+      default:
+        break;
     }
     return widgetSize;
   }
@@ -54,21 +63,26 @@ class UserAvatar extends Component {
     if (person != null) {
       img = person.avatar_url;
       user = person.username;
-    }
-    else {
+    } else {
       img = this.props.avatar;
       user = this.props.user;
     }
-    return (img) ?
-      <img width={widgetSize.img} src={img} alt={user} /> :
+    return img ? (
+      <img width={widgetSize.img} src={img} alt={user} />
+    ) : (
       <div style={{ minWidth: widgetSize.img, textAlign: "center" }}>
-        <FontAwesomeIcon alt={user} icon={faUser} size={widgetSize.fa}
-          style={{ textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)" }} /></div>;
+        <FontAwesomeIcon
+          alt={user}
+          icon={faUser}
+          size={widgetSize.fa}
+          style={{ textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)" }}
+        />
+      </div>
+    );
   }
 }
 
 function ProjectAvatar(props) {
-
   const [avatarUrl, setAvatarUrl] = useState(null);
 
   useEffect(() => {

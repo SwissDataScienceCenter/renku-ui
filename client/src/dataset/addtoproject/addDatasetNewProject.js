@@ -34,26 +34,37 @@ import AppContext from "../../utils/context/appContext";
  *  Component for add dataset to new project
  */
 
-const AddDatasetNewProject = (
-  { dataset, model, handlers, isDatasetValid, currentStatus, importingDataset, project }) => {
-
-  const [ newProject, setNewProject ] = useState(null);
+const AddDatasetNewProject = ({
+  dataset,
+  model,
+  handlers,
+  isDatasetValid,
+  currentStatus,
+  importingDataset,
+  project,
+}) => {
+  const [newProject, setNewProject] = useState(null);
   const setCurrentStatus = handlers.setCurrentStatus;
   const { client } = useContext(AppContext);
-  const user = useSelector( (state) => state.stateModel.user);
+  const user = useSelector((state) => state.stateModel.user);
 
   useEffect(() => setCurrentStatus(null), [setCurrentStatus]);
 
   const startImportDataset = async (projectPath) => {
     if (!client)
-      setCurrentStatus({ status: "error", text: "Unable to import the dataset" });
+      setCurrentStatus({
+        status: "error",
+        text: "Unable to import the dataset",
+      });
     // 1. get github url of project
     setCurrentStatus({ status: "importing", text: "Get new project data..." });
     const fetchProject = await client.getProject(projectPath);
     const urlProjectOrigin = fetchProject?.data?.all?.http_url_to_repo;
     if (!urlProjectOrigin) {
-      setCurrentStatus(
-        { status: "error", text: "Something went wrong in the creation of the project, the project is invalid" });
+      setCurrentStatus({
+        status: "error",
+        text: "Something went wrong in the creation of the project, the project is invalid",
+      });
       return false;
     }
     // 2. create project object for importing
@@ -63,23 +74,26 @@ const AddDatasetNewProject = (
     handlers.submitCallback(project);
   };
 
-  const addDatasetStatus = currentStatus ?
+  const addDatasetStatus = currentStatus ? (
     <AddDatasetStatus
       status={currentStatus.status}
       text={currentStatus?.text || null}
       projectName={project?.name}
-    /> : null;
+    />
+  ) : null;
 
   if (!dataset) return null;
 
   // if data is not ready display a loader
-  if (!model || !client)
-    return <Loader/>;
+  if (!model || !client) return <Loader />;
 
   // do not display form if is an import in process, error or the dataset is not valid
-  const form = importingDataset || !isDatasetValid
-    || ["inProcess", "importing", "error"].includes(currentStatus?.status) ? null :
-    (
+  const form =
+    importingDataset ||
+    !isDatasetValid ||
+    ["inProcess", "importing", "error"].includes(
+      currentStatus?.status
+    ) ? null : (
       <NewProject
         key="newProject"
         model={model}
@@ -91,13 +105,19 @@ const AddDatasetNewProject = (
     );
 
   // in case the import fail indicate that the project was created
-  const extraInfo = !importingDataset && currentStatus?.status === "error" ?
-    (
+  const extraInfo =
+    !importingDataset && currentStatus?.status === "error" ? (
       <WarnAlert timeout={0} dismissible={false}>
-        <div>The project was created correctly but it was not possible to import the dataset.
-          <br/>
-          You can view the project <i className="pt-2"><Link to={`/projects/${newProject?.name}`}>here</Link>{" "}</i>
-          or try again to import the dataset using the <b>Existing Project</b> option.
+        <div>
+          The project was created correctly but it was not possible to import
+          the dataset.
+          <br />
+          You can view the project{" "}
+          <i className="pt-2">
+            <Link to={`/projects/${newProject?.name}`}>here</Link>{" "}
+          </i>
+          or try again to import the dataset using the <b>Existing Project</b>{" "}
+          option.
         </div>
       </WarnAlert>
     ) : null;

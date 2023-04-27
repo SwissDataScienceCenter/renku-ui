@@ -24,7 +24,11 @@ type IAppContext = {
   location: unknown;
 };
 
-const AppContext = React.createContext<IAppContext>({ client: undefined, params: undefined, location: undefined });
+const AppContext = React.createContext<IAppContext>({
+  client: undefined,
+  params: undefined,
+  location: undefined,
+});
 
 export default AppContext;
 export type { IAppContext };

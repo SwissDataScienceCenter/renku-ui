@@ -27,7 +27,7 @@ import { FormGroup } from "../../../utils/ts-wrappers";
 import {
   NewProjectHandlers,
   NewProjectInputs,
-  NewProjectMeta
+  NewProjectMeta,
 } from "./newProject.d";
 
 interface VisibilityProps {

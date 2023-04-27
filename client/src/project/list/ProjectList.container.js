@@ -22,12 +22,15 @@ import React, { useState, useEffect } from "react";
 import { ProjectList as ProjectListPresent } from "./ProjectList.present";
 import { Url, getSearchParams } from "../../utils/helpers/url";
 
-
 // *** Constants ***
 const PROJECT_NEW_URL = Url.get(Url.pages.project.new);
 
 const CONVERSIONS = {
-  q: "query", currentTab: "section", currentPage: "page", orderSearchAsc: "ascending", usersOrGroup: "targetUser"
+  q: "query",
+  currentTab: "section",
+  currentPage: "page",
+  orderSearchAsc: "ascending",
+  usersOrGroup: "targetUser",
 };
 
 const SECTION_MAP = {
@@ -39,13 +42,13 @@ const SECTION_MAP = {
 const SEARCH_IN_MAP = {
   projects: { value: "projects", text: "Project" },
   users: { value: "users", text: "User" },
-  groups: { value: "groups", text: "Group" }
+  groups: { value: "groups", text: "Group" },
 };
 
 const ORDER_BY_MAP = {
   name: { value: "name", text: "Name" },
   creationDate: { value: "created_at", text: "Creation date" },
-  updateDate: { value: "last_activity_at", text: "Update date" }
+  updateDate: { value: "last_activity_at", text: "Update date" },
 };
 
 const URL_MAP = {
@@ -53,13 +56,18 @@ const URL_MAP = {
   projectsSearchUrl: Url.get(Url.pages.projects.all), // --> all --> /all
   projectNewUrl: Url.get(Url.pages.project.new),
   starred: Url.get(Url.pages.projects.starred), // --> starred --> /starred
-  yourProjects: Url.get(Url.pages.projects) // --> your --> null
+  yourProjects: Url.get(Url.pages.projects), // --> your --> null
 };
-
 
 // *** Defaults ***
 
-const DEFAULT_PROJECTS = { fetched: null, fetching: null, total: null, pages: null, list: [] };
+const DEFAULT_PROJECTS = {
+  fetched: null,
+  fetching: null,
+  total: null,
+  pages: null,
+  list: [],
+};
 
 const DEFAULT_USERS_GROUPS = { fetched: null, fetching: null, list: [] };
 
@@ -72,7 +80,6 @@ const DEFAULT_PARAMS = {
   ascending: false,
 };
 
-
 // *** Helper functions ***
 
 /**
@@ -84,10 +91,8 @@ const DEFAULT_PARAMS = {
 function getSection(location) {
   let section = SECTION_MAP.own;
   if (location && location.pathname) {
-    if (location.pathname.endsWith("/starred"))
-      section = SECTION_MAP.starred;
-    else if (location.pathname.endsWith("/all"))
-      section = SECTION_MAP.all;
+    if (location.pathname.endsWith("/starred")) section = SECTION_MAP.starred;
+    else if (location.pathname.endsWith("/all")) section = SECTION_MAP.all;
   }
   return section;
 }
@@ -99,21 +104,14 @@ function getSection(location) {
  * @param {string} [target] - optional target section. It's taken from `params` when not provided.
  */
 function buildPreciseUrl(params, target) {
-  const section = target ?
-    target :
-    params.section;
+  const section = target ? target : params.section;
 
   let page = Url.pages.projects.all;
-  if (section === SECTION_MAP.own)
-    page = Url.pages.projects.base;
-  else if (section === SECTION_MAP.starred)
-    page = Url.pages.projects.starred;
+  if (section === SECTION_MAP.own) page = Url.pages.projects.base;
+  else if (section === SECTION_MAP.starred) page = Url.pages.projects.starred;
 
-  let cleanParams = params ?
-    { ...params } :
-    {};
-  if (cleanParams.section)
-    delete cleanParams.section;
+  let cleanParams = params ? { ...params } : {};
+  if (cleanParams.section) delete cleanParams.section;
 
   const url = Url.get(page, cleanParams);
   return url;
@@ -129,8 +127,7 @@ function buildPreciseUrl(params, target) {
 function removeDefaultParams(params, removeSection = false) {
   let modifiedParams = {};
   for (let [param, value] of Object.entries(params)) {
-    if (value !== DEFAULT_PARAMS[param])
-      modifiedParams[param] = value;
+    if (value !== DEFAULT_PARAMS[param]) modifiedParams[param] = value;
   }
   if (removeSection && Object.keys(modifiedParams).includes("section"))
     delete modifiedParams.section;
@@ -147,23 +144,23 @@ function useLocation(location, params, setParams, setTargetUser) {
     let newParamsFull = { ...newSearchParams };
     const newParamsKeys = Object.keys(newParamsFull);
     for (let [param, value] of Object.entries(DEFAULT_PARAMS)) {
-      if (!newParamsKeys.includes(param))
-        newParamsFull[param] = value;
+      if (!newParamsKeys.includes(param)) newParamsFull[param] = value;
     }
 
     // prevent illegal searchIn
-    if (newSection !== SECTION_MAP.all && newParamsFull.searchIn !== SEARCH_IN_MAP.projects.value)
+    if (
+      newSection !== SECTION_MAP.all &&
+      newParamsFull.searchIn !== SEARCH_IN_MAP.projects.value
+    )
       newParamsFull.searchIn = SEARCH_IN_MAP.projects.value;
 
     const newParams = { ...newParamsFull, section: newSection };
-    if (_.isEqual(newParams, params))
-      return undefined;
+    if (_.isEqual(newParams, params)) return undefined;
 
-    setParams(p => {
+    setParams((p) => {
       const newParams = { ...p, ...newParamsFull, section: newSection };
       // prevent extra queries when changing searchIn
-      if (newParams.searchIn !== p.searchIn)
-        setTargetUser(null);
+      if (newParams.searchIn !== p.searchIn) setTargetUser(null);
 
       return newParams;
     });
@@ -173,11 +170,10 @@ function useLocation(location, params, setParams, setTargetUser) {
 /** React hook to update project search results when parameters change */
 function useProjectSearchParams(client, params, setParams, setProjects) {
   useEffect(() => {
-    if (params.searchIn !== SEARCH_IN_MAP.projects.value)
-      return;
+    if (params.searchIn !== SEARCH_IN_MAP.projects.value) return;
 
     // prepare fetching projects
-    setProjects(p => ({ ...p, fetched: null, fetching: true }));
+    setProjects((p) => ({ ...p, fetched: null, fetching: true }));
     let queryParams = {
       search: params.query,
       page: params.page,
@@ -185,17 +181,18 @@ function useProjectSearchParams(client, params, setParams, setProjects) {
       order_by: params.orderBy,
       sort: params.ascending ? "asc" : "desc",
     };
-    if (params.section === SECTION_MAP.own)
-      queryParams.membership = true;
-    else if (params.section === SECTION_MAP.starred)
-      queryParams.starred = true;
+    if (params.section === SECTION_MAP.own) queryParams.membership = true;
+    else if (params.section === SECTION_MAP.starred) queryParams.starred = true;
     const pageRequest = params.page;
 
     // fetch projects when feasible
     client.getProjects(queryParams).then((response) => {
       // search again for page 1 if the user was trying to get content for an un-existing page
-      if (response.pagination.totalPages && response.pagination.totalPages < pageRequest) {
-        setParams(p => ({ ...p, page: 1 })); // TODO: use removeDefaultParams + buildPreciseUrl
+      if (
+        response.pagination.totalPages &&
+        response.pagination.totalPages < pageRequest
+      ) {
+        setParams((p) => ({ ...p, page: 1 })); // TODO: use removeDefaultParams + buildPreciseUrl
         return;
       }
       setProjects({
@@ -212,55 +209,71 @@ function useProjectSearchParams(client, params, setParams, setProjects) {
 /** React hook to update user search results when parameters change */
 function useUserSearchParams(client, params, setUsers, setTargetUser) {
   useEffect(() => {
-    if (params.searchIn === SEARCH_IN_MAP.projects.value)
-      return;
+    if (params.searchIn === SEARCH_IN_MAP.projects.value) return;
 
     // reset target user
     //setTargetUser(null);
 
     // Never fetch when filtering for something shorter than 3 chars
-    if (params.query == null || !params.query.toString().length || params.query.toString().length < 3) {
-      setUsers({ ...DEFAULT_USERS_GROUPS, fetching: false, fetched: new Date() });
+    if (
+      params.query == null ||
+      !params.query.toString().length ||
+      params.query.toString().length < 3
+    ) {
+      setUsers({
+        ...DEFAULT_USERS_GROUPS,
+        fetching: false,
+        fetched: new Date(),
+      });
       return;
     }
 
     // prepare fetching users
-    setUsers(u => ({ ...u, fetched: null, fetching: true }));
+    setUsers((u) => ({ ...u, fetched: null, fetching: true }));
     let queryParams = { search: params.query, per_page: 100 };
 
     // fetch users when feasible
-    client.searchUsersOrGroups(queryParams, params.searchIn).then((response) => {
-      const data = response.data ?
-        response.data :
-        response;
+    client
+      .searchUsersOrGroups(queryParams, params.searchIn)
+      .then((response) => {
+        const data = response.data ? response.data : response;
 
-      // Set new target // ? mind that targetUser is not currently used
-      let target = params.targetUser ?
-        params.targetUser :
-        null;
-      if (!target && data && data.length) {
-        target = data[0].full_path ?
-          encodeURIComponent(data[0].full_path) :
-          data[0].username;
-      }
-      setTargetUser(target);
+        // Set new target // ? mind that targetUser is not currently used
+        let target = params.targetUser ? params.targetUser : null;
+        if (!target && data && data.length) {
+          target = data[0].full_path
+            ? encodeURIComponent(data[0].full_path)
+            : data[0].username;
+        }
+        setTargetUser(target);
 
-      // set users at the end to prevent flickering
-      setUsers({
-        fetching: false,
-        fetched: new Date(),
-        list: data,
+        // set users at the end to prevent flickering
+        setUsers({
+          fetching: false,
+          fetched: new Date(),
+          list: data,
+        });
       });
-    });
-
-  }, [params.targetUser, params.query, params.searchIn, setUsers, setTargetUser, client]);
+  }, [
+    params.targetUser,
+    params.query,
+    params.searchIn,
+    setUsers,
+    setTargetUser,
+    client,
+  ]);
 }
 
 /** React hook to update project search results when the targetUser changes */
-function useUserProjectSearch(client, params, targetUser, setParams, setProjects) {
+function useUserProjectSearch(
+  client,
+  params,
+  targetUser,
+  setParams,
+  setProjects
+) {
   useEffect(() => {
-    if (params.searchIn === SEARCH_IN_MAP.projects.value)
-      return;
+    if (params.searchIn === SEARCH_IN_MAP.projects.value) return;
 
     // If no users were found, we already know there won't be any project.
     if (!targetUser) {
@@ -273,7 +286,7 @@ function useUserProjectSearch(client, params, targetUser, setParams, setProjects
     }
 
     // Prepare fetching user or group projects
-    setProjects(p => ({ ...p, fetched: null, fetching: true }));
+    setProjects((p) => ({ ...p, fetched: null, fetching: true }));
     let queryParams = {
       page: params.page,
       per_page: params.perPage,
@@ -283,11 +296,15 @@ function useUserProjectSearch(client, params, targetUser, setParams, setProjects
     const pageRequest = params.page;
 
     // Fetch user or group projects
-    client.getProjectsBy(params.searchIn, targetUser, queryParams)
+    client
+      .getProjectsBy(params.searchIn, targetUser, queryParams)
       .then((response) => {
         // search again for page 1 if the user was trying to get content for an nonexistent page
-        if (response.pagination.totalPages && response.pagination.totalPages < pageRequest) {
-          setParams(p => ({ ...p, page: 1 })); // TODO: use removeDefaultParams + buildPreciseUrl
+        if (
+          response.pagination.totalPages &&
+          response.pagination.totalPages < pageRequest
+        ) {
+          setParams((p) => ({ ...p, page: 1 })); // TODO: use removeDefaultParams + buildPreciseUrl
           return;
         }
         setProjects({
@@ -298,10 +315,18 @@ function useUserProjectSearch(client, params, targetUser, setParams, setProjects
           list: response.data,
         });
       });
-  }, [client, params.searchIn, params.page, params.perPage, params.orderBy, params.ascending,
-    targetUser, setParams, setProjects]);
+  }, [
+    client,
+    params.searchIn,
+    params.page,
+    params.perPage,
+    params.orderBy,
+    params.ascending,
+    targetUser,
+    setParams,
+    setProjects,
+  ]);
 }
-
 
 // *** React functional components ***
 
@@ -322,15 +347,17 @@ function ProjectList(props) {
     }
     // filtering per user or group
     if (searchParams.searchIn !== SEARCH_IN_MAP.projects.value) {
-      const newParams = { ...searchParams, searchIn: SEARCH_IN_MAP.projects.value };
+      const newParams = {
+        ...searchParams,
+        searchIn: SEARCH_IN_MAP.projects.value,
+      };
       const newUrl = Url.get(Url.pages.projects.all, newParams);
       props.history.replace(newUrl);
       return null;
     }
   }
-  return (<ProjectListRedirected {...props} />);
+  return <ProjectListRedirected {...props} />;
 }
-
 
 /**
  * Show list of projects, allowing advanced search.
@@ -346,7 +373,7 @@ function ProjectListRedirected(props) {
   const [users, setUsers] = useState(DEFAULT_USERS_GROUPS);
   const [targetUser, setTargetUser] = useState(null);
   const [params, setParams] = useState({
-    ...(getSearchParams(DEFAULT_PARAMS, CONVERSIONS)),
+    ...getSearchParams(DEFAULT_PARAMS, CONVERSIONS),
     section: getSection(props.location),
   });
 
@@ -361,14 +388,19 @@ function ProjectListRedirected(props) {
   useUserSearchParams(props.client, params, setUsers, setTargetUser);
 
   // Get new projects when targetUser change (ONLY when searching in user or groups)
-  useUserProjectSearch(props.client, params, targetUser, setParams, setProjects);
+  useUserProjectSearch(
+    props.client,
+    params,
+    targetUser,
+    setParams,
+    setProjects
+  );
 
   // *** Functions ***
   // Set the selected user or group, if it's different from the current
   // ? We can remove this is we want to always re-fetch when clicking on user/group
   const setTarget = (target) => {
-    if (target === targetUser)
-      return;
+    if (target === targetUser) return;
     setTargetUser(target);
   };
 
@@ -377,17 +409,17 @@ function ProjectListRedirected(props) {
     let modifiedParams = removeDefaultParams(params, true);
 
     // Use the section to decide the target URL.
-    const targetSection = section ?
-      section :
-      params.section;
+    const targetSection = section ? section : params.section;
     let target = Url.pages.projects.all;
-    if (targetSection === SECTION_MAP.own)
-      target = Url.pages.projects.base;
+    if (targetSection === SECTION_MAP.own) target = Url.pages.projects.base;
     else if (targetSection === SECTION_MAP.starred)
       target = Url.pages.projects.starred;
 
     // Fix illegal searchIn
-    if (targetSection !== SECTION_MAP.all && modifiedParams.searchIn !== SEARCH_IN_MAP.projects.value)
+    if (
+      targetSection !== SECTION_MAP.all &&
+      modifiedParams.searchIn !== SEARCH_IN_MAP.projects.value
+    )
       modifiedParams.searchIn = SEARCH_IN_MAP.projects.value;
 
     // Move to the target url.
@@ -400,7 +432,10 @@ function ProjectListRedirected(props) {
   // Get the url for other sections, params included
   const getPreciseUrl = (section) => {
     let modifiedParams = removeDefaultParams(params, true);
-    if (section !== SECTION_MAP.all && modifiedParams.searchIn !== SEARCH_IN_MAP.projects.value)
+    if (
+      section !== SECTION_MAP.all &&
+      modifiedParams.searchIn !== SEARCH_IN_MAP.projects.value
+    )
       modifiedParams.searchIn = SEARCH_IN_MAP.projects.value;
     return buildPreciseUrl(modifiedParams, section);
   };
@@ -409,7 +444,7 @@ function ProjectListRedirected(props) {
     <ProjectListPresent
       fetched={projects.fetched}
       fetching={projects.fetching}
-      getAvatar={id => this.client.getAvatarFromNamespace(id)}
+      getAvatar={(id) => this.client.getAvatarFromNamespace(id)}
       getPreciseUrl={getPreciseUrl}
       loggedIn={props.user ? props.user.logged : false}
       orderByMap={ORDER_BY_MAP}
@@ -427,13 +462,12 @@ function ProjectListRedirected(props) {
   );
 }
 
-
 export { URL_MAP as urlMap, ProjectList };
 
 // test only
 const tests = {
   defaults: { DEFAULT_PROJECTS, DEFAULT_USERS_GROUPS, DEFAULT_PARAMS },
   maps: { ORDER_BY_MAP, SEARCH_IN_MAP, SECTION_MAP },
-  functions: { buildPreciseUrl, getSection, removeDefaultParams }
+  functions: { buildPreciseUrl, getSection, removeDefaultParams },
 };
 export { tests };

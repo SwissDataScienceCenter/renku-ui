@@ -28,7 +28,7 @@ const API_ERRORS = {
   notFoundError: "NOT_FOUND",
   internalServerError: "SERVER_ERROR",
   networkError: "NETWORK_PROBLEM",
-  authExpired: "AUTH_EXPIRED"
+  authExpired: "AUTH_EXPIRED",
 };
 
 function throwAuthError(response) {
@@ -70,22 +70,27 @@ function throwAPIErrors(response) {
   // TODO The default should be to check for type application/json
   // but I want to make a more minimal change to the code right now.
   if (contentType === "text/html")
-    return response.text().then(d => throwErrorWithData(response, d));
+    return response.text().then((d) => throwErrorWithData(response, d));
 
-  return response.json().then(d => throwErrorWithData(response, d));
-
+  return response.json().then((d) => throwErrorWithData(response, d));
 }
 
 function alertAPIErrors(error) {
   switch (error.case) {
     case API_ERRORS.forbiddenError:
-      throw Error("You don't have the necessary permission to view this information or perform this action.");
+      throw Error(
+        "You don't have the necessary permission to view this information or perform this action."
+      );
     case API_ERRORS.notFoundError:
       throw Error("We could not find the requested resource on the server.");
     case API_ERRORS.internalServerError:
-      throw Error("There is a problem with the server - please try again later.");
+      throw Error(
+        "There is a problem with the server - please try again later."
+      );
     case API_ERRORS.networkError:
-      throw Error("There seems to be problem with your network connection. Please check and try again.");
+      throw Error(
+        "There seems to be problem with your network connection. Please check and try again."
+      );
     default:
     // No alert on default exception
   }

@@ -31,46 +31,50 @@ import { ThrottledTooltip } from "./Tooltip";
 
 function ExternalLinkButton(props) {
   let className = "btn";
-  if (props.size != null)
-    className += ` btn-${props.size}`;
-  if (props.disabled)
-    className += " disabled";
-  if (props.color)
-    className += ` btn-${props.color}`;
-  else
-    className += ` btn-primary`;
-  if (props.className)
-    className += ` ${props.className}`;
+  if (props.size != null) className += ` btn-${props.size}`;
+  if (props.disabled) className += " disabled";
+  if (props.color) className += ` btn-${props.color}`;
+  else className += ` btn-primary`;
+  if (props.className) className += ` ${props.className}`;
 
   let otherProps = {};
-  if (props.id)
-    otherProps.id = props.id;
-  if (props.onClick)
-    otherProps.onClick = props.onClick;
+  if (props.id) otherProps.id = props.id;
+  if (props.onClick) otherProps.onClick = props.onClick;
 
   return (
-    <a role="button" target="_blank" rel="noreferrer noopener" href={props.url} className={className}{...otherProps} >
-      {props.title}{props.children}
+    <a
+      role="button"
+      target="_blank"
+      rel="noreferrer noopener"
+      href={props.url}
+      className={className}
+      {...otherProps}
+    >
+      {props.title}
+      {props.children}
     </a>
   );
 }
 
 function ExternalLinkText(props) {
   let className = "";
-  if (props.disabled)
-    className += " disabled";
-  if (props.className)
-    className += ` ${props.className}`;
+  if (props.disabled) className += " disabled";
+  if (props.className) className += ` ${props.className}`;
 
   let otherProps = {};
-  if (props.id)
-    otherProps.id = props.id;
-  if (props.onClick)
-    otherProps.onClick = props.onClick;
+  if (props.id) otherProps.id = props.id;
+  if (props.onClick) otherProps.onClick = props.onClick;
 
   return (
-    <a target="_blank" rel="noreferrer noopener" href={props.url} className={className} {...otherProps} >
-      {props.title}{props.children}
+    <a
+      target="_blank"
+      rel="noreferrer noopener"
+      href={props.url}
+      className={className}
+      {...otherProps}
+    >
+      {props.title}
+      {props.children}
     </a>
   );
 }
@@ -91,24 +95,34 @@ function ExternalLinkText(props) {
  */
 function ExternalLink(props) {
   const role = props.role;
-  const showLinkIcon = props.showLinkIcon || props.iconSup || props.iconAfter || props.iconSize ?
-    true :
-    false;
+  const showLinkIcon =
+    props.showLinkIcon || props.iconSup || props.iconAfter || props.iconSize
+      ? true
+      : false;
   let displayTitle = props.title;
   if (showLinkIcon) {
-    const iconType = props.customIcon ?
-      props.customIcon :
-      faExternalLinkAlt;
-    const icon = props.iconSup ?
-      (<sup><FontAwesomeIcon icon={iconType} size={props.iconSize} color="dark" /></sup>) :
-      (<FontAwesomeIcon icon={iconType} size={props.iconSize} color="dark" />);
-    displayTitle = props.iconAfter ?
-      (<span className="btn-icon-text-after">{props.title}{icon}</span>) :
-      (<span className="btn-icon-text">{icon}{props.title}</span>);
+    const iconType = props.customIcon ? props.customIcon : faExternalLinkAlt;
+    const icon = props.iconSup ? (
+      <sup>
+        <FontAwesomeIcon icon={iconType} size={props.iconSize} color="dark" />
+      </sup>
+    ) : (
+      <FontAwesomeIcon icon={iconType} size={props.iconSize} color="dark" />
+    );
+    displayTitle = props.iconAfter ? (
+      <span className="btn-icon-text-after">
+        {props.title}
+        {icon}
+      </span>
+    ) : (
+      <span className="btn-icon-text">
+        {icon}
+        {props.title}
+      </span>
+    );
   }
   const myProps = { ...props, title: displayTitle };
-  if (role === "link" || role === "text")
-    return ExternalLinkText(myProps);
+  if (role === "link" || role === "text") return ExternalLinkText(myProps);
   return ExternalLinkButton(myProps);
 }
 
@@ -134,43 +148,58 @@ function ExternalDocsLink(props) {
  * @param {string} [tooltip] - the text of the tooltip
  */
 function IconLink(props) {
-  const [uniqueId, ] = useState(`icon-link-${_.uniqueId()}`);
+  const [uniqueId] = useState(`icon-link-${_.uniqueId()}`);
   let iconClass = "icon-link ";
-  if (props.className)
-    iconClass += props.className;
+  if (props.className) iconClass += props.className;
 
-  return <span>
-    <Link to={props.to} id={uniqueId} >
-      <FontAwesomeIcon className={iconClass} icon={props.icon} />
-    </Link>
-    <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
-  </span>;
+  return (
+    <span>
+      <Link to={props.to} id={uniqueId}>
+        <FontAwesomeIcon className={iconClass} icon={props.icon} />
+      </Link>
+      <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
+    </span>
+  );
 }
 
 function ExternalIconLinkWithTooltip(props) {
   const ref = useRef(null);
 
   let className = "btn-icon-text icon-link";
-  if (props.className)
-    className += ` ${props.className}`;
+  if (props.className) className += ` ${props.className}`;
 
-  return <span>
-    <a href={props.url} role="button"
-      className={props.className} ref={ref}
-      target="_blank" rel="noreferrer noopener">
-      <FontAwesomeIcon className={className} icon={props.icon} />{props.title}
-    </a>
-    <ThrottledTooltip target={ref} tooltip={props.tooltip} />
-  </span>;
+  return (
+    <span>
+      <a
+        href={props.url}
+        role="button"
+        className={props.className}
+        ref={ref}
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        <FontAwesomeIcon className={className} icon={props.icon} />
+        {props.title}
+      </a>
+      <ThrottledTooltip target={ref} tooltip={props.tooltip} />
+    </span>
+  );
 }
 
 function ExternalIconLinkWithoutTooltip(props) {
   let className = "btn-icon-text";
-  if (props.className)
-    className += ` ${props.className}`;
-  return <a href={props.url} target="_blank" rel="noreferrer noopener" className={className}>
-    <FontAwesomeIcon icon={props.icon} />{props.title}
-  </a>;
+  if (props.className) className += ` ${props.className}`;
+  return (
+    <a
+      href={props.url}
+      target="_blank"
+      rel="noreferrer noopener"
+      className={className}
+    >
+      <FontAwesomeIcon icon={props.icon} />
+      {props.title}
+    </a>
+  );
 }
 
 /**
@@ -184,11 +213,11 @@ function ExternalIconLinkWithoutTooltip(props) {
  * @param {string?} [className] - [Optional] Any classes to add, e.g., 'nav-link' or 'dropdown-item'
  */
 function ExternalIconLink(props) {
-  const url = (props.url) ? props.url : props.to;
+  const url = props.url ? props.url : props.to;
   const myProps = { url, ...props };
-  return (props.tooltip) ?
-    ExternalIconLinkWithTooltip(myProps) :
-    ExternalIconLinkWithoutTooltip(myProps);
+  return props.tooltip
+    ? ExternalIconLinkWithTooltip(myProps)
+    : ExternalIconLinkWithoutTooltip(myProps);
 }
 
 export { ExternalLink, ExternalDocsLink, ExternalIconLink, IconLink };

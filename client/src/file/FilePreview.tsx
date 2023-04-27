@@ -31,31 +31,85 @@ import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
 
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];
 const CODE_EXTENSIONS = [
-  "bat", "cwl", "dcf", "ini", "jl", "job", "js", "json", "m", "mat", "parquet", "prn", "py", "r", "rmd",
-  "rout", "rproj", "rs", "rst", "scala", "sh", "toml", "ts", "xml", "yaml", "yml",
-  "c", "cc", "cxx", "cpp", "h", "hh", "hxx", "hpp", // C++
-  "f", "for", "ftn", "fpp", "f90", "f95", "f03", "f08" // Fortran
+  "bat",
+  "cwl",
+  "dcf",
+  "ini",
+  "jl",
+  "job",
+  "js",
+  "json",
+  "m",
+  "mat",
+  "parquet",
+  "prn",
+  "py",
+  "r",
+  "rmd",
+  "rout",
+  "rproj",
+  "rs",
+  "rst",
+  "scala",
+  "sh",
+  "toml",
+  "ts",
+  "xml",
+  "yaml",
+  "yml",
+  "c",
+  "cc",
+  "cxx",
+  "cpp",
+  "h",
+  "hh",
+  "hxx",
+  "hpp", // C++
+  "f",
+  "for",
+  "ftn",
+  "fpp",
+  "f90",
+  "f95",
+  "f03",
+  "f08", // Fortran
 ];
 /* eslint-disable */
-const TEXT_EXTENSIONS = ["csv",
-  "dockerignore", "gitattributes", "gitkeep", "gitignore", "renkulfsignore", "txt"
+const TEXT_EXTENSIONS = [
+  "csv",
+  "dockerignore",
+  "gitattributes",
+  "gitkeep",
+  "gitignore",
+  "renkulfsignore",
+  "txt",
 ];
 /* eslint-enable */
 
-type HashElement = {isLfs: boolean};
+type HashElement = { isLfs: boolean };
 
 function filenameExtension(filename: string | undefined) {
-  if (!filename)
-    return null;
+  if (!filename) return null;
 
-  if (filename.match(/\.(.*)/) === null)
-    return null;
+  if (filename.match(/\.(.*)/) === null) return null;
   const extension = filename.split(".").pop();
   return extension?.toLowerCase() ?? null;
 }
 
-type FileType = "code" | "image" | "ipynb" | "lfs" | "md" | "none" | "pdf" | "text" | "unknown";
-function fileInfoToType(hashElement?: HashElement, filename?: string): FileType {
+type FileType =
+  | "code"
+  | "image"
+  | "ipynb"
+  | "lfs"
+  | "md"
+  | "none"
+  | "pdf"
+  | "text"
+  | "unknown";
+function fileInfoToType(
+  hashElement?: HashElement,
+  filename?: string
+): FileType {
   // This needs to be checked first
   if (hashElement && hashElement.isLfs) return "lfs";
 
@@ -70,21 +124,25 @@ function fileInfoToType(hashElement?: HashElement, filename?: string): FileType 
   if (TEXT_EXTENSIONS.indexOf(ext) >= 0) return "text";
   if (CODE_EXTENSIONS.indexOf(ext) >= 0) return "code";
 
-
   return "unknown";
 }
 
 type FilePreviewProps = {
-  branch: string,
-  client: unknown,
-  downloadLink: string,
-  file?: {content: string, file_name: string, file_path: string, size: number},
-  hashElement?: HashElement,
-  insideProject: boolean,
-  previewThreshold: {hard: number, soft: number},
-  projectId: string,
-  projectPathWithNamespace: string
-}
+  branch: string;
+  client: unknown;
+  downloadLink: string;
+  file?: {
+    content: string;
+    file_name: string;
+    file_path: string;
+    size: number;
+  };
+  hashElement?: HashElement;
+  insideProject: boolean;
+  previewThreshold: { hard: number; soft: number };
+  projectId: string;
+  projectPathWithNamespace: string;
+};
 
 function FilePreview(props: FilePreviewProps) {
   const [previewAnyway, setPreviewAnyway] = React.useState(false);
@@ -94,12 +152,15 @@ function FilePreview(props: FilePreviewProps) {
   // File has not yet been fetched
   if (!props.file) return null;
 
-
   const getFileExtension = () => filenameExtension(props.file?.file_name);
 
   // LFS files and big files
-  if ("lfs" === fileType || (props.previewThreshold &&
-      props.file.size > props.previewThreshold.soft && !previewAnyway)) {
+  if (
+    "lfs" === fileType ||
+    (props.previewThreshold &&
+      props.file.size > props.previewThreshold.soft &&
+      !previewAnyway)
+  ) {
     return (
       <FileNoPreview
         url={props.downloadLink}
@@ -131,7 +192,7 @@ function FilePreview(props: FilePreviewProps) {
   if ("pdf" === fileType) {
     return (
       <CardBody key="file preview" className="pb-0 bg-white">
-        <PDFViewer file={`data:application/pdf;base64,${props.file.content}`}/>
+        <PDFViewer file={`data:application/pdf;base64,${props.file.content}`} />
       </CardBody>
     );
   }
@@ -168,7 +229,7 @@ function FilePreview(props: FilePreviewProps) {
   // Jupyter Notebook
   if ("ipynb" === fileType) {
     return (
-    // Do not wrap in a CardBody, the notebook container does that itself
+      // Do not wrap in a CardBody, the notebook container does that itself
       <JupyterNotebookContainer
         key="notebook-body"
         notebook={JSON.parse(atobUTF8(props.file.content))}
@@ -182,8 +243,11 @@ function FilePreview(props: FilePreviewProps) {
   if (fileIsCode) {
     return (
       <CardBody key="file preview" className="pb-0 bg-white">
-        {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-        <CodePreview content={props.file.content} fileExtension={getFileExtension()!} />
+        <CodePreview
+          content={props.file.content}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          fileExtension={getFileExtension()!}
+        />
       </CardBody>
     );
   }
@@ -210,15 +274,15 @@ function FilePreview(props: FilePreviewProps) {
 /* eslint-disable */
 // See https://github.com/highlightjs/highlight.js/blob/main/SUPPORTED_LANGUAGES.md
 const hljsNameMap: Record<string, string> = {
-  "jl": "julia",
-  "f": "fortran",
-  "for": "fortran",
-  "ftn": "fortran",
-  "fpp": "fortran",
-  "f03": "fortran",
-  "f08": "fortran",
-  "m": "objectivec",
-  "mat": "matlab",
+  jl: "julia",
+  f: "fortran",
+  for: "fortran",
+  ftn: "fortran",
+  fpp: "fortran",
+  f03: "fortran",
+  f08: "fortran",
+  m: "objectivec",
+  mat: "matlab",
 };
 /* eslint-enable */
 function extensionToHljsName(ext: string) {
@@ -226,15 +290,17 @@ function extensionToHljsName(ext: string) {
 }
 
 type CodePreviewProps = {
-  content: string,
-  fileExtension: string
-}
+  content: string;
+  fileExtension: string;
+};
 
 function CodePreview(props: CodePreviewProps) {
   const codeBlock = React.useRef<HTMLPreElement>(null);
   React.useEffect(() => {
     if (codeBlock.current) {
-      codeBlock.current.innerHTML = DOMPurify.sanitize(codeBlock.current.innerHTML);
+      codeBlock.current.innerHTML = DOMPurify.sanitize(
+        codeBlock.current.innerHTML
+      );
       hljs.highlightBlock(codeBlock.current);
     }
   }, [codeBlock]);
@@ -249,10 +315,10 @@ function CodePreview(props: CodePreviewProps) {
 }
 
 type JupyterNotebookContainerProps = {
-  client: unknown,
-  filePath: string,
-  notebook: unknown
-}
+  client: unknown;
+  filePath: string;
+  notebook: unknown;
+};
 
 function JupyterNotebookContainer(props: JupyterNotebookContainerProps) {
   let filePath = props.filePath;
@@ -260,20 +326,20 @@ function JupyterNotebookContainer(props: JupyterNotebookContainerProps) {
   const notebookProps = {
     fileName: props.filePath.replace(/^.*(\\|\/|:)/, ""),
     notebook: props.notebook,
-    client: props.client
+    client: props.client,
   };
   // Implemented this way to keep TS happy
   return <StyledNotebook {...notebookProps} />;
 }
 
 type PdfViewerProps = {
-  file: string,
-}
+  file: string;
+};
 
 export function PDFViewer(props: PdfViewerProps) {
-  const [numPages, setNumPages] = React.useState<number|undefined>(undefined);
+  const [numPages, setNumPages] = React.useState<number | undefined>(undefined);
 
-  function onDocumentLoadSuccess({ numPages }: {numPages: number}) {
+  function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
     setNumPages(numPages);
   }
 
@@ -281,22 +347,17 @@ export function PDFViewer(props: PdfViewerProps) {
     <Document
       file={props.file}
       onLoadSuccess={onDocumentLoadSuccess}
-      renderMode="svg">
-      {
-        Array.from(
-          new Array(numPages),
-          (el, index) => (
-            <Page
-              className="rk-pdf-page"
-              key={`page_${index + 1}`}
-              pageNumber={index + 1}
-            />
-          ),
-        )
-      }
+      renderMode="svg"
+    >
+      {Array.from(new Array(numPages), (el, index) => (
+        <Page
+          className="rk-pdf-page"
+          key={`page_${index + 1}`}
+          pageNumber={index + 1}
+        />
+      ))}
     </Document>
   );
 }
-
 
 export default FilePreview;

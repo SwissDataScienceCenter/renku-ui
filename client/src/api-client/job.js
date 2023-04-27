@@ -1,6 +1,4 @@
-
 export default function addJobMethods(client) {
-
   /**
    * Get status for the target job in the core service
    * @param {string} job_id - core job id
@@ -12,12 +10,14 @@ export default function addJobMethods(client) {
     headers.append("X-Requested-With", "XMLHttpRequest");
 
     const url = client.versionedCoreUrl("jobs", versionUrl);
-    return client.clientFetch(`${url}/${job_id}`, {
-      method: "GET",
-      headers: headers
-    }).then(response => {
-      return response.data?.result;
-    });
+    return client
+      .clientFetch(`${url}/${job_id}`, {
+        method: "GET",
+        headers: headers,
+      })
+      .then((response) => {
+        return response.data?.result;
+      });
   };
 
   /**
@@ -30,11 +30,13 @@ export default function addJobMethods(client) {
     headers.append("X-Requested-With", "XMLHttpRequest");
 
     const url = client.versionedCoreUrl("jobs", versionUrl);
-    return client.clientFetch(url, {
-      method: "GET",
-      headers: headers
-    }).then(response => {
-      return response.data?.result;
-    });
+    return client
+      .clientFetch(url, {
+        method: "GET",
+        headers: headers,
+      })
+      .then((response) => {
+        return response.data?.result;
+      });
   };
 }

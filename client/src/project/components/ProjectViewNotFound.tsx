@@ -68,13 +68,18 @@ export const ProjectViewNotFound = ({
     })()
   );
 
-  const notFoundText = projectPathWithNamespace ? <>path <i>{projectPathWithNamespace}</i></>
-    : <>numeric id <i>{projectId}</i></>;
+  const notFoundText = projectPathWithNamespace ? (
+    <>
+      path <i>{projectPathWithNamespace}</i>
+    </>
+  ) : (
+    <>
+      numeric id <i>{projectId}</i>
+    </>
+  );
   const notFoundDescription = (
     <>
-      <p>
-        We could not find project with {notFoundText}.
-      </p>
+      <p>We could not find project with {notFoundText}.</p>
       <p>
         It is possible that the project has been deleted by its owner or you do
         not have permission to access it.

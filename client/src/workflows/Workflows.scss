@@ -1,4 +1,4 @@
-.workflows-box.btn-check:focus+.btn,
+.workflows-box.btn-check:focus + .btn,
 .btn:focus {
   box-shadow: none;
 }
@@ -28,7 +28,6 @@
 }
 
 @media (max-width: 768px) {
-
   //md-size
   .workflows-filters {
     display: flex;

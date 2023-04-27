@@ -18,11 +18,9 @@
 import * as React from "react";
 import { RenkuMarkdown } from "./RenkuMarkdown";
 
-
 interface RenkuMarkdownProps {
   text: string;
 }
-
 
 export default {
   title: "components/RenkuMarkdown",

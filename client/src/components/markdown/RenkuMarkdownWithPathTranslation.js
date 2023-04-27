@@ -11,8 +11,10 @@ import { Url } from "../../utils/helpers/url";
 const patterns = {
   fileRefFull: /!\[(.*?)\]\((.*?)\)/g, //with !
   fileRefTrigger: /(!?\[[^\])]+])\(([^)]*$)/,
-  urlFilesRef: /https?: \/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
-  urlRef: /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?/
+  urlFilesRef:
+    /https?: \/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
+  urlRef:
+    /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?/,
 };
 
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif", "svg"];
@@ -27,15 +29,14 @@ const REF_TYPES = {
 };
 
 const getFileExtension = (file_path) => {
-  if (!file_path)
-    return null;
+  if (!file_path) return null;
 
-  if (file_path.match(/\.(.*)/) === null)
-    return null;
+  if (file_path.match(/\.(.*)/) === null) return null;
   return file_path.split(".").pop().toLowerCase();
 };
 
-const fileIsImage = (file_path) => IMAGE_EXTENSIONS.indexOf(getFileExtension(file_path)) >= 0;
+const fileIsImage = (file_path) =>
+  IMAGE_EXTENSIONS.indexOf(getFileExtension(file_path)) >= 0;
 
 const getFilesRefs = (markdownHTML, filePathArray) => {
   let filesRefs = [];
@@ -52,7 +53,7 @@ const getFilesRefs = (markdownHTML, filePathArray) => {
         refPath: src,
         data: null,
         iBlock: blockCounter,
-        error: false
+        error: false,
       });
       blockCounter++;
     }
@@ -67,9 +68,7 @@ const getFilesRefs = (markdownHTML, filePathArray) => {
  * @param {string} data - base64 encoded image data
  */
 function encodeImageBase64(name, data) {
-  const subType = name.endsWith(".svg") ?
-    "/svg+xml" :
-    "";
+  const subType = name.endsWith(".svg") ? "/svg+xml" : "";
   return `data:image${subType};base64,${data}`;
 }
 
@@ -84,27 +83,36 @@ function FileAndWrapper(props) {
    */
   const randomId = Math.floor(Math.random() * 1000);
   const togglerId = props.block.iBlock + randomId + "toggler";
-  return <div>
-    <Card>
-      <CardBody className="p-2">
-        <label className="mb-0 p-1">
-          <FontAwesomeIcon className="icon-gray me-1" icon={faFile} />
-          {props.block.data.file_name}
-        </label>
-        <label className="mb-0 p-1 float-right btn btn-primary btn-sm" htmlFor={togglerId}>
-          Preview File
-        </label>
-        <input type="checkbox" id={togglerId} className="visually-hidden fake-toggle" />
-        <div className="hide-show-me">
-          <FilePreview
-            file={props.file}
-            {...props}
-            springConfig={props.springConfig}
+  return (
+    <div>
+      <Card>
+        <CardBody className="p-2">
+          <label className="mb-0 p-1">
+            <FontAwesomeIcon className="icon-gray me-1" icon={faFile} />
+            {props.block.data.file_name}
+          </label>
+          <label
+            className="mb-0 p-1 float-right btn btn-primary btn-sm"
+            htmlFor={togglerId}
+          >
+            Preview File
+          </label>
+          <input
+            type="checkbox"
+            id={togglerId}
+            className="visually-hidden fake-toggle"
           />
-        </div>
-      </CardBody>
-    </Card>
-  </div>;
+          <div className="hide-show-me">
+            <FilePreview
+              file={props.file}
+              {...props}
+              springConfig={props.springConfig}
+            />
+          </div>
+        </CardBody>
+      </Card>
+    </div>
+  );
 }
 
 function fixRelativePath(pathToFix, filePathArray) {
@@ -115,19 +123,16 @@ function fixRelativePath(pathToFix, filePathArray) {
 
   for (let elem of fileArray) {
     if (elem === "..") dots++;
-    else if (elem === ".")
-      continue;
-    else
-      acc = elem + "/" + acc;
+    else if (elem === ".") continue;
+    else acc = elem + "/" + acc;
   }
 
   if (dots < filePathArray.length) {
-    for (let i = dots ; i < filePathArray.length; i++)
+    for (let i = dots; i < filePathArray.length; i++)
       acc = filePathArray[i] + "/" + acc;
   }
   return acc;
 }
-
 
 /**
  * Safely render markdown.
@@ -136,53 +141,73 @@ function fixRelativePath(pathToFix, filePathArray) {
  * @param {object} style any styles to apply
  */
 function RenkuMarkdownWithPathTranslation(props) {
-
   const { singleLine, style, branch } = props;
   let className = "text-break renku-markdown";
-  if (singleLine)
-    className += " children-no-spacing";
+  if (singleLine) className += " children-no-spacing";
   let filesPathArray = props.filePath.split("/").slice(0, -1).reverse();
 
-  const markdownToHtml = sanitizedHTMLFromMarkdown(props.markdownText, singleLine);
+  const markdownToHtml = sanitizedHTMLFromMarkdown(
+    props.markdownText,
+    singleLine
+  );
   const divWithMarkdown = document.createElement("div");
   //can we do this with dangerously set inner html???
   divWithMarkdown.innerHTML = markdownToHtml;
 
-  const [filesRefs, setFilesRefs] = useState(getFilesRefs(divWithMarkdown, filesPathArray));
+  const [filesRefs, setFilesRefs] = useState(
+    getFilesRefs(divWithMarkdown, filesPathArray)
+  );
   const loaded = useRef(false);
   const loading = useRef(false);
   const isCancelled = React.useRef(false);
 
-  const fetchRefs = useCallback(() =>{
+  const fetchRefs = useCallback(() => {
     const fetchedFiles = [];
-    filesRefs.forEach(block => {
-      if (block.type === REF_TYPES.IMAGE_PREV || block.type === REF_TYPES.FILE_PREV) {
-        if (!block.refPath.startsWith("https://") && !block.refPath.startsWith("http://")) {
-          const cleanPath = block.refPath && block.refPath.startsWith("/") ?
-            block.refPath.substring(1) :
-            block.refPath;
+    filesRefs.forEach((block) => {
+      if (
+        block.type === REF_TYPES.IMAGE_PREV ||
+        block.type === REF_TYPES.FILE_PREV
+      ) {
+        if (
+          !block.refPath.startsWith("https://") &&
+          !block.refPath.startsWith("http://")
+        ) {
+          const cleanPath =
+            block.refPath && block.refPath.startsWith("/")
+              ? block.refPath.substring(1)
+              : block.refPath;
           fetchedFiles.push(
-            props.client.getRepositoryFile(props.projectId, cleanPath, branch, "base64")
-              .then(d => { block.data = d; return block; })
-              .catch(() => { block.isOpened = false; block.filePreview = false; return block; })
+            props.client
+              .getRepositoryFile(props.projectId, cleanPath, branch, "base64")
+              .then((d) => {
+                block.data = d;
+                return block;
+              })
+              .catch(() => {
+                block.isOpened = false;
+                block.filePreview = false;
+                return block;
+              })
           );
         }
       }
     });
-    return Promise.all(fetchedFiles)
-      .then(filesRefsWithFiles => {
-        if (!isCancelled.current) {
-          setFilesRefs(prevFilesRefs =>
-            //eslint-disable-next-line
-            prevFilesRefs.map(pb => {
-              //eslint-disable-next-line
-              let newBlock = filesRefsWithFiles.find(bf => bf.iBlock === pb.iBlock);
-              return newBlock !== undefined ? newBlock : pb;
-            }));
-          loaded.current = true;
-          loading.current = false;
-        }
-      });
+    return Promise.all(fetchedFiles).then((filesRefsWithFiles) => {
+      if (!isCancelled.current) {
+        setFilesRefs((prevFilesRefs) =>
+          //eslint-disable-next-line max-nested-callbacks
+          prevFilesRefs.map((pb) => {
+            let newBlock = filesRefsWithFiles.find(
+              //eslint-disable-next-line max-nested-callbacks
+              (bf) => bf.iBlock === pb.iBlock
+            );
+            return newBlock !== undefined ? newBlock : pb;
+          })
+        );
+        loaded.current = true;
+        loading.current = false;
+      }
+    });
   }, [filesRefs, props.client, props.projectId, branch]);
 
   useEffect(() => {
@@ -198,13 +223,17 @@ function RenkuMarkdownWithPathTranslation(props) {
   const previewFiles = divWithMarkdown.getElementsByTagName("img");
 
   for (let file of previewFiles) {
-    let currentBlock = filesRefs.find(block => file.src.endsWith(block.refPath));
+    let currentBlock = filesRefs.find((block) =>
+      file.src.endsWith(block.refPath)
+    );
     if (currentBlock && currentBlock.data) {
       if (currentBlock.type === REF_TYPES.IMAGE_PREV) {
-        file.src = encodeImageBase64(currentBlock.data.file_name, currentBlock.data.content);
+        file.src = encodeImageBase64(
+          currentBlock.data.file_name,
+          currentBlock.data.content
+        );
         file.setAttribute("class", "image-preview");
-      }
-      else {
+      } else {
         let temp = document.createElement("div");
         let p = file.parentNode;
         p.style.display = "none";
@@ -212,38 +241,51 @@ function RenkuMarkdownWithPathTranslation(props) {
         text.innerText = p.textContent;
         p.appendChild(text);
         p.appendChild(temp);
-        let renderedFile = <FileAndWrapper
-          file={currentBlock.data}
-          {...props}
-          block={currentBlock}
-          springConfig={{ STIFFNESS, DAMPING }}
-        />;
+        let renderedFile = (
+          <FileAndWrapper
+            file={currentBlock.data}
+            {...props}
+            block={currentBlock}
+            springConfig={{ STIFFNESS, DAMPING }}
+          />
+        );
         temp.innerHTML = ReactDOMServer.renderToString(renderedFile);
       }
     }
   }
 
   const previewLinks = divWithMarkdown.getElementsByTagName("a");
-  const fullBaseUrl = Url.get(Url.pages.projects)
-    + "/" + props.projectPathWithNamespace + "/files/blob/";
+  const fullBaseUrl =
+    Url.get(Url.pages.projects) +
+    "/" +
+    props.projectPathWithNamespace +
+    "/files/blob/";
 
   for (let link of previewLinks) {
-    if (link.getAttribute("href") && !link.getAttribute("href").match(patterns.urlRef)) {
-      const newHref = fixRelativePath(link.getAttribute("href"), filesPathArray) ;
-      link.href = fullBaseUrl + newHref ;
+    if (
+      link.getAttribute("href") &&
+      !link.getAttribute("href").match(patterns.urlRef)
+    ) {
+      const newHref = fixRelativePath(
+        link.getAttribute("href"),
+        filesPathArray
+      );
+      link.href = fullBaseUrl + newHref;
     }
   }
 
-  return <div className={className} style={style}
-    dangerouslySetInnerHTML={{ __html: divWithMarkdown.innerHTML }}>
-  </div>;
-
+  return (
+    <div
+      className={className}
+      style={style}
+      dangerouslySetInnerHTML={{ __html: divWithMarkdown.innerHTML }}
+    ></div>
+  );
 }
 
 function GuardedRenkuMarkdownWithPathTranslation(props) {
   // Return null if markdownText is null, otherwise there are problems with the hooks
-  if (props.markdownText == null)
-    return null;
+  if (props.markdownText == null) return null;
 
   return <RenkuMarkdownWithPathTranslation {...props} />;
 }

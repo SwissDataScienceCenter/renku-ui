@@ -25,13 +25,13 @@ const initialState: Display = {
     ssh: {
       show: false,
       projectPath: "",
-      gitUrl: ""
+      gitUrl: "",
     },
     sessionLogs: {
       show: false,
-      targetServer: ""
-    }
-  }
+      targetServer: "",
+    },
+  },
 };
 
 export const displaySlice = createSlice({
@@ -68,10 +68,11 @@ export const displaySlice = createSlice({
       };
     },
 
-    reset: () => initialState
+    reset: () => initialState,
   },
 });
 
-export const { showSshModal, hideSshModal, toggleSshModal, reset } = displaySlice.actions;
+export const { showSshModal, hideSshModal, toggleSshModal, reset } =
+  displaySlice.actions;
 export const useDisplaySelector: TypedUseSelectorHook<Display> = useSelector;
 export default displaySlice;

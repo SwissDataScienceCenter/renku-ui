@@ -59,7 +59,6 @@ function NewProjectAvatar({ onAvatarChange }: NewProjectAvatarProps) {
     setAlert(null);
   }, [value.selected]);
 
-
   // format: image/png, image/jpeg, image/gif, image/tiff
   return (
     <div className="mb-3">

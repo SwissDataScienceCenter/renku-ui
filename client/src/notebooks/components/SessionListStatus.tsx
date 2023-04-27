@@ -1,7 +1,17 @@
 import React from "react";
-import { Badge, PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
+import {
+  Badge,
+  PopoverBody,
+  PopoverHeader,
+  UncontrolledPopover,
+} from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle, faExclamationTriangle, faInfoCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheckCircle,
+  faExclamationTriangle,
+  faInfoCircle,
+  faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Loader } from "../../components/Loader";
 import { Clipboard } from "../../components/Clipboard";
@@ -23,7 +33,11 @@ function getStatusObject(status: SessionRunningStatus, defaultImage: boolean) {
       return {
         color: defaultImage ? "warning" : "success",
         icon: defaultImage ? (
-          <FontAwesomeIcon icon={faExclamationTriangle} inverse={true} size="lg" />
+          <FontAwesomeIcon
+            icon={faExclamationTriangle}
+            inverse={true}
+            size="lg"
+          />
         ) : (
           <FontAwesomeIcon icon={faCheckCircle} size="lg" />
         ),
@@ -66,7 +80,12 @@ function SessionListRowStatusExtraDetails({
   uid,
 }: Pick<SessionListRowStatusProps, "details" | "status" | "uid">) {
   if (!details.message) return null;
-  if (status == "failed") return <span className="text-muted">&nbsp;(Click the error icon for details.)</span>;
+  if (status == "failed")
+    return (
+      <span className="text-muted">
+        &nbsp;(Click the error icon for details.)
+      </span>
+    );
   return (
     <>
       {" "}
@@ -92,13 +111,20 @@ function SessionListRowStatus(props: SessionListRowStatusProps) {
     stopping: "text-secondary",
   };
 
-  const textStatus = status === SessionStatus.running ? `${data.text} since ${startTime}` : data.text;
+  const textStatus =
+    status === SessionStatus.running
+      ? `${data.text} since ${startTime}`
+      : data.text;
 
   return (
     <>
       <span className={`time-caption font-weight-bold ${textColor[status]}`}>
         {textStatus}
-        <SessionListRowStatusExtraDetails details={details} status={status} uid={uid} />
+        <SessionListRowStatusExtraDetails
+          details={details}
+          status={status}
+          uid={uid}
+        />
       </span>
     </>
   );
@@ -123,7 +149,8 @@ function SessionListRowStatusIconPopover({
   id,
   status,
 }: SessionListRowStatusIconPopoverProps) {
-  if (status !== SessionStatus.running && status !== SessionStatus.failed) return null;
+  if (status !== SessionStatus.running && status !== SessionStatus.failed)
+    return null;
   if (status === SessionStatus.failed) {
     return (
       <UncontrolledPopover target={id} trigger="legacy" placement="right">
@@ -140,7 +167,8 @@ function SessionListRowStatusIconPopover({
   const policy = annotations.default_image_used ? (
     <span>
       <br />
-      <span className="font-weight-bold">Warning:</span> a fallback image was used.
+      <span className="font-weight-bold">Warning:</span> a fallback image was
+      used.
     </span>
   ) : null;
   return (

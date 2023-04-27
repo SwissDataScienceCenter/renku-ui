@@ -45,44 +45,76 @@ export interface EntityDescriptionProps {
   numberLines?: number;
 }
 
-function EntityDescription(
-  { description, isHeightFixed = true, hasDevAccess, showSuggestion, urlChangeDescription, className, numberLines = 3 }
-    : EntityDescriptionProps) {
+function EntityDescription({
+  description,
+  isHeightFixed = true,
+  hasDevAccess,
+  showSuggestion,
+  urlChangeDescription,
+  className,
+  numberLines = 3,
+}: EntityDescriptionProps) {
   const descriptionStyles: CSSProperties = {
     overflow: "hidden",
     textOverflow: "ellipsis",
-    display: "-webkit-box",// eslint-disable-line
+    display: "-webkit-box", // eslint-disable-line
     lineClamp: isHeightFixed ? numberLines : undefined,
-    WebkitLineClamp: isHeightFixed ? numberLines : undefined,// eslint-disable-line
-    WebkitBoxOrient: "vertical",// eslint-disable-line
+    WebkitLineClamp: isHeightFixed ? numberLines : undefined, // eslint-disable-line
+    WebkitBoxOrient: "vertical", // eslint-disable-line
     minHeight: isHeightFixed ? `${25 * numberLines}px` : undefined,
     height: isHeightFixed ? `${25 * numberLines}px` : undefined,
   };
 
-  const markdownDescription = description && typeof description === "string" ?
-    <Fragment>
-      <RenkuMarkdown markdownText={description} singleLine={numberLines === 1} style={descriptionStyles}/>
-      <span className="ms-1">{description.includes("\n") ? " [...]" : ""}</span>
-    </Fragment>
-    : description ;
+  const markdownDescription =
+    description && typeof description === "string" ? (
+      <Fragment>
+        <RenkuMarkdown
+          markdownText={description}
+          singleLine={numberLines === 1}
+          style={descriptionStyles}
+        />
+        <span className="ms-1">
+          {description.includes("\n") ? " [...]" : ""}
+        </span>
+      </Fragment>
+    ) : (
+      description
+    );
 
-  const isUpdatingValue = useSelector((state: RootStateOrAny ) =>
-    state.stateModel?.project?.metadata?.description?.updating);
+  const isUpdatingValue = useSelector(
+    (state: RootStateOrAny) =>
+      state.stateModel?.project?.metadata?.description?.updating
+  );
   if (isUpdatingValue) {
     return (
-      <div className="card-text text-rk-text-light" style={descriptionStyles} data-cy="updating-description">
-        <small><i>Updating description...</i></small>
+      <div
+        className="card-text text-rk-text-light"
+        style={descriptionStyles}
+        data-cy="updating-description"
+      >
+        <small>
+          <i>Updating description...</i>
+        </small>
       </div>
     );
   }
 
-  return (<div className={`card-text ${className}`}
-    style={{ ...descriptionStyles, margin: "12px 0 0 0" }} data-cy="entity-description">
-    {description ? markdownDescription :
-      showSuggestion && hasDevAccess && urlChangeDescription ?
-        <i>(This project has no description.
-          You can provide one <Link to={urlChangeDescription}>here</Link>.)</i> : null }
-  </div>);
+  return (
+    <div
+      className={`card-text ${className}`}
+      style={{ ...descriptionStyles, margin: "12px 0 0 0" }}
+      data-cy="entity-description"
+    >
+      {description ? (
+        markdownDescription
+      ) : showSuggestion && hasDevAccess && urlChangeDescription ? (
+        <i>
+          (This project has no description. You can provide one{" "}
+          <Link to={urlChangeDescription}>here</Link>.)
+        </i>
+      ) : null}
+    </div>
+  );
 }
 
 export default EntityDescription;

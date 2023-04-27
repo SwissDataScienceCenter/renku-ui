@@ -19,23 +19,26 @@ import * as React from "react";
 import CreatorsInput, { CreatorInputProps } from "./CreatorsInput";
 import { Story } from "@storybook/react";
 
-
 export default {
   title: "components/CreatorsInput",
   component: CreatorsInput,
 };
 
-const Template: Story<CreatorInputProps> = (args) => <CreatorsInput {...args} />;
+const Template: Story<CreatorInputProps> = (args) => (
+  <CreatorsInput {...args} />
+);
 export const Default = Template.bind({});
 Default.args = {
   name: "author",
   label: "Creators",
   setInputs: () => true,
-  value: [{
-    id: 1,
-    name: "E2E User",
-    email: "e2e.test@renku.ch",
-    affiliation: "creator",
-    default: true
-  }],
+  value: [
+    {
+      id: 1,
+      name: "E2E User",
+      email: "e2e.test@renku.ch",
+      affiliation: "creator",
+      default: true,
+    },
+  ],
 };

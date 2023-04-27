@@ -16,9 +16,11 @@
  * limitations under the License.
  */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { formatProjectMetadata, ProjectMetadata } from "../../utils/helpers/ProjectFunctions";
+import {
+  formatProjectMetadata,
+  ProjectMetadata,
+} from "../../utils/helpers/ProjectFunctions";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -37,14 +39,15 @@ function convertProjects(response: any): MemberProjectResponse {
   try {
     const projects = response?.data?.projects?.nodes;
     const pageInfo = response?.data?.projects?.pageInfo;
-    const data = projects?.map((project: any) => formatProjectMetadata(project));
+    const data = projects?.map((project: any) =>
+      formatProjectMetadata(project)
+    );
     return {
       endCursor: pageInfo.endCursor,
       hasNextPage: pageInfo.hasNextPage,
       data,
     };
-  }
-  catch (e) {
+  } catch (e) {
     return {
       data: [],
       endCursor: "",
@@ -58,7 +61,10 @@ export const projectApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
   endpoints: (builder) => ({
     getNamespaces: builder.query({
-      query: (ownerOnly?: boolean) => ({ url: `/namespaces${ownerOnly ? "?owned_only=true" : ""}`, method: "GET" }),
+      query: (ownerOnly?: boolean) => ({
+        url: `/namespaces${ownerOnly ? "?owned_only=true" : ""}`,
+        method: "GET",
+      }),
     }),
     getGroupByPath: builder.query<any, string>({
       query: (projectPath) => {
@@ -111,7 +117,8 @@ export const projectApi = createApi({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
         // get list of projects recently visited
         const projectListRequest = await fetchWithBQ(`/last-projects/${_arg}`);
-        if (projectListRequest.error) return { error: projectListRequest.error as FetchBaseQueryError };
+        if (projectListRequest.error)
+          return { error: projectListRequest.error as FetchBaseQueryError };
         const resultProjects = projectListRequest.data as any;
         const projects = resultProjects.projects;
 
@@ -120,25 +127,32 @@ export const projectApi = createApi({
           const projectRequests = [];
           for (const project of projects) {
             projectRequests.push(
-              fetchWithBQ(`/projects/${encodeURIComponent(project)}?statistics=false&doNotTrack=true`)
+              fetchWithBQ(
+                `/projects/${encodeURIComponent(
+                  project
+                )}?statistics=false&doNotTrack=true`
+              )
             );
           }
 
           try {
-            const resultAllProjectData = await Promise.allSettled(projectRequests);
+            const resultAllProjectData = await Promise.allSettled(
+              projectRequests
+            );
             const projectList = [];
             for (const projectData of resultAllProjectData) {
-              if (projectData.status === "fulfilled" && !projectData.value.error)
+              if (
+                projectData.status === "fulfilled" &&
+                !projectData.value.error
+              )
                 projectList.push(formatProjectMetadata(projectData.value.data));
             }
 
             return { data: projectList };
-          }
-          catch (e) {
+          } catch (e) {
             return { error: e as FetchBaseQueryError };
           }
-        }
-        else {
+        } else {
           return { data: [] };
         }
       },

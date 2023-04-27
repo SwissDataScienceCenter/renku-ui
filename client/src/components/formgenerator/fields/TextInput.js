@@ -31,40 +31,62 @@ import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { FormText } from "../../../utils/ts-wrappers";
 import { ErrorLabel } from "../../formlabels/FormLabels";
 
-function TextInput({ name, label, type, value, alert, placeholder, setInputs,
-  help, disabled = false, required = false, editOnClick = false }) {
-
+function TextInput({
+  name,
+  label,
+  type,
+  value,
+  alert,
+  placeholder,
+  setInputs,
+  help,
+  disabled = false,
+  required = false,
+  editOnClick = false,
+}) {
   const [onlyView, setOnlyView] = React.useState(editOnClick);
 
   const switchToEditMode = () => {
     setOnlyView(false);
   };
 
-  return onlyView ?
+  return onlyView ? (
     <FormGroup className="field-group">
       <small>
-        {value ?
+        {value ? (
           <Label className="font-italic text-muted">
             {label}: {value}
           </Label>
-          : null
-        }
-        { value && !disabled ?
-          <Button size="sm" color="rk-white" className="float-end btn-icon-text" onClick={switchToEditMode}>
-            <FontAwesomeIcon icon={faPencilAlt}/> Change Name
+        ) : null}
+        {value && !disabled ? (
+          <Button
+            size="sm"
+            color="rk-white"
+            className="float-end btn-icon-text"
+            onClick={switchToEditMode}
+          >
+            <FontAwesomeIcon icon={faPencilAlt} /> Change Name
           </Button>
-          : null
-        }
+        ) : null}
       </small>
     </FormGroup>
-    :
+  ) : (
     <FormGroup>
-      <FormLabel htmlFor={name} label={label} required={required}/>
-      <Input id={name} data-cy={`input-${name}`} name={name} type={type} value={value || ""}
-        onChange={setInputs} disabled={disabled} placeholder={placeholder} />
+      <FormLabel htmlFor={name} label={label} required={required} />
+      <Input
+        id={name}
+        data-cy={`input-${name}`}
+        name={name}
+        type={type}
+        value={value || ""}
+        onChange={setInputs}
+        disabled={disabled}
+        placeholder={placeholder}
+      />
       {help && <FormText color="muted">{help}</FormText>}
       {alert && <ErrorLabel text={alert} />}
-    </FormGroup>;
+    </FormGroup>
+  );
 }
 
 export default TextInput;

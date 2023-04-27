@@ -17,7 +17,7 @@ if (global.document) {
       const div = document.createElement("div");
       div.innerHTML = html;
       return div.children[0]; // so hokey it's not even funny
-    }
+    },
   });
 }
 if (global.console) {

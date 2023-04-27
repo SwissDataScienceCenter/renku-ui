@@ -41,50 +41,67 @@ export function arrayToTypeEntitySelection(value: string[]) {
 
 export interface TypeFilterProps {
   handler: Function; // eslint-disable-line @typescript-eslint/ban-types
-  value: TypeEntitySelection
+  value: TypeEntitySelection;
 }
 
 export const initialTypeValues: TypeEntitySelection = {
   project: true,
-  dataset: true
+  dataset: true,
 };
 
 const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {
-
   const changeType = (typeKey: string, type: boolean) => {
-    if (!handler)
-      return;
+    if (!handler) return;
 
     const newValues = { ...value };
-    if (typeKey === "project")
-      newValues.project = type;
-    else
-      newValues.dataset = type;
+    if (typeKey === "project") newValues.project = type;
+    else newValues.dataset = type;
 
-    const somethingSelected = Object.values(newValues).filter( val => val);
-    if (somethingSelected.length) // there must always be something selected
+    const somethingSelected = Object.values(newValues).filter((val) => val);
+    if (somethingSelected.length)
+      // there must always be something selected
       handler(newValues);
   };
 
   const items = [
-    { title: "Project", value: "project", color: "rk-green", icon: <Briefcase /> },
-    { title: "Dataset", value: "dataset", color: "rk-pink", icon: <HddStack /> },
+    {
+      title: "Project",
+      value: "project",
+      color: "rk-green",
+      icon: <Briefcase />,
+    },
+    {
+      title: "Dataset",
+      value: "dataset",
+      color: "rk-pink",
+      icon: <HddStack />,
+    },
   ];
 
-  const options = items.map(item => {
+  const options = items.map((item) => {
     const nameInput = `type-entity-${item.value}`;
     const itemValueAsKey = item.value as keyof TypeEntitySelection;
     return (
-      <div className={`d-flex align-items-center form-${item.color}`} key={nameInput}>
+      <div
+        className={`d-flex align-items-center form-${item.color}`}
+        key={nameInput}
+      >
         <Input
           type="checkbox"
           name={nameInput}
           checked={value[itemValueAsKey]}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => changeType(item.value, e.target.checked)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            changeType(item.value, e.target.checked)
+          }
           className={`type-entity-input text-${item.color} ${item.color}`}
-          data-cy={nameInput}/>
-        <label className={`px-2 type-entity-label cursor-pointer text-${item.color} d-flex gap-2 align-items-center`}
-          onClick={() => changeType(item.value, !value[itemValueAsKey])}>{item.icon} {item.title}</label>
+          data-cy={nameInput}
+        />
+        <label
+          className={`px-2 type-entity-label cursor-pointer text-${item.color} d-flex gap-2 align-items-center`}
+          onClick={() => changeType(item.value, !value[itemValueAsKey])}
+        >
+          {item.icon} {item.title}
+        </label>
       </div>
     );
   });

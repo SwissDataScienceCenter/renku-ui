@@ -18,11 +18,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 interface KgLastSearchResult {
-  queries?: string[],
-  error?: string,
+  queries?: string[];
+  error?: string;
 }
 export const TOTAL_QUERIES = 6;
-
 
 export const recentUserActivityApi = createApi({
   reducerPath: "recentUserActivityApi",
@@ -34,15 +33,15 @@ export const recentUserActivityApi = createApi({
         let queries: string[] = [];
         if (response?.queries?.length) {
           queries = response?.queries
-            .map(query => query.replace(/\*/g, "").trim())
-            .filter(query => query.length > 0)
+            .map((query) => query.replace(/\*/g, "").trim())
+            .filter((query) => query.length > 0)
             .slice(0, 5);
         }
         response.queries = queries;
         return response;
-      }
+      },
     }),
-  })
+  }),
 });
 
 // Export hooks for usage in function components, which are

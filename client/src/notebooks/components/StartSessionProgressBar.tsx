@@ -21,10 +21,9 @@ import ProgressStepsIndicator, {
   ProgressStyle,
   ProgressType,
   StatusStepProgressBar,
-  StepsProgressBar
+  StepsProgressBar,
 } from "../../components/progress/ProgressSteps";
 import { Button } from "../../utils/ts-wrappers";
-
 
 interface StatusDetail {
   status: string;
@@ -43,17 +42,21 @@ interface StartSessionProgressBarProps {
   toggleLogs: Function; // eslint-disable-line @typescript-eslint/ban-types
   includeStepInTitle?: boolean;
 }
-const StartSessionProgressBar = (
-  {
-    sessionStatus,
-    isAutoSave,
-    toggleLogs,
-    includeStepInTitle
-  }: StartSessionProgressBarProps) => {
-
+const StartSessionProgressBar = ({
+  sessionStatus,
+  isAutoSave,
+  toggleLogs,
+  includeStepInTitle,
+}: StartSessionProgressBarProps) => {
   const status = getStatusData(sessionStatus?.details, sessionStatus?.state);
-  const title = isAutoSave ? "Starting Session (continuing from autosave)" : "Starting Session";
-  const logButton = <Button onClick={toggleLogs} className="btn-outline-rk-green mt-3">Open Logs</Button>;
+  const title = isAutoSave
+    ? "Starting Session (continuing from autosave)"
+    : "Starting Session";
+  const logButton = (
+    <Button onClick={toggleLogs} className="btn-outline-rk-green mt-3">
+      Open Logs
+    </Button>
+  );
 
   return (
     <ProgressStepsIndicator
@@ -63,21 +66,27 @@ const StartSessionProgressBar = (
       title={includeStepInTitle ? `Step 2 of 2: ${title}` : title}
       status={status}
       moreOptions={logButton}
-    />);
+    />
+  );
 };
 
-function getStatusData(details?: StatusDetail[], state?: string): StepsProgressBar[] {
+function getStatusData(
+  details?: StatusDetail[],
+  state?: string
+): StepsProgressBar[] {
   if (!details || !details.length) {
-    return [{
-      id: 1,
-      status: StatusStepProgressBar.EXECUTING,
-      step: "Fetching session data",
-    }];
+    return [
+      {
+        id: 1,
+        status: StatusStepProgressBar.EXECUTING,
+        step: "Fetching session data",
+      },
+    ];
   }
 
   let i = 0;
   const steps = [];
-  details.map( (s: StatusDetail) => {
+  details.map((s: StatusDetail) => {
     steps.push({
       id: i,
       status: s.status as StatusStepProgressBar,
@@ -89,7 +98,10 @@ function getStatusData(details?: StatusDetail[], state?: string): StepsProgressB
   // add step to wait for the jupyter session  is ready
   steps.push({
     id: i,
-    status: state === "running" ? StatusStepProgressBar.EXECUTING : StatusStepProgressBar.WAITING,
+    status:
+      state === "running"
+        ? StatusStepProgressBar.EXECUTING
+        : StatusStepProgressBar.WAITING,
     step: "Connecting with your session",
   });
   return steps;

@@ -24,22 +24,24 @@ import { ARG_REDUX_PATH } from "addon-redux";
 
 const exampleCreators = [
   {
-    avatar_url: "https://secure.gravatar.com/avatar/d192cd94b7a2bcee6c79ffcebb9c3ff7?s=80&d=identicon",
+    avatar_url:
+      "https://secure.gravatar.com/avatar/d192cd94b7a2bcee6c79ffcebb9c3ff7?s=80&d=identicon",
     id: 68,
     name: "Andrea Test",
     state: "active",
     username: "andrea123",
     web_url: "https://gitlab.dev.renku.ch/dalatinrofrau",
-  }
+  },
 ];
-// eslint-disable-next-line
-const descriptionExample = "Lorem ipsum dolor siter gd amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad ut aliquip ex ea.";
+const descriptionExample =
+  // eslint-disable-next-line spellcheck/spell-checker
+  "Lorem ipsum dolor siter gd amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad ut aliquip ex ea.";
 export default {
   title: "components/ListBar",
   argTypes: {
     updatingDescription: {
       control: { type: "boolean" },
-      [ARG_REDUX_PATH]: "stateModel.project.metadata.description.updating"
+      [ARG_REDUX_PATH]: "stateModel.project.metadata.description.updating",
     },
   },
 };
@@ -78,7 +80,6 @@ ListBarProject.args = {
   updatingDescription: false,
 };
 
-
 export const ListBarDataset = (args: ListElementProps) => (
   <>
     <ListBar
@@ -112,4 +113,3 @@ ListBarDataset.args = {
   imageUrl: undefined,
   tagList: [],
 };
-

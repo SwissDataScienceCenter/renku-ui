@@ -16,20 +16,23 @@
  * limitations under the License.
  */
 
-
 import React from "react";
 import { Link } from "react-router-dom";
 
 import EntityCreators, { EntityCreator } from "./entities/Creators";
 import EntityExecutions from "./entities/Executions";
 import EntityDuration from "./entities/Duration";
-import { CaretDownFill, CaretRightFill, Col, Diagram2 } from "../utils/ts-wrappers";
+import {
+  CaretDownFill,
+  CaretRightFill,
+  Col,
+  Diagram2,
+} from "../utils/ts-wrappers";
 import { EntityChildrenDot } from "./entities/Children";
 import { EntityType, WorkflowType } from "./entities/Entities";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { IconLink } from "./ExternalLinks";
-
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -44,28 +47,43 @@ interface TreeBrowserProps {
 }
 
 function TreeBrowser({
-  emptyElement, expanded, highlightedProp, items = [], selected, shrunk, toggleExpanded
+  emptyElement,
+  expanded,
+  highlightedProp,
+  items = [],
+  selected,
+  shrunk,
+  toggleExpanded,
 }: TreeBrowserProps) {
-  if (!items.length)
-    return (<>{emptyElement}</>);
+  if (!items.length) return <>{emptyElement}</>;
 
   const treeElements = items.map((item: any) => {
-    const newProps: Record<string, any> = { expanded, highlightedProp, items, selected, shrunk, toggleExpanded };
-    return (<TreeElement key={item.uniqueId} {...item} {...newProps} />);
+    const newProps: Record<string, any> = {
+      expanded,
+      highlightedProp,
+      items,
+      selected,
+      shrunk,
+      toggleExpanded,
+    };
+    return <TreeElement key={item.uniqueId} {...item} {...newProps} />;
   });
 
-  return (<div data-cy="workflows-browser" className="mb-3">{treeElements}</div>);
+  return (
+    <div data-cy="workflows-browser" className="mb-3">
+      {treeElements}
+    </div>
+  );
 }
-
 
 interface TreeElementProps extends TreeBrowserProps {
   active: boolean;
-  children: string[],
-  creators: EntityCreator[],
+  children: string[];
+  creators: EntityCreator[];
   duration: number;
   embed?: boolean;
   executions: number | null;
-  highlightedProp: string,
+  highlightedProp: string;
   indentation: number;
   itemType: EntityType;
   lastExecuted: Date | null;
@@ -78,36 +96,62 @@ interface TreeElementProps extends TreeBrowserProps {
 }
 
 function TreeElement({
-  active, children, creators, duration, embed = false, expanded, executions, highlightedProp,
-  indentation, itemType, items, lastExecuted, selected, shrunk, title,
-  toggleExpanded, uniqueId, url, workflowId, workflowType
+  active,
+  children,
+  creators,
+  duration,
+  embed = false,
+  expanded,
+  executions,
+  highlightedProp,
+  indentation,
+  itemType,
+  items,
+  lastExecuted,
+  selected,
+  shrunk,
+  title,
+  toggleExpanded,
+  uniqueId,
+  url,
+  workflowId,
+  workflowType,
 }: TreeElementProps) {
   let newClasses = workflowId === selected ? "selected" : "";
-  if (embed)
-    newClasses += " embed";
+  if (embed) newClasses += " embed";
   const isComposite = workflowType === "CompositePlan" ? true : false;
 
-  const leftItemClasses = "mx-3 center-vertically d-flex flex-column align-items-center";
+  const leftItemClasses =
+    "mx-3 center-vertically d-flex flex-column align-items-center";
   const lineNestedItem = indentation > 0 ? "rk-tree-item--children" : "";
   let leftItem: React.ReactNode = null;
   if (!embed) {
     if (isComposite) {
-      const icon = expanded.includes(workflowId) || expanded.includes(uniqueId) ?
-        <CaretDownFill /> : <CaretRightFill />;
+      const icon =
+        expanded.includes(workflowId) || expanded.includes(uniqueId) ? (
+          <CaretDownFill />
+        ) : (
+          <CaretRightFill />
+        );
       leftItem = (
-        <div className={`${leftItemClasses} interactive`} onClick={() => toggleExpanded(uniqueId)}>
+        <div
+          className={`${leftItemClasses} interactive`}
+          onClick={() => toggleExpanded(uniqueId)}
+        >
           {icon}
         </div>
       );
-    }
-    else {
+    } else {
       const inactive = active ? "" : "inactive";
       leftItem = (
         <div className={leftItemClasses}>
-          <span className={`circle ${itemType} ${inactive} d-flex justify-content-center align-items-center`}>
+          <span
+            className={`circle ${itemType} ${inactive} d-flex justify-content-center align-items-center`}
+          >
             <Diagram2 color="white" />
           </span>
-        </div>);
+        </div>
+      );
     }
   }
 
@@ -117,26 +161,37 @@ function TreeElement({
     childrenNodes = childrenItems.map((item: any) => {
       const childUniqueId = simpleHash(uniqueId + item.uniqueId);
       const newProps: Record<string, any> = {
-        expanded, highlightedProp, items, indentation: indentation + 1, selected, shrunk,
-        toggleExpanded, uniqueId: childUniqueId
+        expanded,
+        highlightedProp,
+        items,
+        indentation: indentation + 1,
+        selected,
+        shrunk,
+        toggleExpanded,
+        uniqueId: childUniqueId,
       };
-      return (<TreeElement key={workflowId + item.workflowId} {...item} {...newProps} />);
+      return (
+        <TreeElement
+          key={workflowId + item.workflowId}
+          {...item}
+          {...newProps}
+        />
+      );
     });
   }
 
   // after 3 nested levels increase the left margin by 10px
-  const marginIndentation = indentation < 3 ? indentation * 30 : ((indentation - 2) * 10) + 60;
+  const marginIndentation =
+    indentation < 3 ? indentation * 30 : (indentation - 2) * 10 + 60;
   const elementStyle = { marginLeft: `${marginIndentation}px` };
 
   // define actions to trigger on click
   const expandIfCollapsed = (workflowId: string) => {
     // expand composite workflows when they are collapsed
     if (isComposite) {
-      if (!expanded.includes(workflowId))
-        toggleExpanded(workflowId);
+      if (!expanded.includes(workflowId)) toggleExpanded(workflowId);
     }
   };
-
 
   const actionsOnClick = (workflowId: string) => {
     expandIfCollapsed(workflowId);
@@ -146,35 +201,61 @@ function TreeElement({
   if (shrunk) {
     let details: React.ReactNode = null;
     if (highlightedProp === "authors") {
-      details = (<EntityCreators display="tree" creators={creators} itemType={itemType} />);
-    }
-    else if (highlightedProp === "duration") {
-      details = (<EntityDuration duration={duration} workflowId={uniqueId} />);
-    }
-    else if (highlightedProp === "executions") {
       details = (
-        <EntityExecutions display="tree" executions={executions} itemType={itemType}
-          lastExecuted={lastExecuted} showLastExecution={false} workflowId={uniqueId} />
+        <EntityCreators
+          display="tree"
+          creators={creators}
+          itemType={itemType}
+        />
       );
-    }
-    else {
+    } else if (highlightedProp === "duration") {
+      details = <EntityDuration duration={duration} workflowId={uniqueId} />;
+    } else if (highlightedProp === "executions") {
       details = (
-        <EntityExecutions display="tree" executions={executions} itemType={itemType}
-          lastExecuted={lastExecuted} showOnlyLastExecution={true} workflowId={uniqueId} />
+        <EntityExecutions
+          display="tree"
+          executions={executions}
+          itemType={itemType}
+          lastExecuted={lastExecuted}
+          showLastExecution={false}
+          workflowId={uniqueId}
+        />
+      );
+    } else {
+      details = (
+        <EntityExecutions
+          display="tree"
+          executions={executions}
+          itemType={itemType}
+          lastExecuted={lastExecuted}
+          showOnlyLastExecution={true}
+          workflowId={uniqueId}
+        />
       );
     }
 
     return (
       <>
-        <div className={`d-flex flex-row rk-tree-item ${newClasses} ${lineNestedItem}`} style={elementStyle}>
+        <div
+          className={`d-flex flex-row rk-tree-item ${newClasses} ${lineNestedItem}`}
+          style={elementStyle}
+        >
           {leftItem}
-          <Link className="row w-100 rk-tree-item-content" to={url} onClick={() => actionsOnClick(workflowId)}>
+          <Link
+            className="row w-100 rk-tree-item-content"
+            to={url}
+            onClick={() => actionsOnClick(workflowId)}
+          >
             <div className="d-flex justify-content-between align-items-center">
               <h5 className="d-flex flex-column">
                 {title}
                 <span className="text-rk-text-light">{details}</span>
               </h5>
-              <EntityChildrenDot childrenElements={children} itemType={itemType} workflowId={uniqueId} />
+              <EntityChildrenDot
+                childrenElements={children}
+                itemType={itemType}
+                workflowId={uniqueId}
+              />
             </div>
           </Link>
         </div>
@@ -186,31 +267,69 @@ function TreeElement({
   return (
     <>
       <div className={`d-flex flex-row rk-tree-item ${newClasses}`}>
-        <Col xs={12} md={5} className="title center-vertically d-flex flex-row" >
-          <div style={elementStyle} className={`d-flex rk-tree-column-child ${lineNestedItem}`}>{leftItem}</div>
-          <Link className="row w-100 rk-tree-item-content rk-tree-column-child" to={url}
-            onClick={() => actionsOnClick(workflowId)}>
+        <Col xs={12} md={5} className="title center-vertically d-flex flex-row">
+          <div
+            style={elementStyle}
+            className={`d-flex rk-tree-column-child ${lineNestedItem}`}
+          >
+            {leftItem}
+          </div>
+          <Link
+            className="row w-100 rk-tree-item-content rk-tree-column-child"
+            to={url}
+            onClick={() => actionsOnClick(workflowId)}
+          >
             <div className="d-flex justify-content-between align-items-center">
               <h5 className="rk-tree-title gap-2">
                 {title}
-                <EntityCreators display="tree" creators={creators} itemType={itemType} />
+                <EntityCreators
+                  display="tree"
+                  creators={creators}
+                  itemType={itemType}
+                />
               </h5>
-              <EntityChildrenDot childrenElements={children} itemType={itemType} workflowId={uniqueId} />
+              <EntityChildrenDot
+                childrenElements={children}
+                itemType={itemType}
+                workflowId={uniqueId}
+              />
             </div>
           </Link>
         </Col>
-        <Col xs={12} sm={7} md={4} className="title d-flex align-items-center rk-tree-column-child">
+        <Col
+          xs={12}
+          sm={7}
+          md={4}
+          className="title d-flex align-items-center rk-tree-column-child"
+        >
           <div className="d-flex rk-tree-column-child">
-            <EntityExecutions display="tree" executions={executions} itemType={itemType}
-              lastExecuted={lastExecuted} showLastExecution={true} workflowId={uniqueId} />
+            <EntityExecutions
+              display="tree"
+              executions={executions}
+              itemType={itemType}
+              lastExecuted={lastExecuted}
+              showLastExecution={true}
+              workflowId={uniqueId}
+            />
           </div>
         </Col>
-        <Col xs={12} sm={5} md={3} className="title d-flex align-items-center rk-tree-column-child">
+        <Col
+          xs={12}
+          sm={5}
+          md={3}
+          className="title d-flex align-items-center rk-tree-column-child"
+        >
           <EntityDuration duration={duration} workflowId={uniqueId} />
-          { embed && !isComposite ?
+          {embed && !isComposite ? (
             <span className="ms-2">
-              <IconLink tooltip="Open workflow" className="text-rk-yellow" icon={faLink} to={url} />
-            </span> : null }
+              <IconLink
+                tooltip="Open workflow"
+                className="text-rk-yellow"
+                icon={faLink}
+                to={url}
+              />
+            </span>
+          ) : null}
         </Col>
       </div>
       {childrenNodes}
@@ -218,13 +337,12 @@ function TreeElement({
   );
 }
 
-
 interface TreeDetailsProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 function TreeDetails({ children }: TreeDetailsProps) {
-  return (<div data-cy="workflow-details">{children}</div>);
+  return <div data-cy="workflow-details">{children}</div>;
 }
 
 export { TreeBrowser, TreeDetails, TreeElement };

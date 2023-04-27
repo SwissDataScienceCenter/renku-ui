@@ -4,22 +4,22 @@
 */
 
 @font-face {
-  font-family: 'Inter';
+  font-family: "Inter";
   font-style: normal;
   font-weight: 400;
-  src: local('Inter Regular'), local('Inter-Regular'),
-  url('../fonts/Inter/static/Inter-Regular.ttf') format('truetype');
+  src: local("Inter Regular"), local("Inter-Regular"),
+    url("../fonts/Inter/static/Inter-Regular.ttf") format("truetype");
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Inter';
+  font-family: "Inter";
   font-style: normal;
   font-weight: 600;
-  src: local('Inter Bold'), local('Inter-Bold'),
-  url('../fonts/Inter/static/Inter-Bold.ttf') format('truetype');
+  src: local("Inter Bold"), local("Inter-Bold"),
+    url("../fonts/Inter/static/Inter-Bold.ttf") format("truetype");
   font-display: swap;
 }
 
 //boostrap font family overwrite
-$font-family-base: 'Inter', sans-serif;
+$font-family-base: "Inter", sans-serif;

@@ -1,5 +1,4 @@
 export default function addMigrationMethods(client) {
-
   /**
    * Check migration status of a project.
    *
@@ -13,16 +12,16 @@ export default function addMigrationMethods(client) {
     headers.append("X-Requested-With", "XMLHttpRequest");
     const url = `${client.baseUrl}/renku/cache.migrations_check`;
     let queryParams = { git_url };
-    if (branch)
-      queryParams.branch = branch;
+    if (branch) queryParams.branch = branch;
 
-    return await client.clientFetch(url, {
-      method: "GET",
-      headers,
-      queryParams
-    }).then(response => response?.data ? response.data : response);
+    return await client
+      .clientFetch(url, {
+        method: "GET",
+        headers,
+        queryParams,
+      })
+      .then((response) => (response?.data ? response.data : response));
   };
-
 
   /**
    * Migrate target project.
@@ -38,12 +37,16 @@ export default function addMigrationMethods(client) {
    * @param {boolean} [options.skip_migrations] - do not execute migrations
    * @returns {object} migration data.
    */
-  client.migrateProject = async (git_url, branch = null, options = {
-    force_template_update: false,
-    skip_template_update: false,
-    skip_docker_update: false,
-    skip_migrations: false
-  }) => {
+  client.migrateProject = async (
+    git_url,
+    branch = null,
+    options = {
+      force_template_update: false,
+      skip_template_update: false,
+      skip_docker_update: false,
+      skip_migrations: false,
+    }
+  ) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
@@ -53,17 +56,17 @@ export default function addMigrationMethods(client) {
       force_template_update: options.force_template_update,
       skip_template_update: options.skip_template_update,
       skip_docker_update: options.skip_docker_update,
-      skip_migrations: options.skip_migrations
+      skip_migrations: options.skip_migrations,
     };
-    if (branch)
-      body.branch = branch;
+    if (branch) body.branch = branch;
 
-    return await client.clientFetch(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body)
-    })
-      .then(response => response?.data ? response.data : response)
-      .catch(error => ({ error: { reason: error.case } }));
+    return await client
+      .clientFetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+      })
+      .then((response) => (response?.data ? response.data : response))
+      .catch((error) => ({ error: { reason: error.case } }));
   };
 }

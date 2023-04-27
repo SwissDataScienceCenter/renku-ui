@@ -19,7 +19,10 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 
-import { useProjectJsonLdQuery, useProjectMetadataQuery } from "../projects/ProjectKgApi";
+import {
+  useProjectJsonLdQuery,
+  useProjectMetadataQuery,
+} from "../projects/ProjectKgApi";
 
 type ProjectJsonLdProps = {
   isInKg: boolean;
@@ -27,20 +30,32 @@ type ProjectJsonLdProps = {
   projectTitle: string;
 };
 
-function ProjectPageTitle({ isInKg, projectPathWithNamespace, projectTitle }: ProjectJsonLdProps) {
+function ProjectPageTitle({
+  isInKg,
+  projectPathWithNamespace,
+  projectTitle,
+}: ProjectJsonLdProps) {
   const kgProjectQueryParams = {
     projectPath: projectPathWithNamespace,
   };
   const options = { skip: isInKg != true };
-  const { data, isFetching, isLoading } = useProjectJsonLdQuery(kgProjectQueryParams, options);
-  const { data: kgData } = useProjectMetadataQuery(kgProjectQueryParams, options);
+  const { data, isFetching, isLoading } = useProjectJsonLdQuery(
+    kgProjectQueryParams,
+    options
+  );
+  const { data: kgData } = useProjectMetadataQuery(
+    kgProjectQueryParams,
+    options
+  );
 
   const projectDesc = kgData?.description;
   const pageTitle = projectDesc
     ? `${projectTitle} • Project • ${projectPathWithNamespace} • ${projectDesc}`
     : `${projectTitle} • Project • ${projectPathWithNamespace}`;
   const jsonLd =
-    !isFetching && !isLoading && data ? <script type="application/ld+json">{JSON.stringify(data)}</script> : null;
+    !isFetching && !isLoading && data ? (
+      <script type="application/ld+json">{JSON.stringify(data)}</script>
+    ) : null;
   return (
     <Helmet key="page-title">
       <title>{pageTitle}</title>

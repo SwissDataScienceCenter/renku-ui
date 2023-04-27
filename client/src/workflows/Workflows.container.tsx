@@ -22,9 +22,14 @@ import { useParams } from "react-router-dom";
 
 import { WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent } from "./Workflows.present";
 import { checkRenkuCoreSupport } from "../utils/helpers/HelperFunctions";
-import { useGetWorkflowDetailQuery, useGetWorkflowListQuery } from "../features/workflows/WorkflowsApi";
-import { workflowsSlice, useWorkflowsSelector } from "../features/workflows/WorkflowsSlice";
-
+import {
+  useGetWorkflowDetailQuery,
+  useGetWorkflowListQuery,
+} from "../features/workflows/WorkflowsApi";
+import {
+  workflowsSlice,
+  useWorkflowsSelector,
+} from "../features/workflows/WorkflowsSlice";
 
 const MIN_CORE_VERSION_WORKFLOWS = 9;
 
@@ -34,7 +39,7 @@ const WorkflowsSorting = {
   executions: "Executions",
   lastExecuted: "Last execution",
   name: "Name",
-  workflowType: "Workflow type"
+  workflowType: "Workflow type",
 };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -48,36 +53,51 @@ interface WorkflowsListProps {
 }
 
 function deserializeError(error: any) {
-  if (!error || !error?.message)
-    return null;
-  if (error.message && error.message.startsWith("{") && error.message.endsWith("}")) {
+  if (!error || !error?.message) return null;
+  if (
+    error.message &&
+    error.message.startsWith("{") &&
+    error.message.endsWith("}")
+  ) {
     try {
       return JSON.parse(error.message);
-    }
-    catch {
+    } catch {
       return error.message;
     }
   }
 }
 
-function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl, backendAvailable }: WorkflowsListProps) {
+function WorkflowsList({
+  fullPath,
+  reference,
+  repositoryUrl,
+  versionUrl,
+  backendAvailable,
+}: WorkflowsListProps) {
   // Get the workflow id from the query parameters
   const { id }: Record<string, string> = useParams();
   const selected = id;
 
   // Verify backend support and availability
-  const unsupported = (backendAvailable != null && !backendAvailable) ||
+  const unsupported =
+    (backendAvailable != null && !backendAvailable) ||
     !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
 
   // Configure the functions to dispatch workflowsDisplay changes
   const dispatch = useDispatch();
-  const toggleAscending = () => dispatch(workflowsSlice.actions.toggleAscending());
-  const toggleExpanded = (workflowId: string) => dispatch(workflowsSlice.actions.toggleExpanded({ workflowId }));
-  const toggleInactive = () => dispatch(workflowsSlice.actions.toggleInactive());
-  const setOrderProperty = (newProperty: string) => dispatch(workflowsSlice.actions.setOrderProperty({ newProperty }));
+  const toggleAscending = () =>
+    dispatch(workflowsSlice.actions.toggleAscending());
+  const toggleExpanded = (workflowId: string) =>
+    dispatch(workflowsSlice.actions.toggleExpanded({ workflowId }));
+  const toggleInactive = () =>
+    dispatch(workflowsSlice.actions.toggleInactive());
+  const setOrderProperty = (newProperty: string) =>
+    dispatch(workflowsSlice.actions.setOrderProperty({ newProperty }));
   const setDetailExpanded = (targetDetails: Record<string, any>) =>
     dispatch(workflowsSlice.actions.setDetail({ targetDetails }));
-  const workflowsDisplay = useWorkflowsSelector((state: RootStateOrAny) => state[workflowsSlice.name]);
+  const workflowsDisplay = useWorkflowsSelector(
+    (state: RootStateOrAny) => state[workflowsSlice.name]
+  );
 
   // Fetch workflow list
   const skipList = !versionUrl || !repositoryUrl || unsupported;
@@ -98,22 +118,32 @@ function WorkflowsList({ fullPath, reference, repositoryUrl, versionUrl, backend
   const waiting = !versionUrl || workflowsQuery.isLoading;
 
   // Fetch workflow details
-  const skipDetails = (skipList || !selected) ? true : false;
+  const skipDetails = skipList || !selected ? true : false;
   const workflowDetailQuery = useGetWorkflowDetailQuery(
-    { coreUrl: versionUrl, gitUrl: repositoryUrl, workflowId: selected, reference, fullPath },
+    {
+      coreUrl: versionUrl,
+      gitUrl: repositoryUrl,
+      workflowId: selected,
+      reference,
+      fullPath,
+    },
     { skip: skipDetails }
   );
   const workflow = {
     details: workflowDetailQuery.data,
     error: deserializeError(workflowDetailQuery.error),
-    fetched: workflowDetailQuery.data !== null && !workflowDetailQuery.isLoading,
+    fetched:
+      workflowDetailQuery.data !== null && !workflowDetailQuery.isLoading,
     fetching: workflowDetailQuery.isFetching || workflowDetailQuery.isLoading,
     expanded: workflowsDisplay.details,
   };
 
   const selectedAvailable =
-    (!!workflows.list?.find((w: any) => w.workflowId === selected)) ||
-    !!(workflow.details?.latest && !!workflows.list?.find((w: any) => w.id === workflow.details?.latest));
+    !!workflows.list?.find((w: any) => w.workflowId === selected) ||
+    !!(
+      workflow.details?.latest &&
+      !!workflows.list?.find((w: any) => w.id === workflow.details?.latest)
+    );
 
   return (
     <WorkflowsTreeBrowserPresent

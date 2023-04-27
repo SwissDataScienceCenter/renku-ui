@@ -33,8 +33,7 @@ export const appendCustomUrlPath = (args: {
     );
     baseUrl.pathname = withFullPath.pathname;
     return baseUrl.href;
-  }
-  catch (error) {
+  } catch (error) {
     if (error instanceof TypeError) return notebookUrl;
     throw error;
   }

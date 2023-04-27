@@ -30,12 +30,14 @@ import { MemoryRouter } from "react-router-dom";
 
 import { LoginHelper, Login } from "./index";
 
-
 // Mock relevant react objects
 const location = { pathname: "", state: "", previous: "", search: "" };
-const history = { location, replace: () => {
-  // eslint-disable-line @typescript-eslint/no-empty-function
-} };
+const history = {
+  location,
+  replace: () => {
+    // eslint-disable-line @typescript-eslint/no-empty-function
+  },
+};
 const url = "https://fakedev.renku.ch/";
 delete window.location;
 window.location = { reload: jest.fn() };
@@ -50,22 +52,23 @@ function dispatchFakeStorageEvent(key, newValue) {
   /* eslint-enable no-console */
 }
 
-
 describe("rendering", () => {
   const params = { BASE_URL: "https://fake" };
   it("renders Login", async () => {
     const props = {
       params,
-      location
+      location,
     };
 
     const div = document.createElement("div");
     document.body.appendChild(div);
     const root = createRoot(div);
     await act(async () => {
-      root.render(<MemoryRouter>
-        <Login {...props} />
-      </MemoryRouter>);
+      root.render(
+        <MemoryRouter>
+          <Login {...props} />
+        </MemoryRouter>
+      );
     });
   });
 });
@@ -79,7 +82,9 @@ describe("LoginHelper functions", () => {
     expect(LoginHelper.createLoginUrl(url)).toBe(`${url}?${extraParam}`);
 
     const urlWithParam = `${url}?test=1`;
-    expect(LoginHelper.createLoginUrl(urlWithParam)).toBe(`${urlWithParam}&${extraParam}`);
+    expect(LoginHelper.createLoginUrl(urlWithParam)).toBe(
+      `${urlWithParam}&${extraParam}`
+    );
   });
 
   it("handleLoginParams", async () => {
@@ -88,15 +93,18 @@ describe("LoginHelper functions", () => {
     LoginHelper.handleLoginParams(history);
     expect(Object.keys(localStorage.__STORE__).length).toBe(0);
     const loginUrl = LoginHelper.createLoginUrl(url);
-    const loginHistory = { ...history, location: { ...location, search: loginUrl.replace(url, "") } };
-    const datePre = (new Date()).getTime();
+    const loginHistory = {
+      ...history,
+      location: { ...location, search: loginUrl.replace(url, "") },
+    };
+    const datePre = new Date().getTime();
 
     LoginHelper.handleLoginParams(loginHistory);
     expect(Object.keys(localStorage.__STORE__).length).toBe(1);
     // ? Alternative to avoid using the localStorage function: localStorage.__STORE__[queryParams.login]
     const loginDate = parseInt(localStorage.getItem(queryParams.login));
     expect(loginDate).toBeGreaterThanOrEqual(datePre);
-    const datePost = (new Date()).getTime();
+    const datePost = new Date().getTime();
     expect(loginDate).toBeLessThanOrEqual(datePost);
   });
 
@@ -108,13 +116,15 @@ describe("LoginHelper functions", () => {
 
     LoginHelper.setupListener();
     expect(Object.keys(sessionStorage.__STORE__).length).toBe(0);
-    const datePre = (new Date()).getTime();
+    const datePre = new Date().getTime();
 
     dispatchFakeStorageEvent(queryParams.login, new Date());
     expect(Object.keys(sessionStorage.__STORE__).length).toBe(1);
-    const sessionStorageDate = parseInt(sessionStorage.getItem(queryParams.login));
+    const sessionStorageDate = parseInt(
+      sessionStorage.getItem(queryParams.login)
+    );
     expect(sessionStorageDate).toBeGreaterThanOrEqual(datePre);
-    const datePost = (new Date()).getTime();
+    const datePost = new Date().getTime();
     expect(sessionStorageDate).toBeLessThanOrEqual(datePost);
 
     dispatchFakeStorageEvent(queryParams.logout, new Date());
@@ -125,13 +135,13 @@ describe("LoginHelper functions", () => {
     localStorage.clear();
 
     expect(Object.keys(localStorage.__STORE__).length).toBe(0);
-    const datePre = (new Date()).getTime();
+    const datePre = new Date().getTime();
 
     LoginHelper.notifyLogout();
     expect(Object.keys(localStorage.__STORE__).length).toBe(1);
     const localStorageDate = parseInt(localStorage.getItem(queryParams.logout));
     expect(localStorageDate).toBeGreaterThanOrEqual(datePre);
-    const datePost = (new Date()).getTime();
+    const datePost = new Date().getTime();
     expect(localStorageDate).toBeLessThanOrEqual(datePost);
 
     dispatchFakeStorageEvent(queryParams.logout, new Date());

@@ -1,26 +1,26 @@
 .visibilities-box {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 0;
 }
 
 .visibility-box {
-    margin: 5px 0;
+  margin: 5px 0;
 }
 
 .visibility-box label {
-    padding: 0 5px 0 0;
+  padding: 0 5px 0 0;
 }
 
 .visibility-box input {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .visibility-input {
-    border: solid 1px var(--bs-primary);
+  border: solid 1px var(--bs-primary);
 }
 
 .visibility-input--error {
-    border: solid 1px var(--bs-danger);
+  border: solid 1px var(--bs-danger);
 }

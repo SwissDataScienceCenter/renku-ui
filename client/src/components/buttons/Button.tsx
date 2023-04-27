@@ -28,7 +28,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { Button, ButtonDropdown, DropdownToggle, DropdownMenu, UncontrolledTooltip, Col } from "reactstrap";
+import {
+  Button,
+  ButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  UncontrolledTooltip,
+  Col,
+} from "reactstrap";
 import { ButtonGroup } from "reactstrap";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { SuccessLabel } from "../formlabels/FormLabels";
@@ -37,7 +44,11 @@ import { ThrottledTooltip } from "../Tooltip";
 import { ChevronDown } from "../../utils/ts-wrappers";
 
 type ButtonWithMenuProps = {
-  children?: React.ReactElement[] | React.ReactNode[] | JSX.Element[] | JSX.Element;
+  children?:
+    | React.ReactElement[]
+    | React.ReactNode[]
+    | JSX.Element[]
+    | JSX.Element;
   className?: string;
   color?: "rk-blue" | "rk-green" | "rk-pink";
   default: React.ReactNode;
@@ -66,8 +77,16 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
 
   const options = props.children ? (
     <>
-      <DropdownToggle data-cy="more-menu" className={`${props.className} ${classes}`} disabled={props.disabled}>
-        <ChevronDown data-cy="more-options-button" size="20" className="btn-with-menu-icon" />
+      <DropdownToggle
+        data-cy="more-menu"
+        className={`${props.className} ${classes}`}
+        disabled={props.disabled}
+      >
+        <ChevronDown
+          data-cy="more-options-button"
+          size="20"
+          className="btn-with-menu-icon"
+        />
       </DropdownToggle>
       <DropdownMenu className="btn-with-menu-options" end>
         {props.children}
@@ -189,8 +208,19 @@ type InlineSubmitButtonProps = {
  * @param {string} props.text text to display when is active
  * @param {string} props.onSubmit function when click button
  */
-function InlineSubmitButton({ id, isSubmitting, isDone, isReadOnly, doneText, text,
-  onSubmit, pristine, tooltipPristine, className, isMainButton }: InlineSubmitButtonProps) {
+function InlineSubmitButton({
+  id,
+  isSubmitting,
+  isDone,
+  isReadOnly,
+  doneText,
+  text,
+  onSubmit,
+  pristine,
+  tooltipPristine,
+  className,
+  isMainButton,
+}: InlineSubmitButtonProps) {
   if (isDone) return <SuccessLabel text={doneText} />;
   if (isSubmitting) {
     return (
@@ -205,7 +235,9 @@ function InlineSubmitButton({ id, isSubmitting, isDone, isReadOnly, doneText, te
     <Button
       data-cy={`${id}-button`}
       onClick={onSubmit}
-      className={`${className} ${isMainButton ? "btn-rk-green" : "btn-outline-rk-green"}`}
+      className={`${className} ${
+        isMainButton ? "btn-rk-green" : "btn-outline-rk-green"
+      }`}
       color="inlineSubmit"
       size="sm"
       disabled={isReadOnly}
@@ -214,7 +246,9 @@ function InlineSubmitButton({ id, isSubmitting, isDone, isReadOnly, doneText, te
     </Button>
   ) : null;
 
-  const tooltip = pristine ? <ThrottledTooltip target={id} tooltip={tooltipPristine} /> : null;
+  const tooltip = pristine ? (
+    <ThrottledTooltip target={id} tooltip={tooltipPristine} />
+  ) : null;
 
   return (
     <div id={id}>
@@ -250,4 +284,11 @@ function RoundButtonGroup({ children }: { children: React.ReactNode[] }) {
   return <ButtonGroup className="round-button-group">{children}</ButtonGroup>;
 }
 
-export { RefreshButton, ButtonWithMenu, CardButton, GoBackButton, InlineSubmitButton, RoundButtonGroup };
+export {
+  RefreshButton,
+  ButtonWithMenu,
+  CardButton,
+  GoBackButton,
+  InlineSubmitButton,
+  RoundButtonGroup,
+};

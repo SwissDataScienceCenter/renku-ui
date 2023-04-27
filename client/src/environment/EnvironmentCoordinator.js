@@ -25,16 +25,15 @@
 function updateObjectFromCoreVersion(oldList, data) {
   const services = [...oldList, data];
   const available = {};
-  for (let v of data.versions)
-    available[v.data["metadata_version"]] = true;
+  for (let v of data.versions) available[v.data["metadata_version"]] = true;
 
   return {
     coreVersions: { available: { $set: available } },
     services: {
       fetching: false,
       fetched: new Date(),
-      list: { $set: services }
-    }
+      list: { $set: services },
+    },
   };
 }
 
@@ -48,18 +47,25 @@ class EnvironmentCoordinator {
     const model = this.model;
     model.set("services.fetching", true);
 
-    return this.client.getCoreVersion()
-      .then(data => {
-        const obj = updateObjectFromCoreVersion(model.get("services.list"), data);
+    return this.client
+      .getCoreVersion()
+      .then((data) => {
+        const obj = updateObjectFromCoreVersion(
+          model.get("services.list"),
+          data
+        );
         model.setObject(obj);
 
         return data;
       })
-      .catch(error => {
-        const errorObject = { services: {
-          fetching: false,
-          fetched: new Date(),
-          error } };
+      .catch((error) => {
+        const errorObject = {
+          services: {
+            fetching: false,
+            fetched: new Date(),
+            error,
+          },
+        };
         model.setObject(errorObject);
 
         return errorObject;

@@ -19,12 +19,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import {
-  WorkflowDetails, WorkflowDetailsRequestParams, WorkflowListElement, WorkflowRequestParams
+  WorkflowDetails,
+  WorkflowDetailsRequestParams,
+  WorkflowListElement,
+  WorkflowRequestParams,
 } from "./Workflows";
 import { Url } from "../../utils/helpers/url";
 
 const PLANS_PREFIX = "/plans/";
-
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -34,7 +36,7 @@ const PLANS_PREFIX = "/plans/";
  * @returns single string of Creators
  */
 function stringifyCreators(creators: Array<Record<string, any>>): string {
-  const creatorNames = creators.map(c => c.name ? c.name : null);
+  const creatorNames = creators.map((c) => (c.name ? c.name : null));
   return creatorNames.join(" ");
 }
 
@@ -43,8 +45,11 @@ function stringifyCreators(creators: Array<Record<string, any>>): string {
  * @param workflowsList - list of workflows ar returned by the API
  * @returns list containing enhanced workflows objects
  */
-function adjustWorkflowsList(workflowsList: Array<Record<string, any>>, fullPath: string): WorkflowListElement[] {
-  return workflowsList.map(workflow => {
+function adjustWorkflowsList(
+  workflowsList: Array<Record<string, any>>,
+  fullPath: string
+): WorkflowListElement[] {
+  return workflowsList.map((workflow) => {
     return {
       ...workflow,
       active: workflow.touches_existing_files,
@@ -53,15 +58,21 @@ function adjustWorkflowsList(workflowsList: Array<Record<string, any>>, fullPath
       executions: workflow.number_of_executions,
       indentation: 0,
       itemType: "workflow",
-      lastExecuted: workflow.last_executed ? new Date(workflow.last_executed) : workflow.last_executed,
+      lastExecuted: workflow.last_executed
+        ? new Date(workflow.last_executed)
+        : workflow.last_executed,
       tagList: workflow.keywords,
       timeCaption: workflow.created,
       title: workflow.name,
       url: Url.get(Url.pages.project.workflows.detail, {
-        namespace: "", path: fullPath, target: "/" + workflow.id.replace(PLANS_PREFIX, "")
+        namespace: "",
+        path: fullPath,
+        target: "/" + workflow.id.replace(PLANS_PREFIX, ""),
       }),
       urlSingle: Url.get(Url.pages.project.workflows.single, {
-        namespace: "", path: fullPath, target: "/" + workflow.id.replace(PLANS_PREFIX, "")
+        namespace: "",
+        path: fullPath,
+        target: "/" + workflow.id.replace(PLANS_PREFIX, ""),
       }),
       uniqueId: workflow.id.replace(PLANS_PREFIX, ""),
       workflowId: workflow.id.replace(PLANS_PREFIX, ""),
@@ -75,15 +86,21 @@ function adjustWorkflowsList(workflowsList: Array<Record<string, any>>, fullPath
  * @param workflowDetails - workflow details object as returned by the API
  * @returns object containing enhanced workflow details
  */
-function adjustWorkflowDetails(workflowDetails: Record<string, any>, fullPath: string): WorkflowDetails {
+function adjustWorkflowDetails(
+  workflowDetails: Record<string, any>,
+  fullPath: string
+): WorkflowDetails {
   return {
     ...workflowDetails,
-    latestUrl: workflowDetails.latest === workflowDetails.id ?
-      null :
-      Url.get(Url.pages.project.workflows.detail, {
-        namespace: "", path: fullPath, target: "/" + workflowDetails.latest.replace(PLANS_PREFIX, "")
-      }),
-    renkuCommand: `renku workflow execute ${workflowDetails.name}`
+    latestUrl:
+      workflowDetails.latest === workflowDetails.id
+        ? null
+        : Url.get(Url.pages.project.workflows.detail, {
+            namespace: "",
+            path: fullPath,
+            target: "/" + workflowDetails.latest.replace(PLANS_PREFIX, ""),
+          }),
+    renkuCommand: `renku workflow execute ${workflowDetails.name}`,
   } as WorkflowDetails;
 }
 
@@ -91,15 +108,17 @@ export const workflowsApi = createApi({
   reducerPath: "workflowsApi",
   baseQuery: fetchBaseQuery({ baseUrl: "" }),
   endpoints: (builder) => ({
-    getWorkflowList: builder.query<WorkflowListElement[], WorkflowRequestParams>({
+    getWorkflowList: builder.query<
+      WorkflowListElement[],
+      WorkflowRequestParams
+    >({
       query: (data) => {
         const url = `/renku${data.coreUrl}/workflow_plans.list`;
         const params: Record<string, any> = { git_url: data.gitUrl };
-        if (data.reference)
-          params.branch = data.reference;
+        if (data.reference) params.branch = data.reference;
         return {
           url: "/ui-server/api" + url,
-          params
+          params,
         };
       },
       transformResponse: (response: any, meta, arg) => {
@@ -108,18 +127,23 @@ export const workflowsApi = createApi({
         else if (response.error)
           throw new Error(JSON.stringify(response.error));
         throw new Error("Unexpected response");
-      }
+      },
     }),
-    getWorkflowDetail: builder.query<WorkflowDetails, WorkflowDetailsRequestParams>({
+    getWorkflowDetail: builder.query<
+      WorkflowDetails,
+      WorkflowDetailsRequestParams
+    >({
       query: (data) => {
         const url = `/renku${data.coreUrl}/workflow_plans.show`;
         const workflowFullId = PLANS_PREFIX + data.workflowId;
-        const params: Record<string, any> = { git_url: data.gitUrl, plan_id: workflowFullId };
-        if (data.reference)
-          params.branch = data.reference;
+        const params: Record<string, any> = {
+          git_url: data.gitUrl,
+          plan_id: workflowFullId,
+        };
+        if (data.reference) params.branch = data.reference;
         return {
           url: "/ui-server/api" + url,
-          params
+          params,
         };
       },
       transformResponse: (response: any, meta, arg) => {
@@ -135,4 +159,5 @@ export const workflowsApi = createApi({
   keepUnusedDataFor: 5,
 });
 
-export const { useGetWorkflowDetailQuery, useGetWorkflowListQuery } = workflowsApi;
+export const { useGetWorkflowDetailQuery, useGetWorkflowListQuery } =
+  workflowsApi;

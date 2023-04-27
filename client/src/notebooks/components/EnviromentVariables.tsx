@@ -16,7 +16,14 @@
  * limitations under the License.
  */
 import React, { ChangeEvent } from "react";
-import { Button, Col, FormGroup, Input, Label, Row } from "../../utils/ts-wrappers";
+import {
+  Button,
+  Col,
+  FormGroup,
+  Input,
+  Label,
+  Row,
+} from "../../utils/ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { ErrorLabel, InputLabel } from "../../components/formlabels/FormLabels";
@@ -31,8 +38,15 @@ export interface EnvVariablesField {
   value: string;
 }
 
-function EnvironmentVariables({ environmentVariables, setEnvironmentVariables }: EnvironmentVariablesProps) {
-  const handleFormChange = (index: number, name: "key" | "value", value: string) => {
+function EnvironmentVariables({
+  environmentVariables,
+  setEnvironmentVariables,
+}: EnvironmentVariablesProps) {
+  const handleFormChange = (
+    index: number,
+    name: "key" | "value",
+    value: string
+  ) => {
     const data: EnvVariablesField[] = [...environmentVariables];
     data[index][name] = value;
     setEnvironmentVariables(data);
@@ -44,9 +58,11 @@ function EnvironmentVariables({ environmentVariables, setEnvironmentVariables }:
   };
 
   const isKeyDuplicated = (key: string) => {
-    if (!key)
-      return false;
-    return environmentVariables.filter( variable => variable.key === key).length >= 2;
+    if (!key) return false;
+    return (
+      environmentVariables.filter((variable) => variable.key === key).length >=
+      2
+    );
   };
 
   const removeFields = (index: number) => {
@@ -61,24 +77,33 @@ function EnvironmentVariables({ environmentVariables, setEnvironmentVariables }:
       <Row key={index}>
         <Col xs={5}>
           <FormGroup className="field-group">
-            <Label for="variable" size="sm" className="text-muted d-md-none">Variable</Label>
+            <Label for="variable" size="sm" className="text-muted d-md-none">
+              Variable
+            </Label>
             <Input
               name="variable"
               value={input.key}
               invalid={isDuplicated}
-              onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(index, "key", event.target.value)}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                handleFormChange(index, "key", event.target.value)
+              }
             />
-            {isDuplicated ? <ErrorLabel text="Variable names must be unique" /> : null }
+            {isDuplicated ? (
+              <ErrorLabel text="Variable names must be unique" />
+            ) : null}
           </FormGroup>
         </Col>
         <Col xs={5}>
           <FormGroup className="field-group">
-            <Label for="variable" size="sm" className="text-muted d-md-none">Value</Label>
+            <Label for="variable" size="sm" className="text-muted d-md-none">
+              Value
+            </Label>
             <Input
               name="value"
               value={input.value}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFormChange(index, "value", event.target.value)}
+                handleFormChange(index, "value", event.target.value)
+              }
             />
           </FormGroup>
         </Col>
@@ -86,7 +111,8 @@ function EnvironmentVariables({ environmentVariables, setEnvironmentVariables }:
           <Button
             size="sm"
             className="border-0 text-danger bg-transparent mb-3"
-            onClick={() => removeFields(index)}>
+            onClick={() => removeFields(index)}
+          >
             <FontAwesomeIcon icon={faTrash} />
           </Button>
         </Col>
@@ -94,7 +120,7 @@ function EnvironmentVariables({ environmentVariables, setEnvironmentVariables }:
     );
   });
 
-  const header = !environmentVariables?.length ? null :
+  const header = !environmentVariables?.length ? null : (
     <Row className="my-2 d-none d-sm-none d-md-flex d-xl-flex">
       <Col sm={5}>
         <Label className="small">Variable</Label>
@@ -102,14 +128,21 @@ function EnvironmentVariables({ environmentVariables, setEnvironmentVariables }:
       <Col sm={5}>
         <Label className="small">Value</Label>
       </Col>
-    </Row>;
+    </Row>
+  );
 
-  return <div className="mt-3">
-    <InputLabel text="Environment Variables" isRequired={false} />
-    {header}
-    {form}
-    <div><Button className="btn-outline-rk-green my-1" onClick={addFields}>Add Variable</Button></div>
-  </div>;
+  return (
+    <div className="mt-3">
+      <InputLabel text="Environment Variables" isRequired={false} />
+      {header}
+      {form}
+      <div>
+        <Button className="btn-outline-rk-green my-1" onClick={addFields}>
+          Add Variable
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 export default EnvironmentVariables;

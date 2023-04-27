@@ -33,17 +33,30 @@ function LoaderSpinner(props) {
   const borderRight = borderTop; // Added a borderRight to make a half-circle
   const borderRadius = "50%";
   const animation = "spin 2s linear infinite";
-  const left = props.inline ? "" : "40%", right = left;
+  const left = props.inline ? "" : "40%",
+    right = left;
   const display = props.inline ? "inline-block" : "";
   const verticalAlign = props.inline ? "middle" : "";
   const margin = `m-${props.margin ? props.margin : 0}`;
-  return <div
-    className={`${margin} ${props.className}`}
-    style = {{
-      width: d, height: d,
-      border, borderTop, borderRight, borderRadius, animation, left, right, display, verticalAlign,
-      position: "relative" }}>
-  </div>;
+  return (
+    <div
+      className={`${margin} ${props.className}`}
+      style={{
+        width: d,
+        height: d,
+        border,
+        borderTop,
+        borderRight,
+        borderRadius,
+        animation,
+        left,
+        right,
+        display,
+        verticalAlign,
+        position: "relative",
+      }}
+    ></div>
+  );
 }
 
 function LoaderBouncer(props) {
@@ -59,7 +72,7 @@ function LoaderBouncer(props) {
 function Loader(props) {
   const size = props.size || 120;
   const inline = props.inline;
-  return (inline || size < 100) ? LoaderSpinner(props) : LoaderBouncer(props);
+  return inline || size < 100 ? LoaderSpinner(props) : LoaderBouncer(props);
 }
 
 export { Loader };

@@ -41,7 +41,12 @@ import {
 
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { ExternalLink } from "../ExternalLinks";
-import { ErrorLabel, HelperLabel, InputLabel, LoadingLabel } from "../formlabels/FormLabels";
+import {
+  ErrorLabel,
+  HelperLabel,
+  InputLabel,
+  LoadingLabel,
+} from "../formlabels/FormLabels";
 import "./TemplateSelector.css";
 
 const defaultTemplateIcon = "/stockimages/templatePlaceholder.svg";
@@ -119,11 +124,11 @@ function TemplateSelector({
 
   if (isFetching) {
     content = <LoadingLabel text="Fetching templates..." />;
-  }
-  else if (noFetchedUserRepo) {
-    content = <HelperLabel text="Fetch templates first, or switch template source to RenkuLab" />;
-  }
-  else {
+  } else if (noFetchedUserRepo) {
+    content = (
+      <HelperLabel text="Fetch templates first, or switch template source to RenkuLab" />
+    );
+  } else {
     content = repositories.map((repository: Repository) => {
       const repoTitle = repository.name;
       const repoTemplates = templates.filter((t) => t.parentRepo === repoTitle);
@@ -145,10 +150,11 @@ function TemplateSelector({
 
   let errorFeedback;
   if (isInvalid && totalTemplates > 0)
-    errorFeedback = <ErrorLabel text={error ?? "Please select a valid template"} />;
+    errorFeedback = (
+      <ErrorLabel text={error ?? "Please select a valid template"} />
+    );
   else if (isInvalid && totalTemplates === 0 && !noFetchedUserRepo)
     errorFeedback = <ErrorLabel text={"Error no templates available"} />;
-
 
   return (
     <>
@@ -166,7 +172,9 @@ interface TemplateRepositoryLinkProps {
 function TemplateRepositoryLink({ url }: TemplateRepositoryLinkProps) {
   let repoUrl = url && url.length && url.startsWith("http") ? url : "";
   if (repoUrl.endsWith(".git")) repoUrl = repoUrl.substring(repoUrl.length - 4);
-  return repoUrl ? <ExternalLink url={repoUrl} title={url} role="link" /> : null;
+  return repoUrl ? (
+    <ExternalLink url={repoUrl} title={url} role="link" />
+  ) : null;
 }
 
 function TemplateGalleryRow({
@@ -190,18 +198,21 @@ function TemplateGalleryRow({
 
   // Show a card for each template
   const elements = templates.map((t) => {
-    const imgSrc = t.icon ? `data:image/png;base64,${t.icon}` : defaultTemplateIcon;
+    const imgSrc = t.icon
+      ? `data:image/png;base64,${t.icon}`
+      : defaultTemplateIcon;
     const id = "id" + simpleHash(repository.name) + simpleHash(t.id);
     const selectedClass = selectedTemplate === t.id ? "selected" : "";
     const invalidTemplate = isInvalid ? "template--invalid" : "";
-    const statusTemplate = isDisabled ? "template--disabled cursor-not-allowed" : "template--active cursor-pointer";
+    const statusTemplate = isDisabled
+      ? "template--disabled cursor-not-allowed"
+      : "template--active cursor-pointer";
 
     return (
       <Col key={t.id}>
         <Card
           id={id}
-          className={
-            `template-card mb-2 text-center box-shadow-cards ${selectedClass} ${invalidTemplate} ${statusTemplate}`}
+          className={`template-card mb-2 text-center box-shadow-cards ${selectedClass} ${invalidTemplate} ${statusTemplate}`}
           onClick={() => {
             handleSelectedTemplate(t.id);
           }}
@@ -227,9 +238,17 @@ function TemplateGalleryRow({
     <Row>
       <p className="fst-italic mt-2 mb-1">
         Source: {repository.name}
-        <FontAwesomeIcon id={repositoryInfoId} className="ms-2 cursor-pointer" icon={faInfoCircle} />
+        <FontAwesomeIcon
+          id={repositoryInfoId}
+          className="ms-2 cursor-pointer"
+          icon={faInfoCircle}
+        />
       </p>
-      <UncontrolledPopover target={repositoryInfoId} trigger="legacy" placement="bottom">
+      <UncontrolledPopover
+        target={repositoryInfoId}
+        trigger="legacy"
+        placement="bottom"
+      >
         <PopoverHeader>{repository.name} templates</PopoverHeader>
         <PopoverBody>
           <p className="mb-1">
@@ -247,7 +266,9 @@ function TemplateGalleryRow({
   return (
     <div>
       {title}
-      <Row className="row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5">{elements}</Row>
+      <Row className="row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5">
+        {elements}
+      </Row>
     </div>
   );
 }

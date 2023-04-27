@@ -20,8 +20,20 @@ import { faInfoCircle, faLink } from "@fortawesome/free-solid-svg-icons";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Url } from "../../utils/helpers/url";
 import {
-  Col, Form, FormGroup, FormText, Input, Label, Modal, ModalBody,
-  ModalHeader, Row, Table, ModalFooter, Button } from "../../utils/ts-wrappers";
+  Col,
+  Form,
+  FormGroup,
+  FormText,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Row,
+  Table,
+  ModalFooter,
+  Button,
+} from "../../utils/ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Clipboard } from "../Clipboard";
 import { ThrottledTooltip } from "../Tooltip";
@@ -33,21 +45,36 @@ interface ShareLinkSessionProps {
   launchNotebookUrl: string;
 }
 
-const ShareLinkSessionIcon = ({ filePath, launchNotebookUrl, filters }: ShareLinkSessionProps) => {
+const ShareLinkSessionIcon = ({
+  filePath,
+  launchNotebookUrl,
+  filters,
+}: ShareLinkSessionProps) => {
   const [showModal, setShowModal] = useState(false);
   const toggleModal = () => setShowModal(!showModal);
-  return <>
-    <span>
-      <FontAwesomeIcon
-        id="openShareLinkModal" className="icon-link" icon={faLink}
-        onClick={toggleModal}
+  return (
+    <>
+      <span>
+        <FontAwesomeIcon
+          id="openShareLinkModal"
+          className="icon-link"
+          icon={faLink}
+          onClick={toggleModal}
+        />
+        <ThrottledTooltip
+          target="openShareLinkModal"
+          tooltip="Share link Session"
+        />
+      </span>
+      <ShareLinkSessionOpenFileModal
+        filters={filters}
+        filePath={filePath}
+        launchNotebookUrl={launchNotebookUrl}
+        showModal={showModal}
+        toggleModal={toggleModal}
       />
-      <ThrottledTooltip target="openShareLinkModal" tooltip="Share link Session" />
-    </span>
-    <ShareLinkSessionOpenFileModal
-      filters={filters} filePath={filePath} launchNotebookUrl={launchNotebookUrl}
-      showModal={showModal} toggleModal={toggleModal} />
-  </>;
+    </>
+  );
 };
 
 interface ProjectFilters {
@@ -68,8 +95,13 @@ interface ShareLinkSessionModalProps {
   notebookFilePath: string;
   environmentVariables: EnvVariablesField[];
 }
-const ShareLinkSessionModal = ({ filters, showModal, toggleModal, notebookFilePath, environmentVariables }
-                                 : ShareLinkSessionModalProps) => {
+const ShareLinkSessionModal = ({
+  filters,
+  showModal,
+  toggleModal,
+  notebookFilePath,
+  environmentVariables,
+}: ShareLinkSessionModalProps) => {
   const [includeBranch, setIncludeBranch] = useState(false);
   const [includeCommit, setIncludeCommit] = useState(false);
   const [includeEnvVariables, setIncludeEnvVariables] = useState(false);
@@ -83,46 +115,66 @@ const ShareLinkSessionModal = ({ filters, showModal, toggleModal, notebookFilePa
       commit: filters?.commit?.id,
     };
 
-    if (!data.namespace || !data.path)
-      return;
+    if (!data.namespace || !data.path) return;
     let urlSession = Url.get(Url.pages.project.session.autostart, data, true);
-    urlSession = notebookFilePath ? `${urlSession}&notebook=${notebookFilePath}` : urlSession;
-    urlSession = includeCommit ? `${urlSession}&commit=${data.commit}` : urlSession;
-    urlSession = includeBranch ? `${urlSession}&branch=${data.branch}` : urlSession;
+    urlSession = notebookFilePath
+      ? `${urlSession}&notebook=${notebookFilePath}`
+      : urlSession;
+    urlSession = includeCommit
+      ? `${urlSession}&commit=${data.commit}`
+      : urlSession;
+    urlSession = includeBranch
+      ? `${urlSession}&branch=${data.branch}`
+      : urlSession;
     if (includeEnvVariables && environmentVariables.length) {
       let urlVariables = "";
-      environmentVariables.map(env => {
+      environmentVariables.map((env) => {
         if (env.key && env.value)
-          urlVariables = `${urlVariables}&env[${encodeURIComponent(env.key)}]=${encodeURIComponent(env.value)}`;
+          urlVariables = `${urlVariables}&env[${encodeURIComponent(
+            env.key
+          )}]=${encodeURIComponent(env.value)}`;
       });
       urlSession = `${urlSession}${urlVariables}`;
     }
 
     setUrl(urlSession);
-  }, [ includeCommit, includeBranch, includeEnvVariables, filters, notebookFilePath, environmentVariables ]);
+  }, [
+    includeCommit,
+    includeBranch,
+    includeEnvVariables,
+    filters,
+    notebookFilePath,
+    environmentVariables,
+  ]);
 
   const setCommit = (checked: boolean) => {
     setIncludeCommit(checked);
-    if (checked)
-      setIncludeBranch(checked);
+    if (checked) setIncludeBranch(checked);
   };
   const setBranch = (checked: boolean) => {
     setIncludeBranch(checked);
-    if (!checked)
-      setIncludeCommit(checked);
+    if (!checked) setIncludeCommit(checked);
   };
   const setVariables = (checked: boolean) => {
     setIncludeEnvVariables(checked);
   };
 
-
-  const validVariables = environmentVariables.filter(variable => variable.key.length && variable.value.length);
+  const validVariables = environmentVariables.filter(
+    (variable) => variable.key.length && variable.value.length
+  );
   const isVariablesEmpty = !validVariables.length;
 
-  const markdown = `[![launch - renku](${Url.get(Url.pages.landing, undefined, true)}renku-badge.svg)](${url})`;
+  const markdown = `[![launch - renku](${Url.get(
+    Url.pages.landing,
+    undefined,
+    true
+  )}renku-badge.svg)](${url})`;
   const notebookFilePathLabel = notebookFilePath ? (
     <FormGroup key="notebook-file-path">
-      <Label>With <b>{notebookFilePath}</b> initially open</Label>.
+      <Label>
+        With <b>{notebookFilePath}</b> initially open
+      </Label>
+      .
     </FormGroup>
   ) : null;
   return (
@@ -135,22 +187,43 @@ const ShareLinkSessionModal = ({ filters, showModal, toggleModal, notebookFilePa
               {notebookFilePathLabel}
               <FormGroup key="link-branch" check>
                 <Label check>
-                  <Input type="checkbox" checked={includeBranch}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setBranch(e.target.checked)}/> Branch
+                  <Input
+                    type="checkbox"
+                    checked={includeBranch}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      setBranch(e.target.checked)
+                    }
+                  />{" "}
+                  Branch
                 </Label>
               </FormGroup>
               <FormGroup key="link-commit" check>
                 <Label check>
-                  <Input type="checkbox" checked={includeCommit}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setCommit(e.target.checked)}/> Commit
+                  <Input
+                    type="checkbox"
+                    checked={includeCommit}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      setCommit(e.target.checked)
+                    }
+                  />{" "}
+                  Commit
                 </Label>
               </FormGroup>
               <FormGroup key="env-variables" check>
                 <Label check>
-                  <Input type="checkbox" checked={isVariablesEmpty ? false : includeEnvVariables}
+                  <Input
+                    type="checkbox"
+                    checked={isVariablesEmpty ? false : includeEnvVariables}
                     disabled={isVariablesEmpty}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setVariables(e.target.checked)}/>
-                  <span className={isVariablesEmpty ? "text-rk-text-light" : ""}>Environment Variables</span>
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      setVariables(e.target.checked)
+                    }
+                  />
+                  <span
+                    className={isVariablesEmpty ? "text-rk-text-light" : ""}
+                  >
+                    Environment Variables
+                  </span>
                 </Label>
               </FormGroup>
               <FormText>
@@ -164,19 +237,23 @@ const ShareLinkSessionModal = ({ filters, showModal, toggleModal, notebookFilePa
                 <tr className="border-bottom">
                   <th scope="row">URL</th>
                   <td style={{ wordBreak: "break-all" }}>{url}</td>
-                  <td style={{ width: 1 }}><Clipboard clipboardText={url} /></td>
+                  <td style={{ width: 1 }}>
+                    <Clipboard clipboardText={url} />
+                  </td>
                 </tr>
-                <tr style={{ borderBottomColor: "transparent" }} >
+                <tr style={{ borderBottomColor: "transparent" }}>
                   <th scope="row">Badge</th>
                   <td colSpan={2} style={{ wordBreak: "break-all" }}>
                     <small>Paste it in your README to show a </small>
-                    <img src="/renku-badge.svg" alt="renku-badge"/>
+                    <img src="/renku-badge.svg" alt="renku-badge" />
                   </td>
                 </tr>
                 <tr className="border-bottom">
                   <th scope="row"> </th>
                   <td style={{ wordBreak: "break-all" }}>{markdown}</td>
-                  <td style={{ width: 1 }}><Clipboard clipboardText={markdown} /></td>
+                  <td style={{ width: 1 }}>
+                    <Clipboard clipboardText={markdown} />
+                  </td>
                 </tr>
               </tbody>
             </Table>
@@ -194,8 +271,13 @@ interface ShareLinkSessionOpenFileModalProps {
   filePath: string;
   launchNotebookUrl: string;
 }
-const ShareLinkSessionOpenFileModal = (
-  { filters, showModal, toggleModal, filePath, launchNotebookUrl }: ShareLinkSessionOpenFileModalProps) => {
+const ShareLinkSessionOpenFileModal = ({
+  filters,
+  showModal,
+  toggleModal,
+  filePath,
+  launchNotebookUrl,
+}: ShareLinkSessionOpenFileModalProps) => {
   const [url, setUrl] = useState("");
   const location = useLocation();
   const history = useHistory();
@@ -208,22 +290,32 @@ const ShareLinkSessionOpenFileModal = (
       commit: filters?.commit?.id,
     };
 
-    if (!data.namespace || !data.path)
-      return;
+    if (!data.namespace || !data.path) return;
     let urlSession = Url.get(Url.pages.project.session.autostart, data, true);
     urlSession = filePath ? `${urlSession}&notebook=${filePath}` : urlSession;
     setUrl(urlSession);
-  }, [ filters, filePath ]);
+  }, [filters, filePath]);
 
   const goToSpecifyCommit = () => {
-    const state = { filePath, showShareLinkModal: true, from: location.pathname };
+    const state = {
+      filePath,
+      showShareLinkModal: true,
+      from: location.pathname,
+    };
     history.push({ pathname: launchNotebookUrl, search: "", state });
   };
 
-  const markdown = `[![launch - renku](${Url.get(Url.pages.landing, undefined, true)}renku-badge.svg)](${url})`;
+  const markdown = `[![launch - renku](${Url.get(
+    Url.pages.landing,
+    undefined,
+    true
+  )}renku-badge.svg)](${url})`;
   const notebookFilePathLabel = filePath ? (
     <FormGroup key="notebook-file-path">
-      <Label>With <b>{filePath}</b> initially open</Label>.
+      <Label>
+        With <b>{filePath}</b> initially open
+      </Label>
+      .
     </FormGroup>
   ) : null;
   return (
@@ -232,27 +324,29 @@ const ShareLinkSessionOpenFileModal = (
       <ModalBody>
         <Row>
           <Col>
-            <Form className="mb-3">
-              {notebookFilePathLabel}
-            </Form>
+            <Form className="mb-3">{notebookFilePathLabel}</Form>
             <Table size="sm">
               <tbody>
                 <tr className="border-bottom">
                   <th scope="row">URL</th>
                   <td style={{ wordBreak: "break-all" }}>{url}</td>
-                  <td style={{ width: 1 }}><Clipboard clipboardText={url} /></td>
+                  <td style={{ width: 1 }}>
+                    <Clipboard clipboardText={url} />
+                  </td>
                 </tr>
-                <tr style={{ borderBottomColor: "transparent" }} >
+                <tr style={{ borderBottomColor: "transparent" }}>
                   <th scope="row">Badge</th>
                   <td colSpan={2} style={{ wordBreak: "break-all" }}>
                     <small>Paste it in your README to show a </small>
-                    <img src="/renku-badge.svg" alt="renku-badge"/>
+                    <img src="/renku-badge.svg" alt="renku-badge" />
                   </td>
                 </tr>
                 <tr className="border-bottom">
                   <th scope="row"> </th>
                   <td style={{ wordBreak: "break-all" }}>{markdown}</td>
-                  <td style={{ width: 1 }}><Clipboard clipboardText={markdown} /></td>
+                  <td style={{ width: 1 }}>
+                    <Clipboard clipboardText={markdown} />
+                  </td>
                 </tr>
               </tbody>
             </Table>
@@ -260,7 +354,9 @@ const ShareLinkSessionOpenFileModal = (
         </Row>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={goToSpecifyCommit}>Want a specific branch or commit?</Button>
+        <Button color="primary" onClick={goToSpecifyCommit}>
+          Want a specific branch or commit?
+        </Button>
       </ModalFooter>
     </Modal>
   );

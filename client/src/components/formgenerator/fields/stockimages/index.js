@@ -28,26 +28,26 @@ const ImageFieldPropertyName = {
   NAME: "NAME",
   URL: "URL",
   STOCK: "STOCK",
-  FILE: "FILE"
+  FILE: "FILE",
 };
 
 const DatasetImages = [
   {
     [ImageFieldPropertyName.NAME]: "lines",
-    [ImageFieldPropertyName.URL]: "stockimages/dataset1.svg"
+    [ImageFieldPropertyName.URL]: "stockimages/dataset1.svg",
   },
   {
     [ImageFieldPropertyName.NAME]: "bars",
-    [ImageFieldPropertyName.URL]: "stockimages/dataset2.svg"
+    [ImageFieldPropertyName.URL]: "stockimages/dataset2.svg",
   },
   {
     // eslint-disable-next-line
     [ImageFieldPropertyName.NAME]: "science",
-    [ImageFieldPropertyName.URL]: "stockimages/dataset3.png"
-  }
+    [ImageFieldPropertyName.URL]: "stockimages/dataset3.png",
+  },
 ];
 
-DatasetImages.forEach(i => {
+DatasetImages.forEach((i) => {
   i[ImageFieldPropertyName.STOCK] = true;
   i[ImageFieldPropertyName.NAME] = `[stock:${i[ImageFieldPropertyName.NAME]}]`;
 });

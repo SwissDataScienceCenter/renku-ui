@@ -58,9 +58,15 @@ describe("rendering", () => {
       root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
-            <ForkProject client={client} model={model} history={fakeHistory} user={loggedUser} />
+            <ForkProject
+              client={client}
+              model={model}
+              history={fakeHistory}
+              user={loggedUser}
+            />
           </MemoryRouter>
-        </Provider>);
+        </Provider>
+      );
     });
   });
 });

@@ -5,7 +5,8 @@ import { ExternalLink } from "../../components/ExternalLinks";
 import { ButtonWithMenu } from "../../components/buttons/Button";
 
 function externalUrlToGitLabIdeUrl(externalUrl: string) {
-  if (externalUrl.includes("/gitlab/")) return externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/");
+  if (externalUrl.includes("/gitlab/"))
+    return externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/");
   const url = new URL(externalUrl);
   const pathname = url.pathname;
   const newPathname = `/-/ide/project${pathname}`;
@@ -42,15 +43,25 @@ function GitLabConnectButton(props: GitLabConnectButtonProps) {
   const gitLabMrUrl = `${props.externalUrl}/-/merge_requests`;
 
   const gitlabProjectButton = (
-    <ExternalLink className="btn-outline-rk-green" url={props.externalUrl} title="Open in GitLab" />
+    <ExternalLink
+      className="btn-outline-rk-green"
+      url={props.externalUrl}
+      title="Open in GitLab"
+    />
   );
 
   const gitlabIDEButton =
-    userLogged && gitlabIdeUrl ? <GitLabLinkItem size={size} text="Web IDE" url={gitlabIdeUrl} /> : null;
+    userLogged && gitlabIdeUrl ? (
+      <GitLabLinkItem size={size} text="Web IDE" url={gitlabIdeUrl} />
+    ) : null;
 
   return (
     <div>
-      <ButtonWithMenu color="rk-green" default={gitlabProjectButton} size={size}>
+      <ButtonWithMenu
+        color="rk-green"
+        default={gitlabProjectButton}
+        size={size}
+      >
         <GitLabLinkItem size={size} text="Issues" url={gitLabIssuesUrl} />
         <GitLabLinkItem size={size} text="Merge Requests" url={gitLabMrUrl} />
         {gitlabIDEButton}

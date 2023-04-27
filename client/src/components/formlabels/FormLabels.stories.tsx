@@ -16,14 +16,18 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { ErrorLabel, HelperLabel, InputHintLabel, InputLabel, LoadingLabel } from "./FormLabels";
-
+import {
+  ErrorLabel,
+  HelperLabel,
+  InputHintLabel,
+  InputLabel,
+  LoadingLabel,
+} from "./FormLabels";
 
 interface LabelsProps {
   text: string;
   isRequired: boolean;
 }
-
 
 export default {
   title: "components/FormLabels",

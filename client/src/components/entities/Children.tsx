@@ -29,24 +29,22 @@ import { Badge, UncontrolledTooltip } from "../../utils/ts-wrappers";
  *  Entity Children component
  */
 
-
 interface EntityChildrenProps {
   childrenElements?: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
   itemType: EntityType;
 }
 
 function EntityChildren({ childrenElements, itemType }: EntityChildrenProps) {
-  const childrenNumber = childrenElements && childrenElements.length ?
-    childrenElements.length :
-    0;
+  const childrenNumber =
+    childrenElements && childrenElements.length ? childrenElements.length : 0;
 
-  if (!childrenNumber)
-    return null;
+  if (!childrenNumber) return null;
 
   if (itemType === "workflow") {
     return (
       <p className="">
-        <span className="text-rk-text small rem">contains </span> {childrenNumber} step{childrenNumber > 1 ? "s" : ""}
+        <span className="text-rk-text small rem">contains </span>{" "}
+        {childrenNumber} step{childrenNumber > 1 ? "s" : ""}
       </p>
     );
   }
@@ -57,20 +55,28 @@ interface EntityChildrenDotProps extends EntityChildrenProps {
   workflowId: string;
 }
 
-function EntityChildrenDot({ childrenElements, itemType, workflowId }: EntityChildrenDotProps) {
-  const childrenNumber = childrenElements && childrenElements.length ?
-    childrenElements.length :
-    0;
+function EntityChildrenDot({
+  childrenElements,
+  itemType,
+  workflowId,
+}: EntityChildrenDotProps) {
+  const childrenNumber =
+    childrenElements && childrenElements.length ? childrenElements.length : 0;
 
-  if (!childrenNumber)
-    return null;
+  if (!childrenNumber) return null;
 
   if (itemType === "workflow") {
     const color = "bg-rk-text";
     const tooltipId = `contains-${workflowId}`;
     const toolTip = (
-      <UncontrolledTooltip key={`duration-elem-${workflowId}`} placement="top" target={tooltipId}>
-        <span>{childrenNumber} step{childrenNumber > 1 ? "s" : ""} in this workflow</span>
+      <UncontrolledTooltip
+        key={`duration-elem-${workflowId}`}
+        placement="top"
+        target={tooltipId}
+      >
+        <span>
+          {childrenNumber} step{childrenNumber > 1 ? "s" : ""} in this workflow
+        </span>
       </UncontrolledTooltip>
     );
 
@@ -83,6 +89,5 @@ function EntityChildrenDot({ childrenElements, itemType, workflowId }: EntityChi
   }
   return null;
 }
-
 
 export { EntityChildren, EntityChildrenDot };

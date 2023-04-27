@@ -28,7 +28,6 @@ import { Integrations as TracingIntegrations } from "@sentry/tracing";
 import _ from "lodash";
 import { API_ERRORS } from "../../../api-client/errors";
 
-
 const NAMESPACE_DEFAULT = "unknown";
 const VERSION_DEFAULT = "unknown";
 const RELEASE_UNKNOWN = "unknown";
@@ -45,9 +44,7 @@ let sentryInitialized = false;
 let sentryUrl = null;
 let sentrySampleRate = 0;
 let sentryNamespace = NAMESPACE_DEFAULT;
-let sentryDenyUrls = [
-  ...EXCLUDED_URLS,
-];
+let sentryDenyUrls = [...EXCLUDED_URLS];
 let disableSentry = false;
 
 // module functions
@@ -76,8 +73,15 @@ function sentryWithProfiler(component, options) {
  * @param {number} [sampleRate] - transaction trace number between 0 and 1 for performance monitoring
  * @param {Array<string | RegExp>} tracingOrigins - String or regex to match request URL for sentry trace
  */
-function sentryInit(url, namespace = null, userPromise = null, version = null, telepresence = false,
-  sampleRate = 0.0, tracingOrigins) {
+function sentryInit(
+  url,
+  namespace = null,
+  userPromise = null,
+  version = null,
+  telepresence = false,
+  sampleRate = 0.0,
+  tracingOrigins
+) {
   // Prevent re-initializing
   if (sentryInitialized)
     throw new Error("Cannot re-initialize the Sentry client.");
@@ -89,20 +93,26 @@ function sentryInit(url, namespace = null, userPromise = null, version = null, t
   // Check namespace
   if (namespace != null) {
     if (typeof namespace !== "string" || !namespace.length)
-      throw new Error("The optional <namespace> must be a valid string identifying the current namespace.");
+      throw new Error(
+        "The optional <namespace> must be a valid string identifying the current namespace."
+      );
     sentryNamespace = namespace;
   }
 
   // Check userPromise
   if (userPromise != null) {
     if (typeof userPromise !== "object" || !userPromise.then)
-      throw new Error("The optional <userPromise> must be a valid promise resolving with user's data.");
+      throw new Error(
+        "The optional <userPromise> must be a valid promise resolving with user's data."
+      );
   }
 
   // Check version
   if (version != null) {
     if (typeof version !== "string" || !version.length)
-      throw new Error("The optional <version> must be a valid string identifying the UI version.");
+      throw new Error(
+        "The optional <version> must be a valid string identifying the UI version."
+      );
     uiVersion = version;
   }
 
@@ -119,23 +129,32 @@ function sentryInit(url, namespace = null, userPromise = null, version = null, t
     release: getRelease(uiVersion),
     beforeSend: (event) => hookBeforeSend(event),
     denyUrls: sentryDenyUrls,
-    integrations: [new TracingIntegrations.BrowserTracing({
-      tracingOrigins,
-      maxTransactionDuration: 30
-    })],
+    integrations: [
+      new TracingIntegrations.BrowserTracing({
+        tracingOrigins,
+        maxTransactionDuration: 30,
+      }),
+    ],
     tracesSampleRate: sentrySampleRate, // number between 0 and 1. (e.g. to send 20% of transactions use 0.2)
   });
   SentryLib.setTags({
     component: UI_COMPONENT,
-    telepresence: !!telepresence
+    telepresence: !!telepresence,
   });
 
   // Handle user data
   if (userPromise != null) {
-    userPromise.then(data => {
-      const user = data && data.id ?
-        { logged: true, id: data.id, username: data.username, email: data.email, signIn: data.current_sign_in_at } :
-        { logged: false, id: 0, username: "0" };
+    userPromise.then((data) => {
+      const user =
+        data && data.id
+          ? {
+              logged: true,
+              id: data.id,
+              username: data.username,
+              email: data.email,
+              signIn: data.current_sign_in_at,
+            }
+          : { logged: false, id: 0, username: "0" };
       SentryLib.setUser(user);
 
       // Add username as tag to simplify search
@@ -144,7 +163,8 @@ function sentryInit(url, namespace = null, userPromise = null, version = null, t
   }
 
   // Prevent sending data to Sentry when manually moving to a different URL.
-  window.addEventListener("beforeunload", (event) => { // eslint-disable-line
+  // eslint-disable-next-line spellcheck/spell-checker, @typescript-eslint/no-unused-vars
+  window.addEventListener("beforeunload", (event) => {
     disableSentry = true;
   });
 
@@ -158,17 +178,23 @@ function hookBeforeSend(event) {
   // *** Filters ***
 
   // global filter
-  if (disableSentry)
-    return null;
+  if (disableSentry) return null;
 
   // filter network errors
-  if (event.exception && event.exception.values && event.exception.values.length) {
-    if (event.exception.values.some(e => e.value === API_ERRORS.networkError))
+  if (
+    event.exception &&
+    event.exception.values &&
+    event.exception.values.length
+  ) {
+    if (event.exception.values.some((e) => e.value === API_ERRORS.networkError))
       return null;
   }
 
   // errors while previewing the notebooks
-  if (event.request.url.includes("/files/blob/") && event.request.url.endsWith(".ipynb"))
+  if (
+    event.request.url.includes("/files/blob/") &&
+    event.request.url.endsWith(".ipynb")
+  )
     return null;
 
   return event;
@@ -181,26 +207,21 @@ function hookBeforeSend(event) {
  */
 function getRelease(version) {
   // Check input validity
-  if (!version || typeof version !== "string")
-    return RELEASE_UNKNOWN;
+  if (!version || typeof version !== "string") return RELEASE_UNKNOWN;
 
   // Check format validity
   const regValid = new RegExp(/^\d*(\.\d*){0,2}(-[a-z0-9.]{7,32})?$/);
   const resValid = version.match(regValid);
-  if (!resValid || !resValid[0])
-    return RELEASE_UNKNOWN;
+  if (!resValid || !resValid[0]) return RELEASE_UNKNOWN;
 
   // Extract information
   const regRelease = new RegExp(/^\d*(\.\d*){0,2}/);
   const resRelease = version.match(regRelease);
-  const release = (!resRelease || !resRelease[0]) ?
-    RELEASE_UNKNOWN :
-    resRelease[0];
+  const release =
+    !resRelease || !resRelease[0] ? RELEASE_UNKNOWN : resRelease[0];
   const regPatch = new RegExp(/-[a-z0-9.]{6,32}$/);
   const resPatch = version.match(regPatch);
-  const patch = (!resPatch || !resPatch[0]) ?
-    "" :
-    RELEASE_DEV;
+  const patch = !resPatch || !resPatch[0] ? "" : RELEASE_DEV;
   return release + patch;
 }
 
@@ -210,9 +231,8 @@ const SentrySettings = {
   url: sentryUrl,
   namespace: sentryNamespace,
   init: sentryInit,
-  withProfiler: sentryWithProfiler
+  withProfiler: sentryWithProfiler,
 };
-
 
 export { SentrySettings as Sentry };
 

@@ -39,14 +39,13 @@ import { btoaUTF8 } from "../../utils/helpers/Encoding";
 import { generateFakeUser } from "../../user/User.test";
 import AppContext from "../../utils/context/appContext";
 
-
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],
   initialIndex: 0,
 });
 fakeHistory.push({
   pathname: "/projects",
-  search: "?page=1"
+  search: "?page=1",
 });
 const fakeLocation = { pathname: "" };
 
@@ -63,14 +62,15 @@ describe("helper functions", () => {
       const reservedWord = RESERVED_TITLE_NAMES[randomNumber];
       if (randomNumber < RESERVED_TITLE_NAMES.length / 5)
         expect(validateTitle("prefix " + reservedWord)).toBe(null);
-      else if (randomNumber > RESERVED_TITLE_NAMES.length / 5 * 4)
+      else if (randomNumber > (RESERVED_TITLE_NAMES.length / 5) * 4)
         expect(validateTitle(reservedWord + " suffix")).toBe(null);
-      else
-        expect(validateTitle(reservedWord)).toContain("Reserved");
+      else expect(validateTitle(reservedWord)).toContain("Reserved");
     }
 
     // first char
-    expect(validateTitle("_underscore")).toContain("must start with a letter or a number");
+    expect(validateTitle("_underscore")).toContain(
+      "must start with a letter or a number"
+    );
     expect(validateTitle("1_underscore")).toBe(null);
     expect(validateTitle("an_underscore")).toBe(null);
 
@@ -80,21 +80,33 @@ describe("helper functions", () => {
   });
 
   it("checkTitleDuplicates", () => {
-    const projectsPaths = ["username/exist", "username/exist-different", "group/exist"];
+    const projectsPaths = [
+      "username/exist",
+      "username/exist-different",
+      "group/exist",
+    ];
 
     // no previous projects
     expect(checkTitleDuplicates("exist", "username", [])).toBe(false);
     expect(checkTitleDuplicates("exist", "group", null)).toBe(false);
 
     // different name
-    expect(checkTitleDuplicates("notExists", "username", projectsPaths)).toBe(false);
-    expect(checkTitleDuplicates("exist-different", "group", projectsPaths)).toBe(false);
+    expect(checkTitleDuplicates("notExists", "username", projectsPaths)).toBe(
+      false
+    );
+    expect(
+      checkTitleDuplicates("exist-different", "group", projectsPaths)
+    ).toBe(false);
 
     // same final name
     expect(checkTitleDuplicates("exist", "group", projectsPaths)).toBe(true);
-    expect(checkTitleDuplicates("exist-different", "username", projectsPaths)).toBe(true);
+    expect(
+      checkTitleDuplicates("exist-different", "username", projectsPaths)
+    ).toBe(true);
     expect(checkTitleDuplicates("existä", "group", projectsPaths)).toBe(true);
-    expect(checkTitleDuplicates("exist-äõî-different", "username", projectsPaths)).toBe(true);
+    expect(
+      checkTitleDuplicates("exist-äõî-different", "username", projectsPaths)
+    ).toBe(true);
   });
 
   it("getDataFromParams", () => {
@@ -118,8 +130,8 @@ describe("helper functions", () => {
       ref: "0.1.16",
       visibility: "private",
       variables: {
-        description: "description here"
-      }
+        description: "description here",
+      },
     };
     urlParams = encode(params);
     decoded = getDataFromParams(urlParams);
@@ -133,10 +145,13 @@ describe("rendering", () => {
 
   const anonymousUser = generateFakeUser(true);
   const loggedUser = generateFakeUser();
-  const users = [{ type: "anonymous", data: anonymousUser }, { type: "logged", data: loggedUser }];
+  const users = [
+    { type: "anonymous", data: anonymousUser },
+    { type: "logged", data: loggedUser },
+  ];
   const appContext = {
     client: client,
-    params: { "TEMPLATES": templates },
+    params: { TEMPLATES: templates },
     location: fakeLocation,
   };
 
@@ -159,7 +174,8 @@ describe("rendering", () => {
                 />
               </AppContext.Provider>
             </MemoryRouter>
-          </Provider>);
+          </Provider>
+        );
       });
     });
   }

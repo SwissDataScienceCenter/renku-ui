@@ -19,8 +19,16 @@
 import React, { useContext, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { Col, Modal, ModalBody, ModalHeader, Row } from "../../utils/ts-wrappers";
-import SortingEntities, { SortingOptions } from "../../components/sortingEntities/SortingEntities";
+import {
+  Col,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Row,
+} from "../../utils/ts-wrappers";
+import SortingEntities, {
+  SortingOptions,
+} from "../../components/sortingEntities/SortingEntities";
 import { FilterEntitySearch } from "../../components/entitySearchFilter/EntitySearchFilter";
 import { SearchResultsHeader } from "../../components/searchResultsHeader/SearchResultsHeader";
 import { SearchResultsContent } from "../../components/searchResultsContent/SearchResultsContent";
@@ -33,7 +41,6 @@ import QuickNav from "../../components/quicknav";
 import AppContext from "../../utils/context/appContext";
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
 import { KgSearchContextProvider, useKgSearchContext } from "./KgSearchContext";
-
 
 /* eslint-disable @typescript-eslint/ban-types */
 
@@ -64,7 +71,7 @@ const ModalFilter = ({
   isOpen,
   onToggle,
   isLoggedUser,
-  valuesDate
+  valuesDate,
 }: ModalFilterProps) => {
   return (
     <Modal isOpen={isOpen} toggle={onToggle} className="filter-modal">
@@ -74,8 +81,17 @@ const ModalFilter = ({
       <ModalBody>
         <div className="pb-4 w-100">
           <FilterEntitySearch
-            valuesDate={valuesDate} author={author} type={type} visibility={visibility} isLoggedUser={isLoggedUser} />
-          <SortingEntities styleType="mobile" sort={sort} setSort={handleSort} />
+            valuesDate={valuesDate}
+            author={author}
+            type={type}
+            visibility={visibility}
+            isLoggedUser={isLoggedUser}
+          />
+          <SortingEntities
+            styleType="mobile"
+            sort={sort}
+            setSort={handleSort}
+          />
         </div>
       </ModalBody>
     </Modal>
@@ -83,8 +99,22 @@ const ModalFilter = ({
 };
 
 function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
-  const { kgSearchState, reducers: { setPage, setSort, reset } } = useKgSearchContext();
-  const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = kgSearchState;
+  const {
+    kgSearchState,
+    reducers: { setPage, setSort, reset },
+  } = useKgSearchContext();
+  const {
+    phrase,
+    sort,
+    page,
+    type,
+    author,
+    visibility,
+    perPage,
+    since,
+    until,
+    typeDate,
+  } = kgSearchState;
 
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(true);
@@ -106,20 +136,26 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
   const valuesDate = {
     since,
     until,
-    type: typeDate
+    type: typeDate,
   };
 
-  const { data, isFetching, isLoading, error } = useSearchEntitiesQuery(searchRequest);
+  const { data, isFetching, isLoading, error } =
+    useSearchEntitiesQuery(searchRequest);
   const filter = (
     <>
-      { isOpenFilter ?
+      {isOpenFilter ? (
         <Col className="col-12 col-lg-3 col-xl-2 pb-2">
           <div className="d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block filter-container">
             <FilterEntitySearch
-              valuesDate={valuesDate} author={author} type={type} visibility={visibility} isLoggedUser={isLoggedUser} />
+              valuesDate={valuesDate}
+              author={author}
+              type={type}
+              visibility={visibility}
+              isLoggedUser={isLoggedUser}
+            />
           </div>
         </Col>
-        : null }
+      ) : null}
     </>
   );
 
@@ -130,11 +166,14 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
     <>
       <Row>
         <ProjectsInactiveKGWarning />
-        <Col className="col-12">
-          {searchNav}
-        </Col>
-        <Col className={isOpenFilter ? "col-12 pb-2 m-auto search-header-container" :
-          "col-10 pb-2 m-auto search-result-header search-header-container"}>
+        <Col className="col-12">{searchNav}</Col>
+        <Col
+          className={
+            isOpenFilter
+              ? "col-12 pb-2 m-auto search-header-container"
+              : "col-10 pb-2 m-auto search-result-header search-header-container"
+          }
+        >
           <SearchResultsHeader
             total={error ? 0 : data?.total}
             phrase={decodeURIComponent(phrase)}
@@ -176,9 +215,11 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
 }
 
 const SearchPageWrapped = (props: SearchPageProps) => {
-  return <KgSearchContextProvider>
-    <SearchPage {...props} />
-  </KgSearchContextProvider>;
+  return (
+    <KgSearchContextProvider>
+      <SearchPage {...props} />
+    </KgSearchContextProvider>
+  );
 };
 
 export default SearchPageWrapped;

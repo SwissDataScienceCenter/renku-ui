@@ -23,20 +23,18 @@
  *  LoginAlert component
  */
 
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { Alert } from "../../utils/ts-wrappers";
 import { Url } from "../../utils/helpers/url";
 
-
 export interface LoginAlertProps {
-  logged: boolean,
-  textIntro: string
-  textLogin: string
-  textPost: string
-  textPre: string
+  logged: boolean;
+  textIntro: string;
+  textLogin: string;
+  textPost: string;
+  textPre: string;
 }
 
 const LoginAlert = ({
@@ -44,23 +42,30 @@ const LoginAlert = ({
   textLogin = "Log in",
   textIntro,
   textPost = " to use this feature.",
-  textPre
+  textPre,
 }: LoginAlertProps) => {
   const location = useLocation();
 
   // No need to show anything when the user is logged.
-  if (logged)
-    return null;
+  if (logged) return null;
 
-  const loginUrl = Url.get(Url.pages.login.link, { pathname: location.pathname });
-  const link = (<Link className="btn btn-primary btn-sm" to={loginUrl}>{textLogin}</Link>);
-  const introElement = textIntro ? (<p>{textIntro}</p>) : null;
+  const loginUrl = Url.get(Url.pages.login.link, {
+    pathname: location.pathname,
+  });
+  const link = (
+    <Link className="btn btn-primary btn-sm" to={loginUrl}>
+      {textLogin}
+    </Link>
+  );
+  const introElement = textIntro ? <p>{textIntro}</p> : null;
 
   return (
     <>
       {introElement}
       <Alert color="primary">
-        <p className="mb-0">{textPre} {link} {textPost}</p>
+        <p className="mb-0">
+          {textPre} {link} {textPost}
+        </p>
       </Alert>
     </>
   );

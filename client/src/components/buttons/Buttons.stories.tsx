@@ -21,12 +21,10 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ButtonWithMenu, RoundButtonGroup } from "./Button";
 
-
 interface LabelsProps {
   text: string;
   isRequired: boolean;
 }
-
 
 export default {
   title: "components/Buttons",
@@ -52,7 +50,10 @@ SecondaryGreen.args = {
 
 export const PrimaryGreenWithIcon = (args: LabelsProps) => (
   <>
-    <Button className="btn-rk-green btn-icon-text"><FontAwesomeIcon icon={faPen} color="dark" />{args.text}</Button>
+    <Button className="btn-rk-green btn-icon-text">
+      <FontAwesomeIcon icon={faPen} color="dark" />
+      {args.text}
+    </Button>
   </>
 );
 PrimaryGreenWithIcon.args = {
@@ -61,8 +62,9 @@ PrimaryGreenWithIcon.args = {
 
 export const SecondaryGreenWithIcon = (args: LabelsProps) => (
   <>
-    <Button className="btn-outline-rk-green btn-icon-text" >
-      <FontAwesomeIcon icon={faPen} color="dark" />{args.text}
+    <Button className="btn-outline-rk-green btn-icon-text">
+      <FontAwesomeIcon icon={faPen} color="dark" />
+      {args.text}
     </Button>
   </>
 );
@@ -91,39 +93,42 @@ SecondaryPink.args = {
 const defaultAction = <Button key="button-main-primary">Main Action</Button>;
 const options = [
   <Button key="button-a">Option A</Button>,
-  <Button key="button-B">Option B</Button>
+  <Button key="button-B">Option B</Button>,
 ];
 export const menuWithOptionPrimary = () => (
   <>
-    <ButtonWithMenu
-      default={defaultAction}
-      isPrincipal={true}
-      color="rk-green">
+    <ButtonWithMenu default={defaultAction} isPrincipal={true} color="rk-green">
       {options}
     </ButtonWithMenu>
   </>
 );
-const defaultActionSecondary = <Button key="button-a" className="btn-outline-rk-green">Main Action</Button>;
+const defaultActionSecondary = (
+  <Button key="button-a" className="btn-outline-rk-green">
+    Main Action
+  </Button>
+);
 export const menuWithOptionSecondary = () => (
   <>
     <ButtonWithMenu
       default={defaultActionSecondary}
       isPrincipal={false}
-      color="rk-green">
+      color="rk-green"
+    >
       {options}
     </ButtonWithMenu>
   </>
 );
 
 const optionsGroupButton = [
-  <Button key="button-x" className="btn-outline-rk-green">Option X</Button>,
-  <Button key="button-y" className="btn-outline-rk-green">Option y</Button>
+  <Button key="button-x" className="btn-outline-rk-green">
+    Option X
+  </Button>,
+  <Button key="button-y" className="btn-outline-rk-green">
+    Option y
+  </Button>,
 ];
 export const roundButtonGroup = () => (
   <>
-    <RoundButtonGroup>
-      {optionsGroupButton}
-    </RoundButtonGroup>
+    <RoundButtonGroup>{optionsGroupButton}</RoundButtonGroup>
   </>
 );
-

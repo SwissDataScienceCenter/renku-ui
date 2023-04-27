@@ -40,18 +40,16 @@ export const sessionApi = createApi({
         };
       },
     }),
-    getLogs: builder.query<any, GetLogsArgs>({ // eslint-disable-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getLogs: builder.query<any, GetLogsArgs>({
       query: (args) => {
         return {
           url: `logs/${args.serverName}`,
-          params: { max_lines: args.lines }
+          params: { max_lines: args.lines },
         };
       },
     }),
   }),
 });
 
-export const {
-  useStopSessionMutation,
-  useGetLogsQuery
-} = sessionApi;
+export const { useStopSessionMutation, useGetLogsQuery } = sessionApi;

@@ -32,13 +32,16 @@ import FormPanel from "./FormGenerator.present";
 import _ from "lodash";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 
-function locationToLocationHash(loc) { return "uid_" + simpleHash(loc); }
+function locationToLocationHash(loc) {
+  return "uid_" + simpleHash(loc);
+}
 
 function mapStateToProps(state, props) {
-  const currentDraft = state.stateModel.formGenerator.formDrafts[props.locationHash];
+  const currentDraft =
+    state.stateModel.formGenerator.formDrafts[props.locationHash];
   return {
     draft: currentDraft,
-    ...props
+    ...props,
   };
 }
 
@@ -46,28 +49,38 @@ const VisibleFormGenerator = connect(mapStateToProps)(FormPanel);
 
 function FormGeneratorWrapper(props) {
   const draft = props.model.get("formDrafts")[props.locationHash];
-  const [inputs, setInputs, setSubmit] = useForm(props.submitCallback, props.handlers, draft);
-  return (<VisibleFormGenerator
-    {...props}
-    handlers={props.handlers}
-    inputs={inputs}
-    loading={props.isLoading}
-    locationHash={props.locationHash}
-    modelValues={props.modelValues}
-    setInputs={setInputs}
-    setSubmit={setSubmit}
-    store={props.store}
-    versionUrl={props.versionUrl}
-  />);
+  const [inputs, setInputs, setSubmit] = useForm(
+    props.submitCallback,
+    props.handlers,
+    draft
+  );
+  return (
+    <VisibleFormGenerator
+      {...props}
+      handlers={props.handlers}
+      inputs={inputs}
+      loading={props.isLoading}
+      locationHash={props.locationHash}
+      modelValues={props.modelValues}
+      setInputs={setInputs}
+      setSubmit={setSubmit}
+      store={props.store}
+      versionUrl={props.versionUrl}
+    />
+  );
 }
 
 class FormGenerator extends Component {
-
   constructor(props) {
     super(props);
     this.model = props.modelTop.subModel("formGenerator");
     this.locationHash = locationToLocationHash(props.formLocation);
-    this.coordinator = new FormGeneratorCoordinator(props.client, this.model, props.formLocation, this.locationHash);
+    this.coordinator = new FormGeneratorCoordinator(
+      props.client,
+      this.model,
+      props.formLocation,
+      this.locationHash
+    );
     this.handlers = {
       addDraft: this.addDraft.bind(this),
       removeDraft: this.removeDraft.bind(this),
@@ -78,26 +91,27 @@ class FormGenerator extends Component {
       setDisableAll: this.setDisableAll.bind(this),
       setServerWarnings: this.setServerWarnings.bind(this),
       setSecondaryButtonText: this.setSecondaryButtonText.bind(this),
-      setFormDraftInternalValuesProperty: this.setFormDraftInternalValuesProperty.bind(this),
-      getFormDraftInternalValuesProperty: this.getFormDraftInternalValuesProperty.bind(this),
-      hideButtons: this.hideButtons.bind(this)
+      setFormDraftInternalValuesProperty:
+        this.setFormDraftInternalValuesProperty.bind(this),
+      getFormDraftInternalValuesProperty:
+        this.getFormDraftInternalValuesProperty.bind(this),
+      hideButtons: this.hideButtons.bind(this),
     };
   }
 
   componentDidMount() {
     const currentDraft = this.getDraft();
-    const modelValues = currentDraft ?
-      currentDraft.currentFormModel : _.cloneDeep(Object.values(this.props.model));
+    const modelValues = currentDraft
+      ? currentDraft.currentFormModel
+      : _.cloneDeep(Object.values(this.props.model));
 
     if (modelValues) {
       if (this.props.initializeFunction) {
-        this.props.initializeFunction( modelValues, this.handlers);
+        this.props.initializeFunction(modelValues, this.handlers);
         this.addDraft(modelValues);
-      }
-      else if (currentDraft === undefined) {
-        modelValues.map(field=> {
-          if (field.initial)
-            field.value = field.initial;
+      } else if (currentDraft === undefined) {
+        modelValues.map((field) => {
+          if (field.initial) field.value = field.initial;
           return field;
         });
         this.addDraft(modelValues);
@@ -118,7 +132,7 @@ class FormGenerator extends Component {
   }
 
   setSubmitLoader(submitLoader) {
-    return this.coordinator.setDraftProperty( "submitLoader", submitLoader);
+    return this.coordinator.setDraftProperty("submitLoader", submitLoader);
   }
 
   hideButtons(hideButtons) {
@@ -126,11 +140,11 @@ class FormGenerator extends Component {
   }
 
   setServerErrors(serverErrors) {
-    return this.coordinator.setDraftProperty( "serverErrors", serverErrors);
+    return this.coordinator.setDraftProperty("serverErrors", serverErrors);
   }
 
   setServerWarnings(serverWarnings) {
-    return this.coordinator.setDraftProperty( "serverWarnings", serverWarnings);
+    return this.coordinator.setDraftProperty("serverWarnings", serverWarnings);
   }
 
   setDisableAll(disableAll) {
@@ -150,26 +164,35 @@ class FormGenerator extends Component {
   }
 
   setFormDraftInternalValuesProperty(fieldName, property, value) {
-    return this.coordinator.setFormDraftInternalValuesProperty(fieldName, property, value);
+    return this.coordinator.setFormDraftInternalValuesProperty(
+      fieldName,
+      property,
+      value
+    );
   }
 
   getFormDraftInternalValuesProperty(fieldName, property) {
-    return this.coordinator.getFormDraftInternalValuesProperty(fieldName, property);
+    return this.coordinator.getFormDraftInternalValuesProperty(
+      fieldName,
+      property
+    );
   }
 
   render() {
     const draft = this.model.get("formDrafts")[this.locationHash];
-    return <FormGeneratorWrapper
-      {...this.props}
-      draft={draft}
-      handlers={this.handlers}
-      loading={this.getDraft() === undefined}
-      locationHash={this.locationHash}
-      model={this.model}
-      modelValues={this.getDraft()}
-      store={this.model.reduxStore}
-      versionUrl={this.props.versionUrl ? this.props.versionUrl : ""}
-    />;
+    return (
+      <FormGeneratorWrapper
+        {...this.props}
+        draft={draft}
+        handlers={this.handlers}
+        loading={this.getDraft() === undefined}
+        locationHash={this.locationHash}
+        model={this.model}
+        modelValues={this.getDraft()}
+        store={this.model.reduxStore}
+        versionUrl={this.props.versionUrl ? this.props.versionUrl : ""}
+      />
+    );
   }
 }
 export default FormGenerator;

@@ -20,7 +20,7 @@ const PAGINATION_LINK_NAMES = {
   first: "firstPageLink",
   last: "lastPageLink",
   prev: "previousPageLink",
-  next: "nextPageLink"
+  next: "nextPageLink",
 };
 
 const NUMERICAL_X_HEADERS = {
@@ -34,9 +34,9 @@ const NUMERICAL_X_HEADERS = {
 
 const NUMERICAL_PAGINATION_HEADERS = {
   "Next-Page": "nextPage",
-  "Page": "currentPage",
+  Page: "currentPage",
   "Per-Page": "perPage",
-  "Total": "totalItems",
+  Total: "totalItems",
   "Total-Pages": "totalPages",
 };
 

@@ -29,12 +29,14 @@ function InformativeIcon({ children }: InformativeIconProps) {
   return (
     <>
       <span ref={ref} className="text-rk-text">
-        <FontAwesomeIcon className="cursor-pointer align-middle" size="sm" icon={faInfoCircle} />
+        <FontAwesomeIcon
+          className="cursor-pointer align-middle"
+          size="sm"
+          icon={faInfoCircle}
+        />
       </span>
       <UncontrolledPopover target={ref} trigger="legacy" placement="bottom">
-        <PopoverBody className="p-2">
-          {children}
-        </PopoverBody>
+        <PopoverBody className="p-2">{children}</PopoverBody>
       </UncontrolledPopover>
     </>
   );

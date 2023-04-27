@@ -26,7 +26,13 @@
 import React from "react";
 
 const HelpText = ({ content }) => {
-  return <div><span><small className="text-muted">{ content }</small></span></div>;
+  return (
+    <div>
+      <span>
+        <small className="text-muted">{content}</small>
+      </span>
+    </div>
+  );
 };
 
 export default HelpText;

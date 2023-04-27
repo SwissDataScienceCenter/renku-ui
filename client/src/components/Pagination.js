@@ -27,39 +27,47 @@ import ReactPagination from "react-js-pagination";
 
 class Pagination extends Component {
   render() {
-
     // We do not display the pagination footer when there are no pages or only one page
-    if (this.props.totalItems == null
-      || this.props.totalItems < 1
-      || this.props.totalItems <= this.props.perPage)
+    if (
+      this.props.totalItems == null ||
+      this.props.totalItems < 1 ||
+      this.props.totalItems <= this.props.perPage
+    )
       return null;
 
     let extraInfoPagination = null;
     if (this.props.showDescription && this.props.totalInPage) {
-      const initialValue = (this.props.currentPage * this.props.perPage) - (this.props.perPage - 1) ;
+      const initialValue =
+        this.props.currentPage * this.props.perPage - (this.props.perPage - 1);
       const lastValue = initialValue + this.props.totalInPage - 1;
-      extraInfoPagination = <div className="pagination-label">
-        {initialValue} - {lastValue} of {this.props.totalItems} results
-      </div>;
+      extraInfoPagination = (
+        <div className="pagination-label">
+          {initialValue} - {lastValue} of {this.props.totalItems} results
+        </div>
+      );
     }
 
-    const className = `pagination ${this.props.className ? this.props.className : null}`;
-    return <div className="d-flex align-items-center flex-column ">
-      <ReactPagination
-        activePage={this.props.currentPage}
-        itemsCountPerPage={this.props.perPage}
-        totalItemsCount={this.props.totalItems}
-        onChange={this.props.onPageChange}
-        innerClass={className}
-        // Some defaults for the styling
-        itemClass={"page-item"}
-        linkClass={"page-link"}
-        activeClass={"page-item active"}
-        hideFirstLastPages={false}
-        hideDisabled={true}
-      />
-      {extraInfoPagination}
-    </div>;
+    const className = `pagination ${
+      this.props.className ? this.props.className : null
+    }`;
+    return (
+      <div className="d-flex align-items-center flex-column ">
+        <ReactPagination
+          activePage={this.props.currentPage}
+          itemsCountPerPage={this.props.perPage}
+          totalItemsCount={this.props.totalItems}
+          onChange={this.props.onPageChange}
+          innerClass={className}
+          // Some defaults for the styling
+          itemClass={"page-item"}
+          linkClass={"page-link"}
+          activeClass={"page-item active"}
+          hideFirstLastPages={false}
+          hideDisabled={true}
+        />
+        {extraInfoPagination}
+      </div>
+    );
   }
 }
 export { Pagination };

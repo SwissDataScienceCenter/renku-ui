@@ -19,7 +19,6 @@
 import { EntityCreator } from "../entities/Creators";
 import { SessionStatusData } from "./StartSessionProgressBar";
 
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 

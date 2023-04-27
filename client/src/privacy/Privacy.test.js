@@ -31,35 +31,30 @@ import { act } from "react-test-renderer";
 
 import { RoutedContent, Cookie, Privacy } from "./index";
 
-
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],
   initialIndex: 0,
 });
 fakeHistory.push({
   pathname: "/projects",
-  search: "?page=1"
+  search: "?page=1",
 });
 
 function getParams(statement = false, content = false, layout = false) {
   let params = {};
-  if (statement)
-    params["PRIVACY_STATEMENT"] = btoa("#Privacy");
+  if (statement) params["PRIVACY_STATEMENT"] = btoa("#Privacy");
   if (content)
-    params["PRIVACY_BANNER_CONTENT"] = btoa("We use cookies <a href=\"/\">here</a>.");
-  if (layout)
-    params["PRIVACY_BANNER_LAYOUT"] = { fakeProp: "fakeValue" };
+    params["PRIVACY_BANNER_CONTENT"] = btoa(
+      'We use cookies <a href="/">here</a>.'
+    );
+  if (layout) params["PRIVACY_BANNER_LAYOUT"] = { fakeProp: "fakeValue" };
 
   return params;
 }
 
 describe("rendering", () => {
   it("renders RoutedContent with different contents", async () => {
-    const contents = [
-      null,
-      "Plain text",
-      "Html with <a href=\"/\">anchor</a>."
-    ];
+    const contents = [null, "Plain text", 'Html with <a href="/">anchor</a>.'];
 
     for (const content of contents) {
       const div = document.createElement("div");
@@ -69,9 +64,7 @@ describe("rendering", () => {
       await act(async () => {
         root.render(
           <MemoryRouter>
-            <RoutedContent
-              history={fakeHistory}
-              content={content} />
+            <RoutedContent history={fakeHistory} content={content} />
           </MemoryRouter>
         );
       });
@@ -88,10 +81,7 @@ describe("rendering", () => {
         await act(async () => {
           root.render(
             <MemoryRouter>
-              <Cookie
-                history={fakeHistory}
-                params={params}
-              />
+              <Cookie history={fakeHistory} params={params} />
             </MemoryRouter>
           );
         });

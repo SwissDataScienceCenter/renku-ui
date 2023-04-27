@@ -17,10 +17,7 @@
  */
 import * as React from "react";
 import "./Progress.css";
-import {
-  CheckCircleFill,
-  XCircleFill
-} from "../../utils/ts-wrappers";
+import { CheckCircleFill, XCircleFill } from "../../utils/ts-wrappers";
 import { Loader } from "../Loader";
 
 /**
@@ -46,7 +43,7 @@ export enum StatusStepProgressBar {
   READY = "ready",
   EXECUTING = "executing",
   WAITING = "waiting",
-  FAILED = "failed"
+  FAILED = "failed",
 }
 /* eslint-enable no-unused-vars */
 
@@ -78,16 +75,16 @@ export interface ProgressStepsIndicatorProps {
  * Project Visibility functional component
  * @param {ProgressIndicatorProps} props - progress indicator options
  */
-const ProgressStepsIndicator = (
-  {
-    style = ProgressStyle.Dark,
-    title,
-    description,
-    status,
-    moreOptions
-  }: ProgressStepsIndicatorProps) => {
-
-  const content = status.map( (s) => <ProgressStep key={`step-${s.id}`} step={s} />);
+const ProgressStepsIndicator = ({
+  style = ProgressStyle.Dark,
+  title,
+  description,
+  status,
+  moreOptions,
+}: ProgressStepsIndicatorProps) => {
+  const content = status.map((s) => (
+    <ProgressStep key={`step-${s.id}`} step={s} />
+  ));
   return (
     <div className={`progress-box progress-box--${style}`}>
       <h2 className="progress-title">{title}</h2>
@@ -101,22 +98,42 @@ const ProgressStepsIndicator = (
 };
 
 interface progressStepProps {
-  step: StepsProgressBar
+  step: StepsProgressBar;
 }
 function ProgressStep({ step }: progressStepProps) {
   let content;
   switch (step.status) {
     case StatusStepProgressBar.EXECUTING:
-      content = <><Loader size="14" inline="true" />{step.step}</>;
+      content = (
+        <>
+          <Loader size="14" inline="true" />
+          {step.step}
+        </>
+      );
       break;
     case StatusStepProgressBar.READY:
-      content = <><CheckCircleFill className="text-rk-green" />{step.step}</>;
+      content = (
+        <>
+          <CheckCircleFill className="text-rk-green" />
+          {step.step}
+        </>
+      );
       break;
     case StatusStepProgressBar.WAITING:
-      content = <><Loader size="14" inline="true" /><span className="text-rk-text-light">{step.step}</span></>;
+      content = (
+        <>
+          <Loader size="14" inline="true" />
+          <span className="text-rk-text-light">{step.step}</span>
+        </>
+      );
       break;
     case StatusStepProgressBar.FAILED:
-      content = <><XCircleFill className="text-rk-danger-shadow"/>{step.step}</>;
+      content = (
+        <>
+          <XCircleFill className="text-rk-danger-shadow" />
+          {step.step}
+        </>
+      );
       break;
   }
 

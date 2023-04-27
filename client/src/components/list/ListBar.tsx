@@ -30,13 +30,16 @@ import { EntityType } from "../../features/kgSearch";
 
 import "./ListBar.scss";
 
-
-export function getMainActionByEntity(entityType: EntityType, slug: string, gitUrl?: string) {
+export function getMainActionByEntity(
+  entityType: EntityType,
+  slug: string,
+  gitUrl?: string
+) {
   switch (entityType) {
     case EntityType.Project:
-      return slug && gitUrl ?
-        (<StartSessionDropdownButton fullPath={slug} gitUrl={gitUrl} />) :
-        null;
+      return slug && gitUrl ? (
+        <StartSessionDropdownButton fullPath={slug} gitUrl={gitUrl} />
+      ) : null;
     case EntityType.Dataset:
       return null;
     default:
@@ -45,7 +48,17 @@ export function getMainActionByEntity(entityType: EntityType, slug: string, gitU
 }
 
 function ListBar({
-  creators, description, gitUrl = "", imageUrl, itemType, labelCaption, slug, timeCaption, title, url, visibility
+  creators,
+  description,
+  gitUrl = "",
+  imageUrl,
+  itemType,
+  labelCaption,
+  slug,
+  timeCaption,
+  title,
+  url,
+  visibility,
 }: ListElementProps) {
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);
@@ -55,16 +68,30 @@ function ListBar({
     <div className="container-entity-listBar">
       <div className="entity-image">
         <Link to={url} className="text-decoration-none">
-          <div style={imageStyles}
-            className={`cursor-pointer listBar-entity-image ${!imageUrl ? `card-header-entity--${itemType}` : ""}`}>
-            {!imageUrl ? <div className="card-bg-title card-bg-title--small">{title}</div> : null}
+          <div
+            style={imageStyles}
+            className={`cursor-pointer listBar-entity-image ${
+              !imageUrl ? `card-header-entity--${itemType}` : ""
+            }`}
+          >
+            {!imageUrl ? (
+              <div className="card-bg-title card-bg-title--small">{title}</div>
+            ) : null}
           </div>
         </Link>
       </div>
-      <div className="entity-title text-truncate cursor-pointer" data-cy={`${itemType}-title`}>
+      <div
+        className="entity-title text-truncate cursor-pointer"
+        data-cy={`${itemType}-title`}
+      >
         <Link to={url} className="text-decoration-none">
           <div className="listBar-title text-truncate">
-            <span className="card-title text-truncate" data-cy="list-card-title">{title}</span>
+            <span
+              className="card-title text-truncate"
+              data-cy="list-card-title"
+            >
+              {title}
+            </span>
             <span className="entity-title--slug text-truncate">{slug}</span>
           </div>
         </Link>
@@ -72,7 +99,8 @@ function ListBar({
       <div className="entity-description cursor-pointer">
         <Link to={url} className="text-decoration-none">
           <EntityDescription
-            description={description} isHeightFixed={true}
+            description={description}
+            isHeightFixed={true}
             showSuggestion={false}
             urlChangeDescription={`${url}/settings`}
             className="text-rk-dark m-0"
@@ -82,23 +110,39 @@ function ListBar({
       </div>
       <div className="entity-type-visibility align-items-baseline">
         <EntityLabel type={itemType} workflowType={null} />
-        { visibility ? (<VisibilityIcon visibility={visibility} className={colorByType.colorText} />) : null }
+        {visibility ? (
+          <VisibilityIcon
+            visibility={visibility}
+            className={colorByType.colorText}
+          />
+        ) : null}
       </div>
       <div className="entity-creators align-items-baseline text-truncate">
-        <EntityCreators display="list" creators={creators} itemType={itemType}
-          includeIcon={true} className="listBar-entity-creators" />
+        <EntityCreators
+          display="list"
+          creators={creators}
+          itemType={itemType}
+          includeIcon={true}
+          className="listBar-entity-creators"
+        />
       </div>
       <div className="entity-date listBar-entity-date">
         <TimeCaption
           caption={labelCaption || "Updated"}
           showTooltip={true}
           time={timeCaption}
-          className="text-rk-text-light text-truncate"/>
+          className="text-rk-text-light text-truncate"
+        />
       </div>
-      <div className={`entity-action d-flex align-items-baseline gap-1 ${!mainButton ? "d-none" : ""}`}>
+      <div
+        className={`entity-action d-flex align-items-baseline gap-1 ${
+          !mainButton ? "d-none" : ""
+        }`}
+      >
         {mainButton}
       </div>
-    </div>);
+    </div>
+  );
 }
 
 export default ListBar;

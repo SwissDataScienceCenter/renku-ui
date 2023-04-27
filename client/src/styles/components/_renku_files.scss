@@ -1,17 +1,18 @@
-.fileBarIconButton{
-	.icon-link{
-		color:$rk-text;
-		&hover{
-			background-color: red;		
-		}
-	}
+.fileBarIconButton {
+  .icon-link {
+    color: $rk-text;
+    &hover {
+      background-color: red;
+    }
+  }
 }
 .rk-pdf-page {
-	width: 100%;
-	height: auto;
+  width: 100%;
+  height: auto;
 
-	svg, div {
-		width: 100% !important;
-		height: auto !important;
-	}
+  svg,
+  div {
+    width: 100% !important;
+    height: auto !important;
+  }
 }

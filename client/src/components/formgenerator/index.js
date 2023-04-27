@@ -45,7 +45,7 @@ export default {
   FormGenerator,
   Parsers,
   Validators,
-  FieldTypes: Fields.FieldTypes
+  FieldTypes: Fields.FieldTypes,
 };
 
 export { FormGenerator };

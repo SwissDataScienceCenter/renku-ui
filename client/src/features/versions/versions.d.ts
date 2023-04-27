@@ -24,7 +24,7 @@ interface NotebookComponent {
       azure_blob: boolean;
     };
     sshEnabled: boolean;
-  },
+  };
   version: string;
 }
 

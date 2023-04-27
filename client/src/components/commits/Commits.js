@@ -24,7 +24,15 @@
  */
 
 import React from "react";
-import { Row, Col, ListGroup, ListGroupItem, ButtonGroup, Button, UncontrolledTooltip } from "reactstrap";
+import {
+  Row,
+  Col,
+  ListGroup,
+  ListGroupItem,
+  ButtonGroup,
+  Button,
+  UncontrolledTooltip,
+} from "reactstrap";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
@@ -40,34 +48,38 @@ import { Clipboard } from "../Clipboard";
 // Constants
 const CommitElement = {
   DATE: "date",
-  COMMIT: "commit"
+  COMMIT: "commit",
 };
-
 
 // Helper functions
 function createDateObject(commit) {
   return {
     type: CommitElement.DATE,
     date: Time.parseDate(commit.committed_date),
-    readableDate: Time.getReadableDate(commit.committed_date)
+    readableDate: Time.getReadableDate(commit.committed_date),
   };
 }
 
 function createCommitsObjects(commits) {
   const enhancedCommits = commits
-    .sort((el1, el2) => el1.committed_date < el2.committed_date ? 1 : -1)
-    .reduce((data, commit) => {
-      if (!data.lastDate || !Time.isSameDay(data.lastDate, commit.committed_date)) {
-        data.lastDate = commit.committed_date;
-        data.list.push(createDateObject(commit));
-      }
-      data.list.push({ ...commit, type: CommitElement.COMMIT });
+    .sort((el1, el2) => (el1.committed_date < el2.committed_date ? 1 : -1))
+    .reduce(
+      (data, commit) => {
+        if (
+          !data.lastDate ||
+          !Time.isSameDay(data.lastDate, commit.committed_date)
+        ) {
+          data.lastDate = commit.committed_date;
+          data.list.push(createDateObject(commit));
+        }
+        data.list.push({ ...commit, type: CommitElement.COMMIT });
 
-      return data;
-    }, { lastDate: null, list: [] });
+        return data;
+      },
+      { lastDate: null, list: [] }
+    );
   return enhancedCommits.list;
 }
-
 
 // React components
 
@@ -83,26 +95,22 @@ function createCommitsObjects(commits) {
  */
 function CommitsView(props) {
   let { fetched, fetching } = props;
-  if (!(fetched != null))
-    fetched = true;
-  if (!(fetching != null))
-    fetching = false;
+  if (!(fetched != null)) fetched = true;
+  if (!(fetching != null)) fetching = false;
 
-  if (fetching)
-    return (<Loader />);
+  if (fetching) return <Loader />;
 
   const enhancedCommits = createCommitsObjects(props.commits);
-  const commitsView = enhancedCommits.map(commit =>
+  const commitsView = enhancedCommits.map((commit) => (
     <SingleCommit
       key={commit.id ? commit.id : commit.readableDate}
       commit={commit}
       urlBrowse={`${props.urlRepository}/tree/`}
       urlDiff={props.urlDiff}
     />
-  );
-  return (<ListGroup>{commitsView}</ListGroup>);
+  ));
+  return <ListGroup>{commitsView}</ListGroup>;
 }
-
 
 /**
  * Create a React commit element
@@ -133,12 +141,24 @@ function SingleCommit(props) {
             </UncontrolledTooltip>
             <br />
             <span className="small">{props.commit.author_name} </span>
-            <TimeCaption caption={"authored"} time={props.commit.committed_date} />
+            <TimeCaption
+              caption={"authored"}
+              time={props.commit.committed_date}
+            />
           </Col>
           <Col xs={12} md="auto" className="d-md-flex">
-            <ButtonGroup className="text-monospace m-auto commit-buttons" size="sm">
-              <Button color="rk-background" className="border" disabled>{props.commit.short_id}</Button>
-              <Button color="rk-background rounded-0" className="border" id={idCopyButton}>
+            <ButtonGroup
+              className="text-monospace m-auto commit-buttons"
+              size="sm"
+            >
+              <Button color="rk-background" className="border" disabled>
+                {props.commit.short_id}
+              </Button>
+              <Button
+                color="rk-background rounded-0"
+                className="border"
+                id={idCopyButton}
+              >
                 <Clipboard clipboardText={props.commit.id} />
               </Button>
               <UncontrolledTooltip placement="top" target={idCopyButton}>
@@ -171,12 +191,11 @@ function SingleCommit(props) {
   );
 }
 
-
 // Export
 const CommitsUtils = {
   ElementType: CommitElement,
   createDateObject,
-  createCommitsObjects
+  createCommitsObjects,
 };
 
 export { CommitsView, CommitsUtils };

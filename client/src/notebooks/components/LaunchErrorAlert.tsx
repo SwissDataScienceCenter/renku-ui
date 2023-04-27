@@ -70,8 +70,7 @@ function LaunchErrorAlert({
       launchErrorElement = (
         <LaunchErrorFrontendAlert launchError={launchError} ci={ci} />
       );
-    }
-    else {
+    } else {
       launchErrorElement = (
         <LaunchErrorBackendAlert launchError={launchError} />
       );

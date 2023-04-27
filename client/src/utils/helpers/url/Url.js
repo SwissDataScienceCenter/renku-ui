@@ -41,35 +41,39 @@ class UrlRule {
     // check required
     if (!Array.isArray(required))
       throw new Error("The <required> parameter must be an array.");
-    else if (required.some(v => typeof v !== "string"))
-      throw new Error("The <required> parameter must contain only strings representing the required data fields.");
-    else
-      this.required = required;
+    else if (required.some((v) => typeof v !== "string"))
+      throw new Error(
+        "The <required> parameter must contain only strings representing the required data fields."
+      );
+    else this.required = required;
 
     // check output
     if (typeof output !== "function")
       throw new Error("The required <output> parameter must be a function.");
     else if (required.length && output.length !== 1)
-      throw new Error("The <output> function must have an argument to assign an object since fields are required.");
-    else
-      this.output = output;
+      throw new Error(
+        "The <output> function must have an argument to assign an object since fields are required."
+      );
+    else this.output = output;
 
     // check validation
     if (validation) {
       if (typeof validation !== "function")
-        throw new Error("The optional <validation> parameter must be a function.");
-      else
-        this.validation = validation;
+        throw new Error(
+          "The optional <validation> parameter must be a function."
+        );
+      else this.validation = validation;
     }
 
     // check examples
     if (examples) {
       if (!Array.isArray(examples))
         throw new Error("The optional <examples> parameter must be an array.");
-      else if (examples.some(v => typeof v !== "string"))
-        throw new Error("The <examples> parameter must contain only strings representing valid URLs.");
-      else
-        this.examples = examples;
+      else if (examples.some((v) => typeof v !== "string"))
+        throw new Error(
+          "The <examples> parameter must contain only strings representing valid URLs."
+        );
+      else this.examples = examples;
     }
   }
 
@@ -88,7 +92,9 @@ class UrlRule {
       const providedFields = Object.keys(data);
       for (const required of this.required) {
         if (!providedFields.includes(required))
-          throw new Error(`The <data> object must include a <${required}> field.`);
+          throw new Error(
+            `The <data> object must include a <${required}> field.`
+          );
       }
     }
 
@@ -97,7 +103,9 @@ class UrlRule {
       const valid = this.validation(data);
       if (!valid) {
         const functionCode = this.validation.toString();
-        throw new Error(`Invalid data, reason unspecified. You can inspect the validation function: ${functionCode}`);
+        throw new Error(
+          `Invalid data, reason unspecified. You can inspect the validation function: ${functionCode}`
+        );
       }
     }
 
@@ -106,14 +114,22 @@ class UrlRule {
   }
 }
 
-
 /**
  * Validate that all arguments for a search are provided.
  * @param {object} data
  */
 function searchValidation(data) {
   const allowedParams = [
-    "q", "query", "page", "perPage", "orderBy", "orderSearchAsc", "searchIn", "ascending", "targetUser", "usersOrGroup"
+    "q",
+    "query",
+    "page",
+    "perPage",
+    "orderBy",
+    "orderSearchAsc",
+    "searchIn",
+    "ascending",
+    "targetUser",
+    "usersOrGroup",
   ];
   const receivedParams = Object.keys(data);
   for (const param of receivedParams) {
@@ -131,16 +147,12 @@ function searchValidation(data) {
 function projectsSearchUrlBuilder(subSection) {
   return (data) => {
     // create base url
-    let url = subSection ?
-        `/projects/${subSection}` :
-      "/projects";
+    let url = subSection ? `/projects/${subSection}` : "/projects";
 
     // add optional parameters
-    if (!data || !Object.keys(data).length)
-      return url;
+    if (!data || !Object.keys(data).length) return url;
     const search = new URLSearchParams();
-    for (const [key, value] of Object.entries(data))
-      search.append(key, value);
+    for (const [key, value] of Object.entries(data)) search.append(key, value);
     return `${url}?${search.toString()}`;
   };
 }
@@ -153,8 +165,7 @@ function projectNewUrlBuilder() {
   return (data) => {
     // create base url
     let url = "/projects/new";
-    if (!data || !data.data)
-      return url;
+    if (!data || !data.data) return url;
     const search = new URLSearchParams();
     search.append("data", data.data);
     return `${url}?${search.toString()}`;
@@ -168,13 +179,12 @@ function projectNewUrlBuilder() {
  */
 function projectPageUrlBuilder(subSection) {
   return (data) => {
-    let url = data.namespace && data.namespace.length ?
-      `/projects/${data.namespace}/${data.path}` :
-      `/projects/${data.path}`;
-    if (subSection)
-      url += subSection;
-    if (data.target)
-      url += data.target;
+    let url =
+      data.namespace && data.namespace.length
+        ? `/projects/${data.namespace}/${data.path}`
+        : `/projects/${data.path}`;
+    if (subSection) url += subSection;
+    if (data.target) url += data.target;
     return url;
   };
 }
@@ -196,21 +206,16 @@ function projectSessionUrlBuilder() {
 function loginUrlObject() {
   return (data) => {
     const url = "/login";
-    const pathname = data.pathname ?
-      data.pathname :
-      document.location.pathname;
-    const search = data.search ?
-      data.search :
-      document.location.search;
+    const pathname = data.pathname ? data.pathname : document.location.pathname;
+    const search = data.search ? data.search : document.location.search;
     return {
       pathname: url,
       state: {
-        previous: pathname + search
-      }
+        previous: pathname + search,
+      },
     };
   };
 }
-
 
 /** Module-level variable for the base URL. Set only once */
 let baseUrl = null;
@@ -224,11 +229,8 @@ function setBaseUrl(url) {
   if (baseUrl != null)
     throw new Error("The base url can't be set multiple times");
   const cleanUrl = url.trim();
-  baseUrl = cleanUrl.endsWith("/") ?
-    url.slice(0, -1) :
-    url;
+  baseUrl = cleanUrl.endsWith("/") ? url.slice(0, -1) : url;
 }
-
 
 /**
  * Create a Url based on the target page. Depending on the specific page, it may require context data.
@@ -246,17 +248,17 @@ function get(target, data, full = false) {
 
   // Return url or throw error based on the type of target.
   let url;
-  if (typeof target === "string")
-    url = target;
+  if (typeof target === "string") url = target;
   else if (typeof target === "object" && target instanceof UrlRule)
     url = target.get(data);
   else
-    throw new Error("Unexpected <target>. Please pick one from the static object <Url.pages>");
+    throw new Error(
+      "Unexpected <target>. Please pick one from the static object <Url.pages>"
+    );
 
   // Add the base url when needed and available.
   if (full) {
-    if (baseUrl == null)
-      throw new Error("The base url is not properly set");
+    if (baseUrl == null) throw new Error("The base url is not properly set");
     return baseUrl + url;
   }
   return url;
@@ -280,130 +282,161 @@ const Url = {
     },
     login: {
       base: "/login",
-      link: new UrlRule(
-        loginUrlObject(), [], null, [
-          "{ pathname: '/login', state: { previous: '/projects' } }",
-          "{ pathname: '/login', state: { previous: '/projects/new?data=eyJ0aXRsZSI6InRlCc3QifQ==' } }"
-        ]
-      ),
+      link: new UrlRule(loginUrlObject(), [], null, [
+        "{ pathname: '/login', state: { previous: '/projects' } }",
+        "{ pathname: '/login', state: { previous: '/projects/new?data=eyJ0aXRsZSI6InRlCc3QifQ==' } }",
+      ]),
     },
     projects: {
-      base: new UrlRule(
-        projectsSearchUrlBuilder(), [], searchValidation, [
-          "/projects",
-          "/projects?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
-        ]
-      ),
-      all: new UrlRule(
-        projectsSearchUrlBuilder("all"), [], searchValidation, [
-          "/projects/all",
-          "/projects/all?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
-        ]
-      ),
+      base: new UrlRule(projectsSearchUrlBuilder(), [], searchValidation, [
+        "/projects",
+        "/projects?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects",
+      ]),
+      all: new UrlRule(projectsSearchUrlBuilder("all"), [], searchValidation, [
+        "/projects/all",
+        "/projects/all?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects",
+      ]),
       starred: new UrlRule(
-        projectsSearchUrlBuilder("starred"), [], searchValidation, [
+        projectsSearchUrlBuilder("starred"),
+        [],
+        searchValidation,
+        [
           "/projects/starred",
-          "/projects/starred?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
+          "/projects/starred?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects",
         ]
-      )
+      ),
     },
     project: {
       base: new UrlRule(
-        projectPageUrlBuilder(""), ["namespace", "path"], null, [
-          "/projects/namespace/path",
-          "/projects/group/subgroup/path",
-        ]
+        projectPageUrlBuilder(""),
+        ["namespace", "path"],
+        null,
+        ["/projects/namespace/path", "/projects/group/subgroup/path"]
       ),
-      new: new UrlRule(
-        projectNewUrlBuilder(), [], null, [
-          "/projects/new",
-          "/projects/new?data=eyJ0aXRsZSI6InRlC3QifQ==",
-        ]
-      ),
+      new: new UrlRule(projectNewUrlBuilder(), [], null, [
+        "/projects/new",
+        "/projects/new?data=eyJ0aXRsZSI6InRlC3QifQ==",
+      ]),
       file: new UrlRule(
-        projectPageUrlBuilder("/files/blob/"), ["namespace", "path", "target"], null, [
+        projectPageUrlBuilder("/files/blob/"),
+        ["namespace", "path", "target"],
+        null,
+        [
           "/projects/namespace/path/files/blob/target",
           "/projects/group/subgroup/path/files/blob/target",
         ]
       ),
       lineage: new UrlRule(
-        projectPageUrlBuilder("/files/lineage/"), ["namespace", "path", "target"], null, [
+        projectPageUrlBuilder("/files/lineage/"),
+        ["namespace", "path", "target"],
+        null,
+        [
           "/projects/namespace/path/files/lineage/target",
           "/projects/group/subgroup/path/files/lineage/target",
         ]
       ),
       session: {
         base: new UrlRule(
-          projectPageUrlBuilder("/sessions"), ["namespace", "path"], null, [
+          projectPageUrlBuilder("/sessions"),
+          ["namespace", "path"],
+          null,
+          [
             "/projects/namespace/path/sessions",
             "/projects/group/subgroup/path/sessions",
           ]
         ),
         new: new UrlRule(
-          projectPageUrlBuilder("/sessions/new"), ["namespace", "path"], null, [
+          projectPageUrlBuilder("/sessions/new"),
+          ["namespace", "path"],
+          null,
+          [
             "/projects/namespace/path/sessions/new",
             "/projects/group/subgroup/path/sessions/new",
           ]
         ),
         autostart: new UrlRule(
-          projectPageUrlBuilder("/sessions/new?autostart=1"), ["namespace", "path"], null, [
+          projectPageUrlBuilder("/sessions/new?autostart=1"),
+          ["namespace", "path"],
+          null,
+          [
             "/projects/namespace/path/sessions/new?autostart=1",
             "/projects/group/subgroup/path/sessions/new?autostart=1",
           ]
         ),
         show: new UrlRule(
-          projectSessionUrlBuilder(), ["namespace", "path", "server"], null, [
+          projectSessionUrlBuilder(),
+          ["namespace", "path", "server"],
+          null,
+          [
             "/projects/namespace/path/sessions/show/server-id",
             "/projects/group/subgroup/path/sessions/show/server-id",
           ]
-        )
+        ),
       },
       workflows: {
         base: new UrlRule(
-          projectPageUrlBuilder("/workflows"), ["namespace", "path"], null, [
+          projectPageUrlBuilder("/workflows"),
+          ["namespace", "path"],
+          null,
+          [
             "/projects/namespace/path/workflows",
             "/projects/group/subgroup/path/workflows",
           ]
         ),
         detail: new UrlRule(
-          projectPageUrlBuilder("/workflows"), ["namespace", "path", "target"], null, [
+          projectPageUrlBuilder("/workflows"),
+          ["namespace", "path", "target"],
+          null,
+          [
             "/projects/namespace/path/workflows/1234abcd",
             "/projects/group/subgroup/path/workflows/1234abcd",
           ]
         ),
         single: new UrlRule(
-          projectPageUrlBuilder("/workflow"), ["namespace", "path", "target"], null, [
+          projectPageUrlBuilder("/workflow"),
+          ["namespace", "path", "target"],
+          null,
+          [
             "/projects/namespace/path/workflow/1234abcd",
             "/projects/group/subgroup/path/workflow/1234abcd",
           ]
-        )
+        ),
       },
       overview: {
         base: new UrlRule(
-          projectPageUrlBuilder(""), ["namespace", "path"], null, [
-            "/projects/namespace/path",
-            "/projects/group/subgroup/path",
-          ]
+          projectPageUrlBuilder(""),
+          ["namespace", "path"],
+          null,
+          ["/projects/namespace/path", "/projects/group/subgroup/path"]
         ),
         stats: new UrlRule(
-          projectPageUrlBuilder("/overview/stats"), ["namespace", "path"], null, [
+          projectPageUrlBuilder("/overview/stats"),
+          ["namespace", "path"],
+          null,
+          [
             "/projects/namespace/path/overview/stats",
             "/projects/group/subgroup/path/overview/stats",
           ]
         ),
         commits: new UrlRule(
-          projectPageUrlBuilder("/overview/commits"), ["namespace", "path"], null, [
+          projectPageUrlBuilder("/overview/commits"),
+          ["namespace", "path"],
+          null,
+          [
             "/projects/namespace/path/overview/commits",
             "/projects/group/subgroup/path/overview/commits",
           ]
         ),
         status: new UrlRule(
-          projectPageUrlBuilder("/overview/status"), ["namespace", "path"], null, [
+          projectPageUrlBuilder("/overview/status"),
+          ["namespace", "path"],
+          null,
+          [
             "/projects/namespace/path/overview/status",
             "/projects/group/subgroup/path/overview/status",
           ]
-        )
-      }
+        ),
+      },
     },
     sessions: {
       base: "/sessions",
@@ -417,9 +450,8 @@ const Url = {
   },
 
   setBaseUrl: setBaseUrl,
-  get: get
+  get: get,
 };
-
 
 /**
  * Get and object (dictionary-like) containing the available query parameters and their values.
@@ -432,7 +464,11 @@ const Url = {
  *   Case insensitive. Default is `true`.
  * @returns {object} dictionary-like object containing the query parameters.
  */
-function getSearchParams(expectedParams = null, convertParams = null, convertTypes = true) {
+function getSearchParams(
+  expectedParams = null,
+  convertParams = null,
+  convertTypes = true
+) {
   const search = new URLSearchParams(window.location.search);
   let parameters = {};
 
@@ -440,18 +476,21 @@ function getSearchParams(expectedParams = null, convertParams = null, convertTyp
   for (const [key, value] of search.entries()) {
     let finalValue = value;
     if (convertTypes) {
-      if (!isNaN(value) && !isNaN(parseFloat(value))) // ? REF: https://stackoverflow.com/a/175787/1303090
+      if (!isNaN(value) && !isNaN(parseFloat(value)))
+        // ? REF: https://stackoverflow.com/a/175787/1303090
         finalValue = parseFloat(value);
-      else if (value.toLowerCase() === "true")
-        finalValue = true;
-      else if (value.toLowerCase() === "false")
-        finalValue = false;
+      else if (value.toLowerCase() === "true") finalValue = true;
+      else if (value.toLowerCase() === "false") finalValue = false;
     }
     parameters[key] = finalValue;
   }
 
   // Convert the parameters
-  if (convertParams && typeof convertParams === "object" && Object.keys(convertParams).length) {
+  if (
+    convertParams &&
+    typeof convertParams === "object" &&
+    Object.keys(convertParams).length
+  ) {
     const currentParams = Object.keys(parameters);
     for (const [convertForm, convertTo] of Object.entries(convertParams)) {
       if (currentParams.includes(convertForm)) {
@@ -463,11 +502,14 @@ function getSearchParams(expectedParams = null, convertParams = null, convertTyp
   }
 
   // Add missing parameters
-  if (expectedParams && typeof expectedParams === "object" && Object.keys(expectedParams).length) {
+  if (
+    expectedParams &&
+    typeof expectedParams === "object" &&
+    Object.keys(expectedParams).length
+  ) {
     const currentParams = Object.keys(parameters);
     for (const [key, value] of Object.entries(expectedParams)) {
-      if (!currentParams.includes(key))
-        parameters[key] = value;
+      if (!currentParams.includes(key)) parameters[key] = value;
     }
   }
 
@@ -489,7 +531,9 @@ function isSessionUrl(url) {
   // if is a project url and finished with sessions should have a namespace and project name
   if (urlParts.length && urlParts[0] === "projects" && endInSessions)
     return urlParts.length >= 4;
-  return isNewSessionUrl?.length > 0 || isShowSessionUrl?.length > 0 || endInSessions;
+  return (
+    isNewSessionUrl?.length > 0 || isShowSessionUrl?.length > 0 || endInSessions
+  );
 }
 
 export { Url, getSearchParams, isSessionUrl };

@@ -12,23 +12,22 @@
   color: inherit !important;
 }
 
-
 /* Customization */
 
 .Toastify__toast {
   width: 350px;
   max-width: 100%;
-  font-size: .875rem;
+  font-size: 0.875rem;
   pointer-events: auto;
-  background-color: rgba(255,255,255,1) !important;
+  background-color: rgba(255, 255, 255, 1) !important;
   background-clip: padding-box;
-  border: 1px solid rgba(0,0,0,.1);
-  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%); 
-  border-radius: .25rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
+  border-radius: 0.25rem;
   padding: 0px !important;
 }
 
-.Toastify__close-button{
+.Toastify__close-button {
   display: none;
 }
 
@@ -44,19 +43,19 @@
 }
 
 .notification.info svg.svg-inline--fa.color {
-  color: #5561A6
+  color: #5561a6;
 }
 .notification.success svg.svg-inline--fa.color {
-  color: #009568
+  color: #009568;
 }
 .notification.warning svg.svg-inline--fa.color {
-  color: #ffc107
+  color: #ffc107;
 }
 .notification.error svg.svg-inline--fa.color {
-  color: #dc3545
+  color: #dc3545;
 }
 .notification.read svg.svg-inline--fa.color {
-  color: rgba(0, 0, 0, 0.5)
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .notification-menu {
@@ -65,10 +64,10 @@
 
 .notification-menu > a {
   text-decoration: none;
-} 
+}
 
 .notification-list-container {
-  width:300px;
+  width: 300px;
   padding: 0;
   margin-bottom: -8px;
 }
@@ -79,7 +78,7 @@
   position: relative;
 }
 
-.notification-list-item:first-of-type{
+.notification-list-item:first-of-type {
   border-top: 1px solid rgba(0, 0, 0, 0.15);
 }
 

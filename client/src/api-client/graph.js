@@ -22,27 +22,19 @@ function addGraphMethods(client) {
   client.checkGraphWebhook = (projectId) => {
     const url = `${client.baseUrl}/projects/${projectId}/graph/webhooks/validation`;
     return client.simpleFetch(url, "POST").then((resp) => {
-      if (resp.status === 200)
-        return true;
-
-      else if (resp.status === 404)
-        return false;
-
+      if (resp.status === 200) return true;
+      else if (resp.status === 404) return false;
 
       // errors expected: 401, 500
       throw new Error(`Error ${resp.status}`);
-
     });
   };
 
   client.createGraphWebhook = async (projectId) => {
     const url = `${client.baseUrl}/projects/${projectId}/graph/webhooks`;
     return client.simpleFetch(url, "POST").then((resp) => {
-      if (resp.status === 200 || resp.status === 201)
-        return true;
-
-      else if (resp.status === 404)
-        return false;
+      if (resp.status === 200 || resp.status === 201) return true;
+      else if (resp.status === 404) return false;
 
       // errors expected: 500
       throw new Error(`Error ${resp.status}`);

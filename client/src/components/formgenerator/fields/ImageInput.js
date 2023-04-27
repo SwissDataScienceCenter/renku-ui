@@ -25,16 +25,30 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Col, Row } from "reactstrap";
-import { Button, ButtonDropdown, DropdownItem, DropdownMenu, DropdownToggle, FormGroup, Input } from "reactstrap";
+import {
+  Button,
+  ButtonDropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  FormGroup,
+  Input,
+} from "reactstrap";
 import { InputGroup } from "reactstrap";
 
 import { ImageFieldPropertyName as Prop } from "./stockimages";
 import { formatBytes } from "../../../utils/helpers/HelperFunctions";
-import { ErrorLabel, InputHintLabel, InputLabel } from "../../formlabels/FormLabels";
-import ImageEditor, { CARD_IMAGE_DIMENSIONS } from "../../imageEditor/ImageEditor";
+import {
+  ErrorLabel,
+  InputHintLabel,
+  InputLabel,
+} from "../../formlabels/FormLabels";
+import ImageEditor, {
+  CARD_IMAGE_DIMENSIONS,
+} from "../../imageEditor/ImageEditor";
 
 function userInputOption(options) {
-  let userInput = options.find(o => o[Prop.STOCK] === false);
+  let userInput = options.find((o) => o[Prop.STOCK] === false);
   if (userInput == null) {
     userInput = { [Prop.NAME]: "user", [Prop.URL]: "", [Prop.STOCK]: false };
     return [userInput, options.concat(userInput)];
@@ -42,27 +56,40 @@ function userInputOption(options) {
   return [userInput, options];
 }
 
-function ImagePreview(
-  { name, value, selected, disabled, setInputs, maxSize, setSizeAlert, options, originalImageInput }) {
+function ImagePreview({
+  name,
+  value,
+  selected,
+  disabled,
+  setInputs,
+  maxSize,
+  setSizeAlert,
+  options,
+  originalImageInput,
+}) {
   const [imageEditionState, setImageEditionState] = useState({
     scale: 1,
-    positions: { x: 0, y: 0 }
+    positions: { x: 0, y: 0 },
   });
 
   useEffect(() => {
     // reset imageEditionState if the image change
     setImageEditionState({
       scale: 1,
-      positions: { x: 0, y: 0 }
+      positions: { x: 0, y: 0 },
     });
   }, [originalImageInput]);
 
   const selectedIndex = value.selected;
   const imageSize = { width: 133, height: 77, borderRadius: "8px" };
   const imageStyle = { ...imageSize, objectFit: "cover" };
-  const imagePreviewStyle = { ...imageStyle, backgroundColor: "#C4C4C4", borderRadius: "8px" };
+  const imagePreviewStyle = {
+    ...imageStyle,
+    backgroundColor: "#C4C4C4",
+    borderRadius: "8px",
+  };
   const displayValue = selected[Prop.NAME] ?? "Current Image";
-  const isImageSelected = (selectedIndex > -1 && selected[Prop.URL]);
+  const isImageSelected = selectedIndex > -1 && selected[Prop.URL];
   const isNewFileUploaded = selected[Prop.URL] && selected[Prop.FILE];
 
   const onChangeImage = (fileModified) => {
@@ -70,23 +97,29 @@ function ImagePreview(
       reviewFile(fileModified, maxSize, setSizeAlert, options, setInputs, name);
   };
 
-  const image = isImageSelected ?
-    (<>
+  const image = isImageSelected ? (
+    <>
       <img src={selected[Prop.URL]} alt={displayValue} style={imageStyle} />
       <small className="text-muted">Current image</small>
-    </>) :
-    (<div style={imagePreviewStyle}
-      className="d-flex justify-content-center align-items-center text-white">
+    </>
+  ) : (
+    <div
+      style={imagePreviewStyle}
+      className="d-flex justify-content-center align-items-center text-white"
+    >
       <div>No Image Yet</div>
-    </div>);
+    </div>
+  );
 
-
-  const imageEditor = isNewFileUploaded && !disabled ?
-    <ImageEditor
-      file={originalImageInput}
-      onSave={onChangeImage}
-      imageEditionState={imageEditionState}
-      setImageEditionState={setImageEditionState} /> : null;
+  const imageEditor =
+    isNewFileUploaded && !disabled ? (
+      <ImageEditor
+        file={originalImageInput}
+        onSave={onChangeImage}
+        imageEditionState={imageEditionState}
+        setImageEditionState={setImageEditionState}
+      />
+    ) : null;
   const imageView = !isNewFileUploaded ? (
     <div style={imageSize}>
       <div className="d-flex justify-content-around card">
@@ -95,18 +128,24 @@ function ImagePreview(
     </div>
   ) : null;
 
-  return (<div className="m-auto">
-    {imageView}
-    {imageEditor}
-  </div>);
+  return (
+    <div className="m-auto">
+      {imageView}
+      {imageEditor}
+    </div>
+  );
 }
 
 function urlInputValue(value) {
-  return value[Prop.FILE] ? "" : value[Prop.STOCK] ? value[Prop.NAME] : value[Prop.URL];
+  return value[Prop.FILE]
+    ? ""
+    : value[Prop.STOCK]
+    ? value[Prop.NAME]
+    : value[Prop.URL];
 }
 
 function fileInputValue(value) {
-  return (value[Prop.FILE] != null) ? value[Prop.FILE]["name"] : "";
+  return value[Prop.FILE] != null ? value[Prop.FILE]["name"] : "";
 }
 
 function onUrlInputChange(name, options, setInputs, e) {
@@ -117,12 +156,20 @@ function onUrlInputChange(name, options, setInputs, e) {
   ui[Prop.FILE] = null;
   const artificialEvent = {
     target: { name, value: { options: o, selected: o.length - 1 } },
-    isPersistent: () => false
+    isPersistent: () => false,
   };
   setInputs(artificialEvent);
 }
 
-function onFileInputChange(name, options, maxSize, setInputs, setSizeAlert, setOriginalImageInput, e) {
+function onFileInputChange(
+  name,
+  options,
+  maxSize,
+  setInputs,
+  setSizeAlert,
+  setOriginalImageInput,
+  e
+) {
   e.preventDefault();
   e.persist();
   const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
@@ -131,13 +178,31 @@ function onFileInputChange(name, options, maxSize, setInputs, setSizeAlert, setO
     return;
   }
   const file = files[0];
-  reviewFile(file, maxSize, setSizeAlert, options, setInputs, name, setOriginalImageInput);
+  reviewFile(
+    file,
+    maxSize,
+    setSizeAlert,
+    options,
+    setInputs,
+    name,
+    setOriginalImageInput
+  );
 }
 
-function reviewFile(file, maxSize, setSizeAlert, options, setInputs, name, setOriginalImageInput) {
+function reviewFile(
+  file,
+  maxSize,
+  setSizeAlert,
+  options,
+  setInputs,
+  name,
+  setOriginalImageInput
+) {
   if (file == null) return;
   if (file.size > maxSize) {
-    setSizeAlert(`Please select an image that is at most ${formatBytes(maxSize)}`);
+    setSizeAlert(
+      `Please select an image that is at most ${formatBytes(maxSize)}`
+    );
     return;
   }
 
@@ -150,21 +215,18 @@ function reviewFile(file, maxSize, setSizeAlert, options, setInputs, name, setOr
     ui[Prop.FILE] = file;
     const artificialEvent = {
       target: { name, value: { options: o, selected: o.length - 1 } },
-      isPersistent: () => false
+      isPersistent: () => false,
     };
     setInputs(artificialEvent);
-    if (setOriginalImageInput)
-      setOriginalImageInput(file);
+    if (setOriginalImageInput) setOriginalImageInput(file);
   };
-  if (file)
-    reader.readAsDataURL(file);
+  if (file) reader.readAsDataURL(file);
   setSizeAlert(null);
 }
 
-
 const ImageInputMode = {
   URL: "URL",
-  FILE: "Choose File"
+  FILE: "Choose File",
 };
 
 function ImageContentInputMode({ name, modes, mode, setMode, onClick, color }) {
@@ -173,24 +235,47 @@ function ImageContentInputMode({ name, modes, mode, setMode, onClick, color }) {
   const buttonId = `${name}-button`;
 
   if (modes.length < 2)
-    return <Button className={`btn-outline-${color}`} onClick={onClick}>{mode}</Button>;
-  return <ButtonDropdown isOpen={isOpen} toggle={toggle}>
-    <Button id={buttonId} color="primary" onClick={onClick}>{mode}</Button>
-    <DropdownToggle split color="primary" />
-    <DropdownMenu>
-      {
-        modes.map((m) => {
-          return <DropdownItem key={m}
-            onClick={() => setMode(m)}>{m}</DropdownItem>;
-        })
-      }
-    </DropdownMenu>
-  </ButtonDropdown>;
-
+    return (
+      <Button className={`btn-outline-${color}`} onClick={onClick}>
+        {mode}
+      </Button>
+    );
+  return (
+    <ButtonDropdown isOpen={isOpen} toggle={toggle}>
+      <Button id={buttonId} color="primary" onClick={onClick}>
+        {mode}
+      </Button>
+      <DropdownToggle split color="primary" />
+      <DropdownMenu>
+        {modes.map((m) => {
+          return (
+            <DropdownItem key={m} onClick={() => setMode(m)}>
+              {m}
+            </DropdownItem>
+          );
+        })}
+      </DropdownMenu>
+    </ButtonDropdown>
+  );
 }
 
-function ImageContentInput({ name, value, placeholder, modes, setInputs,
-  help, maxSize, format, disabled, options, readOnly, color, sizeAlert, setSizeAlert, setOriginalImageInput }) {
+function ImageContentInput({
+  name,
+  value,
+  placeholder,
+  modes,
+  setInputs,
+  help,
+  maxSize,
+  format,
+  disabled,
+  options,
+  readOnly,
+  color,
+  sizeAlert,
+  setSizeAlert,
+  setOriginalImageInput,
+}) {
   const [mode, setMode] = useState(modes[0]);
   const fileInput = useRef(null);
 
@@ -198,7 +283,7 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
   const inputGroupId = `${name}-input-group`;
   const hiddenInputId = `${name}-file-input-hidden`;
 
-  const helpIsString = (typeof help) == "string" || help == null;
+  const helpIsString = typeof help == "string" || help == null;
 
   let helpValue, inputValue, onInputChange, onModeButtonClick, onDrop;
   if (mode === ImageInputMode.URL) {
@@ -211,38 +296,86 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
     onDrop = () => {
       // eslint-disable-line @typescript-eslint/no-empty-function
     };
-  }
-  else {
-    helpValue = (helpIsString) ? help : help["file"];
+  } else {
+    helpValue = helpIsString ? help : help["file"];
     if (helpValue == null && maxSize != null) {
-      helpValue = <span>Select an image file (max size {formatBytes(maxSize)}).<br />
-      Images will be cropped to {CARD_IMAGE_DIMENSIONS.width}px &times; {CARD_IMAGE_DIMENSIONS.height}px.
-      </span>;
+      helpValue = (
+        <span>
+          Select an image file (max size {formatBytes(maxSize)}).
+          <br />
+          Images will be cropped to {CARD_IMAGE_DIMENSIONS.width}px &times;{" "}
+          {CARD_IMAGE_DIMENSIONS.height}px.
+        </span>
+      );
     }
     inputValue = fileInputValue(value);
     onModeButtonClick = () => fileInput.current.click();
     onInputChange = onModeButtonClick;
-    onDrop = (e) => onFileInputChange(name, options, maxSize, setInputs, setSizeAlert, e);
+    onDrop = (e) =>
+      onFileInputChange(name, options, maxSize, setInputs, setSizeAlert, e);
   }
   if (disabled) return null;
   const sizeAlertLabel = sizeAlert ? <ErrorLabel text={sizeAlert} /> : null;
-  return <FormGroup>
-    <InputGroup id={inputGroupId} className="input-right">
-      <ImageContentInputMode
-        name={name} modes={modes} mode={mode} setMode={setMode} onClick={onModeButtonClick} color={color}/>
-      <Input id={widgetId} name={widgetId} type="text" value={inputValue} data-cy={`file-input-${name}`}
-        onDragOver={e => e.preventDefault()} onDragLeave={e => e.preventDefault()}
-        onDrop={onDrop} onChange={onInputChange} disabled={disabled} readOnly={readOnly} placeholder={placeholder} />
-    </InputGroup>
-    <InputHintLabel text={helpValue} />
-    <input id={hiddenInputId} name={hiddenInputId} style={{ display: "none" }}
-      type="file" accept={format}
-      onChange={(e) => onFileInputChange(name, options, maxSize, setInputs, setSizeAlert, setOriginalImageInput, e)}
-      onDrop={(e) => onFileInputChange(name, options, maxSize, setInputs, setSizeAlert, setOriginalImageInput, e)}
-      ref={fileInput} />
-    {sizeAlertLabel}
-  </FormGroup>;
-
+  return (
+    <FormGroup>
+      <InputGroup id={inputGroupId} className="input-right">
+        <ImageContentInputMode
+          name={name}
+          modes={modes}
+          mode={mode}
+          setMode={setMode}
+          onClick={onModeButtonClick}
+          color={color}
+        />
+        <Input
+          id={widgetId}
+          name={widgetId}
+          type="text"
+          value={inputValue}
+          data-cy={`file-input-${name}`}
+          onDragOver={(e) => e.preventDefault()}
+          onDragLeave={(e) => e.preventDefault()}
+          onDrop={onDrop}
+          onChange={onInputChange}
+          disabled={disabled}
+          readOnly={readOnly}
+          placeholder={placeholder}
+        />
+      </InputGroup>
+      <InputHintLabel text={helpValue} />
+      <input
+        id={hiddenInputId}
+        name={hiddenInputId}
+        style={{ display: "none" }}
+        type="file"
+        accept={format}
+        onChange={(e) =>
+          onFileInputChange(
+            name,
+            options,
+            maxSize,
+            setInputs,
+            setSizeAlert,
+            setOriginalImageInput,
+            e
+          )
+        }
+        onDrop={(e) =>
+          onFileInputChange(
+            name,
+            options,
+            maxSize,
+            setInputs,
+            setSizeAlert,
+            setOriginalImageInput,
+            e
+          )
+        }
+        ref={fileInput}
+      />
+      {sizeAlertLabel}
+    </FormGroup>
+  );
 }
 
 /**
@@ -275,48 +408,70 @@ function ImageInput(props) {
     format = "image/*",
     disabled = false,
     required = false,
-    submitting
+    submitting,
   } = props;
   const [sizeAlert, setSizeAlert] = useState(null);
   const [originalImageInput, setOriginalImageInput] = useState(null);
   const options = value.options;
   const selectedIndex = value.selected;
-  const selected = (selectedIndex > -1) ?
-    options[selectedIndex] :
-    { [Prop.NAME]: "[none]", [Prop.URL]: "", [Prop.STOCK]: false };
-  const allowedModes = (modes) ? modes : [ImageInputMode.FILE, ImageInputMode.URL];
-  const helpIsString = (typeof help) == "string" || help == null;
+  const selected =
+    selectedIndex > -1
+      ? options[selectedIndex]
+      : { [Prop.NAME]: "[none]", [Prop.URL]: "", [Prop.STOCK]: false };
+  const allowedModes = modes
+    ? modes
+    : [ImageInputMode.FILE, ImageInputMode.URL];
+  const helpIsString = typeof help == "string" || help == null;
   const previewHelp = !helpIsString && help["preview"] ? help["preview"] : null;
   const contentImage = disabled ? null : (
     <div className="flex-grow-1">
-      <ImageContentInput name={name} value={selected}
-        setInputs={setInputs} help={help} maxSize={maxSize} readOnly={submitting}
-        disabled={disabled} options={options} modes={allowedModes} format={format}
-        sizeAlert={sizeAlert} setSizeAlert={setSizeAlert} setOriginalImageInput={setOriginalImageInput}
+      <ImageContentInput
+        name={name}
+        value={selected}
+        setInputs={setInputs}
+        help={help}
+        maxSize={maxSize}
+        readOnly={submitting}
+        disabled={disabled}
+        options={options}
+        modes={allowedModes}
+        format={format}
+        sizeAlert={sizeAlert}
+        setSizeAlert={setSizeAlert}
+        setOriginalImageInput={setOriginalImageInput}
       />
       {alert && <ErrorLabel text={alert} />}
     </div>
   );
 
-  return <>
-    <Row key="row-title">
-      <InputLabel className="ps-3" text={label} isRequired={required} />
-    </Row>
-    <Row key="row-content" className="field-group">
-      <Col xs={12}>
-        <div className="d-block d-md-flex d-lg-flex gap-5">
-          {contentImage}
-          <div className="pe-2">
-            <ImagePreview
-              name={name}
-              value={value} selected={selected} maxSize={maxSize} originalImageInput={originalImageInput}
-              disabled={disabled} setInputs={setInputs} setSizeAlert={setSizeAlert} options={options} />
-            <InputHintLabel text={previewHelp} />
+  return (
+    <>
+      <Row key="row-title">
+        <InputLabel className="ps-3" text={label} isRequired={required} />
+      </Row>
+      <Row key="row-content" className="field-group">
+        <Col xs={12}>
+          <div className="d-block d-md-flex d-lg-flex gap-5">
+            {contentImage}
+            <div className="pe-2">
+              <ImagePreview
+                name={name}
+                value={value}
+                selected={selected}
+                maxSize={maxSize}
+                originalImageInput={originalImageInput}
+                disabled={disabled}
+                setInputs={setInputs}
+                setSizeAlert={setSizeAlert}
+                options={options}
+              />
+              <InputHintLabel text={previewHelp} />
+            </div>
           </div>
-        </div>
-      </Col>
-    </Row>
-  </>;
+        </Col>
+      </Row>
+    </>
+  );
 }
 
 export default ImageInput;

@@ -1,144 +1,155 @@
 .header-entity-image {
-    max-width: 230px;
-    height: 130px;
-    background-repeat: no-repeat;
-    background-size: cover;
-    border-radius: 8px;
-    background-position-x: center;
-    background-position-y: top;
-    overflow: hidden;
+  max-width: 230px;
+  height: 130px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 8px;
+  background-position-x: center;
+  background-position-y: top;
+  overflow: hidden;
 }
 
 .entity-type-visibility {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .container-entity-header {
-    --bs-card-title-spacer-y: 0.5rem;
-    display: grid;
-    grid-template-columns: 250px auto 200px 180px;
-    grid-template-rows: auto auto auto;
-    grid-auto-rows: 1fr;
-    gap: 0 20px;
-    grid-auto-flow: row;
-    grid-template-areas:
+  --bs-card-title-spacer-y: 0.5rem;
+  display: grid;
+  grid-template-columns: 250px auto 200px 180px;
+  grid-template-rows: auto auto auto;
+  grid-auto-rows: 1fr;
+  gap: 0 20px;
+  grid-auto-flow: row;
+  grid-template-areas:
     "entity-image entity-title entity-type-visibility entity-action"
     "entity-image entity-metadata entity-other-links entity-other-links"
     "entity-time-tags entity-metadata entity-other-links entity-other-links";
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
 }
 
 .container-entity-header-incomplete {
-    display: grid;
-    grid-template-columns: 250px auto 200px;
-    grid-template-rows: auto auto auto;
-    grid-auto-rows: 1fr;
-    gap: 10px 20px;
-    grid-auto-flow: row;
-    grid-template-areas:
+  display: grid;
+  grid-template-columns: 250px auto 200px;
+  grid-template-rows: auto auto auto;
+  grid-auto-rows: 1fr;
+  gap: 10px 20px;
+  grid-auto-flow: row;
+  grid-template-areas:
     "entity-image entity-title entity-type-visibility"
     "entity-image entity-metadata entity-metadata"
     "entity-time-tags entity-metadata entity-metadata";
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
 
-    .entity-action {
-        display: none;
-    }
-    .entity-other-links {
-        display: none;
-    }
+  .entity-action {
+    display: none;
+  }
+  .entity-other-links {
+    display: none;
+  }
 }
 
-.entity-title { grid-area: entity-title; }
+.entity-title {
+  grid-area: entity-title;
+}
 
-.entity-type-visibility { grid-area: entity-type-visibility; }
+.entity-type-visibility {
+  grid-area: entity-type-visibility;
+}
 
 .entity-action {
-    grid-area: entity-action;
-    justify-content: end;
+  grid-area: entity-action;
+  justify-content: end;
 }
 
-.entity-image { grid-area: entity-image; }
+.entity-image {
+  grid-area: entity-image;
+}
 
-.entity-time-tags { grid-area: entity-time-tags; }
+.entity-time-tags {
+  grid-area: entity-time-tags;
+}
 
-.entity-metadata { grid-area: entity-metadata; }
+.entity-metadata {
+  grid-area: entity-metadata;
+}
 
 .entity-other-links {
-    grid-area: entity-other-links;
-    background-color: var(--bs-rk-background-0);
+  grid-area: entity-other-links;
+  background-color: var(--bs-rk-background-0);
 }
-
 
 @media (max-width: 992px) {
-    .container-entity-header {
-        display: grid;
-        grid-template-columns: 250px auto 180px;
-        grid-template-rows: auto auto auto auto;
-        grid-auto-rows: 1fr;
-        gap: 10px 10px;
-        grid-auto-flow: row;
-        grid-template-areas:
-        "entity-title entity-title entity-action"
-        "entity-type-visibility entity-metadata entity-metadata"
-        "entity-image entity-metadata entity-metadata"
-        "entity-time-tags entity-metadata entity-metadata";
-    }
+  .container-entity-header {
+    display: grid;
+    grid-template-columns: 250px auto 180px;
+    grid-template-rows: auto auto auto auto;
+    grid-auto-rows: 1fr;
+    gap: 10px 10px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "entity-title entity-title entity-action"
+      "entity-type-visibility entity-metadata entity-metadata"
+      "entity-image entity-metadata entity-metadata"
+      "entity-time-tags entity-metadata entity-metadata";
+  }
 
-    .entity-other-links {
-        display: none;
-    }
+  .entity-other-links {
+    display: none;
+  }
 }
 
-@media (max-width: 576px) { // sm-size
-    .container-entity-header {
-        display: grid;
-        grid-template-columns: auto 180px;
-        grid-template-rows: auto auto auto auto auto;
-        grid-auto-rows: 1fr;
-        gap: 10px 10px;
-        grid-auto-flow: row;
-        grid-template-areas:
-        "entity-title entity-title"
-        "entity-type-visibility entity-action"
-        "entity-image entity-image"
-        "entity-metadata entity-metadata"
-        "entity-time-tags entity-time-tags";
-    }
+@media (max-width: 576px) {
+  // sm-size
+  .container-entity-header {
+    display: grid;
+    grid-template-columns: auto 180px;
+    grid-template-rows: auto auto auto auto auto;
+    grid-auto-rows: 1fr;
+    gap: 10px 10px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "entity-title entity-title"
+      "entity-type-visibility entity-action"
+      "entity-image entity-image"
+      "entity-metadata entity-metadata"
+      "entity-time-tags entity-time-tags";
+  }
 
-    .entity-other-links {
-        display: none;
-    }
+  .entity-other-links {
+    display: none;
+  }
 }
 
-@media (max-width: 400px) { // sm-size
-    .container-entity-header {
-        display: grid;
-        grid-template-columns: auto;
-        grid-template-rows: auto auto auto auto auto auto;
-        grid-auto-rows: 1fr;
-        gap: 10px 10px;
-        grid-auto-flow: row;
-        grid-template-areas:
-        "entity-title"
-        "entity-action"
-        "entity-type-visibility"
-        "entity-image"
-        "entity-metadata"
-        "entity-time-tags";
-    }
+@media (max-width: 400px) {
+  // sm-size
+  .container-entity-header {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto auto auto auto auto;
+    grid-auto-rows: 1fr;
+    gap: 10px 10px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "entity-title"
+      "entity-action"
+      "entity-type-visibility"
+      "entity-image"
+      "entity-metadata"
+      "entity-time-tags";
+  }
 
-    .entity-other-links {
-        display: none;
-    }
+  .entity-other-links {
+    display: none;
+  }
 
-    .entity-action {
-        justify-content: start;
-    }
+  .entity-action {
+    justify-content: start;
+  }
 }

@@ -33,19 +33,27 @@ import { AboutSessionModal } from "./AboutSessionModal";
 import { ResourcesSessionModel } from "./ResourcesSessionModal";
 import SaveSession from "./SaveSession";
 import StopSession from "./StopSession";
-import { AboutBtn, GoBackBtn, PullSessionBtn, ResourcesBtn, SaveSessionBtn, StopSessionBtn } from "./SessionButtons";
+import {
+  AboutBtn,
+  GoBackBtn,
+  PullSessionBtn,
+  ResourcesBtn,
+  SaveSessionBtn,
+  StopSessionBtn,
+} from "./SessionButtons";
 import { Notebook, SessionHandlers } from "./Session";
 import useWindowSize from "../../utils/helpers/UseWindowsSize";
 import { Url } from "../../utils/helpers/url";
 import { SessionStatus } from "../../utils/constants/Notebooks";
 import { SESSION_TABS, SessionJupyter } from "../Notebooks.present";
-import StartSessionProgressBar, { SessionStatusData } from "./StartSessionProgressBar";
+import StartSessionProgressBar, {
+  SessionStatusData,
+} from "./StartSessionProgressBar";
 import { AUTOSAVED_PREFIX } from "../../utils/helpers/HelperFunctions";
 import SessionUnavailable from "./SessionUnavailable";
 import PullSession from "./PullSession";
 
 const logo = "/static/public/img/logo.svg";
-
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -56,14 +64,13 @@ interface ShowSessionFullscreenProps {
     project: string;
     defaultBranch: string;
   };
-  isLogged: boolean,
+  isLogged: boolean;
   notebook: Notebook;
   urlBack: string;
   projectName: string;
   handlers: SessionHandlers;
 }
 function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
-
   const { filters, notebook, urlBack, projectName, handlers } = props;
   const [sessionStatus, setSessionStatus] = useState<SessionStatusData>();
   const [isTheSessionReady, setIsTheSessionReady] = useState(false);
@@ -71,17 +78,23 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
   const toggleModalAbout = () => setShowModalAboutData(!showModalAboutData);
 
   const [showModalResourcesData, setShowModalResourcesData] = useState(false);
-  const toggleModalResources = () => setShowModalResourcesData(!showModalResourcesData);
-  const [activeResourcesTab, setActiveResourcesTab] = useState<string>(SESSION_TABS.commands);
+  const toggleModalResources = () =>
+    setShowModalResourcesData(!showModalResourcesData);
+  const [activeResourcesTab, setActiveResourcesTab] = useState<string>(
+    SESSION_TABS.commands
+  );
 
   const [showModalStopSession, setShowModalStopSession] = useState(false);
-  const toggleStopSession = () => setShowModalStopSession(!showModalStopSession);
+  const toggleStopSession = () =>
+    setShowModalStopSession(!showModalStopSession);
 
   const [showModalSaveSession, setShowModalSaveSession] = useState(false);
-  const toggleSaveSession = () => setShowModalSaveSession(!showModalSaveSession);
+  const toggleSaveSession = () =>
+    setShowModalSaveSession(!showModalSaveSession);
 
   const [showModalPullSession, setShowModalPullSession] = useState(false);
-  const togglePullSession = () => setShowModalPullSession(!showModalPullSession);
+  const togglePullSession = () =>
+    setShowModalPullSession(!showModalPullSession);
 
   const { height } = useWindowSize();
   const ref = useRef<any>(null);
@@ -98,24 +111,23 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
   useEffect(() => {
     // this keeps track of the component status
     mounted.current = true;
-    return () => { mounted.current = false; };
+    return () => {
+      mounted.current = false;
+    };
   });
 
   useEffect(() => {
     if (notebook.data.status?.state === "running") {
       setTimeout(() => {
-        if (mounted.current)
-          setIsTheSessionReady(true);
+        if (mounted.current) setIsTheSessionReady(true);
       }, 4000); // wait 4 sec to use isTheSessionReady for session view
-    }
-    else {
+    } else {
       setIsTheSessionReady(false);
     }
   }, [notebook.data.status?.state]); // eslint-disable-line
 
   useEffect(() => {
-    if (!notebook.data.status)
-      return;
+    if (!notebook.data.status) return;
     setSessionStatus({ ...notebook.data.status } as SessionStatusData);
   }, [notebook.data.status]); // eslint-disable-line
 
@@ -124,7 +136,9 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
     history.push(urlList);
 
   /* modals */
-  const projectMetadata = useSelector((state: any) => state.stateModel.project?.metadata);
+  const projectMetadata = useSelector(
+    (state: any) => state.stateModel.project?.metadata
+  );
   const toggleToResourcesLogs = () => {
     setActiveResourcesTab(SESSION_TABS.logs);
     toggleModalResources();
@@ -134,41 +148,54 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
     toggleModalResources();
   };
 
-  const aboutModal = <AboutSessionModal
-    toggleModal={toggleModalAbout}
-    isOpen={showModalAboutData}
-    projectMetadata={projectMetadata}
-    notebook={notebook}
-  />;
-  const resourcesModal = <ResourcesSessionModel
-    handlers={handlers}
-    notebook={notebook}
-    toggleModal={toggleResources}
-    defaultBranch={filters.defaultBranch ?? "master"}
-    isOpen={showModalResourcesData}
-    activeTab={activeResourcesTab}
-    setActiveTab={setActiveResourcesTab}
-  />;
-  const stopSessionModal = <StopSession
-    stopNotebook={handlers.stopNotebook}
-    notebook={notebook}
-    closeModal={toggleStopSession}
-    urlList={urlList}
-    isOpen={showModalStopSession}/>;
-  const saveSessionModal = <SaveSession
-    isLogged={props.isLogged}
-    isSessionReady={isTheSessionReady}
-    hasSaveAccess={props.accessLevel >= ACCESS_LEVELS.DEVELOPER}
-    notebook={notebook}
-    closeModal={toggleSaveSession}
-    urlList={urlList}
-    isOpen={showModalSaveSession}/>;
-  const pullSessionModal = <PullSession
-    isSessionReady={isTheSessionReady}
-    notebook={notebook}
-    closeModal={togglePullSession}
-    urlList={urlList}
-    isOpen={showModalPullSession} />;
+  const aboutModal = (
+    <AboutSessionModal
+      toggleModal={toggleModalAbout}
+      isOpen={showModalAboutData}
+      projectMetadata={projectMetadata}
+      notebook={notebook}
+    />
+  );
+  const resourcesModal = (
+    <ResourcesSessionModel
+      handlers={handlers}
+      notebook={notebook}
+      toggleModal={toggleResources}
+      defaultBranch={filters.defaultBranch ?? "master"}
+      isOpen={showModalResourcesData}
+      activeTab={activeResourcesTab}
+      setActiveTab={setActiveResourcesTab}
+    />
+  );
+  const stopSessionModal = (
+    <StopSession
+      stopNotebook={handlers.stopNotebook}
+      notebook={notebook}
+      closeModal={toggleStopSession}
+      urlList={urlList}
+      isOpen={showModalStopSession}
+    />
+  );
+  const saveSessionModal = (
+    <SaveSession
+      isLogged={props.isLogged}
+      isSessionReady={isTheSessionReady}
+      hasSaveAccess={props.accessLevel >= ACCESS_LEVELS.DEVELOPER}
+      notebook={notebook}
+      closeModal={toggleSaveSession}
+      urlList={urlList}
+      isOpen={showModalSaveSession}
+    />
+  );
+  const pullSessionModal = (
+    <PullSession
+      isSessionReady={isTheSessionReady}
+      notebook={notebook}
+      closeModal={togglePullSession}
+      urlList={urlList}
+      isOpen={showModalPullSession}
+    />
+  );
   /* end modals */
 
   let content;
@@ -177,29 +204,46 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
 
   if (notebook.fetched && !notebook.available) {
     content = <SessionUnavailable filters={filters} urlList={urlList} />;
-  }
-  else if (notebook.available) {
+  } else if (notebook.available) {
     const status = sessionStatus?.state;
-    const sessionBranchKey = notebook?.data?.annotations ?
-      Object.keys(notebook?.data?.annotations).find( key => key.split("/")[1] === "branch") : null;
-    const sessionBranchValue = sessionBranchKey ? notebook?.data?.annotations[sessionBranchKey] : "";
+    const sessionBranchKey = notebook?.data?.annotations
+      ? Object.keys(notebook?.data?.annotations).find(
+          (key) => key.split("/")[1] === "branch"
+        )
+      : null;
+    const sessionBranchValue = sessionBranchKey
+      ? notebook?.data?.annotations[sessionBranchKey]
+      : "";
     const isAutoSave = sessionBranchValue.startsWith(AUTOSAVED_PREFIX);
-    content = !isTheSessionReady ?
-      (<div className="progress-box-small progress-box-small--steps">
-        <StartSessionProgressBar includeStepInTitle={includeStepInTitle}
-          sessionStatus={sessionStatus} isAutoSave={isAutoSave} toggleLogs={toggleToResourcesLogs} />
-      </div>) : null;
-    sessionView = status === SessionStatus.running ?
-      <SessionJupyter
-        ready={isTheSessionReady} filters={filters}
-        notebook={notebook} urlList={urlList} height={`${iframeHeight}px`} /> :
-      null;
-  }
-  else {
-    content =
-      (<div className="progress-box-small progress-box-small--steps">
-        <StartSessionProgressBar toggleLogs={toggleToResourcesLogs} includeStepInTitle={includeStepInTitle} />
-      </div>);
+    content = !isTheSessionReady ? (
+      <div className="progress-box-small progress-box-small--steps">
+        <StartSessionProgressBar
+          includeStepInTitle={includeStepInTitle}
+          sessionStatus={sessionStatus}
+          isAutoSave={isAutoSave}
+          toggleLogs={toggleToResourcesLogs}
+        />
+      </div>
+    ) : null;
+    sessionView =
+      status === SessionStatus.running ? (
+        <SessionJupyter
+          ready={isTheSessionReady}
+          filters={filters}
+          notebook={notebook}
+          urlList={urlList}
+          height={`${iframeHeight}px`}
+        />
+      ) : null;
+  } else {
+    content = (
+      <div className="progress-box-small progress-box-small--steps">
+        <StartSessionProgressBar
+          toggleLogs={toggleToResourcesLogs}
+          includeStepInTitle={includeStepInTitle}
+        />
+      </div>
+    );
   }
 
   return (
@@ -215,7 +259,10 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
           </div>
           <div className="d-flex align-items-center justify-content-between bg-primary flex-grow-1 py-2">
             <div className="px-3 text-rk-green">
-              <AboutBtn projectName={projectName} toggleModalAbout={toggleModalAbout} />
+              <AboutBtn
+                projectName={projectName}
+                toggleModalAbout={toggleModalAbout}
+              />
             </div>
             <div className="px-3">
               <img src={logo} alt="Renku" height="22" className="d-block" />

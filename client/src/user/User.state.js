@@ -34,32 +34,38 @@ class UserCoordinator {
   fetchUser() {
     this.model.set("fetching", true);
 
-    return this.client.getUser()
-      .then(data => {
+    return this.client
+      .getUser()
+      .then((data) => {
         // overwrite user data and set if it's logged or not
         this.model.setObject({
           fetching: false,
           fetched: new Date(),
           error: null,
-          logged: data && data.username && data.state === "active" ? true : false,
-          data: { $set: data }
+          logged:
+            data && data.username && data.state === "active" ? true : false,
+          data: { $set: data },
         });
 
         return data;
       })
-      .catch(error => {
-        const status = error.response && error.response.status ?
-          error.response.status :
-          "N/A";
+      .catch((error) => {
+        const status =
+          error.response && error.response.status
+            ? error.response.status
+            : "N/A";
         const errorObject = {
           fetching: false,
           fetched: new Date(),
           error: null,
           logged: false,
-          data: { $set: {} }
+          data: { $set: {} },
         };
         // we get 401 unauthorized when the user is not logged in, but that's not an error
-        if (error.case !== API_ERRORS.unauthorizedError && error.case !== API_ERRORS.authExpired)
+        if (
+          error.case !== API_ERRORS.unauthorizedError &&
+          error.case !== API_ERRORS.authExpired
+        )
           errorObject.error = status;
         this.model.setObject(errorObject);
 

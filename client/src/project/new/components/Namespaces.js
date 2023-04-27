@@ -28,7 +28,11 @@ import Autosuggest from "react-autosuggest";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button, FormGroup, UncontrolledTooltip } from "reactstrap";
-import { InputHintLabel, InputLabel, LoadingLabel } from "../../../components/formlabels/FormLabels";
+import {
+  InputHintLabel,
+  InputLabel,
+  LoadingLabel,
+} from "../../../components/formlabels/FormLabels";
 
 /**
  * Generate refresh button
@@ -43,11 +47,20 @@ function makeRefreshButton(refresh, tip, disabled) {
   return (
     <Fragment>
       <Button
-        key="button" className="ms-1 p-0" color="link" size="sm"
-        id={id} data-cy="refresh-namespace-list" onClick={() => refresh()} disabled={disabled} >
+        key="button"
+        className="ms-1 p-0"
+        color="link"
+        size="sm"
+        id={id}
+        data-cy="refresh-namespace-list"
+        onClick={() => refresh()}
+        disabled={disabled}
+      >
         <FontAwesomeIcon icon={faSyncAlt} />
       </Button>
-      <UncontrolledTooltip key="tooltip" placement="top" target={id}>{tip}</UncontrolledTooltip>
+      <UncontrolledTooltip key="tooltip" placement="top" target={id}>
+        {tip}
+      </UncontrolledTooltip>
     </Fragment>
   );
 }
@@ -58,7 +71,7 @@ class NamespacesAutosuggest extends Component {
     this.state = {
       value: "",
       suggestions: [],
-      preloadUpdated: false
+      preloadUpdated: false,
     };
   }
 
@@ -66,13 +79,14 @@ class NamespacesAutosuggest extends Component {
     // set first user namespace as default (at least one should always available)
     const { namespaces, namespace, user } = this.props;
     if (namespaces.fetched && namespaces.list.length && !namespace) {
-      let defaultNamespace = null, personalNs = null;
+      let defaultNamespace = null,
+        personalNs = null;
       if (user.logged)
-        personalNs = namespaces.list.find(ns => ns.kind === "user" && ns.full_path === user.username);
-      if (personalNs)
-        defaultNamespace = personalNs;
-      else
-        defaultNamespace = namespaces.list.find(ns => ns.kind === "user");
+        personalNs = namespaces.list.find(
+          (ns) => ns.kind === "user" && ns.full_path === user.username
+        );
+      if (personalNs) defaultNamespace = personalNs;
+      else defaultNamespace = namespaces.list.find((ns) => ns.kind === "user");
 
       this.props.handlers.setNamespace(defaultNamespace);
       this.setState({ value: defaultNamespace.full_path });
@@ -83,7 +97,13 @@ class NamespacesAutosuggest extends Component {
   componentDidUpdate() {
     const { automated, input } = this.props;
     const { value, preloadUpdated } = this.state;
-    if (automated && automated.received && automated.finished && input.namespace !== value && !preloadUpdated)
+    if (
+      automated &&
+      automated.received &&
+      automated.finished &&
+      input.namespace !== value &&
+      !preloadUpdated
+    )
       this.setState({ value: input.namespace, preloadUpdated: true });
   }
 
@@ -92,16 +112,21 @@ class NamespacesAutosuggest extends Component {
     const inputValue = value.trim().toLowerCase();
 
     // filter namespaces
-    const filtered = inputValue.length === 0 ?
-      namespaces.list :
-      namespaces.list.filter(namespace => namespace.full_path.toLowerCase().indexOf(inputValue) >= 0);
-    if (!filtered.length)
-      return [];
+    const filtered =
+      inputValue.length === 0
+        ? namespaces.list
+        : namespaces.list.filter(
+            (namespace) =>
+              namespace.full_path.toLowerCase().indexOf(inputValue) >= 0
+          );
+    if (!filtered.length) return [];
 
     // separate different namespaces kind
     const suggestionsObject = filtered.reduce(
       (suggestions, namespace) => {
-        namespace.kind === "group" ? suggestions.group.push(namespace) : suggestions.user.push(namespace);
+        namespace.kind === "group"
+          ? suggestions.group.push(namespace)
+          : suggestions.user.push(namespace);
         return suggestions;
       },
       { user: [], group: [] }
@@ -109,9 +134,10 @@ class NamespacesAutosuggest extends Component {
 
     // filter 0 length groups
     return Object.keys(suggestionsObject).reduce(
-      (suggestions, kind) => suggestionsObject[kind].length ?
-        [...suggestions, { kind, namespaces: suggestionsObject[kind] }] :
-        suggestions,
+      (suggestions, kind) =>
+        suggestionsObject[kind].length
+          ? [...suggestions, { kind, namespaces: suggestionsObject[kind] }]
+          : suggestions,
       []
     );
   }
@@ -126,30 +152,28 @@ class NamespacesAutosuggest extends Component {
   }
 
   renderSuggestion = (suggestion) => {
-    const className = suggestion.full_path === this.state.value ? "highlighted" : "";
-    return (<span className={className}>{suggestion.full_path}</span>);
+    const className =
+      suggestion.full_path === this.state.value ? "highlighted" : "";
+    return <span className={className}>{suggestion.full_path}</span>;
   };
 
   renderSectionTitle(suggestion) {
-    return (<strong>{suggestion.kind}</strong>);
+    return <strong>{suggestion.kind}</strong>;
   }
 
   onBlur = (event, { newValue }) => {
-    if (newValue)
-      this.props.handlers.setNamespace(newValue);
+    if (newValue) this.props.handlers.setNamespace(newValue);
     else if (this.props.input.namespace)
       this.setState({ value: this.props.input.namespace });
   };
 
   onChange = (event, { newValue, method }) => {
-    if (method === "type")
-      this.setState({ value: newValue });
+    if (method === "type") this.setState({ value: newValue });
   };
 
   onSuggestionsFetchRequested = ({ value, reason }) => {
     // show all namespaces on mouse click
-    if (reason === "input-focused")
-      value = "";
+    if (reason === "input-focused") value = "";
     this.setState({ suggestions: this.getSuggestions(value) });
   };
 
@@ -159,7 +183,9 @@ class NamespacesAutosuggest extends Component {
 
   onSuggestionSelected = (event, { suggestionValue }) => {
     this.setState({ value: suggestionValue });
-    const namespace = this.props.namespaces.list.filter(ns => ns.full_path === suggestionValue)[0];
+    const namespace = this.props.namespaces.list.filter(
+      (ns) => ns.full_path === suggestionValue
+    )[0];
     this.props.handlers.setNamespace(namespace);
   };
 
@@ -171,14 +197,15 @@ class NamespacesAutosuggest extends Component {
       inputOpen: "react-autosuggest__input--open",
       inputFocused: "react-autosuggest__input--focused",
       suggestionsContainer: "react-autosuggest__suggestions-container",
-      suggestionsContainerOpen: "react-autosuggest__suggestions-container--open",
+      suggestionsContainerOpen:
+        "react-autosuggest__suggestions-container--open",
       suggestionsList: "react-autosuggest__suggestions-list",
       suggestion: "react-autosuggest__suggestion",
       suggestionFirst: "react-autosuggest__suggestion--first",
       suggestionHighlighted: "react-autosuggest__suggestion--highlighted",
       sectionContainer: "react-autosuggest__section-container",
       sectionContainerFirst: "react-autosuggest__section-container--first",
-      sectionTitle: "react-autosuggest__section-title"
+      sectionTitle: "react-autosuggest__section-title",
     };
     // Override the input theme to match our visual style
     return { ...defaultTheme, ...{ input: "form-control" } };
@@ -193,7 +220,7 @@ class NamespacesAutosuggest extends Component {
       value,
       onChange: this.onChange,
       onBlur: this.onBlur,
-      id: "namespace-input"
+      id: "namespace-input",
     };
 
     return (
@@ -220,29 +247,40 @@ class Namespaces extends Component {
   async componentDidMount() {
     // fetch namespaces if not available yet
     const { namespaces, handlers } = this.props;
-    if (!namespaces.fetched && !namespaces.fetching)
-      handlers.getNamespaces();
+    if (!namespaces.fetched && !namespaces.fetching) handlers.getNamespaces();
   }
 
   render() {
     const { namespaces, handlers } = this.props;
-    const refreshButton = makeRefreshButton(handlers.getNamespaces, "Refresh namespaces", namespaces.fetching);
+    const refreshButton = makeRefreshButton(
+      handlers.getNamespaces,
+      "Refresh namespaces",
+      namespaces.fetching
+    );
     const { list } = namespaces;
     // show info about visibility only when group namespaces are available
-    const info = namespaces.fetched && list.length && list.filter(n => n.kind === "group").length ?
-      (<InputHintLabel text="Group namespaces may restrict the visibility options"/>) :
-      null;
+    const info =
+      namespaces.fetched &&
+      list.length &&
+      list.filter((n) => n.kind === "group").length ? (
+        <InputHintLabel text="Group namespaces may restrict the visibility options" />
+      ) : null;
     // loading or autosuggest
-    const main = namespaces.fetching ?
-      (<div><LoadingLabel text="Refreshing..." /></div>) :
-      (<>
+    const main = namespaces.fetching ? (
+      <div>
+        <LoadingLabel text="Refreshing..." />
+      </div>
+    ) : (
+      <>
         <NamespacesAutosuggest {...this.props} />
         {info}
-      </>);
+      </>
+    );
 
     return (
       <FormGroup className="field-group">
-        <InputLabel text="Namespace" isRequired="true"/><span className="mx-2">{refreshButton}</span>
+        <InputLabel text="Namespace" isRequired="true" />
+        <span className="mx-2">{refreshButton}</span>
         {main}
       </FormGroup>
     );

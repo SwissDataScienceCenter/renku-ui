@@ -25,10 +25,12 @@ function addEnvironmentMethods(client) {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
-    return client.clientFetch(urlApi, {
-      method: "GET",
-      headers: headers
-    }).then(resp => resp.data);
+    return client
+      .clientFetch(urlApi, {
+        method: "GET",
+        headers: headers,
+      })
+      .then((resp) => resp.data);
   };
 
   /**
@@ -43,10 +45,9 @@ function addEnvironmentMethods(client) {
     headers.append("X-Requested-With", "XMLHttpRequest");
     const resp = await client.clientFetch(urlApi, {
       method: "GET",
-      headers: headers
+      headers: headers,
     });
-    if (resp.error)
-      return { ...resp.data.error, available: false };
+    if (resp.error) return { ...resp.data.error, available: false };
     if (resp.data.result?.supported_project_version)
       return { ...resp.data.result, available: true };
     return resp.data;

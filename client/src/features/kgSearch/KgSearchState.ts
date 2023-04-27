@@ -19,9 +19,12 @@
 import {
   DateFilterTypes,
   dateFilterTypeToSinceAndUntil,
-  stringToDateFilter
+  stringToDateFilter,
 } from "../../components/dateFilter/DateFilter";
-import { SortingOptions, stringToSortingOption } from "../../components/sortingEntities/SortingEntities";
+import {
+  SortingOptions,
+  stringToSortingOption,
+} from "../../components/sortingEntities/SortingEntities";
 import {
   TypeEntitySelection,
   arrayToTypeEntitySelection,
@@ -34,12 +37,12 @@ import { KgAuthor, KgSearchState } from "./KgSearch";
 
 type KgStateAuthorKey = "author";
 const numKeys = ["page", "perPage"] as const;
-type KgStateNumKey = typeof numKeys[number];
+type KgStateNumKey = (typeof numKeys)[number];
 type KgStateSortKey = "sort";
 const stringKeys = ["phrase"] as const;
-type KgStateStrKey = typeof stringKeys[number];
+type KgStateStrKey = (typeof stringKeys)[number];
 const dateBoundsKey = ["since", "until"] as const;
-type KgStateDateBoundsKey = typeof dateBoundsKey[number];
+type KgStateDateBoundsKey = (typeof dateBoundsKey)[number];
 type KgStateTypeDateFilterKey = "typeDate";
 type KgStateTypeKey = "type";
 type KgStateVisibilityKey = "visibility";
@@ -54,7 +57,10 @@ type KgStateKey =
   | KgStateVisibilityKey;
 
 // In some cases, the date fields need to be handled separately
-type KgStateSimpleKey = Exclude<KgStateKey, KgStateTypeDateFilterKey | KgStateDateBoundsKey>;
+type KgStateSimpleKey = Exclude<
+  KgStateKey,
+  KgStateTypeDateFilterKey | KgStateDateBoundsKey
+>;
 
 type KgStateVal<T extends KgStateSimpleKey> = T extends KgStateAuthorKey
   ? KgAuthor
@@ -105,7 +111,10 @@ export const searchStringToState = (searchString: string): KgSearchState => {
   };
 };
 
-const queryParameterStateValue = <T extends KgStateSimpleKey>(qp: URLSearchParams, key: T): KgStateVal<T> => {
+const queryParameterStateValue = <T extends KgStateSimpleKey>(
+  qp: URLSearchParams,
+  key: T
+): KgStateVal<T> => {
   const result = qp.get(key) ?? defaultSearchState[key];
   if (isAuthorKey(key)) return result as KgStateVal<T>;
   if (isSortKey(key)) {
@@ -137,9 +146,12 @@ const queryParameterStateValue = <T extends KgStateSimpleKey>(qp: URLSearchParam
  * @param qp Query parameters
  * @returns since, typeDate, until
  */
-const queryParameterDateStateValue = (qp: URLSearchParams): Pick<KgSearchState, "since" | "typeDate" | "until"> => {
+const queryParameterDateStateValue = (
+  qp: URLSearchParams
+): Pick<KgSearchState, "since" | "typeDate" | "until"> => {
   const typeDateString = qp.get("typeDate");
-  const typeDate = stringToDateFilter(typeDateString ?? "") ?? defaultSearchState.typeDate;
+  const typeDate =
+    stringToDateFilter(typeDateString ?? "") ?? defaultSearchState.typeDate;
   const { since, until } = dateFilterTypeToSinceAndUntil(typeDate);
   if (typeDate !== DateFilterTypes.custom) return { since, typeDate, until };
   const sinceStr = qp.get("since") ?? "";
@@ -175,32 +187,38 @@ export const stateToSearchString = (state: Partial<KgSearchState>): string => {
   const stateMap: string[][] = [];
   for (const key of stringKeys) {
     const val = state[key];
-    if (val != null && val !== defaultSearchState[key]) stateMap.push([key, val]);
+    if (val != null && val !== defaultSearchState[key])
+      stateMap.push([key, val]);
   }
   for (const key of numKeys) {
     const val = state[key];
-    if (val != null && val !== defaultSearchState[key]) stateMap.push([key, val.toString()]);
+    if (val != null && val !== defaultSearchState[key])
+      stateMap.push([key, val.toString()]);
   }
   {
     const key = "sort";
     const val = state[key];
-    if (val != null && val !== defaultSearchState[key]) stateMap.push([key, val.toString()]);
+    if (val != null && val !== defaultSearchState[key])
+      stateMap.push([key, val.toString()]);
   }
   {
     const key = "author";
     const val = state[key];
-    if (val != null && val !== defaultSearchState[key]) stateMap.push([key, val.toString()]);
+    if (val != null && val !== defaultSearchState[key])
+      stateMap.push([key, val.toString()]);
   }
   {
     const key = "typeDate";
     const val = state[key];
-    if (val != null && val !== defaultSearchState[key]) stateMap.push([key, val.toString()]);
+    if (val != null && val !== defaultSearchState[key])
+      stateMap.push([key, val.toString()]);
   }
   for (const key of dateBoundsKey) {
     const typeDate = state["typeDate"];
     const val = state[key];
     // Only set the bounds if the date is custom, otherwise they are computed
-    if (typeDate === DateFilterTypes.custom) stateMap.push([key, val?.toString() ?? ""]);
+    if (typeDate === DateFilterTypes.custom)
+      stateMap.push([key, val?.toString() ?? ""]);
   }
   {
     const key = "type";
@@ -232,7 +250,8 @@ function isInitialEqualToObject(
   if (value == null) return true;
   const initial = defaultSearchState[key];
   for (const k of Object.keys(initial))
-    if (value[k as keyof typeof value] != initial[k as keyof typeof initial]) return false;
+    if (value[k as keyof typeof value] != initial[k as keyof typeof initial])
+      return false;
 
   return true;
 }

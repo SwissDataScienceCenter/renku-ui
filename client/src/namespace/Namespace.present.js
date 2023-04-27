@@ -34,16 +34,24 @@ const NamespaceProjects = (props) => {
   const { namespace } = props;
   // TODO: I should get the URLs from the redux store: #779
   const searchUrl = "/projects/all";
-  const searchProjectUrl = (project) => { return `${searchUrl}?q=${project}`; };
-  const searchUserUrl = (user) => { return `${searchUrl}?searchIn=users&q=${user}`; };
-  const searchGroupUrl = (group) => { return `${searchUrl}?searchIn=groups&q=${group}`; };
+  const searchProjectUrl = (project) => {
+    return `${searchUrl}?q=${project}`;
+  };
+  const searchUserUrl = (user) => {
+    return `${searchUrl}?searchIn=users&q=${user}`;
+  };
+  const searchGroupUrl = (group) => {
+    return `${searchUrl}?searchIn=groups&q=${group}`;
+  };
 
   let checking = null;
   if (props.user.fetching || props.group.fetching) {
-    checking = (<div>
-      <p>Searching for {namespace}...</p>
-      <Loader />
-    </div>);
+    checking = (
+      <div>
+        <p>Searching for {namespace}...</p>
+        <Loader />
+      </div>
+    );
   }
 
   let outcome = null;
@@ -54,23 +62,34 @@ const NamespaceProjects = (props) => {
       const projectsUrl = searchUserUrl(props.user.data.username);
       const gitlabUrl = props.user.data.web_url;
       outcome = (
-        <NamespaceUserActions namespace={namespace} projectsUrl={projectsUrl} gitlabUrl={gitlabUrl} />
+        <NamespaceUserActions
+          namespace={namespace}
+          projectsUrl={projectsUrl}
+          gitlabUrl={gitlabUrl}
+        />
       );
-    }
-    else if (props.group.fetched && props.group.data.id) {
+    } else if (props.group.fetched && props.group.data.id) {
       userOrGroup = "Group";
       const projectsUrl = searchGroupUrl(props.group.data.full_path);
       const gitlabUrl = props.group.data.web_url;
       outcome = (
-        <NamespaceGroupActions namespace={namespace} projectsUrl={projectsUrl} gitlabUrl={gitlabUrl} />
+        <NamespaceGroupActions
+          namespace={namespace}
+          projectsUrl={projectsUrl}
+          gitlabUrl={gitlabUrl}
+        />
       );
-    }
-    else {
+    } else {
       const userUrl = searchUserUrl(namespace);
       const groupUrl = searchGroupUrl(namespace);
       const projectUrl = searchProjectUrl(namespace);
       outcome = (
-        <NamespaceNotFoundActions namespace={namespace} userUrl={userUrl} groupUrl={groupUrl} projectUrl={projectUrl} />
+        <NamespaceNotFoundActions
+          namespace={namespace}
+          userUrl={userUrl}
+          groupUrl={groupUrl}
+          projectUrl={projectUrl}
+        />
       );
       return outcome;
     }
@@ -79,7 +98,9 @@ const NamespaceProjects = (props) => {
   return (
     <Row>
       <Col>
-        <h3>{userOrGroup} {props.namespace}</h3>
+        <h3>
+          {userOrGroup} {props.namespace}
+        </h3>
         <div>&nbsp;</div>
         {checking}
         {outcome}
@@ -89,56 +110,91 @@ const NamespaceProjects = (props) => {
 };
 
 const NamespaceUserActions = (props) => {
-  return (<div>
-    <p>What would you like to do?</p>
-    <ul className="mb-0">
-      <li className="mb-1">
-        Browse user&apos;s <Link
-          className="btn btn-primary btn-sm" role="button" to={props.projectsUrl}>projects
-        </Link>
-      </li>
-      <li>
-        Visit user&apos;s <ExternalLink url={props.gitlabUrl} size="sm" title="GitLab page" />
-      </li>
-    </ul>
-  </div>);
+  return (
+    <div>
+      <p>What would you like to do?</p>
+      <ul className="mb-0">
+        <li className="mb-1">
+          Browse user&apos;s{" "}
+          <Link
+            className="btn btn-primary btn-sm"
+            role="button"
+            to={props.projectsUrl}
+          >
+            projects
+          </Link>
+        </li>
+        <li>
+          Visit user&apos;s{" "}
+          <ExternalLink url={props.gitlabUrl} size="sm" title="GitLab page" />
+        </li>
+      </ul>
+    </div>
+  );
 };
 
 const NamespaceGroupActions = (props) => {
-  return (<div>
-    <p>What would you like to do?</p>
-    <ul className="mb-0">
-      <li className="mb-1">
-        Browse group&apos;s <Link
-          className="btn btn-primary btn-sm" role="button" to={props.projectsUrl}>projects
-        </Link>
-      </li>
-      <li>
-        Visit group&apos;s <ExternalLink url={props.gitlabUrl} size="sm" title="GitLab page" />
-      </li>
-    </ul>
-  </div>);
+  return (
+    <div>
+      <p>What would you like to do?</p>
+      <ul className="mb-0">
+        <li className="mb-1">
+          Browse group&apos;s{" "}
+          <Link
+            className="btn btn-primary btn-sm"
+            role="button"
+            to={props.projectsUrl}
+          >
+            projects
+          </Link>
+        </li>
+        <li>
+          Visit group&apos;s{" "}
+          <ExternalLink url={props.gitlabUrl} size="sm" title="GitLab page" />
+        </li>
+      </ul>
+    </div>
+  );
 };
 
 const NamespaceNotFoundActions = (props) => {
-  const description = <>
-    We could not find a user or group with name <i>{props.namespace}</i>.
-  </>;
+  const description = (
+    <>
+      We could not find a user or group with name <i>{props.namespace}</i>.
+    </>
+  );
   return (
-    <NotFound
-      title="User or Group not found"
-      description={description}>
+    <NotFound title="User or Group not found" description={description}>
       <p>
-        If you know what you were looking for, you can try
-        using our search feature.
+        If you know what you were looking for, you can try using our search
+        feature.
       </p>
       <p>
-        I was looking for... {" "}
-        <Link className="btn btn-secondary btn-sm me-1" role="button" to={props.projectUrl}>A project</Link>
-        <Link className="btn btn-secondary btn-sm me-1" role="button" to={props.userUrl}>A user</Link>
-        <Link className="btn btn-secondary btn-sm me-1" role="button" to={props.groupUrl}>A group</Link>
+        I was looking for...{" "}
+        <Link
+          className="btn btn-secondary btn-sm me-1"
+          role="button"
+          to={props.projectUrl}
+        >
+          A project
+        </Link>
+        <Link
+          className="btn btn-secondary btn-sm me-1"
+          role="button"
+          to={props.userUrl}
+        >
+          A user
+        </Link>
+        <Link
+          className="btn btn-secondary btn-sm me-1"
+          role="button"
+          to={props.groupUrl}
+        >
+          A group
+        </Link>
       </p>
-    </NotFound>);
+    </NotFound>
+  );
 };
 
 export { NamespaceProjects };

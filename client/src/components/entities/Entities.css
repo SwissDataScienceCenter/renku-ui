@@ -1,59 +1,58 @@
 .entity-card-large {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 .linked-entities {
-    padding: 20px;
+  padding: 20px;
 }
 
 .linked-entities h3 {
-    font-size: 25px;
+  font-size: 25px;
 }
 
 .linked-entities-link {
-    cursor: pointer;
-    text-decoration: none;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .linked-entities-link svg {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .buttons-header-entity .icon-button {
-    width: 30px;
-    border: none;
-    padding: 0;
-    cursor: pointer;
+  width: 30px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 .entity-tag {
-    padding: 0 8px 0 0;
-    font-size: 15px;
+  padding: 0 8px 0 0;
+  font-size: 15px;
 }
 .entity-tag--small {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .creators {
-    height: 24px;
+  height: 24px;
 }
 .card-entity-row {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    height: 24px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  height: 24px;
 }
 .card-entity-row--title {
-    height: 30px;
+  height: 30px;
 }
 @media (max-width: 768px) {
-    .card-entity-row {
-        height: auto;
-        display: flex;
-        flex-wrap: wrap;
-        white-space: normal;
-    }
+  .card-entity-row {
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    white-space: normal;
+  }
 }
 
 .slug {
-    height: 24px;
+  height: 24px;
 }
-

@@ -23,8 +23,7 @@ import FileUploaderInput from "./FileUploaderInput";
 export default {
   title: "components/FileUploaderInput",
   component: FileUploaderInput,
-  argTypes: {
-  },
+  argTypes: {},
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,6 +34,6 @@ Default.args = {
   label: "Files",
   required: false,
   handlers: {
-    getFormDraftInternalValuesProperty: () => undefined
-  }
+    getFormDraftInternalValuesProperty: () => undefined,
+  },
 };

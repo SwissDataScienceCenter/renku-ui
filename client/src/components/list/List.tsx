@@ -17,10 +17,7 @@
  */
 import * as React from "react";
 import "./ListCard.css";
-import {
-  ListElementProps,
-  ListDisplayType,
-} from "./List.d";
+import { ListElementProps, ListDisplayType } from "./List.d";
 import ListCard from "./ListCard";
 import ListBar from "./ListBar";
 

@@ -18,7 +18,9 @@
 
 import React from "react";
 
-import SortingEntities, { SortingOptions } from "../sortingEntities/SortingEntities";
+import SortingEntities, {
+  SortingOptions,
+} from "../sortingEntities/SortingEntities";
 import { FilterButton } from "../entities/Buttons";
 
 interface ResultHeaderProps {
@@ -32,24 +34,35 @@ interface ResultHeaderProps {
   isOpenFilterModal: boolean;
 }
 const SearchResultsHeader = ({
-  total, phrase, sort, handleSort, isFiltersOpened, toggleFilter, toggleFilterModal, isOpenFilterModal
+  total,
+  phrase,
+  sort,
+  handleSort,
+  isFiltersOpened,
+  toggleFilter,
+  toggleFilterModal,
+  isOpenFilterModal,
 }: ResultHeaderProps) => {
-
   const totalText = total && total > 1 ? "results" : "result";
-  const title = phrase ?
+  const title = phrase ? (
     <div className="rk-search-result-title">
-      {total} {totalText} for <span className="fw-bold">{`"${phrase}"`}</span></div> :
-    <div className="rk-search-result-title">{total} {totalText} </div>;
+      {total} {totalText} for <span className="fw-bold">{`"${phrase}"`}</span>
+    </div>
+  ) : (
+    <div className="rk-search-result-title">
+      {total} {totalText}{" "}
+    </div>
+  );
 
   const buttonMobile = (
     <div className="d-sm-block d-md-block d-lg-none d-xl-none d-xxl-none text-end">
-      <FilterButton isOpen = {isOpenFilterModal} toggle={toggleFilterModal} />
+      <FilterButton isOpen={isOpenFilterModal} toggle={toggleFilterModal} />
     </div>
   );
 
   const buttonDesktop = (
     <div className="d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block">
-      <FilterButton isOpen = {isFiltersOpened} toggle={toggleFilter} />
+      <FilterButton isOpen={isFiltersOpened} toggle={toggleFilter} />
     </div>
   );
 
@@ -66,4 +79,3 @@ const SearchResultsHeader = ({
 };
 
 export { SearchResultsHeader };
-

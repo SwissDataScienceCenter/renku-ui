@@ -35,16 +35,18 @@ describe("rendering", () => {
   it("renders NamespaceProjects", async () => {
     const props = {
       client,
-      namespace: "test"
+      namespace: "test",
     };
 
     const div = document.createElement("div");
     document.body.appendChild(div);
     const root = createRoot(div);
     await act(async () => {
-      root.render(<MemoryRouter>
-        <NamespaceProjects {...props} />
-      </MemoryRouter>);
+      root.render(
+        <MemoryRouter>
+          <NamespaceProjects {...props} />
+        </MemoryRouter>
+      );
     });
   });
 });

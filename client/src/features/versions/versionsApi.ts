@@ -20,7 +20,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
 import { NotebooksVersion, NotebooksVersionResponse } from "./versions";
 
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const versionsApi = createApi({
@@ -43,11 +42,12 @@ export const versionsApi = createApi({
         return {
           name: response.name,
           version: singleVersion?.version ?? "unavailable",
-          anonymousSessionsEnabled: singleVersion?.data?.anonymousSessionsEnabled ?? false,
+          anonymousSessionsEnabled:
+            singleVersion?.data?.anonymousSessionsEnabled ?? false,
           sshEnabled: singleVersion?.data?.sshEnabled ?? false,
           cloudStorageEnabled:
             (singleVersion?.data?.cloudstorageEnabled?.azure_blob ?? false) ||
-            (singleVersion?.data?.cloudstorageEnabled?.s3 ?? false)
+            (singleVersion?.data?.cloudstorageEnabled?.s3 ?? false),
         } as NotebooksVersion;
       },
       transformErrorResponse: () => {
@@ -56,7 +56,7 @@ export const versionsApi = createApi({
           version: "unavailable",
           anonymousSessionsEnabled: false,
           sshEnabled: false,
-          cloudStorageEnabled: false
+          cloudStorageEnabled: false,
         } as NotebooksVersion;
       },
     }),

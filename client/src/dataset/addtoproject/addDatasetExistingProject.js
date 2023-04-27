@@ -48,7 +48,8 @@ const AddDatasetExistingProject = ({
   let projectsMonitorJob = null;
 
   const queryParams = { per_page: 100 };
-  const { data: memberProjects, isLoading: isLoadingMemberProjects } = useGetMemberProjectsQuery(queryParams);
+  const { data: memberProjects, isLoading: isLoadingMemberProjects } =
+    useGetMemberProjectsQuery(queryParams);
 
   useEffect(() => {
     mounted.current = true;
@@ -89,9 +90,12 @@ const AddDatasetExistingProject = ({
       }
     });
 
-    const hitValues = Object.values(hits).sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+    const hitValues = Object.values(hits).sort((a, b) =>
+      a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+    );
     const groupedHits = groupBy(hitValues, (item) => item.subgroup);
-    for (const [key, val] of groupedHits) groupedSuggestions.push({ title: key, suggestions: val });
+    for (const [key, val] of groupedHits)
+      groupedSuggestions.push({ title: key, suggestions: val });
 
     setCurrentStatus(null);
     setSuggestions(groupedSuggestions);
@@ -99,8 +103,13 @@ const AddDatasetExistingProject = ({
   const customHandlers = { onSuggestionsFetchRequested };
 
   let suggestionInput;
-  const isProjectListReady = (memberProjects != null) != null && !isLoadingMemberProjects;
-  if (isProjectListReady && isDatasetValid && currentStatus?.status !== "importing") {
+  const isProjectListReady =
+    (memberProjects != null) != null && !isLoadingMemberProjects;
+  if (
+    isProjectListReady &&
+    isDatasetValid &&
+    currentStatus?.status !== "importing"
+  ) {
     suggestionInput = (
       <SelectAutosuggestInput
         existingValue={existingProject?.name || null}
@@ -112,11 +121,13 @@ const AddDatasetExistingProject = ({
         disabled={importingDataset || currentStatus?.status === "inProcess"}
       />
     );
-  }
-  else if (isDatasetValid === null || isDatasetValid === false || currentStatus?.status === "importing") {
+  } else if (
+    isDatasetValid === null ||
+    isDatasetValid === false ||
+    currentStatus?.status === "importing"
+  ) {
     suggestionInput = null;
-  }
-  else {
+  } else {
     suggestionInput = (
       <div>
         <Loader size="14" inline="true" /> Loading projects...
@@ -142,7 +153,11 @@ const AddDatasetExistingProject = ({
   const onSubmit = (e) => e.preventDefault();
 
   const addDatasetStatus = currentStatus ? (
-    <AddDatasetStatus status={currentStatus.status} text={currentStatus?.text || null} projectName={project?.name} />
+    <AddDatasetStatus
+      status={currentStatus.status}
+      text={currentStatus?.text || null}
+      projectName={project?.name}
+    />
   ) : null;
 
   if (!dataset) return null;

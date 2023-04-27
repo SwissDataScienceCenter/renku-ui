@@ -27,16 +27,27 @@ import { Button, ButtonGroup } from "../../utils/ts-wrappers";
 
 export interface AddDatasetButtonsProps {
   optionSelected: "addDataset" | "importDataset";
-  toggleNewDataset? : Function; // eslint-disable-line @typescript-eslint/ban-types
+  toggleNewDataset?: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
-const AddDatasetButtons = ({ optionSelected, toggleNewDataset }: AddDatasetButtonsProps) => {
+const AddDatasetButtons = ({
+  optionSelected,
+  toggleNewDataset,
+}: AddDatasetButtonsProps) => {
   return (
     <ButtonGroup className="mb-4">
-      <Button className="btn-outline-rk-pink" onClick={toggleNewDataset} active={optionSelected === "addDataset"}>
+      <Button
+        className="btn-outline-rk-pink"
+        onClick={toggleNewDataset}
+        active={optionSelected === "addDataset"}
+      >
         Create Dataset
       </Button>
-      <Button className="btn-outline-rk-pink" onClick={toggleNewDataset} active={optionSelected === "importDataset"}>
+      <Button
+        className="btn-outline-rk-pink"
+        onClick={toggleNewDataset}
+        active={optionSelected === "importDataset"}
+      >
         Import Dataset
       </Button>
     </ButtonGroup>

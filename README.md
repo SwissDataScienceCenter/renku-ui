@@ -13,7 +13,7 @@ This README contains information relevant to contributors to the renku-ui compon
 The Renku UI is made up of two subcomponents, which are each packaged as [Docker](https://www.docker.com) containers and are deployed using [Kubernetes](https://kubernetes.io).
 
 |        |                                                 |
-|--------|-------------------------------------------------|
+| ------ | ----------------------------------------------- |
 | client | [React-based](https://reactjs.org) front-end    |
 | server | [Express-based](https://expressjs.com) back-end |
 
@@ -23,42 +23,48 @@ Below, we explain each of those components in greater detail and guidelines for 
 
 To develop on this codebase, you will want the following tools installed.
 
-|                                                                      |                                                                     |
-|----------------------------------------------------------------------|---------------------------------------------------------------------|
-| [node](https://nodejs.org/en/)                                       | Node JavaScript execution environment                               |
-| [npm](https://github.com/npm/cli)                                    | Node package manager                                                |
-| [nvm](https://github.com/nvm-sh/nvm)                                 | NVM or some similar tool for managing node versions                 |
+|                                      |                                                     |
+| ------------------------------------ | --------------------------------------------------- |
+| [node](https://nodejs.org/en/)       | Node JavaScript execution environment               |
+| [npm](https://github.com/npm/cli)    | Node package manager                                |
+| [nvm](https://github.com/nvm-sh/nvm) | NVM or some similar tool for managing node versions |
 
 Node is a requirement; when you install node, you will probably also get npm automatically. Though not absolutely necessary, we recommend using a **node version manager** like nvm to manage node/npm installations.
 
 However you get it, you need the node version specified in the [Dockerfile](https://github.com/SwissDataScienceCenter/renku-ui/blob/master/client/Dockerfile).
+
+## Git hooks
+
+This project uses [husky](https://typicode.github.io/husky) to handle git hooks.
+
+    $ npm install
+
+This will install husky and the git hooks.
 
 ## Recommended tools
 
 If you are content with testing your changes using Cypress, all you need is node. If you want to develop and test your changes against a real RenkuLab deployment, then you will need a few more tools.
 
 |                                                                      |                                                                     |
-|----------------------------------------------------------------------|---------------------------------------------------------------------|
+| -------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | [kubectl](https://kubernetes.io/docs/tasks/tools/)                   | K8s command-line tool                                               |
 | [telepresence](https://www.telepresence.io/docs/latest/quick-start/) | Tool for redirecting requests to your local development environment |
 
 Kubectl and telepresence will allow you to inject code running on your development machine into a K8s deployment. These two tools will be sufficient if you do not need to deploy the renku application into K8s yourself. If you **do** need to do that, then you will additionally need:
 
-|                                                                      |                                                                     |
-|----------------------------------------------------------------------|---------------------------------------------------------------------|
-| [docker](https://www.docker.com)                                     | For building containers                                             |
-| [helm](https://helm.sh)                                              | For packaging things for K8s                                        |
-
+|                                  |                              |
+| -------------------------------- | ---------------------------- |
+| [docker](https://www.docker.com) | For building containers      |
+| [helm](https://helm.sh)          | For packaging things for K8s |
 
 # Client
 
 The client is the [React-based](https://reactjs.org) front-end for RenkuLab. Development started in 2017, and, in the intervening years, we have striven to change our development style to reflect the evolving best practices around the tools we use. You will see that not all code conforms to the guidelines laid out in this document, but **new code** should follow these guidelines, and older code should be refactored at opportune moments, whenever possible, to conform as well.
 
-
 ## Tool Stack
 
 | Framework                                     | Purpose                                       |
-|-----------------------------------------------|-----------------------------------------------|
+| --------------------------------------------- | --------------------------------------------- |
 | [Bootstrap](https://getbootstrap.com)         | Responsive grid, HTML styling, and components |
 | [Cypress](https://www.cypress.io)             | UI testing framework                          |
 | [React](https://reactjs.org)                  | Reactive component framework                  |
@@ -67,6 +73,22 @@ The client is the [React-based](https://reactjs.org) front-end for RenkuLab. Dev
 | [Storybook](https://storybook.js.org)         | UI component documentation                    |
 | [TypeScript](https://www.typescriptlang.org)  | JavaScript extension with static typing       |
 
+## Code Formating
+
+We use [prettier](https://prettier.io/docs/en/) to format the client codebase.
+
+You can manually run formatting with the following:
+
+    $ cd client
+    $ npm run format
+
+This repository is configured to automatically format the client files on
+commit.
+
+To automatically format on save in VS Code, you can install the
+`esbenp.prettier-vscode` extension then open your workspace settings.
+First, search for `editor.defaultFormatter` and set it to `Prettier`, then
+search for `editor.formatOnSave` and turn on "Format on save".
 
 ## Unit Tests and Linting
 
@@ -136,17 +158,17 @@ To the body of your PR description.
 
 There are a few environment variables you may want to set when starting telepresence if you are going to to take advantage of the Renku team internal development infrastructure:
 
--   SENTRY: set to 1 to redirect the exceptions to the dev [sentry](https://sentry.dev.renku.ch) deployment
--   PR: set to the target PR number in the [renku-ui](https://github.com/SwissDataScienceCenter/renku-ui/pulls) repo to work in the corresponding CI deployment
--   DEV_NAMESPACE: if you do not target a PR deployment you should specify a value for this to reference the namespace with your development deployment
-
+- SENTRY: set to 1 to redirect the exceptions to the dev [sentry](https://sentry.dev.renku.ch) deployment
+- PR: set to the target PR number in the [renku-ui](https://github.com/SwissDataScienceCenter/renku-ui/pulls) repo to work in the corresponding CI deployment
+- DEV_NAMESPACE: if you do not target a PR deployment you should specify a value for this to reference the namespace with your development deployment
 
 For example:
+
 ```
     $ SENTRY=0 PR=1166 ./run-telepresence.sh
 ```
 
-There are also further configuration possibilities offered by the  `run-telepresence.sh` script. For
+There are also further configuration possibilities offered by the `run-telepresence.sh` script. For
 specific use cases, you may need to modify the script directly, since not all options are configurable through environment variables.
 
 ## Coding Guidelines
@@ -159,8 +181,8 @@ New code should be developed in TypeScript, and older code should be converted t
 
 ### **React components should be functional and take advantage of hooks**
 
-* Use `useState` to manage component-local state
-* Use `useEffect` for handling the component lifecycle
+- Use `useState` to manage component-local state
+- Use `useEffect` for handling the component lifecycle
 
 ### **Application state is managed by Redux**
 
@@ -168,10 +190,10 @@ We follow the [redux-toolkit](https://redux-toolkit.js.org/tutorials/typescript)
 
 Key points around this include:
 
-* Global application state is kept in a single, global [Redux](https://redux.js.org) store
-* Features (see below) should make [slices](https://redux-toolkit.js.org/usage/usage-with-typescript#createslice) that encapsulate the state they need and add the slices into the [global store](https://redux-toolkit.js.org/api/configureStore).
-* Use the `useSelector` hook to access information from slices in components
-* Use the `useDispatch` hook to make changes to state in components
+- Global application state is kept in a single, global [Redux](https://redux.js.org) store
+- Features (see below) should make [slices](https://redux-toolkit.js.org/usage/usage-with-typescript#createslice) that encapsulate the state they need and add the slices into the [global store](https://redux-toolkit.js.org/api/configureStore).
+- Use the `useSelector` hook to access information from slices in components
+- Use the `useDispatch` hook to make changes to state in components
 
 ### **Interact with backend services using RTK Query**
 
@@ -181,11 +203,11 @@ Key points around this include:
 
 Based on [these suggestions from Redux](https://redux.js.org/faq/code-structure), we decided to use a few folders to bundle functions and components together, broadly following the "Feature folders" style.
 
-Here are the folders in `/client/src`  where to place new components:
+Here are the folders in `/client/src` where to place new components:
 
-* `features`: create/use sub-folders to contain files identifying single features. These sometimes correspond to Renku abstractions, like "Projects", "Datasets", "Sessions", or to cross-entity features such as "Search" and "Dashboard". All RTK queries should be triggered by components in this folder. Most of the actions to save data in the Redux store slices should be defined here as well.
-* `components`: add here components that can be reused in different contexts. If something is clearly a shared component (E.G. `RenkuAlert`), put it here. If it's not obvious, and currently used by just one component, you can leave it in the `feature` folder (follow the principle: do not over-engineer it too early). Mind that we also store most of the temporary values in the Redux store, so you can define actions here if necessary.
-* `utils`: put here anything generic that doesn't fall into the previous categories (E.G. constants, helper functions, wrappers).
+- `features`: create/use sub-folders to contain files identifying single features. These sometimes correspond to Renku abstractions, like "Projects", "Datasets", "Sessions", or to cross-entity features such as "Search" and "Dashboard". All RTK queries should be triggered by components in this folder. Most of the actions to save data in the Redux store slices should be defined here as well.
+- `components`: add here components that can be reused in different contexts. If something is clearly a shared component (E.G. `RenkuAlert`), put it here. If it's not obvious, and currently used by just one component, you can leave it in the `feature` folder (follow the principle: do not over-engineer it too early). Mind that we also store most of the temporary values in the Redux store, so you can define actions here if necessary.
+- `utils`: put here anything generic that doesn't fall into the previous categories (E.G. constants, helper functions, wrappers).
 
 Picking the perfect place isn't always straightforward and our current folder structure still has many outdated components that don't follow the convention. We plan to move them when already touching the code for other changes.
 
@@ -205,13 +227,12 @@ Though the server is the first receipient of service requests from the client, i
 
 ## Tool Stack
 
-| Framework                                                            | Purpose                                       |
-|----------------------------------------------------------------------|-----------------------------------------------|
-| [Express](https://expressjs.com)                                     | Route and respond to HTTP requests            |
-| [Morgan](https://expressjs.com/en/resources/middleware/morgan.html)  | Logging middleware for express                |
-| [TypeScript](https://www.typescriptlang.org)                         | JavaScript extension with static typing       |
-| [WS](https://www.npmjs.com/package/ws)                               | WebSocket framework                           |
-
+| Framework                                                           | Purpose                                 |
+| ------------------------------------------------------------------- | --------------------------------------- |
+| [Express](https://expressjs.com)                                    | Route and respond to HTTP requests      |
+| [Morgan](https://expressjs.com/en/resources/middleware/morgan.html) | Logging middleware for express          |
+| [TypeScript](https://www.typescriptlang.org)                        | JavaScript extension with static typing |
+| [WS](https://www.npmjs.com/package/ws)                              | WebSocket framework                     |
 
 ## Unit Tests and Linting
 
@@ -251,8 +272,8 @@ Telepresence replaces the UI server pod in the target Kubernetes instance. All t
 
 The instructions for deploying the renku application into K8s are the same as in the client, so see that section for those details. There are some small differences in how the server `run-telepresence.sh` script works compared to the client.
 
-* In the server, `run-telepresence.sh` will prompt you to provide or override the deployment you want to intercept. You can enter the id of a PR to intercept the deployment associated with a GitHub PR.
-* By default, the script will start the server and wait for a debugger to attach. Instead, you can start in _console mode_ and start the server yourself by running `npm run dev-debug` (within a debugger).
+- In the server, `run-telepresence.sh` will prompt you to provide or override the deployment you want to intercept. You can enter the id of a PR to intercept the deployment associated with a GitHub PR.
+- By default, the script will start the server and wait for a debugger to attach. Instead, you can start in _console mode_ and start the server yourself by running `npm run dev-debug` (within a debugger).
 
 For the default mode of the script, you will need to attach a debugger to finish bringing the server up. In VS Code, you can add a **Node Attach** run configuration for this. It will look something like:
 
@@ -289,6 +310,7 @@ $ telepresence connect
 If that is not sufficient, you may need use the activity monitor to find and kill zombie telepresence processes before restarting.
 
 # Site navigation map
+
 Note: stroke-dasharray when the link is only for anonymous users
 
 ```mermaid
@@ -334,6 +356,7 @@ flowchart LR
         PRIDDA1-->PRIDDA11(/modify)
         end
 ```
+
 External links map
 
 ```mermaid

@@ -29,7 +29,7 @@ import uuid from "uuid/v4";
 const orderByValuesMap = {
   TITLE: "title",
   DATE: "date",
-  PROJECTSCOUNT: "projectsCount"
+  PROJECTSCOUNT: "projectsCount",
 };
 
 const datasetListSchema = new Schema({
@@ -44,7 +44,7 @@ const datasetListSchema = new Schema({
   initialized: { initial: true },
   datasets: { initial: [] },
   errorMessage: { initial: "" },
-  gridDisplay: { initial: true }
+  gridDisplay: { initial: true },
 });
 
 class DatasetListModel extends StateModel {
@@ -89,7 +89,13 @@ class DatasetListModel extends StateModel {
     this.set("gridDisplay", gridDisplay);
   }
 
-  setQueryAndSortInSearch(query, orderBy, orderSearchAsc, pathName, pageNumber) {
+  setQueryAndSortInSearch(
+    query,
+    orderBy,
+    orderSearchAsc,
+    pathName,
+    pageNumber
+  ) {
     this.setQuery(query);
     this.setOrderBy(orderBy);
     this.setOrderSearchAsc(orderSearchAsc);
@@ -101,7 +107,7 @@ class DatasetListModel extends StateModel {
   resetBeforeNewSearch() {
     this.setObject({
       currentPage: 1,
-      pages: { $set: [] }
+      pages: { $set: [] },
     });
   }
 
@@ -128,7 +134,7 @@ class DatasetListModel extends StateModel {
       totalItems: pagination.totalItems,
       initialized: false,
       errorMessage: "",
-      loading: false
+      loading: false,
     };
     this.setObject(newData);
     return newData;
@@ -146,15 +152,20 @@ class DatasetListModel extends StateModel {
       per_page: this.get("perPage"),
       page: this.get("currentPage"),
     };
-    return this.client.searchDatasets(searchParams)
-      .then( response => {
+    return this.client
+      .searchDatasets(searchParams)
+      .then((response) => {
         const currentSearchId = this.get("searchId");
         if (currentSearchId !== searchId) return;
         this.manageResponse(response);
       })
       .catch((error) => {
         let newData = {};
-        if (error.response && error.response.status === 400 && this.get("initialized") === false)
+        if (
+          error.response &&
+          error.response.status === 400 &&
+          this.get("initialized") === false
+        )
           newData.errorMessage = "The query is invalid.";
         else if (error.response && error.response.status === 404)
           newData.errorMessage = "No datasets found for this query.";

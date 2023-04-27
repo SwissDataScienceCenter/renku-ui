@@ -34,42 +34,62 @@ import ListBar from "./list/ListBar";
  * @param items items to display, documented on top on ListCard.
  */
 function ListDisplay(props) {
-
-  const { currentPage, perPage, items, search, totalItems, gridDisplay, itemsType, gridColumnsBreakPoint } = props;
+  const {
+    currentPage,
+    perPage,
+    items,
+    search,
+    totalItems,
+    gridDisplay,
+    itemsType,
+    gridColumnsBreakPoint,
+  } = props;
 
   if (!items || !items.length)
-    return (<p>We could not find any matching {itemsType}s.</p>);
+    return <p>We could not find any matching {itemsType}s.</p>;
 
-  const rows = gridDisplay ?
-    items.map(item => <ListCard key={item.id} {...item} />)
-    : items.map(item => <ListBar key={item.id} {...item} />);
+  const rows = gridDisplay
+    ? items.map((item) => <ListCard key={item.id} {...item} />)
+    : items.map((item) => <ListBar key={item.id} {...item} />);
 
-  const onPageChange = (page) => { search({ page }); };
+  const onPageChange = (page) => {
+    search({ page });
+  };
   const breakPointColumns = gridColumnsBreakPoint || {
     default: 4,
     1100: 3,
     700: 2,
-    500: 1
+    500: 1,
   };
 
-  return gridDisplay ?
+  return gridDisplay ? (
     <div>
       <Masonry
         className="rk-search-result-grid mb-4"
-        breakpointCols= {breakPointColumns}
+        breakpointCols={breakPointColumns}
       >
         {rows}
       </Masonry>
-      <Pagination currentPage={currentPage} perPage={perPage} totalItems={totalItems} onPageChange={onPageChange}
-        className="d-flex justify-content-center rk-search-pagination"/>
+      <Pagination
+        currentPage={currentPage}
+        perPage={perPage}
+        totalItems={totalItems}
+        onPageChange={onPageChange}
+        className="d-flex justify-content-center rk-search-pagination"
+      />
     </div>
-    :
+  ) : (
     <div>
       <div className="my-sm-2 my-md-4 d-flex flex-column gap-3">{rows}</div>
-      <Pagination currentPage={currentPage} perPage={perPage} totalItems={totalItems} onPageChange={onPageChange}
-        className="d-flex justify-content-center rk-search-pagination"/>
-    </div>;
-
+      <Pagination
+        currentPage={currentPage}
+        perPage={perPage}
+        totalItems={totalItems}
+        onPageChange={onPageChange}
+        className="d-flex justify-content-center rk-search-pagination"
+      />
+    </div>
+  );
 }
 
 export default ListDisplay;

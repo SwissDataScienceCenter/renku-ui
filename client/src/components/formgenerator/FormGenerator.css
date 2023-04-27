@@ -29,30 +29,30 @@
 */
 
 :root {
-	--ck-border-radius: 4px;
-	--ck-font-size-base: 14px;
-	--ck-custom-border: hsl(300, 1%, 22%);
-	--ck-color-focus-border: var(--ck-color-base-border);
+  --ck-border-radius: 4px;
+  --ck-font-size-base: 14px;
+  --ck-custom-border: hsl(300, 1%, 22%);
+  --ck-color-focus-border: var(--ck-color-base-border);
 }
 
 .ck-read-only {
-	background-color: #e9ecef !important;
+  background-color: #e9ecef !important;
 }
 
 .ck-editor__editable {
-	min-height: 180px;
+  min-height: 180px;
 }
 
-.disabled-input{
-	background-color: #e9ecef;
-	cursor: pointer;
+.disabled-input {
+  background-color: #e9ecef;
+  cursor: pointer;
 }
 
-.text-button{
-	margin-left: 5px;
+.text-button {
+  margin-left: 5px;
 }
 
-.text-button:hover{
-	text-decoration: underline;
-	font-weight: bold;
+.text-button:hover {
+  text-decoration: underline;
+  font-weight: bold;
 }
