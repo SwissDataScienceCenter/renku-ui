@@ -216,6 +216,11 @@ function App(props) {
   const [notifications, setNotifications] = useState(null);
 
   useEffect(() => {
+    // eslint-disable-next-line no-console, spellcheck/spell-checker
+    console.log("leafty - demo");
+  }, []);
+
+  useEffect(() => {
     const getLocation = () => props.location;
     const notificationManager = new NotificationsManager(props.model, props.client, getLocation);
     setNotifications(notificationManager);
