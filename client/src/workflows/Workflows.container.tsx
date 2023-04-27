@@ -49,7 +49,7 @@ interface WorkflowsListProps {
   reference: string;
   repositoryUrl: string;
   versionUrl: string;
-  backendAvailable: boolean;
+  backendAvailable: boolean | null | undefined;
 }
 
 function deserializeError(error: any) {
@@ -79,8 +79,7 @@ function WorkflowsList({
   const selected = id;
 
   // Verify backend support and availability
-  const unsupported =
-    !backendAvailable ||
+  const unsupported = (backendAvailable != null && !backendAvailable) ||
     !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
 
   // Configure the functions to dispatch workflowsDisplay changes

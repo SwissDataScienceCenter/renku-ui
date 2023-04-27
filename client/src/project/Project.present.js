@@ -847,7 +847,7 @@ function ProjectViewWorkflows(props) {
       reference={reference}
       repositoryUrl={props.externalUrl}
       versionUrl={props.migration?.core?.versionUrl}
-      backendAvailable={!!props.migration?.core?.backendAvailable}
+      backendAvailable={props.migration?.core?.backendAvailable}
     />
   );
 }
