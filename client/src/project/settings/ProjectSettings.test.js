@@ -61,7 +61,10 @@ describe("rendering", () => {
 
   it("renders ProjectSettingsGeneral", async () => {
     const props = {
-      metadata: {},
+      metadata: {
+        sshUrl: "SSH URL",
+        httpUrl: "HTTP URL",
+      },
     };
 
     const div = document.createElement("div");
