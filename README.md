@@ -61,6 +61,8 @@ Kubectl and telepresence will allow you to inject code running on your developme
 
 The client is the [React-based](https://reactjs.org) front-end for RenkuLab. Development started in 2017, and, in the intervening years, we have striven to change our development style to reflect the evolving best practices around the tools we use. You will see that not all code conforms to the guidelines laid out in this document, but **new code** should follow these guidelines, and older code should be refactored at opportune moments, whenever possible, to conform as well.
 
+Further technical details are available in [README file in the `client` folder](./client/README.md). 
+
 ## Tool Stack
 
 | Framework                                     | Purpose                                       |
@@ -92,17 +94,16 @@ search for `editor.formatOnSave` and turn on "Format on save".
 
 ## Unit Tests and Linting
 
-We use [jest](https://jestjs.io) as for unit tests and
-[eslint](https://eslint.org/) to detect trivial errors and enforce some coding-style preferences. We require both
-commands to terminate without warnings before we merge a PR. You can
-manually run tests using the following commands:
+We use [jest](https://jestjs.io) for unit tests and
+[eslint](https://eslint.org/) for linting. We run them in out CI piplines and
+require both to pass without warnings before we merge a PR. You can manually run
+tests using the following commands:
 
     $ cd client   # or server if you need to work there
     $ npm test
     $ npm run lint
 
-Some linting errors can be automatically fixed by running
-`npm run lint-fix`.
+Mind that some linting errors can be automatically fixed by running `npm run lint-fix`.
 
 We suggest using an IDE that supports eslint (like [VS Code](https://code.visualstudio.com) or similar) and configuring your IDE to integrate with our eslint configuration so that any linting errors will be displayed as you develop rather than waiting for the CI pipeline to flag them.
 
