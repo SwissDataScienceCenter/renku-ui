@@ -237,6 +237,7 @@ function WorkflowsListFilters({
       <div className="input-filter-box--workflows form-rk-yellow">
         <div className="form-check form-switch">
           <Input
+            data-cy="workflows-inactive-toggle"
             type="switch"
             id="wfExcludeInactive"
             label="label here"
@@ -306,7 +307,7 @@ function orderWorkflows(
 ) {
   const filtered = !showInactive
     ? workflows.filter((w) => w.active)
-    : workflows;
+    : [...workflows];
 
   // ? Pre-sort by a unique prop to guarantee consistency
   const preSorted = filtered.sort((a, b) =>

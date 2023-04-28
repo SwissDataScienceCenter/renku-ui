@@ -94,6 +94,7 @@
     "@babel/helper-regex": "^7.10.5",
     "@babel/preset-typescript": "^7.16.7",
     "@craco/craco": "^7.0.0",
+    "@rtk-query/codegen-openapi": "^1.0.0",
     "@storybook/addon-actions": "^6.5.15",
     "@storybook/addon-essentials": "^6.5.15",
     "@storybook/addon-interactions": "^6.5.15",
