@@ -6,3 +6,7 @@ set -e
 cd ./client
 npm run format-commit 
 cd ..
+
+cd ./server
+npm run format-commit 
+cd ..
