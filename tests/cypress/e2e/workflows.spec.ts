@@ -29,12 +29,38 @@ describe("iteract with workflows", () => {
     fixtures.projectLockStatus().projectMigrationUpToDate();
   });
 
-  it("get list of workflow and interact", () => {
+  it("get list of workflows and interact", () => {
     fixtures.getWorkflows("workflows/workflows-list-links-mappings.json");
     cy.visit("/projects/e2e/local-test-project/workflows");
     cy.get_cy("workflows-page").should("exist");
     cy.wait("@getWorkflows");
     cy.get_cy("workflows-browser").should("exist").children().should("have.length", 4);
+    cy.get_cy("workflows-browser").children().first().contains("pipeline");
+
+    // change ordering
+    cy.gui_workflows_change_sorting("Estimated duration");
+    cy.get_cy("workflows-browser").children().first().contains("train");
+
+    // change order direction
+    cy.gui_workflows_change_sort_order();
+    cy.get_cy("workflows-browser").children().first().contains("pipeline");
+  });
+
+  it("view inactive workflows and interact", () => {
+    fixtures.getWorkflows(
+      "workflows/workflows-list-links-mappings-inactive.json"
+    );
+    cy.visit("/projects/e2e/local-test-project/workflows");
+    cy.get_cy("workflows-page").should("exist");
+    cy.wait("@getWorkflows");
+
+    // Click "Show inactive workflows"
+    cy.get_cy("workflows-inactive-toggle").should("exist").click();
+
+    cy.get_cy("workflows-browser")
+      .should("exist")
+      .children()
+      .should("have.length", 4);
     cy.get_cy("workflows-browser").children().first().contains("pipeline");
 
     // change ordering
