@@ -237,6 +237,7 @@ function WorkflowsListFilters({
       <div className="input-filter-box--workflows form-rk-yellow">
         <div className="form-check form-switch">
           <Input
+            data-cy="workflows-inactive-toggle"
             type="switch"
             id="wfExcludeInactive"
             label="label here"
