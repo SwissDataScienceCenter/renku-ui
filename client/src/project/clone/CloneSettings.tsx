@@ -32,15 +32,13 @@ export const CloneSettings = ({
   projectPath,
   sshUrl,
   httpUrl,
-}: CloneSettingsProps) => {
-  return (
-    <>
-      <CloneCommands externalUrl={externalUrl} projectPath={projectPath} />
-      <div className="border-top border-1 border-primary my-3" />
-      <RepositoryUrls sshUrl={sshUrl} httpUrl={httpUrl} />
-    </>
-  );
-};
+}: CloneSettingsProps) => (
+  <>
+    <CloneCommands externalUrl={externalUrl} projectPath={projectPath} />
+    <div className="border-top border-1 border-primary my-3" />
+    <RepositoryUrls sshUrl={sshUrl} httpUrl={httpUrl} />
+  </>
+);
 
 interface CloneCommandsProps {
   externalUrl: string;
@@ -66,7 +64,6 @@ interface RepositoryUrlsProps {
 
 const RepositoryUrls = ({ sshUrl, httpUrl }: RepositoryUrlsProps) => {
   const httpStr = httpUrl.startsWith("https") ? "HTTPS" : "HTTP";
-
   return (
     <>
       <Label>Repository URL</Label>
@@ -87,8 +84,6 @@ const GitClone = ({ externalUrl, projectPath }: GitCloneProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const onToggle = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
-  // const onOpen = useCallback(() => setIsOpen(true), []);
-  // const onClose = useCallback(() => setIsOpen(false), []);
 
   const gitClone = `git clone ${externalUrl}.git && cd ${projectPath} && git lfs install --local --force`;
   // eslint-disable-next-line spellcheck/spell-checker

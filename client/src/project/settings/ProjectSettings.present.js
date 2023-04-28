@@ -95,7 +95,14 @@ function ProjectSettingsGeneral(props) {
   }, []); // eslint-disable-line
 
   if (props.settingsReadOnly) {
-    return <CloneSettings />;
+    return (
+      <CloneSettings
+        externalUrl={props.externalUrl}
+        projectPath={props.metadata.path}
+        sshUrl={props.metadata.sshUrl}
+        httpUrl={props.metadata.httpUrl}
+      />
+    );
   }
 
   return (

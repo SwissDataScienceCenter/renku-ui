@@ -128,7 +128,6 @@ describe("display a project", () => {
   fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
-    // fixtures.config().versions().userNone();
     fixtures.projects().landingUserProjects().projectTest();
     fixtures.projectLockStatus().projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project");
