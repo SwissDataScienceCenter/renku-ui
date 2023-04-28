@@ -17,45 +17,23 @@
  */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import type { DatasetKg, IDatasetFile } from "./Project.d";
-// import { formatProjectMetadata, ProjectMetadata } from "../../utils/helpers/ProjectFunctions";
-// import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-interface CoreServiceParams {
-  versionUrl?: string;
-}
-
-interface GetDatasetFilesParams extends CoreServiceParams {
-  git_url: string;
-  name: string;
-}
-
-interface GetDatasetFilesResponse {
-  result: {
-    files: IDatasetFile[];
-    name: string;
-  };
-  error: {
-    userMessage?: string;
-    reason?: string;
-  };
-}
-
-interface GetDatasetKgParams {
-  id: string;
-}
-
-interface IDatasetFiles {
-  hasPart: { name: string; atLocation: string }[];
-}
+import type {
+  DatasetKg,
+  GetDatasetFilesParams,
+  GetDatasetFilesResponse,
+  GetDatasetKgParams,
+  IDatasetFiles,
+  MigrationStatus,
+  MigrationStatusParams,
+  MigrationStatusResponse,
+} from "./Project.d";
 
 function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
   const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : endpoint;
   return `/renku${urlPath}`;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function urlWithQueryParams(url: string, queryParams: any) {
   const query = new URLSearchParams(queryParams).toString();
   return `${url}?${query}`;
@@ -64,6 +42,8 @@ function urlWithQueryParams(url: string, queryParams: any) {
 export const projectCoreApi = createApi({
   reducerPath: "projectCore",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
+  tagTypes: ["project"],
+  keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getDatasetFiles: builder.query<IDatasetFiles, GetDatasetFilesParams>({
       query: (params: GetDatasetFilesParams) => {
@@ -107,9 +87,62 @@ export const projectCoreApi = createApi({
         };
       },
     }),
+    getMigrationStatus: builder.query<MigrationStatus, MigrationStatusParams>({
+      query: (migrationParams) => {
+        return {
+          url: "/renku/cache.migrations_check", // ? migrations check always invoked on the last renku version
+          params: {
+            git_url: migrationParams.gitUrl,
+            branch: migrationParams.branch,
+          },
+        };
+      },
+      transformResponse: (response: MigrationStatusResponse) => {
+        const transformedResponse: MigrationStatus = {
+          errorProject: false,
+          errorTemplate: false,
+        };
+        if (response.error) {
+          transformedResponse.errorProject = true;
+          transformedResponse.errorTemplate = true;
+          transformedResponse.error = response.error;
+        } else if (
+          response.result?.core_compatibility_status?.type === "error"
+        ) {
+          transformedResponse.errorProject = true;
+          transformedResponse.details = response.result;
+          transformedResponse.error =
+            response.result?.core_compatibility_status;
+        } else if (response.result?.dockerfile_renku_status?.type === "error") {
+          transformedResponse.errorProject = true;
+          transformedResponse.details = response.result;
+          transformedResponse.error = response.result?.dockerfile_renku_status;
+        } else if (response.result?.template_status?.type === "error") {
+          transformedResponse.errorTemplate = true;
+          transformedResponse.details = response.result;
+          transformedResponse.error = response.result?.template_status;
+        } else {
+          transformedResponse.details = response.result;
+        }
+        return transformedResponse;
+      },
+      transformErrorResponse: (errorData) => {
+        return {
+          errorProject: true,
+          errorTemplate: true,
+          error: {
+            code: errorData.status,
+            userMessage: `Unknown ${errorData.status}  error`,
+            developerMessage: `Unknown ${errorData.status}  error`,
+          },
+        };
+      },
+    }),
   }),
 });
 
-// Export hooks for usage in function components, which are
-// auto-generated based on the defined endpoints
-export const { useGetDatasetFilesQuery, useGetDatasetKgQuery } = projectCoreApi;
+export const {
+  useGetDatasetFilesQuery,
+  useGetDatasetKgQuery,
+  useGetMigrationStatusQuery,
+} = projectCoreApi;

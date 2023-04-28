@@ -45,7 +45,7 @@ import {
 } from "../Project";
 import { ProjectIndexingStatuses } from "../ProjectEnums";
 import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";
-import { projectVersionApi } from "../projectVersionApi";
+import { useGetMigrationStatusQuery } from "../projectCoreApi";
 import { projectKgApi } from "../projectKgApi";
 import { Loader } from "../../../components/Loader";
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
@@ -235,8 +235,10 @@ function ProjectMigrationStatus({
   const toggleShowDetails = () => setShowDetails(!showDetails);
 
   const skip = !gitUrl || !branch;
-  const { data, isLoading, error } =
-    projectVersionApi.useGetMigrationStatusQuery({ gitUrl, branch }, { skip });
+  const { data, isLoading, error } = useGetMigrationStatusQuery(
+    { gitUrl, branch },
+    { skip }
+  );
 
   if (isLoading || skip || checkingSupport) {
     return (

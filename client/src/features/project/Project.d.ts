@@ -19,12 +19,40 @@
 import { CoreErrorContent } from "../../utils/definitions";
 import { ProjectIndexingStatuses } from "./ProjectEnums";
 
-interface Creator {
+export interface CoreServiceParams {
+  versionUrl?: string;
+}
+
+export interface GetDatasetFilesParams extends CoreServiceParams {
+  git_url: string;
+  name: string;
+}
+
+export interface GetDatasetFilesResponse {
+  result: {
+    files: IDatasetFile[];
+    name: string;
+  };
+  error: {
+    userMessage?: string;
+    reason?: string;
+  };
+}
+
+export interface GetDatasetKgParams {
+  id: string;
+}
+
+export interface IDatasetFiles {
+  hasPart: { name: string; atLocation: string }[];
+}
+
+export interface Creator {
   affiliation: string | null;
   email: string;
 }
 
-type DatasetAbstract = {
+export type DatasetAbstract = {
   annotations: string[];
   description: string;
   identifier: string;
@@ -35,12 +63,12 @@ type DatasetAbstract = {
   title: string;
 };
 
-interface DatasetCore extends DatasetAbstract {
+export interface DatasetCore extends DatasetAbstract {
   creators: Creator[];
   created_at: string;
 }
 
-interface DatasetKg extends DatasetAbstract {
+export interface DatasetKg extends DatasetAbstract {
   created: string;
   hasPart: Part[];
   published: Published;
@@ -49,7 +77,7 @@ interface DatasetKg extends DatasetAbstract {
   sameAs?: string;
 }
 
-interface IDataset extends DatasetAbstract {
+export interface IDataset extends DatasetAbstract {
   created: string;
   exists: boolean;
   insideKg: boolean;
@@ -60,20 +88,20 @@ interface IDataset extends DatasetAbstract {
   usedIn?: UsedIn;
 }
 
-type IDatasetFiles = {
+export type IDatasetFiles = {
   fetched: boolean;
   fetching: boolean;
   files: IDatasetFile[];
 };
 
-type IDatasetFile = {
+export type IDatasetFile = {
   path: string;
   added: string;
   name: string;
 };
 
 // ! TODO: remove this since we have another interface
-type IMigration = {
+export type IMigration = {
   check: {
     core_renku_version?: string;
     project_supported?: boolean;
@@ -111,16 +139,16 @@ type IMigration = {
   migration_error: unknown | null;
 };
 
-interface Part {
+export interface Part {
   atLocation: string;
 }
 
-interface Published {
+export interface Published {
   creator: Creator[];
   datePublished?: string;
 }
 
-type StateModelProject = {
+export type StateModelProject = {
   branches: unknown;
   datasets: {
     core: {
@@ -150,7 +178,7 @@ type StateModelProject = {
   };
 };
 
-type UsedIn = {
+export type UsedIn = {
   _links: [
     {
       rel: string;
@@ -234,15 +262,3 @@ export interface ProjectIndexingStatusResponse {
 export interface ProjectActivateIndexingResponse {
   message: string;
 }
-
-export type {
-  DatasetCore,
-  DatasetKg,
-  IDataset,
-  IDatasetFile,
-  IDatasetFiles,
-  IMigration,
-  StateModelProject,
-  IDataset,
-  StateModelProject,
-};
