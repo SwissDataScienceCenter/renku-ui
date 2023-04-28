@@ -1,4 +1,4 @@
-import type { ConfigFile } from "@rtk-query/codegen-openapi"
+import type { ConfigFile } from "@rtk-query/codegen-openapi";
 
 enum Backends {
   Core = "Core",
@@ -9,7 +9,6 @@ enum Backends {
 // ? CUSTOMIZE THESE 2 LINES ? //
 const targetDeplyoment = "dev.renku.ch";
 const targetBackend = Backends.Notebooks;
-
 
 const PREFIX = "https://";
 
@@ -38,7 +37,7 @@ const BackendsConfig = {
 
 const config: ConfigFile = {
   ...BackendsConfig[targetBackend],
-  ...configDefaults
+  ...configDefaults,
 };
 
 export default config;
