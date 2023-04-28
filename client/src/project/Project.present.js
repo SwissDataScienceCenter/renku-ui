@@ -86,9 +86,9 @@ import {
   ProjectFileLineage,
   ProjectFileView,
 } from "../features/project";
+import { CloneButton } from "./clone/CloneButton";
 
 import "./Project.css";
-import { CloneButton } from "./components/CloneButton";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
