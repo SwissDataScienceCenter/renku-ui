@@ -38,27 +38,23 @@ import { faCopy } from "@fortawesome/free-regular-svg-icons";
 
 const COPY_TIMEOUT_MS = 3_000;
 
-interface ClipboardV2Props {
+interface ClipboardProps {
   className?: string;
   clipboardText: string;
   children?: ReactNode;
 }
 
-export const ClipboardV2 = ({
+export const Clipboard = ({
   className,
   clipboardText,
   children,
-}: ClipboardV2Props) => {
+}: ClipboardProps) => {
   const [copied, setCopied] = useState(false);
 
   const currentTimeoutRef = useRef<number | null>(null);
   useEffect(() => {
     return () => {
       if (currentTimeoutRef.current) {
-        console.log(
-          "Cancelling ClipboardV2 timeout",
-          currentTimeoutRef.current
-        );
         window.clearTimeout(currentTimeoutRef.current);
       }
     };
@@ -87,9 +83,9 @@ export const ClipboardV2 = ({
     >
       <Wrap>
         {copied ? (
-          <FontAwesomeIcon icon={faCheck} size="1x" style={{minWidth: 16}} />
+          <FontAwesomeIcon icon={faCheck} size="1x" style={{ minWidth: 16 }} />
         ) : (
-          <FontAwesomeIcon icon={faCopy} size="1x"style={{minWidth: 16}}/>
+          <FontAwesomeIcon icon={faCopy} size="1x" style={{ minWidth: 16 }} />
         )}
         {children}
       </Wrap>

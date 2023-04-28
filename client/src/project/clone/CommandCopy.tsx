@@ -18,7 +18,7 @@
 
 import React, { useState } from "react";
 import cx from "classnames";
-import { ClipboardV2 } from "../../components/ClipboardV2";
+import { Clipboard } from "../../components/Clipboard";
 import { ThrottledTooltip } from "../../components/Tooltip";
 import styles from "./CommandCopy.module.scss";
 
@@ -56,7 +56,7 @@ export const CommandCopy = ({ command }: CommandCopyProps) => {
           {command}
         </code>
       </span>
-      <ClipboardV2
+      <Clipboard
         className={cx(
           styles.clipboardBtn,
           "rounded-end border d-inline-block align-middle cursor-pointer",

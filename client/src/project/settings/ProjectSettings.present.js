@@ -60,7 +60,7 @@ import {
 import { ProjectAvatarEdit, ProjectTags } from "../shared";
 // import { Clipboard } from "../../components/Clipboard";
 import { WarnAlert } from "../../components/Alert";
-import { ClipboardV2 } from "../../components/ClipboardV2";
+import { Clipboard } from "../../components/Clipboard";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import { InlineSubmitButton } from "../../components/buttons/Button";
@@ -205,10 +205,10 @@ function GitCloneCmd(props) {
               </div>
             </td>
             <td style={{ width: 1 }}>
-              <ClipboardV2 clipboardText={gitClone} />
+              <Clipboard clipboardText={gitClone} />
             </td>
             <td style={{ width: 1 }}>
-              <ClipboardV2 clipboardText={gitClone} />
+              <Clipboard clipboardText={gitClone} />
             </td>
           </tr>
           <tr>
@@ -217,10 +217,10 @@ function GitCloneCmd(props) {
               <code>{gitHooksInstall}</code>
             </td>
             <td style={{ width: 1 }}>
-              <ClipboardV2 clipboardText={gitHooksInstall} />
+              <Clipboard clipboardText={gitHooksInstall} />
             </td>
             <td style={{ width: 1 }}>
-              <ClipboardV2 clipboardText={gitHooksInstall} />
+              <Clipboard clipboardText={gitHooksInstall} />
             </td>
           </tr>
         </tbody>
@@ -327,7 +327,7 @@ function CommandRow(props) {
         <code className="break-word">{props.command}</code>
       </td>
       <td style={{ width: 1 }}>
-        <ClipboardV2 clipboardText={props.command} />
+        <Clipboard clipboardText={props.command} />
       </td>
     </tr>
   );
@@ -358,7 +358,7 @@ function RepositoryUrlRow(props) {
       <th scope="row">{props.urlType}</th>
       <td className="break-word">{props.url}</td>
       <td style={{ width: 1 }}>
-        <ClipboardV2 clipboardText={props.url} />
+        <Clipboard clipboardText={props.url} />
       </td>
     </tr>
   );

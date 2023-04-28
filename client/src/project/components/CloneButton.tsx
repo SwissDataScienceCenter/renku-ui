@@ -18,7 +18,7 @@
 
 import React, { useCallback, useState } from "react";
 import { ButtonWithMenu } from "../../components/buttons/Button";
-import { ClipboardV2 } from "../../components/ClipboardV2";
+import { Clipboard } from "../../components/Clipboard";
 import { faCopy } from "@fortawesome/free-regular-svg-icons";
 import {
   Button,
