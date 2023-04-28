@@ -29,7 +29,7 @@ describe("iteract with workflows", () => {
     fixtures.projectLockStatus().projectMigrationUpToDate();
   });
 
-  it("get list of workflow and interact", () => {
+  it("get list of workflows and interact", () => {
     fixtures.getWorkflows("workflows/workflows-list-links-mappings.json");
     cy.visit("/projects/e2e/local-test-project/workflows");
     cy.get_cy("workflows-page").should("exist");
