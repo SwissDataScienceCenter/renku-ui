@@ -24,6 +24,14 @@
  */
 
 import React, { Component, Fragment, useEffect, useState } from "react";
+import {
+  faCheck,
+  faEdit,
+  faExclamationTriangle,
+  faTimesCircle,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -35,69 +43,35 @@ import {
   Input,
   InputGroup,
   Label,
-  Row,
-  Table,
   Nav,
   NavItem,
-  UncontrolledTooltip,
-  Button,
-  Col,
-  Collapse,
-  Form,
-  FormGroup,
-  FormText,
-  Input,
-  InputGroup,
-  Label,
   Row,
   Table,
-  Nav,
-  NavItem,
   UncontrolledTooltip,
 } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheck,
-  faEdit,
-  faExclamationTriangle,
-  faTrash,
-  faTimesCircle,
-  faCheck,
-  faEdit,
-  faExclamationTriangle,
-  faTrash,
-  faTimesCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import _ from "lodash/array";
 
-import { ACCESS_LEVELS } from "../../api-client";
-import { ProjectAvatarEdit, ProjectTags } from "../shared";
-import {
-  NotebooksHelper,
-  ServerOptionBoolean,
-  ServerOptionEnum,
-  ServerOptionRange,
-} from "../../notebooks";
-import { ProjectAvatarEdit, ProjectTags } from "../shared";
-import {
-  NotebooksHelper,
-  ServerOptionBoolean,
-  ServerOptionEnum,
-  ServerOptionRange,
-} from "../../notebooks";
-import { Url } from "../../utils/helpers/url";
 import { RenkuNavLink } from "../../components/RenkuNavLink";
+import {
+  NotebooksHelper,
+  ServerOptionBoolean,
+  ServerOptionEnum,
+  ServerOptionRange,
+} from "../../notebooks";
+import { ProjectAvatarEdit, ProjectTags } from "../shared";
 // import { Clipboard } from "../../components/Clipboard";
-import { ClipboardV2 } from "../../components/ClipboardV2";
-import { Loader } from "../../components/Loader";
 import { WarnAlert } from "../../components/Alert";
-import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
+import { ClipboardV2 } from "../../components/ClipboardV2";
 import { ExternalLink } from "../../components/ExternalLinks";
+import { Loader } from "../../components/Loader";
+import { InlineSubmitButton } from "../../components/buttons/Button";
+import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
+import { SuccessLabel } from "../../components/formlabels/FormLabels";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { Docs } from "../../utils/constants/Docs";
-import { SuccessLabel } from "../../components/formlabels/FormLabels";
-import { InlineSubmitButton } from "../../components/buttons/Button";
 import { CloneSettings } from "../clone/CloneSettings";
+import { ACCESS_LEVELS } from "../../api-client";
+import { Url } from "../../utils/helpers/url";
+import _ from "lodash";
 
 //** Navigation **//
 
@@ -118,7 +92,6 @@ function ProjectSettingsNav(props) {
 
 function ProjectSettingsGeneral(props) {
   useEffect(() => {
-    return function cleanup() {
     return function cleanup() {
       props?.fetchProject(true);
     };
@@ -145,8 +118,6 @@ function ProjectSettingsGeneral(props) {
             onProjectTagsChange={props.onProjectTagsChange}
             settingsReadOnly={props.settingsReadOnly}
           />
-            settingsReadOnly={props.settingsReadOnly}
-          />
           <ProjectDescription {...props} />
         </Col>
         <Col xs={12} lg={6}>
@@ -161,12 +132,6 @@ function ProjectSettingsGeneral(props) {
       </Row>
       <Row>
         <Col xs={12}>
-          <ProjectAvatarEdit
-            externalUrl={props.externalUrl}
-            avatarUrl={props.metadata.avatarUrl}
-            onAvatarChange={props.onAvatarChange}
-            settingsReadOnly={props.settingsReadOnly}
-          />
           <ProjectAvatarEdit
             externalUrl={props.externalUrl}
             avatarUrl={props.metadata.avatarUrl}
@@ -210,20 +175,12 @@ function GitCloneCmd(props) {
   const gitClone = `git clone ${externalUrl}.git && cd ${projectPath} && git lfs install --local --force`;
   const gitHooksInstall = "renku githooks install"; // eslint-disable-line
   return cmdOpen ? (
-  return cmdOpen ? (
     <div className="mt-3">
       <p style={{ fontSize: "smaller" }} className="font-italic">
         If the <b>renku</b> command is not available, you can clone a project
-        using Git.
-        If the <b>renku</b> command is not available, you can clone a project
-        using Git.
+        using Git. If the <b>renku</b> command is not available, you can clone a
+        project using Git.
       </p>
-      <Table
-        style={{ fontSize: "smaller" }}
-        size="sm"
-        className="mb-0"
-        borderless={true}
-      >
       <Table
         style={{ fontSize: "smaller" }}
         size="sm"
@@ -242,9 +199,9 @@ function GitCloneCmd(props) {
               <code>{gitClone}</code>
               <div className="mt-2 mb-0">
                 If you want to work with the repo using renku, you need to run
-                the following after the <code>git clone</code> completes:
-                If you want to work with the repo using renku, you need to run
-                the following after the <code>git clone</code> completes:
+                the following after the <code>git clone</code> completes: If you
+                want to work with the repo using renku, you need to run the
+                following after the <code>git clone</code> completes:
               </div>
             </td>
             <td style={{ width: 1 }}>
@@ -268,11 +225,6 @@ function GitCloneCmd(props) {
           </tr>
         </tbody>
       </Table>
-      <Button
-        style={{ fontSize: "smaller" }}
-        color="link"
-        onClick={() => setCmdOpen(false)}
-      >
       <Button
         style={{ fontSize: "smaller" }}
         color="link"
