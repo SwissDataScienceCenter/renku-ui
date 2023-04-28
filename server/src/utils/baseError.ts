@@ -24,7 +24,11 @@
  */
 
 // eslint-disable-next-line no-unused-vars
-export enum HttpStatusCode { BAD_REQUEST = 400, NOT_FOUND = 404, INTERNAL_SERVER = 500}
+export enum HttpStatusCode {
+  BAD_REQUEST = 400,
+  NOT_FOUND = 404,
+  INTERNAL_SERVER = 500,
+}
 
 class BaseError extends Error {
   public readonly name: string;

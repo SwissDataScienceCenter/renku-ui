@@ -21,10 +21,12 @@ import logger from "../logger";
 
 import { Authenticator } from "../authentication";
 
-
 let storageFailures = 0;
 
-function registerInternalRoutes(app: express.Application, authenticator: Authenticator): void {
+function registerInternalRoutes(
+  app: express.Application,
+  authenticator: Authenticator
+): void {
   // define a route handler for the default home page
   app.get("/", (req, res) => {
     res.send("UI server up and working -- internal route '/'");
@@ -39,18 +41,20 @@ function registerInternalRoutes(app: express.Application, authenticator: Authent
   app.get("/liveness", async (req, res) => {
     // Check storage status
     const storageStatus = authenticator.storage.getStatus();
-    if (storageStatus !== "ready")
-      storageFailures++;
-    else if (storageFailures !== 0)
-      storageFailures = 0;
+    if (storageStatus !== "ready") storageFailures++;
+    else if (storageFailures !== 0) storageFailures = 0;
 
     if (storageFailures >= 5) {
-      logger.error(`Authentication storage failed ${storageFailures} times in a row. Sending a kill signal to k8s.`);
+      logger.error(
+        `Authentication storage failed ${storageFailures} times in a row. Sending a kill signal to k8s.`
+      );
       res.status(503).send("Authentication storage failed.");
       return;
     }
     if (storageFailures >= 1)
-      logger.warn(`Authentication storage is failing. This is the attempt #${storageFailures}`);
+      logger.warn(
+        `Authentication storage is failing. This is the attempt #${storageFailures}`
+      );
 
     res.send("live");
   });
@@ -64,8 +68,7 @@ function registerInternalRoutes(app: express.Application, authenticator: Authent
     else if (!authenticator.ready)
       res.status(503).send("Authenticator not ready");
     // if nothing bad happened so far... all must be working fine!
-    else
-      res.send("live");
+    else res.send("live");
   });
 }
 

@@ -18,7 +18,7 @@
 
 // ref: https://alexn.org/blog/2020/04/21/javascript-semaphore/
 export class AsyncSemaphore {
-  private _available: number
+  private _available: number;
   private _upcoming: Function[]; // eslint-disable-line @typescript-eslint/ban-types
   private _heads: Function[]; // eslint-disable-line @typescript-eslint/ban-types
 
@@ -44,20 +44,19 @@ export class AsyncSemaphore {
   }
 
   async awaitTerminate(): Promise<void> {
-    if (this._available < this.workersCount)
-      return this._completePr;
+    if (this._available < this.workersCount) return this._completePr;
   }
 
   private async _execWithRelease<A>(f: () => Promise<A>): Promise<A> {
     try {
       return await f();
-    }
-    finally {
+    } finally {
       this._release();
     }
   }
 
-  private _queue(): Function[] { // eslint-disable-line @typescript-eslint/ban-types
+  private _queue(): Function[] {
+    // eslint-disable-line @typescript-eslint/ban-types
     if (!this._heads.length) {
       this._heads = this._upcoming.reverse();
       this._upcoming = [];
@@ -70,8 +69,12 @@ export class AsyncSemaphore {
       this._available -= 1;
       return undefined;
     }
-    let fn: Function = () => { /***/ } ;// eslint-disable-line @typescript-eslint/ban-types
-    const p = new Promise<void>(ref => { fn = ref; });
+    let fn: Function = () => {
+      /***/
+    }; // eslint-disable-line @typescript-eslint/ban-types
+    const p = new Promise<void>((ref) => {
+      fn = ref;
+    });
     this._upcoming.push(fn);
     return p;
   }
@@ -81,8 +84,7 @@ export class AsyncSemaphore {
     if (queue.length) {
       const fn = queue.pop();
       if (fn) fn();
-    }
-    else {
+    } else {
       this._available += 1;
 
       if (this._available >= this.workersCount) {
@@ -94,8 +96,12 @@ export class AsyncSemaphore {
   }
 
   private _refreshComplete(): void {
-    let fn: () => void = () => { /***/ };
-    this._completePr = new Promise<void>(r => { fn = r; });
+    let fn: () => void = () => {
+      /***/
+    };
+    this._completePr = new Promise<void>((r) => {
+      fn = r;
+    });
     this._completeFn = fn;
   }
 }
