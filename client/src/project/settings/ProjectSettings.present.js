@@ -46,32 +46,29 @@ import {
   Nav,
   NavItem,
   Row,
-  Table,
   UncontrolledTooltip,
 } from "reactstrap";
 
+import _ from "lodash";
+import { ACCESS_LEVELS } from "../../api-client";
+import { WarnAlert } from "../../components/Alert";
+import { ExternalLink } from "../../components/ExternalLinks";
+import { Loader } from "../../components/Loader";
 import { RenkuNavLink } from "../../components/RenkuNavLink";
+import { InlineSubmitButton } from "../../components/buttons/Button";
+import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
+import { SuccessLabel } from "../../components/formlabels/FormLabels";
+import LoginAlert from "../../components/loginAlert/LoginAlert";
 import {
   NotebooksHelper,
   ServerOptionBoolean,
   ServerOptionEnum,
   ServerOptionRange,
 } from "../../notebooks";
-import { ProjectAvatarEdit, ProjectTags } from "../shared";
-// import { Clipboard } from "../../components/Clipboard";
-import { WarnAlert } from "../../components/Alert";
-import { Clipboard } from "../../components/Clipboard";
-import { ExternalLink } from "../../components/ExternalLinks";
-import { Loader } from "../../components/Loader";
-import { InlineSubmitButton } from "../../components/buttons/Button";
-import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
-import { SuccessLabel } from "../../components/formlabels/FormLabels";
-import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { Docs } from "../../utils/constants/Docs";
-import { CloneSettings } from "../clone/CloneSettings";
-import { ACCESS_LEVELS } from "../../api-client";
 import { Url } from "../../utils/helpers/url";
-import _ from "lodash";
+import { CloneSettings } from "../clone/CloneSettings";
+import { ProjectAvatarEdit, ProjectTags } from "../shared";
 
 //** Navigation **//
 
@@ -97,15 +94,7 @@ function ProjectSettingsGeneral(props) {
     };
   }, []); // eslint-disable-line
 
-  // const gitCommands = (
-  //   <>
-  //     <RepositoryClone {...props} />
-  //     <RepositoryUrls {...props} />
-  //   </>
-  // );
-
   if (props.settingsReadOnly) {
-    // return gitCommands;
     return <CloneSettings />;
   }
 
@@ -121,7 +110,6 @@ function ProjectSettingsGeneral(props) {
           <ProjectDescription {...props} />
         </Col>
         <Col xs={12} lg={6}>
-          {/* {gitCommands} */}
           <CloneSettings
             externalUrl={props.externalUrl}
             projectPath={props.metadata.path}
@@ -140,109 +128,6 @@ function ProjectSettingsGeneral(props) {
           />
         </Col>
       </Row>
-    </div>
-  );
-}
-
-class RepositoryClone extends Component {
-  render() {
-    const { externalUrl } = this.props;
-    const renkuClone = `renku clone ${externalUrl}.git`;
-    return (
-      <div className="mb-3">
-        <Label className="fw-bold">Clone commands</Label>
-        <Table size="sm" className="mb-0">
-          <tbody>
-            <CommandRow application="Renku" command={renkuClone} />
-          </tbody>
-        </Table>
-        <GitCloneCmd
-          externalUrl={externalUrl}
-          projectPath={this.props.metadata.path}
-        />
-        <GitCloneCmd
-          externalUrl={externalUrl}
-          projectPath={this.props.metadata.path}
-        />
-      </div>
-    );
-  }
-}
-
-function GitCloneCmd(props) {
-  const [cmdOpen, setCmdOpen] = useState(false);
-  const { externalUrl, projectPath } = props;
-  const gitClone = `git clone ${externalUrl}.git && cd ${projectPath} && git lfs install --local --force`;
-  const gitHooksInstall = "renku githooks install"; // eslint-disable-line
-  return cmdOpen ? (
-    <div className="mt-3">
-      <p style={{ fontSize: "smaller" }} className="font-italic">
-        If the <b>renku</b> command is not available, you can clone a project
-        using Git. If the <b>renku</b> command is not available, you can clone a
-        project using Git.
-      </p>
-      <Table
-        style={{ fontSize: "smaller" }}
-        size="sm"
-        className="mb-0"
-        borderless={true}
-      >
-        <tbody>
-          <tr>
-            <th scope="row">
-              Git<sup>*</sup>
-            </th>
-            <th scope="row">
-              Git<sup>*</sup>
-            </th>
-            <td>
-              <code>{gitClone}</code>
-              <div className="mt-2 mb-0">
-                If you want to work with the repo using renku, you need to run
-                the following after the <code>git clone</code> completes: If you
-                want to work with the repo using renku, you need to run the
-                following after the <code>git clone</code> completes:
-              </div>
-            </td>
-            <td style={{ width: 1 }}>
-              <Clipboard clipboardText={gitClone} />
-            </td>
-            <td style={{ width: 1 }}>
-              <Clipboard clipboardText={gitClone} />
-            </td>
-          </tr>
-          <tr>
-            <th scope="row"></th>
-            <td>
-              <code>{gitHooksInstall}</code>
-            </td>
-            <td style={{ width: 1 }}>
-              <Clipboard clipboardText={gitHooksInstall} />
-            </td>
-            <td style={{ width: 1 }}>
-              <Clipboard clipboardText={gitHooksInstall} />
-            </td>
-          </tr>
-        </tbody>
-      </Table>
-      <Button
-        style={{ fontSize: "smaller" }}
-        color="link"
-        onClick={() => setCmdOpen(false)}
-      >
-        Hide git command
-      </Button>
-    </div>
-  ) : (
-    <div className="text-end">
-      <Button
-        color="link"
-        style={{ fontSize: "smaller" }}
-        className="m-0"
-        onClick={() => setCmdOpen(true)}
-      >
-        Do not have renku?
-      </Button>
     </div>
   );
 }
@@ -317,51 +202,6 @@ class ProjectDescription extends Component {
       </Form>
     );
   }
-}
-
-function CommandRow(props) {
-  return (
-    <tr>
-      <th scope="row">{props.application}</th>
-      <td>
-        <code className="break-word">{props.command}</code>
-      </td>
-      <td style={{ width: 1 }}>
-        <Clipboard clipboardText={props.command} />
-      </td>
-    </tr>
-  );
-}
-
-class RepositoryUrls extends Component {
-  render() {
-    return (
-      <div className="mb-3">
-        <Label className="font-weight-bold">Repository URL</Label>
-        <Table size="sm">
-          <tbody>
-            <RepositoryUrlRow urlType="SSH" url={this.props.metadata.sshUrl} />
-            <RepositoryUrlRow
-              urlType="HTTP"
-              url={this.props.metadata.httpUrl}
-            />
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
-}
-
-function RepositoryUrlRow(props) {
-  return (
-    <tr>
-      <th scope="row">{props.urlType}</th>
-      <td className="break-word">{props.url}</td>
-      <td style={{ width: 1 }}>
-        <Clipboard clipboardText={props.url} />
-      </td>
-    </tr>
-  );
 }
 
 //** Sessions settings **//

@@ -1,13 +1,7 @@
 import React from "react";
 import { DropdownItem } from "reactstrap";
-
 import { ExternalLink } from "../../components/ExternalLinks";
 import { ButtonWithMenu } from "../../components/buttons/Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCodeBranch,
-  faExternalLinkAlt,
-} from "@fortawesome/free-solid-svg-icons";
 
 function externalUrlToGitLabIdeUrl(externalUrl: string) {
   if (externalUrl.includes("/gitlab/"))
