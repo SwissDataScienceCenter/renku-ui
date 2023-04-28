@@ -96,12 +96,10 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
 
 // *** Heartbeats functions ***
 
-const longLoopFunctions: Array<Function> = [
-  // eslint-disable-line
-  heartbeatRequestServerVersion,
-];
+// eslint-disable-next-line @typescript-eslint/ban-types
+const longLoopFunctions: Array<Function> = [heartbeatRequestServerVersion];
+// eslint-disable-next-line @typescript-eslint/ban-types
 const shortLoopFunctions: Array<Function> = [
-  // eslint-disable-line
   heartbeatRequestSessionStatus,
   heartbeatRequestActivationKgStatus,
 ];
@@ -416,8 +414,8 @@ function configureWebsocket(
 function getWsClientMessageHandler(
   acceptedMessages: Record<string, Array<MessageData>>,
   clientMessage: WsClientMessage
+  // eslint-disable-next-line @typescript-eslint/ban-types
 ): Function | string {
-  // eslint-disable-line
   if (!acceptedMessages[clientMessage.type])
     return `Instruction of type '${clientMessage.type}' is not supported.`;
 

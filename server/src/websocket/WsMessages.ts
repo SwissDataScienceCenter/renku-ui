@@ -50,8 +50,8 @@ interface WsClientMessage {
   data: Record<string, unknown>;
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 function checkWsClientMessage(obj: any): obj is WsClientMessage {
-  // eslint-disable-line
   return (
     "timestamp" in obj &&
     obj.timestamp != null &&

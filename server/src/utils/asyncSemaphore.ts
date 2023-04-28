@@ -55,8 +55,8 @@ export class AsyncSemaphore {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   private _queue(): Function[] {
-    // eslint-disable-line @typescript-eslint/ban-types
     if (!this._heads.length) {
       this._heads = this._upcoming.reverse();
       this._upcoming = [];
@@ -69,9 +69,10 @@ export class AsyncSemaphore {
       this._available -= 1;
       return undefined;
     }
+    // eslint-disable-next-line @typescript-eslint/ban-types
     let fn: Function = () => {
       /***/
-    }; // eslint-disable-line @typescript-eslint/ban-types
+    };
     const p = new Promise<void>((ref) => {
       fn = ref;
     });
