@@ -2,6 +2,7 @@ import React from "react";
 import { DropdownItem } from "reactstrap";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { ButtonWithMenu } from "../../components/buttons/Button";
+import { ThrottledTooltip } from "../../components/Tooltip";
 
 function externalUrlToGitLabIdeUrl(externalUrl: string) {
   if (externalUrl.includes("/gitlab/"))
@@ -43,6 +44,7 @@ function GitLabConnectButton(props: GitLabConnectButtonProps) {
 
   const gitlabProjectButton = (
     <ExternalLink
+      id="open-in-gitlab"
       className="btn-outline-rk-green"
       url={props.externalUrl}
       title="GitLab"
@@ -57,13 +59,22 @@ function GitLabConnectButton(props: GitLabConnectButtonProps) {
     ) : null;
 
   return (
-    // <div>
-    <ButtonWithMenu color="rk-green" default={gitlabProjectButton} size={size}>
-      <GitLabLinkItem size={size} text="Issues" url={gitLabIssuesUrl} />
-      <GitLabLinkItem size={size} text="Merge Requests" url={gitLabMrUrl} />
-      {gitlabIDEButton}
-    </ButtonWithMenu>
-    // </div>
+    <>
+      <ButtonWithMenu
+        color="rk-green"
+        default={gitlabProjectButton}
+        size={size}
+      >
+        <GitLabLinkItem size={size} text="Issues" url={gitLabIssuesUrl} />
+        <GitLabLinkItem size={size} text="Merge Requests" url={gitLabMrUrl} />
+        {gitlabIDEButton}
+      </ButtonWithMenu>
+      <ThrottledTooltip
+        target="open-in-gitlab"
+        tooltip="Open in GitLab"
+        autoHide={false}
+      />
+    </>
   );
 }
 
