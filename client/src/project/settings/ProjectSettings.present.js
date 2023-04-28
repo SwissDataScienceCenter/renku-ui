@@ -23,7 +23,7 @@
  *  Project settings presentational components.
  */
 
-import React, { Component, Fragment, useEffect, useState } from "react";
+import React, { Component, Fragment, useState } from "react";
 import {
   faCheck,
   faEdit,
@@ -87,12 +87,6 @@ function ProjectSettingsNav(props) {
 //** General settings **//
 
 function ProjectSettingsGeneral(props) {
-  useEffect(() => {
-    return function cleanup() {
-      props?.fetchProject(true);
-    };
-  }, []); // eslint-disable-line
-
   if (props.settingsReadOnly && !props.user.logged) {
     const textIntro = "Only authenticated users can access project setting.";
     const textPost = "to visualize project settings.";

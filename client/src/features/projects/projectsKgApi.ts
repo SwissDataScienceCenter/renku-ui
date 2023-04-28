@@ -110,7 +110,7 @@ function kgProjectRequestHeaders(content: ProjectKgContent) {
   };
 }
 
-export const projectKgApi = createApi({
+export const projectsKgApi = createApi({
   reducerPath: "projectKgApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/kg" }),
   endpoints: (builder) => ({
@@ -131,5 +131,5 @@ export const projectKgApi = createApi({
 
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
-export const { useProjectJsonLdQuery, useProjectMetadataQuery } = projectKgApi;
+export const { useProjectJsonLdQuery, useProjectMetadataQuery } = projectsKgApi;
 export type { ProjectKgContent };

@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+import { CoreErrorContent } from "../../utils/definitions";
+import { ProjectIndexingStatuses } from "./ProjectEnums";
+
 interface Creator {
   affiliation: string | null;
   email: string;
@@ -69,6 +72,7 @@ type IDatasetFile = {
   name: string;
 };
 
+// ! TODO: remove this since we have another interface
 type IMigration = {
   check: {
     core_renku_version?: string;
@@ -157,6 +161,80 @@ type UsedIn = {
   name: string;
 };
 
+export interface CoreSectionError extends CoreErrorContent {
+  type: "error";
+}
+
+export interface MigrationStatusParams {
+  branch?: string;
+  gitUrl: string;
+}
+
+export interface MigrationStatusDetails {
+  core_renku_version: string;
+  project_renku_version: string;
+  project_supported: boolean;
+  core_compatibility_status:
+    | CoreSectionError
+    | {
+        current_metadata_version: string;
+        migration_required: boolean;
+        project_metadata_version: string;
+        type: "detail";
+      };
+  dockerfile_renku_status:
+    | CoreSectionError
+    | {
+        automated_dockerfile_update: boolean;
+        dockerfile_renku_version: string;
+        latest_renku_version: string;
+        newer_renku_available: boolean;
+        type: "detail";
+      };
+  template_status:
+    | CoreSectionError
+    | {
+        automated_template_update: boolean;
+        latest_template_version: string;
+        newer_template_available: boolean;
+        project_template_version: string;
+        ssh_supported: boolean;
+        template_id: string;
+        template_ref: string;
+        template_source: string;
+        type: "detail";
+      };
+}
+
+export interface MigrationStatusResponse {
+  error?: CoreErrorContent;
+  result?: MigrationStatusDetails;
+}
+
+export interface MigrationStatus {
+  details?: MigrationStatusDetails;
+  error?: CoreErrorContent | CoreSectionError;
+  errorProject: boolean;
+  errorTemplate: boolean;
+}
+
+export interface ProjectIndexingStatusResponse {
+  activated: boolean;
+  progress?: {
+    done: number;
+    total: number;
+    percentage: number;
+  };
+  details?: {
+    status: ProjectIndexingStatuses;
+    message: string;
+  };
+}
+
+export interface ProjectActivateIndexingResponse {
+  message: string;
+}
+
 export type {
   DatasetCore,
   DatasetKg,
@@ -164,5 +242,7 @@ export type {
   IDatasetFile,
   IDatasetFiles,
   IMigration,
+  StateModelProject,
+  IDataset,
   StateModelProject,
 };

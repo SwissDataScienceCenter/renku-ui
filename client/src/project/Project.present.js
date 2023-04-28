@@ -58,11 +58,8 @@ import {
   ProjectOverviewVersion,
 } from "./overview";
 import { ForkProject } from "./new";
-import {
-  ProjectSettingsGeneral,
-  ProjectSettingsNav,
-  ProjectSettingsSessions,
-} from "./settings";
+import { ProjectSettingsNav, ProjectSettingsSessions } from "./settings";
+import { ProjectSettingsGeneral } from "../features/project/components/ProjectSettings";
 import { WorkflowsList } from "../workflows";
 import { ExternalLink } from "../components/ExternalLinks";
 import { GoBackButton, RoundButtonGroup } from "../components/buttons/Button";
