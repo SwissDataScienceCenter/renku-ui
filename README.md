@@ -96,7 +96,7 @@ search for `editor.formatOnSave` and turn on "Format on save".
 
 We use [jest](https://jestjs.io) for unit tests and
 [eslint](https://eslint.org/) for linting. We run them in out CI piplines and
-require both to pass without workings before we merge a PR. You can manually run
+require both to pass without warnings before we merge a PR. You can manually run
 tests using the following commands:
 
     $ cd client   # or server if you need to work there
