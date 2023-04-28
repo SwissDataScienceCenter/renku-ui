@@ -3,6 +3,11 @@ import { DropdownItem } from "reactstrap";
 
 import { ExternalLink } from "../../components/ExternalLinks";
 import { ButtonWithMenu } from "../../components/buttons/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCodeBranch,
+  faExternalLinkAlt,
+} from "@fortawesome/free-solid-svg-icons";
 
 function externalUrlToGitLabIdeUrl(externalUrl: string) {
   if (externalUrl.includes("/gitlab/"))
@@ -46,7 +51,9 @@ function GitLabConnectButton(props: GitLabConnectButtonProps) {
     <ExternalLink
       className="btn-outline-rk-green"
       url={props.externalUrl}
-      title="Open in GitLab"
+      title="GitLab"
+      showLinkIcon
+      iconSize={size}
     />
   );
 
@@ -56,17 +63,13 @@ function GitLabConnectButton(props: GitLabConnectButtonProps) {
     ) : null;
 
   return (
-    <div>
-      <ButtonWithMenu
-        color="rk-green"
-        default={gitlabProjectButton}
-        size={size}
-      >
-        <GitLabLinkItem size={size} text="Issues" url={gitLabIssuesUrl} />
-        <GitLabLinkItem size={size} text="Merge Requests" url={gitLabMrUrl} />
-        {gitlabIDEButton}
-      </ButtonWithMenu>
-    </div>
+    // <div>
+    <ButtonWithMenu color="rk-green" default={gitlabProjectButton} size={size}>
+      <GitLabLinkItem size={size} text="Issues" url={gitLabIssuesUrl} />
+      <GitLabLinkItem size={size} text="Merge Requests" url={gitLabMrUrl} />
+      {gitlabIDEButton}
+    </ButtonWithMenu>
+    // </div>
   );
 }
 

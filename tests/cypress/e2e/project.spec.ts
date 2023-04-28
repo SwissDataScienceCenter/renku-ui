@@ -123,17 +123,18 @@ describe("display a project - not found", () => {
   });
 });
 
-describe("display a project", () => {
+describe.only("display a project", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
+    // fixtures.config().versions().userNone();
     fixtures.projects().landingUserProjects().projectTest();
     fixtures.projectLockStatus().projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project");
   });
 
-  it("displays the project overview page", () => {
+  it.only("displays the project overview page", () => {
     cy.wait("@getProject");
     cy.wait("@getReadme");
     cy.get_cy("header-project").should("be.visible");

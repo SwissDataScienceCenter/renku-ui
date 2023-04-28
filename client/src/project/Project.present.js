@@ -88,6 +88,7 @@ import {
 } from "../features/project";
 
 import "./Project.css";
+import { CloneButton } from "./components/CloneButton";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -521,7 +522,7 @@ class ProjectViewHeaderOverview extends Component {
         <Row className="d-flex rk-project-header gy-2 gx-2 pb-2 justify-content-md-between justify-content-sm-start">
           <Col className="col-12">
             <div className="d-flex gap-1 gap-md-3 justify-content-end flex-wrap">
-              <div className="pt-1">
+              <div className="flex-grow-1 pt-1">
                 <TimeCaption
                   key="time-caption"
                   time={this.props.metadata.lastActivityAt}
@@ -553,6 +554,13 @@ class ProjectViewHeaderOverview extends Component {
                 externalUrl={this.props.externalUrl}
                 gitlabIDEUrl={gitlabIDEUrl}
                 userLogged={this.props.user.logged}
+              />
+              <CloneButton
+                externalUrl={this.props.externalUrl}
+                userLogged={this.props.user.logged}
+                projectPath={this.props.metadata.path}
+                sshUrl={this.props.metadata.sshUrl}
+                httpUrl={this.props.metadata.httpUrl}
               />
             </div>
           </Col>

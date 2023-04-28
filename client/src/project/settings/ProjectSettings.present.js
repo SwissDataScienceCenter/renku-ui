@@ -40,9 +40,28 @@ import {
   Nav,
   NavItem,
   UncontrolledTooltip,
+  Button,
+  Col,
+  Collapse,
+  Form,
+  FormGroup,
+  FormText,
+  Input,
+  InputGroup,
+  Label,
+  Row,
+  Table,
+  Nav,
+  NavItem,
+  UncontrolledTooltip,
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faCheck,
+  faEdit,
+  faExclamationTriangle,
+  faTrash,
+  faTimesCircle,
   faCheck,
   faEdit,
   faExclamationTriangle,
@@ -59,9 +78,17 @@ import {
   ServerOptionEnum,
   ServerOptionRange,
 } from "../../notebooks";
+import { ProjectAvatarEdit, ProjectTags } from "../shared";
+import {
+  NotebooksHelper,
+  ServerOptionBoolean,
+  ServerOptionEnum,
+  ServerOptionRange,
+} from "../../notebooks";
 import { Url } from "../../utils/helpers/url";
 import { RenkuNavLink } from "../../components/RenkuNavLink";
-import { Clipboard } from "../../components/Clipboard";
+// import { Clipboard } from "../../components/Clipboard";
+import { ClipboardV2 } from "../../components/ClipboardV2";
 import { Loader } from "../../components/Loader";
 import { WarnAlert } from "../../components/Alert";
 import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
@@ -70,6 +97,7 @@ import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { Docs } from "../../utils/constants/Docs";
 import { SuccessLabel } from "../../components/formlabels/FormLabels";
 import { InlineSubmitButton } from "../../components/buttons/Button";
+import { CloneSettings } from "../clone/CloneSettings";
 
 //** Navigation **//
 
@@ -91,18 +119,22 @@ function ProjectSettingsNav(props) {
 function ProjectSettingsGeneral(props) {
   useEffect(() => {
     return function cleanup() {
+    return function cleanup() {
       props?.fetchProject(true);
     };
   }, []); // eslint-disable-line
 
-  const gitCommands = (
-    <>
-      <RepositoryClone {...props} />
-      <RepositoryUrls {...props} />
-    </>
-  );
+  // const gitCommands = (
+  //   <>
+  //     <RepositoryClone {...props} />
+  //     <RepositoryUrls {...props} />
+  //   </>
+  // );
 
-  if (props.settingsReadOnly) return gitCommands;
+  if (props.settingsReadOnly) {
+    // return gitCommands;
+    return <CloneSettings />;
+  }
 
   return (
     <div className="form-rk-green">
@@ -113,14 +145,28 @@ function ProjectSettingsGeneral(props) {
             onProjectTagsChange={props.onProjectTagsChange}
             settingsReadOnly={props.settingsReadOnly}
           />
+            settingsReadOnly={props.settingsReadOnly}
+          />
           <ProjectDescription {...props} />
         </Col>
         <Col xs={12} lg={6}>
-          {gitCommands}
+          {/* {gitCommands} */}
+          <CloneSettings
+            externalUrl={props.externalUrl}
+            projectPath={props.metadata.path}
+            sshUrl={props.metadata.sshUrl}
+            httpUrl={props.metadata.httpUrl}
+          />
         </Col>
       </Row>
       <Row>
         <Col xs={12}>
+          <ProjectAvatarEdit
+            externalUrl={props.externalUrl}
+            avatarUrl={props.metadata.avatarUrl}
+            onAvatarChange={props.onAvatarChange}
+            settingsReadOnly={props.settingsReadOnly}
+          />
           <ProjectAvatarEdit
             externalUrl={props.externalUrl}
             avatarUrl={props.metadata.avatarUrl}
@@ -139,12 +185,16 @@ class RepositoryClone extends Component {
     const renkuClone = `renku clone ${externalUrl}.git`;
     return (
       <div className="mb-3">
-        <Label className="font-weight-bold">Clone commands</Label>
+        <Label className="fw-bold">Clone commands</Label>
         <Table size="sm" className="mb-0">
           <tbody>
             <CommandRow application="Renku" command={renkuClone} />
           </tbody>
         </Table>
+        <GitCloneCmd
+          externalUrl={externalUrl}
+          projectPath={this.props.metadata.path}
+        />
         <GitCloneCmd
           externalUrl={externalUrl}
           projectPath={this.props.metadata.path}
@@ -160,11 +210,20 @@ function GitCloneCmd(props) {
   const gitClone = `git clone ${externalUrl}.git && cd ${projectPath} && git lfs install --local --force`;
   const gitHooksInstall = "renku githooks install"; // eslint-disable-line
   return cmdOpen ? (
+  return cmdOpen ? (
     <div className="mt-3">
       <p style={{ fontSize: "smaller" }} className="font-italic">
         If the <b>renku</b> command is not available, you can clone a project
         using Git.
+        If the <b>renku</b> command is not available, you can clone a project
+        using Git.
       </p>
+      <Table
+        style={{ fontSize: "smaller" }}
+        size="sm"
+        className="mb-0"
+        borderless={true}
+      >
       <Table
         style={{ fontSize: "smaller" }}
         size="sm"
@@ -176,15 +235,23 @@ function GitCloneCmd(props) {
             <th scope="row">
               Git<sup>*</sup>
             </th>
+            <th scope="row">
+              Git<sup>*</sup>
+            </th>
             <td>
               <code>{gitClone}</code>
               <div className="mt-2 mb-0">
                 If you want to work with the repo using renku, you need to run
                 the following after the <code>git clone</code> completes:
+                If you want to work with the repo using renku, you need to run
+                the following after the <code>git clone</code> completes:
               </div>
             </td>
             <td style={{ width: 1 }}>
-              <Clipboard clipboardText={gitClone} />
+              <ClipboardV2 clipboardText={gitClone} />
+            </td>
+            <td style={{ width: 1 }}>
+              <ClipboardV2 clipboardText={gitClone} />
             </td>
           </tr>
           <tr>
@@ -193,7 +260,10 @@ function GitCloneCmd(props) {
               <code>{gitHooksInstall}</code>
             </td>
             <td style={{ width: 1 }}>
-              <Clipboard clipboardText={gitHooksInstall} />
+              <ClipboardV2 clipboardText={gitHooksInstall} />
+            </td>
+            <td style={{ width: 1 }}>
+              <ClipboardV2 clipboardText={gitHooksInstall} />
             </td>
           </tr>
         </tbody>
@@ -203,18 +273,25 @@ function GitCloneCmd(props) {
         color="link"
         onClick={() => setCmdOpen(false)}
       >
+      <Button
+        style={{ fontSize: "smaller" }}
+        color="link"
+        onClick={() => setCmdOpen(false)}
+      >
         Hide git command
       </Button>
     </div>
   ) : (
-    <Button
-      color="link"
-      style={{ fontSize: "smaller" }}
-      className="font-italic"
-      onClick={() => setCmdOpen(true)}
-    >
-      Do not have renku?
-    </Button>
+    <div className="text-end">
+      <Button
+        color="link"
+        style={{ fontSize: "smaller" }}
+        className="m-0"
+        onClick={() => setCmdOpen(true)}
+      >
+        Do not have renku?
+      </Button>
+    </div>
   );
 }
 
@@ -298,7 +375,7 @@ function CommandRow(props) {
         <code className="break-word">{props.command}</code>
       </td>
       <td style={{ width: 1 }}>
-        <Clipboard clipboardText={props.command} />
+        <ClipboardV2 clipboardText={props.command} />
       </td>
     </tr>
   );
@@ -329,7 +406,7 @@ function RepositoryUrlRow(props) {
       <th scope="row">{props.urlType}</th>
       <td className="break-word">{props.url}</td>
       <td style={{ width: 1 }}>
-        <Clipboard clipboardText={props.url} />
+        <ClipboardV2 clipboardText={props.url} />
       </td>
     </tr>
   );
