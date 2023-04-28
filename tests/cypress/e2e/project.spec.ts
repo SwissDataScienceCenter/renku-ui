@@ -123,7 +123,7 @@ describe("display a project - not found", () => {
   });
 });
 
-describe.only("display a project", () => {
+describe("display a project", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = true;
   beforeEach(() => {
@@ -134,7 +134,7 @@ describe.only("display a project", () => {
     cy.visit("/projects/e2e/local-test-project");
   });
 
-  it.only("displays the project overview page", () => {
+  it("displays the project overview page", () => {
     cy.wait("@getProject");
     cy.wait("@getReadme");
     cy.get_cy("header-project").should("be.visible");

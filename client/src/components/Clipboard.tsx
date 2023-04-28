@@ -19,7 +19,7 @@
 /**
  *  renku-ui
  *
- *  Clipboard.ts
+ *  Clipboard.tsx
  *  Clipboard code and presentation.
  */
 
