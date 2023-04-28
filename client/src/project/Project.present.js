@@ -79,7 +79,7 @@ import GitLabConnectButton, {
   externalUrlToGitLabIdeUrl,
 } from "./components/GitLabConnect";
 import { NotebooksCoordinator } from "../notebooks";
-import ProjectPageTitle from "../features/project/ProjectPageTitle";
+import ProjectPageTitle from "../features/project/components/ProjectPageTitle";
 import {
   ProjectEntityHeader,
   ProjectFileLineage,

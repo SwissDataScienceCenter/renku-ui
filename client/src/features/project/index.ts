@@ -1,7 +1,7 @@
 import ProjectDatasetsListView from "./dataset/ProjectDatasetsListView";
 import ProjectDatasetsView from "./dataset/ProjectDatasetsView";
 import ProjectDatasetShow from "./dataset/ProjectDatasetShow";
-import ProjectEntityHeader from "./ProjectEntityHeader";
+import ProjectEntityHeader from "./components/ProjectEntityHeader";
 import ProjectKnowledgeGraphStatus from "./ProjectKnowledgeGraphStatus";
 import { ProjectFileLineage, ProjectFileView } from "./file";
 
