@@ -53,7 +53,6 @@ import {
 } from "../utils/ts-wrappers";
 import EntityCreators from "../components/entities/Creators";
 import Time from "../utils/helpers/Time";
-import { Clipboard } from "../components/Clipboard";
 import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
 import { Docs } from "../utils/constants/Docs";
 import { EntityType } from "../components/entities/Entities";
@@ -69,6 +68,7 @@ import { InfoAlert, WarnAlert } from "../components/Alert";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
 import "./Workflows.scss";
 import InformativeIcon from "../components/InformativeIcon";
+import { CommandCopy } from "../project/clone/CommandCopy";
 
 /** BROWSER **/
 
@@ -511,9 +511,9 @@ function WorkflowTreeDetail({
     );
   } else {
     const command = details.command ? (
-      <code className="mb-0">
-        {details.command} <Clipboard clipboardText={details.command} />
-      </code>
+      <div className="d-grid" style={{ margin: "-0.5rem 0" }}>
+        <CommandCopy command={details.command} />
+      </div>
     ) : (
       <UnavailableDetail />
     );
@@ -527,10 +527,9 @@ function WorkflowTreeDetail({
           {Time.toIsoTimezoneString(details.last_executed)}
         </WorkflowTreeDetailRow>
         <WorkflowTreeDetailRow name="Full command">
-          <code className="mb-0">
-            {details.full_command}
-            <Clipboard clipboardText={details.full_command} />
-          </code>
+          <div className="d-grid" style={{ margin: "-0.5rem 0" }}>
+            <CommandCopy command={details.full_command} />
+          </div>
         </WorkflowTreeDetailRow>
         <WorkflowTreeDetailRow name="Base command">
           {command}
@@ -632,10 +631,9 @@ function WorkflowTreeDetail({
             </WorkflowTreeDetailRow>
             {typeSpecificRows}
             <WorkflowTreeDetailRow name="Renku command">
-              <code className="mb-0">
-                {details.renkuCommand}
-                <Clipboard clipboardText={details.renkuCommand} />
-              </code>
+              <div className="d-grid" style={{ margin: "-0.5rem 0" }}>
+                <CommandCopy command={details.renkuCommand} />
+              </div>
             </WorkflowTreeDetailRow>
           </tbody>
         </Table>

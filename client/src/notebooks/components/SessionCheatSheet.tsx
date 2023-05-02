@@ -22,23 +22,17 @@ import "./SessionCheatSheet.css";
 import * as cheatsheetJson from "./cheatsheet.json";
 import { ExternalDocsLink } from "../../components/ExternalLinks";
 import { Docs, RenkuPythonDocs } from "../../utils/constants/Docs";
-import { Clipboard } from "../../components/Clipboard";
 import { Col } from "../../utils/ts-wrappers";
+import { CommandCopy } from "../../project/clone/CommandCopy";
 
 interface CommandDescProps {
   command: string;
   desc: string | React.ReactNode;
-  clipboard?: boolean;
 }
-function CommandDesc({
-  command = "",
-  desc = "",
-  clipboard = true,
-}: CommandDescProps) {
+function CommandDesc({ command = "", desc = "" }: CommandDescProps) {
   return (
     <div>
-      <code>{command}</code>
-      {clipboard ? <Clipboard clipboardText={command} /> : null}
+      <CommandCopy command={command} />
       <div className="renku-info" style={{ paddingTop: "3px" }}>
         {desc}
       </div>

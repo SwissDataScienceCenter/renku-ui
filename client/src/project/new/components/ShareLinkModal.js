@@ -22,7 +22,6 @@
  *  Share Link Modal component to create a project
  */
 import React, { useEffect, useState } from "react";
-import { Clipboard } from "../../../components/Clipboard";
 import {
   FormGroup,
   FormText,
@@ -34,8 +33,8 @@ import {
   Row,
   Col,
   Form,
-  Table,
 } from "reactstrap";
+import { CommandCopy } from "../../clone/CommandCopy";
 
 function ShareLinkModal(props) {
   const { createUrl, input } = props;
@@ -190,18 +189,13 @@ function ShareLinkModal(props) {
               {labels}
               {feedback}
             </Form>
+          </Col>
+        </Row>
 
-            <Table size="sm">
-              <tbody>
-                <tr className="border-bottom">
-                  <th scope="row">URL</th>
-                  <td style={{ wordBreak: "break-all" }}>{url}</td>
-                  <td style={{ width: 1 }}>
-                    <Clipboard clipboardText={url} />
-                  </td>
-                </tr>
-              </tbody>
-            </Table>
+        <Row>
+          <Col>
+            <h3 className="fs-6 lh-sm fw-bold mt-2">URL</h3>
+            <CommandCopy command={url} />
           </Col>
         </Row>
       </ModalBody>

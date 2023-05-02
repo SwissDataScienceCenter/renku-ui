@@ -30,14 +30,13 @@ import {
   ModalBody,
   ModalHeader,
   Row,
-  Table,
   ModalFooter,
   Button,
 } from "../../utils/ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Clipboard } from "../Clipboard";
 import { ThrottledTooltip } from "../Tooltip";
 import { EnvVariablesField } from "../../notebooks/components/EnviromentVariables";
+import { CommandCopy } from "../../project/clone/CommandCopy";
 
 interface ShareLinkSessionProps {
   filters: ProjectFilters;
@@ -231,32 +230,19 @@ const ShareLinkSessionModal = ({
                 &nbsp;The commit requires including also the branch
               </FormText>
             </Form>
+          </Col>
+        </Row>
 
-            <Table size="sm">
-              <tbody>
-                <tr className="border-bottom">
-                  <th scope="row">URL</th>
-                  <td style={{ wordBreak: "break-all" }}>{url}</td>
-                  <td style={{ width: 1 }}>
-                    <Clipboard clipboardText={url} />
-                  </td>
-                </tr>
-                <tr style={{ borderBottomColor: "transparent" }}>
-                  <th scope="row">Badge</th>
-                  <td colSpan={2} style={{ wordBreak: "break-all" }}>
-                    <small>Paste it in your README to show a </small>
-                    <img src="/renku-badge.svg" alt="renku-badge" />
-                  </td>
-                </tr>
-                <tr className="border-bottom">
-                  <th scope="row"> </th>
-                  <td style={{ wordBreak: "break-all" }}>{markdown}</td>
-                  <td style={{ width: 1 }}>
-                    <Clipboard clipboardText={markdown} />
-                  </td>
-                </tr>
-              </tbody>
-            </Table>
+        <Row>
+          <Col>
+            <h3 className="fs-6 lh-sm fw-bold mt-2">URL</h3>
+            <CommandCopy command={url} />
+            <h3 className="fs-6 lh-sm fw-bold mt-2">Badge</h3>
+            <p className="m-0" style={{ fontSize: "smaller" }}>
+              Paste it in your README to show a{" "}
+              <img src="/renku-badge.svg" alt="renku-badge" /> badge.
+            </p>
+            <CommandCopy command={markdown} />
           </Col>
         </Row>
       </ModalBody>
@@ -325,31 +311,19 @@ const ShareLinkSessionOpenFileModal = ({
         <Row>
           <Col>
             <Form className="mb-3">{notebookFilePathLabel}</Form>
-            <Table size="sm">
-              <tbody>
-                <tr className="border-bottom">
-                  <th scope="row">URL</th>
-                  <td style={{ wordBreak: "break-all" }}>{url}</td>
-                  <td style={{ width: 1 }}>
-                    <Clipboard clipboardText={url} />
-                  </td>
-                </tr>
-                <tr style={{ borderBottomColor: "transparent" }}>
-                  <th scope="row">Badge</th>
-                  <td colSpan={2} style={{ wordBreak: "break-all" }}>
-                    <small>Paste it in your README to show a </small>
-                    <img src="/renku-badge.svg" alt="renku-badge" />
-                  </td>
-                </tr>
-                <tr className="border-bottom">
-                  <th scope="row"> </th>
-                  <td style={{ wordBreak: "break-all" }}>{markdown}</td>
-                  <td style={{ width: 1 }}>
-                    <Clipboard clipboardText={markdown} />
-                  </td>
-                </tr>
-              </tbody>
-            </Table>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col>
+            <h3 className="fs-6 lh-sm fw-bold mt-2">URL</h3>
+            <CommandCopy command={url} />
+            <h3 className="fs-6 lh-sm fw-bold mt-2">Badge</h3>
+            <p className="m-0" style={{ fontSize: "smaller" }}>
+              Paste it in your README to show a{" "}
+              <img src="/renku-badge.svg" alt="renku-badge" /> badge.
+            </p>
+            <CommandCopy command={markdown} />
           </Col>
         </Row>
       </ModalBody>
