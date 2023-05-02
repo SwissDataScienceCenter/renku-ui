@@ -18,7 +18,13 @@
 import Redis from "ioredis";
 import config from "../config";
 import logger from "../logger";
-import { SaveCollectionOptions, StorageSaveOptions, Storage, TypeData, StorageGetOptions } from "./index";
+import {
+  SaveCollectionOptions,
+  StorageSaveOptions,
+  Storage,
+  TypeData,
+  StorageGetOptions,
+} from "./index";
 
 class RedisStorage implements Storage {
   private redis: Redis.Redis;
@@ -30,47 +36,39 @@ class RedisStorage implements Storage {
     password: string = config.redis.password,
     isSentinel: boolean = config.redis.isSentinel as boolean,
     masterSet: string = config.redis.masterSet,
-    db: number = config.redis.database as number,
+    db: number = config.redis.database as number
   ) {
     // configure redis
     const redisConfig: Redis.RedisOptions = {
       lazyConnect: true,
       db,
       retryStrategy: (times) => {
-        return times > 5 ?
-          null :
-          10000;
+        return times > 5 ? null : 10000;
       },
     };
     if (isSentinel) {
-      redisConfig.sentinels = [
-        { host, port },
-      ];
+      redisConfig.sentinels = [{ host, port }];
       redisConfig.name = masterSet;
-      if (password)
-        redisConfig.sentinelPassword = password;
-    }
-    else {
+      if (password) redisConfig.sentinelPassword = password;
+    } else {
       redisConfig.host = host;
       redisConfig.port = port;
     }
-    if (password)
-      redisConfig.password = password;
+    if (password) redisConfig.password = password;
     try {
       this.redis = new Redis(redisConfig);
       this.redis.connect(() => {
-        if (this.redis.status === "ready")
-          this.ready = true;
+        if (this.redis.status === "ready") this.ready = true;
       });
-    }
-    catch (error) /* istanbul ignore next */ {
+    } catch (error) /* istanbul ignore next */ {
       const newError = new Error(`Cannot connect to Redis -- ${error.message}`);
-      newError.stack = newError.stack.split("\n").slice(0, 2).join("\n") + "\n" + error.stack;
+      newError.stack =
+        newError.stack.split("\n").slice(0, 2).join("\n") + "\n" + error.stack;
       logger.error(newError);
     }
   }
 
-  getStatus() : string {
+  getStatus(): string {
     return this.redis.status;
   }
 
@@ -78,7 +76,10 @@ class RedisStorage implements Storage {
     this.redis.disconnect();
   }
 
-  async get(path: string, options: StorageGetOptions = { type: TypeData.String } ): Promise<string|string[]> {
+  async get(
+    path: string,
+    options: StorageGetOptions = { type: TypeData.String }
+  ): Promise<string | string[]> {
     switch (options.type) {
       case TypeData.String: {
         return await this.redis.get(path);
@@ -93,18 +94,21 @@ class RedisStorage implements Storage {
     }
   }
 
-  async save(path: string, value: string, options: StorageSaveOptions = { type: TypeData.String }): Promise<boolean> {
+  async save(
+    path: string,
+    value: string,
+    options: StorageSaveOptions = { type: TypeData.String }
+  ): Promise<boolean> {
     switch (options.type) {
       case TypeData.String: {
         const result = await this.saveString(path, value);
         return result === "OK";
       }
       case TypeData.Collections: {
-        if (!options.limit || !options.score)
-          return false;
+        if (!options.limit || !options.score) return false;
         const saveCollectionOptions: SaveCollectionOptions = {
           limit: options.limit,
-          score: options.score
+          score: options.score,
         };
 
         return await this.saveCollection(path, value, saveCollectionOptions);
@@ -122,12 +126,20 @@ class RedisStorage implements Storage {
     return await this.redis.set(path, value);
   }
 
-  private async saveCollection(path: string, value: string, options: SaveCollectionOptions): Promise<boolean> {
+  private async saveCollection(
+    path: string,
+    value: string,
+    options: SaveCollectionOptions
+  ): Promise<boolean> {
     await this.redis.zadd(path, options.score, value);
     return true;
   }
 
-  private async getCollection(path: string, start: number, stop: number): Promise<string[]> {
+  private async getCollection(
+    path: string,
+    start: number,
+    stop: number
+  ): Promise<string[]> {
     return await this.redis.zrevrange(path, start, stop);
   }
 }

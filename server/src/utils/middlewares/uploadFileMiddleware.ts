@@ -39,7 +39,11 @@ interface FileUploadResult {
   error?: string;
   result?: FileResult[];
 }
-const uploadFileMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+const uploadFileMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   const [oldWrite, oldEnd] = [res.write, res.end];
   const chunks: Buffer[] = [];
 
@@ -47,22 +51,18 @@ const uploadFileMiddleware = (req: Request, res: Response, next: NextFunction): 
     chunks.push(Buffer.from(args[0]));
     const body = Buffer.concat(chunks).toString("utf8");
     const bodyJson = body as FileUploadResult;
-    if (bodyJson?.error)
-      res.status(500);
+    if (bodyJson?.error) res.status(500);
     oldWrite.apply(res, args);
   };
 
   res.end = (...args: never) => {
-    if (args[0])
-      chunks.push(Buffer.from(args[0]));
+    if (args[0]) chunks.push(Buffer.from(args[0]));
     const body = Buffer.concat(chunks).toString("utf8");
     const bodyJson = body as FileUploadResult;
-    if (bodyJson?.error)
-      res.status(500);
+    if (bodyJson?.error) res.status(500);
     oldEnd.apply(res, args);
   };
-  if (next)
-    next();
+  if (next) next();
 };
 
 export default uploadFileMiddleware;

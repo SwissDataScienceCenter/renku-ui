@@ -83,9 +83,9 @@ looking at the `acceptedMessages` variable.
 
 It can be easily extended by adding a new command with a set of:
 
-* Mandatory parameters.
-* Optional parameters.
-* A single handler function.
+- Mandatory parameters.
+- Optional parameters.
+- A single handler function.
 
 Additional handlers can be added to either the `longLoopFunctions` or
 `shortLoopFunctions` variables.
@@ -111,4 +111,5 @@ to the same instance of the the server (sticky sessions, see
 [#2184](https://github.com/SwissDataScienceCenter/renku-ui/issues/2184)).
 
 ## Client side
+
 See the [client side section](../../../client/src/websocket/) for details on how the client uses WebSockets.

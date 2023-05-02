@@ -27,7 +27,12 @@ import { Storage, StorageGetOptions, TypeData } from "../storage";
  * @param {Storage} storage - storage api
  * @param {number} length - number of records, if the value <= 0 it will return all the user's records
  */
-export async function getUserData(prefix: string, token: string, storage: Storage, length = 0): Promise<string[]> {
+export async function getUserData(
+  prefix: string,
+  token: string,
+  storage: Storage,
+  length = 0
+): Promise<string[]> {
   const userId = getUserIdFromToken(token);
   let data: string[] = [];
   const stop = length - 1; // -1 would bring all records
@@ -38,7 +43,7 @@ export async function getUserData(prefix: string, token: string, storage: Storag
   };
 
   if (userId)
-    data = await storage.get(`${prefix}${userId}`, options) as string[];
+    data = (await storage.get(`${prefix}${userId}`, options)) as string[];
 
   return data;
 }

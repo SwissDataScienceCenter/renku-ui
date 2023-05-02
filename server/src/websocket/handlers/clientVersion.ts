@@ -22,43 +22,53 @@ import config from "../../config";
 import { Channel } from "../index";
 import { WsMessage } from "../WsMessages";
 
-
-function handlerRequestServerVersion(data: Record<string, unknown>, channel: Channel, socket: ws): void {
+function handlerRequestServerVersion(
+  data: Record<string, unknown>,
+  channel: Channel,
+  socket: ws
+): void {
   // save the request enabler
   if (data.requestServerVersion) {
     channel.data.set("requestServerVersion", true);
 
     // check that the server has the required data.
-    const currentSha = process.env.RENKU_UI_SHORT_SHA ?
-      process.env.RENKU_UI_SHORT_SHA :
-      null;
+    const currentSha = process.env.RENKU_UI_SHORT_SHA
+      ? process.env.RENKU_UI_SHORT_SHA
+      : null;
     let data = {};
     if (!currentSha) {
-      data = { start: false, message: "The server does not have up-to-date information about the version." };
-    }
-    else {
+      data = {
+        start: false,
+        message:
+          "The server does not have up-to-date information about the version.",
+      };
+    } else {
       const longIntervalSec = config.websocket.longIntervalSec as number;
-      const info = longIntervalSec < 60 ?
-        `${longIntervalSec} seconds` :
-        `${longIntervalSec / 60} minutes`;
-      data = { start: true, message: `The server will send the UI version every ${info}.`, "version": currentSha };
+      const info =
+        longIntervalSec < 60
+          ? `${longIntervalSec} seconds`
+          : `${longIntervalSec / 60} minutes`;
+      data = {
+        start: true,
+        message: `The server will send the UI version every ${info}.`,
+        version: currentSha,
+      };
     }
 
-    socket.send((new WsMessage(data, "user", "version")).toString());
+    socket.send(new WsMessage(data, "user", "version").toString());
   }
 }
 
 function heartbeatRequestServerVersion(channel: Channel): void {
   if (channel.data.get("requestServerVersion")) {
-    const currentSha = process.env.RENKU_UI_SHORT_SHA ?
-      process.env.RENKU_UI_SHORT_SHA :
-      null;
+    const currentSha = process.env.RENKU_UI_SHORT_SHA
+      ? process.env.RENKU_UI_SHORT_SHA
+      : null;
     if (currentSha) {
-      const info = new WsMessage({ "version": currentSha }, "user", "version");
-      channel.sockets.forEach(socket => socket.send(info.toString()));
+      const info = new WsMessage({ version: currentSha }, "user", "version");
+      channel.sockets.forEach((socket) => socket.send(info.toString()));
     }
   }
 }
-
 
 export { handlerRequestServerVersion, heartbeatRequestServerVersion };
