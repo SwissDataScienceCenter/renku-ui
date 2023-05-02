@@ -34,6 +34,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import {
+  Alert,
   Button,
   Col,
   Collapse,
@@ -67,7 +68,6 @@ import {
 } from "../../notebooks";
 import { Docs } from "../../utils/constants/Docs";
 import { Url } from "../../utils/helpers/url";
-import { CloneSettings } from "../clone/CloneSettings";
 import { ProjectAvatarEdit, ProjectTags } from "../shared";
 
 //** Navigation **//
@@ -96,33 +96,24 @@ function ProjectSettingsGeneral(props) {
 
   if (props.settingsReadOnly) {
     return (
-      <CloneSettings
-        externalUrl={props.externalUrl}
-        projectPath={props.metadata.path}
-        sshUrl={props.metadata.sshUrl}
-        httpUrl={props.metadata.httpUrl}
-      />
+      <Alert color="primary">
+        <p className="mb-0">
+          Project settings can be changed only by maintainers.
+        </p>
+      </Alert>
     );
   }
 
   return (
     <div className="form-rk-green">
       <Row className="mt-2">
-        <Col xs={12} lg={6}>
+        <Col xs={12}>
           <ProjectTags
             tagList={props.metadata.tagList}
             onProjectTagsChange={props.onProjectTagsChange}
             settingsReadOnly={props.settingsReadOnly}
           />
           <ProjectDescription {...props} />
-        </Col>
-        <Col xs={12} lg={6}>
-          <CloneSettings
-            externalUrl={props.externalUrl}
-            projectPath={props.metadata.path}
-            sshUrl={props.metadata.sshUrl}
-            httpUrl={props.metadata.httpUrl}
-          />
         </Col>
       </Row>
       <Row>

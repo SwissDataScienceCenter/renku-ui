@@ -17,7 +17,7 @@
  */
 
 import React, { useCallback, useState } from "react";
-import { Button, Label } from "reactstrap";
+import { Button } from "reactstrap";
 import { CommandCopy } from "./CommandCopy";
 
 interface CloneSettingsProps {
@@ -35,7 +35,7 @@ export const CloneSettings = ({
 }: CloneSettingsProps) => (
   <>
     <CloneCommands externalUrl={externalUrl} projectPath={projectPath} />
-    <div className="border-top border-1 border-primary my-3" />
+    {/* <div className="border-top border-1 border-primary my-3" /> */}
     <RepositoryUrls sshUrl={sshUrl} httpUrl={httpUrl} />
   </>
 );
@@ -49,8 +49,8 @@ const CloneCommands = ({ externalUrl, projectPath }: CloneCommandsProps) => {
   const renkuClone = `renku clone ${externalUrl}.git`;
   return (
     <>
-      <Label>Clone commands</Label>
-      <h3 className="fs-6 lh-sm fw-bold mt-1">Renku</h3>
+      {/* <Label>Clone commands</Label> */}
+      <h3 className="fs-6 lh-sm fw-bold mt-1">Clone with Renku</h3>
       <CommandCopy command={renkuClone} />
       <GitClone externalUrl={externalUrl} projectPath={projectPath} />
     </>
@@ -66,10 +66,10 @@ const RepositoryUrls = ({ sshUrl, httpUrl }: RepositoryUrlsProps) => {
   const httpStr = httpUrl.startsWith("https") ? "HTTPS" : "HTTP";
   return (
     <>
-      <Label>Repository URL</Label>
-      <h3 className="fs-6 lh-sm fw-bold mt-1">SSH</h3>
+      {/* <Label>Repository URL</Label> */}
+      <h3 className="fs-6 lh-sm fw-bold mt-1">Repository SSH URL</h3>
       <CommandCopy command={sshUrl} />
-      <h3 className="fs-6 lh-sm fw-bold mt-1">{httpStr}</h3>
+      <h3 className="fs-6 lh-sm fw-bold mt-1">Repository {httpStr} URL</h3>
       <CommandCopy command={httpUrl} />
     </>
   );
@@ -98,7 +98,7 @@ const GitClone = ({ externalUrl, projectPath }: GitCloneProps) => {
             clone a project using Git.
           </p>
 
-          <h3 className="fs-6 lh-sm fw-bold mt-1">Git</h3>
+          <h3 className="fs-6 lh-sm fw-bold mt-1">Clone with Git</h3>
           <CommandCopy command={gitClone} />
 
           <p>
@@ -109,7 +109,7 @@ const GitClone = ({ externalUrl, projectPath }: GitCloneProps) => {
         </>
       )}
 
-      <div className="text-end">
+      <div /*className="text-end"*/>
         <Button
           className="m-0 p-0"
           style={{ fontSize: "unset" }}

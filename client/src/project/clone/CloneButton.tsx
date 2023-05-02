@@ -68,7 +68,7 @@ export const CloneButton = ({
       </DropdownToggle>
       <DropdownMenu className="btn-with-menu-options" end>
         {/* eslint-disable-next-line spellcheck/spell-checker */}
-        <Container style={{ width: "40vw" }}>
+        <Container className="px-3" style={{ width: "40vw" }}>
           <Row xs={12}>
             <Col xs={12}>
               <CloneSettings
