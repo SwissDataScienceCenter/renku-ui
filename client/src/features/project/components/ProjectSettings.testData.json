@@ -1,7 +1,17 @@
 {
   "results": [
     {
-      "expectedResult": "LevelX",
+      "expectedResult": {
+        "level": "LevelX",
+        "renku": {
+          "level": "LevelX",
+          "automated": false
+        },
+        "template": {
+          "level": "LevelX",
+          "automated": false
+        }
+      },
       "data": {
         "errorProject": false,
         "errorTemplate": false,
@@ -37,7 +47,17 @@
       }
     },
     {
-      "expectedResult": "Level5",
+      "expectedResult": {
+        "level": "Level5",
+        "renku": {
+          "level": "Level5",
+          "automated": false
+        },
+        "template": {
+          "level": "LevelE",
+          "automated": false
+        }
+      },
       "data": {
         "errorProject": false,
         "errorTemplate": true,
@@ -76,7 +96,17 @@
       }
     },
     {
-      "expectedResult": "Level5",
+      "expectedResult": {
+        "level": "Level5",
+        "renku": {
+          "level": "Level5",
+          "automated": true
+        },
+        "template": {
+          "level": "LevelE",
+          "automated": false
+        }
+      },
       "data": {
         "errorProject": false,
         "errorTemplate": true,
@@ -115,7 +145,66 @@
       }
     },
     {
-      "expectedResult": "Level3",
+      "expectedResult": {
+        "level": "Level4",
+        "renku": {
+          "level": "Level4",
+          "automated": true
+        },
+        "template": {
+          "level": "LevelE",
+          "automated": false
+        }
+      },
+      "data": {
+        "errorProject": false,
+        "errorTemplate": true,
+        "details": {
+          "core_compatibility_status": {
+            "current_metadata_version": "10",
+            "migration_required": true,
+            "project_metadata_version": "9",
+            "type": "detail"
+          },
+          "core_renku_version": "2.3.2.dev39+gf89f481d",
+          "dockerfile_renku_status": {
+            "automated_dockerfile_update": true,
+            "dockerfile_renku_version": "1.9.3",
+            "latest_renku_version": "2.3.2.dev39+gf89f481d",
+            "newer_renku_available": true,
+            "type": "detail"
+          },
+          "project_renku_version": "1.9.3",
+          "project_supported": true,
+          "template_status": {
+            "code": 2900,
+            "devMessage": "Renku service internal error. Further information: 'str' object has no attribute 'template_source'",
+            "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.ui.service.errors.ProgramInternalError",
+            "type": "error",
+            "userMessage": "Our servers generated an unexpected error while processing data."
+          }
+        },
+        "error": {
+          "code": 2900,
+          "devMessage": "Renku service internal error. Further information: Cannot get project",
+          "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.ui.service.errors.ProgramInternalError",
+          "type": "error",
+          "userMessage": "Our servers generated an unexpected error while processing data."
+        }
+      }
+    },
+    {
+      "expectedResult": {
+        "level": "Level3",
+        "renku": {
+          "level": "Level3",
+          "automated": true
+        },
+        "template": {
+          "level": "Level3",
+          "automated": true
+        }
+      },
       "data": {
         "errorProject": false,
         "errorTemplate": false,
@@ -151,7 +240,17 @@
       }
     },
     {
-      "expectedResult": "Level3",
+      "expectedResult": {
+        "level": "Level3",
+        "renku": {
+          "level": "Level3",
+          "automated": true
+        },
+        "template": {
+          "level": "Level3",
+          "automated": true
+        }
+      },
       "data": {
         "errorProject": false,
         "errorTemplate": false,
@@ -187,7 +286,17 @@
       }
     },
     {
-      "expectedResult": "Level3",
+      "expectedResult": {
+        "level": "Level3",
+        "renku": {
+          "level": "Level1",
+          "automated": true
+        },
+        "template": {
+          "level": "Level3",
+          "automated": true
+        }
+      },
       "data": {
         "errorProject": false,
         "errorTemplate": false,
@@ -223,7 +332,17 @@
       }
     },
     {
-      "expectedResult": "Level2",
+      "expectedResult": {
+        "level": "Level2",
+        "renku": {
+          "level": "Level1",
+          "automated": true
+        },
+        "template": {
+          "level": "Level2",
+          "automated": true
+        }
+      },
       "data": {
         "errorProject": false,
         "errorTemplate": false,
@@ -259,7 +378,17 @@
       }
     },
     {
-      "expectedResult": "Level1",
+      "expectedResult": {
+        "level": "Level1",
+        "renku": {
+          "level": "Level1",
+          "automated": true
+        },
+        "template": {
+          "level": "Level1",
+          "automated": true
+        }
+      },
       "data": {
         "errorProject": false,
         "errorTemplate": false,

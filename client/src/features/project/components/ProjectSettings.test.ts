@@ -16,7 +16,14 @@
  * limitations under the License.
  */
 
-import { getMigrationLevel, ProjectMigrationLevel } from "./ProjectSettings";
+import {
+  getMigrationLevel,
+  getRenkuLevel,
+  getTemplateLevel,
+  ProjectMigrationLevel,
+  RenkuMigrationLevel,
+  TemplateMigrationLevel,
+} from "./ProjectSettings";
 import { MigrationStatus } from "../Project";
 
 import * as jsonObjects from "./ProjectSettings.testData.json";
@@ -27,16 +34,54 @@ describe("Test Project Settings functions", () => {
   it("Test getMigrationLevel", () => {
     jsonObjects.results.forEach((object) => {
       const backendAvailable =
-        object.expectedResult === "Level5" ? false : true;
+        object.expectedResult.level === "Level5" ? false : true;
       const level = getMigrationLevel(
         object.data as MigrationStatus,
         backendAvailable
       );
       const expectedLevel =
         ProjectMigrationLevel[
-          object.expectedResult as ProjectMigrationLevelKeys
+          object.expectedResult.level as ProjectMigrationLevelKeys
         ];
       expect(level).toBe(expectedLevel);
+    });
+  });
+
+  it("Test getRenkuLevel", () => {
+    jsonObjects.results.forEach((object) => {
+      const backendAvailable =
+        object.expectedResult.level === "Level5" ? false : true;
+      const computedLevel = getRenkuLevel(
+        object.data as MigrationStatus,
+        backendAvailable
+      );
+      const expectedLevel = object.expectedResult
+        .renku as unknown as RenkuMigrationLevel;
+      const expectedLevelInverse =
+        ProjectMigrationLevel[
+          expectedLevel.level as unknown as ProjectMigrationLevelKeys
+        ];
+      expect(expectedLevel.automated).toBe(computedLevel?.automated);
+      expect(expectedLevelInverse).toBe(computedLevel?.level);
+    });
+  });
+
+  it("Test getTemplateLevel", () => {
+    jsonObjects.results.forEach((object) => {
+      const backendAvailable =
+        object.expectedResult.level === "Level5" ? false : true;
+      const computedLevel = getTemplateLevel(
+        object.data as MigrationStatus,
+        backendAvailable
+      );
+      const expectedLevel = object.expectedResult
+        .template as unknown as RenkuMigrationLevel;
+      const expectedLevelInverse =
+        ProjectMigrationLevel[
+          expectedLevel.level as unknown as ProjectMigrationLevelKeys
+        ];
+      expect(expectedLevel.automated).toBe(computedLevel?.automated);
+      expect(expectedLevelInverse).toBe(computedLevel?.level);
     });
   });
 });

@@ -33,6 +33,7 @@ import {
   faCheckCircle,
   faExclamationCircle,
   faInfoCircle,
+  faPlusCircle,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -59,7 +60,6 @@ import styles from "./ProjectSettings.module.scss";
 // ****** INTERFACES, ENUMS, CONST ****** //
 const TemplateSourceRenku = "renku";
 
-/* eslint-disable no-multi-spaces */
 export enum ProjectMigrationLevel {
   Level1 = "1-all-good", // ? success
   Level2 = "2-some-info-no-update", // ? info
@@ -77,7 +77,27 @@ export enum ProjectIndexingLevel {
   LevelE = "error", // ? danger
   LevelX = "x-unknown", // ? danger
 }
-/* eslint-enable no-multi-spaces */
+
+export type RenkuMigrationLevel = {
+  automated: boolean;
+  level:
+    | ProjectMigrationLevel.Level1
+    | ProjectMigrationLevel.Level3
+    | ProjectMigrationLevel.Level4
+    | ProjectMigrationLevel.Level5
+    | ProjectMigrationLevel.LevelE
+    | ProjectMigrationLevel.LevelX;
+};
+
+export type TemplateMigrationLevel = {
+  automated: boolean;
+  level:
+    | ProjectMigrationLevel.Level1
+    | ProjectMigrationLevel.Level2
+    | ProjectMigrationLevel.Level3
+    | ProjectMigrationLevel.LevelE
+    | ProjectMigrationLevel.LevelX;
+};
 
 export function getMigrationLevel(
   migrationStatus: MigrationStatus | undefined,
@@ -128,6 +148,72 @@ export function getMigrationLevel(
   }
 
   return ProjectMigrationLevel.LevelX;
+}
+
+export function getRenkuLevel(
+  migrationStatus: MigrationStatus | undefined,
+  backendAvailable: boolean
+): RenkuMigrationLevel | null {
+  let automated = false;
+  if (!migrationStatus) return null;
+  if (migrationStatus.errorProject)
+    return { automated, level: ProjectMigrationLevel.LevelE };
+  const { details } = migrationStatus;
+  if (!details || !details.project_supported)
+    return { automated, level: ProjectMigrationLevel.LevelX };
+  const coreCompatibility =
+    details.core_compatibility_status.type === "detail"
+      ? details.core_compatibility_status
+      : null;
+  const dockerfileRenku =
+    details.dockerfile_renku_status.type === "detail"
+      ? details.dockerfile_renku_status
+      : null;
+  if (dockerfileRenku?.automated_dockerfile_update) automated = true;
+  // level 5 && 4
+  if (coreCompatibility?.migration_required) {
+    if (backendAvailable !== false)
+      return { automated, level: ProjectMigrationLevel.Level4 };
+    return { automated, level: ProjectMigrationLevel.Level5 };
+  }
+  // level 3 && 1
+  if (!coreCompatibility?.migration_required) {
+    if (dockerfileRenku?.newer_renku_available)
+      return { automated, level: ProjectMigrationLevel.Level3 };
+    return { automated, level: ProjectMigrationLevel.Level1 };
+  }
+  return { automated: false, level: ProjectMigrationLevel.LevelX };
+}
+
+export function getTemplateLevel(
+  migrationStatus: MigrationStatus | undefined,
+  backendAvailable: boolean
+): TemplateMigrationLevel | null {
+  let automated = false;
+  if (!migrationStatus) return null;
+  if (migrationStatus.errorTemplate)
+    return { automated, level: ProjectMigrationLevel.LevelE };
+  const { details } = migrationStatus;
+  if (!details || !details.project_supported)
+    return { automated, level: ProjectMigrationLevel.LevelX };
+  const template =
+    details.template_status.type === "detail" ? details.template_status : null;
+  const templateError =
+    details.template_status.type === "error" ? details.template_status : null;
+
+  if (template?.automated_template_update) automated = true;
+  if (template?.newer_template_available)
+    return { automated, level: ProjectMigrationLevel.Level3 };
+  if (
+    templateError ||
+    !template?.template_source ||
+    template?.template_source === TemplateSourceRenku
+  )
+    return { automated, level: ProjectMigrationLevel.Level2 };
+  if (!templateError && !template?.newer_template_available)
+    return { automated, level: ProjectMigrationLevel.Level1 };
+
+  return { automated: false, level: ProjectMigrationLevel.LevelX };
 }
 
 // ****** SETTINGS COMPONENTS ****** //
@@ -196,7 +282,7 @@ function ProjectSettingsGeneral({
         {/* className="lh-lg" */}
         <Row>
           <Col>
-            <h4 className="mb-3">Project status</h4>
+            {/* <h4 className="mb-3">Project status</h4> */}
             <ProjectMigrationStatus
               branch={branch}
               checkingSupport={checkingSupport}
@@ -255,11 +341,9 @@ function ProjectMigrationStatus({
   // ? This is a very unexpected error from the core service, we don't need more precision.
   if (error) {
     return (
-      <SettingsPropsCard>
-        <ErrorAlert>
-          Unexpected error while checking the project status.
-        </ErrorAlert>
-      </SettingsPropsCard>
+      <ErrorAlert>
+        Unexpected error while checking the project status.
+      </ErrorAlert>
     );
   }
 
@@ -273,19 +357,21 @@ function ProjectMigrationStatus({
 
   // ! TODO: handle user permissions
   const migrationLevel = getMigrationLevel(data, isSupported);
-  // // console.log(migrationLevel);
 
   let icon = faInfoCircle;
   let level = "danger";
-  let title = "Unknown status";
-  if (migrationLevel === ProjectMigrationLevel.Level4) {
+  let title = "Unknown project status";
+  if (migrationLevel === ProjectMigrationLevel.Level5) {
+    icon = faExclamationCircle;
+    title = "Project update required";
+  } else if (migrationLevel === ProjectMigrationLevel.Level4) {
     icon = faExclamationCircle;
     level = "warning";
-    title = "Update suggested";
+    title = "Project update required";
   } else if (migrationLevel === ProjectMigrationLevel.Level3) {
     icon = faExclamationCircle;
     level = "info";
-    title = "Update available";
+    title = "Project update available";
   }
   // if (!data?.activated) {
   //   title = "Activate Knowledge Graph integration";
@@ -336,7 +422,119 @@ function ProjectMigrationStatus({
         title={title}
         toggleShowDetails={toggleShowDetails}
       />
+      <ProjectMigrationStatusDetails
+        data={data}
+        isSupported={isSupported}
+        showDetails={showDetails}
+      />
     </>
+  );
+}
+
+interface ProjectMigrationStatusDetailsProps {
+  // isMaintainer: boolean;
+  data: MigrationStatus | undefined;
+  isSupported: boolean;
+  showDetails: boolean;
+}
+function ProjectMigrationStatusDetails({
+  data,
+  isSupported,
+  showDetails,
+}: ProjectMigrationStatusDetailsProps) {
+  // // const migrationLevel = getMigrationLevel(data, isSupported);
+  // Renku Version details
+  let contentRenku: React.ReactNode = <span>No details</span>;
+  const renkuMigrationLevel = getRenkuLevel(data, isSupported);
+  const renkuTitleId = "settings-renku-version";
+  const renkuTitle = "Renku version";
+  const renkuTitleDocsUrl = Docs.rtdHowToGuide("general/upgrading-renku.html");
+  const renkuTitleInfo =
+    "The Renku version defined what Renku features are supported. Keep it updated!";
+  let renkuLevel = "danger";
+  const renkuText = "TEMPORARY PLACEHOLDER";
+  if (renkuMigrationLevel?.level === ProjectMigrationLevel.LevelX) {
+    contentRenku = <span>Level X</span>;
+  } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.LevelE) {
+    contentRenku = (
+      <ProjectSettingsGeneralCoreError
+        errorData={data?.error as CoreSectionError}
+      />
+    );
+  }
+  if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level5) {
+    contentRenku = <span>Level 5</span>;
+  } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level4) {
+    renkuLevel = "warning";
+    contentRenku = <span>Level 4</span>;
+  } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level3) {
+    renkuLevel = "info";
+    contentRenku = <span>Level 3</span>;
+  } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level1) {
+    renkuLevel = "success";
+    contentRenku = <span>Level 1</span>;
+  }
+
+  contentRenku = (
+    <DetailsSection
+      details={contentRenku}
+      icon={faCheckCircle}
+      level={renkuLevel}
+      text={renkuText}
+      title={renkuTitle}
+      titleId={renkuTitleId}
+      titleInfo={renkuTitleInfo}
+      titleDocsUrl={renkuTitleDocsUrl}
+    />
+  );
+
+  // Template version details
+  let contentTemplate: React.ReactNode = <span>No details</span>;
+  const templateMigrationLevel = getTemplateLevel(data, isSupported);
+  const templateTitleId = "settings-template-version";
+  const templateTitle = "Template version";
+  const templateTitleDocsUrl = Docs.rtdReferencePage("templates.html");
+  const templateTitleInfo =
+    "Templates define the basic framework fo your project.";
+  let templateLevel = "danger";
+  const templateText = "TEMPORARY PLACEHOLDER";
+  if (templateMigrationLevel?.level === ProjectMigrationLevel.LevelX) {
+    contentTemplate = <span>Level X</span>;
+  } else if (templateMigrationLevel?.level === ProjectMigrationLevel.LevelE) {
+    contentTemplate = (
+      <ProjectSettingsGeneralCoreError
+        errorData={data?.details?.template_status as CoreSectionError}
+      />
+    );
+  } else if (templateMigrationLevel?.level === ProjectMigrationLevel.Level3) {
+    templateLevel = "info";
+    contentTemplate = <span>Level 3</span>;
+  } else if (templateMigrationLevel?.level === ProjectMigrationLevel.Level2) {
+    templateLevel = "warning";
+    contentTemplate = <span>Level 2</span>;
+  } else if (templateMigrationLevel?.level === ProjectMigrationLevel.Level1) {
+    templateLevel = "success";
+    contentTemplate = <span>Level 1</span>;
+  }
+
+  contentTemplate = (
+    <DetailsSection
+      details={contentTemplate}
+      icon={faCheckCircle}
+      level={templateLevel}
+      text={templateText}
+      title={templateTitle}
+      titleId={templateTitleId}
+      titleInfo={templateTitleInfo}
+      titleDocsUrl={templateTitleDocsUrl}
+    />
+  );
+
+  return (
+    <Collapse isOpen={showDetails}>
+      {contentRenku}
+      {contentTemplate}
+    </Collapse>
   );
 }
 
@@ -399,11 +597,7 @@ function ProjectKnowledgeGraph({
 
   // ! TODO: expand error handling
   if (error) {
-    return (
-      <SettingsPropsCard>
-        <ErrorAlert>{JSON.stringify(error)}</ErrorAlert>
-      </SettingsPropsCard>
-    );
+    return <ErrorAlert>{JSON.stringify(error)}</ErrorAlert>;
   }
 
   let icon = faCheckCircle;
@@ -423,7 +617,7 @@ function ProjectKnowledgeGraph({
   const canUpdate = !data?.activated // ! && user.hasPermissions
     ? true
     : false;
-  const buttonIcon = faArrowAltCircleUp;
+  const buttonIcon = canUpdate ? faPlusCircle : faArrowAltCircleUp;
   let buttonDisabled = false;
   let buttonText = canUpdate ? "Activate" : undefined;
   if (activateIndexingStatus.isLoading) {
@@ -564,11 +758,7 @@ function KnowledgeGraphDetails({
       );
     }
   }
-  return (
-    <>
-      <Collapse isOpen={showDetails}>{content}</Collapse>
-    </>
-  );
+  return <Collapse isOpen={showDetails}>{content}</Collapse>;
 }
 
 interface ProjectSettingsGeneralCoreErrorProps {
@@ -577,11 +767,7 @@ interface ProjectSettingsGeneralCoreErrorProps {
 function ProjectSettingsGeneralCoreError({
   errorData,
 }: ProjectSettingsGeneralCoreErrorProps) {
-  return (
-    <SettingsPropsCard>
-      <CoreErrorAlert error={errorData} />
-    </SettingsPropsCard>
-  );
+  return <CoreErrorAlert error={errorData} />;
 }
 
 // ****** HELPERS ****** //
@@ -769,23 +955,5 @@ function DetailsSection({
         {detailsContent}
       </div>
     </>
-  );
-}
-
-// ! TEMP
-interface SettingsPropsCardProps {
-  children: React.ReactNode;
-}
-function SettingsPropsCard({ children }: SettingsPropsCardProps) {
-  return (
-    <Card className="border-rk-light mb-4">
-      <CardBody>
-        {" "}
-        {/* className="lh-lg" */}
-        <Row>
-          <Col>{children}</Col>
-        </Row>
-      </CardBody>
-    </Card>
   );
 }
