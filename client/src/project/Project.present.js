@@ -71,7 +71,6 @@ import { InfoAlert } from "../components/Alert";
 import { RenkuNavLink } from "../components/RenkuNavLink";
 import { Loader } from "../components/Loader";
 import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
-import { TimeCaption } from "../components/TimeCaption";
 import { Docs } from "../utils/constants/Docs";
 import { ContainerWrap } from "../App";
 import { ThrottledTooltip } from "../components/Tooltip";
@@ -522,13 +521,6 @@ class ProjectViewHeaderOverview extends Component {
         <Row className="d-flex rk-project-header gy-2 gx-2 pb-2 justify-content-md-between justify-content-sm-start">
           <Col className="col-12">
             <div className="d-flex gap-1 gap-md-3 justify-content-end flex-wrap">
-              <div className="flex-grow-1 pt-1">
-                <TimeCaption
-                  key="time-caption"
-                  time={this.props.metadata.lastActivityAt}
-                  className="text-rk-text"
-                />
-              </div>
               <ForkProjectModal
                 client={this.props.client}
                 history={this.props.history}
