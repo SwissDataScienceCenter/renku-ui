@@ -34,7 +34,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import {
-  Alert,
   Button,
   Col,
   Collapse,
@@ -52,7 +51,7 @@ import {
 
 import _ from "lodash";
 import { ACCESS_LEVELS } from "../../api-client";
-import { WarnAlert } from "../../components/Alert";
+import { InfoAlert, WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import { RenkuNavLink } from "../../components/RenkuNavLink";
@@ -94,13 +93,21 @@ function ProjectSettingsGeneral(props) {
     };
   }, []); // eslint-disable-line
 
+  if (props.settingsReadOnly && !props.user.logged) {
+    const textIntro = "Only authenticated users can access project setting.";
+    const textPost = "to visualize project settings.";
+    return (
+      <LoginAlert logged={false} textIntro={textIntro} textPost={textPost} />
+    );
+  }
+
   if (props.settingsReadOnly) {
     return (
-      <Alert color="primary">
+      <InfoAlert dismissible={false} timeout={0}>
         <p className="mb-0">
           Project settings can be changed only by maintainers.
         </p>
-      </Alert>
+      </InfoAlert>
     );
   }
 
