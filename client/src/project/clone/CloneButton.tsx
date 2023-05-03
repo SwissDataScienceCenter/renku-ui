@@ -67,9 +67,9 @@ export const CloneButton = ({
         <ChevronDown size="20" className="btn-with-menu-icon" />
       </DropdownToggle>
       <DropdownMenu className="btn-with-menu-options" end>
-        {/* eslint-disable-next-line spellcheck/spell-checker */}
         <Container
           className="px-3"
+          // eslint-disable-next-line spellcheck/spell-checker
           style={{ width: "420px", maxWidth: "90vw" }}
         >
           <Row xs={12}>
