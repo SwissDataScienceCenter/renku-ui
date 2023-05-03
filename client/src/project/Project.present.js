@@ -520,7 +520,7 @@ class ProjectViewHeaderOverview extends Component {
       <Fragment>
         <Row className="d-flex rk-project-header gy-2 gx-2 pb-2 justify-content-md-between justify-content-sm-start">
           <Col className="col-12">
-            <div className="d-flex gap-1 gap-md-3 justify-content-end flex-wrap">
+            <div className="d-flex gap-2 gap-md-3 justify-content-end align-items-end flex-wrap">
               <ForkProjectModal
                 client={this.props.client}
                 history={this.props.history}
