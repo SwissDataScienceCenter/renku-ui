@@ -82,11 +82,11 @@ export const Clipboard = ({
       style={{ textDecoration: "none" }}
     >
       <Wrap>
-        {copied ? (
-          <FontAwesomeIcon icon={faCheck} size="1x" style={{ minWidth: 16 }} />
-        ) : (
-          <FontAwesomeIcon icon={faCopy} size="1x" style={{ minWidth: 16 }} />
-        )}
+        <FontAwesomeIcon
+          icon={copied ? faCheck : faCopy}
+          size="1x"
+          fixedWidth
+        />
         {children}
       </Wrap>
     </ReactClipboard>
