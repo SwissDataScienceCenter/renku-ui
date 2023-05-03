@@ -37,6 +37,7 @@ import {
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
+import { RenkuRepositories } from "../../../utils/constants/Repositories";
 import { ChevronDown, ChevronUp } from "../../../utils/ts-wrappers";
 import { CoreErrorContent } from "../../../utils/definitions";
 import {
@@ -99,6 +100,50 @@ export type TemplateMigrationLevel = {
     | ProjectMigrationLevel.LevelX;
 };
 
+/**
+ * Replace the longer dev suffix (E.G: ".dev22+g1262f766") with a shorter
+ * "-dev" generic suffix.
+ * @param version - stringy version (SemVer like)
+ * @returns either same string or shorter string ending with "-dev"
+ */
+export function cleanVersion(version?: string): string {
+  if (!version) return "";
+  const regex = /dev\d+\+/;
+  if (regex.test(version)) {
+    return version.substring(0, version.indexOf(".dev")) + "-dev";
+  }
+  return version;
+}
+
+/**
+ * Get the Renku Python URL for the target release
+ */
+export function getReleaseUrl(version?: string): string | null {
+  if (!version) return null;
+  const cleanedVersion = cleanVersion(version);
+  if (!cleanedVersion.endsWith("-dev"))
+    return `${RenkuRepositories.Python}/releases/tag/v${cleanedVersion}`;
+  return null;
+}
+
+/**
+ * Get the Renku Python URL for comparing the commits
+ */
+export function getCompareUrl(
+  projectVersion?: string,
+  latestVersion?: string
+): React.ReactNode {
+  if (!projectVersion || !latestVersion) return null;
+  const cleanedProjectVersion = cleanVersion(projectVersion);
+  const cleanedLatestVersion = cleanVersion(latestVersion);
+  if (
+    !cleanedProjectVersion.endsWith("-dev") &&
+    !cleanedLatestVersion.endsWith("-dev")
+  )
+    return `${RenkuRepositories.Python}/compare/v${cleanedProjectVersion}...v${cleanedLatestVersion}`;
+  return null;
+}
+
 export function getMigrationLevel(
   migrationStatus: MigrationStatus | undefined,
   backendAvailable: boolean
@@ -127,7 +172,6 @@ export function getMigrationLevel(
     return ProjectMigrationLevel.Level5;
   }
   // level 3
-  // ! double check what to do in case !automated_dockerfile_update and later !automated_template_update
   if (
     !coreCompatibility?.migration_required &&
     (dockerfileRenku?.newer_renku_available ||
@@ -278,11 +322,8 @@ function ProjectSettingsGeneral({
   return (
     <Card className="border-rk-light mb-4">
       <CardBody>
-        {" "}
-        {/* className="lh-lg" */}
         <Row>
           <Col>
-            {/* <h4 className="mb-3">Project status</h4> */}
             <ProjectMigrationStatus
               branch={branch}
               checkingSupport={checkingSupport}
@@ -442,8 +483,19 @@ function ProjectMigrationStatusDetails({
   isSupported,
   showDetails,
 }: ProjectMigrationStatusDetailsProps) {
-  // // const migrationLevel = getMigrationLevel(data, isSupported);
   // Renku Version details
+  const docker =
+    data?.details?.dockerfile_renku_status.type === "detail"
+      ? data.details.dockerfile_renku_status
+      : null;
+  const metadata =
+    data?.details?.core_compatibility_status.type === "detail"
+      ? data.details.core_compatibility_status
+      : null;
+  const renkuProjectVersion = cleanVersion(docker?.dockerfile_renku_version);
+  const renkuLatestVersion = cleanVersion(docker?.latest_renku_version);
+  const renkuDockerVersion = `${renkuProjectVersion} (${renkuLatestVersion} available)`;
+
   let contentRenku: React.ReactNode = <span>No details</span>;
   const renkuMigrationLevel = getRenkuLevel(data, isSupported);
   const renkuTitleId = "settings-renku-version";
@@ -452,8 +504,10 @@ function ProjectMigrationStatusDetails({
   const renkuTitleInfo =
     "The Renku version defined what Renku features are supported. Keep it updated!";
   let renkuLevel = "danger";
-  const renkuText = "TEMPORARY PLACEHOLDER";
+  let renkuIcon = faExclamationCircle;
+  let renkuText: string | React.ReactNode = "No data";
   if (renkuMigrationLevel?.level === ProjectMigrationLevel.LevelX) {
+    renkuText = "Unknown version";
     contentRenku = <span>Level X</span>;
   } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.LevelE) {
     contentRenku = (
@@ -463,22 +517,115 @@ function ProjectMigrationStatusDetails({
     );
   }
   if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level5) {
-    contentRenku = <span>Level 5</span>;
+    renkuIcon = faExclamationCircle;
+    // ! FROM HERE
+    const renkuProjectCompareUrl = getCompareUrl(
+      renkuProjectVersion,
+      renkuLatestVersion
+    );
+    const renkuProjectReleaseUrl = getReleaseUrl(renkuLatestVersion);
+    const renkuProjectVersionElement = renkuProjectCompareUrl ? (
+      <ExternalLink
+        role="text"
+        url={renkuProjectCompareUrl}
+        title={renkuProjectVersion}
+      />
+    ) : (
+      <span>{renkuProjectVersion}</span>
+    );
+    const renkuLatestVersionElement = renkuProjectReleaseUrl ? (
+      <ExternalLink
+        role="text"
+        url={renkuProjectReleaseUrl}
+        title={renkuLatestVersion}
+      />
+    ) : (
+      <span>{renkuLatestVersion}</span>
+    );
+    renkuText = (
+      <>
+        {renkuProjectVersionElement} ({renkuLatestVersionElement} avaliable)
+      </>
+    );
+    // ! TO HERE --> make a function
+
+    contentRenku = (
+      <>
+        <span>
+          The project is strongly outdated and most interaction on RenkuLab will
+          not be available (E.G. with datasets, workflows, session settings,
+          ...).
+        </span>
+        <br />
+        <span>
+          This happens because the underlying Renku project metadata is still on
+          version {metadata?.project_metadata_version} while the latest version
+          is {metadata?.current_metadata_version}.{" "}
+          <ExternalLink
+            url={renkuTitleDocsUrl}
+            role="text"
+            iconSup={true}
+            iconAfter={true}
+            title="More info"
+          />
+        </span>
+      </>
+    );
   } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level4) {
     renkuLevel = "warning";
-    contentRenku = <span>Level 4</span>;
+    renkuIcon = faExclamationCircle;
+    renkuText = renkuDockerVersion;
+    contentRenku = (
+      <>
+        <span>
+          The project is outdated. You can still use it on RenkuLab but some
+          features might not be available.
+        </span>
+        <br />
+        <span>
+          This happens because the underlying Renku project metadata is still on
+          version {metadata?.project_metadata_version} while the latest version
+          is {metadata?.current_metadata_version}.{" "}
+          <ExternalLink
+            url={renkuTitleDocsUrl}
+            role="text"
+            iconSup={true}
+            iconAfter={true}
+            title="More info"
+          />
+        </span>
+      </>
+    );
   } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level3) {
     renkuLevel = "info";
-    contentRenku = <span>Level 3</span>;
+    renkuIcon = faInfoCircle;
+    renkuText = renkuDockerVersion;
+    contentRenku = (
+      <>
+        <span>
+          There is a new Renku version. Updating should be safe since it is a
+          minor step.
+          <ExternalLink
+            url={renkuTitleDocsUrl}
+            role="text"
+            iconSup={true}
+            iconAfter={true}
+            title="More info"
+          />
+        </span>
+      </>
+    );
   } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level1) {
+    renkuIcon = faCheckCircle;
     renkuLevel = "success";
+    renkuText = `v${docker?.dockerfile_renku_version}`;
     contentRenku = <span>Level 1</span>;
   }
 
   contentRenku = (
     <DetailsSection
       details={contentRenku}
-      icon={faCheckCircle}
+      icon={renkuIcon}
       level={renkuLevel}
       text={renkuText}
       title={renkuTitle}
@@ -497,10 +644,12 @@ function ProjectMigrationStatusDetails({
   const templateTitleInfo =
     "Templates define the basic framework fo your project.";
   let templateLevel = "danger";
-  const templateText = "TEMPORARY PLACEHOLDER";
+  let templateIcon = faCheckCircle;
+  let templateText = "Unknown version";
   if (templateMigrationLevel?.level === ProjectMigrationLevel.LevelX) {
     contentTemplate = <span>Level X</span>;
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.LevelE) {
+    templateText = "Error";
     contentTemplate = (
       <ProjectSettingsGeneralCoreError
         errorData={data?.details?.template_status as CoreSectionError}
@@ -508,19 +657,22 @@ function ProjectMigrationStatusDetails({
     );
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.Level3) {
     templateLevel = "info";
+    templateIcon = faArrowAltCircleUp;
     contentTemplate = <span>Level 3</span>;
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.Level2) {
     templateLevel = "warning";
+    templateIcon = faExclamationCircle;
     contentTemplate = <span>Level 2</span>;
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.Level1) {
     templateLevel = "success";
+    templateIcon = faCheckCircle;
     contentTemplate = <span>Level 1</span>;
   }
 
   contentTemplate = (
     <DetailsSection
       details={contentTemplate}
-      icon={faCheckCircle}
+      icon={templateIcon}
       level={templateLevel}
       text={templateText}
       title={templateTitle}
@@ -858,7 +1010,7 @@ interface DetailsSectionProps {
   details?: React.ReactElement;
   level?: string;
   icon: IconProp;
-  text: string;
+  text: string | React.ReactNode;
   title: string;
   titleId: string;
   titleInfo?: string;
@@ -928,15 +1080,14 @@ function DetailsSection({
       </span>
     ) : null;
     titlePopover = (
-      <UncontrolledTooltip
-        placement="top"
-        target={titleId}
-        delay={{ show: 0, hide: 2000 }}
-      >
+      <UncontrolledTooltip placement="top" target={titleId} autohide={false}>
         {titleInfo} {titleUrl}
       </UncontrolledTooltip>
     );
   }
+
+  const textElement: React.ReactNode =
+    typeof text === "string" ? <span>{text}</span> : text;
 
   return (
     <>
@@ -947,9 +1098,7 @@ function DetailsSection({
             {titlePopover}
           </div>
           <div className={`mx-3 ${color}`}>{finalIcon}</div>
-          <div>
-            <span>{text}</span>
-          </div>
+          <div>{textElement}</div>
           <div className="ms-auto">{button}</div>
         </div>
         {detailsContent}
