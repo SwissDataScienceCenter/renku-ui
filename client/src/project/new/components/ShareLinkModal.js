@@ -34,7 +34,7 @@ import {
   Col,
   Form,
 } from "reactstrap";
-import { CommandCopy } from "../../clone/CommandCopy";
+import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 
 function ShareLinkModal(props) {
   const { createUrl, input } = props;

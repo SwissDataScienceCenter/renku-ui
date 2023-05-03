@@ -23,7 +23,7 @@ import * as cheatsheetJson from "./cheatsheet.json";
 import { ExternalDocsLink } from "../../components/ExternalLinks";
 import { Docs, RenkuPythonDocs } from "../../utils/constants/Docs";
 import { Col } from "../../utils/ts-wrappers";
-import { CommandCopy } from "../../project/clone/CommandCopy";
+import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 
 interface CommandDescProps {
   command: string;

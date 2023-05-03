@@ -36,7 +36,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ThrottledTooltip } from "../Tooltip";
 import { EnvVariablesField } from "../../notebooks/components/EnviromentVariables";
-import { CommandCopy } from "../../project/clone/CommandCopy";
+import { CommandCopy } from "../commandCopy/CommandCopy";
 
 interface ShareLinkSessionProps {
   filters: ProjectFilters;

@@ -18,15 +18,16 @@
 
 import React, { useState } from "react";
 import cx from "classnames";
-import { Clipboard } from "../../components/Clipboard";
-import { ThrottledTooltip } from "../../components/Tooltip";
+import { Clipboard } from "../Clipboard";
+import { ThrottledTooltip } from "../Tooltip";
 import styles from "./CommandCopy.module.scss";
 
 interface CommandCopyProps {
   command: string;
+  noMargin?: boolean;
 }
 
-export const CommandCopy = ({ command }: CommandCopyProps) => {
+export const CommandCopy = ({ command, noMargin }: CommandCopyProps) => {
   const [randomIdForTooltip] = useState<string>(() => {
     const rand = `${Math.random()}`.slice(2);
     return `command-copy-${rand}`;
@@ -40,7 +41,8 @@ export const CommandCopy = ({ command }: CommandCopyProps) => {
     <div
       className={cx(
         styles.main,
-        "rounded overflow-hidden d-flex align-items-stretch my-2"
+        "rounded overflow-hidden d-flex align-items-stretch",
+        !noMargin && "my-2"
       )}
     >
       <span

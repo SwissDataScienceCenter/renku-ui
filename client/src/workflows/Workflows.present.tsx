@@ -68,7 +68,7 @@ import { InfoAlert, WarnAlert } from "../components/Alert";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
 import "./Workflows.scss";
 import InformativeIcon from "../components/InformativeIcon";
-import { CommandCopy } from "../project/clone/CommandCopy";
+import { CommandCopy } from "../components/commandCopy/CommandCopy";
 
 /** BROWSER **/
 
@@ -511,8 +511,8 @@ function WorkflowTreeDetail({
     );
   } else {
     const command = details.command ? (
-      <div className="d-grid" style={{ margin: "-0.5rem 0" }}>
-        <CommandCopy command={details.command} />
+      <div className="d-grid">
+        <CommandCopy command={details.command} noMargin />
       </div>
     ) : (
       <UnavailableDetail />
@@ -527,8 +527,8 @@ function WorkflowTreeDetail({
           {Time.toIsoTimezoneString(details.last_executed)}
         </WorkflowTreeDetailRow>
         <WorkflowTreeDetailRow name="Full command">
-          <div className="d-grid" style={{ margin: "-0.5rem 0" }}>
-            <CommandCopy command={details.full_command} />
+          <div className="d-grid">
+            <CommandCopy command={details.full_command} noMargin />
           </div>
         </WorkflowTreeDetailRow>
         <WorkflowTreeDetailRow name="Base command">
@@ -631,8 +631,8 @@ function WorkflowTreeDetail({
             </WorkflowTreeDetailRow>
             {typeSpecificRows}
             <WorkflowTreeDetailRow name="Renku command">
-              <div className="d-grid" style={{ margin: "-0.5rem 0" }}>
-                <CommandCopy command={details.renkuCommand} />
+              <div className="d-grid">
+                <CommandCopy command={details.renkuCommand} noMargin />
               </div>
             </WorkflowTreeDetailRow>
           </tbody>

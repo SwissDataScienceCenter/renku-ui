@@ -83,7 +83,7 @@ import {
   StartNotebookLoader,
 } from "./components/StartSessionLoader";
 import CommitSelector from "../components/commitSelector/CommitSelector";
-import { CommandCopy } from "../project/clone/CommandCopy";
+import { CommandCopy } from "../components/commandCopy/CommandCopy";
 
 function ProjectSessionLockAlert({ lockStatus }) {
   if (lockStatus == null) return null;

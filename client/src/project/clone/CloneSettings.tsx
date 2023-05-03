@@ -18,7 +18,7 @@
 
 import React, { useCallback, useState } from "react";
 import { Button } from "reactstrap";
-import { CommandCopy } from "./CommandCopy";
+import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 
 interface CloneSettingsProps {
   externalUrl: string;

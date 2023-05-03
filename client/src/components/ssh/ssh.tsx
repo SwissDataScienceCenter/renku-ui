@@ -41,7 +41,7 @@ import { GeneralErrorMessage } from "../../project/status/MigrationUtils";
 import rkIconSsh from "../../styles/icons/ssh.svg";
 import rkIconSshTicked from "../../styles/icons/ssh-ticked.svg";
 import rkIconSshCross from "../../styles/icons/ssh-cross.svg";
-import { CommandCopy } from "../../project/clone/CommandCopy";
+import { CommandCopy } from "../commandCopy/CommandCopy";
 
 const docsIconStyle = {
   showLinkIcon: true,
