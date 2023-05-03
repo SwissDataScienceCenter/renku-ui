@@ -21,9 +21,9 @@ import { faCopy } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChevronDown } from "react-bootstrap-icons";
 import {
-  ButtonDropdown,
   Col,
   Container,
+  Dropdown,
   DropdownMenu,
   DropdownToggle,
   Row,
@@ -54,7 +54,7 @@ export const CloneButton = ({
   const size = size_ ?? "md";
 
   return (
-    <ButtonDropdown
+    <Dropdown
       className="-btn-outline-rk-green btn-with-menu rounded-pill"
       color="rk-green"
       size={size}
@@ -63,12 +63,15 @@ export const CloneButton = ({
       direction="down"
     >
       <DropdownToggle className="btn-outline-rk-green rounded-pill">
-        <FontAwesomeIcon icon={faCopy} size="1x" style={{ minWidth: 16 }} />{" "}
-        Clone <ChevronDown size="20" className="btn-with-menu-icon" />
+        <FontAwesomeIcon icon={faCopy} size="1x" fixedWidth /> Clone{" "}
+        <ChevronDown size="20" className="btn-with-menu-icon" />
       </DropdownToggle>
       <DropdownMenu className="btn-with-menu-options" end>
         {/* eslint-disable-next-line spellcheck/spell-checker */}
-        <Container className="px-3" style={{ width: "40vw" }}>
+        <Container
+          className="px-3"
+          style={{ width: "420px", maxWidth: "90vw" }}
+        >
           <Row xs={12}>
             <Col xs={12}>
               <CloneSettings
@@ -81,6 +84,6 @@ export const CloneButton = ({
           </Row>
         </Container>
       </DropdownMenu>
-    </ButtonDropdown>
+    </Dropdown>
   );
 };
