@@ -28,19 +28,19 @@ import logger from "../../logger";
 import { errorHandler } from "../errorHandler";
 import express, { ErrorRequestHandler } from "express";
 
-const errorHandlerMiddleware : ErrorRequestHandler = (
+const errorHandlerMiddleware: ErrorRequestHandler = (
   err: Error,
   req: express.Request,
   res: express.Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  next: express.NextFunction): void => {
+  next: express.NextFunction
+): void => {
   logger.info("Error handled in the errorHandler middleware 😉");
   errorHandler.handleError(err);
   if (err instanceof BaseError) {
     res.status(err.httpCode);
     res.json({ error: err.message });
-  }
-  else {
+  } else {
     res.status(500);
     res.json({ error: err.message });
   }

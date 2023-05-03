@@ -43,15 +43,16 @@ const logStream = {
     logger.info(message);
   },
 };
-app.use(morgan("combined", {
-  stream: logStream,
-  skip: function (req) {
-    // exclude from logging all the internal routes not accessible from outside
-    if (!req.url.startsWith(config.server.prefix))
-      return true;
-    return false;
-  }
-}));
+app.use(
+  morgan("combined", {
+    stream: logStream,
+    skip: function (req) {
+      // exclude from logging all the internal routes not accessible from outside
+      if (!req.url.startsWith(config.server.prefix)) return true;
+      return false;
+    },
+  })
+);
 
 logger.info("Server configuration: " + JSON.stringify(config));
 
@@ -78,7 +79,6 @@ app.use(cookieParser());
 
 // register routes
 routes.register(app, prefix, authenticator, storage);
-
 
 // start the Express server
 const server = app.listen(port, () => {

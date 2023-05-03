@@ -30,15 +30,21 @@ describe("Test storage", () => {
     // save data
     const path = "somewhere";
     const data = "something";
-    await storage.save(`${config.auth.storagePrefix}${path}`, data, { type: TypeData.String });
+    await storage.save(`${config.auth.storagePrefix}${path}`, data, {
+      type: TypeData.String,
+    });
 
     // get data
-    let savedData = await storage.get(`${config.auth.storagePrefix}${path}`, { type: TypeData.String });
+    let savedData = await storage.get(`${config.auth.storagePrefix}${path}`, {
+      type: TypeData.String,
+    });
     expect(savedData).toBe(data);
 
     // delete data
     await storage.delete(`${config.auth.storagePrefix}${path}`);
-    savedData = await storage.get(`${config.auth.storagePrefix}${path}`, { type: TypeData.String });
+    savedData = await storage.get(`${config.auth.storagePrefix}${path}`, {
+      type: TypeData.String,
+    });
     expect(savedData).not.toBe(data);
 
     // save access to the project
@@ -57,21 +63,26 @@ describe("Test storage", () => {
 
     for (const project of projects) {
       const projectDate = Date.now();
-      await storage.save(`${config.data.projectsStoragePrefix}${userId}`, project,
+      await storage.save(
+        `${config.data.projectsStoragePrefix}${userId}`,
+        project,
         {
           type: TypeData.Collections,
           limit: 10,
-          score: projectDate
-        });
+          score: projectDate,
+        }
+      );
     }
 
-
     // get the last accessed projects
-    const projectList = await storage.get(`${config.data.projectsStoragePrefix}${userId}`, {
-      type: TypeData.Collections,
-      start: 0,
-      stop: 4
-    });
+    const projectList = await storage.get(
+      `${config.data.projectsStoragePrefix}${userId}`,
+      {
+        type: TypeData.Collections,
+        start: 0,
+        stop: 4,
+      }
+    );
     expect(projectList).toEqual(projectsExpected);
   });
 

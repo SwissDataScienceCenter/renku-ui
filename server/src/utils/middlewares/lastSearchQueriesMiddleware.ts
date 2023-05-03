@@ -21,14 +21,19 @@ import express from "express";
 import config from "../../config";
 import { getUserIdFromToken } from "../../authentication";
 
-const lastSearchQueriesMiddleware = (storage: Storage) =>
-  (req: express.Request, res: express.Response, next: express.NextFunction): void => {
+const lastSearchQueriesMiddleware =
+  (storage: Storage) =>
+  (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): void => {
     const token = req.headers[config.auth.authHeaderField] as string;
     const query = req.query["query"];
     const phrase = query ? (query as string).trim() : "";
 
     if (req.query?.doNotTrack !== "true" && phrase) {
-      res.on("finish", function() {
+      res.on("finish", function () {
         if (res.statusCode >= 400 || !token) {
           next();
           return;
@@ -40,7 +45,7 @@ const lastSearchQueriesMiddleware = (storage: Storage) =>
           {
             type: TypeData.Collections,
             limit: config.data.searchDefaultLength,
-            score: Date.now()
+            score: Date.now(),
           }
         );
       });

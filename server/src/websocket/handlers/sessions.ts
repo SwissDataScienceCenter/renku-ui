@@ -40,30 +40,40 @@ interface Session {
 }
 
 function handlerRequestSessionStatus(
-  data: Record<string, unknown>, channel: Channel): void {
+  data: Record<string, unknown>,
+  channel: Channel
+): void {
   channel.data.set("sessionStatus", null);
 }
 
 function sendMessage(data: string, channel: Channel) {
   const info = new WsMessage({ message: data }, "user", "sessionStatus");
-  channel.sockets.forEach(socket => socket.send(info.toString()));
+  channel.sockets.forEach((socket) => socket.send(info.toString()));
 }
 
-function heartbeatRequestSessionStatus
-(channel: Channel, apiClient: APIClient, authHeathers: Record<string, string>): void {
+function heartbeatRequestSessionStatus(
+  channel: Channel,
+  apiClient: APIClient,
+  authHeathers: Record<string, string>
+): void {
   const previousStatuses = channel.data.get("sessionStatus") as string;
-  apiClient.getSessionStatus(authHeathers)
+  apiClient
+    .getSessionStatus(authHeathers)
     .then((response) => {
       const statusFetched = response as unknown as SessionsResult;
       const servers = statusFetched?.servers ?? {};
       const cleanStatus: Record<string, Session> = {};
       // only keep status information
-      Object.keys(servers).map( key => {
+      Object.keys(servers).map((key) => {
         cleanStatus[key] = { status: servers[key].status };
       });
 
-      const sortedObject = sortObjectProperties(cleanStatus as Record<string, never>);
-      const currentHashedSessions = simpleHash(JSON.stringify(sortedObject)).toString();
+      const sortedObject = sortObjectProperties(
+        cleanStatus as Record<string, never>
+      );
+      const currentHashedSessions = simpleHash(
+        JSON.stringify(sortedObject)
+      ).toString();
       // only send message when something change
       if (!util.isDeepStrictEqual(previousStatuses, currentHashedSessions)) {
         sendMessage("true", channel);

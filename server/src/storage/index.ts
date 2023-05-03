@@ -17,39 +17,45 @@
  */
 
 export interface StorageSaveOptions {
-  type: TypeData,
-  limit?: number, // to trim current set of ordered values only apply to the collections
-  score?: number, // to order values, only apply to the collections
+  type: TypeData;
+  limit?: number; // to trim current set of ordered values only apply to the collections
+  score?: number; // to order values, only apply to the collections
 }
 
 export interface StorageGetOptions {
-  type: TypeData,
-  start?: number, // performs an index range query, represent zero-based indexes, only apply to the collections
-  stop?: number, // performs an index range query, represent zero-based indexes, only apply to the collections
+  type: TypeData;
+  start?: number; // performs an index range query, represent zero-based indexes, only apply to the collections
+  stop?: number; // performs an index range query, represent zero-based indexes, only apply to the collections
 }
 
 export interface SaveCollectionOptions {
-  limit?: number, // to trim current set of ordered values
-  score?: number, // to order values
+  limit?: number; // to trim current set of ordered values
+  score?: number; // to order values
 }
 
 /* eslint-disable no-unused-vars */
-export enum TypeData { String, Collections}
+export enum TypeData {
+  String,
+  Collections,
+}
 export enum StoragePrefix {
   LAST_PROJECTS = "LPROJECT_",
-  LAST_SEARCHES = "LSEARCH_"
+  LAST_SEARCHES = "LSEARCH_",
 }
 /* eslint-enable no-unused-vars */
 
 interface Storage {
-
   ready: boolean;
 
   getStatus(): string;
 
   get(path: string, options?: StorageGetOptions): Promise<string | string[]>;
 
-  save(path: string, value: string, options?: StorageSaveOptions): Promise<boolean>;
+  save(
+    path: string,
+    value: string,
+    options?: StorageSaveOptions
+  ): Promise<boolean>;
 
   delete(path: string): Promise<number>;
 

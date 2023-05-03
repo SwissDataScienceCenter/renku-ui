@@ -27,7 +27,7 @@ const SERVER = {
   serverUiVersion: process.env.UI_SERVER_VERSION || "unknown",
   proxyTimeout: 600 * 1000, // in milliseconds
   wsSuffix: "/ws",
-  keepCookies: JSON.parse(process.env.SERVER_KEEP_COOKIES || "[]")
+  keepCookies: JSON.parse(process.env.SERVER_KEEP_COOKIES || "[]"),
 };
 
 const gatewayUrl = process.env.GATEWAY_URL || urlJoin(SERVER.url ?? "", "/api");
@@ -96,7 +96,7 @@ const WEBSOCKET = {
   shortIntervalSec: 5, // ? in seconds
   longIntervalSec: 180, // ? in seconds
   delayStartSec: 3, // ? in seconds
-  timeoutActivationStatus: 120 // in minutes
+  timeoutActivationStatus: 120, // in minutes
 };
 
 const config = {
