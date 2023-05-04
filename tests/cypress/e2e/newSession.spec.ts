@@ -20,12 +20,20 @@ import Fixtures from "../support/renkulab-fixtures";
 import "../support/utils";
 import "../support/sessions/gui_commands";
 
-describe("launch sessions", () => {
+describe.only("launch sessions", () => {
   const fixtures = new Fixtures(cy);
   beforeEach(() => {
     fixtures.config().versions().projects().landingUserProjects();
     fixtures.projectTest().projectMigrationUpToDate();
-    fixtures.sessionAutosave().sessionServersEmpty().renkuIni().sessionServerOptions().projectLockStatus();
+    fixtures
+      .sessionAutosave()
+      .sessionServersEmpty()
+      .sessionsVersion()
+      .renkuIni()
+      .sessionServerOptions()
+      .resourcePoolsTest()
+      .projectConfigShow()
+      .projectLockStatus();
     cy.visit("/projects/e2e/local-test-project");
   });
 
@@ -34,16 +42,22 @@ describe("launch sessions", () => {
     fixtures.newSessionImages();
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
-    cy.get("form").contains("Start session").should("be.visible").should("be.enabled");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.enabled");
     cy.get("form").contains("Start with base image").should("not.exist");
   });
 
-  it("new session page - logged - success", () => {
+  it.only("new session page - logged - success", () => {
     fixtures.userTest();
     fixtures.newSessionImages();
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
-    cy.get("form").contains("Start session").should("be.visible").should("be.enabled");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.enabled");
     cy.get("form").contains("Start with base image").should("not.exist");
   });
 
@@ -53,7 +67,10 @@ describe("launch sessions", () => {
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionPipelines", { timeout: 10000 });
     cy.get("form").contains("Start with base image").should("be.visible");
-    cy.get("form").contains("Start session").should("be.visible").should("be.disabled");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.disabled");
     cy.contains("No Docker image found").should("be.visible");
     cy.contains("building the branch image").should("be.visible");
     cy.get(".badge").contains("not available").should("be.visible");
@@ -65,7 +82,10 @@ describe("launch sessions", () => {
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
     cy.get("form").contains("Start with base image").should("be.visible");
-    cy.get("form").contains("Start session").should("be.visible").should("be.disabled");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.disabled");
     cy.get(".badge").contains("not available").should("be.visible");
   });
 
@@ -75,7 +95,10 @@ describe("launch sessions", () => {
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
     cy.get("form").contains("Start with base image").should("be.visible");
-    cy.get("form").contains("Start session").should("be.visible").should("be.disabled");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.disabled");
     cy.get(".badge").contains("not available").should("be.visible");
   });
 
@@ -85,7 +108,10 @@ describe("launch sessions", () => {
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJobs", { timeout: 10000 });
     cy.get("form").contains("Start with base image").should("be.visible");
-    cy.get("form").contains("Start session").should("be.visible").should("be.disabled");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.disabled");
     cy.get(".badge").contains("not available").should("be.visible");
     cy.get("#image_build").should("be.visible");
     cy.get("#image_build_again").should("not.exist");
@@ -94,11 +120,17 @@ describe("launch sessions", () => {
 
   it("new session page - logged - running job", () => {
     fixtures.userTest();
-    fixtures.newSessionPipelines().newSessionJobs(false, true).newSessionImages(true);
+    fixtures
+      .newSessionPipelines()
+      .newSessionJobs(false, true)
+      .newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJob", { timeout: 15000 });
     cy.get("form").contains("Start with base image").should("be.visible");
-    cy.get("form").contains("Start session").should("be.visible").should("be.disabled");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.disabled");
     cy.get(".badge").contains("building").should("be.visible");
     cy.get("#image_build").should("not.exist");
     cy.get("#image_build_again").should("not.exist");
@@ -107,11 +139,17 @@ describe("launch sessions", () => {
 
   it("new session page - logged - failed job", () => {
     fixtures.userTest();
-    fixtures.newSessionPipelines().newSessionJobs(false, false, true).newSessionImages(true);
+    fixtures
+      .newSessionPipelines()
+      .newSessionJobs(false, false, true)
+      .newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJobs", { timeout: 10000 });
     cy.get("form").contains("Start with base image").should("be.visible");
-    cy.get("form").contains("Start session").should("be.visible").should("be.disabled");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.disabled");
     cy.get(".badge").contains("not available").should("be.visible");
     cy.get("#image_build").should("not.exist");
     cy.get("#image_build_again").should("be.visible");
@@ -128,11 +166,17 @@ describe("launch sessions", () => {
     cy.contains("Cloud Storage Configuration").should("be.visible");
 
     // Test endpoint validation
-    cy.contains("Please enter a valid URL for the endpoint").should("be.visible");
+    cy.contains("Please enter a valid URL for the endpoint").should(
+      "be.visible"
+    );
     cy.get("#s3-endpoint-0").type("url");
-    cy.contains("Please enter a valid URL for the endpoint").should("be.visible");
+    cy.contains("Please enter a valid URL for the endpoint").should(
+      "be.visible"
+    );
     cy.get("#s3-endpoint-0").type(".com");
-    cy.contains("Please enter a valid URL for the endpoint").should("not.exist");
+    cy.contains("Please enter a valid URL for the endpoint").should(
+      "not.exist"
+    );
 
     // Test bucket validation
     cy.contains("Please enter a valid bucket name").should("be.visible");

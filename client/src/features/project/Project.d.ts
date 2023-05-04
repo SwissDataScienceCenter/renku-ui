@@ -157,6 +157,17 @@ type UsedIn = {
   name: string;
 };
 
+export interface ProjectConfig {
+  config: ProjectConfigSection;
+  default: ProjectConfigSection;
+}
+
+export interface ProjectConfigSection {
+  interactive?: {
+    defaultUrl?: string;
+  };
+}
+
 export type {
   DatasetCore,
   DatasetKg,

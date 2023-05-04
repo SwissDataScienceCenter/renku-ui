@@ -30,8 +30,14 @@ export const sessionApi = createApi({
   reducerPath: "sessionApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/notebooks/" }),
   tagTypes: [],
-  keepUnusedDataFor: 0,
+  // keepUnusedDataFor: 0,
   endpoints: (builder) => ({
+    // getVersion: builder.query<unknown, unknown>({
+    //   query: () => ({
+    //     url: "version",
+    //   }),
+    // }),
+
     stopSession: builder.mutation<boolean, StopSessionArgs>({
       query: (args) => {
         return {
@@ -48,6 +54,7 @@ export const sessionApi = createApi({
           params: { max_lines: args.lines },
         };
       },
+      keepUnusedDataFor: 0,
     }),
   }),
 });

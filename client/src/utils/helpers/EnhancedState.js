@@ -24,17 +24,18 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { projectKgApi } from "../../features/projects/ProjectKgApi";
-import { sessionSidecarApi } from "../../features/session/sidecarApi";
-import { projectApi } from "../../features/projects/ProjectsApi";
-import { projectCoreApi } from "../../features/project/projectCoreApi";
-import { kgSearchApi } from "../../features/kgSearch";
-import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
+import { dataServicesApi } from "../../features/dataServices/dataServicesApi";
+import displaySlice from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import kgInactiveProjectsSlice from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
+import { kgSearchApi } from "../../features/kgSearch";
+import { projectCoreApi } from "../../features/project/projectCoreApi";
+import { projectKgApi } from "../../features/projects/ProjectKgApi";
+import { projectApi } from "../../features/projects/ProjectsApi";
+import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import { sessionApi } from "../../features/session/sessionApi";
+import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import { versionsApi } from "../../features/versions/versionsApi";
-import displaySlice from "../../features/display/displaySlice";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import workflowsSlice from "../../features/workflows/WorkflowsSlice";
 
@@ -46,6 +47,7 @@ function createStoreWithEnhancers(
   renkuStateModelReducer,
   enhancers = undefined
 ) {
+  renkuStateModelReducer[dataServicesApi.reducerPath] = dataServicesApi.reducer;
   renkuStateModelReducer[kgSearchApi.reducerPath] = kgSearchApi.reducer;
   renkuStateModelReducer[projectApi.reducerPath] = projectApi.reducer;
   renkuStateModelReducer[projectCoreApi.reducerPath] = projectCoreApi.reducer;
@@ -72,6 +74,7 @@ function createStoreWithEnhancers(
         immutableCheck: false,
         serializableCheck: false,
       })
+        .concat(dataServicesApi.middleware)
         .concat(kgSearchApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(projectApi.middleware)

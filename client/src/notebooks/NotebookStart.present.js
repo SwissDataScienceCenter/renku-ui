@@ -84,6 +84,10 @@ import {
   StartNotebookLoader,
 } from "./components/StartSessionLoader";
 import CommitSelector from "../components/commitSelector/CommitSelector";
+import { useGetConfigQuery } from "../features/project/projectCoreApi";
+import { useGetNotebooksQuery } from "../features/versions/versionsApi";
+import { useGetResourcePoolsQuery } from "../features/dataServices/dataServicesApi";
+import { ResourcePoolPicker } from "./components/ResourcePoolPicker";
 
 function ProjectSessionLockAlert({ lockStatus }) {
   if (lockStatus == null) return null;
@@ -194,12 +198,39 @@ function StartNotebookServer(props) {
     autosaves,
     autoStarting,
     ci,
+    externalUrl,
     message,
     defaultBackButton,
     justStarted,
   } = props;
   const { branch, commit, namespace, project } = props.filters;
   const location = useLocation();
+
+  // const versionUrl = useSelector(
+  //   (state) => state.stateModel.project.migration.core.versionUrl
+  // );
+  // // console.log({
+  // //   projectRepositoryUrl: externalUrl,
+  // //   versionUrl,
+  // // });
+  // const { data, isLoading } = useGetConfigQuery(
+  //   {
+  //     projectRepositoryUrl: externalUrl,
+  //     versionUrl,
+  //   },
+  //   { skip: versionUrl == null }
+  // );
+  // // console.log({ data, isLoading });
+
+  // const nbVersion = useGetNotebooksQuery();
+  // useEffect(() => {
+  //   console.log({ nbVersion: nbVersion.data });
+  // }, [nbVersion.data]);
+
+  // const resourcePools = useGetResourcePoolsQuery();
+  // useEffect(() => {
+  //   console.log({ resourcePools: resourcePools.data });
+  // }, [resourcePools.data]);
 
   const [showShareLinkModal, setShowShareLinkModal] = useState(
     location?.state?.showShareLinkModal ?? false
@@ -242,14 +273,17 @@ function StartNotebookServer(props) {
   const disabled = fetching.branches || fetching.commits;
 
   const options = show.options ? (
-    <StartNotebookOptions
-      notebookFilePath={location?.state?.filePath}
-      toggleShareLinkModal={toggleShareLinkModal}
-      showShareLinkModal={showShareLinkModal}
-      setEnvironmentVariables={setNotebookEnvVariables}
-      environmentVariables={environmentVariables}
-      {...props}
-    />
+    <>
+      <ResourcePoolPicker projectRepositoryUrl={externalUrl} />
+      <StartNotebookOptions
+        notebookFilePath={location?.state?.filePath}
+        toggleShareLinkModal={toggleShareLinkModal}
+        showShareLinkModal={showShareLinkModal}
+        setEnvironmentVariables={setNotebookEnvVariables}
+        environmentVariables={environmentVariables}
+        {...props}
+      />
+    </>
   ) : null;
 
   const loader =
@@ -257,6 +291,7 @@ function StartNotebookServer(props) {
       <div>
         <p>Checking sessions status...</p>
         <Loader />
+        <ResourcePoolPicker />
       </div>
     ) : null;
 

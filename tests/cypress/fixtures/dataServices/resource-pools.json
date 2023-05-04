@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "default pool for tests",
+    "quota": {
+      "cpu": 100,
+      "memory": 2000000000000,
+      "gpu": 8,
+      "storage": 9e21
+    },
+    "classes": [
+      {
+        "id": 1,
+        "name": "default class for tests",
+        "cpu": 1,
+        "memory": 42,
+        "gpu": 0,
+        "storage": 120
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "another pool for tests",
+    "quota": {
+      "cpu": 500,
+      "memory": 82000000000000,
+      "gpu": 40,
+      "storage": 9e21
+    },
+    "classes": [
+      {
+        "id": 2,
+        "name": "class c1",
+        "cpu": 1,
+        "memory": 64,
+        "gpu": 0,
+        "storage": 128
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      }
+    ]
+  }
+]
