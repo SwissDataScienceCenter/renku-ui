@@ -59,7 +59,6 @@ import {
   WarnAlert,
 } from "../components/Alert";
 import { ButtonWithMenu } from "../components/buttons/Button";
-import { Clipboard } from "../components/Clipboard";
 import { ExternalLink } from "../components/ExternalLinks";
 import { JupyterIcon } from "../components/Icon";
 import { Loader } from "../components/Loader";
@@ -84,6 +83,7 @@ import {
   StartNotebookLoader,
 } from "./components/StartSessionLoader";
 import CommitSelector from "../components/commitSelector/CommitSelector";
+import { CommandCopy } from "../components/commandCopy/CommandCopy";
 
 function ProjectSessionLockAlert({ lockStatus }) {
   if (lockStatus == null) return null;
@@ -1604,10 +1604,7 @@ class AutosavedDataModal extends Component {
               If you do not need it, you can discard this work with the
               following command:
               <br />
-              <code>
-                {command}
-                <Clipboard clipboardText={command} />
-              </code>
+              <CommandCopy command={command} />
             </p>
             <p>Please refer to this {docsLink} to get further information.</p>
           </ModalBody>

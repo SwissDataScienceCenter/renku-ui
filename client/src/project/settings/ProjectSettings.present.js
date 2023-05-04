@@ -24,6 +24,14 @@
  */
 
 import React, { Component, Fragment, useEffect, useState } from "react";
+import {
+  faCheck,
+  faEdit,
+  faExclamationTriangle,
+  faTimesCircle,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -35,41 +43,31 @@ import {
   Input,
   InputGroup,
   Label,
-  Row,
-  Table,
   Nav,
   NavItem,
+  Row,
   UncontrolledTooltip,
 } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheck,
-  faEdit,
-  faExclamationTriangle,
-  faTrash,
-  faTimesCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import _ from "lodash/array";
 
+import _ from "lodash";
 import { ACCESS_LEVELS } from "../../api-client";
-import { ProjectAvatarEdit, ProjectTags } from "../shared";
+import { InfoAlert, WarnAlert } from "../../components/Alert";
+import { ExternalLink } from "../../components/ExternalLinks";
+import { Loader } from "../../components/Loader";
+import { RenkuNavLink } from "../../components/RenkuNavLink";
+import { InlineSubmitButton } from "../../components/buttons/Button";
+import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
+import { SuccessLabel } from "../../components/formlabels/FormLabels";
+import LoginAlert from "../../components/loginAlert/LoginAlert";
 import {
   NotebooksHelper,
   ServerOptionBoolean,
   ServerOptionEnum,
   ServerOptionRange,
 } from "../../notebooks";
-import { Url } from "../../utils/helpers/url";
-import { RenkuNavLink } from "../../components/RenkuNavLink";
-import { Clipboard } from "../../components/Clipboard";
-import { Loader } from "../../components/Loader";
-import { WarnAlert } from "../../components/Alert";
-import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
-import { ExternalLink } from "../../components/ExternalLinks";
-import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { Docs } from "../../utils/constants/Docs";
-import { SuccessLabel } from "../../components/formlabels/FormLabels";
-import { InlineSubmitButton } from "../../components/buttons/Button";
+import { Url } from "../../utils/helpers/url";
+import { ProjectAvatarEdit, ProjectTags } from "../shared";
 
 //** Navigation **//
 
@@ -95,28 +93,34 @@ function ProjectSettingsGeneral(props) {
     };
   }, []); // eslint-disable-line
 
-  const gitCommands = (
-    <>
-      <RepositoryClone {...props} />
-      <RepositoryUrls {...props} />
-    </>
-  );
+  if (props.settingsReadOnly && !props.user.logged) {
+    const textIntro = "Only authenticated users can access project setting.";
+    const textPost = "to visualize project settings.";
+    return (
+      <LoginAlert logged={false} textIntro={textIntro} textPost={textPost} />
+    );
+  }
 
-  if (props.settingsReadOnly) return gitCommands;
+  if (props.settingsReadOnly) {
+    return (
+      <InfoAlert dismissible={false} timeout={0}>
+        <p className="mb-0">
+          Project settings can be changed only by maintainers.
+        </p>
+      </InfoAlert>
+    );
+  }
 
   return (
     <div className="form-rk-green">
       <Row className="mt-2">
-        <Col xs={12} lg={6}>
+        <Col xs={12}>
           <ProjectTags
             tagList={props.metadata.tagList}
             onProjectTagsChange={props.onProjectTagsChange}
             settingsReadOnly={props.settingsReadOnly}
           />
           <ProjectDescription {...props} />
-        </Col>
-        <Col xs={12} lg={6}>
-          {gitCommands}
         </Col>
       </Row>
       <Row>
@@ -130,91 +134,6 @@ function ProjectSettingsGeneral(props) {
         </Col>
       </Row>
     </div>
-  );
-}
-
-class RepositoryClone extends Component {
-  render() {
-    const { externalUrl } = this.props;
-    const renkuClone = `renku clone ${externalUrl}.git`;
-    return (
-      <div className="mb-3">
-        <Label className="font-weight-bold">Clone commands</Label>
-        <Table size="sm" className="mb-0">
-          <tbody>
-            <CommandRow application="Renku" command={renkuClone} />
-          </tbody>
-        </Table>
-        <GitCloneCmd
-          externalUrl={externalUrl}
-          projectPath={this.props.metadata.path}
-        />
-      </div>
-    );
-  }
-}
-
-function GitCloneCmd(props) {
-  const [cmdOpen, setCmdOpen] = useState(false);
-  const { externalUrl, projectPath } = props;
-  const gitClone = `git clone ${externalUrl}.git && cd ${projectPath} && git lfs install --local --force`;
-  const gitHooksInstall = "renku githooks install"; // eslint-disable-line
-  return cmdOpen ? (
-    <div className="mt-3">
-      <p style={{ fontSize: "smaller" }} className="font-italic">
-        If the <b>renku</b> command is not available, you can clone a project
-        using Git.
-      </p>
-      <Table
-        style={{ fontSize: "smaller" }}
-        size="sm"
-        className="mb-0"
-        borderless={true}
-      >
-        <tbody>
-          <tr>
-            <th scope="row">
-              Git<sup>*</sup>
-            </th>
-            <td>
-              <code>{gitClone}</code>
-              <div className="mt-2 mb-0">
-                If you want to work with the repo using renku, you need to run
-                the following after the <code>git clone</code> completes:
-              </div>
-            </td>
-            <td style={{ width: 1 }}>
-              <Clipboard clipboardText={gitClone} />
-            </td>
-          </tr>
-          <tr>
-            <th scope="row"></th>
-            <td>
-              <code>{gitHooksInstall}</code>
-            </td>
-            <td style={{ width: 1 }}>
-              <Clipboard clipboardText={gitHooksInstall} />
-            </td>
-          </tr>
-        </tbody>
-      </Table>
-      <Button
-        style={{ fontSize: "smaller" }}
-        color="link"
-        onClick={() => setCmdOpen(false)}
-      >
-        Hide git command
-      </Button>
-    </div>
-  ) : (
-    <Button
-      color="link"
-      style={{ fontSize: "smaller" }}
-      className="font-italic"
-      onClick={() => setCmdOpen(true)}
-    >
-      Do not have renku?
-    </Button>
   );
 }
 
@@ -288,51 +207,6 @@ class ProjectDescription extends Component {
       </Form>
     );
   }
-}
-
-function CommandRow(props) {
-  return (
-    <tr>
-      <th scope="row">{props.application}</th>
-      <td>
-        <code className="break-word">{props.command}</code>
-      </td>
-      <td style={{ width: 1 }}>
-        <Clipboard clipboardText={props.command} />
-      </td>
-    </tr>
-  );
-}
-
-class RepositoryUrls extends Component {
-  render() {
-    return (
-      <div className="mb-3">
-        <Label className="font-weight-bold">Repository URL</Label>
-        <Table size="sm">
-          <tbody>
-            <RepositoryUrlRow urlType="SSH" url={this.props.metadata.sshUrl} />
-            <RepositoryUrlRow
-              urlType="HTTP"
-              url={this.props.metadata.httpUrl}
-            />
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
-}
-
-function RepositoryUrlRow(props) {
-  return (
-    <tr>
-      <th scope="row">{props.urlType}</th>
-      <td className="break-word">{props.url}</td>
-      <td style={{ width: 1 }}>
-        <Clipboard clipboardText={props.url} />
-      </td>
-    </tr>
-  );
 }
 
 //** Sessions settings **//
