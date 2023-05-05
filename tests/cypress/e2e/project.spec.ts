@@ -137,40 +137,74 @@ describe("display a project", () => {
     cy.wait("@getProject");
     cy.wait("@getReadme");
     cy.get_cy("header-project").should("be.visible");
-    cy.get_cy("project-readme").should("be.visible").should("contain.text", "local test project");
-    cy.get_cy("project-title").should("be.visible").should("contain.text", "local-test-project");
+    cy.get_cy("project-readme")
+      .should("be.visible")
+      .should("contain.text", "local test project");
+    cy.get_cy("project-title")
+      .should("be.visible")
+      .should("contain.text", "local-test-project");
   });
 
   it("displays lock correctly", () => {
     fixtures.projectLockStatus({ locked: true });
     cy.visit("/projects/e2e/local-test-project/overview/status");
     cy.wait("@getProjectLockStatus");
-    cy.get_cy("project-overview-content").contains("project is currently being modified").should("exist");
+    cy.get_cy("project-overview-content")
+      .contains("project is currently being modified")
+      .should("exist");
     fixtures.projectLockStatus({ locked: false });
     cy.visit("/projects/e2e/local-test-project/overview/status");
     cy.wait("@getProjectLockStatus");
-    cy.get_cy("project-overview-content").contains("project is currently being modified").should("not.exist");
+    cy.get_cy("project-overview-content")
+      .contains("project is currently being modified")
+      .should("not.exist");
   });
 
   it("displays the project KG status updates", () => {
-    cy.get_cy("project-overview-nav").contains("a", "Status").should("exist").click();
-    cy.url().should("include", "/projects/e2e/local-test-project/overview/status");
-    cy.get_cy("project-overview-content").contains("Knowledge Graph integration is active.").should("exist");
+    cy.get_cy("project-overview-nav")
+      .contains("a", "Status")
+      .should("exist")
+      .click();
+    cy.url().should(
+      "include",
+      "/projects/e2e/local-test-project/overview/status"
+    );
+    cy.get_cy("project-overview-content")
+      .contains("Knowledge Graph integration is active.")
+      .should("exist");
     fixtures.getStatusProcessing();
-    cy.get_cy("project-overview-nav").contains("a", "Status").should("exist").click();
+    cy.get_cy("project-overview-nav")
+      .contains("a", "Status")
+      .should("exist")
+      .click();
     cy.wait("@getStatusProcessing");
-    cy.get_cy("project-overview-content").contains("Knowledge Graph integration is active.").should("not.exist");
-    cy.get_cy("project-overview-content").contains("Knowledge Graph is building").should("exist");
+    cy.get_cy("project-overview-content")
+      .contains("Knowledge Graph integration is active.")
+      .should("not.exist");
+    cy.get_cy("project-overview-content")
+      .contains("Knowledge Graph is building")
+      .should("exist");
     cy.get_cy("project-overview-content").contains("40%").should("exist");
     fixtures.getStatusProcessing(true);
-    cy.get_cy("project-overview-nav").contains("a", "Status").should("exist").click();
+    cy.get_cy("project-overview-nav")
+      .contains("a", "Status")
+      .should("exist")
+      .click();
     cy.wait("@getStatusProcessing");
-    cy.get_cy("project-overview-content").contains("Knowledge Graph is building").should("not.exist");
-    cy.get_cy("project-overview-content").contains("Knowledge Graph integration is active.").should("exist");
+    cy.get_cy("project-overview-content")
+      .contains("Knowledge Graph is building")
+      .should("not.exist");
+    cy.get_cy("project-overview-content")
+      .contains("Knowledge Graph integration is active.")
+      .should("exist");
   });
 
   it("update project settings overview", () => {
-    fixtures.updateProject("39646", "updateProject", "project/update-project-tag-description.json");
+    fixtures.updateProject(
+      "39646",
+      "updateProject",
+      "project/update-project-tag-description.json"
+    );
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.get_cy("tags-input").type("abcde");
     cy.get_cy("update-tag-button").click();
@@ -180,7 +214,10 @@ describe("display a project", () => {
 
     cy.get_cy("description-input").type("description abcde");
     cy.get_cy("update-desc-button").click();
-    cy.get_cy("updating-description").should("contain.text", "Updating description..");
+    cy.get_cy("updating-description").should(
+      "contain.text",
+      "Updating description.."
+    );
     cy.wait("@updateProject");
     cy.get_cy("entity-description").should("contain.text", "description abcde");
   });
@@ -241,11 +278,15 @@ describe("display a project", () => {
     // look for an input cell
     cy.contains("import numpy as np").should("be.visible");
     // look for an output cell
-    cy.contains("2005").should("be.visible")
-      .should("have.prop", "tagName").should("eq", "TH");
+    cy.contains("2005")
+      .should("be.visible")
+      .should("have.prop", "tagName")
+      .should("eq", "TH");
     // look for a markdown cell
-    cy.contains("Historical Use Patterns").should("be.visible")
-      .should("have.prop", "tagName").should("eq", "H1");
+    cy.contains("Historical Use Patterns")
+      .should("be.visible")
+      .should("have.prop", "tagName")
+      .should("eq", "H1");
   });
 
   it("displays project file > notebook with LaTex", () => {
@@ -350,7 +391,6 @@ describe("fork a project", () => {
     cy.get_cy("visibility-private").should("be.enabled");
     cy.get_cy("visibility-internal").should("be.disabled");
     cy.get_cy("visibility-public").should("be.disabled");
-
   });
 });
 
@@ -368,7 +408,9 @@ describe("display migration information", () => {
     fixtures.projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the project up-to-date info is shown
-    cy.contains("This project is using the latest version of renku.").should("be.visible");
+    cy.contains("This project is using the latest version of renku.").should(
+      "be.visible"
+    );
   });
 
   it("displays optional migration", () => {
@@ -382,14 +424,18 @@ describe("display migration information", () => {
     fixtures.projectMigrationRecommended();
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the migration suggestion is shown
-    cy.contains("Updating to the latest version of renku is highly recommended.").should("be.visible");
+    cy.contains(
+      "Updating to the latest version of renku is highly recommended."
+    ).should("be.visible");
   });
 
   it("displays required migration", () => {
     fixtures.projectMigrationRequired();
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the migration suggestion is shown
-    cy.contains("This project is not compatible with the RenkuLab UI").should("be.visible");
+    cy.contains("This project is not compatible with the RenkuLab UI").should(
+      "be.visible"
+    );
   });
 
   it("displays error on migration", () => {
@@ -397,7 +443,9 @@ describe("display migration information", () => {
     cy.visit("/projects/e2e/local-test-project/overview/status");
     cy.wait("@getMigration");
     // Check that the project up-to-date info is shown
-    cy.contains("unexpected error while handling project data").should("be.visible");
+    cy.contains("unexpected error while handling project data").should(
+      "be.visible"
+    );
   });
 
   it("displays legacy error on migration", () => {

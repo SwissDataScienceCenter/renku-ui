@@ -35,19 +35,7 @@ const Fixtures = NewProject(
   NewSession(
     Sessions(
       Datasets(
-        Projects(
-          Session(
-            User(
-              Workflows(
-                KgSearch(
-                  Global(
-                    BaseFixtures
-                  )
-                )
-              )
-            )
-          )
-        )
+        Projects(Session(User(Workflows(KgSearch(Global(BaseFixtures))))))
       )
     )
   )

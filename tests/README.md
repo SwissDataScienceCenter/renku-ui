@@ -7,7 +7,6 @@ can run completely in isolation.
 Mind that the UI is run from the `../client` folder, so you need to setup the client properly
 before running the e2e tests.
 
-
 ## Run the tests
 
 ### Build the client (optional)
@@ -56,15 +55,16 @@ If you prefer to run the UI client in a different way (perhaps starting it separ
 use either `npm run cypress` or `npm run cypress:headless`. Remember to provide a valid URL as
 `e2e.baseUrl` in case you need something different than `"http://localhost:3000"`
 
-
 ## Opening Cypress GUI
+
 ```
 npm run e2e:headless
 ```
 
 ### Other links
+
 Here are some additional resources:
 
-* Debugging: https://docs.cypress.io/guides/guides/debugging#Using-debugger
-* Best practices: https://docs.cypress.io/guides/references/best-practices
-* Online dashboard: https://dashboard.cypress.io/projects/2nbsft
+- Debugging: https://docs.cypress.io/guides/guides/debugging#Using-debugger
+- Best practices: https://docs.cypress.io/guides/references/best-practices
+- Online dashboard: https://dashboard.cypress.io/projects/2nbsft

@@ -44,7 +44,7 @@ describe("Add new project", () => {
     cy.wait("@getTemplates");
     cy.wait("@createProject");
     cy.wait("@getNewProject");
-    cy.wait("@updateProject").should(result => {
+    cy.wait("@updateProject").should((result) => {
       const request = result.request.body;
       expect(request).to.have.property("name");
     });
@@ -59,20 +59,31 @@ describe("Add new project", () => {
 
   it("error on creating a new project", () => {
     const error = "errors/core-error-1102.json";
-    fixtures
-      .templates()
-      .createProject(error);
+    fixtures.templates().createProject(error);
     cy.gui_create_project(newProjectTitle);
     cy.wait("@getTemplates");
     cy.wait("@createProject");
-    cy.contains("error occurred while creating the project").should("be.visible");
+    cy.contains("error occurred while creating the project").should(
+      "be.visible"
+    );
   });
 
   it("form validations", () => {
     fixtures
-      .templates(false, "url=https%3A%2F%2Fgithub.com%2FSwissDataScienceCenter%2Frenku-project-template&ref=master")
-      .getNamespace("internal-space", "getInternalNamespace", "projects/namespace-128.json")
-      .getNamespace("private-space", "getPrivateNamespace", "projects/namespace-129.json");
+      .templates(
+        false,
+        "url=https%3A%2F%2Fgithub.com%2FSwissDataScienceCenter%2Frenku-project-template&ref=master"
+      )
+      .getNamespace(
+        "internal-space",
+        "getInternalNamespace",
+        "projects/namespace-128.json"
+      )
+      .getNamespace(
+        "private-space",
+        "getPrivateNamespace",
+        "projects/namespace-129.json"
+      );
     cy.wait("@getTemplates");
 
     // validate public visibility is disabled when namespace selected has internal visibility
@@ -88,7 +99,11 @@ describe("Add new project", () => {
     cy.get_cy("visibility-internal").should("be.disabled");
 
     // validate fetch custom templates
-    fixtures.templates(true, "url=invalid-url&ref=master", "getCustomTemplates");
+    fixtures.templates(
+      true,
+      "url=invalid-url&ref=master",
+      "getCustomTemplates"
+    );
     cy.get_cy("custom-source-button").click();
     cy.get_cy("url-repository").type("invalid-url");
     cy.get_cy("ref-repository").type("master");
@@ -99,7 +114,11 @@ describe("Add new project", () => {
     cy.contains("Unable to fetch templates").should("be.visible");
 
     //when valid source info
-    fixtures.templates(false, "url=valid-url&ref=master", "getCustomTemplatesValid");
+    fixtures.templates(
+      false,
+      "url=valid-url&ref=master",
+      "getCustomTemplatesValid"
+    );
     cy.get_cy("url-repository").clear().type("valid-url");
     cy.get_cy("fetch-templates-button").click();
     cy.wait("@getCustomTemplatesValid");
@@ -113,7 +132,9 @@ describe("Add new project", () => {
     // after send to create project should show progress indicator and hide form
     cy.gui_create_project(newProjectTitle);
     cy.contains("Creating Project...").should("be.visible");
-    cy.contains("You'll be redirected to the new project page when the creation is completed.").should("be.visible");
+    cy.contains(
+      "You'll be redirected to the new project page when the creation is completed."
+    ).should("be.visible");
     cy.get_cy("create-project-form").should("not.exist");
   });
 
@@ -125,15 +146,18 @@ describe("Add new project", () => {
       .updateProject(newProjectPath)
       .updateAvatar();
     cy.wait("@getTemplates");
-    cy.get("#project-avatar-file-input-hidden").selectFile("cypress/fixtures/avatars/avatar.png", { force: true });
+    cy.get("#project-avatar-file-input-hidden").selectFile(
+      "cypress/fixtures/avatars/avatar.png",
+      { force: true }
+    );
     cy.gui_create_project(newProjectTitle);
     cy.wait("@createProject");
     cy.wait("@getNewProject");
-    cy.wait("@updateProject").should(result => {
+    cy.wait("@updateProject").should((result) => {
       const request = result.request.body;
       expect(request).to.have.property("name");
     });
-    cy.wait("@updateAvatar").should(result => {
+    cy.wait("@updateAvatar").should((result) => {
       const request = result.request.body;
       expect(request.byteLength).to.lessThan(200 * 1024 * 1024);
     });
@@ -152,17 +176,25 @@ describe("Add new project shared link", () => {
 
   it("prefill values all values (custom template)", () => {
     // eslint-disable-next-line max-len
-    const customValues = "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwiZGVzY3JpcHRpb24iOiIgdGhpcyBhIGN1c3RvbSBkZXNjcmlwdGlvbiIsIm5hbWVzcGFjZSI6ImUyZSIsInZpc2liaWxpdHkiOiJpbnRlcm5hbCIsInVybCI6Imh0dHBzOi8vZ2l0aHViLmNvbS9Td2lzc0RhdGFTY2llbmNlQ2VudGVyL3Jlbmt1LXByb2plY3QtdGVtcGxhdGUiLCJyZWYiOiJtYXN0ZXIiLCJ0ZW1wbGF0ZSI6IkN1c3RvbS9SLW1pbmltYWwifQ%3D%3D";
+    const customValues =
+      "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwiZGVzY3JpcHRpb24iOiIgdGhpcyBhIGN1c3RvbSBkZXNjcmlwdGlvbiIsIm5hbWVzcGFjZSI6ImUyZSIsInZpc2liaWxpdHkiOiJpbnRlcm5hbCIsInVybCI6Imh0dHBzOi8vZ2l0aHViLmNvbS9Td2lzc0RhdGFTY2llbmNlQ2VudGVyL3Jlbmt1LXByb2plY3QtdGVtcGxhdGUiLCJyZWYiOiJtYXN0ZXIiLCJ0ZW1wbGF0ZSI6IkN1c3RvbS9SLW1pbmltYWwifQ%3D%3D";
     fixtures
       .templates(false, "*", "getTemplates")
-      .getNamespace("internal-space", "getInternalNamespace", "projects/namespace-128.json");
+      .getNamespace(
+        "internal-space",
+        "getInternalNamespace",
+        "projects/namespace-128.json"
+      );
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // check title
     cy.get_cy("field-group-title").should("contain.value", "new project");
     // check description
-    cy.get_cy("field-group-description").should("contain.text", "this a custom description");
+    cy.get_cy("field-group-description").should(
+      "contain.text",
+      "this a custom description"
+    );
     // check namespace
     cy.get_cy("project-slug").should("contain.value", "e2e/new-project");
     // check visibility
@@ -172,21 +204,32 @@ describe("Add new project shared link", () => {
 
     // check custom template source
     // eslint-disable-next-line max-len
-    cy.get_cy("url-repository").should("contain.value", "https://github.com/SwissDataScienceCenter/renku-project-template");
+    cy.get_cy("url-repository").should(
+      "contain.value",
+      "https://github.com/SwissDataScienceCenter/renku-project-template"
+    );
     cy.get_cy("ref-repository").should("contain.value", "master");
 
     // check selected template
-    cy.get_cy("project-template-card").get(".selected").should("contain.text", "Basic R (4.1.2) Project");
+    cy.get_cy("project-template-card")
+      .get(".selected")
+      .should("contain.text", "Basic R (4.1.2) Project");
   });
 
   it("prefill values custom template", () => {
     // eslint-disable-next-line max-len
-    const customValues = "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwiZGVzY3JpcHRpb24iOiIgdGhpcyBhIGN1c3RvbSBkZXNjcmlwdGlvbiIsIm5hbWVzcGFjZSI6ImUyZSIsInZpc2liaWxpdHkiOiJpbnRlcm5hbCIsInVybCI6Imh0dHBzOi8vZ2l0aHViLmNvbS9Td2lzc0RhdGFTY2llbmNlQ2VudGVyL3Jlbmt1LXByb2plY3QtdGVtcGxhdGUiLCJyZWYiOiJtYXN0ZXIifQ%3D%3D";
-    const templateUrl = "https://github.com/SwissDataScienceCenter/renku-project-template";
+    const customValues =
+      "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwiZGVzY3JpcHRpb24iOiIgdGhpcyBhIGN1c3RvbSBkZXNjcmlwdGlvbiIsIm5hbWVzcGFjZSI6ImUyZSIsInZpc2liaWxpdHkiOiJpbnRlcm5hbCIsInVybCI6Imh0dHBzOi8vZ2l0aHViLmNvbS9Td2lzc0RhdGFTY2llbmNlQ2VudGVyL3Jlbmt1LXByb2plY3QtdGVtcGxhdGUiLCJyZWYiOiJtYXN0ZXIifQ%3D%3D";
+    const templateUrl =
+      "https://github.com/SwissDataScienceCenter/renku-project-template";
     const templateRef = "master";
     fixtures
       .templates(false, "*", "getTemplates")
-      .getNamespace("internal-space", "getInternalNamespace", "projects/namespace-128.json");
+      .getNamespace(
+        "internal-space",
+        "getInternalNamespace",
+        "projects/namespace-128.json"
+      );
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
@@ -197,14 +240,21 @@ describe("Add new project shared link", () => {
 
   it("prefill values renkuLab template", () => {
     // eslint-disable-next-line max-len
-    const customValues = "?data=eyJ0ZW1wbGF0ZSI6IlJlbmt1L2p1bGlhLW1pbmltYWwifQ%3D%3D";
+    const customValues =
+      "?data=eyJ0ZW1wbGF0ZSI6IlJlbmt1L2p1bGlhLW1pbmltYWwifQ%3D%3D";
     fixtures
       .templates(false, "*", "getTemplates")
-      .getNamespace("internal-space", "getInternalNamespace", "projects/namespace-128.json");
+      .getNamespace(
+        "internal-space",
+        "getInternalNamespace",
+        "projects/namespace-128.json"
+      );
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
     // check selected template
-    cy.get_cy("project-template-card").get(".selected").should("contain.text", "Basic Julia (1.7.1) Project");
+    cy.get_cy("project-template-card")
+      .get(".selected")
+      .should("contain.text", "Basic Julia (1.7.1) Project");
   });
 });

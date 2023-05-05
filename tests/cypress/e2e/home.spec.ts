@@ -30,7 +30,10 @@ describe("display the home page", () => {
     cy.get("h1").should("have.length", 1);
     cy.get("h1")
       .first()
-      .should("have.text", "An open-source knowledge infrastructure for collaborative and reproducible data science");
+      .should(
+        "have.text",
+        "An open-source knowledge infrastructure for collaborative and reproducible data science"
+      );
   });
 });
 
@@ -57,7 +60,9 @@ describe("display the maintenance page", () => {
     cy.visit("/");
     cy.get("h1").should("have.length", 1);
     cy.get("h1").contains("RenkuLab Down").should("be.visible");
-    cy.get(".alert-content").contains("Could not retrieve status information").should("be.visible");
+    cy.get(".alert-content")
+      .contains("Could not retrieve status information")
+      .should("be.visible");
   });
 
   it("displays status page information", () => {

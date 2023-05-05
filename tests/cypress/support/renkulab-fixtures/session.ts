@@ -29,7 +29,7 @@ function Session<T extends FixturesConstructor>(Parent: T) {
         // eslint-disable-next-line max-len
         "/ui-server/api/projects/e2e%2Flocal-test-project/repository/files/.renku%2Frenku.ini/raw?ref=172a784d465a7bd45bacc165df2b64a591ac6b18",
         {
-          fixture: "session/renku.ini"
+          fixture: "session/renku.ini",
         }
       ).as(name);
       return this;
@@ -41,8 +41,8 @@ function Session<T extends FixturesConstructor>(Parent: T) {
         {
           body: {
             autosaves: [],
-            pvsSupport: true
-          }
+            pvsSupport: true,
+          },
         }
       ).as(name);
       return this;
@@ -52,7 +52,7 @@ function Session<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "/ui-server/api/notebooks/servers?namespace=e2e&project=local-test-project*",
         {
-          body: { servers: {} }
+          body: { servers: {} },
         }
       ).as(name);
       return this;
@@ -60,10 +60,8 @@ function Session<T extends FixturesConstructor>(Parent: T) {
 
     sessionServerOptions(cloudStorage?, name = "getSessionServerOptions") {
       cy.fixture("session/server-options.json").then((options) => {
-        if (cloudStorage == null)
-          delete options["cloudstorage"];
-        else if (!cloudStorage)
-          options["cloudstorage"]["s3"] = false;
+        if (cloudStorage == null) delete options["cloudstorage"];
+        else if (!cloudStorage) options["cloudstorage"]["s3"] = false;
 
         cy.intercept(
           "GET",

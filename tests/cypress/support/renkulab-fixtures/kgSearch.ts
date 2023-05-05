@@ -22,37 +22,39 @@ import { FixturesConstructor } from "./fixtures";
  * Fixtures for kg search
  */
 
-
 function KgSearch<T extends FixturesConstructor>(Parent: T) {
   return class KgSearchFixtures extends Parent {
-
     getLastSearch(name = "getLastSearch") {
       cy.intercept("/ui-server/api//last-searches/6", {
-        fixture: "kgSearch/lastSearch.json"
+        fixture: "kgSearch/lastSearch.json",
       }).as(name);
       return this;
     }
 
-    entitySearch(name = "getEntities", fixture = "kgSearch/search.json", total = "7", params = "*") {
-      cy.intercept(
-        `/ui-server/api/kg/entities${params}`,
-        {
-          fixture,
-          headers: {
-            "Total": total
-          }
-        }
-      ).as(name);
+    entitySearch(
+      name = "getEntities",
+      fixture = "kgSearch/search.json",
+      total = "7",
+      params = "*"
+    ) {
+      cy.intercept(`/ui-server/api/kg/entities${params}`, {
+        fixture,
+        headers: {
+          Total: total,
+        },
+      }).as(name);
       return this;
     }
 
-    noActiveProjects(name = "getNoActiveProjects", fixture = "kgSearch/no-active-projects.json") {
+    noActiveProjects(
+      name = "getNoActiveProjects",
+      fixture = "kgSearch/no-active-projects.json"
+    ) {
       cy.intercept("/ui-server/api/kg/users/*/projects?state=NOT_ACTIVATED&*", {
         fixture,
       }).as(name);
       return this;
     }
-
   };
 }
 
