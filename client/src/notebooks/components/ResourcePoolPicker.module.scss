@@ -1,0 +1,11 @@
+.button {
+  --bs-btn-border-color: var(--bs-rk-border-input);
+  --bs-btn-bg: var(--bs-rk-white);
+  color: black;
+
+  --bs-btn-hover-bg: var(--rk-dark-bg);
+
+  &:hover {
+    color: black;
+  }
+}

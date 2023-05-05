@@ -17,14 +17,22 @@
  */
 
 export interface ResourcePool {
-  id: string;
+  id: number;
   name: string;
-  classes: ResourceClass;
+  classes: ResourceClass[];
+  quota: Resources;
 }
 
 export interface ResourceClass {
-  id: string;
+  id: number;
   name: string;
+  cpu: number;
+  memory: number;
+  gpu: number;
+  storage: number;
+}
+
+export interface Resources {
   cpu: number;
   memory: number;
   gpu: number;

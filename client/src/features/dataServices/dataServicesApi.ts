@@ -25,7 +25,7 @@ export const dataServicesApi = createApi({
     baseUrl: "/ui-server/api/data-services-DO-NOT-MERGE",
   }),
   endpoints: (builder) => ({
-    getResourcePools: builder.query<ResourcePool, Record<string, never>>({
+    getResourcePools: builder.query<ResourcePool[], Record<string, never>>({
       query: () => {
         return {
           url: "resource_pools",

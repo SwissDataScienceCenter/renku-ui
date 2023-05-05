@@ -291,7 +291,7 @@ function StartNotebookServer(props) {
       <div>
         <p>Checking sessions status...</p>
         <Loader />
-        <ResourcePoolPicker />
+        {/* <ResourcePoolPicker /> */}
       </div>
     ) : null;
 
