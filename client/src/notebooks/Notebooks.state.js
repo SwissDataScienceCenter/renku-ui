@@ -29,6 +29,8 @@ import { API_ERRORS } from "../api-client/errors";
 import { notebooksSchema } from "../model";
 import { parseINIString, sleep } from "../utils/helpers/HelperFunctions";
 import { formatEnvironmentVariables } from "../api-client/utils";
+import { startSessionOptionsSlice } from "../features/session/startSessionOptionsSlice";
+// import {useSelector} from 'react-redux'
 
 const POLLING_INTERVAL = 3000;
 const POLLING_CI = 5; // in seconds, for the sleep function
@@ -372,6 +374,8 @@ const NotebooksHelper = {
 
 class NotebooksCoordinator {
   constructor(client, model, userModel) {
+    // console.log("NotebooksCoordinator", new Error("huh"));
+    // console.log({ startSessionOptions });
     this.client = client;
     this.model = model;
     this.userModel = userModel;
@@ -604,6 +608,10 @@ class NotebooksCoordinator {
   }
 
   setDefaultOptions(globalOptions, projectOptions) {
+    const reduxStore = this.model.reduxStore;
+    const startSessionOptions = reduxStore.getState().startSessionOptions;
+    console.log({ startSessionOptions });
+
     // verify if all the pieces are available and get what's missing
     if (!globalOptions) {
       const pendingGlobalOptions =
@@ -1254,6 +1262,12 @@ class NotebooksCoordinator {
 
   // * Change notebook status * //
   startServer(forceBaseImage = false) {
+    const reduxStore = this.model.reduxStore;
+    const startSessionOptions = reduxStore.getState(
+      startSessionOptionsSlice.name
+    );
+    console.log({ startSessionOptions });
+
     const options = {
       serverOptions: this.model.get("filters.options"),
     };

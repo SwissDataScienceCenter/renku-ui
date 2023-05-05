@@ -35,6 +35,7 @@ import { projectApi } from "../../features/projects/ProjectsApi";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import { sessionApi } from "../../features/session/sessionApi";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
+import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import workflowsSlice from "../../features/workflows/WorkflowsSlice";
@@ -55,6 +56,8 @@ function createStoreWithEnhancers(
   renkuStateModelReducer[sessionSidecarApi.reducerPath] =
     sessionSidecarApi.reducer;
   renkuStateModelReducer[sessionApi.reducerPath] = sessionApi.reducer;
+  renkuStateModelReducer[startSessionOptionsSlice.name] =
+    startSessionOptionsSlice.reducer;
   renkuStateModelReducer[recentUserActivityApi.reducerPath] =
     recentUserActivityApi.reducer;
   renkuStateModelReducer[inactiveKgProjectsApi.reducerPath] =

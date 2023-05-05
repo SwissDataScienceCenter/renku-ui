@@ -17,7 +17,7 @@
  */
 
 import React from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { RootStateOrAny, useSelector, useStore } from "react-redux";
 import { IMigration } from "../../features/project/Project";
 import { useGetConfigQuery } from "../../features/project/projectCoreApi";
 import { useGetNotebooksQuery } from "../../features/versions/versionsApi";
@@ -31,11 +31,6 @@ interface ResourcePoolPickerProps {
 export const ResourcePoolPicker = ({
   projectRepositoryUrl,
 }: ResourcePoolPickerProps) => {
-  const test = useSelector<RootStateOrAny, IMigration["core"]>(
-    (state) => state.stateModel.notebooks
-  );
-  console.log(test);
-
   const projectMigrationCore = useSelector<RootStateOrAny, IMigration["core"]>(
     (state) => state.stateModel.project.migration.core
   );
@@ -52,10 +47,10 @@ export const ResourcePoolPicker = ({
     );
 
   const { data: sessionsVersion, isLoading: sessionsVersionIsLoading } =
-    useGetNotebooksQuery({}, { skip: !fetchedVersion });
+    useGetNotebooksQuery({});
 
   const { data: resourcePools, isLoading: resourcePoolsIsLoading } =
-    useGetResourcePoolsQuery({}, { skip: !fetchedVersion });
+    useGetResourcePoolsQuery({});
 
   if (!fetchedVersion) return null;
 

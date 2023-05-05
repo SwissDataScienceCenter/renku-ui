@@ -284,10 +284,12 @@ class StartNotebookServer extends Component {
     super(props);
     this.model = props.model.subModel("notebooks");
     this.userModel = props.model.subModel("user");
+    // console.log("StartNotebookServer", props);
     this.coordinator = new NotebooksCoordinator(
       props.client,
       this.model,
-      this.userModel
+      this.userModel,
+      props.startSessionOptions
     );
     this.notifications = props.notifications;
     this.userLogged = this.userModel.get("logged");
@@ -1030,6 +1032,8 @@ class CheckNotebookStatus extends Component {
     const notebookKeys = Object.keys(subState.notebooks.all);
     const notebook =
       notebookKeys.length > 0 ? subState.notebooks.all[notebookKeys] : null;
+
+    // console.log("Notebooks.mapStateToProps", { state, subState, notebook });
 
     return {
       fetched: subState.notebooks.fetched,
