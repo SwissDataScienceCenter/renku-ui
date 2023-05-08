@@ -51,7 +51,7 @@ import { useGetMigrationStatusQuery } from "../projectCoreApi";
 import { projectKgApi } from "../projectKgApi";
 import { Loader } from "../../../components/Loader";
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
-import { ErrorAlert } from "../../../components/Alert";
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Docs } from "../../../utils/constants/Docs";
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -381,24 +381,31 @@ function ProjectMigrationStatus({
     );
   }
 
-  // ? This is a very unexpected error from the core service, we don't need more precision.
-  if (error) {
-    return (
-      <ErrorAlert>
-        Unexpected error while checking the project status.
-      </ErrorAlert>
-    );
-  }
-
-  // ! TODO: expand expected error handling -- maybe re-using the Row elements?
-  if (data?.errorProject)
-    return (
+  // ? This is a very unexpected error from the core service
+  if (error || data?.errorProject) {
+    const errorElement = error ? (
+      <RtkErrorAlert error={error} />
+    ) : (
       <ProjectSettingsGeneralCoreError
         errorData={data.error as CoreErrorContent | CoreSectionError}
       />
     );
+    return (
+      <>
+        <CompositeTitle
+          icon={faExclamationCircle}
+          level="danger"
+          loading={false}
+          showDetails={showDetails}
+          title="Error on project version"
+          toggleShowDetails={toggleShowDetails}
+        />
+        <Collapse isOpen={showDetails}>{errorElement}</Collapse>
+      </>
+    );
+  }
 
-  // ! TODO: handle user permissions
+  // ! TODO: handle user permissions A.K.A isMaintainer
   const migrationLevel = getMigrationLevel(data, isSupported);
 
   let icon = faInfoCircle;
@@ -709,9 +716,22 @@ function ProjectKnowledgeGraph({
     );
   }
 
-  // ! TODO: expand error handling
   if (error) {
-    return <ErrorAlert>{JSON.stringify(error)}</ErrorAlert>;
+    return (
+      <>
+        <CompositeTitle
+          icon={faExclamationCircle}
+          level="danger"
+          loading={false}
+          showDetails={showDetails}
+          title="Error on project metadata"
+          toggleShowDetails={toggleShowDetails}
+        />
+        <Collapse isOpen={showDetails}>
+          <RtkErrorAlert error={error} />
+        </Collapse>
+      </>
+    );
   }
 
   let icon = faCheckCircle;
@@ -750,7 +770,7 @@ function ProjectKnowledgeGraph({
     });
   };
 
-  // ! TODO: only for users with permissions!
+  // ! TODO: only for users with permissions! A.K.A isMaintainer
   // ! TODO: handle errors on click: activateIndexingStatus.isError
   return (
     <>
@@ -945,7 +965,7 @@ function CompositeTitle({
   return (
     <>
       <div className={styles.projectStatusSection}>
-        <h5 className="d-flex align-items-center w-100 mb-0">
+        <h6 className="d-flex align-items-center w-100 mb-0">
           <div className={`me-2 ${color}`}>{finalIcon}</div>
           <div>{title}</div>
           {loading ? null : (
@@ -959,7 +979,7 @@ function CompositeTitle({
               <div className="ms-auto">{button}</div>
             </>
           )}
-        </h5>
+        </h6>
       </div>
     </>
   );
