@@ -27,21 +27,29 @@ interface RtkErrorAlertProps {
 }
 export function RtkErrorAlert({ error }: RtkErrorAlertProps) {
   // ? REF: https://redux-toolkit.js.org/rtk-query/usage-with-typescript#type-safe-error-handling
-  if (alert === null || alert === undefined) return null;
-
-  const err = error as FetchBaseQueryError | SerializedError;
+  if (error == null || error === undefined) return null;
 
   // code or status
   let errorCode = "Unknown";
-  if ("status" in err) errorCode = err.status as string;
-  else if ("code" in err && err.code !== undefined) errorCode = err.code;
+  if ("status" in error) errorCode = error.status.toString();
+  else if ("code" in error && error.code !== undefined)
+    errorCode = error.code.toString();
 
   // message
   let errorMessage = "No details available.";
-  if ("error" in err && err.error.length) errorMessage = err.error;
-  else if ("message" in err && err.message?.length) errorMessage = err.message;
-  else if ("data" in err) {
-    errorMessage = JSON.stringify(err.data);
+  if ("error" in error && error.error.length)
+    errorMessage = error.error.toString();
+  else if ("message" in error && error.message?.length)
+    errorMessage = error.message.toString();
+  else if ("data" in error) {
+    if (
+      typeof error.data === "object" &&
+      error.data !== null &&
+      "message" in error.data
+    )
+      errorMessage = (error.data as unknown as Record<string, unknown>)
+        .message as string;
+    else errorMessage = JSON.stringify(error.data);
   }
 
   return (

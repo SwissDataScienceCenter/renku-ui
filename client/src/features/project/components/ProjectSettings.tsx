@@ -384,7 +384,7 @@ function ProjectMigrationStatus({
   // ? This is a very unexpected error from the core service
   if (error || data?.errorProject) {
     const errorElement = error ? (
-      <RtkErrorAlert error={error} />
+      <RtkErrorAlert error={{ ...error }} />
     ) : (
       <ProjectSettingsGeneralCoreError
         errorData={data.error as CoreErrorContent | CoreSectionError}
@@ -516,7 +516,9 @@ function ProjectMigrationStatusDetails({
   let renkuText: string | React.ReactNode = "No data";
   if (renkuMigrationLevel?.level === ProjectMigrationLevel.LevelX) {
     renkuText = "Unknown version";
-    renkuDetails = <span>Level X</span>;
+    renkuDetails = (
+      <span>Details not available for this unknown version of Renku.</span>
+    );
   } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.LevelE) {
     renkuDetails = (
       <ProjectSettingsGeneralCoreError
@@ -593,13 +595,12 @@ function ProjectMigrationStatusDetails({
   );
 
   // Template version details
-  // // const template =
-  // //   data?.details?.template_status.type === "detail"
-  // //     ? data.details.template_status
-  // //     : null;
-  // // console.log(template);
+  // const template =
+  //   data?.details?.template_status.type === "detail"
+  //     ? data.details.template_status
+  //     : null;
 
-  let contentTemplate: React.ReactNode = <span>No details</span>;
+  let templateDetails: React.ReactNode = <span>No details</span>;
   const templateMigrationLevel = getTemplateLevel(data, isSupported);
   const templateTitleId = "settings-template-version";
   const templateTitle = "Template version";
@@ -610,10 +611,12 @@ function ProjectMigrationStatusDetails({
   let templateIcon = faCheckCircle;
   let templateText: string | React.ReactNode = "Unknown version";
   if (templateMigrationLevel?.level === ProjectMigrationLevel.LevelX) {
-    contentTemplate = <span>Level X</span>;
+    templateDetails = (
+      <span>Details not available for this unknown version of template.</span>
+    );
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.LevelE) {
     templateText = "Error";
-    contentTemplate = (
+    templateDetails = (
       <ProjectSettingsGeneralCoreError
         errorData={data?.details?.template_status as CoreSectionError}
       />
@@ -622,25 +625,35 @@ function ProjectMigrationStatusDetails({
     // New version available
     templateLevel = "info";
     templateIcon = faArrowAltCircleUp;
-    contentTemplate = <span>Level 3</span>;
-    // // if (template?.template_source !== TemplateSourceRenku) {
-    // //   // can add a link
-    // // }
-    // ! TODO: EXPAND RenkuTemplateOutdated
+    templateDetails = (
+      <RenkuTemplateContext
+        automated={templateMigrationLevel.automated}
+        templateDetails={data?.details}
+      />
+    );
     templateText = <RenkuTemplateOutdated templateDetails={data?.details} />;
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.Level2) {
-    templateLevel = "warning";
+    // Some details missing
+    templateLevel = "info";
     templateIcon = faExclamationCircle;
-    contentTemplate = <span>Level 2</span>;
+    templateDetails = (
+      <RenkuTemplateContext
+        automated={templateMigrationLevel.automated}
+        templateDetails={data?.details}
+      />
+    );
+    templateText = <RenkuTemplateOutdated templateDetails={data?.details} />;
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.Level1) {
     templateLevel = "success";
     templateIcon = faCheckCircle;
-    contentTemplate = <span>Level 1</span>;
+    // ! TODO: EXPAND RenkuTemplateOutdated and add templateDetails to handle Level1
+    templateDetails = <span>Level 1</span>;
+    templateText = <RenkuTemplateOutdated templateDetails={data?.details} />;
   }
 
-  contentTemplate = (
+  const contentTemplate = (
     <DetailsSection
-      details={contentTemplate}
+      details={templateDetails}
       icon={templateIcon}
       level={templateLevel}
       text={templateText}
@@ -728,7 +741,7 @@ function ProjectKnowledgeGraph({
           toggleShowDetails={toggleShowDetails}
         />
         <Collapse isOpen={showDetails}>
-          <RtkErrorAlert error={error} />
+          <RtkErrorAlert error={{ ...error }} />
         </Collapse>
       </>
     );
@@ -868,14 +881,7 @@ function KnowledgeGraphDetails({
           The Knowledge Graph integration must be activated to use this project
           from the RenkuLab web interfaces. Otherwise, the functionalities will
           be limited and the project will not be discoverable from the search
-          page.{" "}
-          <ExternalLink
-            url={titleDocsUrl}
-            role="text"
-            iconSup={true}
-            iconAfter={true}
-            title="More info"
-          />
+          page. <MoreInfoLink url={titleDocsUrl} />
         </span>
       );
       content = (
@@ -905,6 +911,22 @@ function ProjectSettingsGeneralCoreError({
 }
 
 // ****** HELPERS ****** //
+interface MoreInfoLinkProps {
+  url: string;
+}
+function MoreInfoLink({ url }: MoreInfoLinkProps) {
+  return (
+    <span className="d-inline-block">
+      <ExternalLink
+        url={url}
+        role="text"
+        iconSup={true}
+        iconAfter={true}
+        title="More info"
+      />
+    </span>
+  );
+}
 
 interface CompositeTitleProps {
   buttonAction?: () => void;
@@ -1139,14 +1161,9 @@ function RenkuVersionContext({
   migrationLevel,
   projectVersion,
 }: RenkuVersionContextProps) {
-  const moreInfoLink = (
-    <ExternalLink
-      url={docsUrl}
-      role="text"
-      iconSup={true}
-      iconAfter={true}
-      title="More info"
-    />
+  const moreInfoLink = <MoreInfoLink url={docsUrl} />;
+  const linkToRenku = (
+    <ExternalLink role="text" url={RenkuRepositories.Python} title="Renku" />
   );
   if (migrationLevel === ProjectMigrationLevel.Level5) {
     return (
@@ -1158,9 +1175,9 @@ function RenkuVersionContext({
         </span>
         <br />
         <span>
-          This happens because the underlying Renku project metadata is still on
-          version {projectVersion} while the latest version is {latestVersion}.{" "}
-          {moreInfoLink}
+          This happens because the underlying {linkToRenku} project metadata is
+          still on version {projectVersion} while the latest version is{" "}
+          {latestVersion}. {moreInfoLink}
         </span>
       </>
     );
@@ -1173,9 +1190,9 @@ function RenkuVersionContext({
         </span>
         <br />
         <span>
-          This happens because the underlying Renku project metadata is still on
-          version {projectVersion} while the latest version is {latestVersion}.{" "}
-          {moreInfoLink}
+          This happens because the underlying {linkToRenku} project metadata is
+          still on version {projectVersion} while the latest version is{" "}
+          {latestVersion}. {moreInfoLink}
         </span>
       </>
     );
@@ -1183,8 +1200,8 @@ function RenkuVersionContext({
     return (
       <>
         <span>
-          There is a new Renku version. Updating should be safe since it is a
-          minor step. {moreInfoLink}
+          There is a new {linkToRenku} version. Updating should be safe since it
+          is a minor step. {moreInfoLink}
         </span>
       </>
     );
@@ -1205,8 +1222,6 @@ function RenkuTemplateOutdated({
       : null;
   if (!template) return null;
   if (template.template_source !== TemplateSourceRenku) {
-    // ! IMPROVE
-    // ! https://docs.github.com/en/pull-requests/committing-changes-to-your-project/viewing-and-comparing-commits/comparing-commits
     const deltaUrl = `${template.template_source}/compare/${template.project_template_version}...${template.latest_template_version}`;
     const deltaLink = (
       <ExternalLink
@@ -1228,7 +1243,110 @@ function RenkuTemplateOutdated({
         {deltaLink} ({latestLink} avaliable)
       </>
     );
+  } else if (template.template_source === TemplateSourceRenku) {
+    if (template.newer_template_available)
+      return (
+        <>
+          {template.project_template_version} (
+          {template.latest_template_version} avaliable)
+        </>
+      );
+    return <>{template.project_template_version}</>;
   }
-  // ! TODO: EXPAND THIS
+  // ! TODO: EXPAND THIS, handle Level1
+  return <span>NOT IMPLEMENTED YET</span>;
+}
+
+interface RenkuTemplateContextProps {
+  automated: boolean;
+  templateDetails: MigrationStatus["details"];
+}
+function RenkuTemplateContext({
+  automated,
+  templateDetails,
+}: RenkuTemplateContextProps) {
+  const template =
+    templateDetails?.template_status.type === "detail"
+      ? templateDetails.template_status
+      : null;
+
+  if (template?.newer_template_available) {
+    const templateManualLink = (
+      <ExternalLink
+        role="text"
+        url={Docs.rtdPythonReferencePage("commands/template.html")}
+        title="Renku Update"
+      />
+    );
+    let updateInfo: React.ReactNode = null;
+    if (automated) {
+      updateInfo = (
+        <>You can click on the Update button to automatically update it.</>
+      );
+    } else if (template.template_source !== TemplateSourceRenku) {
+      updateInfo = (
+        <>
+          Automatic update is not available. You can update the template
+          manually in a session by using the {templateManualLink} command.
+        </>
+      );
+    }
+
+    let templateElement: React.ReactNode = null;
+    let extraInfo: React.ReactNode = null;
+    if (template.template_source !== TemplateSourceRenku) {
+      let templateUrl = template?.template_source;
+      if (template?.latest_template_version)
+        templateUrl += `/tree/${template?.latest_template_version}`;
+      else if (template?.template_ref)
+        templateUrl += `/tree/${template?.template_ref}`;
+      templateElement =
+        templateUrl && template?.template_id ? (
+          <ExternalLink
+            role="text"
+            url={templateUrl}
+            title={template?.template_id}
+          />
+        ) : null;
+    } else {
+      templateElement = template?.template_id ? (
+        <span>{template.template_id}</span>
+      ) : null;
+      extraInfo = (
+        <>
+          <br />
+          <span>
+            Mind that the project uses a default template from this RenkuLab
+            deployment, therefore there is no link to a remote reference
+            template you can check. You can still check the full description
+            when creating a new project using the same template id.
+          </span>
+        </>
+      );
+    }
+
+    return (
+      <span>
+        There is a new version for the template {templateElement} used in this
+        project. {updateInfo} {extraInfo}{" "}
+        <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />
+      </span>
+    );
+  } else if (template?.template_source === TemplateSourceRenku) {
+    return (
+      <span>
+        We could not find updates for the {template?.template_id} template used
+        in this project.
+        <br />
+        Mind that the project uses a default template from this RenkuLab
+        deployment that is cached locally. We cannot verify whether a newer
+        version was recently published in the remote repository.{" "}
+        <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />
+      </span>
+    );
+  }
+  // ! TODO
+  // ! else { return <span>All good!</span> }
+
   return <span>NOT IMPLEMENTED YET</span>;
 }
