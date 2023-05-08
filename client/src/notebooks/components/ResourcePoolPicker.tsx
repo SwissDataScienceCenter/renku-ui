@@ -16,17 +16,17 @@
  * limitations under the License.
  */
 
-import React, { FormEvent, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
-import Autosuggest, {
-  ChangeEvent,
-  InputProps,
-  RenderInputComponentProps,
-  ShouldRenderReasons,
-  SuggestionSelectedEventData,
-} from "react-autosuggest";
-import { RootStateOrAny, useSelector } from "react-redux";
-import { Button, FormGroup, Label } from "reactstrap";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import Select, {
+  GroupBase,
+  SingleValue,
+  ClassNamesConfig,
+  SelectComponentsConfig,
+  components,
+} from "react-select";
+import { FormGroup, Label } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import {
   ResourceClass,
@@ -34,7 +34,14 @@ import {
 } from "../../features/dataServices/dataServices";
 import { IMigration } from "../../features/project/Project";
 import { useGetConfigQuery } from "../../features/project/projectCoreApi";
+import { StartSessionOptions } from "../../features/session/startSessionOptions";
+import {
+  setSessionClass,
+  startSessionOptionsSlice,
+  useStartSessionOptionsSelector,
+} from "../../features/session/startSessionOptionsSlice";
 import { useGetNotebooksQuery } from "../../features/versions/versionsApi";
+import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 import styles from "./ResourcePoolPicker.module.scss";
 
 interface ResourcePoolPickerProps {
@@ -62,10 +69,10 @@ export const ResourcePoolPicker = ({
   const { data: sessionsVersion, isLoading: sessionsVersionIsLoading } =
     useGetNotebooksQuery({});
 
-  // const { data: resourcePools, isLoading: resourcePoolsIsLoading } =
-  //   useGetResourcePoolsQuery({});
-  const resourcePools = fakeResourcePools;
-  const resourcePoolsIsLoading = false;
+  const { data: resourcePools, isLoading: resourcePoolsIsLoading } =
+    useGetResourcePoolsQuery({});
+  // const resourcePools = fakeResourcePools;
+  // const resourcePoolsIsLoading = false;
 
   if (!fetchedVersion) return null;
 
@@ -74,7 +81,7 @@ export const ResourcePoolPicker = ({
     sessionsVersionIsLoading ||
     resourcePoolsIsLoading;
 
-  if (isLoading) {
+  if (isLoading || !resourcePools) {
     return <Loader />;
   }
 
@@ -85,18 +92,6 @@ export const ResourcePoolPicker = ({
         <Label>Session class</Label>
         <SessionClassSelector resourcePools={resourcePools} />
       </FormGroup>
-      {/* <div className="py-2">
-        <pre>{JSON.stringify(projectMigrationCore, null, 2)}</pre>
-      </div>
-      <div className="py-2">
-        <pre>{JSON.stringify(projectConfig, null, 2)}</pre>
-      </div>
-      <div className="py-2">
-        <pre>{JSON.stringify(sessionsVersion, null, 2)}</pre>
-      </div>
-      <div className="py-2">
-        <pre>{JSON.stringify(resourcePools, null, 2)}</pre>
-      </div> */}
     </div>
   );
 };
@@ -106,125 +101,140 @@ interface SessionClassSelectorProps {
 }
 
 const SessionClassSelector = ({ resourcePools }: SessionClassSelectorProps) => {
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const options = useMemo(
+    () => makeGroupedOptions(resourcePools),
+    [resourcePools]
+  );
+  const sessionsClassesFlat = useMemo(
+    () => resourcePools.flatMap((pool) => pool.classes),
+    [resourcePools]
+  );
 
-  const sessionsClassesFlat = resourcePools.flatMap((pool) => pool.classes);
+  const { sessionClass: sessionClassId } = useStartSessionOptionsSelector(
+    (state: RootStateOrAny) =>
+      state[startSessionOptionsSlice.name] as StartSessionOptions
+  );
+  const dispatch = useDispatch();
 
-  const [selectedSessionClass, setSelectedSessionClass] =
-    useState<ResourceClass | null>(
-      sessionsClassesFlat.length > 0 ? sessionsClassesFlat[0] : null
+  // Set initial session class
+  useEffect(() => {
+    dispatch(
+      setSessionClass(
+        sessionsClassesFlat.length > 0 ? sessionsClassesFlat[0].id : 0
+      )
     );
+  }, [dispatch, sessionsClassesFlat]);
+
+  const selectedSessionClass = useMemo(
+    () =>
+      sessionsClassesFlat.find((c) => c.id === sessionClassId) ??
+      sessionsClassesFlat[0] ??
+      null,
+    [sessionClassId, sessionsClassesFlat]
+  );
 
   useEffect(() => {
-    console.log({ showSuggestions, selectedSessionClass });
-  }, [showSuggestions, selectedSessionClass]);
+    console.log({ selectedSessionClass });
+  }, [selectedSessionClass]);
 
-  // const onClickSelector = useCallback(() => {
-  //   setIsOpen((isOpen) => !isOpen);
-  // }, []);
-
-  const onClickButton = useCallback(() => {
-    setShowSuggestions((prev) => !prev);
-  }, []);
-
-  console.log({ sessionsClassesFlat });
-
-  const getSuggestionValue = useCallback(
-    (suggestion: ResourceClass) => `${suggestion.id}`,
-    []
-  );
-  const inputProps: InputProps<ResourceClass> = {
-    // placeholder: "Select a session class...",
-    // type: "text",
-    // className: "",
-    role: "button",
-    style: { caretColor: "transparent" },
-    value: selectedSessionClass ? `${selectedSessionClass.id}` : "",
-    onChange: (event: FormEvent<HTMLElement>, params: ChangeEvent) => {
-      console.log("onChange", event, params);
+  const onChange = useCallback(
+    (newValue: SingleValue<ResourceClass>) => {
+      if (newValue?.id) {
+        dispatch(setSessionClass(newValue?.id));
+      }
     },
-  };
-  const onSuggestionsClearRequested = useCallback(() => {
-    setShowSuggestions(false);
-  }, []);
-  const onSuggestionSelected = useCallback(
-    (_event: FormEvent, data: SuggestionSelectedEventData<ResourceClass>) => {
-      setSelectedSessionClass(data.suggestion);
-      setShowSuggestions(false);
-    },
-    []
-  );
-  const renderInputComponent = useCallback(
-    (props: RenderInputComponentProps) => {
-      console.log(props);
-      const { value, ...rest } = props;
-      const selected = sessionsClassesFlat.find((c) => `${c.id}` === value);
-      return (
-        <>
-          <Label for="sdafaadfadfa">
-            <div>Hewwo</div>
-          </Label>
-          <input
-            id="sdafaadfadfa"
-            name="sdafaadfadfa"
-            value={selected ? selected.name : ""}
-            {...rest}
-          />
-        </>
-      );
-    },
-    [onClickButton, sessionsClassesFlat]
-  );
-  const renderSuggestion = useCallback(
-    (suggestion: ResourceClass) => (
-      <div>
-        <span>{suggestion.name}</span>
-        <span>CPUs: {suggestion.cpu}</span>
-      </div>
-    ),
-    []
-  );
-  const shouldRenderSuggestions = useCallback(
-    (_value: string, reason: ShouldRenderReasons) => {
-      return reason === "input-focused" || showSuggestions;
-    },
-    [showSuggestions]
+    [dispatch]
   );
 
   return (
-    <>
-      {/* <div className="d-grid">
-        <Button
-          className={cx(styles.button, "d-block", "rounded")}
-          type="button"
-          onClick={onClickButton}
-        >
-          {selectedSessionClass
-            ? selectedSessionClass.name
-            : "Select a session class..."}
-        </Button>
-      </div> */}
-      <Autosuggest
-        id="fooobar"
-        multiSection={false}
-        suggestions={sessionsClassesFlat}
-        getSuggestionValue={getSuggestionValue}
-        inputProps={inputProps}
-        onSuggestionsFetchRequested={noOp}
-        onSuggestionsClearRequested={onSuggestionsClearRequested}
-        onSuggestionSelected={onSuggestionSelected}
-        renderInputComponent={renderInputComponent}
-        renderSuggestion={renderSuggestion}
-        // shouldRenderSuggestions={shouldRenderSuggestions}
-        // alwaysRenderSuggestions={showSuggestions}
-        focusInputOnSuggestionClick={false}
+    <div style={{ width: "200px" }}>
+      <Select
+        options={options}
+        defaultValue={selectedSessionClass ? selectedSessionClass : undefined}
+        getOptionValue={(option) => `${option.id}`}
+        getOptionLabel={(option) => option.name}
+        onChange={onChange}
+        isClearable={false}
+        isSearchable={false}
+        unstyled
+        classNames={selectClassNames}
+        components={selectComponents}
+        // Force open
+        // menuIsOpen
       />
-    </>
+    </div>
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const noOp = () => {};
+interface OptionGroup extends GroupBase<ResourceClass> {
+  label: string;
+  pool: ResourcePool;
+  options: readonly ResourceClass[];
+}
+
+const makeGroupedOptions = (resourcePools: ResourcePool[]): OptionGroup[] =>
+  resourcePools.map((pool) => ({
+    label: pool.name,
+    pool,
+    options: pool.classes,
+  }));
+
+const selectClassNames: ClassNamesConfig<ResourceClass, false, OptionGroup> = {
+  control: ({ menuIsOpen }) =>
+    cx(
+      menuIsOpen ? "rounded-top" : "rounded",
+      "border",
+      "px-3",
+      "py-2",
+      styles.control,
+      menuIsOpen && styles.controlIsOpen
+    ),
+  groupHeading: () => cx("px-3", "text-uppercase", styles.groupHeading),
+  menu: () =>
+    cx("rounded-bottom", "border", "border-top-0", "px-0", "py-2", styles.menu),
+  menuList: () => cx("d-grid", "gap-2"),
+  option: ({ isSelected }) =>
+    cx(
+      "d-grid",
+      "gap-4",
+      "px-3",
+      styles.option,
+      isSelected && styles.optionIsSelected
+    ),
+};
+
+const selectComponents: SelectComponentsConfig<
+  ResourceClass,
+  false,
+  OptionGroup
+> = {
+  Option: (props) => {
+    const { label, data: sessionClass } = props;
+    const detailClassName = cx("d-inline-flex", styles.detail);
+    const detailLabelClassName = cx("width", "me-auto", styles.detailLabel);
+    return (
+      <components.Option {...props}>
+        <span className={styles.label}>{label}</span>{" "}
+        <span className={detailClassName}>
+          <span className={detailLabelClassName}>CPUs</span>{" "}
+          <span>{sessionClass.cpu}</span>
+        </span>{" "}
+        <div className={detailClassName}>
+          <span className={detailLabelClassName}>Memory</span>{" "}
+          <span>{sessionClass.memory}</span>
+        </div>{" "}
+        <span className={detailClassName}>
+          <span className={detailLabelClassName}>Storage</span>{" "}
+          <span>{sessionClass.storage}</span>
+        </span>{" "}
+        <span className={detailClassName}>
+          <span className={detailLabelClassName}>GPUs</span>{" "}
+          <span>{sessionClass.gpu}</span>
+        </span>
+      </components.Option>
+    );
+  },
+};
 
 const fakeResourcePools: ResourcePool[] = [
   {

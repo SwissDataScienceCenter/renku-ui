@@ -44,6 +44,135 @@
         "memory": 128,
         "gpu": 1,
         "storage": 256
+      },
+
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
+      },
+      {
+        "id": 3,
+        "name": "class c2",
+        "cpu": 2,
+        "memory": 128,
+        "gpu": 1,
+        "storage": 256
       }
     ]
   }

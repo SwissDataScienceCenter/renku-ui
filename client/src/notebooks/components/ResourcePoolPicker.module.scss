@@ -1,11 +1,54 @@
-.button {
-  --bs-btn-border-color: var(--bs-rk-border-input);
-  --bs-btn-bg: var(--bs-rk-white);
-  color: black;
+.control {
+  background: var(--bs-rk-white);
+  --bs-border-color: var(--bs-rk-border-input);
 
-  --bs-btn-hover-bg: var(--rk-dark-bg);
+  cursor: pointer !important;
 
   &:hover {
-    color: black;
+    // color: blue;
+    --bs-border-color: var(--bs-rk-green);
+  }
+
+  &IsOpen {
+    --bs-border-color: var(--bs-rk-green);
+  }
+}
+
+.groupHeading {
+  font-size: 0.8rem;
+  color: var(--bs-rk-text-light);
+}
+
+.menu {
+  background: var(--bs-rk-white);
+  --bs-border-color: var(--bs-rk-green);
+  z-index: 10 !important;
+}
+
+.option {
+  grid-template-columns: minmax(0, 3fr) repeat(4, minmax(0, 1fr));
+  justify-items: end;
+
+  cursor: pointer !important;
+
+  &:hover {
+    background: rgba(var(--bs-rk-green-rgb), 0.5);
+  }
+
+  &IsSelected {
+    background-color: rgba(var(--bs-rk-green-rgb), 0.25);
+  }
+
+  & .label {
+    justify-self: start;
+  }
+
+  & .detail {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  & .detailLabel {
+    color: var(--bs-rk-text-light);
   }
 }

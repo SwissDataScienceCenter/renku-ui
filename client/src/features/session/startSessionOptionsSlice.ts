@@ -22,16 +22,20 @@ import { StartSessionOptions } from "./startSessionOptions";
 
 const initialState: StartSessionOptions = {
   defaultUrl: "",
+  sessionClass: 0,
 };
 
 export const startSessionOptionsSlice = createSlice({
   name: "startSessionOptions",
   initialState,
   reducers: {
+    setSessionClass: (state, action: PayloadAction<number>) => {
+      state.sessionClass = action.payload;
+    },
     reset: () => initialState,
   },
 });
 
-export const { reset } = startSessionOptionsSlice.actions;
+export const { setSessionClass, reset } = startSessionOptionsSlice.actions;
 export const useStartSessionOptionsSelector: TypedUseSelectorHook<StartSessionOptions> =
   useSelector;
