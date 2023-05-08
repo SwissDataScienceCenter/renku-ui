@@ -33,8 +33,16 @@ declare global {
       gui_workflows_change_sorting(target: string): void;
       gui_workflows_change_sort_order(): void;
       gui_create_project(title: string): void;
-      gui_create_project_add_dataset(title: string, path: string, fixtures): void;
-      gui_select_project_autosuggestion_list(project: string, fixtures, migrationCheckResult): void;
+      gui_create_project_add_dataset(
+        title: string,
+        path: string,
+        fixtures
+      ): void;
+      gui_select_project_autosuggestion_list(
+        project: string,
+        fixtures,
+        migrationCheckResult
+      ): void;
     }
   }
 }

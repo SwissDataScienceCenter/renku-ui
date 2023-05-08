@@ -1,5 +1,5 @@
 {
-  "projects":[
+  "projects": [
     "lorenzo.cavazzi.tech/readme-file-dev",
     "e2e/nuevo-project",
     "e2e/testing-datasets",
@@ -7,4 +7,3 @@
     "e2e/local-test-project-2"
   ]
 }
-

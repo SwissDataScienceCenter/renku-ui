@@ -88,6 +88,10 @@ jobs:
         run: |
           cd tests
           npm install
+      - name: Run format e2e
+        run: |
+          cd tests
+          npm run format-check
       - name: Run lint e2e
         run: |
           cd tests

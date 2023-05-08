@@ -38,10 +38,7 @@ describe("display a dataset", () => {
       cy.get_cy("list-card").should("have.length", totalDatasets);
 
       // the dataset title is displayed
-      cy.get_cy("datasets-title").should(
-        "contain.text",
-        "Renku Datasets"
-      );
+      cy.get_cy("datasets-title").should("contain.text", "Renku Datasets");
     });
   });
 
@@ -51,24 +48,39 @@ describe("display a dataset", () => {
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
 
     fixtures.datasetById(datasetIdentifier);
-    cy.gui_search_dataset(datasetName, fixtures, `datasets/datasets-search_${datasetIdentifier}.json`);
+    cy.gui_search_dataset(
+      datasetName,
+      fixtures,
+      `datasets/datasets-search_${datasetIdentifier}.json`
+    );
     cy.get_cy("list-card-title").contains(datasetName).click();
     cy.wait("@getDatasetById")
-      .its("response.body").then( dataset => {
+      .its("response.body")
+      .then((dataset) => {
         // Check that the title is correct
-        cy.get("title").first().should("contain.text", "abcd • Dataset • Dataset for testing purposes");
+        cy.get("title")
+          .first()
+          .should(
+            "contain.text",
+            "abcd • Dataset • Dataset for testing purposes"
+          );
         // the dataset title is displayed
         cy.get_cy("dataset-title").should("contain.text", dataset?.title);
         // files are displayed
         const totalFiles = dataset?.hasPart?.length;
-        cy.get_cy("dataset-file-title").should("contain.text", `Dataset files (${totalFiles})`);
+        cy.get_cy("dataset-file-title").should(
+          "contain.text",
+          `Dataset files (${totalFiles})`
+        );
         cy.get_cy("dataset-fs-element").should("have.length", 2);
 
         // projects that use the dataset are displayed
         const totalProjectsUsingDataset = dataset?.usedIn?.length || 0;
         if (totalProjectsUsingDataset > 1)
-          cy.get_cy("project-using-dataset").should("have.length", totalProjectsUsingDataset);
-
+          cy.get_cy("project-using-dataset").should(
+            "have.length",
+            totalProjectsUsingDataset
+          );
       });
   });
 

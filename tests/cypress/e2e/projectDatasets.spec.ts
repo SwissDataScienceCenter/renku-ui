@@ -42,7 +42,10 @@ function checkDatasetDisplay(cy, fixtures, datasets, projectPath) {
     cy.wait(`@${requestId}`);
     cy.get_cy("dataset-title").should("contain.text", d.title);
     cy.get_cy("header-project").should("not.exist");
-    cy.get_cy("go-back-button").should("contain.text", `Back to ${projectPath}`);
+    cy.get_cy("go-back-button").should(
+      "contain.text",
+      `Back to ${projectPath}`
+    );
     cy.get_cy("edit-dataset-button").should("exist");
     cy.get_cy("delete-dataset-button").should("exist");
 
@@ -50,7 +53,12 @@ function checkDatasetDisplay(cy, fixtures, datasets, projectPath) {
   });
 }
 
-function checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets, editDisabled = false) {
+function checkDatasetLimitedPermissionDisplay(
+  cy,
+  fixtures,
+  datasets,
+  editDisabled = false
+) {
   datasets.forEach((d, i) => {
     const datasetIdentifier = d.identifier.replace(/-/g, "");
     const requestId = `getDatasetById${i}`;
@@ -65,8 +73,7 @@ function checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets, editDisabl
     if (editDisabled) {
       cy.get_cy("edit-dataset-button").should("be.disabled");
       cy.get_cy("add-to-project-button").should("be.disabled");
-    }
-    else {
+    } else {
       cy.get_cy("edit-dataset-button").should("not.exist");
       cy.get_cy("add-to-project-button").should("be.visible");
     }
@@ -89,7 +96,7 @@ describe("Project dataset", () => {
     fixtures.projectTestContents(undefined, 9);
     fixtures.projectMigrationUpToDate({
       queryUrl: "*",
-      fixtureName: "getMigration"
+      fixtureName: "getMigration",
     });
     fixtures.projectLockStatus();
   });
@@ -104,7 +111,7 @@ describe("Project dataset", () => {
         // all datasets are displayed
         const totalDatasets = datasets?.length;
         cy.get_cy("list-card").should("have.length", totalDatasets);
-        checkDatasetDisplay(cy, fixtures, datasets, projectPath );
+        checkDatasetDisplay(cy, fixtures, datasets, projectPath);
       });
   });
 
@@ -158,7 +165,7 @@ describe("Project dataset (legacy ids)", () => {
     fixtures.projectTestContents(undefined, 9);
     fixtures.projectMigrationUpToDate({
       queryUrl: "*",
-      fixtureName: "getMigration"
+      fixtureName: "getMigration",
     });
     fixtures.projectLockStatus();
   });
@@ -192,9 +199,15 @@ describe("Error loading datasets", () => {
     fixtures.projects().landingUserProjects();
     fixtures.project(projectPath);
     fixtures.projectKGDatasetList(projectPath);
-    fixtures.projectDatasetList("datasetList", "datasets/dataset-list-error.json");
+    fixtures.projectDatasetList(
+      "datasetList",
+      "datasets/dataset-list-error.json"
+    );
     fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({ queryUrl: "*", fixtureName: "getMigration" });
+    fixtures.projectMigrationUpToDate({
+      queryUrl: "*",
+      fixtureName: "getMigration",
+    });
     fixtures.projectLockStatus();
   });
 
@@ -202,7 +215,8 @@ describe("Error loading datasets", () => {
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProject");
     cy.wait("@datasetList")
-      .its("response.body").then( () => {
+      .its("response.body")
+      .then(() => {
         cy.get_cy("error-datasets-modal").should("exist");
       });
   });
@@ -222,7 +236,7 @@ describe("Project dataset (locked)", () => {
     fixtures.projectTestContents(undefined, 9);
     fixtures.projectMigrationUpToDate({
       queryUrl: "*",
-      fixtureName: "getMigration"
+      fixtureName: "getMigration",
     });
     fixtures.projectLockStatus({ locked: true });
   });

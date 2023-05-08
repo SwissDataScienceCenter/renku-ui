@@ -26,14 +26,21 @@ describe("launch autostart sessions", () => {
   beforeEach(() => {
     fixtures.config().versions().projects().landingUserProjects();
     fixtures.projectTest().projectMigrationUpToDate();
-    fixtures.sessionAutosave().sessionServersEmpty().renkuIni().sessionServerOptions().projectLockStatus();
+    fixtures
+      .sessionAutosave()
+      .sessionServersEmpty()
+      .renkuIni()
+      .sessionServerOptions()
+      .projectLockStatus();
     fixtures.userTest().newSessionImages();
   });
 
   it("autostart session - not found custom values branch and commit", () => {
     const invalidCommit = "no-valid-commit";
     const invalidBranch = "no-valid-branch";
-    cy.visit(`${projectUrl}/sessions/new?autostart=1&commit=${invalidCommit}&branch=${invalidBranch}`);
+    cy.visit(
+      `${projectUrl}/sessions/new?autostart=1&commit=${invalidCommit}&branch=${invalidBranch}`
+    );
     const alertMessage = `A session on the branch ${invalidBranch} and the commit ${invalidCommit} could not be started
         because it does not exist in the repository. The branch has been set to the default
         master.
@@ -45,7 +52,9 @@ describe("launch autostart sessions", () => {
 
   it("autostart session - not found custom values commit", () => {
     const invalidCommit = "no-valid-commit";
-    cy.visit(`${projectUrl}/sessions/new?autostart=1&commit=${invalidCommit}&branch=master`);
+    cy.visit(
+      `${projectUrl}/sessions/new?autostart=1&commit=${invalidCommit}&branch=master`
+    );
     const alertMessage = `A session for the reference ${invalidCommit} could not be started
         because it does not exist in the repository. The branch has been set to the default
         master.
@@ -54,5 +63,4 @@ describe("launch autostart sessions", () => {
     cy.wait("@getSessionServerOptions", { timeout: 10000 });
     cy.get(".alert-warning").should("contain.text", alertMessage);
   });
-
 });

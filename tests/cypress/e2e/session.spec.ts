@@ -36,7 +36,7 @@ describe("display a session", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
     cy.gui_open_logs();
-    cy.wait("@getLogs").then( (result) => {
+    cy.wait("@getLogs").then((result) => {
       const logs = result.response.body;
       // validate see logs and can download it
       cy.get_cy("log-tab").should("have.length", Object.keys(logs).length);
@@ -71,11 +71,11 @@ describe("display a session", () => {
     // logs with data
     fixtures.getLogs("getLogs-full", "sessions/logs.json");
     cy.get_cy("retry-logs-body").click();
-    cy.wait("@getLogs-full").then( (result) => {
+    cy.wait("@getLogs-full").then((result) => {
       const logs = result.response.body;
       // validate see logs and can download it
       // eslint-disable-next-line max-nested-callbacks
-      const validLogs = Object.keys(logs).filter(key => logs[key].length > 0);
+      const validLogs = Object.keys(logs).filter((key) => logs[key].length > 0);
       cy.get_cy("log-tab").should("have.length", validLogs.length);
       cy.get_cy("session-log-download-button").should("be.enabled");
     });
@@ -96,7 +96,6 @@ describe("display a session", () => {
     // stop session
     cy.get_cy("stop-session-button").click();
     cy.get_cy("stop-session-modal-button").should("exist");
-
   });
 
   it("save session button -- no sidecar", () => {
@@ -105,9 +104,16 @@ describe("display a session", () => {
     // save session
     cy.get_cy("save-session-button").click();
     cy.get(".modal-dialog").should("exist");
-    cy.get(".modal-dialog").get("h5").contains("Save Session").should("be.visible");
-    cy.get(".modal-dialog").get("div")
-      .contains("It is not possible to offer a one-click save for this session.").should("be.visible");
+    cy.get(".modal-dialog")
+      .get("h5")
+      .contains("Save Session")
+      .should("be.visible");
+    cy.get(".modal-dialog")
+      .get("div")
+      .contains(
+        "It is not possible to offer a one-click save for this session."
+      )
+      .should("be.visible");
   });
 
   it("save session button -- session clean", () => {
@@ -116,9 +122,14 @@ describe("display a session", () => {
     // save session
     cy.get_cy("save-session-button").click();
     cy.get(".modal-dialog").should("exist");
-    cy.get(".modal-dialog").get("h5").contains("Save Session").should("be.visible");
-    cy.get(".modal-dialog").get("div")
-      .contains("Your session is up-to-date.").should("be.visible");
+    cy.get(".modal-dialog")
+      .get("h5")
+      .contains("Save Session")
+      .should("be.visible");
+    cy.get(".modal-dialog")
+      .get("div")
+      .contains("Your session is up-to-date.")
+      .should("be.visible");
   });
 
   it("save session button -- session ahead", () => {
@@ -127,9 +138,16 @@ describe("display a session", () => {
     // save session
     cy.get_cy("save-session-button").click();
     cy.get(".modal-dialog").should("exist");
-    cy.get(".modal-dialog").get("h5").contains("Save Session").should("be.visible");
-    cy.get(".modal-dialog").get("div")
-      .contains("You have work in this session that has not yet been saved to the server.").should("be.visible");
+    cy.get(".modal-dialog")
+      .get("h5")
+      .contains("Save Session")
+      .should("be.visible");
+    cy.get(".modal-dialog")
+      .get("div")
+      .contains(
+        "You have work in this session that has not yet been saved to the server."
+      )
+      .should("be.visible");
   });
 
   it("pull changes button -- no sidecar", () => {
@@ -138,9 +156,16 @@ describe("display a session", () => {
     // pull changes
     cy.get_cy("pull-changes-button").click();
     cy.get(".modal-dialog").should("exist");
-    cy.get(".modal-dialog").get("h5").contains("Refresh Session").should("be.visible");
-    cy.get(".modal-dialog").get("div")
-      .contains("It is not possible to offer a one-click refresh for this session.").should("be.visible");
+    cy.get(".modal-dialog")
+      .get("h5")
+      .contains("Refresh Session")
+      .should("be.visible");
+    cy.get(".modal-dialog")
+      .get("div")
+      .contains(
+        "It is not possible to offer a one-click refresh for this session."
+      )
+      .should("be.visible");
   });
 
   it("pull changes button -- sidecar error`", () => {
@@ -149,9 +174,16 @@ describe("display a session", () => {
     // pull changes
     cy.get_cy("pull-changes-button").click();
     cy.get(".modal-dialog").should("exist");
-    cy.get(".modal-dialog").get("h5").contains("Refresh Session").should("be.visible");
-    cy.get(".modal-dialog").get("div")
-      .contains("It is not possible to offer a one-click refresh for this session.").should("be.visible");
+    cy.get(".modal-dialog")
+      .get("h5")
+      .contains("Refresh Session")
+      .should("be.visible");
+    cy.get(".modal-dialog")
+      .get("div")
+      .contains(
+        "It is not possible to offer a one-click refresh for this session."
+      )
+      .should("be.visible");
   });
 
   it("pull changes button -- session clean", () => {
@@ -160,9 +192,14 @@ describe("display a session", () => {
     // pull changes
     cy.get_cy("pull-changes-button").click();
     cy.get(".modal-dialog").should("exist");
-    cy.get(".modal-dialog").get("h5").contains("Refresh Session").should("be.visible");
-    cy.get(".modal-dialog").get("div")
-      .contains("Your session is up-to-date.").should("be.visible");
+    cy.get(".modal-dialog")
+      .get("h5")
+      .contains("Refresh Session")
+      .should("be.visible");
+    cy.get(".modal-dialog")
+      .get("div")
+      .contains("Your session is up-to-date.")
+      .should("be.visible");
   });
 
   it("pull changes button -- session behind", () => {
@@ -171,9 +208,14 @@ describe("display a session", () => {
     // pull changes
     cy.get_cy("pull-changes-button").click();
     cy.get(".modal-dialog").should("exist");
-    cy.get(".modal-dialog").get("h5").contains("Refresh Session").should("be.visible");
-    cy.get(".modal-dialog").get("div")
-      .contains("This session is behind the server").should("be.visible");
+    cy.get(".modal-dialog")
+      .get("h5")
+      .contains("Refresh Session")
+      .should("be.visible");
+    cy.get(".modal-dialog")
+      .get("div")
+      .contains("This session is behind the server")
+      .should("be.visible");
   });
 
   it("pull changes button -- session diverged", () => {
@@ -182,9 +224,14 @@ describe("display a session", () => {
     // pull changes
     cy.get_cy("pull-changes-button").click();
     cy.get(".modal-dialog").should("exist");
-    cy.get(".modal-dialog").get("h5").contains("Refresh Session").should("be.visible");
-    cy.get(".modal-dialog").get("div")
-      .contains("Your session has diverged from the origin.").should("be.visible");
+    cy.get(".modal-dialog")
+      .get("h5")
+      .contains("Refresh Session")
+      .should("be.visible");
+    cy.get(".modal-dialog")
+      .get("div")
+      .contains("Your session has diverged from the origin.")
+      .should("be.visible");
   });
 });
 
@@ -205,7 +252,6 @@ describe("display a session with error", () => {
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
     cy.get_cy("stop-session-button").should("be.visible");
   });
-
 });
 
 describe("display a session when session is being stopped", () => {
@@ -226,5 +272,4 @@ describe("display a session when session is being stopped", () => {
     cy.get_cy("stopping-btn").should("be.disabled");
     cy.get_cy("stopping-btn").should("be.visible");
   });
-
 });

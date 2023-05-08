@@ -38,7 +38,7 @@ describe("Project new dataset", () => {
     fixtures.projectTestContents(undefined, 9);
     fixtures.projectMigrationUpToDate({
       queryUrl: "*",
-      fixtureName: "getMigration"
+      fixtureName: "getMigration",
     });
     fixtures.projectLockStatus();
   });
@@ -52,12 +52,12 @@ describe("Project new dataset", () => {
       creators: {
         name: "Name Creator",
         email: "email@creator.com",
-        affiliation: "SDSC"
+        affiliation: "SDSC",
       },
       keywords: ["test key 1", "key 2"],
       description: "This is a dataset description",
       file: "count_flights.txt",
-      image: "sdsc.jpeg"
+      image: "sdsc.jpeg",
     });
     cy.wait("@uploadDatasetFile");
     cy.get_cy("submit-button").click();
@@ -65,7 +65,10 @@ describe("Project new dataset", () => {
     cy.wait("@addFile");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false });
-    cy.url().should("include", `projects/${projectPath}/datasets/new-dataset-completed/`);
+    cy.url().should(
+      "include",
+      `projects/${projectPath}/datasets/new-dataset-completed/`
+    );
   });
 
   it("upload dataset file", () => {
@@ -75,13 +78,19 @@ describe("Project new dataset", () => {
       unpack_archive: true,
       statusCode: 200,
     };
-    fixtures.uploadDatasetFile("cacheProjectListOnProgress", "datasets/upload-dataset-multiple-files.json", options);
+    fixtures.uploadDatasetFile(
+      "cacheProjectListOnProgress",
+      "datasets/upload-dataset-multiple-files.json",
+      options
+    );
     cy.wait("@getProject");
     cy.gui_new_dataset({
       title: "New dataset completed",
     });
-    cy.get('[data-cy="dropzone"]')
-      .attachFile("/datasets/files/datasetFiles.zip", { subjectType: "drag-n-drop" });
+    cy.get('[data-cy="dropzone"]').attachFile(
+      "/datasets/files/datasetFiles.zip",
+      { subjectType: "drag-n-drop" }
+    );
     cy.get_cy("upload-compressed-yes").click();
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false });
@@ -93,12 +102,17 @@ describe("Project new dataset", () => {
     cy.get_cy("file-name-column").should("not.exist");
     // load multiple files
     fixtures.uploadDatasetFile();
-    cy.get('[data-cy="dropzone"]')
-      .attachFile("/datasets/files/datasetFiles.zip", { subjectType: "drag-n-drop" });
-    cy.get('[data-cy="dropzone"]')
-      .attachFile("/datasets/files/bigFile.bin", { subjectType: "drag-n-drop" });
-    cy.get('[data-cy="dropzone"]')
-      .attachFile("/datasets/files/count_flights.txt", { subjectType: "drag-n-drop" });
+    cy.get('[data-cy="dropzone"]').attachFile(
+      "/datasets/files/datasetFiles.zip",
+      { subjectType: "drag-n-drop" }
+    );
+    cy.get('[data-cy="dropzone"]').attachFile("/datasets/files/bigFile.bin", {
+      subjectType: "drag-n-drop",
+    });
+    cy.get('[data-cy="dropzone"]').attachFile(
+      "/datasets/files/count_flights.txt",
+      { subjectType: "drag-n-drop" }
+    );
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false });
     cy.wait("@uploadDatasetFile");
@@ -113,12 +127,14 @@ describe("Project new dataset", () => {
     };
     fixtures.uploadDatasetFile("errorUploadFile", "", options);
     cy.wait("@getProject");
-    cy.get('[data-cy="dropzone"]')
-      .attachFile("/datasets/files/bigFile.bin", { subjectType: "drag-n-drop" });
+    cy.get('[data-cy="dropzone"]').attachFile("/datasets/files/bigFile.bin", {
+      subjectType: "drag-n-drop",
+    });
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false });
     cy.wait("@errorUploadFile");
-    cy.get_cy("upload-error-message").contains("Server responded with 500 code.");
+    cy.get_cy("upload-error-message").contains(
+      "Server responded with 500 code."
+    );
   });
 });
-
