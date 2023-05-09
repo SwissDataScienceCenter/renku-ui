@@ -172,6 +172,12 @@ export const projectCoreApi = createApi({
           ...options,
         };
         if (data.branch) body.branch = data.branch;
+        // ! TODO ! : something's not working here...
+        // // console.log({
+        // //   body,
+        // //   method: "POST",
+        // //   url: `/renku/cache.migrate`,
+        // // });
         return {
           body,
           method: "POST",

@@ -57,6 +57,7 @@ import { Docs } from "../../../utils/constants/Docs";
 import { ACCESS_LEVELS } from "../../../api-client";
 
 import styles from "./ProjectSettings.module.scss";
+import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 
 // ****** INTERFACES, ENUMS, CONST ****** //
 const TemplateSourceRenku = "renku";
@@ -140,7 +141,8 @@ export function getCompareUrl(
   const cleanedLatestVersion = cleanVersion(latestVersion);
   if (
     !cleanedProjectVersion.endsWith("-dev") &&
-    !cleanedLatestVersion.endsWith("-dev")
+    !cleanedLatestVersion.endsWith("-dev") &&
+    cleanedProjectVersion !== cleanedLatestVersion
   )
     return `${RenkuRepositories.Python}/compare/v${cleanedProjectVersion}...v${cleanedLatestVersion}`;
   return null;
@@ -433,7 +435,11 @@ function ProjectMigrationStatus({
   let buttonAction: undefined | (() => void);
   let buttonText: undefined | string;
   const buttonIcon = faArrowAltCircleUp;
-  let buttonDisabled = false;
+  let buttonDisabled = isMaintainer ? false : true;
+  const buttonDisabledTooltip = isMaintainer
+    ? "Operation ongoing..."
+    : "Only maintainers can do this.";
+  const buttonId = "button-update-projectMigrationStatus";
   let icon = faInfoCircle;
   let level = "danger";
   let title = "Unknown project status";
@@ -484,7 +490,9 @@ function ProjectMigrationStatus({
       <CompositeTitle
         buttonAction={buttonAction}
         buttonDisabled={buttonDisabled}
+        buttonDisabledTooltip={buttonDisabledTooltip}
         buttonIcon={buttonIcon}
+        buttonId={buttonId}
         buttonText={buttonText}
         icon={icon}
         level={level}
@@ -495,6 +503,7 @@ function ProjectMigrationStatus({
       />
       <ProjectMigrationStatusDetails
         data={data}
+        isMaintainer={isMaintainer}
         isSupported={isSupported}
         showDetails={showDetails}
       />
@@ -503,16 +512,18 @@ function ProjectMigrationStatus({
 }
 
 interface ProjectMigrationStatusDetailsProps {
-  // isMaintainer: boolean;
   data: MigrationStatus | undefined;
+  isMaintainer: boolean;
   isSupported: boolean;
   showDetails: boolean;
 }
 function ProjectMigrationStatusDetails({
   data,
+  isMaintainer,
   isSupported,
   showDetails,
 }: ProjectMigrationStatusDetailsProps) {
+  // ! TODO ! : add update buttons here -- keep in mind the isMaintainer status!
   // Renku Version details
   const docker =
     data?.details?.dockerfile_renku_status.type === "detail"
@@ -595,12 +606,21 @@ function ProjectMigrationStatusDetails({
         migrationLevel={renkuMigrationLevel?.level}
       />
     );
-    // ! TODO - finish level 1
   } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level1) {
     renkuIcon = faCheckCircle;
     renkuLevel = "success";
-    renkuText = `v${docker?.dockerfile_renku_version}`;
-    renkuDetails = <span>Level 1</span>;
+    renkuText = (
+      <RenkuVersionOutdated
+        renkuLatestVersion={renkuLatestVersion}
+        renkuProjectVersion={renkuProjectVersion}
+      />
+    );
+    renkuDetails = (
+      <RenkuVersionContext
+        docsUrl={renkuTitleDocsUrl}
+        migrationLevel={renkuMigrationLevel?.level}
+      />
+    );
   }
 
   const contentRenku = (
@@ -617,11 +637,6 @@ function ProjectMigrationStatusDetails({
   );
 
   // Template version details
-  // const template =
-  //   data?.details?.template_status.type === "detail"
-  //     ? data.details.template_status
-  //     : null;
-
   let templateDetails: React.ReactNode = <span>No details</span>;
   const templateMigrationLevel = getTemplateLevel(data, isSupported);
   const templateTitleId = "settings-template-version";
@@ -638,11 +653,26 @@ function ProjectMigrationStatusDetails({
     );
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.LevelE) {
     templateText = "Error";
-    templateDetails = (
-      <ProjectSettingsGeneralCoreError
-        errorData={data?.details?.template_status as CoreSectionError}
-      />
-    );
+    // ? Do not show template error on very outdated projects. They frequently error.
+    // ? We can consider removing this in the future if it doesn't occure that often anymore.
+    if (
+      renkuMigrationLevel?.level === ProjectMigrationLevel.Level5 ||
+      renkuMigrationLevel?.level === ProjectMigrationLevel.Level4
+    ) {
+      templateDetails = (
+        <span>
+          Older project versions might not expose some template details and
+          trigger an error. This usually disappears after updating the Renku
+          version.
+        </span>
+      );
+    } else {
+      templateDetails = (
+        <ProjectSettingsGeneralCoreError
+          errorData={data?.details?.template_status as CoreSectionError}
+        />
+      );
+    }
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.Level3) {
     // New version available
     templateLevel = "info";
@@ -668,8 +698,12 @@ function ProjectMigrationStatusDetails({
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.Level1) {
     templateLevel = "success";
     templateIcon = faCheckCircle;
-    // ! TODO: EXPAND RenkuTemplateOutdated and add templateDetails to handle Level1
-    templateDetails = <span>Level 1</span>;
+    templateDetails = (
+      <RenkuTemplateContext
+        automated={templateMigrationLevel.automated}
+        templateDetails={data?.details}
+      />
+    );
     templateText = <RenkuTemplateOutdated templateDetails={data?.details} />;
   }
 
@@ -783,11 +817,13 @@ function ProjectKnowledgeGraph({
     level = "info";
   }
 
-  const canUpdate = !data?.activated // ! && user.hasPermissions
-    ? true
-    : false;
+  const canUpdate = !data?.activated ? true : false;
   const buttonIcon = canUpdate ? faPlusCircle : faArrowAltCircleUp;
-  let buttonDisabled = false;
+  let buttonDisabled = isMaintainer ? false : true;
+  const buttonDisabledTooltip = isMaintainer
+    ? "Operation ongoing..."
+    : "Only maintainers can do this.";
+  const buttonId = "button-update-projectKnowledgeGraph";
   let buttonText = canUpdate ? "Activate" : undefined;
   if (activateIndexingStatus.isLoading) {
     buttonDisabled = true;
@@ -805,14 +841,14 @@ function ProjectKnowledgeGraph({
     });
   };
 
-  // ! TODO: only for users with permissions! A.K.A isMaintainer
-  // ! TODO: handle errors on click: activateIndexingStatus.isError
   return (
     <>
       <CompositeTitle
         buttonAction={buttonAction}
         buttonDisabled={buttonDisabled}
+        buttonDisabledTooltip={buttonDisabledTooltip}
         buttonIcon={buttonIcon}
+        buttonId={buttonId}
         buttonText={buttonText}
         icon={icon}
         level={level}
@@ -866,8 +902,8 @@ function KnowledgeGraphDetails({
         const detailsFirstPart = (
           <span>
             The Knowledge Graph is processing project&apos;s events. Some
-            information about the local entities might be outdated until this
-            process has finished.
+            information about the local entities might be unavailable or
+            outdated until this process has finished.
           </span>
         );
         if (data.progress?.done === data.progress?.total) {
@@ -953,7 +989,9 @@ function MoreInfoLink({ url }: MoreInfoLinkProps) {
 interface CompositeTitleProps {
   buttonAction?: () => void;
   buttonDisabled?: boolean;
+  buttonDisabledTooltip?: string;
   buttonIcon?: IconProp;
+  buttonId?: string;
   buttonText?: string;
   level?: string;
   loading: boolean;
@@ -965,6 +1003,8 @@ interface CompositeTitleProps {
 function CompositeTitle({
   buttonAction,
   buttonDisabled,
+  buttonDisabledTooltip,
+  buttonId,
   buttonIcon,
   buttonText,
   level,
@@ -996,12 +1036,28 @@ function CompositeTitle({
       color: level !== "success" ? level : "secondary",
       size: "sm",
     };
-    if (buttonAction)
+    if (buttonAction && buttonId) {
       button = (
-        <Button {...buttonActionStyle} onClick={() => buttonAction()}>
+        <Button
+          {...buttonActionStyle}
+          id={buttonId}
+          onClick={() => buttonAction()}
+        >
           {finalButtonText}
         </Button>
       );
+      if (buttonDisabledTooltip && buttonDisabled) {
+        const targetId = simpleHash(buttonId);
+        button = (
+          <>
+            <div id={targetId}>{button}</div>
+            <UncontrolledTooltip placement="top" target={targetId}>
+              {buttonDisabledTooltip}
+            </UncontrolledTooltip>
+          </>
+        );
+      }
+    }
     // ? this case _should_ not happen
     else button = <Button {...buttonActionStyle}>{finalButtonText}</Button>;
   }
@@ -1141,33 +1197,48 @@ function RenkuVersionOutdated({
   renkuLatestVersion,
   renkuProjectVersion,
 }: RenkuVersionOutdatedProps) {
+  const renkuProjectReleaseUrl = getReleaseUrl(renkuProjectVersion);
+  const renkuLatestReleaseUrl = getReleaseUrl(renkuLatestVersion);
   const renkuProjectCompareUrl = getCompareUrl(
     renkuProjectVersion,
     renkuLatestVersion
   );
-  const renkuProjectReleaseUrl = getReleaseUrl(renkuLatestVersion);
-  const renkuProjectVersionElement = renkuProjectCompareUrl ? (
+
+  const renkuProjectVersionElement = renkuProjectReleaseUrl ? (
     <ExternalLink
       role="text"
-      url={renkuProjectCompareUrl}
+      url={renkuProjectReleaseUrl}
       title={renkuProjectVersion}
     />
   ) : (
     <span>{renkuProjectVersion}</span>
   );
-  const renkuLatestVersionElement = renkuProjectReleaseUrl ? (
+
+  const renkuLatestVersionElement = renkuLatestReleaseUrl ? (
     <ExternalLink
       role="text"
-      url={renkuProjectReleaseUrl}
+      url={renkuLatestReleaseUrl}
       title={renkuLatestVersion}
     />
   ) : (
     <span>{renkuLatestVersion}</span>
   );
-  return (
+
+  const renkuCompareVersionElement = renkuProjectCompareUrl ? (
+    <span>
+      {" "}
+      -{" "}
+      <ExternalLink role="text" url={renkuProjectCompareUrl} title="compare" />
+    </span>
+  ) : null;
+
+  return renkuLatestVersion !== renkuProjectVersion ? (
     <>
-      {renkuProjectVersionElement} ({renkuLatestVersionElement} avaliable)
+      {renkuProjectVersionElement} ({renkuLatestVersionElement} avaliable
+      {renkuCompareVersionElement})
     </>
+  ) : (
+    <>{renkuLatestVersionElement}</>
   );
 }
 
@@ -1227,6 +1298,14 @@ function RenkuVersionContext({
         </span>
       </>
     );
+  } else if (migrationLevel === ProjectMigrationLevel.Level1) {
+    return (
+      <>
+        <span>
+          The project is using the latest {linkToRenku} version. {moreInfoLink}
+        </span>
+      </>
+    );
   }
 
   return null;
@@ -1243,7 +1322,11 @@ function RenkuTemplateOutdated({
       ? templateDetails.template_status
       : null;
   if (!template) return null;
-  if (template.template_source !== TemplateSourceRenku) {
+  if (
+    template.newer_template_available &&
+    template.template_source !== TemplateSourceRenku &&
+    template.template_source !== template.project_template_version
+  ) {
     const deltaUrl = `${template.template_source}/compare/${template.project_template_version}...${template.latest_template_version}`;
     const deltaLink = (
       <ExternalLink
@@ -1252,7 +1335,7 @@ function RenkuTemplateOutdated({
         title={template.project_template_version}
       />
     );
-    const latestUrl = `${template.template_source}/releases/tag/${template.latest_template_version}`;
+    const latestUrl = `${template.template_source}/tree/${template.latest_template_version}`;
     const latestLink = (
       <ExternalLink
         role="text"
@@ -1265,7 +1348,10 @@ function RenkuTemplateOutdated({
         {deltaLink} ({latestLink} avaliable)
       </>
     );
-  } else if (template.template_source === TemplateSourceRenku) {
+  } else if (
+    template.template_source === TemplateSourceRenku ||
+    !template.template_source
+  ) {
     if (template.newer_template_available)
       return (
         <>
@@ -1274,9 +1360,20 @@ function RenkuTemplateOutdated({
         </>
       );
     return <>{template.project_template_version}</>;
+  } else if (
+    !template.newer_template_available ||
+    template.template_source === template.project_template_version
+  ) {
+    const templateUrl = `${template.template_source}/tree/${template.project_template_version}`;
+    return (
+      <ExternalLink
+        role="text"
+        url={templateUrl}
+        title={template.project_template_version}
+      />
+    );
   }
-  // ! TODO: EXPAND THIS, handle Level1
-  return <span>NOT IMPLEMENTED YET</span>;
+  return <>{template.project_template_version}</>;
 }
 
 interface RenkuTemplateContextProps {
@@ -1349,7 +1446,7 @@ function RenkuTemplateContext({
 
     return (
       <span>
-        There is a new version for the template {templateElement} used in this
+        There is a new version of the template {templateElement} used in this
         project. {updateInfo} {extraInfo}{" "}
         <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />
       </span>
@@ -1357,7 +1454,7 @@ function RenkuTemplateContext({
   } else if (template?.template_source === TemplateSourceRenku) {
     return (
       <span>
-        We could not find updates for the {template?.template_id} template used
+        We could not find updates of the {template?.template_id} template used
         in this project.
         <br />
         Mind that the project uses a default template from this RenkuLab
@@ -1370,5 +1467,24 @@ function RenkuTemplateContext({
   // ! TODO
   // ! else { return <span>All good!</span> }
 
-  return <span>NOT IMPLEMENTED YET</span>;
+  let templateUrl = template?.template_source;
+  if (template?.latest_template_version)
+    templateUrl += `/tree/${template?.latest_template_version}`;
+  else if (template?.template_ref)
+    templateUrl += `/tree/${template?.template_ref}`;
+  const templateElement =
+    templateUrl && template?.template_id ? (
+      <ExternalLink
+        role="text"
+        url={templateUrl}
+        title={template?.template_id}
+      />
+    ) : null;
+  return (
+    <span>
+      You are using the latest version of the {templateElement} template used in
+      this project.{" "}
+      <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />
+    </span>
+  );
 }
