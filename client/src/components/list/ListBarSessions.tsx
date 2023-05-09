@@ -50,6 +50,12 @@ import { getStatusObject } from "../../notebooks/components/SessionListStatus";
 import type { SessionRunningStatus } from "../../notebooks/components/SessionListStatus";
 import { SessionButton } from "../../features/session/components/SessionButtons";
 import { Notebook } from "../../notebooks/components/Session";
+import {
+  FormattedDateTime,
+  FormattedRelativeDateTime,
+} from "../dateTime/FormattedDateTime";
+import { FormattedDuration } from "../dateTime/FormattedDuration";
+import { DateTime } from "luxon";
 
 import "./ListBar.scss";
 
@@ -158,7 +164,18 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
       <span>
         <span className="fw-bold">Date:</span>{" "}
         <span>
-          {Time.toIsoTimezoneString(commit.committed_date, "datetime-short")}
+          {"2022-07-05 09:39 ~ 10 months ago"}
+          <FormattedDateTime dateTime={commit.committed_date} format="full" />
+          <span className="time-caption">
+            {" ~ "}
+            {/* <FormattedDuration
+              duration={DateTime.utc().diff(
+                DateTime.fromISO(commit.committed_date)
+              )}
+            /> */}
+            <FormattedRelativeDateTime dateTime={commit.committed_date} />
+          </span>
+          {/* {Time.toIsoTimezoneString(commit.committed_date, "datetime-short")} */}
         </span>{" "}
         <TimeCaption
           caption="~"

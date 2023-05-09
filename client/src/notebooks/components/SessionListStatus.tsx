@@ -1,20 +1,20 @@
 import React from "react";
 import {
-  Badge,
-  PopoverBody,
-  PopoverHeader,
-  UncontrolledPopover,
-} from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
   faCheckCircle,
   faExclamationTriangle,
   faInfoCircle,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
-
-import { Loader } from "../../components/Loader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  Badge,
+  PopoverBody,
+  PopoverHeader,
+  UncontrolledPopover,
+} from "reactstrap";
 import { Clipboard } from "../../components/Clipboard";
+import { Loader } from "../../components/Loader";
+import { FormattedDateTime } from "../../components/dateTime/FormattedDateTime";
 import { SessionStatus } from "../../utils/constants/Notebooks";
 import type { NotebookAnnotations } from "./Session";
 
@@ -112,9 +112,14 @@ function SessionListRowStatus(props: SessionListRowStatusProps) {
   };
 
   const textStatus =
-    status === SessionStatus.running
-      ? `${data.text} since ${startTime}`
-      : data.text;
+    status === SessionStatus.running ? (
+      <>
+        {data.text} since{" "}
+        <FormattedDateTime dateTime={startTime} format="full" />
+      </>
+    ) : (
+      <>{data.text}</>
+    );
 
   return (
     <>

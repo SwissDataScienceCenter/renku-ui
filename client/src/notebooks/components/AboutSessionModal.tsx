@@ -27,7 +27,6 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 import EntityHeader from "../../components/entityHeader/EntityHeader";
-import Time from "../../utils/helpers/Time";
 import {
   InfoCircle,
   Modal,
@@ -154,10 +153,6 @@ function SessionHeader({ notebook }: SessionHeaderProp) {
       return obj;
     }, {});
   const resources = notebook.data.resources?.requests;
-  const startTime = Time.toIsoTimezoneString(
-    notebook.data.started,
-    "datetime-short"
-  );
   const commits = useSelector(
     (state: any) => state.stateModel.notebooks.data.commits
   );
@@ -171,7 +166,7 @@ function SessionHeader({ notebook }: SessionHeaderProp) {
       resources={resources}
       image={notebook.data.image}
       name={notebook.data.name}
-      startTime={startTime}
+      startTime={notebook.data.started}
       status={notebook.data.status}
       url={notebook.data.url}
       showMenu={false}

@@ -31,14 +31,16 @@ export const FormattedDuration = ({
     duration_ instanceof Duration
       ? duration_
       : Duration.fromObject({ seconds: duration_ })
-  ).rescale();
+  )
+    //eslint-disable-next-line spellcheck/spell-checker
+    .rescale();
 
   const [randomIdForTooltip] = useState<string>(() => {
     const rand = `${Math.random()}`.slice(2);
     return `duration-${rand}`;
   });
 
-  if (!duration.isValid) return <>"Invalid Duration"</>;
+  if (!duration.isValid) return <>Invalid Duration</>;
 
   const formatted =
     duration < Duration.fromObject({ seconds: 1 })

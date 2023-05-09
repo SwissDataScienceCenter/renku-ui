@@ -288,10 +288,6 @@ class NotebookServersList extends Component {
           return obj;
         }, {});
       const resources = this.props.servers[k].resources?.requests;
-      const startTime = Time.toIsoTimezoneString(
-        this.props.servers[k].started,
-        "datetime-short"
-      );
 
       return (
         <NotebookServerRow
@@ -308,7 +304,7 @@ class NotebookServersList extends Component {
           resources={resources}
           image={this.props.servers[k].image}
           name={this.props.servers[k].name}
-          startTime={startTime}
+          startTime={this.props.servers[k].started}
           status={this.props.servers[k].status}
           url={this.props.servers[k].url}
         />
