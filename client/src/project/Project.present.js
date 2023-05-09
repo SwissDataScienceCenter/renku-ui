@@ -916,8 +916,6 @@ const ProjectSessions = (props) => {
 
   const backButton = <GoBackButton label={backButtonLabel} url={backUrl} />;
 
-  // console.log("ProjectSessions", props);
-
   return [
     <Col key="content" xs={12}>
       <Switch>

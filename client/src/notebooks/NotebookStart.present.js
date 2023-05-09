@@ -17,6 +17,19 @@
  */
 
 import React, { Component, Fragment, useEffect, useState } from "react";
+import {
+  faBook,
+  faCog,
+  faCogs,
+  faExclamationTriangle,
+  faInfoCircle,
+  faLink,
+  faRedo,
+  faSyncAlt,
+  faUserClock,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import {
   Badge,
@@ -39,55 +52,37 @@ import {
   UncontrolledPopover,
   UncontrolledTooltip,
 } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBook,
-  faCog,
-  faCogs,
-  faExclamationTriangle,
-  faInfoCircle,
-  faLink,
-  faRedo,
-  faSyncAlt,
-  faUserClock,
-} from "@fortawesome/free-solid-svg-icons";
-
 import {
   ErrorAlert,
   InfoAlert,
   SuccessAlert,
   WarnAlert,
 } from "../components/Alert";
-import { ButtonWithMenu } from "../components/buttons/Button";
 import { Clipboard } from "../components/Clipboard";
 import { ExternalLink } from "../components/ExternalLinks";
 import { JupyterIcon } from "../components/Icon";
 import { Loader } from "../components/Loader";
+import { ThrottledTooltip } from "../components/Tooltip";
+import { ButtonWithMenu } from "../components/buttons/Button";
+import CommitSelector from "../components/commitSelector/CommitSelector";
 import { ShareLinkSessionModal } from "../components/shareLinkSession/ShareLinkSession";
 import { Docs } from "../utils/constants/Docs";
-import { ThrottledTooltip } from "../components/Tooltip";
 import { SessionStatus } from "../utils/constants/Notebooks";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
-
-import LaunchErrorAlert from "./components/LaunchErrorAlert";
-import { NotebooksHelper } from "./index";
 import {
   ObjectStoresConfigurationButton,
   ObjectStoresConfigurationModal,
 } from "./ObjectStoresConfig.present";
 import EnvironmentVariables from "./components/EnviromentVariables";
-import { useSelector } from "react-redux";
+import LaunchErrorAlert from "./components/LaunchErrorAlert";
+import { ResourcePoolPicker } from "./components/ResourcePoolPicker";
 import { ServerOptionEnum } from "./components/StartNotebookServerOptions";
 import {
   StartNotebookAutostartLoader,
   StartNotebookLoader,
 } from "./components/StartSessionLoader";
-import CommitSelector from "../components/commitSelector/CommitSelector";
-import { useGetConfigQuery } from "../features/project/projectCoreApi";
-import { useGetNotebooksQuery } from "../features/versions/versionsApi";
-import { useGetResourcePoolsQuery } from "../features/dataServices/dataServicesApi";
-import { ResourcePoolPicker } from "./components/ResourcePoolPicker";
+import { NotebooksHelper } from "./index";
 
 function ProjectSessionLockAlert({ lockStatus }) {
   if (lockStatus == null) return null;
@@ -206,32 +201,6 @@ function StartNotebookServer(props) {
   const { branch, commit, namespace, project } = props.filters;
   const location = useLocation();
 
-  // const versionUrl = useSelector(
-  //   (state) => state.stateModel.project.migration.core.versionUrl
-  // );
-  // // console.log({
-  // //   projectRepositoryUrl: externalUrl,
-  // //   versionUrl,
-  // // });
-  // const { data, isLoading } = useGetConfigQuery(
-  //   {
-  //     projectRepositoryUrl: externalUrl,
-  //     versionUrl,
-  //   },
-  //   { skip: versionUrl == null }
-  // );
-  // // console.log({ data, isLoading });
-
-  // const nbVersion = useGetNotebooksQuery();
-  // useEffect(() => {
-  //   console.log({ nbVersion: nbVersion.data });
-  // }, [nbVersion.data]);
-
-  // const resourcePools = useGetResourcePoolsQuery();
-  // useEffect(() => {
-  //   console.log({ resourcePools: resourcePools.data });
-  // }, [resourcePools.data]);
-
   const [showShareLinkModal, setShowShareLinkModal] = useState(
     location?.state?.showShareLinkModal ?? false
   );
@@ -291,7 +260,6 @@ function StartNotebookServer(props) {
       <div>
         <p>Checking sessions status...</p>
         <Loader />
-        {/* <ResourcePoolPicker /> */}
       </div>
     ) : null;
 

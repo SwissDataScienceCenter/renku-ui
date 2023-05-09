@@ -15,11 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { DatasetKg, IDatasetFile, ProjectConfig } from "./Project.d";
-// import { formatProjectMetadata, ProjectMetadata } from "../../utils/helpers/ProjectFunctions";
-// import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

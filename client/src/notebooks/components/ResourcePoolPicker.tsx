@@ -20,10 +20,10 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import Select, {
-  GroupBase,
-  SingleValue,
   ClassNamesConfig,
+  GroupBase,
   SelectComponentsConfig,
+  SingleValue,
   components,
 } from "react-select";
 import { FormGroup, Label } from "reactstrap";
@@ -32,6 +32,7 @@ import {
   ResourceClass,
   ResourcePool,
 } from "../../features/dataServices/dataServices";
+// import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 import { IMigration } from "../../features/project/Project";
 import { useGetConfigQuery } from "../../features/project/projectCoreApi";
 import { StartSessionOptions } from "../../features/session/startSessionOptions";
@@ -41,7 +42,6 @@ import {
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
 import { useGetNotebooksQuery } from "../../features/versions/versionsApi";
-import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 import styles from "./ResourcePoolPicker.module.scss";
 
 interface ResourcePoolPickerProps {
@@ -69,10 +69,10 @@ export const ResourcePoolPicker = ({
   const { data: sessionsVersion, isLoading: sessionsVersionIsLoading } =
     useGetNotebooksQuery({});
 
-  const { data: resourcePools, isLoading: resourcePoolsIsLoading } =
-    useGetResourcePoolsQuery({});
-  // const resourcePools = fakeResourcePools;
-  // const resourcePoolsIsLoading = false;
+  // const { data: resourcePools, isLoading: resourcePoolsIsLoading } =
+  //   useGetResourcePoolsQuery({});
+  const resourcePools = fakeResourcePools;
+  const resourcePoolsIsLoading = false;
 
   if (!fetchedVersion) return null;
 

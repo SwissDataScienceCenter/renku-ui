@@ -26,11 +26,10 @@
 import _ from "lodash";
 
 import { API_ERRORS } from "../api-client/errors";
-import { notebooksSchema } from "../model";
-import { parseINIString, sleep } from "../utils/helpers/HelperFunctions";
 import { formatEnvironmentVariables } from "../api-client/utils";
 import { startSessionOptionsSlice } from "../features/session/startSessionOptionsSlice";
-// import {useSelector} from 'react-redux'
+import { notebooksSchema } from "../model";
+import { parseINIString, sleep } from "../utils/helpers/HelperFunctions";
 
 const POLLING_INTERVAL = 3000;
 const POLLING_CI = 5; // in seconds, for the sleep function
@@ -374,8 +373,6 @@ const NotebooksHelper = {
 
 class NotebooksCoordinator {
   constructor(client, model, userModel) {
-    // console.log("NotebooksCoordinator", new Error("huh"));
-    // console.log({ startSessionOptions });
     this.client = client;
     this.model = model;
     this.userModel = userModel;
