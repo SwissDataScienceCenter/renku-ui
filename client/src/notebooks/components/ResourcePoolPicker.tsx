@@ -110,10 +110,7 @@ const SessionClassSelector = ({ resourcePools }: SessionClassSelectorProps) => {
     [resourcePools]
   );
 
-  const { sessionClass: sessionClassId } = useStartSessionOptionsSelector(
-    (state: RootStateOrAny) =>
-      state[startSessionOptionsSlice.name] as StartSessionOptions
-  );
+  const { sessionClass: sessionClassId } = useStartSessionOptionsSelector();
   const dispatch = useDispatch();
 
   // Set initial session class
