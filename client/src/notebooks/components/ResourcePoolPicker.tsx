@@ -147,7 +147,7 @@ const SessionClassSelector = ({ resourcePools }: SessionClassSelectorProps) => {
   );
 
   return (
-    <div style={{ width: "200px" }}>
+    <div /*style={{ width: "200px" }}*/>
       <Select
         options={options}
         defaultValue={selectedSessionClass ? selectedSessionClass : undefined}
