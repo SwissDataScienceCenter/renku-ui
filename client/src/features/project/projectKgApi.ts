@@ -41,16 +41,8 @@ export const projectKgApi = createApi({
           return {
             url: `webhooks/projects/${projectId}/webhooks`,
             method: "POST",
-            // validateStatus: (response) => response.status < 400 || response.status === 404
           };
         },
-        // transformErrorResponse: (errorData) => {
-        //   if (errorData.status === 404 && errorData.data && "message") {
-        //     if ((errorData as errorDataMessage).data.message?.includes("project cannot be found"))
-        //       return { activated: false };
-        //   }
-        //   throw errorData;
-        // },
       }
     ),
     getProjectIndexingStatus: builder.query<

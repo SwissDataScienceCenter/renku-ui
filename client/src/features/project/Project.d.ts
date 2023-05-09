@@ -17,7 +17,7 @@
  */
 
 import { CoreErrorContent } from "../../utils/definitions";
-import { ProjectIndexingStatuses } from "./ProjectEnums";
+import { MigrationStartScopes, ProjectIndexingStatuses } from "./ProjectEnums";
 
 export interface CoreServiceParams {
   versionUrl?: string;
@@ -261,4 +261,35 @@ export interface ProjectIndexingStatusResponse {
 
 export interface ProjectActivateIndexingResponse {
   message: string;
+}
+
+export interface MigrationStartParams {
+  branch?: string;
+  gitUrl: string;
+  scope?: MigrationStartScopes;
+}
+
+export interface MigrationStartBody {
+  branch?: string;
+  force_template_update: boolean;
+  git_url: string;
+  is_delayed: boolean;
+  skip_docker_update: boolean;
+  skip_migrations: boolean;
+  skip_template_update: boolean;
+}
+
+export interface MigrationStartDetails {
+  docker_migrated: boolean;
+  errors: string[];
+  messages: string[];
+  remote_branch: string;
+  template_migrated: boolean;
+  warnings: string[];
+  was_migrated: boolean;
+}
+
+export interface MigrationStartResponse {
+  error?: CoreErrorContent;
+  result?: MigrationStartDetails;
 }

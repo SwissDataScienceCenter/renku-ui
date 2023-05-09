@@ -23,10 +23,14 @@ import type {
   GetDatasetFilesResponse,
   GetDatasetKgParams,
   IDatasetFiles,
+  MigrationStartBody,
+  MigrationStartParams,
+  MigrationStartResponse,
   MigrationStatus,
   MigrationStatusParams,
   MigrationStatusResponse,
 } from "./Project.d";
+import { MigrationStartScopes } from "./ProjectEnums";
 
 function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
   const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : endpoint;
@@ -73,6 +77,7 @@ export const projectCoreApi = createApi({
         return { hasPart: files };
       },
     }),
+    // ! TODO: move this to KG API
     getDatasetKg: builder.query<DatasetKg, GetDatasetKgParams>({
       query: (params: GetDatasetKgParams) => {
         const headers = {
@@ -138,6 +143,42 @@ export const projectCoreApi = createApi({
         };
       },
     }),
+    startMigration: builder.mutation<
+      MigrationStartResponse,
+      MigrationStartParams
+    >({
+      query: (data) => {
+        const options = {
+          force_template_update: false,
+          skip_docker_update: false,
+          skip_migrations: false,
+          skip_template_update: false,
+        };
+        if (data.scope === MigrationStartScopes.OnlyTemplate) {
+          options.force_template_update = true;
+          options.skip_docker_update = true;
+          options.skip_migrations = true;
+        } else if (data.scope === MigrationStartScopes.OnlyVersion) {
+          options.skip_template_update = true;
+        } else {
+          options.force_template_update = true;
+          options.skip_docker_update = true;
+          options.skip_migrations = true;
+          options.skip_template_update = true;
+        }
+        const body: MigrationStartBody = {
+          git_url: data.gitUrl,
+          is_delayed: true,
+          ...options,
+        };
+        if (data.branch) body.branch = data.branch;
+        return {
+          body,
+          method: "POST",
+          url: `/renku/cache.migrate`,
+        };
+      },
+    }),
   }),
 });
 
@@ -145,4 +186,5 @@ export const {
   useGetDatasetFilesQuery,
   useGetDatasetKgQuery,
   useGetMigrationStatusQuery,
+  useStartMigrationMutation,
 } = projectCoreApi;

@@ -3,3 +3,9 @@ export enum ProjectIndexingStatuses {
   Success = "success",
   Failure = "failure",
 }
+
+export enum MigrationStartScopes {
+  All,
+  OnlyTemplate,
+  OnlyVersion,
+}

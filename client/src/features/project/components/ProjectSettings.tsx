@@ -45,9 +45,9 @@ import {
   MigrationStatus,
   ProjectIndexingStatusResponse,
 } from "../Project";
-import { ProjectIndexingStatuses } from "../ProjectEnums";
+import { MigrationStartScopes, ProjectIndexingStatuses } from "../ProjectEnums";
 import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";
-import { useGetMigrationStatusQuery } from "../projectCoreApi";
+import { projectCoreApi } from "../projectCoreApi";
 import { projectKgApi } from "../projectKgApi";
 import { Loader } from "../../../components/Loader";
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
@@ -364,10 +364,10 @@ function ProjectMigrationStatus({
   const toggleShowDetails = () => setShowDetails(!showDetails);
 
   const skip = !gitUrl || !branch;
-  const { data, isLoading, error } = useGetMigrationStatusQuery(
-    { gitUrl, branch },
-    { skip }
-  );
+  const { data, isLoading, error, refetch } =
+    projectCoreApi.useGetMigrationStatusQuery({ gitUrl, branch }, { skip });
+  const [startMigration, migrationStatus] =
+    projectCoreApi.useStartMigrationMutation();
 
   if (isLoading || skip || checkingSupport) {
     return (
@@ -405,58 +405,79 @@ function ProjectMigrationStatus({
     );
   }
 
-  // ! TODO: handle user permissions A.K.A isMaintainer
   const migrationLevel = getMigrationLevel(data, isSupported);
+  const buttonUpdate = (scope: MigrationStartScopes) => {
+    buttonDisabled = true;
+    buttonText = "Updating";
+    if (scope === MigrationStartScopes.OnlyTemplate)
+      buttonText = "Updating template";
+    if (scope === MigrationStartScopes.OnlyVersion)
+      buttonText = "Updating version";
+    startMigration({
+      gitUrl,
+      branch,
+      scope,
+    }).then(() => {
+      buttonDisabled = true;
+      buttonText = "Updating";
+      if (scope === MigrationStartScopes.OnlyTemplate)
+        buttonText = "Updating template";
+      if (scope === MigrationStartScopes.OnlyVersion)
+        buttonText = "Updating version";
+      setTimeout(() => {
+        refetch();
+      }, 2000);
+    });
+  };
 
+  let buttonAction: undefined | (() => void);
+  let buttonText: undefined | string;
+  const buttonIcon = faArrowAltCircleUp;
+  let buttonDisabled = false;
   let icon = faInfoCircle;
   let level = "danger";
   let title = "Unknown project status";
   if (migrationLevel === ProjectMigrationLevel.Level5) {
     icon = faExclamationCircle;
     title = "Project update required";
+    buttonText = "Update";
+    buttonAction = () => {
+      buttonUpdate(MigrationStartScopes.All);
+    };
   } else if (migrationLevel === ProjectMigrationLevel.Level4) {
     icon = faExclamationCircle;
     level = "warning";
     title = "Project update required";
+    buttonText = "Update";
+    buttonAction = () => {
+      buttonUpdate(MigrationStartScopes.All);
+    };
   } else if (migrationLevel === ProjectMigrationLevel.Level3) {
     icon = faExclamationCircle;
     level = "info";
     title = "Project update available";
+    buttonText = "Update";
+    buttonAction = () => {
+      buttonUpdate(MigrationStartScopes.All);
+    };
+  } else if (migrationLevel === ProjectMigrationLevel.Level2) {
+    icon = faCheckCircle;
+    level = "info";
+    title = "Project up to date*";
+  } else if (migrationLevel === ProjectMigrationLevel.Level1) {
+    icon = faCheckCircle;
+    level = "success";
+    title = "Project up to date";
   }
-  // if (!data?.activated) {
-  //   title = "Activate Knowledge Graph integration";
-  //   level = "danger";
-  //   icon = faExclamationCircle;
-  // }
-  // else if (data?.progress?.done !== data?.progress?.total) {
-  //   title = "Knowledge Graph metadata (processing)";
-  //   level = "info";
-  // }
-  // else if (data.details?.status === ProjectIndexingStatuses.Failure) {
-  //   level = "info";
-  // }
 
-  const buttonIcon = faArrowAltCircleUp;
-  let buttonDisabled = false;
-  let buttonText = "Update";
+  // handle maintainer status and ongoing update
   if (!isMaintainer) {
     buttonDisabled = true;
-    buttonText = "Update";
   }
-  // // if (activateIndexingStatus.isLoading) {
-  // //   buttonDisabled = true;
-  // //   buttonText = "Activating";
-  // // }
-  const buttonAction = () => {
-    return null;
-    // // buttonText = "Activating";
-    // // buttonDisabled = true;
-    // // activateIndexing(projectId).then(() => {
-    // //   buttonText = "Activating";
-    // //   buttonDisabled = true;
-    // //   setTimeout(() => { refetch(); }, 2000);
-    // // });
-  };
+  if (migrationStatus.isLoading) {
+    buttonDisabled = true;
+    buttonText = "Updating";
+  }
 
   return (
     <>
@@ -574,6 +595,7 @@ function ProjectMigrationStatusDetails({
         migrationLevel={renkuMigrationLevel?.level}
       />
     );
+    // ! TODO - finish level 1
   } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level1) {
     renkuIcon = faCheckCircle;
     renkuLevel = "success";
@@ -971,7 +993,7 @@ function CompositeTitle({
     );
     const buttonActionStyle = {
       disabled: buttonDisabled,
-      color: level,
+      color: level !== "success" ? level : "secondary",
       size: "sm",
     };
     if (buttonAction)
