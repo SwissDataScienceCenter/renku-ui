@@ -140,7 +140,7 @@ function StartNotebookAdvancedOptions(props) {
     toggleShowObjectStoresConfigModal,
   } = props.handlers;
   const s3MountsConfig = props.options.global.cloudstorage?.s3;
-  const cloudStorageAvailable = s3MountsConfig?.enabled ?? false;
+  const cloudStorageAvailable = (s3MountsConfig?.enabled ?? false) || true;
   return (
     <>
       <div className="field-group">
@@ -1197,11 +1197,12 @@ function StartNotebookOptions(props) {
 
   return (
     <>
-      <div>New options here</div>
+      {/* <div>New options here</div> */}
       <NewStartNotebookServerOptions projectRepositoryUrl={props.externalUrl} />
 
-      <div>Old options here</div>
-      <StartNotebookServerOptions key="options" {...props} />
+      {/* <div>Old options here</div>
+      <StartNotebookServerOptions key="options" {...props} /> */}
+
       <EnvironmentVariables
         key="envVariables"
         environmentVariables={environmentVariables}

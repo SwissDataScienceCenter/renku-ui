@@ -1263,10 +1263,10 @@ class NotebooksCoordinator {
     const reduxStore = this.model.reduxStore;
     const startSessionOptions =
       reduxStore.getState()[startSessionOptionsSlice.name];
-    console.log({ startSessionOptions });
 
     const options = {
-      serverOptions: this.model.get("filters.options"),
+      serverOptions: startSessionOptions,
+      legacyServerOptions: this.model.get("filters.options"),
     };
     const cloudstorage = this.model.get("filters.objectStoresConfiguration");
     if (cloudstorage.length > 0) options["cloudstorage"] = cloudstorage;
