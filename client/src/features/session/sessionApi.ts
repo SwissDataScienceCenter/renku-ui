@@ -42,16 +42,6 @@ export const sessionApi = createApi({
         ...legacyOptions
       }: ServerOptionsResponse) => ({
         defaultUrl,
-        // defaultUrl: {
-        //   ...defaultUrl,
-        //   options: [
-        //     ...defaultUrl.options,
-        //     "/foo",
-        //     "/bar",
-        //     // "/baz",
-        //     // "/very_lengthy_option_just_for_fun",
-        //   ],
-        // },
         legacyOptions,
       }),
     }),

@@ -140,7 +140,7 @@ function StartNotebookAdvancedOptions(props) {
     toggleShowObjectStoresConfigModal,
   } = props.handlers;
   const s3MountsConfig = props.options.global.cloudstorage?.s3;
-  const cloudStorageAvailable = (s3MountsConfig?.enabled ?? false) || true;
+  const cloudStorageAvailable = s3MountsConfig?.enabled ?? false;
   return (
     <>
       <div className="field-group">
@@ -245,16 +245,14 @@ function StartNotebookServer(props) {
   const disabled = fetching.branches || fetching.commits;
 
   const options = show.options ? (
-    <>
-      <StartNotebookOptions
-        notebookFilePath={location?.state?.filePath}
-        toggleShareLinkModal={toggleShareLinkModal}
-        showShareLinkModal={showShareLinkModal}
-        setEnvironmentVariables={setNotebookEnvVariables}
-        environmentVariables={environmentVariables}
-        {...props}
-      />
-    </>
+    <StartNotebookOptions
+      notebookFilePath={location?.state?.filePath}
+      toggleShareLinkModal={toggleShareLinkModal}
+      showShareLinkModal={showShareLinkModal}
+      setEnvironmentVariables={setNotebookEnvVariables}
+      environmentVariables={environmentVariables}
+      {...props}
+    />
   ) : null;
 
   const loader =

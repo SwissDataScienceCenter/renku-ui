@@ -287,8 +287,7 @@ class StartNotebookServer extends Component {
     this.coordinator = new NotebooksCoordinator(
       props.client,
       this.model,
-      this.userModel,
-      props.startSessionOptions
+      this.userModel
     );
     this.notifications = props.notifications;
     this.userLogged = this.userModel.get("logged");
