@@ -16,26 +16,157 @@
  * limitations under the License.
  */
 
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   Badge,
   Button,
   ButtonGroup,
+  Col,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  FormGroup,
+  Label,
+  Row,
   UncontrolledDropdown,
 } from "reactstrap";
 
 import styles from "./StartNotebookServerOptions.module.scss";
+import { ResourcePoolPicker } from "./ResourcePoolPicker";
+import { useServerOptionsQuery } from "../../features/session/sessionApi";
+import { Loader } from "../../components/Loader";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import {
+  setDefaultUrl,
+  useStartSessionOptionsSelector,
+} from "../../features/session/startSessionOptionsSlice";
+import { IMigration, ProjectConfig } from "../../features/project/Project";
+import { useGetConfigQuery } from "../../features/project/projectCoreApi";
+import { ServerOptions } from "../../features/session/session";
+
+interface NewStartNotebookServerOptionsProps {
+  projectRepositoryUrl: string;
+}
+
+export const NewStartNotebookServerOptions = ({
+  projectRepositoryUrl,
+}: NewStartNotebookServerOptionsProps) => {
+  return (
+    <>
+      <Row>
+        <DefaultUrlOption projectRepositoryUrl={projectRepositoryUrl} />
+        <ResourcePoolPicker projectRepositoryUrl={projectRepositoryUrl} />
+      </Row>
+    </>
+  );
+};
+
+interface DefaultUrlOptionProps {
+  projectRepositoryUrl: string;
+}
+
+const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
+  // Global options
+  const { data: serverOptions, isLoading: serverOptionsIsLoading } =
+    useServerOptionsQuery({});
+
+  // Project options
+  const projectMigrationCore = useSelector<RootStateOrAny, IMigration["core"]>(
+    (state) => state.stateModel.project.migration.core
+  );
+  const fetchedVersion = !!projectMigrationCore.fetched;
+  const versionUrl = projectMigrationCore.versionUrl ?? "";
+  const { data: projectConfig, isLoading: projectConfigIsLoading } =
+    useGetConfigQuery(
+      {
+        projectRepositoryUrl,
+        versionUrl,
+      },
+      { skip: !fetchedVersion }
+    );
+
+  const defaultUrlOptions = mergeDefaultUrlOptions({
+    serverOptions,
+    projectConfig,
+  });
+
+  const { defaultUrl: selectedDefaultUrl } = useStartSessionOptionsSelector();
+  const dispatch = useDispatch();
+
+  // Set initial default URL
+  useEffect(() => {
+    if (projectConfig != null) {
+      dispatch(
+        setDefaultUrl(
+          projectConfig.config.interactive?.defaultUrl ??
+            projectConfig.default.interactive?.defaultUrl ??
+            ""
+        )
+      );
+    }
+  }, [dispatch, projectConfig]);
+
+  const onChange = useCallback(
+    (event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
+      if (value) {
+        dispatch(setDefaultUrl(value));
+      }
+    },
+    [dispatch]
+  );
+
+  if (
+    serverOptionsIsLoading ||
+    projectConfigIsLoading ||
+    !serverOptions ||
+    !projectConfig
+  ) {
+    return <Loader />;
+  }
+
+  const { defaultUrl } = serverOptions;
+
+  return (
+    <Col xs={12}>
+      <FormGroup className="field-group">
+        <Label className="me-2">{defaultUrl.displayName}</Label>
+        {defaultUrlOptions.length > 1 && <br />}
+        <ServerOptionEnum
+          {...defaultUrl}
+          options={defaultUrlOptions}
+          selected={selectedDefaultUrl}
+          onChange={onChange}
+        />
+      </FormGroup>
+    </Col>
+  );
+};
+
+const mergeDefaultUrlOptions = ({
+  serverOptions,
+  projectConfig,
+}: {
+  serverOptions: ServerOptions | undefined;
+  projectConfig: ProjectConfig | undefined;
+}) => {
+  const globalDefaultUrls = serverOptions?.defaultUrl.options ?? [];
+  const projectDefaultUrl = projectConfig?.config.interactive?.defaultUrl;
+  return [
+    ...globalDefaultUrls,
+    ...(globalDefaultUrls.find((url) => url === projectDefaultUrl) ||
+    projectDefaultUrl == null
+      ? []
+      : [projectDefaultUrl]),
+  ];
+};
 
 const FORM_MAX_WIDTH = 250; // pixels;
 
 interface ServerOptionEnumProps<T extends string | number> {
-  disabled: boolean;
+  disabled?: boolean;
   onChange: (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
-    optionName: T
+    value: T
   ) => void;
   options: T[];
   selected?: T | null | undefined;

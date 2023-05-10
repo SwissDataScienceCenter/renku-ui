@@ -75,8 +75,10 @@ import {
 } from "./ObjectStoresConfig.present";
 import EnvironmentVariables from "./components/EnviromentVariables";
 import LaunchErrorAlert from "./components/LaunchErrorAlert";
-import { ResourcePoolPicker } from "./components/ResourcePoolPicker";
-import { ServerOptionEnum } from "./components/StartNotebookServerOptions";
+import {
+  NewStartNotebookServerOptions,
+  ServerOptionEnum,
+} from "./components/StartNotebookServerOptions";
 import {
   StartNotebookAutostartLoader,
   StartNotebookLoader,
@@ -243,7 +245,6 @@ function StartNotebookServer(props) {
 
   const options = show.options ? (
     <>
-      <ResourcePoolPicker projectRepositoryUrl={externalUrl} />
       <StartNotebookOptions
         notebookFilePath={location?.state?.filePath}
         toggleShareLinkModal={toggleShareLinkModal}
@@ -1145,6 +1146,7 @@ class StartNotebookCommitsOptions extends Component {
 
 function StartNotebookOptions(props) {
   const { justStarted, environmentVariables, setEnvironmentVariables } = props;
+
   if (justStarted)
     return (
       <Label>
@@ -1192,21 +1194,27 @@ function StartNotebookOptions(props) {
     }
   }
 
-  return [
-    <StartNotebookServerOptions key="options" {...props} />,
-    <EnvironmentVariables
-      key="envVariables"
-      environmentVariables={environmentVariables}
-      setEnvironmentVariables={setEnvironmentVariables}
-    />,
-    <ServerOptionLaunch key="button" {...props} />,
-    <ShareLinkSessionModal
-      key="shareLinkModal"
-      toggleModal={props.toggleShareLinkModal}
-      showModal={props.showShareLinkModal}
-      {...props}
-    />,
-  ];
+  return (
+    <>
+      <div>New options here</div>
+      <NewStartNotebookServerOptions projectRepositoryUrl={props.externalUrl} />
+
+      <div>Old options here</div>
+      <StartNotebookServerOptions key="options" {...props} />
+      <EnvironmentVariables
+        key="envVariables"
+        environmentVariables={environmentVariables}
+        setEnvironmentVariables={setEnvironmentVariables}
+      />
+      <ServerOptionLaunch key="button" {...props} />
+      <ShareLinkSessionModal
+        key="shareLinkModal"
+        toggleModal={props.toggleShareLinkModal}
+        showModal={props.showShareLinkModal}
+        {...props}
+      />
+    </>
+  );
 }
 
 function Warning(props) {

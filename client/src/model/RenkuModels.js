@@ -390,6 +390,7 @@ const notebooksSchema = new Schema({
       branch: { initial: {} },
       commit: { initial: {} },
       discard: { initial: false },
+      // TODO(leafty): remove
       options: { initial: {} },
       environment_variables: { initial: [] },
       objectStoresConfiguration: { initial: [] },
@@ -397,6 +398,7 @@ const notebooksSchema = new Schema({
       displayedCommits: { initial: 25 },
     },
   },
+  // TODO(leafty): remove
   options: {
     schema: {
       global: { initial: {} },

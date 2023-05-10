@@ -136,7 +136,8 @@ export const projectCoreApi = createApi({
       transformResponse: (response: GetConfigRawResponse) => ({
         config: {
           interactive: {
-            defaultUrl: response.result?.config?.["interactive.default_url"],
+            // defaultUrl: response.result?.config?.["interactive.default_url"],
+            defaultUrl: "/test",
           },
         },
         default: {

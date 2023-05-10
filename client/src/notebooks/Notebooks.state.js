@@ -607,7 +607,7 @@ class NotebooksCoordinator {
   setDefaultOptions(globalOptions, projectOptions) {
     const reduxStore = this.model.reduxStore;
     const startSessionOptions = reduxStore.getState().startSessionOptions;
-    console.log({ startSessionOptions });
+    console.log({ globalOptions, projectOptions, startSessionOptions });
 
     // verify if all the pieces are available and get what's missing
     if (!globalOptions) {
@@ -641,6 +641,7 @@ class NotebooksCoordinator {
       else if (!NotebooksHelper.checkSettingValidity(option, optionValue))
         warnings = warnings.concat(option);
     });
+    console.log({ filterOptions, warnings });
     this.model.setObject({
       filters: { options: { $set: filterOptions } },
       options: { warnings: { $set: warnings } },
@@ -1260,9 +1261,8 @@ class NotebooksCoordinator {
   // * Change notebook status * //
   startServer(forceBaseImage = false) {
     const reduxStore = this.model.reduxStore;
-    const startSessionOptions = reduxStore.getState(
-      startSessionOptionsSlice.name
-    );
+    const startSessionOptions =
+      reduxStore.getState()[startSessionOptionsSlice.name];
     console.log({ startSessionOptions });
 
     const options = {
@@ -1287,15 +1287,27 @@ class NotebooksCoordinator {
       this.model.get("filters.environment_variables")
     );
 
-    return this.client.startNotebook(
+    const finalOptions = {
       namespace,
       project,
       branch,
       commit,
       image,
       options,
-      env_variables
-    );
+      env_variables,
+    };
+    console.error("Would launch notebook with options", { finalOptions });
+    throw new Error("DO NOT LAUNCH");
+
+    // return this.client.startNotebook(
+    //   namespace,
+    //   project,
+    //   branch,
+    //   commit,
+    //   image,
+    //   options,
+    //   env_variables
+    // );
   }
 
   stopNotebook(serverName, force = false) {

@@ -29,6 +29,9 @@ export const startSessionOptionsSlice = createSlice({
   name: "startSessionOptions",
   initialState,
   reducers: {
+    setDefaultUrl: (state, action: PayloadAction<string>) => {
+      state.defaultUrl = action.payload;
+    },
     setSessionClass: (state, action: PayloadAction<number>) => {
       state.sessionClass = action.payload;
     },
@@ -36,7 +39,9 @@ export const startSessionOptionsSlice = createSlice({
   },
 });
 
-export const { setSessionClass, reset } = startSessionOptionsSlice.actions;
+export const { setDefaultUrl, setSessionClass, reset } =
+  startSessionOptionsSlice.actions;
+
 export const useStartSessionOptionsSelector = () =>
   useSelector<RootStateOrAny, StartSessionOptions>(
     (state) => state[startSessionOptionsSlice.name]

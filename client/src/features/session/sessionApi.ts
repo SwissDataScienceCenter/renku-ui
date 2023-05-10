@@ -15,7 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { ServerOptions, ServerOptionsResponse } from "./session";
 
 interface StopSessionArgs {
   serverName: string;
@@ -31,6 +33,28 @@ export const sessionApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/notebooks/" }),
   tagTypes: [],
   endpoints: (builder) => ({
+    serverOptions: builder.query<ServerOptions, Record<never, never>>({
+      query: () => ({
+        url: "server_options",
+      }),
+      transformResponse: ({
+        defaultUrl,
+        ...legacyOptions
+      }: ServerOptionsResponse) => ({
+        defaultUrl,
+        // defaultUrl: {
+        //   ...defaultUrl,
+        //   options: [
+        //     ...defaultUrl.options,
+        //     "/foo",
+        //     "/bar",
+        //     // "/baz",
+        //     // "/very_lengthy_option_just_for_fun",
+        //   ],
+        // },
+        legacyOptions,
+      }),
+    }),
     stopSession: builder.mutation<boolean, StopSessionArgs>({
       query: (args) => {
         return {
@@ -52,4 +76,8 @@ export const sessionApi = createApi({
   }),
 });
 
-export const { useStopSessionMutation, useGetLogsQuery } = sessionApi;
+export const {
+  useServerOptionsQuery,
+  useStopSessionMutation,
+  useGetLogsQuery,
+} = sessionApi;
