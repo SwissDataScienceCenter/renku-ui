@@ -7,6 +7,7 @@ export default function addMigrationMethods(client) {
    * @returns {object} migration data.
    */
   client.checkMigration = async (git_url, branch = null) => {
+    // ! TODO ! : might need to re-add the logic to check compatibility based on renku core versions
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");

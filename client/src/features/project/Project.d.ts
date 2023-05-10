@@ -273,7 +273,7 @@ export interface MigrationStartBody {
   branch?: string;
   force_template_update: boolean;
   git_url: string;
-  is_delayed: boolean;
+  is_delayed?: boolean;
   skip_docker_update: boolean;
   skip_migrations: boolean;
   skip_template_update: boolean;

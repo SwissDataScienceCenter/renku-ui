@@ -290,15 +290,15 @@ function ProjectSettingsGeneralWrapper(
 ) {
   const isMaintainer =
     props.metadata?.accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
-  const checkingSupport = props.migration?.core?.fetched ? false : true;
+  const checkingSupport = false; // props.migration?.core?.fetched ? false : true;
   return (
     <>
       <ProjectSettingsGeneral
         branch={props.metadata?.defaultBranch}
-        checkingSupport={checkingSupport}
+        checkingSupport={checkingSupport} // ! TODO: remove or update this
         gitUrl={props.metadata?.externalUrl}
         isMaintainer={isMaintainer}
-        isSupported={props.migration?.core?.backendAvailable}
+        isSupported={props.migration?.core?.backendAvailable} // ! TODO: remove or update this
         projectId={props.metadata?.id}
       />
       <ProjectSettingsGeneralLegacy {...props} />
@@ -366,18 +366,21 @@ function ProjectMigrationStatus({
   const toggleShowDetails = () => setShowDetails(!showDetails);
 
   const skip = !gitUrl || !branch;
-  const { data, isLoading, error, refetch } =
+  const { data, isLoading, isFetching, error } =
     projectCoreApi.useGetMigrationStatusQuery({ gitUrl, branch }, { skip });
   const [startMigration, migrationStatus] =
     projectCoreApi.useStartMigrationMutation();
 
-  if (isLoading || skip || checkingSupport) {
+  if (isFetching || skip || checkingSupport) {
+    const fetchingTitle = isLoading
+      ? "Fetching project data..."
+      : "Refreshing project data...";
     return (
       <CompositeTitle
         icon={faTimesCircle}
         loading={true}
         showDetails={showDetails}
-        title="Fetching project data..."
+        title={fetchingTitle}
         toggleShowDetails={toggleShowDetails}
       />
     );
@@ -389,7 +392,7 @@ function ProjectMigrationStatus({
       <RtkErrorAlert error={{ ...error }} />
     ) : (
       <ProjectSettingsGeneralCoreError
-        errorData={data.error as CoreErrorContent | CoreSectionError}
+        errorData={data?.error as CoreErrorContent | CoreSectionError}
       />
     );
     return (
@@ -419,17 +422,8 @@ function ProjectMigrationStatus({
       gitUrl,
       branch,
       scope,
-    }).then(() => {
-      buttonDisabled = true;
-      buttonText = "Updating";
-      if (scope === MigrationStartScopes.OnlyTemplate)
-        buttonText = "Updating template";
-      if (scope === MigrationStartScopes.OnlyVersion)
-        buttonText = "Updating version";
-      setTimeout(() => {
-        refetch();
-      }, 2000);
     });
+    // we rely on query and mutation tags to refetch
   };
 
   let buttonAction: undefined | (() => void);
@@ -496,12 +490,14 @@ function ProjectMigrationStatus({
         buttonText={buttonText}
         icon={icon}
         level={level}
-        loading={isLoading}
+        loading={isFetching}
         showDetails={showDetails}
         title={title}
         toggleShowDetails={toggleShowDetails}
       />
       <ProjectMigrationStatusDetails
+        buttonUpdate={buttonUpdate}
+        buttonDisable={buttonDisabled || isFetching}
         data={data}
         isMaintainer={isMaintainer}
         isSupported={isSupported}
@@ -512,18 +508,21 @@ function ProjectMigrationStatus({
 }
 
 interface ProjectMigrationStatusDetailsProps {
+  buttonDisable: boolean;
+  buttonUpdate: (scope: MigrationStartScopes) => void;
   data: MigrationStatus | undefined;
   isMaintainer: boolean;
   isSupported: boolean;
   showDetails: boolean;
 }
 function ProjectMigrationStatusDetails({
+  buttonDisable,
+  buttonUpdate,
   data,
   isMaintainer,
   isSupported,
   showDetails,
 }: ProjectMigrationStatusDetailsProps) {
-  // ! TODO ! : add update buttons here -- keep in mind the isMaintainer status!
   // Renku Version details
   const docker =
     data?.details?.dockerfile_renku_status.type === "detail"
@@ -623,8 +622,22 @@ function ProjectMigrationStatusDetails({
     );
   }
 
+  const renkuVersionButtonShow =
+    isMaintainer &&
+    (renkuMigrationLevel?.level === ProjectMigrationLevel.Level3 ||
+      renkuMigrationLevel?.level === ProjectMigrationLevel.Level4 ||
+      renkuMigrationLevel?.level === ProjectMigrationLevel.Level5);
+  const renkuButtonText = buttonDisable ? "Updating version" : "Update version";
+  const renkuButtonAction = !renkuVersionButtonShow
+    ? undefined
+    : () => buttonUpdate(MigrationStartScopes.OnlyVersion);
+
   const contentRenku = (
     <DetailsSection
+      buttonAction={renkuButtonAction}
+      buttonDisabled={buttonDisable}
+      buttonIcon={faArrowAltCircleUp}
+      buttonText={renkuButtonText}
       details={renkuDetails}
       icon={renkuIcon}
       level={renkuLevel}
@@ -707,8 +720,22 @@ function ProjectMigrationStatusDetails({
     templateText = <RenkuTemplateOutdated templateDetails={data?.details} />;
   }
 
+  const templateButtonShow =
+    isMaintainer &&
+    templateMigrationLevel?.level === ProjectMigrationLevel.Level3;
+  const templateButtonText = buttonDisable
+    ? "Updating template"
+    : "Update template";
+  const templateButtonAction = !templateButtonShow
+    ? undefined
+    : () => buttonUpdate(MigrationStartScopes.OnlyTemplate);
+
   const contentTemplate = (
     <DetailsSection
+      buttonAction={templateButtonAction}
+      buttonDisabled={buttonDisable}
+      buttonIcon={faArrowAltCircleUp}
+      buttonText={templateButtonText}
       details={templateDetails}
       icon={templateIcon}
       level={templateLevel}
@@ -1087,6 +1114,7 @@ function CompositeTitle({
 
 interface DetailsSectionProps {
   buttonAction?: () => void;
+  buttonDisabled?: boolean;
   buttonIcon?: IconProp;
   buttonText?: string;
   details?: React.ReactElement;
@@ -1100,6 +1128,7 @@ interface DetailsSectionProps {
 }
 function DetailsSection({
   buttonAction,
+  buttonDisabled,
   buttonIcon,
   buttonText,
   details,
@@ -1123,18 +1152,20 @@ function DetailsSection({
         {finalButtonIcon} {buttonText}
       </>
     );
-    if (buttonAction)
+
+    // ? could make a common component using the more complex one from CompositeTitle
+    if (buttonAction) {
+      const buttonActionStyle = {
+        disabled: buttonDisabled,
+        color: level !== "success" ? level : "secondary",
+        size: "sm",
+      };
       button = (
-        <Button color={level} size="sm" onClick={() => buttonAction()}>
+        <Button {...buttonActionStyle} onClick={() => buttonAction()}>
           {finalButtonText}
         </Button>
       );
-    else
-      button = (
-        <Button color={level} size="sm">
-          {finalButtonText}
-        </Button>
-      );
+    }
   }
 
   const detailsContent = details ? (
@@ -1464,8 +1495,6 @@ function RenkuTemplateContext({
       </span>
     );
   }
-  // ! TODO
-  // ! else { return <span>All good!</span> }
 
   let templateUrl = template?.template_source;
   if (template?.latest_template_version)

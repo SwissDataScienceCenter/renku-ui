@@ -46,7 +46,7 @@ function urlWithQueryParams(url: string, queryParams: any) {
 export const projectCoreApi = createApi({
   reducerPath: "projectCore",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
-  tagTypes: ["project"],
+  tagTypes: ["project", "project-status"],
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getDatasetFiles: builder.query<IDatasetFiles, GetDatasetFilesParams>({
@@ -102,6 +102,9 @@ export const projectCoreApi = createApi({
           },
         };
       },
+      providesTags: (result, error, migrationParams) => [
+        { type: "project-status", id: migrationParams.gitUrl },
+      ],
       transformResponse: (response: MigrationStatusResponse) => {
         const transformedResponse: MigrationStatus = {
           errorProject: false,
@@ -162,28 +165,21 @@ export const projectCoreApi = createApi({
           options.skip_template_update = true;
         } else {
           options.force_template_update = true;
-          options.skip_docker_update = true;
-          options.skip_migrations = true;
-          options.skip_template_update = true;
         }
         const body: MigrationStartBody = {
           git_url: data.gitUrl,
-          is_delayed: true,
           ...options,
         };
         if (data.branch) body.branch = data.branch;
-        // ! TODO ! : something's not working here...
-        // // console.log({
-        // //   body,
-        // //   method: "POST",
-        // //   url: `/renku/cache.migrate`,
-        // // });
         return {
           body,
           method: "POST",
           url: `/renku/cache.migrate`,
         };
       },
+      invalidatesTags: (result, error, migrationParams) => [
+        { type: "project-status", id: migrationParams.gitUrl },
+      ],
     }),
   }),
 });
