@@ -19,4 +19,5 @@
 export interface StartSessionOptions {
   defaultUrl: string;
   sessionClass: number;
+  lfsAutoFetch: boolean;
 }

@@ -26,6 +26,7 @@ import {
   DropdownMenu,
   DropdownToggle,
   FormGroup,
+  Input,
   Label,
   Row,
   UncontrolledDropdown,
@@ -38,6 +39,7 @@ import { Loader } from "../../components/Loader";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import {
   setDefaultUrl,
+  setLfsAutoFetch,
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
 import { IMigration, ProjectConfig } from "../../features/project/Project";
@@ -55,7 +57,8 @@ export const NewStartNotebookServerOptions = ({
     <>
       <Row>
         <DefaultUrlOption projectRepositoryUrl={projectRepositoryUrl} />
-        <ResourcePoolPicker projectRepositoryUrl={projectRepositoryUrl} />
+        <ResourcePoolPicker />
+        <AutoFetchLfsOption />
       </Row>
     </>
   );
@@ -158,6 +161,28 @@ const mergeDefaultUrlOptions = ({
       ? []
       : [projectDefaultUrl]),
   ];
+};
+
+const AutoFetchLfsOption = () => {
+  const { lfsAutoFetch } = useStartSessionOptionsSelector();
+  const dispatch = useDispatch();
+
+  const onChange = useCallback(() => {
+    dispatch(setLfsAutoFetch(!lfsAutoFetch));
+  }, [dispatch, lfsAutoFetch]);
+
+  return (
+    <Col xs={12}>
+      <FormGroup className="field-group">
+        <ServerOptionBoolean
+          id="option-lfs-auto-fetch"
+          displayName="Automatically fetch LFS data"
+          onChange={onChange}
+          selected={lfsAutoFetch}
+        />
+      </FormGroup>
+    </Col>
+  );
 };
 
 const FORM_MAX_WIDTH = 250; // pixels;
@@ -279,3 +304,34 @@ const approximateButtonGroupSizeInPixels = <T extends string | number>(
   options.length * 2 * 10 +
   // safe approximate character size
   options.map((opt) => `${opt}`).reduce((len, opt) => len + opt.length, 0) * 12;
+
+interface ServerOptionBooleanProps {
+  id: string;
+  disabled?: boolean;
+  displayName: string;
+  onChange: (event: React.ChangeEvent<HTMLElement>) => void;
+  selected?: boolean | null | undefined;
+}
+
+export const ServerOptionBoolean = ({
+  id,
+  disabled,
+  displayName,
+  onChange,
+  selected,
+}: ServerOptionBooleanProps) => (
+  <div className="form-check form-switch d-inline-block">
+    <Input
+      type="switch"
+      id={id}
+      label={displayName}
+      disabled={disabled}
+      checked={!!selected}
+      onChange={onChange}
+      className="form-check-input rounded-pill"
+    />
+    <Label check htmlFor={id}>
+      {displayName}
+    </Label>
+  </div>
+);

@@ -77,6 +77,7 @@ import EnvironmentVariables from "./components/EnviromentVariables";
 import LaunchErrorAlert from "./components/LaunchErrorAlert";
 import {
   NewStartNotebookServerOptions,
+  ServerOptionBoolean,
   ServerOptionEnum,
 } from "./components/StartNotebookServerOptions";
 import {
@@ -1406,31 +1407,6 @@ class StartNotebookServerOptions extends Component {
       <Row>{renderedServerOptions.concat(globalWarning)}</Row>
     ) : (
       <label>Notebook options not available</label>
-    );
-  }
-}
-
-class ServerOptionBoolean extends Component {
-  render() {
-    const { disabled } = this.props;
-    // The double negation solves an annoying problem happening when checked=undefined
-    // https://stackoverflow.com/a/39709700/1303090
-    const selected = !!this.props.selected;
-    return (
-      <div className="form-check form-switch d-inline-block">
-        <Input
-          type="switch"
-          id={this.props.id}
-          label={this.props.displayName}
-          disabled={disabled}
-          checked={selected}
-          onChange={this.props.onChange}
-          className="form-check-input rounded-pill"
-        />
-        <Label check htmlFor={this.props.id}>
-          {this.props.displayName}
-        </Label>
-      </div>
     );
   }
 }

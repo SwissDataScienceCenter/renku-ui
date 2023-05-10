@@ -18,7 +18,7 @@
 
 import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Select, {
   ClassNamesConfig,
   GroupBase,
@@ -33,53 +33,15 @@ import {
   ResourcePool,
 } from "../../features/dataServices/dataServices";
 // import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
-import { IMigration } from "../../features/project/Project";
-import { useGetConfigQuery } from "../../features/project/projectCoreApi";
-import { StartSessionOptions } from "../../features/session/startSessionOptions";
 import {
   setSessionClass,
-  startSessionOptionsSlice,
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
-import { useGetNotebooksQuery } from "../../features/versions/versionsApi";
 import styles from "./ResourcePoolPicker.module.scss";
 
-interface ResourcePoolPickerProps {
-  projectRepositoryUrl: string;
-}
-
-export const ResourcePoolPicker = ({
-  projectRepositoryUrl,
-}: ResourcePoolPickerProps) => {
-  const projectMigrationCore = useSelector<RootStateOrAny, IMigration["core"]>(
-    (state) => state.stateModel.project.migration.core
-  );
-  const fetchedVersion = !!projectMigrationCore.fetched;
-  const versionUrl = projectMigrationCore.versionUrl ?? "";
-
-  const { data: projectConfig, isLoading: projectConfigIsLoading } =
-    useGetConfigQuery(
-      {
-        projectRepositoryUrl,
-        versionUrl,
-      },
-      { skip: !fetchedVersion }
-    );
-
-  const { data: sessionsVersion, isLoading: sessionsVersionIsLoading } =
-    useGetNotebooksQuery({});
-
-  // const { data: resourcePools, isLoading: resourcePoolsIsLoading } =
-  //   useGetResourcePoolsQuery({});
+export const ResourcePoolPicker = () => {
   const resourcePools = fakeResourcePools;
-  const resourcePoolsIsLoading = false;
-
-  if (!fetchedVersion) return null;
-
-  const isLoading =
-    projectConfigIsLoading ||
-    sessionsVersionIsLoading ||
-    resourcePoolsIsLoading;
+  const isLoading = false;
 
   if (isLoading || !resourcePools) {
     return <Loader />;
