@@ -24,11 +24,15 @@ import { FixturesConstructor } from "./fixtures";
 
 function Global<T extends FixturesConstructor>(Parent: T) {
   return class NewSessionFixtures extends Parent {
-    getStatuspageInfo(name = "getStatuspageInfo", fixture = "statuspage-operational.json") {
-      const interceptResponse = fixture ?
-        { fixture: `statuspage/${fixture}` } :
-        { body: {} };
-      cy.intercept("https://*.statuspage.io/api/v2/summary.json",
+    getStatuspageInfo(
+      name = "getStatuspageInfo",
+      fixture = "statuspage-operational.json"
+    ) {
+      const interceptResponse = fixture
+        ? { fixture: `statuspage/${fixture}` }
+        : { body: {} };
+      cy.intercept(
+        "https://*.statuspage.io/api/v2/summary.json",
         interceptResponse
       ).as(name);
       return this;
@@ -36,21 +40,23 @@ function Global<T extends FixturesConstructor>(Parent: T) {
 
     config(name = "getConfig") {
       cy.intercept("/config.json", {
-        fixture: "config.json"
+        fixture: "config.json",
       }).as(name);
       return this;
     }
 
-    versions(names = { coreVersionsName: "getCoreVersions", uiVersionName: "getUiVersion" }) {
-      const {
-        coreVersionsName,
-        uiVersionName,
-      } = names;
+    versions(
+      names = {
+        coreVersionsName: "getCoreVersions",
+        uiVersionName: "getUiVersion",
+      }
+    ) {
+      const { coreVersionsName, uiVersionName } = names;
       cy.intercept("/ui-server/api/versions", {
-        fixture: "version-ui.json"
+        fixture: "version-ui.json",
       }).as(uiVersionName);
       cy.intercept("/ui-server/api/renku/version", {
-        fixture: "version-core.json"
+        fixture: "version-core.json",
       }).as(coreVersionsName);
 
       return this;
@@ -58,15 +64,13 @@ function Global<T extends FixturesConstructor>(Parent: T) {
 
     namespaces(name = "getNamespaces") {
       cy.intercept("/ui-server/api/namespaces?*", {
-        fixture: "namespaces.json"
+        fixture: "namespaces.json",
       }).as(name);
       return this;
     }
 
     templates(error = false, urlSource = "*", name = "getTemplates") {
-      const fixture = error ?
-        "errors/core-error-1101.json" :
-        "templates.json";
+      const fixture = error ? "errors/core-error-1101.json" : "templates.json";
       cy.intercept(
         "/ui-server/api/renku/templates.read_manifest?" + urlSource,
         { fixture }

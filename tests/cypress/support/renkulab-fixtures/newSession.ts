@@ -25,9 +25,7 @@ import { FixturesConstructor } from "./fixtures";
 function NewSession<T extends FixturesConstructor>(Parent: T) {
   return class NewSessionFixtures extends Parent {
     newSessionPipelines(empty = false) {
-      const data = empty ?
-        [] :
-        { fixture: "session/ci-pipelines.json" };
+      const data = empty ? [] : { fixture: "session/ci-pipelines.json" };
       cy.intercept(
         "/ui-server/api/projects/e2e%2Flocal-test-project/pipelines?sha=172a784d465a7bd45bacc165df2b64a591ac6b18",
         data
@@ -36,12 +34,9 @@ function NewSession<T extends FixturesConstructor>(Parent: T) {
     }
     newSessionJobs(missing = false, running = false, failed = false) {
       let fixture = "session/ci-jobs.json";
-      if (missing)
-        fixture = "session/ci-jobs-missing.json";
-      else if (running)
-        fixture = "session/ci-jobs-running.json";
-      else if (failed)
-        fixture = "session/ci-jobs-failed.json";
+      if (missing) fixture = "session/ci-jobs-missing.json";
+      else if (running) fixture = "session/ci-jobs-running.json";
+      else if (failed) fixture = "session/ci-jobs-failed.json";
       cy.intercept(
         "/ui-server/api/projects/e2e%2Flocal-test-project/pipelines/182743/jobs",
         { fixture }
@@ -55,8 +50,7 @@ function NewSession<T extends FixturesConstructor>(Parent: T) {
     newSessionImages(missing = false) {
       const registryFixture = "session/ci-registry.json";
       let imageFixture = "session/ci-image.json";
-      if (missing)
-        imageFixture = "session/ci-image-missing.json";
+      if (missing) imageFixture = "session/ci-image-missing.json";
       cy.intercept(
         "/ui-server/api/projects/e2e%2Flocal-test-project/registry/repositories",
         { fixture: registryFixture }

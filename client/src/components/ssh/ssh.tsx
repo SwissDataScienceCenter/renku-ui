@@ -22,7 +22,7 @@ import { useDispatch, useSelector, RootStateOrAny } from "react-redux";
 import { DropdownItem } from "reactstrap";
 
 import AppContext from "../../utils/context/appContext";
-import { Modal, ModalBody, ModalHeader, Table } from "../../utils/ts-wrappers";
+import { Modal, ModalBody, ModalHeader } from "../../utils/ts-wrappers";
 import { Loader } from "../Loader";
 import { useGetNotebooksQuery } from "../../features/versions/versionsApi";
 import {
@@ -37,11 +37,11 @@ import { InfoAlert } from "../Alert";
 import { ExternalDocsLink } from "../ExternalLinks";
 import { Docs } from "../../utils/constants/Docs";
 import { GeneralErrorMessage } from "../../project/status/MigrationUtils";
-import { Clipboard } from "../Clipboard";
 
 import rkIconSsh from "../../styles/icons/ssh.svg";
 import rkIconSshTicked from "../../styles/icons/ssh-ticked.svg";
 import rkIconSshCross from "../../styles/icons/ssh-cross.svg";
+import { CommandCopy } from "../commandCopy/CommandCopy";
 
 const docsIconStyle = {
   showLinkIcon: true,
@@ -72,27 +72,6 @@ function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
       />
       Connect with SSH
     </DropdownItem>
-  );
-}
-
-interface SshCommandProps {
-  command: string;
-}
-
-function SshCommand({ command }: SshCommandProps) {
-  return (
-    <Table size="sm">
-      <tbody>
-        <tr>
-          <td>
-            <code className="break-word">{command}</code>
-          </td>
-          <td style={{ width: 1 }}>
-            <Clipboard clipboardText={command} />
-          </td>
-        </tr>
-      </tbody>
-    </Table>
   );
 }
 
@@ -288,21 +267,21 @@ function SshModal() {
 
         <div>
           <p className="mb-1">1. Log in to RenkuLab:</p>
-          <SshCommand command={command.login} />
+          <CommandCopy command={command.login} />
         </div>
         <div>
           <p className="mb-1">2. Clone the repository on your machine:</p>
-          <SshCommand command={command.clone} />
+          <CommandCopy command={command.clone} />
         </div>
         <div>
           <p className="mb-1">
             3. Run the following command within that repository:
           </p>
-          <SshCommand command={command.start} />
+          <CommandCopy command={command.start} />
         </div>
         <div>
           <p className="mb-1">4. Open the session:</p>
-          <SshCommand command={command.open} />
+          <CommandCopy command={command.open} />
         </div>
 
         <p>

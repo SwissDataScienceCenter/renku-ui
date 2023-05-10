@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -15,62 +15,80 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  *  renku-ui
  *
- *  Clipboard.js
+ *  Clipboard.tsx
  *  Clipboard code and presentation.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  Fragment,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import ReactClipboard from "react-clipboard.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { faCopy } from "@fortawesome/free-regular-svg-icons";
 
-/**
- * Clipboard
- *
- * A component that copies text to the clipboard
- * @param {string} [clipboardText] - Text to copy to the clipboard
- */
-function Clipboard(props) {
-  const [copied, setCopied] = useState(false);
-  const timeoutDur = 3000;
+const COPY_TIMEOUT_MS = 3_000;
 
-  // keep track of mounted state
-  const isMounted = useRef(true);
+interface ClipboardProps {
+  className?: string;
+  clipboardText: string;
+  children?: ReactNode;
+}
+
+export const Clipboard = ({
+  className,
+  clipboardText,
+  children,
+}: ClipboardProps) => {
+  const [copied, setCopied] = useState(false);
+
+  const currentTimeoutRef = useRef<number | null>(null);
   useEffect(() => {
-    isMounted.current = true;
     return () => {
-      isMounted.current = false;
+      if (currentTimeoutRef.current) {
+        window.clearTimeout(currentTimeoutRef.current);
+      }
     };
   }, []);
 
-  let className = "";
-  if (props.className) className += ` ${props.className}`;
+  const onSuccess = useCallback(() => {
+    currentTimeoutRef.current = window.setTimeout(() => {
+      setCopied(false);
+    }, COPY_TIMEOUT_MS);
+    setCopied(true);
+  }, []);
+
+  const Wrap = children
+    ? ({ children }: { children?: ReactNode }) => (
+        <span className="btn-icon-text">{children}</span>
+      )
+    : Fragment;
 
   return (
     <ReactClipboard
       component="a"
-      data-clipboard-text={props.clipboardText}
-      onSuccess={() => {
-        setCopied(true);
-        setTimeout(() => {
-          if (isMounted.current) setCopied(false);
-        }, timeoutDur);
-      }}
+      data-clipboard-text={clipboardText}
+      onSuccess={onSuccess}
       className={className}
       style={{ textDecoration: "none" }}
     >
-      {" "}
-      {copied ? (
-        <FontAwesomeIcon icon={faCheck} color="success" />
-      ) : (
-        <FontAwesomeIcon icon={faCopy} />
-      )}
+      <Wrap>
+        <FontAwesomeIcon
+          icon={copied ? faCheck : faCopy}
+          size="1x"
+          fixedWidth
+        />
+        {children}
+      </Wrap>
     </ReactClipboard>
   );
-}
-
-export { Clipboard };
+};

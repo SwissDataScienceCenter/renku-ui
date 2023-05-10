@@ -26,7 +26,7 @@ function User<T extends FixturesConstructor>(Parent: T) {
   return class UserFixtures extends Parent {
     userTest(name = "getUser") {
       cy.intercept("/ui-server/api/user", {
-        fixture: "user.json"
+        fixture: "user.json",
       }).as(name);
       return this;
     }
@@ -34,7 +34,7 @@ function User<T extends FixturesConstructor>(Parent: T) {
     userNone(name = "getUser") {
       cy.intercept("/ui-server/api/user", {
         statusCode: 401,
-        body: {}
+        body: {},
       }).as(name);
       return this;
     }
@@ -42,7 +42,7 @@ function User<T extends FixturesConstructor>(Parent: T) {
     renkuDown(name = "getUser") {
       cy.intercept("/ui-server/api/user", {
         statusCode: 500,
-        body: {}
+        body: {},
       }).as(name);
       return this;
     }

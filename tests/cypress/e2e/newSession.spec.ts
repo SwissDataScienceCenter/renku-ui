@@ -58,6 +58,10 @@ describe.only("launch sessions", () => {
       .contains("Start session")
       .should("be.visible")
       .should("be.enabled");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.enabled");
     cy.get("form").contains("Start with base image").should("not.exist");
   });
 
@@ -67,6 +71,10 @@ describe.only("launch sessions", () => {
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionPipelines", { timeout: 10000 });
     cy.get("form").contains("Start with base image").should("be.visible");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.disabled");
     cy.get("form")
       .contains("Start session")
       .should("be.visible")
@@ -99,6 +107,10 @@ describe.only("launch sessions", () => {
       .contains("Start session")
       .should("be.visible")
       .should("be.disabled");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.disabled");
     cy.get(".badge").contains("not available").should("be.visible");
   });
 
@@ -108,6 +120,10 @@ describe.only("launch sessions", () => {
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJobs", { timeout: 10000 });
     cy.get("form").contains("Start with base image").should("be.visible");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.disabled");
     cy.get("form")
       .contains("Start session")
       .should("be.visible")
@@ -131,6 +147,10 @@ describe.only("launch sessions", () => {
       .contains("Start session")
       .should("be.visible")
       .should("be.disabled");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.disabled");
     cy.get(".badge").contains("building").should("be.visible");
     cy.get("#image_build").should("not.exist");
     cy.get("#image_build_again").should("not.exist");
@@ -143,9 +163,17 @@ describe.only("launch sessions", () => {
       .newSessionPipelines()
       .newSessionJobs(false, false, true)
       .newSessionImages(true);
+    fixtures
+      .newSessionPipelines()
+      .newSessionJobs(false, false, true)
+      .newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJobs", { timeout: 10000 });
     cy.get("form").contains("Start with base image").should("be.visible");
+    cy.get("form")
+      .contains("Start session")
+      .should("be.visible")
+      .should("be.disabled");
     cy.get("form")
       .contains("Start session")
       .should("be.visible")
@@ -169,11 +197,20 @@ describe.only("launch sessions", () => {
     cy.contains("Please enter a valid URL for the endpoint").should(
       "be.visible"
     );
+    cy.contains("Please enter a valid URL for the endpoint").should(
+      "be.visible"
+    );
     cy.get("#s3-endpoint-0").type("url");
     cy.contains("Please enter a valid URL for the endpoint").should(
       "be.visible"
     );
+    cy.contains("Please enter a valid URL for the endpoint").should(
+      "be.visible"
+    );
     cy.get("#s3-endpoint-0").type(".com");
+    cy.contains("Please enter a valid URL for the endpoint").should(
+      "not.exist"
+    );
     cy.contains("Please enter a valid URL for the endpoint").should(
       "not.exist"
     );

@@ -10,3 +10,7 @@ cd ..
 cd ./server
 npm run format-commit 
 cd ..
+
+cd ./tests
+npm run format-commit 
+cd ..
