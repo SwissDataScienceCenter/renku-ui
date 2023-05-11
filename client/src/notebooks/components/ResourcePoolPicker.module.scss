@@ -24,19 +24,10 @@
   z-index: 10 !important;
 }
 
-.option {
+.option,
+.singleValue {
   grid-template-columns: minmax(0, 3fr) repeat(4, minmax(0, 1fr));
   justify-items: end;
-
-  cursor: pointer !important;
-
-  &:hover {
-    background: rgba(var(--bs-rk-green-rgb), 0.5);
-  }
-
-  &IsSelected {
-    background-color: rgba(var(--bs-rk-green-rgb), 0.25);
-  }
 
   & .label {
     justify-self: start;
@@ -49,5 +40,17 @@
 
   & .detailLabel {
     color: var(--bs-rk-text-light);
+  }
+}
+
+.option {
+  cursor: pointer !important;
+
+  &:hover {
+    background: rgba(var(--bs-rk-green-rgb), 0.5);
+  }
+
+  &IsSelected {
+    background-color: rgba(var(--bs-rk-green-rgb), 0.25);
   }
 }

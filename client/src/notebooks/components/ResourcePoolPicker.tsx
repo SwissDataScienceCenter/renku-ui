@@ -157,6 +157,7 @@ const selectClassNames: ClassNamesConfig<ResourceClass, false, OptionGroup> = {
       styles.option,
       isSelected && styles.optionIsSelected
     ),
+  singleValue: () => cx("d-grid", "gap-4", "px-3", styles.singleValue),
 };
 
 const selectComponents: SelectComponentsConfig<
@@ -188,6 +189,32 @@ const selectComponents: SelectComponentsConfig<
           <span>{sessionClass.gpu}</span>
         </span>
       </components.Option>
+    );
+  },
+  SingleValue: (props) => {
+    const { data: sessionClass } = props;
+    const detailClassName = cx("d-inline-flex", styles.detail);
+    const detailLabelClassName = cx("width", "me-auto", styles.detailLabel);
+    return (
+      <components.SingleValue {...props}>
+        <span className={styles.label}>{sessionClass.name}</span>{" "}
+        <span className={detailClassName}>
+          <span className={detailLabelClassName}>CPUs</span>{" "}
+          <span>{sessionClass.cpu}</span>
+        </span>{" "}
+        <div className={detailClassName}>
+          <span className={detailLabelClassName}>Memory</span>{" "}
+          <span>{sessionClass.memory}</span>
+        </div>{" "}
+        <span className={detailClassName}>
+          <span className={detailLabelClassName}>Storage</span>{" "}
+          <span>{sessionClass.storage}</span>
+        </span>{" "}
+        <span className={detailClassName}>
+          <span className={detailLabelClassName}>GPUs</span>{" "}
+          <span>{sessionClass.gpu}</span>
+        </span>
+      </components.SingleValue>
     );
   },
 };
@@ -248,7 +275,7 @@ const fakeResourcePools: ResourcePool[] = [
         storage: 40,
       },
       {
-        id: 4,
+        id: 5,
         name: "special class 3",
         cpu: 8,
         memory: 16,
@@ -256,7 +283,7 @@ const fakeResourcePools: ResourcePool[] = [
         storage: 40,
       },
       {
-        id: 5,
+        id: 6,
         name: "special class 4",
         cpu: 8,
         memory: 32,
