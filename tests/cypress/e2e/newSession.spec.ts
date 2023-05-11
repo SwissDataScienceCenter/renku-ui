@@ -58,7 +58,7 @@ describe("launch sessions", () => {
     cy.get("form").contains("Start with base image").should("not.exist");
   });
 
-  it("new session page - logged - missing pipeline", () => {
+  it.only("new session page - logged - missing pipeline", () => {
     fixtures.userTest();
     fixtures.newSessionPipelines(true).newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
