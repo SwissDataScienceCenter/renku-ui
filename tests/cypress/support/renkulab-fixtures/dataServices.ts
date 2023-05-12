@@ -16,32 +16,22 @@
  * limitations under the License.
  */
 
-interface NotebookComponent {
-  data: {
-    anonymousSessionsEnabled: boolean;
-    cloudstorageEnabled: {
-      s3: boolean;
-      azure_blob: boolean;
-    };
-    sshEnabled: boolean;
+import { FixturesConstructor } from "./fixtures";
+
+/**
+ * Fixtures for Data Services
+ */
+
+export const DataServices = <T extends FixturesConstructor>(Parent: T) => {
+  return class DataServicesFixtures extends Parent {
+    resourcePoolsTest(
+      name = "getResourcePools",
+      fixture = "dataServices/resource-pools.json"
+    ) {
+      cy.intercept("/ui-server/api/data-services-DO-NOT-MERGE/resource_pools", {
+        fixture,
+      }).as(name);
+      return this;
+    }
   };
-  version: string;
-}
-
-interface NotebooksVersionResponse {
-  name: string;
-  versions: NotebookComponent[];
-}
-
-interface NotebooksVersion {
-  name: string;
-  version: string;
-  anonymousSessionsEnabled: boolean;
-  sshEnabled: boolean;
-  cloudStorageEnabled: {
-    s3: boolean;
-    azureBlob: boolean;
-  };
-}
-
-export type { NotebooksVersion, NotebooksVersionResponse };
+};

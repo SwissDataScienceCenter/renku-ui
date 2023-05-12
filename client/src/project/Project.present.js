@@ -1125,85 +1125,83 @@ class ProjectNotebookServers extends Component {
   }
 }
 
-class ProjectStartNotebookServer extends Component {
-  render() {
-    const {
-      branches,
-      client,
-      commits,
-      model,
-      user,
-      forkUrl,
-      externalUrl,
-      location,
-      metadata,
-      fetchBranches,
-      fetchCommits,
-      notebookServersUrl,
-      history,
-      blockAnonymous,
-      notifications,
-      projectCoordinator,
-      lockStatus,
-      backUrl,
-      defaultBackButton,
-    } = this.props;
-    const warning = notebookWarning(
-      user.logged,
-      metadata.accessLevel,
-      forkUrl,
-      location.pathname,
-      externalUrl,
-      this.props
-    );
+const ProjectStartNotebookServer = (props) => {
+  const {
+    branches,
+    client,
+    commits,
+    model,
+    user,
+    forkUrl,
+    externalUrl,
+    location,
+    metadata,
+    fetchBranches,
+    fetchCommits,
+    notebookServersUrl,
+    history,
+    blockAnonymous,
+    notifications,
+    projectCoordinator,
+    lockStatus,
+    backUrl,
+    defaultBackButton,
+  } = props;
+  const warning = notebookWarning(
+    user.logged,
+    metadata.accessLevel,
+    forkUrl,
+    location.pathname,
+    externalUrl,
+    props
+  );
 
-    const locationEnhanced =
-      location && location.state && location.state.successUrl
-        ? location
-        : {
-            ...this.props.location,
-            state: {
-              ...this.props.location.state,
-              successUrl: notebookServersUrl,
-            },
-          };
+  const locationEnhanced =
+    location && location.state && location.state.successUrl
+      ? location
+      : {
+          ...props.location,
+          state: {
+            ...props.location.state,
+            successUrl: notebookServersUrl,
+          },
+        };
 
-    const scope = {
-      defaultBranch: this.props.metadata.defaultBranch,
-      namespace: this.props.metadata.namespace,
-      project: this.props.metadata.path,
-      filePath: location?.state?.filePath,
-    };
+  const scope = {
+    defaultBranch: props.metadata.defaultBranch,
+    namespace: props.metadata.namespace,
+    project: props.metadata.path,
+    filePath: location?.state?.filePath,
+  };
 
-    return (
-      <StartNotebookServer
-        accessLevel={metadata?.accessLevel}
-        autosaved={branches.autosaved}
-        blockAnonymous={blockAnonymous}
-        branches={branches.standard}
-        client={client}
-        commits={commits}
-        externalUrl={externalUrl}
-        fetchingBranches={branches.fetching}
-        history={history}
-        location={locationEnhanced}
-        lockStatus={lockStatus}
-        message={warning}
-        model={model}
-        notebooks={projectCoordinator.model.baseModel.get("notebooks")}
-        notifications={notifications}
-        refreshBranches={fetchBranches}
-        refreshCommits={fetchCommits}
-        scope={scope}
-        successUrl={notebookServersUrl}
-        user={user}
-        openShareLinkModal={location?.state?.openShareLinkModal}
-        backUrl={backUrl}
-        defaultBackButton={defaultBackButton}
-      />
-    );
-  }
-}
+  return (
+    <StartNotebookServer
+      accessLevel={metadata?.accessLevel}
+      autosaved={branches.autosaved}
+      blockAnonymous={blockAnonymous}
+      branches={branches.standard}
+      client={client}
+      commits={commits}
+      externalUrl={externalUrl}
+      fetchingBranches={branches.fetching}
+      history={history}
+      location={locationEnhanced}
+      lockStatus={lockStatus}
+      message={warning}
+      model={model}
+      notebooks={projectCoordinator.model.baseModel.get("notebooks")}
+      notifications={notifications}
+      refreshBranches={fetchBranches}
+      refreshCommits={fetchCommits}
+      scope={scope}
+      successUrl={notebookServersUrl}
+      user={user}
+      openShareLinkModal={location?.state?.openShareLinkModal}
+      backUrl={backUrl}
+      defaultBackButton={defaultBackButton}
+    />
+  );
+};
 
 function ProjectSettings(props) {
   return (

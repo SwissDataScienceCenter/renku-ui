@@ -16,32 +16,23 @@
  * limitations under the License.
  */
 
-interface NotebookComponent {
-  data: {
-    anonymousSessionsEnabled: boolean;
-    cloudstorageEnabled: {
-      s3: boolean;
-      azure_blob: boolean;
-    };
-    sshEnabled: boolean;
-  };
-  version: string;
-}
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { ResourcePool } from "./dataServices";
 
-interface NotebooksVersionResponse {
-  name: string;
-  versions: NotebookComponent[];
-}
+export const dataServicesApi = createApi({
+  reducerPath: "dataServices",
+  baseQuery: fetchBaseQuery({
+    baseUrl: "/ui-server/api/data-services-DO-NOT-MERGE",
+  }),
+  endpoints: (builder) => ({
+    getResourcePools: builder.query<ResourcePool[], Record<string, never>>({
+      query: () => {
+        return {
+          url: "resource_pools",
+        };
+      },
+    }),
+  }),
+});
 
-interface NotebooksVersion {
-  name: string;
-  version: string;
-  anonymousSessionsEnabled: boolean;
-  sshEnabled: boolean;
-  cloudStorageEnabled: {
-    s3: boolean;
-    azureBlob: boolean;
-  };
-}
-
-export type { NotebooksVersion, NotebooksVersionResponse };
+export const { useGetResourcePoolsQuery } = dataServicesApi;

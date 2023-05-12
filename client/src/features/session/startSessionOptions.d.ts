@@ -16,32 +16,8 @@
  * limitations under the License.
  */
 
-interface NotebookComponent {
-  data: {
-    anonymousSessionsEnabled: boolean;
-    cloudstorageEnabled: {
-      s3: boolean;
-      azure_blob: boolean;
-    };
-    sshEnabled: boolean;
-  };
-  version: string;
+export interface StartSessionOptions {
+  defaultUrl: string;
+  sessionClass: number;
+  lfsAutoFetch: boolean;
 }
-
-interface NotebooksVersionResponse {
-  name: string;
-  versions: NotebookComponent[];
-}
-
-interface NotebooksVersion {
-  name: string;
-  version: string;
-  anonymousSessionsEnabled: boolean;
-  sshEnabled: boolean;
-  cloudStorageEnabled: {
-    s3: boolean;
-    azureBlob: boolean;
-  };
-}
-
-export type { NotebooksVersion, NotebooksVersionResponse };

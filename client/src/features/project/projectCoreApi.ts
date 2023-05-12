@@ -15,11 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import type { DatasetKg, IDatasetFile } from "./Project.d";
-// import { formatProjectMetadata, ProjectMetadata } from "../../utils/helpers/ProjectFunctions";
-// import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { DatasetKg, IDatasetFile, ProjectConfig } from "./Project.d";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -49,6 +47,22 @@ interface GetDatasetKgParams {
 
 interface IDatasetFiles {
   hasPart: { name: string; atLocation: string }[];
+}
+
+interface GetConfigParams extends CoreServiceParams {
+  projectRepositoryUrl: string;
+  branch?: string;
+}
+
+interface GetConfigRawResponse {
+  result?: {
+    config?: GetConfigRawResponseSection;
+    default?: GetConfigRawResponseSection;
+  };
+}
+
+interface GetConfigRawResponseSection {
+  "interactive.default_url"?: string;
 }
 
 function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
@@ -107,9 +121,38 @@ export const projectCoreApi = createApi({
         };
       },
     }),
+
+    getConfig: builder.query<ProjectConfig, GetConfigParams>({
+      query: ({ projectRepositoryUrl, branch, versionUrl }) => {
+        const params = {
+          git_url: projectRepositoryUrl,
+          ...(branch ? { branch } : {}),
+        };
+        return {
+          url: versionedUrlEndpoint("config.show", versionUrl),
+          params,
+        };
+      },
+      transformResponse: (response: GetConfigRawResponse) => ({
+        config: {
+          interactive: {
+            defaultUrl: response.result?.config?.["interactive.default_url"],
+          },
+        },
+        default: {
+          interactive: {
+            defaultUrl: response.result?.default?.["interactive.default_url"],
+          },
+        },
+      }),
+    }),
   }),
 });
 
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
-export const { useGetDatasetFilesQuery, useGetDatasetKgQuery } = projectCoreApi;
+export const {
+  useGetDatasetFilesQuery,
+  useGetDatasetKgQuery,
+  useGetConfigQuery,
+} = projectCoreApi;

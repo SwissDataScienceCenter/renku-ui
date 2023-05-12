@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "Public pool",
+    "quota": {
+      "cpu": 100,
+      "memory": 1000,
+      "gpu": 0,
+      "storage": 1000000
+    },
+    "classes": [
+      {
+        "id": 1,
+        "name": "public class 1",
+        "cpu": 1,
+        "memory": 1,
+        "gpu": 0,
+        "storage": 20
+      },
+      {
+        "id": 2,
+        "name": "public class 2",
+        "cpu": 2,
+        "memory": 2,
+        "gpu": 0,
+        "storage": 40
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Special pool",
+    "quota": {
+      "cpu": 200,
+      "memory": 8000,
+      "gpu": 40,
+      "storage": 10000000
+    },
+    "classes": [
+      {
+        "id": 3,
+        "name": "special class 1",
+        "cpu": 2,
+        "memory": 4,
+        "gpu": 0,
+        "storage": 40
+      },
+      {
+        "id": 4,
+        "name": "special class 2",
+        "cpu": 4,
+        "memory": 8,
+        "gpu": 1,
+        "storage": 40
+      },
+      {
+        "id": 4,
+        "name": "special class 3",
+        "cpu": 8,
+        "memory": 16,
+        "gpu": 1,
+        "storage": 40
+      },
+      {
+        "id": 5,
+        "name": "special class 4",
+        "cpu": 8,
+        "memory": 32,
+        "gpu": 1,
+        "storage": 40
+      }
+    ]
+  }
+]

@@ -28,8 +28,11 @@ describe("launch sessions", () => {
     fixtures
       .sessionAutosave()
       .sessionServersEmpty()
+      .sessionsVersion()
       .renkuIni()
       .sessionServerOptions()
+      .resourcePoolsTest()
+      .projectConfigShow()
       .projectLockStatus();
     cy.visit("/projects/e2e/local-test-project");
   });
@@ -46,7 +49,7 @@ describe("launch sessions", () => {
     cy.get("form").contains("Start with base image").should("not.exist");
   });
 
-  it("new session page - logged - success", () => {
+  it.only("new session page - logged - success", () => {
     fixtures.userTest();
     fixtures.newSessionImages();
     cy.visit("/projects/e2e/local-test-project/sessions/new");

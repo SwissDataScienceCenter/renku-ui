@@ -26,9 +26,10 @@
 import _ from "lodash";
 
 import { API_ERRORS } from "../api-client/errors";
+import { formatEnvironmentVariables } from "../api-client/utils";
+import { startSessionOptionsSlice } from "../features/session/startSessionOptionsSlice";
 import { notebooksSchema } from "../model";
 import { parseINIString, sleep } from "../utils/helpers/HelperFunctions";
-import { formatEnvironmentVariables } from "../api-client/utils";
 
 const POLLING_INTERVAL = 3000;
 const POLLING_CI = 5; // in seconds, for the sleep function
@@ -1254,8 +1255,12 @@ class NotebooksCoordinator {
 
   // * Change notebook status * //
   startServer(forceBaseImage = false) {
+    const reduxStore = this.model.reduxStore;
+    const startSessionOptions =
+      reduxStore.getState()[startSessionOptionsSlice.name];
+
     const options = {
-      serverOptions: this.model.get("filters.options"),
+      serverOptions: startSessionOptions,
     };
     const cloudstorage = this.model.get("filters.objectStoresConfiguration");
     if (cloudstorage.length > 0) options["cloudstorage"] = cloudstorage;
@@ -1276,15 +1281,20 @@ class NotebooksCoordinator {
       this.model.get("filters.environment_variables")
     );
 
-    return this.client.startNotebook(
+    const finalOptions = {
       namespace,
       project,
       branch,
       commit,
       image,
       options,
-      env_variables
-    );
+      env_variables,
+    };
+
+    // eslint-disable-next-line no-console
+    console.error("Would launch notebook with options", { finalOptions });
+    throw new Error("DO NOT LAUNCH");
+    // return this.client.startNotebook(finalOptions);
   }
 
   stopNotebook(serverName, force = false) {

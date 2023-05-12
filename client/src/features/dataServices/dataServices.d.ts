@@ -16,32 +16,25 @@
  * limitations under the License.
  */
 
-interface NotebookComponent {
-  data: {
-    anonymousSessionsEnabled: boolean;
-    cloudstorageEnabled: {
-      s3: boolean;
-      azure_blob: boolean;
-    };
-    sshEnabled: boolean;
-  };
-  version: string;
-}
-
-interface NotebooksVersionResponse {
+export interface ResourcePool {
+  id: number;
   name: string;
-  versions: NotebookComponent[];
+  classes: ResourceClass[];
+  quota: Resources;
 }
 
-interface NotebooksVersion {
+export interface ResourceClass {
+  id: number;
   name: string;
-  version: string;
-  anonymousSessionsEnabled: boolean;
-  sshEnabled: boolean;
-  cloudStorageEnabled: {
-    s3: boolean;
-    azureBlob: boolean;
-  };
+  cpu: number;
+  memory: number;
+  gpu: number;
+  storage: number;
 }
 
-export type { NotebooksVersion, NotebooksVersionResponse };
+export interface Resources {
+  cpu: number;
+  memory: number;
+  gpu: number;
+  storage: number;
+}

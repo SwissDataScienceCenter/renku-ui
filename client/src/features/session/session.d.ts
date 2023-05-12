@@ -16,32 +16,18 @@
  * limitations under the License.
  */
 
-interface NotebookComponent {
-  data: {
-    anonymousSessionsEnabled: boolean;
-    cloudstorageEnabled: {
-      s3: boolean;
-      azure_blob: boolean;
-    };
-    sshEnabled: boolean;
-  };
-  version: string;
+export interface ServerOption<T extends number | string> {
+  allow_any_value?: boolean;
+  default: T;
+  displayName: string;
+  options: T[];
+  order: number;
+  type: "enum" | "int" | "float" | "boolean";
 }
 
-interface NotebooksVersionResponse {
-  name: string;
-  versions: NotebookComponent[];
+export interface ServerOptions {
+  defaultUrl: ServerOption<string>;
+  legacyOptions: Record<string, ServerOption>;
 }
 
-interface NotebooksVersion {
-  name: string;
-  version: string;
-  anonymousSessionsEnabled: boolean;
-  sshEnabled: boolean;
-  cloudStorageEnabled: {
-    s3: boolean;
-    azureBlob: boolean;
-  };
-}
-
-export type { NotebooksVersion, NotebooksVersionResponse };
+export type ServerOptionsResponse = Record<string, ServerOption>;
