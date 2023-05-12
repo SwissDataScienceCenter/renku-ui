@@ -26,7 +26,7 @@ import Select, {
   SingleValue,
   components,
 } from "react-select";
-import { FormGroup, Label } from "reactstrap";
+import { Col, FormGroup, Label } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import {
   ResourceClass,
@@ -49,10 +49,12 @@ export const ResourcePoolPicker = () => {
   }
 
   return (
-    <FormGroup className="field-group">
-      <Label>Session class</Label>
-      <SessionClassSelector resourcePools={resourcePools} />
-    </FormGroup>
+    <Col xs={12}>
+      <FormGroup className="field-group">
+        <Label>Session class</Label>
+        <SessionClassSelector resourcePools={resourcePools} />
+      </FormGroup>
+    </Col>
   );
 };
 
@@ -100,22 +102,18 @@ const SessionClassSelector = ({ resourcePools }: SessionClassSelectorProps) => {
   );
 
   return (
-    <div /*style={{ width: "200px" }}*/>
-      <Select
-        options={options}
-        defaultValue={selectedSessionClass ? selectedSessionClass : undefined}
-        getOptionValue={(option) => `${option.id}`}
-        getOptionLabel={(option) => option.name}
-        onChange={onChange}
-        isClearable={false}
-        isSearchable={false}
-        unstyled
-        classNames={selectClassNames}
-        components={selectComponents}
-        // Force open
-        // menuIsOpen
-      />
-    </div>
+    <Select
+      options={options}
+      defaultValue={selectedSessionClass ? selectedSessionClass : undefined}
+      getOptionValue={(option) => `${option.id}`}
+      getOptionLabel={(option) => option.name}
+      onChange={onChange}
+      isClearable={false}
+      isSearchable={false}
+      unstyled
+      classNames={selectClassNames}
+      components={selectComponents}
+    />
   );
 };
 
