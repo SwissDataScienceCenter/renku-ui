@@ -219,10 +219,7 @@ class StateModel {
       let slice = null;
       if (!stateHolder) {
         slice = "stateModel";
-        stateHolder = createStore(
-          { [slice]: schema.reducer() },
-          this.constructor.name
-        );
+        stateHolder = createStore({ [slice]: schema.reducer() });
       }
       this._stateModel = new ReduxStateModel(
         this,

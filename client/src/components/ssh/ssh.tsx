@@ -26,7 +26,6 @@ import { Modal, ModalBody, ModalHeader } from "../../utils/ts-wrappers";
 import { Loader } from "../Loader";
 import { useGetNotebooksQuery } from "../../features/versions/versionsApi";
 import {
-  displaySlice,
   hideSshModal,
   showSshModal,
   toggleSshModal,
@@ -83,9 +82,7 @@ function SshModal() {
   });
   let useLocalMigration = false;
   const { client } = useContext(AppContext);
-  const displayModal = useDisplaySelector(
-    (state: RootStateOrAny) => state[displaySlice.name].modals.ssh
-  );
+  const displayModal = useDisplaySelector((state) => state.modals.ssh);
   const location = useLocation();
   const dispatch = useDispatch();
 

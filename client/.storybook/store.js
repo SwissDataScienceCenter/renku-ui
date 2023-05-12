@@ -1,6 +1,6 @@
-import { createStoreWithEnhancers } from "../src/utils/helpers/EnhancedState.js";
+import { createStore } from "../src/utils/helpers/EnhancedState.js";
 import { enhancer as withReduxEnhancer } from "addon-redux";
 
-const store = createStoreWithEnhancers({}, [withReduxEnhancer]);
+const store = createStore({}, [withReduxEnhancer]);
 
 export default store;

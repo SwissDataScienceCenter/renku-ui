@@ -24,9 +24,7 @@ import React from "react";
 
 export function ProjectsInactiveKGWarning() {
   const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
-  const projectList = useInactiveProjectSelector(
-    (state) => state.kgInactiveProjects
-  );
+  const projectList = useInactiveProjectSelector();
   const { data, isFetching, isLoading } = useGetInactiveProjects(
     user?.data?.id
   );
