@@ -17,7 +17,7 @@
  */
 
 /**
- *
+ * Exposes createStore() which creates the redux store used by the Renku UI
  */
 
 import {
