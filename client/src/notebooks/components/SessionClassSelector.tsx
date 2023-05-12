@@ -75,7 +75,9 @@ const SessionClassSelectorWrapped = ({
     [resourcePools]
   );
 
-  const { sessionClass: sessionClassId } = useStartSessionOptionsSelector();
+  const sessionClassId = useStartSessionOptionsSelector(
+    (state) => state.sessionClass
+  );
   const dispatch = useDispatch();
 
   // Set initial session class

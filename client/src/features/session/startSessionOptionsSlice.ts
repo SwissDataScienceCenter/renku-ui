@@ -23,6 +23,7 @@ import { StartSessionOptions } from "./startSessionOptions";
 const initialState: StartSessionOptions = {
   defaultUrl: "",
   sessionClass: 0,
+  storage: 1,
   lfsAutoFetch: false,
 };
 
@@ -36,6 +37,9 @@ export const startSessionOptionsSlice = createSlice({
     setSessionClass: (state, action: PayloadAction<number>) => {
       state.sessionClass = action.payload;
     },
+    setStorage: (state, action: PayloadAction<number>) => {
+      state.storage = action.payload;
+    },
     setLfsAutoFetch: (state, action: PayloadAction<boolean>) => {
       state.lfsAutoFetch = action.payload;
     },
@@ -43,10 +47,19 @@ export const startSessionOptionsSlice = createSlice({
   },
 });
 
-export const { setDefaultUrl, setSessionClass, setLfsAutoFetch, reset } =
-  startSessionOptionsSlice.actions;
+export const {
+  setDefaultUrl,
+  setSessionClass,
+  setStorage,
+  setLfsAutoFetch,
+  reset,
+} = startSessionOptionsSlice.actions;
 
-export const useStartSessionOptionsSelector = () =>
-  useSelector<RootStateOrAny, StartSessionOptions>(
-    (state) => state[startSessionOptionsSlice.name]
+export const useStartSessionOptionsSelector = <TState = StartSessionOptions>(
+  selector?: (state: StartSessionOptions) => TState
+) =>
+  useSelector<RootStateOrAny, TState>(
+    selector
+      ? (state) => selector(state[startSessionOptionsSlice.name])
+      : (state) => state[startSessionOptionsSlice.name]
   );
