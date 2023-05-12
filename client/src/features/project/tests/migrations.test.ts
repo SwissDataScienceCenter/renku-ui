@@ -16,21 +16,45 @@
  * limitations under the License.
  */
 
+import { MigrationStatus, RenkuMigrationLevel } from "../Project";
+import { ProjectMigrationLevel } from "../projectEnums";
 import {
+  cleanVersion,
+  getCompareUrl,
   getMigrationLevel,
+  getReleaseUrl,
   getRenkuLevel,
   getTemplateLevel,
-  ProjectMigrationLevel,
-  RenkuMigrationLevel,
-  TemplateMigrationLevel,
-} from "./ProjectSettings";
-import { MigrationStatus } from "../Project";
+} from "../utils/migrations";
 
 import * as jsonObjects from "./ProjectSettings.testData.json";
 
 type ProjectMigrationLevelKeys = keyof typeof ProjectMigrationLevel;
 
-describe("Test Project Settings functions", () => {
+describe("Test helper functions", () => {
+  it("Test cleanVersion", () => {
+    expect(cleanVersion("2.3.0")).toBe("2.3.0");
+    expect(cleanVersion("2.3.0.dev22+g1262f766")).toBe("2.3.0-dev");
+  });
+
+  it("Test getReleaseUrl", () => {
+    expect(getReleaseUrl("2.3.0.dev22+g1262f766")).toBe(null);
+    expect(getReleaseUrl("2.3.0")).not.toBe("2.3.0");
+    expect(getReleaseUrl("2.3.0")).toContain("tag/v2.3.0");
+  });
+
+  it("Test getCompareUrl", () => {
+    expect(getCompareUrl("2.3.0.dev22+g1262f766", "2.4.0")).toBe(null);
+    expect(getCompareUrl("2.3.0", "2.4.0.dev22+g1262f766")).toBe(null);
+    expect(getCompareUrl("2.3.0", "2.3.0")).toBe(null);
+    expect(getCompareUrl("2.3.0", "2.4.0")).not.toBe("2.3.0");
+    expect(getCompareUrl("2.3.0", "2.4.0")).toContain(
+      "compare/v2.3.0...v2.4.0"
+    );
+  });
+});
+
+describe("Test migration level functions", () => {
   it("Test getMigrationLevel", () => {
     jsonObjects.results.forEach((object) => {
       const backendAvailable =
@@ -68,12 +92,7 @@ describe("Test Project Settings functions", () => {
 
   it("Test getTemplateLevel", () => {
     jsonObjects.results.forEach((object) => {
-      const backendAvailable =
-        object.expectedResult.level === "Level5" ? false : true;
-      const computedLevel = getTemplateLevel(
-        object.data as MigrationStatus,
-        backendAvailable
-      );
+      const computedLevel = getTemplateLevel(object.data as MigrationStatus);
       const expectedLevel = object.expectedResult
         .template as unknown as RenkuMigrationLevel;
       const expectedLevelInverse =

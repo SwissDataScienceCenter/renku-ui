@@ -30,7 +30,7 @@ import type {
   MigrationStatusParams,
   MigrationStatusResponse,
 } from "./Project.d";
-import { MigrationStartScopes } from "./ProjectEnums";
+import { MigrationStartScopes } from "./projectEnums";
 
 function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
   const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : endpoint;

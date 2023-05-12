@@ -1,11 +1,11 @@
 import React from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
-import { ACCESS_LEVELS } from "../../api-client";
-import { FileLineage, ShowFile } from "../../file";
-import { Url } from "../../utils/helpers/url";
+import { ACCESS_LEVELS } from "../../../api-client";
+import { FileLineage, ShowFile } from "../../../file";
+import { Url } from "../../../utils/helpers/url";
 
-import type { StateModelProject } from "./Project.d";
+import type { StateModelProject } from "../Project";
 
 type ProjectFileLineageProps = {
   client: unknown;

@@ -19,11 +19,11 @@
 import React from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
-import { ACCESS_LEVELS } from "../../api-client";
-import KnowledgeGraphStatus from "../../file/KnowledgeGraphStatus.container";
-import { Url } from "../../utils/helpers/url";
+import { ACCESS_LEVELS } from "../../../api-client";
+import KnowledgeGraphStatus from "../../../file/KnowledgeGraphStatus.container";
+import { Url } from "../../../utils/helpers/url";
 
-import type { StateModelProject } from "./Project.d";
+import type { StateModelProject } from "../Project";
 
 type ProjectKnowledgeGraphStatusProps = {
   createGraphWebhook: unknown;

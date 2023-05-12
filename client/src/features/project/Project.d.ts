@@ -17,7 +17,11 @@
  */
 
 import { CoreErrorContent } from "../../utils/definitions";
-import { MigrationStartScopes, ProjectIndexingStatuses } from "./ProjectEnums";
+import {
+  MigrationStartScopes,
+  ProjectIndexingStatuses,
+  ProjectMigrationLevel,
+} from "./projectEnums";
 
 export interface CoreServiceParams {
   versionUrl?: string;
@@ -293,3 +297,24 @@ export interface MigrationStartResponse {
   error?: CoreErrorContent;
   result?: MigrationStartDetails;
 }
+
+export type RenkuMigrationLevel = {
+  automated: boolean;
+  level:
+    | ProjectMigrationLevel.Level1
+    | ProjectMigrationLevel.Level3
+    | ProjectMigrationLevel.Level4
+    | ProjectMigrationLevel.Level5
+    | ProjectMigrationLevel.LevelE
+    | ProjectMigrationLevel.LevelX;
+};
+
+export type TemplateMigrationLevel = {
+  automated: boolean;
+  level:
+    | ProjectMigrationLevel.Level1
+    | ProjectMigrationLevel.Level2
+    | ProjectMigrationLevel.Level3
+    | ProjectMigrationLevel.LevelE
+    | ProjectMigrationLevel.LevelX;
+};
