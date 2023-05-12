@@ -38,6 +38,7 @@ import {
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
 import styles from "./ResourcePoolPicker.module.scss";
+import { ChevronDown } from "react-bootstrap-icons";
 
 export const ResourcePoolPicker = () => {
   const resourcePools = fakeResourcePools;
@@ -140,11 +141,11 @@ const selectClassNames: ClassNamesConfig<ResourceClass, false, OptionGroup> = {
     cx(
       menuIsOpen ? "rounded-top" : "rounded",
       "border",
-      "px-3",
       "py-2",
       styles.control,
       menuIsOpen && styles.controlIsOpen
     ),
+  dropdownIndicator: () => cx("pe-3"),
   groupHeading: () => cx("px-3", "text-uppercase", styles.groupHeading),
   menu: () =>
     cx("rounded-bottom", "border", "border-top-0", "px-0", "py-2", styles.menu),
@@ -165,6 +166,13 @@ const selectComponents: SelectComponentsConfig<
   false,
   OptionGroup
 > = {
+  DropdownIndicator: (props) => {
+    return (
+      <components.DropdownIndicator {...props}>
+        <ChevronDown size="20" />
+      </components.DropdownIndicator>
+    );
+  },
   Option: (props) => {
     const { label, data: sessionClass } = props;
     const detailClassName = cx("d-inline-flex", styles.detail);
@@ -288,6 +296,94 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 8,
         memory: 32,
         gpu: 1,
+        storage: 40,
+      },
+    ],
+  },
+  {
+    id: 3,
+    name: "Special GPU pool",
+    quota: {
+      cpu: 200,
+      memory: 8_000,
+      gpu: 500,
+      storage: 10_000_000,
+    },
+    classes: [
+      {
+        id: 7,
+        name: "High-GPU class 1",
+        cpu: 2,
+        memory: 4,
+        gpu: 4,
+        storage: 40,
+      },
+      {
+        id: 8,
+        name: "High-GPU class 2",
+        cpu: 4,
+        memory: 8,
+        gpu: 4,
+        storage: 40,
+      },
+      {
+        id: 9,
+        name: "High-GPU class 3",
+        cpu: 8,
+        memory: 16,
+        gpu: 8,
+        storage: 40,
+      },
+      {
+        id: 10,
+        name: "High-GPU class 4",
+        cpu: 8,
+        memory: 32,
+        gpu: 8,
+        storage: 40,
+      },
+    ],
+  },
+  {
+    id: 4,
+    name: "High memory pool",
+    quota: {
+      cpu: 200,
+      memory: 64_000,
+      gpu: 40,
+      storage: 10_000_000,
+    },
+    classes: [
+      {
+        id: 11,
+        name: "high-memory class 1",
+        cpu: 2,
+        memory: 64,
+        gpu: 0,
+        storage: 40,
+      },
+      {
+        id: 12,
+        name: "high-memory class 2",
+        cpu: 4,
+        memory: 64,
+        gpu: 0,
+        storage: 40,
+      },
+      {
+        id: 13,
+        name: "high-memory class 3",
+        cpu: 8,
+        memory: 128,
+        gpu: 0,
+        storage: 40,
+      },
+      {
+        id: 14,
+        name: "high-memory class 4",
+        cpu: 8,
+        memory: 256,
+        gpu: 0,
         storage: 40,
       },
     ],
