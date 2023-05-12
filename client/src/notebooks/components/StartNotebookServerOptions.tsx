@@ -33,7 +33,7 @@ import {
 } from "reactstrap";
 
 import styles from "./StartNotebookServerOptions.module.scss";
-import { ResourcePoolPicker } from "./SessionClassSelector";
+import { SessionClassSelector } from "./SessionClassSelector";
 import { useServerOptionsQuery } from "../../features/session/sessionApi";
 import { Loader } from "../../components/Loader";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
@@ -57,7 +57,7 @@ export const StartNotebookServerOptions = ({
     <>
       <Row>
         <DefaultUrlOption projectRepositoryUrl={projectRepositoryUrl} />
-        <ResourcePoolPicker />
+        <SessionClassSelector />
         <AutoFetchLfsOption />
       </Row>
     </>

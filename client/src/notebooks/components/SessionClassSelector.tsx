@@ -40,7 +40,7 @@ import {
 } from "../../features/session/startSessionOptionsSlice";
 import styles from "./SessionClassSelector.module.scss";
 
-export const ResourcePoolPicker = () => {
+export const SessionClassSelector = () => {
   // const { data: resourcePools, isLoading } = useGetResourcePoolsQuery({});
   const resourcePools = fakeResourcePools;
   const isLoading = false;
@@ -53,17 +53,19 @@ export const ResourcePoolPicker = () => {
     <Col xs={12}>
       <FormGroup className="field-group">
         <Label>Session class</Label>
-        <SessionClassSelector resourcePools={resourcePools} />
+        <SessionClassSelectorWrapped resourcePools={resourcePools} />
       </FormGroup>
     </Col>
   );
 };
 
-interface SessionClassSelectorProps {
+interface SessionClassSelectorWrappedProps {
   resourcePools: ResourcePool[];
 }
 
-const SessionClassSelector = ({ resourcePools }: SessionClassSelectorProps) => {
+const SessionClassSelectorWrapped = ({
+  resourcePools,
+}: SessionClassSelectorWrappedProps) => {
   const options = useMemo(
     () => makeGroupedOptions(resourcePools),
     [resourcePools]
