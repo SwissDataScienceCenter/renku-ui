@@ -18,6 +18,7 @@
 
 import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
+import { ChevronDown } from "react-bootstrap-icons";
 import { useDispatch } from "react-redux";
 import Select, {
   ClassNamesConfig,
@@ -37,10 +38,10 @@ import {
   setSessionClass,
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
-import styles from "./ResourcePoolPicker.module.scss";
-import { ChevronDown } from "react-bootstrap-icons";
+import styles from "./SessionClassSelector.module.scss";
 
 export const ResourcePoolPicker = () => {
+  // const { data: resourcePools, isLoading } = useGetResourcePoolsQuery({});
   const resourcePools = fakeResourcePools;
   const isLoading = false;
 
