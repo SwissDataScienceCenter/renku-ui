@@ -1189,6 +1189,7 @@ function StartNotebookOptions(props) {
     }
   }
 
+  // New options will be swapped here
   return [
     <StartNotebookServerOptions key="options" {...props} />,
     <EnvironmentVariables
