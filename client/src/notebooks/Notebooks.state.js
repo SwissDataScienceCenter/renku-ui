@@ -605,10 +605,6 @@ class NotebooksCoordinator {
   }
 
   setDefaultOptions(globalOptions, projectOptions) {
-    const reduxStore = this.model.reduxStore;
-    const startSessionOptions = reduxStore.getState().startSessionOptions;
-    console.log({ globalOptions, projectOptions, startSessionOptions });
-
     // verify if all the pieces are available and get what's missing
     if (!globalOptions) {
       const pendingGlobalOptions =
@@ -641,7 +637,6 @@ class NotebooksCoordinator {
       else if (!NotebooksHelper.checkSettingValidity(option, optionValue))
         warnings = warnings.concat(option);
     });
-    console.log({ filterOptions, warnings });
     this.model.setObject({
       filters: { options: { $set: filterOptions } },
       options: { warnings: { $set: warnings } },
@@ -1266,7 +1261,6 @@ class NotebooksCoordinator {
 
     const options = {
       serverOptions: startSessionOptions,
-      legacyServerOptions: this.model.get("filters.options"),
     };
     const cloudstorage = this.model.get("filters.objectStoresConfiguration");
     if (cloudstorage.length > 0) options["cloudstorage"] = cloudstorage;
@@ -1296,18 +1290,11 @@ class NotebooksCoordinator {
       options,
       env_variables,
     };
+
+    // eslint-disable-next-line no-console
     console.error("Would launch notebook with options", { finalOptions });
     throw new Error("DO NOT LAUNCH");
-
-    // return this.client.startNotebook(
-    //   namespace,
-    //   project,
-    //   branch,
-    //   commit,
-    //   image,
-    //   options,
-    //   env_variables
-    // );
+    // return this.client.startNotebook(finalOptions);
   }
 
   stopNotebook(serverName, force = false) {

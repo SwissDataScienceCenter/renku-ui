@@ -46,13 +46,13 @@ import { IMigration, ProjectConfig } from "../../features/project/Project";
 import { useGetConfigQuery } from "../../features/project/projectCoreApi";
 import { ServerOptions } from "../../features/session/session";
 
-interface NewStartNotebookServerOptionsProps {
+interface StartNotebookServerOptionsProps {
   projectRepositoryUrl: string;
 }
 
-export const NewStartNotebookServerOptions = ({
+export const StartNotebookServerOptions = ({
   projectRepositoryUrl,
-}: NewStartNotebookServerOptionsProps) => {
+}: StartNotebookServerOptionsProps) => {
   return (
     <>
       <Row>

@@ -76,7 +76,7 @@ import {
 import EnvironmentVariables from "./components/EnviromentVariables";
 import LaunchErrorAlert from "./components/LaunchErrorAlert";
 import {
-  NewStartNotebookServerOptions,
+  StartNotebookServerOptions,
   ServerOptionBoolean,
   ServerOptionEnum,
 } from "./components/StartNotebookServerOptions";
@@ -196,7 +196,6 @@ function StartNotebookServer(props) {
     autosaves,
     autoStarting,
     ci,
-    externalUrl,
     message,
     defaultBackButton,
     justStarted,
@@ -1195,12 +1194,7 @@ function StartNotebookOptions(props) {
 
   return (
     <>
-      {/* <div>New options here</div> */}
-      <NewStartNotebookServerOptions projectRepositoryUrl={props.externalUrl} />
-
-      {/* <div>Old options here</div>
-      <StartNotebookServerOptions key="options" {...props} /> */}
-
+      <StartNotebookServerOptions projectRepositoryUrl={props.externalUrl} />
       <EnvironmentVariables
         key="envVariables"
         environmentVariables={environmentVariables}
@@ -1296,118 +1290,6 @@ function mergeEnumOptions(globalOptions, projectOptions, key) {
     options = [...globalOptions[key].options, projectOptions[key]];
 
   return options;
-}
-
-class StartNotebookServerOptions extends Component {
-  render() {
-    const globalOptions = this.props.options.global;
-    const projectOptions = this.props.options.project;
-    const selectedOptions = this.props.filters.options;
-    const { warnings } = this.props.options;
-    const sortedOptionKeys = Object.keys(globalOptions).sort(
-      (a, b) =>
-        parseInt(globalOptions[a].order) - parseInt(globalOptions[b].order)
-    );
-    const renderedServerOptions = sortedOptionKeys
-      .filter((key) => key !== "commitId")
-      .map((key) => {
-        // when the project has a default option, ensure it's added to the global options
-        const serverOption = {
-          ...globalOptions[key],
-          id: `option-${key}`,
-          selected: selectedOptions[key],
-        };
-
-        const onChange = (event, value) => {
-          this.props.handlers.setServerOption(key, event, value);
-        };
-        const warning = warnings.includes(key) ? (
-          <Warning>
-            Cannot set <b>{serverOption.displayName}</b> to the project default
-            value <i>{projectOptions[key]}</i> in this Renkulab deployment.
-          </Warning>
-        ) : null;
-
-        let optionContent = null;
-        if (serverOption.type === "enum") {
-          const options = mergeEnumOptions(globalOptions, projectOptions, key);
-          serverOption["options"] = options;
-          const separator = options.length === 1 ? null : <br />;
-          optionContent = (
-            <FormGroup className="field-group">
-              <Label className="me-2">{serverOption.displayName}</Label>
-              {separator}
-              <ServerOptionEnum {...serverOption} onChange={onChange} />
-              {warning}
-            </FormGroup>
-          );
-        } else if (
-          serverOption.type === "int" ||
-          serverOption.type === "float"
-        ) {
-          const step = serverOption.type === "int" ? 1 : 0.01;
-          optionContent = (
-            <Fragment>
-              <Label className="me-2">{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-              <br />
-              <ServerOptionRange
-                step={step}
-                {...serverOption}
-                onChange={onChange}
-              />
-            </Fragment>
-          );
-        } else if (serverOption.type === "boolean") {
-          optionContent = (
-            <ServerOptionBoolean {...serverOption} onChange={onChange} />
-          );
-        }
-
-        if (!optionContent) return null;
-
-        const formContent = <FormGroup>{optionContent}</FormGroup>;
-        const colWidth = key === "default_url" ? 12 : 6;
-
-        return (
-          <Col key={key} xs={12} md={colWidth}>
-            {formContent}
-          </Col>
-        );
-      });
-
-    const unmatchedWarnings = warnings.filter(
-      (x) => !sortedOptionKeys.includes(x)
-    );
-    let globalWarning = null;
-    if (unmatchedWarnings && unmatchedWarnings.length) {
-      const language =
-        unmatchedWarnings.length > 1
-          ? { verb: "", plural: "s", aux: "are", article: "" }
-          : { verb: "s", plural: "", aux: "is", article: "a " };
-      const wrongVariables = unmatchedWarnings.map((w, i) => (
-        <span key={i}>
-          <i>{w}</i>: <code>{projectOptions[w].toString()}</code>
-          <br />
-        </span>
-      ));
-
-      globalWarning = (
-        <Warning key="globalWarning">
-          The project configuration for sessions contains {language.article}
-          variable{language.plural} that {language.aux} either unknown in this
-          Renkulab deployment or contain{language.verb} {language.article}wrong
-          value{language.plural}:
-          <br /> {wrongVariables}
-        </Warning>
-      );
-    }
-
-    return renderedServerOptions.length ? (
-      <Row>{renderedServerOptions.concat(globalWarning)}</Row>
-    ) : (
-      <label>Notebook options not available</label>
-    );
-  }
 }
 
 class ServerOptionRange extends Component {

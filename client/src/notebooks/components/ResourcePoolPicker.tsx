@@ -90,10 +90,6 @@ const SessionClassSelector = ({ resourcePools }: SessionClassSelectorProps) => {
     [sessionClassId, sessionsClassesFlat]
   );
 
-  useEffect(() => {
-    console.log({ selectedSessionClass });
-  }, [selectedSessionClass]);
-
   const onChange = useCallback(
     (newValue: SingleValue<ResourceClass>) => {
       if (newValue?.id) {
