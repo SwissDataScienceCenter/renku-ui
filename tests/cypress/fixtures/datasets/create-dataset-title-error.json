@@ -1,0 +1,8 @@
+{
+  "error": {
+    "code": 2200,
+    "devMessage": "Unexpected Renku exception from a service operation: Invalid parameter value - Dataset name 'test@' is not valid (Hint: 'test' is valid).",
+    "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.ui.service.errors.ProgramRenkuError",
+    "userMessage": "Our servers could not process the requested operation. The following details may help: Invalid parameter value - Dataset name 'test@' is not valid (Hint: 'test' is valid)."
+  }
+}
