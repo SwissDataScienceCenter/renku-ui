@@ -77,6 +77,14 @@ interface GetConfigRawResponseSection {
   "interactive.image"?: string;
 }
 
+interface UpdateConfigParams extends GetConfigParams {
+  projectRepositoryUrl: string;
+  branch?: string;
+  update: {
+    [key: string]: string;
+  };
+}
+
 function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
   const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : endpoint;
   return `/renku${urlPath}`;
@@ -137,7 +145,8 @@ export const projectCoreApi = createApi({
       query: ({ projectRepositoryUrl, branch, versionUrl }) => {
         const params = {
           git_url: projectRepositoryUrl,
-          ...(branch ? { branch } : {}),
+          // Branch option not working currently
+          // ...(branch ? { branch } : {}),
         };
         return {
           url: versionedUrlEndpoint("config.show", versionUrl),
@@ -146,6 +155,21 @@ export const projectCoreApi = createApi({
       },
       transformResponse: (response: GetConfigRawResponse) =>
         transformGetConfigRawResponse(response),
+    }),
+    updateConfig: builder.mutation<ProjectConfig, UpdateConfigParams>({
+      query: ({ projectRepositoryUrl, branch, versionUrl, update }) => {
+        const body = {
+          git_url: projectRepositoryUrl,
+          // Branch option not working currently
+          // ...(branch ? { branch } : {}),
+          config: update,
+        };
+        return {
+          url: versionedUrlEndpoint("config.set", versionUrl),
+          method: "POST",
+          body,
+        };
+      },
     }),
   }),
 });
@@ -156,6 +180,7 @@ export const {
   useGetDatasetFilesQuery,
   useGetDatasetKgQuery,
   useGetConfigQuery,
+  useUpdateConfigMutation,
 } = projectCoreApi;
 
 const transformGetConfigRawResponse = (
