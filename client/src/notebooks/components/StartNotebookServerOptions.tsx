@@ -101,8 +101,8 @@ const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
     if (projectConfig != null) {
       dispatch(
         setDefaultUrl(
-          projectConfig.config.interactive?.defaultUrl ??
-            projectConfig.default.interactive?.defaultUrl ??
+          projectConfig.config.sessions?.defaultUrl ??
+            projectConfig.default.sessions?.defaultUrl ??
             ""
         )
       );
@@ -153,7 +153,7 @@ const mergeDefaultUrlOptions = ({
   projectConfig: ProjectConfig | undefined;
 }) => {
   const globalDefaultUrls = serverOptions?.defaultUrl.options ?? [];
-  const projectDefaultUrl = projectConfig?.config.interactive?.defaultUrl;
+  const projectDefaultUrl = projectConfig?.config.sessions?.defaultUrl;
   return [
     ...globalDefaultUrls,
     ...(globalDefaultUrls.find((url) => url === projectDefaultUrl) ||

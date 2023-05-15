@@ -160,11 +160,30 @@ type UsedIn = {
 export interface ProjectConfig {
   config: ProjectConfigSection;
   default: ProjectConfigSection;
+  rawResponse: {
+    [key: string]: unknown;
+  };
 }
 
 export interface ProjectConfigSection {
-  interactive?: {
+  sessions?: {
     defaultUrl?: string;
+
+    /** Session class from the resource pool API */
+    sessionClass?: number;
+
+    /** Disk storage in Gigabytes */
+    storage?: number;
+
+    legacyConfig?: {
+      cpuRequest?: number;
+      memoryRequest?: string;
+      storageRequest?: string;
+      gpuRequest?: number;
+    };
+    unknownConfig?: {
+      [key: string]: unknown;
+    };
   };
 }
 

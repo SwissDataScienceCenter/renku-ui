@@ -17,7 +17,12 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { DatasetKg, IDatasetFile, ProjectConfig } from "./Project.d";
+import type {
+  DatasetKg,
+  IDatasetFile,
+  ProjectConfig,
+  ProjectConfigSection,
+} from "./Project.d";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -63,6 +68,13 @@ interface GetConfigRawResponse {
 
 interface GetConfigRawResponseSection {
   "interactive.default_url"?: string;
+  "interactive.session_class"?: string;
+  "interactive.storage_gb"?: string;
+  "interactive.cpu_request"?: string;
+  "interactive.mem_request"?: string;
+  "interactive.disk_request"?: string;
+  "interactive.gpu_request"?: string;
+  "interactive.image"?: string;
 }
 
 function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
@@ -121,7 +133,6 @@ export const projectCoreApi = createApi({
         };
       },
     }),
-
     getConfig: builder.query<ProjectConfig, GetConfigParams>({
       query: ({ projectRepositoryUrl, branch, versionUrl }) => {
         const params = {
@@ -133,18 +144,8 @@ export const projectCoreApi = createApi({
           params,
         };
       },
-      transformResponse: (response: GetConfigRawResponse) => ({
-        config: {
-          interactive: {
-            defaultUrl: response.result?.config?.["interactive.default_url"],
-          },
-        },
-        default: {
-          interactive: {
-            defaultUrl: response.result?.default?.["interactive.default_url"],
-          },
-        },
-      }),
+      transformResponse: (response: GetConfigRawResponse) =>
+        transformGetConfigRawResponse(response),
     }),
   }),
 });
@@ -156,3 +157,57 @@ export const {
   useGetDatasetKgQuery,
   useGetConfigQuery,
 } = projectCoreApi;
+
+const transformGetConfigRawResponse = (
+  response: GetConfigRawResponse
+): ProjectConfig => {
+  const projectSessionsConfig = response.result?.config ?? {};
+  const defaultSessionsConfig = response.result?.default ?? {};
+
+  const projectLegacySessionsConfig: NonNullable<
+    ProjectConfigSection["sessions"]
+  >["legacyConfig"] = {
+    cpuRequest: safeParseInt(projectSessionsConfig["interactive.cpu_request"]),
+    memoryRequest: projectSessionsConfig["interactive.mem_request"],
+    storageRequest: projectSessionsConfig["interactive.disk_request"],
+    gpuRequest: safeParseInt(projectSessionsConfig["interactive.gpu_request"]),
+  };
+  const defaultLegacySessionsConfig: NonNullable<
+    ProjectConfigSection["sessions"]
+  >["legacyConfig"] = {
+    cpuRequest: safeParseInt(defaultSessionsConfig["interactive.cpu_request"]),
+    memoryRequest: defaultSessionsConfig["interactive.mem_request"],
+    storageRequest: defaultSessionsConfig["interactive.disk_request"],
+    gpuRequest: safeParseInt(defaultSessionsConfig["interactive.gpu_request"]),
+  };
+
+  return {
+    config: {
+      sessions: {
+        defaultUrl: projectSessionsConfig["interactive.default_url"],
+        sessionClass: safeParseInt(
+          projectSessionsConfig["interactive.session_class"]
+        ),
+        storage: safeParseInt(projectSessionsConfig["interactive.storage_gb"]),
+        legacyConfig: projectLegacySessionsConfig,
+      },
+    },
+    default: {
+      sessions: {
+        defaultUrl: defaultSessionsConfig["interactive.default_url"],
+        sessionClass: safeParseInt(
+          defaultSessionsConfig["interactive.session_class"]
+        ),
+        storage: safeParseInt(defaultSessionsConfig["interactive.storage_gb"]),
+        legacyConfig: defaultLegacySessionsConfig,
+      },
+    },
+    rawResponse: response.result ?? {},
+  };
+};
+
+const safeParseInt = (str: string | undefined): number | undefined => {
+  const parsed = parseInt(str ?? "", 10);
+  if (isNaN(parsed)) return undefined;
+  return parsed;
+};
