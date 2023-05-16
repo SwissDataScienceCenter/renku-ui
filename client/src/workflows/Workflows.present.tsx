@@ -17,18 +17,35 @@
  */
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
   faCheck,
   faExclamationTriangle,
-  faLink,
   faFileCode,
+  faLink,
   faSortAmountDown,
   faSortAmountUp,
 } from "@fortawesome/free-solid-svg-icons";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link } from "react-router-dom";
+import { InfoAlert, WarnAlert } from "../components/Alert";
+import {
+  ExternalDocsLink,
+  ExternalLink,
+  IconLink,
+} from "../components/ExternalLinks";
+import InformativeIcon from "../components/InformativeIcon";
+import { Loader } from "../components/Loader";
+import { TreeBrowser, TreeDetails, TreeElement } from "../components/Tree";
+import { CommandCopy } from "../components/commandCopy/CommandCopy";
+import EntityCreators from "../components/entities/Creators";
+import { EntityType } from "../components/entities/Entities";
+import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
+import { Docs } from "../utils/constants/Docs";
+import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
+import { toShortHumanDuration } from "../utils/helpers/DurationUtils";
+import { simpleHash } from "../utils/helpers/HelperFunctions";
+import { Url } from "../utils/helpers/url";
 import {
   Bookmarks,
   Button,
@@ -51,26 +68,7 @@ import {
   UncontrolledTooltip,
   XLg,
 } from "../utils/ts-wrappers";
-import EntityCreators from "../components/entities/Creators";
-import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
-import { Docs } from "../utils/constants/Docs";
-import { EntityType } from "../components/entities/Entities";
-import {
-  ExternalDocsLink,
-  ExternalLink,
-  IconLink,
-} from "../components/ExternalLinks";
-import { Loader } from "../components/Loader";
-import { Url } from "../utils/helpers/url";
-import { TreeBrowser, TreeDetails, TreeElement } from "../components/Tree";
-import { InfoAlert, WarnAlert } from "../components/Alert";
-import { simpleHash } from "../utils/helpers/HelperFunctions";
 import "./Workflows.scss";
-import InformativeIcon from "../components/InformativeIcon";
-import { CommandCopy } from "../components/commandCopy/CommandCopy";
-import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
-import Time from "../utils/helpers/Time";
-import { toShortHumanDuration } from "../utils/helpers/DurationUtils";
 
 /** BROWSER **/
 
