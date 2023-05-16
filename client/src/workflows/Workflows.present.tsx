@@ -52,7 +52,6 @@ import {
   XLg,
 } from "../utils/ts-wrappers";
 import EntityCreators from "../components/entities/Creators";
-import Time from "../utils/helpers/Time";
 import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
 import { Docs } from "../utils/constants/Docs";
 import { EntityType } from "../components/entities/Entities";
@@ -69,6 +68,9 @@ import { simpleHash } from "../utils/helpers/HelperFunctions";
 import "./Workflows.scss";
 import InformativeIcon from "../components/InformativeIcon";
 import { CommandCopy } from "../components/commandCopy/CommandCopy";
+import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
+import Time from "../utils/helpers/Time";
+import { toShortHumanDuration } from "../utils/helpers/DurationUtils";
 
 /** BROWSER **/
 
@@ -524,7 +526,7 @@ function WorkflowTreeDetail({
           {details.number_of_executions}
         </WorkflowTreeDetailRow>
         <WorkflowTreeDetailRow name="Last execution">
-          {Time.toIsoTimezoneString(details.last_executed)}
+          {toHumanDateTime({ datetime: details.last_executed })}
         </WorkflowTreeDetailRow>
         <WorkflowTreeDetailRow name="Full command">
           <div className="d-grid">
@@ -609,7 +611,7 @@ function WorkflowTreeDetail({
                 name="Creation date"
                 icon={<Calendar4 className="text-rk-yellow" size="20" />}
               >
-                {Time.toIsoTimezoneString(details.created)}
+                {toHumanDateTime({ datetime: details.created })}
               </WorkflowTreeMainDetailRow>
             </tbody>
           </Table>
@@ -627,7 +629,7 @@ function WorkflowTreeDetail({
               {isComposite ? "Workflow (Composite)" : "Single step"}
             </WorkflowTreeDetailRow>
             <WorkflowTreeDetailRow name="Estimated runtime">
-              {Time.getDuration(details.duration)}
+              {toShortHumanDuration({ duration: details.duration })}
             </WorkflowTreeDetailRow>
             {typeSpecificRows}
             <WorkflowTreeDetailRow name="Renku command">
