@@ -20,6 +20,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
 import { ChevronDown } from "react-bootstrap-icons";
 import { useDispatch } from "react-redux";
+import { useLocation } from "react-router";
 import Select, {
   ClassNamesConfig,
   GroupBase,
@@ -33,17 +34,27 @@ import {
   ResourceClass,
   ResourcePool,
 } from "../../features/dataServices/dataServices";
-// import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
+import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 import {
   setSessionClass,
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
-import styles from "./SessionClassSelector.module.scss";
+import styles from "./SessionClassOption.module.scss";
 
-export const SessionClassSelector = () => {
-  // const { data: resourcePools, isLoading } = useGetResourcePoolsQuery({});
-  const resourcePools = fakeResourcePools;
-  const isLoading = false;
+export const SessionClassOption = () => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
+
+  const { data: realResourcePools, isLoading } = useGetResourcePoolsQuery(
+    {},
+    { skip: enableFakeResourcePools }
+  );
+
+  const resourcePools = enableFakeResourcePools
+    ? fakeResourcePools
+    : realResourcePools;
 
   if (isLoading || !resourcePools) {
     return <Loader />;
@@ -53,19 +64,17 @@ export const SessionClassSelector = () => {
     <Col xs={12}>
       <FormGroup className="field-group">
         <Label>Session class</Label>
-        <SessionClassSelectorWrapped resourcePools={resourcePools} />
+        <SessionClassSelector resourcePools={resourcePools} />
       </FormGroup>
     </Col>
   );
 };
 
-interface SessionClassSelectorWrappedProps {
+interface SessionClassSelectorProps {
   resourcePools: ResourcePool[];
 }
 
-const SessionClassSelectorWrapped = ({
-  resourcePools,
-}: SessionClassSelectorWrappedProps) => {
+const SessionClassSelector = ({ resourcePools }: SessionClassSelectorProps) => {
   const options = useMemo(
     () => makeGroupedOptions(resourcePools),
     [resourcePools]
@@ -246,7 +255,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 0,
         max_storage: 20,
         default_storage: 5,
-        public: true,
         default: false,
       },
       {
@@ -257,7 +265,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 0,
         max_storage: 40,
         default_storage: 5,
-        public: true,
         default: true,
       },
     ],
@@ -280,7 +287,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 0,
         max_storage: 40,
         default_storage: 10,
-        public: false,
         default: false,
       },
       {
@@ -291,7 +297,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 1,
         max_storage: 40,
         default_storage: 10,
-        public: false,
         default: false,
       },
       {
@@ -302,7 +307,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 1,
         max_storage: 40,
         default_storage: 10,
-        public: false,
         default: false,
       },
       {
@@ -313,7 +317,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 1,
         max_storage: 40,
         default_storage: 10,
-        public: false,
         default: false,
       },
     ],
@@ -336,7 +339,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 4,
         max_storage: 40,
         default_storage: 10,
-        public: false,
         default: false,
       },
       {
@@ -347,7 +349,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 4,
         max_storage: 40,
         default_storage: 10,
-        public: false,
         default: false,
       },
       {
@@ -369,7 +370,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 8,
         max_storage: 40,
         default_storage: 10,
-        public: false,
         default: false,
       },
     ],
@@ -392,7 +392,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 0,
         max_storage: 40,
         default_storage: 10,
-        public: false,
         default: false,
       },
       {
@@ -403,7 +402,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 0,
         max_storage: 40,
         default_storage: 10,
-        public: false,
         default: false,
       },
       {
@@ -414,7 +412,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 0,
         max_storage: 40,
         default_storage: 10,
-        public: false,
         default: false,
       },
       {
@@ -425,7 +422,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 0,
         max_storage: 40,
         default_storage: 10,
-        public: false,
         default: false,
       },
     ],

@@ -20,6 +20,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
 import { clamp } from "lodash";
 import { useDispatch } from "react-redux";
+import { useLocation } from "react-router";
 import {
   Col,
   FormGroup,
@@ -28,7 +29,10 @@ import {
   InputGroupText,
   Label,
 } from "reactstrap";
+import { Loader } from "../../components/Loader";
 import { ThrottledTooltip } from "../../components/Tooltip";
+import { ResourcePool } from "../../features/dataServices/dataServices";
+import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
@@ -37,16 +41,23 @@ import {
   setStorage,
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
+import { fakeResourcePools } from "./SessionClassOption";
 import styles from "./SessionStorageOption.module.scss";
-import { fakeResourcePools } from "./SessionClassSelector";
-import { Loader } from "../../components/Loader";
-import { ResourcePool } from "../../features/dataServices/dataServices";
-// import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 
 export const SessionStorageOption = () => {
-  // const { data: resourcePools, isLoading } = useGetResourcePoolsQuery({});
-  const resourcePools = fakeResourcePools;
-  const isLoading = false;
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
+
+  const { data: realResourcePools, isLoading } = useGetResourcePoolsQuery(
+    {},
+    { skip: enableFakeResourcePools }
+  );
+
+  const resourcePools = enableFakeResourcePools
+    ? fakeResourcePools
+    : realResourcePools;
 
   if (isLoading || !resourcePools) {
     return <Loader />;
