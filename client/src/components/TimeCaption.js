@@ -35,6 +35,7 @@ function displayTimeFromDate(time) {
   return displayTime;
 }
 
+// TODO(leafty): update this next
 function TimeCaption({
   time,
   caption = "Updated",

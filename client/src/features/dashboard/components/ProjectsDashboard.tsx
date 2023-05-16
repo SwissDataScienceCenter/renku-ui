@@ -304,7 +304,7 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
   if (items?.length) {
     const element = items.map((item: SessionProject) => {
       return (
-        <>
+        <Fragment key={item.id}>
           <EnvironmentLogs
             name={displayModal.targetServer}
             annotations={item.notebook?.annotations ?? {}}
@@ -328,7 +328,7 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
             imageUrl={item.imageUrl}
             showLogs={showLogs}
           />
-        </>
+        </Fragment>
       );
     });
     return <div className="session-list">{element}</div>;

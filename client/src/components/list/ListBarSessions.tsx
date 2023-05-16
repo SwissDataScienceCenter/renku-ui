@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import {
   Fragment,
@@ -33,7 +33,6 @@ import {
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-
 import { ListElementProps } from "./List.d";
 import { ExternalLink } from "../ExternalLinks";
 import { TimeCaption } from "../TimeCaption";
@@ -45,13 +44,13 @@ import { Clipboard } from "../Clipboard";
 import { SessionStatus } from "../../utils/constants/Notebooks";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import AppContext from "../../utils/context/appContext";
-import Time from "../../utils/helpers/Time";
 import { getStatusObject } from "../../notebooks/components/SessionListStatus";
 import type { SessionRunningStatus } from "../../notebooks/components/SessionListStatus";
 import { SessionButton } from "../../features/session/components/SessionButtons";
 import { Notebook } from "../../notebooks/components/Session";
-
+import Time from "../../utils/helpers/Time";
 import "./ListBar.scss";
+import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -158,7 +157,7 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
       <span>
         <span className="fw-bold">Date:</span>{" "}
         <span>
-          {Time.toIsoTimezoneString(commit.committed_date, "datetime-short")}
+          {toHumanDateTime({ datetime: commit.committed_date, format: "full" })}
         </span>{" "}
         <TimeCaption
           caption="~"
@@ -249,10 +248,6 @@ function ListBarSession({
 
   /* session part */
   const resources = notebook.resources?.requests;
-  const startTime = Time.toIsoTimezoneString(
-    notebook.started,
-    "datetime-short"
-  );
   const sessionId = notebook.name;
   const statusData = getStatusObject(
     sessionStatus as SessionRunningStatus,
@@ -365,7 +360,7 @@ function ListBarSession({
         <TimeCaption
           caption={sessionTimeLabel || ""}
           showTooltip={true}
-          time={startTime}
+          time={notebook.started}
           className="text-rk-text-light text-truncate"
         />
       </div>
