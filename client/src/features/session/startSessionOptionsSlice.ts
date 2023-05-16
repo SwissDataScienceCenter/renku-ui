@@ -19,11 +19,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { StartSessionOptions } from "./startSessionOptions";
+import { MIN_SESSION_STORAGE_GB } from "./startSessionOptions.constants";
 
 const initialState: StartSessionOptions = {
   defaultUrl: "",
   sessionClass: 0,
-  storage: 1,
+  storage: MIN_SESSION_STORAGE_GB,
   lfsAutoFetch: false,
 };
 

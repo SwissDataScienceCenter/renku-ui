@@ -82,18 +82,19 @@ const SessionClassSelectorWrapped = ({
 
   // Set initial session class
   useEffect(() => {
-    dispatch(
-      setSessionClass(
-        sessionsClassesFlat.length > 0 ? sessionsClassesFlat[0].id : 0
-      )
-    );
+    const initialSessionClass =
+      sessionsClassesFlat.length == 0
+        ? 0
+        : sessionsClassesFlat.find((c) => c.default)?.id ?? 0;
+    dispatch(setSessionClass(initialSessionClass));
   }, [dispatch, sessionsClassesFlat]);
 
   const selectedSessionClass = useMemo(
     () =>
       sessionsClassesFlat.find((c) => c.id === sessionClassId) ??
+      sessionsClassesFlat.find((c) => c.default) ??
       sessionsClassesFlat[0] ??
-      null,
+      undefined,
     [sessionClassId, sessionsClassesFlat]
   );
 
@@ -109,7 +110,7 @@ const SessionClassSelectorWrapped = ({
   return (
     <Select
       options={options}
-      defaultValue={selectedSessionClass ? selectedSessionClass : undefined}
+      defaultValue={selectedSessionClass}
       getOptionValue={(option) => `${option.id}`}
       getOptionLabel={(option) => option.name}
       onChange={onChange}
@@ -246,7 +247,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 20,
         default_storage: 5,
         public: true,
-        default: true,
+        default: false,
       },
       {
         id: 2,
@@ -257,7 +258,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 5,
         public: true,
-        default: false,
+        default: true,
       },
     ],
   },
