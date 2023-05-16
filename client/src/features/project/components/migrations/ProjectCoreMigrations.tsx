@@ -253,7 +253,7 @@ function ProjectMigrationStatusDetails({
   if (renkuMigrationLevel?.level === ProjectMigrationLevel.LevelX) {
     renkuText = "Unknown version";
     renkuDetails = (
-      <span>Details not available for this unknown version of Renku.</span>
+      <span>Details are not available for this unknown version of Renku.</span>
     );
   } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.LevelE) {
     renkuDetails = (
@@ -261,70 +261,42 @@ function ProjectMigrationStatusDetails({
         errorData={data?.error as CoreSectionError}
       />
     );
+  } else if (
+    renkuMigrationLevel?.level !== undefined &&
+    [
+      ProjectMigrationLevel.Level5,
+      ProjectMigrationLevel.Level4,
+      ProjectMigrationLevel.Level3,
+      ProjectMigrationLevel.Level1,
+    ].includes(renkuMigrationLevel?.level)
+  ) {
+    renkuText = (
+      <RenkuVersionOutdated
+        renkuLatestVersion={renkuLatestVersion}
+        renkuProjectVersion={renkuProjectVersion}
+      />
+    );
+    renkuDetails = (
+      <RenkuVersionContext
+        docsUrl={renkuTitleDocsUrl}
+        isMaintainer={isMaintainer}
+        latestVersion={metadata?.current_metadata_version}
+        migrationLevel={renkuMigrationLevel?.level}
+        projectVersion={metadata?.project_metadata_version}
+      />
+    );
   }
   if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level5) {
     renkuIcon = faExclamationCircle;
-    renkuText = (
-      <RenkuVersionOutdated
-        renkuLatestVersion={renkuLatestVersion}
-        renkuProjectVersion={renkuProjectVersion}
-      />
-    );
-    renkuDetails = (
-      <RenkuVersionContext
-        docsUrl={renkuTitleDocsUrl}
-        latestVersion={metadata?.current_metadata_version}
-        migrationLevel={renkuMigrationLevel?.level}
-        projectVersion={metadata?.project_metadata_version}
-      />
-    );
   } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level4) {
     renkuLevel = "warning";
     renkuIcon = faExclamationCircle;
-    renkuText = (
-      <RenkuVersionOutdated
-        renkuLatestVersion={renkuLatestVersion}
-        renkuProjectVersion={renkuProjectVersion}
-      />
-    );
-    renkuDetails = (
-      <RenkuVersionContext
-        docsUrl={renkuTitleDocsUrl}
-        latestVersion={metadata?.current_metadata_version}
-        migrationLevel={renkuMigrationLevel?.level}
-        projectVersion={metadata?.project_metadata_version}
-      />
-    );
   } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level3) {
     renkuLevel = "info";
     renkuIcon = faInfoCircle;
-    renkuText = (
-      <RenkuVersionOutdated
-        renkuLatestVersion={renkuLatestVersion}
-        renkuProjectVersion={renkuProjectVersion}
-      />
-    );
-    renkuDetails = (
-      <RenkuVersionContext
-        docsUrl={renkuTitleDocsUrl}
-        migrationLevel={renkuMigrationLevel?.level}
-      />
-    );
   } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level1) {
     renkuIcon = faCheckCircle;
     renkuLevel = "success";
-    renkuText = (
-      <RenkuVersionOutdated
-        renkuLatestVersion={renkuLatestVersion}
-        renkuProjectVersion={renkuProjectVersion}
-      />
-    );
-    renkuDetails = (
-      <RenkuVersionContext
-        docsUrl={renkuTitleDocsUrl}
-        migrationLevel={renkuMigrationLevel?.level}
-      />
-    );
   }
 
   const renkuVersionButtonShow =
@@ -367,7 +339,9 @@ function ProjectMigrationStatusDetails({
   let templateText: string | React.ReactNode = "Unknown version";
   if (templateMigrationLevel?.level === ProjectMigrationLevel.LevelX) {
     templateDetails = (
-      <span>Details not available for this unknown version of template.</span>
+      <span>
+        Details are not available for this unknown version of template.
+      </span>
     );
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.LevelE) {
     templateText = "Error";
@@ -391,38 +365,36 @@ function ProjectMigrationStatusDetails({
         />
       );
     }
-  } else if (templateMigrationLevel?.level === ProjectMigrationLevel.Level3) {
-    // New version available
-    templateLevel = "info";
-    templateIcon = faArrowAltCircleUp;
+  } else if (
+    templateMigrationLevel?.level !== undefined &&
+    [
+      ProjectMigrationLevel.Level3,
+      ProjectMigrationLevel.Level2,
+      ProjectMigrationLevel.Level1,
+    ].includes(templateMigrationLevel?.level)
+  ) {
     templateDetails = (
       <RenkuTemplateContext
         automated={templateMigrationLevel.automated}
+        isMaintainer={isMaintainer}
         templateDetails={data?.details}
       />
     );
     templateText = <RenkuTemplateOutdated templateDetails={data?.details} />;
+  }
+
+  if (templateMigrationLevel?.level === ProjectMigrationLevel.Level3) {
+    // New version available
+    templateLevel = "info";
+    templateIcon = faArrowAltCircleUp;
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.Level2) {
     // Some details missing
     templateLevel = "info";
     templateIcon = faExclamationCircle;
-    templateDetails = (
-      <RenkuTemplateContext
-        automated={templateMigrationLevel.automated}
-        templateDetails={data?.details}
-      />
-    );
-    templateText = <RenkuTemplateOutdated templateDetails={data?.details} />;
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.Level1) {
+    // All up-to-date
     templateLevel = "success";
     templateIcon = faCheckCircle;
-    templateDetails = (
-      <RenkuTemplateContext
-        automated={templateMigrationLevel.automated}
-        templateDetails={data?.details}
-      />
-    );
-    templateText = <RenkuTemplateOutdated templateDetails={data?.details} />;
   }
 
   const templateButtonShow =
@@ -526,12 +498,14 @@ function RenkuVersionOutdated({
 
 interface RenkuVersionContextProps {
   docsUrl: string;
+  isMaintainer: boolean;
   latestVersion?: string;
   migrationLevel: ProjectMigrationLevel;
   projectVersion?: string;
 }
 function RenkuVersionContext({
   docsUrl,
+  isMaintainer,
   latestVersion,
   migrationLevel,
   projectVersion,
@@ -544,9 +518,9 @@ function RenkuVersionContext({
     return (
       <>
         <span>
-          The project is strongly outdated and most interaction on RenkuLab will
-          not be available (E.G. with datasets, workflows, session settings,
-          ...).
+          The project is strongly outdated, and most interaction on RenkuLab
+          will not be available (E.G. with datasets, workflows, session
+          settings, ...).
         </span>
         <br />
         <span>
@@ -575,8 +549,11 @@ function RenkuVersionContext({
     return (
       <>
         <span>
-          There is a new {linkToRenku} version. Updating should be safe since it
-          is a minor step. {moreInfoLink}
+          There is a new {linkToRenku} version.
+          {isMaintainer
+            ? " Updating should be safe since it is a minor step."
+            : ""}{" "}
+          {moreInfoLink}
         </span>
       </>
     );
@@ -584,7 +561,7 @@ function RenkuVersionContext({
     return (
       <>
         <span>
-          The project is using the latest {linkToRenku} version. {moreInfoLink}
+          The project uses the latest {linkToRenku} version. {moreInfoLink}
         </span>
       </>
     );
@@ -660,10 +637,12 @@ function RenkuTemplateOutdated({
 
 interface RenkuTemplateContextProps {
   automated: boolean;
+  isMaintainer: boolean;
   templateDetails: MigrationStatus["details"];
 }
 function RenkuTemplateContext({
   automated,
+  isMaintainer,
   templateDetails,
 }: RenkuTemplateContextProps) {
   const template =
@@ -680,11 +659,14 @@ function RenkuTemplateContext({
       />
     );
     let updateInfo: React.ReactNode = null;
-    if (automated) {
+    if (isMaintainer && automated) {
       updateInfo = (
         <>You can click on the Update button to automatically update it.</>
       );
-    } else if (template.template_source !== TemplateSourceRenku) {
+    } else if (
+      isMaintainer &&
+      template.template_source !== TemplateSourceRenku
+    ) {
       updateInfo = (
         <>
           Automatic update is not available. You can update the template
@@ -718,7 +700,7 @@ function RenkuTemplateContext({
           <br />
           <span>
             Mind that the project uses a default template from this RenkuLab
-            deployment, therefore there is no link to a remote reference
+            deployment; therefore, there is no link to a remote reference
             template you can check. You can still check the full description
             when creating a new project using the same template id.
           </span>

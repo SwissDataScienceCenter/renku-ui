@@ -85,7 +85,7 @@ function ProjectSettingsGeneral({
 }: ProjectSettingsGeneralProps) {
   return (
     <Card className="border-rk-light mb-4">
-      <CardBody>
+      <CardBody className="py-2">
         <Row>
           <Col>
             <ProjectMigrationStatus

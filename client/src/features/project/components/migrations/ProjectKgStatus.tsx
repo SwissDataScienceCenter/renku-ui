@@ -165,17 +165,23 @@ export function ProjectKnowledgeGraph({
         title={title}
         toggleShowDetails={toggleShowDetails}
       />
-      <KnowledgeGraphDetails data={data} showDetails={showDetails} />
+      <KnowledgeGraphDetails
+        data={data}
+        isMaintainer={isMaintainer}
+        showDetails={showDetails}
+      />
     </>
   );
 }
 
 interface KnowledgeGraphDetailsProps {
   data: ProjectIndexingStatusResponse | undefined;
+  isMaintainer: boolean;
   showDetails: boolean;
 }
 function KnowledgeGraphDetails({
   data,
+  isMaintainer,
   showDetails,
 }: KnowledgeGraphDetailsProps) {
   let content: React.ReactNode;
@@ -200,17 +206,23 @@ function KnowledgeGraphDetails({
           text = "Everything processed";
         } else if (data.details?.status === ProjectIndexingStatuses.Failure) {
           text = "Everything processed*";
-          if (data.details?.message)
-            detailsElement = (
+          if (data.details?.message) {
+            const maintainerDetails = isMaintainer ? (
               <span>
-                *: while processing this project, an error was raised. This
-                should not have consequences; if you notice something wrong,
-                please <Link to="/help">reach us</Link> reporting the link to
-                your project and the error message.
+                If you notice something wrong, please{" "}
+                <Link to="/help">reach us</Link> reporting the link to your
+                project and the error message.
                 <br />
                 <code>Error details: {data.details.message}</code>
               </span>
+            ) : null;
+            detailsElement = (
+              <span>
+                An error was raised while processing the metadata, which should
+                not have consequences. {maintainerDetails}
+              </span>
             );
+          }
         }
       } else {
         text = "Processing data";
@@ -218,7 +230,7 @@ function KnowledgeGraphDetails({
       if (data.details?.status === ProjectIndexingStatuses.InProgress) {
         const detailsFirstPart = (
           <span>
-            The Knowledge Graph is processing project&apos;s events. Some
+            The Knowledge Graph is processing the project&apos;s events. Some
             information about the local entities might be unavailable or
             outdated until this process has finished.
           </span>
@@ -255,7 +267,7 @@ function KnowledgeGraphDetails({
         <span>
           The Knowledge Graph integration must be activated to use this project
           from the RenkuLab web interfaces. Otherwise, the functionalities will
-          be limited and the project will not be discoverable from the search
+          be limited, and the project will not be discoverable from the search
           page. <MoreInfoLink url={titleDocsUrl} />
         </span>
       );

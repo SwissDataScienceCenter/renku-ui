@@ -87,11 +87,19 @@ function ProjectSettingsNav(props) {
 //** General settings **//
 
 function ProjectSettingsGeneral(props) {
-  if (props.settingsReadOnly && !props.user.logged) {
-    const textIntro = "Only authenticated users can access project setting.";
-    const textPost = "to visualize project settings.";
-    return (
-      <LoginAlert logged={false} textIntro={textIntro} textPost={textPost} />
+  let loginElement = null;
+  if (!props.user.logged) {
+    const textPre = "You can";
+    const textPost = "here.";
+    loginElement = (
+      <p className="mt-3 mb-0">
+        <LoginAlert
+          logged={false}
+          noWrapper={true}
+          textPre={textPre}
+          textPost={textPost}
+        />
+      </p>
     );
   }
 
@@ -101,6 +109,7 @@ function ProjectSettingsGeneral(props) {
         <p className="mb-0">
           Project settings can be changed only by maintainers.
         </p>
+        {loginElement}
       </InfoAlert>
     );
   }
