@@ -17,6 +17,7 @@
  */
 
 import React, { useCallback, useEffect } from "react";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import {
   Badge,
   Button,
@@ -31,23 +32,22 @@ import {
   Row,
   UncontrolledDropdown,
 } from "reactstrap";
-
-import styles from "./StartNotebookServerOptions.module.scss";
-import { SessionClassSelector } from "./SessionClassSelector";
-import { useServerOptionsQuery } from "../../features/session/sessionApi";
 import { Loader } from "../../components/Loader";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import {
-  setDefaultUrl,
-  setLfsAutoFetch,
-  useStartSessionOptionsSelector,
-} from "../../features/session/startSessionOptionsSlice";
 import { IMigration, ProjectConfig } from "../../features/project/Project";
 import {
   useGetConfigQuery,
   useUpdateConfigMutation,
 } from "../../features/project/projectCoreApi";
 import { ServerOptions } from "../../features/session/session";
+import { useServerOptionsQuery } from "../../features/session/sessionApi";
+import {
+  setDefaultUrl,
+  setLfsAutoFetch,
+  useStartSessionOptionsSelector,
+} from "../../features/session/startSessionOptionsSlice";
+import { SessionClassOption } from "./SessionClassOption";
+import { SessionStorageOption } from "./SessionStorageOption";
+import styles from "./StartNotebookServerOptions.module.scss";
 
 interface StartNotebookServerOptionsProps {
   projectRepositoryUrl: string;
@@ -71,7 +71,8 @@ export const StartNotebookServerOptions = ({
           projectRepositoryUrl={projectRepositoryUrl}
           branchName={branch?.name}
         />
-        <SessionClassSelector />
+        <SessionClassOption />
+        <SessionStorageOption />
         <AutoFetchLfsOption />
       </Row>
     </>
@@ -112,7 +113,9 @@ const DefaultUrlOption = ({
     projectConfig,
   });
 
-  const { defaultUrl: selectedDefaultUrl } = useStartSessionOptionsSelector();
+  const selectedDefaultUrl = useStartSessionOptionsSelector(
+    (state) => state.defaultUrl
+  );
   const dispatch = useDispatch();
 
   const [updateFn] = useUpdateConfigMutation();
@@ -196,7 +199,9 @@ const mergeDefaultUrlOptions = ({
 };
 
 const AutoFetchLfsOption = () => {
-  const { lfsAutoFetch } = useStartSessionOptionsSelector();
+  const lfsAutoFetch = useStartSessionOptionsSelector(
+    (state) => state.lfsAutoFetch
+  );
   const dispatch = useDispatch();
 
   const onChange = useCallback(() => {

@@ -17,7 +17,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { TypedUseSelectorHook, useSelector } from "react-redux";
+import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { Display, ProjectConfig, SessionConfig } from "./display";
 
 const initialState: Display = {
@@ -74,5 +74,5 @@ export const displaySlice = createSlice({
 
 export const { showSshModal, hideSshModal, toggleSshModal, reset } =
   displaySlice.actions;
-export const useDisplaySelector: TypedUseSelectorHook<Display> = useSelector;
-export default displaySlice;
+
+export const useDisplaySelector = createSliceSelector(displaySlice);

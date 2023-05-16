@@ -16,35 +16,14 @@
  * limitations under the License.
  */
 
-export interface ResourcePool {
-  id: number;
-  name: string;
-  classes: ResourceClass[];
-  quota: Resources;
-}
+import { Slice, SliceCaseReducers } from "@reduxjs/toolkit";
+import { RootStateOrAny, useSelector } from "react-redux";
 
-export interface ResourceClass {
-  id: number;
-  name: string;
-  cpu: number;
-
-  /** Memory (RAM) in Gigabytes */
-  memory: number;
-
-  gpu: number;
-
-  /** Max disk storage in Gigabytes */
-  max_storage: number;
-
-  /** Default disk storage in Gigabytes */
-  default_storage: number;
-
-  default: boolean;
-}
-
-export interface Resources {
-  cpu: number;
-  memory: number;
-  gpu: number;
-  storage: number;
-}
+export const createSliceSelector =
+  <TSliceState>(slice: Slice<TSliceState, SliceCaseReducers<TSliceState>>) =>
+  <TState = TSliceState>(selector?: (state: TSliceState) => TState) =>
+    useSelector<RootStateOrAny, TState>(
+      selector
+        ? (state) => selector(state[slice.name])
+        : (state) => state[slice.name]
+    );

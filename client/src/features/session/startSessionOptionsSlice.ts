@@ -17,12 +17,14 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { StartSessionOptions } from "./startSessionOptions";
+import { MIN_SESSION_STORAGE_GB } from "./startSessionOptions.constants";
 
 const initialState: StartSessionOptions = {
   defaultUrl: "",
   sessionClass: 0,
+  storage: MIN_SESSION_STORAGE_GB,
   lfsAutoFetch: false,
 };
 
@@ -36,6 +38,9 @@ export const startSessionOptionsSlice = createSlice({
     setSessionClass: (state, action: PayloadAction<number>) => {
       state.sessionClass = action.payload;
     },
+    setStorage: (state, action: PayloadAction<number>) => {
+      state.storage = action.payload;
+    },
     setLfsAutoFetch: (state, action: PayloadAction<boolean>) => {
       state.lfsAutoFetch = action.payload;
     },
@@ -43,10 +48,14 @@ export const startSessionOptionsSlice = createSlice({
   },
 });
 
-export const { setDefaultUrl, setSessionClass, setLfsAutoFetch, reset } =
-  startSessionOptionsSlice.actions;
+export const {
+  setDefaultUrl,
+  setSessionClass,
+  setStorage,
+  setLfsAutoFetch,
+  reset,
+} = startSessionOptionsSlice.actions;
 
-export const useStartSessionOptionsSelector = () =>
-  useSelector<RootStateOrAny, StartSessionOptions>(
-    (state) => state[startSessionOptionsSlice.name]
-  );
+export const useStartSessionOptionsSelector = createSliceSelector(
+  startSessionOptionsSlice
+);

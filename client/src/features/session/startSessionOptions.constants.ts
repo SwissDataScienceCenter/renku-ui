@@ -16,35 +16,5 @@
  * limitations under the License.
  */
 
-export interface ResourcePool {
-  id: number;
-  name: string;
-  classes: ResourceClass[];
-  quota: Resources;
-}
-
-export interface ResourceClass {
-  id: number;
-  name: string;
-  cpu: number;
-
-  /** Memory (RAM) in Gigabytes */
-  memory: number;
-
-  gpu: number;
-
-  /** Max disk storage in Gigabytes */
-  max_storage: number;
-
-  /** Default disk storage in Gigabytes */
-  default_storage: number;
-
-  default: boolean;
-}
-
-export interface Resources {
-  cpu: number;
-  memory: number;
-  gpu: number;
-  storage: number;
-}
+export const MIN_SESSION_STORAGE_GB = 1;
+export const STEP_SESSION_STORAGE_GB = 1;

@@ -273,9 +273,7 @@ interface SessionsToShowProps {
   currentSessions: Notebook["data"][];
 }
 function SessionsToShow({ currentSessions }: SessionsToShowProps) {
-  const displayModal = useDisplaySelector(
-    (state: RootStateOrAny) => state[displaySlice.name].modals.sessionLogs
-  );
+  const displayModal = useDisplaySelector((state) => state.modals.sessionLogs);
   const [items, setItems] = useState<any[]>([]);
   const { client } = useContext(AppContext);
 

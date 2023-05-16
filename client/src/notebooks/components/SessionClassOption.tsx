@@ -20,6 +20,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
 import { ChevronDown } from "react-bootstrap-icons";
 import { useDispatch } from "react-redux";
+import { useLocation } from "react-router";
 import Select, {
   ClassNamesConfig,
   GroupBase,
@@ -33,17 +34,27 @@ import {
   ResourceClass,
   ResourcePool,
 } from "../../features/dataServices/dataServices";
-// import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
+import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 import {
   setSessionClass,
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
-import styles from "./SessionClassSelector.module.scss";
+import styles from "./SessionClassOption.module.scss";
 
-export const SessionClassSelector = () => {
-  // const { data: resourcePools, isLoading } = useGetResourcePoolsQuery({});
-  const resourcePools = fakeResourcePools;
-  const isLoading = false;
+export const SessionClassOption = () => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
+
+  const { data: realResourcePools, isLoading } = useGetResourcePoolsQuery(
+    {},
+    { skip: enableFakeResourcePools }
+  );
+
+  const resourcePools = enableFakeResourcePools
+    ? fakeResourcePools
+    : realResourcePools;
 
   if (isLoading || !resourcePools) {
     return <Loader />;
@@ -53,19 +64,17 @@ export const SessionClassSelector = () => {
     <Col xs={12}>
       <FormGroup className="field-group">
         <Label>Session class</Label>
-        <SessionClassSelectorWrapped resourcePools={resourcePools} />
+        <SessionClassSelector resourcePools={resourcePools} />
       </FormGroup>
     </Col>
   );
 };
 
-interface SessionClassSelectorWrappedProps {
+interface SessionClassSelectorProps {
   resourcePools: ResourcePool[];
 }
 
-const SessionClassSelectorWrapped = ({
-  resourcePools,
-}: SessionClassSelectorWrappedProps) => {
+const SessionClassSelector = ({ resourcePools }: SessionClassSelectorProps) => {
   const options = useMemo(
     () => makeGroupedOptions(resourcePools),
     [resourcePools]
@@ -75,23 +84,26 @@ const SessionClassSelectorWrapped = ({
     [resourcePools]
   );
 
-  const { sessionClass: sessionClassId } = useStartSessionOptionsSelector();
+  const sessionClassId = useStartSessionOptionsSelector(
+    (state) => state.sessionClass
+  );
   const dispatch = useDispatch();
 
   // Set initial session class
   useEffect(() => {
-    dispatch(
-      setSessionClass(
-        sessionsClassesFlat.length > 0 ? sessionsClassesFlat[0].id : 0
-      )
-    );
+    const initialSessionClass =
+      sessionsClassesFlat.length == 0
+        ? 0
+        : sessionsClassesFlat.find((c) => c.default)?.id ?? 0;
+    dispatch(setSessionClass(initialSessionClass));
   }, [dispatch, sessionsClassesFlat]);
 
   const selectedSessionClass = useMemo(
     () =>
       sessionsClassesFlat.find((c) => c.id === sessionClassId) ??
+      sessionsClassesFlat.find((c) => c.default) ??
       sessionsClassesFlat[0] ??
-      null,
+      undefined,
     [sessionClassId, sessionsClassesFlat]
   );
 
@@ -107,7 +119,7 @@ const SessionClassSelectorWrapped = ({
   return (
     <Select
       options={options}
-      defaultValue={selectedSessionClass ? selectedSessionClass : undefined}
+      defaultValue={selectedSessionClass}
       getOptionValue={(option) => `${option.id}`}
       getOptionLabel={(option) => option.name}
       onChange={onChange}
@@ -182,12 +194,12 @@ const selectComponents: SelectComponentsConfig<
           <span>{sessionClass.cpu}</span>
         </span>{" "}
         <div className={detailClassName}>
-          <span className={detailLabelClassName}>Memory</span>{" "}
+          <span className={detailLabelClassName}>RAM</span>{" "}
           <span>{sessionClass.memory}</span>
         </div>{" "}
         <span className={detailClassName}>
-          <span className={detailLabelClassName}>Storage</span>{" "}
-          <span>{sessionClass.storage}</span>
+          <span className={detailLabelClassName}>Disk</span>{" "}
+          <span>{sessionClass.max_storage}</span>
         </span>{" "}
         <span className={detailClassName}>
           <span className={detailLabelClassName}>GPUs</span>{" "}
@@ -208,12 +220,12 @@ const selectComponents: SelectComponentsConfig<
           <span>{sessionClass.cpu}</span>
         </span>{" "}
         <div className={detailClassName}>
-          <span className={detailLabelClassName}>Memory</span>{" "}
+          <span className={detailLabelClassName}>RAM</span>{" "}
           <span>{sessionClass.memory}</span>
         </div>{" "}
         <span className={detailClassName}>
-          <span className={detailLabelClassName}>Storage</span>{" "}
-          <span>{sessionClass.storage}</span>
+          <span className={detailLabelClassName}>Disk</span>{" "}
+          <span>{sessionClass.max_storage}</span>
         </span>{" "}
         <span className={detailClassName}>
           <span className={detailLabelClassName}>GPUs</span>{" "}
@@ -224,7 +236,7 @@ const selectComponents: SelectComponentsConfig<
   },
 };
 
-const fakeResourcePools: ResourcePool[] = [
+export const fakeResourcePools: ResourcePool[] = [
   {
     id: 1,
     name: "Public pool",
@@ -241,7 +253,9 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 1,
         memory: 1,
         gpu: 0,
-        storage: 20,
+        max_storage: 20,
+        default_storage: 5,
+        default: false,
       },
       {
         id: 2,
@@ -249,7 +263,9 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 2,
         memory: 2,
         gpu: 0,
-        storage: 40,
+        max_storage: 40,
+        default_storage: 5,
+        default: true,
       },
     ],
   },
@@ -269,7 +285,9 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 2,
         memory: 4,
         gpu: 0,
-        storage: 40,
+        max_storage: 40,
+        default_storage: 10,
+        default: false,
       },
       {
         id: 4,
@@ -277,7 +295,9 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 4,
         memory: 8,
         gpu: 1,
-        storage: 40,
+        max_storage: 40,
+        default_storage: 10,
+        default: false,
       },
       {
         id: 5,
@@ -285,7 +305,9 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 8,
         memory: 16,
         gpu: 1,
-        storage: 40,
+        max_storage: 40,
+        default_storage: 10,
+        default: false,
       },
       {
         id: 6,
@@ -293,7 +315,9 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 8,
         memory: 32,
         gpu: 1,
-        storage: 40,
+        max_storage: 40,
+        default_storage: 10,
+        default: false,
       },
     ],
   },
@@ -313,7 +337,9 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 2,
         memory: 4,
         gpu: 4,
-        storage: 40,
+        max_storage: 40,
+        default_storage: 10,
+        default: false,
       },
       {
         id: 8,
@@ -321,7 +347,9 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 4,
         memory: 8,
         gpu: 4,
-        storage: 40,
+        max_storage: 40,
+        default_storage: 10,
+        default: false,
       },
       {
         id: 9,
@@ -329,7 +357,10 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 8,
         memory: 16,
         gpu: 8,
-        storage: 40,
+        max_storage: 40,
+        default_storage: 10,
+        public: false,
+        default: false,
       },
       {
         id: 10,
@@ -337,7 +368,9 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 8,
         memory: 32,
         gpu: 8,
-        storage: 40,
+        max_storage: 40,
+        default_storage: 10,
+        default: false,
       },
     ],
   },
@@ -357,7 +390,9 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 2,
         memory: 64,
         gpu: 0,
-        storage: 40,
+        max_storage: 40,
+        default_storage: 10,
+        default: false,
       },
       {
         id: 12,
@@ -365,7 +400,9 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 4,
         memory: 64,
         gpu: 0,
-        storage: 40,
+        max_storage: 40,
+        default_storage: 10,
+        default: false,
       },
       {
         id: 13,
@@ -373,7 +410,9 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 8,
         memory: 128,
         gpu: 0,
-        storage: 40,
+        max_storage: 40,
+        default_storage: 10,
+        default: false,
       },
       {
         id: 14,
@@ -381,7 +420,9 @@ const fakeResourcePools: ResourcePool[] = [
         cpu: 8,
         memory: 256,
         gpu: 0,
-        storage: 40,
+        max_storage: 40,
+        default_storage: 10,
+        default: false,
       },
     ],
   },

@@ -32,8 +32,6 @@ describe("Project new dataset", () => {
     fixtures.project(projectPath).cacheProjectList();
     fixtures.projectKGDatasetList(projectPath);
     fixtures.projectDatasetList();
-    // fixtures.uploadDatasetFile();
-    fixtures.createDataset();
     fixtures.addFileDataset();
     fixtures.projectTestContents(undefined, 9);
     fixtures.projectMigrationUpToDate({
@@ -44,6 +42,7 @@ describe("Project new dataset", () => {
   });
 
   it("complete new dataset", () => {
+    fixtures.createDataset();
     fixtures.uploadDatasetFile();
     cy.visit(`projects/${projectPath}/datasets/new`);
     cy.wait("@getProject");
@@ -136,5 +135,39 @@ describe("Project new dataset", () => {
     cy.get_cy("upload-error-message").contains(
       "Server responded with 500 code."
     );
+    cy.get_cy("submit-button").click();
+    cy.get("div.error-feedback")
+      .contains("Please fix problems in the following fields: Title, Files")
+      .should("exist");
+  });
+
+  it("shows error on empty title", () => {
+    fixtures.createDataset(
+      "createDatasetError",
+      "datasets/create-dataset-title-error.json"
+    );
+    cy.visit(`projects/${projectPath}/datasets/new`);
+    cy.wait("@getProject");
+    cy.get_cy("submit-button").click();
+    cy.get("div.error-feedback")
+      .contains("Please fix problems")
+      .should("exist");
+  });
+
+  it("shows error on invalid title", () => {
+    fixtures.createDataset(
+      "createDatasetError",
+      "datasets/create-dataset-title-error.json"
+    );
+    cy.visit(`projects/${projectPath}/datasets/new`);
+    cy.wait("@getProject");
+    cy.gui_new_dataset({
+      title: "test@",
+    });
+    cy.get_cy("submit-button").click();
+    cy.wait("@createDatasetError");
+    cy.get("div.alert-danger")
+      .contains("Errors occurred while performing this operation.")
+      .should("exist");
   });
 });
