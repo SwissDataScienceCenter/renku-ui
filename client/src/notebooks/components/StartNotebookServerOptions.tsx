@@ -42,7 +42,7 @@ import {
   setLfsAutoFetch,
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
-import { SessionClassSelector } from "./SessionClassSelector";
+import { SessionClassOption } from "./SessionClassOption";
 import { SessionStorageOption } from "./SessionStorageOption";
 import styles from "./StartNotebookServerOptions.module.scss";
 
@@ -57,7 +57,7 @@ export const StartNotebookServerOptions = ({
     <>
       <Row>
         <DefaultUrlOption projectRepositoryUrl={projectRepositoryUrl} />
-        <SessionClassSelector />
+        <SessionClassOption />
         <SessionStorageOption />
         <AutoFetchLfsOption />
       </Row>

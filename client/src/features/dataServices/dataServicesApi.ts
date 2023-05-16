@@ -22,7 +22,7 @@ import { ResourcePool } from "./dataServices";
 export const dataServicesApi = createApi({
   reducerPath: "dataServices",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/ui-server/api/data-services-DO-NOT-MERGE",
+    baseUrl: "/ui-server/api/data",
   }),
   endpoints: (builder) => ({
     getResourcePools: builder.query<ResourcePool[], Record<string, never>>({

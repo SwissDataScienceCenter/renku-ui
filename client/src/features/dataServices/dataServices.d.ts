@@ -39,7 +39,6 @@ export interface ResourceClass {
   /** Default disk storage in Gigabytes */
   default_storage: number;
 
-  public: boolean;
   default: boolean;
 }
 
