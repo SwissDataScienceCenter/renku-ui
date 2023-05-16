@@ -17,13 +17,11 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { TypedUseSelectorHook, useSelector } from "react-redux";
-
+import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { WorkflowsDisplay } from "./Workflows";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-type RootStateWorkflowsDisplay = WorkflowsDisplay;
 const initialState: WorkflowsDisplay = {
   details: {},
   expanded: [],
@@ -74,6 +72,4 @@ export const workflowsSlice = createSlice({
   },
 });
 
-export const useWorkflowsSelector: TypedUseSelectorHook<RootStateWorkflowsDisplay> =
-  useSelector;
-export default workflowsSlice;
+export const useWorkflowsSelector = createSliceSelector(workflowsSlice);
