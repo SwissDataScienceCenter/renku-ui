@@ -57,9 +57,7 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
   const { data, isFetching, isLoading, error } = useGetInactiveProjects(
     user?.data?.id
   );
-  const projectList = useInactiveProjectSelector(
-    (state) => state.kgInactiveProjects
-  );
+  const projectList = useInactiveProjectSelector();
   const { client } = useContext(AppContext);
   const dispatch = useDispatch();
 
