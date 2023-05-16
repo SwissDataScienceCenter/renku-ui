@@ -359,7 +359,6 @@ export const fakeResourcePools: ResourcePool[] = [
         gpu: 8,
         max_storage: 40,
         default_storage: 10,
-        public: false,
         default: false,
       },
       {
