@@ -38,6 +38,7 @@ import { projectApi } from "../../features/projects/ProjectsApi";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import { sessionApi } from "../../features/session/sessionApi";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
+import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
@@ -56,6 +57,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [sessionApi.reducerPath]: sessionApi.reducer,
+    [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,

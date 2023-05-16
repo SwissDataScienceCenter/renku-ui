@@ -17,9 +17,8 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootStateOrAny, useSelector } from "react-redux";
-import { StartSessionOptions } from "./startSessionOptions";
 import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
+import { StartSessionOptions } from "./startSessionOptions";
 
 const initialState: StartSessionOptions = {
   defaultUrl: "",

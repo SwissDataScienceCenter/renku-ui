@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
 import { useDispatch } from "react-redux";
 import {
@@ -33,42 +33,95 @@ import {
 } from "../../features/session/startSessionOptionsSlice";
 import styles from "./SessionStorageOption.module.scss";
 import { ThrottledTooltip } from "../../components/Tooltip";
-
-const MIN_STORAGE = 1;
-const STEP_STORAGE = 1;
-const MAX_STORAGE_FOR_TESTS = 80;
+import {
+  MIN_SESSION_STORAGE_GB,
+  STEP_SESSION_STORAGE_GB,
+} from "../../features/session/startSessionOptions.constants";
+import { clamp } from "lodash";
+import { fakeResourcePools } from "./SessionClassSelector";
+import { Loader } from "../../components/Loader";
+import { ResourcePool } from "../../features/dataServices/dataServices";
 
 export const SessionStorageOption = () => {
+  // const { data: resourcePools, isLoading } = useGetResourcePoolsQuery({});
+  const resourcePools = fakeResourcePools;
+  const isLoading = false;
+
+  if (isLoading || !resourcePools) {
+    return <Loader />;
+  }
+
   return (
     <Col xs={12}>
       <FormGroup className="field-group">
         <Label>Amount of Storage</Label>
-        <StorageSelector />
+        <StorageSelector resourcePools={resourcePools} />
       </FormGroup>
     </Col>
   );
 };
 
-const StorageSelector = () => {
-  const storage = useStartSessionOptionsSelector((state) => state.storage);
+interface StorageSelectorProps {
+  resourcePools: ResourcePool[];
+}
+
+const StorageSelector = ({ resourcePools }: StorageSelectorProps) => {
+  const sessionsClassesFlat = useMemo(
+    () => resourcePools.flatMap((pool) => pool.classes),
+    [resourcePools]
+  );
+
+  const { storage, sessionClass: sessionClassId } =
+    useStartSessionOptionsSelector();
   const dispatch = useDispatch();
+
+  const selectedSessionClass = useMemo(
+    () =>
+      sessionsClassesFlat.find((c) => c.id === sessionClassId) ??
+      sessionsClassesFlat[0] ??
+      null,
+    [sessionClassId, sessionsClassesFlat]
+  );
+  const maxStorage = selectedSessionClass.max_storage;
+
+  // Update the storage value to default when changing the session class
+  useEffect(() => {
+    if (selectedSessionClass == null) {
+      return;
+    }
+    const newValue = validateStorageAmount({
+      value: selectedSessionClass.default_storage,
+      maxValue: selectedSessionClass.max_storage,
+    });
+    dispatch(setStorage(newValue));
+  }, [dispatch, selectedSessionClass]);
 
   const onChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = validateStorageAmount(event.target.valueAsNumber);
+      if (selectedSessionClass == null) {
+        return;
+      }
+      const newValue = validateStorageAmount({
+        value: event.target.valueAsNumber,
+        maxValue: selectedSessionClass.max_storage,
+      });
       dispatch(setStorage(newValue));
     },
-    [dispatch]
+    [dispatch, selectedSessionClass]
   );
+
+  if (!selectedSessionClass) {
+    return null;
+  }
 
   return (
     <div className={cx(styles.container, "d-grid gap-sm-3 align-items-center")}>
       <Input
         type="range"
         className={styles.range}
-        min={MIN_STORAGE}
-        max={MAX_STORAGE_FOR_TESTS}
-        step={STEP_STORAGE}
+        min={MIN_SESSION_STORAGE_GB}
+        max={maxStorage}
+        step={STEP_SESSION_STORAGE_GB}
         value={storage}
         onChange={onChange}
       />
@@ -76,9 +129,9 @@ const StorageSelector = () => {
         <Input
           type="number"
           className={cx(styles.inputNumber, "rounded-start")}
-          min={MIN_STORAGE}
-          max={MAX_STORAGE_FOR_TESTS}
-          step={STEP_STORAGE}
+          min={MIN_SESSION_STORAGE_GB}
+          max={maxStorage}
+          step={STEP_SESSION_STORAGE_GB}
           value={storage}
           onChange={onChange}
         />
@@ -97,7 +150,13 @@ const StorageSelector = () => {
   );
 };
 
-const validateStorageAmount = (value: number) =>
+const validateStorageAmount = ({
+  value,
+  maxValue,
+}: {
+  value: number;
+  maxValue: number;
+}) =>
   isNaN(value)
-    ? MIN_STORAGE
-    : Math.min(MAX_STORAGE_FOR_TESTS, Math.max(MIN_STORAGE, Math.round(value)));
+    ? MIN_SESSION_STORAGE_GB
+    : clamp(Math.round(value), MIN_SESSION_STORAGE_GB, maxValue);
