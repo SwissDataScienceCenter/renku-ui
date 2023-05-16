@@ -34,10 +34,7 @@ import {
 } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import { IMigration, ProjectConfig } from "../../features/project/Project";
-import {
-  useGetConfigQuery,
-  useUpdateConfigMutation,
-} from "../../features/project/projectCoreApi";
+import { useGetConfigQuery } from "../../features/project/projectCoreApi";
 import { ServerOptions } from "../../features/session/session";
 import { useServerOptionsQuery } from "../../features/session/sessionApi";
 import {
@@ -60,10 +57,6 @@ export const StartNotebookServerOptions = ({
   projectRepositoryUrl,
   branch,
 }: StartNotebookServerOptionsProps) => {
-  useEffect(() => {
-    console.log({ branch });
-  }, [branch]);
-
   return (
     <>
       <Row>
@@ -84,10 +77,7 @@ interface DefaultUrlOptionProps {
   branchName?: string;
 }
 
-const DefaultUrlOption = ({
-  projectRepositoryUrl,
-  branchName,
-}: DefaultUrlOptionProps) => {
+const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
   // Global options
   const { data: serverOptions, isLoading: serverOptionsIsLoading } =
     useServerOptionsQuery({});
@@ -103,7 +93,7 @@ const DefaultUrlOption = ({
       {
         projectRepositoryUrl,
         versionUrl,
-        ...(branchName ? { branch: branchName } : {}),
+        // ...(branchName ? { branch: branchName } : {}),
       },
       { skip: !fetchedVersion }
     );
@@ -118,18 +108,18 @@ const DefaultUrlOption = ({
   );
   const dispatch = useDispatch();
 
-  const [updateFn] = useUpdateConfigMutation();
-  useEffect(() => {
-    // console.log({ updateFn });
-    const fn = (update: { [key: string]: string }) =>
-      updateFn({
-        projectRepositoryUrl,
-        versionUrl,
-        ...(branchName ? { branch: branchName } : {}),
-        update,
-      });
-    console.log({ updateFn: fn });
-  }, [updateFn, branchName, projectRepositoryUrl, versionUrl]);
+  // const [updateFn] = useUpdateConfigMutation();
+  // useEffect(() => {
+  //   // console.log({ updateFn });
+  //   const fn = (update: { [key: string]: string }) =>
+  //     updateFn({
+  //       projectRepositoryUrl,
+  //       versionUrl,
+  //       // ...(branchName ? { branch: branchName } : {}),
+  //       update,
+  //     });
+  //   // console.log({ updateFn: fn });
+  // }, [updateFn, projectRepositoryUrl, versionUrl]);
 
   // Set initial default URL
   useEffect(() => {

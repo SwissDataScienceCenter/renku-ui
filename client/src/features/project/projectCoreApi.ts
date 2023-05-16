@@ -142,7 +142,7 @@ export const projectCoreApi = createApi({
       },
     }),
     getConfig: builder.query<ProjectConfig, GetConfigParams>({
-      query: ({ projectRepositoryUrl, branch, versionUrl }) => {
+      query: ({ projectRepositoryUrl, versionUrl }) => {
         const params = {
           git_url: projectRepositoryUrl,
           // Branch option not working currently
@@ -157,7 +157,7 @@ export const projectCoreApi = createApi({
         transformGetConfigRawResponse(response),
     }),
     updateConfig: builder.mutation<ProjectConfig, UpdateConfigParams>({
-      query: ({ projectRepositoryUrl, branch, versionUrl, update }) => {
+      query: ({ projectRepositoryUrl, versionUrl, update }) => {
         const body = {
           git_url: projectRepositoryUrl,
           // Branch option not working currently

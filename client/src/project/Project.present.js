@@ -24,6 +24,11 @@
  */
 
 import React, { Component, Fragment, useEffect } from "react";
+import {
+  faCodeBranch,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, Route, Switch } from "react-router-dom";
 import {
   Alert,
@@ -33,61 +38,55 @@ import {
   CardHeader,
   Col,
   Modal,
-  Row,
   Nav,
   NavItem,
+  Row,
   UncontrolledTooltip,
 } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCodeBranch,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
-
-import { Url } from "../utils/helpers/url";
-import { SpecialPropVal } from "../model/Model";
-import { Notebooks, ShowSession, StartNotebookServer } from "../notebooks";
-import FilesTreeView from "./filestreeview/FilesTreeView";
-import { ProjectDatasetsView } from "../features/project";
+import { ContainerWrap } from "../App";
 import { ACCESS_LEVELS } from "../api-client";
-import { shouldDisplayVersionWarning } from "./status/MigrationUtils.js";
+import { InfoAlert } from "../components/Alert";
+import { ExternalLink } from "../components/ExternalLinks";
+import { Loader } from "../components/Loader";
+import { RenkuNavLink } from "../components/RenkuNavLink";
+import { ThrottledTooltip } from "../components/Tooltip";
+import { GoBackButton, RoundButtonGroup } from "../components/buttons/Button";
+import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
+import { SshModal } from "../components/ssh/ssh";
+import {
+  ProjectDatasetsView,
+  ProjectEntityHeader,
+  ProjectFileLineage,
+  ProjectFileView,
+} from "../features/project";
+import ProjectPageTitle from "../features/project/ProjectPageTitle";
+import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
+import {
+  Notebooks,
+  NotebooksCoordinator,
+  ShowSession,
+  StartNotebookServer,
+} from "../notebooks";
+import { Docs } from "../utils/constants/Docs";
+import { Url } from "../utils/helpers/url";
+import { WorkflowsList } from "../workflows";
+import "./Project.css";
+import { CloneButton } from "./clone/CloneButton";
+import GitLabConnectButton, {
+  externalUrlToGitLabIdeUrl,
+} from "./components/GitLabConnect";
+import { ProjectSettingsSessions } from "./components/ProjectSettingsSessions";
+import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
+import FilesTreeView from "./filestreeview/FilesTreeView";
+import { ForkProject } from "./new";
 import {
   ProjectOverviewCommits,
   ProjectOverviewStats,
   ProjectOverviewVersion,
 } from "./overview";
-import { ForkProject } from "./new";
-import {
-  ProjectSettingsGeneral,
-  ProjectSettingsNav,
-  ProjectSettingsSessions,
-} from "./settings";
-import { WorkflowsList } from "../workflows";
-import { ExternalLink } from "../components/ExternalLinks";
-import { GoBackButton, RoundButtonGroup } from "../components/buttons/Button";
-import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
-import { InfoAlert } from "../components/Alert";
-import { RenkuNavLink } from "../components/RenkuNavLink";
-import { Loader } from "../components/Loader";
-import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
-import { Docs } from "../utils/constants/Docs";
-import { ContainerWrap } from "../App";
-import { ThrottledTooltip } from "../components/Tooltip";
-import { SshModal } from "../components/ssh/ssh";
-import GitLabConnectButton, {
-  externalUrlToGitLabIdeUrl,
-} from "./components/GitLabConnect";
-import { NotebooksCoordinator } from "../notebooks";
-import ProjectPageTitle from "../features/project/ProjectPageTitle";
-import {
-  ProjectEntityHeader,
-  ProjectFileLineage,
-  ProjectFileView,
-} from "../features/project";
-import { CloneButton } from "./clone/CloneButton";
-
-import "./Project.css";
+import { ProjectSettingsGeneral, ProjectSettingsNav } from "./settings";
+import { shouldDisplayVersionWarning } from "./status/MigrationUtils.js";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -1401,6 +1400,5 @@ export {
   ProjectSuggestionDataset,
   ProjectSuggestionReadme,
 };
-
 // For testing
 export { filterPaths };
