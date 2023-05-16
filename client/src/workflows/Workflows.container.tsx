@@ -17,7 +17,7 @@
  */
 
 import React from "react";
-import { RootStateOrAny, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import { WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent } from "./Workflows.present";
@@ -95,9 +95,7 @@ function WorkflowsList({
     dispatch(workflowsSlice.actions.setOrderProperty({ newProperty }));
   const setDetailExpanded = (targetDetails: Record<string, any>) =>
     dispatch(workflowsSlice.actions.setDetail({ targetDetails }));
-  const workflowsDisplay = useWorkflowsSelector(
-    (state: RootStateOrAny) => state[workflowsSlice.name]
-  );
+  const workflowsDisplay = useWorkflowsSelector();
 
   // Fetch workflow list
   const skipList = !versionUrl || !repositoryUrl || unsupported;

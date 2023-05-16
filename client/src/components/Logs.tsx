@@ -17,7 +17,7 @@
  */
 
 import React, { useEffect } from "react";
-import { RootStateOrAny, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -318,9 +318,7 @@ interface EnvironmentLogsProps {
   name: string;
 }
 const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
-  const displayModal = useDisplaySelector(
-    (state: RootStateOrAny) => state[displaySlice.name].modals.sessionLogs
-  );
+  const displayModal = useDisplaySelector((state) => state.modals.sessionLogs);
   const { logs, fetchLogs } = useGetSessionLogs(
     displayModal.targetServer,
     displayModal.show

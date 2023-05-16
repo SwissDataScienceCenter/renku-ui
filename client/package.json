@@ -9,8 +9,8 @@
     "@fortawesome/free-regular-svg-icons": "^5.15.3",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@popperjs/core": "^2.10.1",
-    "@reduxjs/toolkit": "^1.9.3",
+    "@popperjs/core": "^2.11.7",
+    "@reduxjs/toolkit": "^1.9.5",
     "@renku/ckeditor5-build-renku": "0.0.6",
     "@sentry/react": "^6.19.7",
     "@sentry/tracing": "^6.16.1",
@@ -38,7 +38,7 @@
     "react": "^18.2.0",
     "react-autosuggest": "^10.1.0",
     "react-avatar-editor": "^13.0.0",
-    "react-bootstrap-icons": "^1.10.2",
+    "react-bootstrap-icons": "^1.10.3",
     "react-clipboard.js": "^2.0.16",
     "react-collapse": "^5.0.0",
     "react-cookie-consent": "^8.0.1",
@@ -57,7 +57,7 @@
     "react-router-hash-link": "^2.4.3",
     "react-select": "^5.7.3",
     "react-toastify": "^6.2.0",
-    "reactstrap": "^9.1.6",
+    "reactstrap": "^9.1.9",
     "redux": "^4.2.1",
     "redux-thunk": "^2.2.0",
     "rehype-katex": "^6.0.2",
@@ -72,7 +72,7 @@
     "styled-jsx": "^5.1.0",
     "uuid": "^3.3.3",
     "xregexp": "^4.4.0",
-    "yaml": "^2.0.1"
+    "yaml": "^2.2.2"
   },
   "scripts": {
     "start-js": "BROWSER=none REACT_APP_UI_DEV_MODE=$UI_DEV_MODE REACT_APP_RENKU_UI_URL=$RENKU_UI_URL craco --max_old_space_size=4096 start",
