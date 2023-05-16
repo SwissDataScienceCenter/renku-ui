@@ -32,7 +32,7 @@ interface errorDataMessage {
 export const projectKgApi = createApi({
   reducerPath: "projectKg",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/kg/" }),
-  tagTypes: ["project"],
+  tagTypes: ["project", "project-indexing"],
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     activateIndexing: builder.mutation<ProjectActivateIndexingResponse, number>(
@@ -43,6 +43,9 @@ export const projectKgApi = createApi({
             method: "POST",
           };
         },
+        invalidatesTags: (result, error, projectId) => [
+          { type: "project-indexing", id: projectId },
+        ],
       }
     ),
     getProjectIndexingStatus: builder.query<
@@ -56,6 +59,9 @@ export const projectKgApi = createApi({
             response.status < 400 || response.status === 404,
         };
       },
+      providesTags: (result, error, projectId) => [
+        { type: "project-indexing", id: projectId },
+      ],
       transformErrorResponse: (errorData) => {
         if (errorData.status === 404 && errorData.data && "message") {
           if (

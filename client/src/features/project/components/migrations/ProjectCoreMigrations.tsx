@@ -72,7 +72,10 @@ export function ProjectMigrationStatus({
 
   const skip = !gitUrl || !branch;
   const { data, isLoading, isFetching, error } =
-    projectCoreApi.useGetMigrationStatusQuery({ gitUrl, branch }, { skip });
+    projectCoreApi.useGetMigrationStatusQuery(
+      { gitUrl, branch },
+      { refetchOnMountOrArgChange: 60 * 5, skip }
+    );
   const [startMigration, migrationStatus] =
     projectCoreApi.useStartMigrationMutation();
 

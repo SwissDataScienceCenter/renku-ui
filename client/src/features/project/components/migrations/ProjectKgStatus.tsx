@@ -55,7 +55,7 @@ export function ProjectKnowledgeGraph({
   const toggleShowDetails = () => setShowDetails(!showDetails);
 
   const skip = !projectId;
-  const { data, isLoading, isUninitialized, error, refetch } =
+  const { data, isFetching, isLoading, isUninitialized, error, refetch } =
     projectKgApi.useGetProjectIndexingStatusQuery(projectId, {
       refetchOnMountOrArgChange: 20,
       skip,
@@ -66,7 +66,7 @@ export function ProjectKnowledgeGraph({
 
   // Add polling for non-activated projects
   useEffect(() => {
-    if (!isUninitialized && !isLoading) {
+    if (!isUninitialized && !isFetching) {
       if (!data?.activated) setPollingInterval(LONG_POLLING);
       else if (data?.details?.status === ProjectIndexingStatuses.InProgress)
         setPollingInterval(SHORT_POLLING);
@@ -75,19 +75,22 @@ export function ProjectKnowledgeGraph({
   }, [
     data,
     isUninitialized,
-    isLoading,
+    isFetching,
     LONG_POLLING,
     NO_POLLING,
     SHORT_POLLING,
   ]);
 
-  if (isLoading || skip) {
+  if (isFetching || skip) {
+    const fetchingTitle = isLoading
+      ? "Fetching project metadata..."
+      : "Refreshing project metadata...";
     return (
       <CompositeTitle
         icon={faTimesCircle}
         loading={true}
         showDetails={showDetails}
-        title="Fetching project metadata..."
+        title={fetchingTitle}
         toggleShowDetails={toggleShowDetails}
       />
     );
