@@ -19,6 +19,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { StartSessionOptions } from "./startSessionOptions";
+import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 
 const initialState: StartSessionOptions = {
   defaultUrl: "",
@@ -55,11 +56,6 @@ export const {
   reset,
 } = startSessionOptionsSlice.actions;
 
-export const useStartSessionOptionsSelector = <TState = StartSessionOptions>(
-  selector?: (state: StartSessionOptions) => TState
-) =>
-  useSelector<RootStateOrAny, TState>(
-    selector
-      ? (state) => selector(state[startSessionOptionsSlice.name])
-      : (state) => state[startSessionOptionsSlice.name]
-  );
+export const useStartSessionOptionsSelector = createSliceSelector(
+  startSessionOptionsSlice
+);

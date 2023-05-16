@@ -94,7 +94,9 @@ const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
     projectConfig,
   });
 
-  const { defaultUrl: selectedDefaultUrl } = useStartSessionOptionsSelector();
+  const selectedDefaultUrl = useStartSessionOptionsSelector(
+    (state) => state.defaultUrl
+  );
   const dispatch = useDispatch();
 
   // Set initial default URL
