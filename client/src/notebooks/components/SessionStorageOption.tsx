@@ -18,6 +18,7 @@
 
 import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
+import { clamp } from "lodash";
 import { useDispatch } from "react-redux";
 import {
   Col,
@@ -27,20 +28,20 @@ import {
   InputGroupText,
   Label,
 } from "reactstrap";
-import {
-  setStorage,
-  useStartSessionOptionsSelector,
-} from "../../features/session/startSessionOptionsSlice";
-import styles from "./SessionStorageOption.module.scss";
 import { ThrottledTooltip } from "../../components/Tooltip";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
 } from "../../features/session/startSessionOptions.constants";
-import { clamp } from "lodash";
+import {
+  setStorage,
+  useStartSessionOptionsSelector,
+} from "../../features/session/startSessionOptionsSlice";
+import styles from "./SessionStorageOption.module.scss";
 import { fakeResourcePools } from "./SessionClassSelector";
 import { Loader } from "../../components/Loader";
 import { ResourcePool } from "../../features/dataServices/dataServices";
+// import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 
 export const SessionStorageOption = () => {
   // const { data: resourcePools, isLoading } = useGetResourcePoolsQuery({});
