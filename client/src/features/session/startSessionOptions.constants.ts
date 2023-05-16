@@ -16,9 +16,5 @@
  * limitations under the License.
  */
 
-export interface StartSessionOptions {
-  defaultUrl: string;
-  sessionClass: number;
-  storage: number;
-  lfsAutoFetch: boolean;
-}
+export const MIN_SESSION_STORAGE_GB = 1;
+export const STEP_SESSION_STORAGE_GB = 1;

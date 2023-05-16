@@ -27,9 +27,20 @@ export interface ResourceClass {
   id: number;
   name: string;
   cpu: number;
+
+  /** Memory (RAM) in Gigabytes */
   memory: number;
+
   gpu: number;
-  storage: number;
+
+  /** Max disk storage in Gigabytes */
+  max_storage: number;
+
+  /** Default disk storage in Gigabytes */
+  default_storage: number;
+
+  public: boolean;
+  default: boolean;
 }
 
 export interface Resources {

@@ -15,7 +15,10 @@
         "cpu": 1,
         "memory": 1,
         "gpu": 0,
-        "storage": 20
+        "max_storage": 20,
+        "default_storage": 5,
+        "public": true,
+        "default": false
       },
       {
         "id": 2,
@@ -23,7 +26,10 @@
         "cpu": 2,
         "memory": 2,
         "gpu": 0,
-        "storage": 40
+        "max_storage": 40,
+        "default_storage": 5,
+        "public": true,
+        "default": true
       }
     ]
   },
@@ -43,7 +49,10 @@
         "cpu": 2,
         "memory": 4,
         "gpu": 0,
-        "storage": 40
+        "max_storage": 40,
+        "default_storage": 10,
+        "public": false,
+        "default": false
       },
       {
         "id": 4,
@@ -51,23 +60,144 @@
         "cpu": 4,
         "memory": 8,
         "gpu": 1,
-        "storage": 40
+        "max_storage": 40,
+        "default_storage": 10,
+        "public": false,
+        "default": false
       },
       {
-        "id": 4,
+        "id": 5,
         "name": "special class 3",
         "cpu": 8,
         "memory": 16,
         "gpu": 1,
-        "storage": 40
+        "max_storage": 40,
+        "default_storage": 10,
+        "public": false,
+        "default": false
       },
       {
-        "id": 5,
+        "id": 6,
         "name": "special class 4",
         "cpu": 8,
         "memory": 32,
         "gpu": 1,
-        "storage": 40
+        "max_storage": 40,
+        "default_storage": 10,
+        "public": false,
+        "default": false
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Special GPU pool",
+    "quota": {
+      "cpu": 200,
+      "memory": 8000,
+      "gpu": 500,
+      "storage": 10000000
+    },
+    "classes": [
+      {
+        "id": 7,
+        "name": "High-GPU class 1",
+        "cpu": 2,
+        "memory": 4,
+        "gpu": 4,
+        "max_storage": 40,
+        "default_storage": 10,
+        "public": false,
+        "default": false
+      },
+      {
+        "id": 8,
+        "name": "High-GPU class 2",
+        "cpu": 4,
+        "memory": 8,
+        "gpu": 4,
+        "max_storage": 40,
+        "default_storage": 10,
+        "public": false,
+        "default": false
+      },
+      {
+        "id": 9,
+        "name": "High-GPU class 3",
+        "cpu": 8,
+        "memory": 16,
+        "gpu": 8,
+        "max_storage": 40,
+        "default_storage": 10,
+        "public": false,
+        "default": false
+      },
+      {
+        "id": 10,
+        "name": "High-GPU class 4",
+        "cpu": 8,
+        "memory": 32,
+        "gpu": 8,
+        "max_storage": 40,
+        "default_storage": 10,
+        "public": false,
+        "default": false
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "High memory pool",
+    "quota": {
+      "cpu": 200,
+      "memory": 64000,
+      "gpu": 40,
+      "storage": 10000000
+    },
+    "classes": [
+      {
+        "id": 11,
+        "name": "high-memory class 1",
+        "cpu": 2,
+        "memory": 64,
+        "gpu": 0,
+        "max_storage": 40,
+        "default_storage": 10,
+        "public": false,
+        "default": false
+      },
+      {
+        "id": 12,
+        "name": "high-memory class 2",
+        "cpu": 4,
+        "memory": 64,
+        "gpu": 0,
+        "max_storage": 40,
+        "default_storage": 10,
+        "public": false,
+        "default": false
+      },
+      {
+        "id": 13,
+        "name": "high-memory class 3",
+        "cpu": 8,
+        "memory": 128,
+        "gpu": 0,
+        "max_storage": 40,
+        "default_storage": 10,
+        "public": false,
+        "default": false
+      },
+      {
+        "id": 14,
+        "name": "high-memory class 4",
+        "cpu": 8,
+        "memory": 256,
+        "gpu": 0,
+        "max_storage": 40,
+        "default_storage": 10,
+        "public": false,
+        "default": false
       }
     ]
   }
