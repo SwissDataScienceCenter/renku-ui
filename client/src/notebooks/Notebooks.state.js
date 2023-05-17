@@ -1260,7 +1260,12 @@ class NotebooksCoordinator {
       reduxStore.getState()[startSessionOptionsSlice.name];
 
     const options = {
-      serverOptions: startSessionOptions,
+      resource_class_id: startSessionOptions.sessionClass ?? null,
+      storage: startSessionOptions.storage ?? null,
+      serverOptions: {
+        defaultUrl: startSessionOptions.defaultUrl,
+        lfsAutoFetch: startSessionOptions.lfsAutoFetch,
+      },
     };
     const cloudstorage = this.model.get("filters.objectStoresConfiguration");
     if (cloudstorage.length > 0) options["cloudstorage"] = cloudstorage;
@@ -1292,9 +1297,9 @@ class NotebooksCoordinator {
     };
 
     // eslint-disable-next-line no-console
-    console.error("Would launch notebook with options", { finalOptions });
-    throw new Error("DO NOT LAUNCH");
-    // return this.client.startNotebook(finalOptions);
+    // console.error("Would launch notebook with options", { finalOptions });
+    // throw new Error("DO NOT LAUNCH");
+    return this.client.startNotebook(finalOptions);
   }
 
   stopNotebook(serverName, force = false) {
