@@ -60,6 +60,10 @@ export const SessionClassOption = () => {
     return <Loader />;
   }
 
+  if (resourcePools.length == 0) {
+    return <p>Error: no resource pools</p>;
+  }
+
   return (
     <Col xs={12}>
       <FormGroup className="field-group">
@@ -128,6 +132,7 @@ const SessionClassSelector = ({ resourcePools }: SessionClassSelectorProps) => {
       unstyled
       classNames={selectClassNames}
       components={selectComponents}
+      menuIsOpen
     />
   );
 };
@@ -159,15 +164,17 @@ const selectClassNames: ClassNamesConfig<ResourceClass, false, OptionGroup> = {
   menu: () =>
     cx("rounded-bottom", "border", "border-top-0", "px-0", "py-2", styles.menu),
   menuList: () => cx("d-grid", "gap-2"),
-  option: ({ isSelected }) =>
+  option: ({ isFocused, isSelected }) =>
     cx(
       "d-grid",
-      "gap-sm-4",
-      "gap-xl-5",
+      "gap-1",
+      // "gap-sm-4",
+      // "gap-xl-5",
       "px-3",
       "py-1",
       styles.option,
-      isSelected && styles.optionIsSelected
+      isFocused && styles.optionIsFocused,
+      !isFocused && isSelected && styles.optionIsSelected
     ),
   singleValue: () =>
     cx("d-grid", "gap-sm-4", "gap-xl-5", "px-3", styles.singleValue),
@@ -186,41 +193,38 @@ const selectComponents: SelectComponentsConfig<
     );
   },
   Option: (props) => {
-    const { label, data: sessionClass } = props;
-    const labelClassName = cx(styles.label);
-    const detailClassName = cx(
-      "d-inline-flex",
-      "flex-wrap",
-      "justify-content-sm-end",
-      styles.detail
-    );
-    const detailLabelClassName = cx(
-      "align-self-start",
-      "me-sm-auto",
-      styles.detailLabel
-    );
-    const detailValueClassName = cx("ms-1", styles.detailValue);
+    // const { label, data: sessionClass } = props;
+    // const labelClassName = cx(styles.label);
+    // const detailClassName = cx(
+    //   "d-inline-flex",
+    //   "flex-wrap",
+    //   "justify-content-sm-end",
+    //   styles.detail
+    // );
+    // const detailLabelClassName = cx(
+    //   "align-self-start",
+    //   "me-sm-auto",
+    //   styles.detailLabel
+    // );
+    // const detailValueClassName = cx("ms-1", styles.detailValue);
+    const { data: sessionClass } = props;
+    const detailValueClassName = cx(styles.detailValue);
+    const detailLabelClassName = cx(styles.detailLabel);
     return (
       <components.Option {...props}>
-        <span className={labelClassName}>{label}</span>{" "}
-        <span className={detailClassName}>
-          <span className={detailLabelClassName}>CPUs</span>{" "}
-          <span className={detailValueClassName}>{sessionClass.cpu}</span>
+        <span>{sessionClass.name}</span>{" "}
+        <span className={detailValueClassName}>{sessionClass.cpu}</span>{" "}
+        <span className={detailLabelClassName}>CPUs</span>{" "}
+        <span className={detailValueClassName}>{sessionClass.memory}</span>
+        <span>
+          GB <span className={detailLabelClassName}>RAM</span>
         </span>{" "}
-        <div className={detailClassName}>
-          <span className={detailLabelClassName}>RAM</span>{" "}
-          <span className={detailValueClassName}>{sessionClass.memory}</span>
-        </div>{" "}
-        <span className={detailClassName}>
-          <span className={detailLabelClassName}>Disk</span>{" "}
-          <span className={detailValueClassName}>
-            {sessionClass.max_storage}
-          </span>
+        <span className={detailValueClassName}>{sessionClass.max_storage}</span>
+        <span>
+          GB <span className={detailLabelClassName}>Disk</span>
         </span>{" "}
-        <span className={detailClassName}>
-          <span className={detailLabelClassName}>GPUs</span>{" "}
-          <span className={detailValueClassName}>{sessionClass.gpu}</span>
-        </span>
+        <span className={detailValueClassName}>{sessionClass.gpu}</span>{" "}
+        <span className={detailLabelClassName}>GPUs</span>{" "}
       </components.Option>
     );
   },
