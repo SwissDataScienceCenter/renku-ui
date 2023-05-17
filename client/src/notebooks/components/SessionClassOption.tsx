@@ -155,19 +155,22 @@ const selectClassNames: ClassNamesConfig<ResourceClass, false, OptionGroup> = {
       menuIsOpen && styles.controlIsOpen
     ),
   dropdownIndicator: () => cx("pe-3"),
-  groupHeading: () => cx("px-3", "text-uppercase", styles.groupHeading),
+  groupHeading: () => cx("pt-1", "px-3", "text-uppercase", styles.groupHeading),
   menu: () =>
     cx("rounded-bottom", "border", "border-top-0", "px-0", "py-2", styles.menu),
   menuList: () => cx("d-grid", "gap-2"),
   option: ({ isSelected }) =>
     cx(
       "d-grid",
-      "gap-4",
+      "gap-sm-4",
+      "gap-xl-5",
       "px-3",
+      "py-1",
       styles.option,
       isSelected && styles.optionIsSelected
     ),
-  singleValue: () => cx("d-grid", "gap-4", "px-3", styles.singleValue),
+  singleValue: () =>
+    cx("d-grid", "gap-sm-4", "gap-xl-5", "px-3", styles.singleValue),
 };
 
 const selectComponents: SelectComponentsConfig<
@@ -184,52 +187,77 @@ const selectComponents: SelectComponentsConfig<
   },
   Option: (props) => {
     const { label, data: sessionClass } = props;
-    const detailClassName = cx("d-inline-flex", styles.detail);
-    const detailLabelClassName = cx("width", "me-auto", styles.detailLabel);
+    const labelClassName = cx(styles.label);
+    const detailClassName = cx(
+      "d-inline-flex",
+      "flex-wrap",
+      "justify-content-sm-end",
+      styles.detail
+    );
+    const detailLabelClassName = cx(
+      "align-self-start",
+      "me-sm-auto",
+      styles.detailLabel
+    );
+    const detailValueClassName = cx("ms-1", styles.detailValue);
     return (
       <components.Option {...props}>
-        <span className={styles.label}>{label}</span>{" "}
+        <span className={labelClassName}>{label}</span>{" "}
         <span className={detailClassName}>
           <span className={detailLabelClassName}>CPUs</span>{" "}
-          <span>{sessionClass.cpu}</span>
+          <span className={detailValueClassName}>{sessionClass.cpu}</span>
         </span>{" "}
         <div className={detailClassName}>
           <span className={detailLabelClassName}>RAM</span>{" "}
-          <span>{sessionClass.memory}</span>
+          <span className={detailValueClassName}>{sessionClass.memory}</span>
         </div>{" "}
         <span className={detailClassName}>
           <span className={detailLabelClassName}>Disk</span>{" "}
-          <span>{sessionClass.max_storage}</span>
+          <span className={detailValueClassName}>
+            {sessionClass.max_storage}
+          </span>
         </span>{" "}
         <span className={detailClassName}>
           <span className={detailLabelClassName}>GPUs</span>{" "}
-          <span>{sessionClass.gpu}</span>
+          <span className={detailValueClassName}>{sessionClass.gpu}</span>
         </span>
       </components.Option>
     );
   },
   SingleValue: (props) => {
     const { data: sessionClass } = props;
-    const detailClassName = cx("d-inline-flex", styles.detail);
-    const detailLabelClassName = cx("width", "me-auto", styles.detailLabel);
+    const detailClassName = cx(
+      "d-inline-flex",
+      "flex-wrap",
+      "justify-content-sm-end",
+      styles.detail
+    );
+    const detailLabelClassName = cx(
+      "align-self-start",
+      "me-sm-auto",
+      styles.detailLabel
+    );
+    const detailValueClassName = cx("ms-1", styles.detailValue);
     return (
       <components.SingleValue {...props}>
         <span className={styles.label}>{sessionClass.name}</span>{" "}
         <span className={detailClassName}>
           <span className={detailLabelClassName}>CPUs</span>{" "}
-          <span>{sessionClass.cpu}</span>
+          <span className={detailValueClassName}>{sessionClass.cpu}</span>
         </span>{" "}
         <div className={detailClassName}>
           <span className={detailLabelClassName}>RAM</span>{" "}
-          <span>{sessionClass.memory}</span>
+          <span className={detailValueClassName}>{sessionClass.memory}</span>
         </div>{" "}
         <span className={detailClassName}>
           <span className={detailLabelClassName}>Disk</span>{" "}
-          <span>{sessionClass.max_storage}</span>
+          <span className={detailValueClassName}>
+            {sessionClass.max_storage}
+          </span>
         </span>{" "}
         <span className={detailClassName}>
           <span className={detailLabelClassName}>GPUs</span>{" "}
-          <span>{sessionClass.gpu}</span>
+          <span className={detailValueClassName}>{sessionClass.gpu}</span>
         </span>
       </components.SingleValue>
     );

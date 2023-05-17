@@ -1,3 +1,8 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
 .control {
   background: var(--bs-rk-white);
   --bs-border-color: var(--bs-rk-border-input);
@@ -26,16 +31,39 @@
 
 .option,
 .singleValue {
-  grid-template-columns: minmax(0, 3fr) repeat(4, minmax(0, 1fr));
-  justify-items: end;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  justify-items: start;
+
+  @include media-breakpoint-up(sm) {
+    grid-template-columns:
+      minmax(min-content, 3fr)
+      repeat(4, minmax(min-content, 6ch));
+    justify-items: end;
+  }
+
+  @include media-breakpoint-up(xl) {
+    grid-template-columns:
+      minmax(min-content, 3fr)
+      repeat(4, minmax(min-content, 8ch));
+  }
 
   & .label {
     justify-self: start;
+
+    grid-column: 1 / -1;
+
+    @include media-breakpoint-up(sm) {
+      grid-column: auto;
+    }
   }
 
   & .detail {
-    width: 100%;
-    flex-wrap: wrap;
+    font-size: smaller;
+
+    @include media-breakpoint-up(sm) {
+      font-size: medium;
+      width: 100%;
+    }
   }
 
   & .detailLabel {
@@ -46,11 +74,16 @@
 .option {
   cursor: pointer !important;
 
+  border-bottom: 1px dotted #a3a3a3;
+  &:last-of-type {
+    border-bottom: none;
+  }
+
   &:hover {
-    background: rgba(var(--bs-rk-green-rgb), 0.5);
+    background-color: #e4e7ea;
   }
 
   &IsSelected {
-    background-color: rgba(var(--bs-rk-green-rgb), 0.25);
+    background-color: #e4e7ea80;
   }
 }
