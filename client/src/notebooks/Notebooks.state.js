@@ -1299,7 +1299,15 @@ class NotebooksCoordinator {
     // eslint-disable-next-line no-console
     // console.error("Would launch notebook with options", { finalOptions });
     // throw new Error("DO NOT LAUNCH");
-    return this.client.startNotebook(finalOptions);
+    return this.client.startNotebook(
+      namespace,
+      project,
+      branch,
+      commit,
+      image,
+      options,
+      env_variables
+    );
   }
 
   stopNotebook(serverName, force = false) {
