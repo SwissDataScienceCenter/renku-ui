@@ -86,6 +86,13 @@ interface UpdateConfigParams extends GetConfigParams {
   };
 }
 
+interface UpdateConfigResponse {
+  branch: string;
+  update: {
+    [key: string]: string;
+  };
+}
+
 function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
   const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : endpoint;
   return `/renku${urlPath}`;
@@ -177,18 +184,37 @@ export const projectCoreApi = createApi({
         { type: "ProjectConfig", id: arg.projectRepositoryUrl },
       ],
     }),
-    updateConfig: builder.mutation<ProjectConfig, UpdateConfigParams>({
-      query: ({ projectRepositoryUrl, versionUrl, update }) => {
+    updateConfig: builder.mutation<UpdateConfigResponse, UpdateConfigParams>({
+      queryFn: async (
+        { projectRepositoryUrl, versionUrl, update },
+        _api,
+        _extraOptions,
+        baseQuery
+      ) => {
         const body = {
           git_url: projectRepositoryUrl,
           // Branch option not working currently
           // ...(branch ? { branch } : {}),
           config: update,
         };
-        return {
+        const response = await baseQuery({
           url: versionedUrlEndpoint("config.set", versionUrl),
           method: "POST",
           body,
+        });
+        if (response.error) {
+          return response;
+        }
+        const data = response.data as any;
+        if (data.error) {
+          return { meta: response.meta, error: data.error } as any;
+        }
+        return {
+          meta: response.meta,
+          data: {
+            branch: data.remote_branch,
+            update: data.config,
+          },
         };
       },
       invalidatesTags: (_result, _error, arg) => [

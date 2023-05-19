@@ -29,7 +29,6 @@ import {
   InputGroupText,
   Label,
 } from "reactstrap";
-import { Loader } from "../../components/Loader";
 import { ThrottledTooltip } from "../../components/Tooltip";
 import { ResourcePool } from "../../features/dataServices/dataServices";
 import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";

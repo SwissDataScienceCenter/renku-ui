@@ -265,7 +265,7 @@ const DefaultUrlOption = ({
     projectConfig.config.sessions?.defaultUrl ??
     projectConfig.default.sessions?.defaultUrl;
 
-  const [updateConfig, { isLoading }] = useUpdateConfigMutation();
+  const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation();
 
   const onChange = useCallback(
     (_event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
@@ -280,6 +280,12 @@ const DefaultUrlOption = ({
     },
     [projectRepositoryUrl, updateConfig, versionUrl]
   );
+
+  useEffect(() => {
+    if (isError) {
+      setNewValue(null);
+    }
+  }, [isError]);
 
   const disabled = !devAccess || isLoading || projectConfigIsFetching;
 
