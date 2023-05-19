@@ -18,12 +18,17 @@
 
 import React, { ReactNode, useEffect } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
-import LoginAlert from "../../components/loginAlert/LoginAlert";
-import { IMigration } from "../../features/project/Project";
-import { LockStatus, User } from "../../model/RenkuModels";
-import { useGetConfigQuery } from "../../features/project/projectCoreApi";
 import { Loader } from "../../components/Loader";
+import LoginAlert from "../../components/loginAlert/LoginAlert";
+import { IMigration, StateModelProject } from "../../features/project/Project";
+import { useGetConfigQuery } from "../../features/project/projectCoreApi";
 import { useServerOptionsQuery } from "../../features/session/sessionApi";
+import { LockStatus, User } from "../../model/RenkuModels";
+import { ACCESS_LEVELS } from "../../api-client";
+import { Url } from "../../utils/helpers/url";
+import { WarnAlert } from "../../components/Alert";
+import { Link } from "react-router-dom";
+import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
 
 interface ProjectSettingsSessionsProps {
   // lockStatus?: LockStatus;
@@ -49,40 +54,35 @@ export const ProjectSettingsSessions = ({
   );
   const locked = locked_ ?? false;
 
-  // const projectConfig = useSelector(
-  //   (state: RootStateOrAny) => state.stateModel.project.config as ProjectConfig
-  // );
-  // useEffect(() => {
-  //   console.log({ projectConfig });
-  // }, [projectConfig]);
-
   // Global options
   const { data: serverOptions, isLoading: serverOptionsIsLoading } =
     useServerOptionsQuery({});
-  useEffect(() => {
-    console.log({ serverOptions, serverOptionsIsLoading });
-  }, [serverOptions, serverOptionsIsLoading]);
 
   // Project options
   const projectMigrationCore = useSelector<RootStateOrAny, IMigration["core"]>(
     (state) => state.stateModel.project.migration.core
   );
-  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
-    (state) => state.stateModel.project.metadata.externalUrl
+  const {
+    externalUrl: projectRepositoryUrl,
+    namespace,
+    path,
+    accessLevel,
+  } = useSelector<RootStateOrAny, StateModelProject["metadata"]>(
+    (state) => state.stateModel.project.metadata
   );
   const fetchedVersion = !!projectMigrationCore.fetched;
   const versionUrl = projectMigrationCore.versionUrl ?? "";
-  const { data: projectConfig, isLoading: projectConfigIsLoading } =
-    useGetConfigQuery(
-      {
-        projectRepositoryUrl,
-        versionUrl,
-      },
-      { skip: !fetchedVersion }
-    );
-  useEffect(() => {
-    console.log({ projectConfig, projectConfigIsLoading });
-  }, [projectConfig, projectConfigIsLoading]);
+  const {
+    data: projectConfig,
+    isLoading: projectConfigIsLoading,
+    error,
+  } = useGetConfigQuery(
+    {
+      projectRepositoryUrl,
+      versionUrl,
+    },
+    { skip: !fetchedVersion }
+  );
 
   // ? Anonymous users may have problem with notebook options, depending on the deployment
   if (!logged) {
@@ -108,11 +108,14 @@ export const ProjectSettingsSessions = ({
 
   // Handle ongoing operations and errors
   if (
+    serverOptionsIsLoading ||
     projectConfigIsLoading ||
     projectMigrationCore.fetching ||
     !projectMigrationCore.fetched
   ) {
-    const message = projectConfigIsLoading
+    const message = serverOptionsIsLoading
+      ? "Getting RenkuLab settings..."
+      : projectConfigIsLoading
       ? "Getting project settings..."
       : "Checking project version and RenkuLab compatibility...";
 
@@ -123,31 +126,59 @@ export const ProjectSettingsSessions = ({
       </SessionsDiv>
     );
   }
-  // if (
-  //   config.fetching ||
-  //   options.fetching ||
-  //   backend.fetching ||
-  //   !backend.fetched
-  // ) {
-  //   let message;
-  //   if (config.fetching) message = "Getting project settings...";
-  //   else if (options.fetching) message = "Getting RenkuLab settings...";
-  //   else if (backend.fetching || !backend.fetched)
-  //     message = "Checking project version and RenkuLab compatibility...";
-  //   else message = "Please wait...";
 
-  //   return (
-  //     <SessionsDiv>
-  //       <p>{message}</p>
-  //       <Loader />
-  //     </SessionsDiv>
-  //   );
-  // }
+  const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER ? true : false;
+  if (!projectMigrationCore.backendAvailable) {
+    const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {
+      namespace,
+      path,
+    });
+    const updateInfo = devAccess
+      ? "It is necessary to update this project"
+      : "It is necessary to update this project. Either contact a project maintainer, or fork and update it";
+    return (
+      <SessionsDiv>
+        <p>Session settings not available.</p>
+        <WarnAlert dismissible={false}>
+          <p>
+            <b>Session settings are unavailable</b> because the project is not
+            compatible with this RenkuLab instance.
+          </p>
+          <p>
+            {updateInfo}.
+            <br />
+            The <Link to={overviewStatusUrl}>Project status</Link> page provides
+            further information.
+          </p>
+        </WarnAlert>
+      </SessionsDiv>
+    );
+  }
+
+  if (error) {
+    return (
+      <SessionsDiv>
+        <CoreErrorAlert error={error} />
+      </SessionsDiv>
+    );
+  }
 
   return (
-    <>
-      <h2>Session Settingzzzzzzzzzzz</h2>
-    </>
+    <SessionsDiv>
+      {!devAccess && (
+        <p>Settings can be changed only by developers and maintainers.</p>
+      )}
+
+      <pre>{JSON.stringify(projectConfig, null, 2)}</pre>
+
+      {/* <DefaultUrlOption
+          projectRepositoryUrl={projectRepositoryUrl}
+          branchName={branch?.name}
+        />
+        <SessionClassOption />
+      <SessionStorageOption /> */}
+      {/* <AutoFetchLfsOption /> */}
+    </SessionsDiv>
   );
 };
 
@@ -161,3 +192,27 @@ const SessionsDiv = ({ children }: SessionsDivProps) => (
     <div className="form-rk-green">{children}</div>
   </div>
 );
+
+// const AutoFetchLfsOption = () => {
+//   const lfsAutoFetch = useStartSessionOptionsSelector(
+//     (state) => state.lfsAutoFetch
+//   );
+//   const dispatch = useDispatch();
+
+//   const onChange = useCallback(() => {
+//     dispatch(setLfsAutoFetch(!lfsAutoFetch));
+//   }, [dispatch, lfsAutoFetch]);
+
+//   return (
+//     <Col xs={12}>
+//       <FormGroup className="field-group">
+//         <ServerOptionBoolean
+//           id="option-lfs-auto-fetch"
+//           displayName="Automatically fetch LFS data"
+//           onChange={onChange}
+//           selected={lfsAutoFetch}
+//         />
+//       </FormGroup>
+//     </Col>
+//   );
+// };

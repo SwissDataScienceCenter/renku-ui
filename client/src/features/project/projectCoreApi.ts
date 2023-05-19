@@ -64,6 +64,7 @@ interface GetConfigRawResponse {
     config?: GetConfigRawResponseSection;
     default?: GetConfigRawResponseSection;
   };
+  error?: unknown;
 }
 
 interface GetConfigRawResponseSection {
@@ -142,19 +143,35 @@ export const projectCoreApi = createApi({
       },
     }),
     getConfig: builder.query<ProjectConfig, GetConfigParams>({
-      query: ({ projectRepositoryUrl, versionUrl }) => {
+      queryFn: async (
+        { projectRepositoryUrl, versionUrl },
+        _api,
+        _extraOptions,
+        baseQuery
+      ) => {
         const params = {
           git_url: projectRepositoryUrl,
           // Branch option not working currently
           // ...(branch ? { branch } : {}),
         };
-        return {
+        const response = await baseQuery({
           url: versionedUrlEndpoint("config.show", versionUrl),
           params,
-        };
+        });
+        if (response.error) {
+          return response;
+        }
+        try {
+          return {
+            meta: response.meta,
+            data: transformGetConfigRawResponse(
+              response.data as GetConfigRawResponse
+            ),
+          };
+        } catch (error) {
+          return { meta: response.meta, error } as any;
+        }
       },
-      transformResponse: (response: GetConfigRawResponse) =>
-        transformGetConfigRawResponse(response),
     }),
     updateConfig: builder.mutation<ProjectConfig, UpdateConfigParams>({
       query: ({ projectRepositoryUrl, versionUrl, update }) => {
@@ -186,6 +203,10 @@ export const {
 const transformGetConfigRawResponse = (
   response: GetConfigRawResponse
 ): ProjectConfig => {
+  if (response.error) {
+    throw response.error;
+  }
+
   const projectSessionsConfig = response.result?.config ?? {};
   const defaultSessionsConfig = response.result?.default ?? {};
 
