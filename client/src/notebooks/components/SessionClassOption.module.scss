@@ -31,47 +31,46 @@
 
 .option,
 .singleValue {
-  grid-template-columns:
-    minmax(min-content, 6fr)
-    1fr 4ch
-    1fr 7ch
-    1fr 8ch
-    1fr 4ch;
+  // Two lines on small viewports
+  grid-template-columns: repeat(4, auto 1fr);
+  row-gap: 0 !important;
 
-  // repeat(8, minmax(min-content, 1fr));
-  // grid-template-columns: repeat(4, minmax(0, 1fr));
-  // justify-items: start;
-  // @include media-breakpoint-up(sm) {
-  //   grid-template-columns:
-  //     minmax(min-content, 3fr)
-  //     repeat(4, minmax(min-content, 6ch));
-  //   justify-items: end;
-  // }
-  // @include media-breakpoint-up(xl) {
-  //   grid-template-columns:
-  //     minmax(min-content, 3fr)
-  //     repeat(4, minmax(min-content, 8ch));
-  // }
-  // & .label {
-  //   justify-self: start;
-  //   grid-column: 1 / -1;
-  //   @include media-breakpoint-up(sm) {
-  //     grid-column: auto;
-  //   }
-  // }
-  // & .detail {
-  //   font-size: smaller;
-  //   @include media-breakpoint-up(sm) {
-  //     font-size: medium;
-  //     width: 100%;
-  //   }
-  // }
+  @include media-breakpoint-up(sm) {
+    // One line on large viewports
+    grid-template-columns: 6fr // Class name
+      1fr 4.5ch // CPUs
+      1fr 6.5ch // RAM
+      1fr 6.2ch // Disk
+      1fr 4.5ch; // GPUs
+    align-items: center;
+  }
+
+  & .label {
+    // Class name spans one line on small viewports
+    grid-column: 1 / -1;
+
+    @include media-breakpoint-up(sm) {
+      grid-column: auto;
+    }
+  }
+
+  & .detail {
+    font-size: smaller;
+
+    @include media-breakpoint-up(lg) {
+      font-size: medium;
+    }
+  }
+
   & .detailValue {
     justify-self: end;
   }
 
   & .detailLabel {
     color: var(--bs-rk-text-light);
+    & .detailUnit {
+      color: var(--bs-body-color);
+    }
   }
 }
 
