@@ -170,7 +170,7 @@ const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
   );
 };
 
-const mergeDefaultUrlOptions = ({
+export const mergeDefaultUrlOptions = ({
   serverOptions,
   projectConfig,
 }: {

@@ -20,15 +20,26 @@ import React, { ReactNode, useEffect } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
-import { IMigration, StateModelProject } from "../../features/project/Project";
+import {
+  IMigration,
+  ProjectConfig,
+  StateModelProject,
+} from "../../features/project/Project";
 import { useGetConfigQuery } from "../../features/project/projectCoreApi";
 import { useServerOptionsQuery } from "../../features/session/sessionApi";
 import { LockStatus, User } from "../../model/RenkuModels";
 import { ACCESS_LEVELS } from "../../api-client";
 import { Url } from "../../utils/helpers/url";
-import { WarnAlert } from "../../components/Alert";
+import { ErrorAlert, WarnAlert } from "../../components/Alert";
 import { Link } from "react-router-dom";
 import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
+import { ServerOptions } from "../../features/session/session";
+import {
+  ServerOptionEnum,
+  mergeDefaultUrlOptions,
+} from "../../notebooks/components/StartNotebookServerOptions";
+import { Col, FormGroup, Label } from "reactstrap";
+import cx from "classnames";
 
 interface ProjectSettingsSessionsProps {
   // lockStatus?: LockStatus;
@@ -163,11 +174,27 @@ export const ProjectSettingsSessions = ({
     );
   }
 
+  if (!serverOptions || !projectConfig) {
+    return (
+      <SessionsDiv>
+        <ErrorAlert dismissible={false}>
+          <h3 className={cx("fs-6", "fw-bold")}>
+            Error on loading session settings
+          </h3>
+        </ErrorAlert>
+      </SessionsDiv>
+    );
+  }
+
   return (
     <SessionsDiv>
       {!devAccess && (
         <p>Settings can be changed only by developers and maintainers.</p>
       )}
+      <DefaultUrlOption
+        serverOptions={serverOptions}
+        projectConfig={projectConfig}
+      />
 
       <pre>{JSON.stringify(projectConfig, null, 2)}</pre>
 
@@ -192,6 +219,43 @@ const SessionsDiv = ({ children }: SessionsDivProps) => (
     <div className="form-rk-green">{children}</div>
   </div>
 );
+
+interface DefaultUrlOptionProps {
+  serverOptions: ServerOptions;
+  projectConfig: ProjectConfig;
+}
+
+const DefaultUrlOption = ({
+  serverOptions,
+  projectConfig,
+}: DefaultUrlOptionProps) => {
+  const defaultUrlOptions = [
+    ...mergeDefaultUrlOptions({
+      serverOptions,
+      projectConfig,
+    }),
+    "/foo",
+    "/bar",
+  ];
+
+  const { defaultUrl } = serverOptions;
+
+  return (
+    <Col xs={12}>
+      <FormGroup className="field-group">
+        <Label className="me-2">{defaultUrl.displayName}</Label>
+        {defaultUrlOptions.length > 1 && <br />}
+        <ServerOptionEnum
+          {...defaultUrl}
+          options={defaultUrlOptions}
+          // selected={selectedDefaultUrl}
+          onChange={() => {}}
+          disabled
+        />
+      </FormGroup>
+    </Col>
+  );
+};
 
 // const AutoFetchLfsOption = () => {
 //   const lfsAutoFetch = useStartSessionOptionsSelector(
