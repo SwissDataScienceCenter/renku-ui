@@ -50,17 +50,18 @@ export const SessionStorageOption = () => {
 
   const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
 
-  const { data: realResourcePools, isLoading } = useGetResourcePoolsQuery(
-    {},
-    { skip: enableFakeResourcePools }
-  );
+  const {
+    data: realResourcePools,
+    isLoading,
+    isError,
+  } = useGetResourcePoolsQuery({}, { skip: enableFakeResourcePools });
 
   const resourcePools = enableFakeResourcePools
     ? fakeResourcePools
     : realResourcePools;
 
-  if (isLoading || !resourcePools) {
-    return <Loader />;
+  if (isLoading || !resourcePools || resourcePools.length == 0 || isError) {
+    return null;
   }
 
   return (

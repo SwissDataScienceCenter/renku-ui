@@ -32,7 +32,7 @@
 .option,
 .singleValue {
   // Two lines on small viewports
-  grid-template-columns: repeat(4, auto 1fr);
+  grid-template-columns: repeat(4, max-content auto);
   row-gap: 0 !important;
 
   @include media-breakpoint-up(sm) {
