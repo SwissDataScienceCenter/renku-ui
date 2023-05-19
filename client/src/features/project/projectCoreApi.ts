@@ -99,6 +99,7 @@ function urlWithQueryParams(url: string, queryParams: any) {
 export const projectCoreApi = createApi({
   reducerPath: "projectCore",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
+  tagTypes: ["ProjectConfig"],
   endpoints: (builder) => ({
     getDatasetFiles: builder.query<IDatasetFiles, GetDatasetFilesParams>({
       query: (params: GetDatasetFilesParams) => {
@@ -172,6 +173,9 @@ export const projectCoreApi = createApi({
           return { meta: response.meta, error } as any;
         }
       },
+      providesTags: (_result, _error, arg) => [
+        { type: "ProjectConfig", id: arg.projectRepositoryUrl },
+      ],
     }),
     updateConfig: builder.mutation<ProjectConfig, UpdateConfigParams>({
       query: ({ projectRepositoryUrl, versionUrl, update }) => {
@@ -187,6 +191,9 @@ export const projectCoreApi = createApi({
           body,
         };
       },
+      invalidatesTags: (_result, _error, arg) => [
+        { type: "ProjectConfig", id: arg.projectRepositoryUrl },
+      ],
     }),
   }),
 });

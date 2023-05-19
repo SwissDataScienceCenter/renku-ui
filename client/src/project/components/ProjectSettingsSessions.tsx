@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useEffect } from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
 import {
@@ -40,6 +40,7 @@ import {
 } from "../../notebooks/components/StartNotebookServerOptions";
 import { Col, FormGroup, Label } from "reactstrap";
 import cx from "classnames";
+import { useUpdateConfigMutation } from "../../features/project/projectCoreApi";
 
 interface ProjectSettingsSessionsProps {
   // lockStatus?: LockStatus;
@@ -86,6 +87,7 @@ export const ProjectSettingsSessions = ({
   const {
     data: projectConfig,
     isLoading: projectConfigIsLoading,
+    isFetching: projectConfigIsFetching,
     error,
   } = useGetConfigQuery(
     {
@@ -194,6 +196,10 @@ export const ProjectSettingsSessions = ({
       <DefaultUrlOption
         serverOptions={serverOptions}
         projectConfig={projectConfig}
+        projectConfigIsFetching={projectConfigIsFetching}
+        projectRepositoryUrl={projectRepositoryUrl}
+        versionUrl={versionUrl}
+        devAccess={devAccess}
       />
 
       <pre>{JSON.stringify(projectConfig, null, 2)}</pre>
@@ -223,22 +229,59 @@ const SessionsDiv = ({ children }: SessionsDivProps) => (
 interface DefaultUrlOptionProps {
   serverOptions: ServerOptions;
   projectConfig: ProjectConfig;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
 }
 
 const DefaultUrlOption = ({
   serverOptions,
   projectConfig,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
 }: DefaultUrlOptionProps) => {
   const defaultUrlOptions = [
     ...mergeDefaultUrlOptions({
-      serverOptions,
+      serverOptions: {
+        ...serverOptions,
+        defaultUrl: {
+          ...serverOptions.defaultUrl,
+          options: [...serverOptions.defaultUrl.options, "/foo", "/bar"],
+        },
+      },
       projectConfig,
     }),
-    "/foo",
-    "/bar",
   ];
 
   const { defaultUrl } = serverOptions;
+
+  const [newValue, setNewValue] = useState<string | null>(null);
+
+  const selectedDefaultUrl =
+    newValue ??
+    projectConfig.config.sessions?.defaultUrl ??
+    projectConfig.default.sessions?.defaultUrl;
+
+  const [updateConfig, { isLoading }] = useUpdateConfigMutation();
+
+  const onChange = useCallback(
+    (_event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
+      setNewValue(value);
+      updateConfig({
+        projectRepositoryUrl,
+        versionUrl,
+        update: {
+          "interactive.default_url": value,
+        },
+      });
+    },
+    [projectRepositoryUrl, updateConfig, versionUrl]
+  );
+
+  const disabled = !devAccess || isLoading || projectConfigIsFetching;
 
   return (
     <Col xs={12}>
@@ -248,9 +291,9 @@ const DefaultUrlOption = ({
         <ServerOptionEnum
           {...defaultUrl}
           options={defaultUrlOptions}
-          // selected={selectedDefaultUrl}
-          onChange={() => {}}
-          disabled
+          selected={selectedDefaultUrl}
+          onChange={onChange}
+          disabled={disabled}
         />
       </FormGroup>
     </Col>
