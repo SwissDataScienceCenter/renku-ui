@@ -190,6 +190,7 @@ export const ProjectSettingsSessions = ({
 
   return (
     <SessionsDiv>
+      <UpdateStatus />
       {!devAccess && (
         <p>Settings can be changed only by developers and maintainers.</p>
       )}
@@ -226,6 +227,34 @@ const SessionsDiv = ({ children }: SessionsDivProps) => (
   </div>
 );
 
+const UpdateStatus = () => {
+  const [, { error }] = useUpdateConfigMutation({
+    fixedCacheKey: "project-settings",
+  });
+
+  if (!error) {
+    return null;
+  }
+
+  // TODO: Should handle this?
+  if (!Object.hasOwn(error, "code")) {
+    return null;
+  }
+
+  const renkuError = error as any;
+
+  // TODO: support for `Error occurred while updating "${keyName}"`?
+  const message = `Error occurred while updating project settings${
+    renkuError.reason
+      ? `: ${renkuError.reason}`
+      : renkuError.userMessage
+      ? `: ${renkuError.userMessage}`
+      : "."
+  }`;
+
+  return <CoreErrorAlert error={error} message={message as any} />;
+};
+
 interface DefaultUrlOptionProps {
   serverOptions: ServerOptions;
   projectConfig: ProjectConfig;
@@ -258,6 +287,7 @@ const DefaultUrlOption = ({
 
   const { defaultUrl } = serverOptions;
 
+  // Temporary value for optimistic UI update
   const [newValue, setNewValue] = useState<string | null>(null);
 
   const selectedDefaultUrl =
@@ -265,7 +295,9 @@ const DefaultUrlOption = ({
     projectConfig.config.sessions?.defaultUrl ??
     projectConfig.default.sessions?.defaultUrl;
 
-  const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation();
+  const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation({
+    fixedCacheKey: "project-settings",
+  });
 
   const onChange = useCallback(
     (_event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
@@ -281,6 +313,7 @@ const DefaultUrlOption = ({
     [projectRepositoryUrl, updateConfig, versionUrl]
   );
 
+  // Reset the temporary value when the API responds with an error
   useEffect(() => {
     if (isError) {
       setNewValue(null);
