@@ -29,6 +29,7 @@ import Select, {
   components,
 } from "react-select";
 import { Col, FormGroup, Label } from "reactstrap";
+import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import {
   ResourceClass,
@@ -40,7 +41,6 @@ import {
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
 import styles from "./SessionClassOption.module.scss";
-import { ErrorAlert } from "../../components/Alert";
 
 export const SessionClassOption = () => {
   const location = useLocation();
