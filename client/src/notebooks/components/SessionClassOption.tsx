@@ -168,16 +168,13 @@ const selectClassNames: ClassNamesConfig<ResourceClass, false, OptionGroup> = {
     cx(
       "d-grid",
       "gap-1",
-      // "gap-sm-4",
-      // "gap-xl-5",
       "px-3",
       "py-1",
       styles.option,
       isFocused && styles.optionIsFocused,
       !isFocused && isSelected && styles.optionIsSelected
     ),
-  singleValue: () =>
-    cx("d-grid", "gap-sm-4", "gap-xl-5", "px-3", styles.singleValue),
+  singleValue: () => cx("d-grid", "gap-1", "px-3", styles.singleValue),
 };
 
 const selectComponents: SelectComponentsConfig<
@@ -193,79 +190,50 @@ const selectComponents: SelectComponentsConfig<
     );
   },
   Option: (props) => {
-    // const { label, data: sessionClass } = props;
-    // const labelClassName = cx(styles.label);
-    // const detailClassName = cx(
-    //   "d-inline-flex",
-    //   "flex-wrap",
-    //   "justify-content-sm-end",
-    //   styles.detail
-    // );
-    // const detailLabelClassName = cx(
-    //   "align-self-start",
-    //   "me-sm-auto",
-    //   styles.detailLabel
-    // );
-    // const detailValueClassName = cx("ms-1", styles.detailValue);
     const { data: sessionClass } = props;
-    const detailValueClassName = cx(styles.detailValue);
-    const detailLabelClassName = cx(styles.detailLabel);
     return (
       <components.Option {...props}>
-        <span>{sessionClass.name}</span>{" "}
-        <span className={detailValueClassName}>{sessionClass.cpu}</span>{" "}
-        <span className={detailLabelClassName}>CPUs</span>{" "}
-        <span className={detailValueClassName}>{sessionClass.memory}</span>
-        <span>
-          GB <span className={detailLabelClassName}>RAM</span>
-        </span>{" "}
-        <span className={detailValueClassName}>{sessionClass.max_storage}</span>
-        <span>
-          GB <span className={detailLabelClassName}>Disk</span>
-        </span>{" "}
-        <span className={detailValueClassName}>{sessionClass.gpu}</span>{" "}
-        <span className={detailLabelClassName}>GPUs</span>{" "}
+        <OptionOrSingleValueContent sessionClass={sessionClass} />
       </components.Option>
     );
   },
   SingleValue: (props) => {
     const { data: sessionClass } = props;
-    const detailClassName = cx(
-      "d-inline-flex",
-      "flex-wrap",
-      "justify-content-sm-end",
-      styles.detail
-    );
-    const detailLabelClassName = cx(
-      "align-self-start",
-      "me-sm-auto",
-      styles.detailLabel
-    );
-    const detailValueClassName = cx("ms-1", styles.detailValue);
     return (
       <components.SingleValue {...props}>
-        <span className={styles.label}>{sessionClass.name}</span>{" "}
-        <span className={detailClassName}>
-          <span className={detailLabelClassName}>CPUs</span>{" "}
-          <span className={detailValueClassName}>{sessionClass.cpu}</span>
-        </span>{" "}
-        <div className={detailClassName}>
-          <span className={detailLabelClassName}>RAM</span>{" "}
-          <span className={detailValueClassName}>{sessionClass.memory}</span>
-        </div>{" "}
-        <span className={detailClassName}>
-          <span className={detailLabelClassName}>Disk</span>{" "}
-          <span className={detailValueClassName}>
-            {sessionClass.max_storage}
-          </span>
-        </span>{" "}
-        <span className={detailClassName}>
-          <span className={detailLabelClassName}>GPUs</span>{" "}
-          <span className={detailValueClassName}>{sessionClass.gpu}</span>
-        </span>
+        <OptionOrSingleValueContent sessionClass={sessionClass} />
       </components.SingleValue>
     );
   },
+};
+
+interface OptionOrSingleValueContentProps {
+  sessionClass: ResourceClass;
+}
+
+const OptionOrSingleValueContent = ({
+  sessionClass,
+}: OptionOrSingleValueContentProps) => {
+  const labelClassName = cx("text-wrap", "text-break", styles.label);
+  const detailValueClassName = cx(styles.detail, styles.detailValue);
+  const detailLabelClassName = cx(styles.detail, styles.detailLabel);
+  return (
+    <>
+      <span className={labelClassName}>{sessionClass.name}</span>{" "}
+      <span className={detailValueClassName}>{sessionClass.cpu}</span>{" "}
+      <span className={detailLabelClassName}>CPUs</span>{" "}
+      <span className={detailValueClassName}>{sessionClass.memory}</span>
+      <span className={detailLabelClassName}>
+        <span className={styles.detailUnit}>GB</span> RAM
+      </span>{" "}
+      <span className={detailValueClassName}>{sessionClass.max_storage}</span>
+      <span className={detailLabelClassName}>
+        <span className={styles.detailUnit}>GB</span> Disk
+      </span>{" "}
+      <span className={detailValueClassName}>{sessionClass.gpu}</span>{" "}
+      <span className={detailLabelClassName}>GPUs</span>{" "}
+    </>
+  );
 };
 
 export const fakeResourcePools: ResourcePool[] = [
