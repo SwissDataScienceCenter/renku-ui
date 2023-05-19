@@ -1,3 +1,8 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
 .control {
   background: var(--bs-rk-white);
   --bs-border-color: var(--bs-rk-border-input);
@@ -26,31 +31,63 @@
 
 .option,
 .singleValue {
-  grid-template-columns: minmax(0, 3fr) repeat(4, minmax(0, 1fr));
-  justify-items: end;
+  // Two lines on small viewports
+  grid-template-columns: repeat(4, max-content auto);
+  row-gap: 0 !important;
+
+  @include media-breakpoint-up(sm) {
+    // One line on large viewports
+    grid-template-columns: 6fr // Class name
+      1fr 4.5ch // CPUs
+      1fr 6.5ch // RAM
+      1fr 6.2ch // Disk
+      1fr 4.5ch; // GPUs
+    align-items: center;
+  }
 
   & .label {
-    justify-self: start;
+    // Class name spans one line on small viewports
+    grid-column: 1 / -1;
+
+    @include media-breakpoint-up(sm) {
+      grid-column: auto;
+    }
   }
 
   & .detail {
-    width: 100%;
-    flex-wrap: wrap;
+    font-size: smaller;
+
+    @include media-breakpoint-up(lg) {
+      font-size: medium;
+    }
+  }
+
+  & .detailValue {
+    justify-self: end;
   }
 
   & .detailLabel {
     color: var(--bs-rk-text-light);
+    & .detailUnit {
+      color: var(--bs-body-color);
+    }
   }
 }
 
 .option {
   cursor: pointer !important;
 
-  &:hover {
-    background: rgba(var(--bs-rk-green-rgb), 0.5);
+  border-bottom: 1px dotted #a3a3a3;
+  &:last-of-type {
+    border-bottom: none;
+  }
+
+  &:hover,
+  &IsFocused {
+    background-color: #e4e7ea;
   }
 
   &IsSelected {
-    background-color: rgba(var(--bs-rk-green-rgb), 0.25);
+    background-color: #e4e7ea80;
   }
 }

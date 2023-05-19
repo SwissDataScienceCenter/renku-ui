@@ -50,17 +50,18 @@ export const SessionStorageOption = () => {
 
   const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
 
-  const { data: realResourcePools, isLoading } = useGetResourcePoolsQuery(
-    {},
-    { skip: enableFakeResourcePools }
-  );
+  const {
+    data: realResourcePools,
+    isLoading,
+    isError,
+  } = useGetResourcePoolsQuery({}, { skip: enableFakeResourcePools });
 
   const resourcePools = enableFakeResourcePools
     ? fakeResourcePools
     : realResourcePools;
 
-  if (isLoading || !resourcePools) {
-    return <Loader />;
+  if (isLoading || !resourcePools || resourcePools.length == 0 || isError) {
+    return null;
   }
 
   return (
@@ -94,7 +95,6 @@ const StorageSelector = ({ resourcePools }: StorageSelectorProps) => {
       null,
     [sessionClassId, sessionsClassesFlat]
   );
-  const maxStorage = selectedSessionClass.max_storage;
 
   // Update the storage value to default when changing the session class
   useEffect(() => {
@@ -125,6 +125,8 @@ const StorageSelector = ({ resourcePools }: StorageSelectorProps) => {
   if (!selectedSessionClass) {
     return null;
   }
+
+  const maxStorage = selectedSessionClass.max_storage;
 
   return (
     <div className={cx(styles.container, "d-grid gap-sm-3 align-items-center")}>
