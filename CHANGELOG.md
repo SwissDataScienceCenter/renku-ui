@@ -1,5 +1,11 @@
 # Changes
 
+## [3.5.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.4.3...3.5.0) (2023-05-22)
+
+### Features
+
+- add a clone button to the project overview ([#2495](https://github.com/SwissDataScienceCenter/renku-ui/issues/2495), [#2440](https://github.com/SwissDataScienceCenter/renku-ui/issues/2440))
+
 ## [3.4.3](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.4.2...3.4.3) (2023-05-02)
 
 ### Bug Fixes
