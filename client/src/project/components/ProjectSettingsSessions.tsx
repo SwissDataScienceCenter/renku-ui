@@ -23,58 +23,44 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import cx from "classnames";
 import debounce from "lodash/debounce";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { RootStateOrAny, useSelector } from "react-redux";
+import { Link, useLocation } from "react-router-dom";
+import { SingleValue } from "react-select";
+import { Col, FormGroup, Label } from "reactstrap";
+import { ACCESS_LEVELS } from "../../api-client";
+import { ErrorAlert, WarnAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
+import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
+import { ResourceClass } from "../../features/dataServices/dataServices";
+import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 import {
   IMigration,
   ProjectConfig,
   StateModelProject,
 } from "../../features/project/Project";
-import { useGetConfigQuery } from "../../features/project/projectCoreApi";
+import {
+  useGetConfigQuery,
+  useUpdateConfigMutation,
+} from "../../features/project/projectCoreApi";
+import { ServerOptions } from "../../features/session/session";
 import { useServerOptionsQuery } from "../../features/session/sessionApi";
 import { LockStatus, User } from "../../model/RenkuModels";
-import { ACCESS_LEVELS } from "../../api-client";
-import { Url } from "../../utils/helpers/url";
-import { ErrorAlert, WarnAlert } from "../../components/Alert";
-import { Link, useLocation } from "react-router-dom";
-import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
-import { ServerOptions } from "../../features/session/session";
 import {
   ServerOptionEnum,
   mergeDefaultUrlOptions,
 } from "../../notebooks/components/StartNotebookServerOptions";
-import { Col, FormGroup, Label } from "reactstrap";
-import cx from "classnames";
-import { useUpdateConfigMutation } from "../../features/project/projectCoreApi";
-import { SingleValue } from "react-select";
-import { ResourceClass } from "../../features/dataServices/dataServices";
 import {
   SessionClassSelector,
   fakeResourcePools,
 } from "../../notebooks/components/options/SessionClassOption";
-import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 import { StorageSelector } from "../../notebooks/components/options/SessionStorageOption";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
-import { SerializedError } from "@reduxjs/toolkit";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
+import { Url } from "../../utils/helpers/url";
 
-interface ProjectSettingsSessionsProps {
-  // lockStatus?: LockStatus;
-  // user: User;
-  [key: string]: unknown;
-}
-
-export const ProjectSettingsSessions = ({
-  // lockStatus,
-  // user,
-  ...rest
-}: ProjectSettingsSessionsProps) => {
-  useEffect(() => {
-    console.log({ rest });
-  }, [rest]);
-
+export const ProjectSettingsSessions = () => {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
     (state) => state.stateModel.user.logged
   );
@@ -273,6 +259,7 @@ const UpdateStatus = () => {
     return null;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renkuCoreError = error.data as any;
 
   // TODO: support for `Error occurred while updating "${keyName}"`?
@@ -284,6 +271,7 @@ const UpdateStatus = () => {
       : "."
   }`;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return <CoreErrorAlert error={renkuCoreError} message={message as any} />;
 };
 

@@ -36,10 +36,7 @@ import {
   ResourcePool,
 } from "../../../features/dataServices/dataServices";
 import { useGetResourcePoolsQuery } from "../../../features/dataServices/dataServicesApi";
-import {
-  setSessionClass,
-  useStartSessionOptionsSelector,
-} from "../../../features/session/startSessionOptionsSlice";
+import { setSessionClass } from "../../../features/session/startSessionOptionsSlice";
 import styles from "./SessionClassOption.module.scss";
 
 export const SessionClassOption = () => {

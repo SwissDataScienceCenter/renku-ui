@@ -21,6 +21,7 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 export const isFetchBaseQueryError = (
   error: FetchBaseQueryError | unknown
 ): error is FetchBaseQueryError => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const statusType = typeof (error as any)?.status;
   return statusType === "number" || statusType === "string";
 };

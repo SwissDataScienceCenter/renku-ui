@@ -30,10 +30,7 @@ import {
   Label,
 } from "reactstrap";
 import { ThrottledTooltip } from "../../../components/Tooltip";
-import {
-  ResourceClass,
-  ResourcePool,
-} from "../../../features/dataServices/dataServices";
+import { ResourceClass } from "../../../features/dataServices/dataServices";
 import { useGetResourcePoolsQuery } from "../../../features/dataServices/dataServicesApi";
 import {
   MIN_SESSION_STORAGE_GB,
@@ -123,7 +120,6 @@ export const SessionStorageOption = () => {
 };
 
 interface StorageSelectorProps {
-  // resourcePools: ResourcePool[];
   currentSessionClass?: ResourceClass | undefined;
   currentStorage?: number;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -131,55 +127,11 @@ interface StorageSelectorProps {
 }
 
 export const StorageSelector = ({
-  // resourcePools,
   currentSessionClass,
   currentStorage,
   onChange,
   disabled,
 }: StorageSelectorProps) => {
-  // const sessionsClassesFlat = useMemo(
-  //   () => resourcePools.flatMap((pool) => pool.classes),
-  //   [resourcePools]
-  // );
-
-  // const { storage, sessionClass: sessionClassId } =
-  //   useStartSessionOptionsSelector();
-  // const dispatch = useDispatch();
-
-  // const selectedSessionClass = useMemo(
-  //   () =>
-  //     sessionsClassesFlat.find((c) => c.id === sessionClassId) ??
-  //     sessionsClassesFlat[0] ??
-  //     null,
-  //   [sessionClassId, sessionsClassesFlat]
-  // );
-
-  // // Update the storage value to default when changing the session class
-  // useEffect(() => {
-  //   if (selectedSessionClass == null) {
-  //     return;
-  //   }
-  //   const newValue = validateStorageAmount({
-  //     value: selectedSessionClass.default_storage,
-  //     maxValue: selectedSessionClass.max_storage,
-  //   });
-  //   dispatch(setStorage(newValue));
-  // }, [dispatch, selectedSessionClass]);
-
-  // const onChange = useCallback(
-  //   (event: React.ChangeEvent<HTMLInputElement>) => {
-  //     if (selectedSessionClass == null) {
-  //       return;
-  //     }
-  //     const newValue = validateStorageAmount({
-  //       value: event.target.valueAsNumber,
-  //       maxValue: selectedSessionClass.max_storage,
-  //     });
-  //     dispatch(setStorage(newValue));
-  //   },
-  //   [dispatch, selectedSessionClass]
-  // );
-
   if (!currentSessionClass) {
     return null;
   }
