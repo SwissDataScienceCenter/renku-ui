@@ -1264,7 +1264,7 @@ class NotebooksCoordinator {
       storage: startSessionOptions.storage ?? null,
       serverOptions: {
         defaultUrl: startSessionOptions.defaultUrl,
-        lfsAutoFetch: startSessionOptions.lfsAutoFetch,
+        lfs_auto_fetch: startSessionOptions.lfsAutoFetch,
       },
     };
     const cloudstorage = this.model.get("filters.objectStoresConfiguration");
@@ -1286,19 +1286,6 @@ class NotebooksCoordinator {
       this.model.get("filters.environment_variables")
     );
 
-    const finalOptions = {
-      namespace,
-      project,
-      branch,
-      commit,
-      image,
-      options,
-      env_variables,
-    };
-
-    // eslint-disable-next-line no-console
-    // console.error("Would launch notebook with options", { finalOptions });
-    // throw new Error("DO NOT LAUNCH");
     return this.client.startNotebook(
       namespace,
       project,

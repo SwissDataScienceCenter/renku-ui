@@ -154,7 +154,6 @@ const SessionClassSelector = ({ resourcePools }: SessionClassSelectorProps) => {
       unstyled
       classNames={selectClassNames}
       components={selectComponents}
-      menuIsOpen
     />
   );
 };
