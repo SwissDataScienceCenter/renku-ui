@@ -29,6 +29,7 @@ import Select, {
   components,
 } from "react-select";
 import { Col, FormGroup, Label } from "reactstrap";
+import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import {
   ResourceClass,
@@ -47,17 +48,38 @@ export const SessionClassOption = () => {
 
   const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
 
-  const { data: realResourcePools, isLoading } = useGetResourcePoolsQuery(
-    {},
-    { skip: enableFakeResourcePools }
-  );
+  const {
+    data: realResourcePools,
+    isLoading,
+    isError,
+  } = useGetResourcePoolsQuery({}, { skip: enableFakeResourcePools });
 
   const resourcePools = enableFakeResourcePools
     ? fakeResourcePools
     : realResourcePools;
 
-  if (isLoading || !resourcePools) {
-    return <Loader />;
+  if (isLoading) {
+    return (
+      <Col xs={12}>
+        Fetching available resource pools... <Loader size="16" inline="true" />
+      </Col>
+    );
+  }
+
+  if (!resourcePools || resourcePools.length == 0 || isError) {
+    return (
+      <Col xs={12}>
+        <ErrorAlert dismissible={false}>
+          <h3 className={cx("fs-6", "fw-bold")}>
+            Error on loading available session resource pools
+          </h3>
+          <p className="mb-0">
+            You can still attempt to launch a session, but the operation may not
+            be successful.
+          </p>
+        </ErrorAlert>
+      </Col>
+    );
   }
 
   if (resourcePools.length == 0) {
