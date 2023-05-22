@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
@@ -31,7 +37,7 @@ import { LockStatus, User } from "../../model/RenkuModels";
 import { ACCESS_LEVELS } from "../../api-client";
 import { Url } from "../../utils/helpers/url";
 import { ErrorAlert, WarnAlert } from "../../components/Alert";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
 import { ServerOptions } from "../../features/session/session";
 import {
@@ -41,6 +47,13 @@ import {
 import { Col, FormGroup, Label } from "reactstrap";
 import cx from "classnames";
 import { useUpdateConfigMutation } from "../../features/project/projectCoreApi";
+import { SingleValue } from "react-select";
+import { ResourceClass } from "../../features/dataServices/dataServices";
+import {
+  SessionClassSelector,
+  fakeResourcePools,
+} from "../../notebooks/components/options/SessionClassOption";
+import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 
 interface ProjectSettingsSessionsProps {
   // lockStatus?: LockStatus;
@@ -202,6 +215,13 @@ export const ProjectSettingsSessions = ({
         versionUrl={versionUrl}
         devAccess={devAccess}
       />
+      <SessionClassOption
+        projectConfig={projectConfig}
+        projectConfigIsFetching={projectConfigIsFetching}
+        projectRepositoryUrl={projectRepositoryUrl}
+        versionUrl={versionUrl}
+        devAccess={devAccess}
+      />
 
       <pre>{JSON.stringify(projectConfig, null, 2)}</pre>
 
@@ -331,6 +351,135 @@ const DefaultUrlOption = ({
           {...defaultUrl}
           options={defaultUrlOptions}
           selected={selectedDefaultUrl}
+          onChange={onChange}
+          disabled={disabled}
+        />
+      </FormGroup>
+    </Col>
+  );
+};
+
+interface SessionClassOptionProps {
+  projectConfig: ProjectConfig;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
+}
+
+const SessionClassOption = ({
+  projectConfig,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
+}: SessionClassOptionProps) => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
+
+  const {
+    data: realResourcePools,
+    isLoading: resourcePoolsIsLoading,
+    isError: resourcePoolsIsError,
+  } = useGetResourcePoolsQuery({}, { skip: enableFakeResourcePools });
+
+  const resourcePools = enableFakeResourcePools
+    ? fakeResourcePools
+    : realResourcePools;
+
+  const defaultSessionClassId =
+    projectConfig.config.sessions?.sessionClass ??
+    projectConfig.default.sessions?.sessionClass;
+  const defaultSessionClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == defaultSessionClassId) ??
+      resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default) ??
+      resourcePools?.find(() => true)?.classes[0] ??
+      undefined,
+    [defaultSessionClassId, resourcePools]
+  );
+
+  // Temporary value for optimistic UI update
+  const [newValue, setNewValue] = useState<number | null>(null);
+
+  const currentSessionClassId =
+    newValue ??
+    projectConfig.config.sessions?.sessionClass ??
+    projectConfig.default.sessions?.sessionClass;
+  const currentSessionClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == currentSessionClassId),
+    [currentSessionClassId, resourcePools]
+  );
+
+  // const selectedSessionClass =
+  //   newValue ??
+  //   projectConfig.config.sessions?.sessionClass ??
+  //   projectConfig.default.sessions?.sessionClass;
+
+  const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation({
+    fixedCacheKey: "project-settings",
+  });
+
+  const onChange = useCallback(
+    (newValue: SingleValue<ResourceClass>) => {
+      if (newValue?.id) {
+        setNewValue(newValue.id);
+        updateConfig({
+          projectRepositoryUrl,
+          versionUrl,
+          update: {
+            "interactive.session_class": `${newValue.id}`,
+          },
+        });
+      }
+    },
+    [projectRepositoryUrl, updateConfig, versionUrl]
+  );
+
+  // Reset the temporary value when the API responds with an error
+  useEffect(() => {
+    if (isError) {
+      setNewValue(null);
+    }
+  }, [isError]);
+
+  const disabled = !devAccess || isLoading || projectConfigIsFetching;
+
+  if (resourcePoolsIsLoading) {
+    return (
+      <Col xs={12}>
+        Fetching available resource pools... <Loader size="16" inline="true" />
+      </Col>
+    );
+  }
+
+  if (!resourcePools || resourcePools.length == 0 || resourcePoolsIsError) {
+    return (
+      <Col xs={12}>
+        <ErrorAlert dismissible={false}>
+          <h3 className={cx("fs-6", "fw-bold")}>
+            Error on loading available session resource pools
+          </h3>
+        </ErrorAlert>
+      </Col>
+    );
+  }
+
+  return (
+    <Col xs={12}>
+      <FormGroup className="field-group">
+        <Label>Session class</Label>
+        <SessionClassSelector
+          resourcePools={resourcePools}
+          currentSessionClass={currentSessionClass}
+          defaultSessionClass={defaultSessionClass}
           onChange={onChange}
           disabled={disabled}
         />

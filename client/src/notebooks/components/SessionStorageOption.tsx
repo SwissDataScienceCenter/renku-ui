@@ -40,7 +40,7 @@ import {
   setStorage,
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
-import { fakeResourcePools } from "./SessionClassOption";
+import { fakeResourcePools } from "./options/SessionClassOption";
 import styles from "./SessionStorageOption.module.scss";
 
 export const SessionStorageOption = () => {

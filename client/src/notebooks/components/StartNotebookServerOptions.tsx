@@ -42,7 +42,7 @@ import {
   setLfsAutoFetch,
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
-import { SessionClassOption } from "./SessionClassOption";
+import { SessionClassOption } from "./options/SessionClassOption";
 import { SessionStorageOption } from "./SessionStorageOption";
 import styles from "./StartNotebookServerOptions.module.scss";
 
@@ -107,19 +107,6 @@ const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
     (state) => state.defaultUrl
   );
   const dispatch = useDispatch();
-
-  // const [updateFn] = useUpdateConfigMutation();
-  // useEffect(() => {
-  //   // console.log({ updateFn });
-  //   const fn = (update: { [key: string]: string }) =>
-  //     updateFn({
-  //       projectRepositoryUrl,
-  //       versionUrl,
-  //       // ...(branchName ? { branch: branchName } : {}),
-  //       update,
-  //     });
-  //   // console.log({ updateFn: fn });
-  // }, [updateFn, projectRepositoryUrl, versionUrl]);
 
   // Set initial default URL
   useEffect(() => {
