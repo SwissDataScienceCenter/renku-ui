@@ -23,6 +23,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import debounce from "lodash/debounce";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
@@ -54,6 +55,7 @@ import {
   fakeResourcePools,
 } from "../../notebooks/components/options/SessionClassOption";
 import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
+import { StorageSelector } from "../../notebooks/components/options/SessionStorageOption";
 
 interface ProjectSettingsSessionsProps {
   // lockStatus?: LockStatus;
@@ -216,6 +218,13 @@ export const ProjectSettingsSessions = ({
         devAccess={devAccess}
       />
       <SessionClassOption
+        projectConfig={projectConfig}
+        projectConfigIsFetching={projectConfigIsFetching}
+        projectRepositoryUrl={projectRepositoryUrl}
+        versionUrl={versionUrl}
+        devAccess={devAccess}
+      />
+      <StorageOption
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
@@ -480,6 +489,138 @@ const SessionClassOption = ({
           resourcePools={resourcePools}
           currentSessionClass={currentSessionClass}
           defaultSessionClass={defaultSessionClass}
+          onChange={onChange}
+          disabled={disabled}
+        />
+      </FormGroup>
+    </Col>
+  );
+};
+
+interface StorageOptionProps {
+  projectConfig: ProjectConfig;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
+}
+
+const StorageOption = ({
+  projectConfig,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
+}: StorageOptionProps) => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
+
+  const {
+    data: realResourcePools,
+    isLoading: resourcePoolsIsLoading,
+    isError: resourcePoolsIsError,
+  } = useGetResourcePoolsQuery({}, { skip: enableFakeResourcePools });
+
+  const resourcePools = enableFakeResourcePools
+    ? fakeResourcePools
+    : realResourcePools;
+
+  // const defaultSessionClassId =
+  //   projectConfig.config.sessions?.sessionClass ??
+  //   projectConfig.default.sessions?.sessionClass;
+  // const defaultSessionClass = useMemo(
+  //   () =>
+  //     resourcePools
+  //       ?.flatMap((pool) => pool.classes)
+  //       .find((c) => c.id == defaultSessionClassId) ??
+  //     resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default) ??
+  //     resourcePools?.find(() => true)?.classes[0] ??
+  //     undefined,
+  //   [defaultSessionClassId, resourcePools]
+  // );
+
+  // Temporary value for optimistic UI update
+  const [newValue, setNewValue] = useState<number | null>(null);
+
+  const currentSessionClassId =
+    projectConfig.config.sessions?.sessionClass ??
+    projectConfig.default.sessions?.sessionClass;
+  const currentSessionClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == currentSessionClassId),
+    [currentSessionClassId, resourcePools]
+  );
+
+  const currentStorage =
+    newValue ??
+    projectConfig.config.sessions?.storage ??
+    currentSessionClass?.default_storage ??
+    projectConfig.default.sessions?.storage;
+
+  const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation({
+    fixedCacheKey: "project-settings",
+  });
+  const debouncedUpdateConfig = useMemo(
+    () => debounce(updateConfig, /*wait=*/ 1_000),
+    [updateConfig]
+  );
+
+  const onChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.valueAsNumber;
+      setNewValue(value);
+      debouncedUpdateConfig({
+        projectRepositoryUrl,
+        versionUrl,
+        update: {
+          "interactive.disk_request": `${value}GB`,
+        },
+      });
+      // updateConfig({
+      //   projectRepositoryUrl,
+      //   versionUrl,
+      //   update: {
+      //     "interactive.disk_request": `${value}GB`,
+      //   },
+      // });
+    },
+    [debouncedUpdateConfig, projectRepositoryUrl, versionUrl]
+  );
+  // const debouncedOnChange = useMemo(
+  //   () => debounce(onChange, /*wait=*/ 1_000),
+  //   [onChange]
+  // );
+
+  // Reset the temporary value when the API responds with an error
+  useEffect(() => {
+    if (isError) {
+      setNewValue(null);
+    }
+  }, [isError]);
+
+  const disabled = !devAccess || isLoading || projectConfigIsFetching;
+
+  if (
+    resourcePoolsIsLoading ||
+    !resourcePools ||
+    resourcePools.length == 0 ||
+    resourcePoolsIsError
+  ) {
+    return null;
+  }
+
+  return (
+    <Col xs={12}>
+      <FormGroup className="field-group">
+        <Label>Amount of Storage</Label>
+        <StorageSelector
+          // resourcePools={resourcePools}
+          currentSessionClass={currentSessionClass}
+          currentStorage={currentStorage}
           onChange={onChange}
           disabled={disabled}
         />

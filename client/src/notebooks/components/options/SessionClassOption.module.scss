@@ -1,0 +1,93 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.control {
+  background: var(--bs-rk-white);
+  --bs-border-color: var(--bs-rk-border-input);
+
+  cursor: pointer !important;
+
+  &:hover {
+    --bs-border-color: var(--bs-rk-green);
+  }
+
+  &IsOpen {
+    --bs-border-color: var(--bs-rk-green);
+  }
+}
+
+.groupHeading {
+  font-size: 0.8rem;
+  color: var(--bs-rk-text-light);
+}
+
+.menu {
+  background: var(--bs-rk-white);
+  --bs-border-color: var(--bs-rk-green);
+  z-index: 10 !important;
+}
+
+.option,
+.singleValue {
+  // Two lines on small viewports
+  grid-template-columns: repeat(4, max-content auto);
+  row-gap: 0 !important;
+
+  @include media-breakpoint-up(sm) {
+    // One line on large viewports
+    grid-template-columns: 6fr // Class name
+      1fr 4.5ch // CPUs
+      1fr 6.5ch // RAM
+      1fr 6.2ch // Disk
+      1fr 4.5ch; // GPUs
+    align-items: center;
+  }
+
+  & .label {
+    // Class name spans one line on small viewports
+    grid-column: 1 / -1;
+
+    @include media-breakpoint-up(sm) {
+      grid-column: auto;
+    }
+  }
+
+  & .detail {
+    font-size: smaller;
+
+    @include media-breakpoint-up(lg) {
+      font-size: medium;
+    }
+  }
+
+  & .detailValue {
+    justify-self: end;
+  }
+
+  & .detailLabel {
+    color: var(--bs-rk-text-light);
+    & .detailUnit {
+      color: var(--bs-body-color);
+    }
+  }
+}
+
+.option {
+  cursor: pointer !important;
+
+  border-bottom: 1px dotted #a3a3a3;
+  &:last-of-type {
+    border-bottom: none;
+  }
+
+  &:hover,
+  &IsFocused {
+    background-color: #e4e7ea;
+  }
+
+  &IsSelected {
+    background-color: #e4e7ea80;
+  }
+}

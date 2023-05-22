@@ -43,7 +43,7 @@ import {
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
 import { SessionClassOption } from "./options/SessionClassOption";
-import { SessionStorageOption } from "./SessionStorageOption";
+import { SessionStorageOption } from "./options/SessionStorageOption";
 import styles from "./StartNotebookServerOptions.module.scss";
 
 interface StartNotebookServerOptionsProps {

@@ -267,7 +267,9 @@ const transformGetConfigRawResponse = (
         sessionClass: safeParseInt(
           projectSessionsConfig["interactive.session_class"]
         ),
-        storage: safeParseInt(projectSessionsConfig["interactive.storage_gb"]),
+        storage: safeParseInt(
+          projectSessionsConfig["interactive.disk_request"]
+        ),
         legacyConfig: projectLegacySessionsConfig,
       },
     },
@@ -277,7 +279,9 @@ const transformGetConfigRawResponse = (
         sessionClass: safeParseInt(
           defaultSessionsConfig["interactive.session_class"]
         ),
-        storage: safeParseInt(defaultSessionsConfig["interactive.storage_gb"]),
+        storage: safeParseInt(
+          defaultSessionsConfig["interactive.disk_request"]
+        ),
         legacyConfig: defaultLegacySessionsConfig,
       },
     },
