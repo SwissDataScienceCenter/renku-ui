@@ -56,6 +56,9 @@ import {
 } from "../../notebooks/components/options/SessionClassOption";
 import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 import { StorageSelector } from "../../notebooks/components/options/SessionStorageOption";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
+import { SerializedError } from "@reduxjs/toolkit";
+import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 
 interface ProjectSettingsSessionsProps {
   // lockStatus?: LockStatus;
@@ -266,22 +269,22 @@ const UpdateStatus = () => {
   }
 
   // TODO: Should handle this?
-  if (!Object.hasOwn(error, "code")) {
+  if (!isFetchBaseQueryError(error) || error.status !== "CUSTOM_ERROR") {
     return null;
   }
 
-  const renkuError = error as any;
+  const renkuCoreError = error.data as any;
 
   // TODO: support for `Error occurred while updating "${keyName}"`?
   const message = `Error occurred while updating project settings${
-    renkuError.reason
-      ? `: ${renkuError.reason}`
-      : renkuError.userMessage
-      ? `: ${renkuError.userMessage}`
+    renkuCoreError.reason
+      ? `: ${renkuCoreError.reason}`
+      : renkuCoreError.userMessage
+      ? `: ${renkuCoreError.userMessage}`
       : "."
   }`;
 
-  return <CoreErrorAlert error={error} message={message as any} />;
+  return <CoreErrorAlert error={renkuCoreError} message={message as any} />;
 };
 
 interface DefaultUrlOptionProps {
@@ -580,20 +583,9 @@ const StorageOption = ({
           "interactive.disk_request": `${value}GB`,
         },
       });
-      // updateConfig({
-      //   projectRepositoryUrl,
-      //   versionUrl,
-      //   update: {
-      //     "interactive.disk_request": `${value}GB`,
-      //   },
-      // });
     },
     [debouncedUpdateConfig, projectRepositoryUrl, versionUrl]
   );
-  // const debouncedOnChange = useMemo(
-  //   () => debounce(onChange, /*wait=*/ 1_000),
-  //   [onChange]
-  // );
 
   // Reset the temporary value when the API responds with an error
   useEffect(() => {

@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  FetchBaseQueryError,
+  createApi,
+  fetchBaseQuery,
+} from "@reduxjs/toolkit/query/react";
 import type {
   DatasetKg,
   IDatasetFile,
@@ -176,8 +180,13 @@ export const projectCoreApi = createApi({
               response.data as GetConfigRawResponse
             ),
           };
-        } catch (error) {
-          return { meta: response.meta, error } as any;
+        } catch (error_) {
+          const error: FetchBaseQueryError = {
+            status: "CUSTOM_ERROR",
+            data: error_,
+            error: "renku-core error",
+          };
+          return { meta: response.meta, error };
         }
       },
       providesTags: (_result, _error, arg) => [
@@ -207,7 +216,12 @@ export const projectCoreApi = createApi({
         }
         const data = response.data as any;
         if (data.error) {
-          return { meta: response.meta, error: data.error } as any;
+          const error: FetchBaseQueryError = {
+            status: "CUSTOM_ERROR",
+            data: data.error,
+            error: "renku-core error",
+          };
+          return { meta: response.meta, error };
         }
         return {
           meta: response.meta,
