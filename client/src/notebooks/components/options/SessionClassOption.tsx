@@ -140,42 +140,6 @@ export const SessionClassSelector = ({
     () => makeGroupedOptions(resourcePools),
     [resourcePools]
   );
-  // const sessionsClassesFlat = useMemo(
-  //   () => resourcePools.flatMap((pool) => pool.classes),
-  //   [resourcePools]
-  // );
-
-  // const sessionClassId = useStartSessionOptionsSelector(
-  //   (state) => state.sessionClass
-  // );
-  // const dispatch = useDispatch();
-
-  // // Set initial session class
-  // useEffect(() => {
-  //   const initialSessionClass =
-  //     sessionsClassesFlat.length == 0
-  //       ? 0
-  //       : sessionsClassesFlat.find((c) => c.default)?.id ?? 0;
-  //   dispatch(setSessionClass(initialSessionClass));
-  // }, [dispatch, sessionsClassesFlat]);
-
-  // const selectedSessionClass = useMemo(
-  //   () =>
-  //     sessionsClassesFlat.find((c) => c.id === sessionClassId) ??
-  //     sessionsClassesFlat.find((c) => c.default) ??
-  //     sessionsClassesFlat[0] ??
-  //     undefined,
-  //   [sessionClassId, sessionsClassesFlat]
-  // );
-
-  // const onChange = useCallback(
-  //   (newValue: SingleValue<ResourceClass>) => {
-  //     if (newValue?.id) {
-  //       dispatch(setSessionClass(newValue?.id));
-  //     }
-  //   },
-  //   [dispatch]
-  // );
 
   return (
     <Select
