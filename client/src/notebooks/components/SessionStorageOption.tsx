@@ -29,7 +29,6 @@ import {
   InputGroupText,
   Label,
 } from "reactstrap";
-import { Loader } from "../../components/Loader";
 import { ThrottledTooltip } from "../../components/Tooltip";
 import { ResourcePool } from "../../features/dataServices/dataServices";
 import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
@@ -50,17 +49,18 @@ export const SessionStorageOption = () => {
 
   const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
 
-  const { data: realResourcePools, isLoading } = useGetResourcePoolsQuery(
-    {},
-    { skip: enableFakeResourcePools }
-  );
+  const {
+    data: realResourcePools,
+    isLoading,
+    isError,
+  } = useGetResourcePoolsQuery({}, { skip: enableFakeResourcePools });
 
   const resourcePools = enableFakeResourcePools
     ? fakeResourcePools
     : realResourcePools;
 
-  if (isLoading || !resourcePools) {
-    return <Loader />;
+  if (isLoading || !resourcePools || resourcePools.length == 0 || isError) {
+    return null;
   }
 
   return (

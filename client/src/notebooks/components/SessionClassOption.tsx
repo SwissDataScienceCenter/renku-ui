@@ -29,6 +29,7 @@ import Select, {
   components,
 } from "react-select";
 import { Col, FormGroup, Label } from "reactstrap";
+import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import {
   ResourceClass,
@@ -47,17 +48,38 @@ export const SessionClassOption = () => {
 
   const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
 
-  const { data: realResourcePools, isLoading } = useGetResourcePoolsQuery(
-    {},
-    { skip: enableFakeResourcePools }
-  );
+  const {
+    data: realResourcePools,
+    isLoading,
+    isError,
+  } = useGetResourcePoolsQuery({}, { skip: enableFakeResourcePools });
 
   const resourcePools = enableFakeResourcePools
     ? fakeResourcePools
     : realResourcePools;
 
-  if (isLoading || !resourcePools) {
-    return <Loader />;
+  if (isLoading) {
+    return (
+      <Col xs={12}>
+        Fetching available resource pools... <Loader size="16" inline="true" />
+      </Col>
+    );
+  }
+
+  if (!resourcePools || resourcePools.length == 0 || isError) {
+    return (
+      <Col xs={12}>
+        <ErrorAlert dismissible={false}>
+          <h3 className={cx("fs-6", "fw-bold")}>
+            Error on loading available session resource pools
+          </h3>
+          <p className="mb-0">
+            You can still attempt to launch a session, but the operation may not
+            be successful.
+          </p>
+        </ErrorAlert>
+      </Col>
+    );
   }
 
   return (
@@ -155,19 +177,21 @@ const selectClassNames: ClassNamesConfig<ResourceClass, false, OptionGroup> = {
       menuIsOpen && styles.controlIsOpen
     ),
   dropdownIndicator: () => cx("pe-3"),
-  groupHeading: () => cx("px-3", "text-uppercase", styles.groupHeading),
+  groupHeading: () => cx("pt-1", "px-3", "text-uppercase", styles.groupHeading),
   menu: () =>
     cx("rounded-bottom", "border", "border-top-0", "px-0", "py-2", styles.menu),
   menuList: () => cx("d-grid", "gap-2"),
-  option: ({ isSelected }) =>
+  option: ({ isFocused, isSelected }) =>
     cx(
       "d-grid",
-      "gap-4",
+      "gap-1",
       "px-3",
+      "py-1",
       styles.option,
-      isSelected && styles.optionIsSelected
+      isFocused && styles.optionIsFocused,
+      !isFocused && isSelected && styles.optionIsSelected
     ),
-  singleValue: () => cx("d-grid", "gap-4", "px-3", styles.singleValue),
+  singleValue: () => cx("d-grid", "gap-1", "px-3", styles.singleValue),
 };
 
 const selectComponents: SelectComponentsConfig<
@@ -183,57 +207,50 @@ const selectComponents: SelectComponentsConfig<
     );
   },
   Option: (props) => {
-    const { label, data: sessionClass } = props;
-    const detailClassName = cx("d-inline-flex", styles.detail);
-    const detailLabelClassName = cx("width", "me-auto", styles.detailLabel);
+    const { data: sessionClass } = props;
     return (
       <components.Option {...props}>
-        <span className={styles.label}>{label}</span>{" "}
-        <span className={detailClassName}>
-          <span className={detailLabelClassName}>CPUs</span>{" "}
-          <span>{sessionClass.cpu}</span>
-        </span>{" "}
-        <div className={detailClassName}>
-          <span className={detailLabelClassName}>RAM</span>{" "}
-          <span>{sessionClass.memory}</span>
-        </div>{" "}
-        <span className={detailClassName}>
-          <span className={detailLabelClassName}>Disk</span>{" "}
-          <span>{sessionClass.max_storage}</span>
-        </span>{" "}
-        <span className={detailClassName}>
-          <span className={detailLabelClassName}>GPUs</span>{" "}
-          <span>{sessionClass.gpu}</span>
-        </span>
+        <OptionOrSingleValueContent sessionClass={sessionClass} />
       </components.Option>
     );
   },
   SingleValue: (props) => {
     const { data: sessionClass } = props;
-    const detailClassName = cx("d-inline-flex", styles.detail);
-    const detailLabelClassName = cx("width", "me-auto", styles.detailLabel);
     return (
       <components.SingleValue {...props}>
-        <span className={styles.label}>{sessionClass.name}</span>{" "}
-        <span className={detailClassName}>
-          <span className={detailLabelClassName}>CPUs</span>{" "}
-          <span>{sessionClass.cpu}</span>
-        </span>{" "}
-        <div className={detailClassName}>
-          <span className={detailLabelClassName}>RAM</span>{" "}
-          <span>{sessionClass.memory}</span>
-        </div>{" "}
-        <span className={detailClassName}>
-          <span className={detailLabelClassName}>Disk</span>{" "}
-          <span>{sessionClass.max_storage}</span>
-        </span>{" "}
-        <span className={detailClassName}>
-          <span className={detailLabelClassName}>GPUs</span>{" "}
-          <span>{sessionClass.gpu}</span>
-        </span>
+        <OptionOrSingleValueContent sessionClass={sessionClass} />
       </components.SingleValue>
     );
   },
+};
+
+interface OptionOrSingleValueContentProps {
+  sessionClass: ResourceClass;
+}
+
+const OptionOrSingleValueContent = ({
+  sessionClass,
+}: OptionOrSingleValueContentProps) => {
+  const labelClassName = cx("text-wrap", "text-break", styles.label);
+  const detailValueClassName = cx(styles.detail, styles.detailValue);
+  const detailLabelClassName = cx(styles.detail, styles.detailLabel);
+  return (
+    <>
+      <span className={labelClassName}>{sessionClass.name}</span>{" "}
+      <span className={detailValueClassName}>{sessionClass.cpu}</span>{" "}
+      <span className={detailLabelClassName}>CPUs</span>{" "}
+      <span className={detailValueClassName}>{sessionClass.memory}</span>
+      <span className={detailLabelClassName}>
+        <span className={styles.detailUnit}>GB</span> RAM
+      </span>{" "}
+      <span className={detailValueClassName}>{sessionClass.max_storage}</span>
+      <span className={detailLabelClassName}>
+        <span className={styles.detailUnit}>GB</span> Disk
+      </span>{" "}
+      <span className={detailValueClassName}>{sessionClass.gpu}</span>{" "}
+      <span className={detailLabelClassName}>GPUs</span>{" "}
+    </>
+  );
 };
 
 export const fakeResourcePools: ResourcePool[] = [
