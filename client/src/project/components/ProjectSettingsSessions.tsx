@@ -50,6 +50,7 @@ import { ServerOptions } from "../../features/session/session";
 import { useServerOptionsQuery } from "../../features/session/sessionApi";
 import { LockStatus, User } from "../../model/RenkuModels";
 import {
+  ServerOptionBoolean,
   ServerOptionEnum,
   mergeDefaultUrlOptions,
 } from "../../notebooks/components/StartNotebookServerOptions";
@@ -196,7 +197,7 @@ export const ProjectSettingsSessions = () => {
   }
 
   return (
-    <SessionsDiv>
+    <SessionsDiv projectConfigIsFetching={projectConfigIsFetching}>
       <UpdateStatus />
       {!devAccess && (
         <p>Settings can be changed only by developers and maintainers.</p>
@@ -223,16 +224,15 @@ export const ProjectSettingsSessions = () => {
         versionUrl={versionUrl}
         devAccess={devAccess}
       />
+      <AutoFetchLfsOption
+        projectConfig={projectConfig}
+        projectConfigIsFetching={projectConfigIsFetching}
+        projectRepositoryUrl={projectRepositoryUrl}
+        versionUrl={versionUrl}
+        devAccess={devAccess}
+      />
 
       <pre>{JSON.stringify(projectConfig, null, 2)}</pre>
-
-      {/* <DefaultUrlOption
-          projectRepositoryUrl={projectRepositoryUrl}
-          branchName={branch?.name}
-        />
-        <SessionClassOption />
-      <SessionStorageOption /> */}
-      {/* <AutoFetchLfsOption /> */}
     </SessionsDiv>
   );
 };
@@ -466,11 +466,6 @@ const SessionClassOption = ({
     [currentSessionClassId, resourcePools]
   );
 
-  // const selectedSessionClass =
-  //   newValue ??
-  //   projectConfig.config.sessions?.sessionClass ??
-  //   projectConfig.default.sessions?.sessionClass;
-
   const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation({
     fixedCacheKey: "project-settings",
   });
@@ -566,20 +561,6 @@ const StorageOption = ({
     ? fakeResourcePools
     : realResourcePools;
 
-  // const defaultSessionClassId =
-  //   projectConfig.config.sessions?.sessionClass ??
-  //   projectConfig.default.sessions?.sessionClass;
-  // const defaultSessionClass = useMemo(
-  //   () =>
-  //     resourcePools
-  //       ?.flatMap((pool) => pool.classes)
-  //       .find((c) => c.id == defaultSessionClassId) ??
-  //     resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default) ??
-  //     resourcePools?.find(() => true)?.classes[0] ??
-  //     undefined,
-  //   [defaultSessionClassId, resourcePools]
-  // );
-
   // Temporary value for optimistic UI update
   const [newValue, setNewValue] = useState<number | null>(null);
 
@@ -657,26 +638,61 @@ const StorageOption = ({
   );
 };
 
-// const AutoFetchLfsOption = () => {
-//   const lfsAutoFetch = useStartSessionOptionsSelector(
-//     (state) => state.lfsAutoFetch
-//   );
-//   const dispatch = useDispatch();
+interface AutoFetchLfsOptionProps {
+  projectConfig: ProjectConfig;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
+}
 
-//   const onChange = useCallback(() => {
-//     dispatch(setLfsAutoFetch(!lfsAutoFetch));
-//   }, [dispatch, lfsAutoFetch]);
+const AutoFetchLfsOption = ({
+  projectConfig,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
+}: AutoFetchLfsOptionProps) => {
+  // Temporary value for optimistic UI update
+  const [newValue, setNewValue] = useState<boolean | null>(null);
 
-//   return (
-//     <Col xs={12}>
-//       <FormGroup className="field-group">
-//         <ServerOptionBoolean
-//           id="option-lfs-auto-fetch"
-//           displayName="Automatically fetch LFS data"
-//           onChange={onChange}
-//           selected={lfsAutoFetch}
-//         />
-//       </FormGroup>
-//     </Col>
-//   );
-// };
+  const selectedAutoFetchLfs =
+    newValue ?? projectConfig.config.sessions?.lfsAutoFetch ?? false;
+
+  const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation({
+    fixedCacheKey: "project-settings",
+  });
+
+  const onChange = useCallback(() => {
+    updateConfig({
+      projectRepositoryUrl,
+      versionUrl,
+      update: {
+        "interactive.lfs_auto_fetch": `${!selectedAutoFetchLfs}`,
+      },
+    });
+  }, [projectRepositoryUrl, selectedAutoFetchLfs, updateConfig, versionUrl]);
+
+  // Reset the temporary value when the API responds with an error
+  useEffect(() => {
+    if (isError) {
+      setNewValue(null);
+    }
+  }, [isError]);
+
+  const disabled = !devAccess || isLoading || projectConfigIsFetching;
+
+  return (
+    <Col xs={12}>
+      <FormGroup className="field-group">
+        <ServerOptionBoolean
+          id="option-lfs-auto-fetch"
+          displayName="Automatically fetch LFS data"
+          onChange={onChange}
+          selected={selectedAutoFetchLfs}
+          disabled={disabled}
+        />
+      </FormGroup>
+    </Col>
+  );
+};

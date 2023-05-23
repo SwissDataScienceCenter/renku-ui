@@ -74,10 +74,10 @@ interface GetConfigRawResponse {
 interface GetConfigRawResponseSection {
   "interactive.default_url"?: string;
   "interactive.session_class"?: string;
-  "interactive.storage_gb"?: string;
+  "interactive.lfs_auto_fetch"?: string;
+  "interactive.disk_request"?: string;
   "interactive.cpu_request"?: string;
   "interactive.mem_request"?: string;
-  "interactive.disk_request"?: string;
   "interactive.gpu_request"?: string;
   "interactive.image"?: string;
 }
@@ -284,6 +284,10 @@ const transformGetConfigRawResponse = (
         storage: safeParseInt(
           projectSessionsConfig["interactive.disk_request"]
         ),
+        lfsAutoFetch:
+          projectSessionsConfig["interactive.lfs_auto_fetch"]
+            ?.trim()
+            .toLowerCase() === "true",
         legacyConfig: projectLegacySessionsConfig,
       },
     },

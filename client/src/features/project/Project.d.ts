@@ -175,6 +175,8 @@ export interface ProjectConfigSection {
     /** Disk storage in Gigabytes */
     storage?: number;
 
+    lfsAutoFetch?: boolean;
+
     legacyConfig?: {
       cpuRequest?: number;
       memoryRequest?: string;
