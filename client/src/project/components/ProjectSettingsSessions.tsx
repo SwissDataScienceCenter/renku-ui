@@ -17,6 +17,7 @@
  */
 
 import React, {
+  Fragment,
   ReactNode,
   useCallback,
   useEffect,
@@ -28,7 +29,7 @@ import debounce from "lodash/debounce";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { SingleValue } from "react-select";
-import { Col, FormGroup, Label } from "reactstrap";
+import { Badge, Col, Collapse, FormGroup, Label } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
 import { ErrorAlert, WarnAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
@@ -59,6 +60,8 @@ import {
 import { StorageSelector } from "../../notebooks/components/options/SessionStorageOption";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { Url } from "../../utils/helpers/url";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
 export const ProjectSettingsSessions = () => {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -235,15 +238,60 @@ export const ProjectSettingsSessions = () => {
 };
 
 interface SessionsDivProps {
+  projectConfigIsFetching?: boolean;
   children?: ReactNode;
 }
 
-const SessionsDiv = ({ children }: SessionsDivProps) => (
-  <div className="mt-2">
-    <h3>Session settings</h3>
-    <div className="form-rk-green">{children}</div>
-  </div>
-);
+const SessionsDiv = ({
+  projectConfigIsFetching,
+  children,
+}: SessionsDivProps) => {
+  const [, { isLoading, isSuccess }] = useUpdateConfigMutation({
+    fixedCacheKey: "project-settings",
+  });
+  const updating = projectConfigIsFetching || isLoading;
+
+  const [saved, setSaved] = useState<boolean>(false);
+  useEffect(() => {
+    if (isSuccess) {
+      setSaved(true);
+      const timeout = window.setTimeout(() => setSaved(false), 3_000);
+      return () => window.clearTimeout(timeout);
+    }
+  }, [isSuccess]);
+
+  const [content, setContent] = useState<JSX.Element>(<></>);
+  useEffect(() => {
+    if (updating) {
+      setContent(
+        <>
+          Saving <Loader inline size={13} color={"white"} />
+        </>
+      );
+    }
+    if (!updating && saved) {
+      setContent(
+        <>
+          Saved <FontAwesomeIcon icon={faCheck} size="1x" />
+        </>
+      );
+    }
+  }, [saved, updating]);
+
+  return (
+    <div className="mt-2">
+      <h3 className="d-flex align-items-center">
+        Session settings
+        <div className={cx("d-flex", "fade", (updating || saved) && "show")}>
+          <Badge className="btn-outline-rk-green text-white ms-1">
+            {content}
+          </Badge>
+        </div>
+      </h3>
+      <div className="form-rk-green">{children}</div>
+    </div>
+  );
+};
 
 const UpdateStatus = () => {
   const [, { error }] = useUpdateConfigMutation({
