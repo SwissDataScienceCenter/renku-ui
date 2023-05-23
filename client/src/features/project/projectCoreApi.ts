@@ -93,13 +93,13 @@ interface UpdateConfigParams extends GetConfigParams {
 interface UpdateConfigResponse {
   branch: string;
   update: {
-    [key: string]: string;
+    [key: string]: string | null;
   };
 }
 
 interface UpdateConfigRawResponse {
   result?: {
-    config?: { [key: string]: string };
+    config?: { [key: string]: string | null };
     remote_branch?: string;
   };
 }
@@ -226,47 +226,17 @@ export const projectCoreApi = createApi({
           update: result?.config ?? {},
         };
       },
-      transformErrorResponse: (error) => {
-        console.log({ error });
-        return error;
+      transformErrorResponse: (error): FetchBaseQueryError => {
+        const data = error.data as any;
+        if (!data.error || !data.error.code) {
+          return error;
+        }
+        return {
+          status: "CUSTOM_ERROR",
+          error: "renku-core error",
+          data: data.error,
+        };
       },
-      // queryFn: async (
-      //   { projectRepositoryUrl, versionUrl, update },
-      //   _api,
-      //   _extraOptions,
-      //   baseQuery
-      // ) => {
-      //   const body = {
-      //     git_url: projectRepositoryUrl,
-      //     // Branch option not working currently
-      //     // ...(branch ? { branch } : {}),
-      //     config: update,
-      //   };
-      //   const response = await baseQuery({
-      //     url: versionedUrlEndpoint("config.set", versionUrl),
-      //     method: "POST",
-      //     body,
-      //   });
-      //   if (response.error) {
-      //     return response;
-      //   }
-      //   const data = response.data as any;
-      //   if (data.error) {
-      //     const error: FetchBaseQueryError = {
-      //       status: "CUSTOM_ERROR",
-      //       data: data.error,
-      //       error: "renku-core error",
-      //     };
-      //     return { meta: response.meta, error };
-      //   }
-      //   return {
-      //     meta: response.meta,
-      //     data: {
-      //       branch: data.remote_branch,
-      //       update: data.config,
-      //     },
-      //   };
-      // },
       invalidatesTags: (_result, _error, arg) => [
         { type: "ProjectConfig", id: arg.projectRepositoryUrl },
       ],
