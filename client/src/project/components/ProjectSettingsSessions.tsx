@@ -17,14 +17,19 @@
  */
 
 import React, {
-  Component,
-  Fragment,
   ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
+import {
+  faCheck,
+  faEdit,
+  faTimesCircle,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import debounce from "lodash/debounce";
 import { RootStateOrAny, useSelector } from "react-redux";
@@ -39,17 +44,16 @@ import {
   Badge,
   Button,
   Col,
-  Collapse,
   FormGroup,
   FormText,
   Input,
   InputGroup,
   Label,
-  Row,
   UncontrolledTooltip,
 } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
 import { ErrorAlert, WarnAlert } from "../../components/Alert";
+import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
@@ -77,17 +81,9 @@ import {
   fakeResourcePools,
 } from "../../notebooks/components/options/SessionClassOption";
 import { StorageSelector } from "../../notebooks/components/options/SessionStorageOption";
+import { Docs } from "../../utils/constants/Docs";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { Url } from "../../utils/helpers/url";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheck,
-  faEdit,
-  faTimesCircle,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { ExternalLink } from "../../components/ExternalLinks";
-import { Docs } from "../../utils/constants/Docs";
 import styles from "./ProjectSettingsSessions.module.scss";
 
 export const ProjectSettingsSessions = () => {

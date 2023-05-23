@@ -97,6 +97,13 @@ interface UpdateConfigResponse {
   };
 }
 
+interface UpdateConfigRawResponse {
+  result?: {
+    config?: { [key: string]: string };
+    remote_branch?: string;
+  };
+}
+
 function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
   const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : endpoint;
   return `/renku${urlPath}`;
@@ -194,43 +201,72 @@ export const projectCoreApi = createApi({
       ],
     }),
     updateConfig: builder.mutation<UpdateConfigResponse, UpdateConfigParams>({
-      queryFn: async (
-        { projectRepositoryUrl, versionUrl, update },
-        _api,
-        _extraOptions,
-        baseQuery
-      ) => {
+      query: ({
+        projectRepositoryUrl,
+        versionUrl,
+        update,
+      }: UpdateConfigParams) => {
         const body = {
           git_url: projectRepositoryUrl,
           // Branch option not working currently
           // ...(branch ? { branch } : {}),
           config: update,
         };
-        const response = await baseQuery({
+        return {
           url: versionedUrlEndpoint("config.set", versionUrl),
           method: "POST",
           body,
-        });
-        if (response.error) {
-          return response;
-        }
-        const data = response.data as any;
-        if (data.error) {
-          const error: FetchBaseQueryError = {
-            status: "CUSTOM_ERROR",
-            data: data.error,
-            error: "renku-core error",
-          };
-          return { meta: response.meta, error };
-        }
-        return {
-          meta: response.meta,
-          data: {
-            branch: data.remote_branch,
-            update: data.config,
-          },
+          validateStatus: (response, body) =>
+            response.status >= 200 && response.status < 300 && !body.error,
         };
       },
+      transformResponse: ({ result }: UpdateConfigRawResponse) => {
+        return {
+          branch: result?.remote_branch ?? "",
+          update: result?.config ?? {},
+        };
+      },
+      transformErrorResponse: (error) => {
+        console.log({ error });
+        return error;
+      },
+      // queryFn: async (
+      //   { projectRepositoryUrl, versionUrl, update },
+      //   _api,
+      //   _extraOptions,
+      //   baseQuery
+      // ) => {
+      //   const body = {
+      //     git_url: projectRepositoryUrl,
+      //     // Branch option not working currently
+      //     // ...(branch ? { branch } : {}),
+      //     config: update,
+      //   };
+      //   const response = await baseQuery({
+      //     url: versionedUrlEndpoint("config.set", versionUrl),
+      //     method: "POST",
+      //     body,
+      //   });
+      //   if (response.error) {
+      //     return response;
+      //   }
+      //   const data = response.data as any;
+      //   if (data.error) {
+      //     const error: FetchBaseQueryError = {
+      //       status: "CUSTOM_ERROR",
+      //       data: data.error,
+      //       error: "renku-core error",
+      //     };
+      //     return { meta: response.meta, error };
+      //   }
+      //   return {
+      //     meta: response.meta,
+      //     data: {
+      //       branch: data.remote_branch,
+      //       update: data.config,
+      //     },
+      //   };
+      // },
       invalidatesTags: (_result, _error, arg) => [
         { type: "ProjectConfig", id: arg.projectRepositoryUrl },
       ],
