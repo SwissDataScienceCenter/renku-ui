@@ -86,7 +86,7 @@ interface UpdateConfigParams extends GetConfigParams {
   projectRepositoryUrl: string;
   branch?: string;
   update: {
-    [key: string]: string;
+    [key: string]: string | null;
   };
 }
 
@@ -288,6 +288,7 @@ const transformGetConfigRawResponse = (
           projectSessionsConfig["interactive.lfs_auto_fetch"]
             ?.trim()
             .toLowerCase() === "true",
+        dockerImage: projectSessionsConfig["interactive.image"],
         legacyConfig: projectLegacySessionsConfig,
       },
     },

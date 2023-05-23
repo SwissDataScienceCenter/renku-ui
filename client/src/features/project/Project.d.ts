@@ -177,6 +177,8 @@ export interface ProjectConfigSection {
 
     lfsAutoFetch?: boolean;
 
+    dockerImage?: string;
+
     legacyConfig?: {
       cpuRequest?: number;
       memoryRequest?: string;

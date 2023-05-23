@@ -57,7 +57,7 @@
     "react-router-hash-link": "^2.4.3",
     "react-select": "^5.7.3",
     "react-toastify": "^6.2.0",
-    "reactstrap": "^9.1.9",
+    "reactstrap": "^9.1.10",
     "redux": "^4.2.1",
     "redux-thunk": "^2.2.0",
     "rehype-katex": "^6.0.2",

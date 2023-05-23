@@ -17,6 +17,7 @@
  */
 
 import React, {
+  Component,
   Fragment,
   ReactNode,
   useCallback,
@@ -29,7 +30,24 @@ import debounce from "lodash/debounce";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { SingleValue } from "react-select";
-import { Badge, Col, Collapse, FormGroup, Label } from "reactstrap";
+import {
+  Accordion,
+  AccordionBody,
+  AccordionHeader,
+  AccordionItem,
+  AccordionProps,
+  Badge,
+  Button,
+  Col,
+  Collapse,
+  FormGroup,
+  FormText,
+  Input,
+  InputGroup,
+  Label,
+  Row,
+  UncontrolledTooltip,
+} from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
 import { ErrorAlert, WarnAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
@@ -62,7 +80,15 @@ import { StorageSelector } from "../../notebooks/components/options/SessionStora
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { Url } from "../../utils/helpers/url";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheck,
+  faEdit,
+  faTimesCircle,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { ExternalLink } from "../../components/ExternalLinks";
+import { Docs } from "../../utils/constants/Docs";
+import styles from "./ProjectSettingsSessions.module.scss";
 
 export const ProjectSettingsSessions = () => {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -225,6 +251,14 @@ export const ProjectSettingsSessions = () => {
         devAccess={devAccess}
       />
       <AutoFetchLfsOption
+        projectConfig={projectConfig}
+        projectConfigIsFetching={projectConfigIsFetching}
+        projectRepositoryUrl={projectRepositoryUrl}
+        versionUrl={versionUrl}
+        devAccess={devAccess}
+      />
+
+      <ProjectSettingsSessionsAdvanced
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
@@ -664,6 +698,7 @@ const AutoFetchLfsOption = ({
   });
 
   const onChange = useCallback(() => {
+    setNewValue(!selectedAutoFetchLfs);
     updateConfig({
       projectRepositoryUrl,
       versionUrl,
@@ -694,5 +729,262 @@ const AutoFetchLfsOption = ({
         />
       </FormGroup>
     </Col>
+  );
+};
+
+interface ProjectSettingsSessionsAdvancedProps {
+  projectConfig: ProjectConfig;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
+}
+
+const ProjectSettingsSessionsAdvanced = ({
+  projectConfig,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
+}: ProjectSettingsSessionsAdvancedProps) => {
+  const imageIsSet = !!projectConfig.config.sessions?.dockerImage;
+
+  // Collapse unknown values by default when none are already assigned
+  const [showImage, setShowImage] = useState<boolean>(imageIsSet);
+
+  const toggleShowImage = useCallback(() => {
+    setShowImage((showImage) => !showImage);
+  }, []);
+
+  return (
+    <div className="mb-2">
+      <Col xs={12}>
+        <AccordionFixed
+          className={styles.accordion}
+          open={showImage ? "advanced-settings" : ""}
+          toggle={toggleShowImage}
+          flush
+        >
+          <AccordionItem>
+            <AccordionHeader targetId="advanced-settings">
+              Advanced settings
+            </AccordionHeader>
+            <AccordionBody accordionId="advanced-settings">
+              {devAccess && (
+                <WarnAlert>
+                  Fixing an image can yield improvements, but it can also lead
+                  to sessions not working in the expected way.{" "}
+                  <ExternalLink
+                    role="text"
+                    title="Please consult the documentation"
+                    url={Docs.rtdTopicGuide(
+                      "sessions/customizing-sessions.html"
+                    )}
+                  />{" "}
+                  before changing this setting.
+                </WarnAlert>
+              )}
+              <PinnedImageOption
+                projectConfig={projectConfig}
+                projectConfigIsFetching={projectConfigIsFetching}
+                projectRepositoryUrl={projectRepositoryUrl}
+                versionUrl={versionUrl}
+                devAccess={devAccess}
+              />
+            </AccordionBody>
+          </AccordionItem>
+        </AccordionFixed>
+      </Col>
+    </div>
+  );
+};
+
+const AccordionFixed = (
+  props: AccordionProps & {
+    toggle?: (id: string) => void;
+  }
+) => <Accordion {...props} />;
+
+interface PinnedImageOptionProps {
+  projectConfig: ProjectConfig;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
+}
+
+const PinnedImageOption = ({
+  projectConfig,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
+}: PinnedImageOptionProps) => {
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const toggleIsEditing = useCallback(() => {
+    setIsEditing((isEditing) => !isEditing);
+  }, []);
+
+  // Temporary value for optimistic UI update
+  const [newValue, setNewValue] = useState<string | null>(null);
+
+  const selectedPinnedImage =
+    newValue ?? projectConfig.config.sessions?.dockerImage;
+
+  const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation({
+    fixedCacheKey: "project-settings",
+  });
+
+  const onChangeInput = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setNewValue(event.target.value);
+    },
+    []
+  );
+
+  const onSave = useCallback(() => {
+    setIsEditing(false);
+    updateConfig({
+      projectRepositoryUrl,
+      versionUrl,
+      update: {
+        "interactive.image": newValue,
+      },
+    });
+  }, [newValue, projectRepositoryUrl, updateConfig, versionUrl]);
+
+  const onResetValue = useCallback(() => {
+    setNewValue("");
+    updateConfig({
+      projectRepositoryUrl,
+      versionUrl,
+      update: {
+        "interactive.image": null,
+      },
+    });
+  }, [projectRepositoryUrl, updateConfig, versionUrl]);
+
+  // Reset the temporary value when the API responds with an error
+  useEffect(() => {
+    if (isError) {
+      setNewValue(null);
+    }
+  }, [isError]);
+
+  const disabled = !devAccess || isLoading || projectConfigIsFetching;
+
+  return (
+    <FormGroup>
+      <Label className="me-2">Docker image:</Label>
+      {!selectedPinnedImage && !isEditing ? (
+        <>
+          <code className="me-2">none</code>
+          {devAccess && (
+            <>
+              <Button
+                id="project-settings-sessions-advanced-image-add"
+                color=""
+                size="sm"
+                className="border-0"
+                disabled={disabled}
+                onClick={toggleIsEditing}
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </Button>
+              <UncontrolledTooltip
+                placement="top"
+                target="project-settings-sessions-advanced-image-add"
+              >
+                Set image
+              </UncontrolledTooltip>
+            </>
+          )}
+        </>
+      ) : (
+        <InputGroup className="input-left">
+          <Input
+            value={selectedPinnedImage}
+            onChange={onChangeInput}
+            disabled={disabled || !isEditing}
+          />
+          {isEditing && (
+            <>
+              <Button
+                id="project-settings-sessions-advanced-image-confirm"
+                className="btn btn-outline-rk-green m-0"
+                disabled={disabled}
+                onClick={onSave}
+              >
+                <FontAwesomeIcon icon={faCheck} />
+              </Button>
+              <UncontrolledTooltip
+                placement="top"
+                target="project-settings-sessions-advanced-image-confirm"
+              >
+                Save changes
+              </UncontrolledTooltip>
+              <Button
+                id="project-settings-sessions-advanced-image-back"
+                className="btn btn-outline-rk-green m-0"
+                disabled={disabled}
+                onClick={toggleIsEditing}
+              >
+                <FontAwesomeIcon icon={faTrash} />
+              </Button>
+              <UncontrolledTooltip
+                placement="top"
+                target="project-settings-sessions-advanced-image-back"
+              >
+                Discard changes
+              </UncontrolledTooltip>
+            </>
+          )}
+          {!isEditing && devAccess && (
+            <>
+              <Button
+                id="project-settings-sessions-advanced-image-edit"
+                className="btn btn-outline-rk-green m-0"
+                disabled={disabled}
+                onClick={toggleIsEditing}
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </Button>
+              <UncontrolledTooltip
+                placement="top"
+                target="project-settings-sessions-advanced-image-edit"
+              >
+                Edit value
+              </UncontrolledTooltip>
+              <Button
+                id="project-settings-sessions-advanced-image-reset"
+                className="btn btn-outline-rk-green m-0"
+                disabled={disabled}
+                onClick={onResetValue}
+              >
+                <FontAwesomeIcon icon={faTimesCircle} />
+              </Button>
+              <UncontrolledTooltip
+                placement="top"
+                target="project-settings-sessions-advanced-image-reset"
+              >
+                Reset value
+              </UncontrolledTooltip>
+            </>
+          )}
+        </InputGroup>
+      )}
+      <div>
+        <FormText>
+          A URL of a RenkuLab-compatible Docker image. For an image from this
+          project, consult{" "}
+          <ExternalLink
+            role="link"
+            title="the list of images for this project"
+            url={`${projectRepositoryUrl}/container_registry`}
+          />
+          .
+        </FormText>
+      </div>
+    </FormGroup>
   );
 };

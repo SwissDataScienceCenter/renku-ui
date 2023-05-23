@@ -342,9 +342,9 @@ export const ServerOptionBoolean = ({
       disabled={disabled}
       checked={!!selected}
       onChange={onChange}
-      className="form-check-input rounded-pill"
+      className="form-check-input rounded-pill cursor-pointer"
     />
-    <Label check htmlFor={id}>
+    <Label check htmlFor={id} className="cursor-pointer">
       {displayName}
     </Label>
   </div>
