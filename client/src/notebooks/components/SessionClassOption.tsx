@@ -82,10 +82,6 @@ export const SessionClassOption = () => {
     );
   }
 
-  if (resourcePools.length == 0) {
-    return <p>Error: no resource pools</p>;
-  }
-
   return (
     <Col xs={12}>
       <FormGroup className="field-group">
