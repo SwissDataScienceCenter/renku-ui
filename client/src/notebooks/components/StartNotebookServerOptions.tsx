@@ -17,6 +17,7 @@
  */
 
 import React, { useCallback, useEffect } from "react";
+import cx from "classnames";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import {
   Badge,
@@ -42,9 +43,9 @@ import {
   setLfsAutoFetch,
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
+import styles from "./StartNotebookServerOptions.module.scss";
 import { SessionClassOption } from "./options/SessionClassOption";
 import { SessionStorageOption } from "./options/SessionStorageOption";
-import styles from "./StartNotebookServerOptions.module.scss";
 
 interface StartNotebookServerOptionsProps {
   projectRepositoryUrl: string;
@@ -245,7 +246,10 @@ export const ServerOptionEnum = <T extends string | number>({
       color = warning != null && warning === picked ? "danger" : undefined;
 
     return (
-      <UncontrolledDropdown direction="down" className={styles.dropdown}>
+      <UncontrolledDropdown
+        direction="down"
+        className={cx(styles.dropdown, "d-inline-block")}
+      >
         <DropdownToggle
           caret
           className="btn-outline-rk-green"

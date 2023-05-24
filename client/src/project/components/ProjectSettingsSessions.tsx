@@ -406,14 +406,7 @@ const DefaultUrlOption = ({
 }: DefaultUrlOptionProps) => {
   const defaultUrlOptions = [
     ...mergeDefaultUrlOptions({
-      serverOptions: {
-        ...serverOptions,
-        defaultUrl: {
-          ...serverOptions.defaultUrl,
-          options: [...serverOptions.defaultUrl.options, "/foo", "/bar"],
-        },
-      },
-      // serverOptions,
+      serverOptions,
       projectConfig,
     }),
   ];
