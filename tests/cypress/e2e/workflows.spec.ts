@@ -49,7 +49,7 @@ describe("iteract with workflows", () => {
     cy.get_cy("workflows-browser").children().first().contains("pipeline");
   });
 
-  it.only("view inactive workflows and interact", () => {
+  it("view inactive workflows and interact", () => {
     fixtures.getWorkflows(
       "workflows/workflows-list-links-mappings-inactive.json"
     );
@@ -75,7 +75,7 @@ describe("iteract with workflows", () => {
     cy.get_cy("workflows-browser").children().first().contains("pipeline");
   });
 
-  it.only("expand a workflow - waiting", () => {
+  it("expand a workflow - waiting", () => {
     fixtures.getWorkflows("workflows/workflows-list-links-mappings.json");
     cy.visit("/projects/e2e/local-test-project/workflows");
     cy.get_cy("workflows-browser")
