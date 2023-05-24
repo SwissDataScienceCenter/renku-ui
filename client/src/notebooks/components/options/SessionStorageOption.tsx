@@ -109,7 +109,6 @@ export const SessionStorageOption = () => {
       <FormGroup className="field-group">
         <Label>Amount of Storage</Label>
         <StorageSelector
-          // resourcePools={resourcePools}
           currentSessionClass={currentSessionClass}
           currentStorage={storage}
           onChange={onChange}
