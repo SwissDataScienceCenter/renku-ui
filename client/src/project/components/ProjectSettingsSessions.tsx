@@ -52,7 +52,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
-import { ErrorAlert, WarnAlert } from "../../components/Alert";
+import { ErrorAlert, RenkuAlert, WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
@@ -127,6 +127,8 @@ export const ProjectSettingsSessions = () => {
     { skip: !fetchedVersion }
   );
 
+  console.log({ error });
+
   // ? Anonymous users may have problem with notebook options, depending on the deployment
   if (!logged) {
     const textIntro = "Only authenticated users can access sessions setting.";
@@ -199,9 +201,26 @@ export const ProjectSettingsSessions = () => {
   }
 
   if (error) {
+    // TODO: Should handle this?
+    if (!isFetchBaseQueryError(error) || error.status !== "CUSTOM_ERROR") {
+      return (
+        <SessionsDiv>
+          <RenkuAlert color="danger" dismissible timeout={0}>
+            <h3>Unknown error</h3>
+          </RenkuAlert>
+        </SessionsDiv>
+      );
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const renkuCoreError = error.data as any;
+
     return (
       <SessionsDiv>
-        <CoreErrorAlert error={error} />
+        <CoreErrorAlert
+          error={renkuCoreError}
+          message={renkuCoreError.reason ?? renkuCoreError.userMessage}
+        />
       </SessionsDiv>
     );
   }

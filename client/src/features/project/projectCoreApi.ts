@@ -162,50 +162,38 @@ export const projectCoreApi = createApi({
       },
     }),
     getConfig: builder.query<ProjectConfig, GetConfigParams>({
-      queryFn: async (
-        { projectRepositoryUrl, versionUrl },
-        _api,
-        _extraOptions,
-        baseQuery
-      ) => {
+      query: ({ projectRepositoryUrl, versionUrl }) => {
         const params = {
           git_url: projectRepositoryUrl,
           // Branch option not working currently
           // ...(branch ? { branch } : {}),
         };
-        const response = await baseQuery({
+        return {
           url: versionedUrlEndpoint("config.show", versionUrl),
           params,
-        });
-        if (response.error) {
-          return response;
+          validateStatus: (response, body) =>
+            response.status >= 200 && response.status < 300 && !body.error,
+        };
+      },
+      transformResponse: (response: GetConfigRawResponse) =>
+        transformGetConfigRawResponse(response),
+      transformErrorResponse: (error): FetchBaseQueryError => {
+        const data = error.data as any;
+        if (!data.error || !data.error.code) {
+          return error;
         }
-        try {
-          return {
-            meta: response.meta,
-            data: transformGetConfigRawResponse(
-              response.data as GetConfigRawResponse
-            ),
-          };
-        } catch (error_) {
-          const error: FetchBaseQueryError = {
-            status: "CUSTOM_ERROR",
-            data: error_,
-            error: "renku-core error",
-          };
-          return { meta: response.meta, error };
-        }
+        return {
+          status: "CUSTOM_ERROR",
+          error: "renku-core error",
+          data: data.error,
+        };
       },
       providesTags: (_result, _error, arg) => [
         { type: "ProjectConfig", id: arg.projectRepositoryUrl },
       ],
     }),
     updateConfig: builder.mutation<UpdateConfigResponse, UpdateConfigParams>({
-      query: ({
-        projectRepositoryUrl,
-        versionUrl,
-        update,
-      }: UpdateConfigParams) => {
+      query: ({ projectRepositoryUrl, versionUrl, update }) => {
         const body = {
           git_url: projectRepositoryUrl,
           // Branch option not working currently
