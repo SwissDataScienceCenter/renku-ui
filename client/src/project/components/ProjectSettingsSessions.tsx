@@ -230,7 +230,10 @@ export const ProjectSettingsSessions = () => {
   }
 
   return (
-    <SessionsDiv projectConfigIsFetching={projectConfigIsFetching}>
+    <SessionsDiv
+      projectConfigIsFetching={projectConfigIsFetching}
+      enableSavingBadge
+    >
       <UpdateStatus />
       {!devAccess && (
         <p>Settings can be changed only by developers and maintainers.</p>
@@ -280,21 +283,37 @@ export const ProjectSettingsSessions = () => {
         versionUrl={versionUrl}
         devAccess={devAccess}
       />
-
-      {/* <pre>{JSON.stringify(projectConfig, null, 2)}</pre> */}
     </SessionsDiv>
   );
 };
 
 interface SessionsDivProps {
+  enableSavingBadge?: boolean;
   projectConfigIsFetching?: boolean;
   children?: ReactNode;
 }
 
 const SessionsDiv = ({
+  enableSavingBadge,
   projectConfigIsFetching,
   children,
-}: SessionsDivProps) => {
+}: SessionsDivProps) => (
+  <div className="mt-2">
+    <h3 className="d-flex align-items-center">
+      Session settings
+      {enableSavingBadge && (
+        <SavingBadge projectConfigIsFetching={projectConfigIsFetching} />
+      )}
+    </h3>
+    <div className="form-rk-green">{children}</div>
+  </div>
+);
+
+interface SavingBadgeProps {
+  projectConfigIsFetching?: boolean;
+}
+
+const SavingBadge = ({ projectConfigIsFetching }: SavingBadgeProps) => {
   const [, { isLoading, isSuccess }] = useUpdateConfigMutation({
     fixedCacheKey: "project-settings",
   });
@@ -328,16 +347,8 @@ const SessionsDiv = ({
   }, [saved, updating]);
 
   return (
-    <div className="mt-2">
-      <h3 className="d-flex align-items-center">
-        Session settings
-        <div className={cx("d-flex", "fade", (updating || saved) && "show")}>
-          <Badge className="btn-outline-rk-green text-white ms-1">
-            {content}
-          </Badge>
-        </div>
-      </h3>
-      <div className="form-rk-green">{children}</div>
+    <div className={cx("d-flex", "fade", (updating || saved) && "show")}>
+      <Badge className="btn-outline-rk-green text-white ms-1">{content}</Badge>
     </div>
   );
 };
@@ -351,25 +362,29 @@ const UpdateStatus = () => {
     return null;
   }
 
-  // TODO: Should handle this?
-  if (!isFetchBaseQueryError(error) || error.status !== "CUSTOM_ERROR") {
-    return null;
+  if (isFetchBaseQueryError(error) && error.status === "CUSTOM_ERROR") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const renkuCoreError = error.data as any;
+
+    const message = `Error occurred while updating project settings${
+      renkuCoreError.reason
+        ? `: ${renkuCoreError.reason}`
+        : renkuCoreError.userMessage
+        ? `: ${renkuCoreError.userMessage}`
+        : "."
+    }`;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return <CoreErrorAlert error={renkuCoreError} message={message as any} />;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const renkuCoreError = error.data as any;
-
-  // TODO: support for `Error occurred while updating "${keyName}"`?
-  const message = `Error occurred while updating project settings${
-    renkuCoreError.reason
-      ? `: ${renkuCoreError.reason}`
-      : renkuCoreError.userMessage
-      ? `: ${renkuCoreError.userMessage}`
-      : "."
-  }`;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return <CoreErrorAlert error={renkuCoreError} message={message as any} />;
+  return (
+    <ErrorAlert dismissible={false}>
+      <h3 className={cx("fs-6", "fw-bold")}>
+        Unknown error occurred while updating project settings.
+      </h3>
+    </ErrorAlert>
+  );
 };
 
 interface DefaultUrlOptionProps {
@@ -412,6 +427,7 @@ const DefaultUrlOption = ({
     newValue ??
     projectConfig.config.sessions?.defaultUrl ??
     projectConfig.default.sessions?.defaultUrl;
+  const defaultValue = projectConfig.default.sessions?.defaultUrl ?? null;
 
   const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation({
     fixedCacheKey: "project-settings",
@@ -430,6 +446,17 @@ const DefaultUrlOption = ({
     },
     [projectRepositoryUrl, updateConfig, versionUrl]
   );
+
+  const onReset = useCallback(() => {
+    setNewValue(defaultValue);
+    updateConfig({
+      projectRepositoryUrl,
+      versionUrl,
+      update: {
+        "interactive.default_url": defaultValue,
+      },
+    });
+  }, [defaultValue, projectRepositoryUrl, updateConfig, versionUrl]);
 
   // Reset the temporary value when the API responds with an error
   useEffect(() => {
@@ -452,8 +479,45 @@ const DefaultUrlOption = ({
           onChange={onChange}
           disabled={disabled}
         />
+        {devAccess && (
+          <ResetOption
+            optionId="project-settings-sessions-default-url"
+            disabled={disabled}
+            onReset={onReset}
+          />
+        )}
       </FormGroup>
     </Col>
+  );
+};
+
+interface ResetOptionProps {
+  optionId: string;
+  disabled: boolean;
+  onReset: () => void;
+}
+
+const ResetOption = ({ optionId, disabled, onReset }: ResetOptionProps) => {
+  return (
+    <>
+      <Button
+        disabled={disabled}
+        id={`${optionId}-reset`}
+        color=""
+        size="sm"
+        className="border-0"
+        onClick={onReset}
+      >
+        <FontAwesomeIcon icon={faTimesCircle} />
+      </Button>
+      <UncontrolledTooltip
+        key="tooltip"
+        placement="top"
+        target={`${optionId}-reset`}
+      >
+        Reset value
+      </UncontrolledTooltip>
+    </>
   );
 };
 
@@ -489,6 +553,7 @@ const SessionClassOption = ({
 
   const defaultSessionClassId =
     projectConfig.config.sessions?.sessionClass ??
+    resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default)?.id ??
     projectConfig.default.sessions?.sessionClass;
   const defaultSessionClass = useMemo(
     () =>
@@ -507,6 +572,7 @@ const SessionClassOption = ({
   const currentSessionClassId =
     newValue ??
     projectConfig.config.sessions?.sessionClass ??
+    resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default)?.id ??
     projectConfig.default.sessions?.sessionClass;
   const currentSessionClass = useMemo(
     () =>
@@ -535,6 +601,28 @@ const SessionClassOption = ({
     },
     [projectRepositoryUrl, updateConfig, versionUrl]
   );
+
+  const onReset = useCallback(() => {
+    setNewValue(
+      resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default)
+        ?.id ??
+        projectConfig.default.sessions?.sessionClass ??
+        null
+    );
+    updateConfig({
+      projectRepositoryUrl,
+      versionUrl,
+      update: {
+        "interactive.session_class": null,
+      },
+    });
+  }, [
+    projectConfig.default.sessions?.sessionClass,
+    projectRepositoryUrl,
+    resourcePools,
+    updateConfig,
+    versionUrl,
+  ]);
 
   // Reset the temporary value when the API responds with an error
   useEffect(() => {
@@ -569,6 +657,13 @@ const SessionClassOption = ({
     <Col xs={12}>
       <FormGroup className="field-group">
         <Label>Session class</Label>
+        {devAccess && (
+          <ResetOption
+            optionId="project-settings-sessions-session-class"
+            disabled={disabled}
+            onReset={onReset}
+          />
+        )}
         <SessionClassSelector
           resourcePools={resourcePools}
           currentSessionClass={currentSessionClass}
@@ -616,6 +711,7 @@ const StorageOption = ({
 
   const currentSessionClassId =
     projectConfig.config.sessions?.sessionClass ??
+    resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default)?.id ??
     projectConfig.default.sessions?.sessionClass;
   const currentSessionClass = useMemo(
     () =>
@@ -654,6 +750,27 @@ const StorageOption = ({
     [debouncedUpdateConfig, projectRepositoryUrl, versionUrl]
   );
 
+  const onReset = useCallback(() => {
+    setNewValue(
+      currentSessionClass?.default_storage ??
+        projectConfig.default.sessions?.storage ??
+        null
+    );
+    updateConfig({
+      projectRepositoryUrl,
+      versionUrl,
+      update: {
+        "interactive.disk_request": null,
+      },
+    });
+  }, [
+    currentSessionClass?.default_storage,
+    projectConfig.default.sessions?.storage,
+    projectRepositoryUrl,
+    updateConfig,
+    versionUrl,
+  ]);
+
   // Reset the temporary value when the API responds with an error
   useEffect(() => {
     if (isError) {
@@ -676,8 +793,14 @@ const StorageOption = ({
     <Col xs={12}>
       <FormGroup className="field-group">
         <Label>Amount of Storage</Label>
+        {devAccess && (
+          <ResetOption
+            optionId="project-settings-sessions-storage"
+            disabled={disabled}
+            onReset={onReset}
+          />
+        )}
         <StorageSelector
-          // resourcePools={resourcePools}
           currentSessionClass={currentSessionClass}
           currentStorage={currentStorage}
           onChange={onChange}
@@ -724,6 +847,17 @@ const AutoFetchLfsOption = ({
     });
   }, [projectRepositoryUrl, selectedAutoFetchLfs, updateConfig, versionUrl]);
 
+  const onReset = useCallback(() => {
+    setNewValue(false);
+    updateConfig({
+      projectRepositoryUrl,
+      versionUrl,
+      update: {
+        "interactive.lfs_auto_fetch": null,
+      },
+    });
+  }, [projectRepositoryUrl, updateConfig, versionUrl]);
+
   // Reset the temporary value when the API responds with an error
   useEffect(() => {
     if (isError) {
@@ -743,6 +877,13 @@ const AutoFetchLfsOption = ({
           selected={selectedAutoFetchLfs}
           disabled={disabled}
         />
+        {devAccess && (
+          <ResetOption
+            optionId="project-settings-sessions-lfs-auto-fetch"
+            disabled={disabled}
+            onReset={onReset}
+          />
+        )}
       </FormGroup>
     </Col>
   );
