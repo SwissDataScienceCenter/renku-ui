@@ -48,11 +48,12 @@ import {
   FormText,
   Input,
   InputGroup,
+  InputGroupText,
   Label,
   UncontrolledTooltip,
 } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
-import { ErrorAlert, RenkuAlert, WarnAlert } from "../../components/Alert";
+import { ErrorAlert, WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
@@ -127,8 +128,6 @@ export const ProjectSettingsSessions = () => {
     { skip: !fetchedVersion }
   );
 
-  console.log({ error });
-
   // ? Anonymous users may have problem with notebook options, depending on the deployment
   if (!logged) {
     const textIntro = "Only authenticated users can access sessions setting.";
@@ -200,18 +199,11 @@ export const ProjectSettingsSessions = () => {
     );
   }
 
-  if (error) {
-    // TODO: Should handle this?
-    if (!isFetchBaseQueryError(error) || error.status !== "CUSTOM_ERROR") {
-      return (
-        <SessionsDiv>
-          <RenkuAlert color="danger" dismissible timeout={0}>
-            <h3>Unknown error</h3>
-          </RenkuAlert>
-        </SessionsDiv>
-      );
-    }
-
+  if (
+    error &&
+    isFetchBaseQueryError(error) &&
+    error.status === "CUSTOM_ERROR"
+  ) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const renkuCoreError = error.data as any;
 
@@ -225,7 +217,7 @@ export const ProjectSettingsSessions = () => {
     );
   }
 
-  if (!serverOptions || !projectConfig) {
+  if (!serverOptions || !projectConfig || error) {
     return (
       <SessionsDiv>
         <ErrorAlert dismissible={false}>
@@ -281,7 +273,15 @@ export const ProjectSettingsSessions = () => {
         devAccess={devAccess}
       />
 
-      <pre>{JSON.stringify(projectConfig, null, 2)}</pre>
+      <ProjectSettingsSessionsUnknown
+        projectConfig={projectConfig}
+        projectConfigIsFetching={projectConfigIsFetching}
+        projectRepositoryUrl={projectRepositoryUrl}
+        versionUrl={versionUrl}
+        devAccess={devAccess}
+      />
+
+      {/* <pre>{JSON.stringify(projectConfig, null, 2)}</pre> */}
     </SessionsDiv>
   );
 };
@@ -398,6 +398,7 @@ const DefaultUrlOption = ({
           options: [...serverOptions.defaultUrl.options, "/foo", "/bar"],
         },
       },
+      // serverOptions,
       projectConfig,
     }),
   ];
@@ -1000,6 +1001,135 @@ const PinnedImageOption = ({
           .
         </FormText>
       </div>
+    </FormGroup>
+  );
+};
+
+interface ProjectSettingsSessionsUnknownProps {
+  projectConfig: ProjectConfig;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
+}
+
+const ProjectSettingsSessionsUnknown = ({
+  projectConfig,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
+}: ProjectSettingsSessionsUnknownProps) => {
+  const unknownConfig = projectConfig.config.sessions?.unknownConfig ?? {};
+  const unknownConfigKeys = Object.keys(unknownConfig).sort();
+
+  const [showSection, setShowSection] = useState<boolean>(false);
+
+  const toggleShowSection = useCallback(() => {
+    setShowSection((showSection) => !showSection);
+  }, []);
+
+  if (unknownConfigKeys.length == 0) {
+    return null;
+  }
+
+  return (
+    <div className="mb-2">
+      <Col xs={12}>
+        <AccordionFixed
+          className={styles.accordion}
+          open={showSection ? "unknown-settings" : ""}
+          toggle={toggleShowSection}
+          flush
+        >
+          <AccordionItem>
+            <AccordionHeader targetId="unknown-settings">
+              Unknown settings
+            </AccordionHeader>
+            <AccordionBody accordionId="unknown-settings">
+              <p>
+                The following settings are stored in the project configuration
+                but they are not supported in this RenkuLab deployment.
+              </p>
+              {unknownConfigKeys.map((optionKey) => (
+                <UnknownOption
+                  key={optionKey}
+                  optionKey={optionKey}
+                  optionValue={unknownConfig[optionKey]}
+                  projectConfigIsFetching={projectConfigIsFetching}
+                  projectRepositoryUrl={projectRepositoryUrl}
+                  versionUrl={versionUrl}
+                  devAccess={devAccess}
+                />
+              ))}
+            </AccordionBody>
+          </AccordionItem>
+        </AccordionFixed>
+      </Col>
+    </div>
+  );
+};
+
+interface UnknownOptionProps {
+  optionKey: string;
+  optionValue: string;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
+}
+
+const UnknownOption = ({
+  optionKey,
+  optionValue,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
+}: UnknownOptionProps) => {
+  const shortKey = optionKey.slice("interactive.".length);
+  const safeShortKey = shortKey.toLowerCase().replaceAll(/[^0-9A-Za-z]/g, "-");
+
+  const [updateConfig, { isLoading }] = useUpdateConfigMutation({
+    fixedCacheKey: "project-settings",
+  });
+
+  const onResetValue = useCallback(() => {
+    updateConfig({
+      projectRepositoryUrl,
+      versionUrl,
+      update: {
+        [optionKey]: null,
+      },
+    });
+  }, [optionKey, projectRepositoryUrl, updateConfig, versionUrl]);
+
+  const disabled = !devAccess || isLoading || projectConfigIsFetching;
+
+  return (
+    <FormGroup>
+      <InputGroup>
+        <InputGroupText className="input-left">{shortKey}</InputGroupText>
+        <Input value={optionValue || "<empty>"} disabled />
+        {devAccess && (
+          <>
+            <Button
+              id={`project-settings-unknown-${safeShortKey}-reset`}
+              className="btn btn-outline-rk-green m-0"
+              disabled={disabled}
+              onClick={onResetValue}
+            >
+              <FontAwesomeIcon icon={faTimesCircle} />
+            </Button>
+            <UncontrolledTooltip
+              placement="top"
+              target={`project-settings-unknown-${safeShortKey}-reset`}
+            >
+              Reset value
+            </UncontrolledTooltip>
+          </>
+        )}
+      </InputGroup>
     </FormGroup>
   );
 };

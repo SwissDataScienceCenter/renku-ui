@@ -186,7 +186,7 @@ export interface ProjectConfigSection {
       gpuRequest?: number;
     };
     unknownConfig?: {
-      [key: string]: unknown;
+      [key: string]: string;
     };
   };
 }

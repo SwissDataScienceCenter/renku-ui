@@ -268,6 +268,14 @@ const transformGetConfigRawResponse = (
     gpuRequest: safeParseInt(defaultSessionsConfig["interactive.gpu_request"]),
   };
 
+  const projectUnknownSessionsConfig = Object.keys(projectSessionsConfig)
+    .filter((key) => key.startsWith(`${SESSION_CONFIG_PREFIX}.`))
+    .filter((key) => !knownConfigKeys.includes(key))
+    .reduce(
+      (obj, key) => ({ ...obj, [key]: (projectSessionsConfig as any)[key] }),
+      {}
+    );
+
   return {
     config: {
       sessions: {
@@ -284,6 +292,7 @@ const transformGetConfigRawResponse = (
             .toLowerCase() === "true",
         dockerImage: projectSessionsConfig["interactive.image"],
         legacyConfig: projectLegacySessionsConfig,
+        unknownConfig: projectUnknownSessionsConfig,
       },
     },
     default: {
@@ -307,3 +316,16 @@ const safeParseInt = (str: string | undefined): number | undefined => {
   if (isNaN(parsed)) return undefined;
   return parsed;
 };
+
+const SESSION_CONFIG_PREFIX = "interactive";
+
+const knownConfigKeys = [
+  "interactive.default_url",
+  "interactive.session_class",
+  "interactive.lfs_auto_fetch",
+  "interactive.disk_request",
+  "interactive.cpu_request",
+  "interactive.mem_request",
+  "interactive.gpu_request",
+  "interactive.image",
+];
