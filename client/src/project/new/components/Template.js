@@ -26,15 +26,15 @@ import TemplateSelector from "../../../components/templateSelector/TemplateSelec
 import { FormGroup } from "reactstrap";
 
 class Template extends Component {
-  async componentDidMount() {
-    // fetch templates if not available yet
-    const { templates, handlers } = this.props;
-    if (!templates.fetched && !templates.fetching) {
-      let templates = await handlers.getTemplates();
-      if (templates && templates.length === 1)
-        handlers.setProperty("template", templates[0].id);
-    }
-  }
+  // async componentDidMount() {
+  //   // fetch templates if not available yet
+  //   const { templates, handlers } = this.props;
+  //   if (!templates.fetched && !templates.fetching) {
+  //     let templates = await handlers.getTemplates();
+  //     if (templates && templates.length === 1)
+  //       handlers.setProperty("template", templates[0].id);
+  //   }
+  // }
 
   render() {
     const { config, handlers, input, templates, meta } = this.props;
