@@ -73,7 +73,7 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
         <p>
           Unexpected error while checking project metadata! You can try to{" "}
           <Link
-            to=""
+            to="."
             onClick={(e) => {
               e.preventDefault();
               refetch();
