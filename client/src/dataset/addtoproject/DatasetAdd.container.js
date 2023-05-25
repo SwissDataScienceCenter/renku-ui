@@ -29,17 +29,12 @@ import { useHistory } from "react-router-dom";
 import DatasetAdd from "./DatasetAdd.present";
 import { DatasetCoordinator } from "../Dataset.state";
 import { ImportStateMessage } from "../../utils/constants/Dataset";
-import {
-  migrationCheckToRenkuVersionStatus,
-  RENKU_VERSION_SCENARIOS,
-} from "../../project/status/MigrationUtils";
 import AppContext from "../../utils/context/appContext";
-import { projectSchema } from "../../model";
+import { useGetMigrationStatusQuery } from "../../features/project/projectCoreApi";
+import { useGetCoreVersionsQuery } from "../../features/versions/versionsApi";
 
+// ? This functionality is broken
 function AddDataset({ datasets, identifier, insideProject, model }) {
-  const migration = projectSchema.createInitialized().migration;
-  const versionUrl = migration.core.versionUrl;
-
   const [currentStatus, setCurrentStatus] = useState(null);
   const [importingDataset, setImportingDataset] = useState(false);
   const [isDatasetValid, setIsDatasetValid] = useState(null);
@@ -48,6 +43,24 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
   const [datasetCoordinator, setDatasetCoordinator] = useState(null);
   const { client } = useContext(AppContext);
   const history = useHistory();
+
+  const [datasetProjectUrl, setDatasetProjectUrl] = useState(null);
+  const [versionUrl, setVersionUrl] = useState(null);
+
+  const coreSupport = useGetCoreVersionsQuery();
+  const datasetProjectMigrationStatus = useGetMigrationStatusQuery(
+    { gitUrl: datasetProjectUrl },
+    {
+      skip: !datasetProjectUrl,
+    }
+  );
+  const [targetDatasetProjectUrl, setTargetDatasetProjectUrl] = useState(null);
+  const targetDatasetProjectMigrationStatus = useGetMigrationStatusQuery(
+    { gitUrl: targetDatasetProjectUrl },
+    {
+      skip: !targetDatasetProjectUrl,
+    }
+  );
 
   useEffect(() => {
     setDatasetCoordinator(
@@ -96,7 +109,6 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
 
     // fetch dataset project values and check it has a valid git url
     // TODO remove this request when dataset include httpUrlToRepo
-    let checkOrigin;
     try {
       const fetchDatasetProject = await client.getProject(
         dataset.project?.path
@@ -107,119 +119,119 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
         setIsDatasetValid(false);
         return false;
       }
-
-      // check dataset project migration status
-      checkOrigin = await client.checkMigration(urlProjectOrigin);
-      if (checkOrigin && checkOrigin.error !== undefined) {
-        const errorMessage =
-          checkOrigin.error?.userMessage ?? checkOrigin.error?.reason;
-        setCurrentStatus({ status: "error", text: errorMessage });
-        setIsDatasetValid(false);
-        return false;
-      }
+      setDatasetProjectUrl(urlProjectOrigin);
     } catch (e) {
       setCurrentStatus({ status: "error", text: "Invalid Dataset" });
       setIsDatasetValid(false);
       return false;
     }
     setIsDatasetValid(true);
-
-    // check if the dataset project is supported
-    const projectVersion =
-      checkOrigin.result.core_compatibility_status.project_metadata_version;
-    const datasetProjectVersionStatus = migrationCheckToRenkuVersionStatus(
-      checkOrigin.result
-    );
-    if (
-      datasetProjectVersionStatus.renkuVersionStatus ===
-      RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED
-    ) {
-      setCurrentStatus({
-        status: "error",
-        text: `The dataset project version ${projectVersion} is not supported`,
-      });
-      return false;
-    }
-
-    setDatasetProjectVersion(projectVersion);
-    setCurrentStatus(null);
-    return projectVersion;
   };
+  // check whether the selected dataset is supported
+  useEffect(() => {
+    if (
+      !datasetProjectMigrationStatus.isUninitialized &&
+      !datasetProjectMigrationStatus.isFetching
+    ) {
+      if (datasetProjectMigrationStatus.isError) {
+        setCurrentStatus({ status: "error", text: "Invalid Dataset" });
+        setIsDatasetValid(false);
+      } else {
+        setIsDatasetValid(true);
+        const metadataVersion = parseInt(
+          datasetProjectMigrationStatus.data?.details?.core_compatibility_status
+            ?.project_metadata_version ?? 0
+        );
+        if (
+          metadataVersion &&
+          !coreSupport.isLoading &&
+          coreSupport.data?.metadataVersions &&
+          coreSupport.data?.metadataVersions.includes(metadataVersion)
+        ) {
+          setDatasetProjectVersion(metadataVersion);
+          setVersionUrl("/" + metadataVersion);
+          setCurrentStatus(null);
+        } else {
+          setCurrentStatus({
+            status: "error",
+            text: `The dataset project version ${metadataVersion} is not supported`,
+          });
+        }
+      }
+    }
+  }, [
+    datasetProjectMigrationStatus.data,
+    datasetProjectMigrationStatus.isFetching,
+    datasetProjectMigrationStatus.isUninitialized,
+    datasetProjectMigrationStatus.isError,
+    coreSupport.isLoading,
+    coreSupport.data,
+  ]);
+
   const validateProject = async (project, validateOrigin, isSubmit = false) => {
     if (!project) return false;
-
     const processStatus = isSubmit ? "importing" : "inProcess";
-    //  start checking project
-    setCurrentStatus({ status: "checkingProject", text: null });
-    setCurrentStatus({
-      status: processStatus,
-      text: "Checking dataset/project compatibility...",
-    });
-    let originProjectVersion;
-    if (validateOrigin || datasetProjectVersion == null)
-      originProjectVersion = await validateDatasetProject(isSubmit);
-    else originProjectVersion = datasetProjectVersion;
 
+    //  start checking project
     setCurrentStatus({
       status: processStatus,
       text: "Checking dataset/project compatibility...",
     });
     // check selected project migration status
-    const checkTarget = await client.checkMigration(project.value);
-    if (checkTarget && checkTarget.error !== undefined) {
-      const errorMessage =
-        checkTarget.error?.userMessage ?? checkTarget.error?.reason;
-      setCurrentStatus({ status: "error", text: errorMessage });
-      return false;
-    }
 
-    // check if the selected project doesn't need migration
-    const targetProjectVersionStatus = migrationCheckToRenkuVersionStatus(
-      checkTarget.result
-    );
-    if (
-      targetProjectVersionStatus.renkuVersionStatus ===
-      RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED
-    ) {
-      setCurrentStatus({
-        status: "error",
-        text: "Operations on this project are not supported in the UI.",
-      });
-      return false;
-    }
-
-    // check if dataset project version and selected project version has the same version
-    const target_metadata_version =
-      checkTarget.result.core_compatibility_status.project_metadata_version;
-    if (+target_metadata_version < +originProjectVersion) {
-      setCurrentStatus({
-        status: "error",
-        text: `Dataset project metadata version (${originProjectVersion})
-          cannot be newer than the project metadata version (${target_metadata_version}) for import.`,
-      });
-      return false;
-    }
-    // check if the dataset project is supported
-    if (
-      targetProjectVersionStatus.renkuVersionStatus ===
-      RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED
-    ) {
-      const backendAvailability = await client.checkCoreAvailability(
-        target_metadata_version
-      );
-      if (!backendAvailability.available) {
-        setCurrentStatus({ status: "errorNeedMigration", text: null });
-        return false;
-      }
-      // Project is older, but backend is available
-    }
-
-    setCurrentStatus({
-      status: "validProject",
-      text: "Selected project is compatible with dataset.",
-    });
-    return true;
+    setTargetDatasetProjectUrl(project.value);
   };
+  // check whether the target dataset is supported
+  useEffect(() => {
+    if (
+      !targetDatasetProjectMigrationStatus.isUninitialized &&
+      !targetDatasetProjectMigrationStatus.isFetching
+    ) {
+      if (targetDatasetProjectMigrationStatus.isError) {
+        setCurrentStatus({
+          status: "error",
+          text: "Unexpected error with the target database.",
+        });
+      } else {
+        const targetDatasetProjectVersion = parseInt(
+          targetDatasetProjectMigrationStatus.data?.details
+            ?.core_compatibility_status?.project_metadata_version ?? 0
+        );
+        if (
+          coreSupport.data?.metadataVersions &&
+          coreSupport.data?.metadataVersions.includes(
+            targetDatasetProjectVersion
+          )
+        ) {
+          if (targetDatasetProjectVersion < datasetProjectVersion) {
+            setCurrentStatus({
+              status: "error",
+              text: `Dataset project metadata version (${datasetProjectVersion})
+                cannot be newer than the project metadata version (${targetDatasetProjectVersion}) for import.`,
+            });
+            return false;
+          }
+          setCurrentStatus({
+            status: "validProject",
+            text: "Selected project is compatible with dataset.",
+          });
+        } else {
+          setCurrentStatus({
+            status: "error",
+            text: "The target project is either too old or unavailable.",
+          });
+        }
+      }
+    }
+  }, [
+    coreSupport.data,
+    datasetProjectVersion,
+    targetDatasetProjectMigrationStatus.isError,
+    targetDatasetProjectMigrationStatus.isFetching,
+    targetDatasetProjectMigrationStatus.isUninitialized,
+    targetDatasetProjectMigrationStatus.data,
+  ]);
+
   /* end validate project */
 
   /* import dataset */

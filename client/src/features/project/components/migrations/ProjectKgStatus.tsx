@@ -46,16 +46,17 @@ export function ProjectKnowledgeGraph({
   isMaintainer,
   projectId,
 }: ProjectKnowledgeGraphProps) {
-  const LONG_POLLING = 2 * 60 * 1000;
+  const LONG_POLLING = 2 * 2.6 * 1000;
   const NO_POLLING = 0;
   const SHORT_POLLING = 5 * 1000;
 
   const [showDetails, setShowDetails] = useState(false);
+  const [justChanged, setJustChanged] = useState(false);
   const [pollingInterval, setPollingInterval] = useState(0);
   const toggleShowDetails = () => setShowDetails(!showDetails);
 
   const skip = !projectId;
-  const { data, isFetching, isLoading, isUninitialized, error, refetch } =
+  const { data, isFetching, isLoading, isUninitialized, error } =
     projectKgApi.useGetProjectIndexingStatusQuery(projectId, {
       refetchOnMountOrArgChange: 20,
       skip,
@@ -66,7 +67,7 @@ export function ProjectKnowledgeGraph({
 
   // Add polling for non-activated projects
   useEffect(() => {
-    if (!isUninitialized && !isFetching) {
+    if (!isUninitialized && !isLoading) {
       if (!data?.activated) setPollingInterval(LONG_POLLING);
       else if (data?.details?.status === ProjectIndexingStatuses.InProgress)
         setPollingInterval(SHORT_POLLING);
@@ -74,21 +75,24 @@ export function ProjectKnowledgeGraph({
     }
   }, [
     data,
+    isLoading,
     isUninitialized,
-    isFetching,
     LONG_POLLING,
     NO_POLLING,
     SHORT_POLLING,
   ]);
 
-  if (isFetching || skip) {
-    const fetchingTitle = isLoading
-      ? "Fetching project metadata..."
-      : "Refreshing project metadata...";
+  const sectionCyId = "kg-status";
+  if (isLoading || skip || (isFetching && justChanged)) {
+    const fetchingTitle =
+      isLoading || skip
+        ? "Fetching project metadata..."
+        : "Refreshing project metadata...";
     return (
       <CompositeTitle
         icon={faTimesCircle}
         loading={true}
+        sectionId={sectionCyId}
         showDetails={showDetails}
         title={fetchingTitle}
         toggleShowDetails={toggleShowDetails}
@@ -103,6 +107,7 @@ export function ProjectKnowledgeGraph({
           icon={faExclamationCircle}
           level="danger"
           loading={false}
+          sectionId={sectionCyId}
           showDetails={showDetails}
           title="Error on project metadata"
           toggleShowDetails={toggleShowDetails}
@@ -143,12 +148,13 @@ export function ProjectKnowledgeGraph({
   const buttonAction = () => {
     buttonText = "Activating";
     buttonDisabled = true;
+    setJustChanged(true);
+    // ? even tho we rely on tags to refresh, we reset `justChanged` after re-fetching to prevent
+    // ? showing unnecessary spinning wheels
     activateIndexing(projectId).then(() => {
-      buttonText = "Activating";
-      buttonDisabled = true;
       setTimeout(() => {
-        refetch();
-      }, 2000);
+        setJustChanged(false);
+      }, SHORT_POLLING * 0.75);
     });
   };
 
@@ -164,6 +170,7 @@ export function ProjectKnowledgeGraph({
         icon={icon}
         level={level}
         loading={isLoading}
+        sectionId={sectionCyId}
         showDetails={showDetails}
         title={title}
         toggleShowDetails={toggleShowDetails}

@@ -29,17 +29,24 @@ import { RenkuRepositories } from "../../../utils/constants/Repositories";
  * Replace the longer dev suffix (E.G: ".dev22+g1262f766") with a shorter
  * "-dev" generic suffix.
  * @param version - stringy version (SemVer like)
+ * @param excludeRc - whether to remove the Release Candidate suffix
  * @returns either same string or shorter string ending with "-dev"
  */
-export function cleanVersion(version?: string): string {
+export function cleanVersion(version?: string, excludeRc?: boolean): string {
   if (!version) return "";
-  const regex = /dev\d+\+/;
-  if (regex.test(version)) {
-    // ! return version.substring(0, version.indexOf(".dev")) + "-dev";
-    // ! TMP just for testing links - revert this
-    return version.substring(0, version.indexOf(".dev"));
+  let cleanedVersion = version;
+  if (excludeRc) {
+    const rcRegex = /rc\d+/;
+    if (rcRegex.test(version))
+      cleanedVersion = version.substring(0, version.indexOf("rc"));
   }
-  return version;
+  const regex = /dev\d+\+/;
+  if (regex.test(cleanedVersion)) {
+    // ! return version.substring(0, cleanedVersion.indexOf(".dev")) + "-dev";
+    // ! Use this for development on PR deployments
+    return cleanedVersion.substring(0, cleanedVersion.indexOf(".dev"));
+  }
+  return cleanedVersion;
 }
 
 /**

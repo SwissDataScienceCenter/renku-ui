@@ -107,7 +107,7 @@ class RenkuAlert extends Component {
       >
         <div className="alert-content">
           {alertIcon}
-          <div>{this.props.children}</div>
+          <div className="w-100">{this.props.children}</div>
         </div>
       </Alert>
     );

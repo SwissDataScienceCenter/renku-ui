@@ -21,17 +21,39 @@ import * as React from "react";
 import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
+import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
+import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
 
-type ProjectEntityHeaderProps = EntityHeaderProps & { isInKg: boolean };
+type ProjectEntityHeaderProps = EntityHeaderProps & {
+  branch: string;
+  projectId: number;
+};
 
-function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
+export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
   const { fullPath } = props;
+
+  const projectIndexingStatus = useGetProjectIndexingStatusQuery(
+    props.projectId,
+    {
+      skip: !fullPath || !props.projectId,
+    }
+  );
 
   useProjectMetadataQuery(
     { projectPath: fullPath },
-    { skip: !fullPath || props.isInKg != true }
+    { skip: !fullPath || !projectIndexingStatus.data?.activated }
   );
-  return <EntityHeader {...props} />;
-}
 
-export default ProjectEntityHeader;
+  const statusButton = (
+    <ProjectStatusIcon
+      branch={props.branch}
+      gitUrl={props.gitUrl ?? ""}
+      isMaintainer={props.devAccess}
+      projectId={props.projectId}
+      projectNamespace=""
+      projectPath={props.fullPath ?? ""}
+    />
+  );
+
+  return <EntityHeader {...props} statusButton={statusButton} />;
+}

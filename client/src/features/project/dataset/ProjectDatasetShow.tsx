@@ -13,9 +13,9 @@ import type {
   DatasetCore,
   DatasetKg,
   IDataset,
-  IMigration,
   StateModelProject,
 } from "../Project.d";
+import { useProjectSelector } from "../projectSlice";
 
 type IDatasetCoordinator = {
   fetchDataset: (id: string, datasets: DatasetCore[], fetchKG: boolean) => void;
@@ -51,9 +51,7 @@ type ProjectDatasetViewProps = {
   lockStatus: unknown;
   logged: unknown;
   maintainer: boolean;
-  migration: IMigration;
   model: unknown;
-  overviewStatusUrl: string;
   projectId: string;
   projectInsideKg: boolean;
   projectPathWithNamespace: string;
@@ -104,9 +102,8 @@ function mergeCoreAndKgDatasets(
 function ProjectDatasetView(props: ProjectDatasetViewProps) {
   const coreDataset = findDataset(props.datasetId, props.datasets);
   const datasetId = findDatasetId(props.datasetId, props.datasets);
-  const migration = props.migration;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const versionUrl = migration.core.versionUrl!;
+  const coreSupport = useProjectSelector((p) => p.migration);
+  const versionUrl = coreSupport.versionUrl;
   const {
     data: kgDataset,
     error: kgFetchError,
@@ -134,10 +131,10 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     <DatasetView
       client={undefined}
       dataset={currentDataset}
+      datasets={props.datasets}
       files={datasetFiles}
       isFilesFetching={isFilesFetching}
       filesFetchError={filesFetchError}
-      datasets={props.datasets}
       fetchError={kgFetchError}
       fetchedKg={kgDataset != null}
       fileContentUrl={props.fileContentUrl}
@@ -151,14 +148,12 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
       lockStatus={props.lockStatus}
       logged={props.logged}
       maintainer={props.maintainer}
-      migration={migration}
       model={props.model}
-      overviewStatusUrl={props.overviewStatusUrl}
-      progress={undefined}
       projectId={props.projectId}
       projectInsideKg={props.projectInsideKg}
       projectPathWithNamespace={props.projectPathWithNamespace}
       projectsUrl={props.projectsUrl}
+      versionUrl={versionUrl}
     />
   );
 }
@@ -174,7 +169,6 @@ function ProjectDatasetShow(props: ProjectDatasetShowProps) {
   const httpProjectUrl = projectMetadata.httpUrl;
   const lockStatus = project.lockStatus;
   const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
-  const migration = project.migration;
   const projectPathWithNamespace = projectMetadata.pathWithNamespace;
   const projectId = projectMetadata.id;
 
@@ -189,10 +183,6 @@ function ProjectDatasetShow(props: ProjectDatasetShowProps) {
   const lineageUrl = Url.get(Url.pages.project.lineage, projectUrlProps);
   // Remove the trailing slash, since that is how downstream components expect it.
   const lineagesUrl = lineageUrl.substring(0, lineageUrl.length - 1);
-  const overviewStatusUrl = Url.get(
-    Url.pages.project.overview.status,
-    projectUrlProps
-  );
   const projectsUrl = Url.get(Url.pages.projects);
   if (props.datasetCoordinator == null) return null;
   return (
@@ -210,9 +200,7 @@ function ProjectDatasetShow(props: ProjectDatasetShowProps) {
       lockStatus={lockStatus}
       logged={user.logged}
       maintainer={maintainer}
-      migration={migration as IMigration}
       model={props.model}
-      overviewStatusUrl={overviewStatusUrl}
       projectId={projectId}
       projectInsideKg={props.projectInsideKg}
       projectPathWithNamespace={projectPathWithNamespace}

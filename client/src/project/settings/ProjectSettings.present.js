@@ -215,7 +215,7 @@ class ProjectDescription extends Component {
 //** Sessions settings **//
 
 function ProjectSettingsSessions(props) {
-  const { backend, config, metadata, newConfig, options, setConfig, user } =
+  const { config, coreSupport, metadata, newConfig, options, setConfig, user } =
     props;
   const { accessLevel, repositoryUrl } = metadata;
   const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER ? true : false;
@@ -248,16 +248,11 @@ function ProjectSettingsSessions(props) {
   }
 
   // Handle ongoing operations and errors
-  if (
-    config.fetching ||
-    options.fetching ||
-    backend.fetching ||
-    !backend.fetched
-  ) {
+  if (config.fetching || options.fetching || !coreSupport.computed) {
     let message;
     if (config.fetching) message = "Getting project settings...";
     else if (options.fetching) message = "Getting RenkuLab settings...";
-    else if (backend.fetching || !backend.fetched)
+    else if (!coreSupport.computed)
       message = "Checking project version and RenkuLab compatibility...";
     else message = "Please wait...";
 
@@ -269,8 +264,8 @@ function ProjectSettingsSessions(props) {
     );
   }
 
-  if (!backend.backendAvailable) {
-    const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {
+  if (!coreSupport.backendAvailable) {
+    const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace: metadata.namespace,
       path: metadata.path,
     });
@@ -288,7 +283,7 @@ function ProjectSettingsSessions(props) {
           <p>
             {updateInfo}.
             <br />
-            The <Link to={overviewStatusUrl}>Project status</Link> page provides
+            The <Link to={settingsUrl}>Project settings</Link> page provides
             further information.
           </p>
         </WarnAlert>

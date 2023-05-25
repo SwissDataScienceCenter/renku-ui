@@ -28,11 +28,7 @@ import { connect } from "react-redux";
 import _ from "lodash";
 
 import Present from "./Project.present";
-import {
-  GraphIndexingStatus,
-  ProjectCoordinator,
-  MigrationStatus,
-} from "./Project.state";
+import { ProjectCoordinator, MigrationStatus } from "./Project.state";
 import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
 import qs from "query-string";
 import { DatasetCoordinator } from "../dataset/Dataset.state";
@@ -43,7 +39,6 @@ const subRoutes = {
   stats: "overview/stats",
   overviewDatasets: "overview/datasets",
   overviewCommits: "overview/commits",
-  overviewStatus: "overview/status",
   datasets: "datasets",
   datasetsAdd: "datasets/new",
   dataset: "datasets/:datasetId",
@@ -177,7 +172,6 @@ function mapProjectStateToProps(state, ownProps) {
   const settingsReadOnly = accessLevel < ACCESS_LEVELS.MAINTAINER;
   const externalUrl = projectCoordinator.get("metadata.externalUrl");
   const canCreateMR = accessLevel >= ACCESS_LEVELS.DEVELOPER;
-  const isGraphReady = ownProps.isGraphReady();
   const pathname = ownProps.history.location.pathname;
   const isOnDatasetEditPage =
     pathname.endsWith("datasets/new") || pathname.endsWith("modify");
@@ -191,7 +185,6 @@ function mapProjectStateToProps(state, ownProps) {
     settingsReadOnly,
     externalUrl,
     canCreateMR,
-    isGraphReady,
     // fields (mostly non-project) that should trigger a re-render
     triggerDataset: refreshTrigger(state.stateModel.dataset),
     triggerForm: isOnDatasetEditPage ? {} : null,
@@ -310,15 +303,6 @@ class View extends Component {
   async fetchCommits(branch) {
     return this.projectCoordinator.fetchCommits({ branch });
   }
-  async createGraphWebhook() {
-    return this.projectCoordinator.createGraphWebhook(this.props.client);
-  }
-  async fetchGraphWebhook() {
-    this.projectCoordinator.fetchGraphWebhook(
-      this.props.client,
-      this.props.user
-    );
-  }
   async fetchProjectFilesTree() {
     return this.projectCoordinator.fetchProjectFilesTree(
       this.props.client,
@@ -339,26 +323,12 @@ class View extends Component {
       this.props.client
     );
   }
-  async fetchGraphStatus() {
-    return this.projectCoordinator.fetchGraphStatus(this.props.client);
-  }
   saveProjectLastNode(nodeData) {
     this.projectCoordinator.saveProjectLastNode(nodeData);
   }
 
-  async fetchMigrationCheck(gitUrl, defaultBranch) {
-    return this.projectCoordinator.fetchMigrationCheck(
-      this.props.client,
-      gitUrl,
-      defaultBranch
-    );
-  }
   async fetchReadmeCommits() {
     return this.projectCoordinator.fetchReadmeCommits(this.props.client);
-  }
-
-  async checkCoreAvailability(version = null) {
-    return await this.projectCoordinator.checkCoreAvailability(version);
   }
 
   async fetchProjectLockStatus() {
@@ -375,31 +345,10 @@ class View extends Component {
       projectData = await this.fetchProject();
 
     if (projectData) {
-      // check project webhook
-      if (this.props.user.logged) this.checkGraphWebhook();
-
       // Check the supported core versions
-      const gitUrl = projectData.all?.http_url_to_repo;
-      const defaultBranch = projectData.all?.default_branch;
-      const migrationData = await this.fetchMigrationCheck(
-        gitUrl,
-        defaultBranch
-      );
-      const projectVersion =
-        migrationData.core_compatibility_status?.project_metadata_version;
-      await this.checkCoreAvailability(projectVersion);
       await this.fetchProjectDatasets();
       await this.fetchProjectLockStatus();
     }
-  }
-
-  migrateProject(gitUrl, branch, options) {
-    this.projectCoordinator.migrateProject(
-      this.props.client,
-      gitUrl,
-      branch,
-      options
-    );
   }
 
   redirectProjectWithNumericId(projectId) {
@@ -444,19 +393,6 @@ class View extends Component {
       .replace(subUrls.fileContentUrl, "");
   }
 
-  checkGraphWebhook() {
-    this.projectCoordinator.checkGraphWebhook(this.props.client);
-  }
-
-  isGraphReady() {
-    const webhookStatus = this.projectCoordinator.get("webhook");
-    return (
-      webhookStatus.status ||
-      (webhookStatus.created && webhookStatus.stop) ||
-      webhookStatus.progress === GraphIndexingStatus.MAX_VALUE
-    );
-  }
-
   getSubUrls() {
     const match = this.props.match;
     const pathComponents = splitProjectSubRoute(match.url);
@@ -473,7 +409,6 @@ class View extends Component {
       statsUrl: `${baseUrl}/overview/stats`,
       overviewDatasetsUrl: `${baseUrl}/overview/datasets`,
       overviewCommitsUrl: `${baseUrl}/overview/commits`,
-      overviewStatusUrl: `${baseUrl}/overview/status`,
       datasetsUrl: datasetsUrl,
       newDatasetUrl: `${datasetsUrl}/new`,
       datasetUrl: `${datasetsUrl}/:datasetId`,
@@ -529,13 +464,6 @@ class View extends Component {
     setLastNode: (nodeData) => {
       this.saveProjectLastNode(nodeData);
     },
-    createGraphWebhook: (e) => {
-      e.preventDefault();
-      return this.createGraphWebhook();
-    },
-    fetchGraphStatus: () => {
-      return this.fetchGraphStatus();
-    },
     fetchReadmeCommits: () => {
       return this.fetchReadmeCommits();
     },
@@ -544,9 +472,6 @@ class View extends Component {
     },
     fetchCommits: (branch = null) => {
       return this.projectCoordinator.fetchCommits(branch);
-    },
-    onMigrateProject: (gitUrl, branch, options) => {
-      return this.migrateProject(gitUrl, branch, options);
     },
     fetchProject: (usePendingRefresh) => {
       if (usePendingRefresh) {
@@ -574,7 +499,6 @@ class View extends Component {
     };
     return (
       <ConnectedProjectView
-        isGraphReady={this.isGraphReady.bind(this)}
         projectCoordinator={this.projectCoordinator}
         {...props}
       />
@@ -647,7 +571,6 @@ function withProjectMapped(MappingComponent, features = [], passProps = true) {
 
 export default { View };
 export {
-  GraphIndexingStatus,
   MigrationStatus,
   mapProjectFeatures,
   splitProjectSubRoute,

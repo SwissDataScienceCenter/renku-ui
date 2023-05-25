@@ -23,20 +23,12 @@
  *  Redux-based state-management code.
  */
 
-import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
+import { API_ERRORS } from "../api-client";
 import { SpecialPropVal, projectSchema } from "../model";
 import {
   refreshIfNecessary,
   splitAutosavedBranches,
 } from "../utils/helpers/HelperFunctions";
-import { EnvironmentCoordinator } from "../environment";
-
-const GraphIndexingStatus = {
-  NO_WEBHOOK: -2,
-  NO_PROGRESS: -1,
-  MIN_VALUE: 0,
-  MAX_VALUE: 100,
-};
 
 const MigrationStatus = {
   MIGRATING: "MIGRATING",
@@ -281,55 +273,6 @@ const ProjectAttributesMixin = {
   },
 };
 
-const MigrationMixin = {
-  // ! TODO: remove this
-  async fetchMigrationCheck(client, gitUrl, defaultBranch = null) {
-    const migrationData = await client.checkMigration(gitUrl, defaultBranch);
-    if (migrationData?.error) {
-      this.set("migration.check", { check_error: migrationData.error, gitUrl });
-      return migrationData.error;
-    }
-    this.set("migration.check", {
-      ...migrationData.result,
-      check_error: null,
-      gitUrl,
-    });
-    return migrationData.result;
-  },
-  async migrateProject(client, gitUrl, defaultBranch = null, options) {
-    if (this.get("migration.migration_status") === MigrationStatus.MIGRATING)
-      return;
-    this.setObject({
-      lockStatus: { locked: true },
-      migration: {
-        migration_status: MigrationStatus.MIGRATING,
-      },
-    });
-    const response = await client.migrateProject(
-      gitUrl,
-      defaultBranch,
-      options
-    );
-    if (response.error) {
-      this.setObject({
-        migration: {
-          migration_status: MigrationStatus.ERROR,
-          migration_error: response.error,
-        },
-      });
-    } else {
-      await this.fetchMigrationCheck(client, gitUrl, defaultBranch);
-      this.setObject({
-        migration: {
-          migration_status: MigrationStatus.FINISHED,
-          migration_error: { $set: null },
-        },
-      });
-      await this.fetchProjectLockStatus();
-    }
-  },
-};
-
 const RepoMixin = {
   async fetchBranches() {
     const client = this.client;
@@ -460,21 +403,6 @@ class ProjectCoordinator {
     this.notifications = notifications;
   }
 
-  checkGraphWebhook(client) {
-    if (this.get("metadata.exists") !== true) {
-      this.model.set("webhook.possible", false);
-      return;
-    }
-
-    // check user permissions and fetch webhook status
-    const webhookCreator =
-      this.get("metadata.accessLevel") >= ACCESS_LEVELS.MAINTAINER
-        ? true
-        : false;
-    this.model.set("webhook.possible", webhookCreator);
-    if (webhookCreator) this.fetchGraphWebhookStatus(client);
-  }
-
   get(component = "") {
     return this.model.get(component);
   }
@@ -590,79 +518,6 @@ class ProjectCoordinator {
     return metadata;
   }
 
-  fetchGraphStatus(client) {
-    const projectId = this.get("metadata.id");
-    if (!projectId) return null;
-    return client
-      .checkGraphStatus(projectId)
-      .then((resp) => {
-        // extract the percentage
-        const progress = resp?.progress ?? null;
-        let percentage;
-        if (progress.percentage == null)
-          percentage = GraphIndexingStatus.NO_PROGRESS;
-
-        if (progress.percentage === 0 || progress.percentage)
-          percentage = progress.percentage;
-        this.setObject({
-          webhook: {
-            progress: percentage,
-            data: resp ? resp : {},
-          },
-        });
-        return percentage;
-      })
-      .catch((err) => {
-        if (err.case === API_ERRORS.notFoundError) {
-          const percentage = GraphIndexingStatus.NO_WEBHOOK;
-          this.setObject({
-            webhook: {
-              progress: percentage,
-              error: err ? err : {},
-            },
-          });
-          return percentage;
-        }
-        throw err;
-      });
-  }
-
-  fetchGraphWebhook(client, user) {
-    if (!user) {
-      this.set("webhook.possible", false);
-      return;
-    }
-    const userIsOwner = this.get("metadata.owner.id") === user.data.id;
-    this.set("webhook.possible", userIsOwner);
-    if (userIsOwner)
-      this.fetchGraphWebhookStatus(client, this.get("metadata.id"));
-  }
-
-  fetchGraphWebhookStatus(client) {
-    this.model.set("webhook.created", false);
-    this.model.setUpdating({ webhook: { status: true } });
-    return client
-      .checkGraphWebhook(this.get("metadata.id"))
-      .then((resp) => {
-        this.model.set("webhook.status", resp);
-      })
-      .catch((err) => {
-        this.model.set("webhook.status", err);
-      });
-  }
-
-  createGraphWebhook(client) {
-    this.model.setUpdating({ webhook: { created: true } });
-    return client
-      .createGraphWebhook(this.get("metadata.id"))
-      .then((resp) => {
-        this.model.set("webhook.created", resp);
-      })
-      .catch((err) => {
-        this.model.set("webhook.created", err);
-      });
-  }
-
   async fetchReadmeCommits() {
     // Do not fetch if a fetch is in progress
     if (this.get("commitsReadme.fetching") === SpecialPropVal.UPDATING) return;
@@ -773,51 +628,12 @@ class ProjectCoordinator {
     this.model.setObject({ statistics: statsObject });
     return stats;
   }
-
-  async checkCoreAvailability(version) {
-    // get the project version if not already passed
-    let projectVersion;
-    if (version) {
-      projectVersion = version.toString();
-    } else {
-      const migrationCheck = this.model.get("migration.check");
-      if (migrationCheck?.core_compatibility_status?.project_metadata_version)
-        projectVersion =
-          migrationCheck.core_compatibility_status?.project_metadata_version.toString();
-      else if (migrationCheck.check_error) projectVersion = false;
-    }
-
-    let data = { versionUrl: projectVersion ? `/${projectVersion}` : null };
-    if (!projectVersion) {
-      data.error = true;
-      data.backendAvailable = false;
-    } else {
-      // check if the APIs for the target project version were already tested
-      const coreVersion = this.model.baseModel.get("environment.coreVersions");
-      if (Object.keys(coreVersion.available).length === 0) {
-        // get the core versions
-        await new EnvironmentCoordinator(
-          this.client,
-          this.model.baseModel.subModel("environment")
-        ).fetchCoreServiceVersions();
-      }
-      // The core version will tell us if we have a backend
-      if (coreVersion.available[projectVersion]) data.backendAvailable = true;
-      else data.backendAvailable = false;
-    }
-
-    data.fetched = new Date();
-    this.model.setObject({ migration: { core: { ...data } } });
-    // return availability
-    return data.backendAvailable;
-  }
 }
 
 Object.assign(ProjectCoordinator.prototype, CoreServiceProjectMixin);
 Object.assign(ProjectCoordinator.prototype, DatasetsMixin);
 Object.assign(ProjectCoordinator.prototype, FileTreeMixin);
 Object.assign(ProjectCoordinator.prototype, ProjectAttributesMixin);
-Object.assign(ProjectCoordinator.prototype, MigrationMixin);
 Object.assign(ProjectCoordinator.prototype, RepoMixin);
 
-export { GraphIndexingStatus, ProjectCoordinator, MigrationStatus };
+export { ProjectCoordinator, MigrationStatus };

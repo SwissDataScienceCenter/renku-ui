@@ -53,6 +53,7 @@ import { setupWebSocket } from "./websocket";
 import SearchPage from "./features/kgSearch/KgSearchPage";
 import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
 import { Dashboard } from "./features/dashboard/Dashboard";
+import { versionsApi } from "./features/versions/versionsApi";
 
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -316,6 +317,10 @@ function CentralContentContainer(props) {
 function App(props) {
   const [webSocket, setWebSocket] = useState(null);
   const [notifications, setNotifications] = useState(null);
+
+  // fetch backend components versions
+  versionsApi.useGetCoreVersionsQuery(null, { pollingInterval: 20000 });
+  versionsApi.useGetNotebooksVersionsQuery();
 
   useEffect(() => {
     const getLocation = () => props.location;

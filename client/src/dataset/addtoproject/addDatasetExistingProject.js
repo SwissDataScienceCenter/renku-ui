@@ -26,6 +26,7 @@ import SelectAutosuggestInput from "../../components/SelectAutosuggestInput";
 import { Loader } from "../../components/Loader";
 import { groupBy } from "../../utils/helpers/HelperFunctions";
 import { useGetMemberProjectsQuery } from "../../features/projects/projectsApi";
+import useGetUserProjects from "../../utils/customHooks/UseGetProjects";
 
 /**
  *  incubator-renku-ui
@@ -47,9 +48,9 @@ const AddDatasetExistingProject = ({
   const setCurrentStatus = handlers.setCurrentStatus;
   let projectsMonitorJob = null;
 
-  const queryParams = { per_page: 100 };
-  const { data: memberProjects, isLoading: isLoadingMemberProjects } =
-    useGetMemberProjectsQuery(queryParams);
+  const projects = useGetUserProjects();
+  const memberProjects = projects.projectsMember;
+  const isLoadingMemberProjects = projects.isFetchingProjects;
 
   useEffect(() => {
     mounted.current = true;
@@ -69,7 +70,7 @@ const AddDatasetExistingProject = ({
   const startImportDataset = () => handlers.submitCallback(existingProject);
   const onSuggestionsFetchRequested = (value, setSuggestions) => {
     if (!memberProjects || isLoadingMemberProjects) return;
-    const featured = { member: memberProjects.data };
+    const featured = { member: memberProjects };
 
     const regex = new RegExp(value, "i");
     const searchDomain = featured.member.filter((project) => {

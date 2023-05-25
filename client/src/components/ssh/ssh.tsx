@@ -16,15 +16,13 @@
  * limitations under the License.
  */
 
-import React, { useContext, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useDispatch, useSelector, RootStateOrAny } from "react-redux";
-import { DropdownItem } from "reactstrap";
+import React from "react";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { DropdownItem, Modal, ModalBody, ModalHeader } from "reactstrap";
 
-import AppContext from "../../utils/context/appContext";
-import { Modal, ModalBody, ModalHeader } from "../../utils/ts-wrappers";
 import { Loader } from "../Loader";
-import { useGetNotebooksQuery } from "../../features/versions/versionsApi";
+import { useGetNotebooksVersionsQuery } from "../../features/versions/versionsApi";
 import {
   hideSshModal,
   showSshModal,
@@ -35,12 +33,11 @@ import { Url } from "../../utils/helpers/url";
 import { InfoAlert } from "../Alert";
 import { ExternalDocsLink } from "../ExternalLinks";
 import { Docs } from "../../utils/constants/Docs";
-import { GeneralErrorMessage } from "../../project/status/MigrationUtils";
-
 import rkIconSsh from "../../styles/icons/ssh.svg";
 import rkIconSshTicked from "../../styles/icons/ssh-ticked.svg";
 import rkIconSshCross from "../../styles/icons/ssh-cross.svg";
 import { CommandCopy } from "../commandCopy/CommandCopy";
+import { projectCoreApi } from "../../features/project/projectCoreApi";
 
 const docsIconStyle = {
   showLinkIcon: true,
@@ -56,7 +53,7 @@ interface SshDropdownProps {
 function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
   const dispatch = useDispatch();
 
-  const { data, isLoading, error } = useGetNotebooksQuery(null);
+  const { data, isLoading, error } = useGetNotebooksVersionsQuery();
   if (error || isLoading || !data?.sshEnabled) return null;
 
   const handleClick = () => {
@@ -75,32 +72,20 @@ function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
 }
 
 function SshModal() {
-  const [localMigration, setLocalMigration] = useState({
-    data: {},
-    fetched: false,
-    fetching: false,
-  });
-  let useLocalMigration = false;
-  const { client } = useContext(AppContext);
   const displayModal = useDisplaySelector((state) => state.modals.ssh);
-  const location = useLocation();
   const dispatch = useDispatch();
+  const gitUrl = cleanGitUrl(displayModal.gitUrl);
 
-  const notebooksSupport = useGetNotebooksQuery(null); // { data, isLoading, error }
-  const coreSupport = useSelector(
-    (state: RootStateOrAny) => state.stateModel.project.migration.check
+  const notebooksSupport = useGetNotebooksVersionsQuery();
+  const coreSupport = projectCoreApi.useGetMigrationStatusQuery(
+    {
+      gitUrl,
+    },
+    { skip: !gitUrl }
   );
 
   // return early if we don't need to display the modal
   if (!displayModal.show) return null;
-
-  // fetch migration data locally when outside the project context -- fix when migrating project to RTK Query
-  if (!location.pathname.includes(displayModal.projectPath))
-    useLocalMigration = true;
-
-  const projectMigrationData = useLocalMigration
-    ? localMigration.data
-    : coreSupport;
 
   // fetch migration data when necessary (i.e. outside the project context, when not already fetched)
   function cleanGitUrl(url: string): string {
@@ -110,48 +95,12 @@ function SshModal() {
     return url;
   }
 
-  const projectCurrentGitUrl = cleanGitUrl(projectMigrationData.gitUrl);
-  const projectToShowGitUrl = cleanGitUrl(displayModal.gitUrl);
-  if (
-    useLocalMigration &&
-    projectCurrentGitUrl !== projectToShowGitUrl &&
-    !localMigration.fetching
-  ) {
-    setLocalMigration({
-      data: { gitUrl: projectToShowGitUrl },
-      fetched: false,
-      fetching: true,
-    });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    client.checkMigration(projectToShowGitUrl).then((resp: any) => {
-      if (resp?.result)
-        setLocalMigration({
-          fetched: true,
-          fetching: false,
-          data: { ...resp.result, gitUrl: projectToShowGitUrl },
-        });
-      else if (resp?.error)
-        setLocalMigration({
-          fetched: true,
-          fetching: false,
-          data: { ...resp.error, gitUrl: projectToShowGitUrl },
-        });
-    });
-  }
-
-  const loading =
-    notebooksSupport.isLoading ||
-    (!useLocalMigration && !projectMigrationData?.core_renku_version) ||
-    (useLocalMigration && localMigration.fetching)
-      ? true
-      : false;
-  const errorCore =
-    (!useLocalMigration && projectMigrationData?.check_error?.code) ||
-    (useLocalMigration && projectMigrationData.code)
-      ? true
-      : false;
+  const loading = notebooksSupport.isLoading || coreSupport.isFetching;
+  const errorCore = coreSupport.isError;
   const sshCoreSupport =
-    projectMigrationData.template_status?.ssh_supported ?? false;
+    coreSupport.data?.details?.template_status?.type === "detail"
+      ? coreSupport.data.details.template_status.ssh_supported
+      : false;
   const sshNotebooksSupport = notebooksSupport.data?.sshEnabled ?? false;
 
   const toggleModal = () => dispatch(toggleSshModal());
@@ -182,19 +131,15 @@ function SshModal() {
           />{" "}
           to get further information.
         </p>
-        <GeneralErrorMessage
-          error_while="checking"
-          error_what="project template"
-          error_reason={
-            (projectMigrationData.check_error?.userMessage ||
-              projectMigrationData.userMessage) ??
-            ""
-          }
-        />
       </>
     );
   } else if (loading) {
-    modalBody = <Loader />;
+    modalBody = (
+      <>
+        <p>Checking project status...</p>
+        <Loader />
+      </>
+    );
   } else if (!sshCoreSupport) {
     const updateUrl = Url.get(Url.pages.project.overview.status, {
       namespace: "",
@@ -231,10 +176,9 @@ function SshModal() {
       </>
     );
   } else {
-    // const command = "renku session ssh-setup";
     const command = {
       login: `renku login ${window.location.origin}`,
-      clone: `renku clone ${projectCurrentGitUrl || projectToShowGitUrl}.git`,
+      clone: `renku clone ${gitUrl}.git`,
       start: "renku session start -p renkulab --ssh",
       open: "renku session open --ssh <session-id>",
     };

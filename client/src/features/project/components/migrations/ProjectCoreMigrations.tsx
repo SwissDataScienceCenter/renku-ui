@@ -52,23 +52,24 @@ import {
   DetailsSection,
   MoreInfoLink,
 } from "./MigrationHelpers";
+import { useProjectSelector } from "../../projectSlice";
 
 interface ProjectMigrationStatusProps {
   branch?: string;
-  checkingSupport: boolean;
   gitUrl: string;
   isMaintainer: boolean;
-  isSupported: boolean;
 }
 export function ProjectMigrationStatus({
   branch,
-  checkingSupport,
   gitUrl,
   isMaintainer,
-  isSupported,
 }: ProjectMigrationStatusProps) {
   const [showDetails, setShowDetails] = useState(false);
   const toggleShowDetails = () => setShowDetails(!showDetails);
+
+  const coreSupport = useProjectSelector((p) => p.migration);
+  const isSupported = coreSupport.backendAvailable ? true : false;
+  const checkingSupport = coreSupport.computed ? false : true;
 
   const skip = !gitUrl || !branch;
   const { data, isLoading, isFetching, error } =
@@ -79,6 +80,7 @@ export function ProjectMigrationStatus({
   const [startMigration, migrationStatus] =
     projectCoreApi.useStartMigrationMutation();
 
+  const sectionCyId = "project-version";
   if (isFetching || skip || checkingSupport) {
     const fetchingTitle = isLoading
       ? "Fetching project data..."
@@ -87,6 +89,7 @@ export function ProjectMigrationStatus({
       <CompositeTitle
         icon={faTimesCircle}
         loading={true}
+        sectionId={sectionCyId}
         showDetails={showDetails}
         title={fetchingTitle}
         toggleShowDetails={toggleShowDetails}
@@ -109,6 +112,7 @@ export function ProjectMigrationStatus({
           icon={faExclamationCircle}
           level="danger"
           loading={false}
+          sectionId={sectionCyId}
           showDetails={showDetails}
           title="Error on project version"
           toggleShowDetails={toggleShowDetails}
@@ -199,6 +203,7 @@ export function ProjectMigrationStatus({
         icon={icon}
         level={level}
         loading={isFetching}
+        sectionId={sectionCyId}
         showDetails={showDetails}
         title={title}
         toggleShowDetails={toggleShowDetails}
@@ -240,8 +245,11 @@ function ProjectMigrationStatusDetails({
     data?.details?.core_compatibility_status.type === "detail"
       ? data.details.core_compatibility_status
       : null;
-  const renkuProjectVersion = cleanVersion(docker?.dockerfile_renku_version);
-  const renkuLatestVersion = cleanVersion(docker?.latest_renku_version);
+  const renkuProjectVersion = cleanVersion(
+    docker?.dockerfile_renku_version,
+    true
+  );
+  const renkuLatestVersion = cleanVersion(docker?.latest_renku_version, true);
 
   let renkuDetails: React.ReactNode = <span>No details</span>;
   const renkuMigrationLevel = getRenkuLevel(data, isSupported);
@@ -554,7 +562,7 @@ function RenkuVersionContext({
         <span>
           There is a new {linkToRenku} version.
           {isMaintainer
-            ? " Updating should be safe since it is a minor step."
+            ? " Updating brings new features and bug-fixes; it should be safe on this project since it is a minor step."
             : ""}{" "}
           {moreInfoLink}
         </span>
@@ -564,7 +572,7 @@ function RenkuVersionContext({
     return (
       <>
         <span>
-          The project uses the latest {linkToRenku} version. {moreInfoLink}
+          This project uses the latest {linkToRenku} version. {moreInfoLink}
         </span>
       </>
     );
@@ -702,7 +710,7 @@ function RenkuTemplateContext({
         <>
           <br />
           <span>
-            Mind that the project uses a default template from this RenkuLab
+            Mind that this project uses a default template from this RenkuLab
             deployment; therefore, there is no link to a remote reference
             template you can check. You can still check the full description
             when creating a new project using the same template id.
@@ -724,7 +732,7 @@ function RenkuTemplateContext({
         We could not find updates of the {template?.template_id} template used
         in this project.
         <br />
-        Mind that the project uses a default template from this RenkuLab
+        Mind that this project uses a default template from this RenkuLab
         deployment that is cached locally. We cannot verify whether a newer
         version was recently published in the remote repository.{" "}
         <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />

@@ -10,13 +10,13 @@ import type { StateModelProject } from "../Project";
 type ProjectFileLineageProps = {
   client: unknown;
   fetchBranches: unknown;
-  fetchGraphStatus: unknown;
   filePath: string;
   history: unknown;
   location: {
     pathname: string;
   };
   model: unknown;
+  projectId?: number;
 };
 
 function ProjectFileLineage(props: ProjectFileLineageProps) {
@@ -31,7 +31,6 @@ function ProjectFileLineage(props: ProjectFileLineageProps) {
   const filesTree = project.filesTree;
   const httpProjectUrl = projectMetadata.httpUrl;
   const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
-  const migration = project.migration;
   const projectPathWithNamespace = projectMetadata.pathWithNamespace;
 
   const forkedData = project.forkedFromProject;
@@ -42,8 +41,6 @@ function ProjectFileLineage(props: ProjectFileLineageProps) {
     all: project.branches,
     fetch: props.fetchBranches,
   };
-
-  const graphProgress = project.webhook.progress;
 
   const projectPath = projectMetadata.path;
   const projectNamespace = projectMetadata.namespace;
@@ -74,7 +71,6 @@ function ProjectFileLineage(props: ProjectFileLineageProps) {
       branches={branches}
       client={props.client}
       externalUrl={externalUrl}
-      fetchGraphStatus={props.fetchGraphStatus}
       fileContentUrl={fileContentUrl}
       forked={forked}
       gitFilePath={gitFilePath}
@@ -86,11 +82,10 @@ function ProjectFileLineage(props: ProjectFileLineageProps) {
       lineagesUrl={lineagesUrl}
       location={props.location}
       maintainer={maintainer}
-      migration={migration}
       model={props.model}
       notebook="Notebook"
       overviewCommitsUrl={overviewCommitsUrl}
-      progress={graphProgress}
+      projectId={props.projectId}
       projectNamespace={projectNamespace}
       projectPathOnly={projectPath}
       projectPath={projectPathWithNamespace}
@@ -116,7 +111,6 @@ function ProjectFileView(props: ProjectFileViewProps) {
   const filesTree = project.filesTree;
   const httpProjectUrl = projectMetadata.httpUrl;
   const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
-  const migration = project.migration;
   const projectId = projectMetadata.id;
   const projectPathWithNamespace = projectMetadata.pathWithNamespace;
 
@@ -128,9 +122,6 @@ function ProjectFileView(props: ProjectFileViewProps) {
     all: project.branches,
     fetch: props.fetchBranches,
   };
-
-  const graphProgress = project.webhook.progress;
-
   const projectPath = projectMetadata.path;
   const projectNamespace = projectMetadata.namespace;
   const projectUrlProps = {
@@ -171,11 +162,9 @@ function ProjectFileView(props: ProjectFileViewProps) {
       launchNotebookUrl={sessionNewUrl}
       location={props.location}
       maintainer={maintainer}
-      migration={migration}
       model={props.model}
       overviewCommitsUrl={overviewCommitsUrl}
       params={props.params}
-      progress={graphProgress}
       projectNamespace={projectNamespace}
       projectId={projectId}
       projectPath={projectPath}

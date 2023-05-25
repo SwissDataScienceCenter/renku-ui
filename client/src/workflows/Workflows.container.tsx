@@ -21,7 +21,6 @@ import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import { WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent } from "./Workflows.present";
-import { checkRenkuCoreSupport } from "../utils/helpers/HelperFunctions";
 import {
   useGetWorkflowDetailQuery,
   useGetWorkflowListQuery,
@@ -30,6 +29,7 @@ import {
   workflowsSlice,
   useWorkflowsSelector,
 } from "../features/workflows/WorkflowsSlice";
+import { useProjectSelector } from "../features/project/projectSlice";
 
 const MIN_CORE_VERSION_WORKFLOWS = 9;
 
@@ -48,8 +48,6 @@ interface WorkflowsListProps {
   fullPath: string;
   reference: string;
   repositoryUrl: string;
-  versionUrl: string;
-  backendAvailable: boolean | null | undefined;
 }
 
 function deserializeError(error: any) {
@@ -71,17 +69,22 @@ function WorkflowsList({
   fullPath,
   reference,
   repositoryUrl,
-  versionUrl,
-  backendAvailable,
 }: WorkflowsListProps) {
   // Get the workflow id from the query parameters
   const { id }: Record<string, string> = useParams();
   const selected = id;
 
+  const coreSupport = useProjectSelector((p) => p.migration);
+  const versionUrl = coreSupport.versionUrl ?? "";
+  const backendAvailable = coreSupport.backendAvailable;
+
   // Verify backend support and availability
   const unsupported =
-    (backendAvailable != null && !backendAvailable) ||
-    !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
+    backendAvailable === false ||
+    (coreSupport.cached.metadataVersion &&
+      coreSupport.cached.metadataVersion < MIN_CORE_VERSION_WORKFLOWS)
+      ? true
+      : false;
 
   // Configure the functions to dispatch workflowsDisplay changes
   const dispatch = useDispatch();
@@ -98,7 +101,7 @@ function WorkflowsList({
   const workflowsDisplay = useWorkflowsSelector();
 
   // Fetch workflow list
-  const skipList = !versionUrl || !repositoryUrl || unsupported;
+  const skipList = !versionUrl || !repositoryUrl || unsupported ? true : false;
   const workflowsQuery = useGetWorkflowListQuery(
     { coreUrl: versionUrl, gitUrl: repositoryUrl, reference, fullPath },
     { skip: skipList }

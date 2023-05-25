@@ -29,6 +29,15 @@ import { connect } from "react-redux";
 import { ProjectSettingsSessions as ProjectSettingsSessionsPresent } from "./ProjectSettings.present";
 import { NotebooksCoordinator } from "../../notebooks";
 import { refreshIfNecessary } from "../../utils/helpers/HelperFunctions";
+import { useProjectSelector } from "../../features/project/projectSlice";
+
+/**
+ * Adds the core support data
+ */
+function ProjectSettingsSessionsWrapper(props) {
+  const coreSupport = useProjectSelector((p) => p.migration);
+  return <ProjectSettingsSessionsMapper {...props} coreSupport={coreSupport} />;
+}
 
 /**
  * Mapper component for ProjectSettingsSessions.
@@ -90,7 +99,7 @@ class ProjectSettingsSessionsMapper extends Component {
       const response = await this.props.client.setProjectConfig(
         this.props.externalUrl,
         config,
-        this.props?.migration?.core?.versionUrl
+        this.props.coreSupport?.versionUrl
       );
       if (response?.data?.error) {
         this.setConfigValue(key, previousValue);
@@ -129,10 +138,7 @@ class ProjectSettingsSessionsMapper extends Component {
 
   // Refresh on update since componentDidMount may still need operations to finish
   componentDidUpdate(prevProps) {
-    if (
-      !prevProps.migration.core.fetched &&
-      this.props.migration.core.fetched
-    ) {
+    if (!prevProps.coreSupport.computed && this.props.coreSupport.computed) {
       const currentConfig = this.model.get("project.config");
       refreshIfNecessary(currentConfig.fetching, currentConfig.fetched, () => {
         this.refreshConfig();
@@ -157,8 +163,8 @@ class ProjectSettingsSessionsMapper extends Component {
 
   async refreshConfig(repositoryUrl = null) {
     // Prevent refreshing when not possible
-    const backend = this.model.get("project.migration.core");
-    if (!backend.fetched || !backend.backendAvailable) return;
+    const coreSupport = this.props.coreSupport;
+    if (!coreSupport.computed || !coreSupport.backendAvailable) return;
     const url = repositoryUrl ? repositoryUrl : this.props.externalUrl;
     // Check if the project is locked
     await this.projectCoordinator.fetchProjectLockStatus();
@@ -171,7 +177,6 @@ class ProjectSettingsSessionsMapper extends Component {
 
   mapStateToProps(state) {
     return {
-      backend: state.stateModel.project.migration.core,
       options: state.stateModel.notebooks.options,
       metadata: state.stateModel.project.metadata,
       config: state.stateModel.project.config,
@@ -184,6 +189,7 @@ class ProjectSettingsSessionsMapper extends Component {
     )(ProjectSettingsSessionsPresent);
     return (
       <ProjectSettingsSessionsConnected
+        coreSupport={this.props.coreSupport}
         location={this.props.location}
         lockStatus={this.props.lockStatus}
         newConfig={this.state}
@@ -193,4 +199,4 @@ class ProjectSettingsSessionsMapper extends Component {
   }
 }
 
-export { ProjectSettingsSessionsMapper as ProjectSettingsSessions };
+export { ProjectSettingsSessionsWrapper as ProjectSettingsSessions };

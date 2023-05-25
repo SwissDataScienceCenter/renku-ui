@@ -94,12 +94,13 @@ export const projectCoreApi = createApi({
     }),
     getMigrationStatus: builder.query<MigrationStatus, MigrationStatusParams>({
       query: (migrationParams) => {
+        const params: { git_url: string; branch?: string } = {
+          git_url: migrationParams.gitUrl,
+        };
+        if (migrationParams.branch) params.branch = migrationParams.branch;
         return {
           url: "/renku/cache.migrations_check", // ? migrations check always invoked on the last renku version
-          params: {
-            git_url: migrationParams.gitUrl,
-            branch: migrationParams.branch,
-          },
+          params,
         };
       },
       providesTags: (result, error, migrationParams) => [

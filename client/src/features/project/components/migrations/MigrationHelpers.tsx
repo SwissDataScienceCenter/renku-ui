@@ -19,6 +19,7 @@
 import React from "react";
 import { Button, UncontrolledTooltip } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import { ChevronDown, ChevronUp } from "../../../../utils/ts-wrappers";
@@ -55,6 +56,7 @@ interface CompositeTitleProps {
   level?: string;
   loading: boolean;
   icon: IconProp;
+  sectionId: string;
   showDetails: boolean;
   title: string;
   toggleShowDetails: () => void;
@@ -69,10 +71,12 @@ export function CompositeTitle({
   level,
   loading,
   icon,
+  sectionId,
   showDetails,
   title,
   toggleShowDetails,
 }: CompositeTitleProps) {
+  const sectionIdFull = sectionId + "-section";
   const finalIcon = loading ? (
     <Loader inline={true} size={14} />
   ) : (
@@ -121,21 +125,29 @@ export function CompositeTitle({
     else button = <Button {...buttonActionStyle}>{finalButtonText}</Button>;
   }
 
+  const buttonDataCy = sectionIdFull + "-action-button";
+  const caretDataCy = showDetails
+    ? sectionIdFull + "-close"
+    : sectionIdFull + "-open";
+  const titleDataCy = sectionIdFull + "-title";
   return (
     <>
-      <div className={styles.projectStatusSection}>
+      <div id={sectionIdFull} className={styles.projectStatusSection}>
         <h6 className="d-flex align-items-center w-100 mb-0">
           <div className={`me-2 ${color}`}>{finalIcon}</div>
-          <div>{title}</div>
+          <div data-cy={titleDataCy}>{title}</div>
           {loading ? null : (
             <>
               <div
                 className="mx-3 cursor-pointer"
+                data-cy={caretDataCy}
                 onClick={() => toggleShowDetails()}
               >
                 {caret}
               </div>
-              <div className="ms-auto">{button}</div>
+              <div className="ms-auto" data-cy={buttonDataCy}>
+                {button}
+              </div>
             </>
           )}
         </h6>
@@ -207,6 +219,7 @@ export function DetailsSection({
   ) : null;
 
   let titlePopover: React.ReactNode = null;
+  let finalTitle: React.ReactNode = <span>{title}</span>;
   if (titleInfo) {
     const externalLinkStyles = {
       className: "text-rk-white",
@@ -229,6 +242,14 @@ export function DetailsSection({
         {titleInfo} {titleUrl}
       </UncontrolledTooltip>
     );
+    finalTitle = (
+      <span>
+        {title}{" "}
+        <sup>
+          <FontAwesomeIcon icon={faQuestionCircle} />
+        </sup>
+      </span>
+    );
   }
 
   const textElement: React.ReactNode =
@@ -239,7 +260,7 @@ export function DetailsSection({
       <div className={styles.projectStatusDetailsSection}>
         <div className="d-flex align-items-center w-100">
           <div>
-            <span id={titleId}>{title}</span>
+            <span id={titleId}>{finalTitle}</span>
             {titlePopover}
           </div>
           <div className={`mx-3 ${color}`}>{finalIcon}</div>

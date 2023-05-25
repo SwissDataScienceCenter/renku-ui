@@ -35,6 +35,8 @@ describe("Test helper functions", () => {
   it("Test cleanVersion", () => {
     expect(cleanVersion("2.3.0")).toBe("2.3.0");
     expect(cleanVersion("2.3.0.dev22+g1262f766")).toBe("2.3.0-dev");
+    expect(cleanVersion("2.3.0rc5")).toBe("2.3.0rc5"); // eslint-disable-line spellcheck/spell-checker
+    expect(cleanVersion("2.3.0rc5", true)).toBe("2.3.0"); // eslint-disable-line spellcheck/spell-checker
   });
 
   it("Test getReleaseUrl", () => {

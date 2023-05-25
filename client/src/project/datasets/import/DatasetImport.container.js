@@ -24,15 +24,18 @@
  */
 
 import React from "react";
+import _ from "lodash";
+
 import { datasetImportFormSchema } from "../../../model/RenkuModels";
 import DatasetImport from "./DatasetImport.present";
 import { ImportStateMessage } from "../../../utils/constants/Dataset";
-import _ from "lodash";
+import { useProjectSelector } from "../../../features/project/projectSlice";
 
 let dsFormSchema = _.cloneDeep(datasetImportFormSchema);
 
 function ImportDataset(props) {
   const formLocation = props.location.pathname + "/import";
+  const coreSupport = useProjectSelector((p) => p.migration);
 
   if (dsFormSchema == null) dsFormSchema = _.cloneDeep(datasetImportFormSchema);
 
@@ -99,13 +102,11 @@ function ImportDataset(props) {
   const monitorJobStatusAndHandleResponse = (job_id, handlers) => {
     let cont = 0;
     let monitorJob = setInterval(() => {
-      props.client
-        .getJobStatus(job_id, props.migration.core.versionUrl)
-        .then((job) => {
-          cont++;
-          if (job !== undefined || cont === 50)
-            handleJobResponse(job, monitorJob, cont, handlers);
-        });
+      props.client.getJobStatus(job_id, coreSupport.versionUrl).then((job) => {
+        cont++;
+        if (job !== undefined || cont === 50)
+          handleJobResponse(job, monitorJob, cont, handlers);
+      });
     }, 10000);
   };
 
@@ -120,7 +121,7 @@ function ImportDataset(props) {
       .datasetImport(
         props.httpProjectUrl,
         mappedInputs.uri,
-        props.migration.core.versionUrl
+        coreSupport.versionUrl
       )
       .then((response) => {
         if (response.data.error !== undefined) {

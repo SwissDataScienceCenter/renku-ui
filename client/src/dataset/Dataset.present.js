@@ -42,6 +42,7 @@ import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
 import { CoreError } from "../components/errors/CoreErrorHelpers";
 import EntityHeader from "../components/entityHeader/EntityHeader";
 import { EntityDeleteButtonButton } from "../components/entities/Buttons";
+import { Url } from "../utils/helpers/url";
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
@@ -436,6 +437,11 @@ export default function DatasetView(props) {
     ? getUpdatedDatasetImage(getDatasetImageUrl(dataset.images), datasetDate)
     : undefined;
 
+  const settingsUrl = Url.get(Url.pages.project.settings, {
+    namespace: "",
+    path: props.projectPathWithNamespace,
+  });
+
   return (
     <div
       className={
@@ -523,13 +529,9 @@ export default function DatasetView(props) {
             <br />
             For more information about the Knowledge Graph status you can go to
             the&nbsp;
-            <Button
-              size="sm"
-              color="warning"
-              onClick={() => props.history.push(props.overviewStatusUrl)}
-            >
-              status page
-            </Button>
+            <Link className="btn btn-sm btn-warning" to={settingsUrl}>
+              project settings page
+            </Link>
             .
           </WarnAlert>
         ) : null}
@@ -543,7 +545,7 @@ export default function DatasetView(props) {
             projectPathWithNamespace={props.projectPathWithNamespace}
             setModalOpen={setDeleteDatasetModalOpen}
             user={props.user}
-            versionUrl={props.migration.core.versionUrl}
+            versionUrl={props.versionUrl}
           />
         ) : null}
       </Col>

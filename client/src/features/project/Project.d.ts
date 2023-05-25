@@ -104,45 +104,6 @@ export type IDatasetFile = {
   name: string;
 };
 
-// ! TODO: remove this since we have another interface
-export type IMigration = {
-  check: {
-    core_renku_version?: string;
-    project_supported?: boolean;
-    project_renku_version?: string;
-    core_compatibility_status: {
-      project_metadata_version?: string;
-      migration_required?: boolean;
-      current_metadata_version?: string;
-    };
-    dockerfile_renku_status: {
-      latest_renku_version?: string;
-      dockerfile_renku_version?: string;
-      automated_dockerfile_update?: boolean;
-      newer_renku_available?: boolean;
-    };
-    template_status: {
-      newer_template_available?: boolean;
-      template_id?: string;
-      automated_template_update?: boolean;
-      template_ref?: string;
-      project_template_version?: string;
-      template_source?: string;
-      latest_template_version?: string;
-    };
-  };
-  core: {
-    versionUrl: string | null;
-    backendAvailable: boolean | null;
-    error: boolean | null;
-    fetched: boolean | null;
-    fetching: boolean | null;
-  };
-  migrating: boolean;
-  migration_status: unknown | null;
-  migration_error: unknown | null;
-};
-
 export interface Part {
   atLocation: string;
 }
@@ -177,9 +138,6 @@ export type StateModelProject = {
     visibility: string;
   };
   migration: unknown;
-  webhook: {
-    progress: unknown;
-  };
 };
 
 export type UsedIn = {
@@ -317,4 +275,20 @@ export type TemplateMigrationLevel = {
     | ProjectMigrationLevel.Level3
     | ProjectMigrationLevel.LevelE
     | ProjectMigrationLevel.LevelX;
+};
+
+export type ProjectSliceMigration = {
+  cached: {
+    branch?: string;
+    coreVersions?: number[];
+    gitUrl?: string;
+    metadataVersion?: number;
+  };
+  backendAvailable?: boolean;
+  computed: boolean;
+  versionUrl?: string;
+};
+
+export type ProjectSlice = {
+  migration: ProjectSliceMigration;
 };

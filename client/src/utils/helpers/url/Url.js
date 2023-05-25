@@ -373,6 +373,17 @@ const Url = {
           ]
         ),
       },
+      settings: {
+        base: new UrlRule(
+          projectPageUrlBuilder("/settings"),
+          ["namespace", "path"],
+          null,
+          [
+            "/projects/namespace/path/settings",
+            "/projects/group/subgroup/path/settings",
+          ]
+        ),
+      },
       workflows: {
         base: new UrlRule(
           projectPageUrlBuilder("/workflows"),
