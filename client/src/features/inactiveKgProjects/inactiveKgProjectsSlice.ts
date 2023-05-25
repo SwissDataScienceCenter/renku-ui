@@ -17,12 +17,11 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { TypedUseSelectorHook, useSelector } from "react-redux";
+import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { InactiveKgProjects } from "./InactiveKgProjects";
 
 const initialState: InactiveKgProjects[] = [];
 
-type RootStateInactiveProjects = { kgInactiveProjects: InactiveKgProjects[] };
 interface ActivationStatus {
   id: number;
   progress: number;
@@ -58,6 +57,7 @@ export const kgInactiveProjectsSlice = createSlice({
 
 export const { updateList, addFullList, updateProgress } =
   kgInactiveProjectsSlice.actions;
-export const useInactiveProjectSelector: TypedUseSelectorHook<RootStateInactiveProjects> =
-  useSelector;
-export default kgInactiveProjectsSlice;
+
+export const useInactiveProjectSelector = createSliceSelector(
+  kgInactiveProjectsSlice
+);

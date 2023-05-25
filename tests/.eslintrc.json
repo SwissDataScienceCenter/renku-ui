@@ -5,7 +5,7 @@
     "project": "tsconfig.json",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "cypress"],
+  "plugins": ["@typescript-eslint", "cypress", "no-only-tests"],
   "rules": {
     "no-eval": "error",
     "no-unused-vars": [
@@ -26,7 +26,8 @@
     "cypress/assertion-before-screenshot": "warn",
     "cypress/no-force": "warn",
     "cypress/no-async-tests": "error",
-    "cypress/no-pause": "error"
+    "cypress/no-pause": "error",
+    "no-only-tests/no-only-tests": "error"
   },
   "extends": [
     "eslint:recommended",

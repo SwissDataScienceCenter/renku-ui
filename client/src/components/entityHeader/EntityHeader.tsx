@@ -141,9 +141,7 @@ function EntityHeader({
   }
 
   // Set up support for logs modal
-  const displayModal = useDisplaySelector(
-    (state: RootStateOrAny) => state[displaySlice.name].modals.sessionLogs
-  );
+  const displayModal = useDisplaySelector((state) => state.modals.sessionLogs);
   const envLogs =
     itemType === "project" ? (
       <EnvironmentLogs

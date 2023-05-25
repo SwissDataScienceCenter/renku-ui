@@ -1,4 +1,5 @@
-import displaySlice, {
+import {
+  displaySlice,
   showSshModal,
   hideSshModal,
   toggleSshModal,
