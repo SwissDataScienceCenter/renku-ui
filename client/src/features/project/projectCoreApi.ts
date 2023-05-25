@@ -71,16 +71,23 @@ interface GetConfigRawResponse {
   error?: unknown;
 }
 
-interface GetConfigRawResponseSection {
-  "interactive.default_url"?: string;
-  "interactive.session_class"?: string;
-  "interactive.lfs_auto_fetch"?: string;
-  "interactive.disk_request"?: string;
-  "interactive.cpu_request"?: string;
-  "interactive.mem_request"?: string;
-  "interactive.gpu_request"?: string;
-  "interactive.image"?: string;
-}
+const KNOWN_CONFIG_KEYS = [
+  "interactive.default_url",
+  "interactive.session_class",
+  "interactive.lfs_auto_fetch",
+  "interactive.disk_request",
+  "interactive.cpu_request",
+  "interactive.mem_request",
+  "interactive.gpu_request",
+  "interactive.image",
+] as const;
+
+type GetConfigRawResponseSectionKey = (typeof KNOWN_CONFIG_KEYS)[number];
+
+type GetConfigRawResponseSection = {
+  // eslint-disable-next-line no-unused-vars
+  [Key in GetConfigRawResponseSectionKey]?: string;
+};
 
 interface UpdateConfigParams extends GetConfigParams {
   projectRepositoryUrl: string;
@@ -270,7 +277,7 @@ const transformGetConfigRawResponse = (
 
   const projectUnknownSessionsConfig = Object.keys(projectSessionsConfig)
     .filter((key) => key.startsWith(`${SESSION_CONFIG_PREFIX}.`))
-    .filter((key) => !knownConfigKeys.includes(key))
+    .filter((key) => !(KNOWN_CONFIG_KEYS as readonly string[]).includes(key))
     .reduce(
       (obj, key) => ({ ...obj, [key]: (projectSessionsConfig as any)[key] }),
       {}
@@ -318,14 +325,3 @@ const safeParseInt = (str: string | undefined): number | undefined => {
 };
 
 const SESSION_CONFIG_PREFIX = "interactive";
-
-const knownConfigKeys = [
-  "interactive.default_url",
-  "interactive.session_class",
-  "interactive.lfs_auto_fetch",
-  "interactive.disk_request",
-  "interactive.cpu_request",
-  "interactive.mem_request",
-  "interactive.gpu_request",
-  "interactive.image",
-];
