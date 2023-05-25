@@ -27,8 +27,7 @@ type ProjectEntityHeaderProps = EntityHeaderProps & { isInKg: boolean };
 function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
   const { fullPath } = props;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  const { data: _kgData } = useProjectMetadataQuery(
+  useProjectMetadataQuery(
     { projectPath: fullPath },
     { skip: !fullPath || props.isInKg != true }
   );
