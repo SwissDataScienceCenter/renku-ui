@@ -171,7 +171,7 @@ export const ProjectSettingsSessions = () => {
     );
   }
 
-  const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER ? true : false;
+  const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER;
   if (!projectMigrationCore.backendAvailable) {
     const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {
       namespace,
