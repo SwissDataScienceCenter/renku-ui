@@ -25,11 +25,12 @@ import React from "react";
  */
 
 function LoaderSpinner(props) {
+  const color = props.color ?? "#01192D";
   const size = props.size || 120;
   const d = `${size}px`;
   // Inspired from https://www.w3schools.com/howto/howto_css_loader.asp
-  const border = `${size / 10}px solid #f3f3f3`;
-  const borderTop = `${size / 10}px solid #01192D`; // Use Renku Blue
+  const border = `${size / 10}px solid transparent`;
+  const borderTop = `${size / 10}px solid ${color}`; // Use Renku Blue
   const borderRight = borderTop; // Added a borderRight to make a half-circle
   const borderRadius = "50%";
   const animation = "spin 2s linear infinite";

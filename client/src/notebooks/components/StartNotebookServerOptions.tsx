@@ -17,6 +17,7 @@
  */
 
 import React, { useCallback, useEffect } from "react";
+import cx from "classnames";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import {
   Badge,
@@ -42,21 +43,28 @@ import {
   setLfsAutoFetch,
   useStartSessionOptionsSelector,
 } from "../../features/session/startSessionOptionsSlice";
-import { SessionClassOption } from "./SessionClassOption";
-import { SessionStorageOption } from "./SessionStorageOption";
 import styles from "./StartNotebookServerOptions.module.scss";
+import { SessionClassOption } from "./options/SessionClassOption";
+import { SessionStorageOption } from "./options/SessionStorageOption";
 
 interface StartNotebookServerOptionsProps {
   projectRepositoryUrl: string;
+  branch?: {
+    name: string;
+  };
 }
 
 export const StartNotebookServerOptions = ({
   projectRepositoryUrl,
+  branch,
 }: StartNotebookServerOptionsProps) => {
   return (
     <>
       <Row>
-        <DefaultUrlOption projectRepositoryUrl={projectRepositoryUrl} />
+        <DefaultUrlOption
+          projectRepositoryUrl={projectRepositoryUrl}
+          branchName={branch?.name}
+        />
         <SessionClassOption />
         <SessionStorageOption />
         <AutoFetchLfsOption />
@@ -67,6 +75,7 @@ export const StartNotebookServerOptions = ({
 
 interface DefaultUrlOptionProps {
   projectRepositoryUrl: string;
+  branchName?: string;
 }
 
 const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
@@ -85,6 +94,7 @@ const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
       {
         projectRepositoryUrl,
         versionUrl,
+        // ...(branchName ? { branch: branchName } : {}),
       },
       { skip: !fetchedVersion }
     );
@@ -104,8 +114,8 @@ const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
     if (projectConfig != null) {
       dispatch(
         setDefaultUrl(
-          projectConfig.config.interactive?.defaultUrl ??
-            projectConfig.default.interactive?.defaultUrl ??
+          projectConfig.config.sessions?.defaultUrl ??
+            projectConfig.default.sessions?.defaultUrl ??
             ""
         )
       );
@@ -148,7 +158,7 @@ const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
   );
 };
 
-const mergeDefaultUrlOptions = ({
+export const mergeDefaultUrlOptions = ({
   serverOptions,
   projectConfig,
 }: {
@@ -156,7 +166,7 @@ const mergeDefaultUrlOptions = ({
   projectConfig: ProjectConfig | undefined;
 }) => {
   const globalDefaultUrls = serverOptions?.defaultUrl.options ?? [];
-  const projectDefaultUrl = projectConfig?.config.interactive?.defaultUrl;
+  const projectDefaultUrl = projectConfig?.config.sessions?.defaultUrl;
   return [
     ...globalDefaultUrls,
     ...(globalDefaultUrls.find((url) => url === projectDefaultUrl) ||
@@ -236,7 +246,10 @@ export const ServerOptionEnum = <T extends string | number>({
       color = warning != null && warning === picked ? "danger" : undefined;
 
     return (
-      <UncontrolledDropdown direction="down" className={styles.dropdown}>
+      <UncontrolledDropdown
+        direction="down"
+        className={cx(styles.dropdown, "d-inline-block")}
+      >
         <DropdownToggle
           caret
           className="btn-outline-rk-green"
@@ -333,9 +346,9 @@ export const ServerOptionBoolean = ({
       disabled={disabled}
       checked={!!selected}
       onChange={onChange}
-      className="form-check-input rounded-pill"
+      className="form-check-input rounded-pill cursor-pointer"
     />
-    <Label check htmlFor={id}>
+    <Label check htmlFor={id} className="cursor-pointer">
       {displayName}
     </Label>
   </div>

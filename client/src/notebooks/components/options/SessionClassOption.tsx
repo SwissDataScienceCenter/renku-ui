@@ -29,17 +29,14 @@ import Select, {
   components,
 } from "react-select";
 import { Col, FormGroup, Label } from "reactstrap";
-import { ErrorAlert } from "../../components/Alert";
-import { Loader } from "../../components/Loader";
+import { ErrorAlert } from "../../../components/Alert";
+import { Loader } from "../../../components/Loader";
 import {
   ResourceClass,
   ResourcePool,
-} from "../../features/dataServices/dataServices";
-import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
-import {
-  setSessionClass,
-  useStartSessionOptionsSelector,
-} from "../../features/session/startSessionOptionsSlice";
+} from "../../../features/dataServices/dataServices";
+import { useGetResourcePoolsQuery } from "../../../features/dataServices/dataServicesApi";
+import { setSessionClass } from "../../../features/session/startSessionOptionsSlice";
 import styles from "./SessionClassOption.module.scss";
 
 export const SessionClassOption = () => {
@@ -57,6 +54,34 @@ export const SessionClassOption = () => {
   const resourcePools = enableFakeResourcePools
     ? fakeResourcePools
     : realResourcePools;
+
+  const defaultSessionClass = useMemo(
+    () =>
+      resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default) ??
+      resourcePools?.find(() => true)?.classes[0] ??
+      undefined,
+    [resourcePools]
+  );
+
+  const dispatch = useDispatch();
+
+  // Set initial session class
+  useEffect(() => {
+    const initialSessionClassId =
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == defaultSessionClass?.id)?.id ?? 0;
+    dispatch(setSessionClass(initialSessionClassId));
+  }, [defaultSessionClass?.id, dispatch, resourcePools]);
+
+  const onChange = useCallback(
+    (newValue: SingleValue<ResourceClass>) => {
+      if (newValue?.id) {
+        dispatch(setSessionClass(newValue?.id));
+      }
+    },
+    [dispatch]
+  );
 
   if (isLoading) {
     return (
@@ -86,7 +111,11 @@ export const SessionClassOption = () => {
     <Col xs={12}>
       <FormGroup className="field-group">
         <Label>Session class</Label>
-        <SessionClassSelector resourcePools={resourcePools} />
+        <SessionClassSelector
+          resourcePools={resourcePools}
+          defaultSessionClass={defaultSessionClass}
+          onChange={onChange}
+        />
       </FormGroup>
     </Col>
   );
@@ -94,57 +123,33 @@ export const SessionClassOption = () => {
 
 interface SessionClassSelectorProps {
   resourcePools: ResourcePool[];
+  currentSessionClass?: ResourceClass | undefined;
+  defaultSessionClass?: ResourceClass | undefined;
+  onChange?: (newValue: SingleValue<ResourceClass>) => void;
+  disabled?: boolean;
 }
 
-const SessionClassSelector = ({ resourcePools }: SessionClassSelectorProps) => {
+export const SessionClassSelector = ({
+  resourcePools,
+  currentSessionClass,
+  defaultSessionClass,
+  onChange,
+  disabled,
+}: SessionClassSelectorProps) => {
   const options = useMemo(
     () => makeGroupedOptions(resourcePools),
     [resourcePools]
-  );
-  const sessionsClassesFlat = useMemo(
-    () => resourcePools.flatMap((pool) => pool.classes),
-    [resourcePools]
-  );
-
-  const sessionClassId = useStartSessionOptionsSelector(
-    (state) => state.sessionClass
-  );
-  const dispatch = useDispatch();
-
-  // Set initial session class
-  useEffect(() => {
-    const initialSessionClass =
-      sessionsClassesFlat.length == 0
-        ? 0
-        : sessionsClassesFlat.find((c) => c.default)?.id ?? 0;
-    dispatch(setSessionClass(initialSessionClass));
-  }, [dispatch, sessionsClassesFlat]);
-
-  const selectedSessionClass = useMemo(
-    () =>
-      sessionsClassesFlat.find((c) => c.id === sessionClassId) ??
-      sessionsClassesFlat.find((c) => c.default) ??
-      sessionsClassesFlat[0] ??
-      undefined,
-    [sessionClassId, sessionsClassesFlat]
-  );
-
-  const onChange = useCallback(
-    (newValue: SingleValue<ResourceClass>) => {
-      if (newValue?.id) {
-        dispatch(setSessionClass(newValue?.id));
-      }
-    },
-    [dispatch]
   );
 
   return (
     <Select
       options={options}
-      defaultValue={selectedSessionClass}
+      value={currentSessionClass}
+      defaultValue={defaultSessionClass}
       getOptionValue={(option) => `${option.id}`}
       getOptionLabel={(option) => option.name}
       onChange={onChange}
+      isDisabled={disabled}
       isClearable={false}
       isSearchable={false}
       unstyled
@@ -191,6 +196,7 @@ const selectClassNames: ClassNamesConfig<ResourceClass, false, OptionGroup> = {
       isFocused && styles.optionIsFocused,
       !isFocused && isSelected && styles.optionIsSelected
     ),
+  placeholder: () => cx("px-3"),
   singleValue: () => cx("d-grid", "gap-1", "px-3", styles.singleValue),
 };
 

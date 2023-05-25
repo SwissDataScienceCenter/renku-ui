@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,16 +16,12 @@
  * limitations under the License.
  */
 
-/**
- * renku-ui
- *
- * Components for project settings
- *
- */
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 
-import {
-  ProjectSettingsGeneral,
-  ProjectSettingsNav,
-} from "./ProjectSettings.present";
-
-export { ProjectSettingsGeneral, ProjectSettingsNav };
+export const isFetchBaseQueryError = (
+  error: FetchBaseQueryError | unknown
+): error is FetchBaseQueryError => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const statusType = typeof (error as any)?.status;
+  return statusType === "number" || statusType === "string";
+};
