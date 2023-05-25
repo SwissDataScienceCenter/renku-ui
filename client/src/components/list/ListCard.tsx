@@ -60,7 +60,9 @@ function ListCard({
               !imageUrl ? `card-header-entity--${itemType}` : ""
             }`}
           >
-            {!imageUrl ? <div className="card-bg-title">{title}</div> : null}
+            {!imageUrl ? (
+              <div className="card-bg-title user-select-none">{title}</div>
+            ) : null}
           </div>
           <EntityButton type={itemType} slug={path as string} />
           <div className="card-body">
