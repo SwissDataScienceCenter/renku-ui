@@ -51,12 +51,19 @@ class Time {
   }
 
   static toIsoTimezoneString(inputDate, type = "datetime") {
-    // add the timezone manually and then convert to ISO string
-    const date = this.parseDate(inputDate);
-    const isoDate = new Date(
-      date.getTime() - date.getTimezoneOffset() * 60000
-    ).toISOString();
-    return this.toIsoString(isoDate, type);
+    try {
+      // add the timezone manually and then convert to ISO string
+      const date = this.parseDate(inputDate);
+      const isoDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60000
+      ).toISOString();
+      return this.toIsoString(isoDate, type);
+    } catch (error) {
+      if (error.message === "Invalid date") {
+        return "Invalid date";
+      }
+      throw error;
+    }
   }
 
   static getReadableDate(inputDate) {
