@@ -36,21 +36,24 @@ export function RtkErrorAlert({ error }: RtkErrorAlertProps) {
     errorCode = error.code.toString();
 
   // message
-  let errorMessage = "No details available.";
-  if ("error" in error && error.error.length)
-    errorMessage = error.error.toString();
-  else if ("message" in error && error.message?.length)
-    errorMessage = error.message.toString();
-  else if ("data" in error) {
+  const extractErrorMessage = (
+    error: FetchBaseQueryError | SerializedError
+  ): string => {
+    if ("error" in error && error.error.length) return error.error.toString();
+    if ("message" in error && error.message?.length)
+      return error.message.toString();
     if (
+      "data" in error &&
       typeof error.data === "object" &&
       error.data !== null &&
       "message" in error.data
     )
-      errorMessage = (error.data as unknown as Record<string, unknown>)
+      return (error.data as unknown as Record<string, unknown>)
         .message as string;
-    else errorMessage = JSON.stringify(error.data);
-  }
+    if ("data" in error) return JSON.stringify(error.data);
+    return "No details available.";
+  };
+  const errorMessage = extractErrorMessage(error);
 
   return (
     <ErrorAlert>

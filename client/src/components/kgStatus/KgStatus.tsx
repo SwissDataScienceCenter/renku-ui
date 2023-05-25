@@ -87,8 +87,8 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
     );
   } else if (!data?.activated) {
     const projectUrl = Url.get(Url.pages.project, {
-      namespace: "",
-      path: props.projectPath,
+      namespace: props.projectNamespace,
+      path: props.projectName,
     });
     const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace: props.projectNamespace,
