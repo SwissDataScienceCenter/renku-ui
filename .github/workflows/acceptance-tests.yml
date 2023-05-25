@@ -52,7 +52,7 @@ jobs:
     environment:
       name: renku-ci-ui-${{ github.event.number }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Find deplyoment url
         uses: peter-evans/find-comment@v1
         id: deploymentUrlMessage
