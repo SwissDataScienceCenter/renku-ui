@@ -40,7 +40,7 @@ jobs:
       extra-values: ${{ steps.deploy-comment.outputs.extra-values}}
     steps:
       - id: deploy-comment
-        uses: SwissDataScienceCenter/renku-actions/check-pr-description@v1.4.4
+        uses: SwissDataScienceCenter/renku-actions/check-pr-description@leafty-patch-1
         with:
           string: /deploy
           pr_ref: ${{ github.event.number }}
