@@ -4,11 +4,7 @@ import { RootStateOrAny, useSelector } from "react-redux";
 import { ACCESS_LEVELS } from "../../../api-client";
 import DatasetView from "../../../dataset/Dataset.present";
 import { Url } from "../../../utils/helpers/url";
-
-import {
-  useGetDatasetFilesQuery,
-  useGetDatasetKgQuery,
-} from "../projectCoreApi";
+import { useGetDatasetFilesQuery } from "../projectCoreApi";
 import type {
   DatasetCore,
   DatasetKg,
@@ -16,6 +12,7 @@ import type {
   StateModelProject,
 } from "../Project.d";
 import { useProjectSelector } from "../projectSlice";
+import { useGetDatasetKgQuery } from "../projectKgApi";
 
 type IDatasetCoordinator = {
   fetchDataset: (id: string, datasets: DatasetCore[], fetchKG: boolean) => void;

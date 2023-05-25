@@ -293,7 +293,7 @@ describe("getSearchParams function", () => {
   beforeAll(() => {
     // ? This works fine locally, but it fails in the GitHub actions where the workaround
     // ? is to delete global.window.location each time.
-    global.window = Object.create(window);
+    global.window ??= Object.create(window);
     Object.defineProperty(window, "location", {
       value: { href: "/", search: "" },
     });

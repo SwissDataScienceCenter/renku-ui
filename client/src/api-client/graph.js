@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-// ! TODO: remove here
 function addGraphMethods(client) {
   /**
    * Get the lineage nodes and edges

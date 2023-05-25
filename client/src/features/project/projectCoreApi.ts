@@ -18,10 +18,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import type {
-  DatasetKg,
   GetDatasetFilesParams,
   GetDatasetFilesResponse,
-  GetDatasetKgParams,
   IDatasetFiles,
   MigrationStartBody,
   MigrationStartParams,
@@ -75,21 +73,6 @@ export const projectCoreApi = createApi({
           atLocation: file.path,
         }));
         return { hasPart: files };
-      },
-    }),
-    // ! TODO: move this to KG API
-    getDatasetKg: builder.query<DatasetKg, GetDatasetKgParams>({
-      query: (params: GetDatasetKgParams) => {
-        const headers = {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest",
-        };
-        return {
-          url: `/kg/datasets/${params.id}`,
-          method: "GET",
-          headers: new Headers(headers),
-        };
       },
     }),
     getMigrationStatus: builder.query<MigrationStatus, MigrationStatusParams>({
@@ -187,7 +170,6 @@ export const projectCoreApi = createApi({
 
 export const {
   useGetDatasetFilesQuery,
-  useGetDatasetKgQuery,
   useGetMigrationStatusQuery,
   useStartMigrationMutation,
 } = projectCoreApi;

@@ -42,9 +42,9 @@ export function cleanVersion(version?: string, excludeRc?: boolean): string {
   }
   const regex = /dev\d+\+/;
   if (regex.test(cleanedVersion)) {
-    // ! return version.substring(0, cleanedVersion.indexOf(".dev")) + "-dev";
-    // ! Use this for development on PR deployments
-    return cleanedVersion.substring(0, cleanedVersion.indexOf(".dev"));
+    return version.substring(0, cleanedVersion.indexOf(".dev")) + "-dev";
+    // ? Use the following when developing on PR deployments
+    // ? return cleanedVersion.substring(0, cleanedVersion.indexOf(".dev"));
   }
   return cleanedVersion;
 }
@@ -139,8 +139,8 @@ export function getMigrationLevel(
  * based on migration status and core service availability
  */
 export function getRenkuLevel(
-  migrationStatus: MigrationStatus | undefined,
-  backendAvailable: boolean
+  migrationStatus?: MigrationStatus,
+  backendAvailable?: boolean
 ): RenkuMigrationLevel | null {
   let automated = false;
   if (!migrationStatus) return null;
@@ -160,9 +160,9 @@ export function getRenkuLevel(
   if (dockerfileRenku?.automated_dockerfile_update) automated = true;
   // level 5 && 4
   if (coreCompatibility?.migration_required) {
-    if (backendAvailable !== false)
-      return { automated, level: ProjectMigrationLevel.Level4 };
-    return { automated, level: ProjectMigrationLevel.Level5 };
+    if (backendAvailable === false)
+      return { automated, level: ProjectMigrationLevel.Level5 };
+    return { automated, level: ProjectMigrationLevel.Level4 };
   }
   // level 3 && 1
   if (!coreCompatibility?.migration_required) {

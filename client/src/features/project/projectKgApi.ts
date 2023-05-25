@@ -19,6 +19,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
 import {
+  DatasetKg,
+  GetDatasetKgParams,
   ProjectActivateIndexingResponse,
   ProjectIndexingStatusResponse,
 } from "./Project";
@@ -48,6 +50,20 @@ export const projectKgApi = createApi({
         ],
       }
     ),
+    getDatasetKg: builder.query<DatasetKg, GetDatasetKgParams>({
+      query: (params: GetDatasetKgParams) => {
+        const headers = {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        };
+        return {
+          url: `datasets/${params.id}`,
+          method: "GET",
+          headers: new Headers(headers),
+        };
+      },
+    }),
     getProjectIndexingStatus: builder.query<
       ProjectIndexingStatusResponse,
       number
@@ -77,5 +93,8 @@ export const projectKgApi = createApi({
   }),
 });
 
-export const { useActivateIndexingMutation, useGetProjectIndexingStatusQuery } =
-  projectKgApi;
+export const {
+  useActivateIndexingMutation,
+  useGetDatasetKgQuery,
+  useGetProjectIndexingStatusQuery,
+} = projectKgApi;

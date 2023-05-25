@@ -24,11 +24,12 @@
  */
 
 import React from "react";
+import { Provider } from "react-redux";
 import { createRoot } from "react-dom/client";
 import { createMemoryHistory } from "history";
 import { act } from "react-test-renderer";
-
 import { MemoryRouter } from "react-router-dom";
+
 import { ACCESS_LEVELS, testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
 import ChangeDataset from "./change/index";
@@ -67,18 +68,20 @@ describe("rendering", () => {
     const root = createRoot(div);
     await act(async () => {
       root.render(
-        <MemoryRouter>
-          <ChangeDataset
-            client={client}
-            edit={false}
-            location={fakeHistory}
-            maintainer={ACCESS_LEVELS.maintainer}
-            migration={migration}
-            model={model}
-            params={{ UPLOAD_THRESHOLD: { soft: 104857600 } }}
-            user={loggedUser}
-          />
-        </MemoryRouter>
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <ChangeDataset
+              client={client}
+              edit={false}
+              location={fakeHistory}
+              maintainer={ACCESS_LEVELS.maintainer}
+              migration={migration}
+              model={model}
+              params={{ UPLOAD_THRESHOLD: { soft: 104857600 } }}
+              user={loggedUser}
+            />
+          </MemoryRouter>
+        </Provider>
       );
     });
   });
@@ -89,17 +92,19 @@ describe("rendering", () => {
     const root = createRoot(div);
     await act(async () => {
       root.render(
-        <MemoryRouter>
-          <DatasetImport
-            client={client}
-            edit={false}
-            location={fakeHistory}
-            maintainer={ACCESS_LEVELS.maintainer}
-            migration={migration}
-            model={model}
-            user={loggedUser}
-          />
-        </MemoryRouter>
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <DatasetImport
+              client={client}
+              edit={false}
+              location={fakeHistory}
+              maintainer={ACCESS_LEVELS.maintainer}
+              migration={migration}
+              model={model}
+              user={loggedUser}
+            />
+          </MemoryRouter>
+        </Provider>
       );
     });
   });

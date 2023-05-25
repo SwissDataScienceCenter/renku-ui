@@ -37,12 +37,3 @@ export enum ProjectMigrationLevel {
   LevelE = "error", // ? danger
   LevelX = "x-unknown", // ? danger
 }
-
-// ! Double check if it's actually used
-export enum ProjectIndexingLevel {
-  Level1 = "1-all-good", // ? success
-  Level2 = "2-some-info-no-update", // ? info
-  Level5 = "5-required-update", // ? danger
-  LevelE = "error", // ? danger
-  LevelX = "x-unknown", // ? danger
-}
