@@ -1051,7 +1051,7 @@ const PinnedImageOption = ({
           )}
         </>
       ) : (
-        <InputGroup className="input-left">
+        <InputGroup className={cx((isEditing || devAccess) && "input-left")}>
           <Input
             value={selectedPinnedImage}
             onChange={onChangeInput}
@@ -1061,11 +1061,14 @@ const PinnedImageOption = ({
             <>
               <Button
                 id="project-settings-sessions-advanced-image-confirm"
-                className="btn btn-outline-rk-green m-0"
+                className={cx(
+                  styles.pinnedImageButton,
+                  "btn btn-outline-rk-green m-0"
+                )}
                 disabled={disabled}
                 onClick={onSave}
               >
-                <FontAwesomeIcon icon={faCheck} />
+                <FontAwesomeIcon icon={faCheck} fixedWidth />
               </Button>
               <UncontrolledTooltip
                 placement="top"
@@ -1075,11 +1078,14 @@ const PinnedImageOption = ({
               </UncontrolledTooltip>
               <Button
                 id="project-settings-sessions-advanced-image-back"
-                className="btn btn-outline-rk-green m-0"
+                className={cx(
+                  styles.pinnedImageButton,
+                  "btn btn-outline-rk-green m-0"
+                )}
                 disabled={disabled}
                 onClick={toggleIsEditing}
               >
-                <FontAwesomeIcon icon={faTrash} />
+                <FontAwesomeIcon icon={faTrash} fixedWidth />
               </Button>
               <UncontrolledTooltip
                 placement="top"
@@ -1093,11 +1099,14 @@ const PinnedImageOption = ({
             <>
               <Button
                 id="project-settings-sessions-advanced-image-edit"
-                className="btn btn-outline-rk-green m-0"
+                className={cx(
+                  styles.pinnedImageButton,
+                  "btn btn-outline-rk-green m-0"
+                )}
                 disabled={disabled}
                 onClick={toggleIsEditing}
               >
-                <FontAwesomeIcon icon={faEdit} />
+                <FontAwesomeIcon icon={faEdit} fixedWidth />
               </Button>
               <UncontrolledTooltip
                 placement="top"
@@ -1107,11 +1116,14 @@ const PinnedImageOption = ({
               </UncontrolledTooltip>
               <Button
                 id="project-settings-sessions-advanced-image-reset"
-                className="btn btn-outline-rk-green m-0"
+                className={cx(
+                  styles.pinnedImageButton,
+                  "btn btn-outline-rk-green m-0"
+                )}
                 disabled={disabled}
                 onClick={onResetValue}
               >
-                <FontAwesomeIcon icon={faTimesCircle} />
+                <FontAwesomeIcon icon={faTimesCircle} fixedWidth />
               </Button>
               <UncontrolledTooltip
                 placement="top"
@@ -1242,14 +1254,18 @@ const UnknownOption = ({
 
   return (
     <FormGroup>
-      <InputGroup>
-        <InputGroupText className="input-left">{shortKey}</InputGroupText>
-        <Input value={optionValue || "<empty>"} disabled />
+      <InputGroup className={styles.unknownOptionGroup}>
+        <InputGroupText className="rounded-start">{shortKey}</InputGroupText>
+        <Input
+          className={cx(!devAccess && "rounded-end")}
+          value={optionValue || "<empty>"}
+          disabled
+        />
         {devAccess && (
           <>
             <Button
               id={`project-settings-unknown-${safeShortKey}-reset`}
-              className="btn btn-outline-rk-green m-0"
+              className="btn btn-outline-rk-green m-0 rounded-end"
               disabled={disabled}
               onClick={onResetValue}
             >
