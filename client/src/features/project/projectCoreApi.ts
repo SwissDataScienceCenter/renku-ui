@@ -184,17 +184,7 @@ export const projectCoreApi = createApi({
       },
       transformResponse: (response: GetConfigRawResponse) =>
         transformGetConfigRawResponse(response),
-      transformErrorResponse: (error): FetchBaseQueryError => {
-        const data = error.data as any;
-        if (!data.error || !data.error.code) {
-          return error;
-        }
-        return {
-          status: "CUSTOM_ERROR",
-          error: "renku-core error",
-          data: data.error,
-        };
-      },
+      transformErrorResponse: (error) => transformRenkuCoreErrorResponse(error),
       providesTags: (_result, _error, arg) => [
         { type: "ProjectConfig", id: arg.projectRepositoryUrl },
       ],
@@ -221,17 +211,7 @@ export const projectCoreApi = createApi({
           update: result?.config ?? {},
         };
       },
-      transformErrorResponse: (error): FetchBaseQueryError => {
-        const data = error.data as any;
-        if (!data.error || !data.error.code) {
-          return error;
-        }
-        return {
-          status: "CUSTOM_ERROR",
-          error: "renku-core error",
-          data: data.error,
-        };
-      },
+      transformErrorResponse: (error) => transformRenkuCoreErrorResponse(error),
       invalidatesTags: (_result, _error, arg) => [
         { type: "ProjectConfig", id: arg.projectRepositoryUrl },
       ],
@@ -325,3 +305,17 @@ const safeParseInt = (str: string | undefined): number | undefined => {
 };
 
 const SESSION_CONFIG_PREFIX = "interactive";
+
+const transformRenkuCoreErrorResponse = (
+  error: FetchBaseQueryError
+): FetchBaseQueryError => {
+  const data = error.data as any;
+  if (!data.error || !data.error.code) {
+    return error;
+  }
+  return {
+    status: "CUSTOM_ERROR",
+    error: "renku-core error",
+    data: data.error,
+  };
+};
