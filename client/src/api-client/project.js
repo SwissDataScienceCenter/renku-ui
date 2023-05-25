@@ -380,7 +380,7 @@ function addProjectMethods(client) {
       const resp = await store.dispatch(
         projectKgApi.endpoints.activateIndexing.initiate(forkedProject.data.id)
       );
-      webhook = (resp?.data?.message ?? "").includes("created") ? true : false;
+      webhook = (resp?.data?.message ?? "").includes("created");
     } catch (error) {
       webhook = false;
     }

@@ -319,7 +319,7 @@ function App(props) {
   const [notifications, setNotifications] = useState(null);
 
   // fetch backend components versions
-  versionsApi.useGetCoreVersionsQuery(null, { pollingInterval: 20000 });
+  versionsApi.useGetCoreVersionsQuery(null, { pollingInterval: 20_000 });
   versionsApi.useGetNotebooksVersionsQuery();
 
   useEffect(() => {

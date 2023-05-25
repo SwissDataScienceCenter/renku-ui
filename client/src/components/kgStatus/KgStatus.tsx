@@ -43,12 +43,11 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
   const SHORT_POLLING = 10 * 1000;
 
   // Set up the query
-  const [pollingInterval, setPollingInterval] = useState(0);
-  const skip = !props.projectId ? true : false;
+  const [pollingInterval, setPollingInterval] = useState(NO_POLLING);
   const { data, isError, isFetching, isLoading, isUninitialized, refetch } =
     projectKgApi.useGetProjectIndexingStatusQuery(props.projectId, {
       refetchOnMountOrArgChange: 20,
-      skip,
+      skip: !props.projectId,
       pollingInterval,
     });
 
@@ -135,5 +134,5 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
       </InfoAlert>
     );
   }
-  return props.children;
+  return <>{props.children}</>;
 }

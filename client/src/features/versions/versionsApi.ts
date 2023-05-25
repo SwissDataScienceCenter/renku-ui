@@ -32,11 +32,9 @@ export const versionsApi = createApi({
   keepUnusedDataFor: 0,
   endpoints: (builder) => ({
     getCoreVersions: builder.query<CoreVersions, void>({
-      query: () => {
-        return {
-          url: "renku/version",
-        };
-      },
+      query: () => ({
+        url: "renku/version",
+      }),
       transformResponse: (response: CoreVersionResponse) => {
         const data: CoreVersions = {
           name: response.name,
