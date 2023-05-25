@@ -183,7 +183,6 @@ function ProjectDatasetsView(props: any) {
   }, [coreSupport.computed, props.datasets.core]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (coreSupport.computed && !coreSupport.backendAvailable) {
-    console.log(coreSupport);
     const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace: props.metadata.namespace,
       path: props.metadata.path,

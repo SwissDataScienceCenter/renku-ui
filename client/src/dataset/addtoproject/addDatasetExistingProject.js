@@ -25,7 +25,6 @@ import { ACCESS_LEVELS } from "../../api-client";
 import SelectAutosuggestInput from "../../components/SelectAutosuggestInput";
 import { Loader } from "../../components/Loader";
 import { groupBy } from "../../utils/helpers/HelperFunctions";
-import { useGetMemberProjectsQuery } from "../../features/projects/projectsApi";
 import useGetUserProjects from "../../utils/customHooks/UseGetProjects";
 
 /**
