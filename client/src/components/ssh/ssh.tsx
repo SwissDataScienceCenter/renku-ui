@@ -141,7 +141,7 @@ function SshModal() {
       </>
     );
   } else if (!sshCoreSupport) {
-    const updateUrl = Url.get(Url.pages.project.overview.status, {
+    const updateUrl = Url.get(Url.pages.project.settings, {
       namespace: "",
       path: displayModal.projectPath,
     });
@@ -157,7 +157,7 @@ function SshModal() {
         <p>
           To update your project, go to{" "}
           <Link to={updateUrl} onClick={() => closeModal()}>
-            Overview Status
+            Project settings
           </Link>{" "}
           and update the Template Version. Then, click again on the{" "}
           <i>Connect with SSH</i> button to view the commands to connect

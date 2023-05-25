@@ -438,15 +438,6 @@ const Url = {
             "/projects/group/subgroup/path/overview/commits",
           ]
         ),
-        status: new UrlRule(
-          projectPageUrlBuilder("/overview/status"),
-          ["namespace", "path"],
-          null,
-          [
-            "/projects/namespace/path/overview/status",
-            "/projects/group/subgroup/path/overview/status",
-          ]
-        ),
       },
     },
     sessions: {
