@@ -16,7 +16,7 @@ describe("rendering", () => {
   const fakeLocation = { pathname: "" };
   const useDispatchMock = jest.spyOn(reactRedux, "useDispatch");
 
-  beforeEach(async () => {
+  beforeEach(() => {
     useDispatchMock.mockClear();
   });
 
