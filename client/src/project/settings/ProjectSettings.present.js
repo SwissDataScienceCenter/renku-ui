@@ -73,7 +73,10 @@ import { ProjectAvatarEdit, ProjectTags } from "../shared";
 
 function ProjectSettingsNav(props) {
   return (
-    <Nav className="flex-column nav-light nav-pills-underline">
+    <Nav
+      className="flex-column nav-light nav-pills-underline"
+      data-cy="settings-navbar"
+    >
       <NavItem>
         <RenkuNavLink to={props.settingsUrl} title="General" />
       </NavItem>

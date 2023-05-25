@@ -29,7 +29,7 @@ export const versionsApi = createApi({
   reducerPath: "versions",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/" }),
   tagTypes: ["versions"],
-  keepUnusedDataFor: 0,
+  keepUnusedDataFor: 60,
   endpoints: (builder) => ({
     getCoreVersions: builder.query<CoreVersions, void>({
       query: () => ({

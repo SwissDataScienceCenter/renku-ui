@@ -75,6 +75,8 @@ import {
 } from "../features/project";
 import { CloneButton } from "./clone/CloneButton";
 import { useProjectSelector } from "../features/project/projectSlice";
+import { useGetMigrationStatusQuery } from "../features/project/projectCoreApi";
+import { useGetCoreVersionsQuery } from "../features/versions/versionsApi";
 
 import "./Project.css";
 
@@ -1114,7 +1116,7 @@ function ProjectSettings(props) {
         <Col key="nav" sm={12} md={2}>
           <ProjectSettingsNav {...props} />
         </Col>
-        <Col key="content" sm={12} md={10}>
+        <Col key="content" sm={12} md={10} data-cy="settings-container">
           <Switch>
             <Route
               exact
@@ -1183,6 +1185,11 @@ class NotFoundInsideProject extends Component {
 
 function ProjectView(props) {
   const available = props.metadata ? props.metadata.exists : null;
+  const gitUrl = props.metadata?.externalUrl ?? undefined;
+  const branch = props.metadata?.defaultBranch ?? undefined;
+  // ? fetch core versions and migration status cause we need them for projectSlice
+  useGetMigrationStatusQuery({ gitUrl, branch }, { skip: !gitUrl || !branch });
+  useGetCoreVersionsQuery();
 
   if (props.namespace && !props.projectPathWithNamespace) {
     return (

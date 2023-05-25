@@ -22,11 +22,11 @@
             "project_metadata_version": null,
             "type": "detail"
           },
-          "core_renku_version": "2.3.2.dev39+gf89f481d",
+          "core_renku_version": "2.3.2",
           "dockerfile_renku_status": {
             "automated_dockerfile_update": false,
             "dockerfile_renku_version": "unknown",
-            "latest_renku_version": "2.3.2.dev39+gf89f481d",
+            "latest_renku_version": "2.3.2",
             "newer_renku_available": false,
             "type": "detail"
           },
@@ -68,11 +68,11 @@
             "project_metadata_version": "5",
             "type": "detail"
           },
-          "core_renku_version": "2.3.2.dev39+gf89f481d",
+          "core_renku_version": "2.3.2",
           "dockerfile_renku_status": {
             "automated_dockerfile_update": false,
             "dockerfile_renku_version": null,
-            "latest_renku_version": "2.3.2.dev39+gf89f481d",
+            "latest_renku_version": "2.3.2",
             "newer_renku_available": null,
             "type": "detail"
           },
@@ -117,11 +117,11 @@
             "project_metadata_version": "8",
             "type": "detail"
           },
-          "core_renku_version": "2.3.2.dev39+gf89f481d",
+          "core_renku_version": "2.3.2",
           "dockerfile_renku_status": {
             "automated_dockerfile_update": true,
             "dockerfile_renku_version": "0.16.2",
-            "latest_renku_version": "2.3.2.dev39+gf89f481d",
+            "latest_renku_version": "2.3.2",
             "newer_renku_available": true,
             "type": "detail"
           },
@@ -166,11 +166,11 @@
             "project_metadata_version": "9",
             "type": "detail"
           },
-          "core_renku_version": "2.3.2.dev39+gf89f481d",
+          "core_renku_version": "2.3.2",
           "dockerfile_renku_status": {
             "automated_dockerfile_update": true,
             "dockerfile_renku_version": "1.9.3",
-            "latest_renku_version": "2.3.2.dev39+gf89f481d",
+            "latest_renku_version": "2.3.2",
             "newer_renku_available": true,
             "type": "detail"
           },
@@ -215,11 +215,11 @@
             "project_metadata_version": "10",
             "type": "detail"
           },
-          "core_renku_version": "2.3.2.dev39+gf89f481d",
+          "core_renku_version": "2.3.2",
           "dockerfile_renku_status": {
             "automated_dockerfile_update": true,
             "dockerfile_renku_version": "2.0.1",
-            "latest_renku_version": "2.3.2.dev39+gf89f481d",
+            "latest_renku_version": "2.3.2",
             "newer_renku_available": true,
             "type": "detail"
           },
@@ -261,11 +261,11 @@
             "project_metadata_version": "10",
             "type": "detail"
           },
-          "core_renku_version": "2.3.2.dev39+gf89f481d",
+          "core_renku_version": "2.3.2",
           "dockerfile_renku_status": {
             "automated_dockerfile_update": true,
             "dockerfile_renku_version": "2.3.0",
-            "latest_renku_version": "2.3.2.dev39+gf89f481d",
+            "latest_renku_version": "2.3.2",
             "newer_renku_available": true,
             "type": "detail"
           },
@@ -307,11 +307,11 @@
             "project_metadata_version": "10",
             "type": "detail"
           },
-          "core_renku_version": "2.3.2.dev39+gf89f481d",
+          "core_renku_version": "2.3.2",
           "dockerfile_renku_status": {
             "automated_dockerfile_update": true,
             "dockerfile_renku_version": "2.3.2",
-            "latest_renku_version": "2.3.2.dev39+gf89f481d",
+            "latest_renku_version": "2.3.2",
             "newer_renku_available": false,
             "type": "detail"
           },
@@ -353,11 +353,11 @@
             "project_metadata_version": "10",
             "type": "detail"
           },
-          "core_renku_version": "2.3.2.dev39+gf89f481d",
+          "core_renku_version": "2.3.2",
           "dockerfile_renku_status": {
             "automated_dockerfile_update": true,
             "dockerfile_renku_version": "2.3.2",
-            "latest_renku_version": "2.3.2.dev39+gf89f481d",
+            "latest_renku_version": "2.3.2",
             "newer_renku_available": false,
             "type": "detail"
           },
@@ -399,11 +399,11 @@
             "project_metadata_version": "10",
             "type": "detail"
           },
-          "core_renku_version": "2.3.2.dev39+gf89f481d",
+          "core_renku_version": "2.3.2",
           "dockerfile_renku_status": {
             "automated_dockerfile_update": true,
             "dockerfile_renku_version": "2.3.2",
-            "latest_renku_version": "2.3.2.dev39+gf89f481d",
+            "latest_renku_version": "2.3.2",
             "newer_renku_available": false,
             "type": "detail"
           },

@@ -69,19 +69,23 @@ function ProjectSettingsGeneral({
   projectId,
 }: ProjectSettingsGeneralProps) {
   return (
-    <Card className="border-rk-light mb-4">
+    <Card className="border-rk-light mb-4" data-cy="project-settings-general">
       <CardBody className="py-2">
         <Row>
           <Col>
-            <ProjectMigrationStatus
-              branch={branch}
-              gitUrl={gitUrl}
-              isMaintainer={isMaintainer}
-            />
-            <ProjectKnowledgeGraph
-              projectId={projectId}
-              isMaintainer={isMaintainer}
-            />
+            <div data-cy="project-settings-migration-status">
+              <ProjectMigrationStatus
+                branch={branch}
+                gitUrl={gitUrl}
+                isMaintainer={isMaintainer}
+              />
+            </div>
+            <div data-cy="project-settings-knowledge-graph">
+              <ProjectKnowledgeGraph
+                projectId={projectId}
+                isMaintainer={isMaintainer}
+              />
+            </div>
           </Col>
         </Row>
       </CardBody>
