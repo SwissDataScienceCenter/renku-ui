@@ -52,7 +52,7 @@ import ProjectIdentifier from "./components/ProjectIdentifier";
 import Visibility from "./components/Visibility";
 import TemplateSource from "./components/TemplateSource";
 import UserTemplate, { ErrorTemplateFeedback } from "./components/UserTemplate";
-import { Template } from "./components/Template2";
+import { Template } from "./components/Template";
 import TemplateVariables from "./components/TemplateVariables";
 import { FormErrors, FormWarnings } from "./components/FormValidations";
 import SubmitFormButton from "./components/SubmitFormButton";
