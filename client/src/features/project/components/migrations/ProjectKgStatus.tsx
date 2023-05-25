@@ -46,7 +46,7 @@ export function ProjectKnowledgeGraph({
   isMaintainer,
   projectId,
 }: ProjectKnowledgeGraphProps) {
-  const LONG_POLLING = 2 * 2.6 * 1000;
+  const LONG_POLLING = 3 * 60 * 1000;
   const NO_POLLING = 0;
   const SHORT_POLLING = 5 * 1000;
 
