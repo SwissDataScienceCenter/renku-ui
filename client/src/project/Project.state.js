@@ -100,15 +100,16 @@ const DatasetsMixin = {
         this.setObject({ datasets: updatedState });
       });
   },
-  fetchProjectDatasets(client, forceReFetch) {
+  fetchProjectDatasets(client, forceReFetch, versionUrl) {
+    if (!versionUrl) return false;
     let core = this.get("datasets.core");
     if (core === SpecialPropVal.UPDATING) return;
     if (core.datasets && core.error == null && !forceReFetch) return core;
     this.setUpdating({ datasets: { core: true } });
     // ! TODO get versionUrl as param
-    const migration = this.model.get("migration.core");
-    if (migration.backendAvailable === false) return false;
-    const versionUrl = migration.versionUrl;
+    // const migration = this.model.get("migration.core");
+    // if (migration.backendAvailable === false) return false;
+    // const versionUrl = migration.versionUrl;
     const gitUrl = this.get("metadata.httpUrl");
     return client
       .listProjectDatasetsFromCoreService(gitUrl, versionUrl)

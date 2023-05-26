@@ -49,6 +49,7 @@ describe("UrlRule private class", () => {
     expect(() => new UrlRule(() => "/", ["input1", 21])).toThrow(
       "<required> parameter must contain only strings"
     );
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     rule = new UrlRule((data) => "/", ["input1", "input2"]);
     expect(rule.required).toBeInstanceOf(Array);
     expect(rule.required).toHaveLength(2);
@@ -63,6 +64,7 @@ describe("UrlRule private class", () => {
       () => true
     );
     expect(rule.validation).toBeInstanceOf(Function);
+    /* eslint-enable @typescript-eslint/no-unused-vars */
 
     // examples
     expect(() => new UrlRule(() => "/", [], null, "wrong_type")).toThrow(

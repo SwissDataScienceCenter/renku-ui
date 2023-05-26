@@ -148,7 +148,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       result = "projects/change-visibility.json"
     ) {
       const fixture = this.useMockedData ? { fixture: result } : undefined;
-      cy.intercept("/ui-server/api/projects/*/graph/webhooks", {
+      cy.intercept("/ui-server/api/kg/webhooks/projects/*/webhooks", {
         body: { message: "Hook created" },
       });
       cy.intercept(
@@ -258,7 +258,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         projectCommitsName,
         readmeName,
       } = names;
-      const { projectReadmeCommits, validationName } = names;
+      const { projectReadmeCommits } = names;
       cy.intercept(
         "/ui-server/api/projects/*/repository/files/README.md/raw?ref=master",
         { fixture: "project/test-project-readme.md" }
@@ -275,9 +275,6 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         "/ui-server/api/projects/*/repository/branches?per_page=100&page=1",
         { fixture: "project/test-project-branches.json" }
       ).as(projectBranchesName);
-      cy.intercept("/ui-server/api/projects/*/graph/webhooks/validation", {
-        body: { message: "Hook valid" },
-      }).as(validationName);
       cy.intercept("/ui-server/api/kg/webhooks/projects/*/events/status", {
         fixture: "project/kgStatus/kgStatusIndexing.json",
       });
@@ -366,7 +363,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       const fixture = this.useMockedData
         ? { fixture: result, delay: 100 }
         : undefined;
-      cy.intercept("/ui-server/api/projects/*/graph/webhooks", {
+      cy.intercept("/ui-server/api/kg/webhooks/projects/*/webhooks", {
         body: { message: "Hook created" },
       });
       cy.intercept(

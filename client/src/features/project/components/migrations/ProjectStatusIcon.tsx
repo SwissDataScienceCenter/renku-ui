@@ -137,8 +137,8 @@ function ProjectStatusElement({
 }: ProjectStatusElementProps) {
   const localId = "project-status-icon";
   return (
-    <div className="d-inline-block" data-cy={`${localId}-element`}>
-      <Link className={`me-2 small text-${color}`} id={localId} to={linkUrl}>
+    <div className="d-inline-block me-2" data-cy={`${localId}-element`}>
+      <Link className={`small text-${color}`} id={localId} to={linkUrl}>
         <FontAwesomeIcon color={color} icon={icon} />
       </Link>
       <UncontrolledTooltip placement="top" target={localId}>

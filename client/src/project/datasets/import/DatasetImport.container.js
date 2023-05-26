@@ -47,7 +47,7 @@ function ImportDataset(props) {
   };
 
   const redirectUser = () => {
-    props.fetchDatasets(true);
+    props.fetchDatasets(true, coreSupport.versionUrl);
     props.history.push({
       //we should do the redirect to the new dataset
       //but for this we need the dataset name in the response of the dataset.import operation :(

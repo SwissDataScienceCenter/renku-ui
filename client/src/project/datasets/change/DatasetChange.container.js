@@ -188,7 +188,7 @@ function ChangeDataset(props) {
   const redirectAfterSuccess = (interval, datasetId, handlers) => {
     handlers.setSubmitLoader({ value: false, text: "" });
     if (interval !== undefined) clearInterval(interval);
-    props.fetchDatasets(true);
+    props.fetchDatasets(true, versionUrl);
     handlers.removeDraft();
     props.history.push({
       pathname: `/projects/${props.projectPathWithNamespace}/datasets/${datasetId}/`,
@@ -197,7 +197,7 @@ function ChangeDataset(props) {
 
   const redirectAfterAddFilesOnCreate = (datasetId, handlers) => {
     handlers.setSubmitLoader({ value: false, text: "" });
-    props.fetchDatasets(true);
+    props.fetchDatasets(true, versionUrl);
     handlers.removeDraft();
     props.history.push({
       pathname: `/projects/${props.projectPathWithNamespace}/datasets/${datasetId}/`,

@@ -1187,9 +1187,14 @@ function ProjectView(props) {
   const available = props.metadata ? props.metadata.exists : null;
   const gitUrl = props.metadata?.externalUrl ?? undefined;
   const branch = props.metadata?.defaultBranch ?? undefined;
-  // ? fetch core versions and migration status cause we need them for projectSlice
+
+  // ? fetch core versions and migration status to compute projectSlice and use useProjectSelector
   useGetMigrationStatusQuery({ gitUrl, branch }, { skip: !gitUrl || !branch });
   useGetCoreVersionsQuery();
+  const coreSupport = useProjectSelector((p) => p.migration);
+  if (props.datasets?.core?.datasets === null && coreSupport.backendAvailable) {
+    props.fetchDatasets(false, coreSupport.versionUrl);
+  }
 
   if (props.namespace && !props.projectPathWithNamespace) {
     return (

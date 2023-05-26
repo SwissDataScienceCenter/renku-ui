@@ -179,8 +179,11 @@ function ProjectDatasetsView(props: any) {
     if (datasetsLoading || !coreSupport.computed) return;
 
     if (props.datasets.core.datasets === null)
-      props.fetchDatasets(props.location.state && props.location.state.reload);
-  }, [coreSupport.computed, props.datasets.core]); // eslint-disable-line react-hooks/exhaustive-deps
+      props.fetchDatasets(
+        props.location.state && props.location.state.reload,
+        coreSupport.versionUrl
+      );
+  }, [coreSupport.computed, coreSupport.versionUrl, props.datasets.core]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (coreSupport.computed && !coreSupport.backendAvailable) {
     const settingsUrl = Url.get(Url.pages.project.settings, {

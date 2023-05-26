@@ -312,10 +312,11 @@ class View extends Component {
   async setProjectOpenFolder(filePath) {
     this.projectCoordinator.setProjectOpenFolder(this.props.client, filePath);
   }
-  async fetchProjectDatasets(forceReFetch) {
+  async fetchProjectDatasets(forceReFetch, versionUrl) {
     return this.projectCoordinator.fetchProjectDatasets(
       this.props.client,
-      forceReFetch
+      forceReFetch,
+      versionUrl
     );
   }
   async fetchProjectDatasetsFromKg() {
@@ -346,7 +347,7 @@ class View extends Component {
 
     if (projectData) {
       // Check the supported core versions
-      await this.fetchProjectDatasets();
+      // await this.fetchProjectDatasets(null, "/10");
       await this.fetchProjectLockStatus();
     }
   }
@@ -453,9 +454,9 @@ class View extends Component {
     fetchFiles: () => {
       this.fetchProjectFilesTree();
     },
-    fetchDatasets: async (forceReFetch) => {
+    fetchDatasets: async (forceReFetch, versionUrl) => {
       this.fetchProjectDatasetsFromKg();
-      await this.fetchProjectDatasets(forceReFetch);
+      await this.fetchProjectDatasets(forceReFetch, versionUrl);
       this.fetchProjectLockStatus();
     },
     setOpenFolder: (filePath) => {

@@ -147,10 +147,7 @@ describe("display a project", () => {
 
   it("displays lock correctly", () => {
     fixtures.projectLockStatus({ locked: true });
-    cy.get_cy("project-navbar")
-      .contains("a", "Settings")
-      .should("exist")
-      .click();
+    cy.visit("/projects/e2e/local-test-project/settings");
     cy.get_cy("settings-navbar")
       .contains("a", "Sessions")
       .should("exist")
