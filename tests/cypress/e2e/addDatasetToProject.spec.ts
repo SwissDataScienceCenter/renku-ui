@@ -40,7 +40,7 @@ describe("Add dataset to existing project", () => {
       .cacheProjectList();
     fixtures.interceptMigrationCheck(
       "migrationCheckDatasetProject",
-      "projects/migration-check_43781.json",
+      "project/migrationStatus/level1-all-good.json",
       "*"
     );
     fixtures.importToProject();
@@ -145,7 +145,7 @@ describe("Add dataset to new project", () => {
       .cacheProjectList();
     fixtures.interceptMigrationCheck(
       "migrationCheckDatasetProject",
-      "projects/migration-check_43781.json",
+      "project/migrationStatus/level1-all-good.json",
       "*"
     );
     cy.visit(`datasets/${datasetIdentifier}/add`);
@@ -163,7 +163,7 @@ describe("Add dataset to new project", () => {
   it("valid dataset, successful import", () => {
     fixtures.interceptMigrationCheck(
       "migrationCheckSelectedProject",
-      "projects/migration-check_43781.json",
+      "project/migrationStatus/level1-all-good.json",
       "*"
     );
     fixtures.projectTestContents(undefined, 9);
@@ -195,7 +195,7 @@ describe("Add dataset to new project", () => {
   it("error importing dataset", () => {
     fixtures.interceptMigrationCheck(
       "migrationCheckSelectedProject",
-      "projects/migration-check_43781.json",
+      "project/migrationStatus/level1-all-good.json",
       "*"
     );
     fixtures.importJobError();
@@ -239,7 +239,7 @@ describe("Invalid dataset", () => {
     fixtures.errorProject(pathOrigin).cacheProjectList();
     fixtures.interceptMigrationCheck(
       "migrationCheckDatasetProject",
-      "projects/migration-check_43781.json",
+      "project/migrationStatus/level1-all-good.json",
       "*"
     );
     cy.visit(`datasets/${datasetIdentifier}/add`);

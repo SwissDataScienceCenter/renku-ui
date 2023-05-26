@@ -276,7 +276,7 @@ function KnowledgeGraphDetails({
       const detailsText = (
         <span>
           The Knowledge Graph integration must be activated to use this project
-          from the RenkuLab web interfaces. Otherwise, the functionalities will
+          from the RenkuLab web interface. Otherwise, the functionalities will
           be limited, and the project will not be discoverable from the search
           page. <MoreInfoLink url={titleDocsUrl} />
         </span>

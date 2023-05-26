@@ -206,3 +206,30 @@ export function getTemplateLevel(
 
   return { automated: false, level: ProjectMigrationLevel.LevelX };
 }
+
+/**
+ * Verify whether project can be automatically updated or not.
+ * Pass only 1 argument to check just one section.
+ */
+export function canUpdateProjectAutomatically(
+  renkuMigrationLevel?: RenkuMigrationLevel | null,
+  templateMigrationLevel?: TemplateMigrationLevel | null
+): boolean {
+  if (
+    renkuMigrationLevel &&
+    renkuMigrationLevel.automated &&
+    (renkuMigrationLevel.level === ProjectMigrationLevel.Level3 ||
+      renkuMigrationLevel.level === ProjectMigrationLevel.Level4 ||
+      renkuMigrationLevel.level === ProjectMigrationLevel.Level5)
+  ) {
+    return true;
+  }
+  if (
+    templateMigrationLevel &&
+    templateMigrationLevel.automated &&
+    templateMigrationLevel.level === ProjectMigrationLevel.Level3
+  ) {
+    return true;
+  }
+  return false;
+}

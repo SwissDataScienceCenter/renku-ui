@@ -147,55 +147,16 @@ describe("display a project", () => {
 
   it("displays lock correctly", () => {
     fixtures.projectLockStatus({ locked: true });
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    cy.wait("@getProjectLockStatus");
-    cy.get_cy("project-overview-content")
+    cy.get_cy("project-navbar")
+      .contains("a", "Settings")
+      .should("exist")
+      .click();
+    cy.get_cy("settings-navbar")
+      .contains("a", "Sessions")
+      .should("exist")
+      .click();
+    cy.get_cy("settings-container")
       .contains("project is currently being modified")
-      .should("exist");
-    fixtures.projectLockStatus({ locked: false });
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    cy.wait("@getProjectLockStatus");
-    cy.get_cy("project-overview-content")
-      .contains("project is currently being modified")
-      .should("not.exist");
-  });
-
-  it("displays the project KG status updates", () => {
-    cy.get_cy("project-overview-nav")
-      .contains("a", "Status")
-      .should("exist")
-      .click();
-    cy.url().should(
-      "include",
-      "/projects/e2e/local-test-project/overview/status"
-    );
-    cy.get_cy("project-overview-content")
-      .contains("Knowledge Graph integration is active.")
-      .should("exist");
-    fixtures.getStatusProcessing();
-    cy.get_cy("project-overview-nav")
-      .contains("a", "Status")
-      .should("exist")
-      .click();
-    cy.wait("@getStatusProcessing");
-    cy.get_cy("project-overview-content")
-      .contains("Knowledge Graph integration is active.")
-      .should("not.exist");
-    cy.get_cy("project-overview-content")
-      .contains("Knowledge Graph is building")
-      .should("exist");
-    cy.get_cy("project-overview-content").contains("40%").should("exist");
-    fixtures.getStatusProcessing(true);
-    cy.get_cy("project-overview-nav")
-      .contains("a", "Status")
-      .should("exist")
-      .click();
-    cy.wait("@getStatusProcessing");
-    cy.get_cy("project-overview-content")
-      .contains("Knowledge Graph is building")
-      .should("not.exist");
-    cy.get_cy("project-overview-content")
-      .contains("Knowledge Graph integration is active.")
       .should("exist");
   });
 
@@ -223,14 +184,14 @@ describe("display a project", () => {
   });
 
   it("displays project settings sessions", () => {
-    fixtures.sessionServerOptions();
+    fixtures.sessionServerOptions().projectConfigShow();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
     cy.contains("Number of CPUs").should("be.visible");
   });
 
   it("displays project settings with cloud-storage enabled ", () => {
-    fixtures.sessionServerOptions(true).projectConfigShow();
+    fixtures.projectConfigShow().sessionServerOptions(true);
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
     cy.contains("Number of CPUs").should("be.visible");
@@ -240,7 +201,6 @@ describe("display a project", () => {
     fixtures.sessionServerOptions().projectConfigShow();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
-    cy.wait("@getProjectLockStatus");
     cy.wait("@getProjectConfigShow");
     cy.contains("Number of CPUs").should("be.visible");
     cy.get("button.active").contains("0.5").should("be.visible");
@@ -391,172 +351,5 @@ describe("fork a project", () => {
     cy.get_cy("visibility-private").should("be.enabled");
     cy.get_cy("visibility-internal").should("be.disabled");
     cy.get_cy("visibility-public").should("be.disabled");
-  });
-});
-
-describe("display migration information", () => {
-  const fixtures = new Fixtures(cy);
-
-  beforeEach(() => {
-    fixtures.config().versions().userTest();
-    fixtures.projects().landingUserProjects().projectTest();
-    fixtures.namespaces();
-    cy.visit("/projects/e2e/local-test-project");
-  });
-
-  it("displays up-to-date migration", () => {
-    fixtures.projectMigrationUpToDate();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    // Check that the project up-to-date info is shown
-    cy.contains("This project is using the latest version of renku.").should(
-      "be.visible"
-    );
-  });
-
-  it("displays optional migration", () => {
-    fixtures.projectMigrationOptional();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    // Check that the migration suggestion is shown
-    cy.contains("A new version of renku is available").should("be.visible");
-  });
-
-  it("displays recommended migration", () => {
-    fixtures.projectMigrationRecommended();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    // Check that the migration suggestion is shown
-    cy.contains(
-      "Updating to the latest version of renku is highly recommended."
-    ).should("be.visible");
-  });
-
-  it("displays required migration", () => {
-    fixtures.projectMigrationRequired();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    // Check that the migration suggestion is shown
-    cy.contains("This project is not compatible with the RenkuLab UI").should(
-      "be.visible"
-    );
-  });
-
-  it("displays error on migration", () => {
-    fixtures.projectMigrationError();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    cy.wait("@getMigration");
-    // Check that the project up-to-date info is shown
-    cy.contains("unexpected error while handling project data").should(
-      "be.visible"
-    );
-  });
-
-  it("displays legacy error on migration", () => {
-    fixtures.projectMigrationLegacyError();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    cy.wait("@getMigration");
-    // Check that the project up-to-date info is shown
-    cy.contains("error occurred").should("be.visible");
-    cy.contains("[Show details]").should("be.visible");
-  });
-});
-
-describe("display migration information for anon user", () => {
-  const fixtures = new Fixtures(cy);
-  beforeEach(() => {
-    fixtures.config().versions().userNone();
-    fixtures.projects().landingUserProjects().projectTest();
-    fixtures.projectLockStatus();
-    cy.visit("/projects/e2e/local-test-project");
-  });
-
-  it("displays up-to-date migration", () => {
-    fixtures.projectMigrationUpToDate();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    cy.contains("Project / Latest Renku Version");
-    // Check that the project up-to-date info is not shown
-    cy.contains("This project is using the latest version of renku.").should(
-      "not.exist"
-    );
-  });
-
-  it("displays optional migration", () => {
-    fixtures.projectMigrationOptional();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    // Check that the migration suggestion is not shown
-    cy.contains("Project Renku Version");
-    cy.contains("A new version of renku is available").should("not.exist");
-  });
-
-  it("displays recommended migration", () => {
-    fixtures.projectMigrationRecommended();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    // Check that the migration suggestion is not shown
-    cy.contains("Project Renku Version");
-    cy.contains(
-      "Updating to the latest version of renku is highly recommended."
-    ).should("not.exist");
-  });
-
-  it("displays required migration", () => {
-    fixtures.projectMigrationRequired();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    // Check that the migration suggestion is not shown
-    cy.contains("Project Renku Version");
-    cy.contains("This project is not compatible with the RenkuLab UI").should(
-      "not.exist"
-    );
-  });
-});
-
-describe("display migration information for observer user", () => {
-  const fixtures = new Fixtures(cy);
-  beforeEach(() => {
-    fixtures.config().versions().userTest();
-    fixtures.projects().landingUserProjects().projectTestObserver();
-    fixtures.projectLockStatus();
-    cy.visit("/projects/e2e/local-test-project");
-  });
-
-  it("displays up-to-date migration", () => {
-    fixtures.projectMigrationUpToDate();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    // Check that the project up-to-date info is shown
-    cy.contains("This project is using the latest version of renku.").should(
-      "be.visible"
-    );
-  });
-
-  it("displays optional migration", () => {
-    fixtures.projectMigrationOptional();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    // Check that the migration suggestion is shown
-    cy.contains("A new version of renku is available").should("be.visible");
-    cy.contains("You do not have the required permissions").should(
-      "be.visible"
-    );
-  });
-
-  it("displays recommended migration", () => {
-    fixtures.projectMigrationRecommended();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    cy.wait("@getProjectLockStatus");
-    // Check that the migration suggestion is shown
-    cy.contains(
-      "Updating to the latest version of renku is highly recommended."
-    ).should("be.visible");
-    cy.contains("You do not have the required permissions").should(
-      "be.visible"
-    );
-  });
-
-  it("displays required migration", () => {
-    fixtures.projectMigrationRequired();
-    cy.visit("/projects/e2e/local-test-project/overview/status");
-    cy.wait("@getProjectLockStatus");
-    // Check that the migration suggestion is  shown
-    cy.contains("This project is not compatible with the RenkuLab UI").should(
-      "be.visible"
-    );
-    cy.contains("You do not have the required permissions").should(
-      "be.visible"
-    );
   });
 });

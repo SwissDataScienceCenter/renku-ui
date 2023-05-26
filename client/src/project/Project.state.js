@@ -105,6 +105,7 @@ const DatasetsMixin = {
     if (core === SpecialPropVal.UPDATING) return;
     if (core.datasets && core.error == null && !forceReFetch) return core;
     this.setUpdating({ datasets: { core: true } });
+    // ! TODO get versionUrl as param
     const migration = this.model.get("migration.core");
     if (migration.backendAvailable === false) return false;
     const versionUrl = migration.versionUrl;
@@ -557,10 +558,10 @@ class ProjectCoordinator {
     return null;
   }
 
-  async fetchProjectConfig(repositoryUrl, branch = null) {
+  async fetchProjectConfig(repositoryUrl, versionUrl = "", branch = null) {
     const fetching = this.model.get("config.fetching");
     if (fetching) return false;
-    const versionUrl = this.model.get("migration.core.versionUrl");
+    // const versionUrl = this.model.get("migration.core.versionUrl");
     let configObject = {
       error: { $set: {} },
       fetching: true,

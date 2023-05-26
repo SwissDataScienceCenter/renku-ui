@@ -39,6 +39,7 @@ import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Docs } from "../../../../utils/constants/Docs";
 import {
+  canUpdateProjectAutomatically,
   cleanVersion,
   getCompareUrl,
   getMigrationLevel,
@@ -138,13 +139,22 @@ export function ProjectMigrationStatus({
     // we rely on query and mutation tags to refetch
   };
 
+  const renkuMigrationLevel = getRenkuLevel(data, isSupported);
+  const templateMigrationLevel = getTemplateLevel(data);
+  const automatedUpdatePossible = canUpdateProjectAutomatically(
+    renkuMigrationLevel,
+    templateMigrationLevel
+  );
+
   let buttonAction: undefined | (() => void);
   let buttonText: undefined | string;
   const buttonIcon = faArrowAltCircleUp;
-  let buttonDisabled = isMaintainer ? false : true;
-  const buttonDisabledTooltip = isMaintainer
-    ? "Operation ongoing..."
-    : "Only maintainers can do this.";
+  let buttonDisabled = !isMaintainer || !automatedUpdatePossible;
+  const buttonDisabledTooltip = !isMaintainer
+    ? "Only maintainers can do this."
+    : !automatedUpdatePossible
+    ? "Automated update not possible for this project"
+    : "Operation ongoing...";
   const buttonId = "button-update-projectMigrationStatus";
   let icon = faInfoCircle;
   let level = "danger";
@@ -289,6 +299,7 @@ function ProjectMigrationStatusDetails({
     );
     renkuDetails = (
       <RenkuVersionContext
+        automated={renkuMigrationLevel?.automated}
         docsUrl={renkuTitleDocsUrl}
         isMaintainer={isMaintainer}
         latestVersion={metadata?.current_metadata_version}
@@ -311,10 +322,7 @@ function ProjectMigrationStatusDetails({
   }
 
   const renkuVersionButtonShow =
-    isMaintainer &&
-    (renkuMigrationLevel?.level === ProjectMigrationLevel.Level3 ||
-      renkuMigrationLevel?.level === ProjectMigrationLevel.Level4 ||
-      renkuMigrationLevel?.level === ProjectMigrationLevel.Level5);
+    isMaintainer && canUpdateProjectAutomatically(renkuMigrationLevel);
   const renkuButtonText = buttonDisable ? "Updating version" : "Update version";
   const renkuButtonAction = !renkuVersionButtonShow
     ? undefined
@@ -386,7 +394,7 @@ function ProjectMigrationStatusDetails({
   ) {
     templateDetails = (
       <RenkuTemplateContext
-        automated={templateMigrationLevel.automated}
+        automated={templateMigrationLevel?.automated}
         isMaintainer={isMaintainer}
         templateDetails={data?.details}
       />
@@ -409,8 +417,7 @@ function ProjectMigrationStatusDetails({
   }
 
   const templateButtonShow =
-    isMaintainer &&
-    templateMigrationLevel?.level === ProjectMigrationLevel.Level3;
+    isMaintainer && canUpdateProjectAutomatically(null, templateMigrationLevel);
   const templateButtonText = buttonDisable
     ? "Updating template"
     : "Update template";
@@ -508,6 +515,7 @@ function RenkuVersionOutdated({
 }
 
 interface RenkuVersionContextProps {
+  automated?: boolean;
   docsUrl: string;
   isMaintainer: boolean;
   latestVersion?: string;
@@ -515,6 +523,7 @@ interface RenkuVersionContextProps {
   projectVersion?: string;
 }
 function RenkuVersionContext({
+  automated,
   docsUrl,
   isMaintainer,
   latestVersion,
@@ -525,34 +534,29 @@ function RenkuVersionContext({
   const linkToRenku = (
     <ExternalLink role="text" url={RenkuRepositories.Python} title="Renku" />
   );
-  if (migrationLevel === ProjectMigrationLevel.Level5) {
+  if (
+    migrationLevel === ProjectMigrationLevel.Level5 ||
+    migrationLevel === ProjectMigrationLevel.Level4
+  ) {
+    const outdatedMessage =
+      migrationLevel === ProjectMigrationLevel.Level5
+        ? "The project is strongly outdated, and most interaction on RenkuLab will not be available (E.G. with datasets, workflows, session settings, ...)."
+        : "The project is outdated. You can still use it on RenkuLab but some features might not be available.";
+    const updateInfo = automated
+      ? "You can click on the Update button to update the version."
+      : "Automatic updates are not available; please use the migrate command in a session.";
     return (
       <>
-        <span>
-          The project is strongly outdated, and most interaction on RenkuLab
-          will not be available (E.G. with datasets, workflows, session
-          settings, ...).
-        </span>
+        {outdatedMessage}
         <br />
         <span>
           This happens because the underlying {linkToRenku} project metadata is
           still on version {projectVersion} while the latest version is{" "}
-          {latestVersion}. {moreInfoLink}
-        </span>
-      </>
-    );
-  } else if (migrationLevel === ProjectMigrationLevel.Level4) {
-    return (
-      <>
-        <span>
-          The project is outdated. You can still use it on RenkuLab but some
-          features might not be available.
+          {latestVersion}.
         </span>
         <br />
         <span>
-          This happens because the underlying {linkToRenku} project metadata is
-          still on version {projectVersion} while the latest version is{" "}
-          {latestVersion}. {moreInfoLink}
+          {updateInfo} {moreInfoLink}
         </span>
       </>
     );

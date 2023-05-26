@@ -84,6 +84,24 @@ export function ProjectStatusIcon({
         text={`Project metadata not processed.${maintainerText}`}
       />
     );
+  if (migrationLevel?.level === ProjectMigrationLevel.LevelX)
+    return (
+      <ProjectStatusElement
+        color="danger"
+        icon={faExclamationCircle}
+        linkUrl={settingsUrl}
+        text={`Project not supported on this version of RenkuLab.${maintainerText}`}
+      />
+    );
+  if (migrationLevel?.level === ProjectMigrationLevel.LevelE)
+    return (
+      <ProjectStatusElement
+        color="danger"
+        icon={faExclamationCircle}
+        linkUrl={settingsUrl}
+        text={`Error checking the project version, please reload.${maintainerText}`}
+      />
+    );
   if (migrationLevel?.level === ProjectMigrationLevel.Level5)
     return (
       <ProjectStatusElement

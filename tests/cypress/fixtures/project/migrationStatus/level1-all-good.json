@@ -6,11 +6,11 @@
       "project_metadata_version": "10",
       "type": "detail"
     },
-    "core_renku_version": "2.3.2.dev39+gf89f481d",
+    "core_renku_version": "2.3.2",
     "dockerfile_renku_status": {
       "automated_dockerfile_update": true,
       "dockerfile_renku_version": "2.3.2",
-      "latest_renku_version": "2.3.2.dev39+gf89f481d",
+      "latest_renku_version": "2.3.2",
       "newer_renku_available": false,
       "type": "detail"
     },

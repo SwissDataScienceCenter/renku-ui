@@ -136,6 +136,7 @@ class ProjectSettingsSessionsMapper extends Component {
     }
   }
 
+  // ? This doesn't seem necessary anymore
   // Refresh on update since componentDidMount may still need operations to finish
   componentDidUpdate(prevProps) {
     if (!prevProps.coreSupport.computed && this.props.coreSupport.computed) {
@@ -157,18 +158,17 @@ class ProjectSettingsSessionsMapper extends Component {
     refreshIfNecessary(currentOptions.fetching, currentOptions.fetched, () => {
       this.refreshOptions();
     });
-
-    this.refreshOptions();
   }
 
   async refreshConfig(repositoryUrl = null) {
     // Prevent refreshing when not possible
+    const versionUrl = this.props.coreSupport?.versionUrl ?? null;
     const coreSupport = this.props.coreSupport;
     if (!coreSupport.computed || !coreSupport.backendAvailable) return;
     const url = repositoryUrl ? repositoryUrl : this.props.externalUrl;
     // Check if the project is locked
     await this.projectCoordinator.fetchProjectLockStatus();
-    return await this.projectCoordinator.fetchProjectConfig(url);
+    return await this.projectCoordinator.fetchProjectConfig(url, versionUrl);
   }
 
   refreshOptions() {

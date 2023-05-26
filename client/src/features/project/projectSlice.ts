@@ -103,7 +103,7 @@ export const projectSlice = createSlice({
           ) {
             const metadataVersion = parseInt(
               payload.payload.details.core_compatibility_status
-                .current_metadata_version
+                .project_metadata_version
             );
             state.migration.cached.metadataVersion = metadataVersion;
             const data = computeBackendData(
