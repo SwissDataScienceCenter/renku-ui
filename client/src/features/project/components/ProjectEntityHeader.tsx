@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 
 import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";

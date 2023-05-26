@@ -79,12 +79,10 @@ function WorkflowsList({
   const backendAvailable = coreSupport.backendAvailable;
 
   // Verify backend support and availability
-  const unsupported =
-    backendAvailable === false ||
-    (coreSupport.cached.metadataVersion &&
-      coreSupport.cached.metadataVersion < MIN_CORE_VERSION_WORKFLOWS)
-      ? true
-      : false;
+  const supported =
+    backendAvailable === true &&
+    coreSupport.cached.metadataVersion &&
+    coreSupport.cached.metadataVersion >= MIN_CORE_VERSION_WORKFLOWS;
 
   // Configure the functions to dispatch workflowsDisplay changes
   const dispatch = useDispatch();
@@ -101,7 +99,7 @@ function WorkflowsList({
   const workflowsDisplay = useWorkflowsSelector();
 
   // Fetch workflow list
-  const skipList = !versionUrl || !repositoryUrl || unsupported ? true : false;
+  const skipList = !versionUrl || !repositoryUrl || !supported;
   const workflowsQuery = useGetWorkflowListQuery(
     { coreUrl: versionUrl, gitUrl: repositoryUrl, reference, fullPath },
     { skip: skipList }
@@ -161,7 +159,7 @@ function WorkflowsList({
       toggleAscending={toggleAscending}
       toggleExpanded={toggleExpanded}
       toggleInactive={toggleInactive}
-      unsupported={unsupported}
+      unsupported={!supported}
       waiting={waiting}
       workflows={workflows}
       workflow={workflow}

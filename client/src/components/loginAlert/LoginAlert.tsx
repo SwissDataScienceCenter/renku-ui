@@ -40,7 +40,7 @@ export interface LoginAlertProps {
 
 const LoginAlert = ({
   logged,
-  noWrapper = false,
+  noWrapper,
   textLogin = "Log in",
   textIntro,
   textPost = " to use this feature.",

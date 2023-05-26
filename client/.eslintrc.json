@@ -55,15 +55,7 @@
   ],
   "rules": {
     "no-eval": "error",
-    "no-unused-vars": ["off"], // ? this messes up with TypeScript enums - https://stackoverflow.com/a/61555310/1303090
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      {
-        "vars": "all",
-        "args": "none",
-        "ignoreRestSiblings": false
-      }
-    ],
+    "@typescript-eslint/no-unused-vars": "warn",
     "no-console": "warn",
     "react/prop-types": "off",
     "react/jsx-indent": [0],

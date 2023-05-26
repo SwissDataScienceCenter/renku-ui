@@ -26,7 +26,7 @@ import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
 
 // ****** SETTINGS COMPONENTS ****** //
 
-interface ProjectSettingsGeneralWrapperProps {
+interface ProjectSettingsGeneralProps {
   client: unknown;
   metadata: {
     accessLevel: number;
@@ -37,14 +37,11 @@ interface ProjectSettingsGeneralWrapperProps {
   };
   [key: string]: unknown;
 }
-function ProjectSettingsGeneralWrapper(
-  props: ProjectSettingsGeneralWrapperProps
-) {
-  const isMaintainer =
-    props.metadata?.accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
+export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
+  const isMaintainer = props.metadata?.accessLevel >= ACCESS_LEVELS.MAINTAINER;
   return (
     <>
-      <ProjectSettingsGeneral
+      <ProjectSettingsGeneralWrapped
         branch={props.metadata?.defaultBranch}
         gitUrl={props.metadata?.externalUrl}
         isMaintainer={isMaintainer}
@@ -54,20 +51,19 @@ function ProjectSettingsGeneralWrapper(
     </>
   );
 }
-export { ProjectSettingsGeneralWrapper as ProjectSettingsGeneral };
 
-interface ProjectSettingsGeneralProps {
+interface ProjectSettingsGeneralWrappedProps {
   branch?: string;
   gitUrl: string;
   projectId: number;
   isMaintainer: boolean;
 }
-function ProjectSettingsGeneral({
+function ProjectSettingsGeneralWrapped({
   branch,
   gitUrl,
   isMaintainer,
   projectId,
-}: ProjectSettingsGeneralProps) {
+}: ProjectSettingsGeneralWrappedProps) {
   return (
     <Card className="border-rk-light mb-4" data-cy="project-settings-general">
       <CardBody className="py-2">

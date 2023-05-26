@@ -98,9 +98,8 @@ function SshModal() {
   const loading = notebooksSupport.isLoading || coreSupport.isFetching;
   const errorCore = coreSupport.isError;
   const sshCoreSupport =
-    coreSupport.data?.details?.template_status?.type === "detail"
-      ? coreSupport.data.details.template_status.ssh_supported
-      : false;
+    coreSupport.data?.details?.template_status?.type === "detail" &&
+    coreSupport.data.details.template_status.ssh_supported;
   const sshNotebooksSupport = notebooksSupport.data?.sshEnabled ?? false;
 
   const toggleModal = () => dispatch(toggleSshModal());

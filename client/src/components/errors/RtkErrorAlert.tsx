@@ -30,10 +30,12 @@ export function RtkErrorAlert({ error }: RtkErrorAlertProps) {
   if (error == null || error === undefined) return null;
 
   // code or status
-  let errorCode = "Unknown";
-  if ("status" in error) errorCode = error.status.toString();
-  else if ("code" in error && error.code !== undefined)
-    errorCode = error.code.toString();
+  const errorCode =
+    "status" in error
+      ? error.status.toString()
+      : "code" in error && error.code !== undefined
+      ? error.code.toString()
+      : "Unknown";
 
   // message
   const extractErrorMessage = (

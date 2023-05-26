@@ -67,7 +67,8 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
         Checking project metadata status... <Loader size="14" inline="true" />
       </p>
     );
-  } else if (isError) {
+  }
+  if (isError) {
     return (
       <WarnAlert>
         <p>
@@ -85,7 +86,8 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
         </p>
       </WarnAlert>
     );
-  } else if (!data?.activated) {
+  }
+  if (!data?.activated) {
     const projectUrl = Url.get(Url.pages.project, {
       namespace: props.projectNamespace,
       path: props.projectName,
@@ -114,7 +116,8 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
         {goToSettings}
       </InfoAlert>
     );
-  } else if (data?.details?.status === ProjectIndexingStatuses.InProgress) {
+  }
+  if (data?.details?.status === ProjectIndexingStatuses.InProgress) {
     const progress =
       data?.progress?.percentage !== undefined &&
       data.progress.percentage > 0 &&
