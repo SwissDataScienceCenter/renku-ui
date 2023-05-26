@@ -28,14 +28,19 @@
   "overrides": [
     {
       "files": ["**/*.ts", "**/*.tsx"],
-      "plugins": ["@typescript-eslint", "react", "react-hooks", "spellcheck"],
+      "plugins": [
+        "@typescript-eslint",
+        "jest",
+        "react",
+        "react-hooks",
+        "spellcheck"
+      ],
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
         // We probably want to turn this on at some point
         // "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "plugin:react/recommended",
-        // We probably want to turn this on at some point
         "plugin:react-hooks/recommended",
         "plugin:jest/recommended",
         "prettier"
@@ -44,7 +49,7 @@
         "project": ["./tsconfig.json"]
       },
       "rules": {
-        "@typescript-eslint/no-unused-vars": ["warn"]
+        "@typescript-eslint/no-unused-vars": "warn"
       }
     }
   ],
