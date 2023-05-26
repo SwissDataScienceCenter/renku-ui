@@ -42,14 +42,11 @@ import {
  *  Visibility input
  */
 
-// These are used by the TS compiler does not realize it.
-/* eslint-disable no-unused-vars */
 export enum Visibilities {
   Public = "public",
   Private = "private",
   Internal = "internal",
 }
-/* eslint-enable no-unused-vars */
 
 export interface VisibilityInputProps {
   /** It restrict the options to show */

@@ -655,7 +655,13 @@ function WorkflowTreeDetail({
 
 /** VISUALIZER **/
 
-function UnavailableDetail({ className = "", text = "None" }) {
+function UnavailableDetail({
+  className = "",
+  text = "None",
+}: {
+  className?: string;
+  text?: string;
+}) {
   return (
     <span className={`fst-italic text-rk-text-light ${className}`}>{text}</span>
   );

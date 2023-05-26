@@ -27,8 +27,6 @@ import { Loader } from "../Loader";
  *  Progress component
  */
 
-// These values are actually used, but the ts compiler does not realize it
-/* eslint-disable no-unused-vars */
 export enum ProgressType {
   Determinate = "Determinate",
   Indeterminate = "Indeterminate",
@@ -45,7 +43,6 @@ export enum StatusStepProgressBar {
   WAITING = "waiting",
   FAILED = "failed",
 }
-/* eslint-enable no-unused-vars */
 
 export interface StepsProgressBar {
   id: number;
