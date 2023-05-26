@@ -21,6 +21,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 
 import { ErrorAlert } from "../Alert";
+import { CoreErrorAlert } from "./CoreErrorAlert";
 
 interface RtkErrorAlertProps {
   error: FetchBaseQueryError | SerializedError | undefined | null;
@@ -62,5 +63,21 @@ export function RtkErrorAlert({ error }: RtkErrorAlertProps) {
       <h5>Error {errorCode}</h5>
       <p className="mb-0">{errorMessage}</p>
     </ErrorAlert>
+  );
+}
+
+export function RtkOrCoreError({ error }: RtkErrorAlertProps) {
+  if (!error) return null;
+  return "status" in error &&
+    typeof error.status === "number" &&
+    (error.status as number) === 200 &&
+    typeof error.data === "object" &&
+    error.data &&
+    "error" in error.data &&
+    typeof error.data.error === "object" &&
+    error.data.error ? (
+    <CoreErrorAlert error={error.data.error} />
+  ) : (
+    <RtkErrorAlert error={error} />
   );
 }

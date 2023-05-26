@@ -62,6 +62,9 @@ export const projectCoreApi = createApi({
           ),
           method: "GET",
           headers: new Headers(headers),
+          validateStatus: (response, body) => {
+            return response.status < 400 && !body.error?.code;
+          },
         };
       },
       transformResponse: (response: GetDatasetFilesResponse) => {
@@ -159,6 +162,9 @@ export const projectCoreApi = createApi({
           body,
           method: "POST",
           url: `/renku/cache.migrate`,
+          validateStatus: (response, body) => {
+            return response.status < 400 && !body.error?.code;
+          },
         };
       },
       invalidatesTags: (result, error, migrationParams) => [

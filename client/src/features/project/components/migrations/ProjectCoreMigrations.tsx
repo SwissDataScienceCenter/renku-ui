@@ -35,7 +35,7 @@ import {
 } from "../../projectEnums";
 import { projectCoreApi } from "../../projectCoreApi";
 import { CoreErrorAlert } from "../../../../components/errors/CoreErrorAlert";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import { RtkOrCoreError } from "../../../../components/errors/RtkErrorAlert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Docs } from "../../../../utils/constants/Docs";
 import {
@@ -87,26 +87,26 @@ export function ProjectMigrationStatus({
       ? "Fetching project data..."
       : "Refreshing project data...";
     return (
-      <CompositeTitle
-        icon={faTimesCircle}
-        loading={true}
-        sectionId={sectionCyId}
-        showDetails={showDetails}
-        title={fetchingTitle}
-        toggleShowDetails={toggleShowDetails}
-      />
+      <>
+        <CompositeTitle
+          icon={faTimesCircle}
+          loading={true}
+          sectionId={sectionCyId}
+          showDetails={showDetails}
+          title={fetchingTitle}
+          toggleShowDetails={toggleShowDetails}
+        />
+        <RtkOrCoreError error={migrationStatus.error} />
+      </>
     );
   }
 
-  // ? This is a very unexpected error from the core service
-  if (error || data?.errorProject) {
-    const errorElement = error ? (
-      <RtkErrorAlert error={{ ...error }} />
-    ) : (
-      <ProjectSettingsGeneralCoreError
-        errorData={data?.error as CoreErrorContent | CoreSectionError}
-      />
-    );
+  if (error) {
+    const currentError = migrationStatus.error
+      ? migrationStatus.error
+      : error
+      ? error
+      : null;
     return (
       <>
         <CompositeTitle
@@ -118,7 +118,7 @@ export function ProjectMigrationStatus({
           title="Error on project version"
           toggleShowDetails={toggleShowDetails}
         />
-        <Collapse isOpen={showDetails}>{errorElement}</Collapse>
+        <RtkOrCoreError error={currentError} />
       </>
     );
   }
@@ -136,7 +136,6 @@ export function ProjectMigrationStatus({
       branch,
       scope,
     });
-    // we rely on query and mutation tags to refetch
   };
 
   const renkuMigrationLevel = getRenkuLevel(data, isSupported);
@@ -218,6 +217,7 @@ export function ProjectMigrationStatus({
         title={title}
         toggleShowDetails={toggleShowDetails}
       />
+      <RtkOrCoreError error={migrationStatus.error} />
       <ProjectMigrationStatusDetails
         buttonUpdate={buttonUpdate}
         buttonDisable={buttonDisabled || isFetching}
