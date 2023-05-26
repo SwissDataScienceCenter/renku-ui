@@ -31,7 +31,6 @@ export interface DateFilterProps {
   onDatesChange: (dates: DatesFilter) => void;
 }
 
-/* eslint-disable no-unused-vars */
 export enum DateFilterTypes {
   all = "all",
   custom = "custom",
@@ -40,7 +39,6 @@ export enum DateFilterTypes {
   lastWeek = "lastWeek",
   older = "older", // before 90 days
 }
-/* eslint-enable no-unused-vars */
 
 export function stringToDateFilter(str: string) {
   return Object.values(DateFilterTypes).includes(str as DateFilterTypes)

@@ -29,13 +29,10 @@ export interface KgSearchResultLink {
 
 export type KgAuthor = "user" | "all";
 
-// These are used by the TS compiler does not realize it.
-/* eslint-disable no-unused-vars */
 export enum EntityType {
   Project = "project",
   Dataset = "dataset",
 }
-/* eslint-enable no-unused-vars */
 
 export interface KgSearchResult {
   _links: KgSearchResultLink[];
