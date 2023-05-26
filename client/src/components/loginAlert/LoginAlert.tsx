@@ -31,10 +31,10 @@ import { Url } from "../../utils/helpers/url";
 
 export interface LoginAlertProps {
   logged: boolean;
-  textIntro: string;
-  textLogin: string;
-  textPost: string;
-  textPre: string;
+  textIntro?: string;
+  textLogin?: string;
+  textPost?: string;
+  textPre?: string;
 }
 
 const LoginAlert = ({

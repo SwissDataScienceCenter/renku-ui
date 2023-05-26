@@ -59,10 +59,11 @@ import {
 } from "./overview";
 import { ForkProject } from "./new";
 import {
-  ProjectSettingsGeneral,
+  ProjectSettingsGeneral as LegacyProjectSettingsGeneral,
   ProjectSettingsNav,
   ProjectSettingsSessions,
 } from "./settings";
+import { ProjectSettingsGeneral } from "./settings/ProjectsSettingsGeneral";
 import { WorkflowsList } from "../workflows";
 import { ExternalLink } from "../components/ExternalLinks";
 import { GoBackButton, RoundButtonGroup } from "../components/buttons/Button";
@@ -1218,7 +1219,12 @@ function ProjectSettings(props) {
               exact
               path={props.settingsUrl}
               render={() => {
-                return <ProjectSettingsGeneral {...props} />;
+                return (
+                  <>
+                    <ProjectSettingsGeneral {...props} />
+                    <LegacyProjectSettingsGeneral {...props} />
+                  </>
+                );
               }}
             />
             <Route
