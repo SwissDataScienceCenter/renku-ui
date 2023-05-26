@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-// These are used by the TS compiler does not realize it.
-/* eslint-disable no-unused-vars */
 export enum EntityType {
   Dataset = "dataset",
   Project = "project",
@@ -28,4 +26,3 @@ export enum WorkflowType {
   Simple = "Plan",
   Composite = "CompositePlan",
 }
-/* eslint-enable no-unused-vars */

@@ -25,8 +25,6 @@
 
 import { UrlRule, Url, getSearchParams, isSessionUrl } from "./Url";
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 describe("UrlRule private class", () => {
   it("Initialization values and errors", () => {
     // Verify all the parameters, and try to trigger all possible errors based on wrong parameters.
