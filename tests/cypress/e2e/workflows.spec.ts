@@ -77,6 +77,10 @@ describe("iteract with workflows", () => {
 
   it("expand a workflow - waiting", () => {
     fixtures.getWorkflows("workflows/workflows-list-links-mappings.json");
+    cy.intercept("/ui-server/api/renku/*/workflow_plans.show?*", {
+      fixture: "workflows/workflow-show-links-mappings.json",
+      delay: 1_000,
+    });
     cy.visit("/projects/e2e/local-test-project/workflows");
     cy.get_cy("workflows-browser")
       .children()
