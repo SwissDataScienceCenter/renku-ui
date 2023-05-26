@@ -63,7 +63,7 @@ describe("Add dataset to existing project", () => {
     cy.gui_select_project_autosuggestion_list(
       projectSelected,
       fixtures,
-      "projects/migration-check_43781.json"
+      "project/migrationStatus/level1-all-good.json"
     );
     cy.get_cy("import-dataset-status").should(
       "contain.text",
@@ -81,13 +81,11 @@ describe("Add dataset to existing project", () => {
     cy.gui_select_project_autosuggestion_list(
       projectSelected,
       fixtures,
-      "projects/migration-check_43781.json"
+      "project/migrationStatus/level1-all-good.json"
     );
     cy.get_cy("add-dataset-submit-button").click();
     cy.wait("@importToProject");
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
-    cy.wait("@importJobCompleted");
+    cy.wait("@importJobCompleted", { timeout: 20_000 });
     cy.url().should(
       "include",
       `projects/${projectSelected}/datasets/${datasetName}`
@@ -99,21 +97,23 @@ describe("Add dataset to existing project", () => {
     cy.gui_select_project_autosuggestion_list(
       projectSelected,
       fixtures,
-      "projects/migration-check_43781.json"
+      "project/migrationStatus/level1-all-good.json"
     );
     fixtures.importJobError();
     cy.get_cy("add-dataset-submit-button").click();
     cy.wait("@importToProject");
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
-    cy.get_cy("import-dataset-status").should("contain.text", "Something fail");
+    cy.wait("@importJobError", { timeout: 20_000 });
+    cy.get_cy("import-dataset-status").should(
+      "contain.text",
+      "Dataset import failed"
+    );
   });
 
   it("error importing from project with different metadata version", () => {
     cy.gui_select_project_autosuggestion_list(
       projectSelected,
       fixtures,
-      "projects/migration-check_43781-old.json"
+      "project/migrationStatus/level4-old-updatable.json"
     );
     cy.get_cy("import-dataset-status").contains(
       "cannot be newer than the project metadata version"
@@ -182,9 +182,7 @@ describe("Add dataset to new project", () => {
       true
     );
     cy.wait("@importToProject");
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(3500); // necessary because request the job status is called in a interval
-    cy.wait("@importJobCompleted");
+    cy.wait("@importJobCompleted", { timeout: 20_000 });
     cy.url().should(
       "include",
       `projects/${newProjectPath}/datasets/${datasetName}`
@@ -205,8 +203,7 @@ describe("Add dataset to new project", () => {
       fixtures
     );
     cy.wait("@importToProject");
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
+    cy.wait("@importJobError", { timeout: 20_000 });
     cy.get_cy("import-dataset-status").should("contain.text", "Something fail");
   });
 });

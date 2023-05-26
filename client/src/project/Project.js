@@ -347,7 +347,6 @@ class View extends Component {
 
     if (projectData) {
       // Check the supported core versions
-      // await this.fetchProjectDatasets(null, "/10");
       await this.fetchProjectLockStatus();
     }
   }

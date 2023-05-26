@@ -237,15 +237,11 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
   /* import dataset */
   const submitCallback = async (project) => {
     if (!project) setCurrentStatus({ status: "error", text: "Empty project" });
-
-    const isProjectValid = await validateProject(project, true, true);
-    if (isProjectValid) {
-      setCurrentStatus({
-        status: "importing",
-        text: ImportStateMessage.ENQUEUED,
-      });
-      importDataset(project);
-    }
+    setCurrentStatus({
+      status: "importing",
+      text: ImportStateMessage.ENQUEUED,
+    });
+    importDataset(project);
   };
 
   const importDataset = (selectedProject) => {

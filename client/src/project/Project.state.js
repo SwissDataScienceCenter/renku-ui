@@ -80,9 +80,11 @@ const DatasetsMixin = {
   fetchProjectDatasetsFromKg(client) {
     //from KG
     if (this.get("datasets.datasets_kg") === SpecialPropVal.UPDATING) return;
+    const pathWithNamespace = this.get("metadata.pathWithNamespace");
+    if (!pathWithNamespace) return;
     this.setUpdating({ datasets: { datasets_kg: true } });
     return client
-      .getProjectDatasetsFromKG(this.get("metadata.pathWithNamespace"))
+      .getProjectDatasetsFromKG(pathWithNamespace)
       .then((datasets) => {
         const updatedState = {
           datasets_kg: { $set: datasets },
@@ -106,10 +108,6 @@ const DatasetsMixin = {
     if (core === SpecialPropVal.UPDATING) return;
     if (core.datasets && core.error == null && !forceReFetch) return core;
     this.setUpdating({ datasets: { core: true } });
-    // ! TODO get versionUrl as param
-    // const migration = this.model.get("migration.core");
-    // if (migration.backendAvailable === false) return false;
-    // const versionUrl = migration.versionUrl;
     const gitUrl = this.get("metadata.httpUrl");
     return client
       .listProjectDatasetsFromCoreService(gitUrl, versionUrl)
