@@ -365,7 +365,7 @@ function ProjectMigrationStatusDetails({
   } else if (templateMigrationLevel?.level === ProjectMigrationLevel.LevelE) {
     templateText = "Error";
     // ? Do not show template error on very outdated projects. They frequently error.
-    // ? We can consider removing this in the future if it doesn't occure that often anymore.
+    // ? We can consider removing this in the future if it doesn't occur that often anymore.
     if (
       renkuMigrationLevel?.level === ProjectMigrationLevel.Level5 ||
       renkuMigrationLevel?.level === ProjectMigrationLevel.Level4
@@ -540,7 +540,7 @@ function RenkuVersionContext({
   ) {
     const outdatedMessage =
       migrationLevel === ProjectMigrationLevel.Level5
-        ? "The project is strongly outdated, and most interaction on RenkuLab will not be available (E.G. with datasets, workflows, session settings, ...)."
+        ? "The project is very outdated. An upgrade is necessary to support the project from the RenkuLab UI."
         : "The project is outdated. You can still use it on RenkuLab but some features might not be available.";
     const updateInfo = automated
       ? "You can click on the Update button to update the version."
@@ -566,7 +566,7 @@ function RenkuVersionContext({
         <span>
           There is a new {linkToRenku} version.
           {isMaintainer
-            ? " Updating brings new features and bug-fixes; it should be safe on this project since it is a minor step."
+            ? " Updating brings new features and bug-fixes; it should be safe on this project since it is a minor update."
             : ""}{" "}
           {moreInfoLink}
         </span>

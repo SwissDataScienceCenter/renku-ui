@@ -50,7 +50,7 @@ describe("display KG status information", () => {
     cy.get_cy("project-status-icon-element").should("not.exist");
   });
 
-  it("Metadata processed", () => {
+  it("Metadata processed with KG indexing failure", () => {
     fixtures.getKgStatus("project/kgStatus/kgStatusIndexedFailure.json");
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
@@ -224,7 +224,7 @@ describe("display migration information", () => {
     cy.get_cy("project-version-section-close").should("not.exist");
     cy.get_cy("project-version-section-open").should("exist").click();
     cy.get_cy("project-settings-migration-status")
-      .contains("it should be safe on this project since it is a minor step")
+      .contains("it should be safe on this project since it is a minor update")
       .should("exist");
     cy.get_cy("project-settings-migration-status")
       .contains("button", "Update version")
@@ -263,7 +263,7 @@ describe("display migration information", () => {
       )
       .should("exist");
     cy.get_cy("project-settings-migration-status")
-      .contains("most interaction on RenkuLab will not be available ")
+      .contains("An upgrade is necessary to support the project")
       .should("not.exist");
     cy.get_cy("project-settings-migration-status")
       .contains("button", "Update version")
@@ -296,7 +296,7 @@ describe("display migration information", () => {
       )
       .should("exist");
     cy.get_cy("project-settings-migration-status")
-      .contains("most interaction on RenkuLab will not be available ")
+      .contains("An upgrade is necessary to support the project")
       .should("exist");
     cy.get_cy("project-settings-migration-status")
       .contains("button", "Update version")
@@ -329,7 +329,7 @@ describe("display migration information", () => {
       )
       .should("exist");
     cy.get_cy("project-settings-migration-status")
-      .contains("most interaction on RenkuLab will not be available ")
+      .contains("An upgrade is necessary to support the project")
       .should("exist");
     cy.get_cy("project-settings-migration-status")
       .contains("button", "Update version")
@@ -339,7 +339,7 @@ describe("display migration information", () => {
     cy.get_cy("project-status-icon-element").should("exist");
   });
 
-  it("displays level X migration: inknown", () => {
+  it("displays level X migration: unknown", () => {
     fixtures.interceptMigrationCheck(
       "migrationCheck",
       "project/migrationStatus/levelX-too-new.json"
@@ -421,7 +421,7 @@ describe("display migration information for non maintainer", () => {
     cy.get_cy("project-version-section-close").should("not.exist");
     cy.get_cy("project-version-section-open").should("exist").click();
     cy.get_cy("project-settings-migration-status")
-      .contains("it should be safe on this project since it is a minor step")
+      .contains("it should be safe on this project since it is a minor update")
       .should("not.exist");
     cy.get_cy("project-settings-migration-status")
       .contains("There is a new")
@@ -463,7 +463,7 @@ describe("display migration information for non maintainer", () => {
       )
       .should("exist");
     cy.get_cy("project-settings-migration-status")
-      .contains("most interaction on RenkuLab will not be available ")
+      .contains("An upgrade is necessary to support the project")
       .should("exist");
     cy.get_cy("project-settings-migration-status")
       .contains("button", "Update version")
