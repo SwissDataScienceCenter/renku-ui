@@ -48,16 +48,20 @@ function Global<T extends FixturesConstructor>(Parent: T) {
     versions(
       names = {
         coreVersionsName: "getCoreVersions",
+        notebooksVersionsName: "getNotebooksVersions",
         uiVersionName: "getUiVersion",
       }
     ) {
-      const { coreVersionsName, uiVersionName } = names;
+      const { coreVersionsName, notebooksVersionsName, uiVersionName } = names;
       cy.intercept("/ui-server/api/versions", {
         fixture: "version-ui.json",
       }).as(uiVersionName);
       cy.intercept("/ui-server/api/renku/version", {
         fixture: "version-core.json",
       }).as(coreVersionsName);
+      cy.intercept("/ui-server/api/notebooks/version", {
+        fixture: "version-notebooks.json",
+      }).as(notebooksVersionsName);
 
       return this;
     }

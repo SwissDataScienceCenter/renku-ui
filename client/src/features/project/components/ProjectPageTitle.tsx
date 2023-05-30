@@ -22,23 +22,28 @@ import { Helmet } from "react-helmet";
 import {
   useProjectJsonLdQuery,
   useProjectMetadataQuery,
-} from "../projects/ProjectKgApi";
+} from "../../projects/projectsKgApi";
+import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 
 type ProjectJsonLdProps = {
-  isInKg: boolean;
+  projectId: number;
   projectPathWithNamespace: string;
   projectTitle: string;
 };
 
 function ProjectPageTitle({
-  isInKg,
+  projectId,
   projectPathWithNamespace,
   projectTitle,
 }: ProjectJsonLdProps) {
+  const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
+    skip: !projectPathWithNamespace || !projectId,
+  });
+
   const kgProjectQueryParams = {
     projectPath: projectPathWithNamespace,
   };
-  const options = { skip: isInKg != true };
+  const options = { skip: !projectIndexingStatus.data?.activated };
   const { data, isFetching, isLoading } = useProjectJsonLdQuery(
     kgProjectQueryParams,
     options

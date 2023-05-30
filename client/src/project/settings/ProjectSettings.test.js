@@ -24,6 +24,7 @@
  */
 
 import React from "react";
+import { Provider } from "react-redux";
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
@@ -35,12 +36,15 @@ import {
 } from "./index";
 import { testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
-import { Provider } from "react-redux";
+import { generateFakeUser } from "../../user/User.test";
 
 const model = new StateModel(globalSchema);
 const fakeLocation = { pathname: "" };
 
 describe("rendering", () => {
+  const anonymousUser = generateFakeUser(true);
+  const loggedUser = generateFakeUser();
+
   it("renders ProjectSettingsNav", async () => {
     const props = {
       settingsUrl: "",
@@ -60,25 +64,28 @@ describe("rendering", () => {
   });
 
   it("renders ProjectSettingsGeneral", async () => {
-    const props = {
-      metadata: {
-        sshUrl: "SSH URL",
-        httpUrl: "HTTP URL",
-      },
-    };
+    for (let user of [loggedUser, anonymousUser]) {
+      const props = {
+        metadata: {
+          sshUrl: "SSH URL",
+          httpUrl: "HTTP URL",
+        },
+        user,
+      };
 
-    const div = document.createElement("div");
-    document.body.appendChild(div);
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <ProjectSettingsGeneral {...props} />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
+      const div = document.createElement("div");
+      document.body.appendChild(div);
+      const root = createRoot(div);
+      await act(async () => {
+        root.render(
+          <Provider store={model.reduxStore}>
+            <MemoryRouter>
+              <ProjectSettingsGeneral {...props} />
+            </MemoryRouter>
+          </Provider>
+        );
+      });
+    }
   });
 
   it("renders ProjectSettingsSessions", async () => {

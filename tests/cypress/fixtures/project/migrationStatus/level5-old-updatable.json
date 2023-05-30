@@ -1,0 +1,27 @@
+{
+  "result": {
+    "core_compatibility_status": {
+      "current_metadata_version": "10",
+      "migration_required": true,
+      "project_metadata_version": "8",
+      "type": "detail"
+    },
+    "core_renku_version": "2.3.2",
+    "dockerfile_renku_status": {
+      "automated_dockerfile_update": true,
+      "dockerfile_renku_version": "0.16.2",
+      "latest_renku_version": "2.3.2",
+      "newer_renku_available": true,
+      "type": "detail"
+    },
+    "project_renku_version": "0.16.2",
+    "project_supported": true,
+    "template_status": {
+      "code": 2900,
+      "devMessage": "Renku service internal error. Further information: Cannot get project",
+      "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.ui.service.errors.ProgramInternalError",
+      "type": "error",
+      "userMessage": "Our servers generated an unexpected error while processing data."
+    }
+  }
+}

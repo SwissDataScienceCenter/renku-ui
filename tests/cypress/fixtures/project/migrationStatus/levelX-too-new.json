@@ -1,0 +1,31 @@
+{
+  "result": {
+    "core_compatibility_status": {
+      "current_metadata_version": "10",
+      "migration_required": false,
+      "project_metadata_version": null,
+      "type": "detail"
+    },
+    "core_renku_version": "2.3.2",
+    "dockerfile_renku_status": {
+      "automated_dockerfile_update": false,
+      "dockerfile_renku_version": "unknown",
+      "latest_renku_version": "2.3.2",
+      "newer_renku_available": false,
+      "type": "detail"
+    },
+    "project_renku_version": ">=2.4.0",
+    "project_supported": false,
+    "template_status": {
+      "automated_template_update": false,
+      "latest_template_version": "unknown",
+      "newer_template_available": false,
+      "project_template_version": "unknown",
+      "ssh_supported": false,
+      "template_id": "unknown",
+      "template_ref": "unknown",
+      "template_source": "unknown",
+      "type": "detail"
+    }
+  }
+}

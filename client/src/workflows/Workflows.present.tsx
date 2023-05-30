@@ -334,7 +334,7 @@ interface UnsupportedWorkflowsProps {
 }
 
 function UnsupportedWorkflows({ fullPath }: UnsupportedWorkflowsProps) {
-  const updateUrl = Url.get(Url.pages.project.overview.status, {
+  const updateUrl = Url.get(Url.pages.project.settings, {
     namespace: "",
     path: fullPath,
   });
@@ -347,7 +347,7 @@ function UnsupportedWorkflows({ fullPath }: UnsupportedWorkflowsProps) {
           a newer version.
         </p>
         <p className="mb-0">
-          The <Link to={updateUrl}>Project status</Link> page provides further
+          The <Link to={updateUrl}>Project settings</Link> page provides further
           information.
         </p>
       </WarnAlert>

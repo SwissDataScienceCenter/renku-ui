@@ -55,14 +55,8 @@
   ],
   "rules": {
     "no-eval": "error",
-    "no-unused-vars": [
-      "warn",
-      {
-        "vars": "all",
-        "args": "none",
-        "ignoreRestSiblings": false
-      }
-    ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
     "no-console": "warn",
     "react/prop-types": "off",
     "react/jsx-indent": [0],
@@ -156,6 +150,7 @@
           "linkify",
           "localhost",
           "maintenances",
+          "matcher",
           "mathbf",
           "mathjax",
           "mergerequests",

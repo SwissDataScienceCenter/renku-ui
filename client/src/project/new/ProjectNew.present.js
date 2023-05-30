@@ -501,7 +501,7 @@ class Creation extends Component {
       : "You'll be redirected to the new project page when the creation is completed.";
 
     return (
-      <div className="new-project-indicator">
+      <div>
         <ProgressIndicator
           type={ProgressType.Indeterminate}
           style={ProgressStyle.Dark}

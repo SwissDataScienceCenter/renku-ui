@@ -17,7 +17,7 @@
  */
 
 import React, { useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import { Loader } from "../../components/Loader";
@@ -33,8 +33,7 @@ import { WsMessage } from "../../websocket/WsMessages";
 import KgActivationHeader from "./components/KgActivationHeader";
 import ActivationProgress from "./components/ActivationProgress";
 import useGetInactiveProjects from "../../utils/customHooks/UseGetInactiveProjects";
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { projectKgApi } from "../project/projectKgApi";
 
 export interface InactiveKgProjects {
   id: number;
@@ -47,13 +46,15 @@ export interface InactiveKgProjects {
 }
 
 interface InactiveKGProjectsPageProps {
-  socket: any;
+  socket: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
   const [activating, setActivating] = useState(false);
-  const user = useSelector((state: any) => state.stateModel.user);
-  const websocket = useSelector((state: any) => state.stateModel.webSocket);
+  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
+  const websocket = useSelector(
+    (state: RootStateOrAny) => state.stateModel.webSocket
+  );
   const { data, isFetching, isLoading, error } = useGetInactiveProjects(
     user?.data?.id
   );
@@ -95,6 +96,7 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
     dispatch(addFullList(tempList));
   };
 
+  // ? The logic here is wrong, this should be fixed or re-worked
   const activateProjects = () => {
     setActivating(true);
     if (client && websocket.open && socket) {
@@ -103,25 +105,12 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
       );
       for (let i = 0; i < projectSelected.length; i++) {
         const projectId = projectSelected[i].id;
-        client
-          .createGraphWebhook(projectId)
-          .then((activation: boolean) => {
-            if (activation) {
-              dispatch(updateProgress({ id: projectId, progress: 0 }));
-              const message = JSON.stringify(
-                new WsMessage(
-                  { projects: [projectId] },
-                  "pullKgActivationStatus"
-                )
-              );
-              socket.send(message);
-            }
-          })
-          .catch(() =>
-            dispatch(
-              updateProgress({ id: projectSelected[i].id, progress: -2 })
-            )
-          );
+        dispatch(projectKgApi.endpoints.activateIndexing.initiate(projectId));
+        dispatch(updateProgress({ id: projectId, progress: 0 }));
+        const message = JSON.stringify(
+          new WsMessage({ projects: [projectId] }, "pullKgActivationStatus")
+        );
+        socket.send(message);
       }
     } else {
       setActivating(false);

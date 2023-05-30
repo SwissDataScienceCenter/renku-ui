@@ -16,6 +16,25 @@
  * limitations under the License.
  */
 
+interface CoreComponent {
+  data: {
+    metadata_version: string;
+  };
+  version: string;
+}
+
+export interface CoreVersionResponse {
+  name: string;
+  versions: CoreComponent[];
+}
+
+export interface CoreVersions {
+  name: string;
+  coreVersions: string[];
+  metadataVersions: number[];
+  details?: CoreComponent[];
+}
+
 interface NotebookComponent {
   data: {
     anonymousSessionsEnabled: boolean;
@@ -28,12 +47,12 @@ interface NotebookComponent {
   version: string;
 }
 
-interface NotebooksVersionResponse {
+export interface NotebooksVersionResponse {
   name: string;
   versions: NotebookComponent[];
 }
 
-interface NotebooksVersion {
+export interface NotebooksVersion {
   name: string;
   version: string;
   anonymousSessionsEnabled: boolean;
