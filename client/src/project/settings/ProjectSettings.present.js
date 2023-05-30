@@ -23,7 +23,7 @@
  *  Project settings presentational components.
  */
 
-import React, { Component, Fragment, useEffect, useState } from "react";
+import React, { Component, Fragment, useState } from "react";
 import {
   faCheck,
   faEdit,
@@ -73,7 +73,10 @@ import { ProjectAvatarEdit, ProjectTags } from "../shared";
 
 function ProjectSettingsNav(props) {
   return (
-    <Nav className="flex-column nav-light nav-pills-underline">
+    <Nav
+      className="flex-column nav-light nav-pills-underline"
+      data-cy="settings-navbar"
+    >
       <NavItem>
         <RenkuNavLink to={props.settingsUrl} title="General" />
       </NavItem>
@@ -87,17 +90,19 @@ function ProjectSettingsNav(props) {
 //** General settings **//
 
 function ProjectSettingsGeneral(props) {
-  useEffect(() => {
-    return function cleanup() {
-      props?.fetchProject(true);
-    };
-  }, []); // eslint-disable-line
-
-  if (props.settingsReadOnly && !props.user.logged) {
-    const textIntro = "Only authenticated users can access project setting.";
-    const textPost = "to visualize project settings.";
-    return (
-      <LoginAlert logged={false} textIntro={textIntro} textPost={textPost} />
+  let loginElement = null;
+  if (!props.user.logged) {
+    const textPre = "You can";
+    const textPost = "here.";
+    loginElement = (
+      <p className="mt-3 mb-0">
+        <LoginAlert
+          logged={false}
+          noWrapper={true}
+          textPre={textPre}
+          textPost={textPost}
+        />
+      </p>
     );
   }
 
@@ -107,6 +112,7 @@ function ProjectSettingsGeneral(props) {
         <p className="mb-0">
           Project settings can be changed only by maintainers.
         </p>
+        {loginElement}
       </InfoAlert>
     );
   }
@@ -212,7 +218,7 @@ class ProjectDescription extends Component {
 //** Sessions settings **//
 
 function ProjectSettingsSessions(props) {
-  const { backend, config, metadata, newConfig, options, setConfig, user } =
+  const { config, coreSupport, metadata, newConfig, options, setConfig, user } =
     props;
   const { accessLevel, repositoryUrl } = metadata;
   const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER ? true : false;
@@ -245,16 +251,11 @@ function ProjectSettingsSessions(props) {
   }
 
   // Handle ongoing operations and errors
-  if (
-    config.fetching ||
-    options.fetching ||
-    backend.fetching ||
-    !backend.fetched
-  ) {
+  if (config.fetching || options.fetching || !coreSupport.computed) {
     let message;
     if (config.fetching) message = "Getting project settings...";
     else if (options.fetching) message = "Getting RenkuLab settings...";
-    else if (backend.fetching || !backend.fetched)
+    else if (!coreSupport.computed)
       message = "Checking project version and RenkuLab compatibility...";
     else message = "Please wait...";
 
@@ -266,8 +267,8 @@ function ProjectSettingsSessions(props) {
     );
   }
 
-  if (!backend.backendAvailable) {
-    const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {
+  if (!coreSupport.backendAvailable) {
+    const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace: metadata.namespace,
       path: metadata.path,
     });
@@ -285,7 +286,7 @@ function ProjectSettingsSessions(props) {
           <p>
             {updateInfo}.
             <br />
-            The <Link to={overviewStatusUrl}>Project status</Link> page provides
+            The <Link to={settingsUrl}>Project settings</Link> page provides
             further information.
           </p>
         </WarnAlert>

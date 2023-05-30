@@ -1,0 +1,12 @@
+{
+  "activated": true,
+  "progress": {
+    "done": 5,
+    "total": 5,
+    "percentage": 100.0
+  },
+  "details": {
+    "status": "success",
+    "message": "no message"
+  }
+}

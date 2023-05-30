@@ -27,13 +27,16 @@ import {
   StoreEnhancer,
   configureStore,
 } from "@reduxjs/toolkit";
+
 import { displaySlice } from "../../features/display/displaySlice";
-import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
+import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
-import { projectKgApi } from "../../features/projects/ProjectKgApi";
-import { projectApi } from "../../features/projects/ProjectsApi";
+import { projectKgApi } from "../../features/project/projectKgApi";
+import { projectSlice } from "../../features/project/projectSlice";
+import { projectsApi } from "../../features/projects/projectsApi";
+import { projectsKgApi } from "../../features/projects/projectsKgApi";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import { sessionApi } from "../../features/session/sessionApi";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
@@ -48,17 +51,19 @@ export const createStore = <S = any, A extends Action = AnyAction>(
 ) => {
   const enhancedReducer = {
     ...renkuStateModelReducer,
+    [displaySlice.name]: displaySlice.reducer,
+    [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
-    [projectApi.reducerPath]: projectApi.reducer,
+    [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
-    [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
-    [sessionApi.reducerPath]: sessionApi.reducer,
+    [projectSlice.name]: projectSlice.reducer,
+    [projectsApi.reducerPath]: projectsApi.reducer,
+    [projectsKgApi.reducerPath]: projectsKgApi.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
-    [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
-    [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
+    [sessionApi.reducerPath]: sessionApi.reducer,
+    [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
-    [displaySlice.name]: displaySlice.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
   };
@@ -71,13 +76,14 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         immutableCheck: false,
         serializableCheck: false,
       })
-        .concat(kgSearchApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
-        .concat(projectApi.middleware)
+        .concat(kgSearchApi.middleware)
         .concat(projectCoreApi.middleware)
         .concat(projectKgApi.middleware)
-        .concat(sessionSidecarApi.middleware)
+        .concat(projectsKgApi.middleware)
+        .concat(projectsApi.middleware)
         .concat(recentUserActivityApi.middleware)
+        .concat(sessionSidecarApi.middleware)
         .concat(sessionApi.middleware)
         .concat(versionsApi.middleware)
         .concat(workflowsApi.middleware),

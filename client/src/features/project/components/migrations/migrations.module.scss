@@ -1,0 +1,13 @@
+.projectStatusSection {
+  display: flex;
+  padding: 0.5rem 0;
+}
+
+.projectStatusDetailsSection {
+  padding: 1rem 0 1rem 1rem;
+  border-bottom: black 1px dashed;
+
+  &:first-child {
+    border-top: black 1px dashed;
+  }
+}

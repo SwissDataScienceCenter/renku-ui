@@ -31,6 +31,7 @@ import { Url } from "../../utils/helpers/url";
 
 export interface LoginAlertProps {
   logged: boolean;
+  noWrapper?: boolean;
   textIntro: string;
   textLogin: string;
   textPost: string;
@@ -39,6 +40,7 @@ export interface LoginAlertProps {
 
 const LoginAlert = ({
   logged,
+  noWrapper,
   textLogin = "Log in",
   textIntro,
   textPost = " to use this feature.",
@@ -58,6 +60,13 @@ const LoginAlert = ({
     </Link>
   );
   const introElement = textIntro ? <p>{textIntro}</p> : null;
+
+  if (noWrapper)
+    return (
+      <span>
+        {textPre} {link} {textPost}
+      </span>
+    );
 
   return (
     <>

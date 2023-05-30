@@ -37,7 +37,6 @@ import {
   sanitizeNotebook,
   tweakCellMetadata,
 } from "./File.present";
-import "jest-canvas-mock";
 
 const model = new StateModel(globalSchema);
 

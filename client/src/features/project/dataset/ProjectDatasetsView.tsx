@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import { Alert, Button, Col } from "reactstrap";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faUserClock } from "@fortawesome/free-solid-svg-icons";
 
@@ -13,40 +12,12 @@ import { Loader } from "../../../components/Loader";
 import { DatasetCoordinator } from "../../../dataset/Dataset.state";
 import { SpecialPropVal } from "../../../model/Model";
 import { Url } from "../../../utils/helpers/url";
-
 import ProjectDatasetListView from "./ProjectDatasetsListView";
 import ProjectDatasetShow from "./ProjectDatasetShow";
 import ProjectDatasetImport from "./ProjectDatasetImport";
 import { ProjectDatasetEdit, ProjectDatasetNew } from "./ProjectDatasetNewEdit";
-
-type IWebhook = {
-  status: string | boolean | null;
-  created: boolean;
-  possible: boolean;
-  stop: unknown;
-  progress: unknown;
-};
-
-function webhookError(props: string | boolean | null) {
-  if (
-    props == null ||
-    props === SpecialPropVal.UPDATING ||
-    props === true ||
-    props === false
-  )
-    return false;
-
-  return true;
-}
-
-function isKgDown(thing: IWebhook | boolean) {
-  if (thing === false) return true;
-  const webhook = thing as IWebhook;
-  return (
-    (webhook.status === false && webhook.created !== true) ||
-    webhookError(webhook.status)
-  );
-}
+import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
+import { useProjectSelector } from "../projectSlice";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetLockAlert({ lockStatus }: any) {
@@ -68,33 +39,27 @@ function ProjectDatasetLockAlert({ lockStatus }: any) {
 /**
  * Shows a warning Alert when Renku version is outdated or Knowledge Graph integration is not active.
  *
- * @param {Object} webhook - project.webhook store object
- * @param {Object} history - react history object
- * @param {string} overviewStatusUrl - overview status url
+ * @param {Object} kgDown - boolean
+ * @param {string} targetUrl - target url
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function ProjectStatusAlert(props: any) {
-  const { webhook, overviewStatusUrl, history } = props;
-  const kgDown = isKgDown(webhook);
-
+interface ProjectStatusAlertProps {
+  kgDown: boolean;
+  targetUrl: string;
+}
+function ProjectStatusAlert(props: ProjectStatusAlertProps) {
+  const { kgDown, targetUrl } = props;
   if (!kgDown) return null;
-
-  const kgInfo = kgDown ? (
-    <span>
-      <strong>Knowledge Graph integration not active. </strong>
-      This means that some operations on datasets are not possible, we recommend
-      activating it.
-    </span>
-  ) : null;
 
   return (
     <WarnAlert>
-      {kgInfo}
-      <br />
-      <br />
-      <Button color="warning" onClick={() => history.push(overviewStatusUrl)}>
+      <p>
+        <strong>Knowledge Graph integration not active. </strong>
+        This means that some operations on datasets are not possible, we
+        recommend activating it.
+      </p>
+      <Link className="btn btn-warning" to={targetUrl}>
         See details
-      </Button>
+      </Link>
     </WarnAlert>
   );
 }
@@ -102,6 +67,11 @@ function ProjectStatusAlert(props: any) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetsNav(props: any) {
   const coreDatasets = props.datasets.core.datasets;
+  const projectId = props.metadata?.id;
+  const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
+    skip: !projectId,
+  });
+  const isGraphReady = !projectIndexingStatus.data?.activated;
   if (coreDatasets == null) return null;
   if (coreDatasets.error != null) return null;
   if (coreDatasets.length === 0) return null;
@@ -114,7 +84,7 @@ function ProjectDatasetsNav(props: any) {
       locked={props.lockStatus?.locked ?? true}
       newDatasetUrl={props.newDatasetUrl}
       accessLevel={props.metadata.accessLevel}
-      graphStatus={props.isGraphReady}
+      graphStatus={isGraphReady}
     />
   );
 }
@@ -181,19 +151,22 @@ function ProjectDatasetsView(props: any) {
   const [datasetCoordinator, setDatasetCoordinator] =
     React.useState<unknown>(null);
 
-  const kgDown = isKgDown(props.webhook);
+  const settingsUrl = Url.get(Url.pages.project.settings, {
+    namespace: props.metadata?.namespace,
+    path: props.metadata?.path,
+  });
 
-  const migrationMessage = (
-    <ProjectStatusAlert
-      history={props.history}
-      overviewStatusUrl={props.overviewStatusUrl}
-      webhook={props.webhook}
-    />
+  const projectId = props.metadata?.id;
+  const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
+    skip: !projectId,
+  });
+  const kgDown = !projectIndexingStatus.data?.activated;
+
+  const coreSupport = useProjectSelector((p) => p.migration);
+
+  const coreSupportMessage = (
+    <ProjectStatusAlert targetUrl={settingsUrl} kgDown={kgDown} />
   );
-
-  useEffect(() => {
-    props.fetchGraphStatus();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     setDatasetCoordinator(
@@ -203,19 +176,17 @@ function ProjectDatasetsView(props: any) {
 
   useEffect(() => {
     const datasetsLoading = props.datasets.core === SpecialPropVal.UPDATING;
-    if (
-      datasetsLoading ||
-      !props.migration.core.fetched ||
-      props.migration.core.fetching
-    )
-      return;
+    if (datasetsLoading || !coreSupport.computed) return;
 
     if (props.datasets.core.datasets === null)
-      props.fetchDatasets(props.location.state && props.location.state.reload);
-  }, [props.migration.core.fetched, props.datasets.core]); // eslint-disable-line react-hooks/exhaustive-deps
+      props.fetchDatasets(
+        props.location.state && props.location.state.reload,
+        coreSupport.versionUrl
+      );
+  }, [coreSupport.computed, coreSupport.versionUrl, props.datasets.core]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (props.migration.core.fetched && !props.migration.core.backendAvailable) {
-    const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {
+  if (coreSupport.computed && !coreSupport.backendAvailable) {
+    const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace: props.metadata.namespace,
       path: props.metadata.path,
     });
@@ -237,7 +208,7 @@ function ProjectDatasetsView(props: any) {
           <p>
             {updateInfo} should resolve the problem.
             <br />
-            The <Link to={overviewStatusUrl}>Project status</Link> page provides
+            The <Link to={settingsUrl}>Project settings</Link> page provides
             further information.
           </p>
         </WarnAlert>
@@ -245,8 +216,7 @@ function ProjectDatasetsView(props: any) {
     );
   }
 
-  const checkingBackend =
-    props.migration.core.fetching || !props.migration.core.fetched;
+  const checkingBackend = !coreSupport.computed;
   if (checkingBackend) {
     return (
       <div>
@@ -305,7 +275,7 @@ function ProjectDatasetsView(props: any) {
   ) {
     return (
       <Col sm={12}>
-        {migrationMessage}
+        {coreSupportMessage}
         <ProjectDatasetLockAlert lockStatus={props.lockStatus} />
         <EmptyDatasets
           locked={props.lockStatus?.locked ?? true}
@@ -318,7 +288,7 @@ function ProjectDatasetsView(props: any) {
 
   return (
     <Col sm={12}>
-      {migrationMessage}
+      {coreSupportMessage}
       <ProjectDatasetLockAlert lockStatus={props.lockStatus} />
       <Switch>
         <Route
@@ -379,11 +349,11 @@ function ProjectDatasetsView(props: any) {
                 key="datasetPreview"
                 datasetCoordinator={datasetCoordinator}
                 datasetId={decodeURIComponent(p.match.params.datasetId ?? "")}
-                graphStatus={props.isGraphReady}
+                graphStatus={projectIndexingStatus.data?.activated ?? false}
                 history={props.history}
                 location={props.location}
                 model={props.model}
-                projectInsideKg={!kgDown}
+                projectInsideKg={projectIndexingStatus.data?.activated ?? false}
               />
             </>
           )}

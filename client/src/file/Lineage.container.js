@@ -19,7 +19,6 @@
 import React, { Component } from "react";
 
 import { API_ERRORS } from "../api-client";
-import { GraphIndexingStatus } from "../project/Project";
 import { FileLineage as FileLineagePresent } from "./Lineage.present";
 
 class FileLineage extends Component {
@@ -27,9 +26,6 @@ class FileLineage extends Component {
     super(props);
     this.state = {
       error: null,
-      graphStatusPoller: null,
-      graphStatusWaiting: false,
-      webhookJustCreated: null,
       graph: null,
       currentNode: { id: null, type: null },
       file: null,
@@ -44,73 +40,7 @@ class FileLineage extends Component {
     // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
     this._isMounted = true;
     this.retrieveGraph();
-    this.startPollingProgress();
     this.retrieveFile();
-  }
-
-  componentWillUnmount() {
-    if (this._isMounted) this.stopPollingProgress();
-
-    this._isMounted = false;
-  }
-
-  async startPollingProgress() {
-    if (this._isMounted && !this.state.graphStatusPoller) {
-      this.props.fetchGraphStatus().then((progress) => {
-        if (
-          this._isMounted &&
-          !this.state.graphStatusPoller &&
-          progress !== GraphIndexingStatus.MAX_VALUE &&
-          progress !== GraphIndexingStatus.NO_WEBHOOK
-        ) {
-          const poller = setInterval(this.checkStatus, 2000);
-          this.setState({ graphStatusPoller: poller });
-        }
-      });
-    }
-  }
-
-  stopPollingProgress() {
-    const { graphStatusPoller } = this.state;
-    if (this._isMounted && graphStatusPoller) {
-      clearTimeout(graphStatusPoller);
-      this.setState({ graphStatusPoller: null });
-    }
-  }
-
-  checkStatus = () => {
-    if (this._isMounted && !this.state.graphStatusWaiting) {
-      this.setState({ graphStatusWaiting: true });
-      this.props.fetchGraphStatus().then((progress) => {
-        if (this._isMounted) {
-          this.setState({ graphStatusWaiting: false });
-          if (
-            progress === GraphIndexingStatus.MAX_VALUE ||
-            progress === GraphIndexingStatus.NO_WEBHOOK
-          ) {
-            this.stopPollingProgress();
-            if (progress === GraphIndexingStatus.MAX_VALUE)
-              this.retrieveGraph();
-          }
-        }
-      });
-    }
-  };
-
-  createWebhook(e) {
-    this.setState({ webhookJustCreated: true });
-    this.props.createGraphWebhook(e).then(() => {
-      if (this._isMounted) {
-        // remember that the graph status endpoint is not updated instantly, better adding a short timeout
-        setTimeout(() => {
-          if (this._isMounted) this.startPollingProgress();
-        }, 1000);
-        // updating this state slightly later avoids UI flickering
-        setTimeout(() => {
-          if (this._isMounted) this.setState({ webhookJustCreated: false });
-        }, 1500);
-      }
-    });
   }
 
   async retrieveGraph() {
@@ -189,16 +119,14 @@ class FileLineage extends Component {
 
     return (
       <FileLineagePresent
-        retrieveGraph={this.retrieveGraph.bind(this)}
-        graph={this.state.graph}
-        error={this.state.error}
-        createWebhook={this.createWebhook.bind(this)}
-        webhookJustCreated={this.state.webhookJustCreated}
-        filePath={`/projects/${this.props.projectPathWithNamespace}/files/blob/${this.props.path}`}
-        currentNode={this.state.currentNode}
         accessLevel={this.props.accessLevel}
-        {...this.props}
+        currentNode={this.state.currentNode}
+        error={this.state.error}
+        filePath={`/projects/${this.props.projectPathWithNamespace}/files/blob/${this.props.path}`}
         fileSize={fileSize}
+        graph={this.state.graph}
+        retrieveGraph={this.retrieveGraph.bind(this)}
+        {...this.props}
       />
     );
   }

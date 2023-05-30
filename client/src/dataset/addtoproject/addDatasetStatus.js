@@ -30,6 +30,7 @@ import ProgressIndicator, {
   ProgressStyle,
   ProgressType,
 } from "../../components/progress/Progress";
+import { Url } from "../../utils/helpers/url";
 
 /**
  *  incubator-renku-ui
@@ -41,6 +42,10 @@ import ProgressIndicator, {
 function AddDatasetStatus(props) {
   const { status, text, projectName } = props;
   let statusProject = null;
+  const updateUrl = Url.get(Url.pages.project.settings, {
+    namespace: "",
+    path: projectName,
+  });
   switch (status) {
     case "errorNeedMigration":
       statusProject = (
@@ -52,9 +57,7 @@ function AddDatasetStatus(props) {
           datasets can be imported into it.
           <br />
           <i className="pt-2">
-            <Link to={`/projects/${projectName}/overview/status`}>
-              More info
-            </Link>
+            <Link to={updateUrl}>More info</Link>
           </i>
         </div>
       );
