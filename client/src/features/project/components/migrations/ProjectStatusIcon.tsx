@@ -26,7 +26,6 @@ import {
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import { Url } from "../../../../utils/helpers/url";
-import { projectCoreApi } from "../../projectCoreApi";
 import { projectKgApi } from "../../projectKgApi";
 import { ProjectMigrationLevel } from "../../projectEnums";
 import { getRenkuLevel } from "../../utils/migrations";
