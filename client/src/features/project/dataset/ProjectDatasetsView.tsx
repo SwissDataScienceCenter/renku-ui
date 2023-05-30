@@ -1,3 +1,21 @@
+/*!
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import { Alert, Button, Col } from "reactstrap";
@@ -17,7 +35,9 @@ import ProjectDatasetShow from "./ProjectDatasetShow";
 import ProjectDatasetImport from "./ProjectDatasetImport";
 import { ProjectDatasetEdit, ProjectDatasetNew } from "./ProjectDatasetNewEdit";
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
-import { useProjectSelector } from "../projectSlice";
+import { RootStateOrAny, useSelector } from "react-redux";
+import { StateModelProject } from "../Project";
+import { useProjectMigrationStatus } from "../useProjectMigrationStatus";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetLockAlert({ lockStatus }: any) {
@@ -148,6 +168,8 @@ function EmptyDatasets({ locked, membership, newDatasetUrl }: any) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetsView(props: any) {
+  const { datasets, fetchDatasets, location } = props;
+
   const [datasetCoordinator, setDatasetCoordinator] =
     React.useState<unknown>(null);
 
@@ -162,7 +184,15 @@ function ProjectDatasetsView(props: any) {
   });
   const kgDown = !projectIndexingStatus.data?.activated;
 
-  const coreSupport = useProjectSelector((p) => p.migration);
+  const { defaultBranch, externalUrl } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { computedMigrationStatus } = useProjectMigrationStatus({
+    gitUrl: externalUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { backendAvailable, versionUrl } = computedMigrationStatus;
 
   const coreSupportMessage = (
     <ProjectStatusAlert targetUrl={settingsUrl} kgDown={kgDown} />
@@ -175,17 +205,20 @@ function ProjectDatasetsView(props: any) {
   }, [props.client, props.model]);
 
   useEffect(() => {
-    const datasetsLoading = props.datasets.core === SpecialPropVal.UPDATING;
-    if (datasetsLoading || !coreSupport.computed) return;
+    const datasetsLoading = datasets.core === SpecialPropVal.UPDATING;
+    if (datasetsLoading || !computedMigrationStatus.computed) return;
 
-    if (props.datasets.core.datasets === null)
-      props.fetchDatasets(
-        props.location.state && props.location.state.reload,
-        coreSupport.versionUrl
-      );
-  }, [coreSupport.computed, coreSupport.versionUrl, props.datasets.core]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (datasets.core.datasets === null)
+      fetchDatasets(location.state && location.state.reload, versionUrl);
+  }, [
+    computedMigrationStatus.computed,
+    datasets.core,
+    fetchDatasets,
+    location.state,
+    versionUrl,
+  ]);
 
-  if (coreSupport.computed && !coreSupport.backendAvailable) {
+  if (computedMigrationStatus.computed && !backendAvailable) {
     const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace: props.metadata.namespace,
       path: props.metadata.path,
@@ -216,8 +249,7 @@ function ProjectDatasetsView(props: any) {
     );
   }
 
-  const checkingBackend = !coreSupport.computed;
-  if (checkingBackend) {
+  if (!computedMigrationStatus.computed) {
     return (
       <div>
         <p>Checking project version and RenkuLab compatibility...</p>

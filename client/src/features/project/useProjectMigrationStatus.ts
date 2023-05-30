@@ -16,15 +16,20 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useGetCoreVersionsQuery } from "../versions/versionsApi";
 import { useGetMigrationStatusQuery } from "./projectCoreApi";
 
 type ComputedMigrationStatus =
-  | { computed: false }
+  | {
+      backendAvailable: undefined;
+      computed: false;
+      versionUrl: undefined;
+    }
   | {
       backendAvailable: false;
       computed: true;
+      versionUrl: undefined;
     }
   | {
       backendAvailable: true;
@@ -67,20 +72,11 @@ export const useProjectMigrationStatus = ({
               .project_metadata_version
           )
         : undefined;
-    console.log({ availableVersions, projectVersion });
     return computeBackendData({
       availableVersions,
       projectVersion,
     });
   }, [coreVersions, migrationStatus]);
-
-  useEffect(() => {
-    console.log({
-      migrationStatus,
-      coreVersions,
-      computedMigrationStatus,
-    });
-  }, [migrationStatus, coreVersions, computedMigrationStatus]);
 
   return {
     computedMigrationStatus,
@@ -97,7 +93,11 @@ const computeBackendData = ({
   projectVersion: number | undefined;
 }): ComputedMigrationStatus => {
   if (!availableVersions || typeof projectVersion !== "number")
-    return { computed: false };
+    return {
+      backendAvailable: undefined,
+      computed: false,
+      versionUrl: undefined,
+    };
   if (availableVersions.includes(projectVersion))
     return {
       backendAvailable: true,
@@ -107,5 +107,6 @@ const computeBackendData = ({
   return {
     backendAvailable: false,
     computed: true,
+    versionUrl: undefined,
   };
 };

@@ -74,9 +74,6 @@ import {
   ProjectFileView,
 } from "../features/project";
 import { CloneButton } from "./clone/CloneButton";
-import { useProjectSelector } from "../features/project/projectSlice";
-import { useGetMigrationStatusQuery } from "../features/project/projectCoreApi";
-import { useGetCoreVersionsQuery } from "../features/versions/versionsApi";
 
 import "./Project.css";
 import { useProjectMigrationStatus } from "../features/project/useProjectMigrationStatus";
@@ -232,11 +229,18 @@ function getLinksProjectHeader(datasets, datasetsUrl, errorGettingDatasets) {
 }
 
 function ProjectViewHeaderMinimal(props) {
-  const coreSupport = useProjectSelector((p) => p.migration);
+  const gitUrl = props.metadata?.externalUrl ?? undefined;
+  const branch = props.metadata?.defaultBranch ?? undefined;
+  const { computedMigrationStatus } = useProjectMigrationStatus({
+    gitUrl,
+    branch,
+  });
+  const { backendAvailable } = computedMigrationStatus;
+
   const linksHeader = getLinksProjectHeader(
     props.datasets,
     props.datasetsUrl,
-    coreSupport.computed && !coreSupport.backendAvailable
+    computedMigrationStatus.computed && !backendAvailable
   );
   const projectUrl = Url.get(Url.pages.project, {
     namespace: props.metadata.namespace,
@@ -1189,16 +1193,18 @@ function ProjectView(props) {
   const gitUrl = props.metadata?.externalUrl ?? undefined;
   const branch = props.metadata?.defaultBranch ?? undefined;
 
-  // ? fetch core versions and migration status to compute projectSlice and use useProjectSelector
-  useGetMigrationStatusQuery({ gitUrl, branch }, { skip: !gitUrl || !branch });
-  useGetCoreVersionsQuery();
-  useProjectMigrationStatus({ gitUrl, branch });
+  const { computedMigrationStatus } = useProjectMigrationStatus({
+    gitUrl,
+    branch,
+  });
+  const { backendAvailable, versionUrl } = computedMigrationStatus;
 
-  const coreSupport = useProjectSelector((p) => p.migration);
-  console.log({ coreSupport });
-  if (props.datasets?.core?.datasets === null && coreSupport.backendAvailable) {
-    props.fetchDatasets(false, coreSupport.versionUrl);
-  }
+  const { datasets, fetchDatasets } = props;
+  useEffect(() => {
+    if (datasets?.core?.datasets === null && backendAvailable) {
+      fetchDatasets(false, versionUrl);
+    }
+  }, [backendAvailable, datasets, fetchDatasets, versionUrl]);
 
   if (props.namespace && !props.projectPathWithNamespace) {
     return (

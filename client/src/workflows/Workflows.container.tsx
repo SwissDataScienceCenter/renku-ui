@@ -29,6 +29,7 @@ import {
   workflowsSlice,
   useWorkflowsSelector,
 } from "../features/workflows/WorkflowsSlice";
+import { useProjectMigrationStatus } from "../features/project/useProjectMigrationStatus";
 import { useProjectSelector } from "../features/project/projectSlice";
 
 const MIN_CORE_VERSION_WORKFLOWS = 9;
@@ -73,6 +74,8 @@ function WorkflowsList({
   // Get the workflow id from the query parameters
   const { id }: Record<string, string> = useParams();
   const selected = id;
+
+  // const {} = useProjectMigrationStatus({});
 
   const coreSupport = useProjectSelector((p) => p.migration);
   const versionUrl = coreSupport.versionUrl ?? "";
