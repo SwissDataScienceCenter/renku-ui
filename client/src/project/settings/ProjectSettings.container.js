@@ -24,19 +24,30 @@
  */
 
 import React, { Component } from "react";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 
 import { ProjectSettingsSessions as ProjectSettingsSessionsPresent } from "./ProjectSettings.present";
 import { NotebooksCoordinator } from "../../notebooks";
 import { refreshIfNecessary } from "../../utils/helpers/HelperFunctions";
-import { useProjectSelector } from "../../features/project/projectSlice";
+import { useProjectMigrationStatus } from "../../features/project/useProjectMigrationStatus";
 
 /**
  * Adds the core support data
  */
 function ProjectSettingsSessionsWrapper(props) {
-  const coreSupport = useProjectSelector((p) => p.migration);
-  return <ProjectSettingsSessionsMapper {...props} coreSupport={coreSupport} />;
+  const { defaultBranch, externalUrl } = useSelector(
+    (state) => state.stateModel.project.metadata
+  );
+  const { computedMigrationStatus } = useProjectMigrationStatus({
+    gitUrl: externalUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  return (
+    <ProjectSettingsSessionsMapper
+      {...props}
+      coreSupport={computedMigrationStatus}
+    />
+  );
 }
 
 /**

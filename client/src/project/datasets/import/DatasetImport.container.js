@@ -29,13 +29,22 @@ import _ from "lodash";
 import { datasetImportFormSchema } from "../../../model/RenkuModels";
 import DatasetImport from "./DatasetImport.present";
 import { ImportStateMessage } from "../../../utils/constants/Dataset";
-import { useProjectSelector } from "../../../features/project/projectSlice";
+import { useSelector } from "react-redux";
+import { useProjectMigrationStatus } from "../../../features/project/useProjectMigrationStatus";
 
 let dsFormSchema = _.cloneDeep(datasetImportFormSchema);
 
 function ImportDataset(props) {
   const formLocation = props.location.pathname + "/import";
-  const coreSupport = useProjectSelector((p) => p.migration);
+
+  const { defaultBranch, externalUrl } = useSelector(
+    (state) => state.stateModel.project.metadata
+  );
+  const { computedMigrationStatus } = useProjectMigrationStatus({
+    gitUrl: externalUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { versionUrl } = computedMigrationStatus;
 
   if (dsFormSchema == null) dsFormSchema = _.cloneDeep(datasetImportFormSchema);
 
@@ -47,7 +56,7 @@ function ImportDataset(props) {
   };
 
   const redirectUser = () => {
-    props.fetchDatasets(true, coreSupport.versionUrl);
+    props.fetchDatasets(true, versionUrl);
     props.history.push({
       //we should do the redirect to the new dataset
       //but for this we need the dataset name in the response of the dataset.import operation :(
@@ -102,7 +111,7 @@ function ImportDataset(props) {
   const monitorJobStatusAndHandleResponse = (job_id, handlers) => {
     let cont = 0;
     let monitorJob = setInterval(() => {
-      props.client.getJobStatus(job_id, coreSupport.versionUrl).then((job) => {
+      props.client.getJobStatus(job_id, versionUrl).then((job) => {
         cont++;
         if (job !== undefined || cont === 50)
           handleJobResponse(job, monitorJob, cont, handlers);
@@ -118,11 +127,7 @@ function ImportDataset(props) {
       text: ImportStateMessage.ENQUEUED,
     });
     props.client
-      .datasetImport(
-        props.httpProjectUrl,
-        mappedInputs.uri,
-        coreSupport.versionUrl
-      )
+      .datasetImport(props.httpProjectUrl, mappedInputs.uri, versionUrl)
       .then((response) => {
         if (response.data.error !== undefined) {
           const error = response.data.error;
