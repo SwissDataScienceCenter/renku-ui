@@ -560,7 +560,6 @@ class ProjectCoordinator {
   async fetchProjectConfig(repositoryUrl, versionUrl = "", branch = null) {
     const fetching = this.model.get("config.fetching");
     if (fetching) return false;
-    // const versionUrl = this.model.get("migration.core.versionUrl");
     let configObject = {
       error: { $set: {} },
       fetching: true,
