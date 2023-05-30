@@ -79,6 +79,7 @@ import { useGetMigrationStatusQuery } from "../features/project/projectCoreApi";
 import { useGetCoreVersionsQuery } from "../features/versions/versionsApi";
 
 import "./Project.css";
+import { useProjectMigrationStatus } from "../features/project/useProjectMigrationStatus";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -1191,7 +1192,10 @@ function ProjectView(props) {
   // ? fetch core versions and migration status to compute projectSlice and use useProjectSelector
   useGetMigrationStatusQuery({ gitUrl, branch }, { skip: !gitUrl || !branch });
   useGetCoreVersionsQuery();
+  useProjectMigrationStatus({ gitUrl, branch });
+
   const coreSupport = useProjectSelector((p) => p.migration);
+  console.log({ coreSupport });
   if (props.datasets?.core?.datasets === null && coreSupport.backendAvailable) {
     props.fetchDatasets(false, coreSupport.versionUrl);
   }
