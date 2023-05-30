@@ -29,7 +29,7 @@ interface RtkErrorAlertProps {
 }
 export function RtkErrorAlert({ error }: RtkErrorAlertProps) {
   // ? REF: https://redux-toolkit.js.org/rtk-query/usage-with-typescript#type-safe-error-handling
-  if (error == null || error === undefined) return null;
+  if (error == null) return null;
 
   // code or status
   const errorCode =
