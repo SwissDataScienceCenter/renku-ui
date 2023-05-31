@@ -55,20 +55,10 @@ export const useCoreSupport = ({
 
   const coreSupport = useMemo(() => {
     const availableVersions = coreVersions?.metadataVersions;
-    // const projectVersion =
-    //   migrationStatus?.details?.core_compatibility_status.type === "detail"
-    //     ? parseInt(
-    //         migrationStatus.details.core_compatibility_status
-    //           .project_metadata_version
-    //       )
-    //     : undefined;
-    // Temp version due to renku-core
     const projectVersion =
-      migrationStatus?.details?.core_compatibility_status.type !== "error" &&
-      typeof migrationStatus?.details?.core_compatibility_status
-        .project_metadata_version === "string"
+      migrationStatus?.details?.core_compatibility_status.type === "detail"
         ? parseInt(
-            migrationStatus.details?.core_compatibility_status
+            migrationStatus.details.core_compatibility_status
               .project_metadata_version
           )
         : undefined;
