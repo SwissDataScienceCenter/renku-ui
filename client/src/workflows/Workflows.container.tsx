@@ -29,7 +29,7 @@ import {
   workflowsSlice,
   useWorkflowsSelector,
 } from "../features/workflows/WorkflowsSlice";
-import { useCoreSupport } from "../features/project/useProjectMigrationStatus";
+import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import { StateModelProject } from "../features/project/Project";
 
 const MIN_CORE_VERSION_WORKFLOWS = 9;

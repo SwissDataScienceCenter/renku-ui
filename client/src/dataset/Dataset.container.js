@@ -20,7 +20,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
 import DatasetView from "./Dataset.present";
-import { useCoreSupport } from "../features/project/useProjectMigrationStatus";
+import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 
 export default function ShowDataset(props) {
   const [dataset, setDataset] = useState(null);

@@ -29,7 +29,7 @@ import { connect, useSelector } from "react-redux";
 import { ProjectSettingsSessions as ProjectSettingsSessionsPresent } from "./ProjectSettings.present";
 import { NotebooksCoordinator } from "../../notebooks";
 import { refreshIfNecessary } from "../../utils/helpers/HelperFunctions";
-import { useCoreSupport } from "../../features/project/useProjectMigrationStatus";
+import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
 
 /**
  * Adds the core support data

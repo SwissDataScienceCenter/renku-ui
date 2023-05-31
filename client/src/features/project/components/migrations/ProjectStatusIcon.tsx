@@ -30,7 +30,7 @@ import { projectKgApi } from "../../projectKgApi";
 import { ProjectMigrationLevel } from "../../projectEnums";
 import { getRenkuLevel } from "../../utils/migrations";
 import { UncontrolledTooltip } from "reactstrap";
-import { useCoreSupport } from "../../useProjectMigrationStatus";
+import { useCoreSupport } from "../../useProjectCoreSupport";
 
 interface ProjectStatusIconProps {
   branch: string;

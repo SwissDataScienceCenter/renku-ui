@@ -76,7 +76,7 @@ import {
 import { CloneButton } from "./clone/CloneButton";
 
 import "./Project.css";
-import { useCoreSupport } from "../features/project/useProjectMigrationStatus";
+import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.

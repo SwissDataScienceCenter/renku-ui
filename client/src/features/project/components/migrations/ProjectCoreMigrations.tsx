@@ -39,7 +39,7 @@ import {
   MigrationStartScopes,
   ProjectMigrationLevel,
 } from "../../projectEnums";
-import { useCoreSupport } from "../../useProjectMigrationStatus";
+import { useCoreSupport } from "../../useProjectCoreSupport";
 import {
   canUpdateProjectAutomatically,
   cleanVersion,

@@ -30,7 +30,7 @@ import type {
   StateModelProject,
 } from "../Project.d";
 import { useGetDatasetKgQuery } from "../projectKgApi";
-import { useCoreSupport } from "../useProjectMigrationStatus";
+import { useCoreSupport } from "../useProjectCoreSupport";
 
 type IDatasetCoordinator = {
   fetchDataset: (id: string, datasets: DatasetCore[], fetchKG: boolean) => void;

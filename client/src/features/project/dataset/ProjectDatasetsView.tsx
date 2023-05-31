@@ -37,7 +37,7 @@ import { ProjectDatasetEdit, ProjectDatasetNew } from "./ProjectDatasetNewEdit";
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { StateModelProject } from "../Project";
-import { useCoreSupport } from "../useProjectMigrationStatus";
+import { useCoreSupport } from "../useProjectCoreSupport";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetLockAlert({ lockStatus }: any) {

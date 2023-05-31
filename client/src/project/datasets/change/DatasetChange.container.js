@@ -37,7 +37,7 @@ import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { CoreError } from "../../../components/errors/CoreErrorHelpers";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { useSelector } from "react-redux";
-import { useCoreSupport } from "../../../features/project/useProjectMigrationStatus";
+import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
 
 let dsFormSchema = _.cloneDeep(datasetFormSchema);
 
