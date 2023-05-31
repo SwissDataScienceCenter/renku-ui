@@ -32,14 +32,12 @@ import ProgressIndicator, {
 } from "../../components/progress/Progress";
 import { Url } from "../../utils/helpers/url";
 
-/**
- *  incubator-renku-ui
- *
- *  AddDatasetStatus
- *  Component for displaying the status of adding a dataset
- */
+import type { AddDatasetStatus } from "./DatasetAdd.types";
 
-function AddDatasetStatus(props) {
+interface DatasetAddToProjectStatusProps extends AddDatasetStatus {
+  projectName?: string;
+}
+function DatasetAddToProjectStatus(props: DatasetAddToProjectStatusProps) {
   const { status, text, projectName } = props;
   let statusProject = null;
   const updateUrl = Url.get(Url.pages.project.settings, {
@@ -113,4 +111,4 @@ function AddDatasetStatus(props) {
   );
 }
 
-export { AddDatasetStatus };
+export default DatasetAddToProjectStatus;
