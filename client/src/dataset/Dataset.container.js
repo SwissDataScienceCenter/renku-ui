@@ -20,14 +20,24 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
 import DatasetView from "./Dataset.present";
-import { useProjectSelector } from "../features/project/projectSlice";
+import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 
 export default function ShowDataset(props) {
   const [dataset, setDataset] = useState(null);
   const [datasetFiles, setDatasetFiles] = useState(null);
 
-  const coreSupport = useProjectSelector((p) => p.migration);
-  const versionUrl = coreSupport.versionUrl;
+  const { defaultBranch, externalUrl } = useSelector(
+    (state) => state.stateModel.project.metadata
+  );
+  const { coreSupport } = useCoreSupport({
+    gitUrl: externalUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const {
+    backendAvailable,
+    computed: coreSupportComputed,
+    versionUrl,
+  } = coreSupport;
 
   const findDatasetId = (name, datasets) => {
     const dataset = datasets?.find((d) => d.name === name);
@@ -86,8 +96,8 @@ export default function ShowDataset(props) {
       const isFilesFetching = props.datasetCoordinator.get("files")?.fetching;
       if (
         props.insideProject &&
-        coreSupport.computed &&
-        coreSupport.backendAvailable &&
+        coreSupportComputed &&
+        backendAvailable &&
         !isFilesFetching
       ) {
         fetchFiles(dataset?.name, props.httpProjectUrl, versionUrl);
@@ -97,8 +107,8 @@ export default function ShowDataset(props) {
     dataset,
     props.httpProjectUrl,
     props.insideProject,
-    coreSupport.computed,
-    coreSupport.backendAvailable,
+    coreSupportComputed,
+    backendAvailable,
     props.datasetCoordinator,
     datasetFiles,
     versionUrl,

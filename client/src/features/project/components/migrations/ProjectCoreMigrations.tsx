@@ -17,7 +17,6 @@
  */
 
 import React, { useState } from "react";
-import { Collapse } from "reactstrap";
 import {
   faArrowAltCircleUp,
   faCheckCircle,
@@ -25,19 +24,22 @@ import {
   faInfoCircle,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { Collapse } from "reactstrap";
 
+import { ExternalLink } from "../../../../components/ExternalLinks";
+import { CoreErrorAlert } from "../../../../components/errors/CoreErrorAlert";
+import { RtkOrCoreError } from "../../../../components/errors/RtkErrorAlert";
+import { Docs } from "../../../../utils/constants/Docs";
+import { TemplateSourceRenku } from "../../../../utils/constants/Migrations";
 import { RenkuRepositories } from "../../../../utils/constants/Repositories";
 import { CoreErrorContent } from "../../../../utils/definitions";
 import { CoreSectionError, MigrationStatus } from "../../Project";
+import { projectCoreApi } from "../../projectCoreApi";
 import {
   MigrationStartScopes,
   ProjectMigrationLevel,
 } from "../../projectEnums";
-import { projectCoreApi } from "../../projectCoreApi";
-import { CoreErrorAlert } from "../../../../components/errors/CoreErrorAlert";
-import { RtkOrCoreError } from "../../../../components/errors/RtkErrorAlert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
-import { Docs } from "../../../../utils/constants/Docs";
+import { useCoreSupport } from "../../useProjectCoreSupport";
 import {
   canUpdateProjectAutomatically,
   cleanVersion,
@@ -47,13 +49,11 @@ import {
   getRenkuLevel,
   getTemplateLevel,
 } from "../../utils/migrations";
-import { TemplateSourceRenku } from "../../../../utils/constants/Migrations";
 import {
   CompositeTitle,
   DetailsSection,
   MoreInfoLink,
 } from "./MigrationHelpers";
-import { useProjectSelector } from "../../projectSlice";
 
 interface ProjectMigrationStatusProps {
   branch?: string;
@@ -68,9 +68,13 @@ export function ProjectMigrationStatus({
   const [showDetails, setShowDetails] = useState(false);
   const toggleShowDetails = () => setShowDetails(!showDetails);
 
-  const coreSupport = useProjectSelector((p) => p.migration);
-  const isSupported = coreSupport.backendAvailable ? true : false;
-  const checkingSupport = coreSupport.computed ? false : true;
+  const { coreSupport } = useCoreSupport({
+    gitUrl,
+    branch,
+  });
+  const { backendAvailable, computed: coreSupportComputed } = coreSupport;
+  const isSupported = coreSupportComputed && backendAvailable;
+  const checkingSupport = !coreSupportComputed;
 
   const skip = !gitUrl || !branch;
   const { data, isLoading, isFetching, error } =

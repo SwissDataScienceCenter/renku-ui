@@ -34,7 +34,6 @@ import { kgSearchApi } from "../../features/kgSearch";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
 import { projectKgApi } from "../../features/project/projectKgApi";
-import { projectSlice } from "../../features/project/projectSlice";
 import { projectsApi } from "../../features/projects/projectsApi";
 import { projectsKgApi } from "../../features/projects/projectsKgApi";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
@@ -57,7 +56,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
-    [projectSlice.name]: projectSlice.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
     [projectsKgApi.reducerPath]: projectsKgApi.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
