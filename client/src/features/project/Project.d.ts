@@ -278,8 +278,9 @@ export type TemplateMigrationLevel = {
 };
 
 export interface DeleteProjectParams {
-  namespace: string;
-  name: string;
+  // namespace: string;
+  // name: string;
+  projectPathWithNamespace: string;
 }
 
 export interface DeleteProjectResponse {

@@ -23,6 +23,7 @@ import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../..
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ProjectMigrationStatus } from "./migrations/ProjectCoreMigrations";
 import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
+import { ProjectSettingsGeneralDeleteProject } from "./ProjectSettingsGeneralDeleteProject";
 
 // ****** SETTINGS COMPONENTS ****** //
 
@@ -34,6 +35,10 @@ interface ProjectSettingsGeneralProps {
     externalUrl: string;
     id: number;
     [key: string]: unknown;
+  };
+  projectPathWithNamespace: string;
+  user: {
+    logged: boolean;
   };
   [key: string]: unknown;
 }
@@ -48,6 +53,11 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
         projectId={props.metadata?.id}
       />
       <ProjectSettingsGeneralLegacy {...props} />
+      <ProjectSettingsGeneralDeleteProject
+        isMaintainer={isMaintainer}
+        userLogged={props.user.logged}
+        {...props}
+      />
     </>
   );
 }
@@ -81,9 +91,6 @@ function ProjectSettingsGeneralWrapped({
                 projectId={projectId}
                 isMaintainer={isMaintainer}
               />
-            </div>
-            <div data-cy="project-settings-delete-project">
-              {"[TODO] Delete project"}
             </div>
           </Col>
         </Row>
