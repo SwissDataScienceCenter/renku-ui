@@ -1122,12 +1122,7 @@ function ProjectSettings(props) {
               exact
               path={props.settingsUrl}
               render={() => {
-                return (
-                  <>
-                    <ProjectSettingsGeneral {...props} />
-                    <LegacyProjectSettingsGeneral {...props} />
-                  </>
-                );
+                return <ProjectSettingsGeneral {...props} />;
               }}
             />
             <Route
