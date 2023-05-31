@@ -277,6 +277,15 @@ export type TemplateMigrationLevel = {
     | ProjectMigrationLevel.LevelX;
 };
 
+export interface DeleteProjectParams {
+  namespace: string;
+  name: string;
+}
+
+export interface DeleteProjectResponse {
+  accepted: true;
+}
+
 export type ProjectSliceMigration = {
   cached: {
     branch?: string;

@@ -20,6 +20,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
 import {
   DatasetKg,
+  DeleteProjectParams,
+  DeleteProjectResponse,
   GetDatasetKgParams,
   ProjectActivateIndexingResponse,
   ProjectIndexingStatusResponse,
@@ -90,6 +92,17 @@ export const projectKgApi = createApi({
         throw errorData;
       },
     }),
+    deleteProject: builder.mutation<DeleteProjectResponse, DeleteProjectParams>(
+      {
+        query: ({ namespace, name }) => {
+          return {
+            method: "DELETE",
+            url: `projects/${namespace}/${name}`,
+          };
+        },
+        invalidatesTags: ["project"],
+      }
+    ),
   }),
 });
 

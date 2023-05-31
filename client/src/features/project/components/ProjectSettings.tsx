@@ -82,6 +82,9 @@ function ProjectSettingsGeneralWrapped({
                 isMaintainer={isMaintainer}
               />
             </div>
+            <div data-cy="project-settings-delete-project">
+              {"[TODO] Delete project"}
+            </div>
           </Col>
         </Row>
       </CardBody>
