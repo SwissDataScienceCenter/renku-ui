@@ -276,19 +276,3 @@ export type TemplateMigrationLevel = {
     | ProjectMigrationLevel.LevelE
     | ProjectMigrationLevel.LevelX;
 };
-
-export type ProjectSliceMigration = {
-  cached: {
-    branch?: string;
-    coreVersions?: number[];
-    gitUrl?: string;
-    metadataVersion?: number;
-  };
-  backendAvailable?: boolean;
-  computed: boolean;
-  versionUrl?: string;
-};
-
-export type ProjectSlice = {
-  migration: ProjectSliceMigration;
-};

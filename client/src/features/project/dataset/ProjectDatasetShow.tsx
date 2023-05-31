@@ -1,3 +1,21 @@
+/*!
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
@@ -11,8 +29,8 @@ import type {
   IDataset,
   StateModelProject,
 } from "../Project.d";
-import { useProjectSelector } from "../projectSlice";
 import { useGetDatasetKgQuery } from "../projectKgApi";
+import { useCoreSupport } from "../useProjectCoreSupport";
 
 type IDatasetCoordinator = {
   fetchDataset: (id: string, datasets: DatasetCore[], fetchKG: boolean) => void;
@@ -37,7 +55,7 @@ type ProjectDatasetShowProps = {
 
 type ProjectDatasetViewProps = {
   datasetCoordinator: IDatasetCoordinator;
-  datasets: DatasetCore[];
+  datasets: DatasetCore[] | undefined;
   datasetId: string;
   fileContentUrl: string;
   graphStatus: boolean;
@@ -55,11 +73,18 @@ type ProjectDatasetViewProps = {
   projectsUrl: string;
 };
 
-function findDataset(name: string, datasets: DatasetCore[]) {
+function findDataset(
+  name: string | undefined,
+  datasets: DatasetCore[] | undefined
+) {
+  if (name == null || datasets == null) return undefined;
   return datasets.find((d) => d.name === name);
 }
 
-function findDatasetId(name?: string, datasets?: DatasetCore[]) {
+function findDatasetId(
+  name: string | undefined,
+  datasets: DatasetCore[] | undefined
+) {
   if (name == null || datasets == null) return undefined;
   const dataset = findDataset(name, datasets);
   return dataset?.identifier;
@@ -99,24 +124,30 @@ function mergeCoreAndKgDatasets(
 function ProjectDatasetView(props: ProjectDatasetViewProps) {
   const coreDataset = findDataset(props.datasetId, props.datasets);
   const datasetId = findDatasetId(props.datasetId, props.datasets);
-  const coreSupport = useProjectSelector((p) => p.migration);
-  const versionUrl = coreSupport.versionUrl;
+
+  const { defaultBranch, externalUrl } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { coreSupport } = useCoreSupport({
+    gitUrl: externalUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { versionUrl } = coreSupport;
+
   const {
     data: kgDataset,
     error: kgFetchError,
     isFetching: isKgFetching,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  } = useGetDatasetKgQuery({ id: datasetId! }, { skip: !datasetId });
+  } = useGetDatasetKgQuery({ id: datasetId ?? "" }, { skip: !datasetId });
   const currentDataset = mergeCoreAndKgDatasets(coreDataset, kgDataset);
-  //  const { }
   const datasetName = currentDataset?.name;
   const {
     data: datasetFiles,
     error: filesFetchError,
     isFetching: isFilesFetching,
   } = useGetDatasetFilesQuery(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    { git_url: props.httpProjectUrl, name: datasetName!, versionUrl },
+    { git_url: props.httpProjectUrl, name: datasetName ?? "", versionUrl },
     { skip: !datasetName }
   );
 
@@ -185,7 +216,7 @@ function ProjectDatasetShow(props: ProjectDatasetShowProps) {
   return (
     <ProjectDatasetView
       key="datasetPreview"
-      datasets={datasets as DatasetCore[]}
+      datasets={datasets as DatasetCore[] | undefined}
       datasetCoordinator={props.datasetCoordinator as IDatasetCoordinator}
       datasetId={props.datasetId}
       fileContentUrl={fileContentUrl}
