@@ -15,33 +15,48 @@
   },
   "extends": [
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
     "plugin:jest/recommended",
     "prettier"
   ],
-  "plugins": [
-    "react",
-    "react-hooks",
-    "jest",
-    "spellcheck",
-    "@typescript-eslint"
-  ],
+  "plugins": ["react", "react-hooks", "jest", "spellcheck"],
   "settings": {
     "react": {
       "version": "detect"
     }
   },
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "plugins": [
+        "@typescript-eslint",
+        "jest",
+        "react",
+        "react-hooks",
+        "spellcheck"
+      ],
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        // We probably want to turn this on at some point
+        // "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended",
+        "plugin:jest/recommended",
+        "prettier"
+      ],
+      "parserOptions": {
+        "project": ["./tsconfig.json"]
+      },
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "warn"
+      }
+    }
+  ],
   "rules": {
     "no-eval": "error",
-    "no-unused-vars": [
-      "warn",
-      {
-        "vars": "all",
-        "args": "none",
-        "ignoreRestSiblings": false
-      }
-    ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
     "no-console": "warn",
     "react/prop-types": "off",
     "react/jsx-indent": [0],
@@ -135,6 +150,7 @@
           "linkify",
           "localhost",
           "maintenances",
+          "matcher",
           "mathbf",
           "mathjax",
           "mergerequests",

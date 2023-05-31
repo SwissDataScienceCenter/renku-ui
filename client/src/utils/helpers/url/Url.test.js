@@ -25,8 +25,6 @@
 
 import { UrlRule, Url, getSearchParams, isSessionUrl } from "./Url";
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 describe("UrlRule private class", () => {
   it("Initialization values and errors", () => {
     // Verify all the parameters, and try to trigger all possible errors based on wrong parameters.
@@ -51,6 +49,7 @@ describe("UrlRule private class", () => {
     expect(() => new UrlRule(() => "/", ["input1", 21])).toThrow(
       "<required> parameter must contain only strings"
     );
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     rule = new UrlRule((data) => "/", ["input1", "input2"]);
     expect(rule.required).toBeInstanceOf(Array);
     expect(rule.required).toHaveLength(2);
@@ -65,6 +64,7 @@ describe("UrlRule private class", () => {
       () => true
     );
     expect(rule.validation).toBeInstanceOf(Function);
+    /* eslint-enable @typescript-eslint/no-unused-vars */
 
     // examples
     expect(() => new UrlRule(() => "/", [], null, "wrong_type")).toThrow(
@@ -295,7 +295,7 @@ describe("getSearchParams function", () => {
   beforeAll(() => {
     // ? This works fine locally, but it fails in the GitHub actions where the workaround
     // ? is to delete global.window.location each time.
-    global.window = Object.create(window);
+    global.window ??= Object.create(window);
     Object.defineProperty(window, "location", {
       value: { href: "/", search: "" },
     });

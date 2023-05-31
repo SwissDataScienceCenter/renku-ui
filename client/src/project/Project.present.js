@@ -36,13 +36,9 @@ import {
   Row,
   Nav,
   NavItem,
-  UncontrolledTooltip,
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCodeBranch,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 
 import { Url } from "../utils/helpers/url";
 import { SpecialPropVal } from "../model/Model";
@@ -50,20 +46,11 @@ import { Notebooks, ShowSession, StartNotebookServer } from "../notebooks";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ProjectDatasetsView } from "../features/project";
 import { ACCESS_LEVELS } from "../api-client";
-import { shouldDisplayVersionWarning } from "./status/MigrationUtils.js";
 import { NamespaceProjects } from "../namespace";
-import {
-  ProjectOverviewCommits,
-  ProjectOverviewStats,
-  ProjectOverviewVersion,
-} from "./overview";
+import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 import { ForkProject } from "./new";
-import {
-  ProjectSettingsGeneral as LegacyProjectSettingsGeneral,
-  ProjectSettingsNav,
-  ProjectSettingsSessions,
-} from "./settings";
-import { ProjectSettingsGeneral } from "./settings/ProjectsSettingsGeneral";
+import { ProjectSettingsNav, ProjectSettingsSessions } from "./settings";
+import { ProjectSettingsGeneral } from "../features/project/components/ProjectSettings";
 import { WorkflowsList } from "../workflows";
 import { ExternalLink } from "../components/ExternalLinks";
 import { GoBackButton, RoundButtonGroup } from "../components/buttons/Button";
@@ -80,13 +67,16 @@ import GitLabConnectButton, {
   externalUrlToGitLabIdeUrl,
 } from "./components/GitLabConnect";
 import { NotebooksCoordinator } from "../notebooks";
-import ProjectPageTitle from "../features/project/ProjectPageTitle";
+import ProjectPageTitle from "../features/project/components/ProjectPageTitle";
 import {
   ProjectEntityHeader,
   ProjectFileLineage,
   ProjectFileView,
 } from "../features/project";
 import { CloneButton } from "./clone/CloneButton";
+import { useProjectSelector } from "../features/project/projectSlice";
+import { useGetMigrationStatusQuery } from "../features/project/projectCoreApi";
+import { useGetCoreVersionsQuery } from "../features/versions/versionsApi";
 
 import "./Project.css";
 
@@ -102,70 +92,6 @@ function isRequestPending(props, request) {
   const transient = props.transient || {};
   const requests = transient.requests || {};
   return requests[request] === SpecialPropVal.UPDATING;
-}
-
-function webhookError(props) {
-  if (
-    props == null ||
-    props === SpecialPropVal.UPDATING ||
-    props === true ||
-    props === false
-  )
-    return false;
-
-  return true;
-}
-
-function isKgDown(webhook) {
-  return (
-    webhook === false ||
-    (webhook.status === false && webhook.created !== true) ||
-    webhookError(webhook.status)
-  );
-}
-
-/**
- * Shows a warning icon when Renku version is outdated or Knowledge Graph integration is not active.
- *
- * @param {Object} webhook - project.webhook store object
- * @param {bool} migration_required - whether it's necessary to migrate the project or not
- * @param {bool} docker_update_possible - whether it's necessary to migrate the docker image or not
- * @param {Object} history - react history object
- * @param {string} overviewStatusUrl - overview status url
- */
-class ProjectStatusIcon extends Component {
-  render() {
-    const { webhook, overviewStatusUrl, history, migration } = this.props;
-    const kgDown = isKgDown(webhook);
-
-    const warningSignForVersionDisplayed =
-      shouldDisplayVersionWarning(migration);
-
-    if (!warningSignForVersionDisplayed && !kgDown) return null;
-
-    const versionInfo = warningSignForVersionDisplayed
-      ? "Current project is outdated. "
-      : null;
-    const kgInfo = kgDown ? "Knowledge Graph integration not active. " : null;
-
-    return (
-      <span
-        className="warningLabel cursor-pointer"
-        style={{ verticalAlign: "text-bottom" }}
-      >
-        <FontAwesomeIcon
-          icon={faExclamationTriangle}
-          onClick={() => history.push(overviewStatusUrl)}
-          id="warningStatusLink"
-        />
-        <UncontrolledTooltip placement="top" target="warningStatusLink">
-          {versionInfo}
-          {kgInfo}
-          Click to see details.
-        </UncontrolledTooltip>
-      </span>
-    );
-  }
 }
 
 function ToggleForkModalButton({
@@ -237,6 +163,7 @@ class ForkProjectModal extends Component {
           client={this.props.client}
           forkedId={this.props.id}
           forkedTitle={this.props.title}
+          model={this.props.model}
           projectVisibility={this.props.projectVisibility}
           toggleModal={this.toggleFunction}
         />
@@ -304,24 +231,16 @@ function getLinksProjectHeader(datasets, datasetsUrl, errorGettingDatasets) {
 }
 
 function ProjectViewHeaderMinimal(props) {
+  const coreSupport = useProjectSelector((p) => p.migration);
   const linksHeader = getLinksProjectHeader(
     props.datasets,
     props.datasetsUrl,
-    props.migration.core.fetched && !props.migration.core.backendAvailable
+    coreSupport.computed && !coreSupport.backendAvailable
   );
   const projectUrl = Url.get(Url.pages.project, {
     namespace: props.metadata.namespace,
     path: props.metadata.path,
   });
-  const statusButton = (
-    <ProjectStatusIcon
-      history={props.history}
-      webhook={props.webhook}
-      overviewStatusUrl={props.overviewStatusUrl}
-      migration={props.migration}
-    />
-  );
-  const isInKg = props.isGraphReady;
 
   const forkedFromText = isForkedFromProject(props.forkedFromProject) ? (
     <>
@@ -345,6 +264,7 @@ function ProjectViewHeaderMinimal(props) {
   return (
     <>
       <ProjectEntityHeader
+        branch={props.metadata?.defaultBranch}
         client={props.client}
         creators={props.metadata.owner ? [props.metadata.owner] : []}
         description={{ value: props.metadata.description }}
@@ -353,12 +273,11 @@ function ProjectViewHeaderMinimal(props) {
         gitUrl={props.externalUrl}
         hideEmptyTags={true}
         imageUrl={props.metadata.avatarUrl}
-        isInKg={isInKg}
         itemType="project"
         labelCaption={"Updated"}
         links={linksHeader}
+        projectId={props.metadata?.id}
         slug={slug}
-        statusButton={statusButton}
         tagList={props.metadata.tagList}
         timeCaption={props.metadata.lastActivityAt}
         title={props.metadata.title}
@@ -767,9 +686,6 @@ class ProjectViewOverviewNav extends Component {
         <NavItem>
           <RenkuNavLink to={this.props.overviewCommitsUrl} title="Commits" />
         </NavItem>
-        <NavItem>
-          <RenkuNavLink to={this.props.overviewStatusUrl} title="Status" />
-        </NavItem>
       </Nav>
     );
   }
@@ -819,16 +735,6 @@ class ProjectViewOverview extends Component {
                   />
                 )}
               />
-              <Route
-                exact
-                path={this.props.overviewStatusUrl}
-                render={() => (
-                  <ProjectOverviewVersion
-                    {...this.props}
-                    isLoading={isRequestPending(this.props, "readme")}
-                  />
-                )}
-              />
             </Switch>
           </Col>
         </Row>
@@ -847,8 +753,6 @@ function ProjectViewWorkflows(props) {
       fullPath={props.projectPathWithNamespace}
       reference={reference}
       repositoryUrl={props.externalUrl}
-      versionUrl={props.migration?.core?.versionUrl}
-      backendAvailable={props.migration?.core?.backendAvailable}
     />
   );
 }
@@ -873,11 +777,11 @@ class ProjectViewFiles extends Component {
                 fetchBranches={() =>
                   this.props.projectCoordinator.fetchBranches()
                 }
-                fetchGraphStatus={this.props.fetchGraphStatus}
                 filePath={p.match.params.filePath}
                 history={this.props.history}
                 location={p.location}
                 model={this.props.model}
+                projectId={this.props.metadata?.id ?? undefined}
               />
             )}
           />
@@ -889,7 +793,6 @@ class ProjectViewFiles extends Component {
                 fetchBranches={() =>
                   this.props.projectCoordinator.fetchBranches()
                 }
-                fetchGraphStatus={this.props.fetchGraphStatus}
                 filePath={p.match.params.filePath}
                 history={this.props.history}
                 location={p.location}
@@ -1213,7 +1116,7 @@ function ProjectSettings(props) {
         <Col key="nav" sm={12} md={2}>
           <ProjectSettingsNav {...props} />
         </Col>
-        <Col key="content" sm={12} md={10}>
+        <Col key="content" sm={12} md={10} data-cy="settings-container">
           <Switch>
             <Route
               exact
@@ -1287,6 +1190,16 @@ class NotFoundInsideProject extends Component {
 
 function ProjectView(props) {
   const available = props.metadata ? props.metadata.exists : null;
+  const gitUrl = props.metadata?.externalUrl ?? undefined;
+  const branch = props.metadata?.defaultBranch ?? undefined;
+
+  // ? fetch core versions and migration status to compute projectSlice and use useProjectSelector
+  useGetMigrationStatusQuery({ gitUrl, branch }, { skip: !gitUrl || !branch });
+  useGetCoreVersionsQuery();
+  const coreSupport = useProjectSelector((p) => p.migration);
+  if (props.datasets?.core?.datasets === null && coreSupport.backendAvailable) {
+    props.fetchDatasets(false, coreSupport.versionUrl);
+  }
 
   if (props.namespace && !props.projectPathWithNamespace) {
     return (
@@ -1319,11 +1232,11 @@ function ProjectView(props) {
   const cleanSessionUrl =
     props.location.pathname.split("/").slice(0, -1).join("/") + "/:server";
   const isShowSession = cleanSessionUrl === props.sessionShowUrl;
-  const isInKg = props.isGraphReady;
+
   return [
     <ProjectPageTitle
       key="page-title"
-      isInKg={isInKg}
+      projectId={props.metadata?.id}
       projectPathWithNamespace={props.metadata.pathWithNamespace}
       projectTitle={props.metadata.title}
     />,

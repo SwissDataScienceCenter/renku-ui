@@ -25,8 +25,6 @@ import "./Progress.css";
  *  Progress component
  */
 
-// These values are actually used, but the ts compiler does not realize it
-/* eslint-disable no-unused-vars */
 export enum ProgressType {
   Determinate = "Determinate",
   Indeterminate = "Indeterminate",
@@ -36,7 +34,6 @@ export enum ProgressStyle {
   Light = "light",
   Dark = "dark",
 }
-/* eslint-enable no-unused-vars */
 
 export interface ProgressIndicatorProps {
   /**

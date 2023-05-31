@@ -18,7 +18,7 @@
 
 import { useEffect, useState } from "react";
 import { computeVisibilities } from "../helpers/HelperFunctions";
-import { useGetGroupByPathQuery } from "../../features/projects/ProjectsApi";
+import { useGetGroupByPathQuery } from "../../features/projects/projectsApi";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
