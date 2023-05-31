@@ -30,7 +30,7 @@ import type {
   StateModelProject,
 } from "../Project.d";
 import { useGetDatasetKgQuery } from "../projectKgApi";
-import { useProjectMigrationStatus } from "../useProjectMigrationStatus";
+import { useCoreSupport } from "../useProjectMigrationStatus";
 
 type IDatasetCoordinator = {
   fetchDataset: (id: string, datasets: DatasetCore[], fetchKG: boolean) => void;
@@ -129,11 +129,11 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     RootStateOrAny,
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
-  const { computedMigrationStatus } = useProjectMigrationStatus({
+  const { coreSupport } = useCoreSupport({
     gitUrl: externalUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { versionUrl } = computedMigrationStatus;
+  const { versionUrl } = coreSupport;
 
   const {
     data: kgDataset,

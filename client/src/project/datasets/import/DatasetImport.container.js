@@ -30,7 +30,7 @@ import { datasetImportFormSchema } from "../../../model/RenkuModels";
 import DatasetImport from "./DatasetImport.present";
 import { ImportStateMessage } from "../../../utils/constants/Dataset";
 import { useSelector } from "react-redux";
-import { useProjectMigrationStatus } from "../../../features/project/useProjectMigrationStatus";
+import { useCoreSupport } from "../../../features/project/useProjectMigrationStatus";
 
 let dsFormSchema = _.cloneDeep(datasetImportFormSchema);
 
@@ -40,7 +40,7 @@ function ImportDataset(props) {
   const { defaultBranch, externalUrl } = useSelector(
     (state) => state.stateModel.project.metadata
   );
-  const { computedMigrationStatus } = useProjectMigrationStatus({
+  const { computedMigrationStatus } = useCoreSupport({
     gitUrl: externalUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });

@@ -29,7 +29,7 @@ import {
   workflowsSlice,
   useWorkflowsSelector,
 } from "../features/workflows/WorkflowsSlice";
-import { useProjectMigrationStatus } from "../features/project/useProjectMigrationStatus";
+import { useCoreSupport } from "../features/project/useProjectMigrationStatus";
 import { StateModelProject } from "../features/project/Project";
 
 const MIN_CORE_VERSION_WORKFLOWS = 9;
@@ -79,18 +79,22 @@ function WorkflowsList({
     RootStateOrAny,
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
-  const { computedMigrationStatus } = useProjectMigrationStatus({
+  const { coreSupport } = useCoreSupport({
     gitUrl: repositoryUrl,
     branch: defaultBranch,
   });
-  const { backendAvailable, versionUrl } = computedMigrationStatus;
+  const {
+    backendAvailable,
+    computed: coreSupportComputed,
+    versionUrl,
+  } = coreSupport;
   const metadataVersion = versionUrl
     ? parseInt(versionUrl.slice(1))
     : undefined;
 
   // Verify backend support and availability
   const unsupported =
-    (computedMigrationStatus.computed && !backendAvailable) ||
+    (coreSupportComputed && !backendAvailable) ||
     (metadataVersion && metadataVersion < MIN_CORE_VERSION_WORKFLOWS) ||
     false;
 
@@ -125,9 +129,7 @@ function WorkflowsList({
     orderProperty: workflowsDisplay.orderProperty,
   };
   const waiting =
-    !versionUrl ||
-    !computedMigrationStatus.computed ||
-    workflowsQuery.isLoading;
+    !versionUrl || !coreSupportComputed || workflowsQuery.isLoading;
 
   // Fetch workflow details
   const skipDetails = skipList || !selected ? true : false;

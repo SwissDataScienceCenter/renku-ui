@@ -39,7 +39,7 @@ import {
   MigrationStartScopes,
   ProjectMigrationLevel,
 } from "../../projectEnums";
-import { useProjectMigrationStatus } from "../../useProjectMigrationStatus";
+import { useCoreSupport } from "../../useProjectMigrationStatus";
 import {
   canUpdateProjectAutomatically,
   cleanVersion,
@@ -68,14 +68,13 @@ export function ProjectMigrationStatus({
   const [showDetails, setShowDetails] = useState(false);
   const toggleShowDetails = () => setShowDetails(!showDetails);
 
-  const { computedMigrationStatus } = useProjectMigrationStatus({
+  const { coreSupport } = useCoreSupport({
     gitUrl,
     branch,
   });
-  const isSupported =
-    computedMigrationStatus.computed &&
-    computedMigrationStatus.backendAvailable;
-  const checkingSupport = !computedMigrationStatus.computed; // TODO(leafty): replace with `isFetching`?
+  const { backendAvailable, computed: coreSupportComputed } = coreSupport;
+  const isSupported = coreSupportComputed && backendAvailable;
+  const checkingSupport = !coreSupportComputed;
 
   const skip = !gitUrl || !branch;
   const { data, isLoading, isFetching, error } =

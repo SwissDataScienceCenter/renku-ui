@@ -37,7 +37,7 @@ import { ProjectDatasetEdit, ProjectDatasetNew } from "./ProjectDatasetNewEdit";
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { StateModelProject } from "../Project";
-import { useProjectMigrationStatus } from "../useProjectMigrationStatus";
+import { useCoreSupport } from "../useProjectMigrationStatus";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetLockAlert({ lockStatus }: any) {
@@ -188,11 +188,15 @@ function ProjectDatasetsView(props: any) {
     RootStateOrAny,
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
-  const { computedMigrationStatus } = useProjectMigrationStatus({
+  const { coreSupport } = useCoreSupport({
     gitUrl: externalUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { backendAvailable, versionUrl } = computedMigrationStatus;
+  const {
+    backendAvailable,
+    computed: coreSupportComputed,
+    versionUrl,
+  } = coreSupport;
 
   const coreSupportMessage = (
     <ProjectStatusAlert targetUrl={settingsUrl} kgDown={kgDown} />
@@ -206,19 +210,19 @@ function ProjectDatasetsView(props: any) {
 
   useEffect(() => {
     const datasetsLoading = datasets.core === SpecialPropVal.UPDATING;
-    if (datasetsLoading || !computedMigrationStatus.computed) return;
+    if (datasetsLoading || !coreSupportComputed) return;
 
     if (datasets.core.datasets === null)
       fetchDatasets(location.state && location.state.reload, versionUrl);
   }, [
-    computedMigrationStatus.computed,
+    coreSupportComputed,
     datasets.core,
     fetchDatasets,
     location.state,
     versionUrl,
   ]);
 
-  if (computedMigrationStatus.computed && !backendAvailable) {
+  if (coreSupportComputed && !backendAvailable) {
     const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace: props.metadata.namespace,
       path: props.metadata.path,
@@ -249,7 +253,7 @@ function ProjectDatasetsView(props: any) {
     );
   }
 
-  if (!computedMigrationStatus.computed) {
+  if (!coreSupportComputed) {
     return (
       <div>
         <p>Checking project version and RenkuLab compatibility...</p>

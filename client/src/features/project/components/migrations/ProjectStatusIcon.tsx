@@ -30,7 +30,7 @@ import { projectKgApi } from "../../projectKgApi";
 import { ProjectMigrationLevel } from "../../projectEnums";
 import { getRenkuLevel } from "../../utils/migrations";
 import { UncontrolledTooltip } from "reactstrap";
-import { useProjectMigrationStatus } from "../../useProjectMigrationStatus";
+import { useCoreSupport } from "../../useProjectMigrationStatus";
 
 interface ProjectStatusIconProps {
   branch: string;
@@ -53,12 +53,12 @@ export function ProjectStatusIcon({
     refetchOnMountOrArgChange: 20,
     skip: skipKg,
   });
-  const { computedMigrationStatus, getMigrationStatusQuery: migrationStatus } =
-    useProjectMigrationStatus({
+  const { coreSupport, getMigrationStatusQuery: migrationStatus } =
+    useCoreSupport({
       gitUrl,
       branch,
     });
-  const { backendAvailable } = computedMigrationStatus;
+  const { backendAvailable } = coreSupport;
   const isLoading = migrationStatus.isLoading || kgStatus.isLoading;
   const kgActivated = kgStatus.data?.activated === true;
   const migrationLevel = getRenkuLevel(migrationStatus.data, backendAvailable);

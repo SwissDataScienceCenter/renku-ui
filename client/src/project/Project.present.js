@@ -76,7 +76,7 @@ import {
 import { CloneButton } from "./clone/CloneButton";
 
 import "./Project.css";
-import { useProjectMigrationStatus } from "../features/project/useProjectMigrationStatus";
+import { useCoreSupport } from "../features/project/useProjectMigrationStatus";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -231,16 +231,16 @@ function getLinksProjectHeader(datasets, datasetsUrl, errorGettingDatasets) {
 function ProjectViewHeaderMinimal(props) {
   const gitUrl = props.metadata?.externalUrl ?? undefined;
   const branch = props.metadata?.defaultBranch ?? undefined;
-  const { computedMigrationStatus } = useProjectMigrationStatus({
+  const { coreSupport } = useCoreSupport({
     gitUrl,
     branch,
   });
-  const { backendAvailable } = computedMigrationStatus;
+  const { backendAvailable, computed: coreSupportComputed } = coreSupport;
 
   const linksHeader = getLinksProjectHeader(
     props.datasets,
     props.datasetsUrl,
-    computedMigrationStatus.computed && !backendAvailable
+    coreSupportComputed && !backendAvailable
   );
   const projectUrl = Url.get(Url.pages.project, {
     namespace: props.metadata.namespace,
@@ -1193,11 +1193,11 @@ function ProjectView(props) {
   const gitUrl = props.metadata?.externalUrl ?? undefined;
   const branch = props.metadata?.defaultBranch ?? undefined;
 
-  const { computedMigrationStatus } = useProjectMigrationStatus({
+  const { coreSupport } = useCoreSupport({
     gitUrl,
     branch,
   });
-  const { backendAvailable, versionUrl } = computedMigrationStatus;
+  const { backendAvailable, versionUrl } = coreSupport;
 
   const { datasets, fetchDatasets } = props;
   useEffect(() => {

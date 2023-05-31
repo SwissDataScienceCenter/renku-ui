@@ -20,7 +20,7 @@ import { useMemo } from "react";
 import { useGetCoreVersionsQuery } from "../versions/versionsApi";
 import { useGetMigrationStatusQuery } from "./projectCoreApi";
 
-type ComputedMigrationStatus =
+export type CoreSupport =
   | {
       backendAvailable: undefined;
       computed: false;
@@ -37,7 +37,7 @@ type ComputedMigrationStatus =
       versionUrl: string;
     };
 
-export const useProjectMigrationStatus = ({
+export const useCoreSupport = ({
   gitUrl,
   branch,
 }: {
@@ -53,7 +53,7 @@ export const useProjectMigrationStatus = ({
   const { data: migrationStatus } = getMigrationStatusQuery;
   const { data: coreVersions } = getCoreVersionsQuery;
 
-  const computedMigrationStatus = useMemo(() => {
+  const coreSupport = useMemo(() => {
     const availableVersions = coreVersions?.metadataVersions;
     // const projectVersion =
     //   migrationStatus?.details?.core_compatibility_status.type === "detail"
@@ -79,7 +79,7 @@ export const useProjectMigrationStatus = ({
   }, [coreVersions, migrationStatus]);
 
   return {
-    computedMigrationStatus,
+    coreSupport,
     getMigrationStatusQuery,
     getCoreVersionsQuery,
   };
@@ -91,7 +91,7 @@ const computeBackendData = ({
 }: {
   availableVersions: number[] | undefined;
   projectVersion: number | undefined;
-}): ComputedMigrationStatus => {
+}): CoreSupport => {
   if (!availableVersions || typeof projectVersion !== "number")
     return {
       backendAvailable: undefined,
