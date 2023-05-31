@@ -44,7 +44,7 @@
     "react-cookie-consent": "^8.0.1",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
-    "react-ipynb-renderer": "^2.0.1",
+    "react-ipynb-renderer": "^2.1.0",
     "react-js-pagination": "^3.0.2",
     "react-katex": "^3.0.1",
     "react-markdown": "^8.0.7",
