@@ -93,7 +93,7 @@ class FileCard extends React.Component {
       );
     }
     return (
-      <Card className="border-rk-light">
+      <Card>
         <CardHeader
           id="file-card-header"
           className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3 flex-wrap"
@@ -169,7 +169,7 @@ class ShowFile extends React.Component {
           : this.props.gitLabFilePath.split("\\").pop().split("/").pop();
       const body =
         fileInfo && fileInfo.type === "tree" ? (
-          <Card className="border-rk-light">
+          <Card>
             <CardBody>Folder</CardBody>
           </Card>
         ) : (
@@ -194,7 +194,7 @@ class ShowFile extends React.Component {
 
     if (this.props.file == null) {
       return (
-        <Card className="border-rk-light">
+        <Card>
           <CardHeader className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3">
             &nbsp;
           </CardHeader>
