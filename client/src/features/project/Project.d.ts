@@ -129,6 +129,7 @@ export type StateModelProject = {
   metadata: {
     accessLevel: number;
     defaultBranch: string;
+    description: string | null;
     externalUrl: string;
     httpUrl: string;
     id: string;

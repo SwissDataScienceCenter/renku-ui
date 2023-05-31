@@ -72,6 +72,7 @@ export const projectsApi = createApi({
         return { url: `/groups/${urlEncodedPath}`, method: "GET" };
       },
     }),
+    // getProject: builder.query<ProjectMetadata, >({}),
     getMemberProjects: builder.query<any, QueryParams>({
       query: (queryParams: QueryParams) => {
         const params = { variables: null, operationName: null };
