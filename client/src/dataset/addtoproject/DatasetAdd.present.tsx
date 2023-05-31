@@ -16,29 +16,33 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  DatasetAdd.present.js
- *  Presentational components.
- */
-
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { RootStateOrAny, useSelector } from "react-redux";
+
 import _ from "lodash";
 import { Row, Col } from "reactstrap";
 import { Button } from "reactstrap";
 import { ButtonGroup, Table } from "reactstrap";
 
-import { AddDatasetExistingProject } from "./addDatasetExistingProject";
-import { AddDatasetNewProject } from "./addDatasetNewProject";
+import AddDatasetExistingProject from "./DatasetAddToExistingProject";
+import AddDatasetNewProject from "./DatasetAddToNewProject";
 import { getDatasetAuthors } from "../DatasetFunctions";
 import { DatasetError } from "../DatasetError";
 import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { ContainerWrap } from "../../App";
 
-function HeaderAddDataset({ dataset }) {
+import {
+  AddDatasetDataset,
+  AddDatasetHandlers,
+  AddDatasetStatus,
+} from "./DatasetAdd.types";
+
+type HeaderAddDatasetProps = {
+  dataset: AddDatasetDataset;
+};
+
+function HeaderAddDataset({ dataset }: HeaderAddDatasetProps) {
   if (!dataset) return null;
   const authors = getDatasetAuthors(dataset);
   return (
@@ -66,6 +70,16 @@ function HeaderAddDataset({ dataset }) {
   );
 }
 
+type DatasetAddProps = {
+  dataset: AddDatasetDataset | null;
+  model: unknown;
+  handlers: AddDatasetHandlers;
+  isDatasetValid: boolean | null;
+  currentStatus: AddDatasetStatus | null;
+  importingDataset: boolean;
+  insideProject: boolean;
+};
+
 function DatasetAdd({
   dataset,
   model,
@@ -74,9 +88,11 @@ function DatasetAdd({
   currentStatus,
   importingDataset,
   insideProject,
-}) {
+}: DatasetAddProps) {
   const [isNewProject, setIsNewProject] = useState(false);
-  const logged = useSelector((state) => state.stateModel.user.logged);
+  const logged = useSelector(
+    (state: RootStateOrAny) => state.stateModel.user.logged
+  );
 
   // Return early if there is no dataset
   if (!dataset) return <Loader />;
@@ -95,7 +111,9 @@ function DatasetAdd({
   // Set different content for logged and anonymous users
   let mainContent = null;
   if (logged) {
-    const disabled = ["inProcess", "importing"].includes(currentStatus?.status)
+    const disabled = ["inProcess", "importing"].includes(
+      currentStatus?.status || ""
+    )
       ? true
       : false;
     const buttonGroup = (
@@ -123,7 +141,6 @@ function DatasetAdd({
     const formToDisplay = !isNewProject ? (
       <AddDatasetExistingProject
         handlers={handlers}
-        model={model}
         dataset={dataset}
         currentStatus={currentStatus}
         isDatasetValid={isDatasetValid}
