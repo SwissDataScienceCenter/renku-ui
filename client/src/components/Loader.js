@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from "react";
 
 /**
  *  renku-ui
@@ -23,6 +22,8 @@ import React from "react";
  *  Loader.js
  *  Loader code and presentation.
  */
+
+import React, { useEffect, useRef } from "react";
 
 function LoaderSpinner(props) {
   const size = props.size || 120;
@@ -38,9 +39,27 @@ function LoaderSpinner(props) {
   const display = props.inline ? "inline-block" : "";
   const verticalAlign = props.inline ? "middle" : "";
   const margin = `m-${props.margin ? props.margin : 0}`;
+
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const existingSpinner = document.querySelector(".rk-spinner");
+    if (!existingSpinner || existingSpinner === ref.current) {
+      return;
+    }
+    console.log({ existingSpinner, ref: ref.current });
+    const currentAnimation = ref.current.getAnimations().find(() => true);
+    const baseAnimation = existingSpinner.getAnimations().find(() => true);
+    if (currentAnimation == null || baseAnimation == null) {
+      return;
+    }
+    currentAnimation.startTime = baseAnimation.startTime;
+  }, []);
+
   return (
     <div
-      className={`${margin} ${props.className}`}
+      ref={ref}
+      className={`rk-spinner ${margin} ${props.className}`}
       style={{
         width: d,
         height: d,
