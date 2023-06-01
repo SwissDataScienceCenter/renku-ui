@@ -17,7 +17,7 @@
  */
 
 import React from "react";
-import { useDispatch } from "react-redux";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import { WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent } from "./Workflows.present";
@@ -29,7 +29,8 @@ import {
   workflowsSlice,
   useWorkflowsSelector,
 } from "../features/workflows/WorkflowsSlice";
-import { useProjectSelector } from "../features/project/projectSlice";
+import { useCoreSupport } from "../features/project/useProjectCoreSupport";
+import { StateModelProject } from "../features/project/Project";
 
 const MIN_CORE_VERSION_WORKFLOWS = 9;
 
@@ -74,15 +75,28 @@ function WorkflowsList({
   const { id }: Record<string, string> = useParams();
   const selected = id;
 
-  const coreSupport = useProjectSelector((p) => p.migration);
-  const versionUrl = coreSupport.versionUrl ?? "";
-  const backendAvailable = coreSupport.backendAvailable;
+  const { defaultBranch } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { coreSupport } = useCoreSupport({
+    gitUrl: repositoryUrl,
+    branch: defaultBranch,
+  });
+  const {
+    backendAvailable,
+    computed: coreSupportComputed,
+    versionUrl,
+  } = coreSupport;
+  const metadataVersion = versionUrl
+    ? parseInt(versionUrl.slice(1))
+    : undefined;
 
   // Verify backend support and availability
-  const supported =
-    backendAvailable === true &&
-    coreSupport.cached.metadataVersion &&
-    coreSupport.cached.metadataVersion >= MIN_CORE_VERSION_WORKFLOWS;
+  const unsupported =
+    (coreSupportComputed && !backendAvailable) ||
+    (metadataVersion && metadataVersion < MIN_CORE_VERSION_WORKFLOWS) ||
+    false;
 
   // Configure the functions to dispatch workflowsDisplay changes
   const dispatch = useDispatch();
@@ -99,9 +113,9 @@ function WorkflowsList({
   const workflowsDisplay = useWorkflowsSelector();
 
   // Fetch workflow list
-  const skipList = !versionUrl || !repositoryUrl || !supported;
+  const skipList = !versionUrl || !repositoryUrl || unsupported;
   const workflowsQuery = useGetWorkflowListQuery(
-    { coreUrl: versionUrl, gitUrl: repositoryUrl, reference, fullPath },
+    { coreUrl: versionUrl ?? "", gitUrl: repositoryUrl, reference, fullPath },
     { skip: skipList }
   );
   const workflows = {
@@ -114,13 +128,14 @@ function WorkflowsList({
     orderAscending: workflowsDisplay.orderAscending,
     orderProperty: workflowsDisplay.orderProperty,
   };
-  const waiting = !versionUrl || workflowsQuery.isLoading;
+  const waiting =
+    !versionUrl || !coreSupportComputed || workflowsQuery.isLoading;
 
   // Fetch workflow details
   const skipDetails = skipList || !selected ? true : false;
   const workflowDetailQuery = useGetWorkflowDetailQuery(
     {
-      coreUrl: versionUrl,
+      coreUrl: versionUrl ?? "",
       gitUrl: repositoryUrl,
       workflowId: selected,
       reference,
@@ -159,7 +174,7 @@ function WorkflowsList({
       toggleAscending={toggleAscending}
       toggleExpanded={toggleExpanded}
       toggleInactive={toggleInactive}
-      unsupported={!supported}
+      unsupported={unsupported}
       waiting={waiting}
       workflows={workflows}
       workflow={workflow}

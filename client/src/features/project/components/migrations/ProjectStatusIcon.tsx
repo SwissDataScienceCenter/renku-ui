@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { Link, useRouteMatch } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -26,12 +26,11 @@ import {
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import { Url } from "../../../../utils/helpers/url";
-import { projectCoreApi } from "../../projectCoreApi";
 import { projectKgApi } from "../../projectKgApi";
 import { ProjectMigrationLevel } from "../../projectEnums";
 import { getRenkuLevel } from "../../utils/migrations";
 import { UncontrolledTooltip } from "reactstrap";
-import { useProjectSelector } from "../../projectSlice";
+import { useCoreSupport } from "../../useProjectCoreSupport";
 
 interface ProjectStatusIconProps {
   branch: string;
@@ -49,23 +48,20 @@ export function ProjectStatusIcon({
   projectNamespace,
   projectPath,
 }: ProjectStatusIconProps) {
-  const skipMigrations = !gitUrl || !branch ? true : false;
-  const migrationStatus = projectCoreApi.useGetMigrationStatusQuery(
-    { gitUrl, branch },
-    { skip: skipMigrations }
-  );
   const skipKg = !projectId ? true : false;
   const kgStatus = projectKgApi.useGetProjectIndexingStatusQuery(projectId, {
     refetchOnMountOrArgChange: 20,
     skip: skipKg,
   });
-  const coreSupport = useProjectSelector((p) => p.migration);
+  const { coreSupport, getMigrationStatusQuery: migrationStatus } =
+    useCoreSupport({
+      gitUrl,
+      branch,
+    });
+  const { backendAvailable } = coreSupport;
   const isLoading = migrationStatus.isLoading || kgStatus.isLoading;
   const kgActivated = kgStatus.data?.activated === true;
-  const migrationLevel = getRenkuLevel(
-    migrationStatus.data,
-    coreSupport.backendAvailable
-  );
+  const migrationLevel = getRenkuLevel(migrationStatus.data, backendAvailable);
   const settingsUrl = Url.get(Url.pages.project.settings, {
     namespace: projectNamespace,
     path: projectPath,
