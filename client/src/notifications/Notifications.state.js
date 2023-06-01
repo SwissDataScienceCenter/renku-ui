@@ -16,17 +16,17 @@
  * limitations under the License.
  */
 
-import {
-  NOTIFICATION_LEVELS,
-  NOTIFICATION_TOPICS,
-} from "./Notifications.constants";
-
 /**
  *  renku-ui
  *
  *  Notifications.state.js
  *  Notifications controller code.
  */
+
+import {
+  NOTIFICATION_LEVELS,
+  NOTIFICATION_TOPICS,
+} from "./Notifications.constants";
 
 const NotificationsInfo = {
   Levels: NOTIFICATION_LEVELS,
