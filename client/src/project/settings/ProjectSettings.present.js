@@ -37,36 +37,36 @@ import { Link } from "react-router-dom";
 import {
   Button,
   Col,
+  Collapse,
   Form,
   FormGroup,
   FormText,
   Input,
   InputGroup,
   Label,
-  Collapse,
-  UncontrolledTooltip,
-  ExternalLink,
   Nav,
   NavItem,
   Row,
+  UncontrolledTooltip,
 } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
 import { InfoAlert, WarnAlert } from "../../components/Alert";
+import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import { RenkuNavLink } from "../../components/RenkuNavLink";
 import { InlineSubmitButton } from "../../components/buttons/Button";
+import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
+import { SuccessLabel } from "../../components/formlabels/FormLabels";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
-import { Url } from "../../utils/helpers/url";
-import { ProjectAvatarEdit, ProjectTags } from "../shared";
 import {
   NotebooksHelper,
   ServerOptionBoolean,
   ServerOptionEnum,
   ServerOptionRange,
 } from "../../notebooks";
-import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
 import { Docs } from "../../utils/constants/Docs";
-import { SuccessLabel } from "../../components/formlabels/FormLabels";
+import { Url } from "../../utils/helpers/url";
+import { ProjectAvatarEdit, ProjectTags } from "../shared";
 
 //** Navigation **//
 

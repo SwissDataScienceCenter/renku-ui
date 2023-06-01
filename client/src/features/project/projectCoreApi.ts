@@ -64,7 +64,6 @@ const KNOWN_CONFIG_KEYS = [
 type GetConfigRawResponseSectionKey = (typeof KNOWN_CONFIG_KEYS)[number];
 
 type GetConfigRawResponseSection = {
-  // eslint-disable-next-line no-unused-vars
   [Key in GetConfigRawResponseSectionKey]?: string;
 };
 
