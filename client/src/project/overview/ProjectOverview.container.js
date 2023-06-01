@@ -25,15 +25,11 @@
 
 import React, { Component } from "react";
 
-import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
-
 import { withProjectMapped } from "../Project";
 import {
   OverviewCommits as OverviewCommitsPresent,
   OverviewStats as OverviewStatsPresent,
 } from "./ProjectOverview.present";
-import ProjectVersionStatus from "../status/ProjectVersionStatus.present";
-import { ProjectKnowledgeGraphStatus } from "../../features/project";
 
 /**
  * Create a visualization of the project stats.
@@ -130,55 +126,4 @@ class OverviewCommits extends Component {
   }
 }
 
-function ProjectKGStatus(props) {
-  return (
-    <Card className="border-rk-light">
-      <CardHeader className="bg-white p-3 ps-4">
-        Knowledge Graph Integration
-      </CardHeader>
-      <CardBody className="p-4 pt-3 pb-3 lh-lg">
-        <Row>
-          <Col>
-            <ProjectKnowledgeGraphStatus
-              createGraphWebhook={props.createGraphWebhook}
-              displaySuccessMessage={true}
-              fetchDatasets={props.fetchDatasets}
-              fetchGraphStatus={props.fetchGraphStatus}
-              graphStatus={props.graphStatus}
-              history={props.history}
-              location={props.location}
-              model={props.model}
-            />
-          </Col>
-        </Row>
-      </CardBody>
-    </Card>
-  );
-}
-
-/**
- * Show the project version information
- *
- * @param {Object} props.projectCoordinator - project coordinator
- */
-class OverviewVersion extends Component {
-  constructor(props) {
-    super(props);
-    this.projectCoordinator = props.projectCoordinator;
-  }
-
-  componentDidMount() {
-    this.projectCoordinator.fetchProjectLockStatus(this.props.user.logged);
-  }
-
-  render() {
-    return (
-      <>
-        <ProjectVersionStatus {...this.props} />
-        <ProjectKGStatus {...this.props} />
-      </>
-    );
-  }
-}
-
-export { OverviewCommits, OverviewStats, OverviewVersion };
+export { OverviewCommits, OverviewStats };

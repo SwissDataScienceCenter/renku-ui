@@ -28,8 +28,6 @@ import "./SortingEntities.css";
  *  Sorting Entities input
  */
 
-// These are used by the TS compiler does not realize it.
-/* eslint-disable no-unused-vars */
 export enum SortingOptions {
   AscTitle = "name:asc",
   DescTitle = "name:desc",
@@ -38,7 +36,6 @@ export enum SortingOptions {
   AscMatchingScore = "matchingScore:asc",
   DescMatchingScore = "matchingScore:desc",
 }
-/* eslint-enable no-unused-vars */
 
 export function stringToSortingOption(str: string) {
   return Object.values(SortingOptions).includes(str as SortingOptions)

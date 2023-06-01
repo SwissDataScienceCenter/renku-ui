@@ -222,6 +222,7 @@ function addNotebookServersMethods(client) {
     const queryParams = { image_url: registryUrl };
     const url = `${client.baseUrl}/notebooks/images`;
 
+    // ? this is the last place where we use `simpleFetch`
     return client.simpleFetch(url, "GET", queryParams).then((resp) => {
       if (resp.status === 200) return true;
       else if (resp.status === 404) return false;

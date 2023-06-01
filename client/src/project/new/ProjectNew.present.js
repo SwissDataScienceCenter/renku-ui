@@ -52,7 +52,7 @@ import ProjectIdentifier from "./components/ProjectIdentifier";
 import Visibility from "./components/Visibility";
 import TemplateSource from "./components/TemplateSource";
 import UserTemplate, { ErrorTemplateFeedback } from "./components/UserTemplate";
-import Template from "./components/Template";
+import { Template } from "./components/Template";
 import TemplateVariables from "./components/TemplateVariables";
 import { FormErrors, FormWarnings } from "./components/FormValidations";
 import SubmitFormButton from "./components/SubmitFormButton";
@@ -501,7 +501,7 @@ class Creation extends Component {
       : "You'll be redirected to the new project page when the creation is completed.";
 
     return (
-      <div className="new-project-indicator">
+      <div>
         <ProgressIndicator
           type={ProgressType.Indeterminate}
           style={ProgressStyle.Dark}

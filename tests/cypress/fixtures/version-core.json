@@ -2,15 +2,15 @@
   "name": "renku-core",
   "versions": [
     {
-      "version": "v1.0.4",
+      "version": "v2.4.1",
       "data": {
-        "metadata_version": "9"
+        "metadata_version": "10"
       }
     },
     {
-      "version": "v0.16.6",
+      "version": "v1.11.3",
       "data": {
-        "metadata_version": "8"
+        "metadata_version": "9"
       }
     }
   ]

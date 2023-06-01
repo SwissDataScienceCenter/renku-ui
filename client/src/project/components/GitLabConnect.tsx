@@ -37,7 +37,7 @@ function GitLabConnectButton(props: GitLabConnectButtonProps) {
   const { externalUrl, userLogged } = props;
   if (!externalUrl) return null;
   const gitlabIdeUrl = externalUrlToGitLabIdeUrl(externalUrl);
-  const size = props.size ? props.size : "md";
+  const size = props.size ? props.size : "1x";
 
   const gitLabIssuesUrl = `${props.externalUrl}/-/issues`;
   const gitLabMrUrl = `${props.externalUrl}/-/merge_requests`;

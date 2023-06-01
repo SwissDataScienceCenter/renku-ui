@@ -373,6 +373,17 @@ const Url = {
           ]
         ),
       },
+      settings: {
+        base: new UrlRule(
+          projectPageUrlBuilder("/settings"),
+          ["namespace", "path"],
+          null,
+          [
+            "/projects/namespace/path/settings",
+            "/projects/group/subgroup/path/settings",
+          ]
+        ),
+      },
       workflows: {
         base: new UrlRule(
           projectPageUrlBuilder("/workflows"),
@@ -425,15 +436,6 @@ const Url = {
           [
             "/projects/namespace/path/overview/commits",
             "/projects/group/subgroup/path/overview/commits",
-          ]
-        ),
-        status: new UrlRule(
-          projectPageUrlBuilder("/overview/status"),
-          ["namespace", "path"],
-          null,
-          [
-            "/projects/namespace/path/overview/status",
-            "/projects/group/subgroup/path/overview/status",
           ]
         ),
       },

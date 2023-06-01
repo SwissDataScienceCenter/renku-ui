@@ -17,18 +17,27 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
 import DatasetView from "./Dataset.present";
-import { projectSchema } from "../model";
-import { useSelector } from "react-redux";
+import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 
 export default function ShowDataset(props) {
   const [dataset, setDataset] = useState(null);
   const [datasetFiles, setDatasetFiles] = useState(null);
 
-  const migration = props.insideProject
-    ? props.migration
-    : projectSchema.createInitialized().migration;
+  const { defaultBranch, externalUrl } = useSelector(
+    (state) => state.stateModel.project.metadata
+  );
+  const { coreSupport } = useCoreSupport({
+    gitUrl: externalUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const {
+    backendAvailable,
+    computed: coreSupportComputed,
+    versionUrl,
+  } = coreSupport;
 
   const findDatasetId = (name, datasets) => {
     const dataset = datasets?.find((d) => d.name === name);
@@ -86,11 +95,11 @@ export default function ShowDataset(props) {
     ) {
       const isFilesFetching = props.datasetCoordinator.get("files")?.fetching;
       if (
-        migration.core.fetched &&
-        migration.core.backendAvailable &&
+        props.insideProject &&
+        coreSupportComputed &&
+        backendAvailable &&
         !isFilesFetching
       ) {
-        const versionUrl = migration.core.versionUrl;
         fetchFiles(dataset?.name, props.httpProjectUrl, versionUrl);
       }
     }
@@ -98,11 +107,11 @@ export default function ShowDataset(props) {
     dataset,
     props.httpProjectUrl,
     props.insideProject,
-    migration.core.backendAvailable,
-    migration.core.fetched,
-    migration.core.versionUrl,
+    coreSupportComputed,
+    backendAvailable,
     props.datasetCoordinator,
     datasetFiles,
+    versionUrl,
   ]);
 
   const currentDataset = useSelector(
@@ -135,8 +144,8 @@ export default function ShowDataset(props) {
     <DatasetView
       client={props.client}
       dataset={dataset}
-      files={datasetFiles}
       datasets={props.datasets}
+      files={datasetFiles}
       fetchError={dataset?.fetchError}
       fetchedKg={dataset?.fetched}
       fileContentUrl={props.fileContentUrl}
@@ -150,14 +159,13 @@ export default function ShowDataset(props) {
       lockStatus={props.lockStatus}
       logged={props.logged}
       maintainer={props.maintainer}
-      migration={migration}
       model={props.model}
-      overviewStatusUrl={props.overviewStatusUrl}
       progress={props.progress}
       projectId={props.projectId}
       projectInsideKg={props.projectInsideKg}
       projectPathWithNamespace={props.projectPathWithNamespace}
       projectsUrl={props.projectsUrl}
+      versionUrl={versionUrl}
     />
   );
 }

@@ -173,7 +173,7 @@ export const ProjectSettingsSessions = () => {
 
   const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER;
   if (!projectMigrationCore.backendAvailable) {
-    const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {
+    const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace,
       path,
     });
@@ -191,7 +191,7 @@ export const ProjectSettingsSessions = () => {
           <p>
             {updateInfo}.
             <br />
-            The <Link to={overviewStatusUrl}>Project status</Link> page provides
+            The <Link to={settingsUrl}>Project settings</Link> page provides
             further information.
           </p>
         </WarnAlert>
