@@ -24,8 +24,10 @@ import { useLocation } from "react-router";
 import Select, {
   ClassNamesConfig,
   GroupBase,
+  OptionProps,
   SelectComponentsConfig,
   SingleValue,
+  SingleValueProps,
   components,
 } from "react-select";
 import { Col, FormGroup, Label } from "reactstrap";
@@ -212,7 +214,7 @@ const selectComponents: SelectComponentsConfig<
       </components.DropdownIndicator>
     );
   },
-  Option: (props) => {
+  Option: (props: OptionProps<ResourceClass, false, OptionGroup>) => {
     const { data: sessionClass } = props;
     return (
       <components.Option {...props}>
@@ -220,7 +222,7 @@ const selectComponents: SelectComponentsConfig<
       </components.Option>
     );
   },
-  SingleValue: (props) => {
+  SingleValue: (props: SingleValueProps<ResourceClass, false, OptionGroup>) => {
     const { data: sessionClass } = props;
     return (
       <components.SingleValue {...props}>
