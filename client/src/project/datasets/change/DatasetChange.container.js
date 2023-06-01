@@ -36,7 +36,8 @@ import { mapDataset } from "../../../dataset/index";
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { CoreError } from "../../../components/errors/CoreErrorHelpers";
 import { ExternalLink } from "../../../components/ExternalLinks";
-import { useProjectSelector } from "../../../features/project/projectSlice";
+import { useSelector } from "react-redux";
+import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
 
 let dsFormSchema = _.cloneDeep(datasetFormSchema);
 
@@ -57,8 +58,15 @@ function ChangeDataset(props) {
     [props.datasets, props.datasetId, datasetFiles]
   );
   const [initialized, setInitialized] = useState(false);
-  const coreSupport = useProjectSelector((p) => p.migration);
-  const versionUrl = coreSupport.versionUrl;
+
+  const { defaultBranch, externalUrl } = useSelector(
+    (state) => state.stateModel.project.metadata
+  );
+  const { coreSupport } = useCoreSupport({
+    gitUrl: externalUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { versionUrl } = coreSupport;
 
   const initializeFunction = (formSchema) => {
     let titleField = formSchema.find((field) => field.name === "title");

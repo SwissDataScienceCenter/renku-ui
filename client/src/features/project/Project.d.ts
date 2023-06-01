@@ -278,27 +278,9 @@ export type TemplateMigrationLevel = {
 };
 
 export interface DeleteProjectParams {
-  // namespace: string;
-  // name: string;
   projectPathWithNamespace: string;
 }
 
 export interface DeleteProjectResponse {
   accepted: true;
 }
-
-export type ProjectSliceMigration = {
-  cached: {
-    branch?: string;
-    coreVersions?: number[];
-    gitUrl?: string;
-    metadataVersion?: number;
-  };
-  backendAvailable?: boolean;
-  computed: boolean;
-  versionUrl?: string;
-};
-
-export type ProjectSlice = {
-  migration: ProjectSliceMigration;
-};
