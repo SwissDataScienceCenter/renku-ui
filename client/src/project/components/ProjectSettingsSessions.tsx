@@ -134,6 +134,8 @@ export const ProjectSettingsSessions = () => {
     { skip: !coreSupportComputed }
   );
 
+  console.log({ projectConfig, projectConfigIsLoading });
+
   // ? Anonymous users may have problem with notebook options, depending on the deployment
   if (!logged) {
     const textIntro = "Only authenticated users can access sessions setting.";
@@ -166,7 +168,9 @@ export const ProjectSettingsSessions = () => {
       ? "Getting RenkuLab settings..."
       : projectConfigIsLoading
       ? "Getting project settings..."
-      : "Checking project version and RenkuLab compatibility...";
+      : !coreSupportComputed
+      ? "Checking project version and RenkuLab compatibility..."
+      : "Please wait...";
 
     return (
       <SessionsDiv>

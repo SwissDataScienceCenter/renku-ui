@@ -62,12 +62,15 @@ export const StartNotebookServerOptions = ({
   projectRepositoryUrl,
   branch,
 }: StartNotebookServerOptionsProps) => {
+  // console.log({ projectConfig, projectConfigIsLoading });
+  // TODO wait for configs
+
   return (
     <>
       <Row>
         <DefaultUrlOption
-          projectRepositoryUrl={projectRepositoryUrl}
-          branchName={branch?.name}
+        // projectRepositoryUrl={projectRepositoryUrl}
+        // branchName={branch?.name}
         />
         <SessionClassOption />
         <SessionStorageOption />
@@ -82,89 +85,90 @@ interface DefaultUrlOptionProps {
   branchName?: string;
 }
 
-const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
-  // Global options
-  const { data: serverOptions, isLoading: serverOptionsIsLoading } =
-    useServerOptionsQuery({});
+const DefaultUrlOption =
+  (/*{ projectRepositoryUrl }: DefaultUrlOptionProps*/) => {
+    // Global options
+    const { data: serverOptions, isLoading: serverOptionsIsLoading } =
+      useServerOptionsQuery({});
 
-  // Project options
-  const { defaultBranch, externalUrl } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
-  const { coreSupport } = useCoreSupport({
-    gitUrl: externalUrl ?? undefined,
-    branch: defaultBranch ?? undefined,
-  });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
-  const { data: projectConfig, isLoading: projectConfigIsLoading } =
-    useGetConfigQuery(
-      {
-        projectRepositoryUrl,
-        versionUrl,
-        // ...(branchName ? { branch: branchName } : {}),
+    // Project options
+    const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
+      RootStateOrAny,
+      StateModelProject["metadata"]
+    >((state) => state.stateModel.project.metadata);
+    const { coreSupport } = useCoreSupport({
+      gitUrl: projectRepositoryUrl ?? undefined,
+      branch: defaultBranch ?? undefined,
+    });
+    const { computed: coreSupportComputed, versionUrl } = coreSupport;
+    const { data: projectConfig, isLoading: projectConfigIsLoading } =
+      useGetConfigQuery(
+        {
+          projectRepositoryUrl,
+          versionUrl,
+          // ...(branchName ? { branch: branchName } : {}),
+        },
+        { skip: !coreSupportComputed }
+      );
+
+    const defaultUrlOptions = mergeDefaultUrlOptions({
+      serverOptions,
+      projectConfig,
+    });
+
+    const selectedDefaultUrl = useStartSessionOptionsSelector(
+      (state) => state.defaultUrl
+    );
+    const dispatch = useDispatch();
+
+    // Set initial default URL
+    useEffect(() => {
+      if (projectConfig != null) {
+        dispatch(
+          setDefaultUrl(
+            projectConfig.config.sessions?.defaultUrl ??
+              projectConfig.default.sessions?.defaultUrl ??
+              ""
+          )
+        );
+      }
+    }, [dispatch, projectConfig]);
+
+    const onChange = useCallback(
+      (event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
+        if (value) {
+          dispatch(setDefaultUrl(value));
+        }
       },
-      { skip: !coreSupportComputed }
+      [dispatch]
     );
 
-  const defaultUrlOptions = mergeDefaultUrlOptions({
-    serverOptions,
-    projectConfig,
-  });
-
-  const selectedDefaultUrl = useStartSessionOptionsSelector(
-    (state) => state.defaultUrl
-  );
-  const dispatch = useDispatch();
-
-  // Set initial default URL
-  useEffect(() => {
-    if (projectConfig != null) {
-      dispatch(
-        setDefaultUrl(
-          projectConfig.config.sessions?.defaultUrl ??
-            projectConfig.default.sessions?.defaultUrl ??
-            ""
-        )
-      );
+    if (
+      serverOptionsIsLoading ||
+      projectConfigIsLoading ||
+      !serverOptions ||
+      !projectConfig
+    ) {
+      return <Loader />;
     }
-  }, [dispatch, projectConfig]);
 
-  const onChange = useCallback(
-    (event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
-      if (value) {
-        dispatch(setDefaultUrl(value));
-      }
-    },
-    [dispatch]
-  );
+    const { defaultUrl } = serverOptions;
 
-  if (
-    serverOptionsIsLoading ||
-    projectConfigIsLoading ||
-    !serverOptions ||
-    !projectConfig
-  ) {
-    return <Loader />;
-  }
-
-  const { defaultUrl } = serverOptions;
-
-  return (
-    <Col xs={12}>
-      <FormGroup className="field-group">
-        <Label className="me-2">{defaultUrl.displayName}</Label>
-        {defaultUrlOptions.length > 1 && <br />}
-        <ServerOptionEnum
-          {...defaultUrl}
-          options={defaultUrlOptions}
-          selected={selectedDefaultUrl}
-          onChange={onChange}
-        />
-      </FormGroup>
-    </Col>
-  );
-};
+    return (
+      <Col xs={12}>
+        <FormGroup className="field-group">
+          <Label className="me-2">{defaultUrl.displayName}</Label>
+          {defaultUrlOptions.length > 1 && <br />}
+          <ServerOptionEnum
+            {...defaultUrl}
+            options={defaultUrlOptions}
+            selected={selectedDefaultUrl}
+            onChange={onChange}
+          />
+        </FormGroup>
+      </Col>
+    );
+  };
 
 export const mergeDefaultUrlOptions = ({
   serverOptions,
@@ -185,10 +189,38 @@ export const mergeDefaultUrlOptions = ({
 };
 
 const AutoFetchLfsOption = () => {
+  // Project options
+  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { coreSupport } = useCoreSupport({
+    gitUrl: projectRepositoryUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const { data: projectConfig } = useGetConfigQuery(
+    {
+      projectRepositoryUrl,
+      versionUrl,
+      // ...(branchName ? { branch: branchName } : {}),
+    },
+    { skip: !coreSupportComputed }
+  );
+
   const lfsAutoFetch = useStartSessionOptionsSelector(
     (state) => state.lfsAutoFetch
   );
   const dispatch = useDispatch();
+
+  // Set initial value
+  useEffect(() => {
+    if (projectConfig != null) {
+      dispatch(
+        setLfsAutoFetch(projectConfig.config.sessions?.lfsAutoFetch ?? false)
+      );
+    }
+  }, [dispatch, projectConfig]);
 
   const onChange = useCallback(() => {
     dispatch(setLfsAutoFetch(!lfsAutoFetch));
