@@ -900,7 +900,7 @@ function WorkflowVisualizerSimpleBox({
 }: WorkflowVisualizerSimpleBoxProps) {
   return (
     <Col xs={12} lg={large ? 12 : 4}>
-      <Card className="borderless border-rk-light mb-3">
+      <Card className="borderless  mb-3">
         <CardHeader className="bg-white py-2 px-0">
           <h4 className="m-1 workflow-simple-box-title d-flex gap-2">
             {title}
