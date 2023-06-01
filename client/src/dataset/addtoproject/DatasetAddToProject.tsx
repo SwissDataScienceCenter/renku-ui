@@ -123,7 +123,7 @@ function DatasetAddToProject({
     // check dataset has valid project url
     setCurrentStatus({
       status: isSubmit ? "importing" : "inProcess",
-      text: "Checking Dataset...",
+      text: "Checking dataset...",
     });
     if (!dataset?.project || !dataset?.project.path) {
       setCurrentStatus({
@@ -198,7 +198,7 @@ function DatasetAddToProject({
 
   const validateProject = async (
     project: SubmitProject,
-    validateOrigin: boolean,
+    _validateOrigin: boolean,
     isSubmit = false
   ) => {
     if (!project) return false;

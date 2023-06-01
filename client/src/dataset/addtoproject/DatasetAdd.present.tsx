@@ -47,12 +47,16 @@ function HeaderAddDataset({ dataset }: HeaderAddDatasetProps) {
   const authors = getDatasetAuthors(dataset);
   return (
     <>
-      <h2>Add dataset to project</h2>
+      <h2>Add dataset</h2>
+      <p>
+        Add the dataset to an already existing project, or create a new project
+        and add the dataset to it.
+      </p>
       <Table className="mb-4 table-borderless" size="sm">
         <tbody className="text-rk-text">
           <tr>
             <td className="text-dark fw-bold" style={{ width: "120px" }}>
-              Title:
+              Dataset Title
             </td>
             <td data-cy="add-dataset-to-project-title">
               {dataset?.title || dataset?.name}
@@ -60,7 +64,7 @@ function HeaderAddDataset({ dataset }: HeaderAddDatasetProps) {
           </tr>
           <tr>
             <td className="text-dark fw-bold" style={{ width: "120px" }}>
-              Authors:
+              Authors
             </td>
             <td>{authors}</td>
           </tr>
@@ -70,53 +74,50 @@ function HeaderAddDataset({ dataset }: HeaderAddDatasetProps) {
   );
 }
 
-type DatasetAddProps = {
-  dataset: AddDatasetDataset | null;
-  model: unknown;
-  handlers: AddDatasetHandlers;
-  isDatasetValid: boolean | null;
-  currentStatus: AddDatasetStatus | null;
-  importingDataset: boolean;
-  insideProject: boolean;
-};
-
-function DatasetAdd({
+function DatasetAddMainContent({
   dataset,
   model,
   handlers,
   isDatasetValid,
   currentStatus,
   importingDataset,
-  insideProject,
-}: DatasetAddProps) {
+}: Omit<DatasetAddProps, "insideProject">) {
   const [isNewProject, setIsNewProject] = useState(false);
   const logged = useSelector(
     (state: RootStateOrAny) => state.stateModel.user.logged
   );
-
-  // Return early if there is no dataset
-  if (!dataset) return <Loader />;
-  if (!dataset?.exists) {
-    if (!_.isEmpty(dataset?.fetchError)) {
-      return (
-        <DatasetError
-          fetchError={dataset?.fetchError}
-          insideProject={insideProject}
-          logged={logged}
-        />
-      );
-    }
+  if (!logged) {
+    const textIntro = "Only authenticated users can create new projects.";
+    const textPost = "to create new project with dataset.";
+    return (
+      <LoginAlert logged={logged} textIntro={textIntro} textPost={textPost} />
+    );
   }
-
-  // Set different content for logged and anonymous users
-  let mainContent = null;
-  if (logged) {
-    const disabled = ["inProcess", "importing"].includes(
-      currentStatus?.status || ""
-    )
-      ? true
-      : false;
-    const buttonGroup = (
+  const disabled = ["inProcess", "importing"].includes(
+    currentStatus?.status || ""
+  )
+    ? true
+    : false;
+  const formToDisplay = !isNewProject ? (
+    <AddDatasetExistingProject
+      handlers={handlers}
+      dataset={dataset}
+      currentStatus={currentStatus}
+      isDatasetValid={isDatasetValid}
+      importingDataset={importingDataset}
+    />
+  ) : (
+    <AddDatasetNewProject
+      handlers={handlers}
+      model={model}
+      dataset={dataset}
+      currentStatus={currentStatus}
+      isDatasetValid={isDatasetValid}
+      importingDataset={importingDataset}
+    />
+  );
+  return (
+    <>
       <ButtonGroup className="d-flex">
         <Button
           disabled={disabled}
@@ -137,45 +138,50 @@ function DatasetAdd({
           New Project
         </Button>
       </ButtonGroup>
-    );
-    const formToDisplay = !isNewProject ? (
-      <AddDatasetExistingProject
-        handlers={handlers}
-        dataset={dataset}
-        currentStatus={currentStatus}
-        isDatasetValid={isDatasetValid}
-        importingDataset={importingDataset}
-      />
-    ) : (
-      <AddDatasetNewProject
-        handlers={handlers}
-        model={model}
-        dataset={dataset}
-        currentStatus={currentStatus}
-        isDatasetValid={isDatasetValid}
-        importingDataset={importingDataset}
-      />
-    );
-    mainContent = (
-      <>
-        {buttonGroup}
-        {formToDisplay}
-      </>
-    );
-  } else {
-    const textIntro = "Only authenticated users can create new projects.";
-    const textPost = "to create new project with dataset.";
-    mainContent = (
-      <LoginAlert logged={logged} textIntro={textIntro} textPost={textPost} />
-    );
+      {formToDisplay}
+    </>
+  );
+}
+
+type DatasetAddProps = {
+  dataset: AddDatasetDataset | null;
+  model: unknown;
+  handlers: AddDatasetHandlers;
+  isDatasetValid: boolean | null;
+  currentStatus: AddDatasetStatus | null;
+  importingDataset: boolean;
+  insideProject: boolean;
+};
+function DatasetAdd(props: DatasetAddProps) {
+  const { dataset, insideProject } = props;
+  const logged = useSelector(
+    (state: RootStateOrAny) => state.stateModel.user.logged
+  );
+
+  // Return early if there is no dataset
+  if (!dataset) return <Loader />;
+  if (!dataset?.exists) {
+    if (!_.isEmpty(dataset?.fetchError)) {
+      return (
+        <DatasetError
+          fetchError={dataset?.fetchError}
+          insideProject={insideProject}
+          logged={logged}
+        />
+      );
+    }
   }
+
+  // Set different content for logged and anonymous users
 
   return (
     <ContainerWrap>
       <Row className="mb-3">
-        <Col md={10} lg={9} xl={8} className="form-rk-green">
+        <Col md={3}>
           <HeaderAddDataset dataset={dataset} />
-          {mainContent}
+        </Col>
+        <Col md={9} xl={8} className="form-rk-green">
+          <DatasetAddMainContent {...props} />
         </Col>
       </Row>
     </ContainerWrap>
