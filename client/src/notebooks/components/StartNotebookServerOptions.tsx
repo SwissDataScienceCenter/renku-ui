@@ -34,8 +34,12 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 import { Loader } from "../../components/Loader";
-import { IMigration, ProjectConfig } from "../../features/project/Project";
+import {
+  ProjectConfig,
+  StateModelProject,
+} from "../../features/project/Project";
 import { useGetConfigQuery } from "../../features/project/projectCoreApi";
+import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
 import { ServerOptions } from "../../features/session/session";
 import { useServerOptionsQuery } from "../../features/session/sessionApi";
 import {
@@ -84,11 +88,15 @@ const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
     useServerOptionsQuery({});
 
   // Project options
-  const projectMigrationCore = useSelector<RootStateOrAny, IMigration["core"]>(
-    (state) => state.stateModel.project.migration.core
-  );
-  const fetchedVersion = !!projectMigrationCore.fetched;
-  const versionUrl = projectMigrationCore.versionUrl ?? "";
+  const { defaultBranch, externalUrl } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { coreSupport } = useCoreSupport({
+    gitUrl: externalUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { computed: coreSupportComputed, versionUrl } = coreSupport;
   const { data: projectConfig, isLoading: projectConfigIsLoading } =
     useGetConfigQuery(
       {
@@ -96,7 +104,7 @@ const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
         versionUrl,
         // ...(branchName ? { branch: branchName } : {}),
       },
-      { skip: !fetchedVersion }
+      { skip: !coreSupportComputed }
     );
 
   const defaultUrlOptions = mergeDefaultUrlOptions({
