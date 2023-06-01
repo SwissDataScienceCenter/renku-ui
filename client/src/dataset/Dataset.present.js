@@ -63,7 +63,7 @@ function DisplayFiles(props) {
     }
 
     return (
-      <Card key="datasetDetails" className="border-rk-light mb-4">
+      <Card key="datasetDetails" className="mb-4">
         <CardHeader className="bg-white p-3 ps-4">Dataset files</CardHeader>
         <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">{errorObject}</CardBody>
       </Card>
@@ -93,7 +93,7 @@ function DisplayFiles(props) {
   });
 
   return (
-    <Card key="datasetDetails" className="border-rk-light mb-4">
+    <Card key="datasetDetails" className="mb-4">
       <CardHeader className="bg-white p-3 ps-4" data-cy="dataset-file-title">
         Dataset files ({files.length})
       </CardHeader>
@@ -117,7 +117,7 @@ function DisplayProjects(props) {
   if (props.projects === undefined || !Array.isArray(props.projects))
     return null;
   return (
-    <Card key="datasetProjectDetails" className="border-rk-light mb-4">
+    <Card key="datasetProjectDetails" className="mb-4">
       <CardHeader className="bg-white p-3 ps-4">
         Projects using this dataset
       </CardHeader>
@@ -159,7 +159,7 @@ function DisplayDescription(props) {
   if (!props.description) return null;
 
   return (
-    <Card key="datasetDescription" className="border-rk-light mb-4 my-4">
+    <Card key="datasetDescription" className="mb-4 my-4">
       <CardHeader className="bg-white p-3 ps-4">Dataset description</CardHeader>
       <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
         {props.insideProject ? (
@@ -190,7 +190,7 @@ function DisplayMetadata({ dataset, sameAs, insideProject }) {
     return null;
 
   return (
-    <Card key="datasetDescription" className="border-rk-light mb-4">
+    <Card key="datasetDescription" className="mb-4">
       <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
         {
           <div className="d-flex">

@@ -342,7 +342,7 @@ class FileLineage extends Component {
       );
 
     return (
-      <Card className="border-rk-light">
+      <Card>
         <CardHeader className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3 flex-wrap">
           <div className="d-flex align-items-end overflow-hidden gap-2">
             {isLFSBadge}

@@ -65,7 +65,7 @@ function ProjectSettingsGeneralWrapped({
   projectId,
 }: ProjectSettingsGeneralWrappedProps) {
   return (
-    <Card className="border-rk-light mb-4" data-cy="project-settings-general">
+    <Card className="mb-4" data-cy="project-settings-general">
       <CardBody className="py-2">
         <Row>
           <Col>
