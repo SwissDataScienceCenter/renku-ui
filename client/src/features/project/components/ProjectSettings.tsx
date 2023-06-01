@@ -23,7 +23,10 @@ import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../..
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ProjectMigrationStatus } from "./migrations/ProjectCoreMigrations";
 import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
-import { ProjectSettingsGeneralDeleteProject } from "./ProjectSettingsGeneralDeleteProject";
+import {
+  ProjectSettingsGeneralDeleteProject,
+  Notifications,
+} from "./ProjectSettingsGeneralDeleteProject";
 
 // ****** SETTINGS COMPONENTS ****** //
 
@@ -36,6 +39,7 @@ interface ProjectSettingsGeneralProps {
     id: number;
     [key: string]: unknown;
   };
+  notifications: Notifications;
   projectPathWithNamespace: string;
   user: {
     logged: boolean;
@@ -55,8 +59,9 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
       <ProjectSettingsGeneralLegacy {...props} />
       <ProjectSettingsGeneralDeleteProject
         isMaintainer={isMaintainer}
+        notifications={props.notifications}
+        projectPathWithNamespace={props.projectPathWithNamespace}
         userLogged={props.user.logged}
-        {...props}
       />
     </>
   );

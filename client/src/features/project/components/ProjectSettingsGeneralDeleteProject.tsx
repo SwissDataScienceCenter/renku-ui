@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import { useHistory } from "react-router";
@@ -34,15 +40,18 @@ import {
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { useDeleteProjectMutation } from "../projectKgApi";
+import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
 
 interface ProjectSettingsGeneralDeleteProjectProps {
   isMaintainer: boolean;
+  notifications: Notifications;
   projectPathWithNamespace: string;
   userLogged: boolean;
 }
 
 export const ProjectSettingsGeneralDeleteProject = ({
   isMaintainer,
+  notifications,
   projectPathWithNamespace,
   userLogged,
 }: ProjectSettingsGeneralDeleteProjectProps) => {
@@ -77,14 +86,16 @@ export const ProjectSettingsGeneralDeleteProject = ({
   const history = useHistory();
   useEffect(() => {
     if (result.isSuccess) {
+      addNotification({ notifications, projectPathWithNamespace });
       history.push("/");
     }
-  }, [history, result]);
+  }, [history, notifications, projectPathWithNamespace, result.isSuccess]);
   useEffect(() => {
     if (result.isError) {
+      setConfirmText("");
       setShowModal(false);
     }
-  }, [result]);
+  }, [result.isError]);
 
   if (!userLogged || !isMaintainer) return null;
 
@@ -183,5 +194,31 @@ const ShowError = ({
       <h5>Unexpected Error</h5>
       <p className="mb-0">Could not delete this project.</p>
     </ErrorAlert>
+  );
+};
+
+export interface Notifications {
+  addSuccess: (
+    topic: string,
+    desc?: ReactNode,
+    link?: string,
+    linkText?: string,
+    awareLocations?: string[],
+    longDesc?: string
+  ) => Notifications;
+}
+
+const addNotification = ({
+  notifications,
+  projectPathWithNamespace,
+}: {
+  notifications: Notifications;
+  projectPathWithNamespace: string;
+}) => {
+  notifications.addSuccess(
+    NOTIFICATION_TOPICS.PROJECT_DELETED,
+    <>
+      Project <code>{projectPathWithNamespace}</code> deleted
+    </>
   );
 };
