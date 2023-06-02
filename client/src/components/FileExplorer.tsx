@@ -1,3 +1,4 @@
+import cx from "classnames";
 import React, { Component, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,7 +8,6 @@ import {
   faFolderOpen,
 } from "@fortawesome/free-solid-svg-icons";
 import { Loader } from "./Loader";
-import { type } from "os";
 
 type HashElt = {
   name: string;
@@ -37,11 +37,14 @@ function buildTree(
   treeNode: TreeNodeElt[],
   jsonObj: JsonObj,
   hash: Record<string, HashElt>,
-  currentPath: string,
+  currentPathCandidate: string,
   foldersOpenOnLoad = 0
 ) {
   if (parts.length === 0) return;
-  currentPath = currentPath === "" ? parts[0] : currentPath + "/" + parts[0];
+  const currentPath =
+    currentPathCandidate === ""
+      ? parts[0]
+      : currentPathCandidate + "/" + parts[0];
 
   for (let i = 0; i < treeNode.length; i++) {
     if (parts[0] === treeNode[i].text) {
@@ -131,12 +134,48 @@ function getFilesTree(
   return treeObj;
 }
 
+type FileDisplayProps = {
+  className: string;
+  icon: React.ReactNode;
+  insideProject: boolean;
+  linkUrl?: string;
+  node: TreeNodeElt;
+};
+function FileDisplay({
+  className,
+  icon,
+  insideProject,
+  linkUrl,
+  node,
+}: FileDisplayProps) {
+  const eltClassName = cx("fs-element", className);
+  if (insideProject && linkUrl && node.jsonObj)
+    return (
+      <div className={eltClassName} data-cy="dataset-fs-element">
+        <Link to={`${linkUrl}/${node.jsonObj.atLocation}`}>
+          {icon} {node.name}
+        </Link>
+      </div>
+    );
+  return (
+    <div
+      className={eltClassName}
+      data-cy="dataset-fs-element"
+      style={{ cursor: "default" }}
+    >
+      <a>
+        {icon} {node.name}
+      </a>
+    </div>
+  );
+}
+
 type TreeNodeProps = {
   path: string;
   node: TreeNodeElt;
   childrenOpen: boolean;
   projectUrl?: string;
-  lineageUrl: string;
+  linkUrl?: string;
   setOpenFolder: (path: string) => void;
   hash: Record<string, HashElt>;
   insideProject: boolean;
@@ -149,7 +188,6 @@ type TreeNodeState = {
 
 class TreeNode extends Component<TreeNodeProps, TreeNodeState> {
   constructor(props: TreeNodeProps) {
-    // eslint-disable-next-line react/prop-types
     const childrenOpen = props.childrenOpen as boolean;
     super(props);
     this.state = {
@@ -175,13 +213,6 @@ class TreeNode extends Component<TreeNodeProps, TreeNodeState> {
       <FontAwesomeIcon className="link-rk-text" icon={faFile} />
     );
 
-    const order = this.props.node.children.length
-      ? "order-second"
-      : "order-third";
-    const hidden = this.props.node.name.startsWith(".")
-      ? " hidden-folder "
-      : "";
-
     const children = this.props.node.children
       ? this.props.node.children.map((node) => {
           return (
@@ -191,7 +222,7 @@ class TreeNode extends Component<TreeNodeProps, TreeNodeState> {
               node={node}
               childrenOpen={this.props.hash[node.path].childrenOpen}
               projectUrl={this.props.projectUrl}
-              lineageUrl={this.props.lineageUrl}
+              linkUrl={this.props.linkUrl}
               setOpenFolder={this.props.setOpenFolder}
               hash={this.props.hash}
               insideProject={this.props.insideProject}
@@ -200,52 +231,39 @@ class TreeNode extends Component<TreeNodeProps, TreeNodeState> {
         })
       : null;
 
-    let elementToRender;
-    const eltClassName = order + " " + hidden;
+    const order = this.props.node.children.length
+      ? "order-second"
+      : "order-third";
+    const hidden = { "hidden-folder": this.props.node.name.startsWith(".") };
+    const className = cx(order, hidden);
     if (this.props.node.jsonObj !== null) {
-      elementToRender = this.props.insideProject ? (
+      return (
+        <FileDisplay
+          className={className}
+          icon={icon}
+          insideProject={this.props.insideProject}
+          linkUrl={this.props.linkUrl}
+          node={this.props.node}
+        />
+      );
+    }
+
+    return (
+      <>
         <div
-          className={`fs-element ${eltClassName}`}
-          data-cy="dataset-fs-element"
-        >
-          <Link
-            to={`${this.props.lineageUrl}/${this.props.node.jsonObj.atLocation}`}
-          >
-            {icon} {this.props.node.name}
-          </Link>
-        </div>
-      ) : (
-        <div
-          className={`fs-element ${eltClassName}`}
-          data-cy="dataset-fs-element"
-          style={{ cursor: "default" }}
+          className={cx("fs-element", className)}
+          data-cy="dataset-fs-folder"
+          onClick={this.handleIconClick}
         >
           <a>
             {icon} {this.props.node.name}
           </a>
         </div>
-      );
-    } else {
-      const secondElement = this.state.childrenOpen ? (
-        <div className="ps-3">{children}</div>
-      ) : null;
-
-      elementToRender = (
-        <>
-          <div
-            className={`fs-element ${eltClassName}`}
-            data-cy="dataset-fs-folder"
-            onClick={this.handleIconClick}
-          >
-            <a>
-              {icon} {this.props.node.name}
-            </a>
-          </div>
-          {secondElement}
-        </>
-      );
-    }
-    return elementToRender;
+        {this.state.childrenOpen ? (
+          <div className="ps-3">{children}</div>
+        ) : null}
+      </>
+    );
   }
 }
 
@@ -253,7 +271,7 @@ type FilesTreeViewProps = {
   data: FilesTree;
   hash: Record<string, HashElt>;
   setOpenFolder: (path: string) => void;
-  lineageUrl: string;
+  linkUrl?: string;
   insideProject: boolean;
 };
 
@@ -272,7 +290,7 @@ function FilesTreeView(props: FilesTreeViewProps) {
               setOpenFolder={props.setOpenFolder}
               path={node.path}
               hash={props.data.hash}
-              lineageUrl={props.lineageUrl}
+              linkUrl={props.linkUrl}
               insideProject={props.insideProject}
             />
           );
@@ -283,7 +301,7 @@ function FilesTreeView(props: FilesTreeViewProps) {
     props.data,
     tree,
     props.setOpenFolder,
-    props.lineageUrl,
+    props.linkUrl,
     props.insideProject,
   ]);
 
@@ -293,23 +311,18 @@ function FilesTreeView(props: FilesTreeViewProps) {
 }
 
 type FileExplorerProps = {
+  /**  This is a list of files with atLocation containing the file path (this is optional) */
   files?: JsonObj[];
+  /** This is the already built fileTree (optional) */
   filesTree?: FilesTree;
+  /** Number of folders that should appear open already when displaying the tree */
   foldersOpenOnLoad: number;
-  lineageUrl: string;
+  /** Should be replaced for URL, this is the link for the file (when clicked) (optional) */
+  linkUrl?: string;
+  /** Set true if the display is inside a project */
   insideProject: boolean;
 };
 
-/**
- * Generic files tree generator.
- * Some things are left to do to make it more generic.
- *
- * @param {*} props.files - This is a list of files with atLocation containing the file path (this is optional)
- * @param {*} props.filesTree - This is the already built fileTree (optional)
- * @param {*} props.foldersOpenOnLoad - Number of folders that should appear open already when displaying the tree
- * @param {*} props.lineageUrl - Should be replaced for URL, this is the link for the file (when clicked) (optional)
- * @param {*} props.insideProject - Boolean to be set true if the display is inside a project
- */
 function FileExplorer(props: FileExplorerProps) {
   const [filesTree, setFilesTree] = useState<
     ReturnType<typeof getFilesTree> | undefined
@@ -340,7 +353,7 @@ function FileExplorer(props: FileExplorerProps) {
       data={filesTree}
       setOpenFolder={setOpenFolder}
       hash={filesTree.hash}
-      lineageUrl={props.lineageUrl}
+      linkUrl={props.linkUrl}
       insideProject={props.insideProject}
     />
   );
