@@ -1158,6 +1158,14 @@ const PinnedImageOption = ({
   );
 };
 
+const ProjectSettingsSessionsOutdated = () => {
+  return (
+    <div className="mb-2">
+      <Col xs={12}>Outdated Settings</Col>
+    </div>
+  );
+};
+
 interface ProjectSettingsSessionsUnknownProps {
   projectConfig: ProjectConfig;
   projectConfigIsFetching: boolean;
