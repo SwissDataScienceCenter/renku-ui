@@ -92,7 +92,7 @@ function StopSessionModal({
       <Fragment>
         {stopping ? (
           <FormText color="primary">
-            <Loader size="16" inline="true" margin="2" />
+            <Loader size={16} inline margin={2} />
             Stopping Session
             <br />
           </FormText>
