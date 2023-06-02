@@ -98,7 +98,7 @@ class OverviewStats extends Component {
 
     // TODO: provide a refresh button once all the data can be refreshed at once (see container)
     return (
-      <Card className="border-rk-light">
+      <Card>
         <CardHeader className="bg-white p-3 ps-4">
           Project Statistics
         </CardHeader>
@@ -240,7 +240,7 @@ class OverviewCommits extends Component {
       <OverviewCommitsBody {...this.props} />
     );
     return (
-      <Card className="border-rk-light">
+      <Card>
         <CardHeader className="bg-white p-3 ps-4 d-flex">
           <span className="align-text-bottom">Commits</span>
           <div>

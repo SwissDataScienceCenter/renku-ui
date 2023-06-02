@@ -155,7 +155,7 @@ function TablesGuide() {
       </table>
       <br />
       <p>It may make sense to set off the table with a title using a card.</p>
-      <Card className="border-rk-light">
+      <Card>
         <CardHeader className="bg-white p-3 ps-4">
           <b>A table in a card</b>
         </CardHeader>

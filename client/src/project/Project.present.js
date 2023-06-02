@@ -629,7 +629,7 @@ class ProjectViewReadme extends Component {
     if (loading && readmeText === "") return <Loader />;
 
     return (
-      <Card className="border-rk-light">
+      <Card>
         <CardHeader className="bg-white p-3 ps-4">README.md</CardHeader>
         <CardBody
           style={{ overflow: "auto" }}
