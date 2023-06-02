@@ -275,6 +275,8 @@ export const ProjectSettingsSessions = () => {
         devAccess={devAccess}
       />
 
+      <ProjectSettingsSessionsOutdated />
+
       <ProjectSettingsSessionsAdvanced
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
@@ -636,7 +638,7 @@ const SessionClassOption = ({
   if (resourcePoolsIsLoading) {
     return (
       <Col xs={12}>
-        Fetching available resource pools... <Loader size="16" inline="true" />
+        Fetching available resource pools... <Loader size={16} inline />
       </Col>
     );
   }

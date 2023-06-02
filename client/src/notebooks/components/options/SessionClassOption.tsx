@@ -133,7 +133,7 @@ export const SessionClassOption = () => {
   if (isLoading) {
     return (
       <Col xs={12}>
-        Fetching available resource pools... <Loader size="16" inline="true" />
+        Fetching available resource pools... <Loader size={16} inline />
       </Col>
     );
   }
