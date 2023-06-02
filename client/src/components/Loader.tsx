@@ -47,7 +47,7 @@ const LoaderSpinner = ({
   const d = `${size}px`;
   // Inspired from https://www.w3schools.com/howto/howto_css_loader.asp
   const border = `${size / 10}px solid transparent`;
-  const borderTop = `${size / 10}px solid ${color}`; // Use Renku Blue
+  const borderTop = `${size / 10}px solid ${color}`;
   const borderRight = borderTop; // Added a borderRight to make a half-circle
   const borderRadius = "50%";
   const animation = "spin 2s linear infinite";
