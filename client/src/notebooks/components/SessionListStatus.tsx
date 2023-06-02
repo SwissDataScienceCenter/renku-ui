@@ -46,13 +46,13 @@ function getStatusObject(status: SessionRunningStatus, defaultImage: boolean) {
     case SessionStatus.starting:
       return {
         color: "warning",
-        icon: <Loader size="16" inline="true" />,
+        icon: <Loader size={16} inline />,
         text: "Starting...",
       };
     case SessionStatus.stopping:
       return {
         color: "warning",
-        icon: <Loader size="16" inline="true" />,
+        icon: <Loader size={16} inline />,
         text: "Stopping...",
       };
     case SessionStatus.failed:

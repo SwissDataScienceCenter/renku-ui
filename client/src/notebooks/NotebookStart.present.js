@@ -331,7 +331,7 @@ function AutosavesInfoAlert({
   if (deleteOngoing) {
     return (
       <InfoAlert dismissible={false} timeout={0}>
-        Deleting the autosave... <Loader size="14" inline="true" />
+        Deleting the autosave... <Loader size={14} inline />
       </InfoAlert>
     );
   }
@@ -428,7 +428,7 @@ class StartNotebookBranches extends Component {
     if (this.props.fetchingBranches || this.props.delays.branch) {
       content = (
         <Label>
-          Updating branches... <Loader size="14" inline="true" />
+          Updating branches... <Loader size={14} inline />
         </Label>
       );
     } else if (branches.length === 0) {
@@ -627,13 +627,13 @@ class StartNotebookPipelines extends Component {
     if (ciStatus.ongoing !== false)
       return (
         <Label>
-          Checking Docker image status... <Loader size="14" inline="true" />
+          Checking Docker image status... <Loader size={14} inline />
         </Label>
       );
     if (this.state.justTriggered)
       return (
         <Label>
-          Triggering Docker image build... <Loader size="14" inline="true" />
+          Triggering Docker image build... <Loader size={14} inline />
         </Label>
       );
 
@@ -999,7 +999,7 @@ class StartNotebookCommits extends Component {
       return (
         <FormGroup>
           <Label>
-            Updating commits... <Loader size="14" inline="true" />
+            Updating commits... <Loader size={14} inline />
           </Label>
         </FormGroup>
       );
@@ -1007,7 +1007,7 @@ class StartNotebookCommits extends Component {
       return (
         <FormGroup>
           <Label>
-            Verifying commit autosaves... <Loader size="14" inline="true" />
+            Verifying commit autosaves... <Loader size={14} inline />
           </Label>
         </FormGroup>
       );
@@ -1148,7 +1148,7 @@ function StartNotebookOptions(props) {
   if (justStarted)
     return (
       <Label>
-        Starting a new session... <Loader size="14" inline="true" />
+        Starting a new session... <Loader size={14} inline />
       </Label>
     );
 
@@ -1157,14 +1157,14 @@ function StartNotebookOptions(props) {
   if (!fetched)
     return (
       <Label>
-        Verifying available sessions... <Loader size="14" inline="true" />
+        Verifying available sessions... <Loader size={14} inline />
       </Label>
     );
 
   if (Object.keys(options.global).length === 0 || options.fetching)
     return (
       <Label>
-        Loading session parameters... <Loader size="14" inline="true" />
+        Loading session parameters... <Loader size={14} inline />
       </Label>
     );
 
@@ -1500,7 +1500,7 @@ const CheckNotebookIcon = ({
 }) => {
   const loader = (
     <span className="ms-2 pb-1">
-      <Loader size="19" inline="true" />
+      <Loader size={19} inline />
     </span>
   );
   if (!fetched) return loader;

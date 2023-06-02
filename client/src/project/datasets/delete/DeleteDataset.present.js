@@ -56,7 +56,7 @@ function DeleteDatasetPresent(props) {
         <Fragment>
           {props.submitLoader !== undefined && props.submitLoader.value ? (
             <FormText color="primary">
-              <Loader size="16" inline="true" margin="2" />
+              <Loader size={16} inline margin={2} />
               {props.submitLoader.text}
               <br />
             </FormText>

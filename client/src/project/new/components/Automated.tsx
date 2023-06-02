@@ -188,7 +188,7 @@ function AutomatedModal(props: AutomatedModalProps) {
             <p>You entered a url containing information to pre-fill.</p>
             <span>
               Please wait while we fetch the required metadata...&nbsp;
-              <Loader inline={true} size={16} />
+              <Loader inline size={16} />
             </span>
             <div className="mt-2">
               {button}
