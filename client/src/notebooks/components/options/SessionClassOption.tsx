@@ -84,12 +84,6 @@ export const SessionClassOption = () => {
 
   const defaultSessionClass = useMemo(
     () =>
-      // resourcePools
-      //   ?.flatMap((pool) => pool.classes)
-      //   .find((c) => c.id == projectConfig?.config.sessions?.sessionClass) ??
-      // resourcePools
-      //   ?.flatMap((pool) => pool.classes)
-      //   .find((c) => c.id == projectConfig?.default.sessions?.sessionClass) ??
       resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default) ??
       resourcePools?.find(() => true)?.classes[0] ??
       undefined,
@@ -110,11 +104,9 @@ export const SessionClassOption = () => {
 
   // Set initial session class
   useEffect(() => {
-    console.log({ projectConfig });
     if (projectConfig == null || resourcePools == null) {
       return;
     }
-    console.log({ projectConfig, resourcePools });
     const sessionClassIdFromConfig =
       projectConfig.config.sessions?.sessionClass ??
       projectConfig.default.sessions?.sessionClass;
@@ -126,14 +118,7 @@ export const SessionClassOption = () => {
         ?.flatMap((pool) => pool.classes)
         .find((c) => c.id == defaultSessionClass?.id)?.id ??
       0;
-    console.log({ initialSessionClassId });
     dispatch(setSessionClass(initialSessionClassId));
-
-    // const initialSessionClassId =
-    //   resourcePools
-    //     ?.flatMap((pool) => pool.classes)
-    //     .find((c) => c.id == defaultSessionClass?.id)?.id ?? 0;
-    // dispatch(setSessionClass(initialSessionClassId));
   }, [defaultSessionClass?.id, dispatch, projectConfig, resourcePools]);
 
   const onChange = useCallback(

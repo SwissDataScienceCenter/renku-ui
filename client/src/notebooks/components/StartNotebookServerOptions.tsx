@@ -52,123 +52,151 @@ import { SessionClassOption } from "./options/SessionClassOption";
 import { SessionStorageOption } from "./options/SessionStorageOption";
 
 interface StartNotebookServerOptionsProps {
-  projectRepositoryUrl: string;
   branch?: {
     name: string;
   };
 }
 
 export const StartNotebookServerOptions = ({
-  projectRepositoryUrl,
-  branch,
+  branch: _branch, //eslint-disable-line @typescript-eslint/no-unused-vars
 }: StartNotebookServerOptionsProps) => {
-  // console.log({ projectConfig, projectConfigIsLoading });
-  // TODO wait for configs
+  // Wait for options to load
+
+  // Global options
+  const { isLoading: serverOptionsIsLoading } = useServerOptionsQuery({});
+
+  // Project options
+  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { coreSupport } = useCoreSupport({
+    gitUrl: projectRepositoryUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const { isLoading: projectConfigIsLoading } = useGetConfigQuery(
+    {
+      projectRepositoryUrl,
+      versionUrl,
+      // ...(branchName ? { branch: branchName } : {}),
+    },
+    { skip: !coreSupportComputed }
+  );
+
+  if (
+    serverOptionsIsLoading ||
+    projectConfigIsLoading ||
+    !coreSupportComputed
+  ) {
+    const message = serverOptionsIsLoading
+      ? "Getting RenkuLab settings..."
+      : projectConfigIsLoading
+      ? "Getting project settings..."
+      : !coreSupportComputed
+      ? "Checking project version and RenkuLab compatibility..."
+      : "Please wait...";
+    return (
+      <Row>
+        <p>{message}</p>
+        <Loader />
+      </Row>
+    );
+  }
 
   return (
-    <>
-      <Row>
-        <DefaultUrlOption
-        // projectRepositoryUrl={projectRepositoryUrl}
-        // branchName={branch?.name}
-        />
-        <SessionClassOption />
-        <SessionStorageOption />
-        <AutoFetchLfsOption />
-      </Row>
-    </>
+    <Row>
+      <DefaultUrlOption />
+      <SessionClassOption />
+      <SessionStorageOption />
+      <AutoFetchLfsOption />
+    </Row>
   );
 };
 
-interface DefaultUrlOptionProps {
-  projectRepositoryUrl: string;
-  branchName?: string;
-}
+const DefaultUrlOption = () => {
+  // Global options
+  const { data: serverOptions, isLoading: serverOptionsIsLoading } =
+    useServerOptionsQuery({});
 
-const DefaultUrlOption =
-  (/*{ projectRepositoryUrl }: DefaultUrlOptionProps*/) => {
-    // Global options
-    const { data: serverOptions, isLoading: serverOptionsIsLoading } =
-      useServerOptionsQuery({});
-
-    // Project options
-    const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
-      RootStateOrAny,
-      StateModelProject["metadata"]
-    >((state) => state.stateModel.project.metadata);
-    const { coreSupport } = useCoreSupport({
-      gitUrl: projectRepositoryUrl ?? undefined,
-      branch: defaultBranch ?? undefined,
-    });
-    const { computed: coreSupportComputed, versionUrl } = coreSupport;
-    const { data: projectConfig, isLoading: projectConfigIsLoading } =
-      useGetConfigQuery(
-        {
-          projectRepositoryUrl,
-          versionUrl,
-          // ...(branchName ? { branch: branchName } : {}),
-        },
-        { skip: !coreSupportComputed }
-      );
-
-    const defaultUrlOptions = mergeDefaultUrlOptions({
-      serverOptions,
-      projectConfig,
-    });
-
-    const selectedDefaultUrl = useStartSessionOptionsSelector(
-      (state) => state.defaultUrl
-    );
-    const dispatch = useDispatch();
-
-    // Set initial default URL
-    useEffect(() => {
-      if (projectConfig != null) {
-        dispatch(
-          setDefaultUrl(
-            projectConfig.config.sessions?.defaultUrl ??
-              projectConfig.default.sessions?.defaultUrl ??
-              ""
-          )
-        );
-      }
-    }, [dispatch, projectConfig]);
-
-    const onChange = useCallback(
-      (event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
-        if (value) {
-          dispatch(setDefaultUrl(value));
-        }
+  // Project options
+  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { coreSupport } = useCoreSupport({
+    gitUrl: projectRepositoryUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const { data: projectConfig, isLoading: projectConfigIsLoading } =
+    useGetConfigQuery(
+      {
+        projectRepositoryUrl,
+        versionUrl,
+        // ...(branchName ? { branch: branchName } : {}),
       },
-      [dispatch]
+      { skip: !coreSupportComputed }
     );
 
-    if (
-      serverOptionsIsLoading ||
-      projectConfigIsLoading ||
-      !serverOptions ||
-      !projectConfig
-    ) {
-      return <Loader />;
+  const defaultUrlOptions = mergeDefaultUrlOptions({
+    serverOptions,
+    projectConfig,
+  });
+
+  const selectedDefaultUrl = useStartSessionOptionsSelector(
+    (state) => state.defaultUrl
+  );
+  const dispatch = useDispatch();
+
+  // Set initial default URL
+  useEffect(() => {
+    if (projectConfig != null) {
+      dispatch(
+        setDefaultUrl(
+          projectConfig.config.sessions?.defaultUrl ??
+            projectConfig.default.sessions?.defaultUrl ??
+            ""
+        )
+      );
     }
+  }, [dispatch, projectConfig]);
 
-    const { defaultUrl } = serverOptions;
+  const onChange = useCallback(
+    (event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
+      if (value) {
+        dispatch(setDefaultUrl(value));
+      }
+    },
+    [dispatch]
+  );
 
-    return (
-      <Col xs={12}>
-        <FormGroup className="field-group">
-          <Label className="me-2">{defaultUrl.displayName}</Label>
-          {defaultUrlOptions.length > 1 && <br />}
-          <ServerOptionEnum
-            {...defaultUrl}
-            options={defaultUrlOptions}
-            selected={selectedDefaultUrl}
-            onChange={onChange}
-          />
-        </FormGroup>
-      </Col>
-    );
-  };
+  if (
+    serverOptionsIsLoading ||
+    projectConfigIsLoading ||
+    !serverOptions ||
+    !projectConfig
+  ) {
+    return <Loader />;
+  }
+
+  const { defaultUrl } = serverOptions;
+
+  return (
+    <Col xs={12}>
+      <FormGroup className="field-group">
+        <Label className="me-2">{defaultUrl.displayName}</Label>
+        {defaultUrlOptions.length > 1 && <br />}
+        <ServerOptionEnum
+          {...defaultUrl}
+          options={defaultUrlOptions}
+          selected={selectedDefaultUrl}
+          onChange={onChange}
+        />
+      </FormGroup>
+    </Col>
+  );
+};
 
 export const mergeDefaultUrlOptions = ({
   serverOptions,

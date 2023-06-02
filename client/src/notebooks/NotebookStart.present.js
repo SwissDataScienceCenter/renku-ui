@@ -1194,10 +1194,7 @@ function StartNotebookOptions(props) {
 
   return (
     <>
-      <StartNotebookServerOptions
-        projectRepositoryUrl={props.externalUrl}
-        branch={filters.branch}
-      />
+      <StartNotebookServerOptions branch={filters.branch} />
       <EnvironmentVariables
         key="envVariables"
         environmentVariables={environmentVariables}
