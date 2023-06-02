@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up node ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: "16.13.2"
       - name: Install client dependencies
@@ -51,7 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up node ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: "16.13.2"
       - name: Install server dependencies and build
@@ -81,7 +81,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up node ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: "16.13.2"
       - name: Install project e2e dependencies
