@@ -65,13 +65,13 @@ const LoaderSpinner = ({
     const baseSpinner = existingSpinners.find(
       (spinner) =>
         spinner !== ref.current &&
-        spinner.getAnimations().at(0)?.startTime != null
+        spinner.getAnimations?.().at(0)?.startTime != null
     );
     if (!baseSpinner) {
       return;
     }
-    const currentAnimation = ref?.current?.getAnimations().at(0);
-    const baseAnimation = baseSpinner.getAnimations().at(0);
+    const currentAnimation = ref?.current?.getAnimations?.().at(0);
+    const baseAnimation = baseSpinner.getAnimations?.().at(0);
     if (
       currentAnimation == null ||
       baseAnimation == null ||
