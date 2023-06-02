@@ -110,7 +110,6 @@ export const ProjectSettingsGeneralDeleteProject = ({
           Deleting the project will remove its repository and all related
           resources, including datasets, issues and merge requests.
         </p>
-        <p>Learn more</p>
         <p className="text-danger">Deleted projects cannot be restored!</p>
         <Button color="danger" onClick={onOpenModal}>
           Delete project
