@@ -71,7 +71,7 @@ function DatasetAddToProjectStatus(props: DatasetAddToProjectStatusProps) {
     case "inProcess":
       statusProject = (
         <div>
-          <Loader size="14" inline="true" /> {text}
+          <Loader size={14} inline /> {text}
         </div>
       );
       break;

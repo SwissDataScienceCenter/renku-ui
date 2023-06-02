@@ -147,7 +147,7 @@ function AddDatasetExistingProject({
   } else {
     suggestionInput = (
       <div>
-        <Loader size="14" inline="true" /> Loading projects...
+        <Loader size={14} inline /> Loading projects...
       </div>
     );
   }

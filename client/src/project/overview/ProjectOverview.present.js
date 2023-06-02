@@ -50,7 +50,7 @@ import { Pagination } from "../../components/Pagination";
 
 class OverviewStats extends Component {
   valueOrEmptyOrLoading(value, fetching, readableSize = true) {
-    if (fetching) return <Loader size="14" inline="true" />;
+    if (fetching) return <Loader size={14} inline />;
     if (value === 0) return 0;
     if (value !== null && !isNaN(value))
       return readableSize ? fileSize(value) : value;
@@ -81,7 +81,7 @@ class OverviewStats extends Component {
     const branchesCount = !StatusHelper.isUpdating(branches) ? (
       branches.length
     ) : (
-      <Loader size="14" inline="true" />
+      <Loader size={14} inline />
     );
 
     let info = null;

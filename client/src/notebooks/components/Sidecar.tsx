@@ -31,7 +31,7 @@ function CenteredLoader() {
   return (
     <div className="d-flex justify-content-center">
       <div>
-        <Loader size="16" inline="true" margin="2" />
+        <Loader size={16} inline margin={2} />
       </div>
     </div>
   );

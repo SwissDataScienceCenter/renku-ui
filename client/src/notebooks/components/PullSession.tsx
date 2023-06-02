@@ -216,7 +216,7 @@ function PullSessionBody({
   const commitsToken = commitsPhrasing(gitStatus.result.behind);
   const pullText = pulling ? (
     <span>
-      <Loader inline={true} size={16} />
+      <Loader inline size={16} />
       Pulling Changes
     </span>
   ) : (

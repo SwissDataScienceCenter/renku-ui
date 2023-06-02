@@ -64,7 +64,7 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
   if (isLoading) {
     return (
       <p>
-        Checking project metadata status... <Loader size="14" inline="true" />
+        Checking project metadata status... <Loader size={14} inline />
       </p>
     );
   }
@@ -128,7 +128,7 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
         </>
       ) : (
         <p>
-          Processing project metadata... <Loader size="14" />
+          Processing project metadata... <Loader size={14} />
         </p>
       );
     return (
