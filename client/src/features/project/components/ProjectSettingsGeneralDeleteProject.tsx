@@ -108,7 +108,7 @@ export const ProjectSettingsGeneralDeleteProject = ({
         {result.error && <ShowError error={result.error} />}
         <p className="mb-0">
           Deleting the project will remove its repository and all related
-          resources, including datasets(?), issues and merge requests.
+          resources, including datasets, issues and merge requests.
         </p>
         <p>Learn more</p>
         <p className="text-danger">Deleted projects cannot be restored!</p>
