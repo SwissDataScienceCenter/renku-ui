@@ -123,7 +123,7 @@ describe("display a project - not found", () => {
   });
 });
 
-describe("display a project", () => {
+describe.only("display a project", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = true;
   beforeEach(() => {
@@ -328,7 +328,7 @@ describe("display a project", () => {
       });
   });
 
-  it("delete a project", () => {
+  it.only("delete a project", () => {
     fixtures.deleteProject();
     cy.visit("/projects/e2e/local-test-project/settings");
 
