@@ -7,14 +7,38 @@ import {
   faFolderOpen,
 } from "@fortawesome/free-solid-svg-icons";
 import { Loader } from "./Loader";
+import { type } from "os";
+
+type HashElt = {
+  name: string;
+  selected: boolean;
+  childrenOpen: boolean;
+  path: string;
+  isLeaf: boolean;
+};
+
+type JsonObj = {
+  atLocation: string;
+  name: string;
+  id: string;
+};
+
+type TreeNodeElt = {
+  name: string;
+  children: TreeNodeElt[];
+  id: string;
+  jsonObj: JsonObj | null;
+  path: string;
+  text?: string;
+};
 
 function buildTree(
-  parts,
-  treeNode,
-  jsonObj,
-  hash,
-  currentPath,
-  foldersOpenOnLoad
+  parts: string[],
+  treeNode: TreeNodeElt[],
+  jsonObj: JsonObj,
+  hash: Record<string, HashElt>,
+  currentPath: string,
+  foldersOpenOnLoad = 0
 ) {
   if (parts.length === 0) return;
   currentPath = currentPath === "" ? parts[0] : currentPath + "/" + parts[0];
@@ -32,23 +56,22 @@ function buildTree(
     }
   }
 
-  let newNode;
-  if (parts[0] === jsonObj.name)
-    newNode = {
-      name: parts[0],
-      children: [],
-      jsonObj: jsonObj,
-      path: currentPath,
-      id: jsonObj.id,
-    };
-  else
-    newNode = {
-      name: parts[0],
-      children: [],
-      jsonObj: null,
-      path: currentPath,
-      id: jsonObj.id,
-    };
+  const newNode =
+    parts[0] === jsonObj.name
+      ? {
+          name: parts[0],
+          children: [],
+          jsonObj: jsonObj,
+          path: currentPath,
+          id: jsonObj.id,
+        }
+      : {
+          name: parts[0],
+          children: [],
+          jsonObj: null,
+          path: currentPath,
+          id: jsonObj.id,
+        };
 
   const currentNode = treeNode.filter((node) => node.name === newNode.name);
 
@@ -84,10 +107,18 @@ function buildTree(
   }
 }
 
-function getFilesTree(files, foldersOpenOnLoad) {
-  let list = files;
-  let tree = [];
-  let hash = {};
+type FilesTree = {
+  tree: TreeNodeElt[];
+  hash: Record<string, HashElt>;
+  leafs: HashElt[];
+};
+function getFilesTree(
+  files: JsonObj[],
+  foldersOpenOnLoad: number | undefined
+): FilesTree {
+  const list = files;
+  const tree: TreeNodeElt[] = [];
+  const hash: Record<string, HashElt> = {};
   for (let i = 0; i < list.length; i++) {
     const dir = list[i].atLocation.split("/");
     buildTree(dir, tree, list[i], hash, "", foldersOpenOnLoad);
@@ -100,12 +131,30 @@ function getFilesTree(files, foldersOpenOnLoad) {
   return treeObj;
 }
 
-class TreeNode extends Component {
-  constructor(props) {
+type TreeNodeProps = {
+  path: string;
+  node: TreeNodeElt;
+  childrenOpen: boolean;
+  projectUrl?: string;
+  lineageUrl: string;
+  setOpenFolder: (path: string) => void;
+  hash: Record<string, HashElt>;
+  insideProject: boolean;
+};
+
+type TreeNodeState = {
+  isSelected: boolean;
+  childrenOpen: boolean;
+};
+
+class TreeNode extends Component<TreeNodeProps, TreeNodeState> {
+  constructor(props: TreeNodeProps) {
+    // eslint-disable-next-line react/prop-types
+    const childrenOpen = props.childrenOpen as boolean;
     super(props);
     this.state = {
       isSelected: false,
-      childrenOpen: this.props.childrenOpen,
+      childrenOpen,
     };
     this.handleIconClick = this.handleIconClick.bind(this);
   }
@@ -200,8 +249,16 @@ class TreeNode extends Component {
   }
 }
 
-function FilesTreeView(props) {
-  const [tree, setTree] = useState(undefined);
+type FilesTreeViewProps = {
+  data: FilesTree;
+  hash: Record<string, HashElt>;
+  setOpenFolder: (path: string) => void;
+  lineageUrl: string;
+  insideProject: boolean;
+};
+
+function FilesTreeView(props: FilesTreeViewProps) {
+  const [tree, setTree] = useState<React.ReactNode>(undefined);
 
   useEffect(() => {
     if (props.data.tree && tree === undefined) {
@@ -235,6 +292,14 @@ function FilesTreeView(props) {
   return <div className="tree-container">{tree}</div>;
 }
 
+type FileExplorerProps = {
+  files?: JsonObj[];
+  filesTree?: FilesTree;
+  foldersOpenOnLoad: number;
+  lineageUrl: string;
+  insideProject: boolean;
+};
+
 /**
  * Generic files tree generator.
  * Some things are left to do to make it more generic.
@@ -245,8 +310,10 @@ function FilesTreeView(props) {
  * @param {*} props.lineageUrl - Should be replaced for URL, this is the link for the file (when clicked) (optional)
  * @param {*} props.insideProject - Boolean to be set true if the display is inside a project
  */
-function FileExplorer(props) {
-  const [filesTree, setFilesTree] = useState(undefined);
+function FileExplorer(props: FileExplorerProps) {
+  const [filesTree, setFilesTree] = useState<
+    ReturnType<typeof getFilesTree> | undefined
+  >(undefined);
 
   useEffect(() => {
     if (props.filesTree !== undefined) setFilesTree(props.filesTree);
@@ -254,11 +321,15 @@ function FileExplorer(props) {
       setFilesTree(getFilesTree(props.files, props.foldersOpenOnLoad));
   }, [props.files, props.filesTree, props.foldersOpenOnLoad]);
 
-  const setOpenFolder = (filePath) => {
-    filesTree.hash[filePath].childrenOpen =
-      !filesTree.hash[filePath].childrenOpen;
-    setFilesTree(filesTree);
-  };
+  const setOpenFolder = React.useCallback(
+    (filePath: string) => {
+      if (filesTree == null) return;
+      filesTree.hash[filePath].childrenOpen =
+        !filesTree.hash[filePath].childrenOpen;
+      setFilesTree(filesTree);
+    },
+    [filesTree]
+  );
 
   const loading = filesTree === undefined;
 
