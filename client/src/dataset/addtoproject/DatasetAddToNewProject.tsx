@@ -18,23 +18,36 @@
 
 import React, { useContext, useEffect, useState } from "react";
 
-import { useSelector } from "react-redux";
+import { RootStateOrAny, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { AddDatasetStatus } from "./addDatasetStatus";
 import { NewProject } from "../../project/new";
 import { Loader } from "../../components/Loader";
 import { WarnAlert } from "../../components/Alert";
 import AppContext from "../../utils/context/appContext";
 
-/**
- *  incubator-renku-ui
- *
- *  AddDatasetNewProject
- *  Component for add dataset to new project
- */
+import type {
+  AddDatasetHandlers,
+  AddDatasetStatus,
+  ExistingProject,
+} from "./DatasetAdd.types";
+import DatasetAddToProjectStatus from "./DatasetAddToProjectStatus";
 
-const AddDatasetNewProject = ({
+type TNewProject = {
+  name: string;
+};
+
+type AddDatasetNewProjectProps = {
+  dataset: unknown;
+  model: unknown;
+  handlers: AddDatasetHandlers;
+  isDatasetValid: boolean | null;
+  currentStatus: AddDatasetStatus | null;
+  importingDataset: boolean;
+  project?: ExistingProject;
+};
+
+function AddDatasetNewProject({
   dataset,
   model,
   handlers,
@@ -42,15 +55,15 @@ const AddDatasetNewProject = ({
   currentStatus,
   importingDataset,
   project,
-}) => {
-  const [newProject, setNewProject] = useState(null);
+}: AddDatasetNewProjectProps) {
+  const [newProject, setNewProject] = useState<TNewProject | null>(null);
   const setCurrentStatus = handlers.setCurrentStatus;
   const { client } = useContext(AppContext);
-  const user = useSelector((state) => state.stateModel.user);
+  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
 
   useEffect(() => setCurrentStatus(null), [setCurrentStatus]);
 
-  const startImportDataset = async (projectPath) => {
+  const startImportDataset = async (projectPath: string) => {
     if (!client)
       setCurrentStatus({
         status: "error",
@@ -75,9 +88,9 @@ const AddDatasetNewProject = ({
   };
 
   const addDatasetStatus = currentStatus ? (
-    <AddDatasetStatus
+    <DatasetAddToProjectStatus
       status={currentStatus.status}
-      text={currentStatus?.text || null}
+      text={currentStatus.text}
       projectName={project?.name}
     />
   ) : null;
@@ -92,7 +105,7 @@ const AddDatasetNewProject = ({
     importingDataset ||
     !isDatasetValid ||
     ["inProcess", "importing", "error"].includes(
-      currentStatus?.status
+      currentStatus?.status ?? ""
     ) ? null : (
       <NewProject
         key="newProject"
@@ -129,6 +142,6 @@ const AddDatasetNewProject = ({
       {extraInfo}
     </div>
   );
-};
+}
 
-export { AddDatasetNewProject };
+export default AddDatasetNewProject;

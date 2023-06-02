@@ -160,18 +160,18 @@ export interface MigrationStatusParams {
   gitUrl: string;
 }
 
+export interface CoreCompatibilityStatus {
+  current_metadata_version: string;
+  migration_required: boolean;
+  project_metadata_version: string;
+  type: "detail";
+}
+
 export interface MigrationStatusDetails {
   core_renku_version: string;
   project_renku_version: string;
   project_supported: boolean;
-  core_compatibility_status:
-    | CoreSectionError
-    | {
-        current_metadata_version: string;
-        migration_required: boolean;
-        project_metadata_version: string;
-        type: "detail";
-      };
+  core_compatibility_status: CoreSectionError | CoreCompatibilityStatus;
   dockerfile_renku_status:
     | CoreSectionError
     | {
