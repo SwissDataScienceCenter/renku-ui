@@ -274,7 +274,7 @@ export const ProjectSettingsSessions = () => {
         versionUrl={versionUrl}
         devAccess={devAccess}
       />
-      q{" "}
+
       <ProjectSettingsSessionsAdvanced
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
@@ -282,6 +282,7 @@ export const ProjectSettingsSessions = () => {
         versionUrl={versionUrl}
         devAccess={devAccess}
       />
+
       <ProjectSettingsSessionsUnknown
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
