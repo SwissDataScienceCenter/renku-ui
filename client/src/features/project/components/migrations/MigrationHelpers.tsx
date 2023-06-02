@@ -78,7 +78,7 @@ export function CompositeTitle({
 }: CompositeTitleProps) {
   const sectionIdFull = sectionId + "-section";
   const finalIcon = loading ? (
-    <Loader inline={true} size={14} />
+    <Loader inline size={14} />
   ) : (
     <FontAwesomeIcon icon={icon} />
   );

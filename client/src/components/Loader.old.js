@@ -43,17 +43,48 @@ function LoaderSpinner(props) {
   const ref = useRef(null);
 
   useEffect(() => {
-    const existingSpinner = document.querySelector(".rk-spinner");
-    if (!existingSpinner || existingSpinner === ref.current) {
+    // const existingSpinner = document.querySelector(".rk-spinner");
+    // if (existingSpinner === ref.current) {
+    //   console.log("base is ref");
+    // }
+    // if (!existingSpinner || existingSpinner === ref.current) {
+    //   return;
+    // }
+    // console.log({ existingSpinner, ref: ref.current });
+    // const currentAnimation = ref.current.getAnimations().find(() => true);
+    // const baseAnimation = existingSpinner.getAnimations().find(() => true);
+    // if (currentAnimation == null || baseAnimation == null) {
+    //   return;
+    // }
+    // console.log([currentAnimation.startTime, baseAnimation.startTime]);
+    // currentAnimation.startTime = baseAnimation.startTime;
+
+    const existingSpinners = [...document.querySelectorAll(".rk-spinner")];
+    const baseSpinner = existingSpinners.find(
+      (spinner) => spinner !== ref.current
+    );
+    console.log({ baseSpinner });
+    if (!baseSpinner) {
       return;
     }
-    console.log({ existingSpinner, ref: ref.current });
     const currentAnimation = ref.current.getAnimations().find(() => true);
-    const baseAnimation = existingSpinner.getAnimations().find(() => true);
-    if (currentAnimation == null || baseAnimation == null) {
+    const baseAnimation = baseSpinner.getAnimations().find(() => true);
+    console.log([
+      !!currentAnimation,
+      currentAnimation.startTime,
+      !!baseAnimation,
+      baseAnimation.startTime,
+    ]);
+    if (
+      currentAnimation == null ||
+      // currentAnimation.startTime == null ||
+      baseAnimation == null ||
+      baseAnimation.startTime == null
+    ) {
       return;
     }
     currentAnimation.startTime = baseAnimation.startTime;
+    // console.log({ baseSpinner });
   }, []);
 
   return (

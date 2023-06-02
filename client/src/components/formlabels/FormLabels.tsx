@@ -59,7 +59,7 @@ const LoadingLabel = ({ text }: LabelProps) => {
   return (
     <FormText className="loading-label">
       <span>{text}</span>
-      <Loader inline={true} size={16} />
+      <Loader inline size={16} />
     </FormText>
   );
 };

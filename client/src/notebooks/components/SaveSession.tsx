@@ -273,7 +273,7 @@ function SaveSessionBody({
   const [commitMessage, setCommitMessage] = React.useState(undefined);
   const saveText = saving ? (
     <span>
-      <Loader inline={true} size={16} />
+      <Loader inline size={16} />
       Saving Session
     </span>
   ) : (
@@ -295,7 +295,7 @@ function SaveSessionBody({
         <Fragment>
           {saving ? (
             <FormText color="primary">
-              <Loader size="16" inline="true" margin="2" />
+              <Loader size={16} inline margin={2} />
               Saving Session
               <br />
             </FormText>

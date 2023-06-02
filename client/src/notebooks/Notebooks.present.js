@@ -415,7 +415,7 @@ class NotebookServerRowCommitInfo extends Component {
     } else if (!commit.fetched && commit.fetching) {
       content = (
         <span>
-          <Loader size="16" inline="true" /> Fetching data...
+          <Loader size={16} inline /> Fetching data...
         </span>
       );
     } else {

@@ -102,7 +102,7 @@ class RenkuToolbarItemUser extends Component {
     const uiserverURL = this.props.params.UISERVER_URL;
     const redirect_url = encodeURIComponent(this.props.params.BASE_URL);
     if (!user.fetched) {
-      return <Loader size="16" inline="true" />;
+      return <Loader size={16} inline />;
     } else if (!user.logged) {
       const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
       return <RenkuNavLink to={to} title="Login" />;
