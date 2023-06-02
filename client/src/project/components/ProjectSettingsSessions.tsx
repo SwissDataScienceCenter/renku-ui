@@ -275,7 +275,13 @@ export const ProjectSettingsSessions = () => {
         devAccess={devAccess}
       />
 
-      <ProjectSettingsSessionsOutdated />
+      <ProjectSettingsSessionsOutdated
+        projectConfig={projectConfig}
+        projectConfigIsFetching={projectConfigIsFetching}
+        projectRepositoryUrl={projectRepositoryUrl}
+        versionUrl={versionUrl}
+        devAccess={devAccess}
+      />
 
       <ProjectSettingsSessionsAdvanced
         projectConfig={projectConfig}
@@ -1160,13 +1166,91 @@ const PinnedImageOption = ({
   );
 };
 
-const ProjectSettingsSessionsOutdated = () => {
+interface ProjectSettingsSessionsOutdatedProps {
+  projectConfig: ProjectConfig;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
+}
+
+const ProjectSettingsSessionsOutdated = ({
+  projectConfig,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
+}: ProjectSettingsSessionsOutdatedProps) => {
+  const legacyConfig = projectConfig.config.sessions?.legacyConfig ?? {};
+  const legacyConfigKeys = (
+    Object.keys(legacyConfig) as (keyof typeof legacyConfig)[]
+  )
+    .filter((optionKey) => legacyConfig[optionKey] != null)
+    .sort();
+
+  const [showSection, setShowSection] = useState<boolean>(
+    legacyConfigKeys.length > 0
+  );
+
+  const toggleShowSection = useCallback(() => {
+    setShowSection((showSection) => !showSection);
+  }, []);
+
+  if (legacyConfigKeys.length == 0) {
+    return null;
+  }
+
   return (
     <div className="mb-2">
-      <Col xs={12}>Outdated Settings</Col>
+      <Col xs={12}>
+        <AccordionFixed
+          className={styles.accordion}
+          open={showSection ? "outdated-settings" : ""}
+          toggle={toggleShowSection}
+          flush
+        >
+          <AccordionItem>
+            <AccordionHeader targetId="outdated-settings">
+              Outdated settings
+            </AccordionHeader>
+            <AccordionBody accordionId="outdated-settings">
+              {devAccess && (
+                <WarnAlert>
+                  The following settings are no longer in use in Renku. They can
+                  be safely removed.
+                </WarnAlert>
+              )}
+              {legacyConfigKeys.map((optionKey) => (
+                <UnknownOption
+                  key={optionKey}
+                  optionKey={OUTDATED_OPTIONS_KEYS[optionKey]}
+                  optionLabel={OUTDATED_OPTIONS_LABELS[optionKey]}
+                  optionValue={`${legacyConfig[optionKey]}`}
+                  projectConfigIsFetching={projectConfigIsFetching}
+                  projectRepositoryUrl={projectRepositoryUrl}
+                  versionUrl={versionUrl}
+                  devAccess={devAccess}
+                />
+              ))}
+            </AccordionBody>
+          </AccordionItem>
+        </AccordionFixed>
+      </Col>
     </div>
   );
 };
+
+const OUTDATED_OPTIONS_KEYS = {
+  cpuRequest: "interactive.cpu_request",
+  memoryRequest: "interactive.mem_request",
+  gpuRequest: "interactive.gpu_request",
+} as const;
+
+const OUTDATED_OPTIONS_LABELS = {
+  cpuRequest: "Number of CPUs",
+  memoryRequest: "Amount of Memory",
+  gpuRequest: "Number of GPUs",
+} as const;
 
 interface ProjectSettingsSessionsUnknownProps {
   projectConfig: ProjectConfig;
@@ -1235,6 +1319,7 @@ const ProjectSettingsSessionsUnknown = ({
 
 interface UnknownOptionProps {
   optionKey: string;
+  optionLabel?: string;
   optionValue: string;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
@@ -1244,13 +1329,16 @@ interface UnknownOptionProps {
 
 const UnknownOption = ({
   optionKey,
+  optionLabel,
   optionValue,
   projectConfigIsFetching,
   projectRepositoryUrl,
   versionUrl,
   devAccess,
 }: UnknownOptionProps) => {
-  const shortKey = optionKey.slice("interactive.".length);
+  const shortKey = optionKey.toLocaleLowerCase().startsWith("interactive")
+    ? optionKey.slice("interactive.".length)
+    : optionKey;
   const safeShortKey = shortKey.toLowerCase().replaceAll(/[^0-9A-Za-z]/g, "-");
 
   const [updateConfig, { isLoading }] = useUpdateConfigMutation({
@@ -1272,7 +1360,9 @@ const UnknownOption = ({
   return (
     <FormGroup>
       <InputGroup className={styles.unknownOptionGroup}>
-        <InputGroupText className="rounded-start">{shortKey}</InputGroupText>
+        <InputGroupText className="rounded-start">
+          {optionLabel || shortKey}
+        </InputGroupText>
         <Input
           className={cx(!devAccess && "rounded-end")}
           value={optionValue || "<empty>"}
