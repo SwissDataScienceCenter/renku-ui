@@ -6,13 +6,10 @@ export interface Creator {
   name: string;
 }
 
-// These are used by the TS compiler does not realize it.
-/* eslint-disable no-unused-vars */
 export enum ListDisplayType {
   Card,
   Bar,
 }
-/* eslint-enable no-unused-vars */
 
 export interface ListElementProps {
   creators: EntityCreator[];

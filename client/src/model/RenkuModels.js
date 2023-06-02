@@ -353,15 +353,6 @@ const projectSchema = new Schema({
       requests: { [Prop.INITIAL]: {} },
     }),
   },
-  webhook: {
-    [Prop.SCHEMA]: {
-      status: { [Prop.INITIAL]: null },
-      created: { [Prop.INITIAL]: null },
-      possible: { [Prop.INITIAL]: null },
-      stop: { [Prop.INITIAL]: null },
-      progress: { [Prop.INITIAL]: null },
-    },
-  },
 });
 
 const notebooksSchema = new Schema({

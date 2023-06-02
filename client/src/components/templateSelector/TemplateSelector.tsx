@@ -22,23 +22,24 @@
  *  TemplateSelector.tsx
  *  TemplateSelector component
  */
-import * as React from "react";
-import { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardBody,
-  CardText,
   CardFooter,
+  CardText,
   Col,
-  UncontrolledPopover,
-  PopoverHeader,
   PopoverBody,
+  PopoverHeader,
   Row,
+  UncontrolledPopover,
   UncontrolledTooltip,
 } from "../../utils/ts-wrappers";
 
+import { NewProjectTemplate, Repository } from "../../model/RenkuModels";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
 import { ExternalLink } from "../ExternalLinks";
 import {
@@ -51,22 +52,6 @@ import "./TemplateSelector.css";
 
 const defaultTemplateIcon = "/stockimages/templatePlaceholder.svg";
 
-export interface Repository {
-  url: string;
-  ref: string;
-  name: string;
-}
-
-export interface ProjectTemplate {
-  id: string;
-  description: string;
-  icon?: string;
-  name: string;
-  variables?: Object; // eslint-disable-line @typescript-eslint/ban-types
-  parentRepo?: string;
-  parentTemplate?: string;
-}
-
 export interface TemplateSelectorProps {
   repositories: Repository[];
 
@@ -75,7 +60,7 @@ export interface TemplateSelectorProps {
 
   selected: string;
 
-  templates: ProjectTemplate[];
+  templates: NewProjectTemplate[];
 
   /** when the data(templates) is loading */
   isFetching: boolean;
@@ -98,7 +83,7 @@ interface TemplateGalleryRowProps {
   repository: Repository;
   select: Function; // eslint-disable-line @typescript-eslint/ban-types
   selected: string;
-  templates: ProjectTemplate[];
+  templates: NewProjectTemplate[];
   isInvalid?: boolean;
   isDisabled?: boolean;
 }

@@ -42,6 +42,7 @@ import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
 import { CoreError } from "../components/errors/CoreErrorHelpers";
 import EntityHeader from "../components/entityHeader/EntityHeader";
 import { EntityDeleteButtonButton } from "../components/entities/Buttons";
+import { Url } from "../utils/helpers/url";
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
@@ -62,7 +63,7 @@ function DisplayFiles(props) {
     }
 
     return (
-      <Card key="datasetDetails" className="border-rk-light mb-4">
+      <Card key="datasetDetails" className="mb-4">
         <CardHeader className="bg-white p-3 ps-4">Dataset files</CardHeader>
         <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">{errorObject}</CardBody>
       </Card>
@@ -92,7 +93,7 @@ function DisplayFiles(props) {
   });
 
   return (
-    <Card key="datasetDetails" className="border-rk-light mb-4">
+    <Card key="datasetDetails" className="mb-4">
       <CardHeader className="bg-white p-3 ps-4" data-cy="dataset-file-title">
         Dataset files ({files.length})
       </CardHeader>
@@ -116,7 +117,7 @@ function DisplayProjects(props) {
   if (props.projects === undefined || !Array.isArray(props.projects))
     return null;
   return (
-    <Card key="datasetProjectDetails" className="border-rk-light mb-4">
+    <Card key="datasetProjectDetails" className="mb-4">
       <CardHeader className="bg-white p-3 ps-4">
         Projects using this dataset
       </CardHeader>
@@ -158,7 +159,7 @@ function DisplayDescription(props) {
   if (!props.description) return null;
 
   return (
-    <Card key="datasetDescription" className="border-rk-light mb-4 my-4">
+    <Card key="datasetDescription" className="mb-4 my-4">
       <CardHeader className="bg-white p-3 ps-4">Dataset description</CardHeader>
       <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
         {props.insideProject ? (
@@ -189,7 +190,7 @@ function DisplayMetadata({ dataset, sameAs, insideProject }) {
     return null;
 
   return (
-    <Card key="datasetDescription" className="border-rk-light mb-4">
+    <Card key="datasetDescription" className="mb-4">
       <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
         {
           <div className="d-flex">
@@ -436,6 +437,11 @@ export default function DatasetView(props) {
     ? getUpdatedDatasetImage(getDatasetImageUrl(dataset.images), datasetDate)
     : undefined;
 
+  const settingsUrl = Url.get(Url.pages.project.settings, {
+    namespace: "",
+    path: props.projectPathWithNamespace,
+  });
+
   return (
     <div
       className={
@@ -523,13 +529,9 @@ export default function DatasetView(props) {
             <br />
             For more information about the Knowledge Graph status you can go to
             the&nbsp;
-            <Button
-              size="sm"
-              color="warning"
-              onClick={() => props.history.push(props.overviewStatusUrl)}
-            >
-              status page
-            </Button>
+            <Link className="btn btn-sm btn-warning" to={settingsUrl}>
+              project settings page
+            </Link>
             .
           </WarnAlert>
         ) : null}
@@ -543,7 +545,7 @@ export default function DatasetView(props) {
             projectPathWithNamespace={props.projectPathWithNamespace}
             setModalOpen={setDeleteDatasetModalOpen}
             user={props.user}
-            versionUrl={props.migration.core.versionUrl}
+            versionUrl={props.versionUrl}
           />
         ) : null}
       </Col>

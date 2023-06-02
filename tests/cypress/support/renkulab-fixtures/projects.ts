@@ -148,7 +148,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       result = "projects/change-visibility.json"
     ) {
       const fixture = this.useMockedData ? { fixture: result } : undefined;
-      cy.intercept("/ui-server/api/projects/*/graph/webhooks", {
+      cy.intercept("/ui-server/api/kg/webhooks/projects/*/webhooks", {
         body: { message: "Hook created" },
       });
       cy.intercept(
@@ -174,7 +174,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     interceptMigrationCheck(name, fixture, queryUrl = null) {
       const coreUrl = "/ui-server/api/renku/cache.migrations_check";
       const defaultQuery =
-        "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Fe2e%2Flocal-test-project.git&branch=master";
+        "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Fe2e%2Flocal-test-project&branch=master";
       cy.intercept(`${coreUrl}?${queryUrl || defaultQuery}`, {
         fixture: fixture,
       }).as(name);
@@ -205,20 +205,6 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    projectMigrationLegacyError(
-      params: MigrationCheckParams = {
-        queryUrl: null,
-        fixtureName: "getMigration",
-      }
-    ) {
-      this.interceptMigrationCheck(
-        params.fixtureName,
-        "errors/core-error-old.json",
-        params.queryUrl
-      );
-      return this;
-    }
-
     projectMigrationUpToDate(
       params: MigrationCheckParams = {
         queryUrl: null,
@@ -227,49 +213,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     ) {
       this.interceptMigrationCheck(
         params.fixtureName,
-        "project/test-project_migration_up-to-date.json",
-        params.queryUrl
-      );
-      return this;
-    }
-
-    projectMigrationOptional(
-      params: MigrationCheckParams = {
-        queryUrl: null,
-        fixtureName: "getMigration",
-      }
-    ) {
-      this.interceptMigrationCheck(
-        params.fixtureName,
-        "project/test-project_migration_update-optional.json",
-        params.queryUrl
-      );
-      return this;
-    }
-
-    projectMigrationRecommended(
-      params: MigrationCheckParams = {
-        queryUrl: null,
-        fixtureName: "getMigration",
-      }
-    ) {
-      this.interceptMigrationCheck(
-        params.fixtureName,
-        "project/test-project_migration_update-recommended.json",
-        params.queryUrl
-      );
-      return this;
-    }
-
-    projectMigrationRequired(
-      params: MigrationCheckParams = {
-        queryUrl: null,
-        fixtureName: "getMigration",
-      }
-    ) {
-      this.interceptMigrationCheck(
-        params.fixtureName,
-        "project/test-project_migration_update-required.json",
+        "project/migrationStatus/level1-all-good.json",
         params.queryUrl
       );
       return this;
@@ -314,7 +258,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         projectCommitsName,
         readmeName,
       } = names;
-      const { projectReadmeCommits, validationName } = names;
+      const { projectReadmeCommits } = names;
       cy.intercept(
         "/ui-server/api/projects/*/repository/files/README.md/raw?ref=master",
         { fixture: "project/test-project-readme.md" }
@@ -331,15 +275,8 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         "/ui-server/api/projects/*/repository/branches?per_page=100&page=1",
         { fixture: "project/test-project-branches.json" }
       ).as(projectBranchesName);
-      cy.intercept("/ui-server/api/projects/*/graph/webhooks/validation", {
-        body: { message: "Hook valid" },
-      }).as(validationName);
-      cy.intercept("/ui-server/api/projects/*/graph/status", {
-        body: {
-          activated: true,
-          progress: { done: 5, total: 5, percentage: 100.0 },
-          details: { status: "success", message: "triples store" },
-        },
+      cy.intercept("/ui-server/api/kg/webhooks/projects/*/events/status", {
+        fixture: "project/kgStatus/kgStatusIndexing.json",
       });
       cy.intercept(`/ui-server/api/renku/${coreVersion}/version`, {
         body: {
@@ -426,7 +363,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       const fixture = this.useMockedData
         ? { fixture: result, delay: 100 }
         : undefined;
-      cy.intercept("/ui-server/api/projects/*/graph/webhooks", {
+      cy.intercept("/ui-server/api/kg/webhooks/projects/*/webhooks", {
         body: { message: "Hook created" },
       });
       cy.intercept(
@@ -465,12 +402,13 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    getStatusProcessing(finished = false, name = "getStatusProcessing") {
-      const result = finished
-        ? "project/project-status-done.json"
-        : "project/project-status-processing.json";
-      const fixture = this.useMockedData ? { fixture: result } : undefined;
-      cy.intercept("/ui-server/api/projects/*/graph/status", fixture).as(name);
+    getKgStatus(
+      fixture = "project/kgStatus/kgStatusIndexedSuccess.json",
+      name = "getKgStatus"
+    ) {
+      cy.intercept("/ui-server/api/kg/webhooks/projects/*/events/status", {
+        fixture,
+      }).as(name);
       return this;
     }
 

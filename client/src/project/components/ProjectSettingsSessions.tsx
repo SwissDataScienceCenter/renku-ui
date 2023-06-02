@@ -61,7 +61,6 @@ import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { ResourceClass } from "../../features/dataServices/dataServices";
 import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 import {
-  IMigration,
   ProjectConfig,
   StateModelProject,
 } from "../../features/project/Project";
@@ -69,6 +68,7 @@ import {
   useGetConfigQuery,
   useUpdateConfigMutation,
 } from "../../features/project/projectCoreApi";
+import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
 import { ServerOptions } from "../../features/session/session";
 import { useServerOptionsQuery } from "../../features/session/sessionApi";
 import { LockStatus, User } from "../../model/RenkuModels";
@@ -102,10 +102,8 @@ export const ProjectSettingsSessions = () => {
     useServerOptionsQuery({});
 
   // Project options
-  const projectMigrationCore = useSelector<RootStateOrAny, IMigration["core"]>(
-    (state) => state.stateModel.project.migration.core
-  );
   const {
+    defaultBranch,
     externalUrl: projectRepositoryUrl,
     namespace,
     path,
@@ -113,8 +111,16 @@ export const ProjectSettingsSessions = () => {
   } = useSelector<RootStateOrAny, StateModelProject["metadata"]>(
     (state) => state.stateModel.project.metadata
   );
-  const fetchedVersion = !!projectMigrationCore.fetched;
-  const versionUrl = projectMigrationCore.versionUrl ?? "";
+
+  const { coreSupport } = useCoreSupport({
+    gitUrl: projectRepositoryUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const {
+    backendAvailable,
+    computed: coreSupportComputed,
+    versionUrl,
+  } = coreSupport;
   const {
     data: projectConfig,
     isLoading: projectConfigIsLoading,
@@ -125,7 +131,7 @@ export const ProjectSettingsSessions = () => {
       projectRepositoryUrl,
       versionUrl,
     },
-    { skip: !fetchedVersion }
+    { skip: !coreSupportComputed }
   );
 
   // ? Anonymous users may have problem with notebook options, depending on the deployment
@@ -154,14 +160,15 @@ export const ProjectSettingsSessions = () => {
   if (
     serverOptionsIsLoading ||
     projectConfigIsLoading ||
-    projectMigrationCore.fetching ||
-    !projectMigrationCore.fetched
+    !coreSupportComputed
   ) {
     const message = serverOptionsIsLoading
       ? "Getting RenkuLab settings..."
       : projectConfigIsLoading
       ? "Getting project settings..."
-      : "Checking project version and RenkuLab compatibility...";
+      : !coreSupportComputed
+      ? "Checking project version and RenkuLab compatibility..."
+      : "Please wait...";
 
     return (
       <SessionsDiv>
@@ -172,8 +179,8 @@ export const ProjectSettingsSessions = () => {
   }
 
   const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER;
-  if (!projectMigrationCore.backendAvailable) {
-    const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {
+  if (!backendAvailable) {
+    const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace,
       path,
     });
@@ -191,7 +198,7 @@ export const ProjectSettingsSessions = () => {
           <p>
             {updateInfo}.
             <br />
-            The <Link to={overviewStatusUrl}>Project status</Link> page provides
+            The <Link to={settingsUrl}>Project settings</Link> page provides
             further information.
           </p>
         </WarnAlert>

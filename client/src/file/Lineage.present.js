@@ -17,21 +17,21 @@
  */
 
 import React, { Component } from "react";
-import { Card, CardHeader, CardBody, Badge } from "reactstrap";
+import { Badge, CardBody, Card, CardHeader } from "reactstrap";
 import graphlib from "graphlib";
 import dagreD3 from "dagre-d3";
 import * as d3 from "d3";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
-import KnowledgeGraphStatus from "./KnowledgeGraphStatus.container";
-import { GraphIndexingStatus } from "../project/Project";
+
 import { JupyterButton } from "./index";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
-
-import "./Lineage.css";
 import { ExternalIconLink } from "../components/ExternalLinks";
 import { Clipboard } from "../components/Clipboard";
+import { KgStatusWrapper } from "../components/kgStatus/KgStatus.tsx";
+
+import "./Lineage.css";
 
 function cropLabelStart(limit, label) {
   if (label.length > limit) return "<...>" + label.substr(label.length - limit);
@@ -262,29 +262,21 @@ class FileLineageGraph extends Component {
   }
 }
 
+function FileLineageWrapped(props) {
+  return (
+    <KgStatusWrapper
+      maintainer={props.maintainer}
+      projectId={props.projectId}
+      projectName={props.projectPath}
+    >
+      <FileLineage {...props} />
+    </KgStatusWrapper>
+  );
+}
+
 class FileLineage extends Component {
   render() {
-    const { progress, currentNode, filePath, graph } = this.props;
-
-    if (
-      progress == null ||
-      progress === GraphIndexingStatus.NO_WEBHOOK ||
-      progress === GraphIndexingStatus.NO_PROGRESS ||
-      (progress >= GraphIndexingStatus.MIN_VALUE &&
-        progress < GraphIndexingStatus.MAX_VALUE)
-    ) {
-      return (
-        <KnowledgeGraphStatus
-          fetchGraphStatus={this.props.fetchGraphStatus}
-          fetchAfterBuild={this.props.retrieveGraph}
-          createGraphWebhook={this.props.createGraphWebhook}
-          maintainer={this.props.maintainer}
-          forked={this.props.forked}
-          progress={this.props.progress}
-        />
-      );
-    }
-
+    const { currentNode, filePath, graph } = this.props;
     const graphComponent = graph ? (
       <FileLineageGraph
         path={this.props.path}
@@ -350,7 +342,7 @@ class FileLineage extends Component {
       );
 
     return (
-      <Card className="border-rk-light">
+      <Card>
         <CardHeader className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3 flex-wrap">
           <div className="d-flex align-items-end overflow-hidden gap-2">
             {isLFSBadge}
@@ -378,4 +370,4 @@ class FileLineage extends Component {
   }
 }
 
-export { FileLineage };
+export { FileLineageWrapped as FileLineage };

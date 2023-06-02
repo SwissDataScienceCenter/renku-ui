@@ -222,7 +222,13 @@ function ForkProject(props) {
     setForkError(null);
     setForkUrl(null);
     try {
-      const forked = await client.forkProject(forkedId, title, path, namespace);
+      const forked = await client.forkProject(
+        forkedId,
+        title,
+        path,
+        namespace,
+        props.model.reduxStore
+      );
 
       // handle non-blocking errors from pipelines and hooks
       if (

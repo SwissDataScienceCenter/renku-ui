@@ -21,7 +21,6 @@ import addEnvironmentMethods from "./environment";
 import addGraphMethods from "./graph";
 import addInstanceMethods from "./instance";
 import addJobMethods from "./job";
-import addMigrationMethods from "./migration";
 import addNotebookServersMethods from "./notebook-servers";
 import addPipelineMethods from "./pipeline";
 import addProjectMethods from "./project";
@@ -68,7 +67,6 @@ class APIClient {
     addGraphMethods(this);
     addInstanceMethods(this);
     addJobMethods(this);
-    addMigrationMethods(this);
     addNotebookServersMethods(this);
     addPipelineMethods(this);
     addProjectMethods(this);

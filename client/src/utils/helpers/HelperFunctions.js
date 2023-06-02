@@ -431,25 +431,8 @@ function stylesByItemType(itemType) {
   }
 }
 
-/**
- * Check renku core support based on partial Url and minimum expected version
- * @param {string | number} minimumVersion - required version.
- * @param {string} coreUrl - url string for the project version.
- * @returns boolean value to indicate whether the feature is supported or not.
- */
-function checkRenkuCoreSupport(minimumVersion, coreUrl) {
-  const projectVersion =
-    coreUrl != null && coreUrl.length
-      ? parseInt(coreUrl.replace(/^\/+|\/+$/g, ""))
-      : 0;
-  const unsupported =
-    projectVersion && projectVersion < minimumVersion ? true : false;
-  return !unsupported;
-}
-
 export {
   capitalizeFirstLetter,
-  checkRenkuCoreSupport,
   generateZip,
   computeVisibilities,
   slugFromTitle,

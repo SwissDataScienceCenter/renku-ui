@@ -19,7 +19,7 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
 import { clamp } from "lodash";
-import { useDispatch } from "react-redux";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router";
 import {
   Col,
@@ -42,6 +42,9 @@ import {
 } from "../../../features/session/startSessionOptionsSlice";
 import { fakeResourcePools } from "./SessionClassOption";
 import styles from "./SessionStorageOption.module.scss";
+import { StateModelProject } from "../../../features/project/Project";
+import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
+import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
 
 export const SessionStorageOption = () => {
   const location = useLocation();
@@ -59,6 +62,25 @@ export const SessionStorageOption = () => {
     ? fakeResourcePools
     : realResourcePools;
 
+  // Project options
+  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { coreSupport } = useCoreSupport({
+    gitUrl: projectRepositoryUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const { data: projectConfig } = useGetConfigQuery(
+    {
+      projectRepositoryUrl,
+      versionUrl,
+      // ...(branchName ? { branch: branchName } : {}),
+    },
+    { skip: !coreSupportComputed }
+  );
+
   const { storage, sessionClass: currentSessionClassId } =
     useStartSessionOptionsSelector();
 
@@ -74,17 +96,22 @@ export const SessionStorageOption = () => {
     [currentSessionClassId, resourcePools]
   );
 
-  // Update the storage value to default when changing the session class
+  // Set initial storage if configured
+  // or
+  // update to the default value when changing the session class
   useEffect(() => {
-    if (currentSessionClass == null) {
+    if (projectConfig == null || currentSessionClass == null) {
       return;
     }
     const newValue = validateStorageAmount({
-      value: currentSessionClass.default_storage,
+      value:
+        projectConfig.config.sessions?.storage ??
+        projectConfig.default.sessions?.storage ??
+        currentSessionClass.default_storage,
       maxValue: currentSessionClass.max_storage,
     });
     dispatch(setStorage(newValue));
-  }, [currentSessionClass, dispatch]);
+  }, [currentSessionClass, dispatch, projectConfig]);
 
   const onChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

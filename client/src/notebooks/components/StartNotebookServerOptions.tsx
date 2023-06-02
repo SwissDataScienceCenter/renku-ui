@@ -34,8 +34,12 @@ import {
   UncontrolledDropdown,
 } from "reactstrap";
 import { Loader } from "../../components/Loader";
-import { IMigration, ProjectConfig } from "../../features/project/Project";
+import {
+  ProjectConfig,
+  StateModelProject,
+} from "../../features/project/Project";
 import { useGetConfigQuery } from "../../features/project/projectCoreApi";
+import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
 import { ServerOptions } from "../../features/session/session";
 import { useServerOptionsQuery } from "../../features/session/sessionApi";
 import {
@@ -48,47 +52,83 @@ import { SessionClassOption } from "./options/SessionClassOption";
 import { SessionStorageOption } from "./options/SessionStorageOption";
 
 interface StartNotebookServerOptionsProps {
-  projectRepositoryUrl: string;
   branch?: {
     name: string;
   };
 }
 
 export const StartNotebookServerOptions = ({
-  projectRepositoryUrl,
-  branch,
+  branch: _branch, //eslint-disable-line @typescript-eslint/no-unused-vars
 }: StartNotebookServerOptionsProps) => {
-  return (
-    <>
+  // Wait for options to load
+
+  // Global options
+  const { isLoading: serverOptionsIsLoading } = useServerOptionsQuery({});
+
+  // Project options
+  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { coreSupport } = useCoreSupport({
+    gitUrl: projectRepositoryUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const { isLoading: projectConfigIsLoading } = useGetConfigQuery(
+    {
+      projectRepositoryUrl,
+      versionUrl,
+      // ...(branchName ? { branch: branchName } : {}),
+    },
+    { skip: !coreSupportComputed }
+  );
+
+  if (
+    serverOptionsIsLoading ||
+    projectConfigIsLoading ||
+    !coreSupportComputed
+  ) {
+    const message = serverOptionsIsLoading
+      ? "Getting RenkuLab settings..."
+      : projectConfigIsLoading
+      ? "Getting project settings..."
+      : !coreSupportComputed
+      ? "Checking project version and RenkuLab compatibility..."
+      : "Please wait...";
+    return (
       <Row>
-        <DefaultUrlOption
-          projectRepositoryUrl={projectRepositoryUrl}
-          branchName={branch?.name}
-        />
-        <SessionClassOption />
-        <SessionStorageOption />
-        <AutoFetchLfsOption />
+        <p>{message}</p>
+        <Loader />
       </Row>
-    </>
+    );
+  }
+
+  return (
+    <Row>
+      <DefaultUrlOption />
+      <SessionClassOption />
+      <SessionStorageOption />
+      <AutoFetchLfsOption />
+    </Row>
   );
 };
 
-interface DefaultUrlOptionProps {
-  projectRepositoryUrl: string;
-  branchName?: string;
-}
-
-const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
+const DefaultUrlOption = () => {
   // Global options
   const { data: serverOptions, isLoading: serverOptionsIsLoading } =
     useServerOptionsQuery({});
 
   // Project options
-  const projectMigrationCore = useSelector<RootStateOrAny, IMigration["core"]>(
-    (state) => state.stateModel.project.migration.core
-  );
-  const fetchedVersion = !!projectMigrationCore.fetched;
-  const versionUrl = projectMigrationCore.versionUrl ?? "";
+  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { coreSupport } = useCoreSupport({
+    gitUrl: projectRepositoryUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { computed: coreSupportComputed, versionUrl } = coreSupport;
   const { data: projectConfig, isLoading: projectConfigIsLoading } =
     useGetConfigQuery(
       {
@@ -96,7 +136,7 @@ const DefaultUrlOption = ({ projectRepositoryUrl }: DefaultUrlOptionProps) => {
         versionUrl,
         // ...(branchName ? { branch: branchName } : {}),
       },
-      { skip: !fetchedVersion }
+      { skip: !coreSupportComputed }
     );
 
   const defaultUrlOptions = mergeDefaultUrlOptions({
@@ -177,10 +217,38 @@ export const mergeDefaultUrlOptions = ({
 };
 
 const AutoFetchLfsOption = () => {
+  // Project options
+  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { coreSupport } = useCoreSupport({
+    gitUrl: projectRepositoryUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const { data: projectConfig } = useGetConfigQuery(
+    {
+      projectRepositoryUrl,
+      versionUrl,
+      // ...(branchName ? { branch: branchName } : {}),
+    },
+    { skip: !coreSupportComputed }
+  );
+
   const lfsAutoFetch = useStartSessionOptionsSelector(
     (state) => state.lfsAutoFetch
   );
   const dispatch = useDispatch();
+
+  // Set initial value
+  useEffect(() => {
+    if (projectConfig != null) {
+      dispatch(
+        setLfsAutoFetch(projectConfig.config.sessions?.lfsAutoFetch ?? false)
+      );
+    }
+  }, [dispatch, projectConfig]);
 
   const onChange = useCallback(() => {
     dispatch(setLfsAutoFetch(!lfsAutoFetch));

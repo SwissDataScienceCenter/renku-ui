@@ -18,17 +18,56 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
-import { NotebooksVersion, NotebooksVersionResponse } from "./versions";
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  CoreVersions,
+  CoreVersionResponse,
+  NotebooksVersion,
+  NotebooksVersionResponse,
+} from "./versions";
 
 export const versionsApi = createApi({
   reducerPath: "versions",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/" }),
   tagTypes: ["versions"],
-  keepUnusedDataFor: 0,
+  keepUnusedDataFor: 60,
   endpoints: (builder) => ({
-    getNotebooks: builder.query<NotebooksVersion, any>({
+    getCoreVersions: builder.query<CoreVersions, void>({
+      query: () => ({
+        url: "renku/version",
+      }),
+      transformResponse: (response: CoreVersionResponse) => {
+        const data: CoreVersions = {
+          name: response.name,
+          coreVersions: [],
+          metadataVersions: [],
+          details: response.versions,
+        };
+        data.name = response.name;
+        if (response.versions?.length >= 1) {
+          for (const coreVersionObject of response.versions) {
+            const metadataVersion = parseInt(
+              coreVersionObject.data.metadata_version
+            );
+            if (metadataVersion) {
+              const coreVersionString = coreVersionObject.version;
+              if (!data.metadataVersions.includes(metadataVersion))
+                data.metadataVersions.push(metadataVersion);
+              if (!data.coreVersions.includes(coreVersionString))
+                data.coreVersions.push(coreVersionString);
+            }
+          }
+        }
+        return data;
+      },
+      transformErrorResponse: () => {
+        return {
+          name: "error",
+          coreVersions: [],
+          metadataVersions: [],
+        } as CoreVersions;
+      },
+    }),
+    getNotebooksVersions: builder.query<NotebooksVersion, void>({
       query: () => {
         return {
           url: "notebooks/version",
@@ -68,4 +107,5 @@ export const versionsApi = createApi({
   }),
 });
 
-export const { useGetNotebooksQuery } = versionsApi;
+export const { useGetCoreVersionsQuery, useGetNotebooksVersionsQuery } =
+  versionsApi;

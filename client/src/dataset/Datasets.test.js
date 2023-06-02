@@ -23,6 +23,7 @@
  *  Tests for datasets function.
  */
 import React from "react";
+import { Provider } from "react-redux";
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
@@ -33,7 +34,6 @@ import { getDatasetImageUrl, mapDataset } from "./DatasetFunctions";
 import { testClient as client } from "../api-client";
 import { StateModel, globalSchema } from "../model";
 import DatasetList from "./list";
-import { Provider } from "react-redux";
 
 describe("Dataset functions", () => {
   const model = new StateModel(globalSchema);

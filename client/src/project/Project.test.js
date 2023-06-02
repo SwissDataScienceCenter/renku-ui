@@ -37,9 +37,8 @@ import Project, { mapProjectFeatures, withProjectMapped } from "./Project";
 import { filterPaths } from "./Project.present";
 import { OverviewCommitsBody } from "./overview/ProjectOverview.present";
 import { ProjectCoordinator } from "./Project.state";
-import { ACCESS_LEVELS, testClient as client } from "../api-client";
+import { testClient as client } from "../api-client";
 import { generateFakeUser } from "../user/User.test";
-import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],
@@ -284,91 +283,5 @@ describe("path filtering", () => {
       "myFolder/alsoVisible/.hidden",
       "myFolder/alsoVisible/other.txt",
     ]);
-  });
-});
-
-describe("rendering ProjectVersionStatus", () => {
-  const props = {
-    launchNotebookUrl: "http://renku.url/project/namespace/sessions/new",
-    loading: false,
-    metadata: {
-      accessLevel: ACCESS_LEVELS.MAINTAINER,
-      defaultBranch: "master",
-      id: 12345,
-    },
-    migration: { check: {}, core: {} },
-    onMigrationProject: () => {
-      // eslint-disable-line @typescript-eslint/ban-types
-    },
-    user: { logged: true },
-  };
-
-  it("shows bouncer if loading", async () => {
-    const allProps = { ...props };
-    allProps.loading = true;
-    const div = document.createElement("div");
-    document.body.appendChild(div);
-    const root = createRoot(div);
-
-    await act(async () => {
-      root.render(<ProjectVersionStatus key="suggestions" {...allProps} />);
-    });
-
-    expect(div.children.length).toBe(2);
-    const bouncers = div.querySelectorAll(".bouncer");
-    expect(bouncers.length).toBe(2);
-  });
-
-  it("shows success if everything is ok", async () => {
-    // This fails with SyntaxError: '##btn_instructions_template' is not a valid selector
-    // but it works in the browser, and I do not know why
-    const allProps = { ...props };
-    allProps.migration = {
-      check: {
-        project_supported: true,
-        dockerfile_renku_status: {
-          latest_renku_version: "1.0.0",
-          dockerfile_renku_version: "1.0.0",
-          automated_dockerfile_update: false,
-          newer_renku_available: false,
-        },
-        core_compatibility_status: {
-          project_metadata_version: "9",
-          migration_required: false,
-          current_metadata_version: "9",
-        },
-        core_renku_version: "1.0.0",
-        project_renku_version: "1.0.0",
-        template_status: {
-          newer_template_available: false,
-          template_id: "python-minimal",
-          automated_template_update: false,
-          template_ref: null,
-          project_template_version: "1.0.0",
-          template_source: "renku",
-          latest_template_version: "1.0.0",
-        },
-      },
-      core: {
-        backendAvailable: true,
-      },
-    };
-
-    const div = document.createElement("div");
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <ProjectVersionStatus key="suggestions" {...allProps} />
-        </MemoryRouter>
-      );
-    });
-    expect(div.children.length).toBe(2);
-
-    const bouncers = div.querySelectorAll(".bouncer");
-    expect(bouncers.length).toBe(0);
-
-    const success = div.querySelectorAll(".alert-success");
-    expect(success.length).toBe(2);
   });
 });

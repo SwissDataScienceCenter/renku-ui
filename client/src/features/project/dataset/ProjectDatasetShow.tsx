@@ -1,21 +1,36 @@
+/*!
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
 import { ACCESS_LEVELS } from "../../../api-client";
 import DatasetView from "../../../dataset/Dataset.present";
 import { Url } from "../../../utils/helpers/url";
-
-import {
-  useGetDatasetFilesQuery,
-  useGetDatasetKgQuery,
-} from "../projectCoreApi";
+import { useGetDatasetFilesQuery } from "../projectCoreApi";
 import type {
   DatasetCore,
   DatasetKg,
   IDataset,
-  IMigration,
   StateModelProject,
 } from "../Project.d";
+import { useGetDatasetKgQuery } from "../projectKgApi";
+import { useCoreSupport } from "../useProjectCoreSupport";
 
 type IDatasetCoordinator = {
   fetchDataset: (id: string, datasets: DatasetCore[], fetchKG: boolean) => void;
@@ -40,7 +55,7 @@ type ProjectDatasetShowProps = {
 
 type ProjectDatasetViewProps = {
   datasetCoordinator: IDatasetCoordinator;
-  datasets: DatasetCore[];
+  datasets: DatasetCore[] | undefined;
   datasetId: string;
   fileContentUrl: string;
   graphStatus: boolean;
@@ -51,20 +66,25 @@ type ProjectDatasetViewProps = {
   lockStatus: unknown;
   logged: unknown;
   maintainer: boolean;
-  migration: IMigration;
   model: unknown;
-  overviewStatusUrl: string;
   projectId: string;
   projectInsideKg: boolean;
   projectPathWithNamespace: string;
   projectsUrl: string;
 };
 
-function findDataset(name: string, datasets: DatasetCore[]) {
+function findDataset(
+  name: string | undefined,
+  datasets: DatasetCore[] | undefined
+) {
+  if (name == null || datasets == null) return undefined;
   return datasets.find((d) => d.name === name);
 }
 
-function findDatasetId(name?: string, datasets?: DatasetCore[]) {
+function findDatasetId(
+  name: string | undefined,
+  datasets: DatasetCore[] | undefined
+) {
   if (name == null || datasets == null) return undefined;
   const dataset = findDataset(name, datasets);
   return dataset?.identifier;
@@ -104,25 +124,30 @@ function mergeCoreAndKgDatasets(
 function ProjectDatasetView(props: ProjectDatasetViewProps) {
   const coreDataset = findDataset(props.datasetId, props.datasets);
   const datasetId = findDatasetId(props.datasetId, props.datasets);
-  const migration = props.migration;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const versionUrl = migration.core.versionUrl!;
+
+  const { defaultBranch, externalUrl } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { coreSupport } = useCoreSupport({
+    gitUrl: externalUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { versionUrl } = coreSupport;
+
   const {
     data: kgDataset,
     error: kgFetchError,
     isFetching: isKgFetching,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  } = useGetDatasetKgQuery({ id: datasetId! }, { skip: !datasetId });
+  } = useGetDatasetKgQuery({ id: datasetId ?? "" }, { skip: !datasetId });
   const currentDataset = mergeCoreAndKgDatasets(coreDataset, kgDataset);
-  //  const { }
   const datasetName = currentDataset?.name;
   const {
     data: datasetFiles,
     error: filesFetchError,
     isFetching: isFilesFetching,
   } = useGetDatasetFilesQuery(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    { git_url: props.httpProjectUrl, name: datasetName!, versionUrl },
+    { git_url: props.httpProjectUrl, name: datasetName ?? "", versionUrl },
     { skip: !datasetName }
   );
 
@@ -134,10 +159,10 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     <DatasetView
       client={undefined}
       dataset={currentDataset}
+      datasets={props.datasets}
       files={datasetFiles}
       isFilesFetching={isFilesFetching}
       filesFetchError={filesFetchError}
-      datasets={props.datasets}
       fetchError={kgFetchError}
       fetchedKg={kgDataset != null}
       fileContentUrl={props.fileContentUrl}
@@ -151,14 +176,12 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
       lockStatus={props.lockStatus}
       logged={props.logged}
       maintainer={props.maintainer}
-      migration={migration}
       model={props.model}
-      overviewStatusUrl={props.overviewStatusUrl}
-      progress={undefined}
       projectId={props.projectId}
       projectInsideKg={props.projectInsideKg}
       projectPathWithNamespace={props.projectPathWithNamespace}
       projectsUrl={props.projectsUrl}
+      versionUrl={versionUrl}
     />
   );
 }
@@ -174,7 +197,6 @@ function ProjectDatasetShow(props: ProjectDatasetShowProps) {
   const httpProjectUrl = projectMetadata.httpUrl;
   const lockStatus = project.lockStatus;
   const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
-  const migration = project.migration;
   const projectPathWithNamespace = projectMetadata.pathWithNamespace;
   const projectId = projectMetadata.id;
 
@@ -189,16 +211,12 @@ function ProjectDatasetShow(props: ProjectDatasetShowProps) {
   const lineageUrl = Url.get(Url.pages.project.lineage, projectUrlProps);
   // Remove the trailing slash, since that is how downstream components expect it.
   const lineagesUrl = lineageUrl.substring(0, lineageUrl.length - 1);
-  const overviewStatusUrl = Url.get(
-    Url.pages.project.overview.status,
-    projectUrlProps
-  );
   const projectsUrl = Url.get(Url.pages.projects);
   if (props.datasetCoordinator == null) return null;
   return (
     <ProjectDatasetView
       key="datasetPreview"
-      datasets={datasets as DatasetCore[]}
+      datasets={datasets as DatasetCore[] | undefined}
       datasetCoordinator={props.datasetCoordinator as IDatasetCoordinator}
       datasetId={props.datasetId}
       fileContentUrl={fileContentUrl}
@@ -210,9 +228,7 @@ function ProjectDatasetShow(props: ProjectDatasetShowProps) {
       lockStatus={lockStatus}
       logged={user.logged}
       maintainer={maintainer}
-      migration={migration as IMigration}
       model={props.model}
-      overviewStatusUrl={overviewStatusUrl}
       projectId={projectId}
       projectInsideKg={props.projectInsideKg}
       projectPathWithNamespace={projectPathWithNamespace}

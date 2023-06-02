@@ -27,13 +27,10 @@ function ProjectDatasetImport(props: ProjectDatasetImportProps) {
   const datasets = project.datasets.core.datasets;
   const httpProjectUrl = projectMetadata.httpUrl;
   const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
-  const migration = project.migration;
 
   const forkedData = project.forkedFromProject;
   const forked =
     forkedData != null && Object.keys(forkedData).length > 0 ? true : false;
-
-  const graphProgress = project.webhook.progress;
 
   const projectPath = projectMetadata.path;
   const projectNamespace = projectMetadata.namespace;
@@ -67,11 +64,9 @@ function ProjectDatasetImport(props: ProjectDatasetImportProps) {
       lineagesUrl={lineagesUrl}
       location={props.location}
       maintainer={maintainer}
-      migration={migration}
       model={props.model}
       notifications={props.notifications}
       overviewCommitsUrl={overviewCommitsUrl}
-      progress={graphProgress}
       projectsUrl={projectsUrl}
       toggleNewDataset={props.toggleNewDataset}
     />

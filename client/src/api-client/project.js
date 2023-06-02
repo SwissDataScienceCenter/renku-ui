@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 
-import { fetchJson } from "./utils";
 import yaml from "yaml";
 
+import { fetchJson } from "./utils";
 import { sleep } from "../utils/helpers/HelperFunctions";
+import { projectKgApi } from "../features/project/projectKgApi";
 
 function getApiUrlFromRepoUrl(url) {
   const urlArray = url.split("/");
@@ -329,7 +330,8 @@ function addProjectMethods(client) {
     sourceId,
     targetTitle,
     targetPath,
-    targetNamespace
+    targetNamespace,
+    store
   ) => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
@@ -375,9 +377,12 @@ function addProjectMethods(client) {
     // Create KG webhook
     let webhook;
     try {
-      webhook = await client.createGraphWebhook(forkedProject.data.id);
+      const resp = await store.dispatch(
+        projectKgApi.endpoints.activateIndexing.initiate(forkedProject.data.id)
+      );
+      webhook = (resp?.data?.message ?? "").includes("created");
     } catch (error) {
-      webhook = error;
+      webhook = false;
     }
 
     return { project: forkedProject.data, pipeline, webhook };

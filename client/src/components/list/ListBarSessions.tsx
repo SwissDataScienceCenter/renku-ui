@@ -277,7 +277,9 @@ function ListBarSession({
             }`}
           >
             {!imageUrl ? (
-              <div className="card-bg-title card-bg-title--small">{title}</div>
+              <div className="card-bg-title card-bg-title--small user-select-none">
+                {title}
+              </div>
             ) : null}
           </div>
         </Link>

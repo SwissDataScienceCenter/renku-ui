@@ -16,6 +16,66 @@
  * limitations under the License.
  */
 
+export interface NewProject {
+  config: NewProjectConfig;
+  input: NewProjectInput;
+  meta: NewProjectMeta;
+  templates: NewProjectTemplates;
+}
+
+export interface NewProjectConfig {
+  custom: boolean;
+  repositories: Repository[];
+}
+
+export interface Repository {
+  name: string;
+  ref: string;
+  url: string;
+}
+
+export interface NewProjectInput {
+  userRepo: boolean;
+  template: string;
+  templatePristine: boolean;
+}
+
+export interface NewProjectMeta {
+  userTemplates: NewProjectMetaUserTemplates;
+  validation: NewProjectMetaValidation;
+}
+
+export interface NewProjectMetaUserTemplates {
+  fetched: Date | null;
+  fetching: boolean | null;
+  error: any; //eslint-disable-line @typescript-eslint/no-explicit-any
+  url: string;
+  ref: string;
+  all: NewProjectTemplate[];
+}
+
+export interface NewProjectMetaValidation {
+  errors: { [key: string]: string | undefined };
+  validation: { [key: string]: string | undefined };
+}
+
+export interface NewProjectTemplates {
+  fetched: Date | null;
+  fetching: boolean | null;
+  errors: any[]; //eslint-disable-line @typescript-eslint/no-explicit-any
+  all: NewProjectTemplate[];
+}
+
+export interface NewProjectTemplate {
+  id: string;
+  description: string;
+  icon?: string;
+  name: string;
+  variables?: { [key: string]: unknown };
+  parentRepo?: string;
+  parentTemplate?: string;
+}
+
 export interface User {
   fetched: Date | null;
   fetching: boolean | null;

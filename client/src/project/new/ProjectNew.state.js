@@ -30,6 +30,7 @@ import {
   slugFromTitle,
   verifyTitleCharacters,
 } from "../../utils/helpers/HelperFunctions";
+import { projectKgApi } from "../../features/project/projectKgApi";
 
 // ? reference https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names
 const RESERVED_TITLE_NAMES = [
@@ -719,9 +720,14 @@ class NewProjectCoordinator {
 
         // get project id for the KG query
         try {
-          const succeeded = await this.client.createGraphWebhook(
-            newProjectResult.data.all.id
+          const resp = await this.model.reduxStore.dispatch(
+            projectKgApi.endpoints.activateIndexing.initiate(
+              newProjectResult.data.all.id
+            )
           );
+          const succeeded = (resp?.data?.message ?? "").includes("created")
+            ? true
+            : false;
           if (succeeded) modelUpdates.meta.creation.kgUpdated = true;
           else
             modelUpdates.meta.creation.kgError =

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
-import { EnvironmentCoordinator } from "./EnvironmentCoordinator";
-
-export { EnvironmentCoordinator };
+export const RenkuRepositories = {
+  Python: "https://github.com/SwissDataScienceCenter/renku-python",
+  UI: "https://github.com/SwissDataScienceCenter/renku-ui",
+};

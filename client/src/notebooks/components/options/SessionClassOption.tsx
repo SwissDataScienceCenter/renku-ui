@@ -19,13 +19,15 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
 import { ChevronDown } from "react-bootstrap-icons";
-import { useDispatch } from "react-redux";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router";
 import Select, {
   ClassNamesConfig,
   GroupBase,
+  OptionProps,
   SelectComponentsConfig,
   SingleValue,
+  SingleValueProps,
   components,
 } from "react-select";
 import { Col, FormGroup, Label } from "reactstrap";
@@ -36,8 +38,14 @@ import {
   ResourcePool,
 } from "../../../features/dataServices/dataServices";
 import { useGetResourcePoolsQuery } from "../../../features/dataServices/dataServicesApi";
-import { setSessionClass } from "../../../features/session/startSessionOptionsSlice";
+import {
+  setSessionClass,
+  useStartSessionOptionsSelector,
+} from "../../../features/session/startSessionOptionsSlice";
 import styles from "./SessionClassOption.module.scss";
+import { StateModelProject } from "../../../features/project/Project";
+import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
+import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
 
 export const SessionClassOption = () => {
   const location = useLocation();
@@ -55,6 +63,25 @@ export const SessionClassOption = () => {
     ? fakeResourcePools
     : realResourcePools;
 
+  // Project options
+  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { coreSupport } = useCoreSupport({
+    gitUrl: projectRepositoryUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const { data: projectConfig } = useGetConfigQuery(
+    {
+      projectRepositoryUrl,
+      versionUrl,
+      // ...(branchName ? { branch: branchName } : {}),
+    },
+    { skip: !coreSupportComputed }
+  );
+
   const defaultSessionClass = useMemo(
     () =>
       resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default) ??
@@ -63,16 +90,36 @@ export const SessionClassOption = () => {
     [resourcePools]
   );
 
+  const { sessionClass: currentSessionClassId } =
+    useStartSessionOptionsSelector();
+  const currentSessionClass = useMemo(
+    () =>
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == currentSessionClassId),
+    [currentSessionClassId, resourcePools]
+  );
+
   const dispatch = useDispatch();
 
   // Set initial session class
   useEffect(() => {
+    if (projectConfig == null || resourcePools == null) {
+      return;
+    }
+    const sessionClassIdFromConfig =
+      projectConfig.config.sessions?.sessionClass ??
+      projectConfig.default.sessions?.sessionClass;
     const initialSessionClassId =
       resourcePools
         ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id == defaultSessionClass?.id)?.id ?? 0;
+        .find((c) => c.id == sessionClassIdFromConfig)?.id ??
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == defaultSessionClass?.id)?.id ??
+      0;
     dispatch(setSessionClass(initialSessionClassId));
-  }, [defaultSessionClass?.id, dispatch, resourcePools]);
+  }, [defaultSessionClass?.id, dispatch, projectConfig, resourcePools]);
 
   const onChange = useCallback(
     (newValue: SingleValue<ResourceClass>) => {
@@ -113,6 +160,7 @@ export const SessionClassOption = () => {
         <Label>Session class</Label>
         <SessionClassSelector
           resourcePools={resourcePools}
+          currentSessionClass={currentSessionClass}
           defaultSessionClass={defaultSessionClass}
           onChange={onChange}
         />
@@ -212,7 +260,7 @@ const selectComponents: SelectComponentsConfig<
       </components.DropdownIndicator>
     );
   },
-  Option: (props) => {
+  Option: (props: OptionProps<ResourceClass, false, OptionGroup>) => {
     const { data: sessionClass } = props;
     return (
       <components.Option {...props}>
@@ -220,7 +268,7 @@ const selectComponents: SelectComponentsConfig<
       </components.Option>
     );
   },
-  SingleValue: (props) => {
+  SingleValue: (props: SingleValueProps<ResourceClass, false, OptionGroup>) => {
     const { data: sessionClass } = props;
     return (
       <components.SingleValue {...props}>

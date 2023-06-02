@@ -334,7 +334,7 @@ interface UnsupportedWorkflowsProps {
 }
 
 function UnsupportedWorkflows({ fullPath }: UnsupportedWorkflowsProps) {
-  const updateUrl = Url.get(Url.pages.project.overview.status, {
+  const updateUrl = Url.get(Url.pages.project.settings, {
     namespace: "",
     path: fullPath,
   });
@@ -347,7 +347,7 @@ function UnsupportedWorkflows({ fullPath }: UnsupportedWorkflowsProps) {
           a newer version.
         </p>
         <p className="mb-0">
-          The <Link to={updateUrl}>Project status</Link> page provides further
+          The <Link to={updateUrl}>Project settings</Link> page provides further
           information.
         </p>
       </WarnAlert>
@@ -655,7 +655,13 @@ function WorkflowTreeDetail({
 
 /** VISUALIZER **/
 
-function UnavailableDetail({ className = "", text = "None" }) {
+function UnavailableDetail({
+  className = "",
+  text = "None",
+}: {
+  className?: string;
+  text?: string;
+}) {
   return (
     <span className={`fst-italic text-rk-text-light ${className}`}>{text}</span>
   );
@@ -894,7 +900,7 @@ function WorkflowVisualizerSimpleBox({
 }: WorkflowVisualizerSimpleBoxProps) {
   return (
     <Col xs={12} lg={large ? 12 : 4}>
-      <Card className="borderless border-rk-light mb-3">
+      <Card className="borderless  mb-3">
         <CardHeader className="bg-white py-2 px-0">
           <h4 className="m-1 workflow-simple-box-title d-flex gap-2">
             {title}
