@@ -274,7 +274,7 @@ export const ProjectSettingsSessions = () => {
         versionUrl={versionUrl}
         devAccess={devAccess}
       />
-
+      q{" "}
       <ProjectSettingsSessionsAdvanced
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
@@ -282,7 +282,6 @@ export const ProjectSettingsSessions = () => {
         versionUrl={versionUrl}
         devAccess={devAccess}
       />
-
       <ProjectSettingsSessionsUnknown
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
@@ -636,7 +635,7 @@ const SessionClassOption = ({
   if (resourcePoolsIsLoading) {
     return (
       <Col xs={12}>
-        Fetching available resource pools... <Loader size="16" inline="true" />
+        Fetching available resource pools... <Loader size={16} inline />
       </Col>
     );
   }
