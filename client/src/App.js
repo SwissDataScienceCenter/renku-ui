@@ -46,7 +46,7 @@ import { StyleGuide } from "./styleguide";
 import { Url } from "./utils/helpers/url";
 import { Unavailable } from "./Maintenance";
 import { Loader } from "./components/Loader";
-import { AddDataset } from "./dataset/addtoproject/DatasetAdd.container";
+import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
@@ -232,7 +232,7 @@ function CentralContentContainer(props) {
           <Route
             path="/datasets/:identifier/add"
             render={(p) => (
-              <AddDataset
+              <DatasetAddToProject
                 key="addDatasetNew"
                 insideProject={false}
                 identifier={p.match.params?.identifier?.replaceAll("-", "")}
