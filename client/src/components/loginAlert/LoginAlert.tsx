@@ -33,9 +33,9 @@ export interface LoginAlertProps {
   logged: boolean;
   noWrapper?: boolean;
   textIntro: string;
-  textLogin: string;
+  textLogin?: string;
   textPost: string;
-  textPre: string;
+  textPre?: string;
 }
 
 const LoginAlert = ({

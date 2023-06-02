@@ -16,13 +16,6 @@
  * limitations under the License.
  */
 
-/**
- *  incubator-renku-ui
- *
- *  DatasetAdd.container.js
- *  Container components for add dataset to project.
- */
-
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -31,32 +24,65 @@ import { DatasetCoordinator } from "../Dataset.state";
 import { ImportStateMessage } from "../../utils/constants/Dataset";
 import AppContext from "../../utils/context/appContext";
 import { useGetMigrationStatusQuery } from "../../features/project/projectCoreApi";
+import type { CoreCompatibilityStatus } from "../../features/project/Project.d";
 import { useGetCoreVersionsQuery } from "../../features/versions/versionsApi";
 
-// ? This functionality is broken
-function AddDataset({ datasets, identifier, insideProject, model }) {
-  const [currentStatus, setCurrentStatus] = useState(null);
+import type {
+  AddDatasetDataset,
+  AddDatasetStatus,
+  SubmitProject,
+} from "./DatasetAdd.types";
+
+type DatasetImportResponse = {
+  data?: {
+    result?: { job_id: string };
+    error?: { userMessage?: string; reason: string };
+  };
+};
+
+type AddDatasetToProjectProps = {
+  datasets: unknown;
+  identifier: string;
+  insideProject: boolean;
+  model: { subModel: (arg0: string) => unknown };
+};
+function DatasetAddToProject({
+  datasets,
+  identifier,
+  insideProject,
+  model,
+}: AddDatasetToProjectProps) {
+  const [currentStatus, setCurrentStatus] = useState<AddDatasetStatus | null>(
+    null
+  );
   const [importingDataset, setImportingDataset] = useState(false);
-  const [isDatasetValid, setIsDatasetValid] = useState(null);
-  const [datasetProjectVersion, setDatasetProjectVersion] = useState(null);
-  const [dataset, setDataset] = useState(null);
-  const [datasetCoordinator, setDatasetCoordinator] = useState(null);
+  const [isDatasetValid, setIsDatasetValid] = useState<boolean | null>(null);
+  const [datasetProjectVersion, setDatasetProjectVersion] = useState<
+    number | null
+  >(null);
+  const [dataset, setDataset] = useState<AddDatasetDataset | null>(null);
+  const [datasetCoordinator, setDatasetCoordinator] =
+    useState<DatasetCoordinator | null>(null);
   const { client } = useContext(AppContext);
   const history = useHistory();
 
-  const [datasetProjectUrl, setDatasetProjectUrl] = useState(null);
-  const [versionUrl, setVersionUrl] = useState(null);
+  const [datasetProjectUrl, setDatasetProjectUrl] = useState<string | null>(
+    null
+  );
+  const [versionUrl, setVersionUrl] = useState<string | null>(null);
 
   const coreSupport = useGetCoreVersionsQuery();
   const datasetProjectMigrationStatus = useGetMigrationStatusQuery(
-    { gitUrl: datasetProjectUrl },
+    { gitUrl: datasetProjectUrl ?? "" },
     {
       skip: !datasetProjectUrl,
     }
   );
-  const [targetDatasetProjectUrl, setTargetDatasetProjectUrl] = useState(null);
+  const [targetDatasetProjectUrl, setTargetDatasetProjectUrl] = useState<
+    string | null
+  >(null);
   const targetDatasetProjectMigrationStatus = useGetMigrationStatusQuery(
-    { gitUrl: targetDatasetProjectUrl },
+    { gitUrl: targetDatasetProjectUrl ?? "" },
     {
       skip: !targetDatasetProjectUrl,
     }
@@ -70,6 +96,7 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
 
   useEffect(() => {
     const fetchDataset = async () => {
+      if (datasetCoordinator == null) return;
       await datasetCoordinator.fetchDataset(identifier, datasets, true);
       const currentDataset = datasetCoordinator.get("metadata");
       setDataset(currentDataset);
@@ -96,9 +123,9 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
     // check dataset has valid project url
     setCurrentStatus({
       status: isSubmit ? "importing" : "inProcess",
-      text: "Checking Dataset...",
+      text: "Checking dataset...",
     });
-    if (!dataset.project || !dataset.project.path) {
+    if (!dataset?.project || !dataset?.project.path) {
       setCurrentStatus({
         status: "error",
         text: "Invalid Dataset, refresh the page to get updated values",
@@ -139,8 +166,10 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
       } else {
         setIsDatasetValid(true);
         const metadataVersion = parseInt(
-          datasetProjectMigrationStatus.data?.details?.core_compatibility_status
-            ?.project_metadata_version ?? 0
+          (
+            datasetProjectMigrationStatus.data?.details
+              ?.core_compatibility_status as CoreCompatibilityStatus
+          )?.project_metadata_version ?? 0
         );
         if (
           metadataVersion &&
@@ -149,7 +178,6 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
           coreSupport.data?.metadataVersions.includes(metadataVersion)
         ) {
           setDatasetProjectVersion(metadataVersion);
-          setVersionUrl("/" + metadataVersion);
           setCurrentStatus(null);
         } else {
           setCurrentStatus({
@@ -168,7 +196,11 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
     coreSupport.data,
   ]);
 
-  const validateProject = async (project, validateOrigin, isSubmit = false) => {
+  const validateProject = async (
+    project: SubmitProject,
+    _validateOrigin: boolean,
+    isSubmit = false
+  ) => {
     if (!project) return false;
     const processStatus = isSubmit ? "importing" : "inProcess";
 
@@ -192,36 +224,42 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
           status: "error",
           text: "Unexpected error with the target database.",
         });
-      } else {
-        const targetDatasetProjectVersion = parseInt(
-          targetDatasetProjectMigrationStatus.data?.details
-            ?.core_compatibility_status?.project_metadata_version ?? 0
-        );
-        if (
-          coreSupport.data?.metadataVersions &&
-          coreSupport.data?.metadataVersions.includes(
-            targetDatasetProjectVersion
-          )
-        ) {
-          if (targetDatasetProjectVersion < datasetProjectVersion) {
-            setCurrentStatus({
-              status: "error",
-              text: `Dataset project metadata version (${datasetProjectVersion})
-                cannot be newer than the project metadata version (${targetDatasetProjectVersion}) for import.`,
-            });
-            return false;
-          }
-          setCurrentStatus({
-            status: "validProject",
-            text: "Selected project is compatible with dataset.",
-          });
-        } else {
-          setCurrentStatus({
-            status: "error",
-            text: "The target project is either too old or unavailable.",
-          });
-        }
+        return;
       }
+      // wait for this to be set
+      if (datasetProjectVersion == null) return;
+
+      const targetDatasetProjectVersion = parseInt(
+        (
+          targetDatasetProjectMigrationStatus.data?.details
+            ?.core_compatibility_status as CoreCompatibilityStatus
+        )?.project_metadata_version ?? 0
+      );
+      setVersionUrl("/" + targetDatasetProjectVersion);
+      if (
+        coreSupport.data?.metadataVersions == null ||
+        !coreSupport.data?.metadataVersions.includes(
+          targetDatasetProjectVersion
+        )
+      ) {
+        setCurrentStatus({
+          status: "error",
+          text: "The target project is either too old or unavailable.",
+        });
+        return;
+      }
+      if (targetDatasetProjectVersion < datasetProjectVersion) {
+        setCurrentStatus({
+          status: "error",
+          text: `Dataset project metadata version (${datasetProjectVersion})
+                cannot be newer than the project metadata version (${targetDatasetProjectVersion}) for import.`,
+        });
+        return;
+      }
+      setCurrentStatus({
+        status: "validProject",
+        text: "Selected project is compatible with dataset.",
+      });
     }
   }, [
     coreSupport.data,
@@ -235,7 +273,7 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
   /* end validate project */
 
   /* import dataset */
-  const submitCallback = async (project) => {
+  const submitCallback = async (project: SubmitProject) => {
     if (!project) setCurrentStatus({ status: "error", text: "Empty project" });
     setCurrentStatus({
       status: "importing",
@@ -244,11 +282,12 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
     importDataset(project);
   };
 
-  const importDataset = (selectedProject) => {
+  const importDataset = (selectedProject: SubmitProject) => {
+    if (dataset == null) return;
     setImportingDataset(true);
     client
       .datasetImport(selectedProject.value, dataset.url, versionUrl)
-      .then((response) => {
+      .then((response: DatasetImportResponse) => {
         if (response?.data?.error !== undefined) {
           const error = response.data.error;
           setCurrentStatus({
@@ -257,8 +296,10 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
           });
           setImportingDataset(false);
         } else {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+          const jobId = response.data?.result?.job_id!;
           monitorJobStatusAndHandleResponse(
-            response.data.result.job_id,
+            jobId,
             selectedProject.name,
             dataset.name
           );
@@ -267,13 +308,13 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
   };
 
   const monitorJobStatusAndHandleResponse = (
-    job_id,
-    projectPath,
-    datasetName
+    job_id: string,
+    projectPath: string,
+    datasetName: string
   ) => {
     let cont = 0;
     const INTERVAL = 6000;
-    let monitorJob = setInterval(async () => {
+    const monitorJob = setInterval(async () => {
       try {
         const job = await client.getJobStatus(job_id, versionUrl);
         cont++;
@@ -286,7 +327,8 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
             datasetName
           );
       } catch (e) {
-        setCurrentStatus({ status: "error", text: e.message });
+        const error = e as { message?: string };
+        setCurrentStatus({ status: "error", text: error.message });
         setImportingDataset(false);
         clearInterval(monitorJob);
       }
@@ -294,11 +336,11 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
   };
 
   function handleJobResponse(
-    job,
-    monitorJob,
-    waitedSeconds,
-    projectPath,
-    datasetName
+    job: { state: string; extras: { error: string } },
+    monitorJob: ReturnType<typeof setInterval>,
+    waitedSeconds: number,
+    projectPath: string,
+    datasetName: string
   ) {
     if (job) {
       switch (job.state) {
@@ -351,7 +393,7 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
     }
   }
 
-  const redirectUser = (projectPath, datasetName) => {
+  const redirectUser = (projectPath: string, datasetName: string) => {
     setCurrentStatus(null);
     history.push({
       pathname: `/projects/${projectPath}/datasets/${datasetName}`,
@@ -379,4 +421,4 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
   );
 }
 
-export { AddDataset };
+export default DatasetAddToProject;

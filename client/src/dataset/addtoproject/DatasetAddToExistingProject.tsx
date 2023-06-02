@@ -20,32 +20,41 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { Button } from "reactstrap";
 
-import { AddDatasetStatus } from "./addDatasetStatus";
 import { ACCESS_LEVELS } from "../../api-client";
 import SelectAutosuggestInput from "../../components/SelectAutosuggestInput";
 import { Loader } from "../../components/Loader";
 import { groupBy } from "../../utils/helpers/HelperFunctions";
 import useGetUserProjects from "../../utils/customHooks/UseGetProjects";
 
-/**
- *  incubator-renku-ui
- *
- *  AddDatasetExistingProject
- *  Component for add dataset to existing project
- */
+import type {
+  AddDatasetHandlers,
+  AddDatasetStatus,
+  ExistingProject,
+} from "./DatasetAdd.types";
+import DatasetAddToProjectStatus from "./DatasetAddToProjectStatus";
 
-const AddDatasetExistingProject = ({
+type THit = Record<"id" | "name" | "subgroup" | "value", string>;
+
+type AddDatasetExistingProjectProps = {
+  dataset: unknown;
+  handlers: AddDatasetHandlers;
+  isDatasetValid: boolean | null;
+  currentStatus: AddDatasetStatus | null;
+  importingDataset: boolean;
+  project?: ExistingProject;
+};
+function AddDatasetExistingProject({
   dataset,
   handlers,
   isDatasetValid,
   currentStatus,
   importingDataset,
   project,
-}) => {
-  const [existingProject, setExistingProject] = useState(null);
+}: AddDatasetExistingProjectProps) {
+  const [existingProject, setExistingProject] =
+    useState<ExistingProject | null>(null);
   const mounted = useRef(false);
   const setCurrentStatus = handlers.setCurrentStatus;
-  let projectsMonitorJob = null;
 
   const projects = useGetUserProjects();
   const memberProjects = projects.projectsMember;
@@ -56,9 +65,8 @@ const AddDatasetExistingProject = ({
     setCurrentStatus(null);
     return () => {
       mounted.current = false;
-      clearInterval(projectsMonitorJob);
     };
-  }, [setCurrentStatus, projectsMonitorJob]);
+  }, [setCurrentStatus]);
 
   useEffect(() => {
     if (existingProject) handlers.validateProject(existingProject, false);
@@ -66,20 +74,26 @@ const AddDatasetExistingProject = ({
     else setCurrentStatus(null);
   }, [existingProject]); // eslint-disable-line
 
-  const startImportDataset = () => handlers.submitCallback(existingProject);
-  const onSuggestionsFetchRequested = (value, setSuggestions) => {
+  const startImportDataset = () => {
+    if (existingProject == null) return;
+    handlers.submitCallback(existingProject);
+  };
+  const onSuggestionsFetchRequested = (
+    value: string,
+    setSuggestions: (suggestions: unknown) => void
+  ) => {
     if (!memberProjects || isLoadingMemberProjects) return;
     const featured = { member: memberProjects };
 
     const regex = new RegExp(value, "i");
-    const searchDomain = featured.member.filter((project) => {
+    const searchDomain = featured.member.filter((project: ExistingProject) => {
       return project.access_level >= ACCESS_LEVELS.MAINTAINER;
     });
 
-    const hits = {};
+    const hits: Record<string, THit> = {};
     const groupedSuggestions = [];
 
-    searchDomain.forEach((d) => {
+    searchDomain.forEach((d: ExistingProject) => {
       if (regex.exec(d.path_with_namespace) != null) {
         hits[d.path_with_namespace] = {
           value: d.http_url_to_repo,
@@ -93,7 +107,7 @@ const AddDatasetExistingProject = ({
     const hitValues = Object.values(hits).sort((a, b) =>
       a.name > b.name ? 1 : b.name > a.name ? -1 : 0
     );
-    const groupedHits = groupBy(hitValues, (item) => item.subgroup);
+    const groupedHits = groupBy(hitValues, (item: THit) => item.subgroup);
     for (const [key, val] of groupedHits)
       groupedSuggestions.push({ title: key, suggestions: val });
 
@@ -112,13 +126,16 @@ const AddDatasetExistingProject = ({
   ) {
     suggestionInput = (
       <SelectAutosuggestInput
-        existingValue={existingProject?.name || null}
-        name="project"
-        label="Project"
-        placeholder="Select a project..."
+        alert={undefined}
         customHandlers={customHandlers}
-        setInputs={setExistingProject}
         disabled={importingDataset || currentStatus?.status === "inProcess"}
+        existingValue={existingProject?.name || null}
+        help={undefined}
+        label="Project"
+        name="project"
+        options={undefined}
+        placeholder="Select a project..."
+        setInputs={setExistingProject}
       />
     );
   } else if (
@@ -150,12 +167,12 @@ const AddDatasetExistingProject = ({
       </div>
     );
 
-  const onSubmit = (e) => e.preventDefault();
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => e.preventDefault();
 
   const addDatasetStatus = currentStatus ? (
-    <AddDatasetStatus
+    <DatasetAddToProjectStatus
       status={currentStatus.status}
-      text={currentStatus?.text || null}
+      text={currentStatus.text}
       projectName={project?.name}
     />
   ) : null;
@@ -171,6 +188,6 @@ const AddDatasetExistingProject = ({
       {addDatasetButton}
     </div>
   );
-};
+}
 
-export { AddDatasetExistingProject };
+export default AddDatasetExistingProject;
