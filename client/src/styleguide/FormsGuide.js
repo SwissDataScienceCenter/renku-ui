@@ -74,7 +74,7 @@ function CardsSection(props) {
       <Col>
         <h3>Cards</h3>
         <p>Use cards to show information grouped by sections.</p>
-        <Card className="border-rk-light">
+        <Card>
           <CardHeader className="bg-white p-3 ps-4">
             <b>Card Title</b>
           </CardHeader>
