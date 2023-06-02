@@ -12,8 +12,8 @@ module.exports = {
   webpack: {
     configure: {
       output: {
-        filename: `[name].[hash]-${version}.js`,
-        chunkFilename: `[name].[hash]-${version}.chunk.js`,
+        filename: `[name].[fullhash]-${version}.js`,
+        chunkFilename: `[name].[fullhash]-${version}.chunk.js`,
       },
     },
   },
