@@ -92,6 +92,8 @@ function DisplayFiles(props) {
     return newFile;
   });
 
+  // see Url.pages.project.file / Url.pages.project.lineage
+  const linkUrl = props.lineagesUrl?.replace("/lineage", "/blob");
   return (
     <Card key="datasetDetails" className="mb-4">
       <CardHeader className="bg-white p-3 ps-4" data-cy="dataset-file-title">
@@ -103,7 +105,7 @@ function DisplayFiles(props) {
         ) : (
           <FileExplorer
             files={filesWithNames}
-            lineageUrl={props.lineagesUrl}
+            linkUrl={linkUrl}
             insideProject={props.insideProject}
             foldersOpenOnLoad={openFolders}
           />
