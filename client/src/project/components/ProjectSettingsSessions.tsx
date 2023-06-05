@@ -1211,7 +1211,7 @@ const ProjectSettingsSessionsOutdated = ({
         >
           <AccordionItem>
             <AccordionHeader targetId="outdated-settings">
-              Outdated settings
+              Unsupported settings
             </AccordionHeader>
             <AccordionBody accordionId="outdated-settings">
               {devAccess && (
