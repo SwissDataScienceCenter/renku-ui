@@ -275,6 +275,14 @@ export const ProjectSettingsSessions = () => {
         devAccess={devAccess}
       />
 
+      <ProjectSettingsSessionsOutdated
+        projectConfig={projectConfig}
+        projectConfigIsFetching={projectConfigIsFetching}
+        projectRepositoryUrl={projectRepositoryUrl}
+        versionUrl={versionUrl}
+        devAccess={devAccess}
+      />
+
       <ProjectSettingsSessionsAdvanced
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
@@ -1158,6 +1166,94 @@ const PinnedImageOption = ({
   );
 };
 
+interface ProjectSettingsSessionsOutdatedProps {
+  projectConfig: ProjectConfig;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
+}
+
+const ProjectSettingsSessionsOutdated = ({
+  projectConfig,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
+}: ProjectSettingsSessionsOutdatedProps) => {
+  const legacyConfig = projectConfig.config.sessions?.legacyConfig ?? {};
+  const legacyConfigKeys = (
+    Object.keys(legacyConfig) as (keyof typeof legacyConfig)[]
+  )
+    .filter((optionKey) => legacyConfig[optionKey] != null)
+    .sort();
+
+  const [showSection, setShowSection] = useState<boolean>(
+    legacyConfigKeys.length > 0
+  );
+
+  const toggleShowSection = useCallback(() => {
+    setShowSection((showSection) => !showSection);
+  }, []);
+
+  if (legacyConfigKeys.length == 0) {
+    return null;
+  }
+
+  return (
+    <div className="mb-2">
+      <Col xs={12}>
+        <AccordionFixed
+          className={styles.accordion}
+          open={showSection ? "outdated-settings" : ""}
+          toggle={toggleShowSection}
+          flush
+        >
+          <AccordionItem>
+            <AccordionHeader targetId="outdated-settings">
+              Unsupported settings
+            </AccordionHeader>
+            <AccordionBody accordionId="outdated-settings">
+              {devAccess && (
+                <WarnAlert>
+                  Handling of resource limits has changed and the following
+                  settings are no longer used. Please select a session class
+                  with the desired resource constraints and remove these
+                  settings to avoid confusion.
+                </WarnAlert>
+              )}
+              {legacyConfigKeys.map((optionKey) => (
+                <UnknownOption
+                  key={optionKey}
+                  optionKey={OUTDATED_OPTIONS_KEYS[optionKey]}
+                  optionLabel={OUTDATED_OPTIONS_LABELS[optionKey]}
+                  optionValue={`${legacyConfig[optionKey]}`}
+                  projectConfigIsFetching={projectConfigIsFetching}
+                  projectRepositoryUrl={projectRepositoryUrl}
+                  versionUrl={versionUrl}
+                  devAccess={devAccess}
+                />
+              ))}
+            </AccordionBody>
+          </AccordionItem>
+        </AccordionFixed>
+      </Col>
+    </div>
+  );
+};
+
+const OUTDATED_OPTIONS_KEYS = {
+  cpuRequest: "interactive.cpu_request",
+  memoryRequest: "interactive.mem_request",
+  gpuRequest: "interactive.gpu_request",
+} as const;
+
+const OUTDATED_OPTIONS_LABELS = {
+  cpuRequest: "Number of CPUs",
+  memoryRequest: "Amount of Memory",
+  gpuRequest: "Number of GPUs",
+} as const;
+
 interface ProjectSettingsSessionsUnknownProps {
   projectConfig: ProjectConfig;
   projectConfigIsFetching: boolean;
@@ -1225,6 +1321,7 @@ const ProjectSettingsSessionsUnknown = ({
 
 interface UnknownOptionProps {
   optionKey: string;
+  optionLabel?: string;
   optionValue: string;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
@@ -1234,13 +1331,16 @@ interface UnknownOptionProps {
 
 const UnknownOption = ({
   optionKey,
+  optionLabel,
   optionValue,
   projectConfigIsFetching,
   projectRepositoryUrl,
   versionUrl,
   devAccess,
 }: UnknownOptionProps) => {
-  const shortKey = optionKey.slice("interactive.".length);
+  const shortKey = optionKey.toLocaleLowerCase().startsWith("interactive")
+    ? optionKey.slice("interactive.".length)
+    : optionKey;
   const safeShortKey = shortKey.toLowerCase().replaceAll(/[^0-9A-Za-z]/g, "-");
 
   const [updateConfig, { isLoading }] = useUpdateConfigMutation({
@@ -1262,7 +1362,9 @@ const UnknownOption = ({
   return (
     <FormGroup>
       <InputGroup className={styles.unknownOptionGroup}>
-        <InputGroupText className="rounded-start">{shortKey}</InputGroupText>
+        <InputGroupText className="rounded-start">
+          {optionLabel || shortKey}
+        </InputGroupText>
         <Input
           className={cx(!devAccess && "rounded-end")}
           value={optionValue || "<empty>"}

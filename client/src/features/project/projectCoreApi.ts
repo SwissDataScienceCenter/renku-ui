@@ -304,7 +304,6 @@ const transformGetConfigRawResponse = (
   >["legacyConfig"] = {
     cpuRequest: safeParseInt(projectSessionsConfig["interactive.cpu_request"]),
     memoryRequest: projectSessionsConfig["interactive.mem_request"],
-    storageRequest: projectSessionsConfig["interactive.disk_request"],
     gpuRequest: safeParseInt(projectSessionsConfig["interactive.gpu_request"]),
   };
   const defaultLegacySessionsConfig: NonNullable<
@@ -312,7 +311,6 @@ const transformGetConfigRawResponse = (
   >["legacyConfig"] = {
     cpuRequest: safeParseInt(defaultSessionsConfig["interactive.cpu_request"]),
     memoryRequest: defaultSessionsConfig["interactive.mem_request"],
-    storageRequest: defaultSessionsConfig["interactive.disk_request"],
     gpuRequest: safeParseInt(defaultSessionsConfig["interactive.gpu_request"]),
   };
 
