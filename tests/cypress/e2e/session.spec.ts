@@ -103,6 +103,7 @@ describe("display a session", () => {
     cy.gui_open_session();
     // save session
     cy.get_cy("save-session-button").click();
+    cy.wait("@getSidecarHealth");
     cy.get(".modal-dialog").should("exist");
     cy.get(".modal-dialog")
       .get("h5")
