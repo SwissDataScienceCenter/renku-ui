@@ -1216,8 +1216,7 @@ const ProjectSettingsSessionsOutdated = ({
             <AccordionBody accordionId="outdated-settings">
               {devAccess && (
                 <WarnAlert>
-                  The following settings are no longer in use in Renku. They can
-                  be safely removed.
+                  Handling of resource limits has changed and the following settings are no longer used. Please select a session class with the desired resource constraints and remove these settings to avoid confusion.
                 </WarnAlert>
               )}
               {legacyConfigKeys.map((optionKey) => (
