@@ -34,6 +34,7 @@ import {
   Row,
   Col,
   Collapse,
+  CardBody,
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -87,52 +88,50 @@ class CloseToast extends Component {
   }
 }
 
-class NotificationToast extends Component {
-  render() {
-    const { notification, markRead, closeToast } = this.props;
-    const { level, topic, desc, link, linkText, longDesc } = notification;
+const NotificationToast = ({ notification, markRead, closeToast }) => {
+  // const { notification, markRead, closeToast } = this.props;
+  const { level, topic, desc, link, linkText, longDesc } = notification;
 
-    const icon = <NotificationIcon className="color me-2" level={level} />;
-    const linkObj = (
-      <NotificationLink
-        link={link}
-        linkText={linkText ? linkText : link}
-        markRead={markRead}
-        closeToast={closeToast}
-        icon={true}
-        childClass={"link-" + getColorFromLevel(level)}
-      />
-    );
-    const notificationsLink = longDesc ? (
-      <Fragment>
-        <br />
-        <Link
-          to="/notifications"
-          onClick={() => {
-            if (closeToast) closeToast();
-          }}
-        >
-          [more info]
-        </Link>
-      </Fragment>
-    ) : null;
+  const icon = <NotificationIcon className="color me-2" level={level} />;
+  const linkObj = (
+    <NotificationLink
+      link={link}
+      linkText={linkText ? linkText : link}
+      markRead={markRead}
+      closeToast={closeToast}
+      icon={true}
+      childClass={"link-" + getColorFromLevel(level)}
+    />
+  );
+  const notificationsLink = longDesc ? (
+    <Fragment>
+      <br />
+      <Link
+        to="/notifications"
+        onClick={() => {
+          if (closeToast) closeToast();
+        }}
+      >
+        [more info]
+      </Link>
+    </Fragment>
+  ) : null;
 
-    return (
-      <Fragment>
-        <div className="toast-header border-bottom-0">
-          {icon}
-          <strong className="me-auto mt-1">{topic}</strong>
-        </div>
-        <div className="toast-body pt-2">
-          <p className="mb-1">
-            {desc} {notificationsLink}
-          </p>
-          {linkObj}
-        </div>
-      </Fragment>
-    );
-  }
-}
+  return (
+    <CardBody className="py-2">
+      <div className="toast-header border-bottom-0">
+        {icon}
+        <strong className="me-auto mt-1">{topic}</strong>
+      </div>
+      <div className="toast-body pt-2">
+        <p className="mb-1">
+          {desc} {notificationsLink}
+        </p>
+        {linkObj}
+      </div>
+    </CardBody>
+  );
+};
 
 function getColorFromLevel(level) {
   const { Levels } = NotificationsInfo;

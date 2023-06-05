@@ -24,21 +24,22 @@
  */
 
 import React, { Component } from "react";
-import { toast } from "react-toastify";
+import cx from "classnames";
 import { connect } from "react-redux";
+import { toast } from "react-toastify";
 
+import {
+  CloseToast,
+  NotificationDropdownItem as NotificationDropdown,
+  NotificationPageItem,
+  NotificationToast,
+  NotificationsMenu as NotificationsMenuPresent,
+  Notifications as NotificationsPresent,
+} from "./Notifications.present";
 import {
   NotificationsCoordinator,
   NotificationsInfo,
 } from "./Notifications.state";
-import {
-  NotificationToast,
-  CloseToast,
-  NotificationsMenu as NotificationsMenuPresent,
-  NotificationDropdownItem as NotificationDropdown,
-  Notifications as NotificationsPresent,
-  NotificationPageItem,
-} from "./Notifications.present";
 
 const NotificationTypes = {
   TOAST: "toast",
@@ -119,7 +120,7 @@ class NotificationsManager {
       let options = {
         closeOnClick: false,
         toastId: `toast-${notification.id}`,
-        className: level.toLowerCase(),
+        className: cx(level.toLowerCase(), "card", "rounded", "flex-row"),
         position: this.toastSettings.position,
         autoClose: this.toastSettings.timeout
           ? this.toastSettings.timeout
