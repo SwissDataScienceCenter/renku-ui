@@ -49,7 +49,7 @@ describe("launch sessions", () => {
     cy.get("form").contains("Start with base image").should("not.exist");
   });
 
-  it.only("new session page - logged - success", () => {
+  it("new session page - logged - success", () => {
     fixtures.userTest();
     fixtures.newSessionImages();
     cy.visit("/projects/e2e/local-test-project/sessions/new");
