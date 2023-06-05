@@ -277,6 +277,14 @@ export type TemplateMigrationLevel = {
     | ProjectMigrationLevel.LevelX;
 };
 
+export interface DeleteProjectParams {
+  projectPathWithNamespace: string;
+}
+
+export interface DeleteProjectResponse {
+  accepted: true;
+}
+
 export interface ProjectConfig {
   config: ProjectConfigSection;
   default: ProjectConfigSection;

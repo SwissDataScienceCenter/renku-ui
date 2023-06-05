@@ -23,22 +23,14 @@
  *  Notifications controller code.
  */
 
+import {
+  NOTIFICATION_LEVELS,
+  NOTIFICATION_TOPICS,
+} from "./Notifications.constants";
+
 const NotificationsInfo = {
-  Levels: {
-    INFO: "info",
-    SUCCESS: "success",
-    WARNING: "warning",
-    ERROR: "error",
-  },
-  Topics: {
-    AUTHENTICATION: "Authentication",
-    DATASET_CREATE: "Dataset creation",
-    DATASET_FILES_UPLOADED: "Dataset files upload",
-    SESSION_START: "Session",
-    PROJECT_API: "Project data",
-    PROJECT_FORKED: "Project forked",
-    KG_ACTIVATION: "KG Activation",
-  },
+  Levels: NOTIFICATION_LEVELS,
+  Topics: NOTIFICATION_TOPICS,
 };
 
 class NotificationsCoordinator {

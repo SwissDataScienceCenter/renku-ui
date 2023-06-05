@@ -125,6 +125,7 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
     ) {
       const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
       cy.intercept("/ui-server/api/renku/*/datasets.import", fixture).as(name);
+      cy.intercept("/ui-server/api/renku/datasets.import", fixture).as(name);
       return this;
     }
 
@@ -134,6 +135,7 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
     ) {
       const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
       cy.intercept("/ui-server/api/renku/*/jobs/*", fixture).as(name);
+      cy.intercept("/ui-server/api/renku/jobs/*", fixture).as(name);
       return this;
     }
 
@@ -143,6 +145,7 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
     ) {
       const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
       cy.intercept("/ui-server/api/renku/*/jobs/*", fixture).as(name);
+      cy.intercept("/ui-server/api/renku/jobs/*", fixture).as(name);
       return this;
     }
 

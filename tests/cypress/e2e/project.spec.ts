@@ -330,6 +330,40 @@ describe("display a project", () => {
         );
       });
   });
+
+  it("delete a project", () => {
+    fixtures.deleteProject();
+    cy.visit("/projects/e2e/local-test-project/settings");
+
+    cy.get_cy("project-settings-general-delete-project")
+      .should("be.visible")
+      .find("button")
+      .contains("Delete project")
+      .should("be.visible")
+      .click();
+
+    cy.contains("Are you absolutely sure?");
+    cy.get("button").contains("Yes, delete this project").should("be.disabled");
+    cy.get("input[name=project-settings-general-delete-confirm-box]").type(
+      "e2e/local-test-project"
+    );
+    cy.get("button")
+      .contains("Yes, delete this project")
+      .should("be.enabled")
+      .click();
+    cy.wait("@deleteProject");
+
+    cy.url().should("not.contain", "/projects");
+    cy.get(".Toastify")
+      .contains("Project e2e/local-test-project deleted")
+      .should("be.visible");
+  });
+
+  it("delete a project - not allowed", () => {
+    fixtures.userNone();
+    cy.visit("/projects/e2e/local-test-project/settings");
+    cy.get_cy("project-settings-general-delete-project").should("not.exist");
+  });
 });
 
 describe("fork a project", () => {
