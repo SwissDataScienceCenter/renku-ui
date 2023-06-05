@@ -32,9 +32,9 @@ import { Url } from "../../utils/helpers/url";
 export interface LoginAlertProps {
   logged: boolean;
   noWrapper?: boolean;
-  textIntro: string;
+  textIntro?: string;
   textLogin?: string;
-  textPost: string;
+  textPost?: string;
   textPre?: string;
 }
 

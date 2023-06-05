@@ -276,3 +276,11 @@ export type TemplateMigrationLevel = {
     | ProjectMigrationLevel.LevelE
     | ProjectMigrationLevel.LevelX;
 };
+
+export interface DeleteProjectParams {
+  projectPathWithNamespace: string;
+}
+
+export interface DeleteProjectResponse {
+  accepted: true;
+}

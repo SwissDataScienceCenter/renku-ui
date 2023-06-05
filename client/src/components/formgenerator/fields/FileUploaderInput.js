@@ -700,7 +700,6 @@ function FileUploaderInput({
                     <small>
                       <FileExplorer
                         filesTree={file.folder_structure}
-                        lineageUrl={" "}
                         insideProject={false}
                         foldersOpenOnLoad={0}
                       />
@@ -821,11 +820,7 @@ function FileUploaderInput({
     initialFilesTree !== undefined ? (
       <Card className="mb-4">
         <CardBody style={{ backgroundColor: "#e9ecef" }}>
-          <FileExplorer
-            filesTree={initialFilesTree}
-            lineageUrl=" "
-            insideProject={false}
-          />
+          <FileExplorer filesTree={initialFilesTree} insideProject={false} />
         </CardBody>
       </Card>
     ) : null;
