@@ -16,10 +16,16 @@
  * limitations under the License.
  */
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import {
+  FetchBaseQueryError,
+  createApi,
+  fetchBaseQuery,
+} from "@reduxjs/toolkit/query/react";
 
 import {
   DatasetKg,
+  DeleteProjectParams,
+  DeleteProjectResponse,
   GetDatasetKgParams,
   ProjectActivateIndexingResponse,
   ProjectIndexingStatusResponse,
@@ -90,6 +96,34 @@ export const projectKgApi = createApi({
         throw errorData;
       },
     }),
+    deleteProject: builder.mutation<DeleteProjectResponse, DeleteProjectParams>(
+      {
+        query: ({ projectPathWithNamespace }) => {
+          return {
+            method: "DELETE",
+            url: `projects/${projectPathWithNamespace}`,
+          };
+        },
+        invalidatesTags: ["project"],
+        transformErrorResponse: (error) => {
+          const { status, data } = error;
+          if (status === 500 && typeof data === "object" && data != null) {
+            const data_ = data as { message?: unknown };
+            if (
+              typeof data_.message === "string" &&
+              data_.message.match(/403 Forbidden/i)
+            ) {
+              const newError: FetchBaseQueryError = {
+                status: 403,
+                data,
+              };
+              return newError;
+            }
+          }
+          return error;
+        },
+      }
+    ),
   }),
 });
 
@@ -97,4 +131,5 @@ export const {
   useActivateIndexingMutation,
   useGetDatasetKgQuery,
   useGetProjectIndexingStatusQuery,
+  useDeleteProjectMutation,
 } = projectKgApi;
