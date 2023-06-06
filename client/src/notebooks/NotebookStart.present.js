@@ -206,7 +206,7 @@ function StartNotebookServer(props) {
   const sessionClass = useSelector(
     (state) => state.startSessionOptions.sessionClass
   );
-  const hasSessionClass = sessionClass != 0;
+  const hasSessionClass = sessionClass !== 0;
 
   const [showShareLinkModal, setShowShareLinkModal] = useState(
     location?.state?.showShareLinkModal ?? false
