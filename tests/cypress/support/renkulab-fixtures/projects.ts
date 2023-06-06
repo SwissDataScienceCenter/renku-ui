@@ -374,6 +374,13 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    deleteProject(name = "deleteProject", forbidden = false) {
+      cy.intercept("DELETE", "/ui-server/api/kg/projects/**", {
+        statusCode: forbidden ? 403 : 200,
+      }).as(name);
+      return this;
+    }
+
     updateAvatar(
       args = {
         projectId: 43781,

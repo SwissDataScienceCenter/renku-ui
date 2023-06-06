@@ -122,7 +122,7 @@ class FileLineage extends Component {
         accessLevel={this.props.accessLevel}
         currentNode={this.state.currentNode}
         error={this.state.error}
-        filePath={`/projects/${this.props.projectPathWithNamespace}/files/blob/${this.props.path}`}
+        filePath={`/projects/${this.props.projectPath}/files/blob/${this.props.path}`}
         fileSize={fileSize}
         graph={this.state.graph}
         retrieveGraph={this.retrieveGraph.bind(this)}
