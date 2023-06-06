@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
+import React, { FunctionComponent, ReactNode, useState } from "react";
 import {
   faArrowAltCircleUp,
   faCheckCircle,
@@ -54,6 +54,7 @@ import {
   DetailsSection,
   MoreInfoLink,
 } from "./MigrationHelpers";
+import { MigrationStatusDetails } from "../../Project";
 
 interface ProjectMigrationStatusProps {
   branch?: string;
@@ -659,82 +660,28 @@ interface RenkuTemplateContextProps {
   isMaintainer: boolean;
   templateDetails: MigrationStatus["details"];
 }
-function RenkuTemplateContext({
+
+const RenkuTemplateContext: FunctionComponent<RenkuTemplateContextProps> = ({
   automated,
   isMaintainer,
   templateDetails,
-}: RenkuTemplateContextProps) {
+}) => {
   const template =
     templateDetails?.template_status.type === "detail"
       ? templateDetails.template_status
       : null;
 
   if (template?.newer_template_available) {
-    const templateManualLink = (
-      <ExternalLink
-        role="text"
-        url={Docs.rtdPythonReferencePage("commands/template.html")}
-        title="Renku Update"
+    return (
+      <RenkuTemplateContextNewerTemplateAvailable
+        automated={automated}
+        isMaintainer={isMaintainer}
+        template={template}
       />
     );
-    let updateInfo: React.ReactNode = null;
-    if (isMaintainer && automated) {
-      updateInfo = (
-        <>You can click on the Update button to automatically update it.</>
-      );
-    } else if (
-      isMaintainer &&
-      template.template_source !== TemplateSourceRenku
-    ) {
-      updateInfo = (
-        <>
-          Automatic update is not available. You can update the template
-          manually in a session by using the {templateManualLink} command.
-        </>
-      );
-    }
+  }
 
-    let templateElement: React.ReactNode = null;
-    let extraInfo: React.ReactNode = null;
-    if (template.template_source !== TemplateSourceRenku) {
-      let templateUrl = template?.template_source;
-      if (template?.latest_template_version)
-        templateUrl += `/tree/${template?.latest_template_version}`;
-      else if (template?.template_ref)
-        templateUrl += `/tree/${template?.template_ref}`;
-      templateElement =
-        templateUrl && template?.template_id ? (
-          <ExternalLink
-            role="text"
-            url={templateUrl}
-            title={template?.template_id}
-          />
-        ) : null;
-    } else {
-      templateElement = template?.template_id ? (
-        <span>{template.template_id}</span>
-      ) : null;
-      extraInfo = (
-        <>
-          <br />
-          <span>
-            Mind that this project uses a default template from this RenkuLab
-            deployment; therefore, there is no link to a remote reference
-            template you can check. You can still check the full description
-            when creating a new project using the same template id.
-          </span>
-        </>
-      );
-    }
-
-    return (
-      <span>
-        There is a new version of the template {templateElement} used in this
-        project. {updateInfo} {extraInfo}{" "}
-        <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />
-      </span>
-    );
-  } else if (template?.template_source === TemplateSourceRenku) {
+  if (template?.template_source === TemplateSourceRenku) {
     return (
       <span>
         We could not find updates of the {template?.template_id} template used
@@ -748,19 +695,9 @@ function RenkuTemplateContext({
     );
   }
 
-  let templateUrl = template?.template_source;
-  if (template?.latest_template_version)
-    templateUrl += `/tree/${template?.latest_template_version}`;
-  else if (template?.template_ref)
-    templateUrl += `/tree/${template?.template_ref}`;
-  const templateElement =
-    templateUrl && template?.template_id ? (
-      <ExternalLink
-        role="text"
-        url={templateUrl}
-        title={template?.template_id}
-      />
-    ) : null;
+  const templateElement = template?.type === "detail" && (
+    <RenkuTemplateContextTemplateElement template={template} />
+  );
   return (
     <span>
       You are using the latest version of the {templateElement} template used in
@@ -768,4 +705,111 @@ function RenkuTemplateContext({
       <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />
     </span>
   );
-}
+};
+
+const RenkuTemplateContextNewerTemplateAvailable: FunctionComponent<
+  Pick<RenkuTemplateContextProps, "automated" | "isMaintainer"> & {
+    template: Exclude<
+      MigrationStatusDetails["template_status"],
+      CoreSectionError
+    >;
+  }
+> = ({ automated, isMaintainer, template }) => {
+  const templateManualLink = (
+    <ExternalLink
+      role="text"
+      url={Docs.rtdPythonReferencePage("commands/template.html")}
+      title="Renku Update"
+    />
+  );
+
+  const templateElement = (
+    <RenkuTemplateContextTemplateElement template={template} />
+  );
+
+  const extraInfo = <RenkuTemplateContextExtraInfo template={template} />;
+
+  return (
+    <span>
+      There is a new version of the template {templateElement} used in this
+      project.{" "}
+      <RenkuTemplateContextUpdateInfo
+        automated={automated}
+        isMaintainer={isMaintainer}
+        templateManualLink={templateManualLink}
+        templateSource={template.template_source}
+      />{" "}
+      {extraInfo} <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />
+    </span>
+  );
+};
+
+const RenkuTemplateContextUpdateInfo: FunctionComponent<
+  Pick<RenkuTemplateContextProps, "automated" | "isMaintainer"> & {
+    templateManualLink: ReactNode;
+    templateSource: string;
+  }
+> = ({ automated, isMaintainer, templateManualLink, templateSource }) => {
+  if (isMaintainer && automated) {
+    return <>You can click on the Update button to automatically update it.</>;
+  }
+
+  if (isMaintainer && templateSource !== TemplateSourceRenku) {
+    return (
+      <>
+        Automatic update is not available. You can update the template manually
+        in a session by using the {templateManualLink} command.
+      </>
+    );
+  }
+
+  return null;
+};
+
+const RenkuTemplateContextTemplateElement: FunctionComponent<{
+  template: Exclude<
+    MigrationStatusDetails["template_status"],
+    CoreSectionError
+  >;
+}> = ({ template }) => {
+  if (template.template_source !== TemplateSourceRenku) {
+    const templateUrlSuffix = template.latest_template_version
+      ? `/tree/${template.latest_template_version}`
+      : template.template_ref
+      ? `/tree/${template.template_ref}`
+      : "";
+    const templateUrl = `${template.template_source}${templateUrlSuffix}`;
+    return templateUrl && template.template_id ? (
+      <ExternalLink
+        role="text"
+        url={templateUrl}
+        title={template?.template_id}
+      />
+    ) : null;
+  }
+
+  return template.template_id ? <span>{template.template_id}</span> : null;
+};
+
+const RenkuTemplateContextExtraInfo: FunctionComponent<{
+  template: Exclude<
+    MigrationStatusDetails["template_status"],
+    CoreSectionError
+  >;
+}> = ({ template }) => {
+  if (template.template_source === TemplateSourceRenku) {
+    return (
+      <>
+        <br />
+        <span>
+          Mind that this project uses a default template from this RenkuLab
+          deployment; therefore, there is no link to a remote reference template
+          you can check. You can still check the full description when creating
+          a new project using the same template id.
+        </span>
+      </>
+    );
+  }
+
+  return null;
+};

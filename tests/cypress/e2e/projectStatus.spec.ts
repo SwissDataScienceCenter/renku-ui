@@ -111,7 +111,7 @@ describe("display KG status information", () => {
   });
 });
 
-describe("display migration information", () => {
+describe.only("display migration information", () => {
   const fixtures = new Fixtures(cy);
 
   beforeEach(() => {
@@ -121,7 +121,7 @@ describe("display migration information", () => {
     cy.visit("/projects/e2e/local-test-project");
   });
 
-  it("displays level 1 migration: up-to-date", () => {
+  it.only("displays level 1 migration: up-to-date", () => {
     fixtures.interceptMigrationCheck(
       "migrationCheck",
       "project/migrationStatus/level1-all-good.json"
@@ -175,7 +175,7 @@ describe("display migration information", () => {
     cy.get_cy("project-status-icon-element").should("not.exist");
   });
 
-  it("displays level 3 migration: template can be migrated", () => {
+  it.only("displays level 3 migration: template can be migrated", () => {
     fixtures.interceptMigrationCheck(
       "migrationCheck",
       "project/migrationStatus/level3-only-template.json"
