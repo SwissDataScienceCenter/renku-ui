@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent, ReactNode, useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 import {
   faArrowAltCircleUp,
   faCheckCircle,
@@ -695,13 +695,13 @@ const RenkuTemplateContext: FunctionComponent<RenkuTemplateContextProps> = ({
     );
   }
 
-  const templateElement = template?.type === "detail" && (
-    <RenkuTemplateContextTemplateElement template={template} />
-  );
   return (
     <span>
-      You are using the latest version of the {templateElement} template used in
-      this project.{" "}
+      You are using the latest version of the{" "}
+      {template?.type === "detail" && (
+        <RenkuTemplateContextTemplateElement template={template} />
+      )}{" "}
+      template used in this project.{" "}
       <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />
     </span>
   );
@@ -714,42 +714,26 @@ const RenkuTemplateContextNewerTemplateAvailable: FunctionComponent<
       CoreSectionError
     >;
   }
-> = ({ automated, isMaintainer, template }) => {
-  const templateManualLink = (
-    <ExternalLink
-      role="text"
-      url={Docs.rtdPythonReferencePage("commands/template.html")}
-      title="Renku Update"
-    />
-  );
-
-  const templateElement = (
-    <RenkuTemplateContextTemplateElement template={template} />
-  );
-
-  const extraInfo = <RenkuTemplateContextExtraInfo template={template} />;
-
-  return (
-    <span>
-      There is a new version of the template {templateElement} used in this
-      project.{" "}
-      <RenkuTemplateContextUpdateInfo
-        automated={automated}
-        isMaintainer={isMaintainer}
-        templateManualLink={templateManualLink}
-        templateSource={template.template_source}
-      />{" "}
-      {extraInfo} <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />
-    </span>
-  );
-};
+> = ({ automated, isMaintainer, template }) => (
+  <span>
+    There is a new version of the template{" "}
+    <RenkuTemplateContextTemplateElement template={template} /> used in this
+    project.{" "}
+    <RenkuTemplateContextUpdateInfo
+      automated={automated}
+      isMaintainer={isMaintainer}
+      templateSource={template.template_source}
+    />{" "}
+    <RenkuTemplateContextExtraInfo template={template} />{" "}
+    <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />
+  </span>
+);
 
 const RenkuTemplateContextUpdateInfo: FunctionComponent<
   Pick<RenkuTemplateContextProps, "automated" | "isMaintainer"> & {
-    templateManualLink: ReactNode;
     templateSource: string;
   }
-> = ({ automated, isMaintainer, templateManualLink, templateSource }) => {
+> = ({ automated, isMaintainer, templateSource }) => {
   if (isMaintainer && automated) {
     return <>You can click on the Update button to automatically update it.</>;
   }
@@ -758,7 +742,13 @@ const RenkuTemplateContextUpdateInfo: FunctionComponent<
     return (
       <>
         Automatic update is not available. You can update the template manually
-        in a session by using the {templateManualLink} command.
+        in a session by using the{" "}
+        <ExternalLink
+          role="text"
+          url={Docs.rtdPythonReferencePage("commands/template.html")}
+          title="Renku Update"
+        />{" "}
+        command.
       </>
     );
   }
