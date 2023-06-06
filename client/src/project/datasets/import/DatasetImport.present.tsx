@@ -31,14 +31,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import FormSchema from "../../../components/formschema/FormSchema";
 
-function DatasetImport(props) {
+type DatasetImportProps = {
+  accessLevel: number;
+  submitCallback: React.MouseEventHandler;
+  onCancel: React.MouseEventHandler;
+  datasetImportFormSchema: unknown;
+  formLocation: string;
+  notifications: unknown;
+  model: unknown;
+  toggleNewDataset: React.MouseEventHandler;
+};
+
+function DatasetImport(props: DatasetImportProps) {
   const [showHeader, setShowHeader] = useState(true);
 
   if (props.accessLevel < ACCESS_LEVELS.MAINTAINER) {
     return (
       <Col sm={12} md={10} lg={8}>
         <Alert timeout={0} color="primary">
-          Acces Denied. You don&apos;t have rights to import datasets for this
+          You do not have access level necessary to import datasets into this
           project.
           <br />
           <br />
