@@ -203,6 +203,11 @@ function StartNotebookServer(props) {
   const { branch, commit, namespace, project } = props.filters;
   const location = useLocation();
 
+  const sessionClass = useSelector(
+    (state) => state.startSessionOptions.sessionClass
+  );
+  const hasSessionClass = sessionClass !== 0;
+
   const [showShareLinkModal, setShowShareLinkModal] = useState(
     location?.state?.showShareLinkModal ?? false
   );
@@ -250,6 +255,7 @@ function StartNotebookServer(props) {
       showShareLinkModal={showShareLinkModal}
       setEnvironmentVariables={setNotebookEnvVariables}
       environmentVariables={environmentVariables}
+      hasSessionClass={hasSessionClass}
       {...props}
     />
   ) : null;
@@ -1359,6 +1365,7 @@ class ServerOptionLaunch extends Component {
       );
 
     const hasImage = ciStatus.available;
+    const disabled = !hasImage || !this.props.hasSessionClass;
     const createLink = (
       <DropdownItem onClick={this.props.toggleShareLinkModal}>
         <FontAwesomeIcon className="text-rk-green" icon={faLink} /> Create link
@@ -1368,7 +1375,7 @@ class ServerOptionLaunch extends Component {
       <Button
         key="start-session"
         color="rk-green"
-        disabled={!hasImage}
+        disabled={disabled}
         onClick={() => this.checkServer(false)}
       >
         Start session
