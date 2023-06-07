@@ -15,6 +15,7 @@
 - fix the "add dataset to project" feature ([#2549](https://github.com/SwissDataScienceCenter/renku-ui/pull/2549))
 - clicking on a file name on the dataset view leads to the contents, not lineage ([#1270](https://github.com/SwissDataScienceCenter/renku-ui/issues/1270))
 - fix getting a 404 page when switching from lineage view to contents ([#2571](https://github.com/SwissDataScienceCenter/renku-ui/issues/2571))
+- fix the workflow view crashing the UI in some cases ([#2578](https://github.com/SwissDataScienceCenter/renku-ui/issues/2578))
 
 ## [3.5.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.4.3...3.5.0) (2023-05-22)
 
