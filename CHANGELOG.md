@@ -4,7 +4,7 @@
 
 ### Features
 
-- rework the project status page, which is moved to the "Settings" tab, under "General" ([#2503](https://github.com/SwissDataScienceCenter/renku-ui/issues/2315), [#2135](https://github.com/SwissDataScienceCenter/renku-ui/issues/2135))
+- major rework and simplification of project status page (moved to Settings -> General) ([#2503](https://github.com/SwissDataScienceCenter/renku-ui/issues/2315), [#2135](https://github.com/SwissDataScienceCenter/renku-ui/issues/2135))
 - add a delete project button on the settings tab ([2416](https://github.com/SwissDataScienceCenter/renku-ui/issues/2416))
 
 ### Bug Fixes
