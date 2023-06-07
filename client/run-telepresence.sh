@@ -142,6 +142,7 @@ tee > ./public/config.json << EOF
   "GATEWAY_URL": "${BASE_URL}/api",
   "UISERVER_URL": "${BASE_URL}/ui-server",
   "WELCOME_PAGE": "${WELCOME_PAGE}",
+  "DASHBOARD_MESSAGE": "{}",
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
   "SENTRY_SAMPLE_RATE": "${SENTRY_SAMPLE_RATE}",
