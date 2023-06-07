@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent, ReactNode, forwardRef, useRef } from "react";
+import React, { ReactNode, forwardRef, useRef } from "react";
 import cx from "classnames";
 import { UncontrolledTooltip } from "reactstrap";
 import Time from "../../utils/helpers/Time";
@@ -33,7 +33,7 @@ export interface EntityExecutionsProps {
   workflowId: string;
 }
 
-export const EntityExecutions: FunctionComponent<EntityExecutionsProps> = ({
+export function EntityExecutions({
   display,
   executions,
   itemType,
@@ -41,7 +41,7 @@ export const EntityExecutions: FunctionComponent<EntityExecutionsProps> = ({
   showLastExecution = true,
   showOnlyLastExecution = false,
   workflowId,
-}) => {
+}: EntityExecutionsProps) {
   const ref = useRef<HTMLParagraphElement>(null);
 
   if (itemType !== "workflow") return null;
@@ -87,24 +87,25 @@ export const EntityExecutions: FunctionComponent<EntityExecutionsProps> = ({
     return executionContentTree;
   }
 
-  const lastExecutionTooltip =
-    showLastExecution && workflowId && lastExecuted ? (
-      <UncontrolledTooltip placement="top" target={ref}>
-        <span>{Time.toIsoTimezoneString(lastExecuted)}</span>
-      </UncontrolledTooltip>
-    ) : null;
   return (
     <div className="executions">
       {executionContentTree}
-      {lastExecutionTooltip}
+      {showLastExecution && workflowId && lastExecuted && (
+        <UncontrolledTooltip placement="top" target={ref}>
+          <span>{Time.toIsoTimezoneString(lastExecuted)}</span>
+        </UncontrolledTooltip>
+      )}
     </div>
   );
-};
+}
 
-const ExecutionContentList: FunctionComponent<{
+function ExecutionContentList({
+  executions,
+  lastExecution,
+}: {
   executions: EntityExecutionsProps["executions"];
   lastExecution: ReactNode;
-}> = ({ executions, lastExecution }) => {
+}) {
   if (executions == null) {
     return <span className="fst-italic">No data on executions.</span>;
   }
@@ -123,7 +124,7 @@ const ExecutionContentList: FunctionComponent<{
       {executions} executions (last {lastExecution})
     </span>
   );
-};
+}
 
 const ExecutionContentTree = forwardRef<
   HTMLParagraphElement,
