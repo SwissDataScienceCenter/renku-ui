@@ -29,5 +29,5 @@ interface DashboardMessageParamsEnabled {
   text: string;
   additionalText: string;
   style: "plain" | "success" | "info" | "warn" | "danger";
-  dismissable: boolean;
+  dismissible: boolean;
 }

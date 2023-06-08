@@ -41,8 +41,8 @@ else
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64`
   echo "Warning! your OS has not been tested yet"
 fi
-DASHBOARD_MESSAGE_TEXT=`echo "# Welcome to Renku
-This is an example welcome message." | base64`
+DASHBOARD_MESSAGE_TEXT="# Welcome to Renku! 🐸
+This is an example welcome message ✨."
 
 if [ -z "$STATUSPAGE_ID" ]; then STATUSPAGE_ID="r3j2c84ftq49"; else echo "STATUSPAGE_ID is set to '$STATUSPAGE_ID'"; fi
 
@@ -148,7 +148,7 @@ tee > ./public/config.json << EOF
     "enabled": true,
     "text": "${DASHBOARD_MESSAGE_TEXT}",
     "style": "info",
-    "dismissable": true
+    "dismissible": true
   },
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",

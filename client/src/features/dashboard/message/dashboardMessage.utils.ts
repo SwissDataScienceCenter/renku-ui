@@ -29,7 +29,6 @@ export function validateDashboardMessageParams(
     return { enabled: false };
   }
 
-  // const rawDashboardParams = params.DASHBOARD_MESSAGE;
   const params_ = params as { DASHBOARD_MESSAGE: unknown };
   if (
     params_.DASHBOARD_MESSAGE == null ||
@@ -56,7 +55,7 @@ export function validateDashboardMessageParams(
     "utf-8"
   );
 
-  const dismissable = !!rawDashboardParams.dismissable;
+  const dismissible = !!rawDashboardParams.dismissible;
 
   const rawStyle =
     typeof rawDashboardParams.style === "string"
@@ -81,7 +80,7 @@ export function validateDashboardMessageParams(
       text,
       additionalText,
       style,
-      dismissable,
+      dismissible,
     };
   }
 

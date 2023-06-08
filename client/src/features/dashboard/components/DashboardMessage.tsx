@@ -19,6 +19,7 @@
 import React, { useContext, useEffect, useMemo } from "react";
 import AppContext from "../../../utils/context/appContext";
 import { validateDashboardMessageParams } from "../message/dashboardMessage.utils";
+import { RenkuAlert } from "../../../components/Alert";
 
 export function DashboardMessage() {
   const { params } = useContext(AppContext);
@@ -31,6 +32,8 @@ export function DashboardMessage() {
   useEffect(() => {
     console.log({ dashboardParams });
   }, [dashboardParams]);
+
+  RenkuAlert;
 
   return null;
 }
