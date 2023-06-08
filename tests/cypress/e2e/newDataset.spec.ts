@@ -171,3 +171,54 @@ describe("Project new dataset", () => {
       .should("exist");
   });
 });
+
+describe("Project import dataset", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
+  const projectPath = "e2e/testing-datasets";
+
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects();
+    fixtures.project(projectPath).cacheProjectList();
+    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectDatasetList();
+    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectMigrationUpToDate({
+      queryUrl: "*",
+      fixtureName: "getMigration",
+    });
+    fixtures.projectLockStatus();
+    fixtures.importToProject();
+  });
+
+  it("import dataset", () => {
+    fixtures.importJobCompleted();
+    cy.visit(`projects/${projectPath}/datasets/new`);
+    cy.wait("@getProject");
+    cy.contains("Import").click();
+    cy.get_cy("input-uri")
+      .click()
+      .type("https://www.doi.org/10.7910/DVN/WTZS4K");
+    cy.get_cy("submit-button").click();
+    cy.wait("@importToProject");
+    cy.wait("@importJobCompleted", { timeout: 20000 });
+    cy.contains("Datasets List").should("be.visible");
+  });
+
+  it("shows error on invalid url", () => {
+    fixtures.importJobError();
+    cy.visit(`projects/${projectPath}/datasets/new`);
+    cy.wait("@getProject");
+    cy.contains("Import").click();
+    cy.get_cy("input-uri")
+      .click()
+      .type("https://www.doi.org/10.7910/DVN/WTZS4K");
+    cy.get_cy("submit-button").click();
+    cy.wait("@importToProject");
+    cy.wait("@importJobError", { timeout: 20000 });
+    cy.contains("Errors occurred while performing this operation.").should(
+      "be.visible"
+    );
+  });
+});
