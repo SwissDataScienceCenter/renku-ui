@@ -11,6 +11,7 @@ const version = commitHash ? commitHash : "dev";
 module.exports = {
   webpack: {
     configure: {
+      devtool: version === "dev" ? "eval-source-map" : "source-map",
       output: {
         filename: `[name].[fullhash]-${version}.js`,
         chunkFilename: `[name].[fullhash]-${version}.chunk.js`,
