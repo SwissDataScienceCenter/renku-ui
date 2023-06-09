@@ -53,7 +53,7 @@ spec:
             - name: WELCOME_PAGE
               value: {{ .Values.client.welcomePage.text | b64enc | quote }}
             - name: DASHBOARD_MESSAGE
-              value: {{ toJson .Values.client.dashboardMessage }}
+              value: {{ toJson .Values.client.dashboardMessage | quote }}
             {{- if .Values.client.statuspage }}
             - name: STATUSPAGE_ID
               value: {{ .Values.client.statuspage.id | quote }}
