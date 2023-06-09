@@ -202,6 +202,7 @@ describe("Project import dataset", () => {
       .type("https://www.doi.org/10.7910/DVN/WTZS4K");
     cy.get_cy("submit-button").click();
     cy.wait("@importToProject");
+    cy.contains("Creating Dataset...").should("be.visible");
     cy.wait("@importJobCompleted", { timeout: 20000 });
     cy.contains("Datasets List").should("be.visible");
   });
@@ -216,6 +217,7 @@ describe("Project import dataset", () => {
       .type("https://www.doi.org/10.7910/DVN/WTZS4K");
     cy.get_cy("submit-button").click();
     cy.wait("@importToProject");
+    cy.contains("Creating Dataset...").should("be.visible");
     cy.wait("@importJobError", { timeout: 20000 });
     cy.contains("Errors occurred while performing this operation.").should(
       "be.visible"
