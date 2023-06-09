@@ -34,6 +34,7 @@ function ProjectDatasetImport(props: ProjectDatasetImportProps) {
 
   const projectPath = projectMetadata.path;
   const projectNamespace = projectMetadata.namespace;
+  const projectPathWithNamespace = `${projectNamespace}/${projectPath}`;
   const projectUrlProps = {
     namespace: projectNamespace,
     path: projectPath,
@@ -67,6 +68,7 @@ function ProjectDatasetImport(props: ProjectDatasetImportProps) {
       model={props.model}
       notifications={props.notifications}
       overviewCommitsUrl={overviewCommitsUrl}
+      projectPathWithNamespace={projectPathWithNamespace}
       projectsUrl={projectsUrl}
       toggleNewDataset={props.toggleNewDataset}
     />
