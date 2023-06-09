@@ -61,6 +61,7 @@ interface ProjectMigrationStatusProps {
   gitUrl: string;
   isMaintainer: boolean;
 }
+
 export function ProjectMigrationStatus({
   branch,
   gitUrl,
@@ -243,6 +244,7 @@ interface ProjectMigrationStatusDetailsProps {
   isSupported: boolean;
   showDetails: boolean;
 }
+
 function ProjectMigrationStatusDetails({
   buttonDisable,
   buttonUpdate,
@@ -460,6 +462,7 @@ function ProjectMigrationStatusDetails({
 interface ProjectSettingsGeneralCoreErrorProps {
   errorData: CoreErrorContent | CoreSectionError;
 }
+
 function ProjectSettingsGeneralCoreError({
   errorData,
 }: ProjectSettingsGeneralCoreErrorProps) {
@@ -470,6 +473,7 @@ interface RenkuVersionOutdatedProps {
   renkuLatestVersion: string;
   renkuProjectVersion: string;
 }
+
 function RenkuVersionOutdated({
   renkuLatestVersion,
   renkuProjectVersion,
@@ -527,6 +531,7 @@ interface RenkuVersionContextProps {
   migrationLevel: ProjectMigrationLevel;
   projectVersion?: string;
 }
+
 function RenkuVersionContext({
   automated,
   docsUrl,
@@ -593,6 +598,7 @@ function RenkuVersionContext({
 interface RenkuTemplateOutdatedProps {
   templateDetails: MigrationStatus["details"];
 }
+
 function RenkuTemplateOutdated({
   templateDetails,
 }: RenkuTemplateOutdatedProps) {
@@ -661,11 +667,11 @@ interface RenkuTemplateContextProps {
   templateDetails: MigrationStatus["details"];
 }
 
-const RenkuTemplateContext: FunctionComponent<RenkuTemplateContextProps> = ({
+function RenkuTemplateContext({
   automated,
   isMaintainer,
   templateDetails,
-}) => {
+}: RenkuTemplateContextProps) {
   const template =
     templateDetails?.template_status.type === "detail"
       ? templateDetails.template_status
@@ -705,35 +711,41 @@ const RenkuTemplateContext: FunctionComponent<RenkuTemplateContextProps> = ({
       <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />
     </span>
   );
-};
+}
 
-const RenkuTemplateContextNewerTemplateAvailable: FunctionComponent<
-  Pick<RenkuTemplateContextProps, "automated" | "isMaintainer"> & {
-    template: Exclude<
-      MigrationStatusDetails["template_status"],
-      CoreSectionError
-    >;
-  }
-> = ({ automated, isMaintainer, template }) => (
-  <span>
-    There is a new version of the template{" "}
-    <RenkuTemplateContextTemplateElement template={template} /> used in this
-    project.{" "}
-    <RenkuTemplateContextUpdateInfo
-      automated={automated}
-      isMaintainer={isMaintainer}
-      templateSource={template.template_source}
-    />{" "}
-    <RenkuTemplateContextExtraInfo template={template} />{" "}
-    <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />
-  </span>
-);
+function RenkuTemplateContextNewerTemplateAvailable({
+  automated,
+  isMaintainer,
+  template,
+}: Pick<RenkuTemplateContextProps, "automated" | "isMaintainer"> & {
+  template: Exclude<
+    MigrationStatusDetails["template_status"],
+    CoreSectionError
+  >;
+}) {
+  return (
+    <span>
+      There is a new version of the template{" "}
+      <RenkuTemplateContextTemplateElement template={template} /> used in this
+      project.{" "}
+      <RenkuTemplateContextUpdateInfo
+        automated={automated}
+        isMaintainer={isMaintainer}
+        templateSource={template.template_source}
+      />{" "}
+      <RenkuTemplateContextExtraInfo template={template} />{" "}
+      <MoreInfoLink url={Docs.rtdReferencePage("templates.html")} />
+    </span>
+  );
+}
 
-const RenkuTemplateContextUpdateInfo: FunctionComponent<
-  Pick<RenkuTemplateContextProps, "automated" | "isMaintainer"> & {
-    templateSource: string;
-  }
-> = ({ automated, isMaintainer, templateSource }) => {
+function RenkuTemplateContextUpdateInfo({
+  automated,
+  isMaintainer,
+  templateSource,
+}: Pick<RenkuTemplateContextProps, "automated" | "isMaintainer"> & {
+  templateSource: string;
+}) {
   if (isMaintainer && automated) {
     return <>You can click on the Update button to automatically update it.</>;
   }
@@ -754,14 +766,16 @@ const RenkuTemplateContextUpdateInfo: FunctionComponent<
   }
 
   return null;
-};
+}
 
-const RenkuTemplateContextTemplateElement: FunctionComponent<{
+function RenkuTemplateContextTemplateElement({
+  template,
+}: {
   template: Exclude<
     MigrationStatusDetails["template_status"],
     CoreSectionError
   >;
-}> = ({ template }) => {
+}) {
   if (template.template_source !== TemplateSourceRenku) {
     const templateUrlSuffix = template.latest_template_version
       ? `/tree/${template.latest_template_version}`
@@ -779,14 +793,16 @@ const RenkuTemplateContextTemplateElement: FunctionComponent<{
   }
 
   return template.template_id ? <span>{template.template_id}</span> : null;
-};
+}
 
-const RenkuTemplateContextExtraInfo: FunctionComponent<{
+function RenkuTemplateContextExtraInfo({
+  template,
+}: {
   template: Exclude<
     MigrationStatusDetails["template_status"],
     CoreSectionError
   >;
-}> = ({ template }) => {
+}) {
   if (template.template_source === TemplateSourceRenku) {
     return (
       <>
@@ -802,4 +818,4 @@ const RenkuTemplateContextExtraInfo: FunctionComponent<{
   }
 
   return null;
-};
+}
