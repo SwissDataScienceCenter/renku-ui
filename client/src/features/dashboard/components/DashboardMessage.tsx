@@ -45,7 +45,7 @@ export function DashboardMessage() {
   const dispatch = useDispatch();
   const dismiss = useCallback(
     () => dispatch(dashboardMessageSlice.actions.dismiss()),
-    []
+    [dispatch]
   );
 
   if (!dashboardParams.enabled || alreadyDismissed) {

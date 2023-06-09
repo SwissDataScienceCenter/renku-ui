@@ -103,10 +103,11 @@ client:
   dashboardMessage:
     enabled: false
     text: |
-      # Welcome to Renku
-      This is an example welcome message.
+      # Welcome to Renku! 🐸
+
+      ✨This is an example welcome message.✨
     additionalText: |
-      Renku documentation: https://renku.readthedocs.io/en/stable/
+      ℹ️ Renku documentation: https://renku.readthedocs.io/en/stable/
     style: info
     dismissable: true
 
