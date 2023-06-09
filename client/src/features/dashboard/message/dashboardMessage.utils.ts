@@ -43,17 +43,13 @@ export function validateDashboardMessageParams(
 
   const enabled = !!rawDashboardParams.enabled;
 
-  const textEnc =
+  const text =
     typeof rawDashboardParams.text === "string" ? rawDashboardParams.text : "";
-  const text = Buffer.from(textEnc, "base64").toString("utf-8");
 
-  const additionalTextEnc =
+  const additionalText =
     typeof rawDashboardParams.additionalText === "string"
       ? rawDashboardParams.additionalText
       : "";
-  const additionalText = Buffer.from(additionalTextEnc, "base64").toString(
-    "utf-8"
-  );
 
   const dismissible = !!rawDashboardParams.dismissible;
 
@@ -68,8 +64,8 @@ export function validateDashboardMessageParams(
       ? "success"
       : rawStyle === "info"
       ? "info"
-      : rawStyle === "warn"
-      ? "warn"
+      : rawStyle === "warning"
+      ? "warning"
       : rawStyle === "danger"
       ? "danger"
       : null;

@@ -28,6 +28,6 @@ interface DashboardMessageParamsEnabled {
   enabled: true;
   text: string;
   additionalText: string;
-  style: "plain" | "success" | "info" | "warn" | "danger";
+  style: "plain" | "success" | "info" | "warning" | "danger";
   dismissible: boolean;
 }

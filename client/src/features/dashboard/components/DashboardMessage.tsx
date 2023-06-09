@@ -16,10 +16,15 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
+import cx from "classnames";
+import { ChevronDown } from "react-bootstrap-icons";
+import { Collapse } from "reactstrap";
+import { RenkuAlert } from "../../../components/Alert";
+import { RenkuMarkdown } from "../../../components/markdown/RenkuMarkdown";
 import AppContext from "../../../utils/context/appContext";
 import { validateDashboardMessageParams } from "../message/dashboardMessage.utils";
-import { RenkuAlert } from "../../../components/Alert";
+import styles from "./DashboardMessage.module.css";
 
 export function DashboardMessage() {
   const { params } = useContext(AppContext);
@@ -28,12 +33,56 @@ export function DashboardMessage() {
     () => validateDashboardMessageParams(params),
     [params]
   );
+  if (!dashboardParams.enabled) {
+    return null;
+  }
 
-  useEffect(() => {
-    console.log({ dashboardParams });
-  }, [dashboardParams]);
+  const { text, additionalText, style, dismissible } = dashboardParams;
 
-  RenkuAlert;
+  const color = style === "plain" ? "primary" : style;
 
-  return null;
+  return (
+    <RenkuAlert
+      className={cx(style === "plain" && styles.plainAlert)}
+      color={color}
+      timeout={0}
+      dismissible={dismissible}
+    >
+      <RenkuMarkdown markdownText={text} />
+      <DashboardMessageMore additionalText={additionalText} />
+    </RenkuAlert>
+  );
+}
+
+function DashboardMessageMore({ additionalText }: { additionalText: string }) {
+  const [show, setShow] = useState<boolean>(false);
+  const toggleShow = useCallback(() => setShow((show) => !show), []);
+
+  if (!additionalText) {
+    return null;
+  }
+
+  return (
+    <>
+      <p>
+        <a
+          className={cx(
+            styles.readMore,
+            "d-inline-block",
+            "cursor-pointer",
+            "accordion"
+          )}
+          onClick={toggleShow}
+        >
+          Read more...{" "}
+          <ChevronDown
+            className={cx(styles.chevron, show && styles.chevronIsOpen, "ms-1")}
+          />
+        </a>
+      </p>
+      <Collapse isOpen={show}>
+        <RenkuMarkdown markdownText={additionalText} />
+      </Collapse>
+    </>
+  );
 }
