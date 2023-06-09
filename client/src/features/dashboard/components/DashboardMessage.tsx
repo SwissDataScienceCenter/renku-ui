@@ -19,17 +19,17 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import cx from "classnames";
 import { ChevronDown } from "react-bootstrap-icons";
+import { useDispatch } from "react-redux";
 import { Collapse } from "reactstrap";
 import { RenkuAlert } from "../../../components/Alert";
 import { RenkuMarkdown } from "../../../components/markdown/RenkuMarkdown";
 import AppContext from "../../../utils/context/appContext";
 import { validateDashboardMessageParams } from "../message/dashboardMessage.utils";
-import styles from "./DashboardMessage.module.css";
 import {
   dashboardMessageSlice,
   useDashboardMessageSelector,
 } from "../message/dashboardMessageSlice";
-import { useDispatch } from "react-redux";
+import styles from "./DashboardMessage.module.css";
 
 export function DashboardMessage() {
   const { params } = useContext(AppContext);
