@@ -25,6 +25,11 @@ import { RenkuMarkdown } from "../../../components/markdown/RenkuMarkdown";
 import AppContext from "../../../utils/context/appContext";
 import { validateDashboardMessageParams } from "../message/dashboardMessage.utils";
 import styles from "./DashboardMessage.module.css";
+import {
+  dashboardMessageSlice,
+  useDashboardMessageSelector,
+} from "../message/dashboardMessageSlice";
+import { useDispatch } from "react-redux";
 
 export function DashboardMessage() {
   const { params } = useContext(AppContext);
@@ -33,7 +38,17 @@ export function DashboardMessage() {
     () => validateDashboardMessageParams(params),
     [params]
   );
-  if (!dashboardParams.enabled) {
+
+  const alreadyDismissed = useDashboardMessageSelector(
+    (state) => state.dismissed
+  );
+  const dispatch = useDispatch();
+  const dismiss = useCallback(
+    () => dispatch(dashboardMessageSlice.actions.dismiss()),
+    []
+  );
+
+  if (!dashboardParams.enabled || alreadyDismissed) {
     return null;
   }
 
@@ -47,6 +62,7 @@ export function DashboardMessage() {
       color={color}
       timeout={0}
       dismissible={dismissible}
+      dismissCallback={dismiss}
     >
       <RenkuMarkdown markdownText={text} />
       <DashboardMessageMore additionalText={additionalText} />
