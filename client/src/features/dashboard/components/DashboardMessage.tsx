@@ -63,6 +63,7 @@ export function DashboardMessage() {
       timeout={0}
       dismissible={dismissible}
       dismissCallback={dismiss}
+      dataCy="dashboard-message"
     >
       <RenkuMarkdown markdownText={text} />
       <DashboardMessageMore additionalText={additionalText} />
