@@ -112,7 +112,7 @@ client:
     # Set this to the empty string "" to disable the "Read more" button.
     additionalText: |
       ℹ️ Renku documentation: https://renku.readthedocs.io/en/stable/
-    # Style of the message card. Allow values are:
+    # Style of the message card. Allowed values are:
     # - "plain" -> simple white background card, no icon
     # - "success" -> green background, green checkmark icon
     # - "info" -> blue background, "i" in circle icon
