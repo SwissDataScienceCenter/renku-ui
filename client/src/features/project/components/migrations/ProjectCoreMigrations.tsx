@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent, useState } from "react";
+import React, { useState } from "react";
 import {
   faArrowAltCircleUp,
   faCheckCircle,
@@ -33,7 +33,11 @@ import { Docs } from "../../../../utils/constants/Docs";
 import { TemplateSourceRenku } from "../../../../utils/constants/Migrations";
 import { RenkuRepositories } from "../../../../utils/constants/Repositories";
 import { CoreErrorContent } from "../../../../utils/definitions";
-import { CoreSectionError, MigrationStatus } from "../../Project";
+import {
+  CoreSectionError,
+  MigrationStatus,
+  MigrationStatusDetails,
+} from "../../Project";
 import { projectCoreApi } from "../../projectCoreApi";
 import {
   MigrationStartScopes,
@@ -54,7 +58,6 @@ import {
   DetailsSection,
   MoreInfoLink,
 } from "./MigrationHelpers";
-import { MigrationStatusDetails } from "../../Project";
 
 interface ProjectMigrationStatusProps {
   branch?: string;
