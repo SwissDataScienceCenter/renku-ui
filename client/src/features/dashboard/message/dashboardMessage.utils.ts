@@ -68,7 +68,7 @@ export function validateDashboardMessageParams(
       ? "warning"
       : rawStyle === "danger"
       ? "danger"
-      : null;
+      : "plain";
 
   if (enabled && text && style) {
     return {
