@@ -52,7 +52,6 @@ tee > "${NGINX_PATH}/config.json" << EOF
   "BASE_URL": "${BASE_URL:-http://renku.build}",
   "GATEWAY_URL": "${GATEWAY_URL:-http://gateway.renku.build}",
   "UISERVER_URL": "${UISERVER_URL:-http://uiserver.renku.build}",
-  "WELCOME_PAGE": "${WELCOME_PAGE}",
   "DASHBOARD_MESSAGE": ${DASHBOARD_MESSAGE},
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
