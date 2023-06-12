@@ -28,6 +28,7 @@ import { useSelector } from "react-redux";
 import type { RootStateOrAny } from "react-redux";
 import { Col, Alert, Button, UncontrolledAlert } from "reactstrap";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { useHistory } from "react-router-dom";
 
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -58,7 +59,6 @@ type DatasetInputFormFields = {
 type DatasetImportFormProps = {
   accessLevel: number;
   formLocation: string;
-  //  notifications: unknown;
   onCancel: () => void;
   serverErrors: string | undefined;
   submitCallback: SubmitHandler<DatasetInputFormFields>;
@@ -95,9 +95,10 @@ type JobStatus =
       };
     };
 
-function DatasetInputSubmitGroup(props: DatasetInputSubmitGroupProps) {
-  const { submitLoader } = props;
-  const { onCancel } = props;
+function DatasetInputSubmitGroup({
+  onCancel,
+  submitLoader,
+}: DatasetInputSubmitGroupProps) {
   const buttonColor = "rk-pink";
 
   return (
@@ -229,11 +230,11 @@ async function importDatasetAndWaitForResult({
 
   // Monitor job status
   await new Promise<void>((resolve) => {
-    let cont = 0;
+    let pollCount = 0;
     const monitorJob = setInterval(() => {
       client.getJobStatus(job_id, versionUrl).then((job) => {
-        cont++;
-        if (cont >= 50) {
+        pollCount++;
+        if (pollCount >= 50) {
           handlers.setSubmitLoader({ value: false, text: "" });
           handlers.setServerErrors(ImportStateMessage.TOO_LONG);
           clearInterval(monitorJob);
@@ -330,14 +331,19 @@ function DatasetImportContainer(
         setServerErrors,
         setSubmitLoader,
       };
-      await importDatasetAndWaitForResult({
-        client,
-        formValues,
-        handlers,
-        httpProjectUrl,
-        redirectUser,
-        versionUrl,
-      });
+      try {
+        await importDatasetAndWaitForResult({
+          client,
+          formValues,
+          handlers,
+          httpProjectUrl,
+          redirectUser,
+          versionUrl,
+        });
+      } catch (e) {
+        setServerErrors(ImportStateMessage.FAILED_NO_INFO);
+        setSubmitLoader({ value: false, text: "" });
+      }
     },
     [
       httpProjectUrl,
@@ -379,9 +385,9 @@ function DatasetImportContainer(
 type DatasetImportProps = {
   accessLevel: number;
   client: DatasetImportClient;
-  history: { push: (arg: unknown) => void };
-  httpProjectUrl: string;
   fetchDatasets: (force: boolean, versionUrl: string) => void;
+  history: ReturnType<typeof useHistory>;
+  httpProjectUrl: string;
   projectPathWithNamespace: string;
   location: { pathname: string };
   toggleNewDataset: DatasetImportFormProps["toggleNewDataset"];
@@ -436,4 +442,4 @@ function DatasetImport(props: DatasetImportProps) {
 }
 
 export default DatasetImport;
-export type { DatasetImportClient };
+export type { DatasetImportClient, DatasetImportProps };

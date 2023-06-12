@@ -204,6 +204,7 @@ describe("Project import dataset", () => {
     cy.wait("@importToProject");
     cy.contains("Creating Dataset...").should("be.visible");
     cy.wait("@importJobCompleted", { timeout: 20000 });
+    cy.wait("@datasetList");
     cy.contains("Datasets List").should("be.visible");
   });
 

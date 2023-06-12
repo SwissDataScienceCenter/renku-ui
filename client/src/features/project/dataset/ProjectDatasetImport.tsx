@@ -2,19 +2,19 @@ import React from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
 import DatasetImport from "../../../project/datasets/import";
-import type { DatasetImportClient } from "../../../project/datasets/import/DatasetImport";
+import type { DatasetImportProps } from "../../../project/datasets/import/DatasetImport";
 
 import type { StateModelProject } from "../Project";
 
 type ProjectDatasetImportProps = {
-  client: DatasetImportClient;
-  fetchDatasets: (force: boolean, versionUrl: string) => void;
-  history: { push: (arg: unknown) => void };
-  location: { pathname: string };
+  client: DatasetImportProps["client"];
+  fetchDatasets: DatasetImportProps["fetchDatasets"];
+  history: DatasetImportProps["history"];
+  location: DatasetImportProps["location"];
   model: unknown;
   notifications: unknown;
   params: unknown;
-  toggleNewDataset: () => void;
+  toggleNewDataset: DatasetImportProps["toggleNewDataset"];
 };
 
 function ProjectDatasetImport(props: ProjectDatasetImportProps) {

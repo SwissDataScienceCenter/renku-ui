@@ -34,7 +34,6 @@ type TextInputProps = {
 };
 
 function TextInput(props: TextInputProps) {
-  /* eslint-disable @typescript-eslint/no-non-null-assertion */
   return (
     <FormGroup className="field-group">
       <FormLabel
@@ -49,10 +48,9 @@ function TextInput(props: TextInputProps) {
         {...props.register}
       />
       {props.help && <FormText color="muted">{props.help}</FormText>}
-      {props.error && <ErrorLabel text={props.error.message!} />}
+      {props.error && <ErrorLabel text={props.error.message ?? ""} />}
     </FormGroup>
   );
-  /* eslint-enable @typescript-eslint/no-non-null-assertion */
 }
 
 export default TextInput;
