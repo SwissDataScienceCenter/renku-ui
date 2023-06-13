@@ -48,9 +48,8 @@ import { getStatusObject } from "../../notebooks/components/SessionListStatus";
 import type { SessionRunningStatus } from "../../notebooks/components/SessionListStatus";
 import { SessionButton } from "../../features/session/components/SessionButtons";
 import { Notebook } from "../../notebooks/components/Session";
-import Time from "../../utils/helpers/Time";
-import "./ListBar.scss";
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
+import "./ListBar.scss";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

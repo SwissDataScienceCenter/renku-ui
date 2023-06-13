@@ -20,7 +20,7 @@ import React, { Fragment } from "react";
 
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader } from "reactstrap";
-import { TimeCaption } from "../components/TimeCaption";
+import { TimeCaption } from "../components/TimeCaptionV2";
 import { Pagination } from "../components/Pagination";
 
 function createDateGradient() {
@@ -45,7 +45,7 @@ function TileListGuide() {
         >
           <div className="d-flex w-100 justify-content-between">
             <h5 className="mb-1">Heading</h5>
-            <TimeCaption time={dateGradient.twoH} />
+            <TimeCaption datetime={dateGradient.twoH} prefix="Updated" />
           </div>
           <p className="mb-1">Some placeholder content in a paragraph.</p>
           <small>And some small print.</small>
@@ -53,7 +53,7 @@ function TileListGuide() {
         <Link to="#" className="list-group-item list-group-item-action">
           <div className="d-flex w-100 justify-content-between">
             <h5 className="mb-1">Heading</h5>
-            <TimeCaption time={dateGradient.oneD} />
+            <TimeCaption datetime={dateGradient.oneD} prefix="Updated" />
           </div>
           <p className="mb-1">Some placeholder content in a paragraph.</p>
           <small className="text-muted">And some muted small print.</small>
@@ -61,7 +61,7 @@ function TileListGuide() {
         <Link to="#" className="list-group-item list-group-item-action">
           <div className="d-flex w-100 justify-content-between">
             <h5 className="mb-1">Heading</h5>
-            <TimeCaption time={dateGradient.twoD} />
+            <TimeCaption datetime={dateGradient.twoD} prefix="Updated" />
           </div>
           <p className="mb-1">Some placeholder content in a paragraph.</p>
           <small className="text-muted">And some muted small print.</small>
@@ -88,7 +88,7 @@ function RowListGuide() {
         >
           <div className="d-flex w-100 justify-content-between">
             <h5 className="mb-1">List group item heading</h5>
-            <TimeCaption time={dateGradient.twoH} />
+            <TimeCaption datetime={dateGradient.twoH} prefix="Updated" />
           </div>
           <p className="mb-1">Some placeholder content in a paragraph.</p>
           <small>And some small print.</small>
@@ -96,7 +96,7 @@ function RowListGuide() {
         <Link to="#" className="list-group-item list-group-item-action">
           <div className="d-flex w-100 justify-content-between">
             <h5 className="mb-1">List group item heading</h5>
-            <TimeCaption time={dateGradient.oneD} />
+            <TimeCaption datetime={dateGradient.oneD} prefix="Updated" />
           </div>
           <p className="mb-1">Some placeholder content in a paragraph.</p>
           <small className="text-muted">And some muted small print.</small>
@@ -104,7 +104,7 @@ function RowListGuide() {
         <Link to="#" className="list-group-item list-group-item-action">
           <div className="d-flex w-100 justify-content-between">
             <h5 className="mb-1">List group item heading</h5>
-            <TimeCaption time={dateGradient.twoD} />
+            <TimeCaption datetime={dateGradient.twoD} prefix="Updated" />
           </div>
           <p className="mb-1">Some placeholder content in a paragraph.</p>
           <small className="text-muted">And some muted small print.</small>

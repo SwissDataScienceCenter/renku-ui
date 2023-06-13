@@ -24,22 +24,21 @@ const DATETIME_FORMATS = {
 } as const;
 type DateTimeFormat = keyof typeof DATETIME_FORMATS;
 
-export const toHumanDateTime = ({
+export function toHumanDateTime({
   datetime: datetime_,
-  format,
+  format = "full-with-seconds",
 }: {
   datetime: DateTime | Date | string;
   format?: DateTimeFormat;
-}): string => {
+}): string {
   const datetime = ensureDateTime(datetime_);
-  return datetime
-    .setLocale("en")
-    .toFormat(DATETIME_FORMATS[format ?? "full-with-seconds"]);
-};
+  return datetime.setLocale("en").toFormat(DATETIME_FORMATS[format]);
+}
 
-const ensureDateTime = (datetime: DateTime | Date | string): DateTime =>
-  datetime instanceof DateTime
+export function ensureDateTime(datetime: DateTime | Date | string): DateTime {
+  return datetime instanceof DateTime
     ? datetime
     : datetime instanceof Date
     ? DateTime.fromJSDate(datetime)
     : DateTime.fromISO(datetime);
+}
