@@ -23,30 +23,31 @@
  *  Components for the displaying information from statuspage.io
  */
 
-import React, { Fragment } from "react";
-import { Link } from "react-router-dom";
-
-import human from "human-time";
-
-import { Row, Col } from "reactstrap";
-import { Alert, Badge, Table } from "reactstrap";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { Fragment, useState } from "react";
 import {
   faCheckCircle,
   faExclamationCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import {
   faMinusCircle,
   faTimesCircle,
   faWrench,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DateTime } from "luxon";
+import { Link } from "react-router-dom";
+import { Alert, Badge, Col, Row, Table } from "reactstrap";
 
-import { Time } from "../utils/helpers/Time";
-import { Url } from "../utils/helpers/url";
 import { WarnAlert } from "../components/Alert";
 import { Loader } from "../components/Loader";
 import { TimeCaption } from "../components/TimeCaption";
+import {
+  ensureDateTime,
+  toHumanDateTime,
+} from "../utils/helpers/DateTimeUtils";
+import {
+  toHumanDuration,
+  toHumanRelativeDuration,
+} from "../utils/helpers/DurationUtils";
+import { Url } from "../utils/helpers/url";
 
 function componentIsLoud(c) {
   return c["name"].toLowerCase() === "loud";
@@ -141,29 +142,35 @@ function sortedMaintenances(maintenances) {
   });
 }
 
-function maintenanceTimeFragment(first) {
-  const scheduledDt = new Date(first.scheduled_for);
-  const displayTime = human(scheduledDt);
+function maintenanceTimeFragment({ maintenance, now }) {
+  // const [now] = useState(DateTime.utc());
+
+  const scheduledDt = new Date(maintenance.scheduled_for);
+  const displayTime = toHumanRelativeDuration({ datetime: scheduledDt, now });
   const maintenanceTimeFragment =
-    scheduledDt > new Date()
+    scheduledDt > now
       ? `Maintenance scheduled in ${displayTime}`
       : `Maintenance started ${displayTime}`;
   return maintenanceTimeFragment;
 }
 
 function MaintenanceSummaryDetails(props) {
+  const [now] = useState(DateTime.utc());
+
   const scheduled = sortedMaintenances(props.statuspage.scheduled_maintenances);
   if (scheduled.length < 1) return <span></span>;
   const first = scheduled[0];
-  const mtf = maintenanceTimeFragment(first);
+  const mtf = maintenanceTimeFragment({ maintenance: first, now });
   const summary = `${mtf}. See below for information about the availability and limitations.`;
   return <WarnAlert>{summary}</WarnAlert>;
 }
 
 function MaintenanceInfo(props) {
+  const [now] = useState(DateTime.utc());
+
   const maintenance = props.maintenance;
   const loud = props.loud;
-  const mtf = maintenanceTimeFragment(maintenance);
+  const mtf = maintenanceTimeFragment({ maintenance, now });
   const command = maintenance["incident_updates"][0].body;
   const displayCommand = loud ? (
     <div className="py-md-3">
@@ -242,12 +249,16 @@ function ComponentStatusDetails(props) {
 
 function ScheduledMaintenanceIncident(props) {
   const incident = props.incident;
+  const datetimeStr = toHumanDateTime({
+    datetime: incident.display_at,
+    format: "full",
+  });
   return (
     <Fragment>
       <p>
         {incident.body}{" "}
         <span className="time-caption" style={{ fontSize: "smaller" }}>
-          Posted at {Time.formatDateTime(Time.parseDate(incident.display_at))}
+          Posted at {datetimeStr}
         </span>
       </p>
     </Fragment>
@@ -256,12 +267,15 @@ function ScheduledMaintenanceIncident(props) {
 
 function ScheduledMaintenanceDetails(props) {
   const maintenance = props.maintenance;
-  const maintenanceDuration =
-    (new Date(maintenance.scheduled_until) -
-      new Date(maintenance.scheduled_for)) /
-    1000;
-  // get the displayTime, but remove " ago" from it
-  const displayTime = human(maintenanceDuration).slice(0, -4);
+  const maintenanceStart = ensureDateTime(maintenance.scheduled_for);
+  const maintenanceDuration = ensureDateTime(maintenance.scheduled_until).diff(
+    maintenanceStart
+  );
+  const displayStart = toHumanDateTime({
+    datetime: maintenanceStart,
+    format: "full",
+  });
+  const displayTime = toHumanDuration({ duration: maintenanceDuration });
   const incidents = maintenance.incident_updates.map((u) => (
     <ScheduledMaintenanceIncident key={u.id} incident={u} />
   ));
@@ -272,8 +286,7 @@ function ScheduledMaintenanceDetails(props) {
         className="time-caption"
         style={{ fontSize: "smaller", fontWeight: "bold" }}
       >
-        on {Time.formatDateTime(Time.parseDate(maintenance.scheduled_for))} for{" "}
-        {displayTime}
+        on {displayStart} for {displayTime}
       </span>
     </h5>,
     ...incidents,
