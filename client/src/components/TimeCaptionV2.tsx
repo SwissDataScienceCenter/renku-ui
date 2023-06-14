@@ -53,6 +53,8 @@ export function TimeCaption({
 
   const className = noCaption ? className_ : cx("time-caption", className_);
 
+  const noSuffixSpace = typeof suffix === "string" && !!suffix.match(/^\p{P}/u);
+
   const ref = useRef<HTMLSpanElement>(null);
 
   return (
@@ -61,7 +63,7 @@ export function TimeCaption({
         {prefix}
         {prefix && " "}
         {durationStr}
-        {suffix && " "}
+        {suffix && !noSuffixSpace && " "}
         {suffix}
       </span>
       {enableTooltip && datetime?.isValid && (

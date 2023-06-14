@@ -32,7 +32,7 @@ import ButtonsGuide from "./ButtonsGuide";
 import ColorsGuide from "./ColorsGuide";
 import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
-import { TimeCaption } from "../components/TimeCaption";
+import { TimeCaption } from "../components/TimeCaptionV2";
 import { RenkuNavLink } from "../components/RenkuNavLink";
 
 function Overview() {
@@ -92,7 +92,7 @@ function FontsGuide() {
             <td>TimeCaption</td>
             <td>text-muted</td>
             <td>
-              <TimeCaption time={new Date()} />
+              <TimeCaption datetime={new Date()} prefix="Updated" />
             </td>
           </tr>
         </tbody>

@@ -38,7 +38,7 @@ import { Alert, Badge, Col, Row, Table } from "reactstrap";
 
 import { WarnAlert } from "../components/Alert";
 import { Loader } from "../components/Loader";
-import { TimeCaption } from "../components/TimeCaption";
+import { TimeCaption } from "../components/TimeCaptionV2";
 import {
   ensureDateTime,
   toHumanDateTime,
@@ -349,13 +349,13 @@ function StatuspageDisplay(props) {
           </a>
           .<br />
           <TimeCaption
-            caption="Status retrieved"
-            time={summary.retrieved_at}
-            endPunctuation=";"
+            datetime={summary.retrieved_at}
+            prefix="Status retrieved"
+            suffix=";"
           />{" "}
           <TimeCaption
-            caption="last updated"
-            time={summary.statuspage.page.updated_at}
+            datetime={summary.statuspage.page.updated_at}
+            prefix="last updated"
           />
         </p>
       </Col>
