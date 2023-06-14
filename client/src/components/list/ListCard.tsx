@@ -18,7 +18,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 
-import { TimeCaption } from "../TimeCaptionV2";
+import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./List.d";
 import EntityLabel from "../entities/Label";
 import Slug from "../entities/Slug";

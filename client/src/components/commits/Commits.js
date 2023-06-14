@@ -41,7 +41,7 @@ import Time from "../../utils/helpers/Time";
 
 import "./Commits.css";
 import { Loader } from "../Loader";
-import { TimeCaption } from "../TimeCaptionV2";
+import { TimeCaption } from "../TimeCaption";
 import { ExternalLink } from "../ExternalLinks";
 import { Clipboard } from "../Clipboard";
 

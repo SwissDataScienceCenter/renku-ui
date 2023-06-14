@@ -39,7 +39,7 @@ import {
   StartSessionDropdownButton,
   SessionButton,
 } from "../../features/session/components/SessionButtons";
-import { TimeCaption } from "../TimeCaptionV2";
+import { TimeCaption } from "../TimeCaption";
 import { EnvironmentLogs } from "../Logs";
 import { displaySlice, useDisplaySelector } from "../../features/display";
 import { getSessionRunning } from "../../utils/helpers/SessionFunctions";

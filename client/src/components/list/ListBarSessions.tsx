@@ -35,7 +35,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { ListElementProps } from "./List.d";
 import { ExternalLink } from "../ExternalLinks";
-import { TimeCaption } from "../TimeCaptionV2";
+import { TimeCaption } from "../TimeCaption";
 import VisibilityIcon from "../entities/VisibilityIcon";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";

@@ -38,7 +38,7 @@ import { Alert, Badge, Col, Row, Table } from "reactstrap";
 
 import { WarnAlert } from "../components/Alert";
 import { Loader } from "../components/Loader";
-import { TimeCaption } from "../components/TimeCaptionV2";
+import { TimeCaption } from "../components/TimeCaption";
 import {
   ensureDateTime,
   toHumanDateTime,

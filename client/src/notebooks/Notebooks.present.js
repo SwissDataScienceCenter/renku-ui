@@ -57,7 +57,7 @@ import { Url, appendCustomUrlPath } from "../utils/helpers/url";
 import Sizes from "../utils/constants/Media";
 import { ExternalLink } from "../components/ExternalLinks";
 import { ButtonWithMenu } from "../components/buttons/Button";
-import { TimeCaption } from "../components/TimeCaptionV2";
+import { TimeCaption } from "../components/TimeCaption";
 import { Loader } from "../components/Loader";
 import { InfoAlert } from "../components/Alert";
 import LoginAlert from "../components/loginAlert/LoginAlert";

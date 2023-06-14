@@ -20,7 +20,7 @@ import React, { Fragment } from "react";
 
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader } from "reactstrap";
-import { TimeCaption } from "../components/TimeCaptionV2";
+import { TimeCaption } from "../components/TimeCaption";
 import { Pagination } from "../components/Pagination";
 
 function createDateGradient() {

@@ -51,7 +51,7 @@ import { NotificationsInfo } from ".";
 
 import "./Notifications.css";
 import { ExternalLink } from "../components/ExternalLinks";
-import { TimeCaption } from "../components/TimeCaptionV2";
+import { TimeCaption } from "../components/TimeCaption";
 
 /**
  * Close button for the toast notification.

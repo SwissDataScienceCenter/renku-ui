@@ -23,7 +23,7 @@ import Autosuggest, {
   SuggestionSelectedEventData,
 } from "react-autosuggest";
 
-import { TimeCaption } from "../TimeCaptionV2";
+import { TimeCaption } from "../TimeCaption";
 import { ChevronDown, ChevronUp } from "../../utils/ts-wrappers";
 import { Loader } from "../Loader";
 

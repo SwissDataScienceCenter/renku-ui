@@ -32,7 +32,7 @@ import ButtonsGuide from "./ButtonsGuide";
 import ColorsGuide from "./ColorsGuide";
 import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
-import { TimeCaption } from "../components/TimeCaptionV2";
+import { TimeCaption } from "../components/TimeCaption";
 import { RenkuNavLink } from "../components/RenkuNavLink";
 
 function Overview() {

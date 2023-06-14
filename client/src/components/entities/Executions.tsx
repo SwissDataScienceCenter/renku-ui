@@ -18,7 +18,7 @@
 
 import React, { ReactNode, forwardRef, useRef } from "react";
 import cx from "classnames";
-import { TimeCaption } from "../TimeCaptionV2";
+import { TimeCaption } from "../TimeCaption";
 import { EntityType } from "./Entities";
 
 export interface EntityExecutionsProps {
@@ -51,7 +51,9 @@ export function EntityExecutions({
       <TimeCaption
         className="text-rk-text-light"
         datetime={lastExecuted}
-        enableTooltip={!showOnlyLastExecution}
+        enableTooltip={
+          !showOnlyLastExecution && showLastExecution && !!workflowId
+        }
         noCaption
       />
     ) : null;
