@@ -53,6 +53,7 @@ export function TimeCaption({
 
   const className = noCaption ? className_ : cx("time-caption", className_);
 
+  // Do not print a space if `suffix` starts with a punctuation character
   const noSuffixSpace = typeof suffix === "string" && !!suffix.match(/^\p{P}/u);
 
   const ref = useRef<HTMLSpanElement>(null);
