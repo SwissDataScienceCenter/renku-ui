@@ -41,7 +41,7 @@ import Time from "../../utils/helpers/Time";
 
 import "./Commits.css";
 import { Loader } from "../Loader";
-import { TimeCaption } from "../TimeCaption";
+import { TimeCaption } from "../TimeCaptionV2";
 import { ExternalLink } from "../ExternalLinks";
 import { Clipboard } from "../Clipboard";
 
@@ -142,8 +142,8 @@ function SingleCommit(props) {
             <br />
             <span className="small">{props.commit.author_name} </span>
             <TimeCaption
-              caption={"authored"}
-              time={props.commit.committed_date}
+              datetime={props.commit.committed_date}
+              prefix="authored"
             />
           </Col>
           <Col xs={12} md="auto" className="d-md-flex">

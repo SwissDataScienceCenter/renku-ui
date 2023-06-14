@@ -18,9 +18,7 @@
 
 import React, { ReactNode, forwardRef, useRef } from "react";
 import cx from "classnames";
-import { UncontrolledTooltip } from "reactstrap";
-import Time from "../../utils/helpers/Time";
-import { TimeCaption } from "../TimeCaption";
+import { TimeCaption } from "../TimeCaptionV2";
 import { EntityType } from "./Entities";
 
 export interface EntityExecutionsProps {
@@ -51,10 +49,10 @@ export function EntityExecutions({
   const lastExecution =
     lastExecuted != null ? (
       <TimeCaption
-        noCaption={true}
-        endPunctuation=""
-        time={lastExecuted}
         className="text-rk-text-light"
+        datetime={lastExecuted}
+        enableTooltip={!showOnlyLastExecution}
+        noCaption
       />
     ) : null;
 
@@ -87,16 +85,7 @@ export function EntityExecutions({
     return executionContentTree;
   }
 
-  return (
-    <div className="executions">
-      {executionContentTree}
-      {showLastExecution && workflowId && lastExecuted && (
-        <UncontrolledTooltip placement="top" target={ref}>
-          <span>{Time.toIsoTimezoneString(lastExecuted)}</span>
-        </UncontrolledTooltip>
-      )}
-    </div>
-  );
+  return <div className="executions">{executionContentTree}</div>;
 }
 
 function ExecutionContentList({

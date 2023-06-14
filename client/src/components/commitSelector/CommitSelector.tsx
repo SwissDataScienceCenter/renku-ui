@@ -23,7 +23,7 @@ import Autosuggest, {
   SuggestionSelectedEventData,
 } from "react-autosuggest";
 
-import { TimeCaption } from "../TimeCaption";
+import { TimeCaption } from "../TimeCaptionV2";
 import { ChevronDown, ChevronUp } from "../../utils/ts-wrappers";
 import { Loader } from "../Loader";
 
@@ -108,11 +108,9 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
       </div>
       <div className="commit-row-date">
         <TimeCaption
-          key="time-caption"
-          caption="authored"
           className="text-truncate"
-          time={suggestion.committed_date}
-          endPunctuation=""
+          datetime={suggestion.committed_date}
+          prefix="authored"
         />
       </div>
       <div className="commit-row-message text-truncate">
@@ -173,11 +171,9 @@ function CommitSelector({ commits, disabled, onChange }: CommitSelectorProps) {
           </div>
           <div className="commit-row-date">
             <TimeCaption
-              key="time-caption"
-              caption="authored"
               className="text-truncate"
-              time={selectedCommit.committed_date}
-              endPunctuation=""
+              datetime={selectedCommit.committed_date}
+              prefix="authored"
             />
           </div>
           <div className="commit-row-box-message text-truncate">
