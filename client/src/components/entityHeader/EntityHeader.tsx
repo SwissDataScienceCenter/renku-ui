@@ -39,7 +39,7 @@ import {
   StartSessionDropdownButton,
   SessionButton,
 } from "../../features/session/components/SessionButtons";
-import { TimeCaption } from "../TimeCaption";
+import { TimeCaption } from "../TimeCaptionV2";
 import { EnvironmentLogs } from "../Logs";
 import { displaySlice, useDisplaySelector } from "../../features/display";
 import { getSessionRunning } from "../../utils/helpers/SessionFunctions";
@@ -176,10 +176,10 @@ function EntityHeader({
         </div>
         <div className="entity-time-tags">
           <TimeCaption
-            caption={labelCaption || "Updated"}
-            showTooltip={true}
-            time={timeCaption}
             className="text-rk-text-light"
+            enableTooltip
+            datetime={timeCaption}
+            prefix={labelCaption || "Updated"}
           />
           <EntityTags
             tagList={tagList}

@@ -18,7 +18,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 
-import { TimeCaption } from "../TimeCaption";
+import { TimeCaption } from "../TimeCaptionV2";
 import { ListElementProps } from "./List.d";
 import VisibilityIcon from "../entities/VisibilityIcon";
 import { StartSessionDropdownButton } from "../../features/session/components/SessionButtons";
@@ -130,10 +130,10 @@ function ListBar({
       </div>
       <div className="entity-date listBar-entity-date">
         <TimeCaption
-          caption={labelCaption || "Updated"}
-          showTooltip={true}
-          time={timeCaption}
           className="text-rk-text-light text-truncate"
+          enableTooltip
+          datetime={timeCaption}
+          prefix={labelCaption || "Updated"}
         />
       </div>
       <div

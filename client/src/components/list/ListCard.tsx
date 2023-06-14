@@ -18,7 +18,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 
-import { TimeCaption } from "../TimeCaption";
+import { TimeCaption } from "../TimeCaptionV2";
 import { ListElementProps } from "./List.d";
 import EntityLabel from "../entities/Label";
 import Slug from "../entities/Slug";
@@ -98,9 +98,9 @@ function ListCard({
             </div>
             <p className="card-text my-1">
               <TimeCaption
-                caption={labelCaption || "Updated"}
-                time={timeCaption}
                 className="text-rk-text-light"
+                datetime={timeCaption}
+                prefix={labelCaption || "Updated"}
               />
             </p>
           </div>

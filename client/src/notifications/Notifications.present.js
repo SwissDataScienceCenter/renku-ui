@@ -51,7 +51,7 @@ import { NotificationsInfo } from ".";
 
 import "./Notifications.css";
 import { ExternalLink } from "../components/ExternalLinks";
-import { TimeCaption } from "../components/TimeCaption";
+import { TimeCaption } from "../components/TimeCaptionV2";
 
 /**
  * Close button for the toast notification.
@@ -370,7 +370,7 @@ class NotificationDropdownItem extends Component {
         </p>
         <span>{linkObj}</span>
         <span className="float-end">
-          <TimeCaption caption=" " time={timestamp} />
+          <TimeCaption datetime={timestamp} />
         </span>
       </Fragment>
     );
@@ -526,11 +526,7 @@ class NotificationPageItem extends Component {
             <NotificationPageItemDetails text={longDesc} />
           </div>
           <div className="mt-auto">
-            <TimeCaption
-              caption=" "
-              time={timestamp}
-              className="text-secondary"
-            />
+            <TimeCaption className="text-secondary" datetime={timestamp} />
           </div>
         </Col>
         <Col className="d-flex align-items-end flex-column flex-shrink-0">

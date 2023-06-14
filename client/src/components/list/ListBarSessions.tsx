@@ -35,7 +35,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { ListElementProps } from "./List.d";
 import { ExternalLink } from "../ExternalLinks";
-import { TimeCaption } from "../TimeCaption";
+import { TimeCaption } from "../TimeCaptionV2";
 import VisibilityIcon from "../entities/VisibilityIcon";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
@@ -158,11 +158,7 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
         <span>
           {toHumanDateTime({ datetime: commit.committed_date, format: "full" })}
         </span>{" "}
-        <TimeCaption
-          caption="~"
-          endPunctuation=" "
-          time={commit.committed_date}
-        />
+        <TimeCaption datetime={commit.committed_date} prefix="~" />
         <br />
       </span>
       <span className="fw-bold">Message:</span> <span>{commit.message}</span>
@@ -326,10 +322,10 @@ function ListBarSession({
       </div>
       <div className="entity-date listBar-entity-date">
         <TimeCaption
-          caption={labelCaption || "Updated"}
-          showTooltip={true}
-          time={timeCaption}
           className="text-rk-text-light text-truncate"
+          enableTooltip
+          datetime={timeCaption}
+          prefix={labelCaption || "Updated"}
         />
       </div>
       <div className="entity-action d-flex align-items-baseline gap-1">
@@ -357,10 +353,10 @@ function ListBarSession({
           <div className="session-icon-details">{sessionDetailsPopover}</div>
         </div>
         <TimeCaption
-          caption={sessionTimeLabel || ""}
-          showTooltip={true}
-          time={notebook.started}
           className="text-rk-text-light text-truncate"
+          enableTooltip
+          datetime={notebook.started}
+          prefix={sessionTimeLabel || ""}
         />
       </div>
       <div className="session-icon">
