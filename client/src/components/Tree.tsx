@@ -20,7 +20,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import EntityCreators, { EntityCreator } from "./entities/Creators";
-import EntityExecutions from "./entities/Executions";
+import { EntityExecutions } from "./entities/Executions";
 import EntityDuration from "./entities/Duration";
 import {
   CaretDownFill,
