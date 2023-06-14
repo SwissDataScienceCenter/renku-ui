@@ -73,6 +73,7 @@ describe("ensureDateTime", () => {
 
     expect(datetime).toBeInstanceOf(DateTime);
     expect(datetime.isValid).toBe(true);
+    expect(datetime.valueOf()).toBe(input.valueOf());
   });
 
   it("converts a string", () => {
@@ -82,5 +83,6 @@ describe("ensureDateTime", () => {
 
     expect(datetime).toBeInstanceOf(DateTime);
     expect(datetime.isValid).toBe(true);
+    expect(datetime.toISO()).toBe("2023-06-17T14:05:22.000+02:00");
   });
 });

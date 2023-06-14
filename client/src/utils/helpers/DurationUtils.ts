@@ -19,16 +19,11 @@
 import { DateTime, Duration, DurationObjectUnits } from "luxon";
 import { ensureDateTime } from "./DateTimeUtils";
 
-const DURATION_ORDERED_DISPLAY_UNITS: readonly (keyof DurationObjectUnits)[] = [
-  "years",
-  "months",
-  "weeks",
-  "days",
-  "hours",
-  "minutes",
-  "seconds",
-] as const;
-
+/**
+ * Converts a duration-like object to a human-readable string.
+ * @param duration a Duration instance or a number of seconds
+ * @returns a human-readable string
+ */
 export function toHumanDuration({
   duration: duration_,
 }: {
@@ -41,7 +36,7 @@ export function toHumanDuration({
   }
 
   const unit = getMostSignificantUnit(duration);
-  const rescaled = Math.round(Math.abs(duration.as(unit)));
+  const rescaled = Math.floor(Math.abs(duration.as(unit)));
 
   if (unit === "seconds" && rescaled < 1) {
     return "< 1 second";
@@ -51,24 +46,50 @@ export function toHumanDuration({
   return `${rescaled} ${unitStr}`;
 }
 
-function ensureDuration(duration: Duration | number): Duration {
+/**
+ * @param duration a Duration instance or a number of seconds
+ * @returns a Duration instance
+ */
+export function ensureDuration(duration: Duration | number): Duration {
   return duration instanceof Duration
     ? duration
-    : Duration.fromObject({ seconds: duration });
+    : isFinite(duration)
+    ? Duration.fromObject({ seconds: duration })
+    : Duration.fromISO("");
 }
 
-function getMostSignificantUnit(duration: Duration): keyof DurationObjectUnits {
+type DurationUnit = keyof DurationObjectUnits;
+
+const DURATION_ORDERED_DISPLAY_UNITS: readonly DurationUnit[] = [
+  "years",
+  "months",
+  "weeks",
+  "days",
+  "hours",
+  "minutes",
+  "seconds",
+] as const;
+
+/**
+ * @returns the most significant duration unit from the input
+ */
+export function getMostSignificantUnit(duration: Duration): DurationUnit {
   if (!duration.isValid) {
     return "seconds";
   }
 
-  const asObject = duration.rescale().toObject();
   const unit = DURATION_ORDERED_DISPLAY_UNITS.find(
-    (unit) => (asObject[unit] ?? 0) != 0
+    (unit) => Math.abs(duration.as(unit)) >= 1
   );
   return unit ?? "seconds";
 }
 
+/**
+ * Converts a duration-like object to a human-readable string,
+ * clamped to 24 hours maximum ("> 24 hours").
+ * @param duration a Duration instance or a number of seconds
+ * @returns a human-readable string
+ */
 export function toShortHumanDuration({
   duration: duration_,
 }: {
@@ -77,29 +98,20 @@ export function toShortHumanDuration({
   const duration = ensureDuration(duration_);
   const hours = Math.abs(duration.as("hours"));
 
-  if (hours >= 24) {
+  if (hours > 24) {
     return "> 24 hours";
   }
 
   return toHumanDuration({ duration });
-
-  // return duration < Duration.fromObject({ seconds: 1 })
-  //   ? "< 1 second"
-  //   : duration < Duration.fromObject({ seconds: 1.5 })
-  //   ? `1 second`
-  //   : duration < Duration.fromObject({ minutes: 1 })
-  //   ? `${Math.round(duration.shiftTo("seconds").seconds)} seconds`
-  //   : duration < Duration.fromObject({ minutes: 1.5 })
-  //   ? `1 minute`
-  //   : duration < Duration.fromObject({ hours: 1 })
-  //   ? `${Math.round(duration.shiftTo("minutes").minutes)} minutes`
-  //   : duration < Duration.fromObject({ hours: 1.5 })
-  //   ? `1 hour`
-  //   : duration < Duration.fromObject({ hours: 24 })
-  //   ? `${Math.round(duration.shiftTo("hours").hours)} hours`
-  //   : "> 24 hours";
 }
 
+/**
+ * Converts a datetime-like object to a human-readable string relative to the current instant,
+ * e.g. "3 minutes ago", "2 days from now".
+ * @param datetime a DateTime instance, a Date instance or an ISO 8601 string
+ * @param now the current instant
+ * @returns a human-readable string
+ */
 export function toHumanRelativeDuration({
   datetime: datetime_,
   now,
@@ -108,6 +120,11 @@ export function toHumanRelativeDuration({
   now: DateTime;
 }): string {
   const datetime = ensureDateTime(datetime_);
+
+  if (!datetime.isValid) {
+    return "invalid datetime";
+  }
+
   const duration = now.diff(datetime);
 
   const seconds = Math.abs(duration.as("seconds"));

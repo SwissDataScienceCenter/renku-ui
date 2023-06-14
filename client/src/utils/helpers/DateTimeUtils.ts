@@ -24,6 +24,12 @@ const DATETIME_FORMATS = {
 } as const;
 type DateTimeFormat = keyof typeof DATETIME_FORMATS;
 
+/**
+ * Converts a datetime-like object to a human-readable string.
+ * @param datetime a DateTime instance, a Date instance or an ISO 8601 string
+ * @param format the string format to use
+ * @returns a human-readable string
+ */
 export function toHumanDateTime({
   datetime: datetime_,
   format = "full-with-seconds",
@@ -35,6 +41,10 @@ export function toHumanDateTime({
   return datetime.setLocale("en").toFormat(DATETIME_FORMATS[format]);
 }
 
+/**
+ * @param datetime a DateTime instance, a Date instance or an ISO 8601 string
+ * @returns a DateTime instance
+ */
 export function ensureDateTime(datetime: DateTime | Date | string): DateTime {
   return datetime instanceof DateTime
     ? datetime
