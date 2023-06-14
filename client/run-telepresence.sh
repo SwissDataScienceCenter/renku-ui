@@ -43,7 +43,6 @@ else
 fi
 DASHBOARD_MESSAGE_TEXT=$(echo "# Welcome to Renku! 🐸
 This is an example welcome message ✨." | node -e "let content = ''; process.stdin.setEncoding('utf-8').on('data', (chunk) => content += chunk).on('end', () => {console.log(JSON.stringify(content))})")
-echo "${DASHBOARD_MESSAGE_TEXT}"
 
 if [ -z "$STATUSPAGE_ID" ]; then STATUSPAGE_ID="r3j2c84ftq49"; else echo "STATUSPAGE_ID is set to '$STATUSPAGE_ID'"; fi
 

@@ -29,7 +29,7 @@ import {
   dashboardMessageSlice,
   useDashboardMessageSelector,
 } from "../message/dashboardMessageSlice";
-import styles from "./DashboardMessage.module.css";
+import styles from "./DashboardMessage.module.scss";
 
 export function DashboardMessage() {
   const { params } = useContext(AppContext);
