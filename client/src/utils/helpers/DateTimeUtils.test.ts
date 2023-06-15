@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-import { DateTime } from "luxon";
+import { DateTime, Settings } from "luxon";
 import { ensureDateTime, toHumanDateTime } from "./DateTimeUtils";
+
+Settings.defaultZone = "Europe/Zurich";
 
 describe("toHumanDateTime", () => {
   it("converts an invalid datetime", () => {
