@@ -44,6 +44,14 @@ describe("toHumanDateTime", () => {
 
     expect(datetimeStr).toBe("2022-08-19 15:36 GMT+2");
   });
+
+  it("converts a valid datetime - date format", () => {
+    const datetime = DateTime.fromISO("2023-06-02T12:29:34+02:00");
+
+    const datetimeStr = toHumanDateTime({ datetime, format: "date" });
+
+    expect(datetimeStr).toBe("June 2, 2023");
+  });
 });
 
 describe("ensureDateTime", () => {
