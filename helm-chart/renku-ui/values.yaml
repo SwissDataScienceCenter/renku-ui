@@ -119,7 +119,7 @@ client:
     style: info
     # When this is set to true, users can dismiss the message and hide
     # it form the dashboard page until the tab is refreshed.
-    dismissable: true
+    dismissible: true
 
   templates:
     custom: true
