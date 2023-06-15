@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import cx from "classnames";
-import { DateTime } from "luxon";
+import { DateTime, Duration } from "luxon";
 import { UncontrolledTooltip } from "reactstrap";
 import {
   ensureDateTime,
@@ -43,7 +43,7 @@ export function TimeCaption({
   prefix,
   suffix,
 }: TimeCaptionProps) {
-  const [now] = useState<DateTime>(DateTime.utc());
+  const [now, setNow] = useState<DateTime>(DateTime.utc());
 
   const datetime = datetime_ ? ensureDateTime(datetime_) : null;
   const durationStr =
@@ -57,6 +57,35 @@ export function TimeCaption({
   const noSuffixSpace = typeof suffix === "string" && !!suffix.match(/^\p{P}/u);
 
   const ref = useRef<HTMLSpanElement>(null);
+  const timeoutRef = useRef<number | null>(null);
+
+  // Refresh every duration / 10, clamped to [5 seconds, 10 minutes]
+  useEffect(() => {
+    if (datetime == null || !datetime.isValid) {
+      return;
+    }
+
+    const duration = now.diff(datetime);
+    const refresh = Math.min(
+      Math.max(
+        duration.toMillis() / 10,
+        Duration.fromObject({ seconds: 5 }).toMillis()
+      ),
+      Duration.fromObject({ minutes: 10 }).toMillis()
+    );
+
+    console.log({ duration: duration.toISO(), refresh });
+
+    timeoutRef.current = window.setTimeout(() => {
+      setNow(DateTime.utc());
+    }, refresh);
+    return () => {
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = null;
+    };
+  }, [datetime, now]);
 
   return (
     <>
