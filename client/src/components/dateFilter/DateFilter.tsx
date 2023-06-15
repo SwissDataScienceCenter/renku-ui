@@ -48,24 +48,29 @@ export function stringToDateFilter(str: string) {
 }
 
 export function dateFilterTypeToSinceAndUntil(typeDate: DateFilterTypes) {
-  const [from, to] = (() => {
-    const now = DateTime.utc();
-    switch (typeDate) {
-      case DateFilterTypes.last90days:
-        return [now.minus(Duration.fromObject({ days: 90 })), now];
-      case DateFilterTypes.lastMonth:
-        return [now.minus(Duration.fromObject({ months: 1 })), now];
-      case DateFilterTypes.lastWeek:
-        return [now.minus(Duration.fromObject({ weeks: 1 })), now];
-      case DateFilterTypes.older:
-        return [null, now.minus(Duration.fromObject({ days: 90 }))];
-      default:
-        return [null, null];
-    }
-  })();
+  const now = DateTime.utc();
+  const [from, to] = getFromToDateFilter(typeDate, now);
   const since = from?.toISODate() ?? "";
   const until = to?.toISODate() ?? "";
   return { since, until };
+}
+
+function getFromToDateFilter(
+  typeDate: DateFilterTypes,
+  now: DateTime
+): [DateTime | null, DateTime | null] {
+  switch (typeDate) {
+    case DateFilterTypes.last90days:
+      return [now.minus(Duration.fromObject({ days: 90 })), now];
+    case DateFilterTypes.lastMonth:
+      return [now.minus(Duration.fromObject({ months: 1 })), now];
+    case DateFilterTypes.lastWeek:
+      return [now.minus(Duration.fromObject({ weeks: 1 })), now];
+    case DateFilterTypes.older:
+      return [null, now.minus(Duration.fromObject({ days: 90 }))];
+    default:
+      return [null, null];
+  }
 }
 
 export interface DatesFilter {
