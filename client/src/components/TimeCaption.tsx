@@ -74,6 +74,7 @@ export function TimeCaption({
       ),
       Duration.fromObject({ minutes: 10 }).toMillis()
     );
+    /* eslint-enable spellcheck/spell-checker */
 
     timeoutRef.current = window.setTimeout(() => {
       setNow(DateTime.utc());
@@ -85,7 +86,6 @@ export function TimeCaption({
       timeoutRef.current = null;
     };
   }, [datetime, now]);
-  /* eslint-enable spellcheck/spell-checker */
 
   return (
     <>
