@@ -232,54 +232,58 @@ async function importDatasetAndWaitForResult({
   await new Promise<void>((resolve) => {
     let pollCount = 0;
     const monitorJob = setInterval(() => {
-      client.getJobStatus(job_id, versionUrl).then((job) => {
-        pollCount++;
-        if (pollCount >= 50) {
-          handlers.setSubmitLoader({ value: false, text: "" });
-          handlers.setServerErrors(ImportStateMessage.TOO_LONG);
-          clearInterval(monitorJob);
-          resolve();
-          return;
-        }
-        if (job == null) return;
-        switch (job.state) {
-          case "ENQUEUED":
-            handlers.setSubmitLoader({
-              value: true,
-              text: ImportStateMessage.ENQUEUED,
-            });
-            break;
-          case "IN_PROGRESS":
-            handlers.setSubmitLoader({
-              value: true,
-              text: ImportStateMessage.IN_PROGRESS,
-            });
-            break;
-          case "COMPLETED":
+      client
+        .getJobStatus(job_id, versionUrl)
+        .then((job) => {
+          if (job == null) return;
+          switch (job.state) {
+            case "ENQUEUED":
+              handlers.setSubmitLoader({
+                value: true,
+                text: ImportStateMessage.ENQUEUED,
+              });
+              break;
+            case "IN_PROGRESS":
+              handlers.setSubmitLoader({
+                value: true,
+                text: ImportStateMessage.IN_PROGRESS,
+              });
+              break;
+            case "COMPLETED":
+              handlers.setSubmitLoader({ value: false, text: "" });
+              clearInterval(monitorJob);
+              redirectUser();
+              resolve();
+              break;
+            case "FAILED":
+              handlers.setSubmitLoader({ value: false, text: "" });
+              handlers.setServerErrors(
+                ImportStateMessage.FAILED + job.extras.error
+              );
+              clearInterval(monitorJob);
+              resolve();
+              break;
+            default:
+              handlers.setSubmitLoader({
+                value: false,
+                text: ImportStateMessage.FAILED_NO_INFO,
+              });
+              handlers.setServerErrors(ImportStateMessage.FAILED_NO_INFO);
+              clearInterval(monitorJob);
+              resolve();
+              break;
+          }
+        })
+        .finally(() => {
+          pollCount++;
+          if (pollCount >= 50) {
             handlers.setSubmitLoader({ value: false, text: "" });
-            clearInterval(monitorJob);
-            redirectUser();
-            resolve();
-            break;
-          case "FAILED":
-            handlers.setSubmitLoader({ value: false, text: "" });
-            handlers.setServerErrors(
-              ImportStateMessage.FAILED + job.extras.error
-            );
+            handlers.setServerErrors(ImportStateMessage.TOO_LONG);
             clearInterval(monitorJob);
             resolve();
-            break;
-          default:
-            handlers.setSubmitLoader({
-              value: false,
-              text: ImportStateMessage.FAILED_NO_INFO,
-            });
-            handlers.setServerErrors(ImportStateMessage.FAILED_NO_INFO);
-            clearInterval(monitorJob);
-            resolve();
-            break;
-        }
-      });
+            return;
+          }
+        });
     }, 5_000);
   });
 }
