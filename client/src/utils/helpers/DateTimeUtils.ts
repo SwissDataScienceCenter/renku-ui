@@ -21,6 +21,7 @@ import { DateTime } from "luxon";
 const DATETIME_FORMATS = {
   "full-with-seconds": "yyyy-LL-dd HH:mm:ss ZZZZ",
   full: "yyyy-LL-dd HH:mm ZZZZ",
+  day: "LLLL d, yyyy",
 } as const;
 type DateTimeFormat = keyof typeof DATETIME_FORMATS;
 
