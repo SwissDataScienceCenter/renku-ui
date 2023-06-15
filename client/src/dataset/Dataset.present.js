@@ -143,7 +143,7 @@ function DisplayProjects(props) {
                   <td className="text-center">
                     {toHumanDateTime({
                       datetime: project.created.dateCreated,
-                      format: "day",
+                      format: "date",
                     })}
                   </td>
                 ) : null}

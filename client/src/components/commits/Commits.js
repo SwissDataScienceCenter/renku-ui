@@ -55,7 +55,7 @@ function createDateObject(commit) {
   return {
     type: CommitElement.DATE,
     date: datetime.toJSDate(),
-    readableDate: toHumanDateTime({ datetime, format: "day" }),
+    readableDate: toHumanDateTime({ datetime, format: "date" }),
   };
 }
 
