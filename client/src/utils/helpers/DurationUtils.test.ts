@@ -148,7 +148,7 @@ describe("getMostSignificantUnit", () => {
     expect(unit).toBe("seconds");
   });
 
-  it("extracts 'seconds' for very short durations", () => {
+  it("extracts 'seconds' for a very short duration", () => {
     const duration = Duration.fromObject({ milliseconds: 524 });
 
     const unit = getMostSignificantUnit(duration);
