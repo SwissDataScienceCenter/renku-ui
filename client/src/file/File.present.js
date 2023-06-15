@@ -17,33 +17,32 @@
  */
 
 import React, { memo, useState } from "react";
+import { faGitlab } from "@fortawesome/free-brands-svg-icons";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import DOMPurify from "dompurify";
+import _ from "lodash";
 import {
   Badge,
-  Card,
-  CardHeader,
-  CardBody,
   Button,
   ButtonGroup,
+  Card,
+  CardBody,
+  CardHeader,
+  Input,
+  Label,
   ListGroup,
   ListGroupItem,
-  Input,
 } from "reactstrap";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
-import DOMPurify from "dompurify";
-
-import { FilePreview } from "./index";
-import { CheckNotebookStatus, CheckNotebookIcon } from "../notebooks";
-import { Time } from "../utils/helpers/Time";
-import { formatBytes } from "../utils/helpers/HelperFunctions";
-import { FileAndLineageSwitch } from "./FileAndLineageComponents";
-import { Label } from "reactstrap";
-import _ from "lodash";
 import { Clipboard } from "../components/Clipboard";
 import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import NotebookPreview from "../components/notebook";
+import { CheckNotebookIcon, CheckNotebookStatus } from "../notebooks";
+import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
+import { formatBytes } from "../utils/helpers/HelperFunctions";
+import { FileAndLineageSwitch } from "./FileAndLineageComponents";
+import { FilePreview } from "./index";
 
 const commitMessageLengthLimit = 120;
 
@@ -84,8 +83,10 @@ class FileCard extends React.Component {
                 {title}
               </div>
               <div className="caption">
-                {this.props.commit.author_name} &nbsp;
-                {Time.toIsoTimezoneString(this.props.commit.committed_date)}
+                {this.props.commit.author_name}{" "}
+                {toHumanDateTime({
+                  datetime: this.props.commit.committed_date,
+                })}
               </div>
             </div>
           </ListGroupItem>

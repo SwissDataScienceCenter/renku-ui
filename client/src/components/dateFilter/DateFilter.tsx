@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ChangeEvent } from "react";
+
+import React, { ChangeEvent, useState } from "react";
+import { DateTime, Duration } from "luxon";
 import { Input } from "../../utils/ts-wrappers";
-import Time from "../../utils/helpers/Time";
 
 /**
  *  renku-ui
@@ -47,31 +48,23 @@ export function stringToDateFilter(str: string) {
 }
 
 export function dateFilterTypeToSinceAndUntil(typeDate: DateFilterTypes) {
-  let from, to;
-  const today = new Date();
-  switch (typeDate) {
-    case DateFilterTypes.last90days:
-      to = today;
-      from = new Date(new Date().setDate(to.getDate() - 90));
-      break;
-    case DateFilterTypes.lastMonth:
-      to = today;
-      from = new Date(new Date().setDate(to.getDate() - 30));
-      break;
-    case DateFilterTypes.lastWeek:
-      to = today;
-      from = new Date(new Date().setDate(to.getDate() - 7));
-      break;
-    case DateFilterTypes.older:
-      to = new Date(new Date().setDate(today.getDate() - 90));
-      break;
-    default:
-      from = "";
-      to = "";
-      break;
-  }
-  const since = from ? Time.toIsoTimezoneString(from, "date") : "";
-  const until = to ? Time.toIsoTimezoneString(to, "date") : "";
+  const [from, to] = (() => {
+    const now = DateTime.utc();
+    switch (typeDate) {
+      case DateFilterTypes.last90days:
+        return [now.minus(Duration.fromObject({ days: 90 })), now];
+      case DateFilterTypes.lastMonth:
+        return [now.minus(Duration.fromObject({ months: 1 })), now];
+      case DateFilterTypes.lastWeek:
+        return [now.minus(Duration.fromObject({ weeks: 1 })), now];
+      case DateFilterTypes.older:
+        return [null, now.minus(Duration.fromObject({ days: 90 }))];
+      default:
+        return [null, null];
+    }
+  })();
+  const since = from?.toISODate() ?? "";
+  const until = to?.toISODate() ?? "";
   return { since, until };
 }
 
@@ -82,6 +75,8 @@ export interface DatesFilter {
 }
 
 const DateFilter = ({ onDatesChange, dates }: DateFilterProps) => {
+  const [now] = useState<DateTime>(DateTime.utc());
+
   const changeDateType = React.useCallback(
     (typeDate: DateFilterTypes) => {
       const { since, until } = dateFilterTypeToSinceAndUntil(typeDate);
@@ -98,35 +93,34 @@ const DateFilter = ({ onDatesChange, dates }: DateFilterProps) => {
     { title: "Older", value: DateFilterTypes.older },
     { title: "Custom", value: DateFilterTypes.custom },
   ];
-  const datesInput =
-    dates.type === DateFilterTypes.custom ? (
-      <>
-        <div>
-          <label className="px-2 author-label">From:</label>
-          <Input
-            type="date"
-            name="start"
-            max={Time.toIsoTimezoneString(new Date(), "date")}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              onDatesChange({ ...dates, since: e.target.value })
-            }
-            value={dates.since}
-          />
-        </div>
-        <div>
-          <label className="px-2 author-label">To:</label>
-          <Input
-            type="date"
-            name="end"
-            max={Time.toIsoTimezoneString(new Date(), "date")}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              onDatesChange({ ...dates, until: e.target.value })
-            }
-            value={dates.until}
-          />
-        </div>
-      </>
-    ) : null;
+  const datesInput = dates.type === DateFilterTypes.custom && (
+    <>
+      <div>
+        <label className="px-2 author-label">From:</label>
+        <Input
+          type="date"
+          name="start"
+          max={now.toISODate()}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            onDatesChange({ ...dates, since: e.target.value })
+          }
+          value={dates.since}
+        />
+      </div>
+      <div>
+        <label className="px-2 author-label">To:</label>
+        <Input
+          type="date"
+          name="end"
+          max={now.toISODate()}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            onDatesChange({ ...dates, until: e.target.value })
+          }
+          value={dates.until}
+        />
+      </div>
+    </>
+  );
 
   const options = items.map((item) => {
     const nameInput = `author-${item.value}`;

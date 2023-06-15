@@ -17,32 +17,31 @@
  */
 
 import React, { useState } from "react";
-import { Helmet } from "react-helmet";
-import { Button, Card, CardBody, CardHeader, Col, Table } from "reactstrap";
-import { Link, useHistory } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import _ from "lodash";
-
+import { Helmet } from "react-helmet";
+import { Link, useHistory } from "react-router-dom";
+import { Button, Card, CardBody, CardHeader, Col, Table } from "reactstrap";
+import { ErrorAlert, WarnAlert } from "../components/Alert";
+import { ExternalLink } from "../components/ExternalLinks";
+import FileExplorer from "../components/FileExplorer";
+import { Loader } from "../components/Loader";
+import { ThrottledTooltip } from "../components/Tooltip";
+import { EntityDeleteButtonButton } from "../components/entities/Buttons";
+import EntityHeader from "../components/entityHeader/EntityHeader";
+import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
+import { CoreError } from "../components/errors/CoreErrorHelpers";
+import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
+import DeleteDataset from "../project/datasets/delete/index";
+import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
+import { Url } from "../utils/helpers/url";
 import { DatasetError } from "./DatasetError";
 import {
   getDatasetAuthors,
   getDatasetImageUrl,
   getUpdatedDatasetImage,
 } from "./DatasetFunctions";
-import DeleteDataset from "../project/datasets/delete/index";
-import Time from "../utils/helpers/Time";
-import FileExplorer from "../components/FileExplorer";
-import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
-import { ExternalLink } from "../components/ExternalLinks";
-import { ErrorAlert, WarnAlert } from "../components/Alert";
-import { Loader } from "../components/Loader";
-import { ThrottledTooltip } from "../components/Tooltip";
-import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
-import { CoreError } from "../components/errors/CoreErrorHelpers";
-import EntityHeader from "../components/entityHeader/EntityHeader";
-import { EntityDeleteButtonButton } from "../components/entities/Buttons";
-import { Url } from "../utils/helpers/url";
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
@@ -142,7 +141,10 @@ function DisplayProjects(props) {
                 </td>
                 {project.created && project.created.dateCreated ? (
                   <td className="text-center">
-                    {Time.getReadableDate(project.created.dateCreated)}
+                    {toHumanDateTime({
+                      datetime: project.created.dateCreated,
+                      format: "day",
+                    })}
                   </td>
                 ) : null}
                 {project.created && project.created.agent ? (
