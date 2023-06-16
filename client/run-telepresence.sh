@@ -167,23 +167,24 @@ tee > ./public/config.json << EOF
 }
 EOF
 
-tee > "./public/sitemap.xml" << EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${BASE_URL}</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/projects</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/datasets</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/help</loc>
-  </url>
-</urlset>
-EOF
+# tee > "./public/sitemap.xml" << EOF
+# <?xml version="1.0" encoding="UTF-8"?>
+# <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+#   <url>
+#     <loc>${BASE_URL}</loc>
+#   </url>
+#   <url>
+#     <loc>${BASE_URL}/projects</loc>
+#   </url>
+#   <url>
+#     <loc>${BASE_URL}/datasets</loc>
+#   </url>
+#   <url>
+#     <loc>${BASE_URL}/help</loc>
+#   </url>
+# </urlset>
+# EOF
+./scripts/generate_sitemap.sh "./public/sitemap.xml"
 
 if [[ $SERVICE_CONSOLE_MODE == 1 ]]
 then
