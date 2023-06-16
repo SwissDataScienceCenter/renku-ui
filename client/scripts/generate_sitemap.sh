@@ -16,9 +16,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: ./scripts/generate_sitemap.sh <path/to/sitemap.xml>
+# Usage: ./scripts/generate_sitemap.sh <base-url> <path/to/sitemap.xml>
 
-tee > "$1" << EOF
+BASE_URL="$1"
+OUTPUT_FILE="$2"
+
+tee > "${OUTPUT_FILE}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
