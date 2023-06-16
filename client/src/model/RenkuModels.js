@@ -616,26 +616,6 @@ const datasetFormSchema = new Schema({
   },
 });
 
-const datasetImportFormSchema = new Schema({
-  uri: {
-    initial: "",
-    name: "uri",
-    label: "Renku dataset URL; Dataverse or Zenodo dataset URL or DOI",
-    edit: false,
-    required: true,
-    type: FormGenerator.FieldTypes.TEXT,
-    // parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
-    validators: [
-      {
-        id: "uri-length",
-        isValidFun: (expression) =>
-          FormGenerator.Validators.isNotEmpty(expression),
-        alert: "URI is too short",
-      },
-    ],
-  },
-});
-
 const environmentSchema = new Schema({
   uiVersion: {
     [Prop.SCHEMA]: new Schema({
@@ -693,7 +673,6 @@ const formGeneratorSchema = new Schema({
 export {
   datasetFormSchema,
   datasetSchema,
-  datasetImportFormSchema,
   environmentSchema,
   formGeneratorSchema,
   newProjectSchema,
