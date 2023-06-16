@@ -61,7 +61,7 @@ Kubectl and telepresence will allow you to inject code running on your developme
 
 The client is the [React-based](https://reactjs.org) front-end for RenkuLab. Development started in 2017, and, in the intervening years, we have striven to change our development style to reflect the evolving best practices around the tools we use. You will see that not all code conforms to the guidelines laid out in this document, but **new code** should follow these guidelines, and older code should be refactored at opportune moments, whenever possible, to conform as well.
 
-Further technical details are available in [README file in the `client` folder](./client/README.md). 
+Further technical details are available in [README file in the `client` folder](./client/README.md).
 
 ## Tool Stack
 
@@ -218,6 +218,68 @@ Picking the perfect place isn't always straightforward and our current folder st
 styles to the whole web application.
 [Create React App supports CSS modules out of the box](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet).
 
+## Navigation map
+
+```mermaid
+flowchart LR
+      subgraph L1
+        A(/)-->DA(/datasets)
+        A-->HE(/help)
+        A-->LO(/login)
+        A-->LOOUT(/logout)
+        A-->PR(/projects)
+        A-->SEA(/search)
+        A-->SE(/sessions)
+      end
+      subgraph L2
+        PR-->PR1(/new)
+        PR-->PRID(/:id)
+        DA-->DAID(/:id)
+        HE-->HE1(/changes)
+        HE-->HE2(/docs)
+        HE-->HE3(/features)
+        HE-->HE4(/status)
+      end
+      subgraph L3
+        PRID-->PRID1(/overview)
+        PRID-->PRFI(/files)
+        DAID-->DAID1(/add)
+        PRID-->PRIDDA(/datasets)
+        PRID-->PRID_WORKFLOWS(/workflows)
+        PRID-->PRSE(/sessions)
+        PRID-->PRID_SETTINGS(/settings)
+        end
+        subgraph L4
+        PRID1-->PRID11(/overview/stats)
+        PRID1-->PRID12(/overview/commits)
+        PRFI-->PRFI1(/blob/:file-path)
+        PRFI-->PRFI2(/lineage/:file-path)
+        PRIDDA-->PRIDDA1(/:dataset-name)
+        PRIDDA-->PRIDDA2(/new)
+        PRID_WORKFLOWS-->PRID_WORKFLOWS_ID(/:worfklow-id)
+        PRSE-->PRSE1(/new?autostart=1)
+        PRSE-->PRSE2(/new)
+        PRSE-->PRSE3(/show/:session-id)
+        PRID_SETTINGS-->PRID_SETTINGS_SESSIONS(/sessions)
+        end
+        subgraph L5
+        PRIDDA1-->PRIDDA11(/modify)
+        end
+```
+
+External links map
+
+```mermaid
+flowchart LR
+    A(/)-->B(https://renku.readthedocs.io/en/stable/*)
+    A-->C(https://github.com/SwissDataScienceCenter/*)
+    A-->G(gitter.im/SwissDataScienceCenter/renku)
+    A-->H(renku.discourse.group)
+    A-->D(https://datascience.ch)
+    A-->E(https://www.epfl.ch)
+    A-->F(https://ethz.ch)
+```
+
 # Server
 
 The server is the [Express-based](https://expressjs.com) back-end for the RenkuLab UI. The main responsibilities of the server are managing user tokens acting handling requests for information from other backend services.
@@ -309,68 +371,3 @@ $ telepresence connect
 ```
 
 If that is not sufficient, you may need use the activity monitor to find and kill zombie telepresence processes before restarting.
-
-# Site navigation map
-
-Note: stroke-dasharray when the link is only for anonymous users
-
-```mermaid
-flowchart LR
-      subgraph L1
-        A(/)-->PR(/projects)
-        A-->DA(/datasets)
-        A-->SE(/sessions)
-        A-->HE(/help)
-        A-->LO(/login)
-        style LO stroke:#f66,stroke-width:1px,stroke-dasharray: 5 5
-        A-->LOOUT(/api/auth/logout)
-      end
-      subgraph L2
-        PR-->PR1(/new)
-        PR-->PR2(/all)
-        PR-->PR3(/starred)
-        PR-->PRID(/:id)
-        DA-->DAID(/:id)
-      end
-      subgraph L3
-        PRID-->PRID1(/overview/stats)
-        PRID-->PRID2(/overview/commits)
-        PRID-->PRID3(/overview/status)
-        PRID-->PRID4(/collaboration/issues)
-        PRID-->PRID5(/collaboration/mergerequests)
-        PRID-->PRID6(/collaboration/fork)
-        PRID-->PRFI(/files)
-        PRID-->PRSE(/sessions)
-        DAID-->DAID1(/add)
-        PRID-->PRIDDA(/datasets)
-        end
-        subgraph L4
-        PRFI-->PRFI1(/blob/:file-path)
-        PRIDDA-->PRIDDA1(/:dataset-name)
-        PRIDDA-->PRIDDA2(/new)
-        PRSE-->PRSE1(/new?autostart=1)
-        PRSE-->PRSE2(/new)
-        PRSE-->PRSE3(/show/:session-id)
-        PRID4-->PRID41(/issue_new)
-        end
-        subgraph L5
-        PRIDDA1-->PRIDDA11(/modify)
-        end
-```
-
-External links map
-
-```mermaid
-flowchart LR
-      A(/)-->B(https://renku.readthedocs.io/en/latest/)
-      A-->C(https://github.com/SwissDataScienceCenter/renku)
-      A-->D(https://datascience.ch/)
-      A-->E(https://www.epfl.ch/en/)
-      A-->F(https://ethz.ch/en.html)
-      A-->G(gitter.im/SwissDataScienceCenter/renku)
-      A-->H(renku.discourse.group/)
-      A-->I(renku.readthedocs.io/en/latest/tutorials/01_firststeps.html)
-      A-->J(datascience.ch/who-we-are/)
-      A-->K(https://renku-python.readthedocs.io/en/latest/introduction.html)
-      A-->L(https://github.com/SwissDataScienceCenter/renku/releases/tag/:version-app)
-```
