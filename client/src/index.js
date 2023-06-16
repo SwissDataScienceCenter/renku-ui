@@ -20,6 +20,7 @@ import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
 import { Sentry } from "./utils/helpers/sentry";
 import { Url } from "./utils/helpers/url";
+import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 
 const configFetch = fetch("/config.json");
 const privacyFetch = fetch("/privacy-statement.md");
@@ -99,20 +100,22 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
     root.render(
       <Provider store={model.reduxStore}>
         <Router>
-          <Route
-            render={(props) => {
-              LoginHelper.handleLoginParams(props.history);
-              return (
-                <VisibleApp
-                  client={client}
-                  params={params}
-                  model={model}
-                  location={props.location}
-                  statuspageId={statuspageId}
-                />
-              );
-            }}
-          />
+          <AppErrorBoundary client={client} model={model} params={params}>
+            <Route
+              render={(props) => {
+                LoginHelper.handleLoginParams(props.history);
+                return (
+                  <VisibleApp
+                    client={client}
+                    params={params}
+                    model={model}
+                    location={props.location}
+                    statuspageId={statuspageId}
+                  />
+                );
+              }}
+            />
+          </AppErrorBoundary>
         </Router>
       </Provider>
     );

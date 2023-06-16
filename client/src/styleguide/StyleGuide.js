@@ -23,7 +23,7 @@
  *  The StyleGuide explains the components of the RenkuLab UI.
  */
 
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 import { Col, Nav, NavItem, Row, Table } from "reactstrap";
 import { Route, Switch } from "react-router-dom";
@@ -36,6 +36,12 @@ import { TimeCaption } from "../components/TimeCaption";
 import { RenkuNavLink } from "../components/RenkuNavLink";
 
 function Overview() {
+  const [error, setError] = useState(null);
+
+  if (error) {
+    throw error;
+  }
+
   return (
     <Fragment>
       <h2>Overview</h2>
@@ -43,6 +49,15 @@ function Overview() {
         The style guide explains the different elements of the RenkuLab UI, how
         they should look and when to use what element.
       </p>
+      <div>
+        <button
+          onClick={() => {
+            setError(new Error("ouch!"));
+          }}
+        >
+          Do not click me
+        </button>
+      </div>
     </Fragment>
   );
 }

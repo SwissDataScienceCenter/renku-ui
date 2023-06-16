@@ -1,0 +1,20 @@
+.error {
+  background-position: center;
+  background-size: cover;
+  height: calc(100vh);
+  background-image: url("../styles/assets/error-background@1.00x.png");
+  color: var(--bs-rk-pink);
+  overflow: auto;
+  width: 100%;
+}
+
+.errorTitle {
+  background-color: rgba(var(--bs-rk-blue-rgb), 0.7);
+  padding: 20px;
+  max-width: 700px;
+}
+
+.errorMain {
+  color: var(--bs-body-color);
+  background-color: rgba(var(--bs-rk-white-rgb), 0.85);
+}
