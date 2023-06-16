@@ -23,6 +23,6 @@
  *  Components for the import Dataset page
  */
 
-import ImportDataset from "./DatasetImport.container";
+import DatasetImport from "./DatasetImport";
 
-export default ImportDataset;
+export default DatasetImport;
