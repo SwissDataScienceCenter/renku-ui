@@ -149,6 +149,7 @@ export const ProjectSettingsGeneralDeleteProject = ({
                   type="text"
                   value={confirmText}
                   onChange={onChangeConfirmBox}
+                  autoComplete="off"
                 />
                 <div className="mt-2 d-flex flex-row justify-content-end">
                   <Button color="outline-danger" onClick={onCloseModal}>

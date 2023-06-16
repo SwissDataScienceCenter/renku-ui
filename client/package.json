@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "3.5.0",
+  "version": "3.6.0",
   "private": true,
   "dependencies": {
     "@ckeditor/ckeditor5-react": "^5.1.0",
@@ -44,6 +44,7 @@
     "react-cookie-consent": "^8.0.1",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
+    "react-hook-form": "^7.44.3",
     "react-ipynb-renderer": "^2.1.2",
     "react-js-pagination": "^3.0.2",
     "react-katex": "^3.0.1",
