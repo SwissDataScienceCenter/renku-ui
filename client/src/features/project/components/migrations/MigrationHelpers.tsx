@@ -133,24 +133,26 @@ export function CompositeTitle({
   return (
     <>
       <div id={sectionIdFull} className={styles.projectStatusSection}>
-        <h6 className="d-flex align-items-center w-100 mb-0">
-          <div className={`me-2 ${color}`}>{finalIcon}</div>
-          <div data-cy={titleDataCy}>{title}</div>
-          {loading ? null : (
-            <>
+        <div className="d-flex align-items-center w-100 mb-0">
+          <h6 className="d-flex align-items-center">
+            <div className={`me-2 ${color}`}>{finalIcon}</div>
+            <div data-cy={titleDataCy}>{title}</div>
+            {!loading && (
               <div
                 className="mx-3 cursor-pointer"
                 data-cy={caretDataCy}
-                onClick={() => toggleShowDetails()}
+                onClick={toggleShowDetails}
               >
                 {caret}
               </div>
-              <div className="ms-auto" data-cy={buttonDataCy}>
-                {button}
-              </div>
-            </>
+            )}
+          </h6>
+          {!loading && (
+            <div className="ms-auto" data-cy={buttonDataCy}>
+              {button}
+            </div>
           )}
-        </h6>
+        </div>
       </div>
     </>
   );
