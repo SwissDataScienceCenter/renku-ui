@@ -30,18 +30,14 @@ import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
 
-import DatasetList from "./dataset/list/DatasetList.container";
-import { AnonymousHome, RenkuNavBar, FooterNavbar } from "./landing";
-import { Notebooks } from "./notebooks";
+import { RenkuNavBar, FooterNavbar } from "./landing";
 import { LoginHelper } from "./authentication";
-import ShowDataset from "./dataset/Dataset.container";
 import { Cookie, Privacy } from "./privacy";
 import { NotificationsManager, NotificationsPage } from "./notifications";
 import { StyleGuide } from "./styleguide";
 import { Url } from "./utils/helpers/url";
 import { Unavailable } from "./Maintenance";
 import { Loader } from "./components/Loader";
-import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
@@ -50,11 +46,20 @@ import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
 
 // Lazily-loaded components
+const AnonymousHome = lazy(() =>
+  import("./landing").then((module) => ({
+    default: module.AnonymousHome,
+  }))
+);
 const Dashboard = lazy(() =>
   import("./features/dashboard/Dashboard").then((module) => ({
     default: module.Dashboard,
   }))
 );
+const DatasetAddToProject = lazy(() =>
+  import("./dataset/addtoproject/DatasetAddToProject")
+);
+const DatasetList = lazy(() => import("./dataset/list/DatasetList.container"));
 const Help = lazy(() => import("./help"));
 const InactiveKGProjectsPage = lazy(() =>
   import("./features/inactiveKgProjects/InactiveKgProjects")
@@ -67,6 +72,11 @@ const Login = lazy(() =>
 const NewProject = lazy(() =>
   import("./project/new").then((module) => ({
     default: module.NewProject,
+  }))
+);
+const Notebooks = lazy(() =>
+  import("./notebooks").then((module) => ({
+    default: module.Notebooks,
   }))
 );
 const NotFound = lazy(() =>
@@ -85,6 +95,7 @@ const ProjectView = lazy(() =>
   }))
 );
 const SearchPage = lazy(() => import("./features/kgSearch/KgSearchPage"));
+const ShowDataset = lazy(() => import("./dataset/Dataset.container"));
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize
@@ -101,14 +112,16 @@ function CentralContentContainer(props) {
     props.location.pathname === Url.get(Url.pages.landing)
   ) {
     return (
-      <AnonymousHome
-        client={props.client}
-        homeCustomized={props.params["HOMEPAGE"]}
-        user={props.user}
-        model={props.model}
-        location={props.location}
-        params={props.params}
-      />
+      <Suspense fallback={<Loader />}>
+        <AnonymousHome
+          client={props.client}
+          homeCustomized={props.params["HOMEPAGE"]}
+          user={props.user}
+          model={props.model}
+          location={props.location}
+          params={props.params}
+        />
+      </Suspense>
     );
   }
 
@@ -262,14 +275,16 @@ function CentralContentContainer(props) {
             render={(p) =>
               !user.logged ? (
                 <ContainerWrap>
-                  <Notebooks
-                    key="sessions"
-                    standalone={true}
-                    client={props.client}
-                    model={props.model}
-                    blockAnonymous={blockAnonymous}
-                    {...p}
-                  />
+                  <Suspense fallback={<Loader />}>
+                    <Notebooks
+                      key="sessions"
+                      standalone={true}
+                      client={props.client}
+                      model={props.model}
+                      blockAnonymous={blockAnonymous}
+                      {...p}
+                    />
+                  </Suspense>
                 </ContainerWrap>
               ) : (
                 <Redirect to="/" />
@@ -279,47 +294,53 @@ function CentralContentContainer(props) {
           <Route
             path="/datasets/:identifier/add"
             render={(p) => (
-              <DatasetAddToProject
-                key="addDatasetNew"
-                insideProject={false}
-                identifier={p.match.params?.identifier?.replaceAll("-", "")}
-                datasets={p.datasets}
-                model={props.model}
-              />
+              <Suspense fallback={<Loader />}>
+                <DatasetAddToProject
+                  key="addDatasetNew"
+                  insideProject={false}
+                  identifier={p.match.params?.identifier?.replaceAll("-", "")}
+                  datasets={p.datasets}
+                  model={props.model}
+                />
+              </Suspense>
             )}
           />
           <Route
             path="/datasets/:identifier"
             render={(p) => (
-              <ShowDataset
-                key="datasetPreview"
-                {...p}
-                insideProject={false}
-                identifier={p.match.params?.identifier?.replaceAll("-", "")}
-                client={props.client}
-                projectsUrl="/projects"
-                selectedDataset={p.match.params.datasetId}
-                datasetCoordinator={
-                  new DatasetCoordinator(
-                    props.client,
-                    props.model.subModel("dataset")
-                  )
-                }
-                logged={props.user.logged}
-                model={props.model}
-              />
+              <Suspense fallback={<Loader />}>
+                <ShowDataset
+                  key="datasetPreview"
+                  {...p}
+                  insideProject={false}
+                  identifier={p.match.params?.identifier?.replaceAll("-", "")}
+                  client={props.client}
+                  projectsUrl="/projects"
+                  selectedDataset={p.match.params.datasetId}
+                  datasetCoordinator={
+                    new DatasetCoordinator(
+                      props.client,
+                      props.model.subModel("dataset")
+                    )
+                  }
+                  logged={props.user.logged}
+                  model={props.model}
+                />
+              </Suspense>
             )}
           />
           <Route
             path="/datasets"
             render={(p) => (
               <ContainerWrap>
-                <DatasetList
-                  key="datasets"
-                  client={props.client}
-                  model={props.model}
-                  {...p}
-                />
+                <Suspense fallback={<Loader />}>
+                  <DatasetList
+                    key="datasets"
+                    client={props.client}
+                    model={props.model}
+                    {...p}
+                  />
+                </Suspense>
               </ContainerWrap>
             )}
           />
@@ -353,7 +374,14 @@ function CentralContentContainer(props) {
               </ContainerWrap>
             )}
           />
-          <Route path="*" render={(p) => <NotFound {...p} />} />
+          <Route
+            path="*"
+            render={(p) => (
+              <Suspense fallback={<Loader />}>
+                <NotFound {...p} />
+              </Suspense>
+            )}
+          />
         </Switch>
       </AppContext.Provider>
     </div>
