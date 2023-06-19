@@ -42,6 +42,7 @@ import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
+import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -50,6 +51,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
 ) => {
   const enhancedReducer = {
     ...renkuStateModelReducer,
+    [dashboardMessageSlice.name]: dashboardMessageSlice.reducer,
     [displaySlice.name]: displaySlice.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
