@@ -91,7 +91,7 @@ function ProjectDatasetsNav(props: any) {
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
     skip: !projectId,
   });
-  const isGraphReady = !projectIndexingStatus.data?.activated;
+  const isGraphReady = projectIndexingStatus.data?.activated === true;
   if (coreDatasets == null) return null;
   if (coreDatasets.error != null) return null;
   if (coreDatasets.length === 0) return null;
