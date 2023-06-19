@@ -51,26 +51,5 @@ tee > "${OUTPUT_FILE}" << EOF
   <url>
     <loc>${BASE_URL}/help/changes</loc>
   </url>
-  <url>
-    <loc>${BASE_URL}/style-guide</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/style-guide/fonts</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/style-guide/colors</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/style-guide/buttons</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/style-guide/nav</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/style-guide/forms</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/style-guide/lists</loc>
-  </url>
 </urlset>
 EOF
