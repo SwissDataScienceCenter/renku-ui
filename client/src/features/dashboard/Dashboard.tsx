@@ -19,6 +19,7 @@
 import React, { Component } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
+import { DashboardMessage } from "./components/DashboardMessage";
 import { ProjectsDashboard } from "./components/ProjectsDashboard";
 import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
 import { DatasetDashboard } from "./components/DatasetsDashboard";
@@ -55,6 +56,7 @@ function Dashboard() {
   return (
     <div className="rk-dashboard">
       <h1 data-cy="dashboard-title">Renku Dashboard - {user.data.name}</h1>
+      <DashboardMessage />
       <ProjectsInactiveKGWarning />
       <ProjectsDashboard userName={user?.data.name} />
       <DatasetDashboard userName={user?.data.name} />

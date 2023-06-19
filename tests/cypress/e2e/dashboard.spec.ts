@@ -18,6 +18,10 @@
  */
 
 import Fixtures from "../support/renkulab-fixtures";
+import {
+  DISMISSIBLE_SIMPLE_INFO_MESSAGE_FIXTURE,
+  NON_DISMISSIBLE_READ_MORE_SUCCESS_MESSAGE_FIXTURE,
+} from "../support/renkulab-fixtures/dashboard";
 import "../support/utils";
 
 const findProject = (path, projects) => {
@@ -223,5 +227,117 @@ describe("dashboard", () => {
       .find("button")
       .first()
       .should("contain.text", "Stop");
+  });
+});
+
+describe("dashboard message", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = true;
+  beforeEach(() => {
+    fixtures
+      .versions()
+      .userTest()
+      .projects()
+      .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
+      .getLastVisitedProjects(
+        "getLastVisitedProjects",
+        "projects/empty-last-visited-projects.json"
+      )
+      .noActiveProjects("getNoActiveProjects");
+  });
+
+  const visitDashboardPage = () => {
+    cy.visit("/");
+    cy.wait("@getUser");
+    cy.wait("@getEntities");
+    cy.wait("@getLastVisitedProjects");
+    cy.wait("@getNoActiveProjects");
+  };
+
+  it("does not display a message when disabled", () => {
+    fixtures.config();
+    visitDashboardPage();
+
+    cy.get_cy("dashboard-message").should("not.exist");
+  });
+
+  it("displays a dissmissible simple info message", () => {
+    fixtures.configWithDashboardMessage({
+      fixture: DISMISSIBLE_SIMPLE_INFO_MESSAGE_FIXTURE,
+    });
+    visitDashboardPage();
+
+    cy.get_cy("dashboard-message")
+      .should("be.visible")
+      .and("have.class", "alert")
+      .and("have.class", "alert-info")
+      .and("have.class", "alert-dismissible")
+      .and("include.text", "Welcome to Renku!")
+      .and("include.text", "This is an example welcome message");
+
+    cy.get_cy("dashboard-message")
+      .find(".alert-icon")
+      .find('img[alt="info icon"]')
+      .should("be.visible");
+
+    cy.get_cy("dashboard-message")
+      .find("button.btn-close")
+      .should("be.visible")
+      .click();
+
+    // The message is removed on dismissal
+    cy.get_cy("dashboard-message").should("not.exist");
+
+    // The message stays removed after dismissal
+    cy.get("#link-search").click();
+    cy.get("#link-dashboard").click();
+    cy.get_cy("dashboard-message").should("not.exist");
+  });
+
+  it("displays a non-dissmissible success message with a read more section", () => {
+    fixtures.configWithDashboardMessage({
+      fixture: NON_DISMISSIBLE_READ_MORE_SUCCESS_MESSAGE_FIXTURE,
+    });
+    visitDashboardPage();
+
+    cy.get_cy("dashboard-message")
+      .should("be.visible")
+      .and("have.class", "alert")
+      .and("have.class", "alert-success")
+      .and("not.have.class", "alert-dismissible")
+      .and("include.text", "Welcome to Renku!")
+      .and("include.text", "This is an example welcome message");
+
+    cy.get_cy("dashboard-message")
+      .find(".alert-icon")
+      .find('img[alt="success icon"]')
+      .should("be.visible");
+
+    cy.get_cy("dashboard-message").find("button.btn-close").should("not.exist");
+
+    // Expand and collapse the "Read more" section
+    cy.get_cy("dashboard-message")
+      .find("a")
+      .contains("Read more")
+      .should("be.visible")
+      .click();
+    cy.get_cy("dashboard-message")
+      .contains("This is some more text")
+      .should("exist")
+      .and("be.visible");
+    cy.get_cy("dashboard-message")
+      .find("a")
+      .contains("Read more")
+      .should("be.visible")
+      .click();
+    cy.get_cy("dashboard-message")
+      .contains("This is some more text")
+      .should("exist")
+      .and("not.be.visible");
+
+    // The message stays visible
+    cy.get("#link-search").click();
+    cy.get("#link-dashboard").click();
+    cy.get_cy("dashboard-message").should("be.visible");
   });
 });
