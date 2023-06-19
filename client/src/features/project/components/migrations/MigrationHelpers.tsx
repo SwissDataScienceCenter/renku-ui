@@ -129,12 +129,12 @@ export function CompositeTitle({
   return (
     <>
       <div id={sectionIdFull} className={styles.projectStatusSection}>
-        <div className="d-flex align-items-center w-100 mb-0 me-3">
+        <div className="d-flex align-items-center w-100 mb-0">
           <h6
             className={cx(
               styles.sectionTitle,
               !loading && [styles.sectionTitleExpandable, "cursor-pointer"],
-              "d-flex align-items-center accordion"
+              "d-flex align-items-center m-0 me-3 accordion"
             )}
             onClick={toggleShowDetails}
           >
