@@ -115,6 +115,31 @@ describe("Project dataset", () => {
       });
   });
 
+  it("delete project dataset", () => {
+    cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getProject");
+    cy.wait("@datasetList")
+      .its("response.body")
+      .then((data) => {
+        const datasets = data.result.datasets;
+        const totalDatasets = datasets?.length;
+        cy.get_cy("list-card").should("have.length", totalDatasets);
+        const dataset = datasets[0];
+        const datasetIdentifier = dataset.identifier.replace(/-/g, "");
+        fixtures.datasetById(datasetIdentifier, "getDatasetById0");
+        cy.get_cy("list-card-title").contains(dataset.title).click();
+        cy.wait("@getDatasetById0");
+        cy.get_cy("delete-dataset-button").should("exist").click();
+        fixtures.datasetsRemove(datasetIdentifier);
+        cy.get("button").contains("Delete dataset").should("exist").click();
+        // dataset should be deleted
+        cy.wait("@datasetsRemove");
+        // list should be refreshed
+        cy.wait("@datasetList");
+        cy.contains("Datasets List").should("be.visible");
+      });
+  });
+
   it("dataset limited options if has not permissions", () => {
     const projectPath = "e2e/testing-datasets";
     fixtures.project(
