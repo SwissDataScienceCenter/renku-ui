@@ -273,8 +273,8 @@ External links map
 flowchart LR
     A(/)-->B(https://renku.readthedocs.io/en/stable/*)
     A-->C(https://github.com/SwissDataScienceCenter/*)
-    A-->G(gitter.im/SwissDataScienceCenter/renku)
-    A-->H(renku.discourse.group)
+    A-->G(https://gitter.im/SwissDataScienceCenter/renku)
+    A-->H(https://renku.discourse.group)
     A-->D(https://datascience.ch)
     A-->E(https://www.epfl.ch)
     A-->F(https://ethz.ch)
