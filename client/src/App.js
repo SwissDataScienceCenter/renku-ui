@@ -23,22 +23,17 @@
  *  Coordinator for the application.
  */
 
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, lazy, Suspense } from "react";
 import { Helmet } from "react-helmet";
 import { Redirect } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
 
-import { Project } from "./project";
-import { ProjectList } from "./project/list";
-import { NewProject } from "./project/new";
 import DatasetList from "./dataset/list/DatasetList.container";
 import { AnonymousHome, RenkuNavBar, FooterNavbar } from "./landing";
 import { Notebooks } from "./notebooks";
-import { Login, LoginHelper } from "./authentication";
-import Help from "./help";
-import { NotFound } from "./not-found";
+import { LoginHelper } from "./authentication";
 import ShowDataset from "./dataset/Dataset.container";
 import { Cookie, Privacy } from "./privacy";
 import { NotificationsManager, NotificationsPage } from "./notifications";
@@ -50,12 +45,46 @@ import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
-import SearchPage from "./features/kgSearch/KgSearchPage";
-import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
-import { Dashboard } from "./features/dashboard/Dashboard";
 
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
+
+// Lazily-loaded components
+const Dashboard = lazy(() =>
+  import("./features/dashboard/Dashboard").then((module) => ({
+    default: module.Dashboard,
+  }))
+);
+const Help = lazy(() => import("./help"));
+const InactiveKGProjectsPage = lazy(() =>
+  import("./features/inactiveKgProjects/InactiveKgProjects")
+);
+const Login = lazy(() =>
+  import("./authentication").then((module) => ({
+    default: module.Login,
+  }))
+);
+const NewProject = lazy(() =>
+  import("./project/new").then((module) => ({
+    default: module.NewProject,
+  }))
+);
+const NotFound = lazy(() =>
+  import("./not-found").then((module) => ({
+    default: module.NotFound,
+  }))
+);
+const ProjectList = lazy(() =>
+  import("./project/list").then((module) => ({
+    default: module.ProjectList,
+  }))
+);
+const ProjectView = lazy(() =>
+  import("./project").then((module) => ({
+    default: module.Project.View,
+  }))
+);
+const SearchPage = lazy(() => import("./features/kgSearch/KgSearchPage"));
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize
@@ -104,7 +133,9 @@ function CentralContentContainer(props) {
             path="/login"
             render={(p) => (
               <ContainerWrap>
-                <Login key="login" {...p} {...props} />
+                <Suspense fallback={<Loader />}>
+                  <Login key="login" {...p} {...props} />
+                </Suspense>
               </ContainerWrap>
             )}
           />
@@ -114,11 +145,13 @@ function CentralContentContainer(props) {
             render={() =>
               props.user.logged ? (
                 <ContainerWrap>
-                  <Dashboard
-                    model={props.model}
-                    user={props.user}
-                    client={props.client}
-                  />
+                  <Suspense fallback={<Loader />}>
+                    <Dashboard
+                      model={props.model}
+                      user={props.user}
+                      client={props.client}
+                    />
+                  </Suspense>
                 </ContainerWrap>
               ) : null
             }
@@ -127,7 +160,9 @@ function CentralContentContainer(props) {
             path={Url.get(Url.pages.help)}
             render={(p) => (
               <ContainerWrap>
-                <Help key="help" {...p} {...props} />
+                <Suspense fallback={<Loader />}>
+                  <Help key="help" {...p} {...props} />
+                </Suspense>
               </ContainerWrap>
             )}
           />
@@ -135,12 +170,14 @@ function CentralContentContainer(props) {
             path={Url.get(Url.pages.search)}
             render={() => (
               <ContainerWrap>
-                <SearchPage
-                  key="kg-search"
-                  userName={props.user?.data?.name}
-                  isLoggedUser={props.user.logged}
-                  model={props.model}
-                />
+                <Suspense fallback={<Loader />}>
+                  <SearchPage
+                    key="kg-search"
+                    userName={props.user?.data?.name}
+                    isLoggedUser={props.user.logged}
+                    model={props.model}
+                  />
+                </Suspense>
               </ContainerWrap>
             )}
           />
@@ -149,13 +186,17 @@ function CentralContentContainer(props) {
             render={(p) =>
               props.user?.logged ? (
                 <ContainerWrap>
-                  <InactiveKGProjectsPage
-                    key="-inactive-kg-projects"
-                    socket={socket}
-                  />
+                  <Suspense fallback={<Loader />}>
+                    <InactiveKGProjectsPage
+                      key="-inactive-kg-projects"
+                      socket={socket}
+                    />
+                  </Suspense>
                 </ContainerWrap>
               ) : (
-                <NotFound {...p} />
+                <Suspense fallback={<Loader />}>
+                  <NotFound {...p} />
+                </Suspense>
               )
             }
           />
@@ -168,13 +209,15 @@ function CentralContentContainer(props) {
             ]}
             render={(p) => (
               <ContainerWrap>
-                <ProjectList
-                  key="projects"
-                  user={props.user}
-                  client={props.client}
-                  statusSummary={props.statusSummary}
-                  {...p}
-                />
+                <Suspense fallback={<Loader />}>
+                  <ProjectList
+                    key="projects"
+                    user={props.user}
+                    client={props.client}
+                    statusSummary={props.statusSummary}
+                    {...p}
+                  />
+                </Suspense>
               </ContainerWrap>
             )}
           />
@@ -183,30 +226,34 @@ function CentralContentContainer(props) {
             path={Url.get(Url.pages.project.new)}
             render={(p) => (
               <ContainerWrap>
-                <NewProject
-                  key="newProject"
-                  model={props.model}
-                  user={props.user}
-                  client={props.client}
-                  {...p}
-                />
+                <Suspense fallback={<Loader />}>
+                  <NewProject
+                    key="newProject"
+                    model={props.model}
+                    user={props.user}
+                    client={props.client}
+                    {...p}
+                  />
+                </Suspense>
               </ContainerWrap>
             )}
           />
           <Route
             path="/projects/:subUrl+"
             render={(p) => (
-              <Project.View
-                key="project/view"
-                client={props.client}
-                params={props.params}
-                model={props.model}
-                user={props.user}
-                blockAnonymous={blockAnonymous}
-                notifications={notifications}
-                socket={socket}
-                {...p}
-              />
+              <Suspense fallback={<Loader />}>
+                <ProjectView
+                  key="project/view"
+                  client={props.client}
+                  params={props.params}
+                  model={props.model}
+                  user={props.user}
+                  blockAnonymous={blockAnonymous}
+                  notifications={notifications}
+                  socket={socket}
+                  {...p}
+                />
+              </Suspense>
             )}
           />
           <Route
