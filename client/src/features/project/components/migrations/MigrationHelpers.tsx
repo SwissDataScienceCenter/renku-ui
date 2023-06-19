@@ -17,17 +17,15 @@
  */
 
 import React from "react";
-import cx from "classnames";
-import { Button, UncontrolledTooltip } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { ChevronDown } from "react-bootstrap-icons";
-// import { ChevronDown, ChevronUp } from "../../../../utils/ts-wrappers";
-import { Loader } from "../../../../components/Loader";
+import { Button, UncontrolledTooltip } from "reactstrap";
 import { ExternalLink } from "../../../../components/ExternalLinks";
+import { Loader } from "../../../../components/Loader";
 import { simpleHash } from "../../../../utils/helpers/HelperFunctions";
-
 import styles from "./migrations.module.scss";
 
 interface MoreInfoLinkProps {
@@ -84,7 +82,6 @@ export function CompositeTitle({
     <FontAwesomeIcon icon={icon} />
   );
   const color = level ? `text-${level}` : "";
-  // const caret = showDetails ? <ChevronUp /> : <ChevronDown />;
   let button: React.ReactNode = null;
   if (buttonText) {
     const finalButtonIcon = buttonIcon ? (
