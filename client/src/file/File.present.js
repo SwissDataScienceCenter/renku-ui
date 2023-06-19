@@ -33,16 +33,16 @@ import {
   ListGroup,
   ListGroupItem,
 } from "reactstrap";
-import "../../node_modules/highlight.js/styles/atom-one-light.css";
 import { Clipboard } from "../components/Clipboard";
 import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
+import { TimeCaption } from "../components/TimeCaption";
 import NotebookPreview from "../components/notebook";
 import { CheckNotebookIcon, CheckNotebookStatus } from "../notebooks";
-import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 import { FilePreview } from "./index";
+import "../../node_modules/highlight.js/styles/atom-one-light.css";
 
 const commitMessageLengthLimit = 120;
 
@@ -83,10 +83,13 @@ class FileCard extends React.Component {
                 {title}
               </div>
               <div className="caption">
-                {this.props.commit.author_name}{" "}
-                {toHumanDateTime({
-                  datetime: this.props.commit.committed_date,
-                })}
+                {this.props.commit.author_name}
+                {", "}
+                <TimeCaption
+                  datetime={this.props.commit.committed_date}
+                  enableTooltip
+                  noCaption
+                />
               </div>
             </div>
           </ListGroupItem>
@@ -539,8 +542,8 @@ const JupyterButtonPresent = (props) => {
 };
 
 export {
-  JupyterButtonPresent,
   FileNoPreview,
+  JupyterButtonPresent,
   NotebookSourceDisplayMode,
   ShowFile,
   StyledNotebook,

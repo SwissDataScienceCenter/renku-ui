@@ -145,6 +145,7 @@ function SingleCommit(props) {
             <span className="small">{props.commit.author_name} </span>
             <TimeCaption
               datetime={props.commit.committed_date}
+              enableTooltip
               prefix="authored"
             />
           </Col>
