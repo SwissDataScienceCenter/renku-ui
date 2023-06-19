@@ -41,6 +41,8 @@ else
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64`
   echo "Warning! your OS has not been tested yet"
 fi
+DASHBOARD_MESSAGE_TEXT=$(echo "# Welcome to Renku! 🐸
+This is an example welcome message ✨." | node -e "let content = ''; process.stdin.setEncoding('utf-8').on('data', (chunk) => content += chunk).on('end', () => {console.log(JSON.stringify(content))})")
 
 if [ -z "$STATUSPAGE_ID" ]; then STATUSPAGE_ID="r3j2c84ftq49"; else echo "STATUSPAGE_ID is set to '$STATUSPAGE_ID'"; fi
 
@@ -142,6 +144,12 @@ tee > ./public/config.json << EOF
   "GATEWAY_URL": "${BASE_URL}/api",
   "UISERVER_URL": "${BASE_URL}/ui-server",
   "WELCOME_PAGE": "${WELCOME_PAGE}",
+  "DASHBOARD_MESSAGE": {
+    "enabled": true,
+    "text": ${DASHBOARD_MESSAGE_TEXT},
+    "style": "info",
+    "dismissible": true
+  },
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
   "SENTRY_SAMPLE_RATE": "${SENTRY_SAMPLE_RATE}",
