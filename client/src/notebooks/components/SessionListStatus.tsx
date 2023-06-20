@@ -82,9 +82,10 @@ function SessionListRowStatusExtraDetails({
   if (!details.message) return null;
   if (status == "failed")
     return (
-      <span className="text-muted">
-        &nbsp;(Click the error icon for details.)
-      </span>
+      <>
+        {" "}
+        <span className="text-muted">(Click the error icon for details.)</span>
+      </>
     );
   return (
     <>
