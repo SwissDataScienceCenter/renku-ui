@@ -180,7 +180,6 @@ export function ProjectMigrationStatus({
       />
       <RtkOrCoreError error={migrationStatus.error} />
       <ProjectMigrationStatusDetails
-        // buttonUpdate={buttonUpdate}
         buttonDisable={buttonDisabled || isFetching}
         data={data}
         isMaintainer={isMaintainer}
