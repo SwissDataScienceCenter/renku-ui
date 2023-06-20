@@ -70,23 +70,7 @@ tee > "${NGINX_PATH}/config.json" << EOF
 EOF
 echo "config.json created in ${NGINX_PATH}"
 
-tee > "${NGINX_PATH}/sitemap.xml" << EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${BASE_URL}</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/projects</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/datasets</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/help</loc>
-  </url>
-</urlset>
-EOF
+/app/scripts/generate_sitemap.sh "${BASE_URL}" "${NGINX_PATH}/sitemap.xml"
 echo "sitemap.xml created in ${NGINX_PATH}"
 
 tee > "${NGINX_PATH}/robots.txt" << EOF
