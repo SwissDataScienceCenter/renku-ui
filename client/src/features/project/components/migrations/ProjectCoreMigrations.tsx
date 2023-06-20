@@ -137,20 +137,6 @@ export function ProjectMigrationStatus({
   }
 
   const migrationLevel = getMigrationLevel(data, isSupported);
-  // const buttonUpdate = (scope: MigrationStartScopes) => {
-  //   buttonDisabled = true;
-  //   buttonText = "Updating";
-  //   if (scope === MigrationStartScopes.OnlyTemplate)
-  //     buttonText = "Updating template";
-  //   if (scope === MigrationStartScopes.OnlyVersion)
-  //     buttonText = "Updating version";
-  //   startMigration({
-  //     gitUrl,
-  //     branch,
-  //     scope,
-  //   });
-  // };
-
   const renkuMigrationLevel = getRenkuLevel(data, isSupported);
   const templateMigrationLevel = getTemplateLevel(data);
   const automatedUpdatePossible = canUpdateProjectAutomatically(
@@ -174,61 +160,6 @@ export function ProjectMigrationStatus({
       migrationLevel,
       updateProject,
     });
-
-  // let buttonAction: undefined | (() => void);
-  // let buttonText: undefined | string;
-  // const buttonIcon = faArrowAltCircleUp;
-  // let buttonDisabled = !isMaintainer || !automatedUpdatePossible;
-  // const buttonDisabledTooltip = !isMaintainer
-  //   ? "Only maintainers can do this."
-  //   : !automatedUpdatePossible
-  //   ? "Automated update not possible for this project"
-  //   : "Operation ongoing...";
-  // const buttonId = "button-update-projectMigrationStatus";
-  // let icon = faInfoCircle;
-  // let level = "danger";
-  // let title = "Unknown project status";
-  // if (migrationLevel === ProjectMigrationLevel.Level5) {
-  //   icon = faExclamationCircle;
-  //   title = "Project update required";
-  //   buttonText = "Update";
-  //   buttonAction = () => {
-  //     buttonUpdate(MigrationStartScopes.All);
-  //   };
-  // } else if (migrationLevel === ProjectMigrationLevel.Level4) {
-  //   icon = faExclamationCircle;
-  //   level = "warning";
-  //   title = "Project update required";
-  //   buttonText = "Update";
-  //   buttonAction = () => {
-  //     buttonUpdate(MigrationStartScopes.All);
-  //   };
-  // } else if (migrationLevel === ProjectMigrationLevel.Level3) {
-  //   icon = faExclamationCircle;
-  //   level = "info";
-  //   title = "Project update available";
-  //   buttonText = "Update";
-  //   buttonAction = () => {
-  //     buttonUpdate(MigrationStartScopes.All);
-  //   };
-  // } else if (migrationLevel === ProjectMigrationLevel.Level2) {
-  //   icon = faCheckCircle;
-  //   level = "info";
-  //   title = "Project up to date*";
-  // } else if (migrationLevel === ProjectMigrationLevel.Level1) {
-  //   icon = faCheckCircle;
-  //   level = "success";
-  //   title = "Project up to date";
-  // }
-
-  // // handle maintainer status and ongoing update
-  // if (!isMaintainer) {
-  //   buttonDisabled = true;
-  // }
-  // if (migrationStatus.isLoading) {
-  //   buttonDisabled = true;
-  //   buttonText = "Updating";
-  // }
 
   return (
     <>
@@ -270,13 +201,6 @@ function getMigrationStatusButtonAction({
   migrationLevel: ProjectMigrationLevel | null;
   updateProject: (scope: MigrationStartScopes) => void;
 }) {
-  // let buttonAction: undefined | (() => void);
-  // let buttonText: undefined | string;
-  // let buttonDisabled = !isMaintainer || !automatedUpdatePossible;
-  // let icon = faInfoCircle;
-  // let level = "danger";
-  // let title = "Unknown project status";
-
   if (migrationLevel === ProjectMigrationLevel.Level5) {
     return {
       buttonAction: () => updateProject(MigrationStartScopes.All),
@@ -327,21 +251,6 @@ function getMigrationStatusButtonAction({
     };
   }
 
-  // // handle maintainer status and ongoing update
-  // if (!isMaintainer) {
-  //   buttonDisabled = true;
-  // }
-  // if (migrationStatus.isLoading) {
-  //   buttonDisabled = true;
-  //   buttonText = "Updating";
-  // }
-
-  // let buttonAction: undefined | (() => void);
-  // let buttonText: undefined | string;
-  // let buttonDisabled = !isMaintainer || !automatedUpdatePossible;
-  // let icon = faInfoCircle;
-  // let level = "danger";
-  // let title = "Unknown project status";
   return {
     buttonAction: null,
     buttonText: null,
@@ -353,7 +262,6 @@ function getMigrationStatusButtonAction({
 
 interface ProjectMigrationStatusDetailsProps {
   buttonDisable: boolean;
-  // buttonUpdate: (scope: MigrationStartScopes) => void;
   data: MigrationStatus | undefined;
   isMaintainer: boolean;
   isSupported: boolean;
@@ -363,7 +271,6 @@ interface ProjectMigrationStatusDetailsProps {
 
 function ProjectMigrationStatusDetails({
   buttonDisable,
-  // buttonUpdate,
   data,
   isMaintainer,
   isSupported,
