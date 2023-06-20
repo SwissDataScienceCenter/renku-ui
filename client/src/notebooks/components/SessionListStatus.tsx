@@ -18,22 +18,21 @@
 
 import React from "react";
 import {
-  Badge,
-  PopoverBody,
-  PopoverHeader,
-  UncontrolledPopover,
-} from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
   faCheckCircle,
   faExclamationTriangle,
   faInfoCircle,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-
-import { Loader } from "../../components/Loader";
+import {
+  Badge,
+  PopoverBody,
+  PopoverHeader,
+  UncontrolledPopover,
+} from "reactstrap";
 import { Clipboard } from "../../components/Clipboard";
+import { Loader } from "../../components/Loader";
 import { SessionStatus } from "../../utils/constants/Notebooks";
 import type { NotebookAnnotations } from "./Session";
 
