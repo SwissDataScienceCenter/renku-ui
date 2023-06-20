@@ -23,18 +23,14 @@
  *  Coordinator for the application.
  */
 
-import React, { Fragment, useEffect, useState, lazy, Suspense } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import { Helmet } from "react-helmet";
 import { Redirect } from "react-router";
 import { Route, Switch } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
 
-import { RenkuNavBar, FooterNavbar } from "./landing";
 import { LoginHelper } from "./authentication";
-import { Cookie, Privacy } from "./privacy";
-import { NotificationsManager, NotificationsPage } from "./notifications";
-import { StyleGuide } from "./styleguide";
+import { NotificationsManager } from "./notifications";
 import { Url } from "./utils/helpers/url";
 import { Unavailable } from "./Maintenance";
 import { Loader } from "./components/Loader";
@@ -51,6 +47,11 @@ const AnonymousHome = lazy(() =>
     default: module.AnonymousHome,
   }))
 );
+const Cookie = lazy(() =>
+  import("./privacy").then((module) => ({
+    default: module.Cookie,
+  }))
+);
 const Dashboard = lazy(() =>
   import("./features/dashboard/Dashboard").then((module) => ({
     default: module.Dashboard,
@@ -60,6 +61,11 @@ const DatasetAddToProject = lazy(() =>
   import("./dataset/addtoproject/DatasetAddToProject")
 );
 const DatasetList = lazy(() => import("./dataset/list/DatasetList.container"));
+const FooterNavbar = lazy(() =>
+  import("./landing").then((module) => ({
+    default: module.FooterNavbar,
+  }))
+);
 const Help = lazy(() => import("./help"));
 const InactiveKGProjectsPage = lazy(() =>
   import("./features/inactiveKgProjects/InactiveKgProjects")
@@ -79,9 +85,19 @@ const Notebooks = lazy(() =>
     default: module.Notebooks,
   }))
 );
+const NotificationsPage = lazy(() =>
+  import("./notifications").then((module) => ({
+    default: module.NotificationsPage,
+  }))
+);
 const NotFound = lazy(() =>
   import("./not-found").then((module) => ({
     default: module.NotFound,
+  }))
+);
+const Privacy = lazy(() =>
+  import("./privacy").then((module) => ({
+    default: module.Privacy,
   }))
 );
 const ProjectList = lazy(() =>
@@ -94,8 +110,23 @@ const ProjectView = lazy(() =>
     default: module.Project.View,
   }))
 );
+const RenkuNavBar = lazy(() =>
+  import("./landing").then((module) => ({
+    default: module.RenkuNavBar,
+  }))
+);
 const SearchPage = lazy(() => import("./features/kgSearch/KgSearchPage"));
 const ShowDataset = lazy(() => import("./dataset/Dataset.container"));
+const StyleGuide = lazy(() =>
+  import("./styleguide").then((module) => ({
+    default: module.StyleGuide,
+  }))
+);
+const ToastContainer = lazy(() =>
+  import("react-toastify").then((module) => ({
+    default: module.ToastContainer,
+  }))
+);
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize
@@ -348,7 +379,9 @@ function CentralContentContainer(props) {
             path="/privacy"
             render={(p) => (
               <ContainerWrap>
-                <Privacy key="privacy" params={props.params} {...p} />
+                <Suspense fallback={<Loader />}>
+                  <Privacy key="privacy" params={props.params} {...p} />
+                </Suspense>
               </ContainerWrap>
             )}
           />
@@ -356,13 +389,15 @@ function CentralContentContainer(props) {
             path="/notifications"
             render={(p) => (
               <ContainerWrap>
-                <NotificationsPage
-                  key="notifications"
-                  client={props.client}
-                  model={props.model}
-                  notifications={notifications}
-                  {...p}
-                />
+                <Suspense fallback={<Loader />}>
+                  <NotificationsPage
+                    key="notifications"
+                    client={props.client}
+                    model={props.model}
+                    notifications={notifications}
+                    {...p}
+                  />
+                </Suspense>
               </ContainerWrap>
             )}
           />
@@ -370,7 +405,9 @@ function CentralContentContainer(props) {
             path="/style-guide"
             render={(p) => (
               <ContainerWrap>
-                <StyleGuide key="style-guide" baseUrl="/style-guide" {...p} />
+                <Suspense fallback={<Loader />}>
+                  <StyleGuide key="style-guide" baseUrl="/style-guide" {...p} />
+                </Suspense>
               </ContainerWrap>
             )}
           />
@@ -437,7 +474,7 @@ function App(props) {
   }
 
   return (
-    <Fragment>
+    <Suspense fallback={<Loader />}>
       <Route
         render={(p) =>
           user.logged || p.location.pathname !== Url.get(Url.pages.landing) ? (
@@ -461,7 +498,7 @@ function App(props) {
         )}
       />
       <ToastContainer />
-    </Fragment>
+    </Suspense>
   );
 }
 
