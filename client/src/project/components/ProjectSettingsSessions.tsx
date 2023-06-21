@@ -261,7 +261,7 @@ export const ProjectSettingsSessions = () => {
         versionUrl={versionUrl}
         devAccess={devAccess}
       />
-      <StorageOptionV2
+      <StorageOption
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
@@ -751,7 +751,7 @@ interface StorageOptionProps {
   devAccess: boolean;
 }
 
-function StorageOptionV2({
+function StorageOption({
   projectConfig,
   projectConfigIsFetching,
   projectRepositoryUrl,
