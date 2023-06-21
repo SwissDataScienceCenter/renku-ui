@@ -19,8 +19,18 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Form, Input, InputGroup,
-  Nav, NavItem, Row
+  Button,
+  ButtonDropdown,
+  Col,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Form,
+  Input,
+  InputGroup,
+  Nav,
+  NavItem,
+  Row,
 } from "reactstrap";
 import {
   faCheck,
@@ -29,22 +39,23 @@ import {
   faSortAmountUp,
   faBars,
   faTh,
-  faPlus
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Url } from "../../utils/helpers/url";
 import "../Project.css";
 import { Label } from "reactstrap";
-import { Loader } from "../../utils/components/Loader";
-import { RenkuNavLink } from "../../utils/components/RenkuNavLink";
-import { MarkdownTextExcerpt } from "../../utils/components/markdown/RenkuMarkdown";
-import ListDisplay from "../../utils/components/List";
+import { Loader } from "../../components/Loader";
+import { RenkuNavLink } from "../../components/RenkuNavLink";
+import { MarkdownTextExcerpt } from "../../components/markdown/RenkuMarkdown";
+import ListDisplay from "../../components/List";
 
 function ProjectListRows(props) {
-  const { currentPage, perPage, projects, search, totalItems, gridDisplay } = props;
+  const { currentPage, perPage, projects, search, totalItems, gridDisplay } =
+    props;
 
-  const projectItems = projects.map(project => {
+  const projectItems = projects.map((project) => {
     const namespace = project.namespace ? project.namespace.full_path : "";
     const path = project.path;
     const url = Url.get(Url.pages.project, { namespace, path });
@@ -55,106 +66,152 @@ function ProjectListRows(props) {
       title: project.name,
       slug: project.path_with_namespace,
       creators: project.owner ? [project.owner] : [project.namespace],
-      description: project.description ?
+      description: project.description ? (
         <Fragment>
-          <MarkdownTextExcerpt markdownText={project.description} singleLine={gridDisplay ? false : true}
-            charsLimit={gridDisplay ? 200 : 150} />
-          <span className="ms-1">{project.description.includes("\n") ? " [...]" : ""}</span>
+          <MarkdownTextExcerpt
+            markdownText={project.description}
+            singleLine={gridDisplay ? false : true}
+            charsLimit={gridDisplay ? 200 : 150}
+          />
+          <span className="ms-1">
+            {project.description.includes("\n") ? " [...]" : ""}
+          </span>
         </Fragment>
-        : " ",
+      ) : (
+        " "
+      ),
       tagList: project.tag_list,
       timeCaption: project.last_activity_at,
-      mediaContent: project.avatar_url,
-      visibility: project.visibility
+      imageUrl: project.avatar_url,
+      visibility: project.visibility,
     };
   });
 
-  return <ListDisplay
-    itemsType="project"
-    search={search}
-    currentPage={currentPage}
-    gridDisplay={gridDisplay}
-    totalItems={totalItems}
-    perPage={perPage}
-    items={projectItems}
-  />;
+  return (
+    <ListDisplay
+      itemsType="project"
+      search={search}
+      currentPage={currentPage}
+      gridDisplay={gridDisplay}
+      totalItems={totalItems}
+      perPage={perPage}
+      items={projectItems}
+    />
+  );
 }
 
 function SearchInFilter(props) {
-  const { loggedIn, params, sectionsMap, searchInMap, searchWithValues, currentSearchInObject } = props;
+  const {
+    loggedIn,
+    params,
+    sectionsMap,
+    searchInMap,
+    searchWithValues,
+    currentSearchInObject,
+  } = props;
 
   // search in
   const [dropdownSearchIn, setDropdownSearchIn] = useState(false);
   const toggleDropdownSearchIn = () => setDropdownSearchIn(!dropdownSearchIn);
-  if (!loggedIn)
-    return null;
+  if (!loggedIn) return null;
 
-  const searchInItems = Object.values(searchInMap).map(v => (
-    <DropdownItem key={v.value} value={v.value} onClick={() => { searchWithValues({ searchIn: v.value }); }}>
-      {v.value === currentSearchInObject.value ? <FontAwesomeIcon icon={faCheck} /> : null} {v.text}
+  const searchInItems = Object.values(searchInMap).map((v) => (
+    <DropdownItem
+      key={v.value}
+      value={v.value}
+      onClick={() => {
+        searchWithValues({ searchIn: v.value });
+      }}
+    >
+      {v.value === currentSearchInObject.value ? (
+        <FontAwesomeIcon icon={faCheck} />
+      ) : null}{" "}
+      {v.text}
     </DropdownItem>
   ));
 
-  return params.section === sectionsMap.all ?
-    (
-      <Fragment>
-        <ButtonDropdown toggle={toggleDropdownSearchIn} isOpen={dropdownSearchIn}
-          className="input-group-append input-group-prepend m-0">
-          <DropdownToggle caret color="rk-white">
-            {currentSearchInObject.text}
-          </DropdownToggle>
-          <DropdownMenu>
-            {searchInItems}
-          </DropdownMenu>
-        </ButtonDropdown>
-      </Fragment>
-    ) :
-    null;
+  return params.section === sectionsMap.all ? (
+    <Fragment>
+      <ButtonDropdown
+        toggle={toggleDropdownSearchIn}
+        isOpen={dropdownSearchIn}
+        className="input-group-append input-group-prepend m-0"
+      >
+        <DropdownToggle caret color="rk-white">
+          {currentSearchInObject.text}
+        </DropdownToggle>
+        <DropdownMenu>{searchInItems}</DropdownMenu>
+      </ButtonDropdown>
+    </Fragment>
+  ) : null;
 }
 
 function SearchOrder(props) {
   const { params, orderByMap, searchWithValues } = props;
 
-  const orderingIcon = params.ascending ?
-    faSortAmountUp :
-    faSortAmountDown;
+  const orderingIcon = params.ascending ? faSortAmountUp : faSortAmountDown;
   const [dropdownOrderBy, setDropdownOrderBy] = useState(false);
   const toggleDropdownOrderBy = () => setDropdownOrderBy(!dropdownOrderBy);
-  const currentOrderMapObject = Object.values(orderByMap).find(v => v.value === params.orderBy);
+  const currentOrderMapObject = Object.values(orderByMap).find(
+    (v) => v.value === params.orderBy
+  );
 
-
-  const orderByItems = Object.values(orderByMap).map(v => (
-    <DropdownItem key={v.value} value={v.value} onClick={() => { searchWithValues({ orderBy: v.value }); }}>
-      {v.value === currentOrderMapObject.value ? <FontAwesomeIcon icon={faCheck} /> : null} {v.text}
+  const orderByItems = Object.values(orderByMap).map((v) => (
+    <DropdownItem
+      key={v.value}
+      value={v.value}
+      onClick={() => {
+        searchWithValues({ orderBy: v.value });
+      }}
+    >
+      {v.value === currentOrderMapObject.value ? (
+        <FontAwesomeIcon icon={faCheck} />
+      ) : null}{" "}
+      {v.text}
     </DropdownItem>
   ));
 
-  return <Fragment>
-    <Col className="col-auto ms-2">
-      <Label className="text-rk-text">
-        Order by:&nbsp;
-      </Label>
-      <Fragment>
-        <ButtonDropdown toggle={toggleDropdownOrderBy} isOpen={dropdownOrderBy}>
-          <DropdownToggle caret color="rk-light" >
-            {currentOrderMapObject.text}
-          </DropdownToggle>
-          <DropdownMenu>
-            {orderByItems}
-          </DropdownMenu>
-        </ButtonDropdown>
-      </Fragment>
-    </Col>
-    <Col className="col-auto">
-      <Button color="rk-white" onClick={() => { searchWithValues({ ascending: !params.ascending }); }}>
-        <FontAwesomeIcon className="m-0" icon={orderingIcon} />
-      </Button>
-    </Col>
-  </Fragment>;
+  return (
+    <Fragment>
+      <Col className="col-auto ms-2">
+        <Label className="text-rk-text">Order by:&nbsp;</Label>
+        <Fragment>
+          <ButtonDropdown
+            toggle={toggleDropdownOrderBy}
+            isOpen={dropdownOrderBy}
+          >
+            <DropdownToggle caret color="rk-light">
+              {currentOrderMapObject.text}
+            </DropdownToggle>
+            <DropdownMenu>{orderByItems}</DropdownMenu>
+          </ButtonDropdown>
+        </Fragment>
+      </Col>
+      <Col className="col-auto">
+        <Button
+          color="rk-white"
+          onClick={() => {
+            searchWithValues({ ascending: !params.ascending });
+          }}
+        >
+          <FontAwesomeIcon className="m-0" icon={orderingIcon} />
+        </Button>
+      </Col>
+    </Fragment>
+  );
 }
 
 function ProjectListSearch(props) {
-  const { loggedIn, orderByMap, params, search, searchInMap, sectionsMap, gridDisplay, setGridDisplay } = props;
+  const {
+    loggedIn,
+    orderByMap,
+    params,
+    search,
+    searchInMap,
+    sectionsMap,
+    gridDisplay,
+    setGridDisplay,
+  } = props;
 
   // input and search
   const [userInput, setUserInput] = useState(params.query.toString());
@@ -172,44 +229,83 @@ function ProjectListSearch(props) {
     // ? on `page` because the user could modify the search and change page without searching first
   }, [params.query, params.page]);
 
-  const currentSearchInObject = Object.values(searchInMap).find(v => v.value === params.searchIn);
+  const currentSearchInObject = Object.values(searchInMap).find(
+    (v) => v.value === params.searchIn
+  );
 
-  const navBar = props.loggedIn ?
-    (<ProjectListNav key="navbar" getPreciseUrl={props.getPreciseUrl} sectionsMap={props.sectionsMap} />) :
-    null;
+  const navBar = props.loggedIn ? (
+    <ProjectListNav
+      key="navbar"
+      getPreciseUrl={props.getPreciseUrl}
+      sectionsMap={props.sectionsMap}
+    />
+  ) : null;
 
-  const navBarJustify = props.loggedIn ?
-    "row row-cols-lg-auto justify-content-lg-end justify-content-md-center g-1 pb-2"
+  const navBarJustify = props.loggedIn
+    ? "row row-cols-lg-auto justify-content-lg-end justify-content-md-center g-1 pb-2"
     : "row row-cols-lg-auto justify-content-start g-1 pb-2";
 
   return (
     <Row className="justify-content-lg-between justify-content-md-center pb-2">
       {navBar}
       <Col md={12} lg={7} className="pb-2">
-        <Form inline onSubmit={e => { e.preventDefault(); searchWithValues(); }}
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault();
+            searchWithValues();
+          }}
           className={navBarJustify}
-          size="sm">
+          size="sm"
+        >
           <Col className="col-auto">
             <InputGroup>
-              <Input name="searchQuery" id="searchQuery"
+              <Input
+                name="searchQuery"
+                id="searchQuery"
                 className="border-light text-rk-text"
-                placeholder={"Search... "} value={userInput}
-                onChange={e => setUserInput(e.target.value.toString())} />
-              <SearchInFilter loggedIn={loggedIn} params={params} sectionsMap={sectionsMap} searchInMap={searchInMap}
-                searchWithValues={searchWithValues} currentSearchInObject={currentSearchInObject} />
+                placeholder={"Search... "}
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value.toString())}
+              />
+              <SearchInFilter
+                loggedIn={loggedIn}
+                params={params}
+                sectionsMap={sectionsMap}
+                searchInMap={searchInMap}
+                searchWithValues={searchWithValues}
+                currentSearchInObject={currentSearchInObject}
+              />
             </InputGroup>
           </Col>
-          <SearchOrder params={params} orderByMap={orderByMap} searchWithValues={searchWithValues} />
+          <SearchOrder
+            params={params}
+            orderByMap={orderByMap}
+            searchWithValues={searchWithValues}
+          />
           <Col className="col-auto">
-            <Button color="rk-white" id="searchButton" onClick={() => searchWithValues()}>
+            <Button
+              color="rk-white"
+              id="searchButton"
+              onClick={() => searchWithValues()}
+            >
               <FontAwesomeIcon className="m-0" icon={faSearch} />
             </Button>
           </Col>
           <Col className="col-auto">
-            <Button className="btn-icon-text" color="rk-white" id="displayButton"
-              onClick={() => setGridDisplay(!gridDisplay)}>
-              <FontAwesomeIcon className={!gridDisplay ? "text-rk-green" : ""} icon={faBars} />
-              <FontAwesomeIcon className={gridDisplay ? "text-rk-green m-0" : "m-0"} icon={faTh} />
+            <Button
+              className="btn-icon-text"
+              color="rk-white"
+              id="displayButton"
+              onClick={() => setGridDisplay(!gridDisplay)}
+            >
+              <FontAwesomeIcon
+                className={!gridDisplay ? "text-rk-green" : ""}
+                icon={faBars}
+              />
+              <FontAwesomeIcon
+                className={gridDisplay ? "text-rk-green m-0" : "m-0"}
+                icon={faTh}
+              />
             </Button>
           </Col>
         </Form>
@@ -223,39 +319,45 @@ function ProjectListUsersFilter(props) {
 
   let usersList = null;
   if (users.list && users.list.length) {
-    usersList = users.list.map(u => {
-      const identifier = u.full_path ?
-        encodeURIComponent(u.full_path) :
-        u.username;
-      const active = target === identifier ?
-        true :
-        false;
+    usersList = users.list.map((u) => {
+      const identifier = u.full_path
+        ? encodeURIComponent(u.full_path)
+        : u.username;
+      const active = target === identifier ? true : false;
       return (
-        <Button key={u.id} className="mb-1 me-1 d-inline-block" color="rk-white" size="sm"
-          onClick={() => { setTarget(identifier); }} active={active} >
-          { u.name}
-          <small className="font-italic d-none d-sm-block">{decodeURIComponent(identifier)}</small>
+        <Button
+          key={u.id}
+          className="mb-1 me-1 d-inline-block"
+          color="rk-white"
+          size="sm"
+          onClick={() => {
+            setTarget(identifier);
+          }}
+          active={active}
+        >
+          {u.name}
+          <small className="font-italic d-none d-sm-block">
+            {decodeURIComponent(identifier)}
+          </small>
         </Button>
       );
     });
   }
 
-  const list = usersList ?
-    (<Col className="d-flex flex-col flex-wrap justify-content-center justify-content-lg-start rk-button-group">
+  const list = usersList ? (
+    <Col className="d-flex flex-col flex-wrap justify-content-center justify-content-lg-start rk-button-group">
       {usersList}
     </Col>
-    ) :
-    null;
+  ) : null;
 
-  return (list);
+  return list;
 }
 
-function verifyRules(params, searchInMap, sectionsMap) {
+function verifyRules(params, searchInMap) {
   if (params.searchIn === searchInMap.projects.value || !params.searchIn) {
     if (params.query && params.query.length < 3)
       return "You can either leave the filter empty to browse all projects or enter at least 3 characters to filter.";
-  }
-  else {
+  } else {
     if (!params.query || params.query.length < 3)
       return `Filtering by ${params.searchIn.toLowerCase()} requires a filter of minimum 3 characters.`;
   }
@@ -263,35 +365,54 @@ function verifyRules(params, searchInMap, sectionsMap) {
 
 function ProjectListContent(props) {
   const {
-    fetched, fetching, getAvatar, loggedIn, orderByMap, params, projects, search, searchInMap, sectionsMap,
-    setTarget, users, target, totalProjects
+    fetched,
+    fetching,
+    getAvatar,
+    loggedIn,
+    orderByMap,
+    params,
+    projects,
+    search,
+    searchInMap,
+    sectionsMap,
+    setTarget,
+    users,
+    target,
+    totalProjects,
   } = props;
 
   const [gridDisplay, setGridDisplay] = useState(true);
 
   let usersFilter = null;
   if (params.searchIn !== searchInMap.projects.value) {
-    if (users.fetching)
-      usersFilter = (<Loader />);
+    if (users.fetching) usersFilter = <Loader />;
     else if (users.fetched)
-      usersFilter = (<ProjectListUsersFilter users={users} setTarget={setTarget} target={target} />);
+      usersFilter = (
+        <ProjectListUsersFilter
+          users={users}
+          setTarget={setTarget}
+          target={target}
+        />
+      );
   }
 
   let content = null;
   // don't show anything if users are updating, since the content would be outdated
   if (!users.fetching) {
     if (fetching) {
-      content = (<Loader />);
-    }
-    else if (!fetched) {
-      content = (<p>Please enter text in the field above and click on Search to see the results.</p>);
-    }
-    else {
+      content = <Loader />;
+    } else if (!fetched) {
+      content = (
+        <p>
+          Please enter text in the field above and click on Search to see the
+          results.
+        </p>
+      );
+    } else {
       const notAllowed = verifyRules(params, searchInMap, sectionsMap);
       if (notAllowed) {
-        content = (<p>{notAllowed}</p>);
-      }
-      else {
+        content = <p>{notAllowed}</p>;
+      } else {
         content = (
           <ProjectListRows
             currentPage={params.page || 1}
@@ -331,19 +452,35 @@ function ProjectListContent(props) {
 function ProjectListNav(props) {
   const { getPreciseUrl, sectionsMap } = props;
   return (
-    <Col className="d-flex pb-2 mb-1 justify-content-evenly justify-content-lg-between" md={12} lg={5}>
+    <Col
+      className="d-flex pb-2 mb-1 justify-content-evenly justify-content-lg-between"
+      md={12}
+      lg={5}
+    >
       <Nav pills className="nav-pills-underline" size="sm">
         <NavItem>
-          <RenkuNavLink title="Your Projects" id="link-projects-your"
-            to={getPreciseUrl(sectionsMap.own)} noSubPath={true} />
+          <RenkuNavLink
+            title="Your Projects"
+            id="link-projects-your"
+            to={getPreciseUrl(sectionsMap.own)}
+            noSubPath={true}
+          />
         </NavItem>
         <NavItem>
-          <RenkuNavLink title="Starred Projects" id="link-projects-starred"
-            to={getPreciseUrl(sectionsMap.starred)} exact={false} />
+          <RenkuNavLink
+            title="Starred Projects"
+            id="link-projects-starred"
+            to={getPreciseUrl(sectionsMap.starred)}
+            exact={false}
+          />
         </NavItem>
         <NavItem>
-          <RenkuNavLink title="All Projects" id="link-projects-all"
-            to={getPreciseUrl(sectionsMap.all)} exact={false} />
+          <RenkuNavLink
+            title="All Projects"
+            id="link-projects-all"
+            to={getPreciseUrl(sectionsMap.all)}
+            exact={false}
+          />
         </NavItem>
       </Nav>
     </Col>
@@ -352,17 +489,35 @@ function ProjectListNav(props) {
 
 function ProjectList(props) {
   const {
-    fetched, fetching, getAvatar, loggedIn, orderByMap, params, projectNew, projects, search, searchInMap,
-    sectionsMap, setTarget, users, target, totalProjects
+    fetched,
+    fetching,
+    getAvatar,
+    loggedIn,
+    orderByMap,
+    params,
+    projectNew,
+    projects,
+    search,
+    searchInMap,
+    sectionsMap,
+    setTarget,
+    users,
+    target,
+    totalProjects,
   } = props;
 
-  const newProjectButton = loggedIn ?
-    (<div>
-      <Link className="btn btn-secondary btn-icon-text" role="button" to={projectNew}>
+  const newProjectButton = loggedIn ? (
+    <div>
+      <Link
+        className="btn btn-secondary btn-icon-text"
+        role="button"
+        to={projectNew}
+      >
         <FontAwesomeIcon icon={faPlus} />
         New project
-      </Link></div>) :
-    null;
+      </Link>
+    </div>
+  ) : null;
   return (
     <Fragment>
       <Row className="pt-2 pb-3">
@@ -391,7 +546,6 @@ function ProjectList(props) {
     </Fragment>
   );
 }
-
 
 export default ProjectList;
 export { ProjectList };

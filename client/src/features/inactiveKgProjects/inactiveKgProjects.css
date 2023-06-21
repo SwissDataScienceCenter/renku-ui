@@ -1,0 +1,27 @@
+.inactive-kg-projects-table th {
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+.inactive-kg-projects-table td {
+  vertical-align: middle;
+}
+
+.inactive-kg-projects-table svg {
+  min-width: 24px;
+}
+
+.inactive-kg-projects-table thead th {
+  border-color: white;
+}
+
+.inactive-kg-projects-table tr:hover {
+  background-color: var(--bs-rk-background-0);
+}
+
+.activationHeader {
+  font-size: 27px;
+}
+.project-title-table {
+  max-width: 300px;
+}

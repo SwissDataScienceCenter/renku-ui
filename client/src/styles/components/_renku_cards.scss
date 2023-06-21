@@ -16,6 +16,7 @@
   height: 198px;
   border-radius: 8px 8px 0 0;
   background-size: cover;
+  overflow: hidden;
 }
 .card-header-entity--large {
   height: 130px;
@@ -48,30 +49,36 @@
 }
 
 .card-type-label {
-  border-radius: 1000px;
-  background-color: rgba(255,255,255,0.8);
-  padding: 5px 15px;
+  padding: 5px 0;
 }
 
-.card-visibility-icon svg {
-  color: rgba(255,255,255,0.6);
+.card-visibility-icon {
+  padding: 5px 0;
 }
+
 .card-visibility-icon--bar svg {
   color: var(--bs-dark);
 }
 
 .card-bg-title {
-  color: rgba(255,255,255,0.2);
+  color: rgba(255, 255, 255, 0.2);
   font-size: 150px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: clip;
   line-height: normal;
+  margin-top: 50px;
 }
 
 .card-bg-title--large {
   position: absolute;
   line-height: 150px;
+}
+
+.card-bg-title--small {
+  font-size: 100px;
+  margin-top: 0;
+  padding-top: 30px;
 }
 
 .card-title {
@@ -82,7 +89,12 @@
 }
 
 .card-tags {
+  margin-top: 8px;
   min-height: 24px;
+}
+
+.card-small-text {
+  font-size: 14px;
 }
 
 .card-description {
@@ -91,8 +103,8 @@
 
 .card-button {
   position: absolute;
-  top: 175px;
-  right: 20px;
+  top: 182px;
+  right: 10px;
 }
 
 .main-card-container {
@@ -102,9 +114,8 @@
   }
 
   .card-body {
-    background-color: #F5F5FA;
+    background-color: #f5f5fa;
     border-radius: 7px;
     padding: 20px;
   }
 }
-

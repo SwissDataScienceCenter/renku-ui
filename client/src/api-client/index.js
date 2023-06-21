@@ -20,17 +20,13 @@ import addDatasetMethods from "./dataset";
 import addEnvironmentMethods from "./environment";
 import addGraphMethods from "./graph";
 import addInstanceMethods from "./instance";
-import addIssueMethods from "./issue";
 import addJobMethods from "./job";
-import addMergeRequestMethods from "./merge-request";
-import addMigrationMethods from "./migration";
 import addNotebookServersMethods from "./notebook-servers";
 import addPipelineMethods from "./pipeline";
 import addProjectMethods from "./project";
 import addRepositoryMethods from "./repository";
 import addTemplatesMethods from "./templates";
 import addUserMethods from "./user";
-import addWorkflowsMethods from "./workflows";
 import processPaginationHeaders from "./pagination";
 import testClient from "./test-client";
 import { APIError, alertAPIErrors, API_ERRORS } from "./errors";
@@ -50,9 +46,8 @@ const FETCH_DEFAULT = {
   alertOnErr: false,
   reLogin: true,
   anonymousLogin: false,
-  maxIterations: 10
+  maxIterations: 10,
 };
-
 
 /**
  * API client to query all the RenkuLab API
@@ -71,17 +66,13 @@ class APIClient {
     addEnvironmentMethods(this);
     addGraphMethods(this);
     addInstanceMethods(this);
-    addIssueMethods(this);
     addJobMethods(this);
-    addMergeRequestMethods(this);
-    addMigrationMethods(this);
     addNotebookServersMethods(this);
     addPipelineMethods(this);
     addProjectMethods(this);
     addRepositoryMethods(this);
     addTemplatesMethods(this);
     addUserMethods(this);
-    addWorkflowsMethods(this);
   }
 
   /**
@@ -114,26 +105,23 @@ class APIClient {
         if (reLogin && error.case === API_ERRORS.unauthorizedError)
           return this.doLogin();
         // Alert only if corresponding option is set to true
-        else if (alertOnErr)
-          alertAPIErrors(error);
+        else if (alertOnErr) alertAPIErrors(error);
         // Default case: Re-raise the error for the application
         // to take care of it.
-        else
-          return Promise.reject(error);
+        else return Promise.reject(error);
       })
-      .then(response => {
+      .then((response) => {
         // This avoids showing errors for a second while doing the anonymous log-in.
         // It should be solved in a more elegant way once we support interruptable fetch #776
         if (!response && anonymousLogin)
           return returnType === RETURN_TYPES.json ? { data: {} } : "";
-        else if (!response)
-          return null;
+        else if (!response) return null;
         switch (returnType) {
           case RETURN_TYPES.json:
-            return response.json().then(data => {
+            return response.json().then((data) => {
               return {
                 data,
-                pagination: processPaginationHeaders(response.headers)
+                pagination: processPaginationHeaders(response.headers),
               };
             });
           case RETURN_TYPES.text:
@@ -158,30 +146,42 @@ class APIClient {
    * @example "for await" syntax that consumes the async iterator
    * for await (const partialData of clientIterableFetch("myApiUrl")) { console.log(partialData) }
    */
-  async* clientIterableFetch(url, {
-    options = FETCH_DEFAULT.options,
-    returnType = FETCH_DEFAULT.returnType,
-    alertOnErr = FETCH_DEFAULT.alertOnErr,
-    reLogin = FETCH_DEFAULT.reLogin,
-    anonymousLogin = FETCH_DEFAULT.anonymousLogin,
-    maxIterations = FETCH_DEFAULT.maxIterations
-  } = {}) {
-    let iterations = 1, page = 1;
+  async *clientIterableFetch(
+    url,
+    {
+      options = FETCH_DEFAULT.options,
+      returnType = FETCH_DEFAULT.returnType,
+      alertOnErr = FETCH_DEFAULT.alertOnErr,
+      reLogin = FETCH_DEFAULT.reLogin,
+      anonymousLogin = FETCH_DEFAULT.anonymousLogin,
+      maxIterations = FETCH_DEFAULT.maxIterations,
+    } = {}
+  ) {
+    let iterations = 1,
+      page = 1;
     do {
       // throw an error if the number of iterations is more than the maximum
       if (maxIterations && iterations > maxIterations)
         throw new Error(`Cannot iterate more than ${maxIterations} times.`);
 
       // set target page and fetch
-      if (options.queryParams)
-        options.queryParams.page = page;
-      else
-        options.queryParams = { page: page };
-      const response = await this.clientFetch(url, options, returnType, alertOnErr, reLogin, anonymousLogin);
+      if (options.queryParams) options.queryParams.page = page;
+      else options.queryParams = { page: page };
+      const response = await this.clientFetch(
+        url,
+        options,
+        returnType,
+        alertOnErr,
+        reLogin,
+        anonymousLogin
+      );
       if (!response.pagination)
-        throw new Error("Invoked API doesn't return structured data, making pagination unusable.");
+        throw new Error(
+          "Invoked API doesn't return structured data, making pagination unusable."
+        );
       page = response.pagination.nextPage;
-      response.pagination.progress = response.pagination.currentPage / response.pagination.totalPages;
+      response.pagination.progress =
+        response.pagination.currentPage / response.pagination.totalPages;
       iterations++;
       yield response;
     } while (page);
@@ -190,17 +190,13 @@ class APIClient {
   // clientFetch does't handle non-2xx responses (ex: graph APIs)
   // can't suppress the error on chrome console on 404 anyway...
   // REF: https://stackoverflow.com/questions/4500741/suppress-chrome-failed-to-load-resource-messages-in-console
-  simpleFetch(
-    url,
-    method = "GET",
-    queryParams = null
-  ) {
+  simpleFetch(url, method = "GET", queryParams = null) {
     const urlObject = new URL(url);
     if (queryParams)
       urlObject.search = new URLSearchParams(queryParams).toString();
     let headers = new Headers({
-      "credentials": "same-origin",
-      "X-Requested-With": "XMLHttpRequest"
+      credentials: "same-origin",
+      "X-Requested-With": "XMLHttpRequest",
     });
     return fetch(urlObject, { headers, method });
   }
@@ -208,17 +204,21 @@ class APIClient {
   doLogin() {
     // This is invoked to check authentication.
     // ? It may be safer to invoke `LoginHelper.notifyLogout()`, but it doesn't seem to be necessary
-    window.location = `${this.uiserverUrl}/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
+    window.location = `${
+      this.uiserverUrl
+    }/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
   doLogout() {
     // ? Whenever this will be used, remember to invoke `LoginHelper.notifyLogout()`
-    window.location = `${this.uiserverUrl}/auth/logout?redirect_url=${encodeURIComponent(window.location.href)}`;
+    window.location = `${
+      this.uiserverUrl
+    }/auth/logout?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
   getBasicHeaders() {
     let headers = {
-      "Accept": "application/json"
+      Accept: "application/json",
     };
     return new Headers(headers);
   }
@@ -244,4 +244,11 @@ class APIClient {
 }
 
 export default APIClient;
-export { alertAPIErrors, APIError, ACCESS_LEVELS, API_ERRORS, FETCH_DEFAULT, testClient };
+export {
+  alertAPIErrors,
+  APIError,
+  ACCESS_LEVELS,
+  API_ERRORS,
+  FETCH_DEFAULT,
+  testClient,
+};

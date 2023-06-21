@@ -16,86 +16,103 @@
  * limitations under the License.
  */
 
-
 import React, { useEffect, useState } from "react";
 
 import "./SessionCheatSheet.css";
 import * as cheatsheetJson from "./cheatsheet.json";
-import { ExternalDocsLink } from "../../utils/components/ExternalLinks";
-import { RenkuPythonDocs } from "../../utils/constants/Docs";
-import { Clipboard } from "../../utils/components/Clipboard";
+import { ExternalDocsLink } from "../../components/ExternalLinks";
+import { Docs, RenkuPythonDocs } from "../../utils/constants/Docs";
 import { Col } from "../../utils/ts-wrappers";
+import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 
 interface CommandDescProps {
   command: string;
   desc: string | React.ReactNode;
-  clipboard?: boolean;
 }
-function CommandDesc({ command = "", desc = "", clipboard = true }: CommandDescProps) {
-  return <div>
-    <code>{command}</code>
-    {
-      clipboard ? <Clipboard clipboardText={command} /> : null
-    }
-    <div className="renku-info" style={{ paddingTop: "3px" }}>{desc}</div>
-  </div>;
+function CommandDesc({ command = "", desc = "" }: CommandDescProps) {
+  return (
+    <div>
+      <CommandCopy command={command} />
+      <div className="renku-info" style={{ paddingTop: "3px" }}>
+        {desc}
+      </div>
+    </div>
+  );
 }
-
 
 interface CommandsRowProps {
   children: React.ReactNode;
 }
 function CommandsRow({ children }: CommandsRowProps) {
-  return <div className="d-flex justify-content-between flex-column flex-md-row commands-row flex-wrap">
-    {children}
-  </div>;
+  return (
+    <div className="d-flex justify-content-between flex-column flex-md-row commands-row flex-wrap">
+      {children}
+    </div>
+  );
 }
-
 
 function Collaboration() {
-  const mergeDesc = <span>Incorporate the changes from the &lt;other branch&gt; into your branch.
-    See the <ExternalDocsLink url="https://www.atlassian.com/git/tutorials/using-branches/git-merge"
-    title="git merge docs" /> for details.
-  </span>;
-  return <div className="mb-3">
-    <CommandsRow>
-      <div>
-        <h2>Collaboration</h2>
-        <p className="renku-info">
-          Working with others requires coordination, and branching/merging is a common way to handle this.
-        </p>
-      </div>
-    </CommandsRow>
-    <CommandsRow>
-      <CommandDesc command="git checkout <branch>"
-        desc="Switch to the <branch>, replacing the contents of your project with the version in the branch." />
-      <CommandDesc command="git merge <other branch>"
-        desc={mergeDesc} />
-    </CommandsRow>
-  </div>;
+  const mergeDesc = (
+    <span>
+      Incorporate the changes from the &lt;other branch&gt; into your branch.
+      See the{" "}
+      <ExternalDocsLink
+        url="https://www.atlassian.com/git/tutorials/using-branches/git-merge"
+        title="git merge docs"
+      />{" "}
+      for details.
+    </span>
+  );
+  return (
+    <div className="mb-3">
+      <CommandsRow>
+        <div>
+          <h2>Collaboration</h2>
+          <p className="renku-info">
+            Working with others requires coordination, and branching/merging is
+            a common way to handle this.
+          </p>
+        </div>
+      </CommandsRow>
+      <CommandsRow>
+        <CommandDesc
+          command="git checkout <branch>"
+          desc="Switch to the <branch>, replacing the contents of your project with the version in the branch."
+        />
+        <CommandDesc command="git merge <other branch>" desc={mergeDesc} />
+      </CommandsRow>
+    </div>
+  );
 }
 
-
 function LearnMore() {
-  return <div className="mb-3">
-    <CommandsRow>
-      <div>
-        <h2>Want to learn more?</h2>
-      </div>
-    </CommandsRow>
-    <CommandsRow>
-      <div>
-        For a more detailed overview of common commands, see the {" "}
-        {/* eslint-disable-next-line max-len */}
-        <ExternalDocsLink url={`${RenkuPythonDocs.READ_THE_DOCS_ROOT}/_static/cheatsheet/cheatsheet.pdf`}
-          title="renku python cheat sheet"/>.
-      </div>
-      <div>
-        The <ExternalDocsLink url={`${RenkuPythonDocs.READ_THE_DOCS_ROOT}/reference/commands.html`}
-          title="Renku documentation" /> covers much more.
-      </div>
-    </CommandsRow>
-  </div>;
+  return (
+    <div className="mb-3">
+      <CommandsRow>
+        <div>
+          <h2>Want to learn more?</h2>
+        </div>
+      </CommandsRow>
+      <CommandsRow>
+        <div>
+          For a more detailed overview of common commands, see the{" "}
+          <ExternalDocsLink
+            url={`${RenkuPythonDocs.READ_THE_DOCS_ROOT}/_static/cheatsheet/cheatsheet.pdf`}
+            title="renku python cheat sheet"
+          />
+          .
+        </div>
+        <div>
+          The{" "}
+          <ExternalDocsLink
+            url={Docs.rtdPythonReferencePage("commands")}
+            title="Renku documentation"
+          />{" "}
+          covers much more.
+        </div>
+      </CommandsRow>
+    </div>
+  );
 }
 
 interface CommandsGroupProps {
@@ -104,25 +121,30 @@ interface CommandsGroupProps {
 function CommandsGroup({ group }: CommandsGroupProps) {
   const commands = group.commands.map((command) => {
     if (command.target.includes("ui")) {
-      return (<Col xs={12} md={6} lg={4} className="command" key={command.command}>
-        <CommandDesc command={command.command} desc={command.description}/></Col>);
+      return (
+        <Col xs={12} md={6} lg={4} className="command" key={command.command}>
+          <CommandDesc command={command.command} desc={command.description} />
+        </Col>
+      );
     }
     return null;
   });
-  return <div className="mb-3">
-    <CommandsRow>
-      <div><h2>{group.name}</h2></div>
-    </CommandsRow>
-    <CommandsRow>
-      {commands}
-    </CommandsRow>
-  </div>;
+  return (
+    <div className="mb-3">
+      <CommandsRow>
+        <div>
+          <h2>{group.name}</h2>
+        </div>
+      </CommandsRow>
+      <CommandsRow>{commands}</CommandsRow>
+    </div>
+  );
 }
 
 interface CheatSheetFile {
   default: {
     groups: GroupCommand[];
-  }
+  };
 }
 interface Command {
   command: string;
@@ -136,30 +158,36 @@ interface GroupCommand {
 interface SessionCheatSheetGeneratedProps {
   version?: string;
 }
-function SessionCheatSheetGenerated({ version }: SessionCheatSheetGeneratedProps) {
+function SessionCheatSheetGenerated({
+  version,
+}: SessionCheatSheetGeneratedProps) {
   const [groups, setGroups] = useState<GroupCommand[]>([]);
   useEffect(() => {
-    const cheatSheet: CheatSheetFile = getCheatSheetByVersion(version);
+    const cheatSheet: CheatSheetFile = getCheatSheetByVersion();
     const uiGroups = cheatsheetJsonToUIGroups(cheatSheet);
     setGroups(uiGroups);
   }, [version]);
 
-  return <div className="commands">
-    <h1 className="mb-5">Renku Cheat Sheet</h1>
-    { groups.map((group) => <CommandsGroup key={group.name} group={group} /> )}
-    <Collaboration />
-    <LearnMore />
-  </div>;
+  return (
+    <div className="commands">
+      <h1 className="mb-5">Renku Cheat Sheet</h1>
+      {groups.map((group) => (
+        <CommandsGroup key={group.name} group={group} />
+      ))}
+      <Collaboration />
+      <LearnMore />
+    </div>
+  );
 }
 
-function getCheatSheetByVersion(version?: string): CheatSheetFile {
+function getCheatSheetByVersion(): CheatSheetFile {
   return cheatsheetJson as unknown as CheatSheetFile;
 }
 
 function cheatsheetJsonToUIGroups(cheatSheet: CheatSheetFile) {
   const allGroups: GroupCommand[] = cheatSheet?.default?.groups;
   return allGroups.filter((group: GroupCommand) => {
-    const uiCommands = group?.commands?.filter( (command: Command) => {
+    const uiCommands = group?.commands?.filter((command: Command) => {
       return command.target?.includes("ui");
     });
     return uiCommands.length;

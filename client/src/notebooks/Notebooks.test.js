@@ -23,12 +23,17 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 
 import {
-  CheckNotebookStatus, Notebooks, NotebooksDisabled, NotebooksHelper, ShowSession, StartNotebookServer
+  CheckNotebookStatus,
+  Notebooks,
+  NotebooksDisabled,
+  NotebooksHelper,
+  ShowSession,
+  StartNotebookServer,
 } from "./index";
 import { mergeEnumOptions } from "./Notebooks.present";
 import { ExpectedAnnotations } from "./Notebooks.state";
@@ -37,52 +42,57 @@ import { ProjectCoordinator } from "../project";
 import { testClient as client } from "../api-client";
 import { Provider } from "react-redux";
 
-
 const model = new StateModel(globalSchema);
 
 const simplifiedGlobalOptions = {
   default_url: {
     default: "/lab",
     options: ["/lab", "/rstudio"],
-    type: "enum"
+    type: "enum",
   },
   cpu_request: {
     default: 1,
     options: [0.5, 1, 2],
-    type: "enum"
+    type: "enum",
   },
   mem_request: {
     default: "1G",
     options: ["1G", "2G"],
-    type: "enum"
+    type: "enum",
   },
   lfs_auto_fetch: {
     default: false,
-    type: "boolean"
+    type: "boolean",
   },
   gpu_request: {
     default: 0,
-    type: "int"
-  }
+    type: "int",
+  },
 };
 
 describe("notebook server clean annotation", () => {
   const domain = ExpectedAnnotations.domain;
   const baseAnnotations = ExpectedAnnotations[domain].default;
+
+  const namespace = "myCoolNamespace";
+  const branch = "anotherBranch";
+  const projectName = "funkyProject";
+  const repository = `https://fake.repo/${namespace}/${projectName}`;
+  const defaultImageUsedText = "True";
+  const defaultImageUsedBool = true;
+
   it("renku.io default", () => {
     const fakeAnswer = {};
-    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, domain);
+    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(
+      fakeAnswer,
+      domain
+    );
     const expectedAnnotations = { ...baseAnnotations };
-    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
+    expect(JSON.stringify(elaboratedAnnotations)).toBe(
+      JSON.stringify(expectedAnnotations)
+    );
   });
   it("renku.io mixed", () => {
-    const namespace = "myCoolNamespace";
-    const branch = "anotherBranch";
-    const projectName = "funkyProject";
-    const repository = `https://fake.repo/${namespace}/${projectName}`;
-    const defaultImageUsedText = "True";
-    const defaultImageUsedBool = true;
-
     const fakeAnswer = {
       [`${domain}/namespace`]: namespace,
       [`${domain}/branch`]: branch,
@@ -90,11 +100,73 @@ describe("notebook server clean annotation", () => {
       [`${domain}/repository`]: repository,
       [`${domain}/default_image_used`]: defaultImageUsedText,
     };
-    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, domain);
+    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(
+      fakeAnswer,
+      domain
+    );
     const expectedAnnotations = {
-      ...baseAnnotations, namespace, branch, projectName, repository, default_image_used: defaultImageUsedBool
+      ...baseAnnotations,
+      namespace,
+      branch,
+      projectName,
+      repository,
+      default_image_used: defaultImageUsedBool,
     };
-    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
+    expect(JSON.stringify(elaboratedAnnotations)).toBe(
+      JSON.stringify(expectedAnnotations)
+    );
+  });
+  it("renku.io occasionally missing.", () => {
+    const fakeAnswer = {
+      [`${domain}/namespace`]: namespace,
+      branch: branch,
+      [`${domain}/projectName`]: projectName,
+      repository: repository,
+      default_image_used: defaultImageUsedText,
+    };
+    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(
+      fakeAnswer,
+      domain
+    );
+    const expectedAnnotations = {
+      ...baseAnnotations,
+      namespace,
+      branch,
+      projectName,
+      repository,
+      default_image_used: defaultImageUsedBool,
+    };
+    expect(JSON.stringify(elaboratedAnnotations)).toBe(
+      JSON.stringify(expectedAnnotations)
+    );
+  });
+  it("renku.io double-clean", () => {
+    const fakeAnswer = {
+      [`${domain}/namespace`]: namespace,
+      [`${domain}/branch`]: branch,
+      [`${domain}/projectName`]: projectName,
+      [`${domain}/repository`]: repository,
+      [`${domain}/default_image_used`]: defaultImageUsedText,
+    };
+    const firstPassAnnotations = NotebooksHelper.cleanAnnotations(
+      fakeAnswer,
+      domain
+    );
+    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(
+      firstPassAnnotations,
+      domain
+    );
+    const expectedAnnotations = {
+      ...baseAnnotations,
+      namespace,
+      branch,
+      projectName,
+      repository,
+      default_image_used: defaultImageUsedBool,
+    };
+    expect(JSON.stringify(elaboratedAnnotations)).toBe(
+      JSON.stringify(expectedAnnotations)
+    );
   });
 });
 
@@ -138,7 +210,7 @@ describe("parse project level session options", () => {
     expect(Object.keys(parsedContent).length).toBe(0);
 
     const contents = ["just invalid text", true, 1, null];
-    contents.forEach(content => {
+    contents.forEach((content) => {
       const noContent = NotebooksHelper.parseProjectOptions(content);
       expect(Object.keys(noContent).length).toBe(0);
     });
@@ -170,9 +242,12 @@ describe("verify project level options validity according to deployment global o
       { option: "gpu_request", value: true, result: false },
     ];
 
-    testValues.forEach(testSet => {
+    testValues.forEach((testSet) => {
       const result = NotebooksHelper.checkOptionValidity(
-        simplifiedGlobalOptions, testSet.option, testSet.value);
+        simplifiedGlobalOptions,
+        testSet.option,
+        testSet.value
+      );
       expect(result).toBe(testSet.result);
     });
   });
@@ -198,7 +273,10 @@ describe("verify project settings validity", () => {
     // only a combination of valid setting name and setting value return true
     for (const setting of SETTINGS) {
       for (const value of VALUES) {
-        const test = NotebooksHelper.checkSettingValidity(setting.text, value.text);
+        const test = NotebooksHelper.checkSettingValidity(
+          setting.text,
+          value.text
+        );
         expect(test).toEqual(setting.valid && value.valid);
       }
     }
@@ -214,7 +292,8 @@ describe("verify project/global options merging", () => {
       mem_request = 8G
       lfs_auto_fetch = True
     `;
-    const projectOptions = NotebooksHelper.parseProjectOptions(projectOptionsIni);
+    const projectOptions =
+      NotebooksHelper.parseProjectOptions(projectOptionsIni);
 
     const testValues = [
       { option: "default_url", value: ["/lab", "/rstudio", "/tree"] },
@@ -222,8 +301,12 @@ describe("verify project/global options merging", () => {
       { option: "mem_request", value: ["1G", "2G"] },
     ];
 
-    testValues.forEach(v => {
-      const result = mergeEnumOptions(simplifiedGlobalOptions, projectOptions, v["option"]);
+    testValues.forEach((v) => {
+      const result = mergeEnumOptions(
+        simplifiedGlobalOptions,
+        projectOptions,
+        v["option"]
+      );
       expect(result).toEqual(v.value);
     });
   });
@@ -232,57 +315,84 @@ describe("verify project/global options merging", () => {
 describe("verify defaults", () => {
   it("get defaults", () => {
     const projectOptions = {
-      "config": {
+      config: {
         "interactive.default_url": "/lab",
         "interactive.fake": "test value",
         "interactive.mem_request": "2G",
         "interactive.cpu_request": "2",
-        "renku.lfs_threshold": "100 kb"
+        "renku.lfs_threshold": "100 kb",
       },
-      "default": {
+      default: {
         "interactive.default_url": "/lab",
-        "renku.lfs_threshold": "100 kb"
-      }
+        "renku.lfs_threshold": "100 kb",
+      },
     };
-    const projectDefaults = NotebooksHelper.getProjectDefault(simplifiedGlobalOptions, projectOptions);
+    const projectDefaults = NotebooksHelper.getProjectDefault(
+      simplifiedGlobalOptions,
+      projectOptions
+    );
 
     // Correct overwriting
-    expect(projectDefaults.defaults.global["mem_request"])
-      .not.toBe(projectOptions.config["interactive.mem_request"]);
-    expect(projectDefaults.defaults.global["mem_request"])
-      .toBe(simplifiedGlobalOptions["mem_request"].default);
-    expect(projectDefaults.defaults.project["mem_request"])
-      .toBe(projectOptions.config["interactive.mem_request"]);
+    expect(projectDefaults.defaults.global["mem_request"]).not.toBe(
+      projectOptions.config["interactive.mem_request"]
+    );
+    expect(projectDefaults.defaults.global["mem_request"]).toBe(
+      simplifiedGlobalOptions["mem_request"].default
+    );
+    expect(projectDefaults.defaults.project["mem_request"]).toBe(
+      projectOptions.config["interactive.mem_request"]
+    );
 
-    expect(projectDefaults.defaults.global["default_url"])
-      .toBe(projectDefaults.defaults.project["default_url"]);
-    expect(projectDefaults.defaults.global["default_url"])
-      .toBe(simplifiedGlobalOptions["default_url"].default);
-    expect(projectDefaults.defaults.project["default_url"])
-      .toBe(projectOptions.config["interactive.default_url"]);
+    expect(projectDefaults.defaults.global["default_url"]).toBe(
+      projectDefaults.defaults.project["default_url"]
+    );
+    expect(projectDefaults.defaults.global["default_url"]).toBe(
+      simplifiedGlobalOptions["default_url"].default
+    );
+    expect(projectDefaults.defaults.project["default_url"]).toBe(
+      projectOptions.config["interactive.default_url"]
+    );
 
     // No leaks of project-only values to default values
     expect(projectDefaults.defaults.project).toHaveProperty("fake");
     expect(projectDefaults.defaults.global).not.toHaveProperty("fake");
 
     // No leaks of non-sessions options
-    expect(projectDefaults.defaults.project).not.toHaveProperty("renku.lfs_threshold");
-    expect(projectDefaults.defaults.project).not.toHaveProperty("lfs_threshold");
+    expect(projectDefaults.defaults.project).not.toHaveProperty(
+      "renku.lfs_threshold"
+    );
+    expect(projectDefaults.defaults.project).not.toHaveProperty(
+      "lfs_threshold"
+    );
 
     // No leaks of prefix
     expect(projectDefaults.defaults.project).toHaveProperty("default_url");
-    expect(projectDefaults.defaults.project).not.toHaveProperty("interactive.default_url");
+    expect(projectDefaults.defaults.project).not.toHaveProperty(
+      "interactive.default_url"
+    );
   });
 });
 
 describe("ci helper functions", () => {
   it("getCiJobStatus", () => {
-    expect(NotebooksHelper.getCiJobStatus({ status: "running" })).toBe(NotebooksHelper.ciStatuses.wrong);
-    expect(NotebooksHelper.getCiJobStatus({ id: 1, status: "running" })).toBe(NotebooksHelper.ciStatuses.running);
-    expect(NotebooksHelper.getCiJobStatus({ id: 1, status: "canceled" })).toBe(NotebooksHelper.ciStatuses.failure);
-    expect(NotebooksHelper.getCiJobStatus({ id: 1, status: "success" })).toBe(NotebooksHelper.ciStatuses.success);
-    expect(NotebooksHelper.getCiJobStatus({ id: 1, status: "fake" })).toBe(NotebooksHelper.ciStatuses.wrong);
-    expect(NotebooksHelper.getCiJobStatus()).toBe(NotebooksHelper.ciStatuses.wrong);
+    expect(NotebooksHelper.getCiJobStatus({ status: "running" })).toBe(
+      NotebooksHelper.ciStatuses.wrong
+    );
+    expect(NotebooksHelper.getCiJobStatus({ id: 1, status: "running" })).toBe(
+      NotebooksHelper.ciStatuses.running
+    );
+    expect(NotebooksHelper.getCiJobStatus({ id: 1, status: "canceled" })).toBe(
+      NotebooksHelper.ciStatuses.failure
+    );
+    expect(NotebooksHelper.getCiJobStatus({ id: 1, status: "success" })).toBe(
+      NotebooksHelper.ciStatuses.success
+    );
+    expect(NotebooksHelper.getCiJobStatus({ id: 1, status: "fake" })).toBe(
+      NotebooksHelper.ciStatuses.wrong
+    );
+    expect(NotebooksHelper.getCiJobStatus()).toBe(
+      NotebooksHelper.ciStatuses.wrong
+    );
   });
 });
 
@@ -290,68 +400,91 @@ describe("rendering", () => {
   const scope = {
     namespace: "fake",
     project: "fake",
-    branch: { name: "master" }
+    branch: { name: "master" },
   };
   const fakeLocation = { pathname: "" };
 
-  it("renders NotebooksDisabled", () => {
+  it("renders NotebooksDisabled", async () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
-      <MemoryRouter>
-        <NotebooksDisabled location={fakeLocation} />
-      </MemoryRouter>, div);
+    const root = createRoot(div);
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <NotebooksDisabled location={fakeLocation} />
+        </MemoryRouter>
+      );
+    });
   });
 
   it("renders ShowSession", async () => {
     const props = {
       client,
       model,
-      match: { params: { server: "server-session-fake-name" } }
+      match: { params: { server: "server-session-fake-name" } },
+      notebookServersUrl: "fake-url-server",
     };
 
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
-            <ShowSession {...props} urlNewSession="new_session"/>
+            <ShowSession {...props} urlNewSession="new_session" />
           </MemoryRouter>
-        </Provider>, div);
+        </Provider>
+      );
     });
   });
 
   it("renders Notebooks", async () => {
     const props = {
       client,
-      model
+      model,
     };
 
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <MemoryRouter>
-          <Notebooks {...props} standalone={true} urlNewSession="new_session"/>
-        </MemoryRouter>, div);
+          <Notebooks {...props} standalone={true} urlNewSession="new_session" />
+        </MemoryRouter>
+      );
     });
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <MemoryRouter>
-          <Notebooks {...props} standalone={false} urlNewSession="new_session"/>
-        </MemoryRouter>, div);
+          <Notebooks
+            {...props}
+            standalone={false}
+            urlNewSession="new_session"
+          />
+        </MemoryRouter>
+      );
     });
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <MemoryRouter>
-          <Notebooks {...props} standalone={true} scope={scope} urlNewSession="new_session"/>
-        </MemoryRouter>, div);
+          <Notebooks
+            {...props}
+            standalone={true}
+            scope={scope}
+            urlNewSession="new_session"
+          />
+        </MemoryRouter>
+      );
     });
   });
 
   it("renders StartNotebookServer without crashing", async () => {
-    const projectCoordinator = new ProjectCoordinator(client, model.subModel("project"));
+    const projectCoordinator = new ProjectCoordinator(
+      client,
+      model.subModel("project")
+    );
     await act(async () => {
       await projectCoordinator.fetchProject(client, "test");
       await projectCoordinator.fetchCommits();
@@ -365,36 +498,42 @@ describe("rendering", () => {
       branches: [],
       autosaved: [],
       location: fakeLocation,
-      refreshBranches: () => { },
+      refreshBranches: () => {
+        // eslint-disable-line @typescript-eslint/no-empty-function
+      },
     };
 
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <StartNotebookServer {...props} />
           </MemoryRouter>
-        </Provider>, div);
+        </Provider>
+      );
     });
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <StartNotebookServer {...props} scope={scope} />
           </MemoryRouter>
-        </Provider>, div);
+        </Provider>
+      );
     });
     // autostart session
     const autostartFakeLocation = { pathname: "", search: "autostart=1" };
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <StartNotebookServer {...props} location={autostartFakeLocation} />
           </MemoryRouter>
-        </Provider>, div);
+        </Provider>
+      );
     });
   });
 
@@ -404,16 +543,18 @@ describe("rendering", () => {
       model,
       scope,
       launchNotebookUrl: "/projects/abc/def/launchNotebook",
-      filePath: "notebook.ipynb"
+      filePath: "notebook.ipynb",
     };
 
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     await act(async () => {
-      ReactDOM.render(
+      root.render(
         <MemoryRouter>
           <CheckNotebookStatus {...props} />
-        </MemoryRouter>, div);
+        </MemoryRouter>
+      );
     });
   });
 });

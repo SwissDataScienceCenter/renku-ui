@@ -6,24 +6,22 @@ const commitHash = require("child_process")
   .execSync("echo $RENKU_UI_SHORT_SHA")
   .toString()
   .trim();
-const version = commitHash ?
-  commitHash :
-  "dev";
+const version = commitHash ? commitHash : "dev";
 
 module.exports = {
   webpack: {
     configure: {
       output: {
-        filename: `[name].[hash]-${version}.js`,
-        chunkFilename: `[name].[hash]-${version}.chunk.js`
-      }
-    }
+        filename: `[name].[fullhash]-${version}.js`,
+        chunkFilename: `[name].[fullhash]-${version}.chunk.js`,
+      },
+    },
   },
   jest: {
     configure: {
       moduleNameMapper: {
         "react-pdf/dist/esm/entry.webpack": "react-pdf/dist/umd/entry.jest",
-      }
-    }
-  }
+      },
+    },
+  },
 };

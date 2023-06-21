@@ -22,13 +22,16 @@ function addPipelineMethods(client) {
   client.runPipeline = async (projectId, defaultBranch = "master") => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
-    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/pipeline`, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        ref: defaultBranch
-      })
-    });
+    return client.clientFetch(
+      `${client.baseUrl}/projects/${projectId}/pipeline`,
+      {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          ref: defaultBranch,
+        }),
+      }
+    );
   };
 
   /**
@@ -43,11 +46,13 @@ function addPipelineMethods(client) {
     const url = `${client.baseUrl}/projects/${projectId}/pipelines`;
     const parameters = { sha: commitId };
 
-    return client.clientFetch(url, {
-      method: "GET",
-      headers,
-      queryParams: parameters
-    }).then(response => response.data);
+    return client
+      .clientFetch(url, {
+        method: "GET",
+        headers,
+        queryParams: parameters,
+      })
+      .then((response) => response.data);
   };
 
   /**
@@ -61,10 +66,12 @@ function addPipelineMethods(client) {
     headers.append("Content-Type", "application/json");
     const url = `${client.baseUrl}/projects/${projectId}/pipelines/${pipelineId}/jobs`;
 
-    return client.clientFetch(url, {
-      method: "GET",
-      headers,
-    }).then(response => response.data);
+    return client
+      .clientFetch(url, {
+        method: "GET",
+        headers,
+      })
+      .then((response) => response.data);
   };
 
   /**
@@ -78,10 +85,12 @@ function addPipelineMethods(client) {
     headers.append("Content-Type", "application/json");
     const url = `${client.baseUrl}/projects/${projectId}/jobs/${jobId}`;
 
-    return client.clientFetch(url, {
-      method: "GET",
-      headers,
-    }).then(response => response.data);
+    return client
+      .clientFetch(url, {
+        method: "GET",
+        headers,
+      })
+      .then((response) => response.data);
   };
 
   /**
@@ -95,10 +104,12 @@ function addPipelineMethods(client) {
     headers.append("Content-Type", "application/json");
     const url = `${client.baseUrl}/projects/${projectId}/pipelines/${pipelineId}/retry`;
 
-    return client.clientFetch(url, {
-      method: "POST",
-      headers,
-    }).then(response => response.data);
+    return client
+      .clientFetch(url, {
+        method: "POST",
+        headers,
+      })
+      .then((response) => response.data);
   };
 
   /**
@@ -112,10 +123,12 @@ function addPipelineMethods(client) {
     headers.append("Content-Type", "application/json");
     const url = `${client.baseUrl}/projects/${projectId}/registry/repositories`;
 
-    return client.clientFetch(url, {
-      method: "GET",
-      headers,
-    }).then(response => response.data);
+    return client
+      .clientFetch(url, {
+        method: "GET",
+        headers,
+      })
+      .then((response) => response.data);
   };
 
   /**
@@ -128,15 +141,16 @@ function addPipelineMethods(client) {
   client.getRegistryTag = (projectId, registryId, tag) => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
-    const url = `${client.baseUrl}/projects/${projectId}/registry/repositories` +
+    const url =
+      `${client.baseUrl}/projects/${projectId}/registry/repositories` +
       `/${registryId}/tags/${tag}`;
 
-    return client.clientFetch(url, { method: "GET", headers })
-      .then(response => response.data)
+    return client
+      .clientFetch(url, { method: "GET", headers })
+      .then((response) => response.data)
       .catch((error) => {
         // 404 is expected when nothing is available for the target tag
-        if (error.case === API_ERRORS.notFoundError)
-          return null;
+        if (error.case === API_ERRORS.notFoundError) return null;
         throw error;
       });
   };

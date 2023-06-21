@@ -15,21 +15,31 @@ $borderRadius: 1000px;
   border-radius: 0;
   padding: 5px 10px;
 }
-.btn-with-menu .btn:nth-child(1) {
+.btn-with-menu {
   border-radius: 1000px;
+}
+
+.btn-with-menu .btn:nth-child(1) {
+  border-radius: 1000px 0 0 1000px;
   padding: 5px 20px;
-  margin-right: 5px;
+  margin-right: 1px;
 }
+
+.btn-with-menu .btn-outline-rk-green.btn:nth-child(1) {
+  margin-right: 0;
+}
+
 .btn-with-menu .btn:nth-child(2) {
-  background-color: transparent;
-  border: none;
   box-shadow: none;
+  border-radius: 0 1000px 1000px 0;
+  border-left: 1px solid;
 }
-.btn-with-menu .btn:nth-child(2):focus {
-  color: $rk-green-highlight;
-}
-.btn-with-menu-options svg {
-  margin-right: 12px;
+
+.btn-with-menu-options {
+  svg,
+  .btn-with-menu-margin {
+    margin-right: 12px;
+  }
 }
 
 .input-group .btn {
@@ -83,20 +93,18 @@ $borderRadius: 1000px;
   background-color: transparent;
 }
 
-.btn-secondary, .btn-info, .btn-warning {
+.btn-secondary,
+.btn-info,
+.btn-warning {
   color: $rk-white;
-  &:hover {
+  --bs-btn-active-color: #{$rk-white};
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
     color: $rk-white;
   }
-
-  &:active {
-    color: $rk-white;
-  }
-
-  &:focus {
-    color: $rk-white;
-  }
-  &.disabled{
+  &.disabled {
     color: $rk-white;
   }
 }
@@ -105,25 +113,25 @@ $borderRadius: 1000px;
 }
 
 .btn-outline-secondary:hover {
-  color:$rk-white;
+  color: $rk-white;
 }
 
 .btn-rk-white {
   border-color: $rk-light;
-  color:$rk-text;
+  color: $rk-text;
   &:hover {
     border-color: $rk-light;
-    color:$rk-text;
+    color: $rk-text;
   }
 
   &:focus {
     border-color: $rk-light;
-    color:$rk-text;
+    color: $rk-text;
   }
 
   &:active {
     border-color: $rk-light;
-    color:$rk-text;
+    color: $rk-text;
   }
 }
 
@@ -147,12 +155,13 @@ $borderRadius: 1000px;
   }
 }
 
-.btn-rk-pink  {
+.btn-rk-pink {
   @extend .btn-rk;
 }
 
 .btn-rk-green {
   @extend .btn-rk;
+  --bs-btn-active-color: white;
 }
 
 .rk-btn-group-light {
@@ -186,7 +195,10 @@ $borderRadius: 1000px;
   background-color: white;
   color: $rk-blue;
 
-  &:hover, &:focus, &.active {
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
     background-color: transparent;
     color: $rk-blue;
   }
@@ -194,10 +206,17 @@ $borderRadius: 1000px;
 .btn-outline-rk-green {
   background-color: white;
   color: $rk-green;
+  --bs-btn-active-color: #{$rk-green-highlight};
+  --bs-btn-active-bg: transparent;
+  --bs-btn-active-border-color: #{$rk-green};
 
-  &:hover, &:focus, &.active {
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
     background-color: transparent;
     color: $rk-green-highlight;
+    border-color: $rk-green;
   }
   &:disabled {
     color: $rk-green;
@@ -209,11 +228,15 @@ $borderRadius: 1000px;
   color: $rk-pink;
   border-color: $rk-pink;
 
-  &:hover, &:focus, &.active {
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
     background-color: transparent;
     color: $rk-pink-highlight;
+    border-color: $rk-pink;
   }
-  &.disabled{
+  &.disabled {
     background-color: transparent;
     color: $rk-pink-highlight;
     border-color: $rk-pink-highlight;
@@ -223,7 +246,7 @@ $borderRadius: 1000px;
 
 .link-alert-warning {
   color: #605000;
-  &:focus{
+  &:focus {
     box-shadow: unset;
   }
 }
@@ -233,14 +256,31 @@ $borderRadius: 1000px;
   color: $rk-pink;
   border-color: $rk-pink;
 
-  &:hover, &:focus, &.active {
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
     background-color: $rk-pink-highlight;
     color: white;
   }
 }
 
-.btn-icon-text svg {
-  margin-right: 12px;
+.btn-icon-text {
+  svg {
+    margin-right: 6px;
+  }
+  sup svg {
+    margin-right: 4px;
+  }
+}
+
+.btn-icon-text-after {
+  svg {
+    margin-left: 6px;
+  }
+  sup svg {
+    margin-left: 4px;
+  }
 }
 
 .btn-with-menu .btn-with-menu-icon {
@@ -248,7 +288,7 @@ $borderRadius: 1000px;
 }
 
 .btn-with-menu-options {
-  background: #FFFFFF;
+  background: #ffffff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   border: none;
@@ -256,14 +296,16 @@ $borderRadius: 1000px;
   margin: 5px 0;
 }
 
-.btn-with-menu-options a, .btn-with-menu-options button {
+.btn-with-menu-options a,
+.btn-with-menu-options button {
   color: $rk-dark;
 }
-.btn-with-menu-options button:focus, .btn-with-menu-options button:active {
+.btn-with-menu-options button:focus,
+.btn-with-menu-options button:active {
   background-color: transparent;
 }
 
-.btn-group:not(.btn-with-menu) {
+.btn-group:not(.btn-with-menu, .round-button-group) {
   border-radius: 8px;
 
   button {
@@ -298,6 +340,16 @@ $borderRadius: 1000px;
   }
 }
 
+.btn-group-vertical:not(.btn-with-menu, .round-button-group) {
+  button:first-of-type {
+    border-radius: 8px 8px 0 0;
+  }
+
+  button:last-of-type {
+    border-radius: 0 0 8px 8px;
+  }
+}
+
 .btn-round {
   border-radius: 1000px;
   width: 50px;
@@ -309,4 +361,82 @@ $borderRadius: 1000px;
 
 .fullscreen-back-button {
   padding: 5px 0 5px 16px;
+}
+
+.round-button-group {
+  .btn:first-child {
+    border-radius: 1000px 0 0 1000px;
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .btn:last-child {
+    border-radius: 0 1000px 1000px 0;
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+}
+.edit-image-btn {
+  position: absolute;
+  left: 15px;
+  background-color: #d9d9d9de;
+  color: black;
+  border: none;
+  border-radius: 8px;
+
+  &:hover {
+    background-color: rgba(166, 166, 166, 0.87);
+    color: white;
+  }
+  &:focus {
+    background-color: rgba(166, 166, 166, 0.87);
+    color: white;
+  }
+}
+
+.editor-control-btn {
+  border-radius: 4px;
+  background-color: #d9d9d9;
+  border: none;
+  padding: 2px 8px;
+  color: var(--bs-dark);
+
+  &:hover {
+    background-color: #d9d9d9de;
+    color: var(--bs-dark);
+  }
+  &:focus {
+    background-color: #d9d9d9de;
+    color: var(--bs-dark);
+  }
+  &:disabled {
+    background-color: rgba(217, 217, 217, 0.81);
+    color: var(--bs-dark);
+  }
+}
+
+.form-rk-pink .btn-save-editor {
+  background-color: var(--bs-rk-pink);
+  border: none;
+
+  &:hover {
+    background-color: #d980a7;
+  }
+}
+
+.form-rk-green .btn-save-editor {
+  background-color: var(--bs-rk-green);
+  border: none;
+  &:hover {
+    background-color: #26a57f;
+  }
+}
+
+.session-link-group {
+  width: 100px;
+  padding-left: 0;
+  padding-right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
 }

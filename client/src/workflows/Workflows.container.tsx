@@ -16,25 +16,23 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
+import React from "react";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
-import { WorkflowsCoordinator } from "./Workflows.state";
 import { WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent } from "./Workflows.present";
-import { checkRenkuCoreSupport } from "../utils/helpers/HelperFunctions";
-
+import {
+  useGetWorkflowDetailQuery,
+  useGetWorkflowListQuery,
+} from "../features/workflows/WorkflowsApi";
+import {
+  workflowsSlice,
+  useWorkflowsSelector,
+} from "../features/workflows/WorkflowsSlice";
+import { useCoreSupport } from "../features/project/useProjectCoreSupport";
+import { StateModelProject } from "../features/project/Project";
 
 const MIN_CORE_VERSION_WORKFLOWS = 9;
-
-interface WorkflowsListProps {
-  client: any;
-  fullPath: string;
-  model: any;
-  reference: string;
-  repositoryUrl: string;
-  versionUrl: string;
-}
 
 const WorkflowsSorting = {
   authors: "Authors",
@@ -42,48 +40,124 @@ const WorkflowsSorting = {
   executions: "Executions",
   lastExecuted: "Last execution",
   name: "Name",
-  workflowType: "Workflow type"
+  workflowType: "Workflow type",
 };
 
-function WorkflowsList({ client, fullPath, model, reference, repositoryUrl, versionUrl }: WorkflowsListProps) {
-  const workflowsCoordinator = new WorkflowsCoordinator(client, model);
-  const workflows = useSelector((state: RootStateOrAny) => state.stateModel.workflows);
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+interface WorkflowsListProps {
+  fullPath: string;
+  reference: string;
+  repositoryUrl: string;
+}
+
+function deserializeError(error: any) {
+  if (!error || !error?.message) return null;
+  if (
+    error.message &&
+    error.message.startsWith("{") &&
+    error.message.endsWith("}")
+  ) {
+    try {
+      return JSON.parse(error.message);
+    } catch {
+      return error.message;
+    }
+  }
+}
+
+function WorkflowsList({
+  fullPath,
+  reference,
+  repositoryUrl,
+}: WorkflowsListProps) {
+  // Get the workflow id from the query parameters
   const { id }: Record<string, string> = useParams();
   const selected = id;
-  const unsupported = !checkRenkuCoreSupport(MIN_CORE_VERSION_WORKFLOWS, versionUrl);
-  const workflow = useSelector((state: RootStateOrAny) => state.stateModel.workflow);
-  // ? either the workflow is available, or the latest version is available
+
+  const { defaultBranch } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const { coreSupport } = useCoreSupport({
+    gitUrl: repositoryUrl,
+    branch: defaultBranch,
+  });
+  const {
+    backendAvailable,
+    computed: coreSupportComputed,
+    versionUrl,
+  } = coreSupport;
+  const metadataVersion = versionUrl
+    ? parseInt(versionUrl.slice(1))
+    : undefined;
+
+  // Verify backend support and availability
+  const unsupported =
+    (coreSupportComputed && !backendAvailable) ||
+    (metadataVersion && metadataVersion < MIN_CORE_VERSION_WORKFLOWS) ||
+    false;
+
+  // Configure the functions to dispatch workflowsDisplay changes
+  const dispatch = useDispatch();
+  const toggleAscending = () =>
+    dispatch(workflowsSlice.actions.toggleAscending());
+  const toggleExpanded = (workflowId: string) =>
+    dispatch(workflowsSlice.actions.toggleExpanded({ workflowId }));
+  const toggleInactive = () =>
+    dispatch(workflowsSlice.actions.toggleInactive());
+  const setOrderProperty = (newProperty: string) =>
+    dispatch(workflowsSlice.actions.setOrderProperty({ newProperty }));
+  const setDetailExpanded = (targetDetails: Record<string, any>) =>
+    dispatch(workflowsSlice.actions.setDetail({ targetDetails }));
+  const workflowsDisplay = useWorkflowsSelector();
+
+  // Fetch workflow list
+  const skipList = !versionUrl || !repositoryUrl || unsupported;
+  const workflowsQuery = useGetWorkflowListQuery(
+    { coreUrl: versionUrl ?? "", gitUrl: repositoryUrl, reference, fullPath },
+    { skip: skipList }
+  );
+  const workflows = {
+    list: workflowsQuery.data,
+    error: deserializeError(workflowsQuery.error),
+    fetched: workflowsQuery.data !== null && !workflowsQuery.isLoading,
+    fetching: workflowsQuery.isFetching || workflowsQuery.isLoading,
+    expanded: workflowsDisplay.expanded,
+    showInactive: workflowsDisplay.showInactive,
+    orderAscending: workflowsDisplay.orderAscending,
+    orderProperty: workflowsDisplay.orderProperty,
+  };
+  const waiting =
+    !versionUrl || !coreSupportComputed || workflowsQuery.isLoading;
+
+  // Fetch workflow details
+  const skipDetails = skipList || !selected ? true : false;
+  const workflowDetailQuery = useGetWorkflowDetailQuery(
+    {
+      coreUrl: versionUrl ?? "",
+      gitUrl: repositoryUrl,
+      workflowId: selected,
+      reference,
+      fullPath,
+    },
+    { skip: skipDetails }
+  );
+  const workflow = {
+    details: workflowDetailQuery.data,
+    error: deserializeError(workflowDetailQuery.error),
+    fetched:
+      workflowDetailQuery.data !== null && !workflowDetailQuery.isLoading,
+    fetching: workflowDetailQuery.isFetching || workflowDetailQuery.isLoading,
+    expanded: workflowsDisplay.details,
+  };
+
   const selectedAvailable =
-    (!!workflows.list.find((w: any) => w.workflowId === selected)) ||
-    (workflow.details?.latest && !!workflows.list.find((w: any) => w.id === workflow.details.latest));
-
-  const toggleAscending = () => workflowsCoordinator.toggleOrderAscending();
-  const toggleExpanded = (workflowId: string) => workflowsCoordinator.toggleExpanded(workflowId);
-  const toggleInactive = () => workflowsCoordinator.toggleInactive();
-  const setDetailExpanded = (targetElement: Record<string, any> = {}) =>
-    workflowsCoordinator.setDetailExpanded(targetElement);
-  const setOrderProperty = (newProperty: string) => workflowsCoordinator.setOrderProperty(newProperty);
-
-  // fetch workflows list
-  useEffect(() => {
-    workflowsCoordinator.fetchWorkflowsList(repositoryUrl, reference, versionUrl, unsupported, fullPath);
-  }, [repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // fetch workflow details
-  useEffect(() => {
-    workflowsCoordinator.fetchWorkflowDetails(selected, repositoryUrl, reference, versionUrl, fullPath).
-      then((result: any) => {
-        // ? not sure if this should be here, but this scrolls nicely to the workflow detail
-        setTimeout(() => {
-          document.getElementById("workflowsDetailsContent")?.scrollIntoView(true);
-        }, 100);
-      });
-  }, [selected, repositoryUrl, reference, versionUrl]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ? consider removing this or including the workflow detail target too
-  const targetChanged = (repositoryUrl + reference) !== workflows.target;
-  const versionUrlAvailable = !versionUrl ? false : true;
-  const waiting = !versionUrlAvailable || targetChanged;
+    !!workflows.list?.find((w: any) => w.workflowId === selected) ||
+    !!(
+      workflow.details?.latest &&
+      !!workflows.list?.find((w: any) => w.id === workflow.details?.latest)
+    );
 
   return (
     <WorkflowsTreeBrowserPresent

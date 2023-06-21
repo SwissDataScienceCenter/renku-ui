@@ -19,7 +19,17 @@
 import { EntityCreator } from "../entities/Creators";
 import { SessionStatusData } from "./StartSessionProgressBar";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
+
 interface NotebookAnnotations {
+  branch: string;
+  "commit-sha": string;
+  default_image_used: boolean;
+  namespace: string;
+  gitlabProjectId: number;
+  projectName: string;
+  repository: string;
   [key: string]: string;
 }
 
@@ -60,13 +70,15 @@ export interface Notebook {
 }
 
 export interface ProjectMetadata {
-  path_with_namespace?: string;
+  accessLevel: number;
+  avatarUrl?: string;
+  description: string;
+  externalUrl?: string;
+  lastActivityAt: string;
+  owner?: EntityCreator;
   pathWithNamespace?: string;
+  path_with_namespace?: string;
+  tagList: string[];
   title: string;
   visibility: "public" | "internal" | "private";
-  description: string;
-  tagList: string[];
-  owner?: EntityCreator;
-  lastActivityAt: string;
-  accessLevel: number;
 }

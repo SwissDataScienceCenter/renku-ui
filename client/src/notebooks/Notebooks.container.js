@@ -23,14 +23,15 @@ import qs from "query-string";
 import { ACCESS_LEVELS } from "../api-client";
 import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
 import {
-  StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled, Notebooks as NotebooksPresent,
+  StartNotebookServer as StartNotebookServerPresent,
+  NotebooksDisabled,
+  Notebooks as NotebooksPresent,
   CheckNotebookIcon,
 } from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
 import { Url } from "../utils/helpers/url";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import ShowSessionFullscreen from "./components/SessionFullScreen";
-
 
 /**
  * This component is needed to map properties from the redux store and keep local states cleared by the
@@ -56,34 +57,37 @@ function mapSessionStateToProps(state, ownProps) {
     available,
     fetched: notebooks.fetched,
     fetching: notebooks.fetching,
-    data: available ?
-      notebooks.all[ownProps.target] :
-      {},
-    logs: state.stateModel.notebooks.logs
+    data: available ? notebooks.all[ownProps.target] : {},
+    logs: state.stateModel.notebooks.logs,
   };
   return {
     accessLevel: metadata.accessLevel,
     handlers: ownProps.handlers,
     target: ownProps.target,
     filters: state.stateModel.notebooks.filters,
-    notebook
+    notebook,
   };
 }
 
-const ShowSessionMapped = connect(mapSessionStateToProps)(ShowSessionFullscreen);
+const ShowSessionMapped = connect(mapSessionStateToProps)(
+  ShowSessionFullscreen
+);
 class ShowSession extends Component {
   constructor(props) {
     super(props);
     this.model = props.model.subModel("notebooks");
     this.userModel = props.model.subModel("user");
-    this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
+    this.coordinator = new NotebooksCoordinator(
+      props.client,
+      this.model,
+      this.userModel
+    );
     this.coordinator.reset();
     this.notifications = props.notifications;
     this.target = props.match.params.server;
     this.userLogged = this.userModel.get("logged");
 
-    if (props.scope)
-      this.coordinator.setNotebookFilters(props.scope, true);
+    if (props.scope) this.coordinator.setNotebookFilters(props.scope, true);
 
     this.handlers = {
       stopNotebook: this.stopNotebook.bind(this),
@@ -92,8 +96,7 @@ class ShowSession extends Component {
   }
 
   componentDidMount() {
-    if (!this.props.blockAnonymous)
-      this.coordinator.startNotebookPolling();
+    if (!this.props.blockAnonymous) this.coordinator.startNotebookPolling();
   }
 
   componentWillUnmount() {
@@ -106,20 +109,22 @@ class ShowSession extends Component {
       // redirect immediately
       if (this.props.history && redirectLocation)
         this.props.history.push(redirectLocation);
-    }
-    catch (error) {
+    } catch (error) {
       // add notification
       this.notifications.addError(
         this.notifications.Topics.SESSION_START,
-        "Unable to stop the current session.", null, null, null,
-        `Error message: "${error.message}"`);
+        "Unable to stop the current session.",
+        null,
+        null,
+        null,
+        `Error message: "${error.message}"`
+      );
       return false;
     }
   }
 
   async fetchLogs(serverName, full = false) {
-    if (!serverName)
-      return;
+    if (!serverName) return;
     return this.coordinator.fetchLogs(serverName, full);
   }
 
@@ -144,7 +149,7 @@ function mapSessionListStateToProps(state, ownProps) {
   return {
     handlers: ownProps.handlers,
     ...state.stateModel.notebooks,
-    logs: { ...state.stateModel.notebooks.logs, show: ownProps.showingLogs }
+    logs: { ...state.stateModel.notebooks.logs, show: ownProps.showingLogs },
   };
 }
 
@@ -172,33 +177,37 @@ class Notebooks extends Component {
     super(props);
     this.model = props.model.subModel("notebooks");
     this.userModel = props.model.subModel("user");
-    this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
+    this.coordinator = new NotebooksCoordinator(
+      props.client,
+      this.model,
+      this.userModel
+    );
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
     this.userLogged = this.userModel.get("logged");
 
-    if (props.scope)
-      this.coordinator.setNotebookFilters(props.scope, true);
-
-
     this.state = {
-      showingLogs: false
+      showingLogs: false,
+      scope: props.scope,
     };
 
     this.handlers = {
       stopNotebook: this.stopNotebook.bind(this),
       fetchLogs: this.fetchLogs.bind(this),
       toggleLogs: this.toggleLogs.bind(this),
-      fetchCommit: this.fetchCommit.bind(this)
+      fetchCommit: this.fetchCommit.bind(this),
     };
   }
 
   componentDidMount() {
-    if (!this.props.blockAnonymous)
-      this.coordinator.startNotebookPolling();
+    if (this.state.scope)
+      this.coordinator.setNotebookFilters(this.state.scope, true);
+    if (!this.props.blockAnonymous) this.coordinator.startNotebookPolling();
   }
 
   componentWillUnmount() {
+    this.coordinator.reset();
+    this.coordinator.fetchNotebooks();
     this.coordinator.stopNotebookPolling();
   }
 
@@ -208,27 +217,22 @@ class Notebooks extends Component {
   }
 
   async fetchLogs(serverName, full = false) {
-    if (!serverName)
-      return;
+    if (!serverName) return;
     return this.coordinator.fetchLogs(serverName, full);
   }
 
   async fetchCommit(serverName) {
-    if (!serverName)
-      return;
+    if (!serverName) return;
     return this.coordinator.fetchCommit(serverName);
   }
 
   toggleLogs(serverName) {
     let nextState;
-    if (this.state.showingLogs !== serverName)
-      nextState = serverName;
-    else
-      nextState = false;
+    if (this.state.showingLogs !== serverName) nextState = serverName;
+    else nextState = false;
     this.setState({ showingLogs: nextState });
 
-    if (nextState)
-      this.fetchLogs(serverName);
+    if (nextState) this.fetchLogs(serverName);
   }
 
   render() {
@@ -238,16 +242,18 @@ class Notebooks extends Component {
     const filePath = this.coordinator?.model?.get("filters.filePath");
     const scope = { ...this.props.scope, filePath };
 
-    return <VisibleNotebooks
-      handlers={this.handlers}
-      showingLogs={this.state.showingLogs}
-      message={this.props.message}
-      scope={scope}
-      store={this.model.reduxStore}
-      standalone={this.props.standalone ? this.props.standalone : false}
-      urlNewSession={this.props.urlNewSession}
-      user={this.props.user}
-    />;
+    return (
+      <VisibleNotebooks
+        handlers={this.handlers}
+        showingLogs={this.state.showingLogs}
+        message={this.props.message}
+        scope={scope}
+        store={this.model.reduxStore}
+        standalone={this.props.standalone ? this.props.standalone : false}
+        urlNewSession={this.props.urlNewSession}
+        user={this.props.user}
+      />
+    );
   }
 }
 
@@ -278,36 +284,49 @@ class StartNotebookServer extends Component {
     super(props);
     this.model = props.model.subModel("notebooks");
     this.userModel = props.model.subModel("user");
-    this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
+    this.coordinator = new NotebooksCoordinator(
+      props.client,
+      this.model,
+      this.userModel
+    );
     this.notifications = props.notifications;
     this.userLogged = this.userModel.get("logged");
     this.errorCustomValues = {
-      "branch": false,
-      "commit": false
+      branch: false,
+      commit: false,
     };
 
     // reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 
-    if (props.scope)
-      this.coordinator.setNotebookFilters(props.scope);
+    if (props.scope) this.coordinator.setNotebookFilters(props.scope);
 
     // Check auto start mode
     const currentSearch = qs.parse(props.location.search);
-    this.autostart = !!(currentSearch && currentSearch["autostart"] && currentSearch["autostart"] === "1");
-    this.customBranch = currentSearch && this.autostart && currentSearch["branch"] ?
-      currentSearch["branch"] :
-      null;
-    this.customCommit = currentSearch && this.autostart && currentSearch["commit"] ?
-      currentSearch["commit"] :
-      null;
-    this.customNotebookFilePath = currentSearch && this.autostart && currentSearch["notebook"] ?
-      currentSearch["notebook"] :
-      null;
+    this.autostart = !!(
+      currentSearch &&
+      currentSearch["autostart"] &&
+      currentSearch["autostart"] === "1"
+    );
+    this.customBranch =
+      currentSearch && this.autostart && currentSearch["branch"]
+        ? currentSearch["branch"]
+        : null;
+    this.customCommit =
+      currentSearch && this.autostart && currentSearch["commit"]
+        ? currentSearch["commit"]
+        : null;
+    this.customNotebookFilePath =
+      currentSearch && this.autostart && currentSearch["notebook"]
+        ? currentSearch["notebook"]
+        : null;
 
-    const environmentVariables = this.getEnvironmentVariablesFromSearch(currentSearch);
-    this.customEnvVariables = currentSearch && this.autostart && environmentVariables.length ?
-      environmentVariables : [];
+    const environmentVariables =
+      this.getEnvironmentVariablesFromSearch(currentSearch);
+    this.customEnvVariables =
+      currentSearch && this.autostart && environmentVariables.length
+        ? environmentVariables
+        : [];
 
     this.state = {
       autosavesCommit: false,
@@ -323,6 +342,7 @@ class StartNotebookServer extends Component {
       branchDelay: false, // used in setBranchWhenReady
       showShareLinkModal: props.location?.state?.showShareLinkModal,
       filePath: props.location?.state?.filePath,
+      scope: props.scope,
     };
 
     this.handlers = {
@@ -338,17 +358,23 @@ class StartNotebookServer extends Component {
       setServerOption: this.setServerOptionFromEvent.bind(this),
       setNotebookEnvVariables: this.setNotebookEnvVariables.bind(this),
       startServer: this.startServer.bind(this),
-      setObjectStoresConfiguration: this.setObjectStoresConfiguration.bind(this),
+      setObjectStoresConfiguration:
+        this.setObjectStoresConfiguration.bind(this),
       toggleMergedBranches: this.toggleMergedBranches.bind(this),
-      toggleShowObjectStoresConfigModal: this.toggleShowObjectStoresConfigModal.bind(this)
+      toggleShowObjectStoresConfigModal:
+        this.toggleShowObjectStoresConfigModal.bind(this),
+      resetNotebookList: this.resetNotebookList.bind(this),
     };
   }
 
+  resetNotebookList() {
+    this.coordinator.reset();
+    this.coordinator.fetchNotebooks();
+  }
   async componentDidMount() {
     this._isMounted = true;
     if (!this.props.blockAnonymous) {
-      if (!this.autostart)
-        this.coordinator.startNotebookPolling();
+      if (!this.autostart) this.coordinator.startNotebookPolling();
       this.coordinator.fetchAutosaves();
       this.selectNotebookFilePath(this.customNotebookFilePath);
       this.setNotebookEnvVariables(this.customEnvVariables);
@@ -364,12 +390,19 @@ class StartNotebookServer extends Component {
 
   async componentDidUpdate(previousProps) {
     // TODO: temporary fix to prevent issue with component rerendered multiple times at the first url load
-    if (this.state.first &&
+    if (
+      this.state.first &&
       StatusHelper.isUpdating(previousProps.fetchingBranches) &&
-      !StatusHelper.isUpdating(this.props.fetchingBranches)) {
+      !StatusHelper.isUpdating(this.props.fetchingBranches)
+    ) {
       this.setState({ first: false });
-      if (this._isMounted)
-        this.refreshBranches().then(r => this.selectBranchWhenReady());
+      if (this._isMounted) {
+        this.refreshBranches().then(() => this.selectBranchWhenReady());
+        if (this.state.scope) {
+          this.coordinator.setNotebookFilters(this.state.scope);
+          this.coordinator.fetchNotebooks();
+        }
+      }
     }
   }
 
@@ -387,7 +420,9 @@ class StartNotebookServer extends Component {
     if (this.errorCustomValues.branch && this.errorCustomValues.commit)
       referenceError = `on the branch ${this.customBranch} and the commit ${this.customCommit}`;
     else
-      referenceError = `for the reference ${ this.errorCustomValues.branch ? this.customBranch : this.customCommit}`;
+      referenceError = `for the reference ${
+        this.errorCustomValues.branch ? this.customBranch : this.customCommit
+      }`;
 
     const message = `A session ${referenceError} could not be started
         because it does not exist in the repository. The branch has been set to the default
@@ -398,7 +433,7 @@ class StartNotebookServer extends Component {
       launchError: {
         frontendError: true,
         pipelineError: false,
-        errorMessage: message
+        errorMessage: message,
       },
     });
     this.coordinator.startNotebookPolling();
@@ -406,11 +441,9 @@ class StartNotebookServer extends Component {
 
   async refreshBranches() {
     if (this._isMounted) {
-      if (StatusHelper.isUpdating(this.props.fetchingBranches))
-        return;
+      if (StatusHelper.isUpdating(this.props.fetchingBranches)) return;
       await this.props.refreshBranches();
-      if (this.state.first)
-        this.selectBranchWhenReady();
+      if (this.state.first) this.selectBranchWhenReady();
     }
   }
 
@@ -420,9 +453,10 @@ class StartNotebookServer extends Component {
       const autosavesAvailable = this.model.get("autosaves.fetched");
       if (this.props.branches.fetching || !autosavesAvailable) {
         this.setState({ branchDelay: true });
-        setTimeout(() => { this.selectBranchWhenReady(); }, 500);
-      }
-      else {
+        setTimeout(() => {
+          this.selectBranchWhenReady();
+        }, 500);
+      } else {
         this.setState({ branchDelay: false });
         this.selectBranch(this.customBranch);
       }
@@ -430,8 +464,7 @@ class StartNotebookServer extends Component {
   }
 
   selectNotebookFilePath(notebookFilePath) {
-    if (!notebookFilePath)
-      return;
+    if (!notebookFilePath) return;
     this.coordinator.setNotebookFilePath(notebookFilePath);
   }
 
@@ -441,14 +474,13 @@ class StartNotebookServer extends Component {
 
   getEnvironmentVariablesFromSearch(search) {
     const variables = [];
-    Object.keys(search).map( key => {
+    Object.keys(search).map((key) => {
       if (key.startsWith("env[")) {
         const env_key = key.split("env[").pop().split("]").shift();
         const value = search[key];
         if (Array.isArray(value))
-          value.forEach(val => variables.push({ key: env_key, value: val }));
-        else
-          variables.push({ key: env_key, value: search[key] });
+          value.forEach((val) => variables.push({ key: env_key, value: val }));
+        else variables.push({ key: env_key, value: search[key] });
       }
     });
     return variables;
@@ -463,8 +495,7 @@ class StartNotebookServer extends Component {
         const oldBranch = this.model.get("filters.branch");
         if (oldBranch && oldBranch.branchName)
           branchName = oldBranch.branchName;
-        else
-          branchName = this.model.get("filters.defaultBranch");
+        else branchName = this.model.get("filters.defaultBranch");
 
         autoBranchName = true;
       }
@@ -473,15 +504,13 @@ class StartNotebookServer extends Component {
       let branchToSet = {};
       const { branches } = this.props;
 
-      const branch = branches.filter(branch => branch.name === branchName);
+      const branch = branches.filter((branch) => branch.name === branchName);
 
       if (branch.length === 1) {
         branchToSet = branch[0];
-      }
-      else if (autoBranchName && branches?.length) {
+      } else if (autoBranchName && branches?.length) {
         branchToSet = branches[0];
-      }
-      else if (this.customBranch || this.customCommit) {
+      } else if (this.customBranch || this.customCommit) {
         // set the error and get the first branch anyway
         branchToSet = branches[0];
         this.errorCustomValues = { ...this.errorCustomValues, branch: true };
@@ -490,10 +519,8 @@ class StartNotebookServer extends Component {
 
       this.coordinator.setBranch(branchToSet);
       this.setState({ autosavesCommit: false });
-      if (!branchToSet)
-        this.coordinator.setCommit({});
-      else
-        this.refreshCommits();
+      if (!branchToSet) this.coordinator.setCommit({});
+      else this.refreshCommits();
     }
   }
 
@@ -514,12 +541,10 @@ class StartNotebookServer extends Component {
       // if (this.props.commits.fetching || !notebooks.fetched)
       if (this.props.commits.fetching) {
         delay = 500;
-      }
-      else if (!notebooks.fetched) {
+      } else if (!notebooks.fetched) {
         if (notebooks.fetching) {
           delay = 500;
-        }
-        else {
+        } else {
           // this may happen with autostart
           this.coordinator.startNotebookPolling();
           delay = 2000;
@@ -528,9 +553,10 @@ class StartNotebookServer extends Component {
 
       if (delay) {
         this.setState({ commitDelay: true });
-        setTimeout(() => { this.selectCommitWhenReady(); }, delay);
-      }
-      else {
+        setTimeout(() => {
+          this.selectCommitWhenReady();
+        }, delay);
+      } else {
         this.setState({ commitDelay: false });
         this.selectCommit(this.customCommit);
       }
@@ -542,51 +568,58 @@ class StartNotebookServer extends Component {
       this.errorCustomValues = { ...this.errorCustomValues, commit: false };
       // filter the list of commits according to the constraints
       const maximum = this.model.get("filters.displayedCommits");
-      const commits = maximum && parseInt(maximum) > 0 ?
-        this.props.commits.list.slice(0, maximum) :
-        this.props.commits.list;
+      const commits =
+        maximum && parseInt(maximum) > 0
+          ? this.props.commits.list.slice(0, maximum)
+          : this.props.commits.list;
       let commit = commits[0];
       const branch = this.model.get("filters.branch");
 
       // find the proper commit or return
       if (commitId) {
-        const filteredCommits = commits.filter(commit => commit.id === commitId);
+        const filteredCommits = commits.filter(
+          (commit) => commit.id === commitId
+        );
         if (filteredCommits.length === 1) {
           commit = filteredCommits[0];
-        }
-        else if (commitId === "latest") {
+        } else if (commitId === "latest") {
           commit = commits[0];
-        }
-        else if (this.customBranch || this.customCommit) {
+        } else if (this.customBranch || this.customCommit) {
           this.errorCustomValues = { ...this.errorCustomValues, commit: true };
           this.setErrorInAutostart(branch.name);
-        }
-        else {
+        } else {
           return;
         }
-      }
-      else {
+      } else {
         let autosave;
         // check if there is an autosave for this branch, and find the corresponding commit
         const autosaves = this.model.get("autosaves");
         const branch = this.model.get("filters.branch");
         let autosaveFound = false;
-        if (branch.name && autosaves.fetched && !autosaves.error && autosaves.list?.length) {
-          autosave = autosaves.list.find(a => a.branch === branch.name);
+        if (
+          branch.name &&
+          autosaves.fetched &&
+          !autosaves.error &&
+          autosaves.list?.length
+        ) {
+          autosave = autosaves.list.find((a) => a.branch === branch.name);
           if (autosave) {
-            const autosaveCommit = commits.find(commit => commit.id.startsWith(autosave.commit));
+            const autosaveCommit = commits.find((commit) =>
+              commit.id.startsWith(autosave.commit)
+            );
             // we expect to find an autosave, unless the user manually removed/changed it (or cloned the project)
             if (autosaveCommit) {
               commit = autosaveCommit;
               autosaveFound = true;
               if (this.state.autosavesCommit !== autosaveCommit?.id)
-                this.setState({ autosavesCommit: autosaveCommit.id, autosavesWrong: false });
-            }
-            else {
+                this.setState({
+                  autosavesCommit: autosaveCommit.id,
+                  autosavesWrong: false,
+                });
+            } else {
               // recovering form a corrupted autosave is unlikely; removing it prevents this from happening again
               this.setState({ autosavesWrong: true });
-              if (autosave?.name)
-                this.deleteAutosave(autosave.name);
+              if (autosave?.name) this.deleteAutosave(autosave.name);
             }
           }
         }
@@ -595,13 +628,21 @@ class StartNotebookServer extends Component {
         if (!autosaveFound) {
           // verify data and sessions
           const notebooks = this.model.get("notebooks");
-          const anyNotebook = notebooks?.all && Object.keys(notebooks.all).length ? true : false;
-          const validNotebooks = branch.name && notebooks.lastParameters.includes(branch.name) ? true : false;
+          const anyNotebook =
+            notebooks?.all && Object.keys(notebooks.all).length ? true : false;
+          const validNotebooks =
+            branch.name && notebooks.lastParameters.includes(branch.name)
+              ? true
+              : false;
           if (anyNotebook && validNotebooks) {
             // get the first session with a valid commit -- that should almost always be the case for running sessions
-            Object.keys(notebooks.all).find(k => {
-              const annotations = NotebooksHelper.cleanAnnotations(notebooks.all[k].annotations, "renku.io");
-              const targetCommit = commits.find(commit => commit.id === annotations["commit-sha"]);
+            Object.keys(notebooks.all).find((k) => {
+              const annotations = NotebooksHelper.cleanAnnotations(
+                notebooks.all[k].annotations
+              );
+              const targetCommit = commits.find(
+                (commit) => commit.id === annotations["commit-sha"]
+              );
               if (targetCommit) {
                 commit = targetCommit;
                 return true;
@@ -613,8 +654,7 @@ class StartNotebookServer extends Component {
 
         // check if the current commit needs to be updated
         const oldCommit = this.model.get("filters.commit");
-        if (oldCommit && oldCommit.id && oldCommit.id === commit.id)
-          return;
+        if (oldCommit && oldCommit.id && oldCommit.id === commit.id) return;
       }
 
       this.coordinator.setCommit(commit);
@@ -626,7 +666,9 @@ class StartNotebookServer extends Component {
     if (this._isMounted) {
       const { accessLevel, user } = this.props;
       await this.coordinator.fetchNotebookOptions(); // TODO: this should not be here
-      const callback = () => { };
+      const callback = () => {
+        // eslint-disable-line @typescript-eslint/no-empty-function
+      };
       const owner = accessLevel >= ACCESS_LEVELS.DEVELOPER;
       await this.coordinator.fetchOrPollCi(force, user.logged, owner, callback);
       this.triggerAutoStart();
@@ -634,25 +676,32 @@ class StartNotebookServer extends Component {
   }
 
   async reTriggerPipeline() {
-    const projectPathWithNamespace = `${encodeURIComponent(this.props.scope.namespace)}%2F${this.props.scope.project}`;
+    const projectPathWithNamespace = `${encodeURIComponent(
+      this.props.scope.namespace
+    )}%2F${this.props.scope.project}`;
     const pipeline = this.model.get("ci.pipelines.target");
     if (pipeline?.id) {
-      await this.props.client.retryPipeline(projectPathWithNamespace, pipeline.id);
+      await this.props.client.retryPipeline(
+        projectPathWithNamespace,
+        pipeline.id
+      );
       return this.refreshPipelines();
     }
   }
 
   async runPipeline() {
-    const projectPathWithNamespace = `${encodeURIComponent(this.props.scope.namespace)}%2F${this.props.scope.project}`;
+    const projectPathWithNamespace = `${encodeURIComponent(
+      this.props.scope.namespace
+    )}%2F${this.props.scope.project}`;
     const branch = this.model.get("filters.branch");
-    const reference = branch?.name ?
-      branch.name :
-      null;
+    const reference = branch?.name ? branch.name : null;
     if (reference) {
       try {
-        await this.props.client.runPipeline(projectPathWithNamespace, reference);
-      }
-      catch {
+        await this.props.client.runPipeline(
+          projectPathWithNamespace,
+          reference
+        );
+      } catch {
         // ? Swallow exceptions that may happen when not working on the latest branch's commit after multiple clicks
       }
       sleep(NotebooksHelper.pollingInterval + 1); // ? This is bad, but it prevents flashing a wrong status
@@ -661,48 +710,61 @@ class StartNotebookServer extends Component {
 
   async triggerAutoStart() {
     if (this._isMounted) {
-      if (this.autostart && !this.state.autostartReady && !this.state.autostartTried) {
+      if (
+        this.autostart &&
+        !this.state.autostartReady &&
+        !this.state.autostartTried
+      ) {
         const data = this.model.get();
         const ciStatus = NotebooksHelper.checkCiStatus(data.ci);
-        const fetched = data.notebooks.fetched && data.options.fetched && !ciStatus.ongoing;
+        const fetched =
+          data.notebooks.fetched && data.options.fetched && !ciStatus.ongoing;
         if (fetched) {
           // start when the image is available
           if (ciStatus.available) {
             this.setState({ autostartReady: true });
             this.startServer();
-          }
-          else {
+          } else {
             let errorMessage;
 
             // image is building through the job
             if (
               ciStatus.stage === NotebooksHelper.ciStages.jobs &&
-              NotebooksHelper.getCiJobStatus(data.ci.jobs?.target) === NotebooksHelper.ciStatuses.running
+              NotebooksHelper.getCiJobStatus(data.ci.jobs?.target) ===
+                NotebooksHelper.ciStatuses.running
             ) {
-              errorMessage = "The session could not start because the image is still building. " +
+              errorMessage =
+                "The session could not start because the image is still building. " +
                 "Please wait for the build to finish, or start the session with the base image";
             }
             // images is not available
             else if (!ciStatus.available) {
-              errorMessage = "The session could not start because no image is available. " +
+              errorMessage =
+                "The session could not start because no image is available. " +
                 "Please select a different commit or start the session with the base image.";
             }
             // it's probably lost in some short-living temporary state before assessing the image is not available
             else {
-              errorMessage = "The session could not start. If it's the first time you see this message, " +
+              errorMessage =
+                "The session could not start. If it's the first time you see this message, " +
                 "please wait a few minutes and try to refresh the page.";
             }
 
             this.setState({
               autostartReady: true,
               autostartTried: true,
-              launchError: { frontendError: true, pipelineError: true, errorMessage },
-              starting: false
+              launchError: {
+                frontendError: true,
+                pipelineError: true,
+                errorMessage,
+              },
+              starting: false,
             });
           }
-        }
-        else {
-          setTimeout(() => { this.triggerAutoStart(); }, 1000);
+        } else {
+          setTimeout(() => {
+            this.triggerAutoStart();
+          }, 1000);
         }
       }
     }
@@ -712,15 +774,9 @@ class StartNotebookServer extends Component {
     const target = event.target.type.toLowerCase();
     let value = providedValue;
     if (!providedValue && providedValue !== 0) {
-      if (target === "button")
-        value = event.target.textContent;
-
-      else if (target === "checkbox")
-        value = event.target.checked;
-
-      else
-        value = event.target.value;
-
+      if (target === "button") value = event.target.textContent;
+      else if (target === "checkbox") value = event.target.checked;
+      else value = event.target.value;
     }
 
     this.coordinator.setNotebookOptions(option, value);
@@ -738,30 +794,36 @@ class StartNotebookServer extends Component {
     }
   }
 
-
   setObjectStoresConfiguration(value) {
     this.coordinator.setObjectStoresConfiguration(value);
   }
 
   redirectToShowSession(data, state, history) {
-    const annotations = NotebooksHelper.cleanAnnotations(data.annotations, "renku.io");
+    const annotations = NotebooksHelper.cleanAnnotations(data.annotations);
     const localUrl = Url.get(Url.pages.project.session.show, {
       namespace: annotations["namespace"],
       path: annotations["projectName"],
       server: data.name,
     });
-    history.push({ pathname: localUrl, search: "", state: { ...state, redirectFromStartServer: true } });
+    history.push({
+      pathname: localUrl,
+      search: "",
+      state: { ...state, redirectFromStartServer: true },
+    });
   }
 
-  internalStartServer() {
+  internalStartServer(forceBaseImage = false) {
     // The core internal logic extracted here for re-use
     const { location, history } = this.props;
-    return this.coordinator.startServer().then((data) => {
-      this.setState({ "starting": false });
+    return this.coordinator.startServer(forceBaseImage).then((data) => {
+      this.setState({ starting: false });
       // redirect user when necessary
-      if (!history || !location)
-        return;
-      if (location.state && location.state.successUrl && history.location.pathname === location.pathname) {
+      if (!history || !location) return;
+      if (
+        location.state &&
+        location.state.successUrl &&
+        history.location.pathname === location.pathname
+      ) {
         if (this.autostart && !this.state.autostartTried) {
           const state = { filePath: this.customNotebookFilePath };
           // ? Start with a short delay to prevent missing server information from "GET /servers" API
@@ -769,31 +831,32 @@ class StartNotebookServer extends Component {
             this.setState({ autostartTried: true });
             this.redirectToShowSession(data, state, history);
           }, 3000);
-        }
-        else {
+        } else {
           this.redirectToShowSession(data, {}, history);
         }
       }
     });
   }
 
-  startServer() {
+  startServer(forceBaseImage = false) {
     //* Data from notebooks/servers endpoint needs some time to update properly.
     //* To avoid flickering UI, just set a temporary state and display a loading wheel.
-    this.setState({ "starting": true, launchError: null });
-    this.internalStartServer().catch((error) => {
+    this.setState({ starting: true, launchError: null });
+    this.internalStartServer(forceBaseImage).catch((error) => {
       if (error.cause && error.cause.response && error.cause.response.status) {
         if (error.cause.response.status === 500) {
           // Some failures just go away. Try again to see if it works the second time.
           setTimeout(() => {
-            this.internalStartServer().catch((error) => {
+            this.internalStartServer(forceBaseImage).catch((error) => {
               this.handleNotebookStartError(error);
             });
           }, 3000);
+        } else {
+          this.handleNotebookStartError(error);
         }
-        else { this.handleNotebookStartError(error); }
+      } else {
+        this.handleNotebookStartError(error);
       }
-      else { this.handleNotebookStartError(error); }
     });
   }
 
@@ -804,10 +867,12 @@ class StartNotebookServer extends Component {
     this.notifications.addError(
       this.notifications.Topics.SESSION_START,
       "Unable to start the session.",
-      this.props.location.pathname, "Try again",
+      this.props.location.pathname,
+      "Try again",
       null, // always toast
-      fullError);
-    this.setState({ "starting": false, launchError: error.message });
+      fullError
+    );
+    this.setState({ starting: false, launchError: error.message });
     if (this.autostart && !this.state.autostartTried)
       this.setState({ autostartTried: true });
   }
@@ -824,16 +889,22 @@ class StartNotebookServer extends Component {
   }
 
   filterAutosavedBranches(branches, username) {
-    if (!username || !branches)
-      return [];
-    return branches.filter(branch => branch.autosave.username === username);
+    if (!username || !branches) return [];
+    return branches.filter(
+      (branch) =>
+        branch.autosave.username &&
+        branch.autosave.username.startsWith(username)
+    );
   }
 
   propsToChildProps() {
-    const username = this.props.user.logged ?
-      this.props.user.data.username :
-      null;
-    const ownAutosaved = this.filterAutosavedBranches([...this.props.autosaved], username);
+    const username = this.props.user.logged
+      ? this.props.user.data.username
+      : null;
+    const ownAutosaved = this.filterAutosavedBranches(
+      [...this.props.autosaved],
+      username
+    );
     const augmentedState = {
       ...this.props.notebooks,
       data: {
@@ -845,56 +916,64 @@ class StartNotebookServer extends Component {
       },
       delays: {
         branch: this.state.branchDelay,
-        commit: this.state.commitDelay
+        commit: this.state.commitDelay,
       },
       externalUrl: this.props.externalUrl,
       fetchingBranches: StatusHelper.isUpdating(this.props.fetchingBranches),
-      showObjectStoreModal: this.state.showObjectStoreModal
+      showObjectStoreModal: this.state.showObjectStoreModal,
     };
     return {
       handlers: this.handlers,
-      ...augmentedState
+      ...augmentedState,
     };
   }
 
   render() {
     if (this.props.blockAnonymous && !this.userLogged)
-      return <>{this.props.defaultBackButton}<NotebooksDisabled logged={this.userLogged} /></>;
+      return (
+        <>
+          {this.props.defaultBackButton}
+          <NotebooksDisabled logged={this.userLogged} />
+        </>
+      );
 
-    return <StartNotebookServerPresent
-      autoStarting={this.autostart && !this.state.autostartTried}
-      autosavesCommit={this.state.autosavesCommit}
-      autosavesWrong={this.state.autosavesWrong}
-      ignorePipeline={this.state.ignorePipeline}
-      inherited={this.props}
-      justStarted={this.state.starting}
-      launchError={this.state.launchError}
-      lockStatus={this.props.lockStatus}
-      message={this.props.message}
-      envVariablesQueryParams={this.customEnvVariables}
-      defaultBackButton={this.props.defaultBackButton}
-      backUrl={this.props.backUrl}
-      {...this.propsToChildProps()}
-    />;
+    return (
+      <StartNotebookServerPresent
+        autoStarting={this.autostart && !this.state.autostartTried}
+        autosavesCommit={this.state.autosavesCommit}
+        autosavesWrong={this.state.autosavesWrong}
+        ignorePipeline={this.state.ignorePipeline}
+        inherited={this.props}
+        justStarted={this.state.starting}
+        launchError={this.state.launchError}
+        lockStatus={this.props.lockStatus}
+        message={this.props.message}
+        envVariablesQueryParams={this.customEnvVariables}
+        defaultBackButton={this.props.defaultBackButton}
+        backUrl={this.props.backUrl}
+        {...this.propsToChildProps()}
+      />
+    );
   }
 }
 
-function mapNotebookStatusStateToProps(state, ownProps) {
+function mapNotebookStatusStateToProps(state) {
   const subState = state.stateModel.notebooks;
 
   const notebookKeys = Object.keys(subState.notebooks.all);
-  const notebook = notebookKeys.length > 0 ?
-    subState.notebooks.all[notebookKeys] :
-    null;
+  const notebook =
+    notebookKeys.length > 0 ? subState.notebooks.all[notebookKeys] : null;
 
   return {
     fetched: subState.notebooks.fetched,
     fetching: subState.notebooks.fetching,
-    notebook
+    notebook,
   };
 }
 
-const VisibleNotebookIcon = connect(mapNotebookStatusStateToProps)(CheckNotebookIcon);
+const VisibleNotebookIcon = connect(mapNotebookStatusStateToProps)(
+  CheckNotebookIcon
+);
 
 /**
  * Display the connect to Jupyter icon
@@ -917,25 +996,26 @@ class CheckNotebookStatus extends Component {
     super(props);
     this.model = props.model.subModel("notebooks");
     this.userModel = props.model.subModel("user");
-    this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
+    this.coordinator = new NotebooksCoordinator(
+      props.client,
+      this.model,
+      this.userModel
+    );
 
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 
-    if (props.scope)
-      this.coordinator.setNotebookFilters(props.scope);
-
+    if (props.scope) this.coordinator.setNotebookFilters(props.scope);
   }
 
   async componentDidMount() {
     let { scope } = this.props;
-    if (!scope.branch)
-      return;
+    if (!scope.branch) return;
     this.coordinator.setNotebookFilters(scope);
 
-    const pollingInterval = this.props.pollingInterval ?
-      parseInt(this.props.pollingInterval) * 1000 :
-      5000;
+    const pollingInterval = this.props.pollingInterval
+      ? parseInt(this.props.pollingInterval) * 1000
+      : 5000;
 
     this.coordinator.startNotebookPolling(pollingInterval);
   }
@@ -944,25 +1024,25 @@ class CheckNotebookStatus extends Component {
     this.coordinator.stopNotebookPolling();
   }
 
-  mapStateToProps(state, ownProps) {
+  mapStateToProps(state) {
     const subState = state.stateModel.notebooks;
 
     const notebookKeys = Object.keys(subState.notebooks.all);
-    const notebook = notebookKeys.length > 0 ?
-      subState.notebooks.all[notebookKeys] :
-      null;
+    const notebook =
+      notebookKeys.length > 0 ? subState.notebooks.all[notebookKeys] : null;
 
     return {
       fetched: subState.notebooks.fetched,
       fetching: subState.notebooks.fetching,
-      notebook
+      notebook,
     };
   }
 
   render() {
-    return (<VisibleNotebookIcon store={this.model.reduxStore} {...this.props} />);
+    return (
+      <VisibleNotebookIcon store={this.model.reduxStore} {...this.props} />
+    );
   }
 }
-
 
 export { CheckNotebookStatus, Notebooks, ShowSession, StartNotebookServer };

@@ -10,12 +10,12 @@
 
 const isLocalhost = Boolean(
   window.location.hostname === "localhost" ||
-  // [::1] is the IPv6 localhost address.
-  window.location.hostname === "[::1]" ||
-  // 127.0.0.1/8 is considered localhost for IPv4.
-  window.location.hostname.match(
-    /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
-  )
+    // [::1] is the IPv6 localhost address.
+    window.location.hostname === "[::1]" ||
+    // 127.0.0.1/8 is considered localhost for IPv4.
+    window.location.hostname.match(
+      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
+    )
 );
 
 export default function register() {
@@ -35,8 +35,7 @@ export default function register() {
       if (isLocalhost) {
         // This is running on localhost. Lets check if a service worker still exists or not.
         checkValidServiceWorker(swUrl);
-      }
-      else {
+      } else {
         // Is not local host. Just register service worker
         registerValidSW(swUrl);
       }
@@ -50,10 +49,12 @@ function registerValidSW(swUrl) {
     // https://bugs.chromium.org/p/chromium/issues/detail?id=465666
     // A bit annoying, but it will go away for proper deployments using https.
     .register(swUrl)
-    .then(registration => {
-      registration.onupdatefound = () => { // eslint-disable-line
+    .then((registration) => {
+      // eslint-disable-next-line spellcheck/spell-checker
+      registration.onupdatefound = () => {
         const installingWorker = registration.installing;
-        installingWorker.onstatechange = () => { // eslint-disable-line
+        // eslint-disable-next-line spellcheck/spell-checker
+        installingWorker.onstatechange = () => {
           if (installingWorker.state === "installed") {
             if (navigator.serviceWorker.controller) {
               // At this point, the old content will have been purged and
@@ -61,8 +62,7 @@ function registerValidSW(swUrl) {
               // It's the perfect time to display a "New content is
               // available; please refresh." message in your web app.
               //console.log("New content is available; please refresh.");
-            }
-            else {
+            } else {
               // At this point, everything has been pre-cached.
               // It's the perfect time to display a
               // "Content is cached for offline use." message.
@@ -72,7 +72,7 @@ function registerValidSW(swUrl) {
         };
       };
     })
-    .catch(error => {
+    .catch(() => {
       //console.error("Error during service worker registration:", error);
     });
 }
@@ -80,20 +80,20 @@ function registerValidSW(swUrl) {
 function checkValidServiceWorker(swUrl) {
   // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl)
-    .then(response => {
+    .then((response) => {
       // Ensure service worker exists, and that we really are getting a JS file.
       if (
         response.status === 404 ||
         response.headers.get("content-type").indexOf("javascript") === -1
       ) {
         // No service worker found. Probably a different app. Reload the page.
-        navigator.serviceWorker.ready.then(registration => {
-          registration.unregister().then(() => { // eslint-disable-line
+        navigator.serviceWorker.ready.then((registration) => {
+          // eslint-disable-next-line spellcheck/spell-checker
+          registration.unregister().then(() => {
             window.location.reload();
           });
         });
-      }
-      else {
+      } else {
         // Service worker found. Proceed as normal.
         registerValidSW(swUrl);
       }
@@ -103,9 +103,10 @@ function checkValidServiceWorker(swUrl) {
     });
 }
 
-export function unregister() { // eslint-disable-line
+// eslint-disable-next-line spellcheck/spell-checker
+export function unregister() {
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.ready.then(registration => {
+    navigator.serviceWorker.ready.then((registration) => {
       registration.unregister(); // eslint-disable-line
     });
   }

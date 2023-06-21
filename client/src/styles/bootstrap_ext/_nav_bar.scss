@@ -3,9 +3,6 @@
   .navbar {
     height: 70px; // we need this to vertically align items
   }
-  .navbar-collapse {
-    padding-top: 0.5em;
-  }
   .input {
     padding-top: 0.3rem;
   }
@@ -41,9 +38,18 @@ nav.navbar {
   // 10 on top and bottom
   padding-top: 10px !important;
   padding-bottom: 10px !important;
-  align-items: center !important;
 
   .dropdown-toggle::after {
     content: none;
   }
+}
+
+.navbar-nav {
+  --bs-navbar-color: rgba(255, 255, 255, 0.55);
+  --bs-navbar-active-color: rgba(255, 255, 255, 1);
+  --bs-navbar-hover-color: rgba(255, 255, 255, 0.75);
+}
+
+.container-fluid.renku-container {
+  align-items: center;
 }

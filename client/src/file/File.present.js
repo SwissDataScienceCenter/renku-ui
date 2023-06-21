@@ -18,7 +18,15 @@
 
 import React, { memo, useState } from "react";
 import {
-  Badge, Card, CardHeader, CardBody, Button, ButtonGroup, ListGroup, ListGroupItem, Input
+  Badge,
+  Card,
+  CardHeader,
+  CardBody,
+  Button,
+  ButtonGroup,
+  ListGroup,
+  ListGroupItem,
+  Input,
 } from "reactstrap";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
@@ -32,10 +40,10 @@ import { formatBytes } from "../utils/helpers/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 import { Label } from "reactstrap";
 import _ from "lodash";
-import { Clipboard } from "../utils/components/Clipboard";
-import { ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
-import { Loader } from "../utils/components/Loader";
-import NotebookPreview from "../utils/components/notebook";
+import { Clipboard } from "../components/Clipboard";
+import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
+import { Loader } from "../components/Loader";
+import NotebookPreview from "../components/notebook";
 
 const commitMessageLengthLimit = 120;
 
@@ -65,7 +73,11 @@ class FileCard extends React.Component {
           <ListGroupItem>
             <div className="d-flex justify-content-between flex-wrap">
               <div>
-                <a href={commitLinkHref} target="_blank" rel="noreferrer noopener">
+                <a
+                  href={commitLinkHref}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
                   Commit: {this.props.commit.short_id}
                 </a>{" "}
                 &nbsp;
@@ -73,7 +85,7 @@ class FileCard extends React.Component {
               </div>
               <div className="caption">
                 {this.props.commit.author_name} &nbsp;
-                {Time.toIsoString(this.props.commit.committed_date)}
+                {Time.toIsoTimezoneString(this.props.commit.committed_date)}
               </div>
             </div>
           </ListGroupItem>
@@ -81,21 +93,27 @@ class FileCard extends React.Component {
       );
     }
     return (
-      <Card className="border-rk-light">
-        <CardHeader id="file-card-header"
-          className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3" >
-          <div className="d-flex align-items-end">
+      <Card>
+        <CardHeader
+          id="file-card-header"
+          className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3 flex-wrap"
+        >
+          <div className="d-flex align-items-end overflow-hidden gap-2">
             {this.props.isLFSBadge}
-            <span className="fw-bold">{this.props.filePath}</span>
-          &nbsp;
-            {this.props.fileSize ? <span><small> {formatBytes(this.props.fileSize)}</small></span> : null}
-          &nbsp;
+            <div className="fw-bold text-truncate">{this.props.filePath}</div>
+            {this.props.fileSize ? (
+              <div className="flex-grow-0 flex-shrink-0">
+                <small> {formatBytes(this.props.fileSize)}</small>
+              </div>
+            ) : null}
             {/* <span className="fileBarIconButton"> */}
-            <Clipboard clipboardText={this.props.filePath} className="icon-link"/>
+            <Clipboard
+              clipboardText={this.props.filePath}
+              className="icon-link d-flex"
+            />
             {/* </span> */}
-          &nbsp;
           </div>
-          <div className="d-flex align-items-end">
+          <div className="d-flex align-items-center">
             {this.props.buttonShareLinkSession}
             {this.props.buttonDownload}
             {this.props.buttonJupyter}
@@ -127,13 +145,13 @@ class ShowFile extends React.Component {
     const gitLabFilePath = this.props.gitLabFilePath;
     const branch = this.props.branch ?? "master";
     const buttonGraph =
-      this.props.lineagesPath !== undefined ?
+      this.props.lineagesPath !== undefined ? (
         <FileAndLineageSwitch
           insideFile={true}
           history={this.props.history}
           switchToPath={`${this.props.lineagesPath}/${gitLabFilePath}`}
         />
-        : null;
+      ) : null;
 
     const buttonGit = (
       <ExternalIconLink
@@ -145,12 +163,18 @@ class ShowFile extends React.Component {
 
     if (this.props.error !== null) {
       const { fileInfo } = this.props;
-      const filePath = fileInfo && fileInfo.path ?
-        fileInfo.path :
-        this.props.gitLabFilePath.split("\\").pop().split("/").pop();
-      const body = fileInfo && fileInfo.type === "tree" ?
-        (<Card className="border-rk-light"><CardBody>Folder</CardBody></Card>) :
-        this.props.error;
+      const filePath =
+        fileInfo && fileInfo.path
+          ? fileInfo.path
+          : this.props.gitLabFilePath.split("\\").pop().split("/").pop();
+      const body =
+        fileInfo && fileInfo.type === "tree" ? (
+          <Card>
+            <CardBody>Folder</CardBody>
+          </Card>
+        ) : (
+          this.props.error
+        );
 
       return (
         <FileCard
@@ -170,26 +194,38 @@ class ShowFile extends React.Component {
 
     if (this.props.file == null) {
       return (
-        <Card className="border-rk-light">
+        <Card>
           <CardHeader className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3">
             &nbsp;
           </CardHeader>
-          <CardBody>Downloading... <Loader size="14" inline="true" /></CardBody>
+          <CardBody>
+            Downloading... <Loader size={14} inline />
+          </CardBody>
         </Card>
       );
     }
 
-    const isLFS = this.props.hashElement ?
-      this.props.hashElement.isLfs :
-      false;
-    const isLFSBadge = isLFS ?
-      (<Badge className="lfs-badge" color="white">LFS</Badge>) :
-      null;
+    const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
+    const isLFSBadge = isLFS ? (
+      <Badge className="lfs-badge" color="white">
+        LFS
+      </Badge>
+    ) : null;
     const downloadLink = `${this.props.externalUrl}/-/raw/${branch}/${gitLabFilePath}?inline=false`;
     const buttonDownload = (
-      <ExternalIconLink tooltip="Download File" icon={faDownload} to={downloadLink} />
+      <ExternalIconLink
+        tooltip="Download File"
+        icon={faDownload}
+        to={downloadLink}
+      />
     );
-    const body = (<FilePreview file={this.props.file} downloadLink={downloadLink} {...this.props} />);
+    const body = (
+      <FilePreview
+        file={this.props.file}
+        downloadLink={downloadLink}
+        {...this.props}
+      />
+    );
 
     return (
       <FileCard
@@ -214,15 +250,20 @@ class FileNoPreview extends React.Component {
   render() {
     const downloadLink = (
       <ExternalLink
-        title="download the file" role="link" showLinkIcon={true} iconAfter={true}
-        url={this.props.url} customIcon={faDownload} />
+        title="download the file"
+        role="link"
+        showLinkIcon={true}
+        iconAfter={true}
+        url={this.props.url}
+        customIcon={faDownload}
+      />
     );
 
     // LFS or very big files
     if (this.props.lfs || this.props.hardLimitReached) {
-      const reason = this.props.hardLimitReached ?
-        `the file is too big (more than ${formatBytes(this.props.hardLimit)})` :
-        "the file is stored in Git LFS";
+      const reason = this.props.hardLimitReached
+        ? `the file is too big (more than ${formatBytes(this.props.hardLimit)})`
+        : "the file is stored in Git LFS";
       return (
         <CardBody key="file preview" className="pb-0">
           <p>The preview is not available because {reason}.</p>
@@ -234,14 +275,25 @@ class FileNoPreview extends React.Component {
     // Big preview-able files
     if (!this.props.previewAnyway) {
       const loadButton = (
-        <Button color="link" className="p-0 align-baseline" onClick={() => { this.props.loadAnyway(); }}>
+        <Button
+          color="link"
+          className="p-0 align-baseline"
+          onClick={() => {
+            this.props.loadAnyway();
+          }}
+        >
           preview it anyway
         </Button>
       );
       return (
         <CardBody key="file preview" className="pb-0">
-          <p>The preview may be slow because the file is large (more than {formatBytes(this.props.softLimit)}).</p>
-          <p>You can {loadButton} or {downloadLink}</p>
+          <p>
+            The preview may be slow because the file is large (more than{" "}
+            {formatBytes(this.props.softLimit)}).
+          </p>
+          <p>
+            You can {loadButton} or {downloadLink}
+          </p>
         </CardBody>
       );
     }
@@ -294,8 +346,7 @@ function tweakCellMetadataShow(cell, accumulator) {
 function tweakCellMetadataDefault(cell, accumulator) {
   if (cell.metadata.jupyter == null) {
     accumulator.push(cell);
-  }
-  else {
+  } else {
     const clone = { ...cell };
     clone.metadata = { ...cell.metadata };
     clone.metadata.hide_input = clone.metadata.jupyter.source_hidden;
@@ -309,16 +360,19 @@ function tweakCellMetadataDefault(cell, accumulator) {
  * @param {object} [nb] - The notebook to process
  * @param {string} [displayMode] - The mode to use to process the notebook
  */
-function tweakCellMetadata(nb, displayMode = NotebookSourceDisplayMode.DEFAULT) {
+function tweakCellMetadata(
+  nb,
+  displayMode = NotebookSourceDisplayMode.DEFAULT
+) {
   // Scan the cell metadata, and, if jupyter.source_hidden === true, set hide_input = true
   const result = { ...nb };
   result.cells = [];
   const cellMetadataFunction =
     displayMode === NotebookSourceDisplayMode.DEFAULT
       ? tweakCellMetadataDefault
-      : displayMode === NotebookSourceDisplayMode.HIDDEN ?
-        tweakCellMetadataHidden
-        : tweakCellMetadataShow;
+      : displayMode === NotebookSourceDisplayMode.HIDDEN
+      ? tweakCellMetadataHidden
+      : tweakCellMetadataShow;
   nb.cells.forEach((cell) => cellMetadataFunction(cell, result.cells));
   if (displayMode === NotebookSourceDisplayMode.SHOWN) {
     // Set the hide_input to false;
@@ -327,7 +381,6 @@ function tweakCellMetadata(nb, displayMode = NotebookSourceDisplayMode.DEFAULT) 
   }
   return result;
 }
-
 
 /**
  * Remove any problematic content from the cells
@@ -345,7 +398,9 @@ function sanitizeCell(cell, accumulator) {
     const o = { ...oo };
     o.data = { ...oo.data };
     if (o.data["text/html"] != null)
-      o.data["text/html"] = [DOMPurify.sanitize([o.data["text/html"].join("\n")])];
+      o.data["text/html"] = [
+        DOMPurify.sanitize([o.data["text/html"].join("\n")]),
+      ];
     return o;
   });
   clone.outputs = outputs;
@@ -364,17 +419,16 @@ function sanitizeNotebook(nb) {
   return result;
 }
 
-
 function NotebookDisplayForm(props) {
   const displayMode = props.displayMode;
   const setDisplayMode = props.setDisplayMode;
-  const [overrideMode, setOverrideMode] = useState(NotebookSourceDisplayMode.SHOWN);
+  const [overrideMode, setOverrideMode] = useState(
+    NotebookSourceDisplayMode.SHOWN
+  );
 
   function setOverride(override) {
-    if (override)
-      setDisplayMode(overrideMode);
-    else
-      setDisplayMode(NotebookSourceDisplayMode.DEFAULT);
+    if (override) setDisplayMode(overrideMode);
+    else setDisplayMode(NotebookSourceDisplayMode.DEFAULT);
   }
 
   function setLocalMode(mode) {
@@ -382,79 +436,113 @@ function NotebookDisplayForm(props) {
     setDisplayMode(mode);
   }
 
-  const overrideControl = (displayMode === NotebookSourceDisplayMode.DEFAULT) ?
-    null :
-    <ButtonGroup key="controls" className="mt-2" size="sm">
-      <Button
-        onClick={() => setLocalMode(NotebookSourceDisplayMode.SHOWN)}
-        active={displayMode === NotebookSourceDisplayMode.SHOWN}
-      >
-        Visible
-      </Button>
-      <Button
-        onClick={() => setLocalMode(NotebookSourceDisplayMode.HIDDEN)}
-        active={displayMode === NotebookSourceDisplayMode.HIDDEN}
-      >
-        Hidden
-      </Button>
-    </ButtonGroup>;
+  const overrideControl =
+    displayMode === NotebookSourceDisplayMode.DEFAULT ? null : (
+      <ButtonGroup key="controls" className="mt-2" size="sm">
+        <Button
+          onClick={() => setLocalMode(NotebookSourceDisplayMode.SHOWN)}
+          active={displayMode === NotebookSourceDisplayMode.SHOWN}
+        >
+          Visible
+        </Button>
+        <Button
+          onClick={() => setLocalMode(NotebookSourceDisplayMode.HIDDEN)}
+          active={displayMode === NotebookSourceDisplayMode.HIDDEN}
+        >
+          Hidden
+        </Button>
+      </ButtonGroup>
+    );
 
-  return <ListGroup key="controls" flush className="border-top-0">
-    <ListGroupItem>
-      <div className="form-check form-switch">
-        <Input
-          type="switch"
-          id="code-visibility-override"
-          name="code-visibility-override"
-          className="rounded-pill"
-          checked={displayMode !== NotebookSourceDisplayMode.DEFAULT}
-          onChange={() => { setOverride(displayMode === NotebookSourceDisplayMode.DEFAULT); }} />
-        <Label for="code-visibility-override" check className="me-4">Override Code Visibility</Label>
-      </div>
-      <div className="form-rk-green">
-        {overrideControl}
-      </div>
-    </ListGroupItem>
-  </ListGroup>;
+  return (
+    <ListGroup key="controls" flush className="border-top-0">
+      <ListGroupItem>
+        <div className="form-check form-switch">
+          <Input
+            type="switch"
+            id="code-visibility-override"
+            name="code-visibility-override"
+            className="rounded-pill"
+            checked={displayMode !== NotebookSourceDisplayMode.DEFAULT}
+            onChange={() => {
+              setOverride(displayMode === NotebookSourceDisplayMode.DEFAULT);
+            }}
+          />
+          <Label for="code-visibility-override" check className="me-4">
+            Override Code Visibility
+          </Label>
+        </div>
+        <div className="form-rk-green">{overrideControl}</div>
+      </ListGroupItem>
+    </ListGroup>
+  );
 }
 
 const StyledNotebook = memo((props) => {
-  const [displayMode, setDisplayMode] = useState(NotebookSourceDisplayMode.DEFAULT);
+  const [displayMode, setDisplayMode] = useState(
+    NotebookSourceDisplayMode.DEFAULT
+  );
 
   if (props.notebook == null) return <div>Loading...</div>;
 
-  const notebook = sanitizeNotebook(tweakCellMetadata(props.notebook, displayMode));
+  const notebook = sanitizeNotebook(
+    tweakCellMetadata(props.notebook, displayMode)
+  );
   return [
-    <NotebookDisplayForm key="notebook-display-form" displayMode={displayMode} setDisplayMode={setDisplayMode} />,
+    <NotebookDisplayForm
+      key="notebook-display-form"
+      displayMode={displayMode}
+      setDisplayMode={setDisplayMode}
+    />,
     <CardBody key="notebook">
-      <NotebookPreview defaultStyle={false} loadMathjax={false} notebook={notebook} />
-    </CardBody>
+      <NotebookPreview
+        defaultStyle={false}
+        loadMathjax={false}
+        notebook={notebook}
+      />
+    </CardBody>,
   ];
 }, _.isEqual);
 StyledNotebook.displayName = "StyledNotebook";
 
-class JupyterButtonPresent extends React.Component {
-  render() {
-    if (!this.props.access)
-      return <CheckNotebookIcon fetched={true} launchNotebookUrl={this.props.launchNotebookUrl} />;
-
-    if (this.props.updating)
-      return (<span className="ms-2 pb-1"><Loader size="19" inline="true" /></span>);
-
+const JupyterButtonPresent = (props) => {
+  if (!props.access) {
     return (
-      <CheckNotebookStatus
-        client={this.props.client}
-        model={this.props.model}
-        scope={this.props.scope}
-        location={this.props.location}
-        launchNotebookUrl={this.props.launchNotebookUrl}
-        filePath={this.props.filePath}
+      <CheckNotebookIcon
+        fetched={true}
+        location={props.location}
+        launchNotebookUrl={props.launchNotebookUrl}
+        filePath={props.filePath}
       />
     );
   }
-}
+
+  if (props.updating) {
+    return (
+      <span className="ms-2 pb-1">
+        <Loader size={19} inline />
+      </span>
+    );
+  }
+
+  return (
+    <CheckNotebookStatus
+      client={props.client}
+      model={props.model}
+      scope={props.scope}
+      location={props.location}
+      launchNotebookUrl={props.launchNotebookUrl}
+      filePath={props.filePath}
+    />
+  );
+};
 
 export {
-  JupyterButtonPresent, FileNoPreview, NotebookSourceDisplayMode, ShowFile, StyledNotebook,
-  sanitizeNotebook, tweakCellMetadata
+  JupyterButtonPresent,
+  FileNoPreview,
+  NotebookSourceDisplayMode,
+  ShowFile,
+  StyledNotebook,
+  sanitizeNotebook,
+  tweakCellMetadata,
 };

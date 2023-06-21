@@ -21,19 +21,17 @@ import { APIError, API_ERRORS, throwAPIErrors, throwAuthError } from "./errors";
 const RETURN_TYPES = {
   json: "json",
   text: "text",
-  full: "full"
+  full: "full",
 };
 
 const AUTH_HEADER = {
   invalidHeaderField: "ui-server-auth",
-  invalidHeaderExpired: "expired"
+  invalidHeaderExpired: "expired",
 };
-
 
 // Wrapper around fetch which will throw exceptions on all non 20x responses.
 // Adapted from https://github.com/github/fetch/issues/155
 function renkuFetch(url, options) {
-
   // Add query parameters to URL instance. This will also work
   // if url is already an instance of URL. Note that this also encodes the URL
   // and the parameters.
@@ -51,38 +49,37 @@ function renkuFetch(url, options) {
   // Add a custom header for protection against CSRF attacks.
   options.headers.set("X-Requested-With", "XMLHttpRequest");
 
-  return fetch(urlObject, options)
+  return (
+    fetch(urlObject, options)
+      // Label an error raised here already as networking problem.
+      .catch((fetchError) => {
+        const networkError = new APIError(API_ERRORS.networkError);
+        networkError.case = API_ERRORS.networkError;
+        networkError.error = fetchError;
+        return Promise.reject(networkError);
+      })
 
-    // Label an error raised here already as networking problem.
-    .catch((fetchError) => {
-      const networkError = new APIError(API_ERRORS.networkError);
-      networkError.case = API_ERRORS.networkError;
-      networkError.error = fetchError;
-      return Promise.reject(networkError);
-    })
-
-    // Raise an error for all non 200 responses.
-    .then((response) => {
-      // check the headers to verify if a re-login should be triggered
-      const authHeader = response.headers.get(AUTH_HEADER.invalidHeaderField);
-      if (authHeader && authHeader === AUTH_HEADER.invalidHeaderExpired)
-        return throwAuthError(response);
-      else if (response.status >= 200 && response.status < 300)
-        return response;
-      return throwAPIErrors(response);
-    });
-
+      // Raise an error for all non 200 responses.
+      .then((response) => {
+        // check the headers to verify if a re-login should be triggered
+        const authHeader = response.headers.get(AUTH_HEADER.invalidHeaderField);
+        if (authHeader && authHeader === AUTH_HEADER.invalidHeaderExpired)
+          return throwAuthError(response);
+        else if (response.status >= 200 && response.status < 300)
+          return response;
+        return throwAPIErrors(response);
+      })
+  );
 }
 
-
 function fetchJson(...args) {
-  return fetch(...args).then(response => response.json());
+  return fetch(...args).then((response) => response.json());
 }
 
 function formatEnvironmentVariables(variables) {
   const env_variables = {};
   if (variables?.length > 0) {
-    variables.map( variable => {
+    variables.map((variable) => {
       if (variable.key && variable.value)
         env_variables[variable.key] = variable.value;
     });
@@ -90,4 +87,10 @@ function formatEnvironmentVariables(variables) {
   return env_variables;
 }
 
-export { fetchJson, renkuFetch, formatEnvironmentVariables, AUTH_HEADER, RETURN_TYPES };
+export {
+  fetchJson,
+  renkuFetch,
+  formatEnvironmentVariables,
+  AUTH_HEADER,
+  RETURN_TYPES,
+};

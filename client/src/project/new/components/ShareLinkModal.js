@@ -22,7 +22,6 @@
  *  Share Link Modal component to create a project
  */
 import React, { useEffect, useState } from "react";
-import { Clipboard } from "../../../utils/components/Clipboard";
 import {
   FormGroup,
   FormText,
@@ -34,8 +33,8 @@ import {
   Row,
   Col,
   Form,
-  Table
 } from "reactstrap";
+import { CommandCopy } from "../../../components/commandCopy/CommandCopy";
 
 function ShareLinkModal(props) {
   const { createUrl, input } = props;
@@ -48,7 +47,7 @@ function ShareLinkModal(props) {
     visibility: false,
     templateRepo: false,
     template: false,
-    variables: false
+    variables: false,
   };
 
   const [available, setAvailable] = useState(defaultObj);
@@ -58,7 +57,11 @@ function ShareLinkModal(props) {
   // Set availability of inputs
   useEffect(() => {
     let variablesAvailable = false;
-    if (input.template && input.variables && Object.keys(input.variables).length) {
+    if (
+      input.template &&
+      input.variables &&
+      Object.keys(input.variables).length
+    ) {
       for (let variable of Object.keys(input.variables)) {
         if (input.variables[variable]) {
           variablesAvailable = true;
@@ -72,9 +75,15 @@ function ShareLinkModal(props) {
       description: input.description ? true : false,
       namespace: true,
       visibility: true,
-      templateRepo: input.userRepo && userTemplates.fetched && userTemplates.url && userTemplates.ref ? true : false,
+      templateRepo:
+        input.userRepo &&
+        userTemplates.fetched &&
+        userTemplates.url &&
+        userTemplates.ref
+          ? true
+          : false,
       template: input.template ? true : false,
-      variables: variablesAvailable
+      variables: variablesAvailable,
     });
   }, [input, userTemplates]);
 
@@ -87,27 +96,22 @@ function ShareLinkModal(props) {
       visibility: false,
       templateRepo: available.templateRepo,
       template: available.template,
-      variables: available.variables
+      variables: available.variables,
     });
   }, [available]);
 
   // Re-create shareable link
   useEffect(() => {
     let dataObject = {};
-    if (include.title)
-      dataObject.title = input.title;
-    if (include.description)
-      dataObject.description = input.description;
-    if (include.namespace)
-      dataObject.namespace = input.namespace;
-    if (include.visibility)
-      dataObject.visibility = input.visibility;
+    if (include.title) dataObject.title = input.title;
+    if (include.description) dataObject.description = input.description;
+    if (include.namespace) dataObject.namespace = input.namespace;
+    if (include.visibility) dataObject.visibility = input.visibility;
     if (include.templateRepo) {
       dataObject.url = userTemplates.url;
       dataObject.ref = userTemplates.ref;
     }
-    if (include.template)
-      dataObject.template = input.template;
+    if (include.template) dataObject.template = input.template;
     if (include.variables) {
       let variablesObject = {};
       for (let variable of Object.keys(input.variables)) {
@@ -123,34 +127,50 @@ function ShareLinkModal(props) {
   const handleCheckbox = (target, event) => {
     // select the template source if is selected a custom template
     if (target === "template" && event.target.checked && available.templateRepo)
-      setInclude({ ...include, templateRepo: event.target.checked, [target]: event.target.checked });
+      setInclude({
+        ...include,
+        templateRepo: event.target.checked,
+        [target]: event.target.checked,
+      });
     // deselect template if deselect templateRepo
-    else if (target === "templateRepo" && !event.target.checked && available.template)
-      setInclude({ ...include, template: false, [target]: event.target.checked });
-    else
-      setInclude({ ...include, [target]: event.target.checked });
+    else if (
+      target === "templateRepo" &&
+      !event.target.checked &&
+      available.template
+    )
+      setInclude({
+        ...include,
+        template: false,
+        [target]: event.target.checked,
+      });
+    else setInclude({ ...include, [target]: event.target.checked });
   };
 
-  const labels = Object.keys(include).map(item => (
+  const labels = Object.keys(include).map((item) => (
     <FormGroup key={item} check>
-      <Label check className={`text-capitalize${available[item] ? " cursor-pointer" : " text-muted cursor-pointer"}`}>
+      <Label
+        check
+        className={`text-capitalize${
+          available[item] ? " cursor-pointer" : " text-muted cursor-pointer"
+        }`}
+      >
         <Input
           type="checkbox"
           disabled={!available[item]}
           checked={include[item]}
-          onChange={e => handleCheckbox(item, e)}
-        /> {item === "templateRepo" ? "template source" : item}
+          onChange={(e) => handleCheckbox(item, e)}
+        />{" "}
+        {item === "templateRepo" ? "template source" : item}
       </Label>
     </FormGroup>
   ));
 
-  const feedback = include.namespace ?
-    (
-      <FormText color="danger">
-        Pre-filling the namespace may lead to errors since other users are not guaranteed to have access to it.
-      </FormText>
-    ) :
-    null;
+  const feedback = include.namespace ? (
+    <FormText color="danger">
+      Pre-filling the namespace may lead to errors since other users are not
+      guaranteed to have access to it.
+    </FormText>
+  ) : null;
 
   return (
     <Modal isOpen={props.show} toggle={props.toggle}>
@@ -159,28 +179,23 @@ function ShareLinkModal(props) {
         <Row>
           <Col>
             <p>
-              Here is your shareable link, containing the current values for a new project.
-              Following the link will lead to a <b>New project</b> form with these values pre-filled.
+              Here is your shareable link, containing the current values for a
+              new project. Following the link will lead to a <b>New project</b>{" "}
+              form with these values pre-filled.
             </p>
-            <p>
-              You can control which values should be pre-filled.
-            </p>
+            <p>You can control which values should be pre-filled.</p>
 
             <Form className="mb-3 form-rk-green">
               {labels}
               {feedback}
             </Form>
+          </Col>
+        </Row>
 
-
-            <Table size="sm">
-              <tbody>
-                <tr className="border-bottom">
-                  <th scope="row">URL</th>
-                  <td style={{ wordBreak: "break-all" }}>{url}</td>
-                  <td style={{ width: 1 }}><Clipboard clipboardText={url} /></td>
-                </tr>
-              </tbody>
-            </Table>
+        <Row>
+          <Col>
+            <h3 className="fs-6 lh-sm fw-bold mt-2">URL</h3>
+            <CommandCopy command={url} />
           </Col>
         </Row>
       </ModalBody>

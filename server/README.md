@@ -3,6 +3,7 @@
 The UI server is based on the [Backend for Fronted (BFF)](https://samnewman.io/patterns/architectural/bff) architecture and it is intended to take some burdens off the UI client and handle them more efficiently.
 
 Specifically, it is (or will be) in charge of:
+
 - Authentication: query the authentication server to get access tokens and use the refresh tokens
   to refresh credentials whenever needed.
 - Aggregate APIs: hide some of the complexity we currently have due to different sources providing
@@ -32,7 +33,7 @@ Other requests are handled directly by the service, and those may use Redis to s
 Among those there are requests requiring aggregations from multiple endpoints, and all the
 authentication related endpoints.
 
-The first category is handled similar to the forwared requests, but the final 
+The first category is handled similar to the forwared requests, but the final
 response is generated only when all the endpoints have responded, and partial failures
 are not reported as full error.\
 The second category is fully managed by the service, errors included.

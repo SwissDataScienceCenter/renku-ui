@@ -25,7 +25,15 @@
 
 import React, { Component, Fragment } from "react";
 import {
-  Badge, Card, CardBody, CardHeader, Col, ListGroupItem, Row, Table, UncontrolledTooltip
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  ListGroupItem,
+  Row,
+  Table,
+  UncontrolledTooltip,
 } from "reactstrap";
 import { default as fileSize } from "filesize";
 import qs from "query-string";
@@ -34,19 +42,16 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import { StatusHelper } from "../../model/Model";
-import { CommitsView } from "../../utils/components/commits/Commits";
-import { Loader } from "../../utils/components/Loader";
-import { ExternalLink } from "../../utils/components/ExternalLinks";
-import { RefreshButton } from "../../utils/components/buttons/Button";
-import { Pagination } from "../../utils/components/Pagination";
-
+import { CommitsView } from "../../components/commits/Commits";
+import { Loader } from "../../components/Loader";
+import { ExternalLink } from "../../components/ExternalLinks";
+import { RefreshButton } from "../../components/buttons/Button";
+import { Pagination } from "../../components/Pagination";
 
 class OverviewStats extends Component {
   valueOrEmptyOrLoading(value, fetching, readableSize = true) {
-    if (fetching)
-      return (<Loader size="14" inline="true" />);
-    if (value === 0)
-      return 0;
+    if (fetching) return <Loader size={14} inline />;
+    if (value === 0) return 0;
     if (value !== null && !isNaN(value))
       return readableSize ? fileSize(value) : value;
     return "";
@@ -54,31 +59,49 @@ class OverviewStats extends Component {
 
   render() {
     const { metadata, statistics, branches } = this.props;
-    if (metadata.fetching)
-      return <Loader />;
+    if (metadata.fetching) return <Loader />;
 
-    const storageSize = this.valueOrEmptyOrLoading(statistics.data.storage_size, statistics.fetching);
-    const repositorySize = this.valueOrEmptyOrLoading(statistics.data.repository_size, statistics.fetching);
-    const lfsSize = this.valueOrEmptyOrLoading(statistics.data.lfs_objects_size, statistics.fetching);
-    const commitsCount = this.valueOrEmptyOrLoading(statistics.data.commit_count, statistics.fetching, false);
-    const branchesCount = !StatusHelper.isUpdating(branches) ?
-      branches.length :
-      (<Loader size="14" inline="true" />);
+    const storageSize = this.valueOrEmptyOrLoading(
+      statistics.data.storage_size,
+      statistics.fetching
+    );
+    const repositorySize = this.valueOrEmptyOrLoading(
+      statistics.data.repository_size,
+      statistics.fetching
+    );
+    const lfsSize = this.valueOrEmptyOrLoading(
+      statistics.data.lfs_objects_size,
+      statistics.fetching
+    );
+    const commitsCount = this.valueOrEmptyOrLoading(
+      statistics.data.commit_count,
+      statistics.fetching,
+      false
+    );
+    const branchesCount = !StatusHelper.isUpdating(branches) ? (
+      branches.length
+    ) : (
+      <Loader size={14} inline />
+    );
 
     let info = null;
     if (!metadata.accessLevel) {
       info = (
         <p className="font-italic">
-          Since you are not a member of this project, some information may not be available.
-          <br />You can still find more information in the GitLab UI.
+          Since you are not a member of this project, some information may not
+          be available.
+          <br />
+          You can still find more information in the GitLab UI.
         </p>
       );
     }
 
     // TODO: provide a refresh button once all the data can be refreshed at once (see container)
     return (
-      <Card className="border-rk-light">
-        <CardHeader className="bg-white p-3 ps-4">Project Statistics</CardHeader>
+      <Card>
+        <CardHeader className="bg-white p-3 ps-4">
+          Project Statistics
+        </CardHeader>
         <CardBody className="p-4 pt-3 pb-3 lh-lg">
           <Row>
             <Col>
@@ -86,51 +109,77 @@ class OverviewStats extends Component {
               <Table className="table-responsive" key="stats-table" size="sm">
                 <tbody>
                   <tr>
-                    <th className="align-middle" scope="row">Number of Branches</th>
-                    <td className="px-3 px-lg-4 align-middle">{branchesCount}</td>
+                    <th className="align-middle" scope="row">
+                      Number of Branches
+                    </th>
+                    <td className="px-3 px-lg-4 align-middle">
+                      {branchesCount}
+                    </td>
                     <td>
-                      <ExternalLink role="text" showLinkIcon={true}
-                        url={`${metadata.repositoryUrl}/-/branches`} title="Branches in GitLab" />
+                      <ExternalLink
+                        role="text"
+                        showLinkIcon={true}
+                        url={`${metadata.repositoryUrl}/-/branches`}
+                        title="Branches in GitLab"
+                      />
                     </td>
                   </tr>
                   <tr>
-                    <th className="align-middle" scope="row">Number of Forks</th>
-                    <td className="px-3 px-lg-4 align-middle">{metadata.forksCount}</td>
+                    <th className="align-middle" scope="row">
+                      Number of Forks
+                    </th>
+                    <td className="px-3 px-lg-4 align-middle">
+                      {metadata.forksCount}
+                    </td>
                     <td>
-                      <ExternalLink role="text" showLinkIcon={true}
-                        url={`${metadata.repositoryUrl}/-/forks`} title="Forks in GitLab" />
+                      <ExternalLink
+                        role="text"
+                        showLinkIcon={true}
+                        url={`${metadata.repositoryUrl}/-/forks`}
+                        title="Forks in GitLab"
+                      />
                     </td>
                   </tr>
                   <tr>
-                    <th className="align-middle" scope="row">Number of Stars</th>
-                    <td className="px-3 px-lg-4 align-middle">{metadata.starCount}</td>
-                    <td>
-                      <ExternalLink role="text" showLinkIcon={true}
-                        url={`${metadata.repositoryUrl}/-/starrers`} title="Stars in GitLab" />
+                    <th className="align-middle" scope="row">
+                      Number of Commits
+                    </th>
+                    <td className="px-3 px-lg-4 align-middle">
+                      {commitsCount}
                     </td>
-                  </tr>
-                  <tr>
-                    <th className="align-middle" scope="row">Number of Commits</th>
-                    <td className="px-3 px-lg-4 align-middle">{commitsCount}</td>
                     <td>
-                      <ExternalLink role="text" showLinkIcon={true}
-                        url={`${metadata.repositoryUrl}/commits`} title="Commits in GitLab" />
+                      <ExternalLink
+                        role="text"
+                        showLinkIcon={true}
+                        url={`${metadata.repositoryUrl}/commits`}
+                        title="Commits in GitLab"
+                      />
                     </td>
                   </tr>
                   <tr>
                     <th scope="row">Storage Size</th>
                     <td className="px-3 px-lg-4 align-middle">{storageSize}</td>
                     <td className="align-middle" rowSpan="3">
-                      <ExternalLink role="text" showLinkIcon={true}
-                        url={metadata.repositoryUrl} title="Sizes in GitLab" />
+                      <ExternalLink
+                        role="text"
+                        showLinkIcon={true}
+                        url={metadata.repositoryUrl}
+                        title="Sizes in GitLab"
+                      />
                     </td>
                   </tr>
                   <tr>
-                    <th className="align-middle" scope="row">Repository Size</th>
-                    <td className="px-3 px-lg-4 align-middle">{repositorySize}</td>
+                    <th className="align-middle" scope="row">
+                      Repository Size
+                    </th>
+                    <td className="px-3 px-lg-4 align-middle">
+                      {repositorySize}
+                    </td>
                   </tr>
                   <tr>
-                    <th className="align-middle" scope="row">LFS Size</th>
+                    <th className="align-middle" scope="row">
+                      LFS Size
+                    </th>
                     <td className="px-3 px-lg-4 align-middle">{lfsSize}</td>
                   </tr>
                 </tbody>
@@ -147,14 +196,20 @@ class OverviewCommits extends Component {
   render() {
     const { commits, metadata } = this.props;
     const gitlabCommitsUrl = `${metadata.repositoryUrl}/commits`;
-    const tooMany = commits.error && commits.error.message && commits.error.message.startsWith("Cannot iterate more") ?
-      true :
-      false;
+    const tooMany =
+      commits.error &&
+      commits.error.message &&
+      commits.error.message.startsWith("Cannot iterate more")
+        ? true
+        : false;
 
     const commitBadgeNumber = `${commits.list.length}${tooMany ? "+" : ""}`;
-    const badge = commits.fetched && !commits.fetching ?
-      (<Badge color="primary" className="ms-2">{commitBadgeNumber}</Badge>) :
-      null;
+    const badge =
+      commits.fetched && !commits.fetching ? (
+        <Badge color="primary" className="ms-2">
+          {commitBadgeNumber}
+        </Badge>
+      ) : null;
     const buttonGit = (
       <Fragment>
         <ExternalLink
@@ -169,28 +224,37 @@ class OverviewCommits extends Component {
         </UncontrolledTooltip>
       </Fragment>
     );
-    const info = commits.error && commits.error.message && commits.error.message.startsWith("Cannot iterate more") ?
-      (<OverviewCommitsInfo number={commits.list.length} url={gitlabCommitsUrl} />) :
-      null;
+    const info =
+      commits.error &&
+      commits.error.message &&
+      commits.error.message.startsWith("Cannot iterate more") ? (
+        <OverviewCommitsInfo
+          number={commits.list.length}
+          url={gitlabCommitsUrl}
+        />
+      ) : null;
 
-    const body = commits.fetching ?
-      (<Loader />) :
-      (<OverviewCommitsBody {...this.props} />);
+    const body = commits.fetching ? (
+      <Loader />
+    ) : (
+      <OverviewCommitsBody {...this.props} />
+    );
     return (
-
-      <Card className="border-rk-light">
+      <Card>
         <CardHeader className="bg-white p-3 ps-4 d-flex">
-          <span className="align-text-bottom">
-            Commits
-          </span>
+          <span className="align-text-bottom">Commits</span>
           <div>
             {badge}
-            <RefreshButton action={commits.refresh} updating={commits.fetching} message="Refresh commits" />
+            <RefreshButton
+              action={commits.refresh}
+              updating={commits.fetching}
+              message="Refresh commits"
+              dataCy="refresh-commits"
+            />
             {buttonGit}
           </div>
         </CardHeader>
         <CardBody className="p-4 pt-3 pb-3 lh-lg">
-          {/* <CardBody className="p-0 lh-lg"> */}
           {body}
           {info}
         </CardBody>
@@ -203,9 +267,15 @@ class OverviewCommitsInfo extends Component {
   render() {
     return (
       <ListGroupItem className="commit-object">
-        <FontAwesomeIcon icon={faInfoCircle} />&nbsp;
-        Cannot load more than {this.props.number} commits. To see the full project history,&nbsp;
-        <ExternalLink role="link" id="commitLink" title="view in GitLab" url={this.props.url} />
+        <FontAwesomeIcon icon={faInfoCircle} />
+        &nbsp; Cannot load more than {this.props.number} commits. To see the
+        full project history,&nbsp;
+        <ExternalLink
+          role="link"
+          id="commitLink"
+          title="view in GitLab"
+          url={this.props.url}
+        />
       </ListGroupItem>
     );
   }
@@ -225,15 +295,17 @@ class OverviewCommitsBody extends Component {
     this.setState({ currentPage: newPage });
     const currentSearch = qs.parse(this.props.location.search);
     const newSearch = qs.stringify({ ...currentSearch, page: newPage });
-    this.props.history.push({ pathname: this.props.location.pathname, search: newSearch });
+    this.props.history.push({
+      pathname: this.props.location.pathname,
+      search: newSearch,
+    });
   }
 
   render() {
     const { commits, metadata } = this.props;
     const { currentPage, perPage } = this.state;
 
-    if (commits.fetching || !commits.fetched)
-      return <Loader />;
+    if (commits.fetching || !commits.fetched) return <Loader />;
 
     const firstCommit = (currentPage - 1) * perPage;
     const lastCommit = currentPage * perPage;

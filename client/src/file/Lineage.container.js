@@ -19,7 +19,6 @@
 import React, { Component } from "react";
 
 import { API_ERRORS } from "../api-client";
-import { GraphIndexingStatus } from "../project/Project";
 import { FileLineage as FileLineagePresent } from "./Lineage.present";
 
 class FileLineage extends Component {
@@ -27,12 +26,9 @@ class FileLineage extends Component {
     super(props);
     this.state = {
       error: null,
-      graphStatusPoller: null,
-      graphStatusWaiting: false,
-      webhookJustCreated: null,
       graph: null,
       currentNode: { id: null, type: null },
-      file: null
+      file: null,
     };
   }
 
@@ -44,101 +40,35 @@ class FileLineage extends Component {
     // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
     this._isMounted = true;
     this.retrieveGraph();
-    this.startPollingProgress();
     this.retrieveFile();
   }
 
-  componentWillUnmount() {
-    if (this._isMounted)
-      this.stopPollingProgress();
-
-    this._isMounted = false;
-  }
-
-  async startPollingProgress() {
-    if (this._isMounted && !this.state.graphStatusPoller) {
-      this.props.fetchGraphStatus().then((progress) => {
-        if (this._isMounted && !this.state.graphStatusPoller &&
-          progress !== GraphIndexingStatus.MAX_VALUE &&
-          progress !== GraphIndexingStatus.NO_WEBHOOK) {
-          const poller = setInterval(this.checkStatus, 2000);
-          this.setState({ graphStatusPoller: poller });
-        }
-      });
-    }
-  }
-
-  stopPollingProgress() {
-    const { graphStatusPoller } = this.state;
-    if (this._isMounted && graphStatusPoller) {
-      clearTimeout(graphStatusPoller);
-      this.setState({ graphStatusPoller: null });
-    }
-  }
-
-  checkStatus = () => {
-    if (this._isMounted && !this.state.graphStatusWaiting) {
-      this.setState({ graphStatusWaiting: true });
-      this.props.fetchGraphStatus().then((progress) => {
-        if (this._isMounted) {
-          this.setState({ graphStatusWaiting: false });
-          if (progress === GraphIndexingStatus.MAX_VALUE || progress === GraphIndexingStatus.NO_WEBHOOK) {
-            this.stopPollingProgress();
-            if (progress === GraphIndexingStatus.MAX_VALUE)
-              this.retrieveGraph();
-
-          }
-        }
-      });
-    }
-  }
-
-  createWebhook(e) {
-    this.setState({ webhookJustCreated: true });
-    this.props.createGraphWebhook(e).then((data) => {
-      if (this._isMounted) {
-        // remember that the graph status endpoint is not updated instantly, better adding a short timeout
-        setTimeout(() => {
-          if (this._isMounted)
-            this.startPollingProgress();
-
-        }, 1000);
-        // updating this state slightly later avoids UI flickering
-        setTimeout(() => {
-          if (this._isMounted)
-            this.setState({ webhookJustCreated: false });
-
-        }, 1500);
-      }
-    });
-  }
-
   async retrieveGraph() {
-    if (!this.props.projectPath)
-      return;
+    if (!this.props.projectPath) return;
     try {
-      this.props.client.getFileLineage(this.props.projectPath, this.props.path)
-        .then(graph => {
+      this.props.client
+        .getFileLineage(this.props.projectPath, this.props.path)
+        .then((graph) => {
           if (this._isMounted) {
             if (!graph) {
               this.setState({ graph: { edges: [], nodes: [] } });
-            }
-            else {
+            } else {
               let currentNode = { id: null, type: null };
-              graph.nodes.forEach(node => {
-                if ((node.type === "Directory" || node.type === "File") && node.location === this.props.path)
+              graph.nodes.forEach((node) => {
+                if (
+                  (node.type === "Directory" || node.type === "File") &&
+                  node.location === this.props.path
+                )
                   currentNode = node;
-
               });
               this.setState({ graph, currentNode });
             }
           }
         })
-        .catch( (error) => {
+        .catch((error) => {
           this.handleFileLineageError(error);
         });
-    }
-    catch (error) {
+    } catch (error) {
       this.handleFileLineageError(error);
     }
   }
@@ -147,8 +77,7 @@ class FileLineage extends Component {
     if (this._isMounted) {
       if (error.case === API_ERRORS.notFoundError)
         this.setState({ error: "No lineage information." });
-      else
-        this.setState({ error: "Could not load lineage." });
+      else this.setState({ error: "Could not load lineage." });
     }
   }
 
@@ -157,16 +86,19 @@ class FileLineage extends Component {
     const client = this.props.client;
     const branch = this.props.branch;
     let filePath = this.props.gitFilePath;
-    client.getRepositoryFile(this.props.projectId, filePath, branch, "base64")
-      .catch(e => {
+    // The projectId has not yet been retrieved; this function will be called again
+    if (this.props.projectId == null) return;
+
+    client
+      .getRepositoryFile(this.props.projectId, filePath, branch, "base64")
+      .catch((e) => {
         if (!this._isMounted) return null;
         if (e.case !== API_ERRORS.notFoundError)
           this.setState({ error: "Could not load file with path " + filePath });
       })
-      .then(json => {
+      .then((json) => {
         if (!this._isMounted) return null;
-        if (!this.state.error)
-          this.setState({ file: json });
+        if (!this.state.error) this.setState({ file: json });
         return json;
       });
   }
@@ -176,23 +108,27 @@ class FileLineage extends Component {
 
     // If the file is LFS this means that to get the real file size we need to read
     // the file string we get with the LFS info
-    if (this.props.hashElement && this.props.hashElement.isLfs && this.state.file) {
+    if (
+      this.props.hashElement &&
+      this.props.hashElement.isLfs &&
+      this.state.file
+    ) {
       const splitFile = atob(this.state.file.content).split("size ");
-      if (splitFile.length === 2)
-        fileSize = splitFile[splitFile.length - 1];
+      if (splitFile.length === 2) fileSize = splitFile[splitFile.length - 1];
     }
 
-    return <FileLineagePresent
-      retrieveGraph={this.retrieveGraph.bind(this)}
-      graph={this.state.graph}
-      error={this.state.error}
-      createWebhook={this.createWebhook.bind(this)}
-      webhookJustCreated={this.state.webhookJustCreated}
-      filePath={`/projects/${this.props.projectPathWithNamespace}/files/blob/${this.props.path}`}
-      currentNode={this.state.currentNode}
-      accessLevel={this.props.accessLevel}
-      {...this.props}
-      fileSize={fileSize} />;
+    return (
+      <FileLineagePresent
+        accessLevel={this.props.accessLevel}
+        currentNode={this.state.currentNode}
+        error={this.state.error}
+        filePath={`/projects/${this.props.projectPath}/files/blob/${this.props.path}`}
+        fileSize={fileSize}
+        graph={this.state.graph}
+        retrieveGraph={this.retrieveGraph.bind(this)}
+        {...this.props}
+      />
+    );
   }
 }
 

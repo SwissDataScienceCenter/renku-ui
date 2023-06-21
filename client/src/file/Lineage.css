@@ -28,14 +28,14 @@ g.workflow polygon {
   stroke-width: 1.5px;
 }
 
-.graphContainer{
- text-align: center;
+.graphContainer {
+  text-align: center;
 }
 
 .graphContainer svg {
   height: 60vh;
   width: 100%;
-  cursor:pointer;
+  cursor: pointer;
 }
 
 .graphContainer text {
@@ -43,31 +43,31 @@ g.workflow polygon {
   font-size: 13px;
 }
 
-.zoomButtons{
+.zoomButtons {
   position: absolute;
   right: 20px;
 }
 
-.btn-group-left{
+.btn-group-left {
   border-color: #e3e3e3;
   color: #868686;
   border-bottom-right-radius: 0;
   border-top-right-radius: 0;
 }
 
-.btn-group-left:hover{
+.btn-group-left:hover {
   background-color: #868686;
   border-color: #868686;
 }
 
-.btn-group-right{
+.btn-group-right {
   border-color: #e3e3e3;
   color: #868686;
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
 }
 
-.btn-group-right:hover{
+.btn-group-right:hover {
   background-color: #868686;
   border-color: #868686;
 }

@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+set -e
+
+cd ./client
+npm run format-commit 
+cd ..
+
+cd ./server
+npm run format-commit 
+cd ..
+
+cd ./tests
+npm run format-commit 
+cd ..

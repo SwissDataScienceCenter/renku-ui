@@ -1,4 +1,3 @@
-
 /*!
  * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -18,43 +17,77 @@
  */
 import React, { Fragment, useEffect, useState } from "react";
 import {
-  Button, FormFeedback, FormGroup, FormText, Input, Label,
-  Modal, ModalBody, ModalFooter, ModalHeader, Table
+  Button,
+  FormFeedback,
+  FormGroup,
+  FormText,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Table,
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Map, List } from "immutable";
 
+import { ExternalLink } from "../components/ExternalLinks";
+import { isURL } from "../utils/helpers/HelperFunctions";
 
-function ObjectStoreSummary({ objectStoreConfiguration }) {
-  return <Fragment>
-    <FormText color="body">
-      <b>{objectStoreConfiguration["endpoint"]}</b>/{objectStoreConfiguration["bucket"]}
-    </FormText><br />
-  </Fragment>;
+import "./ObjectStoresConfig.scss";
+
+function S3ExplanationLink({ title }) {
+  const theTitle = title ?? "S3-compatible storage";
+  return (
+    <ExternalLink
+      role="text"
+      title={theTitle}
+      url="https://en.wikipedia.org/wiki/Amazon_S3#S3_API_and_competing_services"
+    />
+  );
 }
 
-function ObjectStoresConfigurationButton({ objectStoresConfiguration, toggleShowObjectStoresConfigModal }) {
+function ObjectStoreSummary({ objectStoreConfiguration }) {
+  return (
+    <Fragment>
+      <FormText color="body">
+        <b>{objectStoreConfiguration["endpoint"]}</b>/
+        {objectStoreConfiguration["bucket"]}
+      </FormText>
+      <br />
+    </Fragment>
+  );
+}
 
-  return <FormGroup>
-    <Label>
-      Cloud Storage
-    </Label> &nbsp; &nbsp;
-    <FormText color="muted">
-      Use data from sources like AWS S3, Google Cloud Storage, or Azure Blob Storage.
-    </FormText> {"  "}
-    <br />
-    {
-      objectStoresConfiguration.map((cs, i) => <ObjectStoreSummary key={i} objectStoreConfiguration={cs} />)
-    }
-    <FormText color="body"></FormText> {"  "}
-    <Button color="primary" size="sm"
-      id="s3-configure-button"
-      onClick={toggleShowObjectStoresConfigModal}>
-      Configure Cloud Storage
-    </Button>
-
-  </FormGroup>;
+function ObjectStoresConfigurationButton({
+  objectStoresConfiguration,
+  toggleShowObjectStoresConfigModal,
+}) {
+  return (
+    <FormGroup>
+      <Label>Cloud Storage</Label> &nbsp; &nbsp;
+      <FormText color="muted">
+        Use data from <S3ExplanationLink title="S3-compatible storage" />{" "}
+        sources like AWS S3, Google Cloud Storage, etc.
+      </FormText>{" "}
+      {"  "}
+      <br />
+      {objectStoresConfiguration.map((cs, i) => (
+        <ObjectStoreSummary key={i} objectStoreConfiguration={cs} />
+      ))}
+      <FormText color="body"></FormText> {"  "}
+      <Button
+        color="primary"
+        size="sm"
+        id="s3-configure-button"
+        onClick={toggleShowObjectStoresConfigModal}
+      >
+        Configure Cloud Storage
+      </Button>
+    </FormGroup>
+  );
 }
 
 /**
@@ -62,20 +95,32 @@ function ObjectStoresConfigurationButton({ objectStoresConfiguration, toggleShow
  * @param {object} cloudStoreConfig
  */
 function isCloudStorageEndpointValid(cloudStoreConfig) {
-  return (cloudStoreConfig["endpoint"].length > 0);
+  if (cloudStoreConfig["endpoint"].length < 1) return false;
+  if (!isURL(cloudStoreConfig["endpoint"])) return false;
+  return true;
 }
 
 function EndpointMessage({ validationState }) {
-  if (!validationState.endpoint) return <FormFeedback>Please enter an endpoint</FormFeedback>;
-  return (validationState.bucket) ?
-    <FormText>Data mounted at:</FormText> :
-    null;
+  if (!validationState.endpoint)
+    return (
+      <FormFeedback>Please enter a valid URL for the endpoint</FormFeedback>
+    );
+  return validationState.bucket ? <FormText>Data mounted at:</FormText> : null;
 }
 
 function BucketMessage({ credentials, validationState }) {
-  return (validationState.bucket) ?
-    <FormText>/cloudstorage/{credentials.bucket}</FormText> :
-    <FormFeedback>Please enter an bucket</FormFeedback>;
+  return validationState.bucket ? (
+    <FormText>/cloudstorage/{credentials.bucket}</FormText>
+  ) : (
+    <FormFeedback>
+      Please enter a{" "}
+      <ExternalLink
+        role="text"
+        title="valid bucket name"
+        url="https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html"
+      />
+    </FormFeedback>
+  );
 }
 
 /**
@@ -83,11 +128,16 @@ function BucketMessage({ credentials, validationState }) {
  * @param {object} cloudStoreConfig
  */
 function isCloudStorageBucketValid(cloudStoreConfig) {
-  return (cloudStoreConfig["bucket"].length > 0);
+  const bucketPattern = new RegExp(
+    "^([a-z]|\\d)([a-z]|\\d|\\.|-){1,61}([a-z]|\\d)$",
+    "gsm"
+  );
+  const bucket = cloudStoreConfig["bucket"];
+  if (bucket.length < 1) return false;
+  return bucketPattern.test(bucket);
 }
 
 function ObjectStoreRow({ credentials, index, onChangeValue, onDeleteValue }) {
-
   function changeHandler(field) {
     return (e) => onChangeValue(index, field, e.target.value);
   }
@@ -96,73 +146,114 @@ function ObjectStoreRow({ credentials, index, onChangeValue, onDeleteValue }) {
     bucket: isCloudStorageBucketValid(credentials),
   };
 
-  return <tr>
-    <td>
-      <FormGroup>
-        <Input placeholder="endpoint" type="text" autoComplete="text"
-          id={`s3-endpoint-${index}`} name="endpoint"
-          bsSize="sm" value={credentials.endpoint}
-          onChange={changeHandler("endpoint")} invalid={!validationState.endpoint} />
-        <EndpointMessage credentials={credentials} validationState={validationState} />
-      </FormGroup>
-    </td>
-    <td>
-      <FormGroup>
+  return (
+    <tr className="cloud-storage-row">
+      <td>
+        <FormGroup>
+          <Input
+            placeholder="endpoint"
+            type="text"
+            autoComplete="text"
+            id={`s3-endpoint-${index}`}
+            name="endpoint"
+            bsSize="sm"
+            value={credentials.endpoint}
+            onChange={changeHandler("endpoint")}
+            invalid={!validationState.endpoint}
+          />
+          <EndpointMessage
+            credentials={credentials}
+            validationState={validationState}
+          />
+        </FormGroup>
+      </td>
+      <td>
+        <FormGroup>
+          <Input
+            placeholder="bucket name"
+            type="text"
+            autoComplete="text"
+            id={`s3-bucket-${index}`}
+            name="bucket"
+            bsSize="sm"
+            value={credentials.bucket}
+            onChange={changeHandler("bucket")}
+            invalid={!validationState.bucket}
+          />
+          <BucketMessage
+            credentials={credentials}
+            validationState={validationState}
+          />
+        </FormGroup>
+      </td>
+      <td>
         <Input
-          placeholder="bucket name" type="text" autoComplete="text"
-          id={`s3-bucket-${index}`} name="bucket"
-          bsSize="sm" value={credentials.bucket}
-          onChange={changeHandler("bucket")} invalid={!validationState.bucket} />
-        <BucketMessage credentials={credentials} validationState={validationState} />
-      </FormGroup>
-    </td>
-    <td>
-      <Input placeholder="access key" type="text" autoComplete="text"
-        id={`s3-access_key-${index}`} name="access_key"
-        bsSize="sm" value={credentials.access_key}
-        onChange={changeHandler("access_key")} />
-    </td>
-    <td>
-      <Input placeholder="secret key" type="password" autoComplete="text"
-        id={`s3-secret_key-${index}`} name="secret_key"
-        bsSize="sm" value={credentials.secret_key}
-        onChange={changeHandler("secret_key")} />
-    </td>
-    <td>
-      <Button color="link" size="sm"
-        onClick={() => onDeleteValue(index)}>
-        <FontAwesomeIcon icon={faTrash} />
-      </Button>
-    </td>
-  </tr>;
+          placeholder="access key"
+          type="text"
+          autoComplete="text"
+          id={`s3-access_key-${index}`}
+          name="access_key"
+          bsSize="sm"
+          value={credentials.access_key}
+          onChange={changeHandler("access_key")}
+        />
+      </td>
+      <td>
+        <Input
+          placeholder="secret key"
+          type="password"
+          autoComplete="text"
+          id={`s3-secret_key-${index}`}
+          name="secret_key"
+          bsSize="sm"
+          value={credentials.secret_key}
+          onChange={changeHandler("secret_key")}
+        />
+      </td>
+      <td>
+        <Button color="link" size="sm" onClick={() => onDeleteValue(index)}>
+          <FontAwesomeIcon icon={faTrash} />
+        </Button>
+      </td>
+    </tr>
+  );
 }
 
 function emptyObjectStoreCredentials() {
   return { bucket: "", endpoint: "", access_key: "", secret_key: "" };
 }
 
-function ObjectStoresTable({ objectStoresConfiguration, onChangeValue, onDeleteValue }) {
-
-  return <Table borderless={true}>
-    <thead>
-      <tr>
-        <th>Endpoint</th>
-        <th>Bucket Name</th>
-        <th>Access Key</th>
-        <th>Secret Key</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {
-        objectStoresConfiguration.map((cl, i) => {
-          return <ObjectStoreRow
-            key={i}
-            credentials={cl} index={i} onChangeValue={onChangeValue} onDeleteValue={onDeleteValue} />;
-        })
-      }
-    </tbody>
-  </Table>;
+function ObjectStoresTable({
+  objectStoresConfiguration,
+  onChangeValue,
+  onDeleteValue,
+}) {
+  return (
+    <Table borderless={true}>
+      <thead>
+        <tr>
+          <th>Endpoint</th>
+          <th>Bucket Name</th>
+          <th>Access Key</th>
+          <th>Secret Key</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {objectStoresConfiguration.map((cl, i) => {
+          return (
+            <ObjectStoreRow
+              key={i}
+              credentials={cl}
+              index={i}
+              onChangeValue={onChangeValue}
+              onDeleteValue={onDeleteValue}
+            />
+          );
+        })}
+      </tbody>
+    </Table>
+  );
 }
 
 /**
@@ -189,19 +280,26 @@ function validateStoresConfig(storesConfig) {
 function filterConfig(storesConfig) {
   const keys = ["bucket", "endpoint", "access_key", "secret_key"];
   // remove any rows that contain only empty values
-  const filteredConfig = storesConfig.toJS().filter((cs) => {
-    const nonEmpty = keys.map((k) => cs[k].length > 0);
-    return nonEmpty.some((e) => e);
-  }).map((cs) => {
-    // remove tailing spaces
-    keys.map((k) => cs[k] = cs[k].trim());
-    return cs;
-  });
+  const filteredConfig = storesConfig
+    .toJS()
+    .filter((cs) => {
+      const nonEmpty = keys.map((k) => cs[k].length > 0);
+      return nonEmpty.some((e) => e);
+    })
+    .map((cs) => {
+      // remove tailing spaces
+      keys.map((k) => (cs[k] = cs[k].trim()));
+      return cs;
+    });
   return filteredConfig;
 }
 
-function saveValidStoresConfig(storesConfig, setObjectStoresConfiguration,
-  setSaveStatusMessage, toggleShowObjectStoresConfigModal) {
+function saveValidStoresConfig(
+  storesConfig,
+  setObjectStoresConfiguration,
+  setSaveStatusMessage,
+  toggleShowObjectStoresConfigModal
+) {
   // remove any rows that contain only empty values
   let filteredConfig = filterConfig(storesConfig);
   const validatedStores = validateStoresConfig(filteredConfig);
@@ -216,17 +314,26 @@ function saveValidStoresConfig(storesConfig, setObjectStoresConfiguration,
   toggleShowObjectStoresConfigModal();
 }
 
-
-function saveStoresConfig(storesConfig, setObjectStoresConfiguration,
-  setSaveStatusMessage, toggleShowObjectStoresConfigModal) {
+function saveStoresConfig(
+  storesConfig,
+  setObjectStoresConfiguration,
+  setSaveStatusMessage,
+  toggleShowObjectStoresConfigModal
+) {
   // const keys = ["bucket", "endpoint", "access_key", "secret_key"];
   // remove any rows that contain only empty values
   const filteredConfig = filterConfig(storesConfig);
   const validatedStores = validateStoresConfig(filteredConfig);
-  const conflictingBucketNames = Object.keys(validatedStores.conflictingConfigs);
+  const conflictingBucketNames = Object.keys(
+    validatedStores.conflictingConfigs
+  );
   if (conflictingBucketNames.length > 0) {
     const namesStr = conflictingBucketNames.join(", ");
-    setSaveStatusMessage(<span>Bucket names must be unique; multiple rows share <b>{namesStr}</b>.</span>);
+    setSaveStatusMessage(
+      <span>
+        Bucket names must be unique; multiple rows share <b>{namesStr}</b>.
+      </span>
+    );
     return;
   }
 
@@ -259,17 +366,22 @@ function saveStoresConfig(storesConfig, setObjectStoresConfiguration,
   toggleShowObjectStoresConfigModal();
 }
 
-function ObjectStoresConfigurationModal({ objectStoresConfiguration, showObjectStoreModal,
-  toggleShowObjectStoresConfigModal, setObjectStoresConfiguration }) {
+function ObjectStoresConfigurationModal({
+  objectStoresConfiguration,
+  showObjectStoreModal,
+  toggleShowObjectStoresConfigModal,
+  setObjectStoresConfiguration,
+}) {
   const [storesConfig, setStoresConfig] = useState([]);
   const setStoresConfigAndClearMessage = (value) => {
     setStoresConfig(value);
     setSaveStatusMessage("");
   };
   useEffect(() => {
-    const initialCredentials = (objectStoresConfiguration.length > 0) ?
-      List(objectStoresConfiguration) :
-      List([emptyObjectStoreCredentials()]);
+    const initialCredentials =
+      objectStoresConfiguration.length > 0
+        ? List(objectStoresConfiguration)
+        : List([emptyObjectStoreCredentials()]);
     setStoresConfig(initialCredentials);
   }, [objectStoresConfiguration]);
   const onChangeValue = (index, field, value) => {
@@ -287,43 +399,61 @@ function ObjectStoresConfigurationModal({ objectStoresConfiguration, showObjectS
   };
 
   const onClose = () => {
-    saveValidStoresConfig(storesConfig, setObjectStoresConfiguration,
-      setSaveStatusMessage, toggleShowObjectStoresConfigModal);
+    saveValidStoresConfig(
+      storesConfig,
+      setObjectStoresConfiguration,
+      setSaveStatusMessage,
+      toggleShowObjectStoresConfigModal
+    );
   };
 
   const [saveStatusMessage, setSaveStatusMessage] = useState("");
   const onSave = () => {
-    saveStoresConfig(storesConfig, setObjectStoresConfiguration,
-      setSaveStatusMessage, toggleShowObjectStoresConfigModal);
+    saveStoresConfig(
+      storesConfig,
+      setObjectStoresConfiguration,
+      setSaveStatusMessage,
+      toggleShowObjectStoresConfigModal
+    );
   };
 
-  return <div>
-    <Modal
-      size="xl"
-      isOpen={showObjectStoreModal}
-      toggle={onClose}>
-      <ModalHeader toggle={onClose}>Object Store Configuration</ModalHeader>
-      <ModalBody>
-        <p>
-          Provide credentials to use cloud storage like {" "}
-          AWS S3, Google Cloud Storage, or Azure Blob Storage.
-        </p>
-        <ObjectStoresTable
-          objectStoresConfiguration={storesConfig}
-          onChangeValue={onChangeValue} onDeleteValue={onDeleteValue}
-          setCredentials={setStoresConfig} />
-      </ModalBody>
-      <ModalFooter>
-        <FormText color="danger">{saveStatusMessage}</FormText>
-        <Button color="primary" onClick={onAddValue}>Add Bucket</Button>
-        <Button color="secondary"
-          onClick={onSave}>
-          Save
-        </Button>
-      </ModalFooter>
-    </Modal>
-  </div>;
+  return (
+    <div>
+      <Modal
+        size="xl"
+        fullscreen="lg"
+        isOpen={showObjectStoreModal}
+        toggle={onClose}
+      >
+        <ModalHeader toggle={onClose}>Cloud Storage Configuration</ModalHeader>
+        <ModalBody>
+          <p>
+            Provide credentials to use{" "}
+            <S3ExplanationLink title="S3-compatible storage" /> like AWS S3,
+            Google Cloud Storage, etc.
+          </p>
+          <ObjectStoresTable
+            objectStoresConfiguration={storesConfig}
+            onChangeValue={onChangeValue}
+            onDeleteValue={onDeleteValue}
+            setCredentials={setStoresConfig}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <FormText color="danger">{saveStatusMessage}</FormText>
+          <Button color="primary" onClick={onAddValue}>
+            Add Bucket
+          </Button>
+          <Button color="secondary" onClick={onSave}>
+            Save
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </div>
+  );
 }
 
-
 export { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal };
+
+// For tests
+export { isCloudStorageBucketValid, isCloudStorageEndpointValid };

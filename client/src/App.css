@@ -23,8 +23,12 @@
 }
 
 @keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Sticky Footer */
@@ -47,7 +51,7 @@ html {
 }
 
 .caption {
-  color: #AAA;
+  color: #aaa;
 }
 
 .children-no-spacing * {
@@ -57,11 +61,11 @@ html {
 }
 
 .comment-block {
-  display: inline
+  display: inline;
 }
 
 .expanded-reference {
-  border: 1px solid #AAA;
+  border: 1px solid #aaa;
   border-radius: 15px;
   padding: 15px;
   margin-top: 15px;
@@ -69,7 +73,7 @@ html {
 }
 
 .notebook-comparison {
-  border: 1px solid #DDD;
+  border: 1px solid #ddd;
   border-radius: 15px;
   padding: 10px;
   margin-left: 0px;
@@ -100,12 +104,12 @@ html {
 .simple-tooltip {
   position: relative;
   display: inline-block;
-  color: #DD0000;
+  color: #dd0000;
 }
 
 .simple-tooltip .tooltiptext {
   visibility: hidden;
-  background-color: #CCC;
+  background-color: #ccc;
   width: 260px;
   color: #000000;
   text-align: center;
@@ -124,8 +128,12 @@ html {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .bouncer {
@@ -139,7 +147,7 @@ html {
   width: 25px;
   height: 25px;
   margin: 5px;
-  background: #01192D;
+  background: #01192d;
   border-radius: 50px;
   animation: bouncer 0.9s infinite alternate;
 }
@@ -153,7 +161,8 @@ html {
 }
 
 @keyframes bouncer {
-  0%, 50% {
+  0%,
+  50% {
     opacity: 1;
     transform: translateY(0);
   }
@@ -170,7 +179,8 @@ html {
 }
 
 @keyframes delay1s {
-  0%, 50% {
+  0%,
+  50% {
     visibility: visible;
     opacity: 0;
   }
@@ -182,7 +192,7 @@ html {
 }
 
 .renku-markdown code {
-  padding: .2em .4em;
+  padding: 0.2em 0.4em;
   font-size: 85%;
   background-color: rgba(0, 0, 0, 0.04);
   border-radius: 3px;
@@ -196,7 +206,7 @@ html {
   background-color: rgba(0, 0, 0, 0.04);
 }
 
-.renku-markdown pre>code {
+.renku-markdown pre > code {
   padding: 0;
   font-size: 100%;
   white-space: pre;
@@ -216,10 +226,9 @@ html {
   max-width: 1140px;
 }
 
-
 .visually-hidden {
-    position: absolute;
-    left: -100vw;
+  position: absolute;
+  left: -100vw;
 }
 
 .hide-show-me {

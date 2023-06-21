@@ -19,23 +19,26 @@
 import React from "react";
 
 import { Button, Col, Row } from "../../utils/ts-wrappers";
-import { Loader } from "../../utils/components/Loader";
-
+import { Loader } from "../../components/Loader";
 
 function commitsPhrasing(numberOfCommits: number) {
-  return numberOfCommits > 1 ?
-      `${numberOfCommits} commits` :
-      `${numberOfCommits} commit`;
+  return numberOfCommits > 1
+    ? `${numberOfCommits} commits`
+    : `${numberOfCommits} commit`;
 }
 
 function CenteredLoader() {
-  return <div className="d-flex justify-content-center">
-    <div><Loader size="16" inline="true" margin="2" /></div>
-  </div>;
+  return (
+    <div className="d-flex justify-content-center">
+      <div>
+        <Loader size={16} inline margin={2} />
+      </div>
+    </div>
+  );
 }
 
 interface CloseModalProps {
-  closeModal: Function;
+  closeModal: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
 interface ModalProps extends CloseModalProps {
@@ -43,25 +46,26 @@ interface ModalProps extends CloseModalProps {
 }
 
 interface InformationalProps extends CloseModalProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 function InformationalBody({ closeModal, children }: InformationalProps) {
-
-  return (<Row>
-    <Col>
-      {children}
-      <div className="d-flex justify-content-end">
-        <Button className="float-right mt-1 btn-outline-rk-green"
-          onClick={closeModal}>
+  return (
+    <Row>
+      <Col>
+        {children}
+        <div className="d-flex justify-content-end">
+          <Button
+            className="float-right mt-1 btn-outline-rk-green"
+            onClick={closeModal}
+          >
             Back to Session
-        </Button>
-      </div>
-    </Col>
-  </Row>
+          </Button>
+        </div>
+      </Col>
+    </Row>
   );
 }
-
 
 export { CenteredLoader, InformationalBody, commitsPhrasing };
 export type { CloseModalProps, ModalProps };

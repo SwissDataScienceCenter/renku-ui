@@ -23,55 +23,69 @@
  *  Presentational components.
  */
 
-
 import React, { Fragment } from "react";
-import { Row, Col, Modal, ModalHeader, ModalBody, Button, FormText } from "reactstrap";
+import {
+  Row,
+  Col,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  Button,
+  FormText,
+} from "reactstrap";
 
-import { CoreErrorAlert } from "../../../utils/components/errors/CoreErrorAlert";
-import { Loader } from "../../../utils/components/Loader";
-
+import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
+import { Loader } from "../../../components/Loader";
 
 function DeleteDatasetPresent(props) {
   let modalContent = null;
 
   if (props.serverErrors) {
-    modalContent = (<Col><CoreErrorAlert error={props.serverErrors} /></Col>);
-  }
-  else {
-    modalContent = <Col>
-      <p>
-        Are you sure you want to delete dataset <strong>{props.dataset.name}</strong>?
-      </p>
-      <Fragment>
-        { props.submitLoader !== undefined && props.submitLoader.value ?
-          <FormText color="primary">
-            <Loader size="16" inline="true" margin="2" />
-            {props.submitLoader.text}
-            <br />
-          </FormText>
-          : null
-        }
-        <Button type="submit" onClick={props.deleteDataset}
-          disabled={props.submitLoader.value} className="float-right mt-1 btn-rk-pink" >
-          Delete dataset
-        </Button>
-        <Button disabled={props.submitLoader.value} className="float-right mt-1 ms-2 btn-outline-rk-pink"
-          onClick={props.closeModal}>
-          Cancel
-        </Button>
-      </Fragment>
-    </Col>;
+    modalContent = (
+      <Col>
+        <CoreErrorAlert error={props.serverErrors} />
+      </Col>
+    );
+  } else {
+    modalContent = (
+      <Col>
+        <p>
+          Are you sure you want to delete dataset{" "}
+          <strong>{props.dataset.name}</strong>?
+        </p>
+        <Fragment>
+          {props.submitLoader !== undefined && props.submitLoader.value ? (
+            <FormText color="primary">
+              <Loader size={16} inline margin={2} />
+              {props.submitLoader.text}
+              <br />
+            </FormText>
+          ) : null}
+          <Button
+            type="submit"
+            onClick={props.deleteDataset}
+            disabled={props.submitLoader.value}
+            className="float-right mt-1 btn-rk-pink"
+          >
+            Delete dataset
+          </Button>
+          <Button
+            disabled={props.submitLoader.value}
+            className="float-right mt-1 ms-2 btn-outline-rk-pink"
+            onClick={props.closeModal}
+          >
+            Cancel
+          </Button>
+        </Fragment>
+      </Col>
+    );
   }
 
   return (
     <Modal isOpen={props.modalOpen} toggle={props.closeModal}>
-      <ModalHeader toggle={props.closeModal}>
-        Delete Dataset
-      </ModalHeader>
+      <ModalHeader toggle={props.closeModal}>Delete Dataset</ModalHeader>
       <ModalBody>
-        <Row className="mb-3">
-          {modalContent}
-        </Row>
+        <Row className="mb-3">{modalContent}</Row>
       </ModalBody>
     </Modal>
   );

@@ -10,7 +10,7 @@ Project owners can usually trigger actions to start pipelines or jobs again.
 
 ```mermaid
 stateDiagram-v2
-  [*] --> GetPinnedImage: pinned image 
+  [*] --> GetPinnedImage: pinned image
   [*] --> GetProjectImage: project image
 
   GetProjectImage --> Found

@@ -26,10 +26,10 @@ import {
   ModalBody as WrappedModalBody,
   ModalHeader as WrappedModalHeader,
   ModalFooter as WrappedModalFooter,
+  Progress as WrappedProgress,
   Row as WrappedRow,
   Table as WrappedTable,
 } from "reactstrap";
-
 
 import {
   Card as WrappedCard,
@@ -40,7 +40,7 @@ import {
   PopoverHeader as WrappedPopoverHeader,
   PopoverBody as WrappedPopoverBody,
   UncontrolledPopover as WrappedUncontrolledPopover,
-  UncontrolledTooltip as WrappedUncontrolledTooltip
+  UncontrolledTooltip as WrappedUncontrolledTooltip,
 } from "reactstrap";
 
 import {
@@ -54,21 +54,33 @@ import {
   CardList as WrappedCardList,
   CaretDownFill as WrappedCaretDownFill,
   CaretRightFill as WrappedCaretRightFill,
+  ChevronDown as WrappedChevronDown,
+  ChevronUp as WrappedChevronUp,
   Diagram2 as WrappedDiagram2,
   Diagram3 as WrappedDiagram3,
   HddStack as WrappedHddStack,
   Globe as WrappedGlobe,
   People as WrappedPeople,
+  Shield as WrappedShield,
+  Person as WrappedPerson,
   Lock as WrappedLock,
   Download as WrappedDownload,
   Save as WrappedSave,
   Journals as WrappedJournals,
-  StopCircle as WrappedStopCircle,
   InfoCircle as WrappedInfoCircle,
   XCircleFill as WrappedXCircleFill,
+  Funnel as WrappedFunnel,
+  FunnelFill as WrappedFunnelFull,
+  Balloon as WrappedBalloon,
+  ZoomIn as WrappedZoomIn,
+  ZoomOut as WrappedZoomOut,
 } from "react-bootstrap-icons";
 
-import { FormGroup as WrappedFormGroup, Input as WrappedInput, InputGroup as WrappedInputGroup } from "reactstrap";
+import {
+  FormGroup as WrappedFormGroup,
+  Input as WrappedInput,
+  InputGroup as WrappedInputGroup,
+} from "reactstrap";
 
 import {
   Nav as WrappedNav,
@@ -132,6 +144,14 @@ function CaretDownFill(props) {
 
 function CaretRightFill(props) {
   return <WrappedCaretRightFill {...props} />;
+}
+
+function ChevronDown(props) {
+  return <WrappedChevronDown {...props} />;
+}
+
+function ChevronUp(props) {
+  return <WrappedChevronUp {...props} />;
 }
 
 function Diagram2(props) {
@@ -246,6 +266,10 @@ function People(props) {
   return <WrappedPeople {...props} />;
 }
 
+function Person(props) {
+  return <WrappedPerson {...props} />;
+}
+
 function Lock(props) {
   return <WrappedLock {...props} />;
 }
@@ -264,10 +288,6 @@ function Journals(props) {
 
 function ArrowLeft(props) {
   return <WrappedArrowLeft {...props} />;
-}
-
-function StopCircle(props) {
-  return <WrappedStopCircle {...props} />;
 }
 
 function InfoCircle(props) {
@@ -318,6 +338,14 @@ function XCircleFill(props) {
   return <WrappedXCircleFill {...props} />;
 }
 
+function Funnel(props) {
+  return <WrappedFunnel {...props} />;
+}
+
+function FunnelFill(props) {
+  return <WrappedFunnelFull {...props} />;
+}
+
 function Bookmarks(props) {
   return <WrappedBookmarks {...props} />;
 }
@@ -330,15 +358,84 @@ function XLg(props) {
   return <WrappedXLg {...props} />;
 }
 
+function Progress(props) {
+  return <WrappedProgress {...props} />;
+}
+
+function Balloon(props) {
+  return <WrappedBalloon {...props} />;
+}
+
+function ZoomIn(props) {
+  return <WrappedZoomIn {...props} />;
+}
+
+function ZoomOut(props) {
+  return <WrappedZoomOut {...props} />;
+}
+
+function Shield(props) {
+  return <WrappedShield {...props} />;
+}
+
 export { ArrowClockwise };
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
-export { Alert, Badge, Button, ButtonDropdown, ButtonGroup, CheckCircleFill, XCircleFill };
-export { Card, CardBody, CardFooter, CardHeader, CardText, Col, DropdownItem, DropdownMenu, DropdownToggle };
-export { FormFeedback, FormText, Fade, Form, FormGroup, Input, InputGroup, Label };
+export {
+  Alert,
+  Badge,
+  Button,
+  ButtonDropdown,
+  ButtonGroup,
+  Progress,
+  CheckCircleFill,
+  XCircleFill,
+};
+export {
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  CardText,
+  Col,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+};
+export {
+  FormFeedback,
+  FormText,
+  Fade,
+  Form,
+  FormGroup,
+  Input,
+  InputGroup,
+  Label,
+};
 export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
-export { ArrowLeft, Briefcase, CardList, Diagram3, Download, Globe, HddStack, InfoCircle, Journals, Lock };
-export { People, Save, StopCircle };
-export { Nav, NavItem, NavLink, TabContent, TabPane };
-export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, Diagram2, XLg };
+export {
+  ArrowLeft,
+  Briefcase,
+  CardList,
+  Diagram3,
+  Download,
+  Globe,
+  HddStack,
+  InfoCircle,
+  Journals,
+  Lock,
+};
+export { People, Save, Balloon, Person };
+export { Nav, NavItem, NavLink, TabContent, TabPane, ZoomIn, ZoomOut };
+export {
+  Bookmarks,
+  CaretDownFill,
+  CaretRightFill,
+  Calendar4,
+  ChevronDown,
+  Diagram2,
+  XLg,
+  ChevronUp,
+};
+export { Funnel, FunnelFill, Shield };

@@ -10,8 +10,9 @@ on:
       - closed
     paths:
       - client/**
-      - server/**
       - helm-chart/**
+      - tests/**
+      - server/**
       - .github/workflows/**
       - chartpress.yaml
 
@@ -34,11 +35,12 @@ jobs:
       renku-graph: ${{ steps.deploy-comment.outputs.renku-graph}}
       renku-notebooks: ${{ steps.deploy-comment.outputs.renku-notebooks}}
       test-enabled: ${{ steps.deploy-comment.outputs.test-enabled}}
+      test-cypress-enabled: ${{ steps.deploy-comment.outputs.test-cypress-enabled}}
       persist: ${{ steps.deploy-comment.outputs.persist}}
       extra-values: ${{ steps.deploy-comment.outputs.extra-values}}
     steps:
       - id: deploy-comment
-        uses: SwissDataScienceCenter/renku-actions/check-pr-description@v1.4.1
+        uses: SwissDataScienceCenter/renku-actions/check-pr-description@v1.4.6
         with:
           string: /deploy
           pr_ref: ${{ github.event.number }}
@@ -50,7 +52,7 @@ jobs:
     environment:
       name: renku-ci-ui-${{ github.event.number }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Find deplyoment url
         uses: peter-evans/find-comment@v1
         id: deploymentUrlMessage
@@ -67,7 +69,7 @@ jobs:
           body: |
             You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
       - name: Build and deploy
-        uses: SwissDataScienceCenter/renku-actions/deploy-renku@v1.4.1
+        uses: SwissDataScienceCenter/renku-actions/deploy-renku@v1.4.6
         env:
           RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
           DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
@@ -90,12 +92,13 @@ jobs:
           renku_graph: "${{ needs.check-deploy.outputs.renku-graph }}"
           renku_notebooks: "${{ needs.check-deploy.outputs.renku-notebooks }}"
           extra_values: "${{ needs.check-deploy.outputs.extra-values }}"
-  run-acceptance-tests:
+
+  run-selenium-acceptance-tests:
     needs: [check-deploy, deploy-pr]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
-      - uses: SwissDataScienceCenter/renku-actions/test-renku@v1.4.1
+      - uses: SwissDataScienceCenter/renku-actions/test-renku@v1.4.6
         with:
           kubeconfig: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
           renku-release: renku-ci-ui-${{ github.event.number }}
@@ -103,38 +106,21 @@ jobs:
           persist: "${{ needs.check-deploy.outputs.persist }}"
           s3-results-access-key: ${{ secrets.ACCEPTANCE_TESTS_BUCKET_ACCESS_KEY }}
           s3-results-secret-key: ${{ secrets.ACCEPTANCE_TESTS_BUCKET_SECRET_KEY }}
-          test-timeout-mins: "80"
+          test-timeout-mins: "60"
 
-  run-e2e:
+  run-cypress-acceptance-tests:
     needs: [check-deploy, deploy-pr]
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-cypress-enabled == 'true'
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Cypress run
-        uses: cypress-io/github-action@v4
-        env:
-          CYPRESS_BASE_URL: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch/
-          GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
-          CYPRESS_USER: ${{ secrets.CYPRESS_USER }}
+      - name: Extract renku repo ref
+        run: echo "RENKU=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
+      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.4.6
         with:
-          browser: chrome
-          working-directory: e2e
-        # Cypress screenshots will be generated only if the test failed, thus we store screenshots only on failures
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: cypress-screenshots
-          path: e2e/cypress/screenshots
-          retention-days: 7
-      # Cypress test video is always captured, so this action uses "always()" condition
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: cypress-videos
-          path: e2e/cypress/videos
-          retention-days: 3
+          gitlab-token: ${{ secrets.DEV_GITLAB_TOKEN }}
+          renku-release: renku-ci-ui-${{ github.event.number }}
+          test-user-password: ${{ secrets.RENKU_BOT_DEV_PASSWORD }}
+          renku: ${{ env.RENKU }}
 
   cleanup:
     needs: check-deploy
@@ -157,7 +143,7 @@ jobs:
           body: |
             Tearing down the temporary RenkuLab deplyoment for this PR.
       - name: renku teardown
-        uses: SwissDataScienceCenter/renku-actions/cleanup-renku-ci-deployments@v1.4.1
+        uses: SwissDataScienceCenter/renku-actions/cleanup-renku-ci-deployments@v1.4.6
         env:
           HELM_RELEASE_REGEX: "^renku-ci-ui-${{ github.event.number }}$"
           GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}

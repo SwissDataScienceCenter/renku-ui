@@ -26,7 +26,10 @@
 import React from "react";
 import { connect } from "react-redux";
 
-import { StatuspageDisplay as DisplayPresent, StatuspageBanner as BannerPresent } from "./Statuspage.present";
+import {
+  StatuspageDisplay as DisplayPresent,
+  StatuspageBanner as BannerPresent,
+} from "./Statuspage.present";
 
 function mapStateToProps(state, ownProps) {
   return { statusSummary: state.stateModel.statuspage, ...ownProps };
@@ -47,8 +50,13 @@ function StatuspageDisplay(props) {
  */
 function StatuspageBanner(props) {
   const VisibleBanner = connect(mapStateToProps)(BannerPresent);
-  return <VisibleBanner store={props.model.reduxStore} siteStatusUrl={props.siteStatusUrl} location={props.location} />;
+  return (
+    <VisibleBanner
+      store={props.model.reduxStore}
+      siteStatusUrl={props.siteStatusUrl}
+      location={props.location}
+    />
+  );
 }
-
 
 export { StatuspageDisplay, StatuspageBanner };

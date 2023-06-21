@@ -16,7 +16,7 @@ charts:
         valuesPath: client.image
         paths:
           - client
-          - e2e
+          - tests
           - helm-chart
           - server
           - .github
@@ -31,7 +31,7 @@ charts:
         valuesPath: server.image
         paths:
           - client
-          - e2e
+          - tests
           - helm-chart
           - server
           - .github

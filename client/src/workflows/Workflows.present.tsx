@@ -18,39 +18,69 @@
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon, } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowRight, faCheck, faExclamationTriangle, faLink, faFileCode, faSortAmountDown, faSortAmountUp
+  faArrowRight,
+  faCheck,
+  faExclamationTriangle,
+  faLink,
+  faFileCode,
+  faSortAmountDown,
+  faSortAmountUp,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  Bookmarks, Button, ButtonDropdown, Calendar4, Card, CardBody, CardHeader, Col, Diagram2, DropdownItem,
-  DropdownMenu, DropdownToggle, Input, Journals, Label, People, Row, Table,
-  UncontrolledTooltip, XLg
+  Bookmarks,
+  Button,
+  ButtonDropdown,
+  Calendar4,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Diagram2,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Input,
+  Journals,
+  Label,
+  People,
+  Row,
+  Table,
+  UncontrolledTooltip,
+  XLg,
 } from "../utils/ts-wrappers";
-import EntityCreators from "../utils/components/entities/Creators";
+import EntityCreators from "../components/entities/Creators";
 import Time from "../utils/helpers/Time";
-import { Clipboard } from "../utils/components/Clipboard";
-import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
+import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
 import { Docs } from "../utils/constants/Docs";
-import { EntityType } from "../utils/components/entities/Entities";
-import { ExternalDocsLink, ExternalLink, IconLink } from "../utils/components/ExternalLinks";
-import { Loader } from "../utils/components/Loader";
+import { EntityType } from "../components/entities/Entities";
+import {
+  ExternalDocsLink,
+  ExternalLink,
+  IconLink,
+} from "../components/ExternalLinks";
+import { Loader } from "../components/Loader";
 import { Url } from "../utils/helpers/url";
-import { TreeBrowser, TreeDetails, TreeElement } from "../utils/components/Tree";
-import { InfoAlert, WarnAlert } from "../utils/components/Alert";
+import { TreeBrowser, TreeDetails, TreeElement } from "../components/Tree";
+import { InfoAlert, WarnAlert } from "../components/Alert";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
 import "./Workflows.scss";
-import InformativeIcon from "../utils/components/InformativeIcon";
+import InformativeIcon from "../components/InformativeIcon";
+import { CommandCopy } from "../components/commandCopy/CommandCopy";
 
 /** BROWSER **/
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
 
 interface WorkflowsTreeBrowserProps {
   ascending: boolean;
   expanded: string[];
   fullPath: string;
   orderBy: string;
-  orderByMatrix: Record<string, string>,
+  orderByMatrix: Record<string, string>;
   selected: string;
   selectedAvailable: boolean;
   setDetailExpanded: Function;
@@ -66,31 +96,45 @@ interface WorkflowsTreeBrowserProps {
 }
 
 function WorkflowsTreeBrowser({
-  ascending, expanded, fullPath, orderBy, orderByMatrix, selected, selectedAvailable, setDetailExpanded, setOrderBy,
-  showInactive, toggleAscending, toggleInactive, toggleExpanded, unsupported, waiting, workflow, workflows
+  ascending,
+  expanded,
+  fullPath,
+  orderBy,
+  orderByMatrix,
+  selected,
+  selectedAvailable,
+  setDetailExpanded,
+  setOrderBy,
+  showInactive,
+  toggleAscending,
+  toggleInactive,
+  toggleExpanded,
+  unsupported,
+  waiting,
+  workflow,
+  workflows,
 }: WorkflowsTreeBrowserProps) {
   // return immediately when workflows are not supported in the current project
-  if (unsupported)
-    return (<UnsupportedWorkflows fullPath={fullPath} />);
-  const emptyElement = (<NoWorkflows />);
+  if (unsupported) return <UnsupportedWorkflows fullPath={fullPath} />;
+  const emptyElement = <NoWorkflows />;
 
   // show status: loading or error or full content
-  const loading = waiting || (!workflows.fetched);
-  const shrunk = selectedAvailable && !!selected || workflow.error;
+  const loading = waiting || !workflows.fetched;
+  const shrunk = (selectedAvailable && !!selected) || workflow.error;
 
   let content: React.ReactNode;
   if (loading) {
-    content = (<Loader />);
-  }
-  else if (workflows.error) {
-    content = (<CoreErrorAlert error={workflows.error} />);
-  }
-  else {
+    content = <Loader />;
+  } else if (workflows.error) {
+    content = <CoreErrorAlert error={workflows.error} />;
+  } else {
     const treeBrowser = (
       <TreeBrowser
         emptyElement={emptyElement}
         expanded={expanded}
-        highlightedProp={orderBy in ["name", "workflowType"] ? "lastExecution" : orderBy}
+        highlightedProp={
+          orderBy in ["name", "workflowType"] ? "lastExecution" : orderBy
+        }
         items={orderWorkflows(workflows.list, orderBy, ascending, showInactive)}
         selected={selected}
         shrunk={shrunk}
@@ -100,12 +144,18 @@ function WorkflowsTreeBrowser({
 
     if (!shrunk) {
       content = <div className="rk-tree-container">{treeBrowser}</div>;
-    }
-    else {
+    } else {
       const waitingDetails = waiting || workflow.fetching || !workflow.fetched;
       content = (
         <Row className="px-3">
-          <Col xs={12} md={5} lg={4} className={`px-0 rk-tree-container ${shrunk ? "rk-tree-container--shrunk" : ""}`}>
+          <Col
+            xs={12}
+            md={5}
+            lg={4}
+            className={`px-0 rk-tree-container ${
+              shrunk ? "rk-tree-container--shrunk" : ""
+            }`}
+          >
             {treeBrowser}
           </Col>
           <Col xs={12} md={7} lg={8} className="px-0 rk-tree-details-container">
@@ -134,19 +184,19 @@ function WorkflowsTreeBrowser({
         setOrderBy={setOrderBy}
         showInactive={showInactive}
         toggleAscending={toggleAscending}
-        toggleInactive={toggleInactive} />
+        toggleInactive={toggleInactive}
+      />
       {content}
     </div>
   );
 }
-
 
 /** FILTERS AND SPECIAL CASES **/
 
 interface WorkflowsListFiltersProps {
   ascending: boolean;
   orderBy: string;
-  orderByMatrix: Record<string, string>,
+  orderByMatrix: Record<string, string>;
   setOrderBy: Function;
   showInactive: boolean;
   toggleAscending: Function;
@@ -154,15 +204,30 @@ interface WorkflowsListFiltersProps {
 }
 
 function WorkflowsListFilters({
-  ascending, orderBy, orderByMatrix, setOrderBy, showInactive, toggleAscending, toggleInactive
+  ascending,
+  orderBy,
+  orderByMatrix,
+  setOrderBy,
+  showInactive,
+  toggleAscending,
+  toggleInactive,
 }: WorkflowsListFiltersProps) {
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
-  const toggleSortDropdownOpen = () => { setSortDropdownOpen((sortDropdownOpen) => !sortDropdownOpen); };
+  const toggleSortDropdownOpen = () => {
+    setSortDropdownOpen((sortDropdownOpen) => !sortDropdownOpen);
+  };
 
-  const dropdownItems = Object.keys(orderByMatrix).map(item => {
+  const dropdownItems = Object.keys(orderByMatrix).map((item) => {
     return (
-      <DropdownItem key={item} value={item} onClick={() => { setOrderBy(item); }}>
-        {orderBy === item ? <FontAwesomeIcon icon={faCheck} /> : null} {orderByMatrix[item]}
+      <DropdownItem
+        key={item}
+        value={item}
+        onClick={() => {
+          setOrderBy(item);
+        }}
+      >
+        {orderBy === item ? <FontAwesomeIcon icon={faCheck} /> : null}{" "}
+        {orderByMatrix[item]}
       </DropdownItem>
     );
   });
@@ -171,43 +236,63 @@ function WorkflowsListFilters({
     <div className="workflows-filters my-3">
       <div className="input-filter-box--workflows form-rk-yellow">
         <div className="form-check form-switch">
-          <Input type="switch"
-            id="wfExcludeInactive" label="label here" className="rounded-pill"
-            checked={showInactive} onChange={() => toggleInactive()}
+          <Input
+            data-cy="workflows-inactive-toggle"
+            type="switch"
+            id="wfExcludeInactive"
+            label="label here"
+            className="rounded-pill"
+            checked={showInactive}
+            onChange={() => toggleInactive()}
           />
           <Label className="text-rk-text me-2">
             Show inactive workflows{" "}
             <InformativeIcon>
               <p className="mb-1">
-                Inactive workflows don&apos;t have files in the branch&apos;s head
+                Inactive workflows don&apos;t have files in the branch&apos;s
+                head
               </p>
               <p className="mb-0">
                 You can{" "}
                 <ExternalLink
-                  role="text" iconSup={true} iconAfter={true} title="check our documentation"
-                  url={Docs.rtdHowToGuide("404-missing-link")}
-                />
-                {" "}for more details
+                  role="text"
+                  iconSup={true}
+                  iconAfter={true}
+                  title="check our documentation"
+                  url={Docs.rtdTopicGuide("workflows.html")}
+                />{" "}
+                for more details
               </p>
             </InformativeIcon>
           </Label>
         </div>
       </div>
-      <div data-cy="workflows-ordering" className="d-flex align-items-center gap-2">
+      <div
+        data-cy="workflows-ordering"
+        className="d-flex align-items-center gap-2"
+      >
         <Label className="text-rk-text">Order by:</Label>
         <ButtonDropdown
           className="input-filter-box--workflows"
           toggle={toggleSortDropdownOpen}
-          isOpen={sortDropdownOpen}>
-          <DropdownToggle caret color="rk-light">{orderByMatrix[orderBy]}</DropdownToggle>
-          <DropdownMenu>{ dropdownItems }</DropdownMenu>
+          isOpen={sortDropdownOpen}
+        >
+          <DropdownToggle caret color="rk-light">
+            {orderByMatrix[orderBy]}
+          </DropdownToggle>
+          <DropdownMenu>{dropdownItems}</DropdownMenu>
         </ButtonDropdown>
-        <Button data-cy="workflows-order-direction" className="input-filter-box--workflows px-3"
-          color="input-filter-box" onClick={() => toggleAscending()}>
-          {ascending ?
-            <FontAwesomeIcon className="m-0" icon={faSortAmountUp} /> :
+        <Button
+          data-cy="workflows-order-direction"
+          className="input-filter-box--workflows px-3"
+          color="input-filter-box"
+          onClick={() => toggleAscending()}
+        >
+          {ascending ? (
+            <FontAwesomeIcon className="m-0" icon={faSortAmountUp} />
+          ) : (
             <FontAwesomeIcon className="m-0" icon={faSortAmountDown} />
-          }
+          )}
         </Button>
       </div>
     </div>
@@ -215,59 +300,81 @@ function WorkflowsListFilters({
 }
 
 function orderWorkflows(
-  workflows: Array<Record<string, any>>, orderBy: string, ascending: boolean, showInactive: boolean
+  workflows: Array<Record<string, any>>,
+  orderBy: string,
+  ascending: boolean,
+  showInactive: boolean
 ) {
-  const filtered = !showInactive ? workflows.filter(w => w.active) : workflows;
+  const filtered = !showInactive
+    ? workflows.filter((w) => w.active)
+    : [...workflows];
 
   // ? Pre-sort by a unique prop to guarantee consistency
-  const preSorted = filtered.sort((a, b) => (a["name"] > b["name"]) ? 1 : ((b["name"] > a["name"]) ? -1 : 0));
+  const preSorted = filtered.sort((a, b) =>
+    a["name"] > b["name"] ? 1 : b["name"] > a["name"] ? -1 : 0
+  );
   // ? Then second-sort by last execution
-  const secondSorted = preSorted.sort((a, b) => (a["lastExecuted"] < b["lastExecuted"]) ? 1 :
-    ((b["lastExecuted"] < a["lastExecuted"]) ? -1 : 0));
+  const secondSorted = preSorted.sort((a, b) =>
+    a["lastExecuted"] < b["lastExecuted"]
+      ? 1
+      : b["lastExecuted"] < a["lastExecuted"]
+      ? -1
+      : 0
+  );
 
   // ? Final sorting
-  const sorted = secondSorted.sort((a, b) => (a[orderBy] > b[orderBy]) ? 1 : ((b[orderBy] > a[orderBy]) ? -1 : 0));
+  const sorted = secondSorted.sort((a, b) =>
+    a[orderBy] > b[orderBy] ? 1 : b[orderBy] > a[orderBy] ? -1 : 0
+  );
   return ascending ? sorted : sorted.reverse();
 }
-
 
 interface UnsupportedWorkflowsProps {
   fullPath: string;
 }
 
 function UnsupportedWorkflows({ fullPath }: UnsupportedWorkflowsProps) {
-  const updateUrl = Url.get(Url.pages.project.overview.status, { namespace: "", path: fullPath });
+  const updateUrl = Url.get(Url.pages.project.settings, {
+    namespace: "",
+    path: fullPath,
+  });
 
   return (
     <div>
       <WarnAlert dismissible={false}>
         <p>
-          Interacting with workflows in the UI requires updating your project to a newer version.
+          Interacting with workflows in the UI requires updating your project to
+          a newer version.
         </p>
         <p className="mb-0">
-        The <Link to={updateUrl}>Project status</Link> page provides further information.
+          The <Link to={updateUrl}>Project settings</Link> page provides further
+          information.
         </p>
       </WarnAlert>
     </div>
   );
 }
 
-
 function NoWorkflows() {
   return (
     <div>
       <p>There are no workflows in this project.</p>
       <InfoAlert timeout={0}>
-        <p>Renku workflows is a key feature of Renku to make code and processing pipelines reusable.</p>
         <p>
-          <ExternalDocsLink url={Docs.rtdTopicGuide("workflows.html")} title="Check out our documentation" />{" "}
+          Renku workflows is a key feature of Renku to make code and processing
+          pipelines reusable.
+        </p>
+        <p>
+          <ExternalDocsLink
+            url={Docs.rtdTopicGuide("workflows/workflow-browser.html")}
+            title="Check out our documentation"
+          />{" "}
           on workflows if you wish to learn more about this feature.
         </p>
       </InfoAlert>
     </div>
   );
 }
-
 
 /** DETAILS **/
 
@@ -282,9 +389,18 @@ interface WorkflowDetailProps {
 }
 
 function WorkflowDetail({
-  fullPath, selectedAvailable, setDetailExpanded, waiting, workflow, workflowId, workflows
+  fullPath,
+  selectedAvailable,
+  setDetailExpanded,
+  waiting,
+  workflow,
+  workflowId,
+  workflows,
 }: WorkflowDetailProps) {
-  const backUrl = Url.get(Url.pages.project.workflows, { namespace: "", path: fullPath });
+  const backUrl = Url.get(Url.pages.project.workflows, {
+    namespace: "",
+    path: fullPath,
+  });
   const backElement = (
     <div>
       <Link to={backUrl}>
@@ -295,42 +411,47 @@ function WorkflowDetail({
 
   let content: React.ReactNode;
   if (waiting) {
-    content = (<WorkflowDetailPlaceholder backElement={backElement} waiting={true} />);
-  }
-  else if (workflow.error) {
-    content = (<WorkflowDetailPlaceholder backElement={backElement} error={workflow.error} />);
-  }
-  else if (workflowId && !selectedAvailable) {
-    content = (<WorkflowDetailPlaceholder backElement={backElement} unknown={true} />);
-  }
-  else {
+    content = (
+      <WorkflowDetailPlaceholder backElement={backElement} waiting={true} />
+    );
+  } else if (workflow.error) {
+    content = (
+      <WorkflowDetailPlaceholder
+        backElement={backElement}
+        error={workflow.error}
+      />
+    );
+  } else if (workflowId && !selectedAvailable) {
+    content = (
+      <WorkflowDetailPlaceholder backElement={backElement} unknown={true} />
+    );
+  } else {
     content = (
       <TreeDetails>
         <WorkflowTreeDetail
           backElement={backElement}
           fullPath={fullPath}
           setDetailExpanded={setDetailExpanded}
-          waiting={waiting}
           workflow={workflow}
-          workflowId={workflowId}
           workflows={workflows}
         />
       </TreeDetails>
     );
   }
 
-  return (<div id="workflowsDetailsContent" className="workflows-details-content">{content}</div>);
+  return (
+    <div id="workflowsDetailsContent" className="workflows-details-content">
+      {content}
+    </div>
+  );
 }
-
 
 interface WorkflowTreeDetailRowProps {
   children: React.ReactNode;
   name: string | React.ReactNode;
 }
 
-function WorkflowTreeDetailRow({
-  children, name
-}: WorkflowTreeDetailRowProps) {
+function WorkflowTreeDetailRow({ children, name }: WorkflowTreeDetailRowProps) {
   return (
     <tr>
       <td className="fw-bold short">{name}</td>
@@ -344,7 +465,10 @@ interface WorkflowTreeMainDetailRowProps extends WorkflowTreeDetailRowProps {
 }
 
 function WorkflowTreeMainDetailRow({
-  children, name, icon }: WorkflowTreeMainDetailRowProps) {
+  children,
+  name,
+  icon,
+}: WorkflowTreeMainDetailRowProps) {
   return (
     <tr>
       <td className="short">
@@ -358,53 +482,60 @@ function WorkflowTreeMainDetailRow({
   );
 }
 
-
 interface WorkflowTreeDetailsProps {
   backElement: React.ReactNode;
   fullPath: string;
   setDetailExpanded: Function;
-  waiting: boolean;
   workflow: Record<string, any>;
-  workflowId: string;
   workflows: Record<string, any>;
 }
 
 function WorkflowTreeDetail({
-  backElement, fullPath, setDetailExpanded, waiting, workflow, workflowId, workflows
+  backElement,
+  fullPath,
+  setDetailExpanded,
+  workflow,
+  workflows,
 }: WorkflowTreeDetailsProps) {
   const details = workflow.details ? workflow.details : {};
   const isComposite = details.type === "Plan" ? false : true;
 
   let typeSpecificRows: React.ReactNode;
   if (isComposite) {
-    typeSpecificRows = (<>
-      <WorkflowTreeDetailRow name="Number of steps">
-        {details.plans?.length}
-      </WorkflowTreeDetailRow>
-    </>);
-  }
-  else {
-    const command = details.command ?
-      (<code className="mb-0">{details.command} <Clipboard clipboardText={details.command} /></code>) :
-      (<UnavailableDetail />);
+    typeSpecificRows = (
+      <>
+        <WorkflowTreeDetailRow name="Number of steps">
+          {details.plans?.length}
+        </WorkflowTreeDetailRow>
+      </>
+    );
+  } else {
+    const command = details.command ? (
+      <div className="d-grid">
+        <CommandCopy command={details.command} noMargin />
+      </div>
+    ) : (
+      <UnavailableDetail />
+    );
 
-    typeSpecificRows = (<>
-      <WorkflowTreeDetailRow name="Number of executions">
-        {details.number_of_executions}
-      </WorkflowTreeDetailRow>
-      <WorkflowTreeDetailRow name="Last execution">
-        {Time.toIsoTimezoneString(details.last_executed)}
-      </WorkflowTreeDetailRow>
-      <WorkflowTreeDetailRow name="Full command">
-        <code className="mb-0">
-          {details.full_command}
-          <Clipboard clipboardText={details.full_command} />
-        </code>
-      </WorkflowTreeDetailRow>
-      <WorkflowTreeDetailRow name="Base command">
-        {command}
-      </WorkflowTreeDetailRow>
-    </>);
+    typeSpecificRows = (
+      <>
+        <WorkflowTreeDetailRow name="Number of executions">
+          {details.number_of_executions}
+        </WorkflowTreeDetailRow>
+        <WorkflowTreeDetailRow name="Last execution">
+          {Time.toIsoTimezoneString(details.last_executed)}
+        </WorkflowTreeDetailRow>
+        <WorkflowTreeDetailRow name="Full command">
+          <div className="d-grid">
+            <CommandCopy command={details.full_command} noMargin />
+          </div>
+        </WorkflowTreeDetailRow>
+        <WorkflowTreeDetailRow name="Base command">
+          {command}
+        </WorkflowTreeDetailRow>
+      </>
+    );
   }
 
   let newerAvailable: React.ReactNode = null;
@@ -413,8 +544,10 @@ function WorkflowTreeDetail({
       <InfoAlert timeout={0}>
         <p>A new version of this workflow is available.</p>
         <p data-cy="workflow-details-newer">
-          <Link className="btn btn-info btn-sm" to={details.latestUrl}>Click here</Link>
-          {" "}to visualize it.
+          <Link className="btn btn-info btn-sm" to={details.latestUrl}>
+            Click here
+          </Link>{" "}
+          to visualize it.
         </p>
       </InfoAlert>
     );
@@ -430,35 +563,53 @@ function WorkflowTreeDetail({
 
         <CardBody>
           {newerAvailable}
-          <Table data-cy="workflow-details-info-table" className="table-borderless rk-tree-table mb-0" size="sm">
+          <Table
+            data-cy="workflow-details-info-table"
+            className="table-borderless rk-tree-table mb-0"
+            size="sm"
+          >
             <tbody>
-              <WorkflowTreeMainDetailRow name="Author(s)" icon={<People className="text-rk-yellow" size="20" />}>
-                {
-                  details.creators?.length ?
-                    (
-                      <EntityCreators display="plain" creators={details.creators}
-                        itemType={"workflow" as EntityType}
-                      />
-                    ) :
-                    (<span className="fst-italic text-rk-text-light">Not available</span>)
-                }
+              <WorkflowTreeMainDetailRow
+                name="Author(s)"
+                icon={<People className="text-rk-yellow" size="20" />}
+              >
+                {details.creators?.length ? (
+                  <EntityCreators
+                    display="plain"
+                    creators={details.creators}
+                    itemType={"workflow" as EntityType}
+                  />
+                ) : (
+                  <span className="fst-italic text-rk-text-light">
+                    Not available
+                  </span>
+                )}
               </WorkflowTreeMainDetailRow>
-              <WorkflowTreeMainDetailRow name="Description" icon={<Journals className="text-rk-yellow" size="20" />}>
-                {
-                  details.description?.length ?
-                    details.description :
-                    (<span className="fst-italic text-rk-text-light">None</span>)
-                }
+              <WorkflowTreeMainDetailRow
+                name="Description"
+                icon={<Journals className="text-rk-yellow" size="20" />}
+              >
+                {details.description?.length ? (
+                  details.description
+                ) : (
+                  <span className="fst-italic text-rk-text-light">None</span>
+                )}
               </WorkflowTreeMainDetailRow>
-              <WorkflowTreeMainDetailRow name="Keywords" icon={<Bookmarks className="text-rk-yellow" size="20" />}>
-                {
-                  details.keywords?.length ?
-                    (<>{ details.keywords.join(", ") }</>) :
-                    (<span className="fst-italic text-rk-text-light">None</span>)
-                }
+              <WorkflowTreeMainDetailRow
+                name="Keywords"
+                icon={<Bookmarks className="text-rk-yellow" size="20" />}
+              >
+                {details.keywords?.length ? (
+                  <>{details.keywords.join(", ")}</>
+                ) : (
+                  <span className="fst-italic text-rk-text-light">None</span>
+                )}
               </WorkflowTreeMainDetailRow>
-              <WorkflowTreeMainDetailRow name="Creation date" icon={<Calendar4 className="text-rk-yellow" size="20" />}>
-                { Time.toIsoTimezoneString(details.created)}
+              <WorkflowTreeMainDetailRow
+                name="Creation date"
+                icon={<Calendar4 className="text-rk-yellow" size="20" />}
+              >
+                {Time.toIsoTimezoneString(details.created)}
               </WorkflowTreeMainDetailRow>
             </tbody>
           </Table>
@@ -466,20 +617,23 @@ function WorkflowTreeDetail({
       </Card>
 
       <Card className="rk-tree-details mb-4">
-        <Table data-cy="workflow-details-extended-table" className="table-borderless rk-tree-table mb-0" size="sm">
+        <Table
+          data-cy="workflow-details-extended-table"
+          className="table-borderless rk-tree-table mb-0"
+          size="sm"
+        >
           <tbody>
             <WorkflowTreeDetailRow name="Workflow type">
-              {isComposite ? "Workflow (Composite)" : "Single step" }
+              {isComposite ? "Workflow (Composite)" : "Single step"}
             </WorkflowTreeDetailRow>
             <WorkflowTreeDetailRow name="Estimated runtime">
               {Time.getDuration(details.duration)}
             </WorkflowTreeDetailRow>
             {typeSpecificRows}
             <WorkflowTreeDetailRow name="Renku command">
-              <code className="mb-0">
-                {details.renkuCommand}
-                <Clipboard clipboardText={details.renkuCommand} />
-              </code>
+              <div className="d-grid">
+                <CommandCopy command={details.renkuCommand} noMargin />
+              </div>
             </WorkflowTreeDetailRow>
           </tbody>
         </Table>
@@ -499,11 +653,15 @@ function WorkflowTreeDetail({
   );
 }
 
-
 /** VISUALIZER **/
 
-
-function UnavailableDetail({ className = "", text = "None" }) {
+function UnavailableDetail({
+  className = "",
+  text = "None",
+}: {
+  className?: string;
+  text?: string;
+}) {
   return (
     <span className={`fst-italic text-rk-text-light ${className}`}>{text}</span>
   );
@@ -511,7 +669,7 @@ function UnavailableDetail({ className = "", text = "None" }) {
 
 interface WorkflowDetailVisualizerProps {
   details: Record<string, any>;
-  expanded: Record<string, any>
+  expanded: Record<string, any>;
   fullPath: string;
   isComposite: boolean;
   setDetailExpanded: Function;
@@ -519,7 +677,12 @@ interface WorkflowDetailVisualizerProps {
 }
 
 function WorkflowDetailVisualizer({
-  details, expanded, fullPath, isComposite, setDetailExpanded, workflows
+  details,
+  expanded,
+  fullPath,
+  isComposite,
+  setDetailExpanded,
+  workflows,
 }: WorkflowDetailVisualizerProps) {
   if (isComposite) {
     // pre-select first mapping automatically
@@ -527,259 +690,398 @@ function WorkflowDetailVisualizer({
       expanded = details.mappings[0];
 
     // compute the children -- we can use a different visualization if we wish
-    const childrenWorkflowsIds = details.plans?.length ? details.plans.map((p: Record<string, any>) => p.id) : [];
+    const childrenWorkflowsIds = details.plans?.length
+      ? details.plans.map((p: Record<string, any>) => p.id)
+      : [];
     const childrenWorkflowsObjects = workflows.list.filter(
       (w: Record<string, any>) => childrenWorkflowsIds.includes(w.id)
     );
     const childrenWorkflowsElements = childrenWorkflowsObjects.map((w: any) => {
-      let newProps: Record<string, any> = {
+      const newProps: Record<string, any> = {
         embed: true,
         expanded: [],
         items: workflows.list,
         uniqueId: `wf-children-details-${w.workflowId}`,
-        toggleExpanded: () => { }
+        toggleExpanded: () => {
+          // eslint-disable-line @typescript-eslint/no-empty-function
+        },
       };
-      return (<TreeElement key={"wf-children-details-" + w.workflowId} {...w} {...newProps} />);
+      return (
+        <TreeElement
+          key={"wf-children-details-" + w.workflowId}
+          {...w}
+          {...newProps}
+        />
+      );
     });
 
     const information = {
       steps: "Steps within this workflow",
       // eslint-disable-next-line max-len
-      mapping: "The inputs, outputs, and parameters of steps within this workflow that are exposed to the overall workflow",
-      links: "Which outputs from earlier workflow steps are linked to the inputs of subsequent steps"
+      mapping:
+        "The inputs, outputs, and parameters of steps within this workflow that are exposed to the overall workflow",
+      links:
+        "Which outputs from earlier workflow steps are linked to the inputs of subsequent steps",
     };
-    return (<>
-      <Row className="gap-3">
-        <WorkflowVisualizerSimpleBox large={true} title="Steps" information={information.steps}>
-          <div className="internal-steps">{childrenWorkflowsElements}</div>
-        </WorkflowVisualizerSimpleBox>
-        <WorkflowVisualizerSimpleBox large={true} title="Mappings" information={information.mapping}>
-          <Row className="mt-2">
-            <Col xs={12} lg={5}>
-              <VisualizerMappings data={details.mappings} expanded={expanded}
-                setDetailExpanded={setDetailExpanded} workflows={workflows} />
-            </Col>
-            <Col xs={12} lg={7}>
-              <VisualizerMappingExpanded data={expanded} workflows={workflows} />
-            </Col>
-          </Row>
-        </WorkflowVisualizerSimpleBox>
-        <WorkflowVisualizerSimpleBox large={true} title="Links" information={information.links}>
-          <VisualizerLinks data={details.links} workflows={workflows} />
-        </WorkflowVisualizerSimpleBox>
-      </Row>
-    </>);
+    return (
+      <>
+        <Row className="gap-3">
+          <WorkflowVisualizerSimpleBox
+            large={true}
+            title="Steps"
+            information={information.steps}
+          >
+            <div className="internal-steps">{childrenWorkflowsElements}</div>
+          </WorkflowVisualizerSimpleBox>
+          <WorkflowVisualizerSimpleBox
+            large={true}
+            title="Mappings"
+            information={information.mapping}
+          >
+            <Row className="mt-2">
+              <Col xs={12} lg={5}>
+                <VisualizerMappings
+                  data={details.mappings}
+                  expanded={expanded}
+                  setDetailExpanded={setDetailExpanded}
+                />
+              </Col>
+              <Col xs={12} lg={7}>
+                <VisualizerMappingExpanded
+                  data={expanded}
+                  workflows={workflows}
+                />
+              </Col>
+            </Row>
+          </WorkflowVisualizerSimpleBox>
+          <WorkflowVisualizerSimpleBox
+            large={true}
+            title="Links"
+            information={information.links}
+          >
+            <VisualizerLinks data={details.links} workflows={workflows} />
+          </WorkflowVisualizerSimpleBox>
+        </Row>
+      </>
+    );
   }
 
   // pre-select first input automatically
-  if (!expanded?.name && details?.inputs?.length)
-    expanded = details.inputs[0];
-  return (<div className="workflows-detail-table">
-    <Row>
-      <WorkflowVisualizerSimpleBox title="Inputs">
-        <VisualizerCommandEntities data={details.inputs} expanded={expanded}
-          setDetailExpanded={setDetailExpanded} />
-      </WorkflowVisualizerSimpleBox>
-      <WorkflowVisualizerSimpleBox title="Outputs">
-        <VisualizerCommandEntities data={details.outputs} expanded={expanded}
-          setDetailExpanded={setDetailExpanded} />
-      </WorkflowVisualizerSimpleBox>
-      <WorkflowVisualizerSimpleBox title="Parameters">
-        <VisualizerCommandEntities data={details.parameters} expanded={expanded}
-          setDetailExpanded={setDetailExpanded} />
-      </WorkflowVisualizerSimpleBox>
-    </Row>
-    <VisualizerDetailExpanded data={expanded} fullPath={fullPath} />
-  </div>);
+  if (!expanded?.name && details?.inputs?.length) expanded = details.inputs[0];
+  return (
+    <div className="workflows-detail-table">
+      <Row>
+        <WorkflowVisualizerSimpleBox title="Inputs">
+          <VisualizerCommandEntities
+            data={details.inputs}
+            expanded={expanded}
+            setDetailExpanded={setDetailExpanded}
+          />
+        </WorkflowVisualizerSimpleBox>
+        <WorkflowVisualizerSimpleBox title="Outputs">
+          <VisualizerCommandEntities
+            data={details.outputs}
+            expanded={expanded}
+            setDetailExpanded={setDetailExpanded}
+          />
+        </WorkflowVisualizerSimpleBox>
+        <WorkflowVisualizerSimpleBox title="Parameters">
+          <VisualizerCommandEntities
+            data={details.parameters}
+            expanded={expanded}
+            setDetailExpanded={setDetailExpanded}
+          />
+        </WorkflowVisualizerSimpleBox>
+      </Row>
+      <VisualizerDetailExpanded data={expanded} fullPath={fullPath} />
+    </div>
+  );
 }
 
-
 interface VisualizerMappingsProps {
-  data: Record<string, any>[]
-  expanded: Record<string, any>
+  data: Record<string, any>[];
+  expanded: Record<string, any>;
   setDetailExpanded: Function;
-  workflows: Record<string, any>;
 }
 
 function VisualizerMappings({
-  data, expanded, setDetailExpanded, workflows
+  data,
+  expanded,
+  setDetailExpanded,
 }: VisualizerMappingsProps) {
   if (!data?.length)
-    return (<p className="m-2"><UnavailableDetail /></p>);
-  const elements = data.map((element: any) => {
-    const elemClass = (expanded.type === element.type && expanded.name === element.name) ?
-      "selected" : "";
     return (
-      <div key={element.name} className={`px-2 pt-1 mb-2 rk-clickable ${elemClass}`}
-        onClick={() => { setDetailExpanded(element); }}>
+      <p className="m-2">
+        <UnavailableDetail />
+      </p>
+    );
+  const elements = data.map((element: any) => {
+    const elemClass =
+      expanded.type === element.type && expanded.name === element.name
+        ? "selected"
+        : "";
+    return (
+      <div
+        key={element.name}
+        className={`px-2 pt-1 mb-2 rk-clickable ${elemClass}`}
+        onClick={() => {
+          setDetailExpanded(element);
+        }}
+      >
         <p className="mb-0">{element.name}</p>
       </div>
     );
   });
 
-  return (<>{elements}</>);
+  return <>{elements}</>;
 }
 
-
 interface VisualizerLinksProps {
-  data: Record<string, any>[]
+  data: Record<string, any>[];
   workflows: Record<string, any>;
 }
 
-function VisualizerLinks({
-  data, workflows
-}: VisualizerLinksProps) {
+function VisualizerLinks({ data, workflows }: VisualizerLinksProps) {
   if (!data?.length)
-    return (<p className="m-2"><UnavailableDetail /></p>);
+    return (
+      <p className="m-2">
+        <UnavailableDetail />
+      </p>
+    );
 
-  let links = data.map((t: any, num: number) => {
+  const links = data.map((t: any, num: number) => {
     const targets = t.sinks.map((target: any, targetCounter: number) => {
-      const targetKey = simpleHash(target.id + target.name + num + targetCounter);
-      return (<VisualizerLocalResource key={targetKey} data={target} workflows={workflows} />);
+      const targetKey = simpleHash(
+        target.id + target.name + num + targetCounter
+      );
+      return (
+        <VisualizerLocalResource
+          key={targetKey}
+          data={target}
+          workflows={workflows}
+        />
+      );
     });
     return (
       <tr key={simpleHash(t.id + t.name + num)}>
-        <td><VisualizerLocalResource data={t.source} workflows={workflows} /></td>
-        <td><FontAwesomeIcon className="m-0" icon={faArrowRight} /></td>
+        <td>
+          <VisualizerLocalResource data={t.source} workflows={workflows} />
+        </td>
+        <td>
+          <FontAwesomeIcon className="m-0" icon={faArrowRight} />
+        </td>
         <td className="text-end">{targets}</td>
       </tr>
     );
   });
   return (
-    <Table data-cy="workflow-details-links" className="table-borderless rk-tree-table mb-3" size="sm">
-      <tbody>
-        {links}
-      </tbody>
+    <Table
+      data-cy="workflow-details-links"
+      className="table-borderless rk-tree-table mb-3"
+      size="sm"
+    >
+      <tbody>{links}</tbody>
     </Table>
   );
 }
-
 
 interface WorkflowVisualizerSimpleBoxProps {
   children: React.ReactNode;
   large?: boolean;
   title: string;
-  information? : string;
+  information?: string;
 }
 
-function WorkflowVisualizerSimpleBox(
-  { children, large = false, title, information }: WorkflowVisualizerSimpleBoxProps) {
+function WorkflowVisualizerSimpleBox({
+  children,
+  large = false,
+  title,
+  information,
+}: WorkflowVisualizerSimpleBoxProps) {
   return (
     <Col xs={12} lg={large ? 12 : 4}>
-      <Card className="borderless border-rk-light mb-3">
+      <Card className="borderless  mb-3">
         <CardHeader className="bg-white py-2 px-0">
           <h4 className="m-1 workflow-simple-box-title d-flex gap-2">
             {title}
-            { information ? <InformativeIcon>{information}</InformativeIcon> : null }
+            {information ? (
+              <InformativeIcon>{information}</InformativeIcon>
+            ) : null}
           </h4>
         </CardHeader>
-        <CardBody className="px-0 py-2">
-          {children}
-        </CardBody>
+        <CardBody className="px-0 py-2">{children}</CardBody>
       </Card>
     </Col>
   );
 }
 
-
 interface VisualizerCommandEntitiesProps {
-  data: Record<string, any>[]
-  expanded: Record<string, any>
+  data: Record<string, any>[];
+  expanded: Record<string, any>;
   setDetailExpanded: Function;
 }
 
 function VisualizerCommandEntities({
-  data, expanded, setDetailExpanded
+  data,
+  expanded,
+  setDetailExpanded,
 }: VisualizerCommandEntitiesProps) {
   if (!data?.length)
-    return (<p className="m-2"><UnavailableDetail /></p>);
+    return (
+      <p className="m-2">
+        <UnavailableDetail />
+      </p>
+    );
   const elements = data.map((i: any) => {
     return (
-      <VisualizerCommandEntity key={i.plan_id + i.name} element={i}
-        expanded={expanded} setDetailExpanded={setDetailExpanded}
+      <VisualizerCommandEntity
+        key={i.plan_id + i.name}
+        element={i}
+        expanded={expanded}
+        setDetailExpanded={setDetailExpanded}
       />
     );
   });
-  return (<div data-cy="workflow-details-params-list">{elements}</div>);
+  return <div data-cy="workflow-details-params-list">{elements}</div>;
 }
 
 interface VisualizerCommandEntityProps {
-  element: Record<string, any>
-  expanded: Record<string, any>
+  element: Record<string, any>;
+  expanded: Record<string, any>;
   setDetailExpanded: Function;
 }
 
-function VisualizerCommandEntity({ element, expanded, setDetailExpanded }: VisualizerCommandEntityProps) {
-  const elemClass = (expanded.type === element.type && expanded.name === element.name) ?
-    "selected" : "";
+function VisualizerCommandEntity({
+  element,
+  expanded,
+  setDetailExpanded,
+}: VisualizerCommandEntityProps) {
+  const elemClass =
+    expanded.type === element.type && expanded.name === element.name
+      ? "selected"
+      : "";
   let valueClass = "";
-  let link: React.ReactNode = null;
+  const link: React.ReactNode = null;
   if (element.encoding_format && !element.exists)
     valueClass = "text-rk-text-light";
   return (
-    <div className={`px-2 py-1 mb-2 rk-clickable ${elemClass}`} onClick={() => { setDetailExpanded(element); }}>
-      <p className="mb-0"><b>{element.name}</b>: <span className={valueClass}>{element.default_value}</span> {link}</p>
+    <div
+      className={`px-2 py-1 mb-2 rk-clickable ${elemClass}`}
+      onClick={() => {
+        setDetailExpanded(element);
+      }}
+    >
+      <p className="mb-0">
+        <b>{element.name}</b>:{" "}
+        <span className={valueClass}>{element.default_value}</span> {link}
+      </p>
     </div>
   );
 }
 
-
 interface VisualizerDetailExpandedProps {
-  data: Record<string, any>
+  data: Record<string, any>;
   fullPath: string;
 }
 
-function VisualizerDetailExpanded({ data, fullPath }: VisualizerDetailExpandedProps) {
-  if (!data?.name)
-    return null;
+function VisualizerDetailExpanded({
+  data,
+  fullPath,
+}: VisualizerDetailExpandedProps) {
+  if (!data?.name) return null;
 
-  let defaultValue = data.default_value ? data.default_value : <UnavailableDetail />;
+  let defaultValue = data.default_value ? (
+    data.default_value
+  ) : (
+    <UnavailableDetail />
+  );
   if (data.default_value && data.encoding_format) {
     if (data.exists) {
-      const fileUrl = Url.get(Url.pages.project.file, { namespace: "", path: fullPath, target: data.default_value });
+      const fileUrl = Url.get(Url.pages.project.file, {
+        namespace: "",
+        path: fullPath,
+        target: data.default_value,
+      });
       defaultValue = (
-        <span>{defaultValue}
-          <IconLink tooltip="Go to file" className="text-rk-yellow" icon={faFileCode} to={fileUrl} />
+        <span>
+          {defaultValue}
+          <IconLink
+            tooltip="Go to file"
+            className="text-rk-yellow"
+            icon={faFileCode}
+            to={fileUrl}
+          />
         </span>
       );
-    }
-    else {
-      const keyTooltip = "param-gone-info-" + simpleHash(data.plan_id + data.name);
+    } else {
+      const keyTooltip =
+        "param-gone-info-" + simpleHash(data.plan_id + data.name);
       defaultValue = (
         <>
           {defaultValue}{" "}
           <span id={keyTooltip} className="text-rk-text">
             <FontAwesomeIcon icon={faExclamationTriangle} />
           </span>
-          <UncontrolledTooltip key={keyTooltip} placement="top" target={keyTooltip}>
-            <span>The file was manually removed and not avilable in the repository.</span>
+          <UncontrolledTooltip
+            key={keyTooltip}
+            placement="top"
+            target={keyTooltip}
+          >
+            <span>
+              The file was manually removed and not avilable in the repository.
+            </span>
           </UncontrolledTooltip>
         </>
       );
     }
   }
-  const description = data.description ? data.description : <UnavailableDetail />;
+  const description = data.description ? (
+    data.description
+  ) : (
+    <UnavailableDetail />
+  );
   const prefix = data.prefix ? data.prefix : <UnavailableDetail />;
   const position = data.position ? data.position : <UnavailableDetail />;
   // ? add back: const format = data.format ? data.format : <UnavailableDetail text="Unknown" />;
   const typeElem = data.type ? data.type : <UnavailableDetail />;
   let mappedToElement: React.ReactNode = null;
   if (Object.keys(data).includes("mapped_to")) {
-    const mappedTo = data.mapped_to ? data.mapped_to : <UnavailableDetail text="Nothing" />;
-    mappedToElement = (<WorkflowTreeDetailRow name="Mapped to">{mappedTo}</WorkflowTreeDetailRow>);
+    const mappedTo = data.mapped_to ? (
+      data.mapped_to
+    ) : (
+      <UnavailableDetail text="Nothing" />
+    );
+    mappedToElement = (
+      <WorkflowTreeDetailRow name="Mapped to">{mappedTo}</WorkflowTreeDetailRow>
+    );
   }
   return (
     <Row>
       <WorkflowVisualizerSimpleBox title="Details" large={true}>
-        <div data-cy="workflow-details-params-table" className="workflow-details-table p-3">
+        <div
+          data-cy="workflow-details-params-table"
+          className="workflow-details-table p-3"
+        >
           <Table className="table-borderless rk-tree-table mb-0" size="sm">
             <tbody>
-              <WorkflowTreeDetailRow name="Name">{data.name}</WorkflowTreeDetailRow>
-              <WorkflowTreeDetailRow name="Type">{typeElem}</WorkflowTreeDetailRow>
-              <WorkflowTreeDetailRow name="Default value">{defaultValue}</WorkflowTreeDetailRow>
-              <WorkflowTreeDetailRow name="Description">{description}</WorkflowTreeDetailRow>
-              <WorkflowTreeDetailRow name="Prefix">{prefix}</WorkflowTreeDetailRow>
-              <WorkflowTreeDetailRow name="Position">{position}</WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Name">
+                {data.name}
+              </WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Type">
+                {typeElem}
+              </WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Default value">
+                {defaultValue}
+              </WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Description">
+                {description}
+              </WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Prefix">
+                {prefix}
+              </WorkflowTreeDetailRow>
+              <WorkflowTreeDetailRow name="Position">
+                {position}
+              </WorkflowTreeDetailRow>
               {mappedToElement}
             </tbody>
           </Table>
@@ -789,68 +1091,103 @@ function VisualizerDetailExpanded({ data, fullPath }: VisualizerDetailExpandedPr
   );
 }
 
-
 interface VisualizerLocalResourceProps {
-  data: Record<string, any>
+  data: Record<string, any>;
   workflows: Record<string, any>;
 }
 
-function VisualizerLocalResource({ data, workflows }: VisualizerLocalResourceProps) {
+function VisualizerLocalResource({
+  data,
+  workflows,
+}: VisualizerLocalResourceProps) {
   try {
-    const targetWorkflow = workflows?.list?.length ?
-      workflows.list.find((w: any) => (w.id === data.plan_id)) :
-      null;
+    const targetWorkflow = workflows?.list?.length
+      ? workflows.list.find((w: any) => w.id === data.plan_id)
+      : null;
     const subItem = data.id.replace(targetWorkflow.id + "/", "");
     const newName = `${subItem.replace("/", " #")}  @ `;
     const url = targetWorkflow.url;
-    const link = (<IconLink tooltip="Open workflow" className="text-rk-yellow" icon={faLink} to={url} />);
-    return (<span key={simpleHash(data.id + data.name)}>
-      {newName} <Diagram2 className="text-rk-yellow" /> {` `}{targetWorkflow.name} {link}</span>
+    const link = (
+      <IconLink
+        tooltip="Open workflow"
+        className="text-rk-yellow"
+        icon={faLink}
+        to={url}
+      />
     );
-  }
-  catch {
-    return (<span className="text-break" key={simpleHash(data.id + data.name)}>{data.id}</span>);
+    return (
+      <span key={simpleHash(data.id + data.name)}>
+        {newName} <Diagram2 className="text-rk-yellow" /> {` `}
+        {targetWorkflow.name} {link}
+      </span>
+    );
+  } catch {
+    return (
+      <span className="text-break" key={simpleHash(data.id + data.name)}>
+        {data.id}
+      </span>
+    );
   }
 }
 
-
 interface VisualizerMappingExpandedProps {
-  data: Record<string, any>
+  data: Record<string, any>;
   workflows: Record<string, any>;
 }
 
-function VisualizerMappingExpanded({ data, workflows }: VisualizerMappingExpandedProps) {
-  if (!data?.name)
-    return null;
+function VisualizerMappingExpanded({
+  data,
+  workflows,
+}: VisualizerMappingExpandedProps) {
+  if (!data?.name) return null;
 
-  const defaultValue = data.default_value ? data.default_value : <UnavailableDetail />;
-  const description = data.description ? data.description : <UnavailableDetail />;
+  const defaultValue = data.default_value ? (
+    data.default_value
+  ) : (
+    <UnavailableDetail />
+  );
+  const description = data.description ? (
+    data.description
+  ) : (
+    <UnavailableDetail />
+  );
   let targets: React.ReactNode;
   if (!data?.targets?.length) {
-    targets = (<UnavailableDetail text="None" />);
-  }
-  else {
-    targets = (
-      data.targets.map((t: any) => {
-        return (<VisualizerLocalResource key={simpleHash(t.id + t.name)} data={t} workflows={workflows} />);
-      })
-    );
+    targets = <UnavailableDetail text="None" />;
+  } else {
+    targets = data.targets.map((t: any) => {
+      return (
+        <VisualizerLocalResource
+          key={simpleHash(t.id + t.name)}
+          data={t}
+          workflows={workflows}
+        />
+      );
+    });
   }
 
   return (
-    <div className="workflow-mapping-table" data-cy="workflow-details-mapping-panel">
+    <div
+      className="workflow-mapping-table"
+      data-cy="workflow-details-mapping-panel"
+    >
       <Table className="table-borderless rk-tree-table mb-0" size="sm">
         <tbody>
           <WorkflowTreeDetailRow name="Name">{data.name}</WorkflowTreeDetailRow>
-          <WorkflowTreeDetailRow name="Default value">{defaultValue}</WorkflowTreeDetailRow>
-          <WorkflowTreeDetailRow name="Description">{description}</WorkflowTreeDetailRow>
-          <WorkflowTreeDetailRow name="Targets">{targets}</WorkflowTreeDetailRow>
+          <WorkflowTreeDetailRow name="Default value">
+            {defaultValue}
+          </WorkflowTreeDetailRow>
+          <WorkflowTreeDetailRow name="Description">
+            {description}
+          </WorkflowTreeDetailRow>
+          <WorkflowTreeDetailRow name="Targets">
+            {targets}
+          </WorkflowTreeDetailRow>
         </tbody>
       </Table>
     </div>
   );
 }
-
 
 interface WorkflowDetailPlaceholderProps {
   backElement: React.ReactNode;
@@ -860,7 +1197,10 @@ interface WorkflowDetailPlaceholderProps {
 }
 
 function WorkflowDetailPlaceholder({
-  backElement, error, unknown, waiting
+  backElement,
+  error,
+  unknown,
+  waiting,
 }: WorkflowDetailPlaceholderProps) {
   let content: React.ReactNode;
   if (waiting) {
@@ -877,25 +1217,34 @@ function WorkflowDetailPlaceholder({
         </CardBody>
       </Card>
     );
-  }
-  else if (error) {
-    content = (<>
-      <div className="d-flex" data-cy="workflow-details-error">
-        <p className="m-auto mb-3 mt-1">A problem occurred while getting the workflow details.</p>
-      </div>
-      <CoreErrorAlert error={error} />
-    </>);
-  }
-  else if (unknown) {
-    content = (<>
-      <div className="d-flex flex-column" data-cy="workflow-details-unavailable">
-        <p className="mx-auto my-2">
-          <FontAwesomeIcon icon={faExclamationTriangle} /> We cannot find the
-          workflow you are looking for.
-        </p>
-        <p className="mx-auto my-2">You can use the navbar to pick another one.</p>
-      </div>
-    </>);
+  } else if (error) {
+    content = (
+      <>
+        <div className="d-flex" data-cy="workflow-details-error">
+          <p className="m-auto mb-3 mt-1">
+            A problem occurred while getting the workflow details.
+          </p>
+        </div>
+        <CoreErrorAlert error={error} />
+      </>
+    );
+  } else if (unknown) {
+    content = (
+      <>
+        <div
+          className="d-flex flex-column"
+          data-cy="workflow-details-unavailable"
+        >
+          <p className="mx-auto my-2">
+            <FontAwesomeIcon icon={faExclamationTriangle} /> We cannot find the
+            workflow you are looking for.
+          </p>
+          <p className="mx-auto my-2">
+            You can use the navbar to pick another one.
+          </p>
+        </div>
+      </>
+    );
   }
 
   return (
@@ -908,6 +1257,5 @@ function WorkflowDetailPlaceholder({
     </Card>
   );
 }
-
 
 export { WorkflowDetail, WorkflowsTreeBrowser };

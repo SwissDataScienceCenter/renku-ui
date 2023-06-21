@@ -24,51 +24,62 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
+import { act } from "react-test-renderer";
 
 import { StateModel, globalSchema } from "../model";
 import { Time } from "./helpers/Time";
-import { RefreshButton } from "./components/buttons/Button";
-import { CommitsUtils, CommitsView } from "./components/commits/Commits";
+import { RefreshButton } from "../components/buttons/Button";
+import { CommitsUtils, CommitsView } from "../components/commits/Commits";
 import {
-  convertUnicodeToAscii, formatBytes,
-  parseINIString, refreshIfNecessary, sanitizedHTMLFromMarkdown,
+  convertUnicodeToAscii,
+  formatBytes,
+  parseINIString,
+  refreshIfNecessary,
+  sanitizedHTMLFromMarkdown,
   splitAutosavedBranches,
   verifyTitleCharacters,
   slugFromTitle,
 } from "./helpers/HelperFunctions";
-import { fixRelativePath } from "./components/markdown/RenkuMarkdownWithPathTranslation";
-
+import { fixRelativePath } from "../components/markdown/RenkuMarkdownWithPathTranslation";
 
 describe("Render React components and functions", () => {
-  it("render RefreshButton", () => {
+  it("render RefreshButton", async () => {
     const div = document.createElement("div");
-    const fakeAction = () => { return false; };
+    const root = createRoot(div);
+    const fakeAction = () => {
+      return false;
+    };
 
-    ReactDOM.render(
-      <MemoryRouter>
-        <RefreshButton action={fakeAction} updating={false} />
-      </MemoryRouter>
-      , div);
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <RefreshButton action={fakeAction} updating={false} />
+        </MemoryRouter>
+      );
+    });
   });
 
-  it("render CommitsView", () => {
+  it("render CommitsView", async () => {
     const div = document.createElement("div");
+    const root = createRoot(div);
     const projectModel = new StateModel(globalSchema);
     const commits = projectModel.get("project.commits");
 
-    ReactDOM.render(
-      <MemoryRouter>
-        <CommitsView
-          commits={commits.list}
-          fetched={commits.fetched}
-          fetching={commits.fetching}
-          urlRepository="https://fakeUrl.ne/gitlab"
-          urlDiff="https://fakeUrl.ne/gitlab/commit/"
-        />
-      </MemoryRouter>
-      , div);
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <CommitsView
+            commits={commits.list}
+            fetched={commits.fetched}
+            fetching={commits.fetching}
+            urlRepository="https://fakeUrl.ne/gitlab"
+            urlDiff="https://fakeUrl.ne/gitlab/commit/"
+          />
+        </MemoryRouter>
+      );
+    });
   });
 });
 
@@ -76,32 +87,34 @@ describe("Commits functions", () => {
   const { ElementType, createDateObject, createCommitsObjects } = CommitsUtils;
   const COMMITS = [
     {
-      "id": "cfed40406aee875a98203279745bbc35fe0a92b0",
-      "short_id": "cfed4040",
-      "created_at": "2021-04-21T17:04:37.000+02:00",
-      "title": "new renku version",
-      "message": "new renku version\n",
-      "author_name": "Fake author",
-      "author_email": "no@email.abc",
-      "committed_date": "2019-08-26T17:04:37.000+02:00",
+      id: "cfed40406aee875a98203279745bbc35fe0a92b0",
+      short_id: "cfed4040",
+      created_at: "2021-04-21T17:04:37.000+02:00",
+      title: "new renku version",
+      message: "new renku version\n",
+      author_name: "Fake author",
+      author_email: "no@email.abc",
+      committed_date: "2019-08-26T17:04:37.000+02:00",
     },
     {
-      "id": "2f28167c3a2a012e8e69d309747c121c55f1a3cb",
-      "short_id": "2f28167c",
-      "created_at": "2021-04-20T09:28:44.000+00:00",
-      "title": "new history!",
-      "message": "new history!\n",
-      "author_name": "Fake author",
-      "author_email": "no@email.abc",
-      "committed_date": "2019-08-05T09:28:44.000+00:00",
-    }
+      id: "2f28167c3a2a012e8e69d309747c121c55f1a3cb",
+      short_id: "2f28167c",
+      created_at: "2021-04-20T09:28:44.000+00:00",
+      title: "new history!",
+      message: "new history!\n",
+      author_name: "Fake author",
+      author_email: "no@email.abc",
+      committed_date: "2019-08-05T09:28:44.000+00:00",
+    },
   ];
 
   it("function createDateElement", () => {
     const dateObject = createDateObject(COMMITS[0]);
 
     expect(dateObject.date).toBeTruthy();
-    expect(Time.isSameDay(dateObject.date, COMMITS[0].committed_date)).toBeTruthy();
+    expect(
+      Time.isSameDay(dateObject.date, COMMITS[0].committed_date)
+    ).toBeTruthy();
     expect(dateObject.readableDate).toBeTruthy();
     expect(dateObject.type).toBe(ElementType.DATE);
   });
@@ -138,13 +151,13 @@ describe("Time class helper", () => {
     Plus: {
       UTCZ_STRING: "2019-08-23T18:00:00.000Z",
       ISO_READABLE_DATETIME: "2019-08-23 18:00:00",
-      ISO_READABLE_DATETIME_SHORT: "2019-08-23 18:00"
+      ISO_READABLE_DATETIME_SHORT: "2019-08-23 18:00",
     },
     Minus: {
       UTCZ_STRING: "2019-08-23T06:00:00.000Z",
       ISO_READABLE_DATETIME: "2019-08-23 06:00:00",
       ISO_READABLE_DATETIME_SHORT: "2019-08-23 06:00",
-    }
+    },
   };
 
   const DatesComparison = {
@@ -156,9 +169,15 @@ describe("Time class helper", () => {
 
   it("function isSameDay", () => {
     const locale = false;
-    expect(Time.isSameDay(DatesComparison.DAY1, DatesComparison.DAY2, locale)).toBeFalsy();
-    expect(Time.isSameDay(DatesComparison.DAY2, DatesComparison.DAY2_B, locale)).toBeTruthy();
-    expect(Time.isSameDay(DatesComparison.DAY2, DatesComparison.DAY3, locale)).toBeFalsy();
+    expect(
+      Time.isSameDay(DatesComparison.DAY1, DatesComparison.DAY2, locale)
+    ).toBeFalsy();
+    expect(
+      Time.isSameDay(DatesComparison.DAY2, DatesComparison.DAY2_B, locale)
+    ).toBeTruthy();
+    expect(
+      Time.isSameDay(DatesComparison.DAY2, DatesComparison.DAY3, locale)
+    ).toBeFalsy();
   });
 
   it("function isDate", () => {
@@ -169,71 +188,92 @@ describe("Time class helper", () => {
   });
   it("function parseDate", () => {
     expect(Time.parseDate(Dates.NOW)).toEqual(Dates.NOW);
-    expect(Time.parseDate(Dates.UTCZ_STRING)).toEqual(new Date(Dates.UTCZ_STRING));
-    expect(() => { Time.parseDate(Dates.INVALID); }).toThrow("Invalid date");
+    expect(Time.parseDate(Dates.UTCZ_STRING)).toEqual(
+      new Date(Dates.UTCZ_STRING)
+    );
+    expect(() => {
+      Time.parseDate(Dates.INVALID);
+    }).toThrow("Invalid date");
   });
   it("function toIsoString", () => {
-    expect(Time.toIsoString(Dates.UTCZ_STRING)).toEqual(Dates.ISO_READABLE_DATETIME);
-    expect(Time.toIsoString(Dates.UTCZ_STRING, "datetime")).toEqual(Dates.ISO_READABLE_DATETIME);
-    expect(Time.toIsoString(Dates.UTCZ_STRING, "datetime-short")).toEqual(Dates.ISO_READABLE_DATETIME_SHORT);
-    expect(Time.toIsoString(Dates.UTCZ_STRING, "date")).toEqual(Dates.ISO_READABLE_DATE);
-    expect(Time.toIsoString(Dates.UTCZ_STRING, "time")).toEqual(Dates.ISO_READABLE_TIME);
+    expect(Time.toIsoString(Dates.UTCZ_STRING)).toEqual(
+      Dates.ISO_READABLE_DATETIME
+    );
+    expect(Time.toIsoString(Dates.UTCZ_STRING, "datetime")).toEqual(
+      Dates.ISO_READABLE_DATETIME
+    );
+    expect(Time.toIsoString(Dates.UTCZ_STRING, "datetime-short")).toEqual(
+      Dates.ISO_READABLE_DATETIME_SHORT
+    );
+    expect(Time.toIsoString(Dates.UTCZ_STRING, "date")).toEqual(
+      Dates.ISO_READABLE_DATE
+    );
+    expect(Time.toIsoString(Dates.UTCZ_STRING, "time")).toEqual(
+      Dates.ISO_READABLE_TIME
+    );
     const fakeType = "not existing";
-    expect(() => { Time.toIsoString(Dates.UTCZ_STRING, fakeType); }).toThrow(`Unknown type "${fakeType}"`);
+    expect(() => {
+      Time.toIsoString(Dates.UTCZ_STRING, fakeType);
+    }).toThrow(`Unknown type "${fakeType}"`);
 
-    expect(Time.toIsoString(DatesTimezoneFriendly.Minus.UTCZ_STRING))
-      .toEqual(DatesTimezoneFriendly.Minus.ISO_READABLE_DATETIME);
-    expect(Time.toIsoString(DatesTimezoneFriendly.Minus.UTCZ_STRING))
-      .toEqual(DatesTimezoneFriendly.Minus.ISO_READABLE_DATETIME);
+    expect(Time.toIsoString(DatesTimezoneFriendly.Minus.UTCZ_STRING)).toEqual(
+      DatesTimezoneFriendly.Minus.ISO_READABLE_DATETIME
+    );
+    expect(Time.toIsoString(DatesTimezoneFriendly.Minus.UTCZ_STRING)).toEqual(
+      DatesTimezoneFriendly.Minus.ISO_READABLE_DATETIME
+    );
   });
   it("function toIsoTimezoneString", () => {
     // Create the string manually. It's a creepy logic, but here string manipulation seems to be
     // a valid way to avoid re-writing function code in the test.
-    const positive = (new Date().getTimezoneOffset()) >= 0 ?
-      true :
-      false;
-    const DatesTimezone = positive ?
-      DatesTimezoneFriendly.Plus :
-      DatesTimezoneFriendly.Minus;
+    const positive = new Date().getTimezoneOffset() >= 0 ? true : false;
+    const DatesTimezone = positive
+      ? DatesTimezoneFriendly.Plus
+      : DatesTimezoneFriendly.Minus;
     const date = new Date(DatesTimezone.UTCZ_STRING);
     const deltaHours = Math.abs(parseInt(date.getTimezoneOffset() / 60));
-    const deltaMinutes = Math.abs(date.getTimezoneOffset()) - (deltaHours * 60);
+    const deltaMinutes = Math.abs(date.getTimezoneOffset()) - deltaHours * 60;
     let expectedString = DatesTimezone.ISO_READABLE_DATETIME;
     if (deltaHours) {
       let hour = parseInt(expectedString.substring(11, 13));
       if (positive) {
         hour = hour - deltaHours;
-        if (deltaMinutes)
-          hour--;
-      }
-      else {
+        if (deltaMinutes) hour--;
+      } else {
         hour = hour + deltaHours;
       }
       let stringHour = `0${hour}`.substring(0, 2);
-      expectedString = expectedString.substring(0, 11) + stringHour + expectedString.substring(13);
+      expectedString =
+        expectedString.substring(0, 11) +
+        stringHour +
+        expectedString.substring(13);
     }
     if (deltaMinutes) {
       let minute = parseInt(expectedString.substring(14, 16));
-      minute = positive ?
-        minute - deltaMinutes :
-        minute + deltaMinutes;
+      minute = positive ? minute - deltaMinutes : minute + deltaMinutes;
       let stringMinute = `0${minute}`.substring(0, 2);
-      expectedString = expectedString.substring(0, 14) + stringMinute + expectedString.substring(16);
+      expectedString =
+        expectedString.substring(0, 14) +
+        stringMinute +
+        expectedString.substring(16);
     }
-    expect(Time.toIsoTimezoneString(DatesTimezone.UTCZ_STRING)).toEqual(expectedString);
+    expect(Time.toIsoTimezoneString(DatesTimezone.UTCZ_STRING)).toEqual(
+      expectedString
+    );
   });
   it("function formatDateTime", () => {
     let dt = Time.parseDate(Dates.ISO_READABLE_DATETIME);
-    expect(Time.formatDateTime(dt))
-      .not.toBeNull();
-    expect(Time.formatDateTime(dt, { d3FormatString: "%d %m %Y %H:%M:%S" }))
-      .toEqual("11 03 2019 09:34:51");
+    expect(Time.formatDateTime(dt)).not.toBeNull();
+    expect(
+      Time.formatDateTime(dt, { d3FormatString: "%d %m %Y %H:%M:%S" })
+    ).toEqual("11 03 2019 09:34:51");
     // Correct for the UTC offset, but this will not work for timezone with non-whole hour offsets
     dt = Time.parseDate(Dates.UTCZ_STRING);
     const offset = dt.getTimezoneOffset() / 60;
     const hour = String(9 - offset).padStart(2, "0");
-    expect(Time.formatDateTime(dt, { d3FormatString: "%d %m %Y %H:%M:%S" }))
-      .toEqual(`11 03 2019 ${hour}:34:51`);
+    expect(
+      Time.formatDateTime(dt, { d3FormatString: "%d %m %Y %H:%M:%S" })
+    ).toEqual(`11 03 2019 ${hour}:34:51`);
   });
   it("function getDuration", () => {
     expect(Time.getDuration(0)).toEqual("< 1 second");
@@ -321,9 +361,11 @@ describe("Ini file parser", () => {
   it("throwing code", () => {
     // any non-string will throw an exception
     const invalid_contents = [true, 12345, null, undefined, [], {}];
-    invalid_contents.forEach(content => {
+    invalid_contents.forEach((content) => {
       // eslint-disable-next-line
-      expect(() => { parseINIString(content); }).toThrow();
+      expect(() => {
+        parseINIString(content);
+      }).toThrow();
     });
   });
 });
@@ -331,18 +373,22 @@ describe("Ini file parser", () => {
 describe("branch functions", () => {
   const branches = [
     { name: "master" },
-    { name: "renku/autosave/myUser/master/1234567/890acbd" }
+    { name: "renku/autosave/myUser/master/1234567/890acbd" },
   ];
 
   it("function splitAutosavedBranches", () => {
     const splitBranches = splitAutosavedBranches(branches);
     expect(splitBranches.standard.length).toEqual(1);
     expect(splitBranches.autosaved.length).toEqual(1);
-    const [username, branch, commit, finalCommit] = branches[1].name.replace("renku/autosave/", "").split("/");
+    const [username, branch, commit, finalCommit] = branches[1].name
+      .replace("renku/autosave/", "")
+      .split("/");
     expect(splitBranches.autosaved[0].autosave.username).toEqual(username);
     expect(splitBranches.autosaved[0].autosave.branch).toEqual(branch);
     expect(splitBranches.autosaved[0].autosave.commit).toEqual(commit);
-    expect(splitBranches.autosaved[0].autosave.finalCommit).toEqual(finalCommit);
+    expect(splitBranches.autosaved[0].autosave.finalCommit).toEqual(
+      finalCommit
+    );
   });
 });
 
@@ -383,7 +429,9 @@ describe("title related functions", () => {
     expect(slugFromTitle("-Test:-)-", true)).toEqual("test");
   });
   it("function slugFromTitle lowercase with custom separator", () => {
-    expect(slugFromTitle("This is my Project", true, false, "+")).toEqual("this+is+my+project");
+    expect(slugFromTitle("This is my Project", true, false, "+")).toEqual(
+      "this+is+my+project"
+    );
   });
   it("function slugFromTitle ascii", () => {
     expect(slugFromTitle("João-Mario", true, true)).toEqual("joao-mario"); // eslint-disable-line
@@ -414,10 +462,13 @@ describe("html sanitization", () => {
   });
 
   it("handles pure markdown", () => {
-    const markdown = "# internal-test\nA Renku project.\n\nThis is an *internal* project that is used for testing.";
+    const markdown =
+      "# internal-test\nA Renku project.\n\nThis is an *internal* project that is used for testing.";
     const html = sanitizedHTMLFromMarkdown(markdown);
     // eslint-disable-next-line
-    expect(html).toEqual(`<h1 id="internal-test">internal-test</h1>\n<p>A Renku project.</p>\n<p>This is an <em>internal</em> project that is used for testing.</p>`);
+    expect(html).toEqual(
+      `<h1 id="internal-test">internal-test</h1>\n<p>A Renku project.</p>\n<p>This is an <em>internal</em> project that is used for testing.</p>`
+    );
   });
 
   it("handles mixed markdown", () => {
@@ -518,42 +569,45 @@ This is an *internal* project that is used for testing.
 
 describe("display latex in markdown", () => {
   it("handles valid latex source code", () => {
-    const markdown = "This is a README with some LaTeX expressions that should render nicely:\n" +
+    const markdown =
+      "This is a README with some LaTeX expressions that should render nicely:\n" +
       "\n" +
       "**Expression 1**\n" +
       "```math\n" +
       "\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),\n" +
       "```\n";
     const html = sanitizedHTMLFromMarkdown(markdown);
-    const resultExpected = "<p>This is a README with some LaTeX expressions that should render nicely:</p>\n" +
+    const resultExpected =
+      "<p>This is a README with some LaTeX expressions that should render nicely:</p>\n" +
       "<p><strong>Expression 1</strong></p>\n" +
       // eslint-disable-next-line max-len
-      "<span title=\"\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),\"><span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math><mrow><mo>∫</mo><mi>f</mi><mo>(</mo><mi mathvariant=\"bold\">x</mi><mo>)</mo><mi mathvariant=\"normal\">d</mi><mi>u</mi><mo>(</mo><mi mathvariant=\"bold\">x</mi><mo>)</mo><mo separator=\"true\">,</mo></mrow>\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),\n" +
+      '<span title="\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><mrow><mo>∫</mo><mi>f</mi><mo>(</mo><mi mathvariant="bold">x</mi><mo>)</mo><mi mathvariant="normal">d</mi><mi>u</mi><mo>(</mo><mi mathvariant="bold">x</mi><mo>)</mo><mo separator="true">,</mo></mrow>\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),\n' +
       // eslint-disable-next-line max-len
-      "</math></span><span aria-hidden=\"true\" class=\"katex-html\"><span class=\"base\"><span style=\"height:2.22225em;vertical-align:-0.86225em;\" class=\"strut\"></span><span style=\"margin-right:0.44445em;position:relative;top:-0.0011249999999999316em;\" class=\"mop op-symbol large-op\">∫</span><span style=\"margin-right:0.16666666666666666em;\" class=\"mspace\"></span><span style=\"margin-right:0.10764em;\" class=\"mord mathdefault\">f</span><span class=\"mopen\">(</span><span class=\"mord\"><span class=\"mord mathbf\">x</span></span><span class=\"mclose\">)</span><span class=\"mord\"><span class=\"mord\"><span class=\"mord mathrm\">d</span></span></span><span class=\"mord mathdefault\">u</span><span class=\"mopen\">(</span><span class=\"mord\"><span class=\"mord mathbf\">x</span></span><span class=\"mclose\">)</span><span class=\"mpunct\">,</span></span></span></span></span></span>";
+      '</math></span><span aria-hidden="true" class="katex-html"><span class="base"><span style="height:2.22225em;vertical-align:-0.86225em;" class="strut"></span><span style="margin-right:0.44445em;position:relative;top:-0.0011249999999999316em;" class="mop op-symbol large-op">∫</span><span style="margin-right:0.16666666666666666em;" class="mspace"></span><span style="margin-right:0.10764em;" class="mord mathdefault">f</span><span class="mopen">(</span><span class="mord"><span class="mord mathbf">x</span></span><span class="mclose">)</span><span class="mord"><span class="mord"><span class="mord mathrm">d</span></span></span><span class="mord mathdefault">u</span><span class="mopen">(</span><span class="mord"><span class="mord mathbf">x</span></span><span class="mclose">)</span><span class="mpunct">,</span></span></span></span></span></span>';
 
     expect(html).toEqual(resultExpected);
   });
 
   it("handles invalid latex source code", () => {
-    const markdown = "This is a README with some LaTeX expressions that should render nicely:\n" +
+    const markdown =
+      "This is a README with some LaTeX expressions that should render nicely:\n" +
       "\n" +
       "**Expression 1**\n" +
       "```math\n" +
       "\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&\n" +
       "```\n";
     const html = sanitizedHTMLFromMarkdown(markdown);
-    const resultExpected = "<p>This is a README with some LaTeX expressions that should render nicely:</p>\n" +
+    const resultExpected =
+      "<p>This is a README with some LaTeX expressions that should render nicely:</p>\n" +
       "<p><strong>Expression 1</strong></p>\n" +
       // eslint-disable-next-line max-len
-      "<span title=\"\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&amp;\"><span style=\"color:var(--bs-danger)\" title=\"ParseError: KaTeX parse error: Expected 'EOF', got '&amp;' at position 41: …}u(\\mathbf{x}),&amp;̲\" class=\"katex-error\">\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&amp;\n" +
+      '<span title="\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&amp;"><span style="color:var(--bs-danger)" title="ParseError: KaTeX parse error: Expected \'EOF\', got \'&amp;\' at position 41: …}u(\\mathbf{x}),&amp;̲" class="katex-error">\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&amp;\n' +
       "</span></span>";
     expect(html).toEqual(resultExpected);
   });
 });
 
 describe("Translate path for markdown", () => {
-
   // This is the folder structure that will be used for testing
   //
   // /fileStructure
@@ -570,28 +624,28 @@ describe("Translate path for markdown", () => {
     {
       relativePath: "../../images/testImage1.png",
       localFilePath: ["folder2", "folder1"],
-      expectedResult: "images/testImage1.png"
+      expectedResult: "images/testImage1.png",
     },
     {
       relativePath: "./testImage2.png",
       localFilePath: ["folder2", "folder1"],
-      expectedResult: "folder1/folder2/testImage2.png"
+      expectedResult: "folder1/folder2/testImage2.png",
     },
     {
       relativePath: "../folder3/testImage3.png",
       localFilePath: ["folder2", "folder1"],
-      expectedResult: "folder1/folder3/testImage3.png"
-    }
+      expectedResult: "folder1/folder3/testImage3.png",
+    },
   ];
 
   it("function fixRelativePath", () => {
-    testCases.forEach(test => {
-      expect(fixRelativePath(test.relativePath, test.localFilePath)).toEqual(test.expectedResult);
+    testCases.forEach((test) => {
+      expect(fixRelativePath(test.relativePath, test.localFilePath)).toEqual(
+        test.expectedResult
+      );
     });
   });
-
 });
-
 
 describe("function formatBytes", () => {
   it("formatBytes", () => {
@@ -607,7 +661,9 @@ describe("function formatBytes", () => {
 
 describe("function refreshIfNecessary", () => {
   it("formatBytes", () => {
-    const fakeFunction = () => { return true; };
+    const fakeFunction = () => {
+      return true;
+    };
 
     // fetch on falsy data
     expect(refreshIfNecessary(null, null, fakeFunction)).toBe(true);
@@ -617,13 +673,21 @@ describe("function refreshIfNecessary", () => {
     expect(refreshIfNecessary(false, null, fakeFunction)).toBe(true);
 
     // Fetch only when outdated
-    const fiveSecondsAgo = new Date(+(new Date) - 5000);
-    const fifteenSecondsAgo = new Date(+(new Date) - 15000);
-    expect(refreshIfNecessary(false, fifteenSecondsAgo, fakeFunction)).toBe(true);
-    expect(refreshIfNecessary(true, fiveSecondsAgo, fakeFunction)).toBeUndefined();
+    const fiveSecondsAgo = new Date(+new Date() - 5000);
+    const fifteenSecondsAgo = new Date(+new Date() - 15000);
+    expect(refreshIfNecessary(false, fifteenSecondsAgo, fakeFunction)).toBe(
+      true
+    );
+    expect(
+      refreshIfNecessary(true, fiveSecondsAgo, fakeFunction)
+    ).toBeUndefined();
 
     // Tolerance
-    expect(refreshIfNecessary(true, fiveSecondsAgo, fakeFunction, 50)).toBeUndefined();
-    expect(refreshIfNecessary(false, fiveSecondsAgo, fakeFunction, 2)).toBe(true);
+    expect(
+      refreshIfNecessary(true, fiveSecondsAgo, fakeFunction, 50)
+    ).toBeUndefined();
+    expect(refreshIfNecessary(false, fiveSecondsAgo, fakeFunction, 2)).toBe(
+      true
+    );
   });
 });

@@ -17,20 +17,18 @@
  */
 
 /**
-*  renku-ui
-*
-*  authentication/Authentication.container.js
-*  Authentication components to log in and out.
-*/
-
+ *  renku-ui
+ *
+ *  authentication/Authentication.container.js
+ *  Authentication components to log in and out.
+ */
 
 import React, { Component } from "react";
-
 
 const RenkuQueryParams = {
   login: "renku_login",
   logout: "renku_logout",
-  loginValue: "1"
+  loginValue: "1",
 };
 
 const LOGOUT_EVENT_TIMEOUT = 5000;
@@ -48,7 +46,10 @@ const LoginHelper = {
   createLoginUrl: (url) => {
     let redirectUrl = new URL(url);
     if (!redirectUrl.search.includes(RenkuQueryParams.login))
-      redirectUrl.searchParams.append(RenkuQueryParams.login, RenkuQueryParams.loginValue);
+      redirectUrl.searchParams.append(
+        RenkuQueryParams.login,
+        RenkuQueryParams.loginValue
+      );
 
     return redirectUrl.toString();
   },
@@ -60,7 +61,9 @@ const LoginHelper = {
   handleLoginParams: (history) => {
     // check if user has just logged in
     const queryParams = new URLSearchParams(history.location.search);
-    if (queryParams.get(RenkuQueryParams.login) === RenkuQueryParams.loginValue) {
+    if (
+      queryParams.get(RenkuQueryParams.login) === RenkuQueryParams.loginValue
+    ) {
       // delete the login param
       queryParams.delete(RenkuQueryParams.login);
       history.replace({ search: queryParams.toString() });
@@ -79,8 +82,7 @@ const LoginHelper = {
           sessionStorage.setItem(RenkuQueryParams.logout, Date.now());
           window.location.reload();
         }, LOGOUT_EVENT_TIMEOUT);
-      }
-      else if (event.key === RenkuQueryParams.login) {
+      } else if (event.key === RenkuQueryParams.login) {
         sessionStorage.setItem(RenkuQueryParams.login, Date.now());
         window.location.reload();
       }
@@ -96,7 +98,7 @@ const LoginHelper = {
     const login = sessionStorage.getItem(RenkuQueryParams.login);
     if (login) {
       sessionStorage.removeItem(RenkuQueryParams.login);
-      notifications.addSuccess(
+      notifications?.addSuccess(
         notifications.Topics.AUTHENTICATION,
         "The page was refreshed because you recently logged in on a different tab."
       );
@@ -106,7 +108,7 @@ const LoginHelper = {
     const logout = sessionStorage.getItem(RenkuQueryParams.logout);
     if (logout) {
       sessionStorage.removeItem(RenkuQueryParams.logout);
-      notifications.addWarning(
+      notifications?.addWarning(
         notifications.Topics.AUTHENTICATION,
         "The page was refreshed because you recently logged out on a different tab."
       );
@@ -118,7 +120,7 @@ const LoginHelper = {
   notifyLogout: () => {
     localStorage.setItem(RenkuQueryParams.logout, Date.now());
   },
-  queryParams: RenkuQueryParams
+  queryParams: RenkuQueryParams,
 };
 
 // always pass "previous" with the current `location.pathname`
@@ -131,8 +133,9 @@ class Login extends Component {
     const redirectUrl = LoginHelper.createLoginUrl(url);
 
     // set new location
-    window.location =
-      `${this.props.params.UISERVER_URL}/auth/login?redirect_url=${encodeURIComponent(redirectUrl)}`;
+    window.location = `${
+      this.props.params.UISERVER_URL
+    }/auth/login?redirect_url=${encodeURIComponent(redirectUrl)}`;
     return <p>logging in</p>;
   }
 }

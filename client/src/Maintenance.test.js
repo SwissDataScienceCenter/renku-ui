@@ -24,8 +24,9 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
+import { act } from "react-test-renderer";
 
 import { Maintenance } from "./Maintenance";
 import { globalSchema, StateModel } from "./model";
@@ -33,29 +34,34 @@ import { Provider } from "react-redux";
 
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
-  it("renders Maintenance without info", () => {
+
+  it("renders Maintenance without info", async () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
-      <Provider store={model.reduxStore}>
-        <MemoryRouter>
-          <Maintenance info={null} />
-        </MemoryRouter>
-      </Provider>,
-      div
-    );
+    const root = createRoot(div);
+    await act(async () => {
+      root.render(
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <Maintenance info={null} />
+          </MemoryRouter>
+        </Provider>
+      );
+    });
   });
 
-  it("renders Maintenance with info", () => {
+  it("renders Maintenance with info", async () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
-      <Provider store={model.reduxStore}>
-        <MemoryRouter>
-          <Maintenance info={"Important info"} />
-        </MemoryRouter>
-      </Provider>,
-      div
-    );
+    const root = createRoot(div);
+    await act(async () => {
+      root.render(
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <Maintenance info={"Important info"} />
+          </MemoryRouter>
+        </Provider>
+      );
+    });
   });
 });

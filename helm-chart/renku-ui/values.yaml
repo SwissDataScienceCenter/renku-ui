@@ -21,7 +21,8 @@ global:
     image:
       repository: renku/certificates
       tag: "0.0.2"
-    customCAs: []
+    customCAs:
+      []
       # - secret:
 
   ## Specify the information required to connect to a redis instance.
@@ -53,7 +54,7 @@ client:
 
   image:
     repository: renku/renku-ui
-    tag: "2.12.0"
+    tag: "3.6.0"
     pullPolicy: IfNotPresent
 
     ## Optionally specify an array of imagePullSecrets.
@@ -70,7 +71,8 @@ client:
   ingress:
     enabled: false
 
-  resources: {}
+  resources:
+    {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -95,11 +97,29 @@ client:
     runAsNonRoot: true
     allowPrivilegeEscalation: false
 
-  welcomePage:
+  # This defines the message displayed on the home page of logged in users.
+  dashboardMessage:
+    enabled: false
+    # This is the main message and is rendered as Markdown content.
     text: |
-      ## Welcome to Renku!
-      Renku is software for collaborative data science. With Renku you can share code and data,
-      discuss problems and solutions, and coordinate data-science projects.
+      # Welcome to Renku! 🐸
+
+      ✨This is an example welcome message.✨
+    # This message is displayed when the user click "Read more"
+    # and is rendered as Markdown content.
+    # Set this to the empty string "" to disable the "Read more" button.
+    additionalText: |
+      ℹ️ Renku documentation: https://renku.readthedocs.io/en/stable/
+    # Style of the message card. Allowed values are:
+    # - "plain" -> simple white background card, no icon
+    # - "success" -> green background, green checkmark icon
+    # - "info" -> blue background, "i" in circle icon
+    # - "warning" -> yellow background, triangle exclamation mark icon
+    # - "danger" -> red background, triangle exclamation mark icon
+    style: info
+    # When this is set to true, users can dismiss the message and hide
+    # it form the dashboard page until the tab is refreshed.
+    dismissible: true
 
   templates:
     custom: true
@@ -165,7 +185,7 @@ client:
           url: ""
     # The default is to show the tutorial from the docs, but can also link to an
     # internal project
-    tutorialLink: https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html
+    tutorialLink: https://renku.readthedocs.io/en/stable/tutorials/01_firststeps.html
     # Projects to highlight on the homepage
     projects: []
   canary:
@@ -182,7 +202,7 @@ server:
 
   image:
     repository: renku/renku-ui-server
-    tag: "2.12.0"
+    tag: "3.6.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: []
@@ -210,7 +230,8 @@ server:
 
   ingress:
     enabled: false
-    annotations: {}
+    annotations:
+      {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     hosts:
@@ -223,11 +244,12 @@ server:
     #      - chart-example.local
 
   ## Configure autoscaling
+  # configure autoscale only where needed
   autoscaling:
-    enabled: true
-    minReplicas: 1
-    maxReplicas: 5
-    cpuUtilization: 95
+    enabled: false
+    # minReplicas: 2
+    # maxReplicas: 5
+    # cpuUtilization: 70
 
   resources:
     requests:

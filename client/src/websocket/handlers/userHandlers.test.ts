@@ -20,14 +20,17 @@ import WS from "jest-websocket-mock";
 
 import { StateModel, globalSchema } from "../../model";
 import { sleep } from "../../utils/helpers/HelperFunctions";
-import { handleUserInit, handleUserUiVersion, handleUserError } from "./userHandlers";
-
+import {
+  handleUserInit,
+  handleUserUiVersion,
+  handleUserError,
+} from "./userHandlers";
 
 describe("Test userHandlers functions", () => {
   const webSocketURL = "wss://localhost:1234";
   let fakeServer: WS;
   let localWebSocket: WebSocket;
-  let fullModel: any;
+  let fullModel: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   // Setup and clean both the model and the WebSocket fake server
   beforeEach(async () => {
@@ -44,15 +47,15 @@ describe("Test userHandlers functions", () => {
   it("Test handleUserInit function", async () => {
     // check no messages are sent if the connection has not been properly established
     expect(fakeServer).toHaveReceivedMessages([]);
-    handleUserInit({}, localWebSocket, fullModel);
+    handleUserInit({}, localWebSocket);
     await sleep(0.01);
     expect(fakeServer).toHaveReceivedMessages([]);
-    handleUserInit({ message: "wrong" }, localWebSocket, fullModel);
+    handleUserInit({ message: "wrong" }, localWebSocket);
     await sleep(0.01);
     expect(fakeServer).toHaveReceivedMessages([]);
 
     // expect reaction to the setup message
-    handleUserInit({ message: "connection established" }, localWebSocket, fullModel);
+    handleUserInit({ message: "connection established" }, localWebSocket);
     await sleep(0.01);
     expect(fakeServer.messages.length).toBe(1);
     expect(fakeServer.messages[0]).toContain("requestServerVersion");
@@ -68,7 +71,7 @@ describe("Test userHandlers functions", () => {
     handleUserUiVersion({ start: true }, localWebSocket, fullModel);
     expect(localModel.get("webSocket")).toBeTruthy();
 
-    let version = "1234abcd";
+    const version = "1234abcd";
     expect(localModel.get("lastValue")).toBeNull();
     handleUserUiVersion({ version }, localWebSocket, fullModel);
     expect(localModel.get("lastValue")).toBe(version);
@@ -79,7 +82,9 @@ describe("Test userHandlers functions", () => {
     handleUserUiVersion({ version: version + "1a" }, localWebSocket, fullModel);
     expect(localModel.get("lastValue")).not.toBe(version);
     expect(localModel.get("lastValue")).toBe(version + "1a");
-    expect(+new Date(localModel.get("lastReceived"))).toBeGreaterThan(lastReceived);
+    expect(+new Date(localModel.get("lastReceived"))).toBeGreaterThan(
+      lastReceived
+    );
   });
 
   it("Test handleUserError function", async () => {

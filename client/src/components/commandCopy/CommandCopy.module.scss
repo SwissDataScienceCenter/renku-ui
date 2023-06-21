@@ -1,0 +1,30 @@
+@import "~/src/styles/bootstrap/_custom_bootstrap_variables.scss";
+
+.main {
+  background: $rk-background-1;
+  border-color: $rk-border-input;
+}
+
+.clipboardBtn {
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+  &:hover,
+  &:focus {
+    background-color: $rk-background-0;
+    color: $rk-green-highlight;
+    border-color: $rk-green !important;
+  }
+  &:active {
+    color: $rk-white;
+    background-color: $rk-green;
+  }
+  &:disabled {
+    color: $rk-green;
+    opacity: 0.6;
+  }
+
+  svg {
+    margin: unset !important;
+  }
+}

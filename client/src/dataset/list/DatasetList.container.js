@@ -43,12 +43,11 @@ class List extends Component {
   }
 
   componentDidMount() {
-    const { query, orderBy, orderSearchAsc, pathName, pageNumber } = this.getUrlSearchParameters(this.props.location);
+    const { query, orderBy, orderSearchAsc, pathName, pageNumber } =
+      this.getUrlSearchParameters(this.props.location);
     let queryProcess = query;
-    if (queryProcess === undefined)
-      this.model.setInitialized(true);
-    else
-      this.model.setQuery(query);
+    if (queryProcess === undefined) this.model.setInitialized(true);
+    else this.model.setQuery(query);
 
     this.model.setOrderBy(orderBy);
     this.model.setOrderSearchAsc(orderSearchAsc);
@@ -56,38 +55,51 @@ class List extends Component {
     this.model.setPathName(pathName);
     this.model.setPage(pageNumber);
     this.model.performSearch();
-    const listener = this.props.history.listen(location => {
-      const { query, orderBy, orderSearchAsc, pathName, pageNumber } = this.getUrlSearchParameters(location);
+    const listener = this.props.history.listen((location) => {
+      const { query, orderBy, orderSearchAsc, pathName, pageNumber } =
+        this.getUrlSearchParameters(location);
       let queryProcess = query;
       if (queryProcess === undefined) {
         this.model.setInitialized(true);
         queryProcess = "";
       }
-      this.onUrlParametersChange(queryProcess, orderBy, orderSearchAsc, pathName, pageNumber);
+      this.onUrlParametersChange(
+        queryProcess,
+        orderBy,
+        orderSearchAsc,
+        pathName,
+        pageNumber
+      );
     });
     this.setState({ listener });
   }
 
-  urlFromQueryAndPageNumber(query, orderBy, orderSearchAsc, pathName, pageNumber) {
+  urlFromQueryAndPageNumber(
+    query,
+    orderBy,
+    orderSearchAsc,
+    pathName,
+    pageNumber
+  ) {
     return `${pathName}?q=${query}&page=${pageNumber}&orderBy=${orderBy}&orderSearchAsc=${orderSearchAsc}`;
   }
 
   getUrlSearchParameters(location) {
     const query = qs.parse(location.search).q || "";
-    const orderBy = qs.parse(location.search).orderBy || orderByValuesMap.PROJECTSCOUNT;
-    const orderSearchAsc = qs.parse(location.search).orderSearchAsc === "true" ? true : false;
-    const pathName = location.pathname.endsWith("/") ?
-      location.pathname.substring(0, location.pathname.length - 1) :
-      location.pathname;
+    const orderBy =
+      qs.parse(location.search).orderBy || orderByValuesMap.PROJECTSCOUNT;
+    const orderSearchAsc =
+      qs.parse(location.search).orderSearchAsc === "true" ? true : false;
+    const pathName = location.pathname.endsWith("/")
+      ? location.pathname.substring(0, location.pathname.length - 1)
+      : location.pathname;
     const pageNumber = parseInt(qs.parse(location.search).page, 10) || 1;
     return { query, orderBy, orderSearchAsc, pathName, pageNumber };
   }
 
   componentWillUnmount() {
     const { listener } = this.state;
-    if (listener)
-      listener();
-
+    if (listener) listener();
   }
 
   // urlFromQueryAndPageNumber(query) {
@@ -102,10 +114,15 @@ class List extends Component {
     // workaround to prevent the listener of "this.props.history.listen" to trigger in the wrong path
     // INFO: check if the path matches [/datasets$, /datasets/$, /datasets?*, /datasets/\D*]
     const regExp = /\/datasets($|\/$|(\/|\?)\D+.*)$/;
-    if (!regExp.test(pathName))
-      return;
+    if (!regExp.test(pathName)) return;
 
-    this.model.setQueryAndSortInSearch(query, orderBy, orderSearchAsc, pathName, pageNumber);
+    this.model.setQueryAndSortInSearch(
+      query,
+      orderBy,
+      orderSearchAsc,
+      pathName,
+      pageNumber
+    );
   }
 
   onPaginationPageChange({ page }) {
@@ -173,7 +190,7 @@ class List extends Component {
     this.model.cancelSearch();
   }
 
-  mapStateToProps(ownProps) {
+  mapStateToProps() {
     return {
       searchQuery: this.model.get("query"),
       loading: this.model.get("loading"),
@@ -192,16 +209,19 @@ class List extends Component {
   }
 
   render() {
-    const VisibleDatasetList =
-      connect(this.mapStateToProps.bind(this))(DatasetList);
+    const VisibleDatasetList = connect(this.mapStateToProps.bind(this))(
+      DatasetList
+    );
 
-    return <VisibleDatasetList
-      store={this.model.reduxStore}
-      handlers={this.handlers}
-      orderByValuesMap={orderByValuesMap}
-      urlMap={urlMap}
-      orderByLabel={this.getOrderByLabel()}
-    />;
+    return (
+      <VisibleDatasetList
+        store={this.model.reduxStore}
+        handlers={this.handlers}
+        orderByValuesMap={orderByValuesMap}
+        urlMap={urlMap}
+        orderByLabel={this.getOrderByLabel()}
+      />
+    );
   }
 }
 

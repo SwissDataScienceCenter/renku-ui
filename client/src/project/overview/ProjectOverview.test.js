@@ -24,10 +24,11 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
+import { act } from "react-test-renderer";
 
 import { StateModel, globalSchema } from "../../model";
 import { testClient as client } from "../../api-client";
@@ -42,39 +43,48 @@ const fakeHistory = createMemoryHistory({
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
   const props = {
-    projectCoordinator: new ProjectCoordinator(client, model.subModel("project"))
+    projectCoordinator: new ProjectCoordinator(
+      client,
+      model.subModel("project")
+    ),
   };
 
-  it("renders ProjectOverviewCommits", () => {
+  it("renders ProjectOverviewCommits", async () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     const allProps = {
       history: fakeHistory,
       location: fakeHistory.location,
-      ...props
+      ...props,
     };
-    ReactDOM.render(
-      <Provider store={model.reduxStore}>
-        <MemoryRouter>
-          <ProjectOverviewCommits {...allProps} />
-        </MemoryRouter>
-      </Provider>,
-      div);
+    await act(async () => {
+      root.render(
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <ProjectOverviewCommits {...allProps} />
+          </MemoryRouter>
+        </Provider>
+      );
+    });
   });
 
-  it("renders ProjectOverviewStats", () => {
+  it("renders ProjectOverviewStats", async () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const root = createRoot(div);
     const allProps = {
       branches: [],
-      ...props
+      ...props,
     };
-    ReactDOM.render(
-      <Provider store={model.reduxStore}>
-        <MemoryRouter>
-          <ProjectOverviewStats {...allProps} />
-        </MemoryRouter>
-      </Provider>,
-      div);
+    await act(async () => {
+      root.render(
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <ProjectOverviewStats {...allProps} />
+          </MemoryRouter>
+        </Provider>
+      );
+    });
   });
 });

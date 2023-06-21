@@ -24,22 +24,28 @@
  */
 
 import React, { Component } from "react";
-import { toast } from "react-toastify";
+import cx from "classnames";
 import { connect } from "react-redux";
+import { toast } from "react-toastify";
 
-import { NotificationsCoordinator, NotificationsInfo } from "./Notifications.state";
 import {
-  NotificationToast, CloseToast, NotificationsMenu as NotificationsMenuPresent,
-  NotificationDropdownItem as NotificationDropdown, Notifications as NotificationsPresent,
-  NotificationPageItem
+  CloseToast,
+  NotificationDropdownItem as NotificationDropdown,
+  NotificationPageItem,
+  NotificationToast,
+  NotificationsMenu as NotificationsMenuPresent,
+  Notifications as NotificationsPresent,
 } from "./Notifications.present";
-
+import {
+  NotificationsCoordinator,
+  NotificationsInfo,
+} from "./Notifications.state";
 
 const NotificationTypes = {
   TOAST: "toast",
   DROPDOWN: "dropdown",
   COMPLETE: "complete",
-  CUSTOM: "custom"
+  CUSTOM: "custom",
 };
 
 /**
@@ -73,34 +79,60 @@ class NotificationsManager {
    * @param {string[]} [awareLocations] - list of locations where the user would know about the information
    * @param {string} [longDesc] - detailed description of what happened.
    */
-  add(level, topic, desc, link = null, linkText = null, awareLocations = [], longDesc = null) {
+  add(
+    level,
+    topic,
+    desc,
+    link = null,
+    linkText = null,
+    awareLocations = [],
+    longDesc = null
+  ) {
     // verify if the notification should trigger the +1.
-    const locations = Array.isArray(awareLocations) ?
-      awareLocations :
-      [awareLocations];
-    let forceRead = level === this.Levels.INFO ?
-      true :
-      false;
-    if (!forceRead && locations.length && locations.includes(this.getLocation().pathname))
+    const locations = Array.isArray(awareLocations)
+      ? awareLocations
+      : [awareLocations];
+    let forceRead = level === this.Levels.INFO;
+    if (
+      !forceRead &&
+      locations.length &&
+      locations.includes(window.location.pathname)
+    )
       forceRead = true;
 
     // add the notification
     const notification = this.coordinator.addNotification(
-      level, topic, desc, link, linkText, locations, longDesc, forceRead);
+      level,
+      topic,
+      desc,
+      link,
+      linkText,
+      locations,
+      longDesc,
+      forceRead
+    );
 
     // create the toast notification when required
     if (this.toastSettings.enabled && !forceRead) {
-      const markRead = () => { this.coordinator.markRead(notification.id); };
+      const markRead = () => {
+        this.coordinator.markRead(notification.id);
+      };
       let options = {
         closeOnClick: false,
         toastId: `toast-${notification.id}`,
-        className: level.toLowerCase(),
+        className: cx(level.toLowerCase(), "card", "rounded", "flex-row"),
         position: this.toastSettings.position,
-        autoClose: this.toastSettings.timeout ? this.toastSettings.timeout : false,
-        closeButton: <CloseToast markRead={markRead} />
+        autoClose: this.toastSettings.timeout
+          ? this.toastSettings.timeout
+          : false,
+        closeButton: <CloseToast markRead={markRead} />,
       };
       const toastComponent = (
-        <Notification notification={notification} markRead={markRead} type={NotificationTypes.TOAST} />
+        <Notification
+          notification={notification}
+          markRead={markRead}
+          type={NotificationTypes.TOAST}
+        />
       );
       toast(toastComponent, options);
     }
@@ -109,16 +141,48 @@ class NotificationsManager {
   }
 
   addInfo(topic, desc, link, linkText, awareLocations, longDesc) {
-    return this.add(this.Levels.INFO, topic, desc, link, linkText, awareLocations, longDesc);
+    return this.add(
+      this.Levels.INFO,
+      topic,
+      desc,
+      link,
+      linkText,
+      awareLocations,
+      longDesc
+    );
   }
   addSuccess(topic, desc, link, linkText, awareLocations, longDesc) {
-    return this.add(this.Levels.SUCCESS, topic, desc, link, linkText, awareLocations, longDesc);
+    return this.add(
+      this.Levels.SUCCESS,
+      topic,
+      desc,
+      link,
+      linkText,
+      awareLocations,
+      longDesc
+    );
   }
   addWarning(topic, desc, link, linkText, awareLocations, longDesc) {
-    return this.add(this.Levels.WARNING, topic, desc, link, linkText, awareLocations, longDesc);
+    return this.add(
+      this.Levels.WARNING,
+      topic,
+      desc,
+      link,
+      linkText,
+      awareLocations,
+      longDesc
+    );
   }
   addError(topic, desc, link, linkText, awareLocations, longDesc) {
-    return this.add(this.Levels.ERROR, topic, desc, link, linkText, awareLocations, longDesc);
+    return this.add(
+      this.Levels.ERROR,
+      topic,
+      desc,
+      link,
+      linkText,
+      awareLocations,
+      longDesc
+    );
   }
 }
 
@@ -136,13 +200,22 @@ class Notification extends Component {
   render() {
     const { type, notification, markRead } = this.props;
     if (type === NotificationTypes.TOAST)
-      return (<NotificationToast notification={notification} markRead={markRead} closeToast={this.props.closeToast} />);
+      return (
+        <NotificationToast
+          notification={notification}
+          markRead={markRead}
+          closeToast={this.props.closeToast}
+        />
+      );
     else if (type === NotificationTypes.DROPDOWN)
-      return (<NotificationDropdown notification={notification} markRead={markRead} />);
+      return (
+        <NotificationDropdown notification={notification} markRead={markRead} />
+      );
     else if (type === NotificationTypes.COMPLETE)
-      return (<NotificationPageItem notification={notification} markRead={markRead} />);
-    else if (type === NotificationTypes.CUSTOM)
-      return (this.props.present);
+      return (
+        <NotificationPageItem notification={notification} markRead={markRead} />
+      );
+    else if (type === NotificationTypes.CUSTOM) return this.props.present;
     return null;
   }
 }
@@ -166,24 +239,33 @@ class NotificationsMenu extends Component {
     };
   }
 
-  markRead(id) { this.coordinator.markRead(id); }
+  markRead(id) {
+    this.coordinator.markRead(id);
+  }
 
-  markAllRead() { this.coordinator.markAllRead(); }
+  markAllRead() {
+    this.coordinator.markAllRead();
+  }
 
-  mapStateToProps(state, ownProps) {
+  mapStateToProps(state) {
     return {
       handlers: this.handlers,
       notifications: state.stateModel.notifications.all,
       unread: state.stateModel.notifications.unread,
-      enabled: state.stateModel.notifications.dropdown.enabled
+      enabled: state.stateModel.notifications.dropdown.enabled,
     };
   }
 
   render() {
-    const VisibleNotificationsMenu = connect(this.mapStateToProps.bind(this))(NotificationsMenuPresent);
-    return (<VisibleNotificationsMenu
-      store={this.model.reduxStore}
-      levels={this.props.notifications.Levels} />);
+    const VisibleNotificationsMenu = connect(this.mapStateToProps.bind(this))(
+      NotificationsMenuPresent
+    );
+    return (
+      <VisibleNotificationsMenu
+        store={this.model.reduxStore}
+        levels={this.props.notifications.Levels}
+      />
+    );
   }
 }
 
@@ -206,26 +288,40 @@ class NotificationsPage extends Component {
     };
   }
 
-  markRead(id) { this.coordinator.markRead(id); }
+  markRead(id) {
+    this.coordinator.markRead(id);
+  }
 
-  markAllRead() { this.coordinator.markAllRead(); }
+  markAllRead() {
+    this.coordinator.markAllRead();
+  }
 
-  mapStateToProps(state, ownProps) {
+  mapStateToProps(state) {
     return {
       handlers: this.handlers,
       notifications: state.stateModel.notifications.all,
-      unread: state.stateModel.notifications.unread
+      unread: state.stateModel.notifications.unread,
     };
   }
 
   render() {
-    const VisibleNotifications = connect(this.mapStateToProps.bind(this))(NotificationsPresent);
-    return (<VisibleNotifications
-      store={this.model.reduxStore}
-      levels={this.props.notifications.Levels}
-      topics={this.props.notifications.Topics}
-      location={this.props.location} />);
+    const VisibleNotifications = connect(this.mapStateToProps.bind(this))(
+      NotificationsPresent
+    );
+    return (
+      <VisibleNotifications
+        store={this.model.reduxStore}
+        levels={this.props.notifications.Levels}
+        topics={this.props.notifications.Topics}
+        location={this.props.location}
+      />
+    );
   }
 }
 
-export { NotificationsManager, NotificationsMenu, NotificationsPage, Notification };
+export {
+  NotificationsManager,
+  NotificationsMenu,
+  NotificationsPage,
+  Notification,
+};

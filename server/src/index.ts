@@ -31,6 +31,7 @@ import { errorHandler } from "./utils/errorHandler";
 import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
 import { initializeSentry } from "./utils/sentry/sentry";
 import { configureWebsocket } from "./websocket";
+import APIClient from "./api-client";
 
 const app = express();
 const port = config.server.port;
@@ -42,15 +43,16 @@ const logStream = {
     logger.info(message);
   },
 };
-app.use(morgan("combined", {
-  stream: logStream,
-  skip: function (req) {
-    // exclude from logging all the internal routes not accessible from outside
-    if (!req.url.startsWith(config.server.prefix))
-      return true;
-    return false;
-  }
-}));
+app.use(
+  morgan("combined", {
+    stream: logStream,
+    skip: function (req) {
+      // exclude from logging all the internal routes not accessible from outside
+      if (!req.url.startsWith(config.server.prefix)) return true;
+      return false;
+    },
+  })
+);
 
 logger.info("Server configuration: " + JSON.stringify(config));
 
@@ -78,11 +80,13 @@ app.use(cookieParser());
 // register routes
 routes.register(app, prefix, authenticator, storage);
 
-
 // start the Express server
 const server = app.listen(port, () => {
   logger.info(`Express server started at http://localhost:${port}`);
 });
+
+// configure API client
+const apiClient = new APIClient();
 
 // start the WebSocket server
 if (config.websocket.enabled) {
@@ -91,7 +95,7 @@ if (config.websocket.enabled) {
   authPromise.then(() => {
     logger.info("Configuring WebSocket server");
 
-    configureWebsocket(wsServer, authenticator, storage);
+    configureWebsocket(wsServer, authenticator, storage, apiClient);
   });
 }
 

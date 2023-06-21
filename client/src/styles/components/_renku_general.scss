@@ -1,9 +1,11 @@
-a:focus-visible, svg:focus, svg:focus-visible {
+a:focus-visible,
+svg:focus,
+svg:focus-visible {
   outline: none;
 }
 .container-fluid.renku-container {
   padding-right: 2em;
-  padding-left:2em;
+  padding-left: 2em;
 }
 
 .container-xxl.renku-container {
@@ -11,15 +13,22 @@ a:focus-visible, svg:focus, svg:focus-visible {
   padding-left: 2em;
 }
 
+@media (max-width: 394px) {
+  .container-xxl.renku-container {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+}
+
 .rk-navbar {
   background-color: $primary;
 }
 
 .h-86 {
-  min-height: 86%
+  min-height: 86%;
 }
 .cursor-auto:hover {
-  cursor:auto !important;
+  cursor: auto !important;
 }
 
 .p-mb-0 > p {
@@ -51,7 +60,8 @@ a:focus-visible, svg:focus, svg:focus-visible {
   background-color: var(--bs-rk-background-0);
 }
 
-.modal-header, .modal-footer {
+.modal-header,
+.modal-footer {
   border: none;
 }
 
@@ -59,8 +69,12 @@ a:focus-visible, svg:focus, svg:focus-visible {
   word-break: break-word;
 }
 
+:root {
+  --rk-box-shadow: #{$rk-box-shadow};
+}
+
 .box-shadow-cards {
-  box-shadow: 0 4.0px 10.0px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: var(--rk-box-shadow);
 }
 
 .dropdown-item:active {
@@ -74,4 +88,38 @@ a:focus-visible, svg:focus, svg:focus-visible {
 
 .border-radius-8 {
   border-radius: 8px;
+}
+
+.pagination {
+  border: 1px solid #f5f6fa;
+}
+
+.pagination-label {
+  color: var(--bs-rk-text-light);
+}
+
+.rk-search-pagination {
+  margin-bottom: 10px;
+}
+
+.rk-search-pagination .page-item.active .page-link {
+  background-color: var(--bs-rk-green) !important;
+  color: white !important;
+}
+
+.rk-search-pagination .page-link {
+  background-color: white !important;
+  border-color: #f5f6fa !important;
+  color: #3a3a3d !important;
+}
+
+.rk-icon {
+  &-md {
+    width: 20px;
+    height: auto;
+  }
+  &-lg {
+    width: 30px;
+    height: auto;
+  }
 }

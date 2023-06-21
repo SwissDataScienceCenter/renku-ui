@@ -16,24 +16,24 @@
  * limitations under the License.
  */
 
-
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import { StateKind, Schema, StateModel } from "./Model";
 
-
 const simpleSchema = new Schema({
   name: { initial: "Jane Doe", mandatory: true },
-  purpose: { initial: "", mandatory: false }
+  purpose: { initial: "", mandatory: false },
 });
 
 const complexSchema = new Schema({
   basics: { schema: simpleSchema, mandatory: true },
-  subThing: { schema: { age: { initial: 0, mandatory: true } }, mandatory: true },
-  createdAt: { initial: () => "right now" }
+  subThing: {
+    schema: { age: { initial: 0, mandatory: true } },
+    mandatory: true,
+  },
+  createdAt: { initial: () => "right now" },
 });
-
 
 class ComplexModel extends StateModel {
   constructor(stateBinding, stateHolder, initialState) {
@@ -46,42 +46,41 @@ class ComplexModel extends StateModel {
     setTimeout(() => {
       this.set("subThing.age", Math.random());
     }, 1000);
-  }
+  };
 }
-
 
 class Example extends Component {
   render() {
-
     // We do exactly the same thing twice, once for a redux state and once
     // for the normal react state.
 
     return [
       <ReduxStateComponent key="redux" />,
-      <ReactStateComponent key="react" />
+      <ReactStateComponent key="react" />,
     ];
   }
 }
 
-
 // A simple presentational component which shows all props which are passed into it.
 class ShowProps extends Component {
   render() {
-    return <div style={{ border: "1px black solid", margin: "5px" }}>
-      {Object.keys(this.props)
-        .filter(propKey => !(this.props[propKey] instanceof Function))
-        .map(
-          (propKey) => <p key={propKey}>{`${propKey}: ${JSON.stringify(this.props[propKey])}`}</p>
-        )
-      }
-      <button onClick={this.props.onClick}>Change Age</button>
-    </div>;
+    return (
+      <div style={{ border: "1px black solid", margin: "5px" }}>
+        {Object.keys(this.props)
+          .filter((propKey) => !(this.props[propKey] instanceof Function))
+          .map((propKey) => (
+            <p key={propKey}>{`${propKey}: ${JSON.stringify(
+              this.props[propKey]
+            )}`}</p>
+          ))}
+        <button onClick={this.props.onClick}>Change Age</button>
+      </div>
+    );
   }
 }
 
 // First the redux case...
 class ReduxStateComponent extends Component {
-
   constructor(props) {
     super(props);
     //this.thing = new StateModel(complexSchema, StateKind.REDUX)
@@ -89,7 +88,9 @@ class ReduxStateComponent extends Component {
   }
 
   render() {
-    const ConnectedShowProps = connect(this.thing.mapStateToProps, null, null, { storeKey: "thingStore" })(ShowProps);
+    const ConnectedShowProps = connect(this.thing.mapStateToProps, null, null, {
+      storeKey: "thingStore",
+    })(ShowProps);
 
     return (
       <span>
@@ -115,17 +116,21 @@ class ReduxSubStateComponent extends Component {
     // The default implementation of mapStateToProps maps the entire sub-tree
     // of the state to the props which are passed to the presentational component.
     const ConnectedShowProps = connect(
-      subThing.mapStateToProps, undefined, undefined, { storeKey: "subThingStore" }
+      subThing.mapStateToProps,
+      undefined,
+      undefined,
+      { storeKey: "subThingStore" }
     )(ShowProps);
 
-    return <ConnectedShowProps
-      case="REDUX SUBSTATE"
-      onClick={subThing.baseModel.updateAge}
-      subThingStore={subThing.reduxStore}
-    />;
+    return (
+      <ConnectedShowProps
+        case="REDUX SUBSTATE"
+        onClick={subThing.baseModel.updateAge}
+        subThingStore={subThing.reduxStore}
+      />
+    );
   }
 }
-
 
 // Same for the react case...
 class ReactStateComponent extends Component {
@@ -135,24 +140,30 @@ class ReactStateComponent extends Component {
   }
 
   render() {
-    return <span>
-      <ShowProps
-        case="REACT STATE"
-        // The react state can also be passed using {...this.state}, but we use the access using the model
-        {...this.thing.get()}
-        onClick={this.thing.updateAge}/>
+    return (
+      <span>
+        <ShowProps
+          case="REACT STATE"
+          // The react state can also be passed using {...this.state}, but we use the access using the model
+          {...this.thing.get()}
+          onClick={this.thing.updateAge}
+        />
 
-      <ReactSubStateComponent subThing={this.thing.subModel("subThing")} />
-    </span>;
+        <ReactSubStateComponent subThing={this.thing.subModel("subThing")} />
+      </span>
+    );
   }
 }
 
 class ReactSubStateComponent extends Component {
   render() {
-    return <ShowProps
-      case="REACT SUBSTATE"
-      {...this.props.subThing.get()}
-      onClick={this.props.subThing.baseModel.updateAge}/>;
+    return (
+      <ShowProps
+        case="REACT SUBSTATE"
+        {...this.props.subThing.get()}
+        onClick={this.props.subThing.baseModel.updateAge}
+      />
+    );
   }
 }
 

@@ -29,43 +29,73 @@ export function validateCSP(url: string, csp: string): CheckURLResponse {
     const externalUrl = new URL(url);
     // TODO: update originUrl when the client url is different from the server url
     const originUrl = new URL(config.server.url);
-    const frameAncestor = csp.split(";").find( (p: string) => p.split(" ")?.includes("frame-ancestors"));
+    const frameAncestor = csp
+      .split(";")
+      .find((p: string) => p.split(" ")?.includes("frame-ancestors"));
 
     // If is not set framer-ancestor it can't be use in iframes
     if (!frameAncestor)
-      return { ...response, isIframeValid: false, detail: "No frame-ancestor exists in Content-Security-Policy (CSP)" };
+      return {
+        ...response,
+        isIframeValid: false,
+        detail: "No frame-ancestor exists in Content-Security-Policy (CSP)",
+      };
 
     const allowedSources = frameAncestor?.split(" ");
 
     // frame ancestor include all domains
     if (allowedSources.includes("*"))
-      return { ...response, isIframeValid: true, detail: "frame-ancestors include all domains *" };
+      return {
+        ...response,
+        isIframeValid: true,
+        detail: "frame-ancestors include all domains *",
+      };
 
     // match full url including protocol
     if (allowedSources.includes(originUrl.origin)) {
       return {
         ...response,
         isIframeValid: true,
-        detail: `Url ${ config.server.url } is included in frame-ancestors sources` };
+        detail: `Url ${config.server.url} is included in frame-ancestors sources`,
+      };
     }
 
     // self case
-    if (allowedSources.includes("'self'") && originUrl.origin === externalUrl.origin)
-      return { ...response, isIframeValid: true, detail: "frame-ancestors self match origin url" };
+    if (
+      allowedSources.includes("'self'") &&
+      originUrl.origin === externalUrl.origin
+    )
+      return {
+        ...response,
+        isIframeValid: true,
+        detail: "frame-ancestors self match origin url",
+      };
 
     // none case
     if (allowedSources.includes("'none'"))
-      return { ...response, isIframeValid: false, error: "frame-ancestors has 'none' rule" };
+      return {
+        ...response,
+        isIframeValid: false,
+        error: "frame-ancestors has 'none' rule",
+      };
 
     // protocol case
-    if ((allowedSources.includes("https://*") && originUrl.protocol === "https:") ||
-      (allowedSources.includes("http://*") && originUrl.protocol === "http:"))
-      return { ...response, isIframeValid: true, detail: "frame-ancestors protocol rule" };
+    if (
+      (allowedSources.includes("https://*") &&
+        originUrl.protocol === "https:") ||
+      (allowedSources.includes("http://*") && originUrl.protocol === "http:")
+    )
+      return {
+        ...response,
+        isIframeValid: true,
+        detail: "frame-ancestors protocol rule",
+      };
 
     // subdomain case
     const specialCases = ["https://*", "http://*", "*"];
-    const subdomainsAllowed = allowedSources
-      .filter( (source: string) => !specialCases.includes(source) && source.includes("*"));
+    const subdomainsAllowed = allowedSources.filter(
+      (source: string) => !specialCases.includes(source) && source.includes("*")
+    );
     for (const subdomainAllowed of subdomainsAllowed) {
       const cleanAllowedSourceUrl = subdomainAllowed
         .replace("http://", "")
@@ -77,23 +107,34 @@ export function validateCSP(url: string, csp: string): CheckURLResponse {
         .replace("https://", "");
 
       let isValidProtocol = true;
-      if (subdomainAllowed.includes("https://") || subdomainAllowed.includes("http://")) {
+      if (
+        subdomainAllowed.includes("https://") ||
+        subdomainAllowed.includes("http://")
+      ) {
         const isHttpsAllowedSource = subdomainAllowed.includes("https://");
         const isHttpsEntrySource = originUrl.origin.includes("https://");
         isValidProtocol = isHttpsAllowedSource === isHttpsEntrySource;
       }
 
-      if (cleanAllowedSourceUrl === cleanEntryUrl.substr(cleanEntryUrl.length - cleanAllowedSourceUrl.length)
-        && isValidProtocol) {
+      if (
+        cleanAllowedSourceUrl ===
+          cleanEntryUrl.substr(
+            cleanEntryUrl.length - cleanAllowedSourceUrl.length
+          ) &&
+        isValidProtocol
+      ) {
         return {
           ...response,
           isIframeValid: true,
-          detail: `URL ${originUrl.origin} match frame-ancestors rule ${subdomainAllowed}` };
+          detail: `URL ${originUrl.origin} match frame-ancestors rule ${subdomainAllowed}`,
+        };
       }
     }
-    return { ...response, error: "URL does not match any Content-Security-Policy rule" };
-  }
-  catch (e) {
+    return {
+      ...response,
+      error: "URL does not match any Content-Security-Policy rule",
+    };
+  } catch (e) {
     return { ...response, error: e.toString() };
   }
 }

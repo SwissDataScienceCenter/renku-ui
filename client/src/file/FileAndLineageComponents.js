@@ -1,4 +1,3 @@
-
 /*!
  * Copyright 2020 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -25,7 +24,6 @@ import { faFile, faProjectDiagram } from "@fortawesome/free-solid-svg-icons";
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
 
 function FileAndLineageSwitch(props) {
-
   const performSwitch = () => {
     props.history.push(props.switchToPath);
   };
@@ -33,16 +31,15 @@ function FileAndLineageSwitch(props) {
   return (
     <div className="form-rk-green">
       <ButtonGroup size="sm">
-        <Button
-          onClick={performSwitch} active={props.insideFile}>
+        <Button onClick={performSwitch} active={props.insideFile}>
           <FontAwesomeIcon icon={faFile} />
         </Button>
-        <Button
-          onClick={performSwitch} active={!props.insideFile}>
+        <Button onClick={performSwitch} active={!props.insideFile}>
           <FontAwesomeIcon icon={faProjectDiagram} />
         </Button>
       </ButtonGroup>
-    </div>);
+    </div>
+  );
 }
 
 export { FileAndLineageSwitch };

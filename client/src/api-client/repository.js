@@ -18,92 +18,124 @@
 
 import { API_ERRORS, alertAPIErrors } from "./errors";
 
-
 function addRepositoryMethods(client) {
-
   client.postCommit = (projectId, commitPayload) => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
 
-    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/repository/commits`, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(commitPayload)
-    });
+    return client.clientFetch(
+      `${client.baseUrl}/projects/${projectId}/repository/commits`,
+      {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(commitPayload),
+      }
+    );
   };
 
-  client.getCommits = async (projectId, ref = "master", per_page = 100, path, maxIterations) => {
+  client.getCommits = async (
+    projectId,
+    ref = "master",
+    per_page = 100,
+    path,
+    maxIterations
+  ) => {
     const url = `${client.baseUrl}/projects/${projectId}/repository/commits`;
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     const queryParams = { ref_name: ref, per_page };
     if (path) queryParams.path = path;
     const options = { method: "GET", headers, queryParams };
-    const commitsIterator = client.clientIterableFetch(url, { options, maxIterations });
+    const commitsIterator = client.clientIterableFetch(url, {
+      options,
+      maxIterations,
+    });
 
-    let commits = [], pagination = {}, error = false;
+    let commits = [],
+      pagination = {},
+      error = false;
     try {
       for await (const commitsPage of commitsIterator) {
         commits = [...commits, ...commitsPage.data];
         pagination = { ...commitsPage.pagination, done: false };
       }
       pagination.done = true;
-    }
-    catch (exception) {
+    } catch (exception) {
       error = exception;
-    }
-    finally {
+    } finally {
       return { data: commits, pagination, error };
     }
   };
 
   client.getProjectReadme = (projectId, branch) => {
-    return client.getRepositoryFile(projectId, "README.md", branch, "raw")
-      .then(text => {
-        return { text: text || "Could not find a README.md file. Why don't you add one to the repository?" };
+    return client
+      .getRepositoryFile(projectId, "README.md", branch, "raw")
+      .then((text) => {
+        return {
+          text:
+            text ||
+            "Could not find a README.md file. Why don't you add one to the repository?",
+        };
       });
   };
 
-  client.getProjectFile = (projectId, path, ref = "master", alertOnErr = true) => {
+  client.getProjectFile = (
+    projectId,
+    path,
+    ref = "master",
+    alertOnErr = true
+  ) => {
     let headers = client.getBasicHeaders();
     const encodedPath = encodeURIComponent(path);
     return client.clientFetch(
-      `${client.baseUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=${ref}`, {
+      `${client.baseUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=${ref}`,
+      {
         method: "GET",
-        headers: headers
-      }, client.returnTypes.text, alertOnErr
+        headers: headers,
+      },
+      client.returnTypes.text,
+      alertOnErr
     );
   };
 
   client.getRepositoryCommit = async (projectId, commitSHA) => {
     let headers = client.getBasicHeaders();
-    return client.clientFetch(
-      `${client.baseUrl}/projects/${projectId}/repository/commits/${commitSHA}`, {
-        method: "GET",
-        headers: headers
-      },
-      client.returnTypes.full,
-      false
-    ).then(response => {
-      return response.json();
-    });
+    return client
+      .clientFetch(
+        `${client.baseUrl}/projects/${projectId}/repository/commits/${commitSHA}`,
+        {
+          method: "GET",
+          headers: headers,
+        },
+        client.returnTypes.full,
+        false
+      )
+      .then((response) => {
+        return response.json();
+      });
   };
 
-
   // TODO: Merge to following methods into one
-  client.getRepositoryFile = async (projectId, path, ref = "master", encoding = "base64") => {
+  client.getRepositoryFile = async (
+    projectId,
+    path,
+    ref = "master",
+    encoding = "base64"
+  ) => {
     let headers = client.getBasicHeaders();
     const pathEncoded = encodeURIComponent(path);
     const raw = encoding === "raw" ? "/raw" : "";
-    return client.clientFetch(
-      `${client.baseUrl}/projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
-        method: "GET",
-        headers: headers
-      },
-      client.returnTypes.full,
-      false
-    )
-      .then(response => {
+    return client
+      .clientFetch(
+        `${client.baseUrl}/projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`,
+        {
+          method: "GET",
+          headers: headers,
+        },
+        client.returnTypes.full,
+        false
+      )
+      .then((response) => {
         if (encoding === "raw") return response.text();
         if (encoding === "base64") return response.json();
       });
@@ -115,51 +147,57 @@ function addRepositoryMethods(client) {
     // })
   };
 
-
   client.getRepositoryTree = (
     projectId,
-    { path = "", recursive = false, per_page = 100, page = 1, previousResults = [] } = {}
+    {
+      path = "",
+      recursive = false,
+      per_page = 100,
+      page = 1,
+      previousResults = [],
+    } = {}
   ) => {
     let headers = client.getBasicHeaders();
     const queryParams = {
       path,
       recursive,
       per_page,
-      page
+      page,
     };
 
-
     // TODO: Think about general pagination strategy for API client.
-    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/repository/tree`, {
-      method: "GET",
-      headers,
-      queryParams
-    }, client.returnTypes.full, false)
-      .then(response => {
+    return client
+      .clientFetch(
+        `${client.baseUrl}/projects/${projectId}/repository/tree`,
+        {
+          method: "GET",
+          headers,
+          queryParams,
+        },
+        client.returnTypes.full,
+        false
+      )
+      .then((response) => {
         if (response.headers.get("X-Next-Page")) {
-          return response.json().then(data => {
+          return response.json().then((data) => {
             return client.getRepositoryTree(projectId, {
               path,
               recursive,
               per_page,
               previousResults: previousResults.concat(data),
-              page: response.headers.get("X-Next-Page")
+              page: response.headers.get("X-Next-Page"),
             });
           });
         }
 
-        return response.json().then(data => {
+        return response.json().then((data) => {
           return previousResults.concat(data);
         });
-
       })
       .catch((error) => {
-        if (error.case === API_ERRORS.notFoundError)
-          return [];
-
+        if (error.case === API_ERRORS.notFoundError) return [];
 
         alertAPIErrors(error);
-
       });
   };
 
@@ -173,22 +211,21 @@ function addRepositoryMethods(client) {
     const options = { method: "GET", headers, queryParams };
     const branchesIterator = client.clientIterableFetch(url, { options });
 
-    let branches = [], pagination = {}, error = false;
+    let branches = [],
+      pagination = {},
+      error = false;
     try {
       for await (const branchesPage of branchesIterator) {
         branches = [...branches, ...branchesPage.data];
         pagination = { ...branchesPage.pagination, done: false };
       }
       pagination.done = true;
-    }
-    catch (exception) {
+    } catch (exception) {
       error = exception;
-    }
-    finally {
+    } finally {
       return { data: branches, pagination, error };
     }
   };
-
 }
 
 export default addRepositoryMethods;

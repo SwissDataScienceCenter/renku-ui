@@ -23,39 +23,60 @@
  *  Project settings presentational components.
  */
 
-import React, { Component, Fragment, useEffect, useState } from "react";
+import React, { Component, Fragment, useState } from "react";
+import {
+  faCheck,
+  faEdit,
+  faExclamationTriangle,
+  faTimesCircle,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import {
-  Button, Col, Collapse, Form, FormGroup,
-  FormText, Input, InputGroup, Label, Row, Table, Nav, NavItem, UncontrolledTooltip
+  Button,
+  Col,
+  Collapse,
+  Form,
+  FormGroup,
+  FormText,
+  Input,
+  InputGroup,
+  Label,
+  Nav,
+  NavItem,
+  Row,
+  UncontrolledTooltip,
 } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheck, faEdit, faExclamationTriangle, faTrash, faTimesCircle
-} from "@fortawesome/free-solid-svg-icons";
-import _ from "lodash/array";
 
+import _ from "lodash";
 import { ACCESS_LEVELS } from "../../api-client";
-import { ProjectAvatarEdit, ProjectTags, } from "../shared";
-import { NotebooksHelper, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange } from "../../notebooks";
-import { Url } from "../../utils/helpers/url";
-import { RenkuNavLink } from "../../utils/components/RenkuNavLink";
-import { Clipboard } from "../../utils/components/Clipboard";
-import { Loader } from "../../utils/components/Loader";
-import { WarnAlert } from "../../utils/components/Alert";
-import { CoreErrorAlert } from "../../utils/components/errors/CoreErrorAlert";
-import { ExternalLink } from "../../utils/components/ExternalLinks";
-import LoginAlert from "../../utils/components/loginAlert/LoginAlert";
+import { InfoAlert, WarnAlert } from "../../components/Alert";
+import { ExternalLink } from "../../components/ExternalLinks";
+import { Loader } from "../../components/Loader";
+import { RenkuNavLink } from "../../components/RenkuNavLink";
+import { InlineSubmitButton } from "../../components/buttons/Button";
+import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
+import { SuccessLabel } from "../../components/formlabels/FormLabels";
+import LoginAlert from "../../components/loginAlert/LoginAlert";
+import {
+  NotebooksHelper,
+  ServerOptionBoolean,
+  ServerOptionEnum,
+  ServerOptionRange,
+} from "../../notebooks";
 import { Docs } from "../../utils/constants/Docs";
-import { SuccessLabel } from "../../utils/components/formlabels/FormLabels";
-import { InlineSubmitButton } from "../../utils/components/buttons/Button";
-
+import { Url } from "../../utils/helpers/url";
+import { ProjectAvatarEdit, ProjectTags } from "../shared";
 
 //** Navigation **//
 
 function ProjectSettingsNav(props) {
   return (
-    <Nav className="flex-column nav-light nav-pills-underline">
+    <Nav
+      className="flex-column nav-light nav-pills-underline"
+      data-cy="settings-navbar"
+    >
       <NavItem>
         <RenkuNavLink to={props.settingsUrl} title="General" />
       </NavItem>
@@ -66,109 +87,60 @@ function ProjectSettingsNav(props) {
   );
 }
 
-
 //** General settings **//
 
 function ProjectSettingsGeneral(props) {
-  useEffect(() => {
-    return function cleanup () {
-      props?.fetchProject(true);
-    };
-  }, []); // eslint-disable-line
+  let loginElement = null;
+  if (!props.user.logged) {
+    const textPre = "You can";
+    const textPost = "here.";
+    loginElement = (
+      <p className="mt-3 mb-0">
+        <LoginAlert
+          logged={false}
+          noWrapper={true}
+          textPre={textPre}
+          textPost={textPost}
+        />
+      </p>
+    );
+  }
 
-  const gitCommands = (
-    <>
-      <RepositoryClone {...props} />
-      <RepositoryUrls {...props} />
-    </>
-  );
-
-  if (props.settingsReadOnly)
-    return gitCommands;
+  if (props.settingsReadOnly) {
+    return (
+      <InfoAlert dismissible={false} timeout={0}>
+        <p className="mb-0">
+          Project settings can be changed only by maintainers.
+        </p>
+        {loginElement}
+      </InfoAlert>
+    );
+  }
 
   return (
     <div className="form-rk-green">
       <Row className="mt-2">
-        <Col xs={12} lg={6}>
+        <Col xs={12}>
           <ProjectTags
             tagList={props.metadata.tagList}
             onProjectTagsChange={props.onProjectTagsChange}
-            settingsReadOnly={props.settingsReadOnly} />
+            settingsReadOnly={props.settingsReadOnly}
+          />
           <ProjectDescription {...props} />
-        </Col>
-        <Col xs={12} lg={6}>
-          {gitCommands}
         </Col>
       </Row>
       <Row>
         <Col xs={12}>
-          <ProjectAvatarEdit externalUrl={props.externalUrl}
-            avatarUrl={props.metadata.avatarUrl} onAvatarChange={props.onAvatarChange}
-            settingsReadOnly={props.settingsReadOnly} />
+          <ProjectAvatarEdit
+            externalUrl={props.externalUrl}
+            avatarUrl={props.metadata.avatarUrl}
+            onAvatarChange={props.onAvatarChange}
+            settingsReadOnly={props.settingsReadOnly}
+          />
         </Col>
       </Row>
     </div>
   );
-}
-
-class RepositoryClone extends Component {
-  render() {
-    const { externalUrl } = this.props;
-    const renkuClone = `renku clone ${externalUrl}.git`;
-    return (
-      <div className="mb-3">
-        <Label className="font-weight-bold">Clone commands</Label>
-        <Table size="sm" className="mb-0">
-          <tbody>
-            <CommandRow application="Renku" command={renkuClone} />
-          </tbody>
-        </Table>
-        <GitCloneCmd externalUrl={externalUrl} projectPath={this.props.metadata.path} />
-      </div>
-    );
-  }
-}
-
-function GitCloneCmd(props) {
-  const [cmdOpen, setCmdOpen] = useState(false);
-  const { externalUrl, projectPath } = props;
-  const gitClone = `git clone ${externalUrl}.git && cd ${projectPath} && git lfs install --local --force`;
-  const gitHooksInstall = "renku githooks install"; // eslint-disable-line
-  return (cmdOpen) ?
-    <div className="mt-3">
-      <p style={{ fontSize: "smaller" }} className="font-italic">
-        If the <b>renku</b> command is not available, you can clone a project using Git.
-      </p>
-      <Table style={{ fontSize: "smaller" }} size="sm" className="mb-0" borderless={true}>
-        <tbody>
-          <tr>
-            <th scope="row">Git<sup>*</sup></th>
-            <td>
-              <code>{gitClone}</code>
-              <div className="mt-2 mb-0">
-                If you want to work with the repo using renku, {" "}
-                you need to run the following after the <code>git clone</code> completes:
-              </div>
-            </td>
-            <td style={{ width: 1 }}><Clipboard clipboardText={gitClone} /></td>
-          </tr>
-          <tr>
-            <th scope="row"></th>
-            <td>
-              <code>{gitHooksInstall}</code>
-            </td>
-            <td style={{ width: 1 }}><Clipboard clipboardText={gitHooksInstall} /></td>
-          </tr>
-        </tbody>
-      </Table>
-      <Button style={{ fontSize: "smaller" }} color="link" onClick={() => setCmdOpen(false)}>
-        Hide git command
-      </Button>
-    </div> :
-    <Button color="link" style={{ fontSize: "smaller" }} className="font-italic"
-      onClick={() => setCmdOpen(true)}>
-      Do not have renku?
-    </Button>;
 }
 
 class ProjectDescription extends Component {
@@ -192,19 +164,29 @@ class ProjectDescription extends Component {
   handleSubmit(e) {
     e.preventDefault();
     this.setState({ value: this.state.value, updating: true });
-    this.props.onProjectDescriptionChange(this.state.value)
-      .then(() => {
-        this.setState({ value: this.state.value, updated: true, updating: false });
+    this.props.onProjectDescriptionChange(this.state.value).then(() => {
+      this.setState({
+        value: this.state.value,
+        updated: true,
+        updating: false,
       });
+    });
   }
 
   render() {
-    const inputField = this.props.settingsReadOnly || this.state.updating ?
-      <Input id="projectDescription" readOnly value={this.state.value} /> :
-      <Input id="projectDescription" onChange={this.onValueChange} data-cy="description-input"
-        value={this.state.value === null ? "" : this.state.value} />;
+    const inputField =
+      this.props.settingsReadOnly || this.state.updating ? (
+        <Input id="projectDescription" readOnly value={this.state.value} />
+      ) : (
+        <Input
+          id="projectDescription"
+          onChange={this.onValueChange}
+          data-cy="description-input"
+          value={this.state.value === null ? "" : this.state.value}
+        />
+      );
 
-    const submitButton = this.props.settingsReadOnly ? null :
+    const submitButton = this.props.settingsReadOnly ? null : (
       <InlineSubmitButton
         id="update-desc"
         className="updateProjectSettings"
@@ -216,63 +198,28 @@ class ProjectDescription extends Component {
         isSubmitting={this.state.updating}
         pristine={this.state.pristine}
         tooltipPristine="Modify description to update value"
-      />;
-    return <Form onSubmit={this.onSubmit}>
-      <FormGroup>
-        <Label for="projectDescription">Project Description</Label>
-        <div className="d-flex">
-          {inputField}
-          {submitButton}
-        </div>
-        <FormText>A short description for the project</FormText>
-      </FormGroup>
-    </Form>;
-  }
-}
-
-function CommandRow(props) {
-  return (
-    <tr>
-      <th scope="row">{props.application}</th>
-      <td>
-        <code className="break-word">{props.command}</code>
-      </td>
-      <td style={{ width: 1 }}><Clipboard clipboardText={props.command} /></td>
-    </tr>
-  );
-}
-
-class RepositoryUrls extends Component {
-  render() {
+      />
+    );
     return (
-      <div className="mb-3">
-        <Label className="font-weight-bold">Repository URL</Label>
-        <Table size="sm">
-          <tbody>
-            <RepositoryUrlRow urlType="SSH" url={this.props.metadata.sshUrl} />
-            <RepositoryUrlRow urlType="HTTP" url={this.props.metadata.httpUrl} />
-          </tbody>
-        </Table>
-      </div>
+      <Form onSubmit={this.onSubmit}>
+        <FormGroup>
+          <Label for="projectDescription">Project Description</Label>
+          <div className="d-flex">
+            {inputField}
+            {submitButton}
+          </div>
+          <FormText>A short description for the project</FormText>
+        </FormGroup>
+      </Form>
     );
   }
 }
 
-function RepositoryUrlRow(props) {
-  return (
-    <tr>
-      <th scope="row">{props.urlType}</th>
-      <td className="break-word">{props.url}</td>
-      <td style={{ width: 1 }}><Clipboard clipboardText={props.url} /></td>
-    </tr>
-  );
-}
-
-
 //** Sessions settings **//
 
 function ProjectSettingsSessions(props) {
-  const { backend, config, metadata, newConfig, options, setConfig, user } = props;
+  const { config, coreSupport, metadata, newConfig, options, setConfig, user } =
+    props;
   const { accessLevel, repositoryUrl } = metadata;
   const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER ? true : false;
   const locked = props.lockStatus?.locked ?? false;
@@ -284,7 +231,11 @@ function ProjectSettingsSessions(props) {
     const textPost = "to visualize sessions settings.";
     return (
       <SessionsDiv>
-        <LoginAlert logged={user.logged} textIntro={textIntro} textPost={textPost} />
+        <LoginAlert
+          logged={user.logged}
+          textIntro={textIntro}
+          textPost={textPost}
+        />
       </SessionsDiv>
     );
   }
@@ -292,24 +243,21 @@ function ProjectSettingsSessions(props) {
     return (
       <SessionsDiv>
         <p className="text-muted">
-          This project is currently being modified. You will be able to change the{" "}
-          session settings once the changes to the project are complete.
+          This project is currently being modified. You will be able to change
+          the session settings once the changes to the project are complete.
         </p>
       </SessionsDiv>
     );
   }
 
   // Handle ongoing operations and errors
-  if (config.fetching || options.fetching || backend.fetching || !backend.fetched) {
+  if (config.fetching || options.fetching || !coreSupport.computed) {
     let message;
-    if (config.fetching)
-      message = "Getting project settings...";
-    else if (options.fetching)
-      message = "Getting RenkuLab settings...";
-    else if (backend.fetching || !backend.fetched)
+    if (config.fetching) message = "Getting project settings...";
+    else if (options.fetching) message = "Getting RenkuLab settings...";
+    else if (!coreSupport.computed)
       message = "Checking project version and RenkuLab compatibility...";
-    else
-      message = "Please wait...";
+    else message = "Please wait...";
 
     return (
       <SessionsDiv>
@@ -319,25 +267,27 @@ function ProjectSettingsSessions(props) {
     );
   }
 
-  if (!backend.backendAvailable) {
-    const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {
+  if (!coreSupport.backendAvailable) {
+    const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace: metadata.namespace,
       path: metadata.path,
     });
-    const updateInfo = devAccess ?
-      "It is necessary to update this project" :
-      "It is necessary to update this project. Either contact a project maintainer, or fork and update it";
+    const updateInfo = devAccess
+      ? "It is necessary to update this project"
+      : "It is necessary to update this project. Either contact a project maintainer, or fork and update it";
     return (
       <SessionsDiv>
         <p>Session settings not available.</p>
         <WarnAlert dismissible={false}>
           <p>
-            <b>Session settings are unavailable</b> because the project is not compatible with this
-            RenkuLab instance.
+            <b>Session settings are unavailable</b> because the project is not
+            compatible with this RenkuLab instance.
           </p>
           <p>
             {updateInfo}.
-            <br />The <Link to={overviewStatusUrl}>Project status</Link> page provides further information.
+            <br />
+            The <Link to={settingsUrl}>Project settings</Link> page provides
+            further information.
           </p>
         </WarnAlert>
       </SessionsDiv>
@@ -345,12 +295,15 @@ function ProjectSettingsSessions(props) {
   }
 
   if (config.error && config.error.code)
-    return (<SessionsDiv><CoreErrorAlert error={config.error} /></SessionsDiv>);
+    return (
+      <SessionsDiv>
+        <CoreErrorAlert error={config.error} />
+      </SessionsDiv>
+    );
 
   // ? this prevents early rendering when hitting the sessions page on the url bar directly
   const globalOptions = options.global;
-  if (!Object.keys(options.global).length)
-    return null;
+  if (!Object.keys(options.global).length) return null;
 
   // Get metadata and create the visual elements for every option
   const projectData = NotebooksHelper.getProjectDefault(
@@ -359,27 +312,42 @@ function ProjectSettingsSessions(props) {
   );
 
   const knownOptions = (
-    <SessionConfigKnown availableOptions={projectData.options} defaults={projectData.defaults} disabled={disabled}
-      devAccess={devAccess} globalOptions={globalOptions} newConfig={newConfig} setConfig={setConfig}
+    <SessionConfigKnown
+      availableOptions={projectData.options}
+      defaults={projectData.defaults}
+      disabled={disabled}
+      devAccess={devAccess}
+      globalOptions={globalOptions}
+      newConfig={newConfig}
+      setConfig={setConfig}
     />
   );
 
   const advancedOptions = (
-    <SessionConfigAdvanced devAccess={devAccess} defaults={projectData.defaults.project} disabled={disabled}
-      options={projectData.options.unknown} repositoryUrl={repositoryUrl} setConfig={setConfig}
+    <SessionConfigAdvanced
+      devAccess={devAccess}
+      defaults={projectData.defaults.project}
+      disabled={disabled}
+      options={projectData.options.unknown}
+      repositoryUrl={repositoryUrl}
+      setConfig={setConfig}
     />
   );
 
   const unknownOptions = (
-    <SessionConfigUnknown devAccess={devAccess} defaults={projectData.defaults.project}
-      options={projectData.options.unknown} setConfig={setConfig} disabled={disabled}
+    <SessionConfigUnknown
+      devAccess={devAccess}
+      defaults={projectData.defaults.project}
+      options={projectData.options.unknown}
+      setConfig={setConfig}
+      disabled={disabled}
     />
   );
 
   // Information based on user's access level
-  const text = devAccess ?
-    null :
-    (<p>Settings can be changed only by developers and maintainers.</p>);
+  const text = devAccess ? null : (
+    <p>Settings can be changed only by developers and maintainers.</p>
+  );
 
   return (
     <SessionsDiv>
@@ -392,50 +360,83 @@ function ProjectSettingsSessions(props) {
   );
 }
 
-function OptionCol({ option, devAccess, disabled, defaults, globalOptions, setConfig, newConfig }) {
+function OptionCol({
+  option,
+  devAccess,
+  disabled,
+  defaults,
+  globalOptions,
+  setConfig,
+  newConfig,
+}) {
   const configKey = `${NotebooksHelper.sessionConfigPrefix}${option}`;
   const newConfigOption = newConfig?.key === configKey ? newConfig : null;
-  return <Col key={option} xs={12} md={6} lg={5}>
-    <SessionsElement
-      configPrefix={NotebooksHelper.sessionConfigPrefix}
-      devAccess={devAccess}
-      disabled={disabled}
-      globalDefault={defaults.global[option]}
-      option={option}
-      projectDefault={defaults.project[option]}
-      rendering={globalOptions[option]}
-      setConfig={setConfig}
-      newConfigOption={newConfigOption}
-    />
-  </Col>;
-
+  return (
+    <Col key={option} xs={12} md={6} lg={5}>
+      <SessionsElement
+        configPrefix={NotebooksHelper.sessionConfigPrefix}
+        devAccess={devAccess}
+        disabled={disabled}
+        globalDefault={defaults.global[option]}
+        option={option}
+        projectDefault={defaults.project[option]}
+        rendering={globalOptions[option]}
+        setConfig={setConfig}
+        newConfigOption={newConfigOption}
+      />
+    </Col>
+  );
 }
 
 function SessionConfigKnown(props) {
-  const { availableOptions, defaults, devAccess, disabled, globalOptions, setConfig, newConfig } = props;
+  const {
+    availableOptions,
+    defaults,
+    devAccess,
+    disabled,
+    globalOptions,
+    setConfig,
+    newConfig,
+  } = props;
   const optionsRows = [];
   let options = availableOptions.known;
   if (options.includes("default_url")) {
     const option = "default_url";
-    const row = <Row key="default_url">
-      <OptionCol option={option} defaults={defaults}
-        devAccess={devAccess} disabled={disabled} newConfig={newConfig}
-        globalOptions={globalOptions} setConfig={setConfig} />
-    </Row>;
+    const row = (
+      <Row key="default_url">
+        <OptionCol
+          option={option}
+          defaults={defaults}
+          devAccess={devAccess}
+          disabled={disabled}
+          newConfig={newConfig}
+          globalOptions={globalOptions}
+          setConfig={setConfig}
+        />
+      </Row>
+    );
     optionsRows.push(row);
   }
 
-  options = options.filter(o => {
+  options = options.filter((o) => {
     if (o === "default_url") return false;
     if (globalOptions[o].default == null) return false;
     return true;
   });
   let chunks = _.chunk(options, 2);
   chunks.forEach((c, i) => {
-    const elements = c.map(option => <OptionCol key={option} option={option} defaults={defaults}
-      devAccess={devAccess} disabled={disabled}
-      globalOptions={globalOptions} setConfig={setConfig} newConfig={newConfig}
-    />);
+    const elements = c.map((option) => (
+      <OptionCol
+        key={option}
+        option={option}
+        defaults={defaults}
+        devAccess={devAccess}
+        disabled={disabled}
+        globalOptions={globalOptions}
+        setConfig={setConfig}
+        newConfig={newConfig}
+      />
+    ));
     const row = <Row key={i}>{elements}</Row>;
     optionsRows.push(row);
   });
@@ -445,9 +446,9 @@ function SessionConfigKnown(props) {
 function SessionConfigUnknown(props) {
   const { defaults, devAccess, disabled, setConfig } = props;
   // Remove "image" from the options since that's handled separately
-  const options = props.options.length ?
-    props.options.filter(option => option !== "image") :
-    [];
+  const options = props.options.length
+    ? props.options.filter((option) => option !== "image")
+    : [];
 
   const [showUnknown, setShowUnknown] = useState(false);
   const toggleShowUnknown = () => setShowUnknown(!showUnknown);
@@ -458,21 +459,27 @@ function SessionConfigUnknown(props) {
   };
 
   // Don't show anything when there are no unknown settings
-  if (!options || !options.length)
-    return null;
+  if (!options || !options.length) return null;
 
   // Create option elements
-  const unknownOptions = options.map(option => {
+  const unknownOptions = options.map((option) => {
     const value = defaults[option];
     if (value == null) return null;
 
-    const reset = devAccess ?
-      (<SessionsOptionReset disabled={disabled} onChange={() => resetValue(option)} option={option} />) :
-      null;
+    const reset = devAccess ? (
+      <SessionsOptionReset
+        disabled={disabled}
+        onChange={() => resetValue(option)}
+        option={option}
+      />
+    ) : null;
 
     return (
       <FormGroup key={option}>
-        <Label>{option}: {value}</Label> {reset}
+        <Label>
+          {option}: {value}
+        </Label>{" "}
+        {reset}
       </FormGroup>
     );
   });
@@ -483,12 +490,16 @@ function SessionConfigUnknown(props) {
       <Collapse isOpen={showUnknown}>
         <h5>Unrecognized settings</h5>
         <p>
-          The following settings are stored in the project configuration but they are not
-          supported in this RenkuLab deployment.
+          The following settings are stored in the project configuration but
+          they are not supported in this RenkuLab deployment.
         </p>
         {unknownOptions}
       </Collapse>
-      <Button color="link" className="font-italic btn-sm" onClick={toggleShowUnknown}>
+      <Button
+        color="link"
+        className="font-italic btn-sm"
+        onClick={toggleShowUnknown}
+      >
         [{showUnknown ? "Hide " : "Show "} unrecognized settings]
       </Button>
     </div>
@@ -498,28 +509,20 @@ function SessionConfigUnknown(props) {
 function NewConfigStatus(props) {
   const { error, keyName } = props;
 
-  if (!error)
-    return null;
+  if (!error) return null;
 
   let message = `Error occurred while updating "${keyName}"`;
-  if (error.reason)
-    message += `: ${error.reason}`;
-  else if (error.userMessage)
-    message += `: ${error.userMessage}`;
-  else
-    message += ".";
-  return (
-    <CoreErrorAlert error={error} message={message} />
-  );
+  if (error.reason) message += `: ${error.reason}`;
+  else if (error.userMessage) message += `: ${error.userMessage}`;
+  else message += ".";
+  return <CoreErrorAlert error={error} message={message} />;
 }
 
 function SessionsDiv(props) {
   return (
     <div className="mt-2">
       <h3>Session settings</h3>
-      <div className="form-rk-green">
-        {props.children}
-      </div>
+      <div className="form-rk-green">{props.children}</div>
     </div>
   );
 }
@@ -528,11 +531,21 @@ function SessionsOptionReset(props) {
   const { disabled, onChange, option } = props;
   return (
     <>
-      <Button disabled={disabled} id={`${option}_reset`} color="" size="sm"
-        className="border-0" onClick={(event) => onChange(event, null, true)}>
+      <Button
+        disabled={disabled}
+        id={`${option}_reset`}
+        color=""
+        size="sm"
+        className="border-0"
+        onClick={(event) => onChange(event, null, true)}
+      >
         <FontAwesomeIcon icon={faTimesCircle} />
       </Button>
-      <UncontrolledTooltip key="tooltip" placement="top" target={`${option}_reset`}>
+      <UncontrolledTooltip
+        key="tooltip"
+        placement="top"
+        target={`${option}_reset`}
+      >
         Reset value
       </UncontrolledTooltip>
     </>
@@ -541,9 +554,16 @@ function SessionsOptionReset(props) {
 
 function SessionsElement(props) {
   const {
-    configPrefix, devAccess, disabled, globalDefault, option, projectDefault, rendering, setConfig, newConfigOption
+    configPrefix,
+    devAccess,
+    disabled,
+    globalDefault,
+    option,
+    projectDefault,
+    rendering,
+    setConfig,
+    newConfigOption,
   } = props;
-
 
   // temporary save the new value to highlight the correct option while updating
   const [newValue, setNewValue] = useState(null);
@@ -553,101 +573,132 @@ function SessionsElement(props) {
 
   // Compatibility layer to re-use the notebooks presentation components
   const onChange = (event, providedValue, reset = false) => {
-    if (!devAccess)
-      return null;
+    if (!devAccess) return null;
 
     // get the correct value
     let value;
     if (reset) {
       value = null;
-    }
-    else if (providedValue != null) {
+    } else if (providedValue != null) {
       value = providedValue;
-    }
-    else {
+    } else {
       const target = event.target.type.toLowerCase();
-      if (target === "button")
-        value = event.target.textContent;
-
-      else if (target === "checkbox")
-        value = event.target.checked;
-
-      else
-        value = event.target.value;
+      if (target === "button") value = event.target.textContent;
+      else if (target === "checkbox") value = event.target.checked;
+      else value = event.target.value;
     }
 
     setNewValue(value);
     setNewValueApplied(true);
     const configKey = `${configPrefix}${option}`;
     // ? stringify non null values to prevent API errors
-    value = value === null ?
-      value :
-      value.toString();
+    value = value === null ? value : value.toString();
     setConfig(configKey, value, rendering.displayName);
   };
 
   // Provide default info when nothing is selected
-  let info = projectDefault != null ?
-    null :
-    (<FormText>Defaults to <b>{rendering.default.toString()}</b></FormText>);
+  let info =
+    projectDefault != null ? null : (
+      <FormText>
+        Defaults to <b>{rendering.default.toString()}</b>
+      </FormText>
+    );
 
   // Add reset button
-  const reset = devAccess && projectDefault != null ?
-    (<SessionsOptionReset disabled={disabled} onChange={onChange} option={option} />) :
-    null;
+  const reset =
+    devAccess && projectDefault != null ? (
+      <SessionsOptionReset
+        disabled={disabled}
+        onChange={onChange}
+        option={option}
+      />
+    ) : null;
 
-  const labelLoader = newConfigOption?.updating ?
-    (<Loader className="mx-2" size="14" inline="true" />) : null;
+  const labelLoader = newConfigOption?.updating ? (
+    <Loader className="mx-2" size="14" inline="true" />
+  ) : null;
 
-  const labelDone = newConfigOption?.updated ?
-    <span className="mx-2"><SuccessLabel text="Updated." /></span> : null;
+  const labelDone = newConfigOption?.updated ? (
+    <span className="mx-2">
+      <SuccessLabel text="Updated." />
+    </span>
+  ) : null;
 
   // Render proper type
   if (rendering.type === "enum") {
-    const warning = projectDefault && !rendering.options.includes(projectDefault) && option !== "default_url";
+    const warning =
+      projectDefault &&
+      !rendering.options.includes(projectDefault) &&
+      option !== "default_url";
     if (warning) {
-      info = (<FormText color="danger">
-        <FontAwesomeIcon className="cursor-default" icon={faExclamationTriangle} /> Unsupported value on RenkuLab.
-        { devAccess ? " Consider changing it." : "" }
-      </FormText>);
-    }
-    else if (rendering.options.length === 1) {
-      info = (<FormText>Cannot be changed on this server</FormText>);
+      info = (
+        <FormText color="danger">
+          <FontAwesomeIcon
+            className="cursor-default"
+            icon={faExclamationTriangle}
+          />{" "}
+          Unsupported value on RenkuLab.
+          {devAccess ? " Consider changing it." : ""}
+        </FormText>
+      );
+    } else if (rendering.options.length === 1) {
+      info = <FormText>Cannot be changed on this server</FormText>;
     }
 
-    const separator = rendering.options.length === 1 ? null : (<br />);
+    const separator = rendering.options.length === 1 ? null : <br />;
     return (
       <FormGroup>
-        <Label className="me-2">{rendering.displayName} {labelLoader}{labelDone}</Label>
+        <Label className="me-2">
+          {rendering.displayName} {labelLoader}
+          {labelDone}
+        </Label>
         {separator}
-        <ServerOptionEnum {...rendering} selected={newValueApplied ? newValue : projectDefault}
-          onChange={onChange} warning={warning ? projectDefault : null} disabled={disabled}
+        <ServerOptionEnum
+          {...rendering}
+          selected={newValueApplied ? newValue : projectDefault}
+          onChange={onChange}
+          warning={warning ? projectDefault : null}
+          disabled={disabled}
           className="btn-outline-rk-green"
         />
         {reset}
-        {info ? (<Fragment><br />{info}</Fragment>) : null}
+        {info ? (
+          <Fragment>
+            <br />
+            {info}
+          </Fragment>
+        ) : null}
       </FormGroup>
     );
-  }
-  else if (rendering.type === "boolean") {
+  } else if (rendering.type === "boolean") {
     return (
       <FormGroup>
-        <ServerOptionBoolean {...rendering} selected={newValueApplied ? newValue : projectDefault}
-          onChange={onChange} disabled={disabled} />
+        <ServerOptionBoolean
+          {...rendering}
+          selected={newValueApplied ? newValue : projectDefault}
+          onChange={onChange}
+          disabled={disabled}
+        />
         {reset}
-        {labelLoader}{labelDone}
+        {labelLoader}
+        {labelDone}
       </FormGroup>
     );
-  }
-  else if (rendering.type === "float" || rendering.type === "int") {
-    const step = rendering.type === "float" ?
-      0.01 :
-      1;
+  } else if (rendering.type === "float" || rendering.type === "int") {
+    const step = rendering.type === "float" ? 0.01 : 1;
     return (
       <FormGroup>
-        <Label className="me-2">{`${rendering.displayName}: ${projectDefault || globalDefault}`}</Label>
-        <br /><ServerOptionRange step={step} {...rendering} selected={newValueApplied ? newValue : projectDefault}
-          disabled={disabled} onChange={onChange} />
+        <Label className="me-2">{`${rendering.displayName}: ${
+          projectDefault || globalDefault
+        }`}</Label>
+        <br />
+        <ServerOptionRange
+          step={step}
+          {...rendering}
+          selected={newValueApplied ? newValue : projectDefault}
+          disabled={disabled}
+          onChange={onChange}
+        />
         {reset}
       </FormGroup>
     );
@@ -655,24 +706,27 @@ function SessionsElement(props) {
 }
 
 function SessionConfigAdvanced(props) {
-  const { defaults, devAccess, disabled, options, repositoryUrl, setConfig } = props;
-  const imageAvailable = options.length && options.includes("image") ?
-    true :
-    false;
+  const { defaults, devAccess, disabled, options, repositoryUrl, setConfig } =
+    props;
+  const imageAvailable =
+    options.length && options.includes("image") ? true : false;
 
   // Collapse unknown values by default when none are already assigned
   const [showImage, setShowImage] = useState(imageAvailable);
   const toggleShowImage = () => setShowImage(!showImage);
 
-  const warningMessage = devAccess ?
-    (<WarnAlert>
-      Fixing
-      an image can yield improvements, but it can also lead to sessions not working in the expected
-      way. <a href={Docs.rtdHowToGuide("session-customizing.html")}>
-        Please consult the documentation
-      </a> before changing this setting.
-    </WarnAlert>) :
-    null;
+  const warningMessage = devAccess ? (
+    <WarnAlert>
+      Fixing an image can yield improvements, but it can also lead to sessions
+      not working in the expected way.{" "}
+      <ExternalLink
+        role="text"
+        title="Please consult the documentation"
+        url={Docs.rtdTopicGuide("sessions/customizing-sessions.html")}
+      />{" "}
+      before changing this setting.
+    </WarnAlert>
+  ) : null;
   return (
     <div className="mb-2">
       <Collapse isOpen={showImage}>
@@ -686,7 +740,11 @@ function SessionConfigAdvanced(props) {
           value={imageAvailable ? defaults["image"] : null}
         />
       </Collapse>
-      <Button color="link" className="font-italic btn-sm" onClick={toggleShowImage}>
+      <Button
+        color="link"
+        className="font-italic btn-sm"
+        onClick={toggleShowImage}
+      >
         [{showImage ? "Hide " : "Show "} advanced settings]
       </Button>
     </div>
@@ -701,8 +759,7 @@ function SessionPinnedImage(props) {
   //const [modifyReference, setModifyReference] = useState(false);
 
   const toggleModifyString = () => {
-    if (!modifyString)
-      setNewString(value ? value : "");
+    if (!modifyString) setNewString(value ? value : "");
     // setModifyReference(false);
     setModifyString(!modifyString);
   };
@@ -714,13 +771,15 @@ function SessionPinnedImage(props) {
 
   const setValue = (value = null) => {
     if (value !== "")
-      setConfig(`${NotebooksHelper.sessionConfigPrefix}image`, value, "Docker image");
+      setConfig(
+        `${NotebooksHelper.sessionConfigPrefix}image`,
+        value,
+        "Docker image"
+      );
     // setConfig("image", value, "Docker image");
   };
 
-  const imageTarget = value ?
-    value :
-    "none";
+  const imageTarget = value ? value : "none";
 
   // TODO: alternative solution when implementing selection through branch and commit
   // const modify = devAccess && !modifyString && !modifyReference ?
@@ -747,72 +806,112 @@ function SessionPinnedImage(props) {
 
   let image;
   if (modifyString) {
-    image = (<Fragment>
-      <InputGroup disabled={disabled} className="input-left">
-        <Input value={newString} onChange={e => setNewString(e.target.value)} />
-        <Button id="advanced_image_confirm" className="btn btn-rk-green m-0" onClick={() => setValue(newString)}>
-          <FontAwesomeIcon icon={faCheck} />
-        </Button>
-        <Button id="advanced_image_back" className="btn btn-outline-rk-green m-0" onClick={toggleModifyString}
-          style={{ borderLeft: 0 }}>
-          <FontAwesomeIcon icon={faTrash} />
-        </Button>
-        <UncontrolledTooltip placement="top" target="advanced_image_back">
-          Discard changes
-        </UncontrolledTooltip>
-      </InputGroup>
-    </Fragment>);
+    image = (
+      <Fragment>
+        <InputGroup disabled={disabled} className="input-left">
+          <Input
+            value={newString}
+            onChange={(e) => setNewString(e.target.value)}
+          />
+          <Button
+            id="advanced_image_confirm"
+            className="btn btn-rk-green m-0"
+            onClick={() => setValue(newString)}
+          >
+            <FontAwesomeIcon icon={faCheck} />
+          </Button>
+          <Button
+            id="advanced_image_back"
+            className="btn btn-outline-rk-green m-0"
+            onClick={toggleModifyString}
+            style={{ borderLeft: 0 }}
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </Button>
+          <UncontrolledTooltip placement="top" target="advanced_image_back">
+            Discard changes
+          </UncontrolledTooltip>
+        </InputGroup>
+      </Fragment>
+    );
   }
   // TODO: implement selection through branch and commit
   // else if (modifyReference) {
   //   image = "Not implemented yet";
   // }
   else if (value) {
-    const edit = devAccess ?
-      (<Fragment>
-        <Button id="advanced_image_edit" color="outline-primary" onClick={toggleModifyString}>
+    const edit = devAccess ? (
+      <Fragment>
+        <Button
+          id="advanced_image_edit"
+          color="outline-primary"
+          onClick={toggleModifyString}
+        >
           <FontAwesomeIcon icon={faEdit} />
         </Button>
         <UncontrolledTooltip placement="top" target="advanced_image_edit">
           Edit value
         </UncontrolledTooltip>
-        <Button id="advanced_image_reset" color="primary" onClick={() => setValue()}
-          style={{ borderLeft: 0 }}>
+        <Button
+          id="advanced_image_reset"
+          color="primary"
+          onClick={() => setValue()}
+          style={{ borderLeft: 0 }}
+        >
           <FontAwesomeIcon icon={faTimesCircle} />
         </Button>
         <UncontrolledTooltip placement="top" target="advanced_image_reset">
           Reset value
         </UncontrolledTooltip>
-      </Fragment>) :
-      null;
-    image = (<InputGroup disabled={disabled}><Input disabled={true} value={value} /> {edit}</InputGroup>);
-  }
-  else {
-    const edit = devAccess ?
-      (<Fragment>
-        <Button disabled={disabled} id="advanced_image_add" color="" size="sm"
-          className="border-0" onClick={toggleModifyString}>
+      </Fragment>
+    ) : null;
+    image = (
+      <InputGroup disabled={disabled}>
+        <Input disabled={true} value={value} /> {edit}
+      </InputGroup>
+    );
+  } else {
+    const edit = devAccess ? (
+      <Fragment>
+        <Button
+          disabled={disabled}
+          id="advanced_image_add"
+          color=""
+          size="sm"
+          className="border-0"
+          onClick={toggleModifyString}
+        >
           <FontAwesomeIcon icon={faEdit} />
         </Button>
         <UncontrolledTooltip placement="top" target="advanced_image_add">
           Set image
         </UncontrolledTooltip>
-      </Fragment>) :
-      null;
+      </Fragment>
+    ) : null;
 
-    image = (<Fragment>
-      <code className="me-2">{imageTarget}</code>
-      {edit}
-    </Fragment>);
+    image = (
+      <Fragment>
+        <code className="me-2">{imageTarget}</code>
+        {edit}
+      </Fragment>
+    );
   }
 
   const imagesUrl = `${repositoryUrl}/container_registry`;
-  const imagesLink = (<div>
-    <FormText>
-      A URL of a RenkuLab-compatible Docker image. For an image from this project, consult {" "}
-      <ExternalLink role="link" title="the list of images for this project" url={imagesUrl} />.
-    </FormText>
-  </div>);
+  const imagesLink = (
+    <div>
+      <FormText>
+        A URL of a RenkuLab-compatible Docker image. For an image from this
+        project, consult{" "}
+        <ExternalLink
+          role="link"
+          title="the list of images for this project"
+          url={imagesUrl}
+        />
+        .
+      </FormText>
+    </div>
+  );
 
   return (
     <FormGroup>

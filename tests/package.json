@@ -1,0 +1,34 @@
+{
+  "name": "e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end tests for the Renku UI client",
+  "main": "index.js",
+  "scripts": {
+    "cypress": "cypress open --e2e --browser=chrome --config-file cypress.config.ts",
+    "cypress:headless": "cypress run --e2e --headless --config-file cypress.config.ts --spec '**/*'",
+    "e2e": "start-server-and-test start 3000 cypress",
+    "e2e:headless": "start-server-and-test start 3000 cypress:headless",
+    "lint": "eslint --max-warnings=0 cypress/",
+    "format": "prettier -w .",
+    "format-check": "prettier -c .",
+    "format-changed": "pretty-quick --pattern \"tests/**/*.*\"",
+    "format-commit": "pretty-quick --staged --pattern \"tests/**/*.*\"",
+    "start": "npm --prefix ../client run start-js",
+    "install-client": "npm --prefix ../client install"
+  },
+  "author": "Swiss Data Science Center",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.6.0",
+    "@typescript-eslint/parser": "^5.6.0",
+    "cypress": "^11.0.0",
+    "cypress-file-upload": "^5.0.8",
+    "eslint": "^8.28.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-no-only-tests": "^3.1.0",
+    "prettier": "^2.8.8",
+    "pretty-quick": "^3.1.3",
+    "start-server-and-test": "^2.0.0",
+    "typescript": "^4.5.2"
+  }
+}

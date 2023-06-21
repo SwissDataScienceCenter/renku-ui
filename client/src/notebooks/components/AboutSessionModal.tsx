@@ -16,19 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
-import { useSelector } from "react-redux";
-
-import { InfoCircle, Modal, ModalBody, ModalHeader } from "../../utils/ts-wrappers";
-import { EntityType } from "../../utils/components/entities/Entities";
-import EntityHeader from "../../utils/components/entityHeader/EntityHeader";
-import { ACCESS_LEVELS } from "../../api-client";
-import "./SessionModal.css";
-import { NotebookServerRow } from "../Notebooks.present";
-import Time from "../../utils/helpers/Time";
-import { Notebook, ProjectMetadata } from "./Session";
-import { ExternalLink } from "../../utils/components/ExternalLinks";
-
 /**
  *  renku-ui
  *
@@ -36,32 +23,64 @@ import { ExternalLink } from "../../utils/components/ExternalLinks";
  *  AboutSessionModal component
  */
 
+import React from "react";
+import { useSelector } from "react-redux";
+
+import EntityHeader from "../../components/entityHeader/EntityHeader";
+import Time from "../../utils/helpers/Time";
+import {
+  InfoCircle,
+  Modal,
+  ModalBody,
+  ModalHeader,
+} from "../../utils/ts-wrappers";
+import { EntityType } from "../../components/entities/Entities";
+import { ACCESS_LEVELS } from "../../api-client";
+import { NotebookServerRow } from "../Notebooks.present";
+import { Notebook, ProjectMetadata } from "./Session";
+import { ExternalLink } from "../../components/ExternalLinks";
+import { Docs } from "../../utils/constants/Docs";
+
+import "./SessionModal.css";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export interface AboutSessionModalProp {
-  toggleModal: Function;
+  toggleModal: Function; // eslint-disable-line @typescript-eslint/ban-types
   isOpen: boolean;
   projectMetadata: ProjectMetadata;
   notebook: Notebook;
 }
-const AboutSessionModal = ({ toggleModal, isOpen, projectMetadata, notebook }: AboutSessionModalProp) => {
-  const slug = projectMetadata.path_with_namespace ?? projectMetadata.pathWithNamespace;
+const AboutSessionModal = ({
+  toggleModal,
+  isOpen,
+  projectMetadata,
+  notebook,
+}: AboutSessionModalProp) => {
+  const slug =
+    projectMetadata.path_with_namespace ?? projectMetadata.pathWithNamespace;
   const projectHeader = (
     <div>
       <h3 className="text-rk-text-light">Project</h3>
       <EntityHeader
-        title={projectMetadata.title}
-        visibility={projectMetadata.visibility}
-        description={projectMetadata.description}
+        creators={projectMetadata.owner ? [projectMetadata.owner] : []}
+        description={{ value: projectMetadata.description }}
+        devAccess={projectMetadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
+        fullPath={
+          projectMetadata.path_with_namespace ??
+          projectMetadata.pathWithNamespace
+        }
+        gitUrl={projectMetadata.externalUrl}
+        imageUrl={projectMetadata.avatarUrl}
         itemType={"project" as EntityType}
+        labelCaption={"Updated"}
+        showFullHeader={false}
         slug={slug}
         tagList={projectMetadata.tagList}
-        creators={projectMetadata.owner ? [projectMetadata.owner] : []}
-        labelCaption={"Updated"}
         timeCaption={projectMetadata.lastActivityAt}
-        launchNotebookUrl={""}
-        sessionAutostartUrl={""}
-        devAccess={projectMetadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
+        title={projectMetadata.title}
         url={`projects/${slug}`}
-        showFullHeader={false}
+        visibility={projectMetadata.visibility}
       />
     </div>
   );
@@ -79,12 +98,16 @@ const AboutSessionModal = ({ toggleModal, isOpen, projectMetadata, notebook }: A
       <div className="d-flex flex-column gap-1">
         <ExternalLink
           className="mx-1 text-rk-green text-decoration-none d-flex align-items-center gap-2"
-          role="link" url="https://renku.readthedocs.io/en/latest/topic-guides/session-basics.html">
+          role="link"
+          url={Docs.rtdTopicGuide("sessions/session-basics.html")}
+        >
           <InfoCircle /> How to use sessions
         </ExternalLink>
         <ExternalLink
           className="mx-1 text-rk-green text-decoration-none d-flex align-items-center gap-2"
-          role="link" url="https://renku.readthedocs.io/en/latest/introduction/index.html">
+          role="link"
+          url={Docs.READ_THE_DOCS_INTRODUCTION}
+        >
           <InfoCircle /> About Renku
         </ExternalLink>
       </div>
@@ -96,8 +119,17 @@ const AboutSessionModal = ({ toggleModal, isOpen, projectMetadata, notebook }: A
       isOpen={isOpen}
       className="about-modal"
       scrollable={true}
-      toggle={() => { toggleModal(); }}>
-      <ModalHeader className="bg-body header-multiline" toggle={() => { toggleModal(); }} data-cy="modal-header" >
+      toggle={() => {
+        toggleModal();
+      }}
+    >
+      <ModalHeader
+        className="bg-body header-multiline"
+        toggle={() => {
+          toggleModal();
+        }}
+        data-cy="modal-header"
+      >
         About
       </ModalHeader>
       <ModalBody className="bg-body">
@@ -116,11 +148,19 @@ interface SessionHeaderProp {
 }
 function SessionHeader({ notebook }: SessionHeaderProp) {
   const validAnnotations = Object.keys(notebook.data.annotations)
-    .filter(key => key.startsWith("renku.io"))
-    .reduce((obj:any, key: any) => { obj[key] = notebook.data.annotations[key]; return obj; }, {});
+    .filter((key) => key.startsWith("renku.io"))
+    .reduce((obj: any, key: any) => {
+      obj[key] = notebook.data.annotations[key];
+      return obj;
+    }, {});
   const resources = notebook.data.resources?.requests;
-  const startTime = Time.toIsoTimezoneString(notebook.data.started, "datetime-short");
-  const commits = useSelector((state: any) => state.stateModel.notebooks.data.commits);
+  const startTime = Time.toIsoTimezoneString(
+    notebook.data.started,
+    "datetime-short"
+  );
+  const commits = useSelector(
+    (state: any) => state.stateModel.notebooks.data.commits
+  );
   const logs = useSelector((state: any) => state.stateModel.notebooks.logs);
 
   return (
@@ -135,7 +175,8 @@ function SessionHeader({ notebook }: SessionHeaderProp) {
       status={notebook.data.status}
       url={notebook.data.url}
       showMenu={false}
-    />);
+    />
+  );
 }
 
 export { AboutSessionModal };

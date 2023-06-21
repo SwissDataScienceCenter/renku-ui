@@ -1,13 +1,22 @@
 /* DO WE NEED THIS??? */
 .footer .navbar .nav-link {
-    padding: 0.5rem;
-    white-space: nowrap;
+  padding: 0.5rem;
+  white-space: nowrap;
 }
 
 .icons-menu a {
-    vertical-align: middle;
-    outline-style: none;
+  vertical-align: middle;
+  outline-style: none;
 }
 .icons-menu svg {
-    outline-style: none;
+  outline-style: none;
+}
+
+.menu-right {
+  margin: auto;
+  flex-grow: 0;
+}
+
+.menu-right ul {
+  justify-content: space-between;
 }

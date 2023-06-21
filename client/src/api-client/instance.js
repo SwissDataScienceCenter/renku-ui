@@ -21,44 +21,23 @@
 import { renkuFetch } from "./utils";
 
 function addInstanceMethods(client) {
-  client.getNamespaces = async (per_page = 100) => {
-    const url = `${client.baseUrl}/namespaces`;
-    let headers = client.getBasicHeaders();
-    headers.append("Content-Type", "application/json");
-    const queryParams = { per_page };
-    const options = { method: "GET", headers, queryParams };
-    const namespacesIterator = client.clientIterableFetch(url, { options });
-
-    let namespaces = [], pagination = {}, error = false;
-    try {
-      for await (const namespacesPage of namespacesIterator) {
-        namespaces = [...namespaces, ...namespacesPage.data];
-        pagination = { ...namespacesPage.pagination, done: false };
-      }
-      pagination.done = true;
-    }
-    catch (exception) {
-      error = exception;
-    }
-    finally {
-      return { data: namespaces, pagination, error };
-    }
-  };
-
   client.getGroupByPath = (path) => {
     const headers = client.getBasicHeaders();
     const urlEncodedPath = encodeURIComponent(path);
     return client.clientFetch(`${client.baseUrl}/groups/${urlEncodedPath}`, {
       method: "GET",
-      headers
+      headers,
     });
   };
 
   client.isValidUrlForIframe = async (url) => {
-    const response = await renkuFetch(`${client.baseUrl}/allows-iframe/${encodeURIComponent(url)}`, {
-      method: "GET",
-      headers: new Headers({ "Accept": "application/json" })
-    });
+    const response = await renkuFetch(
+      `${client.baseUrl}/allows-iframe/${encodeURIComponent(url)}`,
+      {
+        method: "GET",
+        headers: new Headers({ Accept: "application/json" }),
+      }
+    );
     const data = await response.json();
     return data?.isIframeValid ?? false;
   };

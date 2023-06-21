@@ -20,8 +20,8 @@ import React, { Fragment } from "react";
 
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader } from "reactstrap";
-import { TimeCaption } from "../utils/components/TimeCaption";
-import { Pagination } from "../utils/components/Pagination";
+import { TimeCaption } from "../components/TimeCaption";
+import { Pagination } from "../components/Pagination";
 
 function createDateGradient() {
   const now = new Date();
@@ -31,137 +31,166 @@ function createDateGradient() {
   return { twoH, oneD, twoD };
 }
 
-function TileListGuide(props) {
+function TileListGuide() {
   const dateGradient = createDateGradient();
-  return <Fragment>
-    <h3>Tile lists</h3>
-    <p>Use tile lists show information compactly.
-    </p>
-    <div className="list-group list-group-horizontal">
-      <Link to="#" className="list-group-item list-group-item-action active" aria-current="true">
-        <div className="d-flex w-100 justify-content-between">
-          <h5 className="mb-1">Heading</h5>
-          <TimeCaption time={dateGradient.twoH} />
-        </div>
-        <p className="mb-1">Some placeholder content in a paragraph.</p>
-        <small>And some small print.</small>
-      </Link>
-      <Link to="#" className="list-group-item list-group-item-action">
-        <div className="d-flex w-100 justify-content-between">
-          <h5 className="mb-1">Heading</h5>
-          <TimeCaption time={dateGradient.oneD} />
-        </div>
-        <p className="mb-1">Some placeholder content in a paragraph.</p>
-        <small className="text-muted">And some muted small print.</small>
-      </Link>
-      <Link to="#" className="list-group-item list-group-item-action">
-        <div className="d-flex w-100 justify-content-between">
-          <h5 className="mb-1">Heading</h5>
-          <TimeCaption time={dateGradient.twoD} />
-        </div>
-        <p className="mb-1">Some placeholder content in a paragraph.</p>
-        <small className="text-muted">And some muted small print.</small>
-      </Link>
-    </div>
-  </Fragment>;
+  return (
+    <Fragment>
+      <h3>Tile lists</h3>
+      <p>Use tile lists show information compactly.</p>
+      <div className="list-group list-group-horizontal">
+        <Link
+          to="#"
+          className="list-group-item list-group-item-action active"
+          aria-current="true"
+        >
+          <div className="d-flex w-100 justify-content-between">
+            <h5 className="mb-1">Heading</h5>
+            <TimeCaption time={dateGradient.twoH} />
+          </div>
+          <p className="mb-1">Some placeholder content in a paragraph.</p>
+          <small>And some small print.</small>
+        </Link>
+        <Link to="#" className="list-group-item list-group-item-action">
+          <div className="d-flex w-100 justify-content-between">
+            <h5 className="mb-1">Heading</h5>
+            <TimeCaption time={dateGradient.oneD} />
+          </div>
+          <p className="mb-1">Some placeholder content in a paragraph.</p>
+          <small className="text-muted">And some muted small print.</small>
+        </Link>
+        <Link to="#" className="list-group-item list-group-item-action">
+          <div className="d-flex w-100 justify-content-between">
+            <h5 className="mb-1">Heading</h5>
+            <TimeCaption time={dateGradient.twoD} />
+          </div>
+          <p className="mb-1">Some placeholder content in a paragraph.</p>
+          <small className="text-muted">And some muted small print.</small>
+        </Link>
+      </div>
+    </Fragment>
+  );
 }
 
-function RowListGuide(props) {
+function RowListGuide() {
   const dateGradient = createDateGradient();
-  return <Fragment>
-    <h3>Row lists</h3>
-    <p>Use row lists if there is information to show that cannot be easily
-      summarized or shortened.
-    </p>
-    <div className="list-group">
-      <Link to="#" className="list-group-item list-group-item-action active" aria-current="true">
-        <div className="d-flex w-100 justify-content-between">
-          <h5 className="mb-1">List group item heading</h5>
-          <TimeCaption time={dateGradient.twoH} />
-        </div>
-        <p className="mb-1">Some placeholder content in a paragraph.</p>
-        <small>And some small print.</small>
-      </Link>
-      <Link to="#" className="list-group-item list-group-item-action">
-        <div className="d-flex w-100 justify-content-between">
-          <h5 className="mb-1">List group item heading</h5>
-          <TimeCaption time={dateGradient.oneD} />
-        </div>
-        <p className="mb-1">Some placeholder content in a paragraph.</p>
-        <small className="text-muted">And some muted small print.</small>
-      </Link>
-      <Link to="#" className="list-group-item list-group-item-action">
-        <div className="d-flex w-100 justify-content-between">
-          <h5 className="mb-1">List group item heading</h5>
-          <TimeCaption time={dateGradient.twoD} />
-        </div>
-        <p className="mb-1">Some placeholder content in a paragraph.</p>
-        <small className="text-muted">And some muted small print.</small>
-      </Link>
-    </div>
-  </Fragment>;
+  return (
+    <Fragment>
+      <h3>Row lists</h3>
+      <p>
+        Use row lists if there is information to show that cannot be easily
+        summarized or shortened.
+      </p>
+      <div className="list-group">
+        <Link
+          to="#"
+          className="list-group-item list-group-item-action active"
+          aria-current="true"
+        >
+          <div className="d-flex w-100 justify-content-between">
+            <h5 className="mb-1">List group item heading</h5>
+            <TimeCaption time={dateGradient.twoH} />
+          </div>
+          <p className="mb-1">Some placeholder content in a paragraph.</p>
+          <small>And some small print.</small>
+        </Link>
+        <Link to="#" className="list-group-item list-group-item-action">
+          <div className="d-flex w-100 justify-content-between">
+            <h5 className="mb-1">List group item heading</h5>
+            <TimeCaption time={dateGradient.oneD} />
+          </div>
+          <p className="mb-1">Some placeholder content in a paragraph.</p>
+          <small className="text-muted">And some muted small print.</small>
+        </Link>
+        <Link to="#" className="list-group-item list-group-item-action">
+          <div className="d-flex w-100 justify-content-between">
+            <h5 className="mb-1">List group item heading</h5>
+            <TimeCaption time={dateGradient.twoD} />
+          </div>
+          <p className="mb-1">Some placeholder content in a paragraph.</p>
+          <small className="text-muted">And some muted small print.</small>
+        </Link>
+      </div>
+    </Fragment>
+  );
 }
 
-function PaginationGuide(props) {
-  const onPageChange = () => {};
-  return <Fragment>
-    <h3>Pagination</h3>
-    <Pagination currentPage={2} perPage={10} totalItems={100} onPageChange={onPageChange}
-      className="d-flex justify-content-center rk-search-pagination"/>
-  </Fragment>;
+function PaginationGuide() {
+  const onPageChange = () => {
+    // eslint-disable-line @typescript-eslint/no-empty-function
+  };
+  return (
+    <Fragment>
+      <h3>Pagination</h3>
+      <Pagination
+        currentPage={2}
+        perPage={10}
+        totalItems={100}
+        onPageChange={onPageChange}
+        className="d-flex justify-content-center rk-search-pagination"
+      />
+    </Fragment>
+  );
 }
 
-function TablesGuide(props) {
-  return <Fragment>
-    <h3>Tables</h3>
-    <p>Use tables to show tables of information like metadata fields and
-      values. In this case, no need to use &ldquo;:&rdquo; to end the row header.</p>
-    <table>
-      <tbody>
-        <tr>
-          <th scope="row">Field 1</th>
-          <td>value 1</td>
-        </tr>
-        <tr>
-          <th scope="row">Field 2</th>
-          <td>value 2</td>
-        </tr>
-      </tbody>
-    </table>
-    <br />
-    <p>It may make sense to set off the table with a title using a card.</p>
-    <Card className="border-rk-light">
-      <CardHeader className="bg-white p-3 ps-4"><b>A table in a card</b></CardHeader>
-      <CardBody style={{ overflow: "auto" }} className="p-4">
-        <table>
-          <tbody>
-            <tr>
-              <th scope="row">Field 1</th>
-              <td>value 1</td>
-            </tr>
-            <tr>
-              <th scope="row">Field 2</th>
-              <td>value 2</td>
-            </tr>
-          </tbody>
-        </table>
-      </CardBody>
-    </Card>
-  </Fragment>;
+function TablesGuide() {
+  return (
+    <Fragment>
+      <h3>Tables</h3>
+      <p>
+        Use tables to show tables of information like metadata fields and
+        values. In this case, no need to use &ldquo;:&rdquo; to end the row
+        header.
+      </p>
+      <table>
+        <tbody>
+          <tr>
+            <th scope="row">Field 1</th>
+            <td>value 1</td>
+          </tr>
+          <tr>
+            <th scope="row">Field 2</th>
+            <td>value 2</td>
+          </tr>
+        </tbody>
+      </table>
+      <br />
+      <p>It may make sense to set off the table with a title using a card.</p>
+      <Card>
+        <CardHeader className="bg-white p-3 ps-4">
+          <b>A table in a card</b>
+        </CardHeader>
+        <CardBody style={{ overflow: "auto" }} className="p-4">
+          <table>
+            <tbody>
+              <tr>
+                <th scope="row">Field 1</th>
+                <td>value 1</td>
+              </tr>
+              <tr>
+                <th scope="row">Field 2</th>
+                <td>value 2</td>
+              </tr>
+            </tbody>
+          </table>
+        </CardBody>
+      </Card>
+    </Fragment>
+  );
 }
 
-
-function ListsGuide(props) {
-  return <Fragment>
-    <h2>Lists and Tables</h2>
-    <TileListGuide />
-    <br />
-    <RowListGuide />
-    <br />
-    <PaginationGuide />
-    <br />
-    <TablesGuide />
-  </Fragment>;
+function ListsGuide() {
+  return (
+    <Fragment>
+      <h2>Lists and Tables</h2>
+      <TileListGuide />
+      <br />
+      <RowListGuide />
+      <br />
+      <PaginationGuide />
+      <br />
+      <TablesGuide />
+    </Fragment>
+  );
 }
 
 export default ListsGuide;

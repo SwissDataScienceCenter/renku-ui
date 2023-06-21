@@ -23,49 +23,64 @@
  *  Coordinator for the application.
  */
 
-import React, { Component, Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
+import { Redirect } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useSelector } from "react-redux";
 
-import Project from "./project/Project";
+import { Project } from "./project";
 import { ProjectList } from "./project/list";
 import { NewProject } from "./project/new";
 import DatasetList from "./dataset/list/DatasetList.container";
-import { AnonymousHome, Landing, RenkuNavBar, FooterNavbar } from "./landing";
+import { AnonymousHome, RenkuNavBar, FooterNavbar } from "./landing";
 import { Notebooks } from "./notebooks";
 import { Login, LoginHelper } from "./authentication";
 import Help from "./help";
-import NotFound from "./not-found";
+import { NotFound } from "./not-found";
 import ShowDataset from "./dataset/Dataset.container";
 import { Cookie, Privacy } from "./privacy";
 import { NotificationsManager, NotificationsPage } from "./notifications";
 import { StyleGuide } from "./styleguide";
 import { Url } from "./utils/helpers/url";
 import { Unavailable } from "./Maintenance";
-import "./App.css";
-import { Loader } from "./utils/components/Loader";
-import { AddDataset } from "./dataset/addtoproject/DatasetAdd.container";
+import { Loader } from "./components/Loader";
+import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
+import SearchPage from "./features/kgSearch/KgSearchPage";
+import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
+import { Dashboard } from "./features/dashboard/Dashboard";
+
+import "./App.css";
+import "react-toastify/dist/ReactToastify.css";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
-  const classContainer = !fullSize ? "container-xxl py-4 mt-2 renku-container" : "w-100";
+  const classContainer = !fullSize
+    ? "container-xxl py-4 mt-2 renku-container"
+    : "w-100";
   return <div className={classContainer}>{children}</div>;
 };
 
 function CentralContentContainer(props) {
-  const { notifications, user } = props;
+  const { notifications, user, socket } = props;
 
-  if (!props.user.logged && (props.location.pathname === Url.get(Url.pages.landing))) {
-    return <AnonymousHome client={props.client}
-      homeCustomized={props.params["HOMEPAGE"]}
-      user={props.user}
-      model={props.model}
-      location={props.location}
-      params={props.params} />;
+  if (
+    !props.user.logged &&
+    props.location.pathname === Url.get(Url.pages.landing)
+  ) {
+    return (
+      <AnonymousHome
+        client={props.client}
+        homeCustomized={props.params["HOMEPAGE"]}
+        user={props.user}
+        model={props.model}
+        location={props.location}
+        params={props.params}
+      />
+    );
   }
 
   // check anonymous sessions settings
@@ -77,176 +92,302 @@ function CentralContentContainer(props) {
     location: props.location,
   };
 
-  return <div className="d-flex flex-grow-1">
-    <AppContext.Provider value={appContext}>
-      <Helmet>
-        <title>Reproducible Data Science | Open Research | Renku</title>
-      </Helmet>
-      <Switch>
-        <Route exact path="/login" render={
-          p => <ContainerWrap><Login key="login" {...p} {...props} /></ContainerWrap>} />
-        <Route exact path={Url.get(Url.pages.landing)} render={
-          p => (props.user.logged) ?
-            <ContainerWrap>
-              <Landing.Home
-                key="landing" welcomePage={props.params["WELCOME_PAGE"]}
-                user={props.user}
+  return (
+    <div className="d-flex flex-grow-1">
+      <AppContext.Provider value={appContext}>
+        <Helmet>
+          <title>Reproducible Data Science | Open Research | Renku</title>
+        </Helmet>
+        <Switch>
+          <Route
+            exact
+            path="/login"
+            render={(p) => (
+              <ContainerWrap>
+                <Login key="login" {...p} {...props} />
+              </ContainerWrap>
+            )}
+          />
+          <Route
+            exact
+            path={Url.get(Url.pages.landing)}
+            render={() =>
+              props.user.logged ? (
+                <ContainerWrap>
+                  <Dashboard
+                    model={props.model}
+                    user={props.user}
+                    client={props.client}
+                  />
+                </ContainerWrap>
+              ) : null
+            }
+          />
+          <Route
+            path={Url.get(Url.pages.help)}
+            render={(p) => (
+              <ContainerWrap>
+                <Help key="help" {...p} {...props} />
+              </ContainerWrap>
+            )}
+          />
+          <Route
+            path={Url.get(Url.pages.search)}
+            render={() => (
+              <ContainerWrap>
+                <SearchPage
+                  key="kg-search"
+                  userName={props.user?.data?.name}
+                  isLoggedUser={props.user.logged}
+                  model={props.model}
+                />
+              </ContainerWrap>
+            )}
+          />
+          <Route
+            path={Url.get(Url.pages.inactiveKgProjects)}
+            render={(p) =>
+              props.user?.logged ? (
+                <ContainerWrap>
+                  <InactiveKGProjectsPage
+                    key="-inactive-kg-projects"
+                    socket={socket}
+                  />
+                </ContainerWrap>
+              ) : (
+                <NotFound {...p} />
+              )
+            }
+          />
+          <Route
+            exact
+            path={[
+              Url.get(Url.pages.projects),
+              Url.get(Url.pages.projects.starred),
+              Url.get(Url.pages.projects.all),
+            ]}
+            render={(p) => (
+              <ContainerWrap>
+                <ProjectList
+                  key="projects"
+                  user={props.user}
+                  client={props.client}
+                  statusSummary={props.statusSummary}
+                  {...p}
+                />
+              </ContainerWrap>
+            )}
+          />
+          <Route
+            exact
+            path={Url.get(Url.pages.project.new)}
+            render={(p) => (
+              <ContainerWrap>
+                <NewProject
+                  key="newProject"
+                  model={props.model}
+                  user={props.user}
+                  client={props.client}
+                  {...p}
+                />
+              </ContainerWrap>
+            )}
+          />
+          <Route
+            path="/projects/:subUrl+"
+            render={(p) => (
+              <Project.View
+                key="project/view"
                 client={props.client}
+                params={props.params}
                 model={props.model}
-                {...p} />
-            </ContainerWrap> : null
-        } />
-        <Route path={Url.get(Url.pages.help)} render={
-          p => <ContainerWrap><Help key="help" {...p} {...props} /></ContainerWrap>} />
-        <Route exact
-          path={[Url.get(Url.pages.projects), Url.get(Url.pages.projects.starred), Url.get(Url.pages.projects.all)]}
-          render={p => <ContainerWrap><ProjectList
-            key="projects"
-            user={props.user}
-            client={props.client}
-            statusSummary={props.statusSummary}
-            {...p}
-          /></ContainerWrap>}
-        />
-        <Route exact path={Url.get(Url.pages.project.new)} render={
-          p => <ContainerWrap><NewProject
-            key="newProject"
-            model={props.model}
-            user={props.user}
-            {...p}
-          /></ContainerWrap>}
-        />
-        <Route path="/projects/:subUrl+" render={
-          p => <Project.View
-            key="project/view"
-            client={props.client}
-            params={props.params}
-            model={props.model}
-            user={props.user}
-            blockAnonymous={blockAnonymous}
-            notifications={notifications}
-            {...p}
-          />}
-        />
-        <Route exact path="/sessions" render={
-          p => <ContainerWrap><Notebooks
-            key="sessions"
-            standalone={true}
-            client={props.client}
-            model={props.model}
-            blockAnonymous={blockAnonymous}
-            {...p}
-          /></ContainerWrap>}
-        />
-        <Route path="/datasets/:identifier/add" render={
-          p => <AddDataset
-            key="addDatasetNew"
-            insideProject={false}
-            identifier={p.match.params?.identifier?.replaceAll("-", "")}
-            datasets={p.datasets}
-            model={props.model}
-          />}
-        />
-        <Route path="/datasets/:identifier" render={
-          p => <ShowDataset
-            key="datasetPreview" {...p}
-            insideProject={false}
-            identifier={p.match.params?.identifier?.replaceAll("-", "")}
-            client={props.client}
-            projectsUrl="/projects"
-            selectedDataset={p.match.params.datasetId}
-            datasetCoordinator={new DatasetCoordinator(props.client, props.model.subModel("dataset"))}
-            logged={props.user.logged}
-            model={props.model}
-          />}
-        />
-        <Route path="/datasets" render={
-          p => <ContainerWrap><DatasetList key="datasets"
-            client={props.client}
-            model={props.model}
-            {...p}
-          /></ContainerWrap>}
-        />
-        <Route path="/privacy" render={
-          p => <ContainerWrap><Privacy key="privacy"
-            params={props.params}
-            {...p}
-          /></ContainerWrap>}
-        />
-        <Route path="/notifications" render={
-          p => <ContainerWrap><NotificationsPage key="notifications"
-            client={props.client}
-            model={props.model}
-            notifications={notifications}
-            {...p}
-          /></ContainerWrap>}
-        />
-        <Route path="/style-guide" render={
-          p => <ContainerWrap><StyleGuide key="style-guide"
-            baseUrl="/style-guide"
-            {...p}
-          /></ContainerWrap>}
-        />
-        <Route path="*" render={p => <NotFound {...p} />} />
-      </Switch>
-    </AppContext.Provider>
-  </div>;
+                user={props.user}
+                blockAnonymous={blockAnonymous}
+                notifications={notifications}
+                socket={socket}
+                {...p}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/sessions"
+            render={(p) =>
+              !user.logged ? (
+                <ContainerWrap>
+                  <Notebooks
+                    key="sessions"
+                    standalone={true}
+                    client={props.client}
+                    model={props.model}
+                    blockAnonymous={blockAnonymous}
+                    {...p}
+                  />
+                </ContainerWrap>
+              ) : (
+                <Redirect to="/" />
+              )
+            }
+          />
+          <Route
+            path="/datasets/:identifier/add"
+            render={(p) => (
+              <DatasetAddToProject
+                key="addDatasetNew"
+                insideProject={false}
+                identifier={p.match.params?.identifier?.replaceAll("-", "")}
+                datasets={p.datasets}
+                model={props.model}
+              />
+            )}
+          />
+          <Route
+            path="/datasets/:identifier"
+            render={(p) => (
+              <ShowDataset
+                key="datasetPreview"
+                {...p}
+                insideProject={false}
+                identifier={p.match.params?.identifier?.replaceAll("-", "")}
+                client={props.client}
+                projectsUrl="/projects"
+                selectedDataset={p.match.params.datasetId}
+                datasetCoordinator={
+                  new DatasetCoordinator(
+                    props.client,
+                    props.model.subModel("dataset")
+                  )
+                }
+                logged={props.user.logged}
+                model={props.model}
+              />
+            )}
+          />
+          <Route
+            path="/datasets"
+            render={(p) => (
+              <ContainerWrap>
+                <DatasetList
+                  key="datasets"
+                  client={props.client}
+                  model={props.model}
+                  {...p}
+                />
+              </ContainerWrap>
+            )}
+          />
+          <Route
+            path="/privacy"
+            render={(p) => (
+              <ContainerWrap>
+                <Privacy key="privacy" params={props.params} {...p} />
+              </ContainerWrap>
+            )}
+          />
+          <Route
+            path="/notifications"
+            render={(p) => (
+              <ContainerWrap>
+                <NotificationsPage
+                  key="notifications"
+                  client={props.client}
+                  model={props.model}
+                  notifications={notifications}
+                  {...p}
+                />
+              </ContainerWrap>
+            )}
+          />
+          <Route
+            path="/style-guide"
+            render={(p) => (
+              <ContainerWrap>
+                <StyleGuide key="style-guide" baseUrl="/style-guide" {...p} />
+              </ContainerWrap>
+            )}
+          />
+          <Route path="*" render={(p) => <NotFound {...p} />} />
+        </Switch>
+      </AppContext.Provider>
+    </div>
+  );
 }
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+function App(props) {
+  const [webSocket, setWebSocket] = useState(null);
+  const [notifications, setNotifications] = useState(null);
 
-    // Setup notification system
-    const getLocation = () => this.props.location;
-    this.notifications = new NotificationsManager(this.props.model, this.props.client, getLocation);
+  useEffect(() => {
+    const getLocation = () => props.location;
+    const notificationManager = new NotificationsManager(
+      props.model,
+      props.client,
+      getLocation
+    );
+    setNotifications(notificationManager);
 
     // Setup authentication listeners and notifications
     LoginHelper.setupListener();
-    LoginHelper.triggerNotifications(this.notifications);
+    LoginHelper.triggerNotifications(notifications);
 
     // Setup WebSocket channel
-    this.webSocket = null;
     let webSocketUrl = props.client.uiserverUrl + "/ws";
     if (webSocketUrl.startsWith("http"))
       webSocketUrl = "ws" + webSocketUrl.substring(4);
     // ? adding a small delay to allow session cookie to be saved to local browser before sending requests
-    setTimeout(
-      () => { this.webSocket = setupWebSocket(webSocketUrl, this.props.model); return; },
-      1000
+    setWebSocket(
+      setupWebSocket(
+        webSocketUrl,
+        props.model,
+        getLocation,
+        props.client,
+        notificationManager
+      )
     );
-  }
+  }, []); // eslint-disable-line
 
-  render() {
-    // Avoid rendering the application while authenticating the user
-    const { user } = this.props;
-    if (!user.fetched && user.fetching) {
-      return (
-        <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
-          <h3 className="text-center text-primary">Checking user data</h3>
-          <Loader />
-        </section>
-      );
-    }
-    else if (user.error) {
-      return (<Unavailable model={this.props.model} statuspageId={this.props.statuspageId} />);
-    }
-
+  // Avoid rendering the application while authenticating the user
+  const user = useSelector((state) => state.stateModel.user);
+  if (!user?.fetched && user?.fetching) {
     return (
-      <Fragment>
-        <Route render={p =>
-          (this.props.user.logged) || (p.location.pathname !== Url.get(Url.pages.landing)) ?
-            <RenkuNavBar {...p} {...this.props} notifications={this.notifications} /> :
-            null
-        } />
-        <CentralContentContainer notifications={this.notifications} socket={this.webSocket} {...this.props} />
-        <Route render={props => <FooterNavbar {...props} params={this.props.params} />} />
-        <Route render={props => <Cookie {...props} params={this.props.params} />} />
-        <ToastContainer />
-      </Fragment>
+      <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
+        <h3 className="text-center text-primary">Checking user data</h3>
+        <Loader />
+      </section>
     );
-
+  } else if (user.error) {
+    return (
+      <Unavailable model={props.model} statuspageId={props.statuspageId} />
+    );
   }
+
+  return (
+    <Fragment>
+      <Route
+        render={(p) =>
+          user.logged || p.location.pathname !== Url.get(Url.pages.landing) ? (
+            <RenkuNavBar {...p} {...props} notifications={notifications} />
+          ) : null
+        }
+      />
+      <CentralContentContainer
+        notifications={notifications}
+        socket={webSocket}
+        {...props}
+      />
+      <Route
+        render={(propsRoute) => (
+          <FooterNavbar {...propsRoute} params={props.params} />
+        )}
+      />
+      <Route
+        render={(propsRoute) => (
+          <Cookie {...propsRoute} params={props.params} />
+        )}
+      />
+      <ToastContainer />
+    </Fragment>
+  );
 }
 
 export default App;

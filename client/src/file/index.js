@@ -23,9 +23,8 @@
  *  Module for file rendering in Renku.
  */
 
-
-import { FilePreview, JupyterButton, ShowFile } from "./File.container";
+import { JupyterButton, ShowFile } from "./File.container";
+import FilePreview from "./FilePreview";
 import { FileLineage } from "./Lineage.container";
-import KnowledgeGraphStatus from "./KnowledgeGraphStatus.container";
 
-export { FilePreview, FileLineage, JupyterButton, ShowFile, KnowledgeGraphStatus };
+export { FilePreview, FileLineage, JupyterButton, ShowFile };

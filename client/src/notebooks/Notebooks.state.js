@@ -30,7 +30,6 @@ import { notebooksSchema } from "../model";
 import { parseINIString, sleep } from "../utils/helpers/HelperFunctions";
 import { formatEnvironmentVariables } from "../api-client/utils";
 
-
 const POLLING_INTERVAL = 3000;
 const POLLING_CI = 5; // in seconds, for the sleep function
 const IMAGE_BUILD_JOB = "image_build";
@@ -42,7 +41,7 @@ const CI_TYPES = {
   anonymous: "anonymous",
   pinned: "pinned",
   logged: "logged",
-  owner: "owner"
+  owner: "owner",
 };
 
 const CI_STAGES = {
@@ -50,19 +49,17 @@ const CI_STAGES = {
   image: "image",
   pipelines: "pipelines",
   jobs: "jobs",
-  looping: "looping"
+  looping: "looping",
 };
 
 const CI_STATUSES = {
   wrong: "wrong",
   success: "success",
   running: "running",
-  failure: "failure"
+  failure: "failure",
 };
 
-const VALID_SETTINGS = [
-  "image"
-];
+const VALID_SETTINGS = ["image"];
 
 const SESSIONS_PREFIX = "interactive.";
 
@@ -70,19 +67,27 @@ const ExpectedAnnotations = {
   domain: "renku.io",
   "renku.io": {
     required: [
-      "branch", "commit-sha", "default_image_used", "namespace", "gitlabProjectId", "projectName", "repository"
+      "branch",
+      "commit-sha",
+      "default_image_used",
+      "namespace",
+      "gitlabProjectId",
+      "projectName",
+      "repository",
     ],
     default: {
-      "branch": "unknown",
+      branch: "unknown",
       "commit-sha": "00000000",
-      "default_image_used": false,
-      "namespace": "unknown",
-      "gitlabProjectId": 0,
-      "projectName": "unknown",
-      "repository": "https://none"
-    }
-  }
+      default_image_used: false,
+      namespace: "unknown",
+      gitlabProjectId: 0,
+      projectName: "unknown",
+      repository: "https://none",
+    },
+  },
 };
+
+const LOG_ERROR_KEY = "__error";
 
 const NotebooksHelper = {
   /**
@@ -94,20 +99,27 @@ const NotebooksHelper = {
   cleanAnnotations: (annotations, domain = ExpectedAnnotations.domain) => {
     let cleaned = {};
     const prefix = `${domain}/`;
-    ExpectedAnnotations[domain].required.forEach(annotation => {
-      if (annotations[prefix + annotation] !== undefined) {
-        let value = annotations[prefix + annotation];
+    ExpectedAnnotations[domain].required.forEach((annotation) => {
+      if (
+        annotations[prefix + annotation] !== undefined ||
+        annotations[annotation] !== undefined
+      ) {
+        let value = annotations[prefix + annotation] ?? annotations[annotation];
         // convert text boolean where a boolean is expected
         if (annotation === "default_image_used") {
-          const origValue = annotations[prefix + annotation];
-          if (origValue && typeof origValue === "string" && origValue.toLowerCase() === "true")
+          const origValue =
+            annotations[prefix + annotation] ?? annotations[annotation];
+          if (
+            (origValue &&
+              typeof origValue === "string" &&
+              origValue.toLowerCase() === "true") ||
+            origValue === true
+          )
             value = true;
-          else
-            value = false;
+          else value = false;
         }
         cleaned[annotation] = value;
-      }
-      else {
+      } else {
         cleaned[annotation] = ExpectedAnnotations[domain].default[annotation];
       }
     });
@@ -122,34 +134,34 @@ const NotebooksHelper = {
    * @param {object} projectOptions - project options as returned by the "GET config.show" API.
    * @param {string} [projectPrefix] - project option key prefix used by config to identify session options.
    */
-  getProjectDefault: (notebooksOptions, projectOptions, projectPrefix = SESSIONS_PREFIX) => {
+  getProjectDefault: (
+    notebooksOptions,
+    projectOptions,
+    projectPrefix = SESSIONS_PREFIX
+  ) => {
     let returnObject = {};
-    if (!notebooksOptions || !projectOptions)
-      return returnObject;
+    if (!notebooksOptions || !projectOptions) return returnObject;
 
     // Conversion helper
     const convert = (value) => {
       // return boolean
-      if (value === true || value === false)
-        return value;
+      if (value === true || value === false) return value;
 
       // convert stringy boolean
-      if (value && value.toLowerCase() === "true")
-        return true;
-
-      else if (value && value.toLowerCase() === "false")
-        return false;
-
+      if (value && value.toLowerCase() === "true") return true;
+      else if (value && value.toLowerCase() === "false") return false;
       // convert stringy number
-      else if (!isNaN(value))
-        return parseFloat(value);
+      else if (!isNaN(value)) return parseFloat(value);
 
       return value;
     };
 
     // Define options
-    const sortedOptions = Object.keys(notebooksOptions)
-      .sort((a, b) => parseInt(notebooksOptions[a].order) - parseInt(notebooksOptions[b].order));
+    const sortedOptions = Object.keys(notebooksOptions).sort(
+      (a, b) =>
+        parseInt(notebooksOptions[a].order) -
+        parseInt(notebooksOptions[b].order)
+    );
     let unknownOptions = [];
 
     // Get RenkuLab defaults
@@ -160,12 +172,15 @@ const NotebooksHelper = {
     }, {});
 
     // Overwrite renku defaults
-    if (projectOptions && projectOptions.default && Object.keys(projectOptions.default)) {
+    if (
+      projectOptions &&
+      projectOptions.default &&
+      Object.keys(projectOptions.default)
+    ) {
       for (const [key, value] of Object.entries(projectOptions.default)) {
         if (key.startsWith(projectPrefix)) {
           const option = key.substring(projectPrefix.length);
-          if (!sortedOptions.includes(option))
-            unknownOptions.push(option);
+          if (!sortedOptions.includes(option)) unknownOptions.push(option);
           globalDefaults[option] = convert(value);
         }
       }
@@ -173,12 +188,15 @@ const NotebooksHelper = {
 
     // Get project defaults
     let projectDefaults = [];
-    if (projectOptions && projectOptions.config && Object.keys(projectOptions.config)) {
+    if (
+      projectOptions &&
+      projectOptions.config &&
+      Object.keys(projectOptions.config)
+    ) {
       for (const [key, value] of Object.entries(projectOptions.config)) {
         if (key.startsWith(projectPrefix)) {
           const option = key.substring(projectPrefix.length);
-          if (!sortedOptions.includes(option))
-            unknownOptions.push(option);
+          if (!sortedOptions.includes(option)) unknownOptions.push(option);
           projectDefaults[option] = convert(value);
         }
       }
@@ -187,12 +205,12 @@ const NotebooksHelper = {
     return {
       defaults: {
         global: globalDefaults,
-        project: projectDefaults
+        project: projectDefaults,
       },
       options: {
         known: sortedOptions,
-        unknown: unknownOptions
-      }
+        unknown: unknownOptions,
+      },
     };
   },
 
@@ -209,36 +227,27 @@ const NotebooksHelper = {
     let parsedData;
     try {
       parsedData = parseINIString(data);
-    }
-    catch (error) {
+    } catch (error) {
       parsedData = {};
     }
     // check single props when the environment sections is available
     let parsedOptions = parsedData[RENKU_INI_SECTION];
     // check also the previous section name for compatibility reasons
-    if (!parsedOptions)
-      parsedOptions = parsedData[RENKU_INI_SECTION_LEGACY];
+    if (!parsedOptions) parsedOptions = parsedData[RENKU_INI_SECTION_LEGACY];
     if (parsedOptions) {
-      Object.keys(parsedOptions).forEach(parsedOption => {
+      Object.keys(parsedOptions).forEach((parsedOption) => {
         // treat "defaultUrl" as "default_url" to allow name consistency in the the .ini file
         let option = parsedOption;
-        if (parsedOption === "defaultUrl")
-          option = "default_url";
+        if (parsedOption === "defaultUrl") option = "default_url";
 
         // convert boolean and numbers
         let value = parsedOptions[parsedOption];
         if (value && value.toLowerCase() === "true")
           projectOptions[option] = true;
-
         else if (value && value.toLowerCase() === "false")
           projectOptions[option] = false;
-
-        else if (!isNaN(value))
-          projectOptions[option] = parseFloat(value);
-
-        else
-          projectOptions[option] = value;
-
+        else if (!isNaN(value)) projectOptions[option] = parseFloat(value);
+        else projectOptions[option] = value;
       });
     }
 
@@ -255,33 +264,32 @@ const NotebooksHelper = {
   checkOptionValidity: (globalOptions, currentOption, currentValue) => {
     // default_url is a special case and any string will fit
     if (currentOption === "default_url") {
-      if (typeof currentValue === "string")
-        return true;
+      if (typeof currentValue === "string") return true;
       return false;
     }
 
     const globalOption = globalOptions[currentOption];
     // the project option must be part of the global options
-    if (!globalOption)
-      return false;
+    if (!globalOption) return false;
 
     // non-enum options require only type-check
     if (globalOption.type !== "enum") {
       if (globalOption.type === "boolean") {
-        if (typeof currentValue === "boolean")
-          return true;
+        if (typeof currentValue === "boolean") return true;
         return false;
-      }
-      else if (globalOption.type === "float" || globalOption.type === "int") {
-        if (typeof currentValue === "number")
-          return true;
+      } else if (globalOption.type === "float" || globalOption.type === "int") {
+        if (typeof currentValue === "number") return true;
         return false;
       }
       return false;
     }
 
     // enum options must have a value valid for the corresponding global options
-    if (globalOption.options && globalOption.options.length && globalOption.options.includes(currentValue))
+    if (
+      globalOption.options &&
+      globalOption.options.length &&
+      globalOption.options.includes(currentValue)
+    )
       return true;
 
     return false;
@@ -294,12 +302,9 @@ const NotebooksHelper = {
    * @param {string} value - setting value
    */
   checkSettingValidity: (name, value) => {
-    if (!name || typeof name !== "string" || !name.length)
-      return false;
-    if (!VALID_SETTINGS.includes(name))
-      return false;
-    if (!value || typeof value !== "string" || !value.length)
-      return false;
+    if (!name || typeof name !== "string" || !name.length) return false;
+    if (!VALID_SETTINGS.includes(name)) return false;
+    if (!value || typeof value !== "string" || !value.length) return false;
 
     return true;
   },
@@ -318,11 +323,10 @@ const NotebooksHelper = {
       stage: null,
       error: null,
       ongoing: null,
-      available: false
+      available: false,
     };
 
-    if (ci.stage == null)
-      return returnObject;
+    if (ci.stage == null) return returnObject;
     if (ci.stage === CI_STAGES.starting) {
       returnObject.stage = CI_STAGES.starting;
       returnObject.ongoing = true;
@@ -335,11 +339,9 @@ const NotebooksHelper = {
     if (currentCi.error != null) {
       returnObject.error = currentCi.error;
       returnObject.ongoing = false;
-    }
-    else if (!currentCi.fetched) {
+    } else if (!currentCi.fetched) {
       returnObject.ongoing = true;
-    }
-    else if (ci.stage === CI_STAGES.image || ci.stage === CI_STAGES.looping) {
+    } else if (ci.stage === CI_STAGES.image || ci.stage === CI_STAGES.looping) {
       // Can't be available if we are checking pipelines in another stage
       returnObject.available = currentCi.available ? true : false;
     }
@@ -351,8 +353,7 @@ const NotebooksHelper = {
 
   getCiJobStatus: (job) => {
     if (job && job["id"]) {
-      if (job.status === "success")
-        return CI_STATUSES.success;
+      if (job.status === "success") return CI_STATUSES.success;
       if (["running", "pending", "stopping"].includes(job.status))
         return CI_STATUSES.running;
       if (["failed", "canceled"].includes(job.status))
@@ -366,7 +367,7 @@ const NotebooksHelper = {
   ciTypes: CI_TYPES,
   pollingInterval: POLLING_INTERVAL,
   sessionConfigPrefix: SESSIONS_PREFIX,
-  validSettings: VALID_SETTINGS
+  validSettings: VALID_SETTINGS,
 };
 
 class NotebooksCoordinator {
@@ -383,7 +384,7 @@ class NotebooksCoordinator {
     this.model.setObject({
       notebooks: {
         fetched: null,
-        lastParameters: null
+        lastParameters: null,
       },
       filters: {
         namespace: null,
@@ -396,16 +397,16 @@ class NotebooksCoordinator {
       pipelines: {
         fetched: null,
         lastParameters: null,
-        lastMainId: null
+        lastMainId: null,
       },
       ci: {
         type: null,
         stage: null,
-        error: null
+        error: null,
       },
       options: {
-        fetched: null
-      }
+        fetched: null,
+      },
     });
   }
 
@@ -422,18 +423,18 @@ class NotebooksCoordinator {
    */
   setNotebookFilters(data = {}) {
     let filters = {};
-    if (data.namespace !== undefined)
-      filters.namespace = data.namespace;
-    if (data.project !== undefined)
-      filters.project = data.project;
-    if (data.defaultBranch)
-      filters.defaultBranch = data.defaultBranch;
+    if (data.namespace !== undefined) filters.namespace = data.namespace;
+    if (data.project !== undefined) filters.project = data.project;
+    if (data.defaultBranch) filters.defaultBranch = data.defaultBranch;
     if (data.branch !== undefined)
-      data.branch instanceof Object ? filters.branch = data.branch : filters.branch = { name: data.branch };
+      data.branch instanceof Object
+        ? (filters.branch = data.branch)
+        : (filters.branch = { name: data.branch });
     if (data.commit !== undefined)
-      data.commit instanceof Object ? filters.commit = data.commit : filters.commit = { id: data.commit };
-    if (data.filePath !== undefined)
-      filters.filePath = data.filePath;
+      data.commit instanceof Object
+        ? (filters.commit = data.commit)
+        : (filters.commit = { id: data.commit });
+    if (data.filePath !== undefined) filters.filePath = data.filePath;
 
     this.model.setObject({ filters });
   }
@@ -441,7 +442,7 @@ class NotebooksCoordinator {
   setBranch(branch) {
     this.model.setObject({
       notebooks: { fetched: null },
-      filters: { branch: { $set: branch } }
+      filters: { branch: { $set: branch } },
     });
   }
 
@@ -449,7 +450,7 @@ class NotebooksCoordinator {
     this.model.setObject({
       notebooks: { fetched: null },
       pipelines: { fetched: null },
-      filters: { commit: { $set: commit } }
+      filters: { commit: { $set: commit } },
     });
     this.fetchNotebooks();
   }
@@ -457,7 +458,7 @@ class NotebooksCoordinator {
   setNotebookFilePath(filePath) {
     this.model.setObject({
       filePath: filePath,
-      filters: { filePath }
+      filters: { filePath },
     });
   }
 
@@ -486,44 +487,50 @@ class NotebooksCoordinator {
     return {
       namespace: filters.namespace,
       project: filters.project,
-      branch: filters.branch && filters.branch.name ? filters.branch.name : null,
-      commit: filters.commit && filters.commit.id ? filters.commit.id : null
+      branch:
+        filters.branch && filters.branch.name ? filters.branch.name : null,
+      commit: filters.commit && filters.commit.id ? filters.commit.id : null,
     };
   }
-
 
   // * Fetch data * //
   fetchNotebooks() {
     const fetching = this.model.get("notebooks.fetching");
-    if (fetching)
-      return;
+    if (fetching) return;
 
     // get filters
     const filters = this.getQueryFilters();
     this.model.setObject({
       notebooks: {
         fetching: true,
-        lastParameters: JSON.stringify(filters)
-      }
+        lastParameters: JSON.stringify(filters),
+      },
     });
 
     // get user status
-    const anonymous = this.userModel.get("logged") ?
-      false :
-      true;
+    const anonymous = this.userModel.get("logged") ? false : true;
 
     // get notebooks
-    return this.client.getNotebookServers(
-      filters.namespace, filters.project, filters.branch, null, anonymous)
-      .then(resp => {
+    return this.client
+      .getNotebookServers(
+        filters.namespace,
+        filters.project,
+        filters.branch,
+        null,
+        anonymous
+      )
+      .then((resp) => {
         let updatedNotebooks = { fetching: false };
         // check if result is still valid
         if (!this.model.get("filters.discard")) {
           const filters = this.getQueryFilters();
-          if (this.model.get("notebooks.lastParameters") === JSON.stringify(filters)) {
+          if (
+            this.model.get("notebooks.lastParameters") ===
+            JSON.stringify(filters)
+          ) {
             updatedNotebooks.fetched = new Date();
             const currentServers = this.model.get("notebooks.all");
-            if (!(_.isEqual(resp.data, currentServers)))
+            if (!_.isEqual(resp.data, currentServers))
               updatedNotebooks.all = { $set: resp.data };
           }
           // TODO: re-invoke `fetchNotebooks()` immediately if parameters are outdated
@@ -531,25 +538,22 @@ class NotebooksCoordinator {
         this.model.setObject({ notebooks: updatedNotebooks });
         return resp.data;
       })
-      .catch(error => {
+      .catch((error) => {
         this.model.set("notebooks.fetching", false);
         throw error;
       });
   }
 
   async fetchNotebookOptions(skip = false) {
-    if (!skip)
-      await this.fetchProjectOptions();
+    if (!skip) await this.fetchProjectOptions();
     const oldData = this.model.get("options.global");
-    if (Object.keys(oldData).length !== 0)
-      return;
+    if (Object.keys(oldData).length !== 0) return;
 
     // get user status
-    const anonymous = this.userModel.get("logged") ?
-      false :
-      true;
+    const anonymous = this.userModel.get("logged") ? false : true;
 
-    return this.client.getNotebookServerOptions(anonymous)
+    return this.client
+      .getNotebookServerOptions(anonymous)
       .then((globalOptions) => {
         this.model.set("options.global", globalOptions);
         this.setDefaultOptions(globalOptions, null);
@@ -562,34 +566,35 @@ class NotebooksCoordinator {
   async fetchProjectOptions() {
     // prepare query data and reset warnings
     const filters = this.getQueryFilters();
-    const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
+    const projectId = `${encodeURIComponent(filters.namespace)}%2F${
+      filters.project
+    }`;
     this.model.setObject({
       options: {
         fetching: true,
-        warnings: { $set: [] }
-      }
+        warnings: { $set: [] },
+      },
     });
     // keep track of filter data at query time
     const requestFiltersString = JSON.stringify(filters);
-    await this.client.getRepositoryFile(projectId, RENKU_INI_PATH, filters.commit, "raw")
-      .catch(error => {
+    await this.client
+      .getRepositoryFile(projectId, RENKU_INI_PATH, filters.commit, "raw")
+      .catch((error) => {
         // treat a non existing file as an empty string
-        if (error.case !== API_ERRORS.notFoundError)
-          throw error;
+        if (error.case !== API_ERRORS.notFoundError) throw error;
         return "";
       })
-      .then(data => {
+      .then((data) => {
         // verify that filter data at response time are not for an old query
         const currentFilters = this.getQueryFilters();
-        if (requestFiltersString !== JSON.stringify(currentFilters))
-          return;
+        if (requestFiltersString !== JSON.stringify(currentFilters)) return;
 
         // parse data, save them and try to set user options
         const projectOptions = NotebooksHelper.parseProjectOptions(data);
         const optionsObject = {
           fetching: false,
           fetched: new Date(),
-          project: { $set: projectOptions }
+          project: { $set: projectOptions },
         };
         this.model.setObject({ options: optionsObject });
 
@@ -601,46 +606,45 @@ class NotebooksCoordinator {
   setDefaultOptions(globalOptions, projectOptions) {
     // verify if all the pieces are available and get what's missing
     if (!globalOptions) {
-      const pendingGlobalOptions = this.model.get("options.global") === {} ? true : false;
-      if (pendingGlobalOptions)
-        return;
+      const pendingGlobalOptions =
+        this.model.get("options.global") === {} ? true : false;
+      if (pendingGlobalOptions) return;
       globalOptions = this.model.get("options.global");
     }
     if (!projectOptions) {
       const pendingProjectOptions = this.model.get("options.fetching");
-      if (pendingProjectOptions)
-        return;
+      if (pendingProjectOptions) return;
       projectOptions = this.model.get("options.project");
     }
 
     // Apply default options without overwriting previous selection
     let filterOptions = this.model.get("filters.options");
     const filledOptions = Object.keys(filterOptions);
-    Object.keys(globalOptions).forEach(option => {
+    Object.keys(globalOptions).forEach((option) => {
       if (!filledOptions.includes(option))
         filterOptions[option] = globalOptions[option].default;
-
     });
 
     // Overwrite default options with project options wherever possible
     let warnings = [];
-    Object.keys(projectOptions).forEach(option => {
+    Object.keys(projectOptions).forEach((option) => {
       const optionValue = projectOptions[option];
-      if (NotebooksHelper.checkOptionValidity(globalOptions, option, optionValue))
+      if (
+        NotebooksHelper.checkOptionValidity(globalOptions, option, optionValue)
+      )
         filterOptions[option] = optionValue;
       else if (!NotebooksHelper.checkSettingValidity(option, optionValue))
         warnings = warnings.concat(option);
     });
     this.model.setObject({
       filters: { options: { $set: filterOptions } },
-      options: { warnings: { $set: warnings } }
+      options: { warnings: { $set: warnings } },
     });
   }
 
   fetchLogs(serverName, full = false) {
     let lines = 250;
-    if (full)
-      lines = 0;
+    if (full) lines = 0;
     let logs = { fetching: true };
     if (this.model.get("logs.reference") !== serverName && !full) {
       logs.reference = serverName;
@@ -648,8 +652,12 @@ class NotebooksCoordinator {
       logs.fetched = null;
     }
     this.model.setObject({ logs });
-    return this.client.getNotebookServerLogs(serverName, lines)
-      .catch(e => "Logs currently not available. Try again in a minute...")
+    return this.client
+      .getNotebookServerLogs(serverName, lines)
+      .catch(() => ({
+        [LOG_ERROR_KEY]:
+          "Logs currently not available. Try again in a minute...",
+      }))
       .then((data) => {
         let updatedLogs = { fetching: false };
         if (!full) {
@@ -665,19 +673,24 @@ class NotebooksCoordinator {
     // get the commit for the target server
     const environments = this.model.get("notebooks.all");
     const target = environments[serverName];
-    if (!target || !target.annotations)
-      return;
+    if (!target || !target.annotations) return;
     const annotations = NotebooksHelper.cleanAnnotations(target.annotations);
-    if (!annotations || !annotations["commit-sha"] || !annotations["gitlabProjectId"])
+    if (
+      !annotations ||
+      !annotations["commit-sha"] ||
+      !annotations["gitlabProjectId"]
+    )
       return;
     const commitSha = annotations["commit-sha"];
     const gitlabProjectId = annotations["gitlabProjectId"];
 
     // verify if the commit data are already cached
     const oldCommits = this.model.get("data.commits");
-    if (Object.keys(oldCommits).includes(commitSha) &&
+    if (
+      Object.keys(oldCommits).includes(commitSha) &&
       oldCommits[commitSha].data &&
-      oldCommits[commitSha].data.project_id)
+      oldCommits[commitSha].data.project_id
+    )
       return { ...oldCommits[commitSha].data };
 
     let commitData = {};
@@ -686,13 +699,14 @@ class NotebooksCoordinator {
 
     let fetched = null;
     try {
-      commitData = await this.client.getRepositoryCommit(gitlabProjectId, commitSha);
+      commitData = await this.client.getRepositoryCommit(
+        gitlabProjectId,
+        commitSha
+      );
       fetched = new Date();
-    }
-    catch (error) {
+    } catch (error) {
       // TODO: add to notifications
-    }
-    finally {
+    } finally {
       commit = { data: commitData, fetched, fetching: false };
       this.model.setObject({ data: { commits: { [commitSha]: commit } } });
     }
@@ -704,26 +718,26 @@ class NotebooksCoordinator {
     // prevent double fetch
     if (!force) {
       const fetching = this.model.get("autosaves.fetching");
-      if (fetching)
-        return;
+      if (fetching) return;
     }
 
     // get filters
     const filters = this.getQueryFilters();
-    if (!filters.namespace || !filters.project)
-      return;
+    if (!filters.namespace || !filters.project) return;
     this.model.set("autosaves.fetching", true);
-    const response = await this.client.getProjectAutosaves(filters.namespace, filters.project);
+    const response = await this.client.getProjectAutosaves(
+      filters.namespace,
+      filters.project
+    );
     let autosavesData = { fetching: false, fetched: new Date() };
     if (response && response.autosaves) {
       autosavesData.error = null;
       autosavesData.list = { $set: response.autosaves };
       autosavesData.pvsSupport = response.pvsSupport;
-    }
-    else {
-      autosavesData.error = response.error ?
-        response.error :
-        response.toString();
+    } else {
+      autosavesData.error = response.error
+        ? response.error
+        : response.toString();
       autosavesData.list = { $set: [] };
       autosavesData.pvsSupport = null;
     }
@@ -733,11 +747,13 @@ class NotebooksCoordinator {
 
   async deleteAutosave(autosave) {
     const filters = this.getQueryFilters();
-    if (!filters.namespace || !filters.project)
-      return;
-    return await this.client.deleteProjectAutosave(filters.namespace, filters.project, autosave);
+    if (!filters.namespace || !filters.project) return;
+    return await this.client.deleteProjectAutosave(
+      filters.namespace,
+      filters.project,
+      autosave
+    );
   }
-
 
   // * Handle notebooks polling * //
   startNotebookPolling(interval = POLLING_INTERVAL) {
@@ -770,8 +786,7 @@ class NotebooksCoordinator {
    */
   _checkTarget(expectedTarget) {
     const currentTarget = this.model.get("ci.target");
-    if (expectedTarget !== currentTarget)
-      return false;
+    if (expectedTarget !== currentTarget) return false;
     return true;
   }
 
@@ -781,15 +796,10 @@ class NotebooksCoordinator {
    * @returns {string}
    */
   _getErrorMessage(error) {
-    if (error?.errorData?.message)
-      return error.errorData.message;
-    if (error?.message)
-      return error.message;
-    if (error?.case)
-      return error.case;
-    return error ?
-      error.toString() :
-      false;
+    if (error?.errorData?.message) return error.errorData.message;
+    if (error?.message) return error.message;
+    if (error?.case) return error.case;
+    return error ? error.toString() : false;
   }
 
   /**
@@ -800,27 +810,26 @@ class NotebooksCoordinator {
    * @param {boolean} owner  - whether the user is project owner or not
    * @param {function} [problemCallback]  - callback to invoke when there is a problem
    */
-  async fetchOrPollCi(force = false, logged = null, owner = null, problemCallback = null) {
+  async fetchOrPollCi(
+    force = false,
+    logged = null,
+    owner = null,
+    problemCallback = null
+  ) {
     // Verify current commit and avoid re-fetching if not needed
     const filters = this.model.get("filters");
     const commit = filters?.commit?.id;
-    if (!commit)
-      return;
+    if (!commit) return;
     const previousCi = this.model.get("ci");
-    if (previousCi.target === commit && !force)
-      return;
+    if (previousCi.target === commit && !force) return;
 
     // Get basic information
     const options = this.model.get("options.project");
     let ciType;
-    if (options["image"])
-      ciType = CI_TYPES.pinned;
-    else if (!logged)
-      ciType = CI_TYPES.anonymous;
-    else if (!owner)
-      ciType = CI_TYPES.logged;
-    else
-      ciType = CI_TYPES.owner;
+    if (options["image"]) ciType = CI_TYPES.pinned;
+    else if (!logged) ciType = CI_TYPES.anonymous;
+    else if (!owner) ciType = CI_TYPES.logged;
+    else ciType = CI_TYPES.owner;
 
     // set up the basic object
     let ciObject = notebooksSchema.createInitialized().ci;
@@ -830,11 +839,12 @@ class NotebooksCoordinator {
     this.model.setObject({ ci: ciObject });
 
     // Check for image availability
-    const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
+    const projectId = `${encodeURIComponent(filters.namespace)}%2F${
+      filters.project
+    }`;
     if (ciType === CI_TYPES.pinned)
       this.checkRemoteImage(options["image"], commit, problemCallback);
-    else
-      this.checkCiImage(projectId, commit, problemCallback);
+    else this.checkCiImage(projectId, commit, problemCallback);
   }
 
   /**
@@ -867,37 +877,34 @@ class NotebooksCoordinator {
    */
   async fetchCiPipeline(projectId, expectedTarget) {
     // block fetching and falsify when the current target has changed
-    if (!this._checkTarget(expectedTarget))
-      return false;
+    if (!this._checkTarget(expectedTarget)) return false;
 
     let pipelineObject = { fetching: true };
     let pipelinesList = [];
 
     // return early if it's still fetching
     const fetching = this.model.get("ci.pipelines.fetching");
-    if (fetching)
-      return pipelinesList;
+    if (fetching) return pipelinesList;
 
     // start fetching and wait for the result
     this.model.setObject({ ci: { pipelines: pipelineObject } });
     try {
       pipelinesList = await this.client.getPipelines(projectId, expectedTarget);
       pipelineObject.error = null;
-    }
-    catch (e) {
+    } catch (e) {
       pipelineObject.error = this._getErrorMessage(e);
     }
     pipelineObject.list = { $set: pipelinesList };
-    pipelineObject.target = pipelinesList?.length === 1 ? pipelinesList[0] : null;
-    pipelineObject.available = !pipelineObject.error && pipelinesList?.length ? true : false;
+    pipelineObject.target =
+      pipelinesList?.length === 1 ? pipelinesList[0] : null;
+    pipelineObject.available =
+      !pipelineObject.error && pipelinesList?.length ? true : false;
     pipelineObject.fetching = false;
     pipelineObject.fetched = new Date();
     this.model.setObject({ ci: { pipelines: pipelineObject } });
 
     // return either the list or false if any error occurred
-    return pipelineObject.error ?
-      false :
-      pipelinesList;
+    return pipelineObject.error ? false : pipelinesList;
   }
 
   /**
@@ -911,9 +918,9 @@ class NotebooksCoordinator {
 
     // Get the pipelines, filtering for the one containing the target job (if any).
     const pipelines = this.model.get("ci.pipelines");
-    let pipelinesList = pipelines.target?.id ?
-      [pipelines.target] :
-      pipelines.list;
+    let pipelinesList = pipelines.target?.id
+      ? [pipelines.target]
+      : pipelines.list;
 
     // Get jobs from the pipelines
     let jobs = await this.fetchCiJobs(projectId, target, pipelinesList);
@@ -934,11 +941,12 @@ class NotebooksCoordinator {
       }
       if (status === CI_STATUSES.success)
         this.loopCiImage(projectId, target, problemCallback);
-      else if (problemCallback)
-        problemCallback();
-    }
-    else {
-      this.model.set("ci.jobs.error", "Unexpected errors with GitLab pipelines: duplicate jobs name");
+      else if (problemCallback) problemCallback();
+    } else {
+      this.model.set(
+        "ci.jobs.error",
+        "Unexpected errors with GitLab pipelines: duplicate jobs name"
+      );
       if (problemCallback) problemCallback();
     }
   }
@@ -950,35 +958,40 @@ class NotebooksCoordinator {
    * @param {object[]} pipelinesList - list of all the relevant pipelines
    * @param {boolean} reFetching -whether it's a re-try or not
    */
-  async fetchCiJobs(projectId, expectedTarget, pipelinesList, reFetching = false) {
+  async fetchCiJobs(
+    projectId,
+    expectedTarget,
+    pipelinesList,
+    reFetching = false
+  ) {
     // block fetching and falsify when the current target has changed
-    if (!this._checkTarget(expectedTarget))
-      return false;
+    if (!this._checkTarget(expectedTarget)) return false;
 
     let jobsList = [];
     let jobsObject = {};
-    if (reFetching)
-      jobsObject.reFetching = true;
-    else
-      jobsObject.fetching = true;
+    if (reFetching) jobsObject.reFetching = true;
+    else jobsObject.fetching = true;
 
     this.model.setObject({ ci: { jobs: jobsObject } });
     for (const pipeline of pipelinesList) {
       try {
         // check the jobs and break if we find the one we are looking for
-        const pipelineJobs = await this.client.getPipelineJobs(projectId, pipeline.id);
-        const imageJob = pipelineJobs.find(job => job.name === IMAGE_BUILD_JOB);
+        const pipelineJobs = await this.client.getPipelineJobs(
+          projectId,
+          pipeline.id
+        );
+        const imageJob = pipelineJobs.find(
+          (job) => job.name === IMAGE_BUILD_JOB
+        );
         jobsObject.error = null;
         if (imageJob) {
           jobsObject.target = imageJob;
           break;
-        }
-        else {
+        } else {
           jobsList = [...jobsList, ...pipelineJobs];
         }
-      }
-      // block on errors
-      catch (e) {
+      } catch (e) {
+        // block on errors
         jobsObject.error = this._getErrorMessage(e);
         break;
       }
@@ -988,14 +1001,13 @@ class NotebooksCoordinator {
     jobsObject.fetching = false;
     jobsObject.reFetching = false;
     jobsObject.fetched = new Date();
-    jobsObject.available = jobsObject.target || !jobsObject.error ? true : false;
+    jobsObject.available =
+      jobsObject.target || !jobsObject.error ? true : false;
     this.model.setObject({ ci: { jobs: jobsObject } });
 
     // return either an array with the target jobs (it's 1 or none) or false if error occurred
-    if (jobsObject.error)
-      return false;
-    else if (jobsObject.target)
-      return [jobsObject.target];
+    if (jobsObject.error) return false;
+    else if (jobsObject.target) return [jobsObject.target];
     return [];
   }
 
@@ -1007,8 +1019,7 @@ class NotebooksCoordinator {
    */
   async fetchCiJob(projectId, expectedTarget, jobId) {
     // block fetching and falsify when the current target has changed
-    if (!this._checkTarget(expectedTarget))
-      return false;
+    if (!this._checkTarget(expectedTarget)) return false;
 
     let jobsObject = { reFetching: true };
     this.model.setObject({ ci: { jobs: jobsObject } });
@@ -1017,9 +1028,8 @@ class NotebooksCoordinator {
     try {
       job = await this.client.getProjectJob(projectId, jobId);
       jobsObject.error = null;
-    }
-    // block on errors
-    catch (e) {
+    } catch (e) {
+      // block on errors
       jobsObject.error = this._getErrorMessage(e);
     }
 
@@ -1027,9 +1037,7 @@ class NotebooksCoordinator {
     jobsObject.reFetching = false;
     jobsObject.fetched = new Date();
     this.model.setObject({ ci: { jobs: jobsObject } });
-    return job?.id && !jobsObject.error ?
-      job :
-      false;
+    return job?.id && !jobsObject.error ? job : false;
   }
 
   /**
@@ -1057,18 +1065,20 @@ class NotebooksCoordinator {
       if (ciType !== CI_TYPES.anonymous) {
         // Check the pipelines for owners or logged users
         this.checkCiPipelines(projectId, target, problemCallback);
-      }
-      else {
+      } else {
         // Keep looping for images
         imageObject.error = registry.error;
       }
-    }
-    else if (registry?.id) {
+    } else if (registry?.id) {
       // save the registry id
       imageObject.registryId = registry.id;
 
       // fetch the image
-      const imageAvailable = await this.fetchCiImage(projectId, target, registry.id);
+      const imageAvailable = await this.fetchCiImage(
+        projectId,
+        target,
+        registry.id
+      );
       imageObject.fetching = false;
       imageObject.fetched = new Date();
       imageObject.available = imageAvailable ? true : false;
@@ -1077,15 +1087,13 @@ class NotebooksCoordinator {
         if (ciType !== CI_TYPES.anonymous) {
           // Check the pipelines for owners or logged users
           this.checkCiPipelines(projectId, target, problemCallback);
-        }
-        else {
+        } else {
           // Keep looping for images
           this.loopCiImage(projectId, target, problemCallback);
         }
       }
     }
   }
-
 
   /**
    * Fetch the image registry if the current ci target is the same passed as argument
@@ -1094,8 +1102,7 @@ class NotebooksCoordinator {
    */
   async fetchCiRegistry(projectId, expectedTarget) {
     // block fetching and falsify when the current target has changed
-    if (!this._checkTarget(expectedTarget))
-      return false;
+    if (!this._checkTarget(expectedTarget)) return false;
 
     let registries = [];
     let error = null;
@@ -1104,34 +1111,32 @@ class NotebooksCoordinator {
       // There should be at least 1 Docker registry
       if (!registries?.length) {
         error = "This project does not have any Docker image repository";
-      }
-      else if (registries?.length !== 1) {
+      } else if (registries?.length !== 1) {
         // The CI we define has no name
         // ! This is not totally reliable since users can change it. We should probably give it a Renku name
-        const filteredRegistries = registries.find(registry => registry.name === "");
+        const filteredRegistries = registries.find(
+          (registry) => registry.name === ""
+        );
         if (filteredRegistries?.id) {
           registries = [filteredRegistries];
           error = null;
+        } else {
+          error =
+            "The project has multiple Docker image repositories. We can't identify the correct one";
         }
-        else {
-          error = "The project has multiple Docker image repositories. We can't identify the correct one";
-        }
-      }
-      else {
+      } else {
         // If we have only 1 registry, we don't need to check anything else.
         error = null;
       }
-    }
-    catch (e) {
+    } catch (e) {
       error = this._getErrorMessage(e);
     }
 
     // return either the error or the id
-    return error ?
-      { error } :
-      { id: registries?.length === 1 ? registries[0]?.id : null };
+    return error
+      ? { error }
+      : { id: registries?.length === 1 ? registries[0]?.id : null };
   }
-
 
   /**
    * Fetch the pipeline if the current ci target is the same passed as argument
@@ -1141,21 +1146,22 @@ class NotebooksCoordinator {
    */
   async fetchCiImage(projectId, expectedTarget, registryId) {
     // block fetching and falsify when the current target has changed
-    if (!this._checkTarget(expectedTarget))
-      return false;
+    if (!this._checkTarget(expectedTarget)) return false;
 
     // let imageObject = { fetching: true };
     // this.model.setObject({ ci: { image: imageObject } });
 
     const commitShortSha = expectedTarget.substring(0, 7);
     try {
-      const image = await this.client.getRegistryTag(projectId, registryId, commitShortSha);
-      if (image?.location)
-        return true;
+      const image = await this.client.getRegistryTag(
+        projectId,
+        registryId,
+        commitShortSha
+      );
+      if (image?.location) return true;
       return false;
-    }
-    // block on errors
-    catch (e) {
+    } catch (e) {
+      // block on errors
       return this._getErrorMessage(e);
     }
   }
@@ -1178,11 +1184,12 @@ class NotebooksCoordinator {
       loopingObject.fetched = new Date();
       if (registry?.error || !registry?.id) {
         if (problemCallback) problemCallback();
-        loopingObject.error = registry.error ? registry.error : "Cannot find the project's Docker registry.";
+        loopingObject.error = registry.error
+          ? registry.error
+          : "Cannot find the project's Docker registry.";
         loopingObject.available = false;
         loopingObject.fetching = false;
-      }
-      else {
+      } else {
         registryId = registry.id;
       }
       this.model.setObject({ ci: { looping: loopingObject } });
@@ -1223,13 +1230,10 @@ class NotebooksCoordinator {
     this.model.setObject({ ci: { image: imageObject } });
     try {
       const imageAvailable = await this.client.getImageStatus(registryUrl);
-      if (imageAvailable)
-        imageObject.available = true;
-      else
-        imageObject.available = false;
+      if (imageAvailable) imageObject.available = true;
+      else imageObject.available = false;
       imageObject.error = null;
-    }
-    catch (e) {
+    } catch (e) {
       imageObject.available = false;
       imageObject.error = this._getErrorMessage(e);
     }
@@ -1248,47 +1252,66 @@ class NotebooksCoordinator {
     this.model.set("ci", notebooksSchema.createInitialized().ci);
   }
 
-
   // * Change notebook status * //
-  startServer() {
+  startServer(forceBaseImage = false) {
     const options = {
       serverOptions: this.model.get("filters.options"),
     };
     const cloudstorage = this.model.get("filters.objectStoresConfiguration");
-    if (cloudstorage.length > 0)
-      options["cloudstorage"] = cloudstorage;
+    if (cloudstorage.length > 0) options["cloudstorage"] = cloudstorage;
 
     const filters = this.model.get("filters");
     const namespace = filters.namespace;
     const project = filters.project;
-    const branch = filters.branch && filters.branch.name ? filters.branch.name : filters.defaultBranch;
-    const commit = filters.commit && filters.commit.id ? filters.commit.id : "latest";
+    const branch =
+      filters.branch && filters.branch.name
+        ? filters.branch.name
+        : filters.defaultBranch;
+    const commit =
+      filters.commit && filters.commit.id ? filters.commit.id : "latest";
     const projectOptions = this.model.get("options.project");
-    const image = projectOptions.image ?
-      projectOptions.image :
-      null;
-    const env_variables = formatEnvironmentVariables(this.model.get("filters.environment_variables"));
+    const image =
+      projectOptions.image && !forceBaseImage ? projectOptions.image : null;
+    const env_variables = formatEnvironmentVariables(
+      this.model.get("filters.environment_variables")
+    );
 
-    return this.client.startNotebook(namespace, project, branch, commit, image, options, env_variables);
+    return this.client.startNotebook(
+      namespace,
+      project,
+      branch,
+      commit,
+      image,
+      options,
+      env_variables
+    );
   }
 
   stopNotebook(serverName, force = false) {
     // manually set the state and temporarily throw away servers data until the promise resolves
     const updatedState = {
       filters: { discard: true },
-      notebooks: { all: { [serverName]: { status: { ready: false, stopping: true } } } }
+      notebooks: {
+        all: { [serverName]: { status: { ready: false, stopping: true } } },
+      },
     };
     this.model.setObject(updatedState);
-    return this.client.stopNotebookServer(serverName, force)
-      .then(response => {
+    return this.client
+      .stopNotebookServer(serverName, force)
+      .then((response) => {
         this.model.set("filters.discard", false);
         return response;
       })
-      .catch(error => {
+      .catch((error) => {
         this.model.set("filters.discard", false);
         throw error;
       });
   }
 }
 
-export { NotebooksHelper, ExpectedAnnotations, NotebooksCoordinator };
+export {
+  LOG_ERROR_KEY,
+  NotebooksHelper,
+  ExpectedAnnotations,
+  NotebooksCoordinator,
+};

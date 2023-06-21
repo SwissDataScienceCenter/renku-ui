@@ -23,10 +23,8 @@ class WsMessage {
 
   constructor(data: string | Record<string, unknown>, type: string) {
     this.timestamp = new Date();
-    if (typeof data === "string")
-      this.data = { message: data };
-    else
-      this.data = data;
+    if (typeof data === "string") this.data = { message: data };
+    else this.data = data;
     this.type = type;
   }
 
@@ -34,7 +32,7 @@ class WsMessage {
     return JSON.stringify({
       timestamp: this.timestamp,
       type: this.type,
-      data: this.data
+      data: this.data,
     });
   }
 }
@@ -46,15 +44,20 @@ interface WsServerMessage {
   data: Record<string, unknown>;
 }
 
-function checkWsServerMessage(obj: any): obj is WsServerMessage { // eslint-disable-line
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function checkWsServerMessage(obj: any): obj is WsServerMessage {
   return (
-    "timestamp" in obj && obj.timestamp != null &&
-    "scope" in obj && obj.scope != null &&
-    "type" in obj && obj.type != null &&
-    "data" in obj && obj.data != null && typeof obj.data === "object"
+    "timestamp" in obj &&
+    obj.timestamp != null &&
+    "scope" in obj &&
+    obj.scope != null &&
+    "type" in obj &&
+    obj.type != null &&
+    "data" in obj &&
+    obj.data != null &&
+    typeof obj.data === "object"
   );
 }
-
 
 export { checkWsServerMessage, WsMessage };
 export type { WsServerMessage };

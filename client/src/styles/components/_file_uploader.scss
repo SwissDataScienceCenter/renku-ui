@@ -1,39 +1,39 @@
-.table-files{
-	font-size:0.9rem;
-	font-weight: lighter;
-	table-layout: fixed;
+.table-files {
+  font-size: 0.9rem;
+  font-weight: lighter;
+  table-layout: fixed;
   width: 100%;
   white-space: nowrap;
 }
 
-.table-files thead{
-	background-color: #fafafa;
+.table-files thead {
+  background-color: #fafafa;
 }
 
-.table-files th{
-	padding-top:1em;
-	border-color:#ced4da !important;
+.table-files th {
+  padding-top: 1em;
+  border-color: #ced4da !important;
 }
 
-.table thead th{
-	border-bottom-width: 1px;
-	// border-color:#c4c4c4;
+.table thead th {
+  border-bottom-width: 1px;
+  // border-color:#c4c4c4;
 }
 
 .table > :not(:first-child) {
   border-top: 1px solid currentColor;
 }
 
-.table-files td{
-	overflow: unset;
-	text-overflow: unset;
-	 overflow: visible;
+.table-files td {
+  overflow: unset;
+  text-overflow: unset;
+  overflow: visible;
   white-space: normal;
   -ms-word-break: break-all;
   word-break: break-all;
   /* Non standard for webkit*/
   word-break: break-word;
-	-webkit-hyphens: auto;
+  -webkit-hyphens: auto;
   -moz-hyphens: auto;
   hyphens: auto;
   max-width: 400%;
@@ -45,7 +45,7 @@
 .dz-message button {
   border: none;
   background-color: transparent;
-  font-size:0.9rem;
+  font-size: 0.9rem;
   font-weight: lighter;
   color: var(--bs-body-color);
 }
@@ -65,8 +65,8 @@
   justify-content: center;
   margin-bottom: 10px;
   min-height: 127px;
-  background-color: #F3F3F3;
+  background-color: #f3f3f3;
   border-style: dashed;
-  border-color: #D3D3D3;
+  border-color: #d3d3d3;
   margin-top: 20px;
 }

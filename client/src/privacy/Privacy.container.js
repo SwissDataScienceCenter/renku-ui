@@ -49,8 +49,7 @@ class RoutedContent extends React.Component {
   // catch the anchor links and use the react route instead
   contentClickHandler = (e) => {
     const targetLink = e.target.closest("a");
-    if (!targetLink)
-      return;
+    if (!targetLink) return;
     e.preventDefault();
 
     // remove the local prefix to avoid repetition
@@ -78,19 +77,20 @@ class Cookie extends Component {
   render() {
     const { params, history } = this.props;
 
-    if (!params["PRIVACY_ENABLED"])
-      return null;
+    if (!params["PRIVACY_ENABLED"]) return null;
 
     // REF: https://www.npmjs.com/package/react-cookie-consent
-    const layout = params["PRIVACY_BANNER_LAYOUT"] ?
-      params["PRIVACY_BANNER_LAYOUT"] :
-      LAYOUT;
-    const content = params["PRIVACY_BANNER_CONTENT"] ?
-      atob(params["PRIVACY_BANNER_CONTENT"]) :
-      CONTENT;
-    const renderedContent = (<RoutedContent content={content} history={history} />);
+    const layout = params["PRIVACY_BANNER_LAYOUT"]
+      ? params["PRIVACY_BANNER_LAYOUT"]
+      : LAYOUT;
+    const content = params["PRIVACY_BANNER_CONTENT"]
+      ? atob(params["PRIVACY_BANNER_CONTENT"])
+      : CONTENT;
+    const renderedContent = (
+      <RoutedContent content={content} history={history} />
+    );
 
-    return (<CookieBanner layout={layout} content={renderedContent} />);
+    return <CookieBanner layout={layout} content={renderedContent} />;
   }
 }
 
@@ -98,11 +98,11 @@ class Privacy extends Component {
   render() {
     const { params } = this.props;
 
-    const content = params["PRIVACY_ENABLED"] ?
-      params["PRIVACY_STATEMENT"] :
-      null;
+    const content = params["PRIVACY_ENABLED"]
+      ? params["PRIVACY_STATEMENT"]
+      : null;
 
-    return (<PrivacyPresent content={content} />);
+    return <PrivacyPresent content={content} />;
   }
 }
 

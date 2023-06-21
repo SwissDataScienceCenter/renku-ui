@@ -100,21 +100,25 @@ function convertUnicodeToAscii(string) {
  * @param {bool} lower - convert to lowercase
  * @param {string} separator - string to replace invalid characters
  */
-function slugFromTitle(title, lower = false, unicodeConversion = false, separator = "-") {
+function slugFromTitle(
+  title,
+  lower = false,
+  unicodeConversion = false,
+  separator = "-"
+) {
   // eslint-disable-next-line
   // ? REF: https://github.com/gitlabhq/gitlabhq/blob/7942fe679107b5e73e0b359f000946dbbf2feb35/app/assets/javascripts/lib/utils/text_utility.js#L48-L65
-  const rawProjectName = lower ?
-    title.trim().toLowerCase() :
-    title.trim();
-  const convertedString = unicodeConversion ?
-    convertUnicodeToAscii(rawProjectName) :
-    rawProjectName;
+  const rawProjectName = lower ? title.trim().toLowerCase() : title.trim();
+  const convertedString = unicodeConversion
+    ? convertUnicodeToAscii(rawProjectName)
+    : rawProjectName;
   const slug = convertedString
     .replace(/[^a-zA-Z0-9-]+/g, separator) // remove invalid chars
-    .split(separator).filter(Boolean).join(separator); // remove separators duplicates
+    .split(separator)
+    .filter(Boolean)
+    .join(separator); // remove separators duplicates
 
-  if (slug === separator)
-    return "";
+  if (slug === separator) return "";
   return slug;
 }
 
@@ -125,25 +129,31 @@ function verifyTitleCharacters(title) {
 
 function getActiveProjectPathWithNamespace(currentPath) {
   try {
-    if (currentPath.includes("/projects/") && currentPath.split("/").length > 3 )
+    if (currentPath.includes("/projects/") && currentPath.split("/").length > 3)
       return currentPath.split("/")[2] + "/" + currentPath.split("/")[3];
     return null;
-  }
-  catch (TypeError) {
+  } catch (TypeError) {
     return null;
   }
 }
 
 function splitAutosavedBranches(branches) {
   const autosaved = branches
-    .filter(branch => branch.name.startsWith(AUTOSAVED_PREFIX))
-    .map(branch => {
+    .filter((branch) => branch.name.startsWith(AUTOSAVED_PREFIX))
+    .map((branch) => {
       let autosave = {};
       const autosaveData = branch.name.replace(AUTOSAVED_PREFIX, "").split("/");
-      [autosave.username, autosave.branch, autosave.commit, autosave.finalCommit] = autosaveData;
+      [
+        autosave.username,
+        autosave.branch,
+        autosave.commit,
+        autosave.finalCommit,
+      ] = autosaveData;
       return { ...branch, autosave };
     });
-  const standard = branches.filter(branch => !branch.name.startsWith(AUTOSAVED_PREFIX));
+  const standard = branches.filter(
+    (branch) => !branch.name.startsWith(AUTOSAVED_PREFIX)
+  );
   return { standard, autosaved };
 }
 
@@ -158,16 +168,17 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
     tables: true,
     tasklists: true, // eslint-disable-line
     disableForced4SpacesIndentedSublists: true, // eslint-disable-line
-    emoji: true
+    literalMidWordUnderscores: true,
+    emoji: true,
   };
   const showdownClasses = {
-    table: "table word-break-normal"
+    table: "table word-break-normal",
   };
   // Reference: https://github.com/showdownjs/showdown/wiki/Add-default-classes-for-each-HTML-element
-  const bindings = Object.keys(showdownClasses).map(key => ({
+  const bindings = Object.keys(showdownClasses).map((key) => ({
     type: "output",
     regex: new RegExp(`<${key}(.*?)(?:(class="([^"]*)")(.*))?>`, "g"),
-    replace: `<${key} $1 class="$3 ${showdownClasses[key]}" $4>`
+    replace: `<${key} $1 class="$3 ${showdownClasses[key]}" $4>`,
   }));
 
   const converter = new showdown.Converter({
@@ -180,17 +191,16 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
         throwOnError: false,
         displayMode: true,
         errorColor: "var(--bs-danger)",
-        delimiters: [
-          { left: "$", right: "$", display: false },
-        ],
+        delimiters: [{ left: "$", right: "$", display: false }],
       }),
-    ]
+    ],
   });
   if (singleLine && markdown) {
     const lineBreakers = ["<br>", "<br />", "<br/>", "\n"];
-    const breakPosition = Math.max(...lineBreakers.map(elem => markdown.indexOf(elem)));
-    if (breakPosition !== -1)
-      markdown = markdown.substring(0, breakPosition);
+    const breakPosition = Math.max(
+      ...lineBreakers.map((elem) => markdown.indexOf(elem))
+    );
+    if (breakPosition !== -1) markdown = markdown.substring(0, breakPosition);
   }
 
   // adding gitlab delimiters support https://docs.gitlab.com/ee/user/markdown.html#math
@@ -206,10 +216,13 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
 }
 
 function simpleHash(str) {
-  let i, l, hVal = 0x0128a9d4;
+  let i,
+    l,
+    hVal = 0x0128a9d4;
   for (i = 0, l = str.length; i < l; i++) {
     hVal ^= str.charCodeAt(i);
-    hVal += (hVal << 1) + (hVal << 4) + (hVal << 7) + (hVal << 8) + (hVal << 24);
+    hVal +=
+      (hVal << 1) + (hVal << 4) + (hVal << 7) + (hVal << 8) + (hVal << 24);
   }
   return ("0000000" + (hVal >>> 0).toString(16)).substr(-8);
 }
@@ -218,7 +231,7 @@ function parseINIString(data) {
   const regex = {
     section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
     param: /^\s*([^=]+?)\s*=\s*(.*?)\s*$/,
-    comment: /^\s*;.*$/
+    comment: /^\s*;.*$/,
   };
   const lines = data.split(/[\r\n]+/);
   let section = null;
@@ -226,21 +239,15 @@ function parseINIString(data) {
   lines.forEach(function (line) {
     if (regex.comment.test(line)) {
       return;
-    }
-    else if (regex.param.test(line)) {
+    } else if (regex.param.test(line)) {
       let match = line.match(regex.param);
-      if (section)
-        value[section][match[1]] = match[2];
-      else
-        value[match[1]] = match[2];
-
-    }
-    else if (regex.section.test(line)) {
+      if (section) value[section][match[1]] = match[2];
+      else value[match[1]] = match[2];
+    } else if (regex.section.test(line)) {
       let match = line.match(regex.section);
       value[match[1]] = {};
       section = match[1];
-    }
-    else if (line.length === 0 && section) {
+    } else if (line.length === 0 && section) {
       section = null;
     }
   });
@@ -254,8 +261,7 @@ function parseINIString(data) {
  * @param {number} decimals - Number of decimals
  */
 function formatBytes(bytes, decimals = 2) {
-  if (bytes === 0)
-    return "0 Bytes";
+  if (bytes === 0) return "0 Bytes";
 
   // this prevents the function to break on negative numbers, even if they are not particularly interesting
   let sign = "";
@@ -269,10 +275,11 @@ function formatBytes(bytes, decimals = 2) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  if (isNaN(i))
-    return i.toString();
+  if (isNaN(i)) return i.toString();
 
-  return sign + parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+  return (
+    sign + parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
+  );
 }
 
 /**
@@ -285,11 +292,8 @@ function groupBy(list, keyGetter) {
   list.forEach((item) => {
     const key = keyGetter(item);
     const collection = map.get(key);
-    if (!collection)
-      map.set(key, [item]);
-    else
-      collection.push(item);
-
+    if (!collection) map.set(key, [item]);
+    else collection.push(item);
   });
   return map;
 }
@@ -301,13 +305,21 @@ function gitLabUrlFromProfileUrl(webUrl) {
 }
 
 function isURL(str) {
-  var pattern = new RegExp("^(https?:\\/\\/)?" + // protocol
-    "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-    "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-    "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-    "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-    "(\\#[-a-z\\d_]*)?$", "i"); // fragment locator
+  var pattern = new RegExp(
+    "^(https?:\\/\\/)?" + // protocol
+      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+      "(\\#[-a-z\\d_]*)?$",
+    "i"
+  ); // fragment locator
   return !!pattern.test(str);
+}
+
+function hasSpecialCharacters(text) {
+  const spCharts = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/; // eslint-disable-line
+  return spCharts.test(text);
 }
 
 /**
@@ -320,11 +332,9 @@ function isURL(str) {
  * @param {number} [tolerance] - Maximum age (in seconds) of the data before refreshing them. Default is 10.
  */
 function refreshIfNecessary(fetching, fetched, action, tolerance = 10) {
-  if (fetching)
-    return;
+  if (fetching) return;
   const now = new Date();
-  if (!fetched || now - fetched > tolerance * 1000)
-    return action();
+  if (!fetched || now - fetched > tolerance * 1000) return action();
 }
 
 /**
@@ -333,7 +343,7 @@ function refreshIfNecessary(fetching, fetched, action, tolerance = 10) {
  * @example await sleep(0.5) // sleep for 0.5 seconds
  */
 async function sleep(seconds) {
-  await new Promise(r => setTimeout(r, seconds * 1000));
+  await new Promise((r) => setTimeout(r, seconds * 1000));
 }
 
 /**
@@ -343,15 +353,13 @@ async function sleep(seconds) {
  * @param {string} name -  name for the .zip file
  */
 const generateZip = async (files, name) => {
-  if (!files.length && !name)
-    return;
+  if (!files.length && !name) return;
 
   const JSZip = await require("jszip");
-  const { saveAs } = await import ("file-saver");
+  const { saveAs } = await require("file-saver");
   const zip = new JSZip();
 
-  for (const file of files)
-    zip.file(file?.name, file?.content);
+  for (const file of files) zip.file(file?.name, file?.content);
 
   const content = await zip.generateAsync({ type: "blob" });
   saveAs(content, `${name}.zip`);
@@ -362,8 +370,8 @@ const generateZip = async (files, name) => {
  * @param {string} text - text to capitalize
  * @example capitalizeFirstLetter("hello world!") returns "Hello World"
  */
-const capitalizeFirstLetter = (text) => text.charAt(0).toUpperCase() + text.toLowerCase().slice(1);
-
+const capitalizeFirstLetter = (text) =>
+  text.charAt(0).toUpperCase() + text.toLowerCase().slice(1);
 
 /**
  * Capitalize a string.
@@ -375,7 +383,7 @@ function toCapitalized(aString) {
 
 /**
  * computeVisibilities.
- * @param {[string]} options
+ * @param {string[]} options
  */
 const computeVisibilities = (options) => {
   if (options.includes("private")) {
@@ -384,8 +392,7 @@ const computeVisibilities = (options) => {
       disabled: ["public", "internal"],
       default: "private",
     };
-  }
-  else if (options.includes("internal")) {
+  } else if (options.includes("internal")) {
     return {
       visibilities: ["private", "internal"],
       disabled: ["public"],
@@ -395,7 +402,7 @@ const computeVisibilities = (options) => {
   return {
     visibilities: ["private", "internal", "public"],
     disabled: [],
-    default: "public"
+    default: "public",
   };
 };
 
@@ -404,44 +411,46 @@ function stylesByItemType(itemType) {
     case "project":
       return {
         colorText: "text-rk-green",
-        bgColor: "rk-green"
+        bgColor: "rk-green",
       };
     case "dataset":
       return {
         colorText: "text-rk-pink",
-        bgColor: "rk-pink"
+        bgColor: "rk-pink",
       };
     case "workflow":
       return {
         colorText: "text-rk-yellow",
-        bgColor: "rk-yellow"
+        bgColor: "rk-yellow",
       };
     default:
       return {
         colorText: "text-rk-green",
-        bgColor: "rk-green"
+        bgColor: "rk-green",
       };
   }
 }
 
-/**
- * Check renku core support based on partial Url and minimum expected version
- * @param {string | number} minimumVersion - required version.
- * @param {string} coreUrl - url string for the project version.
- * @returns boolean value to indicate whether the feature is supported or not.
- */
-function checkRenkuCoreSupport(minimumVersion, coreUrl) {
-  const projectVersion = coreUrl != null && coreUrl.length ?
-    parseInt(coreUrl.replace(/^\/+|\/+$/g, "")) :
-    0;
-  const unsupported = projectVersion && projectVersion < minimumVersion ? true : false;
-  return !unsupported;
-}
-
-
 export {
-  capitalizeFirstLetter, checkRenkuCoreSupport, generateZip, computeVisibilities,
-  slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown,
-  simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleCharacters,
-  convertUnicodeToAscii, refreshIfNecessary, sleep, toCapitalized, stylesByItemType, AUTOSAVED_PREFIX
+  capitalizeFirstLetter,
+  generateZip,
+  computeVisibilities,
+  slugFromTitle,
+  getActiveProjectPathWithNamespace,
+  splitAutosavedBranches,
+  sanitizedHTMLFromMarkdown,
+  simpleHash,
+  parseINIString,
+  formatBytes,
+  groupBy,
+  gitLabUrlFromProfileUrl,
+  isURL,
+  verifyTitleCharacters,
+  convertUnicodeToAscii,
+  refreshIfNecessary,
+  sleep,
+  toCapitalized,
+  stylesByItemType,
+  AUTOSAVED_PREFIX,
+  hasSpecialCharacters,
 };

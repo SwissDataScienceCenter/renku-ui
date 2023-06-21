@@ -19,26 +19,35 @@
 import WS from "jest-websocket-mock";
 
 import { StateModel, globalSchema } from "../model";
-import { getWsServerMessageHandler, retryConnection, setupWebSocket, MessageData } from "./index";
+import {
+  getWsServerMessageHandler,
+  retryConnection,
+  setupWebSocket,
+  MessageData,
+} from "./index";
 import { WsServerMessage } from "./WsMessages";
 import { sleep } from "../utils/helpers/HelperFunctions";
+import { NotificationsManager } from "../notifications";
+import APIClient, { testClient as client } from "../api-client";
 
-
+const fakeLocation = () => {
+  return { pathname: "" };
+};
 const messageHandlers: Record<string, Record<string, Array<MessageData>>> = {
-  "user": {
-    "init": [
+  user: {
+    init: [
       {
         required: ["requiredValue"],
         optional: null,
-        handler: () => "valid"
+        handler: () => "valid",
       },
       {
         required: ["specialRequiredValue"],
         optional: ["optionalValue"],
-        handler: () => "valid"
+        handler: () => "valid",
       },
-    ]
-  }
+    ],
+  },
 };
 
 describe("Test WebSocket functions", () => {
@@ -49,82 +58,91 @@ describe("Test WebSocket functions", () => {
           timestamp: new Date(),
           scope: "FAKE_SCOPE",
           type: "user",
-          data: { "requiredValue": "1234abcd" }
+          data: { requiredValue: "1234abcd" },
         } as WsServerMessage,
-        result: "Scope 'FAKE_SCOPE' is not supported."
+        result: "Scope 'FAKE_SCOPE' is not supported.",
       },
       {
         message: {
           timestamp: new Date(),
           scope: "user",
           type: "FAKE_TYPE",
-          data: { "requiredValue": "1234abcd" }
+          data: { requiredValue: "1234abcd" },
         } as WsServerMessage,
-        result: "Type 'FAKE_TYPE' is not supported for the scope 'user'."
+        result: "Type 'FAKE_TYPE' is not supported for the scope 'user'.",
       },
       {
         message: {
           timestamp: new Date(),
           scope: "user",
           type: "init",
-          data: {}
+          data: {},
         } as WsServerMessage,
-        result: "Could not find a proper handler; data is wrong for a 'init' instruction."
+        result:
+          "Could not find a proper handler; data is wrong for a 'init' instruction.",
       },
       {
         message: {
           timestamp: new Date(),
           scope: "user",
           type: "init",
-          data: { "requiredValue": "1234abcd", "optionalValue": "1234abcd" }
+          data: { requiredValue: "1234abcd", optionalValue: "1234abcd" },
         } as WsServerMessage,
-        result: "Could not find a proper handler; data is wrong for a 'init' instruction.",
+        result:
+          "Could not find a proper handler; data is wrong for a 'init' instruction.",
       },
       {
         message: {
           timestamp: new Date(),
           scope: "user",
           type: "init",
-          data: { "optionalValue": "1234abcd" }
+          data: { optionalValue: "1234abcd" },
         } as WsServerMessage,
-        result: "Could not find a proper handler; data is wrong for a 'init' instruction.",
+        result:
+          "Could not find a proper handler; data is wrong for a 'init' instruction.",
       },
       {
         message: {
           timestamp: new Date(),
           scope: "user",
           type: "init",
-          data: { "requiredValue": "1234abcd" }
+          data: { requiredValue: "1234abcd" },
         } as WsServerMessage,
-        result: () => "valid"
+        result: () => "valid",
       },
       {
         message: {
           timestamp: new Date(),
           scope: "user",
           type: "init",
-          data: { "specialRequiredValue": "1234abcd", "optionalValue": "1234abcd" }
+          data: { specialRequiredValue: "1234abcd", optionalValue: "1234abcd" },
         } as WsServerMessage,
-        result: () => "valid"
-      }
+        result: () => "valid",
+      },
     ];
 
     // test results
     for (const action of actions) {
       const result = getWsServerMessageHandler(messageHandlers, action.message);
-      typeof result === "string" ?
-        expect(result).toBe(action.result) :
-        expect(result()).toBe((action.result as Function)()); // eslint-disable-line
+      typeof result === "string"
+        ? expect(result).toBe(action.result)
+        : expect(result()).toBe((action.result as Function)()); // eslint-disable-line
     }
   });
 
   it("Test retryConnection function", async () => {
     const model = new StateModel(globalSchema);
-
+    const notifications = new NotificationsManager(model, client, fakeLocation);
     const reconnectModel = model.subModel("webSocket.reconnect");
     expect(reconnectModel.get("attempts")).toBe(0);
     expect(reconnectModel.get("retrying")).toBe(false);
-    retryConnection("fakeUrl", model);
+    retryConnection(
+      "fakeUrl",
+      model,
+      fakeLocation,
+      client as APIClient,
+      notifications
+    );
     expect(reconnectModel.get("attempts")).toBe(1);
     expect(reconnectModel.get("retrying")).toBe(true);
   });
@@ -135,6 +153,11 @@ describe("Test WebSocket server", () => {
     const fullModel = new StateModel(globalSchema);
     const webSocketURL = "wss://localhost:1234";
     const fakeServer = new WS(webSocketURL, { jsonProtocol: true });
+    const notifications = new NotificationsManager(
+      fullModel,
+      client,
+      fakeLocation
+    );
     // ? We need to create a client before we invoke `fakeServer.connected` -- limitations of the mock library
     new WebSocket(webSocketURL);
     await fakeServer.connected;
@@ -144,12 +167,24 @@ describe("Test WebSocket server", () => {
 
     // using a wrong URL shouldn't work
     expect(localModel.get("open")).toBe(false);
-    setupWebSocket(webSocketURL.replace("localhost", "fake_host"), fullModel);
+    setupWebSocket(
+      webSocketURL.replace("localhost", "fake_host"),
+      fullModel,
+      fakeLocation,
+      client as APIClient,
+      notifications
+    );
     await sleep(0.01); // ? It's ugly, but it's needed when using the fake WebSocket server...
     expect(localModel.get("open")).toBe(false);
 
     // using the correct URL opens the connection
-    setupWebSocket(webSocketURL, fullModel);
+    setupWebSocket(
+      webSocketURL,
+      fullModel,
+      fakeLocation,
+      client as APIClient,
+      notifications
+    );
     await sleep(0.01);
     expect(localModel.get("open")).toBe(true);
 
@@ -159,7 +194,7 @@ describe("Test WebSocket server", () => {
       timestamp: new Date(),
       scope: "user",
       type: "test",
-      data: { "message": "something" }
+      data: { message: "something" },
     } as WsServerMessage;
     fakeServer.send(validMessage);
     await sleep(0.01);
@@ -172,7 +207,9 @@ describe("Test WebSocket server", () => {
     expect(localModel.get("error")).toBe(false);
     fakeServer.send("test");
     await sleep(0.01);
-    expect(+new Date(localModel.get("lastReceived"))).toBeGreaterThan(dateFirstValidMessage);
+    expect(+new Date(localModel.get("lastReceived"))).toBeGreaterThan(
+      dateFirstValidMessage
+    );
     expect(+new Date(localModel.get("lastReceived"))).toBeLessThan(+new Date());
     expect(localModel.get("error")).toBe(true);
   });

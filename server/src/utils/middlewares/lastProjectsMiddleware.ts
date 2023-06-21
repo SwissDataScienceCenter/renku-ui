@@ -21,14 +21,28 @@ import express from "express";
 import config from "../../config";
 import { getUserIdFromToken } from "../../authentication";
 
-const lastProjectsMiddleware = (storage: Storage) =>
-  (req: express.Request, res: express.Response, next: express.NextFunction): void => {
+function projectNameIsId(projectName: string): boolean {
+  return projectName.match(/^[0-9]*$/) !== null;
+}
+
+const lastProjectsMiddleware =
+  (storage: Storage) =>
+  (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ): void => {
     const token = req.headers[config.auth.authHeaderField] as string;
     const projectName = req.params["projectName"];
+    // Ignore projects that are ids -- these will be re-accessed as namespace/name anyway
+    if (projectNameIsId(projectName)) {
+      next();
+      return;
+    }
 
     if (req.query?.doNotTrack !== "true") {
-      res.on("finish", function() {
-        if (![304, 200].includes(res.statusCode) || !token) {
+      res.on("finish", function () {
+        if (res.statusCode >= 400 || !token) {
           next();
           return;
         }
@@ -41,7 +55,7 @@ const lastProjectsMiddleware = (storage: Storage) =>
           {
             type: TypeData.Collections,
             limit: config.data.projectsDefaultLength,
-            score: Date.now()
+            score: Date.now(),
           }
         );
       });

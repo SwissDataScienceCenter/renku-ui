@@ -105,3 +105,6 @@ virtualenv
 
 # Ignore helm charts requirements lock file
 requirements.lock
+
+# Ingore RTK automatically generated files
+client/.rtk/*Api.ts

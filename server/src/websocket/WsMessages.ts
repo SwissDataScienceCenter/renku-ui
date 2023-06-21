@@ -22,12 +22,14 @@ class WsMessage {
   type: string; // E.G. "error", ...
   data: Record<string, unknown>;
 
-  constructor(data: string | Record<string, unknown>, scope: string, type: string) {
+  constructor(
+    data: string | Record<string, unknown>,
+    scope: string,
+    type: string
+  ) {
     this.timestamp = new Date();
-    if (typeof data === "string")
-      this.data = { message: data };
-    else
-      this.data = data;
+    if (typeof data === "string") this.data = { message: data };
+    else this.data = data;
     this.scope = scope;
     this.type = type;
   }
@@ -37,7 +39,7 @@ class WsMessage {
       timestamp: this.timestamp,
       scope: this.scope,
       type: this.type,
-      data: this.data
+      data: this.data,
     });
   }
 }
@@ -48,13 +50,17 @@ interface WsClientMessage {
   data: Record<string, unknown>;
 }
 
-function checkWsClientMessage(obj: any): obj is WsClientMessage { // eslint-disable-line
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+function checkWsClientMessage(obj: any): obj is WsClientMessage {
   return (
-    "timestamp" in obj && obj.timestamp != null &&
-    "type" in obj && obj.type != null &&
-    "data" in obj && obj.data != null && typeof obj.data === "object"
+    "timestamp" in obj &&
+    obj.timestamp != null &&
+    "type" in obj &&
+    obj.type != null &&
+    "data" in obj &&
+    obj.data != null &&
+    typeof obj.data === "object"
   );
 }
-
 
 export { checkWsClientMessage, WsClientMessage, WsMessage };

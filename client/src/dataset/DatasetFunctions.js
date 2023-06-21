@@ -7,7 +7,7 @@ function mapDataset(dataset_core, dataset_kg) {
       description: dataset_core.description,
       created: dataset_core.created_at,
       published: {
-        creator: dataset_core.creators
+        creator: dataset_core.creators,
       },
       identifier: dataset_core.identifier,
       keywords: dataset_core.keywords,
@@ -19,10 +19,11 @@ function mapDataset(dataset_core, dataset_kg) {
       dataset.sameAs = dataset_kg.sameAs;
       dataset.usedIn = dataset_kg.usedIn;
       dataset.insideKg = true;
-      dataset.published.datePublished = dataset_kg.published && dataset_kg.published.datePublished ?
-        dataset_kg.published.datePublished : undefined;
-    }
-    else {
+      dataset.published.datePublished =
+        dataset_kg.published && dataset_kg.published.datePublished
+          ? dataset_kg.published.datePublished
+          : undefined;
+    } else {
       dataset.insideKg = false;
     }
     return dataset;
@@ -38,11 +39,49 @@ function mapDataset(dataset_core, dataset_kg) {
 function getDatasetAuthors(dataset) {
   if (!dataset) return null;
 
-  return dataset.published !== undefined && dataset.published.creator !== undefined ?
-    dataset.published.creator
-      .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : ""))
-      .join("; ")
+  return dataset.published !== undefined &&
+    dataset.published.creator !== undefined
+    ? dataset.published.creator
+        .map(
+          (creator) =>
+            creator.name +
+            (creator.affiliation ? ` (${creator.affiliation})` : "")
+        )
+        .join("; ")
     : null;
 }
 
-export { mapDataset, getDatasetAuthors };
+/**
+ * Display a file with some metadata. Has the following parameters:
+ *
+ * @param {Object[]} images - Images link arrays
+ */
+function getDatasetImageUrl(images) {
+  try {
+    // images could contain previous image url, so we get the last in the array.
+    const index = images?.length - 1;
+    return images[index]["_links"][0].href;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Returns image url with extra parameter to avoid outdated cached url
+ *
+ * @param {string} imageUrl - Url image
+ * @param {string | Date} lastUpdateDate - last url update
+ */
+function getUpdatedDatasetImage(imageUrl, lastUpdateDate) {
+  if (!imageUrl) return undefined;
+
+  const lastUpdate = new Date(lastUpdateDate).getTime();
+  return `${imageUrl}?${lastUpdate}`;
+}
+
+export {
+  mapDataset,
+  getDatasetAuthors,
+  getDatasetImageUrl,
+  getUpdatedDatasetImage,
+};

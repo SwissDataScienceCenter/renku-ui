@@ -28,19 +28,23 @@ import { connect } from "react-redux";
 import { Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
-import { WarnAlert } from "../utils/components/Alert";
-
+import { WarnAlert } from "../components/Alert";
 
 /**
  * Container component for the warning banners
  */
 function NavBarWarnings(props) {
-  function mapStateToProps(state, ownProps) {
+  function mapStateToProps(state) {
     return { environment: state.stateModel.environment };
   }
 
   const VisibleBanner = connect(mapStateToProps)(NavBarWarningsPresent);
-  return (<VisibleBanner store={props.model.reduxStore} uiShortSha={props.uiShortSha} />);
+  return (
+    <VisibleBanner
+      store={props.model.reduxStore}
+      uiShortSha={props.uiShortSha}
+    />
+  );
 }
 
 /**
@@ -51,31 +55,34 @@ function NavBarWarningsPresent(props) {
   const { uiVersion } = environment;
 
   // return when local ui version data is not available
-  if (!uiShortSha || uiShortSha.toLowerCase() === "development" || uiShortSha.toLowerCase() === "dev")
+  if (
+    !uiShortSha ||
+    uiShortSha.toLowerCase() === "development" ||
+    uiShortSha.toLowerCase() === "dev"
+  )
     return null;
 
   // return when remote ui version data is not available
-  if (!uiVersion.webSocket || !uiVersion.lastValue)
-    return null;
+  if (!uiVersion.webSocket || !uiVersion.lastValue) return null;
 
-  if (uiShortSha === uiVersion.lastValue)
-    return null;
+  if (uiShortSha === uiVersion.lastValue) return null;
 
   return (
     <WarnAlert className="container-xxl renku-container" fade={false}>
-      <h5>
-        A new version of RenkuLab is available!
-      </h5>
+      <h5>A new version of RenkuLab is available!</h5>
       <p className="m-0">
         Reload the page or{" "}
-        <Button size="sm" color="warning" onClick={() => window.location.reload()}>
+        <Button
+          size="sm"
+          color="warning"
+          onClick={() => window.location.reload()}
+        >
           click here <FontAwesomeIcon icon={faSyncAlt} />
-        </Button>
-        {" "}to refresh the UI. Sessions will keep running.
+        </Button>{" "}
+        to refresh the UI. Sessions will keep running.
       </p>
     </WarnAlert>
   );
 }
-
 
 export { NavBarWarnings };

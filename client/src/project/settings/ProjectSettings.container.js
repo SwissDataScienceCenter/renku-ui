@@ -24,11 +24,26 @@
  */
 
 import React, { Component } from "react";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 
 import { ProjectSettingsSessions as ProjectSettingsSessionsPresent } from "./ProjectSettings.present";
 import { NotebooksCoordinator } from "../../notebooks";
 import { refreshIfNecessary } from "../../utils/helpers/HelperFunctions";
+import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
+
+/**
+ * Adds the core support data
+ */
+function ProjectSettingsSessionsWrapper(props) {
+  const { defaultBranch, externalUrl } = useSelector(
+    (state) => state.stateModel.project.metadata
+  );
+  const { coreSupport } = useCoreSupport({
+    gitUrl: externalUrl ?? undefined,
+    branch: defaultBranch ?? undefined,
+  });
+  return <ProjectSettingsSessionsMapper {...props} coreSupport={coreSupport} />;
+}
 
 /**
  * Mapper component for ProjectSettingsSessions.
@@ -47,11 +62,15 @@ class ProjectSettingsSessionsMapper extends Component {
     // add notebooks coordinator
     const notebooksModel = props.model.subModel("notebooks");
     const userModel = props.model.subModel("user");
-    this.notebooksCoordinator = new NotebooksCoordinator(props.client, notebooksModel, userModel);
+    this.notebooksCoordinator = new NotebooksCoordinator(
+      props.client,
+      notebooksModel,
+      userModel
+    );
 
     // add handlers
     this.handlers = {
-      refreshConfig: this.refreshConfig.bind(this)
+      refreshConfig: this.refreshConfig.bind(this),
     };
     this.setConfig = this.setConfig.bind(this);
   }
@@ -68,88 +87,115 @@ class ProjectSettingsSessionsMapper extends Component {
       keyName: null,
       value: null,
       updated: false,
-      error: null
+      error: null,
     };
 
     const currentConfig = this.projectCoordinator.get("config.data.config");
     const previousValue = currentConfig[key];
     this.setConfigValue(key, value);
-    this.setState({ ...pristineNewConfig, keyName, key, updating: true, error: null });
+    this.setState({
+      ...pristineNewConfig,
+      keyName,
+      key,
+      updating: true,
+      error: null,
+    });
     try {
       const config = { [key]: value };
-      const response = await this.props.client
-        .setProjectConfig(this.props.externalUrl, config, this.props?.migration?.core?.versionUrl);
+      const response = await this.props.client.setProjectConfig(
+        this.props.externalUrl,
+        config,
+        this.props.coreSupport?.versionUrl
+      );
       if (response?.data?.error) {
         this.setConfigValue(key, previousValue);
-        this.setState({ ...this.state, keyName, key, updating: false, error: response.data.error });
+        this.setState({
+          ...this.state,
+          keyName,
+          key,
+          updating: false,
+          error: response.data.error,
+        });
+      } else {
+        const value =
+          response.data.result.config[
+            Object.keys(response.data.result.config)[0]
+          ];
+        this.setState({
+          ...this.state,
+          updating: false,
+          updated: true,
+          error: null,
+          keyName,
+          key,
+          value,
+        });
       }
-      else {
-        const value = response.data.result.config[Object.keys(response.data.result.config)[0]];
-        this.setState({ ...this.state, updating: false, updated: true, error: null, keyName, key, value });
-      }
-    }
-    catch (error) {
+    } catch (error) {
       this.setConfigValue(key, previousValue);
-      this.setState({ ...this.state, keyName, key, error: error?.message ? error.message : "Unexpected error." });
+      this.setState({
+        ...this.state,
+        keyName,
+        key,
+        error: error?.message ? error.message : "Unexpected error.",
+      });
     }
   }
 
+  // ? This doesn't seem necessary anymore
   // Refresh on update since componentDidMount may still need operations to finish
   componentDidUpdate(prevProps) {
-    if (!prevProps.migration.core.fetched && this.props.migration.core.fetched) {
+    if (!prevProps.coreSupport.computed && this.props.coreSupport.computed) {
       const currentConfig = this.model.get("project.config");
-      refreshIfNecessary(
-        currentConfig.fetching, currentConfig.fetched, () => { this.refreshConfig(); }
-      );
+      refreshIfNecessary(currentConfig.fetching, currentConfig.fetched, () => {
+        this.refreshConfig();
+      });
     }
   }
 
   componentDidMount() {
     // Refresh project configuration for logged user
-    if (!this.model.get("user.logged"))
-      return null;
+    if (!this.model.get("user.logged")) return null;
     const currentConfig = this.model.get("project.config");
-    refreshIfNecessary(
-      currentConfig.fetching, currentConfig.fetched, () => { this.refreshConfig(); }
-    );
+    refreshIfNecessary(currentConfig.fetching, currentConfig.fetched, () => {
+      this.refreshConfig();
+    });
     const currentOptions = this.model.get("notebooks.options");
-    refreshIfNecessary(
-      currentOptions.fetching, currentOptions.fetched, () => { this.refreshOptions(); }
-    );
-
-    this.refreshOptions();
+    refreshIfNecessary(currentOptions.fetching, currentOptions.fetched, () => {
+      this.refreshOptions();
+    });
   }
 
   async refreshConfig(repositoryUrl = null) {
     // Prevent refreshing when not possible
-    const backend = this.model.get("project.migration.core");
-    if (!backend.fetched || !backend.backendAvailable)
-      return;
-    const url = repositoryUrl ?
-      repositoryUrl :
-      this.props.externalUrl;
+    const versionUrl = this.props.coreSupport?.versionUrl ?? null;
+    const coreSupport = this.props.coreSupport;
+    if (!coreSupport.computed || !coreSupport.backendAvailable) return;
+    const url = repositoryUrl ? repositoryUrl : this.props.externalUrl;
     // Check if the project is locked
     await this.projectCoordinator.fetchProjectLockStatus();
-    return await this.projectCoordinator.fetchProjectConfig(url);
+    return await this.projectCoordinator.fetchProjectConfig(url, versionUrl);
   }
 
   refreshOptions() {
     return this.notebooksCoordinator.fetchNotebookOptions(true);
   }
 
-  mapStateToProps(state, ownProps) {
+  mapStateToProps(state) {
     return {
-      backend: state.stateModel.project.migration.core,
       options: state.stateModel.notebooks.options,
       metadata: state.stateModel.project.metadata,
       config: state.stateModel.project.config,
-      user: state.stateModel.user
+      user: state.stateModel.user,
     };
   }
   render() {
-    const ProjectSettingsSessionsConnected = connect(this.mapStateToProps.bind(this))(ProjectSettingsSessionsPresent);
+    const ProjectSettingsSessionsConnected = connect(
+      this.mapStateToProps.bind(this)
+    )(ProjectSettingsSessionsPresent);
     return (
       <ProjectSettingsSessionsConnected
+        coreSupport={this.props.coreSupport}
         location={this.props.location}
         lockStatus={this.props.lockStatus}
         newConfig={this.state}
@@ -159,4 +205,4 @@ class ProjectSettingsSessionsMapper extends Component {
   }
 }
 
-export { ProjectSettingsSessionsMapper as ProjectSettingsSessions };
+export { ProjectSettingsSessionsWrapper as ProjectSettingsSessions };

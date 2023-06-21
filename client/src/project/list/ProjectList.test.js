@@ -37,7 +37,6 @@ import AppContext from "../../utils/context/appContext";
 import { ProjectList } from "./";
 import { globalSchema, StateModel } from "../../model";
 
-
 describe("helper functions", () => {
   it("removeDefaultParams", () => {
     const { removeDefaultParams } = tests.functions;
@@ -55,10 +54,17 @@ describe("helper functions", () => {
     expect(Object.keys(result)).toHaveLength(1);
 
     // Remove the `section` parameter correctly.
-    result = removeDefaultParams({ ...DEFAULT_PARAMS, page: 123, section: "any" });
+    result = removeDefaultParams({
+      ...DEFAULT_PARAMS,
+      page: 123,
+      section: "any",
+    });
     expect(result).toMatchObject({ page: 123, section: "any" });
     expect(Object.keys(result)).toHaveLength(2);
-    result = removeDefaultParams({ ...DEFAULT_PARAMS, page: 123, section: "any" }, true);
+    result = removeDefaultParams(
+      { ...DEFAULT_PARAMS, page: 123, section: "any" },
+      true
+    );
     expect(result).not.toMatchObject({ page: 123, section: "any" });
     expect(result).toMatchObject({ page: 123 });
     expect(Object.keys(result)).toHaveLength(1);
@@ -78,7 +84,10 @@ describe("helper functions", () => {
     expect(result).not.toContain("?");
 
     // Change the section when `target` is provided.
-    const paramsWithSection = { ...DEFAULT_PARAMS, section: SECTION_MAP.starred };
+    const paramsWithSection = {
+      ...DEFAULT_PARAMS,
+      section: SECTION_MAP.starred,
+    };
     result = buildPreciseUrl(paramsWithSection, SECTION_MAP.all);
     expect(result).not.toContain(SECTION_MAP.starred);
     expect(result).toContain(SECTION_MAP.all);
@@ -91,7 +100,7 @@ describe("helper functions", () => {
 
     // Verify that the result is unambiguous.
     const location = {
-      pathname: Url.get(Url.pages.projects.starred)
+      pathname: Url.get(Url.pages.projects.starred),
     };
     result = getSection(location);
     expect(result).toBe(SECTION_MAP.starred);
@@ -99,7 +108,6 @@ describe("helper functions", () => {
     expect(result).not.toBe(SECTION_MAP.all);
   });
 });
-
 
 describe("rendering", () => {
   const loggedUser = generateFakeUser();
@@ -110,17 +118,16 @@ describe("rendering", () => {
   });
   fakeHistory.push({
     pathname: "/projects/all",
-    search: "?page=1"
+    search: "?page=1",
   });
   const templates = { custom: false, repositories: [{}] };
   const fakeLocation = { pathname: "" };
   const appContext = {
     client: client,
-    params: { "TEMPLATES": templates },
+    params: { TEMPLATES: templates },
     location: fakeLocation,
   };
   const model = new StateModel(globalSchema);
-
 
   //TestRenderer
   it("Renders ProjectList for logged user", async () => {
@@ -129,7 +136,12 @@ describe("rendering", () => {
         <Provider store={model.reduxStore}>
           <MemoryRouter>
             <AppContext.Provider value={appContext}>
-              <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={loggedUser} />
+              <ProjectList
+                client={client}
+                history={fakeHistory}
+                location={fakeHistory.location}
+                user={loggedUser}
+              />
             </AppContext.Provider>
           </MemoryRouter>
         </Provider>
@@ -143,7 +155,12 @@ describe("rendering", () => {
         <Provider store={model.reduxStore}>
           <AppContext.Provider value={appContext}>
             <MemoryRouter>
-              <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={anonymousUser} />
+              <ProjectList
+                client={client}
+                history={fakeHistory}
+                location={fakeHistory.location}
+                user={anonymousUser}
+              />
             </MemoryRouter>
           </AppContext.Provider>
         </Provider>
@@ -154,7 +171,7 @@ describe("rendering", () => {
   it("Redirects only anonymous user when accessing an illegal url", async () => {
     fakeHistory.push({
       pathname: "/projects/all",
-      search: "?page=1&searchIn=users"
+      search: "?page=1&searchIn=users",
     });
     let rendered, props;
 
@@ -164,31 +181,52 @@ describe("rendering", () => {
         <Provider store={model.reduxStore}>
           <AppContext.Provider value={appContext}>
             <MemoryRouter>
-              <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={loggedUser} />
+              <ProjectList
+                client={client}
+                history={fakeHistory}
+                location={fakeHistory.location}
+                user={loggedUser}
+              />
             </MemoryRouter>
           </AppContext.Provider>
         </Provider>
       );
     });
     props = rendered.root.findByType(ProjectList).props;
-    expect(props).toMatchObject({ client: {}, history: {}, location: {}, user: {} });
+    expect(props).toMatchObject({
+      client: {},
+      history: {},
+      location: {},
+      user: {},
+    });
     expect(props.history.location.search).toContain("searchIn=users");
     expect(props.history.location.search).not.toContain("searchIn=projects");
 
     // Anonymous users can't use searchIn=users, they should be redirected to searchIn=projects
     await act(async () => {
       rendered = TestRenderer.create(
-        <Provider store={model.reduxStore}>0
+        <Provider store={model.reduxStore}>
+          0
           <AppContext.Provider value={appContext}>
             <MemoryRouter>
-              <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={anonymousUser} />
+              <ProjectList
+                client={client}
+                history={fakeHistory}
+                location={fakeHistory.location}
+                user={anonymousUser}
+              />
             </MemoryRouter>
           </AppContext.Provider>
         </Provider>
       );
     });
     props = rendered.root.findByType(ProjectList).props;
-    expect(props).toMatchObject({ client: {}, history: {}, location: {}, user: {} });
+    expect(props).toMatchObject({
+      client: {},
+      history: {},
+      location: {},
+      user: {},
+    });
     expect(props.history.location.search).not.toContain("searchIn=users");
     expect(props.history.location.search).toContain("searchIn=projects");
   });

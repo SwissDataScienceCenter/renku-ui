@@ -23,12 +23,12 @@
  *  Description field group component
  */
 import * as React from "react";
-import FieldGroup from "../../../utils/components/FieldGroups";
+import FieldGroup from "../../../components/FieldGroups";
 import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
 
 interface DescriptionProps {
   handlers: {
-    setProperty: Function
+    setProperty: Function; // eslint-disable-line @typescript-eslint/ban-types
   };
   meta: NewProjectMeta;
   input: NewProjectInputs;
@@ -46,8 +46,10 @@ function Description({ handlers, meta, input }: DescriptionProps) {
       value={input.description ?? ""}
       help="Let people know what the project is about"
       isRequired={false}
-      feedback={error} invalid={isInvalid}
-      onChange={(e) => handlers.setProperty("description", e.target.value)} />
+      feedback={error}
+      invalid={isInvalid}
+      onChange={(e) => handlers.setProperty("description", e.target.value)}
+    />
   );
 }
 

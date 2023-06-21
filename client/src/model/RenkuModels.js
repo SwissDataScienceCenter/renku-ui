@@ -24,14 +24,14 @@
  */
 
 import { Schema, PropertyName as Prop } from "./Model";
-import FormGenerator from "../utils/components/formgenerator/";
+import FormGenerator from "../components/formgenerator";
 
 const userSchema = new Schema({
   fetched: { initial: null, mandatory: true },
   fetching: { initial: false, mandatory: true },
   error: { initial: null, mandatory: true },
   logged: { initial: false, mandatory: true },
-  data: { initial: {}, mandatory: true }
+  data: { initial: {}, mandatory: true },
 });
 
 const projectsSchema = new Schema({
@@ -40,40 +40,40 @@ const projectsSchema = new Schema({
       fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
       member: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
-      starred: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
-    })
+      starred: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+    }),
   },
   landingProjects: {
     [Prop.SCHEMA]: new Schema({
       fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
       list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
-      lastVisited: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true }
-    })
+      lastVisited: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
+    }),
   },
   namespaces: {
     [Prop.SCHEMA]: new Schema({
       fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
-      list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
-    })
-  }
+      list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+    }),
+  },
 });
 
 const newProjectSchema = new Schema({
   config: {
     [Prop.SCHEMA]: new Schema({
       custom: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
-      repositories: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true } // contains only { url, ref, name }
-    })
+      repositories: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }, // contains only { url, ref, name }
+    }),
   },
   templates: {
     [Prop.SCHEMA]: new Schema({
       fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
       errors: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }, // contains only { "name": "desc" }
-      all: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
-    })
+      all: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+    }),
   },
   input: {
     [Prop.SCHEMA]: new Schema({
@@ -89,7 +89,7 @@ const newProjectSchema = new Schema({
       template: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
       templatePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       variables: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true }, // contains pairs "var1": "value1"
-    })
+    }),
   },
   automated: {
     [Prop.SCHEMA]: new Schema({
@@ -105,14 +105,14 @@ const newProjectSchema = new Schema({
           url: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
           ref: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
           variables: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
-        })
+        }),
       },
       step: { [Prop.INITIAL]: 0, [Prop.MANDATORY]: true }, // TODO: remove if not useful
       finished: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
       error: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
       warnings: { [Prop.INITIAL]: [], [Prop.MANDATORY]: false },
       manuallyReset: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
-    })
+    }),
   },
   meta: {
     [Prop.SCHEMA]: new Schema({
@@ -121,8 +121,8 @@ const newProjectSchema = new Schema({
           id: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
           fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
           fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
-          visibilities: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
-        })
+          visibilities: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+        }),
       },
       userTemplates: {
         [Prop.SCHEMA]: new Schema({
@@ -131,14 +131,14 @@ const newProjectSchema = new Schema({
           errors: { [Prop.INITIAL]: [], [Prop.MANDATORY]: false }, // contains "desc"
           url: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
           ref: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
-          all: { [Prop.INITIAL]: [], [Prop.MANDATORY]: false }
-        })
+          all: { [Prop.INITIAL]: [], [Prop.MANDATORY]: false },
+        }),
       },
       validation: {
         [Prop.SCHEMA]: new Schema({
           warnings: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
           errors: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
-        })
+        }),
       },
       creation: {
         [Prop.SCHEMA]: new Schema({
@@ -154,10 +154,10 @@ const newProjectSchema = new Schema({
           newName: { [Prop.INITIAL]: "" },
           newNamespace: { [Prop.INITIAL]: "" },
           newUrl: { [Prop.INITIAL]: "" },
-        })
-      }
-    })
-  }
+        }),
+      },
+    }),
+  },
 });
 
 const webSocketSchema = new Schema({
@@ -171,29 +171,8 @@ const webSocketSchema = new Schema({
       retrying: { [Prop.INITIAL]: false },
       attempts: { [Prop.INITIAL]: 0 },
       lastTime: { [Prop.INITIAL]: null },
-    })
-  }
-});
-
-const workflowSchema = new Schema({
-  details: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
-  target: { [Prop.INITIAL]: "" },
-  error: { [Prop.INITIAL]: null },
-  fetched: { [Prop.INITIAL]: null },
-  fetching: { [Prop.INITIAL]: false },
-  expanded: { [Prop.INITIAL]: {} }
-});
-
-const workflowsSchema = new Schema({
-  list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
-  target: { [Prop.INITIAL]: "" },
-  error: { [Prop.INITIAL]: null },
-  fetched: { [Prop.INITIAL]: null },
-  fetching: { [Prop.INITIAL]: false },
-  expanded: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
-  showInactive: { [Prop.INITIAL]: false },
-  orderAscending: { [Prop.INITIAL]: true },
-  orderProperty: { [Prop.INITIAL]: "workflowType" }
+    }),
+  },
 });
 
 const projectSchema = new Schema({
@@ -204,7 +183,7 @@ const projectSchema = new Schema({
       error: { [Prop.INITIAL]: null },
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },
-    })
+    }),
   },
   commits: {
     [Prop.SCHEMA]: new Schema({
@@ -213,7 +192,7 @@ const projectSchema = new Schema({
 
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },
-    })
+    }),
   },
   commitsReadme: {
     [Prop.SCHEMA]: new Schema({
@@ -222,7 +201,7 @@ const projectSchema = new Schema({
 
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },
-    })
+    }),
   },
   config: {
     [Prop.SCHEMA]: new Schema({
@@ -232,13 +211,13 @@ const projectSchema = new Schema({
       fetching: { [Prop.INITIAL]: false },
 
       initial: { [Prop.INITIAL]: {} },
-      input: { [Prop.INITIAL]: {} }
-    })
+      input: { [Prop.INITIAL]: {} },
+    }),
   },
   data: {
     [Prop.SCHEMA]: new Schema({
-      readme: { [Prop.INITIAL]: {} }
-    })
+      readme: { [Prop.INITIAL]: {} },
+    }),
   },
   datasets: {
     [Prop.SCHEMA]: new Schema({
@@ -246,29 +225,29 @@ const projectSchema = new Schema({
       core: {
         [Prop.INITIAL]: {
           datasets: null,
-          error: null
-        }
-      }
-    })
+          error: null,
+        },
+      },
+    }),
   },
   files: {
     [Prop.SCHEMA]: new Schema({
       notebooks: { [Prop.INITIAL]: [] },
       data: { [Prop.INITIAL]: [] },
-      modifiedFiles: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true }
-    })
+      modifiedFiles: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+    }),
   },
   filesTree: {
     [Prop.SCHEMA]: new Schema({
       hash: { [Prop.INITIAL]: {} },
-      loaded: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true }
-    })
+      loaded: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+    }),
   },
   filters: {
     [Prop.SCHEMA]: new Schema({
       branch: { [Prop.INITIAL]: { name: null }, [Prop.MANDATORY]: true },
       commit: { [Prop.INITIAL]: { id: "latest" }, [Prop.MANDATORY]: true },
-    })
+    }),
   },
   forkedFromProject: { [Prop.INITIAL]: {} },
   lockStatus: {
@@ -278,7 +257,7 @@ const projectSchema = new Schema({
       error: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
 
       locked: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
-    })
+    }),
   },
   metadata: {
     [Prop.SCHEMA]: new Schema({
@@ -290,7 +269,7 @@ const projectSchema = new Schema({
       exists: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       externalUrl: { [Prop.INITIAL]: "" }, // external_url
       forksCount: { [Prop.INITIAL]: null }, // forks_count
-      httpUrl: { [Prop.INITIAL]: "", }, // http_url
+      httpUrl: { [Prop.INITIAL]: "" }, // http_url
       id: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // id
       lastActivityAt: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true }, // last_activity_at
       namespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // namespace.full_path
@@ -298,7 +277,7 @@ const projectSchema = new Schema({
       path: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       pathWithNamespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // path_with_namespace
       repositoryUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // web_url
-      sshUrl: { [Prop.INITIAL]: "", }, // ssh_url
+      sshUrl: { [Prop.INITIAL]: "" }, // ssh_url
       starCount: { [Prop.INITIAL]: null }, // star_count
       tagList: { [Prop.INITIAL]: [] }, // tag_list
       title: { [Prop.INITIAL]: "" },
@@ -307,7 +286,7 @@ const projectSchema = new Schema({
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },
       pendingRefresh: { [Prop.INITIAL]: false },
-    })
+    }),
   },
   migration: {
     [Prop.SCHEMA]: new Schema({
@@ -319,13 +298,13 @@ const projectSchema = new Schema({
           core_compatibility_status: {
             project_metadata_version: undefined,
             migration_required: undefined,
-            current_metadata_version: undefined
+            current_metadata_version: undefined,
           },
           dockerfile_renku_status: {
             latest_renku_version: undefined,
             dockerfile_renku_version: undefined,
             automated_dockerfile_update: undefined,
-            newer_renku_available: undefined
+            newer_renku_available: undefined,
           },
           template_status: {
             newer_template_available: undefined,
@@ -334,8 +313,8 @@ const projectSchema = new Schema({
             template_ref: undefined,
             project_template_version: undefined,
             template_source: undefined,
-            latest_template_version: undefined
-          }
+            latest_template_version: undefined,
+          },
         },
         migrating: { [Prop.INITIAL]: false },
         migration_status: { [Prop.INITIAL]: null },
@@ -349,9 +328,9 @@ const projectSchema = new Schema({
           error: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
           fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
           fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
-        })
-      }
-    })
+        }),
+      },
+    }),
   },
   statistics: {
     [Prop.SCHEMA]: new Schema({
@@ -362,26 +341,17 @@ const projectSchema = new Schema({
           repository_size: { [Prop.INITIAL]: null },
           wiki_size: { [Prop.INITIAL]: null },
           lfs_objects_size: { [Prop.INITIAL]: null },
-          job_artifacts_size: { [Prop.INITIAL]: null }
-        })
+          job_artifacts_size: { [Prop.INITIAL]: null },
+        }),
       },
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },
-    })
+    }),
   },
   transient: {
     [Prop.SCHEMA]: new Schema({
-      requests: { [Prop.INITIAL]: {} }
-    })
-  },
-  webhook: {
-    [Prop.SCHEMA]: {
-      status: { [Prop.INITIAL]: null },
-      created: { [Prop.INITIAL]: null },
-      possible: { [Prop.INITIAL]: null },
-      stop: { [Prop.INITIAL]: null },
-      progress: { [Prop.INITIAL]: null }
-    }
+      requests: { [Prop.INITIAL]: {} },
+    }),
   },
 });
 
@@ -393,7 +363,7 @@ const notebooksSchema = new Schema({
       fetched: { initial: null },
       fetching: { initial: false },
       pvsSupport: { initial: null },
-    }
+    },
   },
   notebooks: {
     schema: {
@@ -401,8 +371,8 @@ const notebooksSchema = new Schema({
       poller: { initial: null },
       fetched: { initial: null },
       fetching: { initial: false },
-      lastParameters: { initial: null }
-    }
+      lastParameters: { initial: null },
+    },
   },
   filters: {
     schema: {
@@ -416,7 +386,7 @@ const notebooksSchema = new Schema({
       objectStoresConfiguration: { initial: [] },
       includeMergedBranches: { initial: false },
       displayedCommits: { initial: 25 },
-    }
+    },
   },
   options: {
     schema: {
@@ -425,8 +395,8 @@ const notebooksSchema = new Schema({
       project: { initial: {} },
       fetched: { initial: null },
       fetching: { initial: false },
-      warnings: { initial: [] }
-    }
+      warnings: { initial: [] },
+    },
   },
   pipelines: {
     schema: {
@@ -438,7 +408,7 @@ const notebooksSchema = new Schema({
 
       lastParameters: { initial: null },
       lastMainId: { initial: null },
-    }
+    },
   },
   ci: {
     [Prop.SCHEMA]: new Schema({
@@ -449,7 +419,7 @@ const notebooksSchema = new Schema({
           fetching: { [Prop.INITIAL]: false },
           registryId: { [Prop.INITIAL]: null },
           error: { [Prop.INITIAL]: null },
-        })
+        }),
       },
       pipelines: {
         [Prop.SCHEMA]: new Schema({
@@ -459,7 +429,7 @@ const notebooksSchema = new Schema({
           fetched: { [Prop.INITIAL]: null },
           fetching: { [Prop.INITIAL]: false },
           error: { [Prop.INITIAL]: null },
-        })
+        }),
       },
       jobs: {
         [Prop.SCHEMA]: new Schema({
@@ -470,7 +440,7 @@ const notebooksSchema = new Schema({
           fetching: { [Prop.INITIAL]: false },
           reFetching: { [Prop.INITIAL]: false },
           error: { [Prop.INITIAL]: null },
-        })
+        }),
       },
       looping: {
         [Prop.SCHEMA]: new Schema({
@@ -478,25 +448,25 @@ const notebooksSchema = new Schema({
           fetched: { [Prop.INITIAL]: null },
           fetching: { [Prop.INITIAL]: false },
           error: { [Prop.INITIAL]: null },
-        })
+        }),
       },
       target: { [Prop.INITIAL]: null }, // target commit id
       type: { [Prop.INITIAL]: null }, // anonymous, pinned, logged, owner
       stage: { [Prop.INITIAL]: null }, // starting --> images --> (pipelines --> jobs -->) looping
-    })
+    }),
   },
   logs: {
     schema: {
       data: { initial: [] },
       fetched: { initial: null },
       fetching: { initial: false },
-    }
+    },
   },
   data: {
     schema: {
       commits: { initial: {} }, // use it as a dictionary where the key is the full commit sha
-    }
-  }
+    },
+  },
 });
 
 const datasetSchema = new Schema({
@@ -519,7 +489,7 @@ const datasetSchema = new Schema({
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },
       fetchError: { [Prop.INITIAL]: null },
-    })
+    }),
   },
   files: {
     [Prop.SCHEMA]: new Schema({
@@ -527,8 +497,8 @@ const datasetSchema = new Schema({
       fetchError: { [Prop.INITIAL]: null },
       fetched: { [Prop.INITIAL]: null },
       hasPart: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
-    })
-  }
+    }),
+  },
 });
 
 const datasetFormSchema = new Schema({
@@ -538,13 +508,17 @@ const datasetFormSchema = new Schema({
     label: "Title",
     required: true,
     type: FormGenerator.FieldTypes.TEXT,
-    validators: [{
-      id: "title-length",
-      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: "Title is too short"
-    }],
-    help: "The title is displayed in listings of datasets. " +
-      "The *name* is automatically derived from the title, but can be changed."
+    validators: [
+      {
+        id: "title-length",
+        isValidFun: (expression) =>
+          FormGenerator.Validators.isNotEmpty(expression),
+        alert: "Title is too short",
+      },
+    ],
+    help:
+      "The title is displayed in listings of datasets. " +
+      "The *name* is automatically derived from the title, but can be changed.",
   },
   name: {
     initial: "",
@@ -554,24 +528,30 @@ const datasetFormSchema = new Schema({
     editOnClick: true,
     required: true,
     type: FormGenerator.FieldTypes.TEXT,
-    parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
-    validators: [{
-      id: "name-length",
-      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: "Name is too short"
-    }],
-    help: " It is used as an identifier in renku commands."
+    parseFun: (expression) => FormGenerator.Parsers.slugFromTitle(expression),
+    validators: [
+      {
+        id: "name-length",
+        isValidFun: (expression) =>
+          FormGenerator.Validators.isNotEmpty(expression),
+        alert: "Name is too short",
+      },
+    ],
+    help: " It is used as an identifier in renku commands.",
   },
   creators: {
     initial: [],
     name: "creators",
     label: "Creators",
     type: FormGenerator.FieldTypes.CREATORS,
-    validators: [{
-      id: "creator-valid",
-      isValidFun: expression => FormGenerator.Validators.creatorIsValid(expression),
-      alert: "Creator name and email cannot be empty"
-    }]
+    validators: [
+      {
+        id: "creator-valid",
+        isValidFun: (expression) =>
+          FormGenerator.Validators.creatorIsValid(expression),
+        alert: "Creator name and email cannot be empty",
+      },
+    ],
     //shall we pre-validate that an email is an email with regex? --> yes and it should not be empty also...
   },
   keywords: {
@@ -590,11 +570,13 @@ const datasetFormSchema = new Schema({
     type: FormGenerator.FieldTypes.TEXT_EDITOR,
     outputType: "markdown",
     help: "Basic markdown styling tags are allowed in this field.",
-    validators: [{
-      id: "name-length",
-      //  isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 3),
-      alert: "Description can't be empty"
-    }],
+    validators: [
+      {
+        id: "name-length",
+        //  isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 3),
+        alert: "Description can't be empty",
+      },
+    ],
     optional: true,
   },
   files: {
@@ -607,84 +589,31 @@ const datasetFormSchema = new Schema({
     filesOnUploader: undefined,
     notifyFunction: undefined,
     internalValues: undefined,
-    validators: [{
-      id: "files-length",
-      isValidFun: expression => FormGenerator.Validators.filesReady(expression),
-      alert: "Some queued files have not finished uploading."
-    }]
+    validators: [
+      {
+        id: "files-length",
+        isValidFun: (expression) =>
+          FormGenerator.Validators.filesReady(expression),
+        alert: "Some queued files have not finished uploading.",
+      },
+    ],
   },
   image: {
     name: "image",
     label: "Image",
     edit: true,
     type: FormGenerator.FieldTypes.IMAGE,
-    maxSize: 200 * 1024,
+    maxSize: 10 * 1024 * 1024,
     format: "image/png,image/jpeg,image/gif,image/tiff",
-    help: "JPG, PNG, and JPEG files are allowed, up to 200KB.",
+    // Image input should apply the default help text
+    help: undefined,
     value: {
       options: [],
-      selected: -1
+      selected: -1,
     },
     validators: [],
     modes: ["Choose File"],
-  }
-});
-
-const issueFormSchema = new Schema({
-  title: {
-    initial: "",
-    name: "title",
-    label: "Title",
-    type: FormGenerator.FieldTypes.TEXT,
-    placeholder: "A brief name to identify the issue",
-    validators: [{
-      id: "text-length",
-      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: "Text is too short"
-    }]
   },
-  description: {
-    initial: "",
-    name: "description",
-    label: "Description",
-    type: FormGenerator.FieldTypes.TEXT_EDITOR,
-    outputType: "markdown",
-    placeholder: "A brief name to identify the issue",
-    help: "A description of the issue helps users understand it and is highly recommended.",
-    validators: [{
-      id: "textarea-length",
-      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: "Description can't be empty"
-    }]
-  },
-  visibility: {
-    initial: "public",
-    name: "visibility",
-    label: "Visibility",
-    type: FormGenerator.FieldTypes.SELECT,
-    options: [
-      { value: "public", name: "Public" },
-      { value: "restricted", name: "Restricted" }
-    ],
-    validators: []
-  }
-});
-
-const datasetImportFormSchema = new Schema({
-  uri: {
-    initial: "",
-    name: "uri",
-    label: "Renku dataset URL; Dataverse or Zenodo dataset URL or DOI",
-    edit: false,
-    required: true,
-    type: FormGenerator.FieldTypes.TEXT,
-    // parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
-    validators: [{
-      id: "uri-length",
-      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: "URI is too short"
-    }]
-  }
 });
 
 const environmentSchema = new Schema({
@@ -693,22 +622,22 @@ const environmentSchema = new Schema({
       webSocket: { [Prop.INITIAL]: null },
       lastValue: { [Prop.INITIAL]: null },
       lastReceived: { [Prop.INITIAL]: null },
-    })
+    }),
   },
   coreVersions: {
     [Prop.SCHEMA]: new Schema({
       available: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
       unavailable: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
-    })
+    }),
   },
   services: {
     [Prop.SCHEMA]: new Schema({
       fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
       // each value has the structure {name: string, versions: [{version, data}]}
-      list: { [Prop.INITIAL]: [] }
-    })
-  }
+      list: { [Prop.INITIAL]: [] },
+    }),
+  },
 });
 
 /**
@@ -717,7 +646,7 @@ const environmentSchema = new Schema({
 const statuspageSchema = new Schema({
   retrieved_at: { initial: null },
   statuspage: { initial: null },
-  error: { initial: null }
+  error: { initial: null },
 });
 
 const notificationsSchema = new Schema({
@@ -726,24 +655,32 @@ const notificationsSchema = new Schema({
   dropdown: {
     [Prop.SCHEMA]: new Schema({
       enabled: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
-    })
+    }),
   },
   toast: {
     [Prop.SCHEMA]: new Schema({
       enabled: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       timeout: { [Prop.INITIAL]: 7500, [Prop.MANDATORY]: true },
       position: { [Prop.INITIAL]: "top-right", [Prop.MANDATORY]: true },
-    })
-  }
+    }),
+  },
 });
 
 const formGeneratorSchema = new Schema({
-  formDrafts: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true }
+  formDrafts: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
 });
 
 export {
-  datasetFormSchema, datasetSchema, datasetImportFormSchema, environmentSchema,
-  formGeneratorSchema, issueFormSchema, newProjectSchema, notebooksSchema, notificationsSchema,
-  projectSchema, projectsSchema, statuspageSchema, userSchema, webSocketSchema, workflowSchema,
-  workflowsSchema
+  datasetFormSchema,
+  datasetSchema,
+  environmentSchema,
+  formGeneratorSchema,
+  newProjectSchema,
+  notebooksSchema,
+  notificationsSchema,
+  projectSchema,
+  projectsSchema,
+  statuspageSchema,
+  userSchema,
+  webSocketSchema,
 };

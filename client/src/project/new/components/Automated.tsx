@@ -22,19 +22,23 @@
  *  Automated.tsx
  *  Automated Project component
  */
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 import { Col, Row } from "../../../utils/ts-wrappers";
-import { Alert, Button, Fade, Modal, ModalBody, ModalHeader } from "../../../utils/ts-wrappers";
-
-import { ErrorAlert, WarnAlert } from "../../../utils/components/Alert";
+import {
+  Alert,
+  Button,
+  Fade,
+  Modal,
+  ModalBody,
+  ModalHeader,
+} from "../../../utils/ts-wrappers";
+import { ErrorAlert, WarnAlert } from "../../../components/Alert";
 import { Url } from "../../../utils/helpers/url";
-import { Loader } from "../../../utils/components/Loader";
-
-const Link = require("react-router-dom").Link;
+import { Loader } from "../../../components/Loader";
 
 interface Project {
   title?: string;
@@ -57,11 +61,11 @@ interface AutomatedData extends Project {
 
 interface AutomatedProps {
   automated: AutomatedData;
-  removeAutomated: Function;
+  removeAutomated: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
 interface AutomatedModalProps {
-  removeAutomated: Function;
+  removeAutomated: Function; // eslint-disable-line @typescript-eslint/ban-types
 }
 
 function Automated({ automated, removeAutomated }: AutomatedProps) {
@@ -73,7 +77,8 @@ function Automated({ automated, removeAutomated }: AutomatedProps) {
 
   if (!automated.finished) {
     // Show a static modal while loading the data
-    if (automated.received && automated.valid) return <AutomatedModal removeAutomated={removeAutomated} />;
+    if (automated.received && automated.valid)
+      return <AutomatedModal removeAutomated={removeAutomated} />;
     return null;
   }
   // Show a feedback when the automated part has finished
@@ -82,13 +87,21 @@ function Automated({ automated, removeAutomated }: AutomatedProps) {
     const error = <pre>{automated.error}</pre>;
     return (
       <ErrorAlert key="alert">
-        <p>We could not pre-fill the fields with the information provided in the RenkuLab project-creation link.</p>
         <p>
-          It is possible that the link is outdated or not valid. Please contact the source of the RenkuLab link and ask
-          for a new one.
+          We could not pre-fill the fields with the information provided in the
+          RenkuLab project-creation link.
+        </p>
+        <p>
+          It is possible that the link is outdated or not valid. Please contact
+          the source of the RenkuLab link and ask for a new one.
         </p>
 
-        <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleError()}>
+        <Button
+          color="link"
+          style={{ fontSize: "smaller" }}
+          className="font-italic"
+          onClick={() => toggleError()}
+        >
           {showError ? "Hide error details" : "Show error details"}
         </Button>
         <Fade in={showError} tag="div">
@@ -102,8 +115,16 @@ function Automated({ automated, removeAutomated }: AutomatedProps) {
     const warnings = <pre>{automated.warnings.join("\n")}</pre>;
     return (
       <WarnAlert>
-        <p>Some fields could not be pre-filled with the information provided in the RenkuLab project-creation link.</p>
-        <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleWarn()}>
+        <p>
+          Some fields could not be pre-filled with the information provided in
+          the RenkuLab project-creation link.
+        </p>
+        <Button
+          color="link"
+          style={{ fontSize: "smaller" }}
+          className="font-italic"
+          onClick={() => toggleWarn()}
+        >
           {showWarnings ? "Hide warnings" : "Show warnings"}
         </Button>
         <Fade in={showWarnings} tag="div">
@@ -133,7 +154,12 @@ function AutomatedModal(props: AutomatedModalProps) {
   const toggle = () => setShowFadeIn(!showFadeIn);
 
   const button = showFadeIn ? null : (
-    <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggle()}>
+    <Button
+      color="link"
+      style={{ fontSize: "smaller" }}
+      className="font-italic"
+      onClick={() => toggle()}
+    >
       Taking too long?
     </Button>
   );
@@ -162,7 +188,7 @@ function AutomatedModal(props: AutomatedModalProps) {
             <p>You entered a url containing information to pre-fill.</p>
             <span>
               Please wait while we fetch the required metadata...&nbsp;
-              <Loader inline={true} size={16} />
+              <Loader inline size={16} />
             </span>
             <div className="mt-2">
               {button}

@@ -26,19 +26,32 @@
 import React, { Component, Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Badge, DropdownMenu, DropdownToggle, DropdownItem, Button, Row, Col, Collapse
+  Badge,
+  DropdownMenu,
+  DropdownToggle,
+  DropdownItem,
+  Button,
+  Row,
+  Col,
+  Collapse,
+  CardBody,
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faLink, faInfoCircle, faExclamationTriangle, faInbox, faTimes, faCheck, faCheckCircle
+  faLink,
+  faInfoCircle,
+  faExclamationTriangle,
+  faInbox,
+  faTimes,
+  faCheck,
+  faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { NotificationsInfo } from ".";
 
 import "./Notifications.css";
-import { ExternalLink } from "../utils/components/ExternalLinks";
-import { TimeCaption } from "../utils/components/TimeCaption";
-
+import { ExternalLink } from "../components/ExternalLinks";
+import { TimeCaption } from "../components/TimeCaption";
 
 /**
  * Close button for the toast notification.
@@ -49,54 +62,76 @@ import { TimeCaption } from "../utils/components/TimeCaption";
  */
 class CloseToast extends Component {
   close() {
-    if (this.props.markRead)
-      this.props.markRead();
-    if (this.props.closeToast)
-      this.props.closeToast();
+    if (this.props.markRead) this.props.markRead();
+    if (this.props.closeToast) this.props.closeToast();
   }
 
   render() {
-    const addedClasses = this.props.addClasses ? ` ${this.props.addClasses}` : null;
+    const addedClasses = this.props.addClasses
+      ? ` ${this.props.addClasses}`
+      : null;
     const className = `btn-close me-2 mt-2 ${addedClasses}`;
 
     return (
-      <button type="button" className={className}
-        data-bs-dismiss="toast" aria-label="Close" onClick={() => { this.close(); }}>{" "}
+      <button
+        type="button"
+        className={className}
+        data-bs-dismiss="toast"
+        aria-label="Close"
+        onClick={() => {
+          this.close();
+        }}
+      >
+        {" "}
       </button>
     );
   }
 }
 
+const NotificationToast = ({ notification, markRead, closeToast }) => {
+  // const { notification, markRead, closeToast } = this.props;
+  const { level, topic, desc, link, linkText, longDesc } = notification;
 
-class NotificationToast extends Component {
-  render() {
-    const { notification, markRead, closeToast } = this.props;
-    const { level, topic, desc, link, linkText, longDesc } = notification;
+  const icon = <NotificationIcon className="color me-2" level={level} />;
+  const linkObj = (
+    <NotificationLink
+      link={link}
+      linkText={linkText ? linkText : link}
+      markRead={markRead}
+      closeToast={closeToast}
+      icon={true}
+      childClass={"link-" + getColorFromLevel(level)}
+    />
+  );
+  const notificationsLink = longDesc ? (
+    <Fragment>
+      <br />
+      <Link
+        to="/notifications"
+        onClick={() => {
+          if (closeToast) closeToast();
+        }}
+      >
+        [more info]
+      </Link>
+    </Fragment>
+  ) : null;
 
-    const icon = (<NotificationIcon className="color me-2" level={level} />);
-    const linkObj = (
-      <NotificationLink link={link} linkText={linkText ? linkText : link}
-        markRead={markRead} closeToast={closeToast} icon={true} childClass={"link-" + getColorFromLevel(level)} />
-    );
-    const notificationsLink = longDesc ?
-      (<Fragment>
-        <br /><Link to="/notifications" onClick={() => { if (closeToast) closeToast(); }}>[more info]</Link>
-      </Fragment>) :
-      null;
-
-    return (<Fragment>
+  return (
+    <CardBody className="py-2">
       <div className="toast-header border-bottom-0">
         {icon}
         <strong className="me-auto mt-1">{topic}</strong>
       </div>
       <div className="toast-body pt-2">
-        <p className="mb-1">{desc} {notificationsLink}</p>
+        <p className="mb-1">
+          {desc} {notificationsLink}
+        </p>
         {linkObj}
       </div>
-    </Fragment>
-    );
-  }
-}
+    </CardBody>
+  );
+};
 
 function getColorFromLevel(level) {
   const { Levels } = NotificationsInfo;
@@ -122,23 +157,45 @@ class NotificationIcon extends Component {
     const { level, size, className } = this.props;
     const { Levels } = NotificationsInfo;
 
-    let sizeIcon = size ?
-      size :
-      null;
+    let sizeIcon = size ? size : null;
 
     switch (level) {
       case Levels.SUCCESS:
-        return <FontAwesomeIcon icon={faCheckCircle}
-          color="var(--bs-success)" size={sizeIcon} className={className} />;
+        return (
+          <FontAwesomeIcon
+            icon={faCheckCircle}
+            color="var(--bs-success)"
+            size={sizeIcon}
+            className={className}
+          />
+        );
       case Levels.WARNING:
-        return <FontAwesomeIcon icon={faExclamationTriangle}
-          color="var(--bs-warning)" size={sizeIcon} className={className} />;
+        return (
+          <FontAwesomeIcon
+            icon={faExclamationTriangle}
+            color="var(--bs-warning)"
+            size={sizeIcon}
+            className={className}
+          />
+        );
       case Levels.ERROR:
-        return <FontAwesomeIcon icon={faExclamationTriangle}
-          color="var(--bs-danger)" size={sizeIcon} className={className} />;
+        return (
+          <FontAwesomeIcon
+            icon={faExclamationTriangle}
+            color="var(--bs-danger)"
+            size={sizeIcon}
+            className={className}
+          />
+        );
       default:
-        return <FontAwesomeIcon icon={faInfoCircle}
-          color="var(--bs-info)" size={sizeIcon} className={className} />;
+        return (
+          <FontAwesomeIcon
+            icon={faInfoCircle}
+            color="var(--bs-info)"
+            size={sizeIcon}
+            className={className}
+          />
+        );
     }
   }
 }
@@ -157,56 +214,64 @@ class NotificationIcon extends Component {
 class NotificationLink extends Component {
   cleanup() {
     const { markRead, closeToast } = this.props;
-    if (markRead)
-      markRead();
-    if (closeToast)
-      closeToast();
+    if (markRead) markRead();
+    if (closeToast) closeToast();
   }
 
   render() {
-    const { link, linkText, icon, onlyIcon, childClass, iconSize, role } = this.props;
+    const { link, linkText, icon, onlyIcon, childClass, iconSize, role } =
+      this.props;
     let text = "";
     if (!onlyIcon) {
-      text = linkText ?
-        linkText :
-        link;
+      text = linkText ? linkText : link;
     }
-    const displayAs = role ?
-      role :
-      "link";
+    const displayAs = role ? role : "link";
 
     if (!link) {
       return null;
-    }
-    else if (link.startsWith("http")) {
+    } else if (link.startsWith("http")) {
       return (
-        <ExternalLink className={childClass} url={link} title={text} role={displayAs}
-          showLinkIcon={icon || onlyIcon} iconSize={iconSize} onClick={() => this.cleanup()} />
+        <ExternalLink
+          className={childClass}
+          url={link}
+          title={text}
+          role={displayAs}
+          showLinkIcon={icon || onlyIcon}
+          iconSize={iconSize}
+          onClick={() => this.cleanup()}
+        />
       );
     }
-    const linkIcon = icon || onlyIcon ?
-      (<FontAwesomeIcon icon={faLink} size={iconSize} />) :
-      null;
+    const linkIcon =
+      icon || onlyIcon ? (
+        <FontAwesomeIcon icon={faLink} size={iconSize} />
+      ) : null;
 
-    const fullClass = displayAs === "button" ?
-      `${childClass} btn btn-secondary` :
-      childClass;
+    const fullClass =
+      displayAs === "button" ? `${childClass} btn btn-secondary` : childClass;
 
     return (
-      <Link className={fullClass} title={linkText}
-        onClick={() => this.cleanup()} to={link}>{linkIcon} {text}</Link>
+      <Link
+        className={fullClass}
+        title={linkText}
+        onClick={() => this.cleanup()}
+        to={link}
+      >
+        {linkIcon} {text}
+      </Link>
     );
   }
 }
 
 class NotificationsMenu extends Component {
   render() {
-    if (!this.props.enabled)
-      return null;
+    if (!this.props.enabled) return null;
 
-    const badge = this.props.unread ?
-      (<Badge color="danger" className="notification-badge">{this.props.unread}</Badge>) :
-      null;
+    const badge = this.props.unread ? (
+      <Badge color="danger" className="notification-badge">
+        {this.props.unread}
+      </Badge>
+    ) : null;
     return (
       <Fragment>
         {/* This throws an error in test: Warning `Reference` should not be used outside of a `Manager` component. */}
@@ -214,8 +279,12 @@ class NotificationsMenu extends Component {
           <FontAwesomeIcon icon={faInbox} id="notificationsBarIcon" />
           {badge}
         </DropdownToggle>
-        <DropdownMenu className="notification-menu btn-with-menu-options" end
-          key="notifications-bar" aria-labelledby="notifications-menu">
+        <DropdownMenu
+          className="notification-menu btn-with-menu-options"
+          end
+          key="notifications-bar"
+          aria-labelledby="notifications-menu"
+        >
           <NotificationsMenuList {...this.props} />
         </DropdownMenu>
       </Fragment>
@@ -225,27 +294,39 @@ class NotificationsMenu extends Component {
 
 class NotificationsMenuList extends Component {
   render() {
-    const notifications = this.props.notifications.filter(notification =>
-      notification.level !== this.props.levels.INFO &&
-      !notification.read);
-    let renderedNotifications = notifications.map(notification => {
+    const notifications = this.props.notifications.filter(
+      (notification) =>
+        notification.level !== this.props.levels.INFO && !notification.read
+    );
+    let renderedNotifications = notifications.map((notification) => {
       const className = `notification-list-item pt-3 notification ${notification.level.toLowerCase()}`;
-      const markRead = () => { this.props.handlers.markRead(notification.id); };
+      const markRead = () => {
+        this.props.handlers.markRead(notification.id);
+      };
 
       return (
         <div key={notification.id} className={className}>
-          <NotificationDropdownItem notification={notification} markRead={() => markRead()} />
+          <NotificationDropdownItem
+            notification={notification}
+            markRead={() => markRead()}
+          />
         </div>
       );
     });
 
-    const content = renderedNotifications.length ?
-      (<div className="notification-list-container mt-2">{renderedNotifications}</div>) :
-      null;
+    const content = renderedNotifications.length ? (
+      <div className="notification-list-container mt-2">
+        {renderedNotifications}
+      </div>
+    ) : null;
 
     return (
       <Fragment>
-        <Link to="/notifications"><DropdownItem>Notifications ({renderedNotifications.length})</DropdownItem></Link>
+        <Link to="/notifications">
+          <DropdownItem>
+            Notifications ({renderedNotifications.length})
+          </DropdownItem>
+        </Link>
         {content}
       </Fragment>
     );
@@ -255,24 +336,42 @@ class NotificationsMenuList extends Component {
 class NotificationDropdownItem extends Component {
   render() {
     const { notification, markRead, closeToast } = this.props;
-    const { level, topic, desc, link, linkText, timestamp, longDesc } = notification;
+    const { level, topic, desc, link, linkText, timestamp, longDesc } =
+      notification;
 
-    const icon = (<NotificationIcon className="color" level={level} />);
+    const icon = <NotificationIcon className="color" level={level} />;
     const linkObj = (
-      <NotificationLink link={link} linkText={linkText ? linkText : link} markRead={markRead}
-        closeToast={closeToast} icon={true} />
+      <NotificationLink
+        link={link}
+        linkText={linkText ? linkText : link}
+        markRead={markRead}
+        closeToast={closeToast}
+        icon={true}
+      />
     );
-    const read = (<FontAwesomeIcon className="close-icon" icon={faTimes} onClick={() => markRead()} />);
-    const notificationsLink = longDesc ?
-      (<Link to="/notifications">[more info]</Link>) :
-      null;
+    const read = (
+      <FontAwesomeIcon
+        className="close-icon"
+        icon={faTimes}
+        onClick={() => markRead()}
+      />
+    );
+    const notificationsLink = longDesc ? (
+      <Link to="/notifications">[more info]</Link>
+    ) : null;
 
     return (
       <Fragment>
-        <h5 className="pb-1">{icon} {topic} {read}</h5>
-        <p className="pb-1">{desc} {notificationsLink} </p>
+        <h5 className="pb-1">
+          {icon} {topic} {read}
+        </h5>
+        <p className="pb-1">
+          {desc} {notificationsLink}{" "}
+        </p>
         <span>{linkObj}</span>
-        <span className="float-end"><TimeCaption caption=" " time={timestamp} /></span>
+        <span className="float-end">
+          <TimeCaption caption=" " time={timestamp} />
+        </span>
       </Fragment>
     );
   }
@@ -282,57 +381,72 @@ class Notifications extends Component {
   render() {
     const { notifications, handlers } = this.props;
 
-    const newNotifications = notifications && notifications.filter(notification => !notification.read);
-    const readNotifications = notifications && notifications.filter(notification => notification.read);
+    const newNotifications =
+      notifications &&
+      notifications.filter((notification) => !notification.read);
+    const readNotifications =
+      notifications &&
+      notifications.filter((notification) => notification.read);
 
-    let newSection = null, readSection = null;
+    let newSection = null,
+      readSection = null;
     if (!notifications || !notifications.length) {
       newSection = (
         <Fragment>
           <Row className="pt-2 pb-3">
             <Col className="d-flex mb-2 justify-content-between">
-              <h2 >Notifications</h2>
+              <h2>Notifications</h2>
             </Col>
           </Row>
           <p className="font-italic">No unread notifications.</p>
         </Fragment>
       );
-    }
-    else {
+    } else {
       if (newNotifications && newNotifications.length) {
         const newContent = newNotifications
           .sort((a, b) => b.timestamp - a.timestamp)
-          .map(notification => (
-            <NotificationPageItem key={notification.id} notification={notification} read={false}
-              markRead={() => this.props.handlers.markRead(notification.id)} />
+          .map((notification) => (
+            <NotificationPageItem
+              key={notification.id}
+              notification={notification}
+              read={false}
+              markRead={() => this.props.handlers.markRead(notification.id)}
+            />
           ));
 
         newSection = (
           <Fragment>
             <Row className="pt-2 pb-3">
               <Col className="d-flex mb-2 justify-content-between">
-                <h2 >Notifications</h2>
-                <Button color="secondary" size="sm" className="mb-3" onClick={() => { handlers.markAllRead(); }}>
-                  <FontAwesomeIcon icon={faCheck}
-                  /> Mark all as read
+                <h2>Notifications</h2>
+                <Button
+                  color="secondary"
+                  size="sm"
+                  className="mb-3"
+                  onClick={() => {
+                    handlers.markAllRead();
+                  }}
+                >
+                  <FontAwesomeIcon icon={faCheck} /> Mark all as read
                 </Button>
               </Col>
             </Row>
             <Col className="mb-3 ">{newContent}</Col>
           </Fragment>
         );
-      }
-      else {
-        newSection = (
-          <p className="font-italic">No unread notifications.</p>
-        );
+      } else {
+        newSection = <p className="font-italic">No unread notifications.</p>;
       }
       if (readNotifications && readNotifications.length) {
         const readContent = readNotifications
           .sort((a, b) => b.timestamp - a.timestamp)
-          .map(notification => (
-            <NotificationPageItem key={notification.id} notification={notification} read={true}
-              markRead={() => this.props.handlers.markRead(notification.id)} />
+          .map((notification) => (
+            <NotificationPageItem
+              key={notification.id}
+              notification={notification}
+              read={true}
+              markRead={() => this.props.handlers.markRead(notification.id)}
+            />
           ));
         readSection = (
           <Fragment>
@@ -359,54 +473,71 @@ class Notifications extends Component {
 class NotificationPageItem extends Component {
   render() {
     const { notification, markRead, read } = this.props;
-    const { level, topic, desc, link, linkText, timestamp, longDesc, id } = notification;
+    const { level, topic, desc, link, linkText, timestamp, longDesc, id } =
+      notification;
 
-    let markReadButton = null, linkButton = null;
+    let markReadButton = null,
+      linkButton = null;
     if (!read) {
       const readId = `read-button-${id}`;
       markReadButton = (
         <Fragment>
-          <Button id={readId} color="secondary" size="sm"
-            outline onClick={() => markRead()}>
-            <FontAwesomeIcon icon={faCheck}
-            />  Mark as read
+          <Button
+            id={readId}
+            color="secondary"
+            size="sm"
+            outline
+            onClick={() => markRead()}
+          >
+            <FontAwesomeIcon icon={faCheck} /> Mark as read
           </Button>
         </Fragment>
       );
     }
     if (link) {
       linkButton = (
-        <NotificationLink childClass="fs-6"
-          link={link} linkText={linkText}
+        <NotificationLink
+          childClass="fs-6"
+          link={link}
+          linkText={linkText}
           className="link-primary"
-          icon={true} markRead={markRead} />
+          icon={true}
+          markRead={markRead}
+        />
       );
     }
 
-    const readClass = read ?
-      " read" :
-      "";
+    const readClass = read ? " read" : "";
     const levelClass = level.toLowerCase();
     const className = `d-flex flex-row rk-search-result notification ${levelClass}${readClass}`;
 
-    return <div className={className}>
-      <NotificationIcon className="color p-0 m-2 cursor-default" level={level}/>
-      <Col className="d-flex align-items-start flex-column col-9 overflow-hidden">
-        <div className="title d-inline-block">
-          {topic}  {linkButton}
-        </div>
-        <div className="text-rk-text">
-          <span>{desc}</span>
-          <NotificationPageItemDetails text={longDesc} />
-        </div>
-        <div className="mt-auto">
-          <TimeCaption caption=" " time={timestamp} className="text-secondary"/>
-        </div>
-      </Col>
-      <Col className="d-flex align-items-end flex-column flex-shrink-0">
-        {markReadButton}
-      </Col>
-    </div>;
+    return (
+      <div className={className}>
+        <NotificationIcon
+          className="color p-0 m-2 cursor-default"
+          level={level}
+        />
+        <Col className="d-flex align-items-start flex-column col-9 overflow-hidden">
+          <div className="title d-inline-block">
+            {topic} {linkButton}
+          </div>
+          <div className="text-rk-text">
+            <span>{desc}</span>
+            <NotificationPageItemDetails text={longDesc} />
+          </div>
+          <div className="mt-auto">
+            <TimeCaption
+              caption=" "
+              time={timestamp}
+              className="text-secondary"
+            />
+          </div>
+        </Col>
+        <Col className="d-flex align-items-end flex-column flex-shrink-0">
+          {markReadButton}
+        </Col>
+      </div>
+    );
   }
 }
 
@@ -414,8 +545,7 @@ function NotificationPageItemDetails(props) {
   const [visible, setVisible] = useState(false);
   const toggleVisibility = () => setVisible(!visible);
 
-  if (!props.text)
-    return null;
+  if (!props.text) return null;
   return (
     <Fragment>
       <br />
@@ -430,7 +560,11 @@ function NotificationPageItemDetails(props) {
   );
 }
 
-
 export {
-  NotificationsMenu, NotificationToast, NotificationDropdownItem, CloseToast, Notifications, NotificationPageItem
+  NotificationsMenu,
+  NotificationToast,
+  NotificationDropdownItem,
+  CloseToast,
+  Notifications,
+  NotificationPageItem,
 };

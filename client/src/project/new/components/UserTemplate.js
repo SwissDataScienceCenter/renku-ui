@@ -23,54 +23,70 @@
  *  UserTemplate field group component
  */
 import React, { Component, Fragment } from "react";
-import { Docs, Links } from "../../../utils/constants/Docs";
 import { Button, FormGroup, FormText, Input } from "reactstrap";
-import { ErrorLabel, InputHintLabel, InputLabel } from "../../../utils/components/formlabels/FormLabels";
-import { CoreErrorAlert } from "../../../utils/components/errors/CoreErrorAlert";
+
+import { Docs, Links } from "../../../utils/constants/Docs";
+import {
+  ErrorLabel,
+  InputHintLabel,
+  InputLabel,
+} from "../../../components/formlabels/FormLabels";
+import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
+import { ExternalLink } from "../../../components/ExternalLinks";
 
 const ErrorTemplateFeedback = ({ templates, meta, input }) => {
-  if (input.userRepo)
-    templates = meta.userTemplates;
+  if (input.userRepo) templates = meta.userTemplates;
   // check template errors and provide adequate feedback
   let alert = null;
-  let error = templates.errors && templates.errors.length ?
-    templates.errors[0] :
-    null;
+  let error =
+    templates.errors && templates.errors.length ? templates.errors[0] : null;
 
-  if (error) {
+  if (templates.fetched != null && !templates.fetching && error) {
     const fatal = !(templates.all && templates.all.length);
-    const suggestion = input.userRepo ?
-      null :
-      (<span>
-        You can try refreshing the page. If the error persists, you should contact the development team on&nbsp;
-        <a href={Links.GITTER} target="_blank" rel="noreferrer noopener">Gitter</a> or&nbsp;
-        <a href={Links.GITHUB} target="_blank" rel="noreferrer noopener">GitHub</a>.
-      </span>);
+    const suggestion = input.userRepo ? null : (
+      <span>
+        You can try refreshing the page. If the error persists, you should
+        contact the development team on&nbsp;
+        <a href={Links.GITTER} target="_blank" rel="noreferrer noopener">
+          Gitter
+        </a>{" "}
+        or&nbsp;
+        <a href={Links.GITHUB} target="_blank" rel="noreferrer noopener">
+          GitHub
+        </a>
+        .
+      </span>
+    );
 
     // extract message and details
-    let details = null, errorObject = null;
+    let details = null,
+      errorObject = null;
     if (typeof error === "string") {
       details = error;
       errorObject = { code: 10000 };
-    }
-    else {
+    } else {
       const first = error[Object.keys(error)[0]];
-      if (typeof error === "string") {
+      if (typeof first === "string") {
         details = first;
         errorObject = { code: 10000 };
-      }
-      else {
+      } else {
         details = first.userMessage ? first.userMessage : first.reason;
         errorObject = first;
-        if (fatal && !input.userRepo)
-          errorObject.code = 10000;
+        if (fatal && !input.userRepo) errorObject.code = 10000;
       }
     }
-    const message = fatal ?
-      "Unable to fetch templates." :
-      "Some templates could not be fetched.";
+    const message = fatal
+      ? "Unable to fetch templates."
+      : "Some templates could not be fetched.";
 
-    alert = (<CoreErrorAlert details={details} error={errorObject} message={message} suggestion={suggestion} />);
+    alert = (
+      <CoreErrorAlert
+        details={details}
+        error={errorObject}
+        message={message}
+        suggestion={suggestion}
+      />
+    );
   }
   return alert;
 };
@@ -80,7 +96,7 @@ class UserTemplate extends Component {
     super(props);
     this.state = {
       missingUrl: false,
-      missingRef: false
+      missingRef: false,
     };
   }
 
@@ -91,18 +107,18 @@ class UserTemplate extends Component {
     const { missingUrl, missingRef } = this.state;
     let newState = {
       missingUrl: false,
-      missingRef: false
+      missingRef: false,
     };
-    if (!meta.userTemplates.url)
-      newState.missingUrl = true;
-    if (!meta.userTemplates.ref)
-      newState.missingRef = true;
-    if (missingUrl !== newState.missingUrl || missingRef !== newState.missingRef)
+    if (!meta.userTemplates.url) newState.missingUrl = true;
+    if (!meta.userTemplates.ref) newState.missingRef = true;
+    if (
+      missingUrl !== newState.missingUrl ||
+      missingRef !== newState.missingRef
+    )
       this.setState(newState);
 
     // try to get user templates if repository data are available
-    if (newState.missingUrl || newState.missingRef)
-      return;
+    if (newState.missingUrl || newState.missingRef) return;
     return this.props.handlers.getUserTemplates();
   }
 
@@ -110,51 +126,69 @@ class UserTemplate extends Component {
     const { meta, handlers, config } = this.props;
 
     // placeholders and links
-    let urlExample = "https://github.com/SwissDataScienceCenter/renku-project-template";
+    let urlExample =
+      "https://github.com/SwissDataScienceCenter/renku-project-template";
     if (config.repositories && config.repositories.length)
       urlExample = config.repositories[0].url;
     let refExample = "0.1.11";
     if (config.repositories && config.repositories.length)
       refExample = config.repositories[0].ref;
     const templatesDocs = (
-      <a href={Docs.rtdReferencePage("templates.html")}
-        target="_blank" rel="noopener noreferrer">
-        Renku templates
-      </a>
+      <ExternalLink
+        role="text"
+        title="Renku templates"
+        url={Docs.rtdReferencePage("templates.html")}
+      />
     );
     return (
       <Fragment>
         <FormGroup className="field-group">
-          <InputLabel isRequired="true" text="Repository URL"/>
+          <InputLabel isRequired="true" text="Repository URL" />
           <Input
             type="text"
             value={meta.userTemplates.url}
-            onChange={(e) => handlers.setTemplateProperty("url", e.target.value)}
+            onChange={(e) =>
+              handlers.setTemplateProperty("url", e.target.value)
+            }
             data-cy="url-repository"
-            invalid={this.state.missingUrl} />
-          {this.state.missingUrl && <ErrorLabel text="Provide a template repository URL" />}
+            invalid={this.state.missingUrl}
+          />
+          {this.state.missingUrl && (
+            <ErrorLabel text="Provide a template repository URL" />
+          )}
           <FormText>
-            A valid {templatesDocs} repository. E.G. { urlExample }
+            A valid {templatesDocs} repository. E.G. {urlExample}
           </FormText>
         </FormGroup>
 
         <FormGroup className="field-group">
-          <InputLabel isRequired="true" text="Repository Reference"/>
+          <InputLabel isRequired="true" text="Repository Reference" />
           <Input
             type="text"
             value={meta.userTemplates.ref}
-            onChange={(e) => handlers.setTemplateProperty("ref", e.target.value)}
+            onChange={(e) =>
+              handlers.setTemplateProperty("ref", e.target.value)
+            }
             data-cy="ref-repository"
-            invalid={this.state.missingRef} />
-          {this.state.missingRef && <ErrorLabel text="Provide a template repository reference" />}
-          <InputHintLabel text={`Preferably a tag or a commit.
-          A branch is also valid, but it is not a static reference E.G. ${refExample}`} />
+            invalid={this.state.missingRef}
+          />
+          {this.state.missingRef && (
+            <ErrorLabel text="Provide a template repository reference" />
+          )}
+          <InputHintLabel
+            text={`Preferably a tag or a commit.
+          A branch is also valid, but it is not a static reference E.G. ${refExample}`}
+          />
         </FormGroup>
         <FormGroup className="field-group">
           <Button
-            id="fetch-custom-templates" className="btn-outline-rk-green" size="sm"
+            id="fetch-custom-templates"
+            className="btn-outline-rk-green"
+            size="sm"
             data-cy="fetch-templates-button"
-            onClick={() => this.fetchTemplates()}>Fetch templates
+            onClick={() => this.fetchTemplates()}
+          >
+            Fetch templates
           </Button>
         </FormGroup>
       </Fragment>

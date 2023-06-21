@@ -39,9 +39,10 @@ function Maintenance(props: MaintenanceProps) {
   const { info } = props;
 
   const headerText = "Maintenance";
-  const body = info && info !== "true" && info !== "1" ?
-    info :
-    "Renku is undergoing maintenance. It should be available again soon. Please check back in a little while.";
+  const body =
+    info && info !== "true" && info !== "1"
+      ? info
+      : "Renku is undergoing maintenance. It should be available again soon. Please check back in a little while.";
   return (
     <Router>
       <div>
@@ -49,7 +50,8 @@ function Maintenance(props: MaintenanceProps) {
         <main role="main" className="container-fluid">
           <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
             <h1 className="text-center text-primary">
-              <FontAwesomeIcon icon={faWrench} /> {headerText} <FontAwesomeIcon icon={faWrench} />
+              <FontAwesomeIcon icon={faWrench} /> {headerText}{" "}
+              <FontAwesomeIcon icon={faWrench} />
             </h1>
             <br />
             <p className="text-center">{body}</p>
@@ -77,14 +79,17 @@ function Unavailable(props: UnavailableProps) {
               <FontAwesomeIcon icon={faWrench} /> RenkuLab Down
             </h1>
             <br />
-            <p>Some of the resources on RenkuLab are temporarily unavailable.</p>
+            <p>
+              Some of the resources on RenkuLab are temporarily unavailable.
+            </p>
           </section>
         </Col>
       </Row>
-      {statusLink ?
-        <UnavailableDetailsStatuspage model={props.model} /> :
+      {statusLink ? (
+        <UnavailableDetailsStatuspage model={props.model} />
+      ) : (
         <UnavailableDetailsUnknown />
-      }
+      )}
     </main>
   );
 }
@@ -93,25 +98,38 @@ function UnavailableDetailsUnknown() {
   const reload = () => {
     window.location.reload();
   };
-  return <Row>
-    <Col md={{ size: 6, offset: 3 }}>
-      <p className="text-center">
-        Please try to <Button color="primary" size="sm" onClick={() => reload()}>reload</Button> the
-        application in a few minutes.
-      </p>
-    </Col></Row>;
+  return (
+    <Row>
+      <Col md={{ size: 6, offset: 3 }}>
+        <p className="text-center">
+          Please try to{" "}
+          <Button color="primary" size="sm" onClick={() => reload()}>
+            reload
+          </Button>{" "}
+          the application in a few minutes.
+        </p>
+      </Col>
+    </Row>
+  );
 }
 
 interface UnavailableDetailsStatuspageProps {
   model: unknown;
 }
-function UnavailableDetailsStatuspage({ model }: UnavailableDetailsStatuspageProps) {
-  return <Row>
-    <Col md={{ size: 10, offset: 1 }} lg={{ size: 8, offset: 2 }} xl={{ size: 8, offset: 3 }}>
-      <StatuspageDisplay model={model} />
-    </Col>
-  </Row>;
-
+function UnavailableDetailsStatuspage({
+  model,
+}: UnavailableDetailsStatuspageProps) {
+  return (
+    <Row>
+      <Col
+        md={{ size: 10, offset: 1 }}
+        lg={{ size: 8, offset: 2 }}
+        xl={{ size: 8, offset: 3 }}
+      >
+        <StatuspageDisplay model={model} />
+      </Col>
+    </Row>
+  );
 }
 
 export { Maintenance, Unavailable };
