@@ -57,6 +57,18 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    datasetsRemove(datasetName: string, name = "datasetsRemove") {
+      const body = { result: { name, remote_branch: "master" } };
+      const fixture = { body };
+
+      cy.intercept(
+        "POST",
+        "/ui-server/api/renku/*/datasets.remove",
+        fixture
+      ).as(name);
+      return this;
+    }
+
     invalidDataset(
       id = "a46c10c94a40359181965e5c4cdabc",
       name = "invalidDataset"

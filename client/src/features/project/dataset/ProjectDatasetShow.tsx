@@ -21,6 +21,7 @@ import { RootStateOrAny, useSelector } from "react-redux";
 
 import { ACCESS_LEVELS } from "../../../api-client";
 import DatasetView from "../../../dataset/Dataset.present";
+import AppContext from "../../../utils/context/appContext";
 import { Url } from "../../../utils/helpers/url";
 import { useGetDatasetFilesQuery } from "../projectCoreApi";
 import type {
@@ -122,6 +123,7 @@ function mergeCoreAndKgDatasets(
 }
 
 function ProjectDatasetView(props: ProjectDatasetViewProps) {
+  const { client } = React.useContext(AppContext);
   const coreDataset = findDataset(props.datasetId, props.datasets);
   const datasetId = findDatasetId(props.datasetId, props.datasets);
 
@@ -157,7 +159,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     isKgFetching;
   return (
     <DatasetView
-      client={undefined}
+      client={client}
       dataset={currentDataset}
       datasets={props.datasets}
       files={datasetFiles}
