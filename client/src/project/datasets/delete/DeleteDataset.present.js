@@ -52,12 +52,39 @@ function ModalContent({
     );
   }
 
+  if (submitLoader != null && submitLoader.value) {
+    return (
+      <div className="d-flex flex-row-reverse">
+        <FormText color="primary">
+          <Loader size={16} inline margin={2} />
+          {submitLoader.text}
+          <br />
+        </FormText>
+      </div>
+    );
+  }
+
   return (
     <Col>
       <p>
         Are you sure you want to delete dataset <strong>{dataset.name}</strong>?
       </p>
-      <>
+      <div className="d-flex flex-row-reverse">
+        <Button
+          type="submit"
+          onClick={deleteDataset}
+          disabled={submitLoader.value}
+          className="mt-1 btn-rk-pink"
+        >
+          Delete dataset
+        </Button>
+        <Button
+          disabled={submitLoader.value}
+          className="mt-1 me-2 btn-outline-rk-pink"
+          onClick={closeModal}
+        >
+          Cancel
+        </Button>
         {submitLoader != null && submitLoader.value && (
           <FormText color="primary">
             <Loader size={16} inline margin={2} />
@@ -65,22 +92,7 @@ function ModalContent({
             <br />
           </FormText>
         )}
-        <Button
-          disabled={submitLoader.value}
-          className="float-right mt-1 ms-2 btn-outline-rk-pink"
-          onClick={closeModal}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          onClick={deleteDataset}
-          disabled={submitLoader.value}
-          className="float-right mt-1 btn-rk-pink"
-        >
-          Delete dataset
-        </Button>
-      </>
+      </div>
     </Col>
   );
 }
