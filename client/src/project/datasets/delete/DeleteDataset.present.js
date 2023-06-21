@@ -23,7 +23,7 @@
  *  Presentational components.
  */
 
-import React, { Fragment } from "react";
+import React from "react";
 import {
   Row,
   Col,
@@ -57,14 +57,14 @@ function ModalContent({
       <p>
         Are you sure you want to delete dataset <strong>{dataset.name}</strong>?
       </p>
-      <Fragment>
-        {submitLoader !== undefined && submitLoader.value ? (
+      <>
+        {submitLoader != null && submitLoader.value && (
           <FormText color="primary">
             <Loader size={16} inline margin={2} />
             {submitLoader.text}
             <br />
           </FormText>
-        ) : null}
+        )}
         <Button
           disabled={submitLoader.value}
           className="float-right mt-1 ms-2 btn-outline-rk-pink"
@@ -80,7 +80,7 @@ function ModalContent({
         >
           Delete dataset
         </Button>
-      </Fragment>
+      </>
     </Col>
   );
 }

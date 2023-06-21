@@ -126,9 +126,9 @@ describe("Project dataset", () => {
         cy.get_cy("list-card").should("have.length", totalDatasets);
         const dataset = datasets[0];
         const datasetIdentifier = dataset.identifier.replace(/-/g, "");
-        fixtures.datasetById(datasetIdentifier, "getDatasetById0");
+        fixtures.datasetById(datasetIdentifier, "getDatasetById");
         cy.get_cy("list-card-title").contains(dataset.title).click();
-        cy.wait("@getDatasetById0");
+        cy.wait("@getDatasetById");
         cy.get_cy("delete-dataset-button").should("exist").click();
         fixtures.datasetsRemove(datasetIdentifier);
         cy.get("button").contains("Delete dataset").should("exist").click();
