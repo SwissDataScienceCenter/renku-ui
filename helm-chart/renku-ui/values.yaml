@@ -97,11 +97,29 @@ client:
     runAsNonRoot: true
     allowPrivilegeEscalation: false
 
-  welcomePage:
+  # This defines the message displayed on the home page of logged in users.
+  dashboardMessage:
+    enabled: false
+    # This is the main message and is rendered as Markdown content.
     text: |
-      ## Welcome to Renku!
-      Renku is software for collaborative data science. With Renku you can share code and data,
-      discuss problems and solutions, and coordinate data-science projects.
+      # Welcome to Renku! 🐸
+
+      ✨This is an example welcome message.✨
+    # This message is displayed when the user click "Read more"
+    # and is rendered as Markdown content.
+    # Set this to the empty string "" to disable the "Read more" button.
+    additionalText: |
+      ℹ️ Renku documentation: https://renku.readthedocs.io/en/stable/
+    # Style of the message card. Allowed values are:
+    # - "plain" -> simple white background card, no icon
+    # - "success" -> green background, green checkmark icon
+    # - "info" -> blue background, "i" in circle icon
+    # - "warning" -> yellow background, triangle exclamation mark icon
+    # - "danger" -> red background, triangle exclamation mark icon
+    style: info
+    # When this is set to true, users can dismiss the message and hide
+    # it form the dashboard page until the tab is refreshed.
+    dismissible: true
 
   templates:
     custom: true
