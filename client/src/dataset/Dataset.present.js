@@ -30,7 +30,7 @@ import {
   getDatasetImageUrl,
   getUpdatedDatasetImage,
 } from "./DatasetFunctions";
-import DeleteDataset from "../project/datasets/delete/index";
+import DeleteDataset from "../project/datasets/delete";
 import Time from "../utils/helpers/Time";
 import FileExplorer from "../components/FileExplorer";
 import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
