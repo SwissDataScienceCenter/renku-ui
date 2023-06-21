@@ -23,6 +23,7 @@ import {
   CoreVersionResponse,
   NotebooksVersion,
   NotebooksVersionResponse,
+  CoreVersionDetails,
 } from "./versions";
 
 export const versionsApi = createApi({
@@ -34,17 +35,23 @@ export const versionsApi = createApi({
     getCoreVersions: builder.query<CoreVersions, void>({
       query: () => ({
         url: "renku/versions",
+        validateStatus: (response, body) => {
+          return response.status < 400 && !body.error?.code;
+        },
       }),
       transformResponse: (response: CoreVersionResponse) => {
+        if (response.error) throw new Error(response.error.userMessage);
+        const content = response.result as CoreVersionDetails;
+
         const data: CoreVersions = {
-          name: response.name,
+          name: content.name,
           coreVersions: [],
           metadataVersions: [],
-          details: response.versions,
+          details: content.versions,
         };
-        data.name = response.name;
-        if (response.versions?.length >= 1) {
-          for (const coreVersionObject of response.versions) {
+        data.name = content.name;
+        if (content.versions?.length >= 1) {
+          for (const coreVersionObject of content.versions) {
             const metadataVersion = parseInt(
               coreVersionObject.data.metadata_version
             );
