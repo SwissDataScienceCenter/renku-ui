@@ -50,6 +50,7 @@ import {
   InputGroup,
   InputGroupText,
   Label,
+  Row,
   UncontrolledTooltip,
 } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
@@ -86,6 +87,7 @@ import { Docs } from "../../utils/constants/Docs";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { Url } from "../../utils/helpers/url";
 import styles from "./ProjectSettingsSessions.module.scss";
+import { ThrottledTooltip } from "../../components/Tooltip";
 
 export const ProjectSettingsSessions = () => {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -253,7 +255,37 @@ export const ProjectSettingsSessions = () => {
         versionUrl={versionUrl}
         devAccess={devAccess}
       />
-      <SessionClassOption
+
+      <CpuOption
+        projectConfig={projectConfig}
+        projectConfigIsFetching={projectConfigIsFetching}
+        projectRepositoryUrl={projectRepositoryUrl}
+        versionUrl={versionUrl}
+        devAccess={devAccess}
+      />
+      <RamOption
+        projectConfig={projectConfig}
+        projectConfigIsFetching={projectConfigIsFetching}
+        projectRepositoryUrl={projectRepositoryUrl}
+        versionUrl={versionUrl}
+        devAccess={devAccess}
+      />
+      <StorageOptionV2
+        projectConfig={projectConfig}
+        projectConfigIsFetching={projectConfigIsFetching}
+        projectRepositoryUrl={projectRepositoryUrl}
+        versionUrl={versionUrl}
+        devAccess={devAccess}
+      />
+      <GpuOption
+        projectConfig={projectConfig}
+        projectConfigIsFetching={projectConfigIsFetching}
+        projectRepositoryUrl={projectRepositoryUrl}
+        versionUrl={versionUrl}
+        devAccess={devAccess}
+      />
+
+      {/* <SessionClassOption
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
@@ -266,7 +298,7 @@ export const ProjectSettingsSessions = () => {
         projectRepositoryUrl={projectRepositoryUrl}
         versionUrl={versionUrl}
         devAccess={devAccess}
-      />
+      /> */}
       <AutoFetchLfsOption
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
@@ -275,13 +307,13 @@ export const ProjectSettingsSessions = () => {
         devAccess={devAccess}
       />
 
-      <ProjectSettingsSessionsOutdated
+      {/* <ProjectSettingsSessionsOutdated
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
         versionUrl={versionUrl}
         devAccess={devAccess}
-      />
+      /> */}
 
       <ProjectSettingsSessionsAdvanced
         projectConfig={projectConfig}
@@ -320,7 +352,7 @@ const SessionsDiv = ({
         <SavingBadge projectConfigIsFetching={projectConfigIsFetching} />
       )}
     </h3>
-    <div className="form-rk-green">{children}</div>
+    <div className="row form-rk-green">{children}</div>
   </div>
 );
 
@@ -528,6 +560,430 @@ const ResetOption = ({ optionId, disabled, onReset }: ResetOptionProps) => {
     </>
   );
 };
+
+interface CpuOptionProps {
+  projectConfig: ProjectConfig;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
+}
+
+function CpuOption({
+  projectConfig,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
+}: CpuOptionProps) {
+  // Temporary value for optimistic UI update
+  const [newValue, setNewValue] = useState<number | null>(null);
+
+  const currentCpuCount =
+    newValue ??
+    projectConfig.config.sessions?.legacyConfig?.cpuRequest ??
+    projectConfig.default.sessions?.legacyConfig?.cpuRequest;
+
+  const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation({
+    fixedCacheKey: "project-settings",
+  });
+  const debouncedUpdateConfig = useMemo(
+    () => debounce(updateConfig, /*wait=*/ 1_000),
+    [updateConfig]
+  );
+
+  const onChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.valueAsNumber;
+      setNewValue(value);
+      debouncedUpdateConfig({
+        projectRepositoryUrl,
+        versionUrl,
+        update: {
+          "interactive.cpu_request": `${value}`,
+        },
+      });
+    },
+    [debouncedUpdateConfig, projectRepositoryUrl, versionUrl]
+  );
+
+  const onReset = useCallback(() => {
+    setNewValue(
+      projectConfig.default.sessions?.legacyConfig?.cpuRequest ?? null
+    );
+    updateConfig({
+      projectRepositoryUrl,
+      versionUrl,
+      update: {
+        "interactive.cpu_request": null,
+      },
+    });
+  }, [
+    projectConfig.default.sessions?.legacyConfig?.cpuRequest,
+    projectRepositoryUrl,
+    updateConfig,
+    versionUrl,
+  ]);
+
+  // Reset the temporary value when the API responds with an error
+  useEffect(() => {
+    if (isError) {
+      setNewValue(null);
+    }
+  }, [isError]);
+
+  const disabled = !devAccess || isLoading || projectConfigIsFetching;
+
+  return (
+    <Col xs={6}>
+      <FormGroup className="field-group">
+        <Label>Number of CPUs</Label>
+        {devAccess && (
+          <ResetOption
+            optionId="project-settings-sessions-cpu"
+            disabled={disabled}
+            onReset={onReset}
+          />
+        )}
+        <InputGroup>
+          <Input
+            type="number"
+            className={cx(styles.inputNumber, "rounded-start")}
+            min={0.1}
+            max={64}
+            step={0.1}
+            value={currentCpuCount}
+            onChange={onChange}
+            disabled={disabled}
+          />
+          <InputGroupText className={"rounded-end"}>CPUs</InputGroupText>
+        </InputGroup>
+      </FormGroup>
+    </Col>
+  );
+}
+
+interface RamOptionProps {
+  projectConfig: ProjectConfig;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
+}
+
+function RamOption({
+  projectConfig,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
+}: RamOptionProps) {
+  // Temporary value for optimistic UI update
+  const [newValue, setNewValue] = useState<number | null>(null);
+
+  const currentRamAmount =
+    newValue ??
+    projectConfig.config.sessions?.legacyConfig?.memoryRequest ??
+    projectConfig.default.sessions?.legacyConfig?.memoryRequest;
+
+  const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation({
+    fixedCacheKey: "project-settings",
+  });
+  const debouncedUpdateConfig = useMemo(
+    () => debounce(updateConfig, /*wait=*/ 1_000),
+    [updateConfig]
+  );
+
+  const onChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.valueAsNumber;
+      setNewValue(value);
+      debouncedUpdateConfig({
+        projectRepositoryUrl,
+        versionUrl,
+        update: {
+          "interactive.mem_request": `${value}G`,
+        },
+      });
+    },
+    [debouncedUpdateConfig, projectRepositoryUrl, versionUrl]
+  );
+
+  const onReset = useCallback(() => {
+    setNewValue(
+      projectConfig.default.sessions?.legacyConfig?.memoryRequest ?? null
+    );
+    updateConfig({
+      projectRepositoryUrl,
+      versionUrl,
+      update: {
+        "interactive.mem_request": null,
+      },
+    });
+  }, [
+    projectConfig.default.sessions?.legacyConfig?.memoryRequest,
+    projectRepositoryUrl,
+    updateConfig,
+    versionUrl,
+  ]);
+
+  // Reset the temporary value when the API responds with an error
+  useEffect(() => {
+    if (isError) {
+      setNewValue(null);
+    }
+  }, [isError]);
+
+  const disabled = !devAccess || isLoading || projectConfigIsFetching;
+
+  return (
+    <Col xs={6}>
+      <FormGroup className="field-group">
+        <Label>Amount of Memory</Label>
+        {devAccess && (
+          <ResetOption
+            optionId="project-settings-sessions-memory"
+            disabled={disabled}
+            onReset={onReset}
+          />
+        )}
+        <InputGroup>
+          <Input
+            type="number"
+            className={cx(styles.inputNumber, "rounded-start")}
+            min={1}
+            max={1024}
+            step={1}
+            value={currentRamAmount}
+            onChange={onChange}
+            disabled={disabled}
+          />
+          <InputGroupText
+            id="session-memory-option-gb"
+            className={"rounded-end"}
+          >
+            GB
+          </InputGroupText>
+          <ThrottledTooltip
+            target="session-memory-option-gb"
+            tooltip="Gigabytes"
+          />
+        </InputGroup>
+      </FormGroup>
+    </Col>
+  );
+}
+
+interface StorageOptionProps {
+  projectConfig: ProjectConfig;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
+}
+
+function StorageOptionV2({
+  projectConfig,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
+}: StorageOptionProps) {
+  // Temporary value for optimistic UI update
+  const [newValue, setNewValue] = useState<number | null>(null);
+
+  const currentStorage =
+    newValue ??
+    projectConfig.config.sessions?.storage ??
+    projectConfig.default.sessions?.storage;
+
+  const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation({
+    fixedCacheKey: "project-settings",
+  });
+  const debouncedUpdateConfig = useMemo(
+    () => debounce(updateConfig, /*wait=*/ 1_000),
+    [updateConfig]
+  );
+
+  const onChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.valueAsNumber;
+      setNewValue(value);
+      debouncedUpdateConfig({
+        projectRepositoryUrl,
+        versionUrl,
+        update: {
+          "interactive.disk_request": `${value}G`,
+        },
+      });
+    },
+    [debouncedUpdateConfig, projectRepositoryUrl, versionUrl]
+  );
+
+  const onReset = useCallback(() => {
+    setNewValue(projectConfig.default.sessions?.storage ?? null);
+    updateConfig({
+      projectRepositoryUrl,
+      versionUrl,
+      update: {
+        "interactive.disk_request": null,
+      },
+    });
+  }, [
+    projectConfig.default.sessions?.storage,
+    projectRepositoryUrl,
+    updateConfig,
+    versionUrl,
+  ]);
+
+  // Reset the temporary value when the API responds with an error
+  useEffect(() => {
+    if (isError) {
+      setNewValue(null);
+    }
+  }, [isError]);
+
+  const disabled = !devAccess || isLoading || projectConfigIsFetching;
+
+  return (
+    <Col xs={6}>
+      <FormGroup className="field-group">
+        <Label>Amount of Storage</Label>
+        {devAccess && (
+          <ResetOption
+            optionId="project-settings-sessions-storage"
+            disabled={disabled}
+            onReset={onReset}
+          />
+        )}
+        <InputGroup>
+          <Input
+            type="number"
+            className={cx(styles.inputNumber, "rounded-start")}
+            min={1}
+            max={1024}
+            step={1}
+            value={currentStorage}
+            onChange={onChange}
+            disabled={disabled}
+          />
+          <InputGroupText
+            id="session-storage-option-gb"
+            className={"rounded-end"}
+          >
+            GB
+          </InputGroupText>
+          <ThrottledTooltip
+            target="session-storage-option-gb"
+            tooltip="Gigabytes"
+          />
+        </InputGroup>
+      </FormGroup>
+    </Col>
+  );
+}
+
+interface GpuOptionProps {
+  projectConfig: ProjectConfig;
+  projectConfigIsFetching: boolean;
+  projectRepositoryUrl: string;
+  versionUrl: string;
+  devAccess: boolean;
+}
+
+function GpuOption({
+  projectConfig,
+  projectConfigIsFetching,
+  projectRepositoryUrl,
+  versionUrl,
+  devAccess,
+}: GpuOptionProps) {
+  // Temporary value for optimistic UI update
+  const [newValue, setNewValue] = useState<number | null>(null);
+
+  const currentGpuCount =
+    newValue ??
+    projectConfig.config.sessions?.legacyConfig?.gpuRequest ??
+    projectConfig.default.sessions?.legacyConfig?.gpuRequest;
+
+  const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation({
+    fixedCacheKey: "project-settings",
+  });
+  const debouncedUpdateConfig = useMemo(
+    () => debounce(updateConfig, /*wait=*/ 1_000),
+    [updateConfig]
+  );
+
+  const onChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.valueAsNumber;
+      setNewValue(value);
+      debouncedUpdateConfig({
+        projectRepositoryUrl,
+        versionUrl,
+        update: {
+          "interactive.gpu_request": `${value}`,
+        },
+      });
+    },
+    [debouncedUpdateConfig, projectRepositoryUrl, versionUrl]
+  );
+
+  const onReset = useCallback(() => {
+    setNewValue(
+      projectConfig.default.sessions?.legacyConfig?.gpuRequest ?? null
+    );
+    updateConfig({
+      projectRepositoryUrl,
+      versionUrl,
+      update: {
+        "interactive.gpu_request": null,
+      },
+    });
+  }, [
+    projectConfig.default.sessions?.legacyConfig?.gpuRequest,
+    projectRepositoryUrl,
+    updateConfig,
+    versionUrl,
+  ]);
+
+  // Reset the temporary value when the API responds with an error
+  useEffect(() => {
+    if (isError) {
+      setNewValue(null);
+    }
+  }, [isError]);
+
+  const disabled = !devAccess || isLoading || projectConfigIsFetching;
+
+  return (
+    <Col xs={6}>
+      <FormGroup className="field-group">
+        <Label>Number of GPUs</Label>
+        {devAccess && (
+          <ResetOption
+            optionId="project-settings-sessions-gpu"
+            disabled={disabled}
+            onReset={onReset}
+          />
+        )}
+        <InputGroup>
+          <Input
+            type="number"
+            className={cx(styles.inputNumber, "rounded-start")}
+            min={1}
+            max={8}
+            step={1}
+            value={currentGpuCount}
+            onChange={onChange}
+            disabled={disabled}
+          />
+          <InputGroupText className={"rounded-end"}>GPUs</InputGroupText>
+        </InputGroup>
+      </FormGroup>
+    </Col>
+  );
+}
 
 interface SessionClassOptionProps {
   projectConfig: ProjectConfig;

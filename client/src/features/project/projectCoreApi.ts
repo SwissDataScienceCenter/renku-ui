@@ -303,14 +303,18 @@ const transformGetConfigRawResponse = (
     ProjectConfigSection["sessions"]
   >["legacyConfig"] = {
     cpuRequest: safeParseInt(projectSessionsConfig["interactive.cpu_request"]),
-    memoryRequest: projectSessionsConfig["interactive.mem_request"],
+    memoryRequest: safeParseInt(
+      projectSessionsConfig["interactive.mem_request"]
+    ),
     gpuRequest: safeParseInt(projectSessionsConfig["interactive.gpu_request"]),
   };
   const defaultLegacySessionsConfig: NonNullable<
     ProjectConfigSection["sessions"]
   >["legacyConfig"] = {
     cpuRequest: safeParseInt(defaultSessionsConfig["interactive.cpu_request"]),
-    memoryRequest: defaultSessionsConfig["interactive.mem_request"],
+    memoryRequest: safeParseInt(
+      defaultSessionsConfig["interactive.mem_request"]
+    ),
     gpuRequest: safeParseInt(defaultSessionsConfig["interactive.gpu_request"]),
   };
 

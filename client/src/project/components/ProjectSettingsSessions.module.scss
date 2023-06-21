@@ -21,3 +21,10 @@
     border-radius: 0;
   }
 }
+
+.inputNumber {
+  :global(.input-group) & {
+    width: 120px;
+    border-radius: 0;
+  }
+}
