@@ -27,12 +27,13 @@ import {
   StoreEnhancer,
   configureStore,
 } from "@reduxjs/toolkit";
-import { dataServicesApi } from "../../features/dataServices/dataServicesApi";
 
+import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
+import { dataServicesApi } from "../../features/dataServices/dataServicesApi";
 import { displaySlice } from "../../features/display/displaySlice";
+import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
-import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
 import { projectKgApi } from "../../features/project/projectKgApi";
 import { projectsApi } from "../../features/projects/projectsApi";
@@ -52,6 +53,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
 ) => {
   const enhancedReducer = {
     ...renkuStateModelReducer,
+    [dashboardMessageSlice.name]: dashboardMessageSlice.reducer,
     [dataServicesApi.reducerPath]: dataServicesApi.reducer,
     [displaySlice.name]: displaySlice.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,

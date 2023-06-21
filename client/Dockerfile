@@ -1,4 +1,4 @@
-FROM node:16.14.2-alpine
+FROM node:18.16.0-alpine AS builder
 
 RUN apk update && apk add python3 make g++
 
@@ -28,9 +28,10 @@ RUN npm ci && \
 
 FROM nginxinc/nginx-unprivileged:1.20-alpine
 
-COPY --from=0 /app/build /usr/share/nginx/html
+COPY --from=builder /app/build /usr/share/nginx/html
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+COPY scripts/generate_sitemap.sh /app/scripts/generate_sitemap.sh
 
 # Set up the config files written by docker-entrypoint
 USER root

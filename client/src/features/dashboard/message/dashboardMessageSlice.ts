@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,13 +16,27 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  Dataset/import
- *  Components for the import Dataset page
- */
+import { createSlice } from "@reduxjs/toolkit";
+import { createSliceSelector } from "../../../utils/customHooks/UseSliceSelector";
 
-import ImportDataset from "./DatasetImport.container";
+interface DashboardMessageState {
+  dismissed: boolean;
+}
 
-export default ImportDataset;
+const initialState: DashboardMessageState = {
+  dismissed: false,
+};
+
+export const dashboardMessageSlice = createSlice({
+  name: "dashboardMessage",
+  initialState,
+  reducers: {
+    dismiss: (state) => {
+      state.dismissed = true;
+    },
+  },
+});
+
+export const useDashboardMessageSelector = createSliceSelector(
+  dashboardMessageSlice
+);

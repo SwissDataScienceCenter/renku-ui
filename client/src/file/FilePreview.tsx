@@ -130,7 +130,7 @@ function fileInfoToType(
 type FilePreviewProps = {
   branch: string;
   client: unknown;
-  downloadLink: string;
+  downloadLink?: string;
   file?: {
     content: string;
     file_name: string;
@@ -142,6 +142,7 @@ type FilePreviewProps = {
   previewThreshold: { hard: number; soft: number };
   projectId: string;
   projectPathWithNamespace: string;
+  springConfig: unknown;
 };
 
 function FilePreview(props: FilePreviewProps) {
@@ -361,3 +362,4 @@ export function PDFViewer(props: PdfViewerProps) {
 }
 
 export default FilePreview;
+export type { FilePreviewProps };
