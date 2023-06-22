@@ -17,16 +17,15 @@
  */
 
 import React from "react";
-import { Button, UncontrolledTooltip } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-
-import { ChevronDown, ChevronUp } from "../../../../utils/ts-wrappers";
-import { Loader } from "../../../../components/Loader";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+import { ChevronDown } from "react-bootstrap-icons";
+import { Button, UncontrolledTooltip } from "reactstrap";
 import { ExternalLink } from "../../../../components/ExternalLinks";
+import { Loader } from "../../../../components/Loader";
 import { simpleHash } from "../../../../utils/helpers/HelperFunctions";
-
 import styles from "./migrations.module.scss";
 
 interface MoreInfoLinkProps {
@@ -83,7 +82,6 @@ export function CompositeTitle({
     <FontAwesomeIcon icon={icon} />
   );
   const color = level ? `text-${level}` : "";
-  const caret = showDetails ? <ChevronUp /> : <ChevronDown />;
   let button: React.ReactNode = null;
   if (buttonText) {
     const finalButtonIcon = buttonIcon ? (
@@ -126,31 +124,39 @@ export function CompositeTitle({
   }
 
   const buttonDataCy = sectionIdFull + "-action-button";
-  const caretDataCy = showDetails
-    ? sectionIdFull + "-close"
-    : sectionIdFull + "-open";
+  const caretDataCy = `${sectionIdFull}-${showDetails ? "close" : "open"}`;
   const titleDataCy = sectionIdFull + "-title";
   return (
     <>
       <div id={sectionIdFull} className={styles.projectStatusSection}>
-        <h6 className="d-flex align-items-center w-100 mb-0">
-          <div className={`me-2 ${color}`}>{finalIcon}</div>
-          <div data-cy={titleDataCy}>{title}</div>
-          {loading ? null : (
-            <>
-              <div
-                className="mx-3 cursor-pointer"
+        <div className="d-flex align-items-center w-100 mb-0">
+          <h6
+            className={cx(
+              styles.sectionTitle,
+              !loading && [styles.sectionTitleExpandable, "cursor-pointer"],
+              "d-flex align-items-center m-0 me-3 accordion"
+            )}
+            onClick={toggleShowDetails}
+          >
+            <div className={`me-2 ${color}`}>{finalIcon}</div>
+            <div data-cy={titleDataCy}>{title}</div>
+            {!loading && (
+              <ChevronDown
+                className={cx(
+                  styles.chevron,
+                  showDetails && styles.chevronIsOpen,
+                  "ms-3"
+                )}
                 data-cy={caretDataCy}
-                onClick={() => toggleShowDetails()}
-              >
-                {caret}
-              </div>
-              <div className="ms-auto" data-cy={buttonDataCy}>
-                {button}
-              </div>
-            </>
+              />
+            )}
+          </h6>
+          {!loading && (
+            <div className="ms-auto" data-cy={buttonDataCy}>
+              {button}
+            </div>
           )}
-        </h6>
+        </div>
       </div>
     </>
   );
