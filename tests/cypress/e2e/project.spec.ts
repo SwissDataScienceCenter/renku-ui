@@ -123,7 +123,7 @@ describe("display a project - not found", () => {
   });
 });
 
-describe.only("display a project", () => {
+describe("display a project", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = true;
   beforeEach(() => {
