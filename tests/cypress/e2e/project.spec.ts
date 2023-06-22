@@ -123,7 +123,7 @@ describe("display a project - not found", () => {
   });
 });
 
-describe("display a project", () => {
+describe.only("display a project", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = true;
   beforeEach(() => {
@@ -184,16 +184,20 @@ describe("display a project", () => {
     fixtures.sessionServerOptions().resourcePoolsTest().projectConfigShow();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
-    cy.contains("Session class").should("be.visible");
+    cy.contains("Number of CPUs").should("be.visible");
+    cy.contains("Amount of Memory").should("be.visible");
     cy.contains("Amount of Storage").should("be.visible");
+    cy.contains("Number of GPUs").should("be.visible");
   });
 
   it("displays project settings with cloud-storage enabled ", () => {
     fixtures.sessionServerOptions(true).resourcePoolsTest().projectConfigShow();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
-    cy.contains("Session class").should("be.visible");
+    cy.contains("Number of CPUs").should("be.visible");
+    cy.contains("Amount of Memory").should("be.visible");
     cy.contains("Amount of Storage").should("be.visible");
+    cy.contains("Number of GPUs").should("be.visible");
   });
 
   it("displays project settings complete", () => {
@@ -201,8 +205,10 @@ describe("display a project", () => {
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
     cy.wait("@getProjectConfigShow");
-    cy.contains("Session class").should("be.visible");
+    cy.contains("Number of CPUs").should("be.visible");
+    cy.contains("Amount of Memory").should("be.visible");
     cy.contains("Amount of Storage").should("be.visible");
+    cy.contains("Number of GPUs").should("be.visible");
     cy.get("button.active").contains("/lab").should("be.visible");
   });
 

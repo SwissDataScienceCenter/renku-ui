@@ -24,7 +24,10 @@
 
 .inputNumber {
   :global(.input-group) & {
-    width: 120px;
     border-radius: 0;
+  }
+
+  &Group {
+    width: 200px;
   }
 }

@@ -614,7 +614,7 @@ function CpuOption({
             onReset={onReset}
           />
         )}
-        <InputGroup>
+        <InputGroup className={styles.inputNumberGroup}>
           <Input
             type="number"
             className={cx(styles.inputNumber, "rounded-start")}
@@ -716,7 +716,7 @@ function RamOption({
             onReset={onReset}
           />
         )}
-        <InputGroup>
+        <InputGroup className={styles.inputNumberGroup}>
           <Input
             type="number"
             className={cx(styles.inputNumber, "rounded-start")}
@@ -825,7 +825,7 @@ function StorageOption({
             onReset={onReset}
           />
         )}
-        <InputGroup>
+        <InputGroup className={styles.inputNumberGroup}>
           <Input
             type="number"
             className={cx(styles.inputNumber, "rounded-start")}
@@ -936,7 +936,7 @@ function GpuOption({
             onReset={onReset}
           />
         )}
-        <InputGroup>
+        <InputGroup className={styles.inputNumberGroup}>
           <Input
             type="number"
             className={cx(styles.inputNumber, "rounded-start")}
