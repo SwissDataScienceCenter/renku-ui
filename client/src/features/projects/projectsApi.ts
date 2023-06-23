@@ -35,6 +35,19 @@ interface MemberProjectResponse {
   hasNextPage: boolean;
 }
 
+type Namespace = {
+  id: number;
+  name: string;
+  path: string;
+  kind: string;
+  full_path: string;
+  parent_id: number | null;
+  avatar_url: string | null;
+  web_url: string;
+  members_count_with_descendants: number;
+  root_repository_size: number;
+};
+
 function convertProjects(response: any): MemberProjectResponse {
   try {
     const projects = response?.data?.projects?.nodes;
@@ -60,9 +73,9 @@ export const projectsApi = createApi({
   reducerPath: "projects",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
   endpoints: (builder) => ({
-    getNamespaces: builder.query({
+    getNamespaces: builder.query<Namespace[], boolean>({
       query: (ownerOnly?: boolean) => ({
-        url: `/namespaces${ownerOnly ? "?owned_only=true" : ""}`,
+        url: `/namespaces?per_page=100${ownerOnly ? "&owned_only=true" : ""}`,
         method: "GET",
       }),
     }),
