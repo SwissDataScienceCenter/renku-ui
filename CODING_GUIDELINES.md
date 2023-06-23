@@ -10,6 +10,12 @@ read as the code base grows.
 
 ## Guidelines
 
+Rules:
+
+- [R001: Use utility functions to create CSS class names](#r001-use-utility-functions-to-create-css-class-names)
+- [R002: Avoid `condition ? true : false`](#r002-avoid-condition--true--false)
+- [R003: Avoid nested `if/else` blocks](#r003-avoid-nested-ifelse-blocks)
+
 ### R001: Use utility functions to create CSS class names
 
 DO:
