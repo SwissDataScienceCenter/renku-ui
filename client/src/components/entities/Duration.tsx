@@ -16,32 +16,27 @@
  * limitations under the License.
  */
 
-import React from "react";
-
-import Time from "../../utils/helpers/Time";
+import React, { useRef } from "react";
+import { toShortHumanDuration } from "../../utils/helpers/DurationUtils";
 import { UncontrolledTooltip } from "../../utils/ts-wrappers";
 
 export interface EntityDurationProps {
   duration: number | null;
-  workflowId: string;
 }
 
-function EntityDuration({ duration, workflowId }: EntityDurationProps) {
+function EntityDuration({ duration }: EntityDurationProps) {
+  const ref = useRef<HTMLParagraphElement>(null);
+
   if (duration == null) return null;
-  const elemId = `duration-${workflowId}`;
-  const durationDesc = "Estimated runtime";
+
   return (
     <>
-      <p id={elemId}>
+      <p ref={ref}>
         <span className="text-rk-text small">Runs in</span>{" "}
-        {Time.getDuration(duration)}
+        {toShortHumanDuration({ duration })}
       </p>
-      <UncontrolledTooltip
-        key={`duration-elem-${elemId}`}
-        placement="top"
-        target={elemId}
-      >
-        <span>{durationDesc}</span>
+      <UncontrolledTooltip placement="top" target={ref}>
+        Estimated runtime
       </UncontrolledTooltip>
     </>
   );

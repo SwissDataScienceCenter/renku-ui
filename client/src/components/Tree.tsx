@@ -209,7 +209,7 @@ function TreeElement({
         />
       );
     } else if (highlightedProp === "duration") {
-      details = <EntityDuration duration={duration} workflowId={uniqueId} />;
+      details = <EntityDuration duration={duration} />;
     } else if (highlightedProp === "executions") {
       details = (
         <EntityExecutions
@@ -319,7 +319,7 @@ function TreeElement({
           md={3}
           className="title d-flex align-items-center rk-tree-column-child"
         >
-          <EntityDuration duration={duration} workflowId={uniqueId} />
+          <EntityDuration duration={duration} />
           {embed && !isComposite ? (
             <span className="ms-2">
               <IconLink
