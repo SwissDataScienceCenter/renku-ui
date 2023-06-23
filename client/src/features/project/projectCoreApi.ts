@@ -302,7 +302,9 @@ const transformGetConfigRawResponse = (
   const projectLegacySessionsConfig: NonNullable<
     ProjectConfigSection["sessions"]
   >["legacyConfig"] = {
-    cpuRequest: safeParseInt(projectSessionsConfig["interactive.cpu_request"]),
+    cpuRequest: safeParseFloat(
+      projectSessionsConfig["interactive.cpu_request"]
+    ),
     memoryRequest: safeParseInt(
       projectSessionsConfig["interactive.mem_request"]
     ),
@@ -311,7 +313,9 @@ const transformGetConfigRawResponse = (
   const defaultLegacySessionsConfig: NonNullable<
     ProjectConfigSection["sessions"]
   >["legacyConfig"] = {
-    cpuRequest: safeParseInt(defaultSessionsConfig["interactive.cpu_request"]),
+    cpuRequest: safeParseFloat(
+      defaultSessionsConfig["interactive.cpu_request"]
+    ),
     memoryRequest: safeParseInt(
       defaultSessionsConfig["interactive.mem_request"]
     ),
@@ -364,6 +368,12 @@ const transformGetConfigRawResponse = (
 
 const safeParseInt = (str: string | undefined): number | undefined => {
   const parsed = parseInt(str ?? "", 10);
+  if (isNaN(parsed)) return undefined;
+  return parsed;
+};
+
+const safeParseFloat = (str: string | undefined): number | undefined => {
+  const parsed = parseFloat(str ?? "");
   if (isNaN(parsed)) return undefined;
   return parsed;
 };
