@@ -33,8 +33,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import debounce from "lodash/debounce";
 import { RootStateOrAny, useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
-import { SingleValue } from "react-select";
+import { Link } from "react-router-dom";
 import {
   Accordion,
   AccordionBody,
@@ -56,10 +55,9 @@ import { ACCESS_LEVELS } from "../../api-client";
 import { ErrorAlert, WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
+import { ThrottledTooltip } from "../../components/Tooltip";
 import { CoreErrorAlert } from "../../components/errors/CoreErrorAlert";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
-import { ResourceClass } from "../../features/dataServices/dataServices";
-import { useGetResourcePoolsQuery } from "../../features/dataServices/dataServicesApi";
 import {
   ProjectConfig,
   StateModelProject,
@@ -77,11 +75,6 @@ import {
   ServerOptionEnum,
   mergeDefaultUrlOptions,
 } from "../../notebooks/components/StartNotebookServerOptions";
-import {
-  SessionClassSelector,
-  fakeResourcePools,
-} from "../../notebooks/components/options/SessionClassOption";
-import { StorageSelector } from "../../notebooks/components/options/SessionStorageOption";
 import { Docs } from "../../utils/constants/Docs";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { Url } from "../../utils/helpers/url";
@@ -253,29 +246,71 @@ export const ProjectSettingsSessions = () => {
         versionUrl={versionUrl}
         devAccess={devAccess}
       />
-      <SessionClassOption
-        projectConfig={projectConfig}
+
+      <ComputeResourceOption
+        devAccess={devAccess}
+        optionInputAddon="CPUs"
+        optionLabel="Number of CPUs"
+        optionMinValue={0.1}
+        optionName="interactive.cpu_request"
+        optionStepValue={0.1}
+        optionDefaultValue={
+          projectConfig.default.sessions?.legacyConfig?.cpuRequest
+        }
+        optionValue={projectConfig.config.sessions?.legacyConfig?.cpuRequest}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
         versionUrl={versionUrl}
-        devAccess={devAccess}
       />
-      <StorageOption
-        projectConfig={projectConfig}
+      <ComputeResourceOption
+        devAccess={devAccess}
+        optionInputAddon="GB"
+        optionInputAddonTooltip="Gigabytes"
+        optionLabel="Amount of Memory"
+        optionMinValue={1}
+        optionName="interactive.mem_request"
+        optionStepValue={1}
+        optionSuffix="G"
+        optionDefaultValue={
+          projectConfig.default.sessions?.legacyConfig?.memoryRequest
+        }
+        optionValue={projectConfig.config.sessions?.legacyConfig?.memoryRequest}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
         versionUrl={versionUrl}
-        devAccess={devAccess}
       />
-      <AutoFetchLfsOption
-        projectConfig={projectConfig}
+      <ComputeResourceOption
+        devAccess={devAccess}
+        optionInputAddon="GB"
+        optionInputAddonTooltip="Gigabytes"
+        optionLabel="Amount of Storage"
+        optionMinValue={1}
+        optionName="interactive.disk_request"
+        optionStepValue={1}
+        optionSuffix="G"
+        optionDefaultValue={projectConfig.default.sessions?.storage}
+        optionValue={projectConfig.config.sessions?.storage}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
         versionUrl={versionUrl}
+      />
+      <ComputeResourceOption
         devAccess={devAccess}
+        optionInputAddon="GPUs"
+        optionLabel="Number of GPUs"
+        optionMinValue={1}
+        optionName="interactive.gpu_request"
+        optionStepValue={1}
+        optionDefaultValue={
+          projectConfig.default.sessions?.legacyConfig?.gpuRequest
+        }
+        optionValue={projectConfig.config.sessions?.legacyConfig?.gpuRequest}
+        projectConfigIsFetching={projectConfigIsFetching}
+        projectRepositoryUrl={projectRepositoryUrl}
+        versionUrl={versionUrl}
       />
 
-      <ProjectSettingsSessionsOutdated
+      <AutoFetchLfsOption
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
@@ -320,7 +355,7 @@ const SessionsDiv = ({
         <SavingBadge projectConfigIsFetching={projectConfigIsFetching} />
       )}
     </h3>
-    <div className="form-rk-green">{children}</div>
+    <div className="row form-rk-green">{children}</div>
   </div>
 );
 
@@ -529,217 +564,49 @@ const ResetOption = ({ optionId, disabled, onReset }: ResetOptionProps) => {
   );
 };
 
-interface SessionClassOptionProps {
-  projectConfig: ProjectConfig;
+interface ComputeResourceOptionProps {
+  devAccess: boolean;
+  optionInputAddon?: string;
+  optionInputAddonTooltip?: ReactNode;
+  optionLabel: string;
+  optionMinValue?: number;
+  optionMaxValue?: number;
+  optionName: string;
+  optionStepValue?: number;
+  optionSuffix?: string;
+  optionDefaultValue: number | undefined;
+  optionValue: number | undefined;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
   versionUrl: string;
-  devAccess: boolean;
 }
 
-const SessionClassOption = ({
-  projectConfig,
+function ComputeResourceOption({
+  devAccess,
+  optionInputAddon,
+  optionInputAddonTooltip,
+  optionLabel,
+  optionMinValue,
+  optionMaxValue,
+  optionName,
+  optionStepValue,
+  optionSuffix = "",
+  optionDefaultValue,
+  optionValue,
   projectConfigIsFetching,
   projectRepositoryUrl,
   versionUrl,
-  devAccess,
-}: SessionClassOptionProps) => {
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-
-  const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
-
-  const {
-    data: realResourcePools,
-    isLoading: resourcePoolsIsLoading,
-    isError: resourcePoolsIsError,
-  } = useGetResourcePoolsQuery({}, { skip: enableFakeResourcePools });
-
-  const resourcePools = enableFakeResourcePools
-    ? fakeResourcePools
-    : realResourcePools;
-
-  const defaultSessionClassId =
-    projectConfig.config.sessions?.sessionClass ??
-    resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default)?.id ??
-    projectConfig.default.sessions?.sessionClass;
-  const defaultSessionClass = useMemo(
-    () =>
-      resourcePools
-        ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id == defaultSessionClassId) ??
-      resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default) ??
-      resourcePools?.find(() => true)?.classes[0] ??
-      undefined,
-    [defaultSessionClassId, resourcePools]
-  );
-
+}: ComputeResourceOptionProps) {
   // Temporary value for optimistic UI update
   const [newValue, setNewValue] = useState<number | null>(null);
 
-  const currentSessionClassId =
-    newValue ??
-    projectConfig.config.sessions?.sessionClass ??
-    resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default)?.id ??
-    projectConfig.default.sessions?.sessionClass;
-  const currentSessionClass = useMemo(
-    () =>
-      resourcePools
-        ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id == currentSessionClassId),
-    [currentSessionClassId, resourcePools]
-  );
-
-  const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation({
-    fixedCacheKey: "project-settings",
-  });
-
-  const onChange = useCallback(
-    (newValue: SingleValue<ResourceClass>) => {
-      if (newValue?.id) {
-        setNewValue(newValue.id);
-        updateConfig({
-          projectRepositoryUrl,
-          versionUrl,
-          update: {
-            "interactive.session_class": `${newValue.id}`,
-          },
-        });
-      }
-    },
-    [projectRepositoryUrl, updateConfig, versionUrl]
-  );
-
-  const onReset = useCallback(() => {
-    setNewValue(
-      resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default)
-        ?.id ??
-        projectConfig.default.sessions?.sessionClass ??
-        null
-    );
-    updateConfig({
-      projectRepositoryUrl,
-      versionUrl,
-      update: {
-        "interactive.session_class": null,
-      },
-    });
-  }, [
-    projectConfig.default.sessions?.sessionClass,
-    projectRepositoryUrl,
-    resourcePools,
-    updateConfig,
-    versionUrl,
-  ]);
-
-  // Reset the temporary value when the API responds with an error
-  useEffect(() => {
-    if (isError) {
-      setNewValue(null);
-    }
-  }, [isError]);
-
-  const disabled = !devAccess || isLoading || projectConfigIsFetching;
-
-  if (resourcePoolsIsLoading) {
-    return (
-      <Col xs={12}>
-        Fetching available resource pools... <Loader size={16} inline />
-      </Col>
-    );
-  }
-
-  if (!resourcePools || resourcePools.length == 0 || resourcePoolsIsError) {
-    return (
-      <Col xs={12}>
-        <ErrorAlert dismissible={false}>
-          <h3 className={cx("fs-6", "fw-bold")}>
-            Error on loading available session resource pools
-          </h3>
-        </ErrorAlert>
-      </Col>
-    );
-  }
-
-  return (
-    <Col xs={12}>
-      <FormGroup className="field-group">
-        <Label>Session class</Label>
-        {devAccess && (
-          <ResetOption
-            optionId="project-settings-sessions-session-class"
-            disabled={disabled}
-            onReset={onReset}
-          />
-        )}
-        <SessionClassSelector
-          resourcePools={resourcePools}
-          currentSessionClass={currentSessionClass}
-          defaultSessionClass={defaultSessionClass}
-          onChange={onChange}
-          disabled={disabled}
-        />
-      </FormGroup>
-    </Col>
-  );
-};
-
-interface StorageOptionProps {
-  projectConfig: ProjectConfig;
-  projectConfigIsFetching: boolean;
-  projectRepositoryUrl: string;
-  versionUrl: string;
-  devAccess: boolean;
-}
-
-const StorageOption = ({
-  projectConfig,
-  projectConfigIsFetching,
-  projectRepositoryUrl,
-  versionUrl,
-  devAccess,
-}: StorageOptionProps) => {
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-
-  const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
-
-  const {
-    data: realResourcePools,
-    isLoading: resourcePoolsIsLoading,
-    isError: resourcePoolsIsError,
-  } = useGetResourcePoolsQuery({}, { skip: enableFakeResourcePools });
-
-  const resourcePools = enableFakeResourcePools
-    ? fakeResourcePools
-    : realResourcePools;
-
-  // Temporary value for optimistic UI update
-  const [newValue, setNewValue] = useState<number | null>(null);
-
-  const currentSessionClassId =
-    projectConfig.config.sessions?.sessionClass ??
-    resourcePools?.flatMap((pool) => pool.classes).find((c) => c.default)?.id ??
-    projectConfig.default.sessions?.sessionClass;
-  const currentSessionClass = useMemo(
-    () =>
-      resourcePools
-        ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id == currentSessionClassId),
-    [currentSessionClassId, resourcePools]
-  );
-
-  const currentStorage =
-    newValue ??
-    projectConfig.config.sessions?.storage ??
-    currentSessionClass?.default_storage ??
-    projectConfig.default.sessions?.storage;
+  const currentValue = newValue ?? optionValue ?? optionDefaultValue ?? "";
 
   const [updateConfig, { isLoading, isError }] = useUpdateConfigMutation({
     fixedCacheKey: "project-settings",
   });
   const debouncedUpdateConfig = useMemo(
-    () => debounce(updateConfig, /*wait=*/ 1_000),
+    () => debounce(updateConfig, /*wait=*/ INPUT_NUMBER_DEBOUNCE_MS),
     [updateConfig]
   );
 
@@ -751,29 +618,31 @@ const StorageOption = ({
         projectRepositoryUrl,
         versionUrl,
         update: {
-          "interactive.disk_request": `${value}GB`,
+          [optionName]: `${value}${optionSuffix}`,
         },
       });
     },
-    [debouncedUpdateConfig, projectRepositoryUrl, versionUrl]
+    [
+      debouncedUpdateConfig,
+      optionName,
+      optionSuffix,
+      projectRepositoryUrl,
+      versionUrl,
+    ]
   );
 
   const onReset = useCallback(() => {
-    setNewValue(
-      currentSessionClass?.default_storage ??
-        projectConfig.default.sessions?.storage ??
-        null
-    );
+    setNewValue(optionDefaultValue ?? null);
     updateConfig({
       projectRepositoryUrl,
       versionUrl,
       update: {
-        "interactive.disk_request": null,
+        [optionName]: null,
       },
     });
   }, [
-    currentSessionClass?.default_storage,
-    projectConfig.default.sessions?.storage,
+    optionDefaultValue,
+    optionName,
     projectRepositoryUrl,
     updateConfig,
     versionUrl,
@@ -788,36 +657,51 @@ const StorageOption = ({
 
   const disabled = !devAccess || isLoading || projectConfigIsFetching;
 
-  if (
-    resourcePoolsIsLoading ||
-    !resourcePools ||
-    resourcePools.length == 0 ||
-    resourcePoolsIsError
-  ) {
-    return null;
-  }
+  const optionId = `project-settings-sessions-${optionName.replace(
+    /[^0-9A-Z]/gi,
+    "-"
+  )}`;
 
   return (
-    <Col xs={12}>
+    <Col xs={6}>
       <FormGroup className="field-group">
-        <Label>Amount of Storage</Label>
+        <Label>{optionLabel}</Label>
         {devAccess && (
           <ResetOption
-            optionId="project-settings-sessions-storage"
+            optionId={optionId}
             disabled={disabled}
             onReset={onReset}
           />
         )}
-        <StorageSelector
-          currentSessionClass={currentSessionClass}
-          currentStorage={currentStorage}
-          onChange={onChange}
-          disabled={disabled}
-        />
+        <InputGroup className={styles.inputNumberGroup}>
+          <Input
+            type="number"
+            className={cx(styles.inputNumber, "rounded-start")}
+            min={optionMinValue}
+            max={optionMaxValue}
+            step={optionStepValue}
+            value={currentValue}
+            onChange={onChange}
+            disabled={disabled}
+          />
+          {optionInputAddon && (
+            <InputGroupText id={`${optionId}-addon`} className={"rounded-end"}>
+              {optionInputAddon}
+            </InputGroupText>
+          )}
+          {optionInputAddon && optionInputAddonTooltip && (
+            <ThrottledTooltip
+              target={`${optionId}-addon`}
+              tooltip={optionInputAddonTooltip}
+            />
+          )}
+        </InputGroup>
       </FormGroup>
     </Col>
   );
-};
+}
+
+const INPUT_NUMBER_DEBOUNCE_MS = 1_000;
 
 interface AutoFetchLfsOptionProps {
   projectConfig: ProjectConfig;
@@ -1165,94 +1049,6 @@ const PinnedImageOption = ({
     </FormGroup>
   );
 };
-
-interface ProjectSettingsSessionsOutdatedProps {
-  projectConfig: ProjectConfig;
-  projectConfigIsFetching: boolean;
-  projectRepositoryUrl: string;
-  versionUrl: string;
-  devAccess: boolean;
-}
-
-const ProjectSettingsSessionsOutdated = ({
-  projectConfig,
-  projectConfigIsFetching,
-  projectRepositoryUrl,
-  versionUrl,
-  devAccess,
-}: ProjectSettingsSessionsOutdatedProps) => {
-  const legacyConfig = projectConfig.config.sessions?.legacyConfig ?? {};
-  const legacyConfigKeys = (
-    Object.keys(legacyConfig) as (keyof typeof legacyConfig)[]
-  )
-    .filter((optionKey) => legacyConfig[optionKey] != null)
-    .sort();
-
-  const [showSection, setShowSection] = useState<boolean>(
-    legacyConfigKeys.length > 0
-  );
-
-  const toggleShowSection = useCallback(() => {
-    setShowSection((showSection) => !showSection);
-  }, []);
-
-  if (legacyConfigKeys.length == 0) {
-    return null;
-  }
-
-  return (
-    <div className="mb-2">
-      <Col xs={12}>
-        <AccordionFixed
-          className={styles.accordion}
-          open={showSection ? "outdated-settings" : ""}
-          toggle={toggleShowSection}
-          flush
-        >
-          <AccordionItem>
-            <AccordionHeader targetId="outdated-settings">
-              Unsupported settings
-            </AccordionHeader>
-            <AccordionBody accordionId="outdated-settings">
-              {devAccess && (
-                <WarnAlert>
-                  Handling of resource limits has changed and the following
-                  settings are no longer used. Please select a session class
-                  with the desired resource constraints and remove these
-                  settings to avoid confusion.
-                </WarnAlert>
-              )}
-              {legacyConfigKeys.map((optionKey) => (
-                <UnknownOption
-                  key={optionKey}
-                  optionKey={OUTDATED_OPTIONS_KEYS[optionKey]}
-                  optionLabel={OUTDATED_OPTIONS_LABELS[optionKey]}
-                  optionValue={`${legacyConfig[optionKey]}`}
-                  projectConfigIsFetching={projectConfigIsFetching}
-                  projectRepositoryUrl={projectRepositoryUrl}
-                  versionUrl={versionUrl}
-                  devAccess={devAccess}
-                />
-              ))}
-            </AccordionBody>
-          </AccordionItem>
-        </AccordionFixed>
-      </Col>
-    </div>
-  );
-};
-
-const OUTDATED_OPTIONS_KEYS = {
-  cpuRequest: "interactive.cpu_request",
-  memoryRequest: "interactive.mem_request",
-  gpuRequest: "interactive.gpu_request",
-} as const;
-
-const OUTDATED_OPTIONS_LABELS = {
-  cpuRequest: "Number of CPUs",
-  memoryRequest: "Amount of Memory",
-  gpuRequest: "Number of GPUs",
-} as const;
 
 interface ProjectSettingsSessionsUnknownProps {
   projectConfig: ProjectConfig;

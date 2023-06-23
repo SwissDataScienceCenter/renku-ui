@@ -309,7 +309,7 @@ export interface ProjectConfigSection {
 
     legacyConfig?: {
       cpuRequest?: number;
-      memoryRequest?: string;
+      memoryRequest?: number;
       gpuRequest?: number;
     };
     unknownConfig?: {
