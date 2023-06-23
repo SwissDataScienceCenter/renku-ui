@@ -23,6 +23,7 @@ import _ from "lodash";
 import { Helmet } from "react-helmet";
 import { Link, useHistory } from "react-router-dom";
 import { Button, Card, CardBody, CardHeader, Col, Table } from "reactstrap";
+
 import { ErrorAlert, WarnAlert } from "../components/Alert";
 import { ExternalLink } from "../components/ExternalLinks";
 import FileExplorer from "../components/FileExplorer";
@@ -33,7 +34,7 @@ import EntityHeader from "../components/entityHeader/EntityHeader";
 import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
 import { CoreError } from "../components/errors/CoreErrorHelpers";
 import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
-import DeleteDataset from "../project/datasets/delete/index";
+import DeleteDataset from "../project/datasets/delete";
 import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
 import { Url } from "../utils/helpers/url";
 import { DatasetError } from "./DatasetError";
