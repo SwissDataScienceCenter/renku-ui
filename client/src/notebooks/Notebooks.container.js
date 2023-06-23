@@ -665,7 +665,7 @@ class StartNotebookServer extends Component {
   async refreshPipelines(force = false) {
     if (this._isMounted) {
       const { accessLevel, user } = this.props;
-      await this.coordinator.fetchNotebookOptions(); // TODO: this should not be here
+      // await this.coordinator.fetchNotebookOptions(); // TODO: this should not be here
       const callback = () => {
         // eslint-disable-line @typescript-eslint/no-empty-function
       };

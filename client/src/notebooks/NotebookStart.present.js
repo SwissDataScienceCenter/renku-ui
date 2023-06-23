@@ -1167,12 +1167,14 @@ function StartNotebookOptions(props) {
       </Label>
     );
 
-  if (Object.keys(options.global).length === 0 || options.fetching)
-    return (
-      <Label>
-        Loading session parameters... <Loader size={14} inline />
-      </Label>
-    );
+  if (Object.keys(options.global).length === 0 || options.fetching) {
+    console.log("no options?", options);
+    // return (
+    //   <Label>
+    //     Loading session parameters... <Loader size={14} inline />
+    //   </Label>
+    // );
+  }
 
   if (Object.keys(all).length > 0) {
     const currentCommit = filters.commit?.id;
@@ -1182,19 +1184,21 @@ function StartNotebookOptions(props) {
       return false;
     });
     if (currentNotebook) {
-      return [
-        <StartNotebookOptionsRunning
-          key="notebook-options-running"
-          notebook={all[currentNotebook]}
-        />,
-        <ShareLinkSessionModal
-          key="shareLinkModal"
-          toggleModal={props.toggleShareLinkModal}
-          showModal={props.showShareLinkModal}
-          notebookFilePath={props.notebookFilePath}
-          {...props}
-        />,
-      ];
+      return (
+        <>
+          <StartNotebookOptionsRunning
+            key="notebook-options-running"
+            notebook={all[currentNotebook]}
+          />
+          <ShareLinkSessionModal
+            key="shareLinkModal"
+            toggleModal={props.toggleShareLinkModal}
+            showModal={props.showShareLinkModal}
+            notebookFilePath={props.notebookFilePath}
+            {...props}
+          />
+        </>
+      );
     }
   }
 
@@ -1353,6 +1357,8 @@ class ServerOptionLaunch extends Component {
   render() {
     const { ci } = this.props;
     const { warnings } = this.props.options;
+
+    console.log(this.props.options);
 
     const ciStatus = NotebooksHelper.checkCiStatus(ci);
     const globalNotification =
