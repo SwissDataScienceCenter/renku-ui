@@ -176,10 +176,10 @@ function EntityHeader({
         </div>
         <div className="entity-time-tags">
           <TimeCaption
-            caption={labelCaption || "Updated"}
-            showTooltip={true}
-            time={timeCaption}
             className="text-rk-text-light"
+            enableTooltip
+            datetime={timeCaption}
+            prefix={labelCaption || "Updated"}
           />
           <EntityTags
             tagList={tagList}

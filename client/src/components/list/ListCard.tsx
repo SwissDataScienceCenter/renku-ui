@@ -98,9 +98,9 @@ function ListCard({
             </div>
             <p className="card-text my-1">
               <TimeCaption
-                caption={labelCaption || "Updated"}
-                time={timeCaption}
                 className="text-rk-text-light"
+                datetime={timeCaption}
+                prefix={labelCaption || "Updated"}
               />
             </p>
           </div>

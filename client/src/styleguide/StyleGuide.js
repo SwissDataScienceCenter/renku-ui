@@ -92,7 +92,7 @@ function FontsGuide() {
             <td>TimeCaption</td>
             <td>text-muted</td>
             <td>
-              <TimeCaption time={new Date()} />
+              <TimeCaption datetime={new Date()} prefix="Updated" />
             </td>
           </tr>
         </tbody>
