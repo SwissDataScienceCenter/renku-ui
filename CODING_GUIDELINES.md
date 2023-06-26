@@ -18,7 +18,7 @@ Rules:
 
 ### R001: Use utility functions to create CSS class names
 
-#### ✅ DO
+**✅ DO**
 
 ```ts
 import cx from "classnames";
@@ -30,33 +30,35 @@ const className = cx(
 );
 ```
 
-#### ❌ DON'T
+**❌ DON'T**
 
 ```ts
 const className = "rounded" + (disabled ? " disabled" : "");
 ```
 
-#### 💡 Rationale
+**💡 Rationale**
 
 Constructing CSS class names by hand leads to frequent mistakes, e.g.
 having `undefined` or `null` as one of the CSS classes of an HTML element.
 
 ### R002: Avoid `condition ? true : false`
 
-DO:
+**✅ DO**
 
 ```ts
 const isActive = conditionA && x > y && conditionC;
 ```
 
-DON'T:
+**❌ DON'T**
 
 ```ts
 const isActive = conditionA && x > y && conditionC ? true : false;
 ```
 
-Rationale: `? true : false` is unnecessary and may surprise the reader, leading
-to slower code reading.
+**💡 Rationale**
+
+The `? true : false` construct is unnecessary and may surprise the reader,
+leading to slower code reading.
 
 Tip: use double boolean negation to ensure the variable is of type `boolean`.
 
@@ -66,7 +68,7 @@ const enabled = !!objMaybeUndefined?.field.length;
 
 ### R003: Avoid nested `if/else` blocks
 
-DO:
+**✅ DO**
 
 ```ts
 function getStatus(input: Input) {
@@ -86,7 +88,7 @@ function getStatus(input: Input) {
 }
 ```
 
-DON'T:
+**❌ DON'T**
 
 ```ts
 function getStatus(input: Input) {
@@ -108,7 +110,9 @@ function getStatus(input: Input) {
 }
 ```
 
-Rationale: nested `if/else` block are hard to read and follow, especially when
+**💡 Rationale**
+
+Nested `if/else` block are hard to read and follow, especially when
 they span more than one screen vertically.
 
 If possible, use early returns to flatten the case enumeration. This means in
