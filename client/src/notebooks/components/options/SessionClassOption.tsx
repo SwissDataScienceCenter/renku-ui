@@ -40,6 +40,7 @@ import {
 import { useGetResourcePoolsQuery } from "../../../features/dataServices/dataServicesApi";
 import {
   setSessionClass,
+  reset,
   useStartSessionOptionsSelector,
 } from "../../../features/session/startSessionOptionsSlice";
 import styles from "./SessionClassOption.module.scss";
@@ -54,7 +55,6 @@ import {
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { TimeCaption } from "../../../components/TimeCaption";
 
 export const SessionClassOption = () => {
   const location = useLocation();
@@ -110,6 +110,13 @@ export const SessionClassOption = () => {
   );
 
   const dispatch = useDispatch();
+
+  // Reset session class when unmounting
+  useEffect(() => {
+    return () => {
+      dispatch(reset());
+    };
+  }, [dispatch]);
 
   // Set initial session class
   useEffect(() => {
