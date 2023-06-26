@@ -18,7 +18,7 @@ Rules:
 
 ### R001: Use utility functions to create CSS class names
 
-DO:
+#### ✅ DO
 
 ```ts
 import cx from "classnames";
@@ -30,13 +30,15 @@ const className = cx(
 );
 ```
 
-DON'T:
+#### ❌ DON'T
 
 ```ts
 const className = "rounded" + (disabled ? " disabled" : "");
 ```
 
-Rationale: constructing CSS class names by hand leads to frequent mistakes, e.g.
+#### 💡 Rationale
+
+Constructing CSS class names by hand leads to frequent mistakes, e.g.
 having `undefined` or `null` as one of the CSS classes of an HTML element.
 
 ### R002: Avoid `condition ? true : false`
