@@ -31,7 +31,7 @@ import Select, {
   components,
 } from "react-select";
 import { Col, FormGroup, Label } from "reactstrap";
-import { ErrorAlert } from "../../../components/Alert";
+import { ErrorAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import {
   ResourceClass,
@@ -167,7 +167,10 @@ export const SessionClassOption = () => {
     <Col xs={12}>
       <FormGroup className="field-group">
         <Label>Session class</Label>
-        <SessionRequirements projectConfig={projectConfig} />
+        <SessionRequirements
+          projectConfig={projectConfig}
+          resourcePools={resourcePools}
+        />
         <SessionClassSelector
           resourcePools={resourcePools}
           currentSessionClass={currentSessionClass}
@@ -181,9 +184,13 @@ export const SessionClassOption = () => {
 
 interface SessionRequirementsProps {
   projectConfig: ProjectConfig | undefined;
+  resourcePools: ResourcePool[];
 }
 
-function SessionRequirements({ projectConfig }: SessionRequirementsProps) {
+function SessionRequirements({
+  projectConfig,
+  resourcePools,
+}: SessionRequirementsProps) {
   if (!projectConfig) {
     return null;
   }
@@ -198,34 +205,50 @@ function SessionRequirements({ projectConfig }: SessionRequirementsProps) {
     return null;
   }
 
+  const noMatchingClass = !resourcePools
+    .flatMap((pool) => pool.classes)
+    .some((c) => c.matches);
+
   return (
-    <div className={cx("d-flex", "flex-row", "flex-wrap", styles.requirements)}>
-      <span className="me-3">Session requirements:</span>
-      {cpuRequest && (
-        <>
-          {" "}
-          <span className="me-3">{cpuRequest} CPUs</span>
-        </>
+    <>
+      <div
+        className={cx("d-flex", "flex-row", "flex-wrap", styles.requirements)}
+      >
+        <span className="me-3">Session requirements:</span>
+        {cpuRequest && (
+          <>
+            {" "}
+            <span className="me-3">{cpuRequest} CPUs</span>
+          </>
+        )}
+        {memoryRequest && (
+          <>
+            {" "}
+            <span className="me-3">{memoryRequest} GB RAM</span>
+          </>
+        )}
+        {storageRequest && (
+          <>
+            {" "}
+            <span className="me-3">{storageRequest} GB Disk</span>
+          </>
+        )}
+        {gpuRequest && (
+          <>
+            {" "}
+            <span>{gpuRequest} GPUs</span>
+          </>
+        )}
+      </div>
+      {noMatchingClass && (
+        <WarnAlert className="mb-1">
+          <p className="mb-0">
+            It seems that no session class you have access to can match the
+            compute requirements to launch a session
+          </p>
+        </WarnAlert>
       )}
-      {memoryRequest && (
-        <>
-          {" "}
-          <span className="me-3">{memoryRequest} GB RAM</span>
-        </>
-      )}
-      {storageRequest && (
-        <>
-          {" "}
-          <span className="me-3">{storageRequest} GB Disk</span>
-        </>
-      )}
-      {gpuRequest && (
-        <>
-          {" "}
-          <span>{gpuRequest} GPUs</span>
-        </>
-      )}
-    </div>
+    </>
   );
 }
 
@@ -410,7 +433,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 5,
         default: true,
-        matches: true,
+        matches: false,
       },
     ],
   },
@@ -433,7 +456,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: true,
+        matches: false,
       },
       {
         id: 4,
@@ -444,7 +467,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: true,
+        matches: false,
       },
       {
         id: 5,
@@ -455,7 +478,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: true,
+        matches: false,
       },
       {
         id: 6,
@@ -466,7 +489,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: true,
+        matches: false,
       },
     ],
   },
@@ -489,7 +512,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: true,
+        matches: false,
       },
       {
         id: 8,
@@ -500,7 +523,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: true,
+        matches: false,
       },
       {
         id: 9,
@@ -511,7 +534,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: true,
+        matches: false,
       },
       {
         id: 10,
@@ -522,7 +545,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: true,
+        matches: false,
       },
     ],
   },
@@ -545,7 +568,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: true,
+        matches: false,
       },
       {
         id: 12,
@@ -556,7 +579,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: true,
+        matches: false,
       },
       {
         id: 13,
@@ -567,7 +590,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: true,
+        matches: false,
       },
       {
         id: 14,
@@ -578,7 +601,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: true,
+        matches: false,
       },
     ],
   },
