@@ -40,6 +40,8 @@ export interface ResourceClass {
   default_storage: number;
 
   default: boolean;
+
+  matches?: boolean;
 }
 
 export interface Resources {

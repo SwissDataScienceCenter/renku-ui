@@ -43,9 +43,18 @@ import {
   useStartSessionOptionsSelector,
 } from "../../../features/session/startSessionOptionsSlice";
 import styles from "./SessionClassOption.module.scss";
-import { StateModelProject } from "../../../features/project/Project";
+import {
+  ProjectConfig,
+  StateModelProject,
+} from "../../../features/project/Project";
 import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
 import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
+import {
+  faCheckCircle,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { TimeCaption } from "../../../components/TimeCaption";
 
 export const SessionClassOption = () => {
   const location = useLocation();
@@ -107,17 +116,17 @@ export const SessionClassOption = () => {
     if (projectConfig == null || resourcePools == null) {
       return;
     }
-    const sessionClassIdFromConfig =
-      projectConfig.config.sessions?.sessionClass ??
-      projectConfig.default.sessions?.sessionClass;
+    console.log({ projectConfig });
+    // const sessionClassIdFromConfig =
+    //   projectConfig.config.sessions?.sessionClass ??
+    //   projectConfig.default.sessions?.sessionClass;
     const initialSessionClassId =
+      // resourcePools
+      //   ?.flatMap((pool) => pool.classes)
+      //   .find((c) => c.id == sessionClassIdFromConfig)?.id ??
       resourcePools
         ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id == sessionClassIdFromConfig)?.id ??
-      resourcePools
-        ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id == defaultSessionClass?.id)?.id ??
-      0;
+        .find((c) => c.id == defaultSessionClass?.id)?.id ?? 0;
     dispatch(setSessionClass(initialSessionClassId));
   }, [defaultSessionClass?.id, dispatch, projectConfig, resourcePools]);
 
@@ -158,6 +167,7 @@ export const SessionClassOption = () => {
     <Col xs={12}>
       <FormGroup className="field-group">
         <Label>Session class</Label>
+        <SessionRequirements projectConfig={projectConfig} />
         <SessionClassSelector
           resourcePools={resourcePools}
           currentSessionClass={currentSessionClass}
@@ -168,6 +178,56 @@ export const SessionClassOption = () => {
     </Col>
   );
 };
+
+interface SessionRequirementsProps {
+  projectConfig: ProjectConfig | undefined;
+}
+
+function SessionRequirements({ projectConfig }: SessionRequirementsProps) {
+  if (!projectConfig) {
+    return null;
+  }
+
+  const cpuRequest = projectConfig?.config.sessions?.legacyConfig?.cpuRequest;
+  const memoryRequest =
+    projectConfig?.config.sessions?.legacyConfig?.memoryRequest;
+  const storageRequest = projectConfig?.config.sessions?.storage;
+  const gpuRequest = projectConfig?.config.sessions?.legacyConfig?.gpuRequest;
+
+  if (!cpuRequest && !memoryRequest && !storageRequest && !gpuRequest) {
+    return null;
+  }
+
+  return (
+    <div className={cx("d-flex", "flex-row", "flex-wrap", styles.requirements)}>
+      <span className="me-3">Session requirements:</span>
+      {cpuRequest && (
+        <>
+          {" "}
+          <span className="me-3">{cpuRequest} CPUs</span>
+        </>
+      )}
+      {memoryRequest && (
+        <>
+          {" "}
+          <span className="me-3">{memoryRequest} GB RAM</span>
+        </>
+      )}
+      {storageRequest && (
+        <>
+          {" "}
+          <span className="me-3">{storageRequest} GB Disk</span>
+        </>
+      )}
+      {gpuRequest && (
+        <>
+          {" "}
+          <span>{gpuRequest} GPUs</span>
+        </>
+      )}
+    </div>
+  );
+}
 
 interface SessionClassSelectorProps {
   resourcePools: ResourcePool[];
@@ -203,6 +263,8 @@ export const SessionClassSelector = ({
       unstyled
       classNames={selectClassNames}
       components={selectComponents}
+      // for dev
+      // menuIsOpen
     />
   );
 };
@@ -285,12 +347,23 @@ interface OptionOrSingleValueContentProps {
 const OptionOrSingleValueContent = ({
   sessionClass,
 }: OptionOrSingleValueContentProps) => {
-  const labelClassName = cx("text-wrap", "text-break", styles.label);
+  const labelClassName = cx(
+    "text-wrap",
+    "text-break",
+    styles.label,
+    sessionClass.matches && styles.labelMatches
+  );
   const detailValueClassName = cx(styles.detail, styles.detailValue);
   const detailLabelClassName = cx(styles.detail, styles.detailLabel);
   return (
     <>
-      <span className={labelClassName}>{sessionClass.name}</span>{" "}
+      <span className={labelClassName}>
+        <FontAwesomeIcon
+          icon={sessionClass.matches ? faCheckCircle : faExclamationTriangle}
+          fixedWidth
+        />
+        {sessionClass.name}
+      </span>{" "}
       <span className={detailValueClassName}>{sessionClass.cpu}</span>{" "}
       <span className={detailLabelClassName}>CPUs</span>{" "}
       <span className={detailValueClassName}>{sessionClass.memory}</span>
@@ -337,6 +410,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 5,
         default: true,
+        matches: true,
       },
     ],
   },
@@ -359,6 +433,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matches: true,
       },
       {
         id: 4,
@@ -369,6 +444,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matches: true,
       },
       {
         id: 5,
@@ -379,6 +455,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matches: true,
       },
       {
         id: 6,
@@ -389,6 +466,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matches: true,
       },
     ],
   },
@@ -411,6 +489,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matches: true,
       },
       {
         id: 8,
@@ -421,6 +500,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matches: true,
       },
       {
         id: 9,
@@ -431,6 +511,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matches: true,
       },
       {
         id: 10,
@@ -441,6 +522,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matches: true,
       },
     ],
   },
@@ -463,6 +545,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matches: true,
       },
       {
         id: 12,
@@ -473,6 +556,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matches: true,
       },
       {
         id: 13,
@@ -483,6 +567,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matches: true,
       },
       {
         id: 14,
@@ -493,6 +578,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matches: true,
       },
     ],
   },

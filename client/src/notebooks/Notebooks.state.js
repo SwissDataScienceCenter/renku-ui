@@ -1255,6 +1255,8 @@ class NotebooksCoordinator {
 
   // * Change notebook status * //
   startServer(forceBaseImage = false) {
+    console.log("startServer()");
+
     const reduxStore = this.model.reduxStore;
     const startSessionOptions =
       reduxStore.getState()[startSessionOptionsSlice.name];

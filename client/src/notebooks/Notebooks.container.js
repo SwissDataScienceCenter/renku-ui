@@ -663,6 +663,7 @@ class StartNotebookServer extends Component {
   }
 
   async refreshPipelines(force = false) {
+    console.log("refreshPipelines()");
     if (this._isMounted) {
       const { accessLevel, user } = this.props;
       // await this.coordinator.fetchNotebookOptions(); // TODO: this should not be here
@@ -709,6 +710,7 @@ class StartNotebookServer extends Component {
   }
 
   async triggerAutoStart() {
+    console.log("triggerAutoStart()");
     if (this._isMounted) {
       if (
         this.autostart &&
@@ -717,8 +719,14 @@ class StartNotebookServer extends Component {
       ) {
         const data = this.model.get();
         const ciStatus = NotebooksHelper.checkCiStatus(data.ci);
-        const fetched =
-          data.notebooks.fetched && data.options.fetched && !ciStatus.ongoing;
+        // const fetched =
+        //   data.notebooks.fetched && data.options.fetched && !ciStatus.ongoing;
+        const fetched = data.notebooks.fetched && !ciStatus.ongoing;
+        console.log([
+          data.notebooks.fetched,
+          data.options.fetched,
+          !ciStatus.ongoing,
+        ]);
         if (fetched) {
           // start when the image is available
           if (ciStatus.available) {
