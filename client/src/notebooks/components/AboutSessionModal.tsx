@@ -25,22 +25,20 @@
 
 import React from "react";
 import { useSelector } from "react-redux";
-
+import { ACCESS_LEVELS } from "../../api-client";
+import { ExternalLink } from "../../components/ExternalLinks";
+import { EntityType } from "../../components/entities/Entities";
 import EntityHeader from "../../components/entityHeader/EntityHeader";
-import Time from "../../utils/helpers/Time";
+import { Docs } from "../../utils/constants/Docs";
+import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import {
   InfoCircle,
   Modal,
   ModalBody,
   ModalHeader,
 } from "../../utils/ts-wrappers";
-import { EntityType } from "../../components/entities/Entities";
-import { ACCESS_LEVELS } from "../../api-client";
 import { NotebookServerRow } from "../Notebooks.present";
 import { Notebook, ProjectMetadata } from "./Session";
-import { ExternalLink } from "../../components/ExternalLinks";
-import { Docs } from "../../utils/constants/Docs";
-
 import "./SessionModal.css";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -154,10 +152,10 @@ function SessionHeader({ notebook }: SessionHeaderProp) {
       return obj;
     }, {});
   const resources = notebook.data.resources?.requests;
-  const startTime = Time.toIsoTimezoneString(
-    notebook.data.started,
-    "datetime-short"
-  );
+  const startTime = toHumanDateTime({
+    datetime: notebook.data.started,
+    format: "full",
+  });
   const commits = useSelector(
     (state: any) => state.stateModel.notebooks.data.commits
   );

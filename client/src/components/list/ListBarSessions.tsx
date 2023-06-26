@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import {
   Fragment,
@@ -33,7 +33,6 @@ import {
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-
 import { ListElementProps } from "./List.d";
 import { ExternalLink } from "../ExternalLinks";
 import { TimeCaption } from "../TimeCaption";
@@ -45,12 +44,11 @@ import { Clipboard } from "../Clipboard";
 import { SessionStatus } from "../../utils/constants/Notebooks";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import AppContext from "../../utils/context/appContext";
-import Time from "../../utils/helpers/Time";
 import { getStatusObject } from "../../notebooks/components/SessionListStatus";
 import type { SessionRunningStatus } from "../../notebooks/components/SessionListStatus";
 import { SessionButton } from "../../features/session/components/SessionButtons";
 import { Notebook } from "../../notebooks/components/Session";
-
+import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import "./ListBar.scss";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -158,13 +156,9 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
       <span>
         <span className="fw-bold">Date:</span>{" "}
         <span>
-          {Time.toIsoTimezoneString(commit.committed_date, "datetime-short")}
+          {toHumanDateTime({ datetime: commit.committed_date, format: "full" })}
         </span>{" "}
-        <TimeCaption
-          caption="~"
-          endPunctuation=" "
-          time={commit.committed_date}
-        />
+        <TimeCaption datetime={commit.committed_date} prefix="~" />
         <br />
       </span>
       <span className="fw-bold">Message:</span> <span>{commit.message}</span>
@@ -249,10 +243,6 @@ function ListBarSession({
 
   /* session part */
   const resources = notebook.resources?.requests;
-  const startTime = Time.toIsoTimezoneString(
-    notebook.started,
-    "datetime-short"
-  );
   const sessionId = notebook.name;
   const statusData = getStatusObject(
     sessionStatus as SessionRunningStatus,
@@ -332,10 +322,10 @@ function ListBarSession({
       </div>
       <div className="entity-date listBar-entity-date">
         <TimeCaption
-          caption={labelCaption || "Updated"}
-          showTooltip={true}
-          time={timeCaption}
           className="text-rk-text-light text-truncate"
+          enableTooltip
+          datetime={timeCaption}
+          prefix={labelCaption || "Updated"}
         />
       </div>
       <div className="entity-action d-flex align-items-baseline gap-1">
@@ -363,10 +353,10 @@ function ListBarSession({
           <div className="session-icon-details">{sessionDetailsPopover}</div>
         </div>
         <TimeCaption
-          caption={sessionTimeLabel || ""}
-          showTooltip={true}
-          time={startTime}
           className="text-rk-text-light text-truncate"
+          enableTooltip
+          datetime={notebook.started}
+          prefix={sessionTimeLabel || ""}
         />
       </div>
       <div className="session-icon">

@@ -24,26 +24,24 @@
  */
 
 import React from "react";
+import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DateTime } from "luxon";
 import {
-  Row,
+  Button,
+  ButtonGroup,
   Col,
   ListGroup,
   ListGroupItem,
-  ButtonGroup,
-  Button,
+  Row,
   UncontrolledTooltip,
 } from "reactstrap";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
-
-import Time from "../../utils/helpers/Time";
-
-import "./Commits.css";
+import { Clipboard } from "../Clipboard";
+import { ExternalLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import { TimeCaption } from "../TimeCaption";
-import { ExternalLink } from "../ExternalLinks";
-import { Clipboard } from "../Clipboard";
+import "./Commits.css";
+import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 
 // Constants
 const CommitElement = {
@@ -53,10 +51,11 @@ const CommitElement = {
 
 // Helper functions
 function createDateObject(commit) {
+  const datetime = DateTime.fromISO(commit.committed_date);
   return {
     type: CommitElement.DATE,
-    date: Time.parseDate(commit.committed_date),
-    readableDate: Time.getReadableDate(commit.committed_date),
+    date: datetime.toJSDate(),
+    readableDate: toHumanDateTime({ datetime, format: "date" }),
   };
 }
 
@@ -65,9 +64,12 @@ function createCommitsObjects(commits) {
     .sort((el1, el2) => (el1.committed_date < el2.committed_date ? 1 : -1))
     .reduce(
       (data, commit) => {
+        const lastDate = data.lastDate ? DateTime.fromISO(data.lastDate) : null;
+        const commitDate = DateTime.fromISO(commit.committed_date);
         if (
           !data.lastDate ||
-          !Time.isSameDay(data.lastDate, commit.committed_date)
+          !lastDate ||
+          !lastDate.hasSame(commitDate, "day")
         ) {
           data.lastDate = commit.committed_date;
           data.list.push(createDateObject(commit));
@@ -142,8 +144,9 @@ function SingleCommit(props) {
             <br />
             <span className="small">{props.commit.author_name} </span>
             <TimeCaption
-              caption={"authored"}
-              time={props.commit.committed_date}
+              datetime={props.commit.committed_date}
+              enableTooltip
+              prefix="authored"
             />
           </Col>
           <Col xs={12} md="auto" className="d-md-flex">
