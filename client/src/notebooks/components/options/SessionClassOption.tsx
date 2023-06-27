@@ -129,21 +129,27 @@ export const SessionClassOption = () => {
   }, [dispatch]);
 
   // Set initial session class
+  // Order of preference:
+  // 1. Default session class if it satisfies the compute requirements
+  // 2. The first session class from the default pool which satisfies
+  //    the compute requirements
+  // 3. The default session class otherwise
   useEffect(() => {
     if (projectConfig == null || resourcePools == null) {
       return;
     }
-    console.log({ projectConfig });
-    // const sessionClassIdFromConfig =
-    //   projectConfig.config.sessions?.sessionClass ??
-    //   projectConfig.default.sessions?.sessionClass;
     const initialSessionClassId =
-      // resourcePools
-      //   ?.flatMap((pool) => pool.classes)
-      //   .find((c) => c.id == sessionClassIdFromConfig)?.id ??
       resourcePools
         ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id == defaultSessionClass?.id)?.id ?? 0;
+        .find((c) => c.id == defaultSessionClass?.id && c.matching)?.id ??
+      resourcePools
+        ?.filter((pool) => pool.default)
+        .flatMap((pool) => pool.classes)
+        .find((c) => c.matching)?.id ??
+      resourcePools
+        ?.flatMap((pool) => pool.classes)
+        .find((c) => c.id == defaultSessionClass?.id)?.id ??
+      0;
     dispatch(setSessionClass(initialSessionClassId));
   }, [defaultSessionClass?.id, dispatch, projectConfig, resourcePools]);
 
@@ -224,7 +230,7 @@ function SessionRequirements({
 
   const noMatchingClass = !resourcePools
     .flatMap((pool) => pool.classes)
-    .some((c) => c.matches);
+    .some((c) => c.matching);
 
   return (
     <>
@@ -391,7 +397,7 @@ const OptionOrSingleValueContent = ({
     "text-wrap",
     "text-break",
     styles.label,
-    sessionClass.matches && styles.labelMatches
+    sessionClass.matching && styles.labelMatches
   );
   const detailValueClassName = cx(styles.detail, styles.detailValue);
   const detailLabelClassName = cx(styles.detail, styles.detailLabel);
@@ -399,9 +405,9 @@ const OptionOrSingleValueContent = ({
     <>
       <span className={labelClassName}>
         <FontAwesomeIcon
-          icon={sessionClass.matches ? faCheckCircle : faExclamationTriangle}
+          icon={sessionClass.matching ? faCheckCircle : faExclamationTriangle}
           fixedWidth
-        />
+        />{" "}
         {sessionClass.name}
       </span>{" "}
       <span className={detailValueClassName}>{sessionClass.cpu}</span>{" "}
@@ -450,7 +456,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 5,
         default: true,
-        matches: false,
+        matching: false,
       },
     ],
   },
@@ -473,7 +479,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: false,
+        matching: false,
       },
       {
         id: 4,
@@ -484,7 +490,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: false,
+        matching: false,
       },
       {
         id: 5,
@@ -495,7 +501,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: false,
+        matching: false,
       },
       {
         id: 6,
@@ -506,7 +512,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: false,
+        matching: false,
       },
     ],
   },
@@ -529,7 +535,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: false,
+        matching: false,
       },
       {
         id: 8,
@@ -540,7 +546,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: false,
+        matching: false,
       },
       {
         id: 9,
@@ -551,7 +557,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: false,
+        matching: false,
       },
       {
         id: 10,
@@ -562,7 +568,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: false,
+        matching: false,
       },
     ],
   },
@@ -585,7 +591,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: false,
+        matching: false,
       },
       {
         id: 12,
@@ -596,7 +602,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: false,
+        matching: false,
       },
       {
         id: 13,
@@ -607,7 +613,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: false,
+        matching: false,
       },
       {
         id: 14,
@@ -618,7 +624,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
-        matches: false,
+        matching: false,
       },
     ],
   },

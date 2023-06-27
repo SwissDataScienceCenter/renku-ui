@@ -21,6 +21,9 @@ export interface ResourcePool {
   name: string;
   classes: ResourceClass[];
   quota: Resources;
+  // TODO(@leafty): remove "?"
+  default?: boolean;
+  public?: boolean;
 }
 
 export interface ResourceClass {
@@ -41,7 +44,7 @@ export interface ResourceClass {
 
   default: boolean;
 
-  matches?: boolean;
+  matching?: boolean;
 }
 
 export interface Resources {

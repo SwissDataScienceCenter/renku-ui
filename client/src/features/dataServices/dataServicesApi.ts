@@ -28,15 +28,14 @@ export const dataServicesApi = createApi({
     getResourcePools: builder.query<ResourcePool[], ResourcePoolsQueryParams>({
       query: ({ cpuRequest, gpuRequest, memoryRequest, storageRequest }) => {
         const params = {
-          ...(cpuRequest ? { cpuRequest } : {}),
-          ...(gpuRequest ? { gpuRequest } : {}),
-          ...(memoryRequest ? { memoryRequest } : {}),
-          ...(storageRequest ? { storageRequest } : {}),
+          ...(cpuRequest ? { cpu: cpuRequest } : {}),
+          ...(gpuRequest ? { gpu: gpuRequest } : {}),
+          ...(memoryRequest ? { memory: memoryRequest } : {}),
+          ...(storageRequest ? { max_storage: storageRequest } : {}),
         };
-        console.warn("TODO!", params);
         return {
           url: "resource_pools",
-          // params
+          params,
         };
       },
     }),
