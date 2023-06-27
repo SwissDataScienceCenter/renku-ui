@@ -60,18 +60,6 @@ export const SessionClassOption = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
 
-  const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
-
-  const {
-    data: realResourcePools,
-    isLoading,
-    isError,
-  } = useGetResourcePoolsQuery({}, { skip: enableFakeResourcePools });
-
-  const resourcePools = enableFakeResourcePools
-    ? fakeResourcePools
-    : realResourcePools;
-
   // Project options
   const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
     RootStateOrAny,
@@ -90,6 +78,28 @@ export const SessionClassOption = () => {
     },
     { skip: !coreSupportComputed }
   );
+
+  // Resource pools
+  const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
+
+  const {
+    data: realResourcePools,
+    isLoading,
+    isError,
+  } = useGetResourcePoolsQuery(
+    {
+      cpuRequest: projectConfig?.config.sessions?.legacyConfig?.cpuRequest,
+      gpuRequest: projectConfig?.config.sessions?.legacyConfig?.gpuRequest,
+      memoryRequest:
+        projectConfig?.config.sessions?.legacyConfig?.memoryRequest,
+      storageRequest: projectConfig?.config.sessions?.storage,
+    },
+    { skip: enableFakeResourcePools || !projectConfig }
+  );
+
+  const resourcePools = enableFakeResourcePools
+    ? fakeResourcePools
+    : realResourcePools;
 
   const defaultSessionClass = useMemo(
     () =>
@@ -111,7 +121,7 @@ export const SessionClassOption = () => {
 
   const dispatch = useDispatch();
 
-  // Reset session class when unmounting
+  // Reset session class when we navigate away
   useEffect(() => {
     return () => {
       dispatch(reset());

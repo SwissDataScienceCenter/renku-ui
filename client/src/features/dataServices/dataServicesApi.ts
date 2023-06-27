@@ -17,7 +17,7 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { ResourcePool } from "./dataServices";
+import { ResourcePool, ResourcePoolsQueryParams } from "./dataServices";
 
 export const dataServicesApi = createApi({
   reducerPath: "dataServices",
@@ -25,10 +25,18 @@ export const dataServicesApi = createApi({
     baseUrl: "/ui-server/api/data",
   }),
   endpoints: (builder) => ({
-    getResourcePools: builder.query<ResourcePool[], Record<string, never>>({
-      query: () => {
+    getResourcePools: builder.query<ResourcePool[], ResourcePoolsQueryParams>({
+      query: ({ cpuRequest, gpuRequest, memoryRequest, storageRequest }) => {
+        const params = {
+          ...(cpuRequest ? { cpuRequest } : {}),
+          ...(gpuRequest ? { gpuRequest } : {}),
+          ...(memoryRequest ? { memoryRequest } : {}),
+          ...(storageRequest ? { storageRequest } : {}),
+        };
+        console.warn("TODO!", params);
         return {
           url: "resource_pools",
+          // params
         };
       },
     }),

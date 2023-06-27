@@ -50,3 +50,10 @@ export interface Resources {
   gpu: number;
   storage: number;
 }
+
+export interface ResourcePoolsQueryParams {
+  cpuRequest?: number;
+  gpuRequest?: number;
+  memoryRequest?: number;
+  storageRequest?: number;
+}
