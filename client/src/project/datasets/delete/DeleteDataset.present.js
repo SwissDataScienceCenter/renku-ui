@@ -23,7 +23,7 @@
  *  Presentational components.
  */
 
-import React, { Fragment } from "react";
+import React from "react";
 import {
   Row,
   Col,
@@ -37,55 +37,74 @@ import {
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { Loader } from "../../../components/Loader";
 
-function DeleteDatasetPresent(props) {
-  let modalContent = null;
-
-  if (props.serverErrors) {
-    modalContent = (
+function ModalContent({
+  closeModal,
+  dataset,
+  deleteDataset,
+  serverErrors,
+  submitLoader,
+}) {
+  if (serverErrors) {
+    return (
       <Col>
-        <CoreErrorAlert error={props.serverErrors} />
-      </Col>
-    );
-  } else {
-    modalContent = (
-      <Col>
-        <p>
-          Are you sure you want to delete dataset{" "}
-          <strong>{props.dataset.name}</strong>?
-        </p>
-        <Fragment>
-          {props.submitLoader !== undefined && props.submitLoader.value ? (
-            <FormText color="primary">
-              <Loader size={16} inline margin={2} />
-              {props.submitLoader.text}
-              <br />
-            </FormText>
-          ) : null}
-          <Button
-            type="submit"
-            onClick={props.deleteDataset}
-            disabled={props.submitLoader.value}
-            className="float-right mt-1 btn-rk-pink"
-          >
-            Delete dataset
-          </Button>
-          <Button
-            disabled={props.submitLoader.value}
-            className="float-right mt-1 ms-2 btn-outline-rk-pink"
-            onClick={props.closeModal}
-          >
-            Cancel
-          </Button>
-        </Fragment>
+        <CoreErrorAlert error={serverErrors} />
       </Col>
     );
   }
 
+  if (submitLoader != null && submitLoader.value) {
+    return (
+      <div className="d-flex flex-row-reverse">
+        <FormText color="primary">
+          <Loader size={16} inline margin={2} />
+          {submitLoader.text}
+          <br />
+        </FormText>
+      </div>
+    );
+  }
+
+  return (
+    <Col>
+      <p>
+        Are you sure you want to delete dataset <strong>{dataset.name}</strong>?
+      </p>
+      <div className="d-flex flex-row-reverse">
+        <Button
+          type="submit"
+          onClick={deleteDataset}
+          disabled={submitLoader.value}
+          className="mt-1 btn-rk-pink"
+        >
+          Delete dataset
+        </Button>
+        <Button
+          disabled={submitLoader.value}
+          className="mt-1 me-2 btn-outline-rk-pink"
+          onClick={closeModal}
+        >
+          Cancel
+        </Button>
+        {submitLoader != null && submitLoader.value && (
+          <FormText color="primary">
+            <Loader size={16} inline margin={2} />
+            {submitLoader.text}
+            <br />
+          </FormText>
+        )}
+      </div>
+    </Col>
+  );
+}
+
+function DeleteDatasetPresent(props) {
   return (
     <Modal isOpen={props.modalOpen} toggle={props.closeModal}>
       <ModalHeader toggle={props.closeModal}>Delete Dataset</ModalHeader>
       <ModalBody>
-        <Row className="mb-3">{modalContent}</Row>
+        <Row className="mb-3">
+          <ModalContent {...props} />
+        </Row>
       </ModalBody>
     </Modal>
   );

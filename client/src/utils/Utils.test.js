@@ -27,9 +27,8 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 import { act } from "react-test-renderer";
-
+import { DateTime } from "luxon";
 import { StateModel, globalSchema } from "../model";
-import { Time } from "./helpers/Time";
 import { RefreshButton } from "../components/buttons/Button";
 import { CommitsUtils, CommitsView } from "../components/commits/Commits";
 import {
@@ -111,12 +110,11 @@ describe("Commits functions", () => {
   it("function createDateElement", () => {
     const dateObject = createDateObject(COMMITS[0]);
 
-    expect(dateObject.date).toBeTruthy();
-    expect(
-      Time.isSameDay(dateObject.date, COMMITS[0].committed_date)
-    ).toBeTruthy();
-    expect(dateObject.readableDate).toBeTruthy();
-    expect(dateObject.type).toBe(ElementType.DATE);
+    expect(dateObject).toMatchObject({
+      type: "date",
+      date: new Date("2019-08-26T15:04:37Z"),
+      readableDate: "August 26, 2019",
+    });
   });
 
   it("function createCommitsObjects", () => {
@@ -126,174 +124,20 @@ describe("Commits functions", () => {
     let dates = 0;
     let last;
     for (const commit of COMMITS) {
-      if (!last || !Time.isSameDay(commit.committed_date, last.committed_date))
+      if (
+        !last ||
+        !DateTime.fromISO(commit.committed_date).hasSame(
+          DateTime.fromISO(last.committed_date),
+          "day"
+        )
+      ) {
         dates++;
+      }
       last = commit;
     }
     expect(dateObject.length).toBe(COMMITS.length + dates);
     expect(dateObject[0].type).toBe(ElementType.DATE);
     expect(dateObject[1].type).toBe(ElementType.COMMIT);
-  });
-});
-
-describe("Time class helper", () => {
-  const Dates = {
-    NOW: new Date(),
-    UTCZ_STRING: "2019-03-11T09:34:51.000Z",
-    INVALID: "this is not a date",
-    ISO_READABLE_DATETIME: "2019-03-11 09:34:51",
-    ISO_READABLE_DATETIME_SHORT: "2019-03-11 09:34",
-    ISO_READABLE_DATE: "2019-03-11",
-    ISO_READABLE_TIME: "09:34:51",
-  };
-
-  const DatesTimezoneFriendly = {
-    Plus: {
-      UTCZ_STRING: "2019-08-23T18:00:00.000Z",
-      ISO_READABLE_DATETIME: "2019-08-23 18:00:00",
-      ISO_READABLE_DATETIME_SHORT: "2019-08-23 18:00",
-    },
-    Minus: {
-      UTCZ_STRING: "2019-08-23T06:00:00.000Z",
-      ISO_READABLE_DATETIME: "2019-08-23 06:00:00",
-      ISO_READABLE_DATETIME_SHORT: "2019-08-23 06:00",
-    },
-  };
-
-  const DatesComparison = {
-    DAY1: new Date("2020-04-20T09:48:00.000Z"),
-    DAY2: "2020-04-21T09:48:00.000Z",
-    DAY2_B: "2020-04-21T23:48:00.000Z",
-    DAY3: "2020-04-22T00:00:00.000Z",
-  };
-
-  it("function isSameDay", () => {
-    const locale = false;
-    expect(
-      Time.isSameDay(DatesComparison.DAY1, DatesComparison.DAY2, locale)
-    ).toBeFalsy();
-    expect(
-      Time.isSameDay(DatesComparison.DAY2, DatesComparison.DAY2_B, locale)
-    ).toBeTruthy();
-    expect(
-      Time.isSameDay(DatesComparison.DAY2, DatesComparison.DAY3, locale)
-    ).toBeFalsy();
-  });
-
-  it("function isDate", () => {
-    expect(Time.isDate(Dates.NOW)).toBeTruthy();
-    expect(Time.isDate(Dates.UTCZ_STRING)).toBeFalsy();
-    expect(Time.isDate(new Date(Dates.UTCZ_STRING))).toBeTruthy();
-    expect(Time.isDate(Dates.INVALID)).toBeFalsy();
-  });
-  it("function parseDate", () => {
-    expect(Time.parseDate(Dates.NOW)).toEqual(Dates.NOW);
-    expect(Time.parseDate(Dates.UTCZ_STRING)).toEqual(
-      new Date(Dates.UTCZ_STRING)
-    );
-    expect(() => {
-      Time.parseDate(Dates.INVALID);
-    }).toThrow("Invalid date");
-  });
-  it("function toIsoString", () => {
-    expect(Time.toIsoString(Dates.UTCZ_STRING)).toEqual(
-      Dates.ISO_READABLE_DATETIME
-    );
-    expect(Time.toIsoString(Dates.UTCZ_STRING, "datetime")).toEqual(
-      Dates.ISO_READABLE_DATETIME
-    );
-    expect(Time.toIsoString(Dates.UTCZ_STRING, "datetime-short")).toEqual(
-      Dates.ISO_READABLE_DATETIME_SHORT
-    );
-    expect(Time.toIsoString(Dates.UTCZ_STRING, "date")).toEqual(
-      Dates.ISO_READABLE_DATE
-    );
-    expect(Time.toIsoString(Dates.UTCZ_STRING, "time")).toEqual(
-      Dates.ISO_READABLE_TIME
-    );
-    const fakeType = "not existing";
-    expect(() => {
-      Time.toIsoString(Dates.UTCZ_STRING, fakeType);
-    }).toThrow(`Unknown type "${fakeType}"`);
-
-    expect(Time.toIsoString(DatesTimezoneFriendly.Minus.UTCZ_STRING)).toEqual(
-      DatesTimezoneFriendly.Minus.ISO_READABLE_DATETIME
-    );
-    expect(Time.toIsoString(DatesTimezoneFriendly.Minus.UTCZ_STRING)).toEqual(
-      DatesTimezoneFriendly.Minus.ISO_READABLE_DATETIME
-    );
-  });
-  it("function toIsoTimezoneString", () => {
-    // Create the string manually. It's a creepy logic, but here string manipulation seems to be
-    // a valid way to avoid re-writing function code in the test.
-    const positive = new Date().getTimezoneOffset() >= 0 ? true : false;
-    const DatesTimezone = positive
-      ? DatesTimezoneFriendly.Plus
-      : DatesTimezoneFriendly.Minus;
-    const date = new Date(DatesTimezone.UTCZ_STRING);
-    const deltaHours = Math.abs(parseInt(date.getTimezoneOffset() / 60));
-    const deltaMinutes = Math.abs(date.getTimezoneOffset()) - deltaHours * 60;
-    let expectedString = DatesTimezone.ISO_READABLE_DATETIME;
-    if (deltaHours) {
-      let hour = parseInt(expectedString.substring(11, 13));
-      if (positive) {
-        hour = hour - deltaHours;
-        if (deltaMinutes) hour--;
-      } else {
-        hour = hour + deltaHours;
-      }
-      let stringHour = `0${hour}`.substring(0, 2);
-      expectedString =
-        expectedString.substring(0, 11) +
-        stringHour +
-        expectedString.substring(13);
-    }
-    if (deltaMinutes) {
-      let minute = parseInt(expectedString.substring(14, 16));
-      minute = positive ? minute - deltaMinutes : minute + deltaMinutes;
-      let stringMinute = `0${minute}`.substring(0, 2);
-      expectedString =
-        expectedString.substring(0, 14) +
-        stringMinute +
-        expectedString.substring(16);
-    }
-    expect(Time.toIsoTimezoneString(DatesTimezone.UTCZ_STRING)).toEqual(
-      expectedString
-    );
-  });
-  it("function formatDateTime", () => {
-    let dt = Time.parseDate(Dates.ISO_READABLE_DATETIME);
-    expect(Time.formatDateTime(dt)).not.toBeNull();
-    expect(
-      Time.formatDateTime(dt, { d3FormatString: "%d %m %Y %H:%M:%S" })
-    ).toEqual("11 03 2019 09:34:51");
-    // Correct for the UTC offset, but this will not work for timezone with non-whole hour offsets
-    dt = Time.parseDate(Dates.UTCZ_STRING);
-    const offset = dt.getTimezoneOffset() / 60;
-    const hour = String(9 - offset).padStart(2, "0");
-    expect(
-      Time.formatDateTime(dt, { d3FormatString: "%d %m %Y %H:%M:%S" })
-    ).toEqual(`11 03 2019 ${hour}:34:51`);
-  });
-  it("function getDuration", () => {
-    expect(Time.getDuration(0)).toEqual("< 1 second");
-    expect(Time.getDuration(0.2)).toEqual("< 1 second");
-    expect(Time.getDuration(1)).toEqual("1 second");
-    expect(Time.getDuration(1.4)).toEqual("1 second");
-    expect(Time.getDuration(20)).toEqual("20 seconds");
-    expect(Time.getDuration(59)).toEqual("59 seconds");
-    expect(Time.getDuration(60)).toEqual("1 minute");
-    expect(Time.getDuration(99.55)).toEqual("1 minute");
-    expect(Time.getDuration(121)).toEqual("2 minutes");
-    expect(Time.getDuration(60 * 20)).toEqual("20 minutes");
-    expect(Time.getDuration(60 * 59 + 50)).toEqual("59 minutes");
-    expect(Time.getDuration(60 * 60 * 1.2)).toEqual("1 hour");
-    expect(Time.getDuration(60 * 60 * 1.99)).toEqual("1 hour");
-    expect(Time.getDuration(60 * 60 * 2)).toEqual("2 hours");
-    expect(Time.getDuration(60 * 60 * 23 + 45)).toEqual("23 hours");
-    expect(Time.getDuration(60 * 60 * 24)).toEqual("24 hours");
-    expect(Time.getDuration(60 * 60 * 24 + 200)).toEqual("> 24 hours");
-    expect(Time.getDuration(60 * 60 * 25)).toEqual("> 24 hours");
   });
 });
 

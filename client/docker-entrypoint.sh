@@ -25,6 +25,7 @@ echo " UI_SHORT_SHA=${RENKU_UI_SHORT_SHA}"
 echo " GATEWAY_URL=${GATEWAY_URL:-http://gateway.renku.build}"
 echo " UISERVER_URL=${UISERVER_URL:-http://uiserver.renku.build}"
 echo " BASE_URL=${BASE_URL:-http://renku.build}"
+echo " DASHBOARD_MESSAGE=${DASHBOARD_MESSAGE}"
 echo " SENTRY_URL=${SENTRY_URL}"
 echo " SENTRY_NAMESPACE=${SENTRY_NAMESPACE}"
 echo " SENTRY_SAMPLE_RATE=${SENTRY_SAMPLE_RATE}"
@@ -36,7 +37,7 @@ echo " PRIVACY_BANNER_LAYOUT=${PRIVACY_BANNER_LAYOUT}"
 echo " TEMPLATES=${TEMPLATES}"
 echo " PREVIEW_THRESHOLD=${PREVIEW_THRESHOLD}"
 echo " UPLOAD_THRESHOLD=${UPLOAD_THRESHOLD}"
-echo " HOMEPAGE": "${HOMEPAGE}"
+echo " HOMEPAGE=${HOMEPAGE}"
 echo "==================================================="
 
 echo "Privacy file contains the following markdown (first 5 lines):"
@@ -51,7 +52,7 @@ tee > "${NGINX_PATH}/config.json" << EOF
   "BASE_URL": "${BASE_URL:-http://renku.build}",
   "GATEWAY_URL": "${GATEWAY_URL:-http://gateway.renku.build}",
   "UISERVER_URL": "${UISERVER_URL:-http://uiserver.renku.build}",
-  "WELCOME_PAGE": "${WELCOME_PAGE}",
+  "DASHBOARD_MESSAGE": ${DASHBOARD_MESSAGE},
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
   "SENTRY_SAMPLE_RATE": "${SENTRY_SAMPLE_RATE}",
@@ -69,23 +70,7 @@ tee > "${NGINX_PATH}/config.json" << EOF
 EOF
 echo "config.json created in ${NGINX_PATH}"
 
-tee > "${NGINX_PATH}/sitemap.xml" << EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${BASE_URL}</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/projects</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/datasets</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/help</loc>
-  </url>
-</urlset>
-EOF
+/app/scripts/generate_sitemap.sh "${BASE_URL}" "${NGINX_PATH}/sitemap.xml"
 echo "sitemap.xml created in ${NGINX_PATH}"
 
 tee > "${NGINX_PATH}/robots.txt" << EOF

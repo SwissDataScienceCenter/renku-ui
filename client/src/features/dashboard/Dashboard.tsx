@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
+import { DashboardMessage } from "./components/DashboardMessage";
 import { ProjectsDashboard } from "./components/ProjectsDashboard";
 import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
 import { DatasetDashboard } from "./components/DatasetsDashboard";
@@ -27,40 +28,36 @@ import { SshModal } from "../../components/ssh/ssh";
 
 import "./Dashboard.scss";
 
-class DashboardWrapper extends Component {
-  // ? Temporary wrapper to fetch sessions at least once when opening the dashboard.
-  /* eslint-disable react/prop-types */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(props: any) {
-    super(props);
-    const notebooksModel = props.model.subModel("notebooks");
-    const userModel = props.model.subModel("user");
+interface DashboardProps {
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  client: any;
+  model: any;
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+}
+
+export function Dashboard({ client, model }: DashboardProps) {
+  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
+
+  // Fetch sessions at least once when opening the dashboard
+  useEffect(() => {
+    const notebooksModel = model.subModel("notebooks");
+    const userModel = model.subModel("user");
     const notebookCoordinator = new NotebooksCoordinator(
-      props.client,
+      client,
       notebooksModel,
       userModel
     );
     notebookCoordinator.fetchNotebooks();
-  }
-  /* eslint-enable react/prop-types */
-
-  render() {
-    return <Dashboard />;
-  }
-}
-
-function Dashboard() {
-  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
+  }, [client, model]);
 
   return (
     <div className="rk-dashboard">
       <h1 data-cy="dashboard-title">Renku Dashboard - {user.data.name}</h1>
+      <DashboardMessage />
       <ProjectsInactiveKGWarning />
-      <ProjectsDashboard userName={user?.data.name} />
-      <DatasetDashboard userName={user?.data.name} />
+      <ProjectsDashboard userName={user.data.name} />
+      <DatasetDashboard userName={user.data.name} />
       <SshModal />
     </div>
   );
 }
-
-export { DashboardWrapper as Dashboard };

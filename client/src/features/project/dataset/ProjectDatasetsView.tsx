@@ -17,7 +17,7 @@
  */
 
 import React, { useEffect } from "react";
-import { Link, Route, Switch } from "react-router-dom";
+import { Link, Route, Switch, useHistory } from "react-router-dom";
 import { Alert, Button, Col } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faUserClock } from "@fortawesome/free-solid-svg-icons";
@@ -91,7 +91,7 @@ function ProjectDatasetsNav(props: any) {
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
     skip: !projectId,
   });
-  const isGraphReady = !projectIndexingStatus.data?.activated;
+  const isGraphReady = projectIndexingStatus.data?.activated === true;
   if (coreDatasets == null) return null;
   if (coreDatasets.error != null) return null;
   if (coreDatasets.length === 0) return null;
@@ -169,6 +169,7 @@ function EmptyDatasets({ locked, membership, newDatasetUrl }: any) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetsView(props: any) {
   const { datasets, fetchDatasets, location } = props;
+  const history = useHistory();
 
   const [datasetCoordinator, setDatasetCoordinator] =
     React.useState<unknown>(null);
@@ -212,12 +213,18 @@ function ProjectDatasetsView(props: any) {
     const datasetsLoading = datasets.core === SpecialPropVal.UPDATING;
     if (datasetsLoading || !coreSupportComputed) return;
 
-    if (datasets.core.datasets === null)
+    if (
+      datasets.core.datasets === null ||
+      (location.state && location.state.reload)
+    ) {
       fetchDatasets(location.state && location.state.reload, versionUrl);
+      history.replace({ state: { reload: false } });
+    }
   }, [
     coreSupportComputed,
     datasets.core,
     fetchDatasets,
+    history,
     location.state,
     versionUrl,
   ]);

@@ -1,20 +1,38 @@
+/*!
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from "react";
-import {
-  Badge,
-  PopoverBody,
-  PopoverHeader,
-  UncontrolledPopover,
-} from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheckCircle,
   faExclamationTriangle,
   faInfoCircle,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
-
-import { Loader } from "../../components/Loader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+import {
+  Badge,
+  PopoverBody,
+  PopoverHeader,
+  UncontrolledPopover,
+} from "reactstrap";
 import { Clipboard } from "../../components/Clipboard";
+import { Loader } from "../../components/Loader";
 import { SessionStatus } from "../../utils/constants/Notebooks";
 import type { NotebookAnnotations } from "./Session";
 
@@ -80,23 +98,32 @@ function SessionListRowStatusExtraDetails({
   uid,
 }: Pick<SessionListRowStatusProps, "details" | "status" | "uid">) {
   if (!details.message) return null;
+
+  const popover = (
+    <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
+      <PopoverHeader>Kubernetes pod status</PopoverHeader>
+      <PopoverBody>
+        <span>{details.message}</span>
+        <br />
+      </PopoverBody>
+    </UncontrolledPopover>
+  );
+
   if (status == "failed")
     return (
-      <span className="text-muted">
-        &nbsp;(Click the error icon for details.)
-      </span>
+      <>
+        {" "}
+        <span id={uid} className="text-muted cursor-pointer">
+          (Click here for details.)
+        </span>
+        {popover}
+      </>
     );
   return (
     <>
       {" "}
       <FontAwesomeIcon id={uid} icon={faInfoCircle} />
-      <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
-        <PopoverHeader>Kubernetes pod status</PopoverHeader>
-        <PopoverBody>
-          <span>{details.message}</span>
-          <br />
-        </PopoverBody>
-      </UncontrolledPopover>
+      {popover}
     </>
   );
 }
@@ -185,15 +212,21 @@ function SessionListRowStatusIconPopover({
   );
 }
 
-function SessionListRowStatusIcon(props: SessionListRowStatusIconProps) {
-  const { annotations, details, image, status, uid } = props;
+function SessionListRowStatusIcon({
+  annotations,
+  details,
+  image,
+  spaced,
+  status,
+  uid,
+}: SessionListRowStatusIconProps) {
   const data = getStatusObject(status, annotations.default_image_used);
-  const classes = props.spaced ? "text-nowrap p-1 mb-2" : "text-nowrap p-1";
+  const className = cx("text-nowrap p-1 cursor-pointer", spaced && "mb-2");
   const id = `${uid}-status`;
 
   return (
     <div>
-      <Badge id={id} color={data.color} className={classes}>
+      <Badge id={id} color={data.color} className={className}>
         {data.icon}
       </Badge>
       <SessionListRowStatusIconPopover

@@ -1,21 +1,13 @@
-.projectStatusSection {
-  display: flex;
-  padding: 0.5rem 0;
+.plainAlert {
+  --bs-alert-bg: var(--bs-rk-white);
 }
 
-.projectStatusDetailsSection {
-  padding: 1rem 0 1rem 1rem;
-  border-bottom: black 1px dashed;
-
-  &:first-child {
-    border-top: black 1px dashed;
-  }
-}
-
-.sectionTitle {
+.readMore {
+  color: unset;
+  text-decoration: unset;
   border-bottom: 1px solid transparent;
 
-  &Expandable:hover {
+  &:hover {
     border-bottom-color: var(--bs-body-color);
   }
 }
