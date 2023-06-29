@@ -297,9 +297,6 @@ export interface ProjectConfigSection {
   sessions?: {
     defaultUrl?: string;
 
-    /** Session class from the resource pool API */
-    // sessionClass?: number;
-
     /** Disk storage in Gigabytes */
     storage?: number;
 

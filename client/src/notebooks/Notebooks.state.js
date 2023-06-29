@@ -30,7 +30,6 @@ import { formatEnvironmentVariables } from "../api-client/utils";
 import { startSessionOptionsSlice } from "../features/session/startSessionOptionsSlice";
 import { notebooksSchema } from "../model";
 import { parseINIString, sleep } from "../utils/helpers/HelperFunctions";
-import { projectCoreApi } from "../features/project/projectCoreApi";
 
 const POLLING_INTERVAL = 3000;
 const POLLING_CI = 5; // in seconds, for the sleep function
@@ -1256,8 +1255,6 @@ class NotebooksCoordinator {
 
   // * Change notebook status * //
   startServer(forceBaseImage = false) {
-    console.log("startServer()");
-
     const reduxStore = this.model.reduxStore;
     const startSessionOptions =
       reduxStore.getState()[startSessionOptionsSlice.name];
@@ -1288,16 +1285,6 @@ class NotebooksCoordinator {
     const env_variables = formatEnvironmentVariables(
       this.model.get("filters.environment_variables")
     );
-
-    console.log({
-      namespace,
-      project,
-      branch,
-      commit,
-      image,
-      options,
-      env_variables,
-    });
 
     return this.client.startNotebook(
       namespace,

@@ -672,7 +672,6 @@ class StartNotebookServer extends Component {
       this.coordinator.setCommit(commit);
       await this.getProjectConfig();
       await this.getResourcePools();
-      console.log("refreshPipelines() - call site");
       this.refreshPipelines();
     }
   }
@@ -680,7 +679,6 @@ class StartNotebookServer extends Component {
   async getProjectConfig() {
     const metadata = this.props.model.get("project.metadata");
     const { defaultBranch, externalUrl: projectRepositoryUrl } = metadata;
-    console.log({ metadata });
 
     const store = this.props.model.reduxStore;
 
@@ -714,7 +712,6 @@ class StartNotebookServer extends Component {
       availableVersions,
       projectVersion,
     });
-    console.log({ coreSupport });
 
     // Get project config
     const getConfig = store.dispatch(
@@ -727,7 +724,6 @@ class StartNotebookServer extends Component {
 
     const { data: projectConfig } = await getConfig;
     this.state.projectConfig = projectConfig;
-    console.log({ projectConfig });
   }
 
   async getResourcePools() {
@@ -746,29 +742,11 @@ class StartNotebookServer extends Component {
 
     const { data: resourcePools } = await getResourcePools;
     this.state.resourcePools = resourcePools;
-    console.log({ resourcePools });
-
-    // const {
-    //   data: realResourcePools,
-    //   isLoading,
-    //   isError,
-    // } = useGetResourcePoolsQuery(
-    //   {
-    //     cpuRequest: projectConfig?.config.sessions?.legacyConfig?.cpuRequest,
-    //     gpuRequest: projectConfig?.config.sessions?.legacyConfig?.gpuRequest,
-    //     memoryRequest:
-    //       projectConfig?.config.sessions?.legacyConfig?.memoryRequest,
-    //     storageRequest: projectConfig?.config.sessions?.storage,
-    //   },
-    //   { skip: enableFakeResourcePools || !projectConfig }
-    // );
   }
 
   async refreshPipelines(force = false) {
-    console.log("refreshPipelines()");
     if (this._isMounted) {
       const { accessLevel, user } = this.props;
-      // await this.coordinator.fetchNotebookOptions(); // TODO: this should not be here
       const callback = () => {
         // eslint-disable-line @typescript-eslint/no-empty-function
       };
@@ -812,7 +790,6 @@ class StartNotebookServer extends Component {
   }
 
   async triggerAutoStart() {
-    console.log("triggerAutoStart()");
     if (this._isMounted) {
       if (
         this.autostart &&
@@ -821,14 +798,7 @@ class StartNotebookServer extends Component {
       ) {
         const data = this.model.get();
         const ciStatus = NotebooksHelper.checkCiStatus(data.ci);
-        // const fetched =
-        //   data.notebooks.fetched && data.options.fetched && !ciStatus.ongoing;
         const fetched = data.notebooks.fetched && !ciStatus.ongoing;
-        console.log([
-          data.notebooks.fetched,
-          data.options.fetched,
-          !ciStatus.ongoing,
-        ]);
         if (fetched) {
           // Check that we can auto-assign a session class
           const resourcePools = this.state.resourcePools;

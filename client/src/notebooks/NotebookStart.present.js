@@ -1159,21 +1159,13 @@ function StartNotebookOptions(props) {
     );
 
   const { all, fetched } = props.notebooks;
-  const { filters, options } = props;
-  if (!fetched)
+  const { filters } = props;
+  if (!fetched) {
     return (
       <Label>
         Verifying available sessions... <Loader size={14} inline />
       </Label>
     );
-
-  if (Object.keys(options.global).length === 0 || options.fetching) {
-    console.log("no options?", options);
-    // return (
-    //   <Label>
-    //     Loading session parameters... <Loader size={14} inline />
-    //   </Label>
-    // );
   }
 
   if (Object.keys(all).length > 0) {
@@ -1357,8 +1349,6 @@ class ServerOptionLaunch extends Component {
   render() {
     const { ci } = this.props;
     const { warnings } = this.props.options;
-
-    console.log(this.props.options);
 
     const ciStatus = NotebooksHelper.checkCiStatus(ci);
     const globalNotification =
