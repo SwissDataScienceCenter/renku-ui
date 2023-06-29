@@ -30,14 +30,11 @@ type ProjectEntityHeaderProps = EntityHeaderProps & {
 };
 
 export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
-  const { fullPath } = props;
+  const { fullPath, projectId } = props;
 
-  const projectIndexingStatus = useGetProjectIndexingStatusQuery(
-    props.projectId,
-    {
-      skip: !fullPath || !props.projectId,
-    }
-  );
+  const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
+    skip: !fullPath || !projectId,
+  });
 
   useProjectMetadataQuery(
     { projectPath: fullPath },
@@ -49,7 +46,7 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
       branch={props.branch}
       gitUrl={props.gitUrl ?? ""}
       isMaintainer={props.devAccess}
-      projectId={props.projectId}
+      projectId={projectId}
       projectNamespace=""
       projectPath={props.fullPath ?? ""}
     />
