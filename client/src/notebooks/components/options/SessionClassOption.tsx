@@ -191,8 +191,9 @@ export const SessionClassOption = () => {
       <FormGroup className="field-group">
         <Label>Session class</Label>
         <SessionRequirements
-          projectConfig={projectConfig}
+          currentSessionClass={currentSessionClass}
           resourcePools={resourcePools}
+          projectConfig={projectConfig}
         />
         <SessionClassSelector
           resourcePools={resourcePools}
@@ -206,11 +207,13 @@ export const SessionClassOption = () => {
 };
 
 interface SessionRequirementsProps {
-  projectConfig: ProjectConfig | undefined;
+  currentSessionClass?: ResourceClass | undefined;
   resourcePools: ResourcePool[];
+  projectConfig: ProjectConfig | undefined;
 }
 
 function SessionRequirements({
+  currentSessionClass,
   projectConfig,
   resourcePools,
 }: SessionRequirementsProps) {
@@ -228,6 +231,9 @@ function SessionRequirements({
     return null;
   }
 
+  const currentSessionClassNotMatching =
+    currentSessionClass?.matching === false;
+
   const noMatchingClass = !resourcePools
     .flatMap((pool) => pool.classes)
     .some((c) => c.matching);
@@ -235,7 +241,13 @@ function SessionRequirements({
   return (
     <>
       <div
-        className={cx("d-flex", "flex-row", "flex-wrap", styles.requirements)}
+        className={cx(
+          "d-flex",
+          "flex-row",
+          "flex-wrap",
+          styles.requirements,
+          currentSessionClassNotMatching && styles.requirementsNotMet
+        )}
       >
         <span className="me-3">Session requirements:</span>
         {cpuRequest && (
@@ -263,6 +275,17 @@ function SessionRequirements({
           </>
         )}
       </div>
+      {currentSessionClassNotMatching && (
+        <div
+          className={cx(
+            styles.requirements,
+            currentSessionClassNotMatching && styles.requirementsNotMet
+          )}
+        >
+          <FontAwesomeIcon icon={faExclamationTriangle} /> This session class
+          does not match the compute requirements
+        </div>
+      )}
       {noMatchingClass && (
         <WarnAlert className="mb-1">
           <p className="mb-0">

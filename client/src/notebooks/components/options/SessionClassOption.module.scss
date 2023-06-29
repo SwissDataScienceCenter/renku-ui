@@ -6,6 +6,10 @@
 .requirements {
   color: var(--bs-rk-text);
   font-size: small;
+
+  &NotMet {
+    color: var(--bs-danger);
+  }
 }
 
 .control {
