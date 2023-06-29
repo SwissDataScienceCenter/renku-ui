@@ -44,6 +44,7 @@ export interface ResourceClass {
 
   default: boolean;
 
+  // TODO(@leafty): remove "?"
   matching?: boolean;
 }
 

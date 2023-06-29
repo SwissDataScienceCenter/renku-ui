@@ -112,11 +112,6 @@ function StartNotebookAutostartLoader(
   }, [fetching, isSessionVisible]); //eslint-disable-line
 
   useEffect(() => {
-    console.log({
-      ci: !ciStatus.ongoing,
-      data: !!data.fetched,
-      options: !!options.fetched,
-    });
     setFetching({
       ci: !ciStatus.ongoing,
       data: !!data.fetched,

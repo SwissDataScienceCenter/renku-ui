@@ -309,8 +309,6 @@ export const SessionClassSelector = ({
       unstyled
       classNames={selectClassNames}
       components={selectComponents}
-      // for dev
-      // menuIsOpen
     />
   );
 };
