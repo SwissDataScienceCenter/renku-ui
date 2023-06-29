@@ -45,7 +45,6 @@ import styles from "./SessionStorageOption.module.scss";
 import { StateModelProject } from "../../../features/project/Project";
 import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
 import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
-import { WarnAlert } from "../../../components/Alert";
 
 export const SessionStorageOption = () => {
   const location = useLocation();

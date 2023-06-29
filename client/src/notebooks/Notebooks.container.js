@@ -747,6 +747,7 @@ class StartNotebookServer extends Component {
   async refreshPipelines(force = false) {
     if (this._isMounted) {
       const { accessLevel, user } = this.props;
+      await this.coordinator.fetchNotebookOptions(); // TODO: this should not be here
       const callback = () => {
         // eslint-disable-line @typescript-eslint/no-empty-function
       };
@@ -798,7 +799,8 @@ class StartNotebookServer extends Component {
       ) {
         const data = this.model.get();
         const ciStatus = NotebooksHelper.checkCiStatus(data.ci);
-        const fetched = data.notebooks.fetched && !ciStatus.ongoing;
+        const fetched =
+          data.notebooks.fetched && data.options.fetched && !ciStatus.ongoing;
         if (fetched) {
           // Check that we can auto-assign a session class
           const resourcePools = this.state.resourcePools;

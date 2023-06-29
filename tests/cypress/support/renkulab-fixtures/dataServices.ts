@@ -28,7 +28,7 @@ export const DataServices = <T extends FixturesConstructor>(Parent: T) => {
       name = "getResourcePools",
       fixture = "dataServices/resource-pools.json"
     ) {
-      cy.intercept("/ui-server/api/data/resource_pools", {
+      cy.intercept("/ui-server/api/data/resource_pools*", {
         fixture,
       }).as(name);
       return this;
