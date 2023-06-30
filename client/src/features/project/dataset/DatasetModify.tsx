@@ -24,7 +24,6 @@ import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import cx from "classnames";
 
-//import { Link } from "react-router-dom";
 import { Button, UncontrolledAlert } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
@@ -568,7 +567,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
     return () => {
       window.removeEventListener("beforeunload", onBeforeUnload);
     };
-  });
+  }, []);
 
   // Still waiting for the form to be initialized
   if (formState.context.location.pathname !== location.pathname) {

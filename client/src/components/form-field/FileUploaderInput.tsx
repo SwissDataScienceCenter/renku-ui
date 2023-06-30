@@ -94,6 +94,14 @@ function FileUploaderInput(props: FileUploaderInputProps) {
     (state) => state.form.files
   );
   const dispatch = useDispatch();
+  const { setValue } = props;
+  const setDisplayFiles = React.useCallback(
+    (files: DatasetFormState["form"]["files"]) => {
+      dispatch(setFiles(files));
+      setValue(files);
+    },
+    [dispatch, setValue]
+  );
   return (
     <FormGeneratorFileUploaderInput
       alert={props.error?.message}
@@ -109,10 +117,7 @@ function FileUploaderInput(props: FileUploaderInputProps) {
         projectPathWithNamespace: props.projectPathWithNamespace,
         location: props.location,
       })}
-      setDisplayFiles={(files: DatasetFormState["form"]["files"]) => {
-        dispatch(setFiles(files));
-        props.setValue(files);
-      }}
+      setDisplayFiles={setDisplayFiles}
       uploadThresholdSoft={UPLOAD_THRESHOLD_SOFT}
       value={props.value}
     />
