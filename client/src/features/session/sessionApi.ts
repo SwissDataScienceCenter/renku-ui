@@ -33,6 +33,9 @@ export const sessionApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/notebooks/" }),
   tagTypes: [],
   endpoints: (builder) => ({
+    getSessions: builder.query<unknown, void>({
+      query: () => ({ url: "servers" }),
+    }),
     serverOptions: builder.query<ServerOptions, Record<never, never>>({
       query: () => ({
         url: "server_options",
@@ -67,6 +70,7 @@ export const sessionApi = createApi({
 });
 
 export const {
+  useGetSessionsQuery,
   useServerOptionsQuery,
   useStopSessionMutation,
   useGetLogsQuery,

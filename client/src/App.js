@@ -55,6 +55,7 @@ import { Dashboard } from "./features/dashboard/Dashboard";
 
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
+import AnonymousSessionsList from "./features/session/components/AnonymousSessionsList";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize
@@ -208,14 +209,8 @@ function CentralContentContainer(props) {
               />
             )}
           />
-          <Route exact path="/sessions">
-            {!user.logged ? (
-              <ContainerWrap>
-                <div>NOTEBOOKS</div>
-              </ContainerWrap>
-            ) : (
-              <Redirect to="/" />
-            )}
+          <Route exact path={Url.get(Url.pages.sessions)}>
+            {!user.logged ? <AnonymousSessionsList /> : <Redirect to="/" />}
           </Route>
           <Route
             path="/datasets/:identifier/add"
