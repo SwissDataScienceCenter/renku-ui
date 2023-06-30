@@ -38,12 +38,13 @@ import FileUploaderInput, {
 } from "../../../components/form-field/FileUploaderInput";
 import TextInput from "../../../components/form-field/TextInput";
 import TextAreaInput from "../../../components/form-field/TextAreaInput";
-import FormGenerator from "../../../components/formgenerator";
 import type { RenkuUser } from "../../../model/RenkuModels";
 import { FormErrorFields } from "../../../project/new/components/FormValidations";
+import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
+
+import { DatasetCore, IDatasetFiles } from "../../project/Project";
 
 import {
-  initializeForUser,
   reset,
   setFormValues,
   setServerError,
@@ -203,7 +204,8 @@ function DatasetFormErrors({ errors }: DatasetFormErrorsProps) {
 }
 
 interface DatasetModifyFormProps extends DatasetModifyDisplayProps {
-  dataset: unknown;
+  dataset: DatasetCore | undefined;
+  existingFiles: IDatasetFiles | undefined;
   formState: DatasetFormState;
   location: unknown;
   notifications: unknown;
@@ -225,8 +227,10 @@ function DatasetModifyForm(props: DatasetModifyFormProps) {
   });
   const title = watch("title");
   React.useEffect(() => {
-    if (title) setValue("name", FormGenerator.Parsers.slugFromTitle(title));
-  }, [setValue, title]);
+    // only update the name if the dataset does not already exist
+    if (props.dataset == null && title)
+      setValue("name", slugFromTitle(title, true));
+  }, [props.dataset, setValue, title]);
 
   return (
     <form className="form-rk-pink" onSubmit={handleSubmit(props.onSubmit)}>
@@ -251,6 +255,7 @@ function DatasetModifyForm(props: DatasetModifyFormProps) {
         name="name"
         required={true}
         register={register("name", {
+          disabled: props.dataset != null,
           required:
             "A name is required; a default is derived from the title, but it can be modified",
         })}
@@ -279,6 +284,7 @@ function DatasetModifyForm(props: DatasetModifyFormProps) {
       />
       <FileUploaderInput
         dataset={props.dataset}
+        existingFiles={props.existingFiles}
         help="You can upload files from your computer or add files from a remote location."
         label="Files"
         location={props.location}
@@ -326,26 +332,27 @@ function serverWarningMessageForMerge(
   return (
     <div>
       <p>
-        The operation was successful, but
+        The operation was successful, but{" "}
         <strong>
           this project requires use of merge requests to make changes.
         </strong>
       </p>
-      <br />
-      <br />
-      Create a merge request to bring the changes from{" "}
-      <strong>{remoteBranch}</strong> into{" "}
-      <strong>{props.defaultBranch}</strong> to see the dataset in your project.
-      <br />
-      <br />
-      This can be done on the{" "}
-      <ExternalLink
-        className="btn-warning"
-        size="sm"
-        title="Merge Requests"
-        url={`${props.externalUrl}/-/merge_requests`}
-      />{" "}
-      tab of the GitLab UI.
+      <p>
+        Create a merge request to bring the changes from{" "}
+        <strong>{remoteBranch}</strong> into{" "}
+        <strong>{props.defaultBranch}</strong> to see the dataset in your
+        project.
+      </p>
+      <p>
+        This can be done on the{" "}
+        <ExternalLink
+          className="btn-warning"
+          size="sm"
+          title="Merge Requests"
+          url={`${props.externalUrl}/-/merge_requests`}
+        />{" "}
+        tab of the GitLab UI.
+      </p>
     </div>
   );
 }
@@ -395,9 +402,9 @@ function formatServerError(error: ServerError) {
 }
 export interface DatasetModifyProps extends DatasetModifyDisplayProps {
   client: DatasetPostClient;
-  dataset: unknown;
+  dataset: DatasetModifyFormProps["dataset"];
   defaultBranch: string;
-  edit: boolean;
+  existingFiles: DatasetModifyFormProps["existingFiles"];
   externalUrl: string;
   fetchDatasets: PostSubmitProps["fetchDatasets"];
   history: ReturnType<typeof useHistory>;
@@ -416,8 +423,8 @@ export default function DatasetModify(props: DatasetModifyProps) {
   const dispatch = useDispatch();
   const {
     client,
+    dataset,
     defaultBranch,
-    edit,
     externalUrl,
     fetchDatasets,
     history,
@@ -426,12 +433,11 @@ export default function DatasetModify(props: DatasetModifyProps) {
     overviewCommitsUrl,
     projectPathWithNamespace,
     setSubmitting,
-    user,
     versionUrl,
   } = props;
-  React.useEffect(() => {
-    dispatch(initializeForUser({ location, projectPathWithNamespace, user }));
-  }, [dispatch, location, projectPathWithNamespace, user]);
+
+  const edit = dataset != null;
+  const name = dataset?.name;
 
   const formState = useDatasetFormSelector();
 
@@ -453,9 +459,12 @@ export default function DatasetModify(props: DatasetModifyProps) {
     async (data: DatasetFormFields) => {
       setSubmitting(true);
       dispatch(setFormValues(data));
+      const submitData = { ...data };
+      // Do not change the name of an existing dataset
+      if (name) submitData.name = name;
 
       try {
-        const { dataset, response } = await postDataset(data, {
+        const { dataset, response } = await postDataset(submitData, {
           client,
           defaultBranch,
           edit,
@@ -514,7 +523,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
         setSubmitting(false);
         if (postCreationResponse.problemJobs.length === 0) {
           await redirectAfterSubmit({
-            datasetId: dataset.name,
+            datasetId: dataset.name ?? props.dataset?.name ?? "",
             fetchDatasets,
             history,
             projectPathWithNamespace,
@@ -546,7 +555,9 @@ export default function DatasetModify(props: DatasetModifyProps) {
       fetchDatasets,
       history,
       httpProjectUrl,
+      name,
       projectPathWithNamespace,
+      props.dataset?.name,
       setError,
       setSubmitting,
       setWarning,
@@ -583,15 +594,15 @@ export default function DatasetModify(props: DatasetModifyProps) {
             externalUrl,
             overviewCommitsUrl,
           })}
-          <div>
-            <Button
-              className={cx("float-end", "mt-1", "me-1", "btn-outline-rk-pink")}
-              onClick={() => props.onCancel()}
-            >
-              {edit ? "Go to dataset" : "Go to list"}
-            </Button>
-          </div>
         </UncontrolledAlert>
+        <div>
+          <Button
+            className={cx("float-end", "mt-1", "me-1", "btn-outline-rk-pink")}
+            onClick={() => props.onCancel()}
+          >
+            {edit ? "Go to dataset" : "Go to list"}
+          </Button>
+        </div>
       </div>
     );
   }
@@ -600,6 +611,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
     <>
       <DatasetModifyForm
         dataset={props.dataset}
+        existingFiles={props.existingFiles}
         formState={formState}
         location={location}
         notifications={props.notifications}

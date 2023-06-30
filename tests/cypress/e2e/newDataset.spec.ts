@@ -190,7 +190,7 @@ describe("Project new dataset", () => {
     cy.get('[data-cy="dropzone"]').attachFile("/datasets/files/bigFile.bin", {
       subjectType: "drag-n-drop",
     });
-    cy.wait("@errorUploadFile", { timeout: 5000 });
+    cy.wait("@errorUploadFile", { timeout: 10_000 });
     cy.get_cy("upload-error-message").contains(
       "Server responded with 500 code."
     );

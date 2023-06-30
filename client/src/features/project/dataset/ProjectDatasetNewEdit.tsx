@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 import React from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Alert, Button, Col } from "reactstrap";
 
@@ -31,22 +31,26 @@ import ProgressIndicator, {
   ProgressStyle,
   ProgressType,
 } from "../../../components/progress/Progress";
-import ChangeDataset from "../../../project/datasets/change";
 import { Url } from "../../../utils/helpers/url";
 
-import type { StateModelProject } from "../Project";
+import type { IDatasetFiles, StateModelProject } from "../Project";
 
 import type { DatasetPostClient } from "./datasetCore.api";
+
+import { initializeForDataset, initializeForUser } from "./datasetForm.slice";
 
 import DatasetModify from "./DatasetModify";
 import type {
   DatasetModifyDisplayProps,
+  DatasetModifyProps,
   PostSubmitProps,
 } from "./DatasetModify";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
+import { SerializedError } from "@reduxjs/toolkit";
+import { Loader } from "../../../components/Loader";
 
 type ChangeDatasetProps = {
   client: DatasetPostClient;
-  edit: boolean;
   fetchDatasets: PostSubmitProps["fetchDatasets"];
   history: ReturnType<typeof useHistory>;
   location: { pathname: string };
@@ -63,7 +67,8 @@ type ProjectDatasetNewOnlyProps = {
 };
 
 type ProjectDatasetEditOnlyProps = {
-  dataset?: string;
+  dataset: NonNullable<DatasetModifyProps["dataset"]>;
+  files: IDatasetFiles;
   datasetId: string;
 };
 
@@ -111,13 +116,14 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
     projectUrlProps
   );
 
-  const { history, submitting, setSubmitting } = props;
+  const { dataset, history, submitting, setSubmitting } = props;
 
   const onCancel = React.useCallback(() => {
-    history.push({
-      pathname: `/projects/${projectPathWithNamespace}/datasets`,
-    });
-  }, [history, projectPathWithNamespace]);
+    const pathname = dataset
+      ? `/projects/${projectPathWithNamespace}/datasets/${dataset.name}`
+      : `/projects/${projectPathWithNamespace}/datasets`;
+    history.push({ pathname });
+  }, [dataset, history, projectPathWithNamespace]);
 
   if (accessLevel < ACCESS_LEVELS.MAINTAINER) {
     return (
@@ -166,7 +172,7 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
       client={props.client}
       dataset={props.dataset}
       defaultBranch={projectMetadata.defaultBranch}
-      edit={props.edit}
+      existingFiles={props.files ?? { hasPart: [] }}
       externalUrl={projectMetadata.externalUrl}
       fetchDatasets={props.fetchDatasets}
       initialized={true}
@@ -187,9 +193,20 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
 }
 
 function ProjectDatasetNew(
-  props: Omit<ChangeDatasetProps, "edit" | "submitting" | "setSubmitting"> &
+  props: Omit<ChangeDatasetProps, "submitting" | "setSubmitting"> &
     ProjectDatasetNewOnlyProps
 ) {
+  const location = props.location;
+  const project = useSelector(
+    (state: RootStateOrAny) => state.stateModel.project as StateModelProject
+  );
+  const projectPathWithNamespace = project.metadata.pathWithNamespace;
+  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
+  const dispatch = useDispatch();
+  React.useEffect(() => {
+    dispatch(initializeForUser({ location, projectPathWithNamespace, user }));
+  }, [dispatch, location, projectPathWithNamespace, user]);
+
   const [submitting, setSubmitting] = React.useState(false);
   return (
     <FormSchema
@@ -207,7 +224,6 @@ function ProjectDatasetNew(
         <ProjectDatasetNewEdit
           key="datasetCreate"
           client={props.client}
-          edit={false}
           fetchDatasets={props.fetchDatasets}
           history={props.history}
           location={props.location}
@@ -226,96 +242,109 @@ function ProjectDatasetNew(
   );
 }
 
-function ProjectDatasetEdit(
-  props: Omit<ChangeDatasetProps, "edit" | "submitting" | "setSubmitting"> &
+function ProjectDatasetEditForm(
+  props: ChangeDatasetProps &
+    DatasetModifyDisplayProps &
     ProjectDatasetEditOnlyProps
 ) {
+  const location = props.location;
   const project = useSelector(
     (state: RootStateOrAny) => state.stateModel.project as StateModelProject
   );
-  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
-  const projectMetadata = project.metadata;
-  const accessLevel = projectMetadata.accessLevel;
-  const datasets = project.datasets.core.datasets;
-  const httpProjectUrl = projectMetadata.httpUrl;
-  const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER;
-  const projectPath = projectMetadata.path;
-  const projectNamespace = projectMetadata.namespace;
-  const projectUrlProps = {
-    namespace: projectNamespace,
-    path: projectPath,
-    target: "",
-  };
-  const fileContentUrl = Url.get(Url.pages.project.file, projectUrlProps);
-  const lineageUrl = Url.get(Url.pages.project.lineage, projectUrlProps);
-  // Remove the trailing slash, since that is how downstream components expect it.
-  const lineagesUrl = lineageUrl.substring(0, lineageUrl.length - 1);
-  const projectPathWithNamespace = projectMetadata.pathWithNamespace;
-  const projectId = projectMetadata.id;
-
-  const forkedData = project.forkedFromProject;
-  const forked =
-    forkedData != null && Object.keys(forkedData).length > 0 ? true : false;
-  const overviewCommitsUrl = Url.get(
-    Url.pages.project.overview.commits,
-    projectUrlProps
-  );
-  const projectsUrl = Url.get(Url.pages.projects);
+  const projectPathWithNamespace = project.metadata.pathWithNamespace;
+  const dispatch = useDispatch();
+  const { dataset, files } = props;
+  React.useEffect(() => {
+    dispatch(
+      initializeForDataset({
+        dataset: dataset,
+        location,
+        projectPathWithNamespace,
+      })
+    );
+  }, [dataset, dispatch, files, location, projectPathWithNamespace]);
+  const [submitting, setSubmitting] = React.useState(false);
   return (
-    <ChangeDataset
-      accessLevel={accessLevel}
+    <ProjectDatasetNewEdit
+      key="datasetModify"
       client={props.client}
       dataset={props.dataset}
       datasetId={props.datasetId}
-      datasets={datasets}
-      defaultBranch={projectMetadata.defaultBranch}
-      edit={true}
       fetchDatasets={props.fetchDatasets}
-      fileContentUrl={fileContentUrl}
-      forked={forked}
+      files={files}
       history={props.history}
-      httpProjectUrl={httpProjectUrl}
-      insideProject={true}
-      lineagesUrl={lineagesUrl}
       location={props.location}
-      maintainer={maintainer}
       model={props.model}
       notifications={props.notifications}
-      ovewrviewCommitsUrl={overviewCommitsUrl}
-      params={{ UPLOAD_THRESHOLD: { soft: 104857600 } }}
-      projectId={projectId}
-      projectPathWithNamespace={projectPathWithNamespace}
-      projectsUrl={projectsUrl}
-      user={user}
+      setSubmitting={setSubmitting}
+      submitting={submitting}
+      submitButtonText="Modify Dataset"
+      submitLoaderText="Modifying dataset"
+      params={props.params}
+      versionUrl={props.versionUrl}
     />
   );
-  // const [submitting, setSubmitting] = React.useState(false);
-  // return (
-  //   <FormSchema
-  //     showHeader={!submitting}
-  //     title="Modify Dataset"
-  //     description="Update dataset metadata or upload dataset files"
-  //   >
-  //     <ProjectDatasetNewEdit
-  //       key="datasetModify"
-  //       client={props.client}
-  //       dataset={props.dataset}
-  //       datasetId={props.datasetId}
-  //       edit={true}
-  //       fetchDatasets={props.fetchDatasets}
-  //       history={props.history}
-  //       location={props.location}
-  //       model={props.model}
-  //       notifications={props.notifications}
-  //       setSubmitting={setSubmitting}
-  //       submitting={submitting}
-  //       submitButtonText="Modify Dataset"
-  //       submitLoaderText="Modifying dataset"
-  //       params={props.params}
-  //       versionUrl={props.versionUrl}
-  //     />
-  //   </FormSchema>
-  // );
+}
+
+export type ProjectDatasetEditProps = Omit<
+  ChangeDatasetProps,
+  "submitting" | "setSubmitting"
+> &
+  Partial<ProjectDatasetEditOnlyProps> & {
+    files: IDatasetFiles;
+    isFilesFetching: boolean;
+    filesFetchError: FetchBaseQueryError | SerializedError | undefined;
+  };
+
+function ProjectDatasetEdit(props: ProjectDatasetEditProps) {
+  const { dataset, datasetId } = props;
+  const [submitting, setSubmitting] = React.useState(false);
+
+  if (dataset == null || datasetId == null || datasetId.length === 0) {
+    // This should never happen, but just in case
+    return (
+      <div className="d-flex flex-column">
+        Trying to modify a non-existent dataset.
+      </div>
+    );
+  }
+  if (props.isFilesFetching) {
+    return <Loader />;
+  }
+  if (props.filesFetchError) {
+    // This should never happen because it should caught before allowing the user to edit a dataset, but just in case
+    return (
+      <div className="d-flex flex-column">
+        Could not retrieve dataset files.
+      </div>
+    );
+  }
+  return (
+    <FormSchema
+      showHeader={!submitting}
+      title="Modify Dataset"
+      description="Update dataset metadata or upload dataset files"
+    >
+      <ProjectDatasetEditForm
+        key="datasetModify"
+        client={props.client}
+        dataset={dataset}
+        datasetId={datasetId}
+        fetchDatasets={props.fetchDatasets}
+        files={props.files}
+        history={props.history}
+        location={props.location}
+        model={props.model}
+        notifications={props.notifications}
+        setSubmitting={setSubmitting}
+        submitting={submitting}
+        submitButtonText="Modify Dataset"
+        submitLoaderText="Modifying dataset"
+        params={props.params}
+        versionUrl={props.versionUrl}
+      />
+    </FormSchema>
+  );
 }
 
 export { ProjectDatasetEdit, ProjectDatasetNew };

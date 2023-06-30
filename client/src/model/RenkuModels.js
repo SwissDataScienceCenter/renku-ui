@@ -24,7 +24,6 @@
  */
 
 import { Schema, PropertyName as Prop } from "./Model";
-import FormGenerator from "../components/formgenerator";
 
 const userSchema = new Schema({
   fetched: { initial: null, mandatory: true },
@@ -501,121 +500,6 @@ const datasetSchema = new Schema({
   },
 });
 
-const datasetFormSchema = new Schema({
-  title: {
-    initial: "",
-    name: "title",
-    label: "Title",
-    required: true,
-    type: FormGenerator.FieldTypes.TEXT,
-    validators: [
-      {
-        id: "title-length",
-        isValidFun: (expression) =>
-          FormGenerator.Validators.isNotEmpty(expression),
-        alert: "Title is too short",
-      },
-    ],
-    help:
-      "The title is displayed in listings of datasets. " +
-      "The *name* is automatically derived from the title, but can be changed.",
-  },
-  name: {
-    initial: "",
-    name: "name",
-    label: "Name",
-    edit: false,
-    editOnClick: true,
-    required: true,
-    type: FormGenerator.FieldTypes.TEXT,
-    parseFun: (expression) => FormGenerator.Parsers.slugFromTitle(expression),
-    validators: [
-      {
-        id: "name-length",
-        isValidFun: (expression) =>
-          FormGenerator.Validators.isNotEmpty(expression),
-        alert: "Name is too short",
-      },
-    ],
-    help: " It is used as an identifier in renku commands.",
-  },
-  creators: {
-    initial: [],
-    name: "creators",
-    label: "Creators",
-    type: FormGenerator.FieldTypes.CREATORS,
-    validators: [
-      {
-        id: "creator-valid",
-        isValidFun: (expression) =>
-          FormGenerator.Validators.creatorIsValid(expression),
-        alert: "Creator name and email cannot be empty",
-      },
-    ],
-    //shall we pre-validate that an email is an email with regex? --> yes and it should not be empty also...
-  },
-  keywords: {
-    initial: [],
-    name: "keywords",
-    label: "Keywords",
-    help: "To insert a keyword, type it and press enter.",
-    type: FormGenerator.FieldTypes.KEYWORDS,
-    validators: [],
-    optional: true,
-  },
-  description: {
-    initial: "",
-    name: "description",
-    label: "Description",
-    type: FormGenerator.FieldTypes.TEXT_EDITOR,
-    outputType: "markdown",
-    help: "Basic markdown styling tags are allowed in this field.",
-    validators: [
-      {
-        id: "name-length",
-        //  isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 3),
-        alert: "Description can't be empty",
-      },
-    ],
-    optional: true,
-  },
-  files: {
-    initial: [],
-    name: "files",
-    label: "Files",
-    edit: true,
-    type: FormGenerator.FieldTypes.FILES,
-    uploadFileFunction: undefined,
-    filesOnUploader: undefined,
-    notifyFunction: undefined,
-    internalValues: undefined,
-    validators: [
-      {
-        id: "files-length",
-        isValidFun: (expression) =>
-          FormGenerator.Validators.filesReady(expression),
-        alert: "Some queued files have not finished uploading.",
-      },
-    ],
-  },
-  image: {
-    name: "image",
-    label: "Image",
-    edit: true,
-    type: FormGenerator.FieldTypes.IMAGE,
-    maxSize: 10 * 1024 * 1024,
-    format: "image/png,image/jpeg,image/gif,image/tiff",
-    // Image input should apply the default help text
-    help: undefined,
-    value: {
-      options: [],
-      selected: -1,
-    },
-    validators: [],
-    modes: ["Choose File"],
-  },
-});
-
 const environmentSchema = new Schema({
   uiVersion: {
     [Prop.SCHEMA]: new Schema({
@@ -671,7 +555,6 @@ const formGeneratorSchema = new Schema({
 });
 
 export {
-  datasetFormSchema,
   datasetSchema,
   environmentSchema,
   formGeneratorSchema,

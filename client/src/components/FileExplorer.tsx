@@ -17,7 +17,7 @@ type HashElt = {
   isLeaf: boolean;
 };
 
-type JsonObj = {
+export type FileTreeNode = {
   atLocation: string;
   name: string;
   id: string;
@@ -27,7 +27,7 @@ type TreeNodeElt = {
   name: string;
   children: TreeNodeElt[];
   id: string;
-  jsonObj: JsonObj | null;
+  jsonObj: FileTreeNode | null;
   path: string;
   text?: string;
 };
@@ -35,7 +35,7 @@ type TreeNodeElt = {
 function buildTree(
   parts: string[],
   treeNode: TreeNodeElt[],
-  jsonObj: JsonObj,
+  jsonObj: FileTreeNode,
   hash: Record<string, HashElt>,
   currentPathCandidate: string,
   foldersOpenOnLoad = 0
@@ -116,7 +116,7 @@ type FilesTree = {
   leafs: HashElt[];
 };
 function getFilesTree(
-  files: JsonObj[],
+  files: FileTreeNode[],
   foldersOpenOnLoad: number | undefined
 ): FilesTree {
   const list = files;
@@ -312,7 +312,7 @@ function FilesTreeView(props: FilesTreeViewProps) {
 
 type FileExplorerProps = {
   /**  This is a list of files with atLocation containing the file path (this is optional) */
-  files?: JsonObj[];
+  files?: FileTreeNode[];
   /** This is the already built fileTree (optional) */
   filesTree?: FilesTree;
   /** Number of folders that should appear open already when displaying the tree */
