@@ -35,7 +35,6 @@ import { ProjectList } from "./project/list";
 import { NewProject } from "./project/new";
 import DatasetList from "./dataset/list/DatasetList.container";
 import { AnonymousHome, RenkuNavBar, FooterNavbar } from "./landing";
-import { Notebooks } from "./notebooks";
 import { Login, LoginHelper } from "./authentication";
 import Help from "./help";
 import { NotFound } from "./not-found";
@@ -209,26 +208,15 @@ function CentralContentContainer(props) {
               />
             )}
           />
-          <Route
-            exact
-            path="/sessions"
-            render={(p) =>
-              !user.logged ? (
-                <ContainerWrap>
-                  <Notebooks
-                    key="sessions"
-                    standalone={true}
-                    client={props.client}
-                    model={props.model}
-                    blockAnonymous={blockAnonymous}
-                    {...p}
-                  />
-                </ContainerWrap>
-              ) : (
-                <Redirect to="/" />
-              )
-            }
-          />
+          <Route exact path="/sessions">
+            {!user.logged ? (
+              <ContainerWrap>
+                <div>NOTEBOOKS</div>
+              </ContainerWrap>
+            ) : (
+              <Redirect to="/" />
+            )}
+          </Route>
           <Route
             path="/datasets/:identifier/add"
             render={(p) => (
