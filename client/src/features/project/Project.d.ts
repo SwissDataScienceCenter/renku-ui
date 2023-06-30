@@ -27,6 +27,10 @@ export interface CoreServiceParams {
   versionUrl?: string;
 }
 
+type DatasetImage = {
+  _links: { href: string }[];
+};
+
 export interface GetDatasetFilesParams extends CoreServiceParams {
   git_url: string;
   name: string;
@@ -52,6 +56,7 @@ export interface IDatasetFiles {
 }
 
 export interface Creator {
+  name: string;
   affiliation: string | null;
   email: string;
 }

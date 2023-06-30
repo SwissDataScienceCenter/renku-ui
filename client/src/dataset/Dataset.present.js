@@ -314,7 +314,15 @@ function AddToProjectButton({ insideKg, locked, logged, identifier }) {
   );
 }
 
-function EditDatasetButton({ dataset, insideProject, locked, maintainer }) {
+function EditDatasetButton({
+  dataset,
+  files,
+  isFilesFetching,
+  filesFetchError,
+  insideProject,
+  locked,
+  maintainer,
+}) {
   if (!insideProject || !maintainer) return null;
   if (locked) {
     return (
@@ -339,7 +347,10 @@ function EditDatasetButton({ dataset, insideProject, locked, maintainer }) {
       className="float-right mb-1"
       id="editDatasetTooltip"
       data-cy="edit-dataset-button"
-      to={{ pathname: "modify", state: { dataset: dataset } }}
+      to={{
+        pathname: "modify",
+        state: { dataset, files, isFilesFetching, filesFetchError },
+      }}
     >
       <Button
         className="btn-rk-white text-rk-pink icon-button"
@@ -403,6 +414,9 @@ export default function DatasetView(props) {
     <EditDatasetButton
       key="editDatasetButton"
       dataset={dataset}
+      files={props.files}
+      isFilesFetching={props.isFilesFetching}
+      filesFetchError={props.filesFetchError}
       insideProject={props.insideProject}
       locked={locked}
       maintainer={props.maintainer}

@@ -30,14 +30,25 @@ import { Loader } from "../../../components/Loader";
 import { DatasetCoordinator } from "../../../dataset/Dataset.state";
 import { SpecialPropVal } from "../../../model/Model";
 import { Url } from "../../../utils/helpers/url";
+
+import type { DatasetCore } from "../Project";
 import ProjectDatasetListView from "./ProjectDatasetsListView";
 import ProjectDatasetShow from "./ProjectDatasetShow";
 import ProjectDatasetImport from "./ProjectDatasetImport";
 import { ProjectDatasetEdit, ProjectDatasetNew } from "./ProjectDatasetNewEdit";
+import type { ProjectDatasetEditProps } from "./ProjectDatasetNewEdit";
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { StateModelProject } from "../Project";
 import { useCoreSupport } from "../useProjectCoreSupport";
+
+type LocationState = {
+  dataset: DatasetCore;
+  files: ProjectDatasetEditProps["files"];
+  isFilesFetching: boolean;
+  filesFetchError: ProjectDatasetEditProps["filesFetchError"];
+  reload: boolean;
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetLockAlert({ lockStatus }: any) {
@@ -383,32 +394,36 @@ function ProjectDatasetsView(props: any) {
         />
         <Route
           path={props.editDatasetUrl}
-          render={(p) => (
-            <>
-              <Col key="btn" md={12}>
-                <GoBackButton
-                  label="Back to dataset"
-                  url={`${props.datasetsUrl}/${p.match.params.datasetId}/`}
+          render={(p) => {
+            const locationState = p.location.state
+              ? (p.location.state as LocationState)
+              : undefined;
+            return (
+              <>
+                <Col key="btn" md={12}>
+                  <GoBackButton
+                    label="Back to dataset"
+                    url={`${props.datasetsUrl}/${p.match.params.datasetId}/`}
+                  />
+                </Col>
+                <ProjectDatasetEdit
+                  client={props.client}
+                  dataset={locationState?.dataset}
+                  datasetId={decodeURIComponent(p.match.params.datasetId ?? "")}
+                  fetchDatasets={props.fetchDatasets}
+                  files={locationState?.files ?? { hasPart: [] }}
+                  filesFetchError={locationState?.filesFetchError}
+                  history={props.history}
+                  isFilesFetching={locationState?.isFilesFetching ?? false}
+                  location={props.location}
+                  model={props.model}
+                  notifications={props.notifications}
+                  params={props.params}
+                  versionUrl={versionUrl}
                 />
-              </Col>
-              <ProjectDatasetEdit
-                client={props.client}
-                dataset={
-                  p.location.state
-                    ? (p.location.state as Record<string, string>).dataset
-                    : undefined
-                }
-                datasetId={decodeURIComponent(p.match.params.datasetId ?? "")}
-                fetchDatasets={props.fetchDatasets}
-                history={props.history}
-                location={props.location}
-                model={props.model}
-                notifications={props.notifications}
-                params={props.params}
-                versionUrl={versionUrl}
-              />
-            </>
-          )}
+              </>
+            );
+          }}
         />
         <Route
           path={props.datasetUrl}

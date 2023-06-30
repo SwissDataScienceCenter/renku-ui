@@ -19,13 +19,13 @@
 /**
  *  renku-ui
  *
- *  SelectInput.js
+ *  SelectAutosuggestInput.js
  *  Presentational components.
  */
 
 import * as React from "react";
 import { useState } from "react";
-import FormLabel from "./formgenerator/fields/FormLabel";
+import FormLabel from "./form-field/FormLabel";
 import { FormGroup } from "reactstrap";
 import Autosuggest from "react-autosuggest";
 import { FormText } from "../utils/ts-wrappers";

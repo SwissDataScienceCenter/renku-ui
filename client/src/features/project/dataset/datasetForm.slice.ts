@@ -18,10 +18,12 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import type { Creator } from "../../../components/form-field/CreatorsInput";
 import type { ImageInputImage } from "../../../components/form-field/ImageInput";
+import type { CreatorInputCreator } from "../../../components/form-field/CreatorsInput";
 import type { RenkuUser } from "../../../model/RenkuModels";
 import { createSliceSelector } from "../../../utils/customHooks/UseSliceSelector";
+
+import { DatasetCore } from "../Project";
 
 export type DatasetUploaderFile = {
   file: unknown;
@@ -51,7 +53,7 @@ type ServerError =
 
 export type DatasetFormState = {
   form: {
-    creators: Creator[];
+    creators: CreatorInputCreator[];
     description: string;
     files: Omit<DatasetUploaderFile, "file">[];
     image: ImageInputImage;
@@ -69,13 +71,19 @@ export type DatasetFormState = {
   };
 };
 
-type FormInitialValues = {
+type FormNewInitialValues = {
   location: { pathname: string };
   projectPathWithNamespace: string;
   user: RenkuUser;
 };
 
-function newDatasetCreators(user: RenkuUser): Creator[] {
+type FormEditInitialValues = {
+  dataset: DatasetCore;
+  location: { pathname: string };
+  projectPathWithNamespace: string;
+};
+
+function newDatasetCreators(user: RenkuUser): CreatorInputCreator[] {
   return [
     {
       id: 0,
@@ -107,7 +115,7 @@ export const datasetFormSlice = createSlice({
   name: "datasetForm",
   initialState,
   reducers: {
-    initializeForUser: (state, action: PayloadAction<FormInitialValues>) => {
+    initializeForUser: (state, action: PayloadAction<FormNewInitialValues>) => {
       if (state.context.location.pathname === action.payload.location.pathname)
         return state;
       state.form = {
@@ -124,6 +132,36 @@ export const datasetFormSlice = createSlice({
         location: action.payload.location,
       };
     },
+    initializeForDataset: (
+      state,
+      action: PayloadAction<FormEditInitialValues>
+    ) => {
+      if (state.context.location.pathname === action.payload.location.pathname)
+        return state;
+      const { dataset } = action.payload;
+      const image = {
+        options: [
+          { NAME: "", URL: dataset.mediaContent ?? undefined, STOCK: false },
+        ],
+        selected: 0,
+      };
+      state.form = {
+        creators: dataset.creators.map((creator, idx) => ({
+          ...creator,
+          id: idx,
+        })),
+        description: dataset.description,
+        files: [],
+        image: image,
+        keywords: dataset.keywords,
+        name: dataset.name,
+        title: dataset.title,
+      };
+      state.context = {
+        projectPathWithNamespace: action.payload.projectPathWithNamespace,
+        location: action.payload.location,
+      };
+    },
     setFiles: (
       state,
       action: PayloadAction<DatasetFormState["form"]["files"]>
@@ -131,7 +169,8 @@ export const datasetFormSlice = createSlice({
       state.form.files = action.payload;
     },
     setFormValues: (state, action: PayloadAction<DatasetFormState["form"]>) => {
-      state.form = action.payload;
+      // merge the values from the payload and form
+      state.form = { ...action.payload, ...state.form };
     },
     setServerError: (state, action: PayloadAction<ServerError>) => {
       state.context.serverError = action.payload;
@@ -145,6 +184,7 @@ export const datasetFormSlice = createSlice({
 });
 
 export const {
+  initializeForDataset,
   initializeForUser,
   setFiles,
   setFormValues,
