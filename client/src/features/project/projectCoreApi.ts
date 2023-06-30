@@ -88,8 +88,11 @@ interface UpdateConfigRawResponse {
   };
 }
 
-function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
-  const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : endpoint;
+function versionedUrlEndpoint(
+  endpoint: string,
+  versionUrl: string | undefined | null
+) {
+  const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : `/${endpoint}`;
   return `/renku${urlPath}`;
 }
 
