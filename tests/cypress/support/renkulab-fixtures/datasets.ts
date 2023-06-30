@@ -199,6 +199,21 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    editDataset(name = "editDataset", datasetTitle = "abcd edited") {
+      cy.intercept("/ui-server/api/renku/*/datasets.edit", {
+        body: {
+          result: {
+            edited: {
+              title: datasetTitle,
+            },
+            remote_branch: "master",
+            warnings: [],
+          },
+        },
+      }).as(name);
+      return this;
+    }
+
     addFileDataset(name = "addFile", resultFile = "datasets/add-file.json") {
       const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
       cy.intercept("/ui-server/api/renku/*/datasets.add", fixture).as(name);

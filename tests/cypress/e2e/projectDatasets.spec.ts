@@ -115,6 +115,70 @@ describe("Project dataset", () => {
       });
   });
 
+  it("can edit project dataset", () => {
+    fixtures.getFiles().uploadDatasetFile().addFileDataset().editDataset();
+
+    cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getProject");
+    cy.wait("@datasetList")
+      .its("response.body")
+      .then((data) => {
+        const datasets = data.result.datasets;
+        const totalDatasets = datasets?.length;
+        cy.get_cy("list-card").should("have.length", totalDatasets);
+        const dataset = datasets[0];
+        const datasetIdentifier = dataset.identifier.replace(/-/g, "");
+        fixtures.datasetById(datasetIdentifier, "getDatasetById");
+        cy.get_cy("list-card-title").contains(dataset.title).click();
+        cy.wait("@getDatasetById");
+        cy.get_cy("edit-dataset-button").first().click();
+        cy.wait("@getFiles");
+
+        cy.get("input[name='title']").should("have.value", dataset.title);
+        cy.get("input[name='title']").type(" edited");
+
+        // For some reason the first creator email is used twice in datasets.creators, so we check the second and third creator
+        cy.get_cy("creator-name")
+          .first()
+          .should("have.value", dataset.creators[1].name);
+        cy.get_cy("creator-name")
+          .last()
+          .should("have.value", dataset.creators[2].name);
+        cy.get_cy("creator-name").first().type(" edited");
+
+        cy.get("div.input-tag").contains("test");
+        cy.get("div.input-tag").contains("testing datasets");
+        cy.get_cy("input-keywords").type("added").type("{enter}");
+
+        cy.get("div.ck-editor__main").contains("Dataset for testing purposes");
+        cy.get_cy("ckeditor-description")
+          .find("p")
+          .click()
+          .type(". New description");
+
+        cy.get("div.tree-container").contains("air_quality_no2.txt");
+        cy.get('[data-cy="dropzone"]').attachFile(
+          "/datasets/files/count_flights.txt",
+          { subjectType: "drag-n-drop" }
+        );
+        cy.wait("@uploadDatasetFile");
+
+        //        fixtures.projectKGDatasetList(projectPath);
+        //        fixtures.projectDatasetList();
+        cy.get_cy("submit-button").click();
+        // req.body.title.should("end.with", "edited");
+        // req.body.creators[1].name.should("end.with", "edited");
+        // req.body.keywords.should("include", "added");
+        cy.wait("@editDataset")
+          .its("request.body.title")
+          .should("equal", `${dataset.title} edited`);
+        cy.wait("@addFile");
+        cy.wait("@datasetList", { timeout: 20_000 });
+        cy.wait("@getProjectLockStatus");
+        cy.get(".card-title").contains(dataset.title);
+      });
+  });
+
   it("delete project dataset", () => {
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProject");
