@@ -1262,10 +1262,8 @@ class NotebooksCoordinator {
     const options = {
       resource_class_id: startSessionOptions.sessionClass ?? null,
       storage: startSessionOptions.storage ?? null,
-      serverOptions: {
-        defaultUrl: startSessionOptions.defaultUrl,
-        lfs_auto_fetch: startSessionOptions.lfsAutoFetch,
-      },
+      default_url: startSessionOptions.defaultUrl,
+      lfs_auto_fetch: startSessionOptions.lfsAutoFetch,
     };
     const cloudstorage = this.model.get("filters.objectStoresConfiguration");
     if (cloudstorage.length > 0) options["cloudstorage"] = cloudstorage;
