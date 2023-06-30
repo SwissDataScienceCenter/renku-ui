@@ -29,6 +29,7 @@ import {
 } from "@reduxjs/toolkit";
 
 import { displaySlice } from "../../features/display/displaySlice";
+import { datasetFormSlice } from "../../features/project/dataset";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
@@ -53,6 +54,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     ...renkuStateModelReducer,
     [dashboardMessageSlice.name]: dashboardMessageSlice.reducer,
     [displaySlice.name]: displaySlice.reducer,
+    [datasetFormSlice.name]: datasetFormSlice.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
