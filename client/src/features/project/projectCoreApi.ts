@@ -30,8 +30,11 @@ import type {
 } from "./Project.d";
 import { MigrationStartScopes } from "./projectEnums";
 
-function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
-  const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : endpoint;
+function versionedUrlEndpoint(
+  endpoint: string,
+  versionUrl: string | null | undefined
+) {
+  const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : `/${endpoint}`;
   return `/renku${urlPath}`;
 }
 
