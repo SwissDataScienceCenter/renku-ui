@@ -201,6 +201,7 @@ export const SessionClassOption = () => {
           defaultSessionClass={defaultSessionClass}
           onChange={onChange}
         />
+        <SessionClassWarning currentSessionClass={currentSessionClass} />
       </FormGroup>
     </Col>
   );
@@ -275,17 +276,6 @@ function SessionRequirements({
           </>
         )}
       </div>
-      {currentSessionClassNotMatching && (
-        <div
-          className={cx(
-            styles.requirements,
-            currentSessionClassNotMatching && styles.requirementsNotMet
-          )}
-        >
-          <FontAwesomeIcon icon={faExclamationTriangle} /> This session class
-          does not match the compute requirements
-        </div>
-      )}
       {noMatchingClass && (
         <WarnAlert className="mb-1">
           <p className="mb-0">
@@ -295,6 +285,33 @@ function SessionRequirements({
         </WarnAlert>
       )}
     </>
+  );
+}
+
+interface SessionClassWarningProps {
+  currentSessionClass?: ResourceClass | undefined;
+}
+
+function SessionClassWarning({
+  currentSessionClass,
+}: SessionClassWarningProps) {
+  const currentSessionClassNotMatching =
+    currentSessionClass?.matching === false;
+
+  if (!currentSessionClassNotMatching) {
+    return null;
+  }
+
+  return (
+    <div
+      className={cx(
+        styles.requirements,
+        currentSessionClassNotMatching && styles.requirementsNotMet
+      )}
+    >
+      <FontAwesomeIcon icon={faExclamationTriangle} /> This session class does
+      not match the compute requirements
+    </div>
   );
 }
 
