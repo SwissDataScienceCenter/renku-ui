@@ -31,7 +31,7 @@ import Select, {
   components,
 } from "react-select";
 import { Col, FormGroup, Label } from "reactstrap";
-import { ErrorAlert } from "../../../components/Alert";
+import { ErrorAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import {
   ResourceClass,
@@ -40,28 +40,25 @@ import {
 import { useGetResourcePoolsQuery } from "../../../features/dataServices/dataServicesApi";
 import {
   setSessionClass,
+  reset,
   useStartSessionOptionsSelector,
 } from "../../../features/session/startSessionOptionsSlice";
 import styles from "./SessionClassOption.module.scss";
-import { StateModelProject } from "../../../features/project/Project";
+import {
+  ProjectConfig,
+  StateModelProject,
+} from "../../../features/project/Project";
 import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
 import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
+import {
+  faCheckCircle,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const SessionClassOption = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-
-  const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
-
-  const {
-    data: realResourcePools,
-    isLoading,
-    isError,
-  } = useGetResourcePoolsQuery({}, { skip: enableFakeResourcePools });
-
-  const resourcePools = enableFakeResourcePools
-    ? fakeResourcePools
-    : realResourcePools;
 
   // Project options
   const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
@@ -81,6 +78,28 @@ export const SessionClassOption = () => {
     },
     { skip: !coreSupportComputed }
   );
+
+  // Resource pools
+  const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
+
+  const {
+    data: realResourcePools,
+    isLoading,
+    isError,
+  } = useGetResourcePoolsQuery(
+    {
+      cpuRequest: projectConfig?.config.sessions?.legacyConfig?.cpuRequest,
+      gpuRequest: projectConfig?.config.sessions?.legacyConfig?.gpuRequest,
+      memoryRequest:
+        projectConfig?.config.sessions?.legacyConfig?.memoryRequest,
+      storageRequest: projectConfig?.config.sessions?.storage,
+    },
+    { skip: enableFakeResourcePools || !projectConfig }
+  );
+
+  const resourcePools = enableFakeResourcePools
+    ? fakeResourcePools
+    : realResourcePools;
 
   const defaultSessionClass = useMemo(
     () =>
@@ -102,18 +121,31 @@ export const SessionClassOption = () => {
 
   const dispatch = useDispatch();
 
+  // Reset session class when we navigate away
+  useEffect(() => {
+    return () => {
+      dispatch(reset());
+    };
+  }, [dispatch]);
+
   // Set initial session class
+  // Order of preference:
+  // 1. Default session class if it satisfies the compute requirements
+  // 2. The first session class from the default pool which satisfies
+  //    the compute requirements
+  // 3. The default session class otherwise
   useEffect(() => {
     if (projectConfig == null || resourcePools == null) {
       return;
     }
-    const sessionClassIdFromConfig =
-      projectConfig.config.sessions?.sessionClass ??
-      projectConfig.default.sessions?.sessionClass;
     const initialSessionClassId =
       resourcePools
         ?.flatMap((pool) => pool.classes)
-        .find((c) => c.id == sessionClassIdFromConfig)?.id ??
+        .find((c) => c.id == defaultSessionClass?.id && c.matching)?.id ??
+      resourcePools
+        ?.filter((pool) => pool.default)
+        .flatMap((pool) => pool.classes)
+        .find((c) => c.matching)?.id ??
       resourcePools
         ?.flatMap((pool) => pool.classes)
         .find((c) => c.id == defaultSessionClass?.id)?.id ??
@@ -158,16 +190,130 @@ export const SessionClassOption = () => {
     <Col xs={12}>
       <FormGroup className="field-group">
         <Label>Session class</Label>
+        <SessionRequirements
+          currentSessionClass={currentSessionClass}
+          resourcePools={resourcePools}
+          projectConfig={projectConfig}
+        />
         <SessionClassSelector
           resourcePools={resourcePools}
           currentSessionClass={currentSessionClass}
           defaultSessionClass={defaultSessionClass}
           onChange={onChange}
         />
+        <SessionClassWarning currentSessionClass={currentSessionClass} />
       </FormGroup>
     </Col>
   );
 };
+
+interface SessionRequirementsProps {
+  currentSessionClass?: ResourceClass | undefined;
+  resourcePools: ResourcePool[];
+  projectConfig: ProjectConfig | undefined;
+}
+
+function SessionRequirements({
+  currentSessionClass,
+  projectConfig,
+  resourcePools,
+}: SessionRequirementsProps) {
+  if (!projectConfig) {
+    return null;
+  }
+
+  const cpuRequest = projectConfig?.config.sessions?.legacyConfig?.cpuRequest;
+  const memoryRequest =
+    projectConfig?.config.sessions?.legacyConfig?.memoryRequest;
+  const storageRequest = projectConfig?.config.sessions?.storage;
+  const gpuRequest = projectConfig?.config.sessions?.legacyConfig?.gpuRequest;
+
+  if (!cpuRequest && !memoryRequest && !storageRequest && !gpuRequest) {
+    return null;
+  }
+
+  const currentSessionClassNotMatching =
+    currentSessionClass?.matching === false;
+
+  const noMatchingClass = !resourcePools
+    .flatMap((pool) => pool.classes)
+    .some((c) => c.matching);
+
+  return (
+    <>
+      <div
+        className={cx(
+          "d-flex",
+          "flex-row",
+          "flex-wrap",
+          styles.requirements,
+          currentSessionClassNotMatching && styles.requirementsNotMet
+        )}
+      >
+        <span className="me-3">Session requirements:</span>
+        {cpuRequest && (
+          <>
+            {" "}
+            <span className="me-3">{cpuRequest} CPUs</span>
+          </>
+        )}
+        {memoryRequest && (
+          <>
+            {" "}
+            <span className="me-3">{memoryRequest} GB RAM</span>
+          </>
+        )}
+        {storageRequest && (
+          <>
+            {" "}
+            <span className="me-3">{storageRequest} GB Disk</span>
+          </>
+        )}
+        {gpuRequest && (
+          <>
+            {" "}
+            <span>{gpuRequest} GPUs</span>
+          </>
+        )}
+      </div>
+      {noMatchingClass && (
+        <WarnAlert className="mb-1">
+          <p className="mb-0">
+            It seems that no session class you have access to can match the
+            compute requirements to launch a session
+          </p>
+        </WarnAlert>
+      )}
+    </>
+  );
+}
+
+interface SessionClassWarningProps {
+  currentSessionClass?: ResourceClass | undefined;
+}
+
+function SessionClassWarning({
+  currentSessionClass,
+}: SessionClassWarningProps) {
+  const currentSessionClassNotMatching =
+    currentSessionClass?.matching === false;
+
+  if (!currentSessionClassNotMatching) {
+    return null;
+  }
+
+  return (
+    <div
+      className={cx(
+        styles.requirements,
+        currentSessionClassNotMatching && styles.requirementsNotMet
+      )}
+    >
+      <FontAwesomeIcon icon={faExclamationTriangle} /> This session class does
+      not match the compute requirements
+    </div>
+  );
+}
 
 interface SessionClassSelectorProps {
   resourcePools: ResourcePool[];
@@ -285,12 +431,23 @@ interface OptionOrSingleValueContentProps {
 const OptionOrSingleValueContent = ({
   sessionClass,
 }: OptionOrSingleValueContentProps) => {
-  const labelClassName = cx("text-wrap", "text-break", styles.label);
+  const labelClassName = cx(
+    "text-wrap",
+    "text-break",
+    styles.label,
+    sessionClass.matching && styles.labelMatches
+  );
   const detailValueClassName = cx(styles.detail, styles.detailValue);
   const detailLabelClassName = cx(styles.detail, styles.detailLabel);
   return (
     <>
-      <span className={labelClassName}>{sessionClass.name}</span>{" "}
+      <span className={labelClassName}>
+        <FontAwesomeIcon
+          icon={sessionClass.matching ? faCheckCircle : faExclamationTriangle}
+          fixedWidth
+        />{" "}
+        {sessionClass.name}
+      </span>{" "}
       <span className={detailValueClassName}>{sessionClass.cpu}</span>{" "}
       <span className={detailLabelClassName}>CPUs</span>{" "}
       <span className={detailValueClassName}>{sessionClass.memory}</span>
@@ -337,6 +494,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 5,
         default: true,
+        matching: false,
       },
     ],
   },
@@ -359,6 +517,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matching: false,
       },
       {
         id: 4,
@@ -369,6 +528,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matching: false,
       },
       {
         id: 5,
@@ -379,6 +539,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matching: false,
       },
       {
         id: 6,
@@ -389,6 +550,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matching: false,
       },
     ],
   },
@@ -411,6 +573,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matching: false,
       },
       {
         id: 8,
@@ -421,6 +584,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matching: false,
       },
       {
         id: 9,
@@ -431,6 +595,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matching: false,
       },
       {
         id: 10,
@@ -441,6 +606,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matching: false,
       },
     ],
   },
@@ -463,6 +629,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matching: false,
       },
       {
         id: 12,
@@ -473,6 +640,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matching: false,
       },
       {
         id: 13,
@@ -483,6 +651,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matching: false,
       },
       {
         id: 14,
@@ -493,6 +662,7 @@ export const fakeResourcePools: ResourcePool[] = [
         max_storage: 40,
         default_storage: 10,
         default: false,
+        matching: false,
       },
     ],
   },

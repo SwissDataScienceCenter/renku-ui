@@ -52,7 +52,6 @@ interface GetConfigRawResponse {
 
 const KNOWN_CONFIG_KEYS = [
   "interactive.default_url",
-  "interactive.session_class",
   "interactive.lfs_auto_fetch",
   "interactive.disk_request",
   "interactive.cpu_request",
@@ -89,8 +88,11 @@ interface UpdateConfigRawResponse {
   };
 }
 
-function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
-  const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : endpoint;
+function versionedUrlEndpoint(
+  endpoint: string,
+  versionUrl: string | undefined | null
+) {
+  const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : `/${endpoint}`;
   return `/renku${urlPath}`;
 }
 
@@ -335,9 +337,6 @@ const transformGetConfigRawResponse = (
     config: {
       sessions: {
         defaultUrl: projectSessionsConfig["interactive.default_url"],
-        sessionClass: safeParseInt(
-          projectSessionsConfig["interactive.session_class"]
-        ),
         storage: safeParseInt(
           projectSessionsConfig["interactive.disk_request"]
         ),
@@ -353,9 +352,6 @@ const transformGetConfigRawResponse = (
     default: {
       sessions: {
         defaultUrl: defaultSessionsConfig["interactive.default_url"],
-        sessionClass: safeParseInt(
-          defaultSessionsConfig["interactive.session_class"]
-        ),
         storage: safeParseInt(
           defaultSessionsConfig["interactive.disk_request"]
         ),

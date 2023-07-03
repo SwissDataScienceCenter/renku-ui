@@ -2,6 +2,8 @@
   {
     "id": 1,
     "name": "Public pool",
+    "default": true,
+    "public": true,
     "quota": {
       "cpu": 100,
       "memory": 1000,
@@ -17,7 +19,8 @@
         "gpu": 0,
         "max_storage": 20,
         "default_storage": 5,
-        "default": false
+        "default": true,
+        "matching": false
       },
       {
         "id": 2,
@@ -27,13 +30,16 @@
         "gpu": 0,
         "max_storage": 40,
         "default_storage": 5,
-        "default": true
+        "default": false,
+        "matching": true
       }
     ]
   },
   {
     "id": 2,
     "name": "Special pool",
+    "default": false,
+    "public": false,
     "quota": {
       "cpu": 200,
       "memory": 8000,
@@ -49,7 +55,8 @@
         "gpu": 0,
         "max_storage": 40,
         "default_storage": 10,
-        "default": false
+        "default": false,
+        "matching": true
       },
       {
         "id": 4,
@@ -59,7 +66,8 @@
         "gpu": 1,
         "max_storage": 40,
         "default_storage": 10,
-        "default": false
+        "default": false,
+        "matching": true
       },
       {
         "id": 5,
@@ -69,7 +77,8 @@
         "gpu": 1,
         "max_storage": 40,
         "default_storage": 10,
-        "default": false
+        "default": false,
+        "matching": true
       },
       {
         "id": 6,
@@ -79,13 +88,16 @@
         "gpu": 1,
         "max_storage": 40,
         "default_storage": 10,
-        "default": false
+        "default": false,
+        "matching": true
       }
     ]
   },
   {
     "id": 3,
     "name": "Special GPU pool",
+    "default": false,
+    "public": false,
     "quota": {
       "cpu": 200,
       "memory": 8000,
@@ -101,7 +113,8 @@
         "gpu": 4,
         "max_storage": 40,
         "default_storage": 10,
-        "default": false
+        "default": false,
+        "matching": true
       },
       {
         "id": 8,
@@ -111,7 +124,8 @@
         "gpu": 4,
         "max_storage": 40,
         "default_storage": 10,
-        "default": false
+        "default": false,
+        "matching": true
       },
       {
         "id": 9,
@@ -121,8 +135,8 @@
         "gpu": 8,
         "max_storage": 40,
         "default_storage": 10,
-        "public": false,
-        "default": false
+        "default": false,
+        "matching": true
       },
       {
         "id": 10,
@@ -132,13 +146,16 @@
         "gpu": 8,
         "max_storage": 40,
         "default_storage": 10,
-        "default": false
+        "default": false,
+        "matching": true
       }
     ]
   },
   {
     "id": 4,
     "name": "High memory pool",
+    "default": false,
+    "public": false,
     "quota": {
       "cpu": 200,
       "memory": 64000,
@@ -154,7 +171,8 @@
         "gpu": 0,
         "max_storage": 40,
         "default_storage": 10,
-        "default": false
+        "default": false,
+        "matching": true
       },
       {
         "id": 12,
@@ -164,7 +182,8 @@
         "gpu": 0,
         "max_storage": 40,
         "default_storage": 10,
-        "default": false
+        "default": false,
+        "matching": true
       },
       {
         "id": 13,
@@ -174,7 +193,8 @@
         "gpu": 0,
         "max_storage": 40,
         "default_storage": 10,
-        "default": false
+        "default": false,
+        "matching": true
       },
       {
         "id": 14,
@@ -184,7 +204,8 @@
         "gpu": 0,
         "max_storage": 40,
         "default_storage": 10,
-        "default": false
+        "default": false,
+        "matching": true
       }
     ]
   }

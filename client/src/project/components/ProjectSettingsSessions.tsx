@@ -669,7 +669,9 @@ function ComputeResourceOption({
         {devAccess && (
           <ResetOption
             optionId={optionId}
-            disabled={disabled}
+            // eslint-disable-next-line spellcheck/spell-checker
+            // TODO(@leafty): remove `|| currentValue === ""` once https://github.com/SwissDataScienceCenter/renku-python/issues/3544 is fixed
+            disabled={disabled || currentValue === ""}
             onReset={onReset}
           />
         )}

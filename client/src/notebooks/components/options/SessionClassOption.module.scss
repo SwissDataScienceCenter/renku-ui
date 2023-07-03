@@ -3,6 +3,15 @@
 @import "~bootstrap/scss/maps";
 @import "~bootstrap/scss/mixins";
 
+.requirements {
+  color: var(--bs-rk-text);
+  font-size: small;
+
+  &NotMet {
+    color: var(--bs-danger);
+  }
+}
+
 .control {
   background: var(--bs-rk-white);
   --bs-border-color: var(--bs-rk-border-input);
@@ -51,6 +60,12 @@
 
     @include media-breakpoint-up(sm) {
       grid-column: auto;
+    }
+
+    color: var(--bs-danger);
+
+    &Matches {
+      color: var(--bs-rk-green);
     }
   }
 

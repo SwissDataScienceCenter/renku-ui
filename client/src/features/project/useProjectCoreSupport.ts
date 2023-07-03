@@ -75,7 +75,7 @@ export const useCoreSupport = ({
   };
 };
 
-const computeBackendData = ({
+export const computeBackendData = ({
   availableVersions,
   projectVersion,
 }: {

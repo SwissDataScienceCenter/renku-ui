@@ -1160,12 +1160,13 @@ function StartNotebookOptions(props) {
 
   const { all, fetched } = props.notebooks;
   const { filters, options } = props;
-  if (!fetched)
+  if (!fetched) {
     return (
       <Label>
         Verifying available sessions... <Loader size={14} inline />
       </Label>
     );
+  }
 
   if (Object.keys(options.global).length === 0 || options.fetching)
     return (
@@ -1182,19 +1183,21 @@ function StartNotebookOptions(props) {
       return false;
     });
     if (currentNotebook) {
-      return [
-        <StartNotebookOptionsRunning
-          key="notebook-options-running"
-          notebook={all[currentNotebook]}
-        />,
-        <ShareLinkSessionModal
-          key="shareLinkModal"
-          toggleModal={props.toggleShareLinkModal}
-          showModal={props.showShareLinkModal}
-          notebookFilePath={props.notebookFilePath}
-          {...props}
-        />,
-      ];
+      return (
+        <>
+          <StartNotebookOptionsRunning
+            key="notebook-options-running"
+            notebook={all[currentNotebook]}
+          />
+          <ShareLinkSessionModal
+            key="shareLinkModal"
+            toggleModal={props.toggleShareLinkModal}
+            showModal={props.showShareLinkModal}
+            notebookFilePath={props.notebookFilePath}
+            {...props}
+          />
+        </>
+      );
     }
   }
 

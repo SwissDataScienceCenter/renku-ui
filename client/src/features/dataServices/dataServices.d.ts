@@ -21,6 +21,10 @@ export interface ResourcePool {
   name: string;
   classes: ResourceClass[];
   quota: Resources;
+  // eslint-disable-next-line spellcheck/spell-checker
+  // TODO(@leafty): remove "?"
+  default?: boolean;
+  public?: boolean;
 }
 
 export interface ResourceClass {
@@ -40,6 +44,10 @@ export interface ResourceClass {
   default_storage: number;
 
   default: boolean;
+
+  // eslint-disable-next-line spellcheck/spell-checker
+  // TODO(@leafty): remove "?"
+  matching?: boolean;
 }
 
 export interface Resources {
@@ -47,4 +55,11 @@ export interface Resources {
   memory: number;
   gpu: number;
   storage: number;
+}
+
+export interface ResourcePoolsQueryParams {
+  cpuRequest?: number;
+  gpuRequest?: number;
+  memoryRequest?: number;
+  storageRequest?: number;
 }
