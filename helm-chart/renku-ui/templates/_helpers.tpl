@@ -101,5 +101,5 @@ Template a json list of cookies that should not be stripped by the ui-server pro
 {{- end -}}
 {{- end -}}
 {{- $cookieNames = concat $cookieNames .Values.server.keepCookies -}}
-{{- $cookieNames | toJson -}}
+{{- $cookieNames | uniq | toJson -}}
 {{- end -}}
