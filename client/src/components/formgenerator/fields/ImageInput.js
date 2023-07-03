@@ -312,7 +312,15 @@ function ImageContentInput({
     onModeButtonClick = () => fileInput.current.click();
     onInputChange = onModeButtonClick;
     onDrop = (e) =>
-      onFileInputChange(name, options, maxSize, setInputs, setSizeAlert, e);
+      onFileInputChange(
+        name,
+        options,
+        maxSize,
+        setInputs,
+        setSizeAlert,
+        setOriginalImageInput,
+        e
+      );
   }
   if (disabled) return null;
   const sizeAlertLabel = sizeAlert ? <ErrorLabel text={sizeAlert} /> : null;
@@ -328,6 +336,7 @@ function ImageContentInput({
           color={color}
         />
         <Input
+          autoComplete="off"
           id={widgetId}
           name={widgetId}
           type="text"
@@ -443,7 +452,6 @@ function ImageInput(props) {
       {alert && <ErrorLabel text={alert} />}
     </div>
   );
-
   return (
     <>
       <Row key="row-title">

@@ -81,7 +81,7 @@ export interface DatasetKg extends DatasetAbstract {
   sameAs?: string;
 }
 
-export interface IDataset extends DatasetAbstract {
+interface IDataset extends DatasetAbstract {
   created: string;
   exists: boolean;
   insideKg: boolean;

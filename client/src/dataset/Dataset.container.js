@@ -46,7 +46,7 @@ export default function ShowDataset(props) {
 
   // Use Effect to calculate dataset
   useEffect(() => {
-    const fetchDatasets = (id) => {
+    const fetchDataset = (id) => {
       props.datasetCoordinator.resetDataset();
       const fetchKG = props.insideProject ? props.graphStatus : true;
       props.datasetCoordinator.fetchDataset(id, props.datasets, fetchKG);
@@ -63,9 +63,9 @@ export default function ShowDataset(props) {
         props.datasets &&
         (!currentDataset || !currentDataset?.fetching)
       )
-        fetchDatasets(datasetId);
+        fetchDataset(datasetId);
       else if (!props.insideProject && props.identifier)
-        fetchDatasets(datasetId);
+        fetchDataset(datasetId);
       else setDataset(currentDataset);
     }
   }, [

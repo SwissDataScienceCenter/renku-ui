@@ -92,8 +92,12 @@ function versionedUrlEndpoint(
   endpoint: string,
   versionUrl: string | undefined | null
 ) {
-  const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : `/${endpoint}`;
-  return `/renku${urlPath}`;
+  const endpoint_ = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
+  const versionUrl_ = versionUrl?.startsWith("/")
+    ? versionUrl.slice(1)
+    : versionUrl;
+  const urlPath = versionUrl_ ? `${versionUrl_}/${endpoint_}` : endpoint_;
+  return `/renku/${urlPath}`;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

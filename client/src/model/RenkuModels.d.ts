@@ -90,3 +90,11 @@ export interface LockStatus {
   error: any; //eslint-disable-line @typescript-eslint/no-explicit-any
   locked: boolean | null;
 }
+
+export type RenkuUser = {
+  data: {
+    name: string;
+    email: string;
+    organization: string;
+  };
+};

@@ -31,6 +31,7 @@ import {
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 import { dataServicesApi } from "../../features/dataServices/dataServicesApi";
 import { displaySlice } from "../../features/display/displaySlice";
+import { datasetFormSlice } from "../../features/project/dataset";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
@@ -56,6 +57,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [dashboardMessageSlice.name]: dashboardMessageSlice.reducer,
     [dataServicesApi.reducerPath]: dataServicesApi.reducer,
     [displaySlice.name]: displaySlice.reducer,
+    [datasetFormSlice.name]: datasetFormSlice.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,

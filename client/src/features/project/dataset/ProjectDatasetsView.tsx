@@ -128,6 +128,7 @@ function ProjectAddDataset(props: any) {
           notifications={props.notifications}
           params={props.params}
           toggleNewDataset={toggleNewDataset}
+          versionUrl={props.versionUrl}
         />
       ) : (
         <ProjectDatasetImport
@@ -345,7 +346,11 @@ function ProjectDatasetsView(props: any) {
                   url={props.datasetsUrl}
                 />
               </Col>
-              <ProjectAddDataset key="projectsAddDataset" {...props} />
+              <ProjectAddDataset
+                key="projectsAddDataset"
+                {...props}
+                versionUrl={versionUrl}
+              />
             </>
           )}
         />
@@ -373,6 +378,7 @@ function ProjectDatasetsView(props: any) {
                 model={props.model}
                 notifications={props.notifications}
                 params={props.params}
+                versionUrl={versionUrl}
               />
             </>
           )}
