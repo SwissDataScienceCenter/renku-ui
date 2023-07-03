@@ -83,3 +83,23 @@ Return the appropriate apiVersion for autoscaling.
 {{- print "autoscaling/v2beta2" -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Template a json list of cookies that should not be stripped by the ui-server proxy
+*/}}
+{{- define "ui-server.keepCookies" -}}
+{{- $cookieNames := list -}}
+{{- $coreBaseName := printf "%s-core" .Release.Name -}}
+{{- if .Values.core -}}
+{{- $coreBaseName := .Values.core.basename | default (printf "%s-core" .Release.Name) -}}
+{{- end -}}
+{{- range $i, $k := (keys .Values.global.core.versions | sortAlpha) -}}
+{{- $serviceName := printf "reverse-proxy-sticky-session-%s-%s" $coreBaseName (get $.Values.global.core.versions $k).name -}}
+{{- $cookieNames = mustAppend $cookieNames $serviceName -}}
+{{- if eq $k "latest" -}}
+{{- $cookieNames = mustAppend $cookieNames $serviceName -}}
+{{- end -}}
+{{- end -}}
+{{- $cookieNames = concat $cookieNames .Values.server.keepCookies -}}
+{{- $cookieNames | toJson -}}
+{{- end -}}
