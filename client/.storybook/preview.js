@@ -23,7 +23,11 @@ export const parameters = {
 export const decorators = [
   (Story) => {
     const appContext = {
-      client: { baseUrl: "http://localhost" },
+      client: {
+        baseUrl: "http://localhost",
+        uploadFileURL: () => "http://localhost",
+      },
+
       params: {},
       location: "location",
     };
