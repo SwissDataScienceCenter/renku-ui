@@ -16,14 +16,22 @@
  * limitations under the License.
  */
 
-import React, { useContext } from "react";
+import React, { useCallback, useContext, useState } from "react";
+import {
+  faExternalLinkAlt,
+  faFileAlt,
+  faStop,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Col, Row } from "reactstrap";
+import { Button, Col, DropdownItem, Row } from "reactstrap";
 import { ErrorAlert, InfoAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
+import { EnvironmentLogs } from "../../../components/Logs";
+import { ButtonWithMenu } from "../../../components/buttons/Button";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { User } from "../../../model/RenkuModels";
@@ -36,8 +44,9 @@ import AppContext from "../../../utils/context/appContext";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 import { Url } from "../../../utils/helpers/url";
+import { toggleSessionLogsModal } from "../../display/displaySlice";
 import { Session, Sessions } from "../session";
-import { useGetSessionsQuery } from "../sessionApi";
+import { useGetSessionsQuery, useStopSessionMutation } from "../sessionApi";
 import { SESSIONS_POLLING_INTERVAL_MS } from "../sessions.constants";
 import SessionRowCommitInfo from "./SessionRowCommitInfo";
 
@@ -164,6 +173,11 @@ function SessionListItem({ session }: SessionListItemProps) {
     commit: `${cleanAnnotations["repository"]}/tree/${cleanAnnotations["commit-sha"]}`,
   };
   const image = session.image;
+  const localUrl: string = Url.get(Url.pages.project.session.show, {
+    namespace: cleanAnnotations["namespace"],
+    path: cleanAnnotations["projectName"],
+    server: session.name,
+  });
 
   return (
     <>
@@ -171,13 +185,16 @@ function SessionListItem({ session }: SessionListItemProps) {
         annotations={cleanAnnotations}
         details={details}
         image={image}
+        localUrl={localUrl}
+        name={session.name}
         repositoryLinks={repositoryLinks}
         resourceRequests={resourceRequests}
         startTime={startTime}
         status={status}
         uid={uid}
+        url={session.url}
       />
-      <pre>{JSON.stringify(session, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(session, null, 2)}</pre> */}
     </>
   );
 }
@@ -186,22 +203,28 @@ interface SessionRowProps {
   annotations: Session["annotations"];
   details: { message: string };
   image: string;
+  localUrl: string;
+  name: string;
   repositoryLinks: { branch: string; commit: string };
   resourceRequests: Session["resources"]["requests"];
   startTime: string;
   status: Session["status"]["state"];
   uid: string;
+  url: string;
 }
 
 function SessionRowFull({
   annotations,
   details,
   image,
+  localUrl,
+  name,
   repositoryLinks,
   resourceRequests,
   startTime,
   status,
   uid,
+  url,
 }: SessionRowProps) {
   const icon = (
     <div className="align-middle">
@@ -251,23 +274,13 @@ function SessionRowFull({
 
   const actions = (
     <span className="mb-auto">
-      {"[actions]"}
-      {/* <NotebookServerRowAction
-        localUrl={this.props.localUrl}
-        name={this.props.name}
+      <SessionRowActions
+        localUrl={localUrl}
+        name={name}
         status={status}
-        stopNotebook={this.props.stopNotebook}
-        toggleLogs={this.props.toggleLogs}
         url={url}
-        scope={this.props.scope}
-      /> */}
-      {/* <EnvironmentLogsPresent
-        fetchLogs={this.props.fetchLogs}
-        toggleLogs={this.props.toggleLogs}
-        logs={this.props.logs}
-        name={this.props.name}
-        annotations={annotations}
-      /> */}
+      />
+      <EnvironmentLogs annotations={annotations as any} name={name} />
     </span>
   );
 
@@ -378,91 +391,102 @@ function SessionRowResourceRequests({
   );
 }
 
-// const NotebookServerRowAction = memo((props) => {
-//   const { status, name, scope } = props;
-//   const actions = {
-//     connect: null,
-//     stop: null,
-//     logs: null,
-//   };
-//   let defaultAction = null;
-//   actions.logs = (
-//     <DropdownItem
-//       data-cy="session-log-button"
-//       onClick={() => props.toggleLogs(name)}
-//       color="secondary"
-//     >
-//       <FontAwesomeIcon className="text-rk-green" icon={faFileAlt} /> Get logs
-//     </DropdownItem>
-//   );
+interface SessionRowActionsProps {
+  localUrl: string;
+  name: string;
+  status: Session["status"]["state"];
+  url: string;
+}
 
-//   if (status !== SessionStatus.stopping) {
-//     actions.stop = (
-//       <Fragment>
-//         <DropdownItem divider />
-//         <DropdownItem onClick={() => props.stopNotebook(name)}>
-//           <FontAwesomeIcon className="text-rk-green" icon={faStop} /> Stop
-//         </DropdownItem>
-//       </Fragment>
-//     );
-//   }
-//   if (status === SessionStatus.running || status === SessionStatus.starting) {
-//     const state = scope?.filePath ? { filePath: scope?.filePath } : undefined;
-//     defaultAction = (
-//       <Link
-//         data-cy="open-session"
-//         className="btn btn-outline-rk-green"
-//         to={{ pathname: props.localUrl, state }}
-//       >
-//         <div className="d-flex gap-2 text-rk-green">
-//           <img src="/connectGreen.svg" className="rk-icon rk-icon-md" /> Connect
-//         </div>
-//       </Link>
-//     );
-//     actions.openExternal = (
-//       <DropdownItem href={props.url} target="_blank">
-//         <FontAwesomeIcon className="text-rk-green" icon={faExternalLinkAlt} />{" "}
-//         Open in new tab
-//       </DropdownItem>
-//     );
-//   } else if (status === SessionStatus.stopping) {
-//     defaultAction = (
-//       <Button
-//         data-cy="stopping-btn"
-//         className="btn-outline-rk-green"
-//         disabled={true}
-//       >
-//         Stopping...
-//       </Button>
-//     );
-//     actions.stop = null;
-//   } else {
-//     const classes = { className: "text-nowrap btn-outline-rk-green" };
-//     defaultAction = (
-//       <Button
-//         data-cy="stop-session-button"
-//         {...classes}
-//         onClick={() => props.stopNotebook(name)}
-//       >
-//         <div className="d-flex gap-2 text-rk-green">
-//           <FontAwesomeIcon className="m-auto" icon={faStop} /> Stop
-//         </div>
-//       </Button>
-//     );
-//     actions.stop = null;
-//   }
+function SessionRowActions({
+  localUrl,
+  name,
+  status,
+  url,
+}: SessionRowActionsProps) {
+  const dispatch = useDispatch();
+  const onToggleLogs = useCallback(() => {
+    dispatch(toggleSessionLogsModal({ targetServer: name }));
+  }, [dispatch, name]);
 
-//   return (
-//     <ButtonWithMenu
-//       className="sessionsButton"
-//       size="sm"
-//       default={defaultAction}
-//       color="rk-green"
-//       disabled={status === SessionStatus.stopping}
-//     >
-//       {actions.openExternal}
-//       {actions.logs}
-//       {actions.stop}
-//     </ButtonWithMenu>
-//   );
-// }, _.isEqual);
+  const [stopSession] = useStopSessionMutation();
+  // Optimistically show a session as "stopping" when triggered from the UI
+  const [isStopping, setIsStopping] = useState<boolean>(false);
+
+  const onStopSession = () => {
+    stopSession({ serverName: name });
+    setIsStopping(true);
+  };
+
+  const defaultAction =
+    status === "starting" || status === "running" ? (
+      <Link
+        className={cx("btn", "btn-outline-rk-green")}
+        data-cy="open-session"
+        to={{ pathname: localUrl }}
+      >
+        <div className="d-flex gap-2 text-rk-green">
+          <img src="/connectGreen.svg" className="rk-icon rk-icon-md" /> Connect
+        </div>
+      </Link>
+    ) : status === "stopping" || isStopping ? (
+      <Button
+        className="btn-outline-rk-green"
+        data-cy="stopping-btn"
+        disabled={true}
+      >
+        Stopping...
+      </Button>
+    ) : (
+      <Button
+        className={cx("text-nowrap", "btn-outline-rk-green")}
+        data-cy="stop-session-button"
+        onClick={onStopSession}
+      >
+        <div className={cx("d-flex", "gap-2", "text-rk-green")}>
+          <FontAwesomeIcon className="m-auto" icon={faStop} /> Stop
+        </div>
+      </Button>
+    );
+
+  const openInNewTabAction = (status === "starting" ||
+    status === "running") && (
+    <DropdownItem href={url} target="_blank">
+      <FontAwesomeIcon className="text-rk-green" icon={faExternalLinkAlt} />{" "}
+      Open in new tab
+    </DropdownItem>
+  );
+
+  const logsAction = (
+    <DropdownItem
+      data-cy="session-log-button"
+      onClick={onToggleLogs}
+      color="secondary"
+    >
+      <FontAwesomeIcon className="text-rk-green" icon={faFileAlt} /> Get logs
+    </DropdownItem>
+  );
+
+  const stopAction = status !== "stopping" && (
+    <>
+      <DropdownItem divider />
+      <DropdownItem onClick={onStopSession}>
+        <FontAwesomeIcon className="text-rk-green" icon={faStop} /> Stop
+      </DropdownItem>
+    </>
+  );
+
+  return (
+    <ButtonWithMenu
+      className="sessionsButton"
+      size="sm"
+      default={defaultAction}
+      color="rk-green"
+      disabled={status === "stopping" || isStopping}
+    >
+      {openInNewTabAction}
+      {logsAction}
+      {stopAction}
+    </ButtonWithMenu>
+  );
+}

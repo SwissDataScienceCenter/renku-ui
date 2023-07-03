@@ -36,11 +36,12 @@ interface GetLogsArgs {
 export const sessionApi = createApi({
   reducerPath: "sessionApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/notebooks/" }),
-  tagTypes: [],
+  tagTypes: ["Session"],
   endpoints: (builder) => ({
     getSessions: builder.query<Sessions, void>({
       query: () => ({ url: "servers" }),
       transformResponse: ({ servers }: GetSessionsRawResponse) => servers,
+      providesTags: ["Session"],
     }),
     serverOptions: builder.query<ServerOptions, Record<never, never>>({
       query: () => ({
@@ -55,12 +56,11 @@ export const sessionApi = createApi({
       }),
     }),
     stopSession: builder.mutation<boolean, StopSessionArgs>({
-      query: (args) => {
-        return {
-          method: "DELETE",
-          url: `servers/${args.serverName}`,
-        };
-      },
+      query: (args) => ({
+        method: "DELETE",
+        url: `servers/${args.serverName}`,
+      }),
+      invalidatesTags: ["Session"],
     }),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getLogs: builder.query<any, GetLogsArgs>({
