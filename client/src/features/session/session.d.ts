@@ -31,3 +31,32 @@ export interface ServerOptions {
 }
 
 export type ServerOptionsResponse = Record<string, ServerOption>;
+
+export type Sessions = Record<string, Session>;
+
+export interface Session {
+  annotations: Record<string, unknown>;
+  cloudstorage: unknown;
+  image: string;
+  name: string;
+  resources: SessionResources;
+  started: string;
+  state: unknown;
+  status: SessionStatus;
+  url: string;
+}
+
+interface SessionResources {
+  requests?: { cpu?: number; memory?: string; storage?: string };
+  usage?: { cpu?: number; memory?: string; storage?: string };
+}
+
+interface SessionStatus {
+  message: string;
+  state: "failed" | "running" | "starting" | "stopping";
+  [key]: unknown;
+}
+
+interface GetSessionsRawResponse {
+  servers: Record<string, Session>;
+}

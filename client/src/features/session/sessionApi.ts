@@ -17,7 +17,12 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { ServerOptions, ServerOptionsResponse } from "./session";
+import {
+  GetSessionsRawResponse,
+  ServerOptions,
+  ServerOptionsResponse,
+  Sessions,
+} from "./session";
 
 interface StopSessionArgs {
   serverName: string;
@@ -33,8 +38,9 @@ export const sessionApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/notebooks/" }),
   tagTypes: [],
   endpoints: (builder) => ({
-    getSessions: builder.query<unknown, void>({
+    getSessions: builder.query<Sessions, void>({
       query: () => ({ url: "servers" }),
+      transformResponse: ({ servers }: GetSessionsRawResponse) => servers,
     }),
     serverOptions: builder.query<ServerOptions, Record<never, never>>({
       query: () => ({

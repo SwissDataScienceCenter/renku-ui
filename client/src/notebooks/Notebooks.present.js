@@ -167,6 +167,7 @@ class Notebooks extends Component {
   render() {
     const serverNumbers = Object.keys(this.props.notebooks.all).length;
     const loading = this.props.notebooks.fetched ? false : true;
+    console.log(this.props.message);
     const message = this.props.message ? <div>{this.props.message}</div> : null;
 
     return (
