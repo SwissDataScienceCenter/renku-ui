@@ -75,3 +75,11 @@ export interface NewProjectTemplate {
   parentRepo?: string;
   parentTemplate?: string;
 }
+
+export type RenkuUser = {
+  data: {
+    name: string;
+    email: string;
+    organization: string;
+  };
+};
