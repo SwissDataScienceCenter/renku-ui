@@ -262,6 +262,13 @@ function ProjectDatasetsView(props: any) {
   }
 
   if (!coreSupportComputed) {
+    if (coreSupport.backendErrorMessage)
+      return (
+        <ErrorAlert>
+          <b>There was an error verifying support for this project.</b>
+          <p>{coreSupport.backendErrorMessage}</p>
+        </ErrorAlert>
+      );
     return (
       <div>
         <p>Checking project version and RenkuLab compatibility...</p>

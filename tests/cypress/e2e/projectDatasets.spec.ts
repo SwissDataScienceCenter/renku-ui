@@ -247,6 +247,36 @@ describe("Error loading datasets", () => {
   });
 });
 
+describe("Migration check errors", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
+  const projectPath = "e2e/testing-datasets";
+
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects();
+    fixtures.project(projectPath);
+    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectDatasetList();
+    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectLockStatus();
+  });
+
+  it("display project datasets", () => {
+    fixtures.projectMigrationError({
+      errorNumber: 2200,
+      queryUrl: "*",
+      fixtureName: "getMigration",
+    });
+    cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getProject");
+    cy.wait("@getMigration");
+    cy.get("div.alert-danger")
+      .contains("There was an error verifying support for this project.")
+      .should("be.visible");
+  });
+});
+
 describe("Project dataset (locked)", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = true;
