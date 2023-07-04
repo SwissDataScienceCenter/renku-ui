@@ -17,6 +17,15 @@
  */
 
 import React, { Component, Fragment, memo } from "react";
+import {
+  faExternalLinkAlt,
+  faFileAlt,
+  faInfoCircle,
+  faPlus,
+  faStop,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import _ from "lodash";
 import Media from "react-media";
 import { Link, useHistory } from "react-router-dom";
 import {
@@ -28,46 +37,35 @@ import {
   Row,
   UncontrolledPopover,
 } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { InfoAlert } from "../components/Alert";
+import { ExternalLink } from "../components/ExternalLinks";
+import { Loader } from "../components/Loader";
 import {
-  faExternalLinkAlt,
-  faFileAlt,
-  faInfoCircle,
-  faPlus,
-  faStop,
-} from "@fortawesome/free-solid-svg-icons";
-import _ from "lodash";
-
+  EnvironmentLogsPresent,
+  SessionLogs as LogsSessionLogs,
+} from "../components/Logs";
+import { TimeCaption } from "../components/TimeCaption";
+import { ButtonWithMenu } from "../components/buttons/Button";
+import LoginAlert from "../components/loginAlert/LoginAlert";
+import Sizes from "../utils/constants/Media";
+import { SessionStatus } from "../utils/constants/Notebooks";
+import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
+import { formatBytes, simpleHash } from "../utils/helpers/HelperFunctions";
+import { Url, appendCustomUrlPath } from "../utils/helpers/url";
+import {
+  CheckNotebookIcon,
+  ServerOptionBoolean,
+  ServerOptionEnum,
+  ServerOptionRange,
+  StartNotebookServer,
+  mergeEnumOptions,
+} from "./NotebookStart.present";
+import "./Notebooks.css";
 import {
   SessionListRowStatus,
   SessionListRowStatusIcon,
 } from "./components/SessionListStatus";
 import { NotebooksHelper } from "./index";
-import {
-  CheckNotebookIcon,
-  StartNotebookServer,
-  mergeEnumOptions,
-  ServerOptionBoolean,
-  ServerOptionEnum,
-  ServerOptionRange,
-} from "./NotebookStart.present";
-import { formatBytes, simpleHash } from "../utils/helpers/HelperFunctions";
-import Time from "../utils/helpers/Time";
-import { Url, appendCustomUrlPath } from "../utils/helpers/url";
-import Sizes from "../utils/constants/Media";
-import { ExternalLink } from "../components/ExternalLinks";
-import { ButtonWithMenu } from "../components/buttons/Button";
-import { TimeCaption } from "../components/TimeCaption";
-import { Loader } from "../components/Loader";
-import { InfoAlert } from "../components/Alert";
-import LoginAlert from "../components/loginAlert/LoginAlert";
-import {
-  EnvironmentLogsPresent,
-  SessionLogs as LogsSessionLogs,
-} from "../components/Logs";
-import { SessionStatus } from "../utils/constants/Notebooks";
-
-import "./Notebooks.css";
 
 // * Constants and helpers * //
 const SESSION_TABS = {
@@ -288,10 +286,10 @@ class NotebookServersList extends Component {
           return obj;
         }, {});
       const resources = this.props.servers[k].resources?.requests;
-      const startTime = Time.toIsoTimezoneString(
-        this.props.servers[k].started,
-        "datetime-short"
-      );
+      const startTime = toHumanDateTime({
+        datetime: this.props.servers[k].started,
+        format: "full",
+      });
 
       return (
         <NotebookServerRow
@@ -427,16 +425,12 @@ class NotebookServerRowCommitInfo extends Component {
           <span>
             <span className="fw-bold">Date:</span>{" "}
             <span>
-              {Time.toIsoTimezoneString(
-                commit.data.committed_date,
-                "datetime-short"
-              )}
+              {toHumanDateTime({
+                datetime: commit.data.committed_date,
+                format: "full",
+              })}
             </span>{" "}
-            <TimeCaption
-              caption="~"
-              endPunctuation=" "
-              time={commit.data.committed_date}
-            />
+            <TimeCaption prefix="~" datetime={commit.data.committed_date} />
             <br />
           </span>
           <span className="fw-bold">Message:</span>{" "}

@@ -41,8 +41,6 @@ else
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64`
   echo "Warning! your OS has not been tested yet"
 fi
-DASHBOARD_MESSAGE_TEXT=$(echo "# Welcome to Renku! 🐸
-This is an example welcome message ✨." | node -e "let content = ''; process.stdin.setEncoding('utf-8').on('data', (chunk) => content += chunk).on('end', () => {console.log(JSON.stringify(content))})")
 
 if [ -z "$STATUSPAGE_ID" ]; then STATUSPAGE_ID="r3j2c84ftq49"; else echo "STATUSPAGE_ID is set to '$STATUSPAGE_ID'"; fi
 
@@ -124,6 +122,9 @@ else
   fi
 fi
 
+DASHBOARD_MESSAGE_TEXT=$(echo "# Welcome to Renku! 🐸
+You are running **telepresence** on **${DEV_NAMESPACE}** 🔗" | node -e "let content = ''; process.stdin.setEncoding('utf-8').on('data', (chunk) => content += chunk).on('end', () => {console.log(JSON.stringify(content))})")
+
 # set sentry dns if explicitly required by the user
 if [[ $SENTRY = 1 ]]
 then
@@ -175,23 +176,7 @@ tee > ./public/config.json << EOF
 }
 EOF
 
-tee > "./public/sitemap.xml" << EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${BASE_URL}</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/projects</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/datasets</loc>
-  </url>
-  <url>
-    <loc>${BASE_URL}/help</loc>
-  </url>
-</urlset>
-EOF
+./scripts/generate_sitemap.sh "${BASE_URL}" "./public/sitemap.xml"
 
 if [[ $SERVICE_CONSOLE_MODE == 1 ]]
 then

@@ -1,5 +1,20 @@
 # Changes
 
+## [3.7.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.6.0...3.7.0) (2023-06-30)
+
+### Features
+
+- add a customizable message to the dashboard page ([#2592](https://github.com/SwissDataScienceCenter/renku-ui/issues/2592), [#2434](https://github.com/SwissDataScienceCenter/renku-ui/issues/2434))
+
+### Bug Fixes
+
+- dataset delete is possible again ([#2607](https://github.com/SwissDataScienceCenter/renku-ui/issues/2607))
+- improve showing the error details for sessions ([#2611](https://github.com/SwissDataScienceCenter/renku-ui/issues/2611), [#2504](https://github.com/SwissDataScienceCenter/renku-ui/issues/2504))
+- fix sessions not showing on dashboard ([#2608](https://github.com/SwissDataScienceCenter/renku-ui/issues/2608), [#2593](https://github.com/SwissDataScienceCenter/renku-ui/issues/2593))
+- allow up to 100 namespaces and sort them ([#2606](https://github.com/SwissDataScienceCenter/renku-ui/issues/2606))
+- correctly determine if a dataset is in the KG ([#2600](https://github.com/SwissDataScienceCenter/renku-ui/issues/2600))
+- more robust handling of markdown to prevent crashes ([#2597](https://github.com/SwissDataScienceCenter/renku-ui/issues/2597))
+
 ## [3.6.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.5.0...3.6.0) (2023-06-07)
 
 ### Features

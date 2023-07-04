@@ -130,10 +130,10 @@ function ListBar({
       </div>
       <div className="entity-date listBar-entity-date">
         <TimeCaption
-          caption={labelCaption || "Updated"}
-          showTooltip={true}
-          time={timeCaption}
           className="text-rk-text-light text-truncate"
+          enableTooltip
+          datetime={timeCaption}
+          prefix={labelCaption || "Updated"}
         />
       </div>
       <div

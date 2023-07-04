@@ -17,7 +17,7 @@
  */
 
 import React, { useEffect } from "react";
-import { Link, Route, Switch } from "react-router-dom";
+import { Link, Route, Switch, useHistory } from "react-router-dom";
 import { Alert, Button, Col } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faUserClock } from "@fortawesome/free-solid-svg-icons";
@@ -128,6 +128,7 @@ function ProjectAddDataset(props: any) {
           notifications={props.notifications}
           params={props.params}
           toggleNewDataset={toggleNewDataset}
+          versionUrl={props.versionUrl}
         />
       ) : (
         <ProjectDatasetImport
@@ -169,6 +170,7 @@ function EmptyDatasets({ locked, membership, newDatasetUrl }: any) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetsView(props: any) {
   const { datasets, fetchDatasets, location } = props;
+  const history = useHistory();
 
   const [datasetCoordinator, setDatasetCoordinator] =
     React.useState<unknown>(null);
@@ -212,12 +214,18 @@ function ProjectDatasetsView(props: any) {
     const datasetsLoading = datasets.core === SpecialPropVal.UPDATING;
     if (datasetsLoading || !coreSupportComputed) return;
 
-    if (datasets.core.datasets === null)
+    if (
+      datasets.core.datasets === null ||
+      (location.state && location.state.reload)
+    ) {
       fetchDatasets(location.state && location.state.reload, versionUrl);
+      history.replace({ state: { reload: false } });
+    }
   }, [
     coreSupportComputed,
     datasets.core,
     fetchDatasets,
+    history,
     location.state,
     versionUrl,
   ]);
@@ -338,7 +346,11 @@ function ProjectDatasetsView(props: any) {
                   url={props.datasetsUrl}
                 />
               </Col>
-              <ProjectAddDataset key="projectsAddDataset" {...props} />
+              <ProjectAddDataset
+                key="projectsAddDataset"
+                {...props}
+                versionUrl={versionUrl}
+              />
             </>
           )}
         />
@@ -366,6 +378,7 @@ function ProjectDatasetsView(props: any) {
                 model={props.model}
                 notifications={props.notifications}
                 params={props.params}
+                versionUrl={versionUrl}
               />
             </>
           )}

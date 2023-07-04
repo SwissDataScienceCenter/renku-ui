@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+// TODO(@ciyer): remove this file as part of the Dataset refactor
+
 /**
  *  renku-ui
  *
