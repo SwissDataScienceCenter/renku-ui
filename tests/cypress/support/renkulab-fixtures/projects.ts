@@ -23,6 +23,7 @@ import { FixturesConstructor } from "./fixtures";
  */
 
 interface MigrationCheckParams {
+  errorNumber?: number;
   fixtureName?: string;
   queryUrl?: string;
 }
@@ -193,13 +194,14 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
 
     projectMigrationError(
       params: MigrationCheckParams = {
+        errorNumber: 2001,
         queryUrl: null,
         fixtureName: "getMigration",
       }
     ) {
       this.interceptMigrationCheck(
         params.fixtureName,
-        "errors/core-error-2001.json",
+        `errors/core-error-${params.errorNumber}.json`,
         params.queryUrl
       );
       return this;
