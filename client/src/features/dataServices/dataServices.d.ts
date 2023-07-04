@@ -21,10 +21,8 @@ export interface ResourcePool {
   name: string;
   classes: ResourceClass[];
   quota: Resources;
-  // eslint-disable-next-line spellcheck/spell-checker
-  // TODO(@leafty): remove "?"
-  default?: boolean;
-  public?: boolean;
+  default: boolean;
+  public: boolean;
 }
 
 export interface ResourceClass {
@@ -45,9 +43,7 @@ export interface ResourceClass {
 
   default: boolean;
 
-  // eslint-disable-next-line spellcheck/spell-checker
-  // TODO(@leafty): remove "?"
-  matching?: boolean;
+  matching: boolean;
 }
 
 export interface Resources {
