@@ -61,9 +61,7 @@ const proxyMiddleware = createProxyMiddleware({
           cookieName
         );
         if (cookieValue) {
-          newCookies.push(
-            serializeCookie(cookieName, cookieValue)
-          );
+          newCookies.push(serializeCookie(cookieName, cookieValue));
         }
       }
     }
