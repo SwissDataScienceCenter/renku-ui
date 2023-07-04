@@ -27,6 +27,7 @@ import {
   ProjectSettingsGeneralDeleteProject,
   Notifications,
 } from "./ProjectSettingsGeneralDeleteProject";
+import { ProjectSettingsDescription } from "./ProjectSettingsDescription";
 
 // ****** SETTINGS COMPONENTS ****** //
 
@@ -55,6 +56,11 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
         gitUrl={props.metadata?.externalUrl}
         isMaintainer={isMaintainer}
         projectId={props.metadata?.id}
+      />
+      <ProjectSettingsDescription
+        gitUrl={props.metadata?.externalUrl}
+        projectId={props.metadata?.id}
+        projectFullPath={props.projectPathWithNamespace}
       />
       <ProjectSettingsGeneralLegacy {...props} />
       <ProjectSettingsGeneralDeleteProject

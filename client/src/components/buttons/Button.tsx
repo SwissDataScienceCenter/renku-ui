@@ -23,7 +23,6 @@
  */
 
 import React, { Fragment, useState } from "react";
-import { JSX } from "@babel/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
@@ -37,9 +36,9 @@ import {
   Col,
 } from "reactstrap";
 import { ButtonGroup } from "reactstrap";
+import cx from "classnames";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
-import { SuccessLabel } from "../formlabels/FormLabels";
-import { Loader } from "../Loader";
+import { LoadingLabel, SuccessLabel } from "../formlabels/FormLabels";
 import { ThrottledTooltip } from "../Tooltip";
 import { ChevronDown } from "../../utils/ts-wrappers";
 
@@ -186,17 +185,18 @@ function GoBackButton(props: GoBackButtonProps) {
 }
 
 type InlineSubmitButtonProps = {
-  id: string;
-  isSubmitting: boolean;
-  isDone: boolean;
-  isReadOnly: boolean;
-  doneText: string;
-  text: string;
-  onSubmit: () => void;
-  pristine: boolean;
-  tooltipPristine: string;
   className: string;
-  isMainButton: boolean;
+  doneText: string;
+  id: string;
+  isDone: boolean;
+  isMainButton?: boolean;
+  isReadOnly: boolean;
+  isSubmitting: boolean;
+  onSubmit?: () => void;
+  pristine: boolean;
+  submittingText?: string;
+  text: string;
+  tooltipPristine: string;
 };
 /**
  *
@@ -209,35 +209,33 @@ type InlineSubmitButtonProps = {
  * @param {string} props.onSubmit function when click button
  */
 function InlineSubmitButton({
-  id,
-  isSubmitting,
-  isDone,
-  isReadOnly,
+  className,
   doneText,
-  text,
+  id,
+  isDone,
+  isMainButton,
+  isReadOnly,
+  isSubmitting,
   onSubmit,
   pristine,
+  submittingText,
+  text,
   tooltipPristine,
-  className,
-  isMainButton,
 }: InlineSubmitButtonProps) {
   if (isDone) return <SuccessLabel text={doneText} />;
-  if (isSubmitting) {
+  if (isSubmitting)
     return (
-      <div className="inlineSubmit">
-        {" "}
-        <Loader className="mx-1" inline={true} size={16} />
-      </div>
+      <LoadingLabel className="feedback mx-1" text={submittingText || " "} />
     );
-  }
 
   const submit = !isDone ? (
     <Button
       data-cy={`${id}-button`}
-      onClick={onSubmit}
-      className={`${className} ${
+      onClick={onSubmit ? onSubmit : () => null}
+      className={cx(
+        className,
         isMainButton ? "btn-rk-green" : "btn-outline-rk-green"
-      }`}
+      )}
       color="inlineSubmit"
       size="sm"
       disabled={isReadOnly}

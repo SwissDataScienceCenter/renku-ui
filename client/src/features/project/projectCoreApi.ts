@@ -34,7 +34,9 @@ import type {
   MigrationStatusResponse,
   ProjectConfig,
   ProjectConfigSection,
-} from "./Project.d";
+  UpdateDescriptionParams,
+  UpdateDescriptionResponse,
+} from "./Project";
 import { MigrationStartScopes } from "./projectEnums";
 
 interface GetConfigParams extends CoreServiceParams {
@@ -109,7 +111,12 @@ function urlWithQueryParams(url: string, queryParams: any) {
 export const projectCoreApi = createApi({
   reducerPath: "projectCore",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
-  tagTypes: ["project", "project-status", "ProjectConfig"],
+  tagTypes: [
+    "project",
+    "project-status",
+    "project-kg-metadata",
+    "ProjectConfig",
+  ],
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getDatasetFiles: builder.query<IDatasetFiles, GetDatasetFilesParams>({
@@ -282,6 +289,24 @@ export const projectCoreApi = createApi({
         { type: "ProjectConfig", id: arg.projectRepositoryUrl },
       ],
     }),
+    updateDescription: builder.mutation<
+      UpdateDescriptionResponse,
+      UpdateDescriptionParams
+    >({
+      query: (data) => {
+        return {
+          body: { git_url: data.gitUrl, description: data.description },
+          method: "POST",
+          url: `/renku/project.edit`,
+          validateStatus: (response, body) => {
+            return response.status < 400 && !body.error?.code;
+          },
+        };
+      },
+      invalidatesTags: (result, error, params) => [
+        { type: "project-kg-metadata", id: params.slug },
+      ],
+    }),
   }),
 });
 
@@ -291,6 +316,7 @@ export const {
   useStartMigrationMutation,
   useGetConfigQuery,
   useUpdateConfigMutation,
+  useUpdateDescriptionMutation,
 } = projectCoreApi;
 
 const transformGetConfigRawResponse = (

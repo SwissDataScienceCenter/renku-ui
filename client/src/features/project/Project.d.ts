@@ -319,3 +319,19 @@ export interface ProjectConfigSection {
     };
   };
 }
+
+export interface UpdateDescriptionParams {
+  description: string;
+  gitUrl: string;
+  slug: string;
+}
+
+export interface UpdateDescriptionDetails {
+  edited?: Record<string, string>;
+  warning?: string;
+}
+
+export interface UpdateDescriptionResponse {
+  error?: CoreErrorContent;
+  result?: UpdateDescriptionDetails;
+}

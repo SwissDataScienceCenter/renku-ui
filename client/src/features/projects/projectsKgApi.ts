@@ -113,6 +113,7 @@ function kgProjectRequestHeaders(content: ProjectKgContent) {
 export const projectsKgApi = createApi({
   reducerPath: "projectKgApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/kg" }),
+  tagTypes: ["project-kg-metadata"],
   endpoints: (builder) => ({
     projectJsonLd: builder.query<KgJsonLdResponse, ProjectKgParams>({
       query: (params) => ({
@@ -125,6 +126,9 @@ export const projectsKgApi = createApi({
         url: `projects/${params.projectPath}`,
         headers: kgProjectRequestHeaders("json"),
       }),
+      providesTags: (result, error, params) => [
+        { type: "project-kg-metadata", slug: params.projectPath },
+      ],
     }),
   }),
 });

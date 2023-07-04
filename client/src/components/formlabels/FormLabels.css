@@ -3,6 +3,11 @@
   font-style: italic;
 }
 
+.loading-label.feedback {
+  line-height: 16px;
+  padding-top: 6px;
+}
+
 .helper-label {
   font-style: italic;
   padding-right: 10px;

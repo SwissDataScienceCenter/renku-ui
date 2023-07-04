@@ -148,10 +148,10 @@ class ProjectDescription extends Component {
   render() {
     const inputField =
       this.props.settingsReadOnly || this.state.updating ? (
-        <Input id="projectDescription" readOnly value={this.state.value} />
+        <Input id="projectDescriptionOld" readOnly value={this.state.value} />
       ) : (
         <Input
-          id="projectDescription"
+          id="projectDescriptionOld"
           onChange={this.onValueChange}
           data-cy="description-input"
           value={this.state.value === null ? "" : this.state.value}
@@ -160,7 +160,7 @@ class ProjectDescription extends Component {
 
     const submitButton = this.props.settingsReadOnly ? null : (
       <InlineSubmitButton
-        id="update-desc"
+        id="update-desc-old"
         className="updateProjectSettings"
         submittingText="Updating"
         doneText="Updated"
@@ -175,7 +175,7 @@ class ProjectDescription extends Component {
     return (
       <Form onSubmit={this.onSubmit}>
         <FormGroup>
-          <Label for="projectDescription">Project Description</Label>
+          <Label for="projectDescriptionOld">Project Description</Label>
           <div className="d-flex">
             {inputField}
             {submitButton}

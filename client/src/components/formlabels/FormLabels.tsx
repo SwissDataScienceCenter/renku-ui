@@ -23,7 +23,7 @@
  *  FormLabels components.
  */
 import * as React from "react";
-import { FormText, FormFeedback, Label } from "../../utils/ts-wrappers";
+import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationTriangle,
@@ -31,9 +31,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./FormLabels.css";
+
+import { FormText, FormFeedback, Label } from "../../utils/ts-wrappers";
 import { Loader } from "../Loader";
 
 interface LabelProps {
+  className?: string;
   text: string;
   children?: React.ReactNode;
 }
@@ -55,11 +58,12 @@ const InputLabel = ({ text, isRequired = false }: InputLabelProps) => {
   );
 };
 
-const LoadingLabel = ({ text }: LabelProps) => {
+const LoadingLabel = ({ className, text }: LabelProps) => {
   return (
-    <FormText className="loading-label">
-      <span>{text}</span>
-      <Loader inline size={16} />
+    <FormText className={cx(className, "loading-label")}>
+      <span>
+        {text} <Loader inline size={16} />
+      </span>
     </FormText>
   );
 };
