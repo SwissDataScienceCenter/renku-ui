@@ -41,8 +41,6 @@ else
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64`
   echo "Warning! your OS has not been tested yet"
 fi
-DASHBOARD_MESSAGE_TEXT=$(echo "# Welcome to Renku! 🐸
-This is an example welcome message ✨." | node -e "let content = ''; process.stdin.setEncoding('utf-8').on('data', (chunk) => content += chunk).on('end', () => {console.log(JSON.stringify(content))})")
 
 if [ -z "$STATUSPAGE_ID" ]; then STATUSPAGE_ID="r3j2c84ftq49"; else echo "STATUSPAGE_ID is set to '$STATUSPAGE_ID'"; fi
 
@@ -123,6 +121,9 @@ else
     SERVICE_NAME=${DEV_NAMESPACE}-renku-ui
   fi
 fi
+
+DASHBOARD_MESSAGE_TEXT=$(echo "# Welcome to Renku! 🐸
+You are running **telepresence** on **${DEV_NAMESPACE}** 🔗" | node -e "let content = ''; process.stdin.setEncoding('utf-8').on('data', (chunk) => content += chunk).on('end', () => {console.log(JSON.stringify(content))})")
 
 # set sentry dns if explicitly required by the user
 if [[ $SENTRY = 1 ]]
