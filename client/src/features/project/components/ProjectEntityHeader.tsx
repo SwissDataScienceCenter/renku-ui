@@ -30,30 +30,42 @@ type ProjectEntityHeaderProps = EntityHeaderProps & {
 };
 
 export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
-  const { fullPath } = props;
+  const { branch, description, devAccess, fullPath, gitUrl, projectId } = props;
 
-  const projectIndexingStatus = useGetProjectIndexingStatusQuery(
-    props.projectId,
-    {
-      skip: !fullPath || !props.projectId,
-    }
-  );
+  const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
+    skip: !fullPath || !projectId,
+  });
 
-  useProjectMetadataQuery(
+  const { data, isLoading } = useProjectMetadataQuery(
     { projectPath: fullPath },
     { skip: !fullPath || !projectIndexingStatus.data?.activated }
   );
 
+  // overwrite description when available from KG
+  const descriptionKg: EntityHeaderProps["description"] = {
+    isLoading,
+    value: data?.description || "",
+  };
+  if (!isLoading && !data?.description && description?.value) {
+    descriptionKg.isLoading = false;
+    descriptionKg.value = description.value;
+  }
   const statusButton = (
     <ProjectStatusIcon
-      branch={props.branch}
-      gitUrl={props.gitUrl ?? ""}
-      isMaintainer={props.devAccess}
-      projectId={props.projectId}
+      branch={branch}
+      gitUrl={gitUrl ?? ""}
+      isMaintainer={devAccess}
+      projectId={projectId}
       projectNamespace=""
-      projectPath={props.fullPath ?? ""}
+      projectPath={fullPath ?? ""}
     />
   );
 
-  return <EntityHeader {...props} statusButton={statusButton} />;
+  return (
+    <EntityHeader
+      {...props}
+      description={descriptionKg}
+      statusButton={statusButton}
+    />
+  );
 }
