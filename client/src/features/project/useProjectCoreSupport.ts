@@ -23,16 +23,19 @@ import { useGetMigrationStatusQuery } from "./projectCoreApi";
 export type CoreSupport =
   | {
       backendAvailable: undefined;
+      backendErrorMessage: string | undefined;
       computed: false;
       versionUrl: undefined;
     }
   | {
       backendAvailable: false;
+      backendErrorMessage: undefined;
       computed: true;
       versionUrl: undefined;
     }
   | {
       backendAvailable: true;
+      backendErrorMessage: undefined;
       computed: true;
       versionUrl: string;
     };
@@ -62,8 +65,13 @@ export const useCoreSupport = ({
               .project_metadata_version
           )
         : undefined;
+    const backendErrorMessage =
+      migrationStatus?.details?.core_compatibility_status.type === "detail"
+        ? undefined
+        : migrationStatus?.error?.userMessage;
     return computeBackendData({
       availableVersions,
+      backendErrorMessage,
       projectVersion,
     });
   }, [coreVersions, migrationStatus]);
@@ -77,9 +85,11 @@ export const useCoreSupport = ({
 
 const computeBackendData = ({
   availableVersions,
+  backendErrorMessage,
   projectVersion,
 }: {
   availableVersions: number[] | undefined;
+  backendErrorMessage: string | undefined;
   projectVersion: number | undefined;
 }): CoreSupport => {
   if (!availableVersions || typeof projectVersion !== "number")
@@ -87,15 +97,18 @@ const computeBackendData = ({
       backendAvailable: undefined,
       computed: false,
       versionUrl: undefined,
+      backendErrorMessage,
     };
   if (availableVersions.includes(projectVersion))
     return {
       backendAvailable: true,
+      backendErrorMessage: undefined,
       computed: true,
       versionUrl: `/${projectVersion}`,
     };
   return {
     backendAvailable: false,
+    backendErrorMessage: undefined,
     computed: true,
     versionUrl: undefined,
   };
