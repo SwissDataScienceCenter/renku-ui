@@ -20,7 +20,6 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
 import { clamp } from "lodash";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router";
 import {
   Col,
   FormGroup,
@@ -32,6 +31,9 @@ import {
 import { ThrottledTooltip } from "../../../components/Tooltip";
 import { ResourceClass } from "../../../features/dataServices/dataServices";
 import { useGetResourcePoolsQuery } from "../../../features/dataServices/dataServicesApi";
+import { StateModelProject } from "../../../features/project/Project";
+import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
+import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
@@ -40,16 +42,9 @@ import {
   setStorage,
   useStartSessionOptionsSelector,
 } from "../../../features/session/startSessionOptionsSlice";
-import { fakeResourcePools } from "./SessionClassOption";
 import styles from "./SessionStorageOption.module.scss";
-import { StateModelProject } from "../../../features/project/Project";
-import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
-import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
 
 export const SessionStorageOption = () => {
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-
   // Project options
   const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
     RootStateOrAny,
@@ -64,16 +59,13 @@ export const SessionStorageOption = () => {
     {
       projectRepositoryUrl,
       versionUrl,
-      // ...(branchName ? { branch: branchName } : {}),
     },
     { skip: !coreSupportComputed }
   );
 
   // Resource pools
-  const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
-
   const {
-    data: realResourcePools,
+    data: resourcePools,
     isLoading,
     isError,
   } = useGetResourcePoolsQuery(
@@ -84,12 +76,8 @@ export const SessionStorageOption = () => {
         projectConfig?.config.sessions?.legacyConfig?.memoryRequest,
       storageRequest: projectConfig?.config.sessions?.storage,
     },
-    { skip: enableFakeResourcePools || !projectConfig }
+    { skip: !projectConfig }
   );
-
-  const resourcePools = enableFakeResourcePools
-    ? fakeResourcePools
-    : realResourcePools;
 
   const { storage, sessionClass: currentSessionClassId } =
     useStartSessionOptionsSelector();

@@ -88,9 +88,16 @@ interface UpdateConfigRawResponse {
   };
 }
 
-function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
-  const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : endpoint;
-  return `/renku${urlPath}`;
+function versionedUrlEndpoint(
+  endpoint: string,
+  versionUrl: string | undefined | null
+) {
+  const endpoint_ = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
+  const versionUrl_ = versionUrl?.startsWith("/")
+    ? versionUrl.slice(1)
+    : versionUrl;
+  const urlPath = versionUrl_ ? `${versionUrl_}/${endpoint_}` : endpoint_;
+  return `/renku/${urlPath}`;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -230,11 +237,10 @@ export const projectCoreApi = createApi({
       ],
     }),
     getConfig: builder.query<ProjectConfig, GetConfigParams>({
-      query: ({ projectRepositoryUrl, versionUrl }) => {
+      query: ({ branch, projectRepositoryUrl, versionUrl }) => {
         const params = {
           git_url: projectRepositoryUrl,
-          // Branch option not working currently
-          // ...(branch ? { branch } : {}),
+          ...(branch ? { branch } : {}),
         };
         return {
           url: versionedUrlEndpoint("config.show", versionUrl),
@@ -251,11 +257,10 @@ export const projectCoreApi = createApi({
       ],
     }),
     updateConfig: builder.mutation<UpdateConfigResponse, UpdateConfigParams>({
-      query: ({ projectRepositoryUrl, versionUrl, update }) => {
+      query: ({ branch, projectRepositoryUrl, versionUrl, update }) => {
         const body = {
           git_url: projectRepositoryUrl,
-          // Branch option not working currently
-          // ...(branch ? { branch } : {}),
+          ...(branch ? { branch } : {}),
           config: update,
         };
         return {

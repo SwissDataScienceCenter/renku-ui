@@ -16,46 +16,34 @@
  * limitations under the License.
  */
 
-export interface ResourcePool {
-  id: number;
+import React from "react";
+import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
+
+import FormGeneratorKeywordsInput from "../formgenerator/fields/KeywordsInput";
+
+type KeywordsInputProps = {
+  error?: FieldError;
+  help?: string | React.ReactNode;
+  label: string;
   name: string;
-  classes: ResourceClass[];
-  quota: Resources;
-  default: boolean;
-  public: boolean;
+  register: UseFormRegisterReturn;
+  value: string[];
+};
+
+function KeywordsInput(props: KeywordsInputProps) {
+  const setInputs = (value: React.ChangeEvent<HTMLInputElement>) => {
+    props.register.onChange(value);
+  };
+  return (
+    <FormGeneratorKeywordsInput
+      alert={props.error?.message}
+      help={props.help}
+      label={props.label}
+      name={props.name}
+      setInputs={setInputs}
+      value={props.value}
+    />
+  );
 }
 
-export interface ResourceClass {
-  id: number;
-  name: string;
-  cpu: number;
-
-  /** Memory (RAM) in Gigabytes */
-  memory: number;
-
-  gpu: number;
-
-  /** Max disk storage in Gigabytes */
-  max_storage: number;
-
-  /** Default disk storage in Gigabytes */
-  default_storage: number;
-
-  default: boolean;
-
-  matching: boolean;
-}
-
-export interface Resources {
-  cpu: number;
-  memory: number;
-  gpu: number;
-  storage: number;
-}
-
-export interface ResourcePoolsQueryParams {
-  cpuRequest?: number;
-  gpuRequest?: number;
-  memoryRequest?: number;
-  storageRequest?: number;
-}
+export default KeywordsInput;

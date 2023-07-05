@@ -17,10 +17,14 @@
  */
 
 import React, { useCallback, useEffect, useMemo } from "react";
+import {
+  faCheckCircle,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { ChevronDown } from "react-bootstrap-icons";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router";
 import Select, {
   ClassNamesConfig,
   GroupBase,
@@ -39,27 +43,20 @@ import {
 } from "../../../features/dataServices/dataServices";
 import { useGetResourcePoolsQuery } from "../../../features/dataServices/dataServicesApi";
 import {
+  ProjectConfig,
+  StateModelProject,
+} from "../../../features/project/Project";
+import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
+import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
+import {
+  reset,
   setSessionClass,
   reset,
   useStartSessionOptionsSelector,
 } from "../../../features/session/startSessionOptionsSlice";
 import styles from "./SessionClassOption.module.scss";
-import {
-  ProjectConfig,
-  StateModelProject,
-} from "../../../features/project/Project";
-import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
-import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
-import {
-  faCheckCircle,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const SessionClassOption = () => {
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-
   // Project options
   const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
     RootStateOrAny,
@@ -74,16 +71,13 @@ export const SessionClassOption = () => {
     {
       projectRepositoryUrl,
       versionUrl,
-      // ...(branchName ? { branch: branchName } : {}),
     },
     { skip: !coreSupportComputed }
   );
 
   // Resource pools
-  const enableFakeResourcePools = !!searchParams.get("useFakeResourcePools");
-
   const {
-    data: realResourcePools,
+    data: resourcePools,
     isLoading,
     isError,
   } = useGetResourcePoolsQuery(
@@ -94,12 +88,8 @@ export const SessionClassOption = () => {
         projectConfig?.config.sessions?.legacyConfig?.memoryRequest,
       storageRequest: projectConfig?.config.sessions?.storage,
     },
-    { skip: enableFakeResourcePools || !projectConfig }
+    { skip: !projectConfig }
   );
-
-  const resourcePools = enableFakeResourcePools
-    ? fakeResourcePools
-    : realResourcePools;
 
   const defaultSessionClass = useMemo(
     () =>
@@ -463,207 +453,3 @@ const OptionOrSingleValueContent = ({
     </>
   );
 };
-
-export const fakeResourcePools: ResourcePool[] = [
-  {
-    id: 1,
-    name: "Public pool",
-    quota: {
-      cpu: 100,
-      memory: 1_000,
-      gpu: 0,
-      storage: 1_000_000,
-    },
-    classes: [
-      {
-        id: 1,
-        name: "public class 1",
-        cpu: 1,
-        memory: 1,
-        gpu: 0,
-        max_storage: 20,
-        default_storage: 5,
-        default: false,
-      },
-      {
-        id: 2,
-        name: "public class 2",
-        cpu: 2,
-        memory: 2,
-        gpu: 0,
-        max_storage: 40,
-        default_storage: 5,
-        default: true,
-        matching: false,
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "Special pool",
-    quota: {
-      cpu: 200,
-      memory: 8_000,
-      gpu: 40,
-      storage: 10_000_000,
-    },
-    classes: [
-      {
-        id: 3,
-        name: "special class 1",
-        cpu: 2,
-        memory: 4,
-        gpu: 0,
-        max_storage: 40,
-        default_storage: 10,
-        default: false,
-        matching: false,
-      },
-      {
-        id: 4,
-        name: "special class 2",
-        cpu: 4,
-        memory: 8,
-        gpu: 1,
-        max_storage: 40,
-        default_storage: 10,
-        default: false,
-        matching: false,
-      },
-      {
-        id: 5,
-        name: "special class 3",
-        cpu: 8,
-        memory: 16,
-        gpu: 1,
-        max_storage: 40,
-        default_storage: 10,
-        default: false,
-        matching: false,
-      },
-      {
-        id: 6,
-        name: "special class 4",
-        cpu: 8,
-        memory: 32,
-        gpu: 1,
-        max_storage: 40,
-        default_storage: 10,
-        default: false,
-        matching: false,
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "Special GPU pool",
-    quota: {
-      cpu: 200,
-      memory: 8_000,
-      gpu: 500,
-      storage: 10_000_000,
-    },
-    classes: [
-      {
-        id: 7,
-        name: "High-GPU class 1",
-        cpu: 2,
-        memory: 4,
-        gpu: 4,
-        max_storage: 40,
-        default_storage: 10,
-        default: false,
-        matching: false,
-      },
-      {
-        id: 8,
-        name: "High-GPU class 2",
-        cpu: 4,
-        memory: 8,
-        gpu: 4,
-        max_storage: 40,
-        default_storage: 10,
-        default: false,
-        matching: false,
-      },
-      {
-        id: 9,
-        name: "High-GPU class 3",
-        cpu: 8,
-        memory: 16,
-        gpu: 8,
-        max_storage: 40,
-        default_storage: 10,
-        default: false,
-        matching: false,
-      },
-      {
-        id: 10,
-        name: "High-GPU class 4",
-        cpu: 8,
-        memory: 32,
-        gpu: 8,
-        max_storage: 40,
-        default_storage: 10,
-        default: false,
-        matching: false,
-      },
-    ],
-  },
-  {
-    id: 4,
-    name: "High memory pool",
-    quota: {
-      cpu: 200,
-      memory: 64_000,
-      gpu: 40,
-      storage: 10_000_000,
-    },
-    classes: [
-      {
-        id: 11,
-        name: "high-memory class 1",
-        cpu: 2,
-        memory: 64,
-        gpu: 0,
-        max_storage: 40,
-        default_storage: 10,
-        default: false,
-        matching: false,
-      },
-      {
-        id: 12,
-        name: "high-memory class 2",
-        cpu: 4,
-        memory: 64,
-        gpu: 0,
-        max_storage: 40,
-        default_storage: 10,
-        default: false,
-        matching: false,
-      },
-      {
-        id: 13,
-        name: "high-memory class 3",
-        cpu: 8,
-        memory: 128,
-        gpu: 0,
-        max_storage: 40,
-        default_storage: 10,
-        default: false,
-        matching: false,
-      },
-      {
-        id: 14,
-        name: "high-memory class 4",
-        cpu: 8,
-        memory: 256,
-        gpu: 0,
-        max_storage: 40,
-        default_storage: 10,
-        default: false,
-        matching: false,
-      },
-    ],
-  },
-];

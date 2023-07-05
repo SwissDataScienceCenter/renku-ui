@@ -16,46 +16,9 @@
  * limitations under the License.
  */
 
-export interface ResourcePool {
-  id: number;
-  name: string;
-  classes: ResourceClass[];
-  quota: Resources;
-  default: boolean;
-  public: boolean;
-}
-
-export interface ResourceClass {
-  id: number;
-  name: string;
-  cpu: number;
-
-  /** Memory (RAM) in Gigabytes */
-  memory: number;
-
-  gpu: number;
-
-  /** Max disk storage in Gigabytes */
-  max_storage: number;
-
-  /** Default disk storage in Gigabytes */
-  default_storage: number;
-
-  default: boolean;
-
-  matching: boolean;
-}
-
-export interface Resources {
-  cpu: number;
-  memory: number;
-  gpu: number;
-  storage: number;
-}
-
-export interface ResourcePoolsQueryParams {
-  cpuRequest?: number;
-  gpuRequest?: number;
-  memoryRequest?: number;
-  storageRequest?: number;
-}
+export type DatasetImage = {
+  content_url?: string;
+  file_id?: string;
+  position: number;
+  mirror_locally: boolean;
+};

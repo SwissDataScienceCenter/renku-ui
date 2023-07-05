@@ -39,13 +39,39 @@ describe("Project new dataset", () => {
       fixtureName: "getMigration",
     });
     fixtures.projectLockStatus();
+    cy.visit(`projects/${projectPath}/datasets/new`);
+    cy.wait("@getProject");
+    cy.wait("@getMigration");
+    cy.wait("@datasetList");
   });
 
   it("complete new dataset", () => {
     fixtures.createDataset();
     fixtures.uploadDatasetFile();
-    cy.visit(`projects/${projectPath}/datasets/new`);
-    cy.wait("@getProject");
+    cy.gui_new_dataset({
+      title: "New dataset completed",
+      keywords: ["test key 1", "key 2"],
+      description: "This is a dataset description",
+      file: "count_flights.txt",
+      image: "sdsc.jpeg",
+    });
+    cy.wait("@uploadDatasetFile");
+    // check that the default creator was added
+    cy.get("input[name=default-creator]")
+      .should("be.disabled")
+      .should("have.value", "E2E User (e2e@renku.ch)");
+    cy.get_cy("submit-button").click();
+    cy.wait("@createDataset", { timeout: 20_000 });
+    cy.wait("@addFile");
+    cy.url().should(
+      "include",
+      `projects/${projectPath}/datasets/new-dataset-completed/`
+    );
+  });
+
+  it("complete new dataset with non-default creator", () => {
+    fixtures.createDataset();
+    fixtures.uploadDatasetFile();
     cy.gui_new_dataset({
       title: "New dataset completed",
       creators: {
@@ -59,30 +85,65 @@ describe("Project new dataset", () => {
       image: "sdsc.jpeg",
     });
     cy.wait("@uploadDatasetFile");
+    // There should be a default creator and a non-default creator
+    cy.get("input[name=default-creator]")
+      .should("be.disabled")
+      .should("have.value", "E2E User (e2e@renku.ch)");
+    cy.get_cy("creator-email").should("have.value", "email@creator.com");
     cy.get_cy("submit-button").click();
-    cy.wait("@createDataset");
+    cy.wait("@createDataset", { timeout: 20_000 });
     cy.wait("@addFile");
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(3500, { log: false });
     cy.url().should(
       "include",
       `projects/${projectPath}/datasets/new-dataset-completed/`
     );
   });
 
-  it("upload dataset file", () => {
-    cy.visit(`projects/${projectPath}/datasets/new`);
-    const options = {
-      override_existing: true,
-      unpack_archive: true,
-      statusCode: 200,
-    };
-    fixtures.uploadDatasetFile(
-      "cacheProjectListOnProgress",
-      "datasets/upload-dataset-multiple-files.json",
-      options
-    );
+  it("resets form when going to a new project", () => {
+    const secondProjectPath = "e2e/random-project";
+    fixtures.project(secondProjectPath);
+    fixtures.createDataset();
+    fixtures.uploadDatasetFile();
+    cy.gui_new_dataset({
+      title: "New dataset completed",
+      creators: {
+        name: "Name Creator",
+        email: "email@creator.com",
+        affiliation: "SDSC",
+      },
+      keywords: ["test key 1", "key 2"],
+      description: "This is a dataset description",
+      file: "count_flights.txt",
+      image: "sdsc.jpeg",
+    });
+    // check that the default creator was added
+    cy.get("input[name=default-creator]")
+      .should("be.disabled")
+      .should("have.value", "E2E User (e2e@renku.ch)");
+    cy.get_cy("creator-email").should("have.value", "email@creator.com");
+
+    // Visit a new project and check that the form was cleared
+    cy.visit(`projects/${secondProjectPath}/datasets/new`);
     cy.wait("@getProject");
+    cy.wait("@getMigration");
+    cy.wait("@datasetList");
+    cy.get_cy("input-title").should("have.value", "");
+    cy.get("input[name=default-creator]")
+      .should("be.disabled")
+      .should("have.value", "E2E User (e2e@renku.ch)");
+    cy.get_cy("creator-email").should("not.exist");
+  });
+
+  it("upload dataset file", () => {
+    fixtures.uploadDatasetFile(
+      "multipleFilesUpload",
+      "datasets/upload-dataset-multiple-files.json",
+      {
+        override_existing: true,
+        unpack_archive: true,
+        statusCode: 200,
+      }
+    );
     cy.gui_new_dataset({
       title: "New dataset completed",
     });
@@ -91,9 +152,7 @@ describe("Project new dataset", () => {
       { subjectType: "drag-n-drop" }
     );
     cy.get_cy("upload-compressed-yes").click();
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(3500, { log: false });
-    cy.wait("@cacheProjectListOnProgress");
+    cy.wait("@multipleFilesUpload");
     cy.get_cy("file-name-column").contains("Show unzipped files");
     cy.get_cy("display-zip-files-link").click();
     cy.get_cy("file-name-column").contains("New Folder With Items");
@@ -108,30 +167,30 @@ describe("Project new dataset", () => {
     cy.get('[data-cy="dropzone"]').attachFile("/datasets/files/bigFile.bin", {
       subjectType: "drag-n-drop",
     });
+    // Needed for tests on the server
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000, { log: false });
     cy.get('[data-cy="dropzone"]').attachFile(
       "/datasets/files/count_flights.txt",
       { subjectType: "drag-n-drop" }
     );
+    // Needed for tests on the server
     // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(3500, { log: false });
+    cy.wait(5000, { log: false });
     cy.wait("@uploadDatasetFile");
     cy.get_cy("file-name-column").should("have.length", 3);
   });
 
   it("error upload dataset file", () => {
-    cy.visit(`projects/${projectPath}/datasets/new`);
     const options = {
       override_existing: true,
       statusCode: 500,
     };
     fixtures.uploadDatasetFile("errorUploadFile", "", options);
-    cy.wait("@getProject");
     cy.get('[data-cy="dropzone"]').attachFile("/datasets/files/bigFile.bin", {
       subjectType: "drag-n-drop",
     });
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(3500, { log: false });
-    cy.wait("@errorUploadFile");
+    cy.wait("@errorUploadFile", { timeout: 5000 });
     cy.get_cy("upload-error-message").contains(
       "Server responded with 500 code."
     );
@@ -146,8 +205,6 @@ describe("Project new dataset", () => {
       "createDatasetError",
       "datasets/create-dataset-title-error.json"
     );
-    cy.visit(`projects/${projectPath}/datasets/new`);
-    cy.wait("@getProject");
     cy.get_cy("submit-button").click();
     cy.get("div.error-feedback")
       .contains("Please fix problems")
@@ -159,8 +216,6 @@ describe("Project new dataset", () => {
       "createDatasetError",
       "datasets/create-dataset-title-error.json"
     );
-    cy.visit(`projects/${projectPath}/datasets/new`);
-    cy.wait("@getProject");
     cy.gui_new_dataset({
       title: "test@",
     });
@@ -169,6 +224,34 @@ describe("Project new dataset", () => {
     cy.get("div.alert-danger")
       .contains("Errors occurred while performing this operation.")
       .should("exist");
+  });
+});
+
+describe("Project new dataset without access", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = true;
+  const projectPath = "e2e/local-test-project";
+
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects().projectTestObserver();
+    fixtures.projectLockStatus();
+    fixtures.cacheProjectList();
+    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectDatasetList();
+    fixtures.createDataset();
+    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectMigrationUpToDate({
+      queryUrl: "*",
+      fixtureName: "getMigration",
+    });
+    fixtures.projectLockStatus();
+  });
+
+  it("correctly handles missing access", () => {
+    cy.visit(`projects/${projectPath}/datasets/new`);
+    cy.wait("@getProject");
+    cy.contains("If you were recently given access").should("be.visible");
   });
 });
 
@@ -196,6 +279,8 @@ describe("Project import dataset", () => {
     fixtures.importJobCompleted();
     cy.visit(`projects/${projectPath}/datasets/new`);
     cy.wait("@getProject");
+    cy.wait("@getMigration");
+    cy.wait("@datasetList");
     cy.contains("Import").click();
     cy.get_cy("input-uri")
       .click()
@@ -212,6 +297,8 @@ describe("Project import dataset", () => {
     fixtures.importJobError();
     cy.visit(`projects/${projectPath}/datasets/new`);
     cy.wait("@getProject");
+    cy.wait("@getMigration");
+    cy.wait("@datasetList");
     cy.contains("Import").click();
     cy.get_cy("input-uri")
       .click()
