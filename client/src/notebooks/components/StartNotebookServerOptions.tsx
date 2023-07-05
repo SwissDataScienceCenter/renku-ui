@@ -51,15 +51,7 @@ import styles from "./StartNotebookServerOptions.module.scss";
 import { SessionClassOption } from "./options/SessionClassOption";
 import { SessionStorageOption } from "./options/SessionStorageOption";
 
-interface StartNotebookServerOptionsProps {
-  branch?: {
-    name: string;
-  };
-}
-
-export const StartNotebookServerOptions = ({
-  branch: _branch, //eslint-disable-line @typescript-eslint/no-unused-vars
-}: StartNotebookServerOptionsProps) => {
+export const StartNotebookServerOptions = () => {
   // Wait for options to load
 
   // Global options
@@ -79,7 +71,6 @@ export const StartNotebookServerOptions = ({
     {
       projectRepositoryUrl,
       versionUrl,
-      // ...(branchName ? { branch: branchName } : {}),
     },
     { skip: !coreSupportComputed }
   );
@@ -231,7 +222,6 @@ const AutoFetchLfsOption = () => {
     {
       projectRepositoryUrl,
       versionUrl,
-      // ...(branchName ? { branch: branchName } : {}),
     },
     { skip: !coreSupportComputed }
   );

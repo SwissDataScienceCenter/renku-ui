@@ -59,7 +59,6 @@ export const SessionStorageOption = () => {
     {
       projectRepositoryUrl,
       versionUrl,
-      // ...(branchName ? { branch: branchName } : {}),
     },
     { skip: !coreSupportComputed }
   );

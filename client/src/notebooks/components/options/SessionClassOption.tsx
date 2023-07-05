@@ -70,7 +70,6 @@ export const SessionClassOption = () => {
     {
       projectRepositoryUrl,
       versionUrl,
-      // ...(branchName ? { branch: branchName } : {}),
     },
     { skip: !coreSupportComputed }
   );
