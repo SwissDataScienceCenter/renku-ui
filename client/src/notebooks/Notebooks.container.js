@@ -37,6 +37,7 @@ import { projectCoreApi } from "../features/project/projectCoreApi";
 import { computeBackendData } from "../features/project/useProjectCoreSupport";
 import { dataServicesApi } from "../features/dataServices/dataServicesApi";
 import {
+  setDefaultUrl,
   setSessionClass,
   setStorage,
 } from "../features/session/startSessionOptionsSlice";
@@ -836,6 +837,11 @@ class StartNotebookServer extends Component {
           ) {
             await store.dispatch(
               setStorage(this.state.projectConfig.config.sessions.storage)
+            );
+          }
+          if (this.state.projectConfig?.config.sessions?.defaultUrl) {
+            await store.dispatch(
+              setDefaultUrl(this.state.projectConfig.config.sessions.defaultUrl)
             );
           }
 

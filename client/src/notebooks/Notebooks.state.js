@@ -60,7 +60,13 @@ const CI_STATUSES = {
   failure: "failure",
 };
 
-const VALID_SETTINGS = ["image"];
+const VALID_SETTINGS = [
+  "image",
+  "cpu_request",
+  "memory_request",
+  "disk_request",
+  "gpu_request",
+];
 
 const SESSIONS_PREFIX = "interactive.";
 

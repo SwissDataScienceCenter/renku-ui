@@ -1357,6 +1357,8 @@ class ServerOptionLaunch extends Component {
     const { ci } = this.props;
     const { warnings } = this.props.options;
 
+    console.log({ warnings });
+
     const ciStatus = NotebooksHelper.checkCiStatus(ci);
     const globalNotification =
       warnings.length < 1 ? null : (
