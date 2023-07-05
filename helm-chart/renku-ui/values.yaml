@@ -24,6 +24,9 @@ global:
     customCAs:
       []
       # - secret:
+    
+  core:
+    versions: {}
 
   ## Specify the information required to connect to a redis instance.
   ## All the values below are required.
