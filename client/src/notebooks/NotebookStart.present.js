@@ -1357,9 +1357,21 @@ class ServerOptionLaunch extends Component {
     const { ci } = this.props;
     const { warnings } = this.props.options;
 
+    // Do not show warnings on compute requests as we are using
+    // resource pools now
+    const filteredWarnings = warnings.filter(
+      (key) =>
+        ![
+          "cpu_request",
+          "memory_request",
+          "disk_request",
+          "gpu_request",
+        ].includes(key)
+    );
+
     const ciStatus = NotebooksHelper.checkCiStatus(ci);
     const globalNotification =
-      warnings.length < 1 ? null : (
+      filteredWarnings.length < 1 ? null : (
         <Warning key="globalNotification">
           The session cannot be configured exactly as requested for this
           project. You can still start one, but some things may not work
