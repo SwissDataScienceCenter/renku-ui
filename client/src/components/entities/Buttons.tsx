@@ -37,6 +37,7 @@ import {
 } from "../../utils/ts-wrappers";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { StartSessionButton } from "../../features/session/components/SessionButtons";
+import SessionButton from "../../features/session/components/SessionButton";
 
 export interface EntityButtonProps {
   type: EntityType;
@@ -47,9 +48,14 @@ function EntityButton({ type, slug }: EntityButtonProps) {
     case "project":
       return (
         <div className="card-button">
-          <StartSessionButton fullPath={slug} />
+          <SessionButton fullPath={slug} />
         </div>
       );
+    // return (
+    //   <div className="card-button">
+    //     <StartSessionButton fullPath={slug} />
+    //   </div>
+    // );
     case "dataset":
       return null; // not defined yet
     default:

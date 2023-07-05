@@ -110,35 +110,35 @@ function EntityHeader({
       : false;
 
   // Set the main button based on running sessions
-  let mainButton = null;
-  if (fullPath && gitUrl) {
-    if (!notebook) {
-      const loading = !sessions.fetched && sessions.fetching ? true : false;
-      mainButton = (
-        <StartSessionDropdownButton
-          fullPath={fullPath}
-          gitUrl={gitUrl}
-          loading={loading}
-        />
-      );
-    } else {
-      const showLogs = () => {
-        dispatch(
-          displaySlice.actions.showSessionLogsModal({
-            targetServer: notebook.name,
-          })
-        );
-      };
-      mainButton = (
-        <SessionButton
-          fullPath={fullPath}
-          gitUrl={gitUrl}
-          notebook={notebook}
-          showLogs={showLogs}
-        />
-      );
-    }
-  }
+  const mainButton = null;
+  // if (fullPath && gitUrl) {
+  //   if (!notebook) {
+  //     const loading = !sessions.fetched && sessions.fetching ? true : false;
+  //     mainButton = (
+  //       <StartSessionDropdownButton
+  //         fullPath={fullPath}
+  //         gitUrl={gitUrl}
+  //         loading={loading}
+  //       />
+  //     );
+  //   } else {
+  //     const showLogs = () => {
+  //       dispatch(
+  //         displaySlice.actions.showSessionLogsModal({
+  //           targetServer: notebook.name,
+  //         })
+  //       );
+  //     };
+  //     mainButton = (
+  //       <SessionButton
+  //         fullPath={fullPath}
+  //         gitUrl={gitUrl}
+  //         notebook={notebook}
+  //         showLogs={showLogs}
+  //       />
+  //     );
+  //   }
+  // }
 
   // Set up support for logs modal
   const displayModal = useDisplaySelector((state) => state.modals.sessionLogs);
