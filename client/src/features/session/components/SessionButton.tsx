@@ -17,7 +17,15 @@
  */
 
 import React from "react";
+import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+import { Link } from "react-router-dom";
+import { Button } from "reactstrap";
+import { NotebooksHelper } from "../../../notebooks";
 import { Url } from "../../../utils/helpers/url";
+import { Session } from "../session";
+import { getRunningSession } from "../session.utils";
 import { useGetSessionsQuery } from "../sessionApi";
 import { SESSIONS_POLLING_INTERVAL_MS } from "../sessions.constants";
 
@@ -35,75 +43,110 @@ interface SessionButtonCommonProps {
   fullPath: string;
 }
 
-export default function SessionButton({
-  className,
-  fullPath,
-  withActions,
-  ...rest
-}: SessionButtonProps) {
+export default function SessionButton(props: SessionButtonProps) {
+  const { className, fullPath, withActions } = props;
+
   if (withActions) {
-    return <span>{"[with actions]"}</span>;
+    const { gitUrl } = props;
+    return (
+      <SessionButtonWithActions
+        className={className}
+        fullPath={fullPath}
+        gitUrl={gitUrl}
+      />
+    );
   }
 
   return (
     <SessionButtonWithoutActions className={className} fullPath={fullPath} />
   );
-  // const projectData = { namespace: "", path: fullPath };
-  // const sessionAutostartUrl = Url.get(
-  //   Url.pages.project.session.autostart,
-  //   projectData
-  // );
-
-  // const currentSessions = useSelector(
-  //   (state: RootStateOrAny) => state.stateModel.notebooks?.notebooks?.all
-  // );
-  // const localSessionRunning = currentSessions
-  //   ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //     (getSessionRunning(currentSessions, sessionAutostartUrl) as any)
-  //   : false;
-  // const history = useHistory();
-
-  // let content = null;
-  // if (loading) {
-  //   content = <span>Loading...</span>;
-  // } else {
-  //   content = !localSessionRunning ? (
-  //     <>
-  //       <FontAwesomeIcon icon={faPlay} /> Start{" "}
-  //     </>
-  //   ) : (
-  //     <div className="d-flex gap-2">
-  //       <img src="/connect.svg" className="rk-icon rk-icon-md" /> Connect{" "}
-  //     </div>
-  //   );
-  // }
-
-  // const sessionLink = !localSessionRunning
-  //   ? sessionAutostartUrl
-  //   : localSessionRunning.showSessionURL;
-
-  // const localClass = `btn btn-sm btn-rk-green btn-icon-text start-session-button ${className}`;
-  // if (showAsLink && !loading)
-  //   return (
-  //     <Link to={sessionLink} className={localClass}>
-  //       {content}
-  //     </Link>
-  //   );
-  // return (
-  //   <Button
-  //     disabled={loading}
-  //     onClick={() => history.push(sessionLink)}
-  //     className={localClass}
-  //   >
-  //     {content}
-  //   </Button>
-  // );
 }
 
-function SessionButtonWithoutActions({}: SessionButtonCommonProps) {
+function SessionButtonWithActions({
+  className: className_,
+  fullPath,
+  gitUrl,
+}: SessionButtonCommonProps & { gitUrl: string }) {
+  const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, {
+    namespace: "",
+    path: fullPath,
+  });
+
   const { data: sessions, isLoading } = useGetSessionsQuery(undefined, {
     pollingInterval: SESSIONS_POLLING_INTERVAL_MS,
   });
 
-  return <span>{"[without actions]"}</span>;
+  const runningSession = sessions
+    ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
+    : null;
+
+  if (isLoading) {
+    return (
+      <Button className={className_} disabled>
+        <span>Loading...</span>
+      </Button>
+    );
+  }
+
+  return <span>{"[with actions]"}</span>;
+}
+
+function SessionButtonWithoutActions({
+  className: className_,
+  fullPath,
+}: SessionButtonCommonProps) {
+  const className = cx(
+    "btn",
+    "btn-sm",
+    "btn-rk-green",
+    "btn-icon-text",
+    "start-session-button",
+    className_
+  );
+
+  const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, {
+    namespace: "",
+    path: fullPath,
+  });
+
+  const { data: sessions, isLoading } = useGetSessionsQuery(undefined, {
+    pollingInterval: SESSIONS_POLLING_INTERVAL_MS,
+  });
+
+  const runningSession = sessions
+    ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
+    : null;
+
+  if (isLoading) {
+    return (
+      <Button className={className} disabled>
+        <span>Loading...</span>
+      </Button>
+    );
+  }
+
+  if (!runningSession) {
+    return (
+      <Link className={className} to={sessionAutostartUrl}>
+        <FontAwesomeIcon icon={faPlay} /> Start
+      </Link>
+    );
+  }
+
+  const annotations = NotebooksHelper.cleanAnnotations(
+    runningSession.annotations
+  ) as Session["annotations"];
+  const showSessionUrl = Url.get(Url.pages.project.session.show, {
+    namespace: annotations.namespace,
+    path: annotations.projectName,
+    server: runningSession.name,
+  });
+
+  return (
+    <Link className={className} to={showSessionUrl}>
+      <div className="d-flex gap-2">
+        <img src="/connect.svg" className="rk-icon rk-icon-md" /> Connect
+      </div>
+    </Link>
+  );
 }

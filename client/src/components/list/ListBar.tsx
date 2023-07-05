@@ -27,6 +27,7 @@ import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
 import { EntityType } from "../../features/kgSearch";
+import SessionButton from "../../features/session/components/SessionButton";
 
 import "./ListBar.scss";
 
@@ -38,7 +39,8 @@ export function getMainActionByEntity(
   switch (entityType) {
     case EntityType.Project:
       return slug && gitUrl ? (
-        <StartSessionDropdownButton fullPath={slug} gitUrl={gitUrl} />
+        // <StartSessionDropdownButton fullPath={slug} gitUrl={gitUrl} />
+        <SessionButton fullPath={slug} gitUrl={gitUrl} withActions />
       ) : null;
     case EntityType.Dataset:
       return null;

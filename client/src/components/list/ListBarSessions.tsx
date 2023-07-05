@@ -46,7 +46,8 @@ import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import AppContext from "../../utils/context/appContext";
 import { getStatusObject } from "../../notebooks/components/SessionListStatus";
 import type { SessionRunningStatus } from "../../notebooks/components/SessionListStatus";
-import { SessionButton } from "../../features/session/components/SessionButtons";
+// import { SessionButton } from "../../features/session/components/SessionButtons";
+import SessionButton from "../../features/session/components/SessionButton";
 import { Notebook } from "../../notebooks/components/Session";
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import "./ListBar.scss";
@@ -329,7 +330,7 @@ function ListBarSession({
         />
       </div>
       <div className="entity-action d-flex align-items-baseline gap-1">
-        <SessionButton
+        {/* <SessionButton
           fullPath={fullPath}
           gitUrl={gitUrl}
           notebook={notebook}
@@ -337,7 +338,8 @@ function ListBarSession({
           stopSessionCallback={(server: string, status: string) =>
             forceSessionStatus(status)
           }
-        />
+        /> */}
+        <SessionButton fullPath={fullPath} gitUrl={gitUrl} withActions />
       </div>
       <div className="session-resources text-truncate">
         <ResourceList resources={resources} />
