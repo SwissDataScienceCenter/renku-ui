@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": 2200,
+    "devMessage": "Unexpected Renku exception from a service operation: Git command failed: /svc/cache/projects/Y3JhbWFrcmlldGh6LmNo/namespace/project",
+    "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.ui.service.errors.ProgramRenkuError",
+    "sentry": "https://sentry.dev.renku.ch/organizations/sentry?query=7861661cc9794a2c98eb267dcc462302",
+    "userMessage": "Our servers could not process the requested operation. The following details may help: Git command failed: /svc/cache/projects/Y3JhbWFrcmlldGh6LmNo/namespace/project"
+  }
+}
