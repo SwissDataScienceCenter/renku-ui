@@ -41,12 +41,12 @@ function handleSessionsStatus(
         userModel
       );
       notebookCoordinator.fetchNotebooks();
-
-      console.log("Dispatch session invalidation!");
-      model.reduxStore.dispatch(
-        sessionApi.endpoints.invalidateSessions.initiate()
-      );
     }
+
+    console.log("Dispatch session invalidation!");
+    model.reduxStore.dispatch(
+      sessionApi.endpoints.invalidateSessions.initiate()
+    );
   }
 }
 
