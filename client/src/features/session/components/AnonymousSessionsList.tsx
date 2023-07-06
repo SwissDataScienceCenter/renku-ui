@@ -39,7 +39,6 @@ import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 import { Url } from "../../../utils/helpers/url";
 import { Session, Sessions } from "../session";
 import { useGetSessionsQuery } from "../sessionApi";
-import { SESSIONS_POLLING_INTERVAL_MS } from "../sessions.constants";
 import SessionButton from "./SessionButton";
 import SessionRowCommitInfo from "./SessionRowCommitInfo";
 
@@ -78,9 +77,7 @@ function AnonymousSessionsDisabledNotice() {
 }
 
 function AnonymousSessionsEnabledList() {
-  const { data: sessions, isLoading } = useGetSessionsQuery(undefined, {
-    pollingInterval: SESSIONS_POLLING_INTERVAL_MS,
-  });
+  const { data: sessions, isLoading } = useGetSessionsQuery();
 
   if (isLoading) {
     return <Loader />;

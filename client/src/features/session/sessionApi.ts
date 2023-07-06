@@ -43,6 +43,10 @@ export const sessionApi = createApi({
       transformResponse: ({ servers }: GetSessionsRawResponse) => servers,
       providesTags: ["Session"],
     }),
+    invalidateSessions: builder.mutation<null, void>({
+      queryFn: () => ({ data: null }),
+      invalidatesTags: ["Session"],
+    }),
     serverOptions: builder.query<ServerOptions, Record<never, never>>({
       query: () => ({
         url: "server_options",

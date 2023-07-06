@@ -35,7 +35,6 @@ import { Url } from "../../../utils/helpers/url";
 import { Session } from "../session";
 import { getRunningSession } from "../session.utils";
 import { useGetSessionsQuery, useStopSessionMutation } from "../sessionApi";
-import { SESSIONS_POLLING_INTERVAL_MS } from "../sessions.constants";
 import { useDispatch } from "react-redux";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
 
@@ -87,9 +86,7 @@ function SessionButtonWithActions({
     path: fullPath,
   });
 
-  const { data: sessions, isLoading } = useGetSessionsQuery(undefined, {
-    pollingInterval: SESSIONS_POLLING_INTERVAL_MS,
-  });
+  const { data: sessions, isLoading } = useGetSessionsQuery();
 
   const runningSession = sessions
     ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
@@ -277,9 +274,7 @@ function SessionButtonWithoutActions({
     path: fullPath,
   });
 
-  const { data: sessions, isLoading } = useGetSessionsQuery(undefined, {
-    pollingInterval: SESSIONS_POLLING_INTERVAL_MS,
-  });
+  const { data: sessions, isLoading } = useGetSessionsQuery();
 
   const runningSession = sessions
     ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })

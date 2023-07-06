@@ -20,6 +20,7 @@ import { isSessionUrl } from "../../utils/helpers/url/Url";
 import { NotebooksCoordinator } from "../../notebooks";
 import APIClient from "../../api-client";
 import { StateModel } from "../../model";
+import { sessionApi } from "../../features/session/sessionApi";
 
 function handleSessionsStatus(
   data: Record<string, unknown>,
@@ -40,6 +41,11 @@ function handleSessionsStatus(
         userModel
       );
       notebookCoordinator.fetchNotebooks();
+
+      console.log("Dispatch session invalidation!");
+      model.reduxStore.dispatch(
+        sessionApi.endpoints.invalidateSessions.initiate()
+      );
     }
   }
 }
