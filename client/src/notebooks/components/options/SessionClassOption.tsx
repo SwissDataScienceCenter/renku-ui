@@ -51,7 +51,6 @@ import { useCoreSupport } from "../../../features/project/useProjectCoreSupport"
 import {
   reset,
   setSessionClass,
-  reset,
   useStartSessionOptionsSelector,
 } from "../../../features/session/startSessionOptionsSlice";
 import styles from "./SessionClassOption.module.scss";
