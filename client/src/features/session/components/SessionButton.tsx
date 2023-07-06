@@ -16,18 +16,28 @@
  * limitations under the License.
  */
 
-import React from "react";
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import React, { useCallback, useState } from "react";
+import {
+  faPlay,
+  faStop,
+  faFileAlt,
+  faExternalLinkAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { Link } from "react-router-dom";
-import { Button } from "reactstrap";
+import { Button, DropdownItem } from "reactstrap";
+import { ButtonWithMenu } from "../../../components/buttons/Button";
+import { SshDropdown } from "../../../components/ssh/ssh";
 import { NotebooksHelper } from "../../../notebooks";
+import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import { Url } from "../../../utils/helpers/url";
 import { Session } from "../session";
 import { getRunningSession } from "../session.utils";
-import { useGetSessionsQuery } from "../sessionApi";
+import { useGetSessionsQuery, useStopSessionMutation } from "../sessionApi";
 import { SESSIONS_POLLING_INTERVAL_MS } from "../sessions.constants";
+import { useDispatch } from "react-redux";
+import { toggleSessionLogsModal } from "../../display/displaySlice";
 
 type SessionButtonProps = SessionButtonCommonProps &
   (
@@ -48,6 +58,7 @@ export default function SessionButton(props: SessionButtonProps) {
 
   if (withActions) {
     const { gitUrl } = props;
+    console.log({ gitUrl });
     return (
       <SessionButtonWithActions
         className={className}
@@ -63,11 +74,15 @@ export default function SessionButton(props: SessionButtonProps) {
 }
 
 function SessionButtonWithActions({
-  className: className_,
+  className,
   fullPath,
   gitUrl,
 }: SessionButtonCommonProps & { gitUrl: string }) {
   const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, {
+    namespace: "",
+    path: fullPath,
+  });
+  const sessionStartUrl = Url.get(Url.pages.project.session.new, {
     namespace: "",
     path: fullPath,
   });
@@ -82,13 +97,166 @@ function SessionButtonWithActions({
 
   if (isLoading) {
     return (
-      <Button className={className_} disabled>
+      <Button className={className} disabled>
         <span>Loading...</span>
       </Button>
     );
   }
 
-  return <span>{"[with actions]"}</span>;
+  if (!runningSession) {
+    const defaultAction = (
+      <SessionButtonWithoutActions
+        className="session-link-group"
+        fullPath={fullPath}
+      />
+    );
+    return (
+      <ButtonWithMenu
+        className={cx("startButton", className)}
+        color="rk-green"
+        default={defaultAction}
+        isPrincipal
+        size="sm"
+      >
+        <DropdownItem>
+          <Link className="text-decoration-none" to={sessionStartUrl}>
+            <img
+              src={rkIconStartWithOptions}
+              className="rk-icon rk-icon-md btn-with-menu-margin"
+            />
+            Start with options
+          </Link>
+        </DropdownItem>
+        <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />
+      </ButtonWithMenu>
+    );
+  }
+
+  return <SessionActions className={className} session={runningSession} />;
+}
+
+interface SessionActionsProps {
+  className?: string;
+  session: Session;
+}
+
+function SessionActions({ className, session }: SessionActionsProps) {
+  const dispatch = useDispatch();
+  const onToggleLogs = useCallback(() => {
+    dispatch(toggleSessionLogsModal({ targetServer: session.name }));
+  }, [dispatch, session.name]);
+
+  const [stopSession] = useStopSessionMutation();
+  // Optimistically show a session as "stopping" when triggered from the UI
+  const [isStopping, setIsStopping] = useState<boolean>(false);
+  const onStopSession = useCallback(() => {
+    stopSession({ serverName: session.name });
+    setIsStopping(true);
+  }, [session.name, stopSession]);
+
+  const status = session.status.state;
+
+  const annotations = NotebooksHelper.cleanAnnotations(
+    session.annotations
+  ) as Session["annotations"];
+  const showSessionUrl = Url.get(Url.pages.project.session.show, {
+    namespace: annotations.namespace,
+    path: annotations.projectName,
+    server: session.name,
+  });
+
+  const buttonClassName = cx(
+    "btn",
+    "btn-rk-green",
+    "btn-sm",
+    "btn-icon-text",
+    "start-session-button",
+    "session-link-group"
+  );
+
+  const defaultAction =
+    status === "starting" || status === "running" ? (
+      <Link
+        className={buttonClassName}
+        data-cy="open-session"
+        to={{ pathname: showSessionUrl }}
+      >
+        <div className={cx("d-flex", "gap-2")}>
+          <img className={cx("rk-icon", "rk-icon-md")} src="/connect.svg" />{" "}
+          Connect
+        </div>
+      </Link>
+    ) : status === "stopping" || isStopping ? (
+      <Button className={buttonClassName} data-cy="stopping-btn" disabled>
+        Stopping...
+      </Button>
+    ) : (
+      <Button
+        className={buttonClassName}
+        data-cy="stop-session-button"
+        onClick={onStopSession}
+      >
+        <div className={cx("d-flex", "gap-2")}>
+          <FontAwesomeIcon
+            className={cx("rk-icon", "rk-icon-md")}
+            icon={faStop}
+          />{" "}
+          Stop
+        </div>
+      </Button>
+    );
+
+  const openInNewTabAction = (status === "starting" ||
+    status === "running") && (
+    <DropdownItem href={session.url} target="_blank">
+      <FontAwesomeIcon
+        className={cx("text-rk-green", "fa-w-14")}
+        fixedWidth
+        icon={faExternalLinkAlt}
+      />{" "}
+      Open in new tab
+    </DropdownItem>
+  );
+
+  const logsAction = (
+    <DropdownItem data-cy="session-log-button" onClick={onToggleLogs}>
+      <FontAwesomeIcon
+        className={cx("text-rk-green", "fa-w-14")}
+        fixedWidth
+        icon={faFileAlt}
+      />{" "}
+      Get logs
+    </DropdownItem>
+  );
+
+  const stopAction = status !== "stopping" && status !== "failed" && (
+    <>
+      <DropdownItem onClick={onStopSession}>
+        <FontAwesomeIcon
+          className={cx("text-rk-green", "fa-w-14")}
+          fixedWidth
+          icon={faStop}
+        />{" "}
+        Stop
+      </DropdownItem>
+      <DropdownItem divider />
+    </>
+  );
+
+  return (
+    <ButtonWithMenu
+      className={cx("sessionsButton", className)}
+      color="rk-green"
+      default={defaultAction}
+      disabled={status === "stopping" || isStopping}
+      isPrincipal
+      size="sm"
+    >
+      {stopAction}
+      {openInNewTabAction}
+      {logsAction}
+    </ButtonWithMenu>
+  );
 }
 
 function SessionButtonWithoutActions({

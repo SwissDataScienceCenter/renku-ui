@@ -35,14 +35,15 @@ import LinkedEntitiesByItemType, {
 import Slug from "../entities/Slug";
 import VisibilityIcon from "../entities/VisibilityIcon";
 import { EntityType } from "../entities/Entities";
-import {
-  StartSessionDropdownButton,
-  SessionButton,
-} from "../../features/session/components/SessionButtons";
+// import {
+//   StartSessionDropdownButton,
+//   SessionButton,
+// } from "../../features/session/components/SessionButtons";
 import { TimeCaption } from "../TimeCaption";
 import { EnvironmentLogs } from "../Logs";
 import { displaySlice, useDisplaySelector } from "../../features/display";
 import { getSessionRunning } from "../../utils/helpers/SessionFunctions";
+import SessionButton from "../../features/session/components/SessionButton";
 import { Url } from "../../utils/helpers/url";
 
 import "./EntityHeader.scss";
@@ -110,7 +111,10 @@ function EntityHeader({
       : false;
 
   // Set the main button based on running sessions
-  const mainButton = null;
+  const mainButton =
+    fullPath && gitUrl ? (
+      <SessionButton fullPath={fullPath} gitUrl={gitUrl} withActions />
+    ) : null;
   // if (fullPath && gitUrl) {
   //   if (!notebook) {
   //     const loading = !sessions.fetched && sessions.fetching ? true : false;
