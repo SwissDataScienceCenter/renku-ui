@@ -1,5 +1,20 @@
 # Changes
 
+## [3.8.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.7.0...3.8.0) (2023-07-05)
+
+### Features
+
+- handle responses from the new core versions endpoint ([#2134](https://github.com/SwissDataScienceCenter/renku-ui/issues/2134))
+- surface backend error message on dataset list page ([#2629](https://github.com/SwissDataScienceCenter/renku-ui/issues/2629))
+
+### Bug Fixes
+
+- prevent API failures for projects on older metadata versions ([#2627](https://github.com/SwissDataScienceCenter/renku-ui/issues/2627))
+
+### BREAKING CHANGES
+
+- Requires renku-core v2.6.0 or greater
+
 ## [3.7.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.6.0...3.7.0) (2023-06-30)
 
 ### Features
