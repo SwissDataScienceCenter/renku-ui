@@ -213,6 +213,7 @@ function ProjectDatasetsView(props: any) {
   useEffect(() => {
     const datasetsLoading = datasets.core === SpecialPropVal.UPDATING;
     if (datasetsLoading || !coreSupportComputed) return;
+    if (!backendAvailable) return;
 
     if (
       datasets.core.datasets === null ||
@@ -222,6 +223,7 @@ function ProjectDatasetsView(props: any) {
       history.replace({ state: { reload: false } });
     }
   }, [
+    backendAvailable,
     coreSupportComputed,
     datasets.core,
     fetchDatasets,
