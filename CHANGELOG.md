@@ -1,5 +1,12 @@
 # Changes
 
+## [3.8.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.8.0...3.8.1) (2023-07-06)
+
+### Bug Fixes
+
+- do not query for datasets if no backend is available for the project version ([#2636](https://github.com/SwissDataScienceCenter/renku-ui/issues/2636))
+- prevent errors when building with npm
+
 ## [3.8.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.7.0...3.8.0) (2023-07-05)
 
 ### Features
