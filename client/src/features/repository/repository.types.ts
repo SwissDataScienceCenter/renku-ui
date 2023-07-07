@@ -16,6 +16,12 @@
  * limitations under the License.
  */
 
+export interface GetRepositoryBranchesParams {
+  page?: number;
+  perPage?: number;
+  projectId: string;
+}
+
 export interface RepositoryCommit {
   author_name: string;
   committed_date: string;

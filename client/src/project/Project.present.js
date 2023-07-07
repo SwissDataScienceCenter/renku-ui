@@ -1259,9 +1259,10 @@ function ProjectView(props) {
           render={() => <ProjectViewHeader {...props} />}
         />
         {/* <Route path={props.notebookServersUrl} render={() => null} /> */}
-        <Route path={props.editDatasetUrl} render={() => null} />
-        <Route path={props.datasetUrl} render={() => null} />
-        <Route path={props.sessionShowUrl} render={() => null} />
+        <Route path={props.editDatasetUrl} />
+        <Route path={props.datasetUrl} />
+        <Route path={props.launchNotebookUrl} />
+        <Route path={props.sessionShowUrl} />
         <Route
           path={props.newDatasetUrl}
           component={() => <ProjectViewHeader {...props} />}
@@ -1270,9 +1271,10 @@ function ProjectView(props) {
       </Switch>
       <Switch key="projectNav">
         {/* <Route path={props.notebookServersUrl} render={() => null} /> */}
-        <Route path={props.editDatasetUrl} render={() => null} />
-        <Route path={props.datasetUrl} render={() => null} />
-        <Route path={props.sessionShowUrl} render={() => null} />
+        <Route path={props.editDatasetUrl} />
+        <Route path={props.datasetUrl} />
+        <Route path={props.launchNotebookUrl} />
+        <Route path={props.sessionShowUrl} />
         <Route component={() => <ProjectNav key="nav" {...props} />} />
       </Switch>
       <Row key="content">

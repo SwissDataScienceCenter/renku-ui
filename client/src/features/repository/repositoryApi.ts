@@ -18,6 +18,7 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
+  GetRepositoryBranchesParams,
   GetRepositoryCommitParams,
   RepositoryCommit,
 } from "./repository.types";
@@ -27,6 +28,15 @@ const repositoryApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
   tagTypes: ["Commit"],
   endpoints: (builder) => ({
+    getRepositoryBranches: builder.query<unknown, GetRepositoryBranchesParams>({
+      query: ({ page, perPage, projectId }) => ({
+        url: `${projectId}/repository/branches`,
+        params: {
+          ...(page ? { page } : {}),
+          ...(perPage ? { perPage } : {}),
+        },
+      }),
+    }),
     getRepositoryCommit: builder.query<
       RepositoryCommit,
       GetRepositoryCommitParams
@@ -41,7 +51,8 @@ const repositoryApi = createApi({
 });
 
 export default repositoryApi;
-export const { useGetRepositoryCommitQuery } = repositoryApi;
+export const { useGetRepositoryBranchesQuery, useGetRepositoryCommitQuery } =
+  repositoryApi;
 
 // client.getRepositoryCommit = async (projectId, commitSHA) => {
 //     let headers = client.getBasicHeaders();

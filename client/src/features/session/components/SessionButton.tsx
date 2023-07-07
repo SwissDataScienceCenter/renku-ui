@@ -57,7 +57,6 @@ export default function SessionButton(props: SessionButtonProps) {
 
   if (withActions) {
     const { gitUrl } = props;
-    console.log({ gitUrl });
     return (
       <SessionButtonWithActions
         className={className}

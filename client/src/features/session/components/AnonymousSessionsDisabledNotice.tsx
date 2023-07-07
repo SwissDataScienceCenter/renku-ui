@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -17,20 +17,13 @@
  */
 
 import React from "react";
+import LoginAlert from "../../../components/loginAlert/LoginAlert";
 
-type IAppContext = {
-  client: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-  location: unknown;
-  model: unknown;
-  params: unknown;
-};
-
-const AppContext = React.createContext<IAppContext>({
-  client: undefined,
-  location: undefined,
-  model: undefined,
-  params: undefined,
-});
-
-export default AppContext;
-export type { IAppContext };
+export default function AnonymousSessionsDisabledNotice() {
+  const textIntro =
+    "This Renkulab deployment does not allow unauthenticated users to start sessions.";
+  const textPost = "to use sessions.";
+  return (
+    <LoginAlert logged={false} textIntro={textIntro} textPost={textPost} />
+  );
+}

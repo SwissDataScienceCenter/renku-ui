@@ -23,11 +23,11 @@ import { Col, Row } from "reactstrap";
 import { ErrorAlert, InfoAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
-import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { User } from "../../../model/RenkuModels";
 import AppContext from "../../../utils/context/appContext";
 import { useGetSessionsQuery } from "../sessionApi";
 import SessionsList from "./SessionsList";
+import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 
 export default function AnonymousSessionsList() {
   const { params } = useContext(AppContext);
@@ -51,15 +51,6 @@ export default function AnonymousSessionsList() {
     <ContainerWrap>
       <AnonymousSessionsEnabledList />
     </ContainerWrap>
-  );
-}
-
-function AnonymousSessionsDisabledNotice() {
-  const textIntro =
-    "This Renkulab deployment does not allow unauthenticated users to start sessions.";
-  const textPost = "to use sessions.";
-  return (
-    <LoginAlert logged={false} textIntro={textIntro} textPost={textPost} />
   );
 }
 
