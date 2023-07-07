@@ -33,6 +33,7 @@ const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];
 const CODE_EXTENSIONS = [
   "bat",
   "cwl",
+  "code-workspace",
   "dcf",
   "ini",
   "jl",
@@ -44,8 +45,13 @@ const CODE_EXTENSIONS = [
   "parquet",
   "prn",
   "py",
-  "r",
+  "r", // R
+  "lock",
+  "qmd",
+  "renviron",
+  "rprofile",
   "rmd",
+  "rnw",
   "rout",
   "rproj",
   "rs",
