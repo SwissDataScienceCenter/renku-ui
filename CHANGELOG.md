@@ -1,5 +1,19 @@
 # Changes
 
+## [3.9.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.8.1...3.9.0) (2023-07-07)
+
+### Features
+
+- update session start options and project settings to use compute resource pools ([#2517](https://github.com/SwissDataScienceCenter/renku-ui/issues/2517), [#2484](https://github.com/SwissDataScienceCenter/renku-ui/issues/2484))
+- support common R file extensions ([#2637](https://github.com/SwissDataScienceCenter/renku-ui/issues/2637), [#2638](https://github.com/SwissDataScienceCenter/renku-ui/issues/2638))
+
+### BREAKING CHANGES
+
+Sessions started from the UI will now use provisioned resource pools and session classes.
+
+- Support the new session classes provided by the compute resource pools.
+- Requires renku-notebooks 1.16.0 or greater
+
 ## [3.8.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.8.0...3.8.1) (2023-07-06)
 
 ### Bug Fixes
