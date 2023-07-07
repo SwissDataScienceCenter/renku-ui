@@ -29,6 +29,7 @@ import { atobUTF8 } from "../utils/helpers/Encoding";
 import { encodeImageBase64 } from "../components/markdown/RenkuMarkdownWithPathTranslation";
 import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
 
+/* eslint-disable spellcheck/spell-checker */
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];
 const CODE_EXTENSIONS = [
   "bat",
@@ -46,6 +47,7 @@ const CODE_EXTENSIONS = [
   "prn",
   "py",
   "r", // R
+  "lintr",
   "lock",
   "qmd",
   "renviron",
@@ -80,6 +82,7 @@ const CODE_EXTENSIONS = [
   "f03",
   "f08", // Fortran
 ];
+/* eslint-enable spellcheck/spell-checker */
 /* eslint-disable */
 const TEXT_EXTENSIONS = [
   "csv",
