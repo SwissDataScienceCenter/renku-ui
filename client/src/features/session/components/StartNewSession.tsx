@@ -35,7 +35,10 @@ import { Link } from "react-router-dom";
 import { ProjectMetadata } from "../../../notebooks/components/Session";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ForkProject } from "../../../project/new";
-import { useGetRepositoryBranchesQuery } from "../../repository/repositoryApi";
+import {
+  useGetAllRepositoryBranches,
+  useGetRepositoryBranchesQuery,
+} from "../../repository/repositoryApi";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -266,9 +269,21 @@ function StartNewSessionOptions() {
     (state) => state.stateModel.project.metadata.id ?? null
   );
 
-  console.log({ gitLabProjectId });
+  const result = useGetAllRepositoryBranches(
+    {
+      projectId: `${gitLabProjectId ?? 0}`,
+    },
+    { skip: !gitLabProjectId }
+  );
 
-  // const {data } = useGetRepositoryBranchesQuery();
+  // const { data } = useGetRepositoryBranchesQuery(
+  //   {
+  //     projectId: `${gitLabProjectId ?? 0}`,
+  //   },
+  //   { skip: !gitLabProjectId }
+  // );
+
+  console.log({ data: result.data });
 
   return null;
 }

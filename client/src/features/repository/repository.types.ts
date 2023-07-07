@@ -16,11 +16,57 @@
  * limitations under the License.
  */
 
+export interface RepositoryBranchesPage {
+  branches: RepositoryBranch[];
+  pagination: {
+    currentPage?: number;
+    firstPageLink?: string;
+    lastPageLink?: string;
+    nextPage?: number;
+    nextPageLink?: string;
+    perPage?: number;
+    previousPage?: number;
+    totalItems?: number;
+    totalPages?: number;
+  };
+}
+
+export interface RepositoryBranch {
+  name: string;
+}
+
 export interface GetRepositoryBranchesParams {
   page?: number;
   perPage?: number;
   projectId: string;
 }
+
+export type GetRepositoryBranchResponse = {
+  can_push: boolean;
+  commit: {
+    author_email: string;
+    author_name: string;
+    authored_date: string;
+    committed_date: string;
+    committer_email: string;
+    committer_name: string;
+    created_at: string;
+    id: string;
+    message: string;
+    parent_ids: unknown;
+    short_id: string;
+    title: string;
+    trailers: unknown;
+    web_url: string;
+  };
+  default: boolean;
+  developers_can_merge: boolean;
+  developers_can_push: boolean;
+  merged: boolean;
+  name: string;
+  protected: boolean;
+  web_url: string;
+}[];
 
 export interface RepositoryCommit {
   author_name: string;
