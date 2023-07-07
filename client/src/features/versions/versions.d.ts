@@ -64,5 +64,8 @@ export interface NotebooksVersion {
   version: string;
   anonymousSessionsEnabled: boolean;
   sshEnabled: boolean;
-  cloudStorageEnabled: boolean;
+  cloudStorageEnabled: {
+    s3: boolean;
+    azureBlob: boolean;
+  };
 }

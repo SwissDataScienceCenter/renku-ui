@@ -17,6 +17,19 @@
  */
 
 import React, { Component, Fragment, useEffect, useState } from "react";
+import {
+  faBook,
+  faCog,
+  faCogs,
+  faExclamationTriangle,
+  faInfoCircle,
+  faLink,
+  faRedo,
+  faSyncAlt,
+  faUserClock,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import {
   Badge,
@@ -39,50 +52,39 @@ import {
   UncontrolledPopover,
   UncontrolledTooltip,
 } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBook,
-  faCog,
-  faCogs,
-  faExclamationTriangle,
-  faInfoCircle,
-  faLink,
-  faRedo,
-  faSyncAlt,
-  faUserClock,
-} from "@fortawesome/free-solid-svg-icons";
-
 import {
   ErrorAlert,
   InfoAlert,
   SuccessAlert,
   WarnAlert,
 } from "../components/Alert";
-import { ButtonWithMenu } from "../components/buttons/Button";
 import { ExternalLink } from "../components/ExternalLinks";
 import { JupyterIcon } from "../components/Icon";
 import { Loader } from "../components/Loader";
+import { ThrottledTooltip } from "../components/Tooltip";
+import { ButtonWithMenu } from "../components/buttons/Button";
+import CommitSelector from "../components/commitSelector/CommitSelector";
 import { ShareLinkSessionModal } from "../components/shareLinkSession/ShareLinkSession";
 import { Docs } from "../utils/constants/Docs";
-import { ThrottledTooltip } from "../components/Tooltip";
 import { SessionStatus } from "../utils/constants/Notebooks";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
-
-import LaunchErrorAlert from "./components/LaunchErrorAlert";
-import { NotebooksHelper } from "./index";
 import {
   ObjectStoresConfigurationButton,
   ObjectStoresConfigurationModal,
 } from "./ObjectStoresConfig.present";
 import EnvironmentVariables from "./components/EnviromentVariables";
-import { useSelector } from "react-redux";
-import { ServerOptionEnum } from "./components/StartNotebookServerOptions";
+import LaunchErrorAlert from "./components/LaunchErrorAlert";
+import {
+  StartNotebookServerOptions,
+  ServerOptionBoolean,
+  ServerOptionEnum,
+} from "./components/StartNotebookServerOptions";
 import {
   StartNotebookAutostartLoader,
   StartNotebookLoader,
 } from "./components/StartSessionLoader";
-import CommitSelector from "../components/commitSelector/CommitSelector";
+import { NotebooksHelper } from "./index";
 import { CommandCopy } from "../components/commandCopy/CommandCopy";
 
 function ProjectSessionLockAlert({ lockStatus }) {
@@ -201,6 +203,11 @@ function StartNotebookServer(props) {
   const { branch, commit, namespace, project } = props.filters;
   const location = useLocation();
 
+  const sessionClass = useSelector(
+    (state) => state.startSessionOptions.sessionClass
+  );
+  const hasSessionClass = sessionClass !== 0;
+
   const [showShareLinkModal, setShowShareLinkModal] = useState(
     location?.state?.showShareLinkModal ?? false
   );
@@ -248,6 +255,7 @@ function StartNotebookServer(props) {
       showShareLinkModal={showShareLinkModal}
       setEnvironmentVariables={setNotebookEnvVariables}
       environmentVariables={environmentVariables}
+      hasSessionClass={hasSessionClass}
       {...props}
     />
   ) : null;
@@ -1142,6 +1150,7 @@ class StartNotebookCommitsOptions extends Component {
 
 function StartNotebookOptions(props) {
   const { justStarted, environmentVariables, setEnvironmentVariables } = props;
+
   if (justStarted)
     return (
       <Label>
@@ -1151,12 +1160,13 @@ function StartNotebookOptions(props) {
 
   const { all, fetched } = props.notebooks;
   const { filters, options } = props;
-  if (!fetched)
+  if (!fetched) {
     return (
       <Label>
         Verifying available sessions... <Loader size={14} inline />
       </Label>
     );
+  }
 
   if (Object.keys(options.global).length === 0 || options.fetching)
     return (
@@ -1173,37 +1183,41 @@ function StartNotebookOptions(props) {
       return false;
     });
     if (currentNotebook) {
-      return [
-        <StartNotebookOptionsRunning
-          key="notebook-options-running"
-          notebook={all[currentNotebook]}
-        />,
-        <ShareLinkSessionModal
-          key="shareLinkModal"
-          toggleModal={props.toggleShareLinkModal}
-          showModal={props.showShareLinkModal}
-          notebookFilePath={props.notebookFilePath}
-          {...props}
-        />,
-      ];
+      return (
+        <>
+          <StartNotebookOptionsRunning
+            key="notebook-options-running"
+            notebook={all[currentNotebook]}
+          />
+          <ShareLinkSessionModal
+            key="shareLinkModal"
+            toggleModal={props.toggleShareLinkModal}
+            showModal={props.showShareLinkModal}
+            notebookFilePath={props.notebookFilePath}
+            {...props}
+          />
+        </>
+      );
     }
   }
 
-  return [
-    <StartNotebookServerOptions key="options" {...props} />,
-    <EnvironmentVariables
-      key="envVariables"
-      environmentVariables={environmentVariables}
-      setEnvironmentVariables={setEnvironmentVariables}
-    />,
-    <ServerOptionLaunch key="button" {...props} />,
-    <ShareLinkSessionModal
-      key="shareLinkModal"
-      toggleModal={props.toggleShareLinkModal}
-      showModal={props.showShareLinkModal}
-      {...props}
-    />,
-  ];
+  return (
+    <>
+      <StartNotebookServerOptions branch={filters.branch} />
+      <EnvironmentVariables
+        key="envVariables"
+        environmentVariables={environmentVariables}
+        setEnvironmentVariables={setEnvironmentVariables}
+      />
+      <ServerOptionLaunch key="button" {...props} />
+      <ShareLinkSessionModal
+        key="shareLinkModal"
+        toggleModal={props.toggleShareLinkModal}
+        showModal={props.showShareLinkModal}
+        {...props}
+      />
+    </>
+  );
 }
 
 function Warning(props) {
@@ -1287,143 +1301,6 @@ function mergeEnumOptions(globalOptions, projectOptions, key) {
   return options;
 }
 
-class StartNotebookServerOptions extends Component {
-  render() {
-    const globalOptions = this.props.options.global;
-    const projectOptions = this.props.options.project;
-    const selectedOptions = this.props.filters.options;
-    const { warnings } = this.props.options;
-    const sortedOptionKeys = Object.keys(globalOptions).sort(
-      (a, b) =>
-        parseInt(globalOptions[a].order) - parseInt(globalOptions[b].order)
-    );
-    const renderedServerOptions = sortedOptionKeys
-      .filter((key) => key !== "commitId")
-      .map((key) => {
-        // when the project has a default option, ensure it's added to the global options
-        const serverOption = {
-          ...globalOptions[key],
-          id: `option-${key}`,
-          selected: selectedOptions[key],
-        };
-
-        const onChange = (event, value) => {
-          this.props.handlers.setServerOption(key, event, value);
-        };
-        const warning = warnings.includes(key) ? (
-          <Warning>
-            Cannot set <b>{serverOption.displayName}</b> to the project default
-            value <i>{projectOptions[key]}</i> in this Renkulab deployment.
-          </Warning>
-        ) : null;
-
-        let optionContent = null;
-        if (serverOption.type === "enum") {
-          const options = mergeEnumOptions(globalOptions, projectOptions, key);
-          serverOption["options"] = options;
-          const separator = options.length === 1 ? null : <br />;
-          optionContent = (
-            <FormGroup className="field-group">
-              <Label className="me-2">{serverOption.displayName}</Label>
-              {separator}
-              <ServerOptionEnum {...serverOption} onChange={onChange} />
-              {warning}
-            </FormGroup>
-          );
-        } else if (
-          serverOption.type === "int" ||
-          serverOption.type === "float"
-        ) {
-          const step = serverOption.type === "int" ? 1 : 0.01;
-          optionContent = (
-            <Fragment>
-              <Label className="me-2">{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-              <br />
-              <ServerOptionRange
-                step={step}
-                {...serverOption}
-                onChange={onChange}
-              />
-            </Fragment>
-          );
-        } else if (serverOption.type === "boolean") {
-          optionContent = (
-            <ServerOptionBoolean {...serverOption} onChange={onChange} />
-          );
-        }
-
-        if (!optionContent) return null;
-
-        const formContent = <FormGroup>{optionContent}</FormGroup>;
-        const colWidth = key === "default_url" ? 12 : 6;
-
-        return (
-          <Col key={key} xs={12} md={colWidth}>
-            {formContent}
-          </Col>
-        );
-      });
-
-    const unmatchedWarnings = warnings.filter(
-      (x) => !sortedOptionKeys.includes(x)
-    );
-    let globalWarning = null;
-    if (unmatchedWarnings && unmatchedWarnings.length) {
-      const language =
-        unmatchedWarnings.length > 1
-          ? { verb: "", plural: "s", aux: "are", article: "" }
-          : { verb: "s", plural: "", aux: "is", article: "a " };
-      const wrongVariables = unmatchedWarnings.map((w, i) => (
-        <span key={i}>
-          <i>{w}</i>: <code>{projectOptions[w].toString()}</code>
-          <br />
-        </span>
-      ));
-
-      globalWarning = (
-        <Warning key="globalWarning">
-          The project configuration for sessions contains {language.article}
-          variable{language.plural} that {language.aux} either unknown in this
-          Renkulab deployment or contain{language.verb} {language.article}wrong
-          value{language.plural}:
-          <br /> {wrongVariables}
-        </Warning>
-      );
-    }
-
-    return renderedServerOptions.length ? (
-      <Row>{renderedServerOptions.concat(globalWarning)}</Row>
-    ) : (
-      <label>Notebook options not available</label>
-    );
-  }
-}
-
-class ServerOptionBoolean extends Component {
-  render() {
-    const { disabled } = this.props;
-    // The double negation solves an annoying problem happening when checked=undefined
-    // https://stackoverflow.com/a/39709700/1303090
-    const selected = !!this.props.selected;
-    return (
-      <div className="form-check form-switch d-inline-block">
-        <Input
-          type="switch"
-          id={this.props.id}
-          label={this.props.displayName}
-          disabled={disabled}
-          checked={selected}
-          onChange={this.props.onChange}
-          className="form-check-input rounded-pill"
-        />
-        <Label check htmlFor={this.props.id}>
-          {this.props.displayName}
-        </Label>
-      </div>
-    );
-  }
-}
-
 class ServerOptionRange extends Component {
   render() {
     const { disabled } = this.props;
@@ -1480,9 +1357,21 @@ class ServerOptionLaunch extends Component {
     const { ci } = this.props;
     const { warnings } = this.props.options;
 
+    // Do not show warnings on compute requests as we are using
+    // resource pools now
+    const filteredWarnings = warnings.filter(
+      (key) =>
+        ![
+          "cpu_request",
+          "memory_request",
+          "disk_request",
+          "gpu_request",
+        ].includes(key)
+    );
+
     const ciStatus = NotebooksHelper.checkCiStatus(ci);
     const globalNotification =
-      warnings.length < 1 ? null : (
+      filteredWarnings.length < 1 ? null : (
         <Warning key="globalNotification">
           The session cannot be configured exactly as requested for this
           project. You can still start one, but some things may not work
@@ -1491,6 +1380,7 @@ class ServerOptionLaunch extends Component {
       );
 
     const hasImage = ciStatus.available;
+    const disabled = !hasImage || !this.props.hasSessionClass;
     const createLink = (
       <DropdownItem onClick={this.props.toggleShareLinkModal}>
         <FontAwesomeIcon className="text-rk-green" icon={faLink} /> Create link
@@ -1500,7 +1390,7 @@ class ServerOptionLaunch extends Component {
       <Button
         key="start-session"
         color="rk-green"
-        disabled={!hasImage}
+        disabled={disabled}
         onClick={() => this.checkServer(false)}
       >
         Start session

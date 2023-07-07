@@ -1,0 +1,212 @@
+[
+  {
+    "id": 1,
+    "name": "Public pool",
+    "default": true,
+    "public": true,
+    "quota": {
+      "cpu": 100,
+      "memory": 1000,
+      "gpu": 0,
+      "storage": 1000000
+    },
+    "classes": [
+      {
+        "id": 1,
+        "name": "public class 1",
+        "cpu": 1,
+        "memory": 1,
+        "gpu": 0,
+        "max_storage": 20,
+        "default_storage": 5,
+        "default": true,
+        "matching": false
+      },
+      {
+        "id": 2,
+        "name": "public class 2",
+        "cpu": 2,
+        "memory": 2,
+        "gpu": 0,
+        "max_storage": 40,
+        "default_storage": 5,
+        "default": false,
+        "matching": true
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Special pool",
+    "default": false,
+    "public": false,
+    "quota": {
+      "cpu": 200,
+      "memory": 8000,
+      "gpu": 40,
+      "storage": 10000000
+    },
+    "classes": [
+      {
+        "id": 3,
+        "name": "special class 1",
+        "cpu": 2,
+        "memory": 4,
+        "gpu": 0,
+        "max_storage": 40,
+        "default_storage": 10,
+        "default": false,
+        "matching": true
+      },
+      {
+        "id": 4,
+        "name": "special class 2",
+        "cpu": 4,
+        "memory": 8,
+        "gpu": 1,
+        "max_storage": 40,
+        "default_storage": 10,
+        "default": false,
+        "matching": true
+      },
+      {
+        "id": 5,
+        "name": "special class 3",
+        "cpu": 8,
+        "memory": 16,
+        "gpu": 1,
+        "max_storage": 40,
+        "default_storage": 10,
+        "default": false,
+        "matching": true
+      },
+      {
+        "id": 6,
+        "name": "special class 4",
+        "cpu": 8,
+        "memory": 32,
+        "gpu": 1,
+        "max_storage": 40,
+        "default_storage": 10,
+        "default": false,
+        "matching": true
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Special GPU pool",
+    "default": false,
+    "public": false,
+    "quota": {
+      "cpu": 200,
+      "memory": 8000,
+      "gpu": 500,
+      "storage": 10000000
+    },
+    "classes": [
+      {
+        "id": 7,
+        "name": "High-GPU class 1",
+        "cpu": 2,
+        "memory": 4,
+        "gpu": 4,
+        "max_storage": 40,
+        "default_storage": 10,
+        "default": false,
+        "matching": true
+      },
+      {
+        "id": 8,
+        "name": "High-GPU class 2",
+        "cpu": 4,
+        "memory": 8,
+        "gpu": 4,
+        "max_storage": 40,
+        "default_storage": 10,
+        "default": false,
+        "matching": true
+      },
+      {
+        "id": 9,
+        "name": "High-GPU class 3",
+        "cpu": 8,
+        "memory": 16,
+        "gpu": 8,
+        "max_storage": 40,
+        "default_storage": 10,
+        "default": false,
+        "matching": true
+      },
+      {
+        "id": 10,
+        "name": "High-GPU class 4",
+        "cpu": 8,
+        "memory": 32,
+        "gpu": 8,
+        "max_storage": 40,
+        "default_storage": 10,
+        "default": false,
+        "matching": true
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "High memory pool",
+    "default": false,
+    "public": false,
+    "quota": {
+      "cpu": 200,
+      "memory": 64000,
+      "gpu": 40,
+      "storage": 10000000
+    },
+    "classes": [
+      {
+        "id": 11,
+        "name": "high-memory class 1",
+        "cpu": 2,
+        "memory": 64,
+        "gpu": 0,
+        "max_storage": 40,
+        "default_storage": 10,
+        "default": false,
+        "matching": true
+      },
+      {
+        "id": 12,
+        "name": "high-memory class 2",
+        "cpu": 4,
+        "memory": 64,
+        "gpu": 0,
+        "max_storage": 40,
+        "default_storage": 10,
+        "default": false,
+        "matching": true
+      },
+      {
+        "id": 13,
+        "name": "high-memory class 3",
+        "cpu": 8,
+        "memory": 128,
+        "gpu": 0,
+        "max_storage": 40,
+        "default_storage": 10,
+        "default": false,
+        "matching": true
+      },
+      {
+        "id": 14,
+        "name": "high-memory class 4",
+        "cpu": 8,
+        "memory": 256,
+        "gpu": 0,
+        "max_storage": 40,
+        "default_storage": 10,
+        "default": false,
+        "matching": true
+      }
+    ]
+  }
+]

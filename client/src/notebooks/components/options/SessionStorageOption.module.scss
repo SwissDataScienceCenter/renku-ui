@@ -1,0 +1,43 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.container {
+  grid-template-rows: repeat(2, minmax(auto, 1fr));
+
+  @include media-breakpoint-up(sm) {
+    grid-template-rows: none;
+    grid-template-columns: minmax(auto, 1fr) max-content;
+  }
+}
+
+.range {
+  $form-range-thumb-bg: var(--bs-rk-green);
+  $form-range-thumb-active-bg: rgba(var(--bs-rk-green-rgb), 0.75);
+
+  &::-webkit-slider-thumb {
+    border-radius: 50%;
+    @include gradient-bg($form-range-thumb-bg);
+
+    &:active {
+      @include gradient-bg($form-range-thumb-active-bg);
+    }
+  }
+
+  &::-moz-range-thumb {
+    border-radius: 50%;
+    @include gradient-bg($form-range-thumb-bg);
+
+    &:active {
+      @include gradient-bg($form-range-thumb-active-bg);
+    }
+  }
+}
+
+.inputNumber {
+  :global(.input-group) & {
+    width: 120px;
+    border-radius: 0;
+  }
+}

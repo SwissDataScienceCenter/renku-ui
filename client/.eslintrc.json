@@ -114,6 +114,8 @@
           "datasets",
           "dataverse",
           "datetime",
+          "debounce",
+          "debounced",
           "discoverability",
           "dismissible",
           "dropdown",

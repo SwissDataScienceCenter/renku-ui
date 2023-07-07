@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,16 +16,5 @@
  * limitations under the License.
  */
 
-/**
- * renku-ui
- *
- * Components for project settings
- *
- */
-
-import {
-  ProjectSettingsGeneral,
-  ProjectSettingsNav,
-} from "./ProjectSettings.present";
-
-export { ProjectSettingsGeneral, ProjectSettingsNav };
+export const MIN_SESSION_STORAGE_GB = 1;
+export const STEP_SESSION_STORAGE_GB = 1;
