@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,16 +16,18 @@
  * limitations under the License.
  */
 
-/**
- * renku-ui
- *
- * Components for project settings
- *
- */
+export interface ServerOption<T extends number | string> {
+  allow_any_value?: boolean;
+  default: T;
+  displayName: string;
+  options: T[];
+  order: number;
+  type: "enum" | "int" | "float" | "boolean";
+}
 
-import {
-  ProjectSettingsGeneral,
-  ProjectSettingsNav,
-} from "./ProjectSettings.present";
+export interface ServerOptions {
+  defaultUrl: ServerOption<string>;
+  legacyOptions: Record<string, ServerOption>;
+}
 
-export { ProjectSettingsGeneral, ProjectSettingsNav };
+export type ServerOptionsResponse = Record<string, ServerOption>;

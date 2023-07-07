@@ -76,6 +76,21 @@ export interface NewProjectTemplate {
   parentTemplate?: string;
 }
 
+export interface User {
+  fetched: Date | null;
+  fetching: boolean | null;
+  error: any; //eslint-disable-line @typescript-eslint/no-explicit-any
+  logged: boolean;
+  data: unknown;
+}
+
+export interface LockStatus {
+  fetched: Date | null;
+  fetching: boolean | null;
+  error: any; //eslint-disable-line @typescript-eslint/no-explicit-any
+  locked: boolean | null;
+}
+
 export type RenkuUser = {
   data: {
     name: string;

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,16 +16,22 @@
  * limitations under the License.
  */
 
+import { FixturesConstructor } from "./fixtures";
+
 /**
- * renku-ui
- *
- * Components for project settings
- *
+ * Fixtures for Versions
  */
 
-import {
-  ProjectSettingsGeneral,
-  ProjectSettingsNav,
-} from "./ProjectSettings.present";
-
-export { ProjectSettingsGeneral, ProjectSettingsNav };
+export const Versions = <T extends FixturesConstructor>(Parent: T) => {
+  return class VersionsFixtures extends Parent {
+    sessionsVersion(
+      name = "getSessionsVersion",
+      fixture = "session/version.json"
+    ) {
+      cy.intercept("/ui-server/api/notebooks/version", {
+        fixture,
+      }).as(name);
+      return this;
+    }
+  };
+};

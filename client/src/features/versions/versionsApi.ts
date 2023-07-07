@@ -91,9 +91,11 @@ export const versionsApi = createApi({
           anonymousSessionsEnabled:
             singleVersion?.data?.anonymousSessionsEnabled ?? false,
           sshEnabled: singleVersion?.data?.sshEnabled ?? false,
-          cloudStorageEnabled:
-            (singleVersion?.data?.cloudstorageEnabled?.azure_blob ?? false) ||
-            (singleVersion?.data?.cloudstorageEnabled?.s3 ?? false),
+          cloudStorageEnabled: {
+            s3: singleVersion?.data?.cloudstorageEnabled?.s3 ?? false,
+            azureBlob:
+              singleVersion?.data?.cloudstorageEnabled?.azure_blob ?? false,
+          },
         } as NotebooksVersion;
       },
       transformErrorResponse: () => {
@@ -102,7 +104,10 @@ export const versionsApi = createApi({
           version: "unavailable",
           anonymousSessionsEnabled: false,
           sshEnabled: false,
-          cloudStorageEnabled: false,
+          cloudStorageEnabled: {
+            s3: false,
+            azureBlob: false,
+          },
         } as NotebooksVersion;
       },
     }),

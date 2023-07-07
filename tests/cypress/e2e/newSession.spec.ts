@@ -28,8 +28,11 @@ describe("launch sessions", () => {
     fixtures
       .sessionAutosave()
       .sessionServersEmpty()
+      .sessionsVersion()
       .renkuIni()
       .sessionServerOptions()
+      .resourcePoolsTest()
+      .projectConfigShow()
       .projectLockStatus();
     cy.visit("/projects/e2e/local-test-project");
   });

@@ -24,22 +24,15 @@
  */
 
 import React from "react";
-import { Provider } from "react-redux";
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
+import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
-
-import {
-  ProjectSettingsGeneral,
-  ProjectSettingsNav,
-  ProjectSettingsSessions,
-} from "./index";
-import { testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
 import { generateFakeUser } from "../../user/User.test";
+import { ProjectSettingsGeneral, ProjectSettingsNav } from "./index";
 
 const model = new StateModel(globalSchema);
-const fakeLocation = { pathname: "" };
 
 describe("rendering", () => {
   const anonymousUser = generateFakeUser(true);
@@ -86,27 +79,5 @@ describe("rendering", () => {
         );
       });
     }
-  });
-
-  it("renders ProjectSettingsSessions", async () => {
-    const props = {
-      client,
-      location: fakeLocation,
-      model,
-      store: model.reduxStore,
-    };
-
-    const div = document.createElement("div");
-    document.body.appendChild(div);
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <ProjectSettingsSessions {...props} />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
   });
 });
