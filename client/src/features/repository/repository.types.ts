@@ -35,8 +35,7 @@ export interface RepositoryBranch {
   name: string;
 }
 
-export interface GetRepositoryBranchesParams {
-  page?: number;
+export interface GetAllRepositoryBranchesParams {
   perPage?: number;
   projectId: string;
 }

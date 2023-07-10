@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { faUserClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RootStateOrAny, useSelector } from "react-redux";
@@ -35,10 +35,7 @@ import { Link } from "react-router-dom";
 import { ProjectMetadata } from "../../../notebooks/components/Session";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ForkProject } from "../../../project/new";
-import {
-  useGetAllRepositoryBranches,
-  useGetRepositoryBranchesQuery,
-} from "../../repository/repositoryApi";
+import { useGetAllRepositoryBranchesQuery } from "../../repository/repositoryApi";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -269,7 +266,7 @@ function StartNewSessionOptions() {
     (state) => state.stateModel.project.metadata.id ?? null
   );
 
-  const result = useGetAllRepositoryBranches(
+  const result = useGetAllRepositoryBranchesQuery(
     {
       projectId: `${gitLabProjectId ?? 0}`,
     },
@@ -283,7 +280,9 @@ function StartNewSessionOptions() {
   //   { skip: !gitLabProjectId }
   // );
 
-  console.log({ data: result.data });
+  useEffect(() => {
+    console.log({ result });
+  }, [result]);
 
   return null;
 }
