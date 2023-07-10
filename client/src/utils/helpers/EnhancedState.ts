@@ -47,6 +47,7 @@ import { startSessionOptionsSlice } from "../../features/session/startSessionOpt
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
+import registryApi from "../../features/registry/registryApi";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -68,6 +69,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectsKgApi.reducerPath]: projectsKgApi.reducer,
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
+    [registryApi.reducerPath]: registryApi.reducer,
     [repositoryApi.reducerPath]: repositoryApi.reducer,
     [sessionApi.reducerPath]: sessionApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
@@ -92,6 +94,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(projectsKgApi.middleware)
         .concat(projectsApi.middleware)
         .concat(recentUserActivityApi.middleware)
+        .concat(registryApi.middleware)
         .concat(repositoryApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionApi.middleware)

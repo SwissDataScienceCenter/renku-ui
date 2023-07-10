@@ -37,6 +37,7 @@ import { Url } from "../../../utils/helpers/url";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import SessionBranchOption from "./SessionBranchOption";
 import SessionCommitOption from "./SessionCommitOption";
+import SessionDockerImage from "./SessionDockerImage";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -264,6 +265,7 @@ function ForkProjectModal() {
 function StartNewSessionOptions() {
   return (
     <>
+      <SessionDockerImage />
       <SessionBranchOption />
       <SessionCommitOption />
     </>
