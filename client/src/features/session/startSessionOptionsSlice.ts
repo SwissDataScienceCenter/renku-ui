@@ -22,16 +22,20 @@ import { MIN_SESSION_STORAGE_GB } from "./startSessionOptions.constants";
 import { StartSessionOptions } from "./startSessionOptions.types";
 
 const initialState: StartSessionOptions = {
+  branch: "",
   defaultUrl: "",
+  lfsAutoFetch: false,
   sessionClass: 0,
   storage: MIN_SESSION_STORAGE_GB,
-  lfsAutoFetch: false,
 };
 
 export const startSessionOptionsSlice = createSlice({
   name: "startSessionOptions",
   initialState,
   reducers: {
+    setBranch: (state, action: PayloadAction<string>) => {
+      state.branch = action.payload;
+    },
     setDefaultUrl: (state, action: PayloadAction<string>) => {
       state.defaultUrl = action.payload;
     },
@@ -49,6 +53,7 @@ export const startSessionOptionsSlice = createSlice({
 });
 
 export const {
+  setBranch,
   setDefaultUrl,
   setSessionClass,
   setStorage,

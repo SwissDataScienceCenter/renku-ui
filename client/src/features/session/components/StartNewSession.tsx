@@ -16,26 +16,26 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { faUserClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { useLocation } from "react-router";
-import cx from "classnames";
+import { Link } from "react-router-dom";
 import { Button, Col, Form, Modal, Row } from "reactstrap";
+import { ACCESS_LEVELS } from "../../../api-client";
 import { InfoAlert, WarnAlert } from "../../../components/Alert";
+import { ExternalLink } from "../../../components/ExternalLinks";
 import { GoBackButton } from "../../../components/buttons/Button";
 import { LockStatus, User } from "../../../model/RenkuModels";
+import { ProjectMetadata } from "../../../notebooks/components/Session";
+import { ForkProject } from "../../../project/new";
+import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import { Url } from "../../../utils/helpers/url";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
-import { ExternalLink } from "../../../components/ExternalLinks";
-import { Docs } from "../../../utils/constants/Docs";
-import { Link } from "react-router-dom";
-import { ProjectMetadata } from "../../../notebooks/components/Session";
-import { ACCESS_LEVELS } from "../../../api-client";
-import { ForkProject } from "../../../project/new";
-import { useGetAllRepositoryBranchesQuery } from "../../repository/repositoryApi";
+import SessionBranchOption from "./SessionBranchOption";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -66,7 +66,6 @@ export default function StartNewSession() {
         <Col sm={12} md={9} lg={8}>
           <Form className="form-rk-green">
             <SessionSaveWarning />
-            {"[Form]"}
             <StartNewSessionOptions />
           </Form>
         </Col>
@@ -262,27 +261,5 @@ function ForkProjectModal() {
 }
 
 function StartNewSessionOptions() {
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
-    (state) => state.stateModel.project.metadata.id ?? null
-  );
-
-  const result = useGetAllRepositoryBranchesQuery(
-    {
-      projectId: `${gitLabProjectId ?? 0}`,
-    },
-    { skip: !gitLabProjectId }
-  );
-
-  // const { data } = useGetRepositoryBranchesQuery(
-  //   {
-  //     projectId: `${gitLabProjectId ?? 0}`,
-  //   },
-  //   { skip: !gitLabProjectId }
-  // );
-
-  useEffect(() => {
-    console.log({ result });
-  }, [result]);
-
-  return null;
+  return <SessionBranchOption />;
 }

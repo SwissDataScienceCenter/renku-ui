@@ -32,6 +32,7 @@ export interface RepositoryBranchesPage {
 }
 
 export interface RepositoryBranch {
+  merged: boolean;
   name: string;
 }
 
