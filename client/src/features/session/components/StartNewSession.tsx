@@ -36,6 +36,7 @@ import AppContext from "../../../utils/context/appContext";
 import { Url } from "../../../utils/helpers/url";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import SessionBranchOption from "./SessionBranchOption";
+import SessionCommitOption from "./SessionCommitOption";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -261,5 +262,10 @@ function ForkProjectModal() {
 }
 
 function StartNewSessionOptions() {
-  return <SessionBranchOption />;
+  return (
+    <>
+      <SessionBranchOption />
+      <SessionCommitOption />
+    </>
+  );
 }

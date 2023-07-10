@@ -23,6 +23,7 @@ import { StartSessionOptions } from "./startSessionOptions.types";
 
 const initialState: StartSessionOptions = {
   branch: "",
+  commit: "",
   defaultUrl: "",
   lfsAutoFetch: false,
   sessionClass: 0,
@@ -35,6 +36,9 @@ export const startSessionOptionsSlice = createSlice({
   reducers: {
     setBranch: (state, action: PayloadAction<string>) => {
       state.branch = action.payload;
+    },
+    setCommit: (state, action: PayloadAction<string>) => {
+      state.commit = action.payload;
     },
     setDefaultUrl: (state, action: PayloadAction<string>) => {
       state.defaultUrl = action.payload;
@@ -54,6 +58,7 @@ export const startSessionOptionsSlice = createSlice({
 
 export const {
   setBranch,
+  setCommit,
   setDefaultUrl,
   setSessionClass,
   setStorage,

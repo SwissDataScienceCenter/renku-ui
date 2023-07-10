@@ -114,14 +114,14 @@ export default function SessionBranchOption() {
   if (isFetching) {
     return (
       <div className="field-group">
-        <Label>
+        <div className="form-label">
           Loading branches... <Loader inline size={16} />
-        </Label>
+        </div>
       </div>
     );
   }
 
-  if (!branches || isError) {
+  if (!branches || !filteredBranches || isError) {
     return (
       <div className="field-group">
         <div className="form-label">
@@ -205,7 +205,7 @@ export default function SessionBranchOption() {
         type="select"
         value={currentBranch}
       >
-        {filteredBranches?.map(({ name }) => (
+        {filteredBranches.map(({ name }) => (
           <option key={name} value={name}>
             {name}
           </option>
@@ -227,7 +227,6 @@ function RefreshBranchesButton({ refresh }: RefreshBranchesButtonProps) {
       <Button
         className={cx("ms-2", "p-0")}
         color="link"
-        id="branchUpdateButton"
         innerRef={ref}
         onClick={refresh}
         size="sm"
@@ -257,7 +256,6 @@ function BranchOptionsButton({
       <Button
         className={cx("ms-2", "p-0")}
         color="link"
-        id="branchOptionsButton"
         innerRef={ref}
         onClick={(event) => {
           event.preventDefault();

@@ -16,21 +16,16 @@
  * limitations under the License.
  */
 
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import processPaginationHeaders from "../../api-client/pagination";
 import {
-  FetchArgs,
-  createApi,
-  fetchBaseQuery,
-} from "@reduxjs/toolkit/query/react";
-import {
-  GetRepositoryBranchResponse,
   GetAllRepositoryBranchesParams,
   GetRepositoryCommitParams,
+  GetRepositoryCommitsParams,
+  Pagination,
   RepositoryBranch,
-  RepositoryBranchesPage,
   RepositoryCommit,
 } from "./repository.types";
-import processPaginationHeaders from "../../api-client/pagination";
-import { useEffect, useState } from "react";
 
 const repositoryApi = createApi({
   reducerPath: "repository",
@@ -71,7 +66,7 @@ const repositoryApi = createApi({
           const responseHeaders = result.meta?.response?.headers;
           const pagination = processPaginationHeaders(
             responseHeaders
-          ) as RepositoryBranchesPage["pagination"];
+          ) as Pagination;
 
           if (pagination.nextPage == null) {
             break;
@@ -82,7 +77,15 @@ const repositoryApi = createApi({
 
         return { data: allBranches };
       },
-      providesTags: ["Branch"],
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(
+                ({ name }) => ({ type: "Branch", id: name } as const)
+              ),
+              "Branch",
+            ]
+          : ["Branch"],
     }),
     getRepositoryCommit: builder.query<
       RepositoryCommit,
@@ -94,9 +97,66 @@ const repositoryApi = createApi({
       providesTags: (result) =>
         result ? [{ type: "Commit", id: result.id }, "Commit"] : ["Commit"],
     }),
+    getRepositoryCommits: builder.query<
+      RepositoryCommit[],
+      GetRepositoryCommitsParams
+    >({
+      queryFn: async (
+        { branch, perPage, projectId },
+        _queryApi,
+        _extraOptions,
+        fetchBaseQuery
+      ) => {
+        const url = `${projectId}/repository/commits`;
+
+        const allCommits: RepositoryCommit[] = [];
+        let currentPage = 1;
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const result = await fetchBaseQuery({
+            url,
+            params: {
+              ref_name: branch,
+              page: currentPage,
+              per_page: perPage ?? 100,
+            },
+          });
+
+          if (result.error != null) {
+            return result;
+          }
+
+          const commits = result.data as RepositoryCommit[];
+          allCommits.push(...commits);
+
+          const responseHeaders = result.meta?.response?.headers;
+          const pagination = processPaginationHeaders(
+            responseHeaders
+          ) as Pagination;
+
+          if (pagination.nextPage == null) {
+            break;
+          }
+
+          ++currentPage;
+        }
+
+        return { data: allCommits };
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Commit", id } as const)),
+              "Commit",
+            ]
+          : ["Commit"],
+    }),
   }),
 });
 
 export default repositoryApi;
-export const { useGetAllRepositoryBranchesQuery, useGetRepositoryCommitQuery } =
-  repositoryApi;
+export const {
+  useGetAllRepositoryBranchesQuery,
+  useGetRepositoryCommitQuery,
+  useGetRepositoryCommitsQuery,
+} = repositoryApi;

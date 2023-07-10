@@ -16,19 +16,16 @@
  * limitations under the License.
  */
 
-export interface RepositoryBranchesPage {
-  branches: RepositoryBranch[];
-  pagination: {
-    currentPage?: number;
-    firstPageLink?: string;
-    lastPageLink?: string;
-    nextPage?: number;
-    nextPageLink?: string;
-    perPage?: number;
-    previousPage?: number;
-    totalItems?: number;
-    totalPages?: number;
-  };
+export interface Pagination {
+  currentPage?: number;
+  firstPageLink?: string;
+  lastPageLink?: string;
+  nextPage?: number;
+  nextPageLink?: string;
+  perPage?: number;
+  previousPage?: number;
+  totalItems?: number;
+  totalPages?: number;
 }
 
 export interface RepositoryBranch {
@@ -73,6 +70,7 @@ export interface RepositoryCommit {
   committed_date: string;
   id: string;
   message: string;
+  short_id: string;
   web_url: string;
 }
 
@@ -81,40 +79,8 @@ export interface GetRepositoryCommitParams {
   projectId: string;
 }
 
-// {
-//     "id": "0db8abcbab6036c2d5bb7cb70808908d7ad66bd6",
-//     "short_id": "0db8abcb",
-//     "created_at": "2023-06-30T08:05:48.000+00:00",
-//     "parent_ids": [
-//       "6f2116174b150d73efb272dadfec750d7d040c28"
-//     ],
-//     "title": "renku-ci-ui-2620.dev.renku.ch: config set interactive.mem_request",
-//     "message": "renku-ci-ui-2620.dev.renku.ch: config set interactive.mem_request\n\nrenku-transaction: bd9d6b45e0324fde82bc56bbbd2001bf\n",
-//     "author_name": "Johann-Michael Thiebaut",
-//     "author_email": "johann.thiebaut@sdsc.ethz.ch",
-//     "authored_date": "2023-06-30T08:05:48.000+00:00",
-//     "committer_name": "renku 2.5.0",
-//     "committer_email": "https://github.com/swissdatasciencecenter/renku-python/tree/v2.5.0",
-//     "committed_date": "2023-06-30T08:05:48.000+00:00",
-//     "trailers": {},
-//     "web_url": "https://gitlab.dev.renku.ch/johann.thiebaut1/another-playground-project/-/commit/0db8abcbab6036c2d5bb7cb70808908d7ad66bd6",
-//     "stats": {
-//       "additions": 1,
-//       "deletions": 0,
-//       "total": 1
-//     },
-//     "status": "success",
-//     "project_id": 100761,
-//     "last_pipeline": {
-//       "id": 326095,
-//       "iid": 221,
-//       "project_id": 100761,
-//       "sha": "0db8abcbab6036c2d5bb7cb70808908d7ad66bd6",
-//       "ref": "master",
-//       "status": "success",
-//       "source": "push",
-//       "created_at": "2023-06-30T08:05:50.791Z",
-//       "updated_at": "2023-06-30T08:06:09.154Z",
-//       "web_url": "https://gitlab.dev.renku.ch/johann.thiebaut1/another-playground-project/-/pipelines/326095"
-//     }
-//   }
+export interface GetRepositoryCommitsParams {
+  branch: string;
+  perPage?: number;
+  projectId: string;
+}

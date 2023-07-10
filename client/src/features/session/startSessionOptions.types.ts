@@ -18,6 +18,7 @@
 
 export interface StartSessionOptions {
   branch: string;
+  commit: string;
   defaultUrl: string;
   lfsAutoFetch: boolean;
   sessionClass: number;
