@@ -16,6 +16,16 @@
  * limitations under the License.
  */
 
+export interface RegistryTag {
+  location: string;
+}
+
+export interface GetRegistryTagParams {
+  projectId: number;
+  registryId: number;
+  tag: string;
+}
+
 export interface Registry {
   id: number;
   name: string;

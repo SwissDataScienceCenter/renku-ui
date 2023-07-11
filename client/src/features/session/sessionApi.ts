@@ -44,9 +44,8 @@ export const sessionApi = createApi({
     getDockerImage: builder.query<DockerImage, GetDockerImageParams>({
       query: ({ image }) => ({
         url: `images`,
-        params: { image_url: image + "foobar" },
+        params: { image_url: image },
         validateStatus: (response) => {
-          console.log({ st: response.status });
           return response.status < 400 || response.status == 404;
         },
       }),

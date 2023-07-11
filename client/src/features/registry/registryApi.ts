@@ -17,13 +17,23 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { GetRenkuRegistryParams, Registry } from "./registry.types";
+import {
+  GetRegistryTagParams,
+  GetRenkuRegistryParams,
+  Registry,
+  RegistryTag,
+} from "./registry.types";
 
 const registryApi = createApi({
   reducerPath: "registry",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
   tagTypes: ["Registry"],
   endpoints: (builder) => ({
+    getRegistryTag: builder.query<RegistryTag, GetRegistryTagParams>({
+      query: ({ projectId, registryId, tag }) => ({
+        url: `${projectId}/registry/repositories/${registryId}/tags/${tag}`,
+      }),
+    }),
     getRenkuRegistry: builder.query<Registry, GetRenkuRegistryParams>({
       queryFn: async (
         { projectId },
@@ -73,4 +83,4 @@ const registryApi = createApi({
 });
 
 export default registryApi;
-export const { useGetRenkuRegistryQuery } = registryApi;
+export const { useGetRegistryTagQuery, useGetRenkuRegistryQuery } = registryApi;

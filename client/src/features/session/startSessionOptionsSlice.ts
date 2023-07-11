@@ -73,9 +73,11 @@ export const {
   setBranch,
   setCommit,
   setDefaultUrl,
+  setDockerImageStatus,
+  setLfsAutoFetch,
+  setPinnedDockerImage,
   setSessionClass,
   setStorage,
-  setLfsAutoFetch,
   reset,
 } = startSessionOptionsSlice.actions;
 

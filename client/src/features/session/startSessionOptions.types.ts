@@ -27,4 +27,12 @@ export interface StartSessionOptions {
   storage: number;
 }
 
-export type DockerImageStatus = "unknown" | "available" | "not-available";
+export type DockerImageStatus =
+  | "unknown"
+  | "available"
+  | "not-available"
+  | "checking-ci-registry-start"
+  | "checking-ci-registry"
+  | "checking-ci-image-start"
+  | "checking-ci-image"
+  | "error";
