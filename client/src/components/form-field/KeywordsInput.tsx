@@ -17,7 +17,7 @@
  */
 
 import React from "react";
-import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
+import type { UseFormRegisterReturn } from "react-hook-form";
 import { FormGroup, FormText } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -27,6 +27,7 @@ import FormLabel from "./FormLabel";
 import { ErrorLabel } from "../formlabels/FormLabels";
 
 type SetInputsValue = { target: unknown; type: unknown };
+type SetDirtyFunction = (value: boolean) => void;
 
 type FormGeneratorKeywordsInputProps = {
   alert: string | undefined;
@@ -35,6 +36,7 @@ type FormGeneratorKeywordsInputProps = {
   label: string;
   name: string;
   required?: boolean;
+  setDirty: SetDirtyFunction;
   setInputs: (e: SetInputsValue) => void;
   value: string[];
 };
@@ -43,6 +45,7 @@ function FormGeneratorKeywordsInput({
   label,
   value,
   alert,
+  setDirty,
   setInputs,
   help,
   disabled = false,
@@ -63,21 +66,43 @@ function FormGeneratorKeywordsInput({
 
   const inputKeyDown = React.useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
-      const val = e.currentTarget.value;
-      if (e.key === "Enter" && val) {
+      const val = e.currentTarget.value.trim();
+      const key = e.key;
+      if (key === "Enter") {
+        // Prevent form submit
         e.preventDefault();
-        if (tags.find((tag) => tag.toLowerCase() === val.toLowerCase())) return;
-        setTags([...tags, val]);
-        if (tagInput && tagInput.current) tagInput.current.value = "";
-      } else if (e.key === "Enter") {
-        e.preventDefault();
-        // If this is not here then the form will be submitted on enter
-      } else if (e.key === "Backspace" && !val) {
-        removeTag(tags.length - 1);
+        setDirty(false);
+        if (val) {
+          // Check if the tag already exists
+          if (tags.find((tag) => tag.toLowerCase() === val.toLowerCase()))
+            return;
+
+          // Add a tag and clear the input
+          setTags([...tags, val]);
+          if (tagInput && tagInput.current) tagInput.current.value = "";
+        }
+        return;
       }
+      if (key === "Backspace" && val === "") {
+        setDirty(false);
+        removeTag(tags.length - 1);
+        return;
+      }
+      setDirty(val !== "");
     },
-    [removeTag, tags]
+    [removeTag, setDirty, tags]
   );
+
+  React.useEffect(() => {
+    // if the component loses focus, update the tags
+    if (active) return;
+    if (!tagInput || !tagInput.current) return;
+    const val = tagInput.current.value.trim();
+    if (val.length < 1) return;
+    setTags([...tags, val]);
+    tagInput.current.value = "";
+    setDirty(false);
+  }, [active, setDirty, setTags, tags]);
 
   React.useEffect(() => {
     const artificialEvent = {
@@ -130,11 +155,12 @@ function FormGeneratorKeywordsInput({
 }
 
 type KeywordsInputProps = {
-  error?: FieldError;
+  hasError: boolean;
   help?: string | React.ReactNode;
   label: string;
   name: string;
   register: UseFormRegisterReturn;
+  setDirty: SetDirtyFunction;
   value: string[];
 };
 
@@ -144,10 +170,15 @@ function KeywordsInput(props: KeywordsInputProps) {
   };
   return (
     <FormGeneratorKeywordsInput
-      alert={props.error?.message}
+      alert={
+        props.hasError
+          ? "Please add or clear partially entered keywords"
+          : undefined
+      }
       help={props.help}
       label={props.label}
       name={props.name}
+      setDirty={props.setDirty}
       setInputs={setInputs}
       value={props.value}
     />
