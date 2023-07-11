@@ -17,9 +17,10 @@
  */
 import * as React from "react";
 import { ChangeEvent, useEffect, useState } from "react";
-import { Input } from "../../utils/ts-wrappers";
+import { Input, Label } from "../../utils/ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faExclamationCircle,
   faGlobe,
   faLock,
   faUserFriends,
@@ -34,6 +35,9 @@ import {
   InputLabel,
   LoadingLabel,
 } from "../formlabels/FormLabels";
+import { ExternalLink } from "../ExternalLinks";
+import { GitlabLinks } from "../../utils/constants/Docs";
+import { ThrottledTooltip } from "../Tooltip";
 
 /**
  *  renku-ui
@@ -47,6 +51,27 @@ export enum Visibilities {
   Private = "private",
   Internal = "internal",
 }
+
+const VISIBILITY_ITEMS = [
+  {
+    title: "Public",
+    value: "public",
+    icon: faGlobe,
+    hint: "Access without authentication",
+  },
+  {
+    title: "Internal",
+    value: "internal",
+    icon: faUserFriends,
+    hint: "Access only for authenticated users",
+  },
+  {
+    title: "Private",
+    value: "private",
+    icon: faLock,
+    hint: "Access only for the creator or contributors",
+  },
+];
 
 export interface VisibilityInputProps {
   /** It restrict the options to show */
@@ -81,6 +106,10 @@ export interface VisibilityInputProps {
   name?: string;
 
   isLoadingData: boolean;
+
+  isForked?: boolean;
+  isNamespaceGroup?: boolean;
+  includeRequiredLabel?: boolean;
 }
 
 /**
@@ -96,6 +125,8 @@ const VisibilityInput = ({
   onChange,
   name = "visibility",
   isLoadingData,
+  isForked,
+  includeRequiredLabel = true,
 }: VisibilityInputProps) => {
   const [visibility, setVisibility] = useState<string | null>(null);
   useEffect(() => setVisibility(value), [value]);
@@ -132,28 +163,34 @@ const VisibilityInput = ({
 
   const visibilities = computeVisibilities([namespaceVisibility]);
   const markInvalid = !visibility && isInvalid && isRequired;
-  const items = [
-    {
-      title: "Public",
-      value: "public",
-      icon: faGlobe,
-      hint: "Access without authentication",
-    },
-    {
-      title: "Internal",
-      value: "internal",
-      icon: faUserFriends,
-      hint: "Access only for authenticated users",
-    },
-    {
-      title: "Private",
-      value: "private",
-      icon: faLock,
-      hint: "Access only for the creator or contributors",
-    },
-  ];
 
-  const options = items.map((item) => {
+  const disableByNamespaceOptions = {
+    public: "",
+    private: `Public and Internal options are not available due to ${
+      isForked ? "forked project or " : ""
+    }group namespace restrictions. `,
+    internal: `Public is not available due to ${
+      isForked ? "forked project or " : ""
+    }group namespace restrictions. `,
+  };
+
+  const feedbackByNamespace = (isTooltip: boolean) => {
+    return (
+      <>
+        {disableByNamespaceOptions[namespaceVisibility]} If you need more
+        information about visibility, please check the{" "}
+        <ExternalLink
+          url={GitlabLinks.PROJECT_VISIBILITY}
+          role="text"
+          title="documentation"
+          className={isTooltip ? "link-rk-white" : ""}
+        />
+        .
+      </>
+    );
+  };
+
+  const options = VISIBILITY_ITEMS.map((item) => {
     const disabledByNamespace = visibilities.disabled.includes(item.value);
     const isDisabled = disabled || disabledByNamespace;
 
@@ -162,7 +199,7 @@ const VisibilityInput = ({
         className="visibility-box col-sm-12 col-md-4 col-lg-4 px-0"
         key={`visibility-${item.value}`}
       >
-        <div className="d-flex">
+        <div id={`visibility-${item.value}`} className="d-flex">
           <div
             className={isDisabled ? "cursor-not-allowed d-inline" : "d-inline"}
           >
@@ -204,6 +241,13 @@ const VisibilityInput = ({
             />
           </div>
         </div>
+        {isDisabled ? (
+          <ThrottledTooltip
+            target={`visibility-${item.value}`}
+            autoHide={false}
+            tooltip={feedbackByNamespace(true)}
+          />
+        ) : null}
         <div onClick={() => changeVisibility(item.value, isDisabled)}>
           <InputHintLabel text={item.hint} />
         </div>
@@ -211,28 +255,26 @@ const VisibilityInput = ({
     );
   });
 
-  const disableByNamespaceOptions = {
-    public: "",
-    private:
-      "Public and Internal options are not available due to namespace restrictions",
-    internal: "Public is not available due to namespace restrictions",
-  };
-  const disabledByNamespace =
-    namespaceVisibility !== Visibilities.Public ? (
-      <InputHintLabel text={disableByNamespaceOptions[namespaceVisibility]} />
-    ) : null;
   const errorFeedback = markInvalid ? (
     <ErrorLabel text="Please select visibility" />
   ) : null;
 
   return (
     <>
-      <InputLabel text="Visibility" isRequired={isRequired} />
+      {includeRequiredLabel ? (
+        <InputLabel text="Visibility" isRequired={isRequired} />
+      ) : (
+        <Label> Visibility </Label>
+      )}
       <div className="visibilities-box row">{options}</div>
       {errorFeedback}
-      {disabledByNamespace}
+      <div className="d-flex gap-1 align-items-baseline">
+        <FontAwesomeIcon className="text-muted" icon={faExclamationCircle} />
+        <InputHintLabel text="">{feedbackByNamespace(false)}</InputHintLabel>
+      </div>
     </>
   );
 };
 
 export default VisibilityInput;
+export { VISIBILITY_ITEMS };

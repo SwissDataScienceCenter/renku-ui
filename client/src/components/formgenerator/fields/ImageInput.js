@@ -46,6 +46,7 @@ import {
 import ImageEditor, {
   CARD_IMAGE_DIMENSIONS,
 } from "../../imageEditor/ImageEditor";
+import { Label } from "../../../utils/ts-wrappers";
 
 function userInputOption(options) {
   let userInput = options.find((o) => o[Prop.STOCK] === false);
@@ -418,6 +419,7 @@ function ImageInput(props) {
     disabled = false,
     required = false,
     submitting,
+    includeRequiredLabel = true,
   } = props;
   const [sizeAlert, setSizeAlert] = useState(null);
   const [originalImageInput, setOriginalImageInput] = useState(null);
@@ -455,7 +457,11 @@ function ImageInput(props) {
   return (
     <>
       <Row key="row-title">
-        <InputLabel className="ps-3" text={label} isRequired={required} />
+        {includeRequiredLabel ? (
+          <InputLabel className="ps-3" text={label} isRequired={required} />
+        ) : (
+          <Label className="ps-3"> {label} </Label>
+        )}
       </Row>
       <Row key="row-content" className="field-group">
         <Col xs={12}>

@@ -22,6 +22,7 @@ import {
   ProjectIndexingStatuses,
   ProjectMigrationLevel,
 } from "./projectEnums";
+import { Visibilities } from "../../components/visibility/Visibility";
 
 export interface CoreServiceParams {
   versionUrl?: string;
@@ -313,4 +314,17 @@ export interface ProjectConfigSection {
       [key: string]: string;
     };
   };
+}
+
+export interface UpdateProjectVisibilityParams {
+  projectId: number;
+  visibility: Visibilities;
+}
+
+export interface UpdateProjectResponse {
+  projectId: number;
+}
+
+export interface GitlabProjectResponse {
+  visibility: Visibilities;
 }

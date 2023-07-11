@@ -23,11 +23,16 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import { ErrorAlert } from "../Alert";
 import { CoreErrorAlert } from "./CoreErrorAlert";
 import { CoreErrorResponse } from "../../utils/definitions";
+import { extractTextFromObject } from "../../utils/helpers/TextUtils";
 
 interface RtkErrorAlertProps {
   error: FetchBaseQueryError | SerializedError | undefined | null;
+  dismissible?: boolean;
 }
-export function RtkErrorAlert({ error }: RtkErrorAlertProps) {
+export function RtkErrorAlert({
+  error,
+  dismissible = true,
+}: RtkErrorAlertProps) {
   // ? REF: https://redux-toolkit.js.org/rtk-query/usage-with-typescript#type-safe-error-handling
   if (error == null) return null;
 
@@ -51,16 +56,16 @@ export function RtkErrorAlert({ error }: RtkErrorAlertProps) {
       typeof error.data === "object" &&
       error.data !== null &&
       "message" in error.data
-    )
-      return (error.data as unknown as Record<string, unknown>)
-        .message as string;
+    ) {
+      return extractTextFromObject(error.data).join(" ");
+    }
     if ("data" in error) return JSON.stringify(error.data);
     return "No details available.";
   };
   const errorMessage = extractErrorMessage(error);
 
   return (
-    <ErrorAlert>
+    <ErrorAlert dismissible={dismissible}>
       <h5>Error {errorCode}</h5>
       <p className="mb-0">{errorMessage}</p>
     </ErrorAlert>
@@ -78,6 +83,6 @@ export function RtkOrCoreError({ error }: RtkErrorAlertProps) {
     (error.data as CoreErrorResponse).error ? (
     <CoreErrorAlert error={(error.data as CoreErrorResponse).error} />
   ) : (
-    <RtkErrorAlert error={error} />
+    <RtkErrorAlert dismissible={true} error={error} />
   );
 }

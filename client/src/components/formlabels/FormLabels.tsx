@@ -68,8 +68,12 @@ const HelperLabel = ({ text }: LabelProps) => {
   return <FormText className="helper-label">{text}</FormText>;
 };
 
-const InputHintLabel = ({ text }: LabelProps) => {
-  return <FormText className="input-hint">{text}</FormText>;
+const InputHintLabel = ({ text, children }: LabelProps) => {
+  return (
+    <FormText className="input-hint">
+      {text} {children}
+    </FormText>
+  );
 };
 
 const ErrorLabel = ({ text, children }: LabelProps) => {

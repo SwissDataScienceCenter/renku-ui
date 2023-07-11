@@ -63,6 +63,12 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+
+    projectById(name = "getProjectsById", idProject, fixture = "projects/project.json") {
+      cy.intercept(`/ui-server/api/projects/${idProject}`, { fixture }).as(name);
+      return this;
+    }
+
     project(
       path = "",
       name = "getProject",
@@ -360,10 +366,11 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     updateProject(
       path = "",
       name = "updateProject",
-      result = "project/update-project.json"
+      result = "project/update-project.json",
+      statusCode = 200
     ) {
       const fixture = this.useMockedData
-        ? { fixture: result, delay: 100 }
+        ? { fixture: result, delay: 100, statusCode }
         : undefined;
       cy.intercept("/ui-server/api/kg/webhooks/projects/*/webhooks", {
         body: { message: "Hook created" },

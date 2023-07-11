@@ -46,6 +46,7 @@ import { startSessionOptionsSlice } from "../../features/session/startSessionOpt
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
+import { projectGitlabApi } from "../../features/project/projectGitlabApi";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -72,6 +73,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
+    [projectGitlabApi.reducerPath]: projectGitlabApi.reducer,
   };
 
   // For the moment, disable the custom middleware, since it causes problems for our app.
@@ -93,7 +95,8 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(sessionSidecarApi.middleware)
         .concat(sessionApi.middleware)
         .concat(versionsApi.middleware)
-        .concat(workflowsApi.middleware),
+        .concat(workflowsApi.middleware)
+        .concat(projectGitlabApi.middleware),
     enhancers,
   });
   return store;

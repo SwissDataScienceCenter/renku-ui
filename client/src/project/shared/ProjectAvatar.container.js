@@ -118,6 +118,7 @@ function ProjectAvatarEdit({
   onAvatarChange,
   externalUrl,
   settingsReadOnly,
+  includeRequiredLabel = true,
 }) {
   const initial = avatarUrl
     ? {
@@ -173,6 +174,7 @@ function ProjectAvatarEdit({
         setInputs={(e) => {
           changeValue(e.target.value);
         }}
+        includeRequiredLabel={includeRequiredLabel}
       />
       <ProjectAvatarSubmitButtons
         value={value}
