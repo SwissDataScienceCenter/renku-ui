@@ -48,6 +48,7 @@ import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 import registryApi from "../../features/registry/registryApi";
+import pipelinesApi from "../../features/pipelines/pipelinesApi";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -63,6 +64,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
+    [pipelinesApi.reducerPath]: pipelinesApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
@@ -89,6 +91,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(dataServicesApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(kgSearchApi.middleware)
+        .concat(pipelinesApi.middleware)
         .concat(projectCoreApi.middleware)
         .concat(projectKgApi.middleware)
         .concat(projectsKgApi.middleware)

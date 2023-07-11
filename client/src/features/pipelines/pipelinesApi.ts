@@ -16,25 +16,24 @@
  * limitations under the License.
  */
 
-export interface StartSessionOptions {
-  branch: string;
-  commit: string;
-  defaultUrl: string;
-  dockerImageStatus: DockerImageStatus;
-  lfsAutoFetch: boolean;
-  pinnedDockerImage: string;
-  sessionClass: number;
-  storage: number;
-}
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { GetPipelinesParams } from "./pipelines.types";
 
-export type DockerImageStatus =
-  | "unknown"
-  | "available"
-  | "not-available"
-  | "checking-ci-registry-start"
-  | "checking-ci-registry"
-  | "checking-ci-image-start"
-  | "checking-ci-image"
-  | "checking-ci-pipelines-start"
-  | "checking-ci-pipelines"
-  | "error";
+const pipelinesApi = createApi({
+  reducerPath: "pipelines",
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
+  tagTypes: ["Job", "Pipeline"],
+  endpoints: (builder) => ({
+    getPipelines: builder.query<unknown, GetPipelinesParams>({
+      query: ({ commit, projectId }) => ({
+        url: `${projectId}/pipelines`,
+        params: {
+          ...(commit ? { sha: commit } : {}),
+        },
+      }),
+    }),
+  }),
+});
+
+export default pipelinesApi;
+export const { useGetPipelinesQuery } = pipelinesApi;

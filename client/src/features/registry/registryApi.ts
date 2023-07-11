@@ -27,12 +27,14 @@ import {
 const registryApi = createApi({
   reducerPath: "registry",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
-  tagTypes: ["Registry"],
+  tagTypes: ["Registry", "RegistryTag"],
   endpoints: (builder) => ({
     getRegistryTag: builder.query<RegistryTag, GetRegistryTagParams>({
       query: ({ projectId, registryId, tag }) => ({
         url: `${projectId}/registry/repositories/${registryId}/tags/${tag}`,
       }),
+      providesTags: (result, _error, { tag }) =>
+        result ? [{ type: "RegistryTag", id: tag }] : [],
     }),
     getRenkuRegistry: builder.query<Registry, GetRenkuRegistryParams>({
       queryFn: async (
@@ -78,6 +80,8 @@ const registryApi = createApi({
           },
         };
       },
+      providesTags: (result) =>
+        result ? [{ type: "Registry", id: result.id }] : [],
     }),
   }),
 });

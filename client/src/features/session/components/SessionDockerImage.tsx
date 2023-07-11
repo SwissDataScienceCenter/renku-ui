@@ -17,9 +17,7 @@
  */
 
 import React, { useEffect } from "react";
-import registryApi, {
-  useGetRenkuRegistryQuery,
-} from "../../registry/registryApi";
+import registryApi from "../../registry/registryApi";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { useCoreSupport } from "../../project/useProjectCoreSupport";
 import { useGetConfigQuery } from "../../project/projectCoreApi";
@@ -30,6 +28,7 @@ import {
   setDockerImageStatus,
   setPinnedDockerImage,
 } from "../startSessionOptionsSlice";
+import pipelinesApi from "../../pipelines/pipelinesApi";
 
 export default function SessionDockerImage() {
   const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
@@ -150,13 +149,7 @@ function SessionProjectDockerImage() {
       error: renkuRegistryError,
       isFetching: renkuRegistryIsFetching,
     },
-  ] = registryApi
-    .useLazyGetRenkuRegistryQuery
-    // {
-    //   projectId: `${gitLabProjectId ?? 0}`,
-    // },
-    // { skip: !gitLabProjectId }
-    ();
+  ] = registryApi.useLazyGetRenkuRegistryQuery();
 
   const [
     getRegistryTag,
@@ -166,6 +159,11 @@ function SessionProjectDockerImage() {
       isFetching: registryTagIsFetching,
     },
   ] = registryApi.useLazyGetRegistryTagQuery();
+
+  const [
+    getPipelinesQuery,
+    { data: pipelines, error: pipelinesError, isFetching: pipelinesIsFetching },
+  ] = pipelinesApi.useLazyGetPipelinesQuery();
 
   useEffect(() => {
     console.log({ status });
@@ -183,7 +181,7 @@ function SessionProjectDockerImage() {
       return;
     }
     dispatch(setDockerImageStatus("checking-ci-registry-start"));
-  }, []);
+  }, [dispatch, status]);
 
   // Check the registry
   useEffect(() => {
@@ -202,8 +200,7 @@ function SessionProjectDockerImage() {
       return;
     }
     if (renkuRegistryError != null) {
-      // TODO
-      dispatch(setDockerImageStatus("error"));
+      dispatch(setDockerImageStatus("checking-ci-pipelines-start"));
       return;
     }
     dispatch(setDockerImageStatus("checking-ci-image-start"));
@@ -221,7 +218,7 @@ function SessionProjectDockerImage() {
       registryId: registry.id,
       tag,
     });
-  }, [commit, getRegistryTag, gitLabProjectId, registry, status]);
+  }, [commit, dispatch, getRegistryTag, gitLabProjectId, registry, status]);
 
   // Handle checking the Docker image
   useEffect(() => {
@@ -229,12 +226,36 @@ function SessionProjectDockerImage() {
       return;
     }
     if (registryTagError != null) {
-      // TODO
-      dispatch(setDockerImageStatus("error"));
+      dispatch(setDockerImageStatus("checking-ci-pipelines-start"));
       return;
     }
     dispatch(setDockerImageStatus("available"));
   }, [dispatch, registryTagError, registryTagIsFetching, status]);
+
+  // Check the CI/CD pipelines
+  useEffect(() => {
+    if (status !== "checking-ci-pipelines-start" || !gitLabProjectId) {
+      return;
+    }
+    dispatch(setDockerImageStatus("checking-ci-pipelines"));
+    getPipelinesQuery({
+      commit,
+      projectId: gitLabProjectId,
+    });
+  }, [commit, dispatch, getPipelinesQuery, gitLabProjectId, status]);
+
+  // Handle checking the CI/CD pipelines
+  useEffect(() => {
+    if (status !== "checking-ci-pipelines" || pipelinesIsFetching) {
+      return;
+    }
+    if (pipelinesError != null) {
+      // TODO
+      dispatch(setDockerImageStatus("error"));
+      return;
+    }
+    dispatch(setDockerImageStatus("not-available"));
+  }, [dispatch, pipelinesError, pipelinesIsFetching, status]);
 
   return (
     <div className="field-group">

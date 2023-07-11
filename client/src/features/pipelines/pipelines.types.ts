@@ -16,25 +16,7 @@
  * limitations under the License.
  */
 
-export interface StartSessionOptions {
-  branch: string;
-  commit: string;
-  defaultUrl: string;
-  dockerImageStatus: DockerImageStatus;
-  lfsAutoFetch: boolean;
-  pinnedDockerImage: string;
-  sessionClass: number;
-  storage: number;
+export interface GetPipelinesParams {
+  commit?: string;
+  projectId: number;
 }
-
-export type DockerImageStatus =
-  | "unknown"
-  | "available"
-  | "not-available"
-  | "checking-ci-registry-start"
-  | "checking-ci-registry"
-  | "checking-ci-image-start"
-  | "checking-ci-image"
-  | "checking-ci-pipelines-start"
-  | "checking-ci-pipelines"
-  | "error";
