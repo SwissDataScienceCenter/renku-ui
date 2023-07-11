@@ -147,7 +147,7 @@ describe("Project dataset", () => {
 
         cy.get("div.input-tag").contains("test");
         cy.get("div.input-tag").contains("testing datasets");
-        cy.get_cy("input-keywords").type("added").type("{enter}");
+        cy.get_cy("input-keywords").type("added");
 
         cy.get("div.ck-editor__main").contains("Dataset for testing purposes");
         cy.get_cy("ckeditor-description")

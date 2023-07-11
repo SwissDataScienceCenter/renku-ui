@@ -231,7 +231,7 @@ function DatasetModifyForm(props: DatasetModifyFormProps) {
     if (props.dataset == null && title)
       setValue("name", slugFromTitle(title, true));
   }, [props.dataset, setValue, title]);
-
+  const [areKeywordsDirty, setKeywordsDirty] = React.useState(false);
   return (
     <form className="form-rk-pink" onSubmit={handleSubmit(props.onSubmit)}>
       <TextInput
@@ -268,10 +268,12 @@ function DatasetModifyForm(props: DatasetModifyFormProps) {
         value={getValues("creators")}
       />
       <KeywordsInput
+        hasError={errors.keywords != null}
         help="Keywords are used to describe the dataset. To add one, type a keyword and press enter."
         label="Keywords"
         name="keywords"
-        register={register("keywords")}
+        register={register("keywords", { validate: () => !areKeywordsDirty })}
+        setDirty={setKeywordsDirty}
         value={getValues("keywords")}
       />
       <TextAreaInput<DatasetFormFields>
