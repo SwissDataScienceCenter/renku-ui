@@ -82,8 +82,7 @@ const CODE_EXTENSIONS = [
   "f03",
   "f08", // Fortran
 ];
-/* eslint-enable spellcheck/spell-checker */
-/* eslint-disable */
+
 const TEXT_EXTENSIONS = [
   "csv",
   "dockerignore",
@@ -93,7 +92,7 @@ const TEXT_EXTENSIONS = [
   "renkulfsignore",
   "txt",
 ];
-/* eslint-enable */
+/* eslint-enable spellcheck/spell-checker */
 
 type HashElement = { isLfs: boolean };
 
