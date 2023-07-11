@@ -32,7 +32,7 @@ import { SshDropdown } from "../../../components/ssh/ssh";
 import { NotebooksHelper } from "../../../notebooks";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import { Url } from "../../../utils/helpers/url";
-import { Session } from "../session";
+import { Session } from "../session.types";
 import { getRunningSession } from "../session.utils";
 import { useGetSessionsQuery, useStopSessionMutation } from "../sessionApi";
 import { useDispatch } from "react-redux";

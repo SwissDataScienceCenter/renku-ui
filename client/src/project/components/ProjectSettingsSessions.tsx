@@ -67,7 +67,7 @@ import {
   useUpdateConfigMutation,
 } from "../../features/project/projectCoreApi";
 import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
-import { ServerOptions } from "../../features/session/session";
+import { ServerOptions } from "../../features/session/session.types";
 import { useServerOptionsQuery } from "../../features/session/sessionApi";
 import { LockStatus, User } from "../../model/RenkuModels";
 import {
@@ -92,7 +92,7 @@ export const ProjectSettingsSessions = () => {
 
   // Global options
   const { data: serverOptions, isLoading: serverOptionsIsLoading } =
-    useServerOptionsQuery({});
+    useServerOptionsQuery();
 
   // Project options
   const {

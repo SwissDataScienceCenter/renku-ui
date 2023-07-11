@@ -20,7 +20,11 @@ export interface StartSessionOptions {
   branch: string;
   commit: string;
   defaultUrl: string;
+  dockerImageStatus: DockerImageStatus;
   lfsAutoFetch: boolean;
+  pinnedDockerImage: string;
   sessionClass: number;
   storage: number;
 }
+
+export type DockerImageStatus = "unknown" | "available" | "not-available";

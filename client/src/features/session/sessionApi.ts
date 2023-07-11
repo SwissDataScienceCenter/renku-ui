@@ -18,11 +18,14 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import {
+  DockerImage,
+  GetDockerImageParams,
   GetSessionsRawResponse,
+  ServerOption,
   ServerOptions,
   ServerOptionsResponse,
   Sessions,
-} from "./session";
+} from "./session.types";
 
 interface StopSessionArgs {
   serverName: string;
@@ -38,6 +41,22 @@ export const sessionApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/notebooks/" }),
   tagTypes: ["Session"],
   endpoints: (builder) => ({
+    getDockerImage: builder.query<DockerImage, GetDockerImageParams>({
+      query: ({ image }) => ({
+        url: `images`,
+        params: { image_url: image + "foobar" },
+        validateStatus: (response) => {
+          console.log({ st: response.status });
+          return response.status < 400 || response.status == 404;
+        },
+      }),
+      transformResponse: (_value, meta, { image }) => {
+        if (meta?.response?.status != null && meta.response.status == 404) {
+          return { image, available: false };
+        }
+        return { image, available: true };
+      },
+    }),
     getSessions: builder.query<Sessions, void>({
       query: () => ({ url: "servers" }),
       transformResponse: ({ servers }: GetSessionsRawResponse) => servers,
@@ -47,7 +66,7 @@ export const sessionApi = createApi({
       queryFn: () => ({ data: null }),
       invalidatesTags: ["Session"],
     }),
-    serverOptions: builder.query<ServerOptions, Record<never, never>>({
+    serverOptions: builder.query<ServerOptions, void>({
       query: () => ({
         url: "server_options",
       }),
@@ -55,7 +74,7 @@ export const sessionApi = createApi({
         defaultUrl,
         ...legacyOptions
       }: ServerOptionsResponse) => ({
-        defaultUrl,
+        defaultUrl: defaultUrl as ServerOption<string>,
         legacyOptions,
       }),
     }),
@@ -80,6 +99,7 @@ export const sessionApi = createApi({
 });
 
 export const {
+  useGetDockerImageQuery,
   useGetSessionsQuery,
   useServerOptionsQuery,
   useStopSessionMutation,

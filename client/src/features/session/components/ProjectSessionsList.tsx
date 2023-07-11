@@ -21,7 +21,7 @@ import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { useGetSessionsQuery } from "../sessionApi";
 import { NotebooksHelper } from "../../../notebooks";
-import { Session, Sessions } from "../session";
+import { Session, Sessions } from "../session.types";
 import SessionsList from "./SessionsList";
 
 interface ProjectSessionsListProps {

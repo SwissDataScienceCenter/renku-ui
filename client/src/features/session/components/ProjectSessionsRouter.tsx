@@ -37,7 +37,7 @@ export default function ProjectSessionsRouter() {
     projectUrlData
   );
 
-  console.log({ sessionsListUrl, loc: window.location.pathname });
+  // console.log({ sessionsListUrl, loc: window.location.pathname });
 
   return (
     <Switch>

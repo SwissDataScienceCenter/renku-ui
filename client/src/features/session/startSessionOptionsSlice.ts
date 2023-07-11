@@ -19,13 +19,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { MIN_SESSION_STORAGE_GB } from "./startSessionOptions.constants";
-import { StartSessionOptions } from "./startSessionOptions.types";
+import {
+  DockerImageStatus,
+  StartSessionOptions,
+} from "./startSessionOptions.types";
 
 const initialState: StartSessionOptions = {
   branch: "",
   commit: "",
   defaultUrl: "",
+  dockerImageStatus: "unknown",
   lfsAutoFetch: false,
+  pinnedDockerImage: "",
   sessionClass: 0,
   storage: MIN_SESSION_STORAGE_GB,
 };
@@ -39,18 +44,26 @@ export const startSessionOptionsSlice = createSlice({
     },
     setCommit: (state, action: PayloadAction<string>) => {
       state.commit = action.payload;
+      // Also reset the docker image status when a commit is set
+      state.dockerImageStatus = "unknown";
     },
     setDefaultUrl: (state, action: PayloadAction<string>) => {
       state.defaultUrl = action.payload;
+    },
+    setDockerImageStatus: (state, action: PayloadAction<DockerImageStatus>) => {
+      state.dockerImageStatus = action.payload;
+    },
+    setLfsAutoFetch: (state, action: PayloadAction<boolean>) => {
+      state.lfsAutoFetch = action.payload;
+    },
+    setPinnedDockerImage: (state, action: PayloadAction<string>) => {
+      state.pinnedDockerImage = action.payload;
     },
     setSessionClass: (state, action: PayloadAction<number>) => {
       state.sessionClass = action.payload;
     },
     setStorage: (state, action: PayloadAction<number>) => {
       state.storage = action.payload;
-    },
-    setLfsAutoFetch: (state, action: PayloadAction<boolean>) => {
-      state.lfsAutoFetch = action.payload;
     },
     reset: () => initialState,
   },

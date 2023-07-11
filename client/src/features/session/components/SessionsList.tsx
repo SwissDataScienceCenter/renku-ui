@@ -29,7 +29,7 @@ import {
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 import { Url } from "../../../utils/helpers/url";
-import { Session, Sessions } from "../session";
+import { Session, Sessions } from "../session.types";
 import SessionButton from "./SessionButton";
 import SessionRowCommitInfo from "./SessionRowCommitInfo";
 
