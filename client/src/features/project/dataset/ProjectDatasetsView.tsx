@@ -197,6 +197,7 @@ function ProjectDatasetsView(props: any) {
   const {
     backendAvailable,
     computed: coreSupportComputed,
+    backendErrorMessage,
     versionUrl,
   } = coreSupport;
 
@@ -232,6 +233,14 @@ function ProjectDatasetsView(props: any) {
     versionUrl,
   ]);
 
+  if (coreSupportComputed && backendErrorMessage)
+    return (
+      <ErrorAlert>
+        <b>There was an error verifying support for this project.</b>
+        <p>{backendErrorMessage}</p>
+      </ErrorAlert>
+    );
+
   if (coreSupportComputed && !backendAvailable) {
     const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace: props.metadata.namespace,
@@ -264,13 +273,6 @@ function ProjectDatasetsView(props: any) {
   }
 
   if (!coreSupportComputed) {
-    if (coreSupport.backendErrorMessage)
-      return (
-        <ErrorAlert>
-          <b>There was an error verifying support for this project.</b>
-          <p>{coreSupport.backendErrorMessage}</p>
-        </ErrorAlert>
-      );
     return (
       <div>
         <p>Checking project version and RenkuLab compatibility...</p>
