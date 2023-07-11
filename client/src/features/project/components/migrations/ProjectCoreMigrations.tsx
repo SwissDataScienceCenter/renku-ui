@@ -263,7 +263,7 @@ interface ProjectMigrationStatusDetailsProps {
   buttonDisable: boolean;
   data: MigrationStatus | undefined;
   isMaintainer: boolean;
-  isSupported: boolean | undefined;
+  isSupported: boolean;
   showDetails: boolean;
   updateProject: (scope: MigrationStartScopes) => void;
 }

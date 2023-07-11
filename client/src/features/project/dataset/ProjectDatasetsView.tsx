@@ -236,8 +236,24 @@ function ProjectDatasetsView(props: any) {
   if (coreSupportComputed && backendErrorMessage)
     return (
       <ErrorAlert>
-        <b>There was an error verifying support for this project.</b>
-        <p>{backendErrorMessage}</p>
+        <p>
+          <b>There was an error verifying support for this project.</b>
+        </p>
+
+        <p>
+          <code>{backendErrorMessage}</code>
+        </p>
+
+        <p className="mb-0">
+          You can try to{" "}
+          <a
+            className="btn btn-danger"
+            href={window.location.href}
+            onClick={() => window.location.reload()}
+          >
+            reload the page
+          </a>
+        </p>
       </ErrorAlert>
     );
 

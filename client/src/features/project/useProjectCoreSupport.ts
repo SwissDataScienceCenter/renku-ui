@@ -28,7 +28,7 @@ export type CoreSupport =
       versionUrl: undefined;
     }
   | {
-      backendAvailable: undefined;
+      backendAvailable: false;
       backendErrorMessage: string;
       computed: true;
       versionUrl: undefined;
@@ -100,7 +100,7 @@ export const computeBackendData = ({
 }): CoreSupport => {
   if (backendErrorMessage) {
     return {
-      backendAvailable: undefined,
+      backendAvailable: false,
       backendErrorMessage,
       computed: true,
       versionUrl: undefined,
