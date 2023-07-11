@@ -46,16 +46,14 @@ import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import AppContext from "../../utils/context/appContext";
 import { getStatusObject } from "../../notebooks/components/SessionListStatus";
 import type { SessionRunningStatus } from "../../notebooks/components/SessionListStatus";
-// import { SessionButton } from "../../features/session/components/SessionButtons";
 import SessionButton from "../../features/session/components/SessionButton";
 import { Notebook } from "../../notebooks/components/Session";
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import "./ListBar.scss";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 /** Helper function for formatting the resource list */
 interface ResourceListProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resources: Record<string, any>;
 }
 function ResourceList({ resources }: ResourceListProps) {
@@ -207,7 +205,6 @@ function ListBarSession({
   itemType,
   labelCaption,
   notebook,
-  showLogs,
   slug,
   timeCaption,
   title,
@@ -221,16 +218,15 @@ function ListBarSession({
   useEffect(() => {
     setSessionStatus(notebook?.status?.state);
   }, [notebook?.status?.state]);
-  const forceSessionStatus = (status: string) => {
-    setSessionStatus(status);
-  };
 
   useEffect(() => {
     client
       .getCommits(id, notebook.annotations.branch)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((commitsFetched: Record<string, any>) => {
         if (commitsFetched.data?.length > 0) {
           const sessionCommit = commitsFetched.data.filter(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (commit: Record<string, any>) =>
               commit.id === notebook.annotations["commit-sha"]
           );
@@ -330,15 +326,6 @@ function ListBarSession({
         />
       </div>
       <div className="entity-action d-flex align-items-baseline gap-1">
-        {/* <SessionButton
-          fullPath={fullPath}
-          gitUrl={gitUrl}
-          notebook={notebook}
-          showLogs={showLogs}
-          stopSessionCallback={(server: string, status: string) =>
-            forceSessionStatus(status)
-          }
-        /> */}
         <SessionButton fullPath={fullPath} gitUrl={gitUrl} withActions />
       </div>
       <div className="session-resources text-truncate">

@@ -15,20 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import * as React from "react";
 import { Link } from "react-router-dom";
-
-import { TimeCaption } from "../TimeCaption";
-import { ListElementProps } from "./List.d";
-import VisibilityIcon from "../entities/VisibilityIcon";
-import { StartSessionDropdownButton } from "../../features/session/components/SessionButtons";
+import { EntityType } from "../../features/kgSearch";
+import SessionButton from "../../features/session/components/SessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
+import { TimeCaption } from "../TimeCaption";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
-import { EntityType } from "../../features/kgSearch";
-import SessionButton from "../../features/session/components/SessionButton";
-
+import VisibilityIcon from "../entities/VisibilityIcon";
+import { ListElementProps } from "./List.d";
 import "./ListBar.scss";
 
 export function getMainActionByEntity(

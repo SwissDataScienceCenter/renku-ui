@@ -70,7 +70,6 @@ import {
 import { Docs } from "../utils/constants/Docs";
 import { Url } from "../utils/helpers/url";
 import { WorkflowsList } from "../workflows";
-import "./Project.css";
 import { CloneButton } from "./clone/CloneButton";
 import GitLabConnectButton, {
   externalUrlToGitLabIdeUrl,
@@ -81,6 +80,7 @@ import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 import { ProjectSettingsNav } from "./settings";
+import "./Project.css";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.

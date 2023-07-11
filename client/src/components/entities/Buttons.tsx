@@ -24,20 +24,19 @@
  */
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { faCog, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faCog, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
-import { EntityType } from "./Entities";
+import SessionButton from "../../features/session/components/SessionButton";
+import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import {
   Button,
   Funnel,
   FunnelFill,
   UncontrolledTooltip,
 } from "../../utils/ts-wrappers";
-import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
-import { StartSessionButton } from "../../features/session/components/SessionButtons";
-import SessionButton from "../../features/session/components/SessionButton";
+import { EntityType } from "./Entities";
 
 export interface EntityButtonProps {
   type: EntityType;
@@ -51,11 +50,6 @@ function EntityButton({ type, slug }: EntityButtonProps) {
           <SessionButton fullPath={slug} />
         </div>
       );
-    // return (
-    //   <div className="card-button">
-    //     <StartSessionButton fullPath={slug} />
-    //   </div>
-    // );
     case "dataset":
       return null; // not defined yet
     default:
@@ -177,7 +171,7 @@ function FilterButton({ isOpen, toggle }: FilterButtonProps) {
 
 export {
   EntityButton,
-  EntityModifyButton,
   EntityDeleteButtonButton,
+  EntityModifyButton,
   FilterButton,
 };

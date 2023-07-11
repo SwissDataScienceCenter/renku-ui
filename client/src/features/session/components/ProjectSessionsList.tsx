@@ -70,7 +70,7 @@ function useProjectSessions({
               {} as Sessions
             )
         : null,
-    [sessions]
+    [projectPathWithNamespace, sessions]
   );
   return projectSessions;
 }

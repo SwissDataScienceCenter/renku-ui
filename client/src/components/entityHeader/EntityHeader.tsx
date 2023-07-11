@@ -23,31 +23,25 @@
  *  Entity Header component
  */
 import React from "react";
-import { useDispatch, useSelector, RootStateOrAny } from "react-redux";
-
+import { RootStateOrAny, useSelector } from "react-redux";
+import { useDisplaySelector } from "../../features/display";
+import SessionButton from "../../features/session/components/SessionButton";
+import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
+import { getSessionRunning } from "../../utils/helpers/SessionFunctions";
+import { Url } from "../../utils/helpers/url";
+import { EnvironmentLogs } from "../Logs";
+import { TimeCaption } from "../TimeCaption";
 import Creators, { EntityCreator } from "../entities/Creators";
 import EntityDescription from "../entities/Description";
-import EntityTags from "../entities/Tags";
+import { EntityType } from "../entities/Entities";
 import EntityLabel from "../entities/Label";
 import LinkedEntitiesByItemType, {
   EntityLinksHeader,
 } from "../entities/LinkedEntitiesByItemType";
 import Slug from "../entities/Slug";
+import EntityTags from "../entities/Tags";
 import VisibilityIcon from "../entities/VisibilityIcon";
-import { EntityType } from "../entities/Entities";
-// import {
-//   StartSessionDropdownButton,
-//   SessionButton,
-// } from "../../features/session/components/SessionButtons";
-import { TimeCaption } from "../TimeCaption";
-import { EnvironmentLogs } from "../Logs";
-import { displaySlice, useDisplaySelector } from "../../features/display";
-import { getSessionRunning } from "../../utils/helpers/SessionFunctions";
-import SessionButton from "../../features/session/components/SessionButton";
-import { Url } from "../../utils/helpers/url";
-
 import "./EntityHeader.scss";
-import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 
 export interface EntityHeaderProps {
   client?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -95,7 +89,6 @@ function EntityHeader({
   visibility,
 }: EntityHeaderProps) {
   // Find sessions
-  const dispatch = useDispatch();
   const sessions = useSelector(
     (state: RootStateOrAny) => state.stateModel.notebooks?.notebooks
   );
@@ -115,34 +108,6 @@ function EntityHeader({
     fullPath && gitUrl ? (
       <SessionButton fullPath={fullPath} gitUrl={gitUrl} withActions />
     ) : null;
-  // if (fullPath && gitUrl) {
-  //   if (!notebook) {
-  //     const loading = !sessions.fetched && sessions.fetching ? true : false;
-  //     mainButton = (
-  //       <StartSessionDropdownButton
-  //         fullPath={fullPath}
-  //         gitUrl={gitUrl}
-  //         loading={loading}
-  //       />
-  //     );
-  //   } else {
-  //     const showLogs = () => {
-  //       dispatch(
-  //         displaySlice.actions.showSessionLogsModal({
-  //           targetServer: notebook.name,
-  //         })
-  //       );
-  //     };
-  //     mainButton = (
-  //       <SessionButton
-  //         fullPath={fullPath}
-  //         gitUrl={gitUrl}
-  //         notebook={notebook}
-  //         showLogs={showLogs}
-  //       />
-  //     );
-  //   }
-  // }
 
   // Set up support for logs modal
   const displayModal = useDisplaySelector((state) => state.modals.sessionLogs);
