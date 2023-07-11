@@ -197,6 +197,7 @@ function ProjectDatasetsView(props: any) {
   const {
     backendAvailable,
     computed: coreSupportComputed,
+    backendErrorMessage: coreSupportError,
     versionUrl,
   } = coreSupport;
 
@@ -212,7 +213,7 @@ function ProjectDatasetsView(props: any) {
 
   useEffect(() => {
     const datasetsLoading = datasets.core === SpecialPropVal.UPDATING;
-    if (datasetsLoading || !coreSupportComputed) return;
+    if (datasetsLoading || (!coreSupportComputed && !coreSupportError)) return;
     if (!backendAvailable) return;
 
     if (
@@ -225,6 +226,7 @@ function ProjectDatasetsView(props: any) {
   }, [
     backendAvailable,
     coreSupportComputed,
+    coreSupportError,
     datasets.core,
     fetchDatasets,
     history,

@@ -77,9 +77,13 @@ export function ProjectMigrationStatus({
     gitUrl,
     branch,
   });
-  const { backendAvailable, computed: coreSupportComputed } = coreSupport;
+  const {
+    backendAvailable,
+    computed: coreSupportComputed,
+    backendErrorMessage: coreSupportError,
+  } = coreSupport;
   const isSupported = coreSupportComputed && backendAvailable;
-  const checkingSupport = !coreSupportComputed;
+  const checkingSupport = !coreSupportComputed && !coreSupportError;
 
   const skip = !gitUrl || !branch;
   const { data, isLoading, isFetching, error } =
