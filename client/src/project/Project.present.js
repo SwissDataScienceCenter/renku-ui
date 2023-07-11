@@ -58,6 +58,7 @@ import {
 import ProjectPageTitle from "../features/project/components/ProjectPageTitle";
 import { ProjectSettingsGeneral } from "../features/project/components/ProjectSettings";
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
+import ProjectSessionsRouter from "../features/session/components/ProjectSessionsRouter";
 import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
 import {
@@ -80,7 +81,6 @@ import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 import { ProjectSettingsNav } from "./settings";
-import ProjectSessionsRouter from "../features/session/components/ProjectSessionsRouter";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.

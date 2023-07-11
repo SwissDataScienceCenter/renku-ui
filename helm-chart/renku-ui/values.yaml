@@ -25,6 +25,9 @@ global:
       []
       # - secret:
 
+  core:
+    versions: {}
+
   ## Specify the information required to connect to a redis instance.
   ## All the values below are required.
   redis:
@@ -54,7 +57,7 @@ client:
 
   image:
     repository: renku/renku-ui
-    tag: "3.7.0"
+    tag: "3.9.0"
     pullPolicy: IfNotPresent
 
     ## Optionally specify an array of imagePullSecrets.
@@ -202,7 +205,7 @@ server:
 
   image:
     repository: renku/renku-ui-server
-    tag: "3.7.0"
+    tag: "3.9.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: []

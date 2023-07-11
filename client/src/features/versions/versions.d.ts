@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { CoreErrorContent } from "../../utils/definitions";
+
 interface CoreComponent {
   data: {
     metadata_version: string;
@@ -23,9 +25,14 @@ interface CoreComponent {
   version: string;
 }
 
-export interface CoreVersionResponse {
+export interface CoreVersionDetails {
   name: string;
   versions: CoreComponent[];
+}
+
+export interface CoreVersionResponse {
+  error?: CoreErrorContent;
+  result?: CoreVersionDetails;
 }
 
 export interface CoreVersions {
@@ -62,5 +69,3 @@ export interface NotebooksVersion {
     azureBlob: boolean;
   };
 }
-
-export type { NotebooksVersion, NotebooksVersionResponse };
