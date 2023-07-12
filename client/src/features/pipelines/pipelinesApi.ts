@@ -17,14 +17,47 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { GetPipelinesParams } from "./pipelines.types";
+import {
+  GetPipelineJobByNameParams,
+  GetPipelinesParams,
+  Pipeline,
+  PipelineJob,
+} from "./pipelines.types";
 
 const pipelinesApi = createApi({
   reducerPath: "pipelines",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
   tagTypes: ["Job", "Pipeline"],
   endpoints: (builder) => ({
-    getPipelines: builder.query<unknown, GetPipelinesParams>({
+    getPipelineJobByName: builder.query<
+      PipelineJob | null,
+      GetPipelineJobByNameParams
+    >({
+      queryFn: async (
+        { jobName, pipelineIds, projectId },
+        _queryApi,
+        _extraOptions,
+        fetchBaseQuery
+      ) => {
+        for (const pipelineId of pipelineIds) {
+          const url = `${projectId}/pipelines/${pipelineId}/jobs`;
+          const result = await fetchBaseQuery({ url });
+
+          if (result.error) {
+            return result;
+          }
+
+          const jobs = result.data as PipelineJob[];
+          const found = jobs.find(({ name }) => name === jobName);
+          if (found) {
+            return { data: found };
+          }
+        }
+
+        return { data: null };
+      },
+    }),
+    getPipelines: builder.query<Pipeline[], GetPipelinesParams>({
       query: ({ commit, projectId }) => ({
         url: `${projectId}/pipelines`,
         params: {
@@ -36,4 +69,5 @@ const pipelinesApi = createApi({
 });
 
 export default pipelinesApi;
-export const { useGetPipelinesQuery } = pipelinesApi;
+export const { useGetPipelineJobByNameQuery, useGetPipelinesQuery } =
+  pipelinesApi;

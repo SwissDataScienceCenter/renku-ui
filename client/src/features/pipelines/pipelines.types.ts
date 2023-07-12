@@ -16,6 +16,21 @@
  * limitations under the License.
  */
 
+export interface Pipeline {
+  id: number;
+}
+
+export interface PipelineJob {
+  id: number;
+  name: string;
+}
+
+export interface GetPipelineJobByNameParams {
+  jobName: string;
+  pipelineIds: number[];
+  projectId: number;
+}
+
 export interface GetPipelinesParams {
   commit?: string;
   projectId: number;

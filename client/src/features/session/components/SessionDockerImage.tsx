@@ -29,6 +29,10 @@ import {
   setPinnedDockerImage,
 } from "../startSessionOptionsSlice";
 import pipelinesApi from "../../pipelines/pipelinesApi";
+import {
+  SESSION_CI_IMAGE_BUILD_JOB,
+  SESSION_CI_PIPELINE_POLLING_INTERVAL_MS,
+} from "../startSessionOptions.constants";
 
 export default function SessionDockerImage() {
   const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
@@ -161,9 +165,18 @@ function SessionProjectDockerImage() {
   ] = registryApi.useLazyGetRegistryTagQuery();
 
   const [
-    getPipelinesQuery,
+    getPipelines,
     { data: pipelines, error: pipelinesError, isFetching: pipelinesIsFetching },
   ] = pipelinesApi.useLazyGetPipelinesQuery();
+
+  const [
+    getPipelineJobByName,
+    {
+      data: pipelineJob,
+      error: pipelineJobError,
+      isFetching: pipelineJobIsFetching,
+    },
+  ] = pipelinesApi.useLazyGetPipelineJobByNameQuery();
 
   useEffect(() => {
     console.log({ status });
@@ -174,6 +187,12 @@ function SessionProjectDockerImage() {
   useEffect(() => {
     console.log({ registryTagError });
   }, [registryTagError]);
+  useEffect(() => {
+    console.log({ pipelines });
+  }, [pipelines]);
+  useEffect(() => {
+    console.log({ pipelineJob });
+  }, [pipelineJob]);
 
   // Start checking for Docker images in CI/CD
   useEffect(() => {
@@ -238,24 +257,44 @@ function SessionProjectDockerImage() {
       return;
     }
     dispatch(setDockerImageStatus("checking-ci-pipelines"));
-    getPipelinesQuery({
+    getPipelines({
       commit,
       projectId: gitLabProjectId,
     });
-  }, [commit, dispatch, getPipelinesQuery, gitLabProjectId, status]);
+  }, [commit, dispatch, getPipelines, gitLabProjectId, status]);
 
   // Handle checking the CI/CD pipelines
   useEffect(() => {
     if (status !== "checking-ci-pipelines" || pipelinesIsFetching) {
       return;
     }
-    if (pipelinesError != null) {
-      // TODO
+    if (pipelinesError != null || pipelines == null) {
       dispatch(setDockerImageStatus("error"));
       return;
     }
-    dispatch(setDockerImageStatus("not-available"));
-  }, [dispatch, pipelinesError, pipelinesIsFetching, status]);
+    if (pipelines.length == 0) {
+      const timeout = window.setTimeout(() => {
+        dispatch(setDockerImageStatus("checking-ci-pipelines-start"));
+      }, SESSION_CI_PIPELINE_POLLING_INTERVAL_MS);
+      return () => {
+        window.clearTimeout(timeout);
+      };
+    }
+    dispatch(setDockerImageStatus("checking-ci-jobs-start"));
+  }, [dispatch, pipelines, pipelinesError, pipelinesIsFetching, status]);
+
+  // Check the CI/CD pipeline jobs
+  useEffect(() => {
+    if (status !== "checking-ci-jobs-start" || !gitLabProjectId || !pipelines) {
+      return;
+    }
+    dispatch(setDockerImageStatus("checking-ci-jobs"));
+    getPipelineJobByName({
+      jobName: SESSION_CI_IMAGE_BUILD_JOB,
+      pipelineIds: pipelines.map(({ id }) => id),
+      projectId: gitLabProjectId,
+    });
+  }, [dispatch, getPipelineJobByName, gitLabProjectId, pipelines, status]);
 
   return (
     <div className="field-group">

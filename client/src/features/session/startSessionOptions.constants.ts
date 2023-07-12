@@ -16,5 +16,8 @@
  * limitations under the License.
  */
 
+export const SESSION_CI_PIPELINE_POLLING_INTERVAL_MS = 5_000;
+export const SESSION_CI_IMAGE_BUILD_JOB = "image_build";
+
 export const MIN_SESSION_STORAGE_GB = 1;
 export const STEP_SESSION_STORAGE_GB = 1;

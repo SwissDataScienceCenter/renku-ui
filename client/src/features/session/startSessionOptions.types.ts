@@ -37,4 +37,6 @@ export type DockerImageStatus =
   | "checking-ci-image"
   | "checking-ci-pipelines-start"
   | "checking-ci-pipelines"
+  | "checking-ci-jobs-start"
+  | "checking-ci-jobs"
   | "error";
