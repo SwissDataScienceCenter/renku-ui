@@ -8,6 +8,11 @@ so.
 The purpose of the guidelines is to ensure code remains maintainable and easy to
 read as the code base grows.
 
+## Adding new rules
+
+Add new rules at the bottom of the list, incrementing the rule number by 1. Do
+not re-order rules so that they keep a stable number.
+
 ## Guidelines
 
 Rules:
@@ -131,7 +136,78 @@ const status =
     : "idle";
 ```
 
-## Adding new rules
+### R004: Include a default export when appropriate
 
-Add new rules at the bottom of the list, incrementing the rule number by 1. Do
-not re-order rules so that they keep a stable number.
+Include a `default` export when a main component is defined in a source file
+(this should be the usual case).
+
+**✅ DO**
+
+```tsx
+export default function MyComponent() {
+  return (
+    <div>
+      <h2>My Component</h2>
+      <p>Hello, World!</p>
+    </div>
+  );
+}
+```
+
+**💡 Rationale**
+
+The main component being exported as a `default` export is a common convention
+with `React` projects.
+
+The `default` export also shows which component is a the top level and which
+ones are sub-components.
+
+### R005: File naming conventions
+
+**React Components**
+
+Use the component name as a file name. The file name as well as the component
+name should use CamelCase.
+
+Example: `MyComponent.tsx`
+
+**Type Definitions**
+
+Type definition file names start with a lowercase letter and end with
+`.types.ts`.
+
+Example: `workflows.types.ts`
+
+**Hook Definitions**
+
+Reusable hooks should be defined in their own file, be a default export,
+use the hook name as a file name and have the extension `.hook.ts`.
+
+Example: `useRenku.hook.ts`
+
+**Utility Functions**
+
+Utility file names start with a lowercase letter and end with `.utils.ts`.
+
+Example: `sessions.utils.ts`
+
+**API Definitions**
+
+Files defining RTK Query endpoints start with a lowercase letter and end with
+`.api.ts`.
+
+Example: `projects.api.ts`
+
+**Slice Definitions**
+
+Files defining RTK slices start with a lowercase letter and end with
+`.slice.ts`.
+
+Example: `user.slice.ts`
+
+**Test Definitions**
+
+Test file names start with a lowercase letter and end with `.test.ts` for unit
+tests or with `.spec.ts` for Cypress tests.
+
+Example: `login.test.ts` or `datasets.spec.ts`
