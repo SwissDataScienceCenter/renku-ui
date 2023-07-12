@@ -34,6 +34,7 @@ import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
 import { TimeCaption } from "../components/TimeCaption";
 import { RenkuNavLink } from "../components/RenkuNavLink";
+import { Loader } from "../components/Loader";
 
 function Overview() {
   return (
@@ -189,6 +190,15 @@ function StyleGuideHeader(props) {
             <h2>Style Guide</h2>
             <div className="text-rk-text">
               An guide to the RenkuLab UI elements.
+            </div>
+            <div
+              style={{
+                color: "#0000ff",
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
+              <Loader inline size={48} />
             </div>
           </div>
           <div className="d-flex flex-column justify-content-between">

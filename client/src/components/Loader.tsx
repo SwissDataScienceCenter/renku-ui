@@ -18,6 +18,7 @@
 
 import React, { useEffect, useRef } from "react";
 import cx from "classnames";
+import styles from "./Loader.module.scss";
 
 interface LoaderProps {
   className?: string;
@@ -29,11 +30,71 @@ interface LoaderProps {
 
 export const Loader = ({ inline, size = 120, ...rest }: LoaderProps) => {
   return inline || size < 100 ? (
-    <LoaderSpinner inline={inline} size={size} {...rest} />
+    <LoaderSpinnerV2 inline={inline} size={size} {...rest} />
   ) : (
     <LoaderBouncer {...rest} />
   );
 };
+
+function LoaderSpinnerV2({
+  className,
+  color = "#01192D", // Renku blue
+  inline,
+  margin,
+  size,
+}: LoaderSpinnerProps) {
+  const borderSize = size / 8;
+  return (
+    <div
+      className={className}
+      style={{
+        display: "inline-block",
+        width: `${size}px`,
+        height: `${size}px`,
+        color,
+      }}
+    >
+      <div
+        style={{
+          position: "relative",
+          width: `${size}px`,
+          height: `${size}px`,
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: `${size}px`,
+            height: `${size}px`,
+            borderColor: "currentcolor",
+            borderWidth: `${borderSize}px`,
+            borderStyle: "solid",
+            borderRadius: "50%",
+            opacity: 0.25,
+          }}
+        ></div>
+        <div
+          className={styles.spinner}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: `${size}px`,
+            height: `${size}px`,
+            borderColor: "transparent",
+            borderTopColor: "currentcolor",
+            borderWidth: `${borderSize}px`,
+            borderStyle: "solid",
+            borderRadius: "50%",
+            opacity: 1,
+          }}
+        ></div>
+      </div>
+    </div>
+  );
+}
 
 type LoaderSpinnerProps = LoaderProps & Required<Pick<LoaderProps, "size">>;
 

@@ -1,0 +1,22 @@
+@mixin spin-animation() {
+  $name: inline-#{unique-id()};
+
+  @keyframes #{$name} {
+    @content;
+  }
+
+  animation-name: $name;
+}
+
+.spinner {
+  --spinner-animation-speed: 1.5s;
+
+  @include spin-animation() {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  animation-duration: var(--spinner-animation-speed);
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
