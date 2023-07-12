@@ -26,9 +26,10 @@
 import _ from "lodash";
 
 import { API_ERRORS } from "../api-client/errors";
+import { formatEnvironmentVariables } from "../api-client/utils";
+import { startSessionOptionsSlice } from "../features/session/startSessionOptionsSlice";
 import { notebooksSchema } from "../model";
 import { parseINIString, sleep } from "../utils/helpers/HelperFunctions";
-import { formatEnvironmentVariables } from "../api-client/utils";
 
 const POLLING_INTERVAL = 3000;
 const POLLING_CI = 5; // in seconds, for the sleep function
@@ -59,7 +60,13 @@ const CI_STATUSES = {
   failure: "failure",
 };
 
-const VALID_SETTINGS = ["image"];
+const VALID_SETTINGS = [
+  "image",
+  "cpu_request",
+  "memory_request",
+  "disk_request",
+  "gpu_request",
+];
 
 const SESSIONS_PREFIX = "interactive.";
 
@@ -1254,8 +1261,15 @@ class NotebooksCoordinator {
 
   // * Change notebook status * //
   startServer(forceBaseImage = false) {
+    const reduxStore = this.model.reduxStore;
+    const startSessionOptions =
+      reduxStore.getState()[startSessionOptionsSlice.name];
+
     const options = {
-      serverOptions: this.model.get("filters.options"),
+      resource_class_id: startSessionOptions.sessionClass ?? null,
+      storage: startSessionOptions.storage ?? null,
+      default_url: startSessionOptions.defaultUrl,
+      lfs_auto_fetch: startSessionOptions.lfsAutoFetch,
     };
     const cloudstorage = this.model.get("filters.objectStoresConfiguration");
     if (cloudstorage.length > 0) options["cloudstorage"] = cloudstorage;

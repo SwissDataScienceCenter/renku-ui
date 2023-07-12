@@ -81,7 +81,7 @@ export interface DatasetKg extends DatasetAbstract {
   sameAs?: string;
 }
 
-export interface IDataset extends DatasetAbstract {
+interface IDataset extends DatasetAbstract {
   created: string;
   exists: boolean;
   insideKg: boolean;
@@ -283,4 +283,34 @@ export interface DeleteProjectParams {
 
 export interface DeleteProjectResponse {
   accepted: true;
+}
+
+export interface ProjectConfig {
+  config: ProjectConfigSection;
+  default: ProjectConfigSection;
+  rawResponse: {
+    [key: string]: unknown;
+  };
+}
+
+export interface ProjectConfigSection {
+  sessions?: {
+    defaultUrl?: string;
+
+    /** Disk storage in Gigabytes */
+    storage?: number;
+
+    lfsAutoFetch?: boolean;
+
+    dockerImage?: string;
+
+    legacyConfig?: {
+      cpuRequest?: number;
+      memoryRequest?: number;
+      gpuRequest?: number;
+    };
+    unknownConfig?: {
+      [key: string]: string;
+    };
+  };
 }

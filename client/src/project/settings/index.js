@@ -23,10 +23,9 @@
  *
  */
 
-import { ProjectSettingsSessions } from "./ProjectSettings.container";
 import {
   ProjectSettingsGeneral,
   ProjectSettingsNav,
 } from "./ProjectSettings.present";
 
-export { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions };
+export { ProjectSettingsGeneral, ProjectSettingsNav };

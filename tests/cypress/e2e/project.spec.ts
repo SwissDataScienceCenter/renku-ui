@@ -181,26 +181,35 @@ describe("display a project", () => {
   });
 
   it("displays project settings sessions", () => {
-    fixtures.sessionServerOptions().projectConfigShow();
+    fixtures.sessionServerOptions().resourcePoolsTest().projectConfigShow();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
     cy.contains("Number of CPUs").should("be.visible");
+    cy.contains("Amount of Memory").should("be.visible");
+    cy.contains("Amount of Storage").should("be.visible");
+    cy.contains("Number of GPUs").should("be.visible");
   });
 
   it("displays project settings with cloud-storage enabled ", () => {
-    fixtures.projectConfigShow().sessionServerOptions(true);
+    fixtures.sessionServerOptions(true).resourcePoolsTest().projectConfigShow();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
     cy.contains("Number of CPUs").should("be.visible");
+    cy.contains("Amount of Memory").should("be.visible");
+    cy.contains("Amount of Storage").should("be.visible");
+    cy.contains("Number of GPUs").should("be.visible");
   });
 
   it("displays project settings complete", () => {
-    fixtures.sessionServerOptions().projectConfigShow();
+    fixtures.sessionServerOptions().resourcePoolsTest().projectConfigShow();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
     cy.wait("@getProjectConfigShow");
     cy.contains("Number of CPUs").should("be.visible");
-    cy.get("button.active").contains("0.5").should("be.visible");
+    cy.contains("Amount of Memory").should("be.visible");
+    cy.contains("Amount of Storage").should("be.visible");
+    cy.contains("Number of GPUs").should("be.visible");
+    cy.get("button.active").contains("/lab").should("be.visible");
   });
 
   it("displays project settings error", () => {

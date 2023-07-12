@@ -46,12 +46,12 @@ export function MoreInfoLink({ url }: MoreInfoLinkProps) {
 }
 
 interface CompositeTitleProps {
-  buttonAction?: () => void;
+  buttonAction?: (() => void) | null;
   buttonDisabled?: boolean;
   buttonDisabledTooltip?: string;
   buttonIcon?: IconProp;
   buttonId?: string;
-  buttonText?: string;
+  buttonText?: string | null;
   level?: string;
   loading: boolean;
   icon: IconProp;

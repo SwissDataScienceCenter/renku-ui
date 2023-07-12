@@ -24,6 +24,8 @@
  */
 
 import React, { Component, Fragment, useEffect } from "react";
+import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, Route, Switch } from "react-router-dom";
 import {
   Alert,
@@ -33,50 +35,51 @@ import {
   CardHeader,
   Col,
   Modal,
-  Row,
   Nav,
   NavItem,
+  Row,
 } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
-
-import { Url } from "../utils/helpers/url";
-import { SpecialPropVal } from "../model/Model";
-import { Notebooks, ShowSession, StartNotebookServer } from "../notebooks";
-import FilesTreeView from "./filestreeview/FilesTreeView";
-import { ProjectDatasetsView } from "../features/project";
+import { ContainerWrap } from "../App";
 import { ACCESS_LEVELS } from "../api-client";
-import { NamespaceProjects } from "../namespace";
-import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
-import { ForkProject } from "./new";
-import { ProjectSettingsNav, ProjectSettingsSessions } from "./settings";
-import { ProjectSettingsGeneral } from "../features/project/components/ProjectSettings";
-import { WorkflowsList } from "../workflows";
+import { InfoAlert } from "../components/Alert";
 import { ExternalLink } from "../components/ExternalLinks";
+import { Loader } from "../components/Loader";
+import { RenkuNavLink } from "../components/RenkuNavLink";
+import { ThrottledTooltip } from "../components/Tooltip";
 import { GoBackButton, RoundButtonGroup } from "../components/buttons/Button";
 import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
-import { InfoAlert } from "../components/Alert";
-import { RenkuNavLink } from "../components/RenkuNavLink";
-import { Loader } from "../components/Loader";
-import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
-import { Docs } from "../utils/constants/Docs";
-import { ContainerWrap } from "../App";
-import { ThrottledTooltip } from "../components/Tooltip";
 import { SshModal } from "../components/ssh/ssh";
-import GitLabConnectButton, {
-  externalUrlToGitLabIdeUrl,
-} from "./components/GitLabConnect";
-import { NotebooksCoordinator } from "../notebooks";
-import ProjectPageTitle from "../features/project/components/ProjectPageTitle";
 import {
+  ProjectDatasetsView,
   ProjectEntityHeader,
   ProjectFileLineage,
   ProjectFileView,
 } from "../features/project";
-import { CloneButton } from "./clone/CloneButton";
-
-import "./Project.css";
+import ProjectPageTitle from "../features/project/components/ProjectPageTitle";
+import { ProjectSettingsGeneral } from "../features/project/components/ProjectSettings";
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
+import { SpecialPropVal } from "../model/Model";
+import { NamespaceProjects } from "../namespace";
+import {
+  Notebooks,
+  NotebooksCoordinator,
+  ShowSession,
+  StartNotebookServer,
+} from "../notebooks";
+import { Docs } from "../utils/constants/Docs";
+import { Url } from "../utils/helpers/url";
+import { WorkflowsList } from "../workflows";
+import "./Project.css";
+import { CloneButton } from "./clone/CloneButton";
+import GitLabConnectButton, {
+  externalUrlToGitLabIdeUrl,
+} from "./components/GitLabConnect";
+import { ProjectSettingsSessions } from "./components/ProjectSettingsSessions";
+import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
+import FilesTreeView from "./filestreeview/FilesTreeView";
+import { ForkProject } from "./new";
+import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
+import { ProjectSettingsNav } from "./settings";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -1034,85 +1037,83 @@ class ProjectNotebookServers extends Component {
   }
 }
 
-class ProjectStartNotebookServer extends Component {
-  render() {
-    const {
-      branches,
-      client,
-      commits,
-      model,
-      user,
-      forkUrl,
-      externalUrl,
-      location,
-      metadata,
-      fetchBranches,
-      fetchCommits,
-      notebookServersUrl,
-      history,
-      blockAnonymous,
-      notifications,
-      projectCoordinator,
-      lockStatus,
-      backUrl,
-      defaultBackButton,
-    } = this.props;
-    const warning = notebookWarning(
-      user.logged,
-      metadata.accessLevel,
-      forkUrl,
-      location.pathname,
-      externalUrl,
-      this.props
-    );
+const ProjectStartNotebookServer = (props) => {
+  const {
+    branches,
+    client,
+    commits,
+    model,
+    user,
+    forkUrl,
+    externalUrl,
+    location,
+    metadata,
+    fetchBranches,
+    fetchCommits,
+    notebookServersUrl,
+    history,
+    blockAnonymous,
+    notifications,
+    projectCoordinator,
+    lockStatus,
+    backUrl,
+    defaultBackButton,
+  } = props;
+  const warning = notebookWarning(
+    user.logged,
+    metadata.accessLevel,
+    forkUrl,
+    location.pathname,
+    externalUrl,
+    props
+  );
 
-    const locationEnhanced =
-      location && location.state && location.state.successUrl
-        ? location
-        : {
-            ...this.props.location,
-            state: {
-              ...this.props.location.state,
-              successUrl: notebookServersUrl,
-            },
-          };
+  const locationEnhanced =
+    location && location.state && location.state.successUrl
+      ? location
+      : {
+          ...props.location,
+          state: {
+            ...props.location.state,
+            successUrl: notebookServersUrl,
+          },
+        };
 
-    const scope = {
-      defaultBranch: this.props.metadata.defaultBranch,
-      namespace: this.props.metadata.namespace,
-      project: this.props.metadata.path,
-      filePath: location?.state?.filePath,
-    };
+  const scope = {
+    defaultBranch: props.metadata.defaultBranch,
+    namespace: props.metadata.namespace,
+    project: props.metadata.path,
+    filePath: location?.state?.filePath,
+  };
 
-    return (
-      <StartNotebookServer
-        accessLevel={metadata?.accessLevel}
-        autosaved={branches.autosaved}
-        blockAnonymous={blockAnonymous}
-        branches={branches.standard}
-        client={client}
-        commits={commits}
-        externalUrl={externalUrl}
-        fetchingBranches={branches.fetching}
-        history={history}
-        location={locationEnhanced}
-        lockStatus={lockStatus}
-        message={warning}
-        model={model}
-        notebooks={projectCoordinator.model.baseModel.get("notebooks")}
-        notifications={notifications}
-        refreshBranches={fetchBranches}
-        refreshCommits={fetchCommits}
-        scope={scope}
-        successUrl={notebookServersUrl}
-        user={user}
-        openShareLinkModal={location?.state?.openShareLinkModal}
-        backUrl={backUrl}
-        defaultBackButton={defaultBackButton}
-      />
-    );
-  }
-}
+  return (
+    <StartNotebookServer
+      accessLevel={metadata?.accessLevel}
+      autosaved={branches.autosaved}
+      blockAnonymous={blockAnonymous}
+      branches={branches.standard}
+      client={client}
+      commits={commits}
+      externalUrl={externalUrl}
+      fetchingBranches={branches.fetching}
+      history={history}
+      location={locationEnhanced}
+      lockStatus={lockStatus}
+      message={warning}
+      model={model}
+      notebooks={projectCoordinator.model.baseModel.get("notebooks")}
+      notifications={notifications}
+      refreshBranches={fetchBranches}
+      refreshCommits={fetchCommits}
+      scope={scope}
+      successUrl={notebookServersUrl}
+      user={user}
+      openShareLinkModal={location?.state?.openShareLinkModal}
+      backUrl={backUrl}
+      defaultBackButton={defaultBackButton}
+    />
+  );
+};
 
 function ProjectSettings(props) {
   return (
@@ -1327,6 +1328,5 @@ export {
   ProjectSuggestionDataset,
   ProjectSuggestionReadme,
 };
-
 // For testing
 export { filterPaths };

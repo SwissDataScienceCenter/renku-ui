@@ -128,6 +128,7 @@ function ProjectAddDataset(props: any) {
           notifications={props.notifications}
           params={props.params}
           toggleNewDataset={toggleNewDataset}
+          versionUrl={props.versionUrl}
         />
       ) : (
         <ProjectDatasetImport
@@ -212,6 +213,7 @@ function ProjectDatasetsView(props: any) {
   useEffect(() => {
     const datasetsLoading = datasets.core === SpecialPropVal.UPDATING;
     if (datasetsLoading || !coreSupportComputed) return;
+    if (!backendAvailable) return;
 
     if (
       datasets.core.datasets === null ||
@@ -221,6 +223,7 @@ function ProjectDatasetsView(props: any) {
       history.replace({ state: { reload: false } });
     }
   }, [
+    backendAvailable,
     coreSupportComputed,
     datasets.core,
     fetchDatasets,
@@ -261,6 +264,13 @@ function ProjectDatasetsView(props: any) {
   }
 
   if (!coreSupportComputed) {
+    if (coreSupport.backendErrorMessage)
+      return (
+        <ErrorAlert>
+          <b>There was an error verifying support for this project.</b>
+          <p>{coreSupport.backendErrorMessage}</p>
+        </ErrorAlert>
+      );
     return (
       <div>
         <p>Checking project version and RenkuLab compatibility...</p>
@@ -345,7 +355,11 @@ function ProjectDatasetsView(props: any) {
                   url={props.datasetsUrl}
                 />
               </Col>
-              <ProjectAddDataset key="projectsAddDataset" {...props} />
+              <ProjectAddDataset
+                key="projectsAddDataset"
+                {...props}
+                versionUrl={versionUrl}
+              />
             </>
           )}
         />
@@ -373,6 +387,7 @@ function ProjectDatasetsView(props: any) {
                 model={props.model}
                 notifications={props.notifications}
                 params={props.params}
+                versionUrl={versionUrl}
               />
             </>
           )}

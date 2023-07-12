@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,22 +16,22 @@
  * limitations under the License.
  */
 
-function addEnvironmentMethods(client) {
-  /**
-   * Get the version of the core service
-   */
-  client.getCoreVersion = async () => {
-    const urlApi = `${client.baseUrl}/renku/version`;
-    let headers = client.getBasicHeaders();
-    headers.append("Content-Type", "application/json");
-    headers.append("X-Requested-With", "XMLHttpRequest");
-    return client
-      .clientFetch(urlApi, {
-        method: "GET",
-        headers: headers,
-      })
-      .then((resp) => resp.data);
-  };
-}
+import { FixturesConstructor } from "./fixtures";
 
-export default addEnvironmentMethods;
+/**
+ * Fixtures for Data Services
+ */
+
+export const DataServices = <T extends FixturesConstructor>(Parent: T) => {
+  return class DataServicesFixtures extends Parent {
+    resourcePoolsTest(
+      name = "getResourcePools",
+      fixture = "dataServices/resource-pools.json"
+    ) {
+      cy.intercept("/ui-server/api/data/resource_pools*", {
+        fixture,
+      }).as(name);
+      return this;
+    }
+  };
+};

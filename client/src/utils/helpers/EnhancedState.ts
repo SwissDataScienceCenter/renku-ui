@@ -28,10 +28,13 @@ import {
   configureStore,
 } from "@reduxjs/toolkit";
 
+import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
+import { dataServicesApi } from "../../features/dataServices/dataServicesApi";
 import { displaySlice } from "../../features/display/displaySlice";
+import { datasetFormSlice } from "../../features/project/dataset";
+import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
-import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
 import { projectKgApi } from "../../features/project/projectKgApi";
 import { projectsApi } from "../../features/projects/projectsApi";
@@ -39,10 +42,10 @@ import { projectsKgApi } from "../../features/projects/projectsKgApi";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import { sessionApi } from "../../features/session/sessionApi";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
+import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
-import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -52,7 +55,9 @@ export const createStore = <S = any, A extends Action = AnyAction>(
   const enhancedReducer = {
     ...renkuStateModelReducer,
     [dashboardMessageSlice.name]: dashboardMessageSlice.reducer,
+    [dataServicesApi.reducerPath]: dataServicesApi.reducer,
     [displaySlice.name]: displaySlice.reducer,
+    [datasetFormSlice.name]: datasetFormSlice.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
@@ -60,6 +65,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
     [projectsKgApi.reducerPath]: projectsKgApi.reducer,
+    [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [sessionApi.reducerPath]: sessionApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
@@ -76,6 +82,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         immutableCheck: false,
         serializableCheck: false,
       })
+        .concat(dataServicesApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(kgSearchApi.middleware)
         .concat(projectCoreApi.middleware)

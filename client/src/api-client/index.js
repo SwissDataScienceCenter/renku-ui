@@ -17,7 +17,6 @@
  */
 
 import addDatasetMethods from "./dataset";
-import addEnvironmentMethods from "./environment";
 import addGraphMethods from "./graph";
 import addInstanceMethods from "./instance";
 import addJobMethods from "./job";
@@ -63,7 +62,6 @@ class APIClient {
     this.returnTypes = RETURN_TYPES;
 
     addDatasetMethods(this);
-    addEnvironmentMethods(this);
     addGraphMethods(this);
     addInstanceMethods(this);
     addJobMethods(this);
