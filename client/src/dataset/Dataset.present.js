@@ -71,9 +71,18 @@ function DisplayFiles(props) {
   }
 
   const files = props.files.hasPart;
+  const filesMap = _.groupBy(files, (file) => file.atLocation.split("/")[0]);
+  const filesFolderLength = Object.keys(filesMap);
+  const fileLengthCutoff = 5;
 
-  let openFolders =
-    files.length > 0 ? (files[0].atLocation.startsWith("data/") ? 2 : 1) : 0;
+  const openFolders =
+    files.length < 1
+      ? 0
+      : filesFolderLength > 1
+      ? 1
+      : files.length < fileLengthCutoff
+      ? 2
+      : 1;
 
   // ? This re-adds the name property on the datasets.
   // TODO: consider refactoring FileExplorer
