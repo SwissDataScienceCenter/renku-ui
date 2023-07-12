@@ -20,6 +20,8 @@ Rules:
 - [R001: Use utility functions to create CSS class names](#r001-use-utility-functions-to-create-css-class-names)
 - [R002: Avoid `condition ? true : false`](#r002-avoid-condition--true--false)
 - [R003: Avoid nested `if/else` blocks](#r003-avoid-nested-ifelse-blocks)
+- [R004: Include a default export when appropriate](#r004-include-a-default-export-when-appropriate)
+- [R005: File naming conventions](#r005-file-naming-conventions)
 
 ### R001: Use utility functions to create CSS class names
 
