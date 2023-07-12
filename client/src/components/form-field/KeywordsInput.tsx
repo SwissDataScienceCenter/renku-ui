@@ -26,7 +26,8 @@ import FormLabel from "./FormLabel";
 
 import { ErrorLabel } from "../formlabels/FormLabels";
 
-type SetInputsValue = { target: unknown; type: unknown };
+import { SetInputsValue } from "./form-field.types";
+
 type SetDirtyFunction = (value: boolean) => void;
 
 type FormGeneratorKeywordsInputProps = {

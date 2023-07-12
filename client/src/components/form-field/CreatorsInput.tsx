@@ -36,6 +36,8 @@ import {
 
 import { Creator } from "../../features/project/Project";
 
+import { SetInputsValue } from "./form-field.types";
+
 export type CreatorInputCreator = Creator & { id: number; default?: boolean };
 
 export interface CreatorInputProps {
@@ -43,7 +45,7 @@ export interface CreatorInputProps {
   label: string;
   value?: CreatorInputCreator[];
   alert?: string;
-  setInputs: Function; // eslint-disable-line @typescript-eslint/ban-types
+  setInputs: (value: SetInputsValue) => void;
   help?: React.ReactNode;
   disabled?: boolean;
 }
@@ -82,7 +84,7 @@ function CreatorForm(props: CreatorFormProps) {
             type="text"
             defaultValue={props.creator.name}
             name="name"
-            data-cy={`creator-name`}
+            data-cy="creator-name"
             disabled={props.disabled}
             onChange={onChangeCreator}
           />
@@ -96,7 +98,7 @@ function CreatorForm(props: CreatorFormProps) {
           <Input
             bsSize="sm"
             type="email"
-            data-cy={`creator-email`}
+            data-cy="creator-email"
             defaultValue={props.creator.email}
             name="email"
             disabled={props.disabled}
@@ -111,7 +113,7 @@ function CreatorForm(props: CreatorFormProps) {
           </Label>
           <Input
             bsSize="sm"
-            data-cy={`creator-affiliation`}
+            data-cy="creator-affiliation"
             defaultValue={props.creator.affiliation ?? undefined}
             name="affiliation"
             disabled={props.disabled}
@@ -185,9 +187,12 @@ export function FormGeneratorCreatorsInput({
     ]);
   };
 
-  const deleteCreator = (id: number) => {
-    setCreators(creators.filter((creator) => creator.id !== id));
-  };
+  const deleteCreator = React.useCallback(
+    (id: number) => {
+      setCreators(creators.filter((creator) => creator.id !== id));
+    },
+    [creators]
+  );
 
   const setCreator = (newCreator: CreatorInputCreator) => {
     setCreators((prevCreators) =>
@@ -216,11 +221,10 @@ export function FormGeneratorCreatorsInput({
     );
     const artificialEvent = {
       target: { name: name, value: filteredCreators },
-      isPersistent: () => false,
+      type: "change",
     };
     setInputs(artificialEvent);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [creators]);
+  }, [creators, name, setInputs]);
 
   const defaultCreators = creators.filter(
     (creator) => creator.default === true
@@ -303,7 +307,7 @@ export type CreatorsInputProps = Omit<
 };
 
 function CreatorsInput(props: CreatorsInputProps) {
-  const setInputs = (value: React.ChangeEvent<HTMLInputElement>) => {
+  const setInputs = (value: SetInputsValue) => {
     props.register.onChange(value);
   };
   return (
