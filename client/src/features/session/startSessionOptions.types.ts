@@ -20,6 +20,7 @@ export interface StartSessionOptions {
   branch: string;
   commit: string;
   defaultUrl: string;
+  dockerImageBuildStatus: DockerImageBuildStatus;
   dockerImageStatus: DockerImageStatus;
   lfsAutoFetch: boolean;
   pinnedDockerImage: string;
@@ -27,10 +28,9 @@ export interface StartSessionOptions {
   storage: number;
 }
 
-export type DockerImageStatus =
+export type DockerImageBuildStatus =
   | "unknown"
   | "available"
-  | "not-available"
   | "checking-ci-registry-start"
   | "checking-ci-registry"
   | "checking-ci-image-start"
@@ -39,4 +39,13 @@ export type DockerImageStatus =
   | "checking-ci-pipelines"
   | "checking-ci-jobs-start"
   | "checking-ci-jobs"
+  | "checking-ci-image-done-start"
+  | "checking-ci-image-done"
+  | "waiting-ci-image"
   | "error";
+
+export type DockerImageStatus =
+  | "unknown"
+  | "available"
+  | "not-available"
+  | "building";

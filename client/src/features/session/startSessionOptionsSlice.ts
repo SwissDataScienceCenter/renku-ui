@@ -20,6 +20,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { MIN_SESSION_STORAGE_GB } from "./startSessionOptions.constants";
 import {
+  DockerImageBuildStatus,
   DockerImageStatus,
   StartSessionOptions,
 } from "./startSessionOptions.types";
@@ -28,6 +29,7 @@ const initialState: StartSessionOptions = {
   branch: "",
   commit: "",
   defaultUrl: "",
+  dockerImageBuildStatus: "unknown",
   dockerImageStatus: "unknown",
   lfsAutoFetch: false,
   pinnedDockerImage: "",
@@ -41,14 +43,23 @@ export const startSessionOptionsSlice = createSlice({
   reducers: {
     setBranch: (state, action: PayloadAction<string>) => {
       state.branch = action.payload;
+      // Also reset the docker image status when a branch is set
+      state.dockerImageStatus = "unknown";
     },
     setCommit: (state, action: PayloadAction<string>) => {
       state.commit = action.payload;
       // Also reset the docker image status when a commit is set
+      state.dockerImageBuildStatus = "unknown";
       state.dockerImageStatus = "unknown";
     },
     setDefaultUrl: (state, action: PayloadAction<string>) => {
       state.defaultUrl = action.payload;
+    },
+    setDockerImageBuildStatus: (
+      state,
+      action: PayloadAction<DockerImageBuildStatus>
+    ) => {
+      state.dockerImageBuildStatus = action.payload;
     },
     setDockerImageStatus: (state, action: PayloadAction<DockerImageStatus>) => {
       state.dockerImageStatus = action.payload;
@@ -73,6 +84,7 @@ export const {
   setBranch,
   setCommit,
   setDefaultUrl,
+  setDockerImageBuildStatus,
   setDockerImageStatus,
   setLfsAutoFetch,
   setPinnedDockerImage,
