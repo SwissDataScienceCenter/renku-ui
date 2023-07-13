@@ -37,8 +37,7 @@ export function getMainActionByEntity(
   switch (entityType) {
     case EntityType.Project:
       return slug && gitUrl ? (
-        // <StartSessionDropdownButton fullPath={slug} gitUrl={gitUrl} />
-        <SessionButton fullPath={slug} gitUrl={gitUrl} withActions />
+        <SessionButton fullPath={slug} gitUrl={gitUrl} />
       ) : null;
     case EntityType.Dataset:
       return null;

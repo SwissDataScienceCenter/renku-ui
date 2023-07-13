@@ -18,13 +18,13 @@
 
 import React, { useCallback, useState } from "react";
 import {
-  faPlay,
-  faStop,
-  faFileAlt,
   faExternalLinkAlt,
+  faFileAlt,
+  faStop,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, DropdownItem } from "reactstrap";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
@@ -32,50 +32,23 @@ import { SshDropdown } from "../../../components/ssh/ssh";
 import { NotebooksHelper } from "../../../notebooks";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import { Url } from "../../../utils/helpers/url";
+import { toggleSessionLogsModal } from "../../display/displaySlice";
 import { Session } from "../session.types";
 import { getRunningSession } from "../session.utils";
 import { useGetSessionsQuery, useStopSessionMutation } from "../sessionApi";
-import { useDispatch } from "react-redux";
-import { toggleSessionLogsModal } from "../../display/displaySlice";
+import SimpleSessionButton from "./SimpleSessionButton";
 
-type SessionButtonProps = SessionButtonCommonProps &
-  (
-    | {
-        gitUrl: string;
-        withActions: true;
-      }
-    | { withActions?: false }
-  );
-
-interface SessionButtonCommonProps {
+interface SessionButtonProps {
   className?: string;
   fullPath: string;
+  gitUrl: string;
 }
 
-export default function SessionButton(props: SessionButtonProps) {
-  const { className, fullPath, withActions } = props;
-
-  if (withActions) {
-    const { gitUrl } = props;
-    return (
-      <SessionButtonWithActions
-        className={className}
-        fullPath={fullPath}
-        gitUrl={gitUrl}
-      />
-    );
-  }
-
-  return (
-    <SessionButtonWithoutActions className={className} fullPath={fullPath} />
-  );
-}
-
-function SessionButtonWithActions({
+export default function SessionButton({
   className,
   fullPath,
   gitUrl,
-}: SessionButtonCommonProps & { gitUrl: string }) {
+}: SessionButtonProps) {
   const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, {
     namespace: "",
     path: fullPath,
@@ -101,10 +74,7 @@ function SessionButtonWithActions({
 
   if (!runningSession) {
     const defaultAction = (
-      <SessionButtonWithoutActions
-        className="session-link-group"
-        fullPath={fullPath}
-      />
+      <SimpleSessionButton className="session-link-group" fullPath={fullPath} />
     );
     return (
       <ButtonWithMenu
@@ -252,63 +222,5 @@ function SessionActions({ className, session }: SessionActionsProps) {
       {openInNewTabAction}
       {logsAction}
     </ButtonWithMenu>
-  );
-}
-
-function SessionButtonWithoutActions({
-  className: className_,
-  fullPath,
-}: SessionButtonCommonProps) {
-  const className = cx(
-    "btn",
-    "btn-sm",
-    "btn-rk-green",
-    "btn-icon-text",
-    "start-session-button",
-    className_
-  );
-
-  const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, {
-    namespace: "",
-    path: fullPath,
-  });
-
-  const { data: sessions, isLoading } = useGetSessionsQuery();
-
-  const runningSession = sessions
-    ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
-    : null;
-
-  if (isLoading) {
-    return (
-      <Button className={className} disabled>
-        <span>Loading...</span>
-      </Button>
-    );
-  }
-
-  if (!runningSession) {
-    return (
-      <Link className={className} to={sessionAutostartUrl}>
-        <FontAwesomeIcon icon={faPlay} /> Start
-      </Link>
-    );
-  }
-
-  const annotations = NotebooksHelper.cleanAnnotations(
-    runningSession.annotations
-  ) as Session["annotations"];
-  const showSessionUrl = Url.get(Url.pages.project.session.show, {
-    namespace: annotations.namespace,
-    path: annotations.projectName,
-    server: runningSession.name,
-  });
-
-  return (
-    <Link className={className} to={showSessionUrl}>
-      <div className="d-flex gap-2">
-        <img src="/connect.svg" className="rk-icon rk-icon-md" /> Connect
-      </div>
-    </Link>
   );
 }

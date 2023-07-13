@@ -181,7 +181,6 @@ function SessionRowFull({
       <SessionButton
         fullPath={`${annotations["namespace"]}/${annotations["projectName"]}`}
         gitUrl={""}
-        withActions
       />
       <EnvironmentLogs annotations={annotations as any} name={name} />
     </span>

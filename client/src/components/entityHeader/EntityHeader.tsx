@@ -106,7 +106,7 @@ function EntityHeader({
   // Set the main button based on running sessions
   const mainButton =
     fullPath && gitUrl ? (
-      <SessionButton fullPath={fullPath} gitUrl={gitUrl} withActions />
+      <SessionButton fullPath={fullPath} gitUrl={gitUrl} />
     ) : null;
 
   // Set up support for logs modal

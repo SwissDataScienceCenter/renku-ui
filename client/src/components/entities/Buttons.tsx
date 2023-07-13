@@ -27,8 +27,7 @@ import React from "react";
 import { faCog, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-
-import SessionButton from "../../features/session/components/SessionButton";
+import SimpleSessionButton from "../../features/session/components/SimpleSessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import {
   Button,
@@ -47,7 +46,7 @@ function EntityButton({ type, slug }: EntityButtonProps) {
     case "project":
       return (
         <div className="card-button">
-          <SessionButton fullPath={slug} />
+          <SimpleSessionButton fullPath={slug} />
         </div>
       );
     case "dataset":
