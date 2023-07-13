@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 
-import { isSessionUrl } from "../../utils/helpers/url/Url";
-import { NotebooksCoordinator } from "../../notebooks";
 import APIClient from "../../api-client";
+import sessionsApi from "../../features/session/sessions.api";
 import { StateModel } from "../../model";
+import { NotebooksCoordinator } from "../../notebooks";
+import { isSessionUrl } from "../../utils/helpers/url/Url";
 
 function handleSessionsStatus(
   data: Record<string, unknown>,
@@ -41,6 +42,10 @@ function handleSessionsStatus(
       );
       notebookCoordinator.fetchNotebooks();
     }
+
+    model.reduxStore.dispatch(
+      sessionsApi.endpoints.invalidateSessions.initiate()
+    );
   }
 }
 
