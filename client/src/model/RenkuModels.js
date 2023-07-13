@@ -220,7 +220,6 @@ const projectSchema = new Schema({
   },
   datasets: {
     [Prop.SCHEMA]: new Schema({
-      datasets_kg: { [Prop.INITIAL]: [] },
       core: {
         [Prop.INITIAL]: {
           datasets: null,

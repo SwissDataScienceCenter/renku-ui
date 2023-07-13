@@ -98,24 +98,17 @@ function ProjectStatusAlert(props: ProjectStatusAlertProps) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetsNav(props: any) {
   const coreDatasets = props.datasets.core.datasets;
-  const projectId = props.metadata?.id;
-  const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
-    skip: !projectId,
-  });
-  const isGraphReady = projectIndexingStatus.data?.activated === true;
   if (coreDatasets == null) return null;
   if (coreDatasets.error != null) return null;
   if (coreDatasets.length === 0) return null;
 
   return (
     <ProjectDatasetListView
-      datasets_kg={props.datasets.datasets_kg}
       datasets={props.datasets.core.datasets}
       datasetsUrl={props.datasetsUrl}
       locked={props.lockStatus?.locked ?? true}
       newDatasetUrl={props.newDatasetUrl}
       accessLevel={props.metadata.accessLevel}
-      graphStatus={isGraphReady}
     />
   );
 }
