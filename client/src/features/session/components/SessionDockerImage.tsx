@@ -35,6 +35,7 @@ import {
   SESSION_CI_PIPELINE_POLLING_INTERVAL_MS,
 } from "../startSessionOptions.constants";
 import { DockerImageStatus } from "../startSessionOptions.types";
+import { PipelineJob } from "../../pipelines/pipelines.types";
 
 export default function SessionDockerImage() {
   const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
@@ -294,6 +295,7 @@ function SessionProjectDockerImage() {
     }
     if (pipelinesError != null || pipelines == null) {
       dispatch(setDockerImageBuildStatus("error"));
+      dispatch(setDockerImageStatus("not-available"));
       return;
     }
     if (pipelines.length == 0) {
@@ -328,6 +330,7 @@ function SessionProjectDockerImage() {
     }
     if (pipelineJobError != null) {
       dispatch(setDockerImageBuildStatus("error"));
+      dispatch(setDockerImageStatus("not-available"));
       return;
     }
     if (pipelineJob == null) {
@@ -339,8 +342,105 @@ function SessionProjectDockerImage() {
         window.clearTimeout(timeout);
       };
     }
-    dispatch(setDockerImageBuildStatus("checking-ci-image-done-start"));
+
+    if (pipelineJob.status === "success") {
+      dispatch(setDockerImageBuildStatus("checking-ci-done-registry"));
+      return;
+    }
+    if (
+      (["running", "pending", "stopping"] as PipelineJob["status"][]).includes(
+        pipelineJob.status
+      )
+    ) {
+      dispatch(setDockerImageBuildStatus("ci-job-running"));
+      dispatch(setDockerImageStatus("building"));
+      return;
+    }
+    dispatch(setDockerImageBuildStatus("error"));
+    dispatch(setDockerImageStatus("not-available"));
   }, [dispatch, pipelineJob, pipelineJobError, pipelineJobIsFetching, status]);
+
+  // Check the status of the running CI/CD job
+  useEffect(() => {
+    if (status !== "ci-job-running") {
+      return;
+    }
+    const timeout = window.setTimeout(() => {
+      dispatch(setDockerImageBuildStatus("checking-ci-jobs-start"));
+    }, SESSION_CI_PIPELINE_POLLING_INTERVAL_MS);
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [dispatch, pipelineJob, pipelineJobError, pipelineJobIsFetching, status]);
+
+  // Check the registry, the CI/CD job is done, so it is supposed to exist
+  useEffect(() => {
+    if (status !== "checking-ci-done-registry-start" || !gitLabProjectId) {
+      return;
+    }
+    dispatch(setDockerImageBuildStatus("checking-ci-done-registry"));
+    getRenkuRegistry({
+      projectId: `${gitLabProjectId}`,
+    });
+  }, [dispatch, getRenkuRegistry, gitLabProjectId, status]);
+
+  // Handle checking the registry
+  useEffect(() => {
+    if (status !== "checking-ci-done-registry" || renkuRegistryIsFetching) {
+      return;
+    }
+    if (renkuRegistryError != null) {
+      dispatch(setDockerImageBuildStatus("error"));
+      dispatch(setDockerImageStatus("not-available"));
+      return;
+    }
+    dispatch(setDockerImageBuildStatus("checking-ci-done-image-start"));
+  }, [dispatch, renkuRegistryError, renkuRegistryIsFetching, status]);
+
+  // Check the Docker image, the CI/CD job is done, so it is supposed to exist
+  useEffect(() => {
+    if (
+      status !== "checking-ci-done-image-start" ||
+      !gitLabProjectId ||
+      !registry
+    ) {
+      return;
+    }
+    const tag = commit.slice(0, 7);
+    dispatch(setDockerImageBuildStatus("checking-ci-done-image"));
+    getRegistryTag({
+      projectId: gitLabProjectId,
+      registryId: registry.id,
+      tag,
+    });
+  }, [commit, dispatch, getRegistryTag, gitLabProjectId, registry, status]);
+
+  // Handle checking the Docker image
+  useEffect(() => {
+    if (status !== "checking-ci-done-image" || registryTagIsFetching) {
+      return;
+    }
+    if (registryTagError != null) {
+      dispatch(setDockerImageBuildStatus("waiting-ci-image"));
+      dispatch(setDockerImageStatus("not-available"));
+      return;
+    }
+    dispatch(setDockerImageBuildStatus("available"));
+    dispatch(setDockerImageStatus("available"));
+  }, [dispatch, registryTagError, registryTagIsFetching, status]);
+
+  // Periodically check the registry for the Docker image
+  useEffect(() => {
+    if (status !== "waiting-ci-image") {
+      return;
+    }
+    const timeout = window.setTimeout(() => {
+      dispatch(setDockerImageBuildStatus("checking-ci-done-image-start"));
+    }, SESSION_CI_PIPELINE_POLLING_INTERVAL_MS);
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [dispatch, registryTagError, registryTagIsFetching, status]);
 
   return (
     <div className="field-group">

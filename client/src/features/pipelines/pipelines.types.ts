@@ -23,6 +23,13 @@ export interface Pipeline {
 export interface PipelineJob {
   id: number;
   name: string;
+  status:
+    | "success"
+    | "running"
+    | "pending"
+    | "stopping"
+    | "failed"
+    | "canceled";
 }
 
 export interface GetPipelineJobByNameParams {
