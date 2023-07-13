@@ -120,7 +120,7 @@ function SessionJupyter(props) {
   let content = null;
   if (notebook.available) {
     const status = notebook.data.status.state;
-    if (status === SessionStatus.running) {
+    if (status === SessionStatus.running && ready) {
       const locationFilePath = history?.location?.state?.filePath;
       const notebookUrl = locationFilePath
         ? appendCustomUrlPath({
@@ -133,7 +133,7 @@ function SessionJupyter(props) {
           id="session-iframe"
           title="session iframe"
           src={notebookUrl}
-          style={{ display: ready ? "block" : "none" }}
+          style={{ display: "block" }}
           width="100%"
           height={height}
           referrerPolicy="origin"
