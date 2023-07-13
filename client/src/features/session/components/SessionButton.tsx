@@ -140,6 +140,8 @@ function SessionActions({ className, session }: SessionActionsProps) {
     "session-link-group"
   );
 
+  // TODO: handle hibernating state
+
   const defaultAction =
     status === "starting" || status === "running" ? (
       <Link

@@ -73,6 +73,8 @@ export default function SimpleSessionButton({
     );
   }
 
+  // TODO: handle hibernating state
+
   const annotations = NotebooksHelper.cleanAnnotations(
     runningSession.annotations
   ) as Session["annotations"];
