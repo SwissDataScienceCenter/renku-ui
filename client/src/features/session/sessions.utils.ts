@@ -26,7 +26,7 @@ interface GetRunningSessionArgs {
   sessions: Sessions;
 }
 
-// TODO: deduplicate `getSessionRunning()`
+// TODO: remove duplicate `getSessionRunning()`
 export function getRunningSession({
   autostartUrl,
   sessions,
