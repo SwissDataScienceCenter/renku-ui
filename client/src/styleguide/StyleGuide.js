@@ -34,7 +34,7 @@ import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
 import { TimeCaption } from "../components/TimeCaption";
 import { RenkuNavLink } from "../components/RenkuNavLink";
-import { Loader } from "../components/Loader";
+import { Loader, LoaderSpinner } from "../components/Loader";
 
 function Overview() {
   return (
@@ -193,12 +193,23 @@ function StyleGuideHeader(props) {
             </div>
             <div
               style={{
-                color: "#0000ff",
+                color: "#01192d",
                 display: "flex",
                 flexDirection: "row",
               }}
             >
               <Loader inline size={48} />
+              <LoaderSpinner inline size={48} />
+            </div>
+            <div
+              style={{
+                color: "#01192d",
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
+              <Loader inline size={16} />
+              <LoaderSpinner inline size={16} />
             </div>
           </div>
           <div className="d-flex flex-column justify-content-between">

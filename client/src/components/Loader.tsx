@@ -51,7 +51,7 @@ function LoaderSpinnerV2({
         display: "inline-block",
         width: `${size}px`,
         height: `${size}px`,
-        color,
+        // color,
       }}
     >
       <div
@@ -98,7 +98,7 @@ function LoaderSpinnerV2({
 
 type LoaderSpinnerProps = LoaderProps & Required<Pick<LoaderProps, "size">>;
 
-const LoaderSpinner = ({
+export const LoaderSpinner = ({
   className,
   color = "#01192D", // Renku blue
   inline,
