@@ -319,11 +319,7 @@ class View extends Component {
       versionUrl
     );
   }
-  async fetchProjectDatasetsFromKg() {
-    return this.projectCoordinator.fetchProjectDatasetsFromKg(
-      this.props.client
-    );
-  }
+
   saveProjectLastNode(nodeData) {
     this.projectCoordinator.saveProjectLastNode(nodeData);
   }
@@ -454,7 +450,6 @@ class View extends Component {
       this.fetchProjectFilesTree();
     },
     fetchDatasets: async (forceReFetch, versionUrl) => {
-      this.fetchProjectDatasetsFromKg();
       await this.fetchProjectDatasets(forceReFetch, versionUrl);
       this.fetchProjectLockStatus();
     },
