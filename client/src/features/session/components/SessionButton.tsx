@@ -66,7 +66,7 @@ export default function SessionButton({
 
   if (isLoading) {
     return (
-      <Button className={className} disabled>
+      <Button className={cx("btn-sm", className)} disabled>
         <span>Loading...</span>
       </Button>
     );
