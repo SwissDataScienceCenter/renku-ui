@@ -24,19 +24,18 @@
  */
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { faCog, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faCog, faTrash } from "@fortawesome/free-solid-svg-icons";
-
-import { EntityType } from "./Entities";
+import { Link } from "react-router-dom";
+import SimpleSessionButton from "../../features/session/components/SimpleSessionButton";
+import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import {
   Button,
   Funnel,
   FunnelFill,
   UncontrolledTooltip,
 } from "../../utils/ts-wrappers";
-import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
-import { StartSessionButton } from "../../features/session/components/SessionButtons";
+import { EntityType } from "./Entities";
 
 export interface EntityButtonProps {
   type: EntityType;
@@ -47,7 +46,7 @@ function EntityButton({ type, slug }: EntityButtonProps) {
     case "project":
       return (
         <div className="card-button">
-          <StartSessionButton fullPath={slug} />
+          <SimpleSessionButton fullPath={slug} />
         </div>
       );
     case "dataset":
@@ -171,7 +170,7 @@ function FilterButton({ isOpen, toggle }: FilterButtonProps) {
 
 export {
   EntityButton,
-  EntityModifyButton,
   EntityDeleteButtonButton,
+  EntityModifyButton,
   FilterButton,
 };

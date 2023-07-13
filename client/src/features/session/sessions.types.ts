@@ -16,7 +16,16 @@
  * limitations under the License.
  */
 
-export interface ServerOption<T extends number | string> {
+export interface DockerImage {
+  image: string;
+  available: boolean;
+}
+
+export interface GetDockerImageParams {
+  image: string;
+}
+
+export interface ServerOption<T extends number | string = number | string> {
   allow_any_value?: boolean;
   default: T;
   displayName: string;
@@ -31,3 +40,32 @@ export interface ServerOptions {
 }
 
 export type ServerOptionsResponse = Record<string, ServerOption>;
+
+export type Sessions = Record<string, Session>;
+
+export interface Session {
+  annotations: Record<string, unknown>;
+  cloudstorage: unknown;
+  image: string;
+  name: string;
+  resources: SessionResources;
+  started: string;
+  state: unknown;
+  status: SessionStatus;
+  url: string;
+}
+
+interface SessionResources {
+  requests?: { cpu?: number; memory?: string; storage?: string };
+  usage?: { cpu?: number; memory?: string; storage?: string };
+}
+
+interface SessionStatus {
+  message: string;
+  state: "failed" | "running" | "starting" | "stopping";
+  [key: string]: unknown;
+}
+
+export interface GetSessionsRawResponse {
+  servers: Record<string, Session>;
+}
