@@ -69,3 +69,69 @@ interface SessionStatus {
 export interface GetSessionsRawResponse {
   servers: Record<string, Session>;
 }
+
+export interface StartSessionParams {
+  //       "branch": "master",
+  // "cloudstorage": [],
+  // "commit_sha": "string",
+  // "default_url": "/lab",
+  // "environment_variables": {},
+  // "image": null,
+  // "lfs_auto_fetch": false,
+  // "namespace": "string",
+  // "notebook": null,
+  // "project": "string",
+  // "resource_class_id": null,
+  // "serverOptions": {
+  //   "cpu_request": 0,
+  //   "defaultUrl": "/lab",
+  //   "disk_request": "1G",
+  //   "gpu_request": 0,
+  //   "lfs_auto_fetch": false,
+  //   "mem_request": "0G"
+  // },
+  // "storage": 1
+
+  // branch
+  // :
+  // "pinned-image"
+  // commit_sha
+  // :
+  // "6493d331ae07e69c70f32699d41b2e73e0cd48a2"
+  // default_url
+  // :
+  // "/lab"
+  // environment_variables
+  // :
+  // {foo: "bar"}
+  // image
+  // :
+  // "python:3"
+  // lfs_auto_fetch
+  // :
+  // false
+  // namespace
+  // :
+  // "johann.thiebaut1"
+  // project
+  // :
+  // "another-playground-project"
+  // resource_class_id
+  // :
+  // 2
+  // storage
+  // :
+  // 4
+
+  branch: string;
+  cloudstorage?: unknown[];
+  commit: string;
+  defaultUrl: string;
+  environmentVariables?: Record<string, string>;
+  image?: string;
+  lfsAutoFetch: boolean;
+  namespace: string;
+  project: string;
+  sessionClass: number;
+  storage: number;
+}

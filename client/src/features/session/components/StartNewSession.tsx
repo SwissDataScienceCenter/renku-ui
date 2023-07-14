@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { faUserClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -39,6 +39,8 @@ import SessionBranchOption from "./SessionBranchOption";
 import SessionCommitOption from "./SessionCommitOption";
 import SessionDockerImage from "./SessionDockerImage";
 import { StartNotebookServerOptions } from "../../../notebooks/components/StartNotebookServerOptions";
+import { useStartSessionOptionsSelector } from "../startSessionOptionsSlice";
+import { useStartSessionMutation } from "../sessionApi";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -70,6 +72,8 @@ export default function StartNewSession() {
           <Form className="form-rk-green">
             <SessionSaveWarning />
             <StartNewSessionOptions />
+
+            <StartSessionButton />
           </Form>
         </Col>
       </Row>
@@ -271,5 +275,66 @@ function StartNewSessionOptions() {
       <SessionCommitOption />
       <StartNotebookServerOptions />
     </>
+  );
+}
+
+function StartSessionButton() {
+  const namespace = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.namespace
+  );
+  const project = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.path
+  );
+
+  const {
+    branch,
+    commit,
+    defaultUrl,
+    dockerImageStatus,
+    lfsAutoFetch,
+    pinnedDockerImage,
+    sessionClass,
+    storage,
+  } = useStartSessionOptionsSelector();
+
+  const enabled = dockerImageStatus === "available";
+
+  const [startSession, result] = useStartSessionMutation();
+
+  const onStart = useCallback(() => {
+    startSession({
+      branch,
+      commit,
+      defaultUrl,
+      image: pinnedDockerImage,
+      lfsAutoFetch,
+      namespace,
+      project,
+      sessionClass,
+      storage,
+    });
+  }, [
+    branch,
+    commit,
+    defaultUrl,
+    lfsAutoFetch,
+    namespace,
+    pinnedDockerImage,
+    project,
+    sessionClass,
+    startSession,
+    storage,
+  ]);
+
+  useEffect(() => {
+    console.log({ result });
+  }, [result]);
+
+  return (
+    <div className="field-group">
+      <Button disabled={!enabled} onClick={onStart}>
+        Start Session
+      </Button>
+    </div>
   );
 }

@@ -24,7 +24,9 @@ import {
   ServerOption,
   ServerOptions,
   ServerOptionsResponse,
+  Session,
   Sessions,
+  StartSessionParams,
 } from "./session.types";
 
 interface StopSessionArgs {
@@ -94,6 +96,41 @@ export const sessionApi = createApi({
       },
       keepUnusedDataFor: 0,
     }),
+    startSession: builder.mutation<Session, StartSessionParams>({
+      query: ({
+        branch,
+        // cloudstorage,
+        commit,
+        defaultUrl,
+        environmentVariables,
+        image,
+        lfsAutoFetch,
+        namespace,
+        project,
+        sessionClass,
+        storage,
+      }) => {
+        const body = {
+          branch,
+          // cloudstorage: cloudstorage ?? [],
+          commit_sha: commit,
+          default_url: defaultUrl,
+          environment_variables: environmentVariables ?? {},
+          image: image || null,
+          lfs_auto_fetch: lfsAutoFetch,
+          namespace,
+          project,
+          resource_class_id: sessionClass,
+          storage,
+        };
+        return {
+          body,
+          method: "POST",
+          url: "servers",
+        };
+      },
+      invalidatesTags: ["Session"],
+    }),
   }),
 });
 
@@ -103,4 +140,5 @@ export const {
   useServerOptionsQuery,
   useStopSessionMutation,
   useGetLogsQuery,
+  useStartSessionMutation,
 } = sessionApi;
