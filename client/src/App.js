@@ -88,8 +88,8 @@ function CentralContentContainer(props) {
 
   const appContext = {
     client: props.client,
-    params: props.params,
     location: props.location,
+    params: props.params,
   };
 
   return (
