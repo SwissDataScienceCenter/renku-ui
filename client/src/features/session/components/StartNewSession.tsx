@@ -38,6 +38,7 @@ import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import SessionBranchOption from "./SessionBranchOption";
 import SessionCommitOption from "./SessionCommitOption";
 import SessionDockerImage from "./SessionDockerImage";
+import { StartNotebookServerOptions } from "../../../notebooks/components/StartNotebookServerOptions";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -268,6 +269,7 @@ function StartNewSessionOptions() {
       <SessionDockerImage />
       <SessionBranchOption />
       <SessionCommitOption />
+      <StartNotebookServerOptions />
     </>
   );
 }
