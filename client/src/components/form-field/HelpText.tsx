@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,19 +19,18 @@
 /**
  *  renku-ui
  *
- *  formgenerator/fields
- *  Fields available to the form generator
+ *  HelperText.js
+ *  Presentational components.
  */
 
-export default {
-  FieldTypes: {
-    TEXT: "text",
-    TEXT_AREA: "textarea",
-    TEXT_EDITOR: "cktextarea",
-    FILES: "fileUploader",
-    SELECT: "select",
-    CREATORS: "creators",
-    KEYWORDS: "keywords",
-    IMAGE: "image",
-  },
-};
+import React from "react";
+
+export default function HelpText({ content }: { content: React.ReactNode }) {
+  return (
+    <div>
+      <span>
+        <small className="text-muted">{content}</small>
+      </span>
+    </div>
+  );
+}
