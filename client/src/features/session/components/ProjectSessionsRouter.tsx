@@ -37,8 +37,6 @@ export default function ProjectSessionsRouter() {
     projectUrlData
   );
 
-  // console.log({ sessionsListUrl, loc: window.location.pathname });
-
   return (
     <Switch>
       <Route exact path={sessionsListUrl}>
@@ -47,6 +45,7 @@ export default function ProjectSessionsRouter() {
       <Route path={startSessionUrl}>
         <StartNewSession />
       </Route>
+
       <Route>
         <span>Huh?</span>
       </Route>

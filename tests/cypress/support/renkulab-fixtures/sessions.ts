@@ -35,22 +35,19 @@ function Sessions<T extends FixturesConstructor>(Parent: T) {
       const fixtureB = this.useMockedData ? { fixture: resultFile } : undefined;
 
       // intercept: different times to get different results
+      cy.intercept("/ui-server/api/notebooks/servers", fixtureA).as(name);
       cy.intercept(
-        "/ui-server/api/notebooks/servers?namespace=" + namespace,
-        fixtureA
-      ).as(name);
-      cy.intercept(
-        "/ui-server/api/notebooks/servers?namespace=" + namespace,
+        "/ui-server/api/notebooks/servers",
         { times: 4 },
         fixtureB
       ).as(name);
       cy.intercept(
-        "/ui-server/api/notebooks/servers?namespace=" + namespace,
+        "/ui-server/api/notebooks/servers",
         { times: 4 },
         fixtureA
       ).as(name);
       cy.intercept(
-        "/ui-server/api/notebooks/servers?namespace=" + namespace,
+        "/ui-server/api/notebooks/servers",
         { times: 4 },
         fixtureB
       ).as(name);

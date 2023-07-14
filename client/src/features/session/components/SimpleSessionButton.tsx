@@ -31,11 +31,13 @@ import { useGetSessionsQuery } from "../sessionApi";
 interface SimpleSessionButtonProps {
   className?: string;
   fullPath: string;
+  skip?: boolean;
 }
 
 export default function SimpleSessionButton({
   className: className_,
   fullPath,
+  skip,
 }: SimpleSessionButtonProps) {
   const className = cx(
     "btn",
@@ -51,7 +53,9 @@ export default function SimpleSessionButton({
     path: fullPath,
   });
 
-  const { data: sessions, isLoading } = useGetSessionsQuery();
+  const { data: sessions, isLoading } = useGetSessionsQuery(undefined, {
+    skip: skip,
+  });
 
   const runningSession = sessions
     ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
