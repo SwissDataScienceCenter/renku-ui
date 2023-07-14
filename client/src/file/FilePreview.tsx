@@ -29,10 +29,12 @@ import { atobUTF8 } from "../utils/helpers/Encoding";
 import { encodeImageBase64 } from "../components/markdown/RenkuMarkdownWithPathTranslation";
 import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
 
+/* eslint-disable spellcheck/spell-checker */
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];
 const CODE_EXTENSIONS = [
   "bat",
   "cwl",
+  "code-workspace",
   "dcf",
   "ini",
   "jl",
@@ -44,8 +46,14 @@ const CODE_EXTENSIONS = [
   "parquet",
   "prn",
   "py",
-  "r",
+  "r", // R
+  "lintr",
+  "lock",
+  "qmd",
+  "renviron",
+  "rprofile",
   "rmd",
+  "rnw",
   "rout",
   "rproj",
   "rs",
@@ -74,7 +82,7 @@ const CODE_EXTENSIONS = [
   "f03",
   "f08", // Fortran
 ];
-/* eslint-disable */
+
 const TEXT_EXTENSIONS = [
   "csv",
   "dockerignore",
@@ -84,7 +92,7 @@ const TEXT_EXTENSIONS = [
   "renkulfsignore",
   "txt",
 ];
-/* eslint-enable */
+/* eslint-enable spellcheck/spell-checker */
 
 type HashElement = { isLfs: boolean };
 

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   faArrowAltCircleUp,
   faCheckCircle,
@@ -89,6 +89,10 @@ export function ProjectMigrationStatus({
     );
   const [startMigration, migrationStatus] =
     projectCoreApi.useStartMigrationMutation();
+  const updateProject = useCallback(
+    (scope: MigrationStartScopes) => startMigration({ branch, gitUrl, scope }),
+    [branch, gitUrl, startMigration]
+  );
 
   const sectionCyId = "project-version";
   if (isFetching || skip || checkingSupport) {
@@ -133,20 +137,6 @@ export function ProjectMigrationStatus({
   }
 
   const migrationLevel = getMigrationLevel(data, isSupported);
-  const buttonUpdate = (scope: MigrationStartScopes) => {
-    buttonDisabled = true;
-    buttonText = "Updating";
-    if (scope === MigrationStartScopes.OnlyTemplate)
-      buttonText = "Updating template";
-    if (scope === MigrationStartScopes.OnlyVersion)
-      buttonText = "Updating version";
-    startMigration({
-      gitUrl,
-      branch,
-      scope,
-    });
-  };
-
   const renkuMigrationLevel = getRenkuLevel(data, isSupported);
   const templateMigrationLevel = getTemplateLevel(data);
   const automatedUpdatePossible = canUpdateProjectAutomatically(
@@ -154,60 +144,22 @@ export function ProjectMigrationStatus({
     templateMigrationLevel
   );
 
-  let buttonAction: undefined | (() => void);
-  let buttonText: undefined | string;
   const buttonIcon = faArrowAltCircleUp;
-  let buttonDisabled = !isMaintainer || !automatedUpdatePossible;
+  const buttonDisabled =
+    !isMaintainer || !automatedUpdatePossible || migrationStatus.isLoading;
   const buttonDisabledTooltip = !isMaintainer
     ? "Only maintainers can do this."
     : !automatedUpdatePossible
     ? "Automated update not possible for this project"
     : "Operation ongoing...";
   const buttonId = "button-update-projectMigrationStatus";
-  let icon = faInfoCircle;
-  let level = "danger";
-  let title = "Unknown project status";
-  if (migrationLevel === ProjectMigrationLevel.Level5) {
-    icon = faExclamationCircle;
-    title = "Project update required";
-    buttonText = "Update";
-    buttonAction = () => {
-      buttonUpdate(MigrationStartScopes.All);
-    };
-  } else if (migrationLevel === ProjectMigrationLevel.Level4) {
-    icon = faExclamationCircle;
-    level = "warning";
-    title = "Project update required";
-    buttonText = "Update";
-    buttonAction = () => {
-      buttonUpdate(MigrationStartScopes.All);
-    };
-  } else if (migrationLevel === ProjectMigrationLevel.Level3) {
-    icon = faExclamationCircle;
-    level = "info";
-    title = "Project update available";
-    buttonText = "Update";
-    buttonAction = () => {
-      buttonUpdate(MigrationStartScopes.All);
-    };
-  } else if (migrationLevel === ProjectMigrationLevel.Level2) {
-    icon = faCheckCircle;
-    level = "info";
-    title = "Project up to date*";
-  } else if (migrationLevel === ProjectMigrationLevel.Level1) {
-    icon = faCheckCircle;
-    level = "success";
-    title = "Project up to date";
-  }
 
-  // handle maintainer status and ongoing update
-  if (!isMaintainer) {
-    buttonDisabled = true;
-  }
-  if (migrationStatus.isLoading) {
-    buttonDisabled = true;
-    buttonText = "Updating";
-  }
+  const { buttonAction, buttonText, icon, level, title } =
+    getMigrationStatusButtonAction({
+      isLoading: migrationStatus.isLoading,
+      migrationLevel,
+      updateProject,
+    });
 
   return (
     <>
@@ -228,33 +180,101 @@ export function ProjectMigrationStatus({
       />
       <RtkOrCoreError error={migrationStatus.error} />
       <ProjectMigrationStatusDetails
-        buttonUpdate={buttonUpdate}
         buttonDisable={buttonDisabled || isFetching}
         data={data}
         isMaintainer={isMaintainer}
         isSupported={isSupported}
         showDetails={showDetails}
+        updateProject={updateProject}
       />
     </>
   );
 }
 
+function getMigrationStatusButtonAction({
+  isLoading,
+  migrationLevel,
+  updateProject,
+}: {
+  isLoading: boolean;
+  migrationLevel: ProjectMigrationLevel | null;
+  updateProject: (scope: MigrationStartScopes) => void;
+}) {
+  if (migrationLevel === ProjectMigrationLevel.Level5) {
+    return {
+      buttonAction: () => updateProject(MigrationStartScopes.All),
+      buttonText: isLoading ? "Updating" : "Update",
+      icon: faExclamationCircle,
+      level: "danger",
+      title: "Project update required",
+    };
+  }
+
+  if (migrationLevel === ProjectMigrationLevel.Level4) {
+    return {
+      buttonAction: () => updateProject(MigrationStartScopes.All),
+      buttonText: isLoading ? "Updating" : "Update",
+      icon: faExclamationCircle,
+      level: "warning",
+      title: "Project update required",
+    };
+  }
+
+  if (migrationLevel === ProjectMigrationLevel.Level3) {
+    return {
+      buttonAction: () => updateProject(MigrationStartScopes.All),
+      buttonText: isLoading ? "Updating" : "Update",
+      icon: faExclamationCircle,
+      level: "info",
+      title: "Project update available",
+    };
+  }
+
+  if (migrationLevel === ProjectMigrationLevel.Level2) {
+    return {
+      buttonAction: null,
+      buttonText: null,
+      icon: faCheckCircle,
+      level: "info",
+      title: "Project up to date*",
+    };
+  }
+
+  if (migrationLevel === ProjectMigrationLevel.Level1) {
+    return {
+      buttonAction: null,
+      buttonText: null,
+      icon: faCheckCircle,
+      level: "success",
+      title: "Project up to date",
+    };
+  }
+
+  return {
+    buttonAction: null,
+    buttonText: null,
+    icon: faInfoCircle,
+    level: "danger",
+    title: "Unknown project status",
+  };
+}
+
 interface ProjectMigrationStatusDetailsProps {
   buttonDisable: boolean;
-  buttonUpdate: (scope: MigrationStartScopes) => void;
   data: MigrationStatus | undefined;
   isMaintainer: boolean;
   isSupported: boolean;
   showDetails: boolean;
+  updateProject: (scope: MigrationStartScopes) => void;
 }
 
 function ProjectMigrationStatusDetails({
   buttonDisable,
-  buttonUpdate,
   data,
   isMaintainer,
   isSupported,
   showDetails,
+  updateProject,
 }: ProjectMigrationStatusDetailsProps) {
   // Renku Version details
   const docker =
@@ -336,7 +356,7 @@ function ProjectMigrationStatusDetails({
   const renkuButtonText = buttonDisable ? "Updating version" : "Update version";
   const renkuButtonAction = !renkuVersionButtonShow
     ? undefined
-    : () => buttonUpdate(MigrationStartScopes.OnlyVersion);
+    : () => updateProject(MigrationStartScopes.OnlyVersion);
 
   const contentRenku = (
     <DetailsSection
@@ -433,7 +453,7 @@ function ProjectMigrationStatusDetails({
     : "Update template";
   const templateButtonAction = !templateButtonShow
     ? undefined
-    : () => buttonUpdate(MigrationStartScopes.OnlyTemplate);
+    : () => updateProject(MigrationStartScopes.OnlyTemplate);
 
   const contentTemplate = (
     <DetailsSection

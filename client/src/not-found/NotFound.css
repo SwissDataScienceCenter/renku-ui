@@ -11,7 +11,7 @@
 
 .not-found-box-text {
   padding: 20px;
-  background-color: #01192db3;
+  background-color: rgba(var(--bs-rk-blue-rgb), 0.7);
 }
 .not-found-box-text:first-of-type {
   padding: 20px;

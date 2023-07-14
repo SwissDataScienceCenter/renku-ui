@@ -128,6 +128,7 @@ function ProjectAddDataset(props: any) {
           notifications={props.notifications}
           params={props.params}
           toggleNewDataset={toggleNewDataset}
+          versionUrl={props.versionUrl}
         />
       ) : (
         <ProjectDatasetImport
@@ -196,6 +197,7 @@ function ProjectDatasetsView(props: any) {
   const {
     backendAvailable,
     computed: coreSupportComputed,
+    backendErrorMessage,
     versionUrl,
   } = coreSupport;
 
@@ -212,6 +214,7 @@ function ProjectDatasetsView(props: any) {
   useEffect(() => {
     const datasetsLoading = datasets.core === SpecialPropVal.UPDATING;
     if (datasetsLoading || !coreSupportComputed) return;
+    if (!backendAvailable) return;
 
     if (
       datasets.core.datasets === null ||
@@ -221,6 +224,7 @@ function ProjectDatasetsView(props: any) {
       history.replace({ state: { reload: false } });
     }
   }, [
+    backendAvailable,
     coreSupportComputed,
     datasets.core,
     fetchDatasets,
@@ -228,6 +232,30 @@ function ProjectDatasetsView(props: any) {
     location.state,
     versionUrl,
   ]);
+
+  if (coreSupportComputed && backendErrorMessage)
+    return (
+      <ErrorAlert>
+        <p>
+          <b>There was an error verifying support for this project.</b>
+        </p>
+
+        <p>
+          <code>{backendErrorMessage}</code>
+        </p>
+
+        <p className="mb-0">
+          You can try to{" "}
+          <a
+            className="btn btn-danger"
+            href={window.location.href}
+            onClick={() => window.location.reload()}
+          >
+            reload the page
+          </a>
+        </p>
+      </ErrorAlert>
+    );
 
   if (coreSupportComputed && !backendAvailable) {
     const settingsUrl = Url.get(Url.pages.project.settings, {
@@ -345,7 +373,11 @@ function ProjectDatasetsView(props: any) {
                   url={props.datasetsUrl}
                 />
               </Col>
-              <ProjectAddDataset key="projectsAddDataset" {...props} />
+              <ProjectAddDataset
+                key="projectsAddDataset"
+                {...props}
+                versionUrl={versionUrl}
+              />
             </>
           )}
         />
@@ -373,6 +405,7 @@ function ProjectDatasetsView(props: any) {
                 model={props.model}
                 notifications={props.notifications}
                 params={props.params}
+                versionUrl={versionUrl}
               />
             </>
           )}

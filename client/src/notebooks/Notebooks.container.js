@@ -32,6 +32,15 @@ import { StatusHelper } from "../model/Model";
 import { Url } from "../utils/helpers/url";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import ShowSessionFullscreen from "./components/SessionFullScreen";
+import { versionsApi } from "../features/versions/versionsApi";
+import { projectCoreApi } from "../features/project/projectCoreApi";
+import { computeBackendData } from "../features/project/useProjectCoreSupport";
+import { dataServicesApi } from "../features/dataServices/dataServicesApi";
+import {
+  setDefaultUrl,
+  setSessionClass,
+  setStorage,
+} from "../features/session/startSessionOptionsSlice";
 
 /**
  * This component is needed to map properties from the redux store and keep local states cleared by the
@@ -343,6 +352,9 @@ class StartNotebookServer extends Component {
       showShareLinkModal: props.location?.state?.showShareLinkModal,
       filePath: props.location?.state?.filePath,
       scope: props.scope,
+      projectConfig: null,
+      resourcePools: null,
+      rtkQuerySubscriptions: [],
     };
 
     this.handlers = {
@@ -385,6 +397,7 @@ class StartNotebookServer extends Component {
   componentWillUnmount() {
     this.coordinator.stopNotebookPolling();
     this.coordinator.stopCiPolling();
+    this.state.rtkQuerySubscriptions.forEach((unsubscribe) => unsubscribe());
     this._isMounted = false;
   }
 
@@ -658,8 +671,78 @@ class StartNotebookServer extends Component {
       }
 
       this.coordinator.setCommit(commit);
+      await this.getProjectConfig();
+      await this.getResourcePools();
       this.refreshPipelines();
     }
+  }
+
+  async getProjectConfig() {
+    const metadata = this.props.model.get("project.metadata");
+    const { defaultBranch, externalUrl: projectRepositoryUrl } = metadata;
+
+    const store = this.props.model.reduxStore;
+
+    // Re-implementation of useCoreSupport() without hooks
+    const getMigrationStatus = store.dispatch(
+      projectCoreApi.endpoints.getMigrationStatus.initiate({
+        gitUrl: projectRepositoryUrl ?? "",
+        branch: defaultBranch,
+      })
+    );
+    this.state.rtkQuerySubscriptions.push(getMigrationStatus.unsubscribe);
+
+    const getCoreVersions = store.dispatch(
+      versionsApi.endpoints.getCoreVersions.initiate()
+    );
+    this.state.rtkQuerySubscriptions.push(getCoreVersions.unsubscribe);
+
+    const { data: migrationStatus } = await getMigrationStatus;
+    const { data: coreVersions } = await getCoreVersions;
+
+    const availableVersions = coreVersions?.metadataVersions;
+    const projectVersion =
+      migrationStatus?.details?.core_compatibility_status.type === "detail"
+        ? parseInt(
+            migrationStatus.details.core_compatibility_status
+              .project_metadata_version
+          )
+        : undefined;
+
+    const coreSupport = computeBackendData({
+      availableVersions,
+      projectVersion,
+    });
+
+    // Get project config
+    const getConfig = store.dispatch(
+      projectCoreApi.endpoints.getConfig.initiate({
+        projectRepositoryUrl,
+        versionUrl: coreSupport.versionUrl,
+      })
+    );
+    this.state.rtkQuerySubscriptions.push(getConfig.unsubscribe);
+
+    const { data: projectConfig } = await getConfig;
+    this.state.projectConfig = projectConfig;
+  }
+
+  async getResourcePools() {
+    const store = this.props.model.reduxStore;
+    const projectConfig = this.state.projectConfig;
+    const getResourcePools = store.dispatch(
+      dataServicesApi.endpoints.getResourcePools.initiate({
+        cpuRequest: projectConfig?.config.sessions?.legacyConfig?.cpuRequest,
+        gpuRequest: projectConfig?.config.sessions?.legacyConfig?.gpuRequest,
+        memoryRequest:
+          projectConfig?.config.sessions?.legacyConfig?.memoryRequest,
+        storageRequest: projectConfig?.config.sessions?.storage,
+      })
+    );
+    this.state.rtkQuerySubscriptions.push(getResourcePools.unsubscribe);
+
+    const { data: resourcePools } = await getResourcePools;
+    this.state.resourcePools = resourcePools;
   }
 
   async refreshPipelines(force = false) {
@@ -720,6 +803,48 @@ class StartNotebookServer extends Component {
         const fetched =
           data.notebooks.fetched && data.options.fetched && !ciStatus.ongoing;
         if (fetched) {
+          // Check that we can auto-assign a session class
+          const resourcePools = this.state.resourcePools;
+          const defaultSessionClass = resourcePools
+            ?.flatMap((pool) => pool.classes)
+            .find((c) => c.default);
+          const firstMatchingSessionClass = defaultSessionClass?.matching
+            ? defaultSessionClass
+            : resourcePools
+                ?.filter((pool) => pool.default)
+                .flatMap((pool) => pool.classes)
+                .find((c) => c.matching);
+          if (firstMatchingSessionClass == null) {
+            this.setState({
+              autostartReady: true,
+              autostartTried: true,
+              launchError: {
+                frontendError: true,
+                pipelineError: false,
+                errorMessage:
+                  "The session cannot be started automatically, please select session options below.",
+              },
+              starting: false,
+            });
+            return;
+          }
+
+          const store = this.props.model.reduxStore;
+          await store.dispatch(setSessionClass(firstMatchingSessionClass.id));
+          if (
+            this.state.projectConfig?.config.sessions?.storage != null &&
+            this.state.projectConfig.config.sessions.storage > 0
+          ) {
+            await store.dispatch(
+              setStorage(this.state.projectConfig.config.sessions.storage)
+            );
+          }
+          if (this.state.projectConfig?.config.sessions?.defaultUrl) {
+            await store.dispatch(
+              setDefaultUrl(this.state.projectConfig.config.sessions.defaultUrl)
+            );
+          }
+
           // start when the image is available
           if (ciStatus.available) {
             this.setState({ autostartReady: true });

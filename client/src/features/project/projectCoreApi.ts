@@ -15,9 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+import {
+  FetchBaseQueryError,
+  createApi,
+  fetchBaseQuery,
+} from "@reduxjs/toolkit/query/react";
 import type {
+  CoreServiceParams,
   GetDatasetFilesParams,
   GetDatasetFilesResponse,
   IDatasetFiles,
@@ -27,12 +32,72 @@ import type {
   MigrationStatus,
   MigrationStatusParams,
   MigrationStatusResponse,
+  ProjectConfig,
+  ProjectConfigSection,
 } from "./Project.d";
 import { MigrationStartScopes } from "./projectEnums";
 
-function versionedUrlEndpoint(endpoint: string, versionUrl?: string) {
-  const urlPath = versionUrl ? `${versionUrl}/${endpoint}` : endpoint;
-  return `/renku${urlPath}`;
+interface GetConfigParams extends CoreServiceParams {
+  projectRepositoryUrl: string;
+  branch?: string;
+}
+
+interface GetConfigRawResponse {
+  result?: {
+    config?: GetConfigRawResponseSection;
+    default?: GetConfigRawResponseSection;
+  };
+  error?: unknown;
+}
+
+const KNOWN_CONFIG_KEYS = [
+  "interactive.default_url",
+  "interactive.lfs_auto_fetch",
+  "interactive.disk_request",
+  "interactive.cpu_request",
+  "interactive.mem_request",
+  "interactive.gpu_request",
+  "interactive.image",
+] as const;
+
+type GetConfigRawResponseSectionKey = (typeof KNOWN_CONFIG_KEYS)[number];
+
+type GetConfigRawResponseSection = {
+  [Key in GetConfigRawResponseSectionKey]?: string;
+};
+
+interface UpdateConfigParams extends GetConfigParams {
+  projectRepositoryUrl: string;
+  branch?: string;
+  update: {
+    [key: string]: string | null;
+  };
+}
+
+interface UpdateConfigResponse {
+  branch: string;
+  update: {
+    [key: string]: string | null;
+  };
+}
+
+interface UpdateConfigRawResponse {
+  result?: {
+    config?: { [key: string]: string | null };
+    remote_branch?: string;
+  };
+}
+
+function versionedUrlEndpoint(
+  endpoint: string,
+  versionUrl: string | undefined | null
+) {
+  const endpoint_ = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
+  const versionUrl_ = versionUrl?.startsWith("/")
+    ? versionUrl.slice(1)
+    : versionUrl;
+  const urlPath = versionUrl_ ? `${versionUrl_}/${endpoint_}` : endpoint_;
+  return `/renku/${urlPath}`;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,7 +109,7 @@ function urlWithQueryParams(url: string, queryParams: any) {
 export const projectCoreApi = createApi({
   reducerPath: "projectCore",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
-  tagTypes: ["project", "project-status"],
+  tagTypes: ["project", "project-status", "ProjectConfig"],
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getDatasetFiles: builder.query<IDatasetFiles, GetDatasetFilesParams>({
@@ -171,6 +236,52 @@ export const projectCoreApi = createApi({
         { type: "project-status", id: migrationParams.gitUrl },
       ],
     }),
+    getConfig: builder.query<ProjectConfig, GetConfigParams>({
+      query: ({ branch, projectRepositoryUrl, versionUrl }) => {
+        const params = {
+          git_url: projectRepositoryUrl,
+          ...(branch ? { branch } : {}),
+        };
+        return {
+          url: versionedUrlEndpoint("config.show", versionUrl),
+          params,
+          validateStatus: (response, body) =>
+            response.status >= 200 && response.status < 300 && !body.error,
+        };
+      },
+      transformResponse: (response: GetConfigRawResponse) =>
+        transformGetConfigRawResponse(response),
+      transformErrorResponse: (error) => transformRenkuCoreErrorResponse(error),
+      providesTags: (_result, _error, arg) => [
+        { type: "ProjectConfig", id: arg.projectRepositoryUrl },
+      ],
+    }),
+    updateConfig: builder.mutation<UpdateConfigResponse, UpdateConfigParams>({
+      query: ({ branch, projectRepositoryUrl, versionUrl, update }) => {
+        const body = {
+          git_url: projectRepositoryUrl,
+          ...(branch ? { branch } : {}),
+          config: update,
+        };
+        return {
+          url: versionedUrlEndpoint("config.set", versionUrl),
+          method: "POST",
+          body,
+          validateStatus: (response, body) =>
+            response.status >= 200 && response.status < 300 && !body.error,
+        };
+      },
+      transformResponse: ({ result }: UpdateConfigRawResponse) => {
+        return {
+          branch: result?.remote_branch ?? "",
+          update: result?.config ?? {},
+        };
+      },
+      transformErrorResponse: (error) => transformRenkuCoreErrorResponse(error),
+      invalidatesTags: (_result, _error, arg) => [
+        { type: "ProjectConfig", id: arg.projectRepositoryUrl },
+      ],
+    }),
   }),
 });
 
@@ -178,4 +289,106 @@ export const {
   useGetDatasetFilesQuery,
   useGetMigrationStatusQuery,
   useStartMigrationMutation,
+  useGetConfigQuery,
+  useUpdateConfigMutation,
 } = projectCoreApi;
+
+const transformGetConfigRawResponse = (
+  response: GetConfigRawResponse
+): ProjectConfig => {
+  if (response.error) {
+    throw response.error;
+  }
+
+  const projectSessionsConfig = response.result?.config ?? {};
+  const defaultSessionsConfig = response.result?.default ?? {};
+
+  const projectLegacySessionsConfig: NonNullable<
+    ProjectConfigSection["sessions"]
+  >["legacyConfig"] = {
+    cpuRequest: safeParseFloat(
+      projectSessionsConfig["interactive.cpu_request"]
+    ),
+    memoryRequest: safeParseInt(
+      projectSessionsConfig["interactive.mem_request"]
+    ),
+    gpuRequest: safeParseInt(projectSessionsConfig["interactive.gpu_request"]),
+  };
+  const defaultLegacySessionsConfig: NonNullable<
+    ProjectConfigSection["sessions"]
+  >["legacyConfig"] = {
+    cpuRequest: safeParseFloat(
+      defaultSessionsConfig["interactive.cpu_request"]
+    ),
+    memoryRequest: safeParseInt(
+      defaultSessionsConfig["interactive.mem_request"]
+    ),
+    gpuRequest: safeParseInt(defaultSessionsConfig["interactive.gpu_request"]),
+  };
+
+  const projectUnknownSessionsConfig = Object.keys(projectSessionsConfig)
+    .filter((key) => key.startsWith(`${SESSION_CONFIG_PREFIX}.`))
+    .filter((key) => !(KNOWN_CONFIG_KEYS as readonly string[]).includes(key))
+    .reduce(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (obj, key) => ({ ...obj, [key]: (projectSessionsConfig as any)[key] }),
+      {}
+    );
+
+  return {
+    config: {
+      sessions: {
+        defaultUrl: projectSessionsConfig["interactive.default_url"],
+        storage: safeParseInt(
+          projectSessionsConfig["interactive.disk_request"]
+        ),
+        lfsAutoFetch:
+          projectSessionsConfig["interactive.lfs_auto_fetch"]
+            ?.trim()
+            .toLowerCase() === "true",
+        dockerImage: projectSessionsConfig["interactive.image"],
+        legacyConfig: projectLegacySessionsConfig,
+        unknownConfig: projectUnknownSessionsConfig,
+      },
+    },
+    default: {
+      sessions: {
+        defaultUrl: defaultSessionsConfig["interactive.default_url"],
+        storage: safeParseInt(
+          defaultSessionsConfig["interactive.disk_request"]
+        ),
+        legacyConfig: defaultLegacySessionsConfig,
+      },
+    },
+    rawResponse: response.result ?? {},
+  };
+};
+
+const safeParseInt = (str: string | undefined): number | undefined => {
+  const parsed = parseInt(str ?? "", 10);
+  if (isNaN(parsed)) return undefined;
+  return parsed;
+};
+
+const safeParseFloat = (str: string | undefined): number | undefined => {
+  const parsed = parseFloat(str ?? "");
+  if (isNaN(parsed)) return undefined;
+  return parsed;
+};
+
+const SESSION_CONFIG_PREFIX = "interactive";
+
+const transformRenkuCoreErrorResponse = (
+  error: FetchBaseQueryError
+): FetchBaseQueryError => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data = error.data as any;
+  if (!data.error || !data.error.code) {
+    return error;
+  }
+  return {
+    status: "CUSTOM_ERROR",
+    error: "renku-core error",
+    data: data.error,
+  };
+};

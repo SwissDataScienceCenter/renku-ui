@@ -92,7 +92,10 @@ describe("Sentry settings", () => {
       FAKE.version
     );
     expect(sentrySettings).toBeTruthy();
-    expect(sentrySettings.SDK_NAME).toBe("sentry.javascript.browser");
+    expect(Object.keys(sentrySettings)).toContain("SDK_VERSION");
+    expect(typeof sentrySettings.SDK_VERSION).toBe("string");
+    expect(Object.keys(sentrySettings)).toContain("captureEvent");
+    expect(typeof sentrySettings.captureEvent).toBe("function");
   });
 });
 

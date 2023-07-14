@@ -1,5 +1,56 @@
 # Changes
 
+## [3.9.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.8.1...3.9.0) (2023-07-07)
+
+### Features
+
+- update session start options and project settings to use compute resource pools ([#2517](https://github.com/SwissDataScienceCenter/renku-ui/issues/2517), [#2484](https://github.com/SwissDataScienceCenter/renku-ui/issues/2484))
+- support common R file extensions ([#2637](https://github.com/SwissDataScienceCenter/renku-ui/issues/2637), [#2638](https://github.com/SwissDataScienceCenter/renku-ui/issues/2638))
+
+### BREAKING CHANGES
+
+Sessions started from the UI will now use provisioned resource pools and session classes.
+
+- Support the new session classes provided by the compute resource pools.
+- Requires renku-notebooks 1.16.0 or greater
+
+## [3.8.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.8.0...3.8.1) (2023-07-06)
+
+### Bug Fixes
+
+- do not query for datasets if no backend is available for the project version ([#2636](https://github.com/SwissDataScienceCenter/renku-ui/issues/2636))
+- prevent errors when building with npm
+
+## [3.8.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.7.0...3.8.0) (2023-07-05)
+
+### Features
+
+- handle responses from the new core versions endpoint ([#2134](https://github.com/SwissDataScienceCenter/renku-ui/issues/2134))
+- surface backend error message on dataset list page ([#2629](https://github.com/SwissDataScienceCenter/renku-ui/issues/2629))
+
+### Bug Fixes
+
+- prevent API failures for projects on older metadata versions ([#2627](https://github.com/SwissDataScienceCenter/renku-ui/issues/2627))
+
+### BREAKING CHANGES
+
+- Requires renku-core v2.6.0 or greater
+
+## [3.7.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.6.0...3.7.0) (2023-06-30)
+
+### Features
+
+- add a customizable message to the dashboard page ([#2592](https://github.com/SwissDataScienceCenter/renku-ui/issues/2592), [#2434](https://github.com/SwissDataScienceCenter/renku-ui/issues/2434))
+
+### Bug Fixes
+
+- dataset delete is possible again ([#2607](https://github.com/SwissDataScienceCenter/renku-ui/issues/2607))
+- improve showing the error details for sessions ([#2611](https://github.com/SwissDataScienceCenter/renku-ui/issues/2611), [#2504](https://github.com/SwissDataScienceCenter/renku-ui/issues/2504))
+- fix sessions not showing on dashboard ([#2608](https://github.com/SwissDataScienceCenter/renku-ui/issues/2608), [#2593](https://github.com/SwissDataScienceCenter/renku-ui/issues/2593))
+- allow up to 100 namespaces and sort them ([#2606](https://github.com/SwissDataScienceCenter/renku-ui/issues/2606))
+- correctly determine if a dataset is in the KG ([#2600](https://github.com/SwissDataScienceCenter/renku-ui/issues/2600))
+- more robust handling of markdown to prevent crashes ([#2597](https://github.com/SwissDataScienceCenter/renku-ui/issues/2597))
+
 ## [3.6.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.5.0...3.6.0) (2023-06-07)
 
 ### Features
