@@ -114,35 +114,44 @@ function SessionLogs(props) {
 }
 
 function SessionJupyter(props) {
-  const { notebook, height = "800px", ready } = props;
+  const { height = "800px", ready, notebook } = props;
   const history = useHistory();
 
+  if (!notebook.available) return null;
+
   let content = null;
-  if (notebook.available) {
-    const status = notebook.data.status.state;
-    if (status === SessionStatus.running) {
-      const locationFilePath = history?.location?.state?.filePath;
-      const notebookUrl = locationFilePath
-        ? appendCustomUrlPath({
-            notebookUrl: notebook.data.url,
-            customUrlPath: `/lab/tree/${locationFilePath}`,
-          })
-        : notebook.data.url;
-      content = (
-        <iframe
-          id="session-iframe"
-          title="session iframe"
-          src={notebookUrl}
-          style={{ display: ready ? "block" : "none" }}
-          width="100%"
-          height={height}
-          referrerPolicy="origin"
-          sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
-        />
-      );
-    } else if (status === SessionStatus.stopping) {
-      content = <Loader />;
-    }
+  const status = notebook.data?.status?.state;
+  if (status === SessionStatus.running) {
+    const locationFilePath = history?.location?.state?.filePath;
+    const notebookUrl = locationFilePath
+      ? appendCustomUrlPath({
+          notebookUrl: notebook.data.url,
+          customUrlPath: `/lab/tree/${locationFilePath}`,
+        })
+      : notebook.data.url;
+
+    // make it invisible and prevent scrollbars until it's ready
+    const style = !ready
+      ? {
+          position: "absolute",
+          top: 0,
+          visibility: "hidden",
+        }
+      : {};
+    content = (
+      <iframe
+        className="d-block w-100"
+        height={height}
+        id="session-iframe"
+        referrerPolicy="origin"
+        sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
+        src={notebookUrl}
+        style={style}
+        title="session iframe"
+      />
+    );
+  } else if (status === SessionStatus.stopping) {
+    content = <Loader />;
   }
   return content;
 }
