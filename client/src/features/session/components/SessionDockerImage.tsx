@@ -16,7 +16,19 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  faBook,
+  faCog,
+  faCogs,
+  faExclamationTriangle,
+  faInfoCircle,
+  faLink,
+  faRedo,
+  faSyncAlt,
+  faUserClock,
+} from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Loader } from "../../../components/Loader";
 import { PipelineJob } from "../../pipelines/pipelines.types";
@@ -36,6 +48,10 @@ import {
   setPinnedDockerImage,
   useStartSessionOptionsSelector,
 } from "../startSessionOptionsSlice";
+import { Badge, Button, Collapse, FormText, Input } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ExternalLink } from "../../../components/ExternalLinks";
+import { Docs } from "../../../utils/constants/Docs";
 
 export default function SessionDockerImage() {
   const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
@@ -103,9 +119,24 @@ interface SessionPinnedDockerImageProps {
 function SessionPinnedDockerImage({
   dockerImage,
 }: SessionPinnedDockerImageProps) {
-  const { data: dockerImageStatus, isFetching } = useGetDockerImageQuery({
-    image: dockerImage,
-  });
+  const status = useStartSessionOptionsSelector(
+    ({ dockerImageStatus }) => dockerImageStatus
+  );
+
+  const { data: dockerImageStatus, isFetching } = useGetDockerImageQuery(
+    {
+      image: dockerImage,
+    },
+    {
+      pollingInterval:
+        status === "not-available"
+          ? SESSION_CI_PIPELINE_POLLING_INTERVAL_MS
+          : 0,
+    }
+  );
+
+  const [show, setShow] = useState<boolean>(false);
+  const toggleShow = useCallback(() => setShow((show) => !show), []);
 
   const dispatch = useDispatch();
 
@@ -136,21 +167,58 @@ function SessionPinnedDockerImage({
     );
   }
 
-  if (dockerImageStatus == null) {
-    return (
-      <div className="field-group">
-        <div className="form-label">
-          Error: could not get Docker image availability for{" "}
-          <code>{dockerImage}</code>
-        </div>
-      </div>
+  const moreInfoButton = (
+    <Button className={cx("ms-3", "p-0")} color="link" onClick={toggleShow}>
+      more info
+    </Button>
+  );
+  const pinnedImagesDoc = (
+    <ExternalLink
+      role="text"
+      iconSup={true}
+      iconAfter={true}
+      url={Docs.rtdReferencePage("templates.html#pin-a-docker-image")}
+      title="pinned image"
+    />
+  );
+  const badge =
+    dockerImageStatus == null || !dockerImageStatus.available ? (
+      <Badge color="danger">pinned not available</Badge>
+    ) : (
+      <Badge color="success">pinned available</Badge>
     );
-  }
+  const moreInfo =
+    dockerImageStatus == null || !dockerImageStatus.available ? (
+      <>
+        <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" />{" "}
+        Pinned Docker image not found. Since this project specifies a{" "}
+        {pinnedImagesDoc}, it is unlikely to work with a base image.
+      </>
+    ) : (
+      <>
+        <Input
+          type="text"
+          disabled={true}
+          id="customImage"
+          value={dockerImage}
+        ></Input>
+        <FormText>
+          <FontAwesomeIcon icon={faInfoCircle} /> This project specifies a{" "}
+          {pinnedImagesDoc}. A pinned image has advantages for projects with
+          many forks, but it will not reflect changes to the{" "}
+          <code>Dockerfile</code> or any project dependency files.
+        </FormText>
+      </>
+    );
 
   return (
     <div className="field-group">
       <div className="form-label">
-        Docker image: {JSON.stringify(dockerImageStatus?.available)}
+        Docker image: {badge}
+        {moreInfoButton}
+        <Collapse isOpen={show}>
+          <div className="mt-3">{moreInfo}</div>
+        </Collapse>
       </div>
     </div>
   );
