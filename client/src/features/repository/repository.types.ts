@@ -84,3 +84,8 @@ export interface GetRepositoryCommitsParams {
   perPage?: number;
   projectId: string;
 }
+
+export interface GetConfigFromRepositoryParams {
+  commit: string;
+  projectId: number;
+}

@@ -17,25 +17,25 @@
  */
 
 import React, { useEffect } from "react";
-import registryApi from "../../registry/registryApi";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { useCoreSupport } from "../../project/useProjectCoreSupport";
-import { useGetConfigQuery } from "../../project/projectCoreApi";
 import { Loader } from "../../../components/Loader";
-import { useGetDockerImageQuery } from "../sessionApi";
-import {
-  useStartSessionOptionsSelector,
-  setDockerImageStatus,
-  setPinnedDockerImage,
-  setDockerImageBuildStatus,
-} from "../startSessionOptionsSlice";
+import { PipelineJob } from "../../pipelines/pipelines.types";
 import pipelinesApi from "../../pipelines/pipelinesApi";
+import { useCoreSupport } from "../../project/useProjectCoreSupport";
+import registryApi from "../../registry/registryApi";
+import usePatchedProjectConfig from "../hooks/usePatchedProjectConfig.hook";
+import { useGetDockerImageQuery } from "../sessionApi";
 import {
   SESSION_CI_IMAGE_BUILD_JOB,
   SESSION_CI_PIPELINE_POLLING_INTERVAL_MS,
 } from "../startSessionOptions.constants";
 import { DockerImageStatus } from "../startSessionOptions.types";
-import { PipelineJob } from "../../pipelines/pipelines.types";
+import {
+  setDockerImageBuildStatus,
+  setDockerImageStatus,
+  setPinnedDockerImage,
+  useStartSessionOptionsSelector,
+} from "../startSessionOptionsSlice";
 
 export default function SessionDockerImage() {
   const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
@@ -44,25 +44,29 @@ export default function SessionDockerImage() {
   const defaultBranch = useSelector<RootStateOrAny, string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
+  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
   const { computed: coreSupportComputed, versionUrl } = coreSupport;
 
-  // TODO: We should get the commit here, not the branch
-  // const branch = useStartSessionOptionsSelector(({ branch }) => branch);
   const commit = useStartSessionOptionsSelector(({ commit }) => commit);
 
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
-    useGetConfigQuery(
-      {
-        branch: commit,
-        projectRepositoryUrl,
-        versionUrl,
-      },
-      { skip: !coreSupportComputed || !commit }
-    );
+    usePatchedProjectConfig({
+      commit,
+      gitLabProjectId: gitLabProjectId ?? 0,
+      projectRepositoryUrl,
+      versionUrl,
+      skip: !coreSupportComputed,
+    });
+
+  useEffect(() => {
+    console.log({ commit });
+  }, [commit]);
 
   useEffect(() => {
     console.log({ coreSupport });

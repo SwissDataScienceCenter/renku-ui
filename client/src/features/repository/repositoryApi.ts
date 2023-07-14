@@ -20,12 +20,17 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import processPaginationHeaders from "../../api-client/pagination";
 import {
   GetAllRepositoryBranchesParams,
+  GetConfigFromRepositoryParams,
   GetRepositoryCommitParams,
   GetRepositoryCommitsParams,
   Pagination,
   RepositoryBranch,
   RepositoryCommit,
 } from "./repository.types";
+import { RENKU_CONFIG_FILE_PATH } from "./repository.constants";
+import { parseINIString } from "../../utils/helpers/HelperFunctions";
+import { ProjectConfig } from "../project/Project";
+import { transformGetConfigRawResponse } from "../project/projectCoreApi";
 
 const repositoryApi = createApi({
   reducerPath: "repository",
@@ -86,6 +91,61 @@ const repositoryApi = createApi({
               "Branch",
             ]
           : ["Branch"],
+    }),
+    getConfigFromRepository: builder.query<
+      ProjectConfig,
+      GetConfigFromRepositoryParams
+    >({
+      queryFn: async (
+        { commit, projectId },
+        _queryApi,
+        _extraOptions,
+        fetchBaseQuery
+      ) => {
+        const filePath = encodeURIComponent(RENKU_CONFIG_FILE_PATH);
+        const url = `${projectId}/repository/files/${filePath}/raw?ref=${commit}`;
+        const result = await fetchBaseQuery({ url, responseHandler: "text" });
+
+        if (result.error != null) {
+          return result;
+        }
+
+        const { data, error } = (() => {
+          try {
+            return {
+              data: parseINIString(result.data) as Record<
+                string,
+                Record<string, string>
+              >,
+              error: null,
+            };
+          } catch (error) {
+            return { data: null, error };
+          }
+        })();
+        if (data == null) {
+          return {
+            error: {
+              data: result.data as string,
+              error: `${error}`,
+              originalStatus: result.meta?.response?.status ?? 0,
+              status: "PARSING_ERROR",
+            },
+          };
+        }
+
+        const flattened = Object.entries(data.interactive ?? {}).reduce(
+          (obj, [key, value]) => ({ ...obj, [`interactive.${key}`]: value }),
+          {} as Record<string, string>
+        );
+        const projectConfig = transformGetConfigRawResponse({
+          result: {
+            config: flattened,
+          },
+        });
+
+        return { data: projectConfig };
+      },
     }),
     getRepositoryCommit: builder.query<
       RepositoryCommit,
@@ -157,6 +217,7 @@ const repositoryApi = createApi({
 export default repositoryApi;
 export const {
   useGetAllRepositoryBranchesQuery,
+  useGetConfigFromRepositoryQuery,
   useGetRepositoryCommitQuery,
   useGetRepositoryCommitsQuery,
 } = repositoryApi;
