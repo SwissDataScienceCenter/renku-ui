@@ -147,15 +147,17 @@ function SessionPinnedDockerImage({
 
   // Set the image status
   useEffect(() => {
-    const status: DockerImageStatus = isLoading
+    const newStatus: DockerImageStatus = isLoading
       ? "unknown"
       : dockerImageStatus == null
       ? "not-available"
       : dockerImageStatus.available
       ? "available"
       : "not-available";
-    dispatch(setDockerImageStatus(status));
-  }, [dispatch, dockerImageStatus, isLoading]);
+    if (newStatus !== status) {
+      dispatch(setDockerImageStatus(newStatus));
+    }
+  }, [dispatch, dockerImageStatus, isLoading, status]);
 
   if (status === "unknown") {
     return (
