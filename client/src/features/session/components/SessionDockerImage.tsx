@@ -123,7 +123,7 @@ function SessionPinnedDockerImage({
     ({ dockerImageStatus }) => dockerImageStatus
   );
 
-  const { data: dockerImageStatus, isFetching } = useGetDockerImageQuery(
+  const { data: dockerImageStatus, isLoading } = useGetDockerImageQuery(
     {
       image: dockerImage,
     },
@@ -147,7 +147,7 @@ function SessionPinnedDockerImage({
 
   // Set the image status
   useEffect(() => {
-    const status: DockerImageStatus = isFetching
+    const status: DockerImageStatus = isLoading
       ? "unknown"
       : dockerImageStatus == null
       ? "not-available"
@@ -155,9 +155,9 @@ function SessionPinnedDockerImage({
       ? "available"
       : "not-available";
     dispatch(setDockerImageStatus(status));
-  }, [dispatch, dockerImageStatus, isFetching]);
+  }, [dispatch, dockerImageStatus, isLoading]);
 
-  if (isFetching) {
+  if (status === "unknown") {
     return (
       <div className="field-group">
         <div className="form-label">
@@ -182,13 +182,13 @@ function SessionPinnedDockerImage({
     />
   );
   const badge =
-    dockerImageStatus == null || !dockerImageStatus.available ? (
+    status === "not-available" ? (
       <Badge color="danger">pinned not available</Badge>
     ) : (
       <Badge color="success">pinned available</Badge>
     );
   const moreInfo =
-    dockerImageStatus == null || !dockerImageStatus.available ? (
+    status === "not-available" ? (
       <>
         <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" />{" "}
         Pinned Docker image not found. Since this project specifies a{" "}
