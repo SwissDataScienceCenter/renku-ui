@@ -28,7 +28,7 @@ import type {
 } from "react-hook-form";
 import { Input, FormGroup, FormText, Label } from "reactstrap";
 
-import FormLabel from "../formgenerator/fields/FormLabel";
+import FormLabel from "./FormLabel";
 import { ErrorLabel } from "../formlabels/FormLabels";
 
 import CkEditor from "./CkEditor";

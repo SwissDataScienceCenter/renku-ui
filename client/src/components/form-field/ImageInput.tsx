@@ -21,7 +21,7 @@ import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
 import FormGeneratorImageInput, {
   ImageInputMode,
-} from "../formgenerator/fields/ImageInput";
+} from "./FormGeneratorImageInput";
 
 type ImageInputImage = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
