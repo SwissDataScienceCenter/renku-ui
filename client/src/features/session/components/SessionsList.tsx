@@ -33,6 +33,8 @@ import { Session, Sessions } from "../sessions.types";
 import SessionButton from "./SessionButton";
 import SessionRowCommitInfo from "./SessionRowCommitInfo";
 import { Col, Row } from "reactstrap";
+import Media from "react-media";
+import Sizes from "../../../utils/constants/Media";
 
 interface SessionsListProps {
   sessions: Sessions;
@@ -90,21 +92,28 @@ function SessionListItem({ session }: SessionListItemProps) {
   };
   const image = session.image;
 
-  // TODO(@leafty): compact row
+  const rowProps: SessionRowProps = {
+    annotations: cleanAnnotations,
+    details,
+    image,
+    name: session.name,
+    repositoryLinks,
+    resourceRequests,
+    startTime,
+    status,
+    uid,
+  };
+
   return (
-    <>
-      <SessionRowFull
-        annotations={cleanAnnotations}
-        details={details}
-        image={image}
-        name={session.name}
-        repositoryLinks={repositoryLinks}
-        resourceRequests={resourceRequests}
-        startTime={startTime}
-        status={status}
-        uid={uid}
-      />
-    </>
+    <Media query={Sizes.md}>
+      {(matches) =>
+        matches ? (
+          <SessionRowFull {...rowProps} />
+        ) : (
+          <SessionRowCompact {...rowProps} />
+        )
+      }
+    </Media>
   );
 }
 
@@ -189,7 +198,6 @@ function SessionRowFull({
 
   return (
     <Col
-      data-cy="session-container"
       className={cx(
         "d-flex",
         "flex-row",
@@ -201,6 +209,7 @@ function SessionRowFull({
         "rk-search-result-100",
         "cursor-auto"
       )}
+      data-cy="session-container"
       xs={12}
     >
       <div className={cx("d-flex", "flex-grow-1")}>
@@ -292,5 +301,112 @@ function SessionRowResourceRequests({
         </span>
       ))}
     </>
+  );
+}
+
+function SessionRowCompact({
+  annotations,
+  details,
+  image,
+  name,
+  repositoryLinks,
+  resourceRequests,
+  startTime,
+  status,
+  uid,
+}: SessionRowProps) {
+  const icon = (
+    <span>
+      <SessionListRowStatusIcon
+        annotations={annotations as any}
+        details={details}
+        image={image}
+        status={status}
+        uid={uid}
+      />
+    </span>
+  );
+
+  const branch = (
+    <>
+      <span className="fw-bold">Branch: </span>
+      <ExternalLink
+        role="text"
+        showLinkIcon={true}
+        title={annotations["branch"]}
+        url={repositoryLinks.branch}
+      />
+      <br />
+    </>
+  );
+
+  const commit = (
+    <>
+      <span className="fw-bold">Commit: </span>
+      <ExternalLink
+        role="text"
+        showLinkIcon={true}
+        title={`${annotations["commit-sha"]}`.substring(0, 8)}
+        url={repositoryLinks.commit}
+      />{" "}
+      <SessionRowCommitInfo
+        commitSha={annotations["commit-sha"] as string | undefined}
+        projectId={annotations["gitlabProjectId"] as string | undefined}
+      />
+      <br />
+    </>
+  );
+
+  const statusOut = (
+    <span>
+      <SessionListRowStatus
+        annotations={annotations as any}
+        details={details}
+        startTime={startTime}
+        status={status}
+        uid={uid}
+      />
+    </span>
+  );
+
+  const actions = (
+    <span>
+      <SessionButton
+        fullPath={`${annotations["namespace"]}/${annotations["projectName"]}`}
+        runningSessionName={name}
+      />
+      <EnvironmentLogs annotations={annotations as any} name={name} />
+    </span>
+  );
+
+  return (
+    <Col
+      className={cx(
+        "rk-search-result-compact",
+        "bg-white",
+        "cursor-auto",
+        "border-radius-8",
+        "border-0"
+      )}
+      data-cy="session-container"
+    >
+      <span className="fw-bold">Project: </span>
+      <span>
+        <SessionRowProject annotations={annotations} />
+      </span>
+      <br />
+      {branch}
+      {commit}
+
+      <span className="fw-bold">Resources: </span>
+      <span>
+        <SessionRowResourceRequests resourceRequests={resourceRequests} />
+      </span>
+      <br />
+      <div className="d-inline-flex">
+        {icon} &nbsp; {statusOut}
+      </div>
+      <div className="mt-1">{actions}</div>
+    </Col>
   );
 }
