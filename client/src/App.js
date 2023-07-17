@@ -262,10 +262,9 @@ function CentralContentContainer(props) {
               />
             )}
           />
-          <Route
-            path="/datasets"
-            render={() => <Redirect to="/search?type=dataset" />}
-          />
+          <Route path="/datasets">
+            <Redirect to="/search?type=dataset" />
+          </Route>
           <Route
             path="/privacy"
             render={(p) => (
