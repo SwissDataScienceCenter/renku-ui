@@ -72,7 +72,12 @@ export const displaySlice = createSlice({
   },
 });
 
-export const { showSshModal, hideSshModal, toggleSshModal, reset } =
-  displaySlice.actions;
+export const {
+  showSshModal,
+  hideSshModal,
+  toggleSshModal,
+  toggleSessionLogsModal,
+  reset,
+} = displaySlice.actions;
 
 export const useDisplaySelector = createSliceSelector(displaySlice);

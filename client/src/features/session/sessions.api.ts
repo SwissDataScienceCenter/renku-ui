@@ -17,7 +17,15 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { ServerOptions, ServerOptionsResponse } from "./session";
+import {
+  DockerImage,
+  GetDockerImageParams,
+  GetSessionsRawResponse,
+  ServerOption,
+  ServerOptions,
+  ServerOptionsResponse,
+  Sessions,
+} from "./sessions.types";
 
 interface StopSessionArgs {
   serverName: string;
@@ -28,12 +36,36 @@ interface GetLogsArgs {
   lines: number;
 }
 
-export const sessionApi = createApi({
-  reducerPath: "sessionApi",
+const sessionsApi = createApi({
+  reducerPath: "sessionsApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/notebooks/" }),
-  tagTypes: [],
+  tagTypes: ["Session"],
   endpoints: (builder) => ({
-    serverOptions: builder.query<ServerOptions, Record<never, never>>({
+    getDockerImage: builder.query<DockerImage, GetDockerImageParams>({
+      query: ({ image }) => ({
+        url: `images`,
+        params: { image_url: image },
+        validateStatus: (response) => {
+          return response.status < 400 || response.status == 404;
+        },
+      }),
+      transformResponse: (_value, meta, { image }) => {
+        if (meta?.response?.status != null && meta.response.status == 404) {
+          return { image, available: false };
+        }
+        return { image, available: true };
+      },
+    }),
+    getSessions: builder.query<Sessions, void>({
+      query: () => ({ url: "servers" }),
+      transformResponse: ({ servers }: GetSessionsRawResponse) => servers,
+      providesTags: ["Session"],
+    }),
+    invalidateSessions: builder.mutation<null, void>({
+      queryFn: () => ({ data: null }),
+      invalidatesTags: ["Session"],
+    }),
+    serverOptions: builder.query<ServerOptions, void>({
       query: () => ({
         url: "server_options",
       }),
@@ -41,17 +73,16 @@ export const sessionApi = createApi({
         defaultUrl,
         ...legacyOptions
       }: ServerOptionsResponse) => ({
-        defaultUrl,
+        defaultUrl: defaultUrl as ServerOption<string>,
         legacyOptions,
       }),
     }),
     stopSession: builder.mutation<boolean, StopSessionArgs>({
-      query: (args) => {
-        return {
-          method: "DELETE",
-          url: `servers/${args.serverName}`,
-        };
-      },
+      query: (args) => ({
+        method: "DELETE",
+        url: `servers/${args.serverName}`,
+      }),
+      invalidatesTags: ["Session"],
     }),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getLogs: builder.query<any, GetLogsArgs>({
@@ -66,8 +97,11 @@ export const sessionApi = createApi({
   }),
 });
 
+export default sessionsApi;
 export const {
+  useGetDockerImageQuery,
+  useGetSessionsQuery,
   useServerOptionsQuery,
   useStopSessionMutation,
   useGetLogsQuery,
-} = sessionApi;
+} = sessionsApi;

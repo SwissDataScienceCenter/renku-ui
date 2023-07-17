@@ -40,8 +40,8 @@ import {
 } from "../../features/project/Project";
 import { useGetConfigQuery } from "../../features/project/projectCoreApi";
 import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
-import { ServerOptions } from "../../features/session/session";
-import { useServerOptionsQuery } from "../../features/session/sessionApi";
+import { useServerOptionsQuery } from "../../features/session/sessions.api";
+import { ServerOptions } from "../../features/session/sessions.types";
 import {
   setDefaultUrl,
   setLfsAutoFetch,
@@ -55,7 +55,7 @@ export const StartNotebookServerOptions = () => {
   // Wait for options to load
 
   // Global options
-  const { isLoading: serverOptionsIsLoading } = useServerOptionsQuery({});
+  const { isLoading: serverOptionsIsLoading } = useServerOptionsQuery();
 
   // Project options
   const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
@@ -108,7 +108,7 @@ export const StartNotebookServerOptions = () => {
 const DefaultUrlOption = () => {
   // Global options
   const { data: serverOptions, isLoading: serverOptionsIsLoading } =
-    useServerOptionsQuery({});
+    useServerOptionsQuery();
 
   // Project options
   const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<

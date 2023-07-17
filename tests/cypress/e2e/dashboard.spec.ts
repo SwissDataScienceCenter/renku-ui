@@ -173,7 +173,7 @@ describe("dashboard", () => {
         "getLastVisitedProjects",
         "projects/last-visited-projects-5.json"
       )
-      .getSessions("getSessions", "*", "sessions/sessionsWithError.json")
+      .getSessions("getSessions", "sessions/sessionsWithError.json")
       .getProjectCommits();
     const files = {
       "dalatinrofrau/flights-usa": 55402,
@@ -221,6 +221,13 @@ describe("dashboard", () => {
       .first()
       .find(".session-icon")
       .should("have.text", "Error");
+    cy.get_cy("container-session")
+      .first()
+      .find(".entity-action")
+      .find("button")
+      .first()
+      .contains("Loading")
+      .should("not.exist");
     cy.get_cy("container-session")
       .first()
       .find(".entity-action")
