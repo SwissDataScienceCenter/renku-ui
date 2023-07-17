@@ -22,7 +22,7 @@ import { SessionStatusData } from "./StartSessionProgressBar";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 
-interface NotebookAnnotations {
+export interface NotebookAnnotations {
   branch: string;
   "commit-sha": string;
   default_image_used: boolean;

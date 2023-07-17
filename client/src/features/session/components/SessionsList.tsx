@@ -18,23 +18,24 @@
 
 import React from "react";
 import cx from "classnames";
+import Media from "react-media";
 import { Link } from "react-router-dom";
+import { Col, Row } from "reactstrap";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { EnvironmentLogs } from "../../../components/Logs";
 import { NotebooksHelper } from "../../../notebooks";
+import { NotebookAnnotations } from "../../../notebooks/components/Session";
 import {
   SessionListRowStatus,
   SessionListRowStatusIcon,
 } from "../../../notebooks/components/SessionListStatus";
+import Sizes from "../../../utils/constants/Media";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 import { Url } from "../../../utils/helpers/url";
 import { Session, Sessions } from "../sessions.types";
 import SessionButton from "./SessionButton";
 import SessionRowCommitInfo from "./SessionRowCommitInfo";
-import { Col, Row } from "reactstrap";
-import Media from "react-media";
-import Sizes from "../../../utils/constants/Media";
 
 interface SessionsListProps {
   sessions: Sessions;
@@ -143,7 +144,7 @@ function SessionRowFull({
   const icon = (
     <div className="align-middle">
       <SessionListRowStatusIcon
-        annotations={annotations as any}
+        annotations={annotations as NotebookAnnotations}
         details={details}
         image={image}
         status={status}
@@ -178,7 +179,7 @@ function SessionRowFull({
 
   const statusOut = (
     <SessionListRowStatus
-      annotations={annotations as any}
+      annotations={annotations as NotebookAnnotations}
       details={details}
       startTime={startTime}
       status={status}
@@ -192,7 +193,10 @@ function SessionRowFull({
         fullPath={`${annotations["namespace"]}/${annotations["projectName"]}`}
         runningSessionName={name}
       />
-      <EnvironmentLogs annotations={annotations as any} name={name} />
+      <EnvironmentLogs
+        annotations={annotations as NotebookAnnotations}
+        name={name}
+      />
     </span>
   );
 
@@ -318,7 +322,7 @@ function SessionRowCompact({
   const icon = (
     <span>
       <SessionListRowStatusIcon
-        annotations={annotations as any}
+        annotations={annotations as NotebookAnnotations}
         details={details}
         image={image}
         status={status}
@@ -360,7 +364,7 @@ function SessionRowCompact({
   const statusOut = (
     <span>
       <SessionListRowStatus
-        annotations={annotations as any}
+        annotations={annotations as NotebookAnnotations}
         details={details}
         startTime={startTime}
         status={status}
@@ -375,7 +379,10 @@ function SessionRowCompact({
         fullPath={`${annotations["namespace"]}/${annotations["projectName"]}`}
         runningSessionName={name}
       />
-      <EnvironmentLogs annotations={annotations as any} name={name} />
+      <EnvironmentLogs
+        annotations={annotations as NotebookAnnotations}
+        name={name}
+      />
     </span>
   );
 
