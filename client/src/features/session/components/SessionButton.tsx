@@ -33,9 +33,9 @@ import { NotebooksHelper } from "../../../notebooks";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
+import { useGetSessionsQuery, useStopSessionMutation } from "../sessions.api";
 import { Session } from "../sessions.types";
 import { getRunningSession } from "../sessions.utils";
-import { useGetSessionsQuery, useStopSessionMutation } from "../sessions.api";
 import SimpleSessionButton from "./SimpleSessionButton";
 
 interface SessionButtonProps {
@@ -61,8 +61,6 @@ export default function SessionButton({
   });
 
   const { data: sessions, isLoading, isError } = useGetSessionsQuery();
-
-  console.log({ fullPath, gitUrl, sessions });
 
   const runningSession =
     sessions && runningSessionName && runningSessionName in sessions

@@ -35,7 +35,7 @@ const repositoryApi = createApi({
         url: `${projectId}/repository/commits/${commitSha}`,
       }),
       providesTags: (result) =>
-        result ? [{ type: "Commit", id: result.id }, "Commit"] : ["Commit"],
+        result ? [{ id: result.id, type: "Commit" }, "Commit"] : ["Commit"],
     }),
   }),
 });

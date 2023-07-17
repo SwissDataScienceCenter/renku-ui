@@ -62,7 +62,6 @@ import ProjectSessionsRouter from "../features/session/components/ProjectSession
 import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
 import {
-  Notebooks,
   NotebooksCoordinator,
   ShowSession,
   StartNotebookServer,

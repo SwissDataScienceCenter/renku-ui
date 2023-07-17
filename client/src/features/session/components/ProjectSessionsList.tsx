@@ -34,7 +34,6 @@ export default function ProjectSessionsList({
 }: ProjectSessionsListProps) {
   const { isLoading } = useGetSessionsQuery();
   const projectSessions = useProjectSessions({ projectPathWithNamespace });
-  console.log({ projectSessions });
 
   if (isLoading) {
     return <Loader />;
