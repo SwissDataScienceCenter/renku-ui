@@ -58,7 +58,7 @@ export default function SessionButton({
     path: fullPath,
   });
 
-  const { data: sessions, isLoading } = useGetSessionsQuery();
+  const { data: sessions, isLoading, isError } = useGetSessionsQuery();
 
   const runningSession = sessions
     ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
@@ -74,7 +74,11 @@ export default function SessionButton({
 
   if (!runningSession) {
     const defaultAction = (
-      <SimpleSessionButton className="session-link-group" fullPath={fullPath} />
+      <SimpleSessionButton
+        className="session-link-group"
+        fullPath={fullPath}
+        skip={isError}
+      />
     );
     return (
       <ButtonWithMenu
