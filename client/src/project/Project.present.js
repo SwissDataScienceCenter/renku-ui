@@ -832,16 +832,9 @@ const ProjectSessions = (props) => {
   return [
     <Col key="content" xs={12}>
       <Switch>
-        <Route
-          exact
-          path={props.notebookServersUrl}
-          render={() => (
-            <>
-              {backButton}
-              <ProjectNotebookServers {...props} />
-            </>
-          )}
-        />
+        <Route exact path={props.notebookServersUrl}>
+          <ProjectSessionsRouter />
+        </Route>
         <Route
           path={props.launchNotebookUrl}
           render={() => (
@@ -1304,13 +1297,10 @@ function ProjectView(props) {
             path={props.settingsUrl}
             render={() => <ProjectSettings key="settings" {...props} />}
           />
-          {/* <Route
+          <Route
             path={props.notebookServersUrl}
             render={() => <ProjectSessions key="sessions" {...props} />}
-          /> */}
-          <Route path={props.notebookServersUrl}>
-            <ProjectSessionsRouter />
-          </Route>
+          />
           <Route component={NotFoundInsideProject} />
         </Switch>
       </Row>

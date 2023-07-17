@@ -21,7 +21,6 @@ import { RootStateOrAny, useSelector } from "react-redux";
 import { Route, Switch } from "react-router";
 import { Url } from "../../../utils/helpers/url";
 import ProjectSessionsList from "./ProjectSessionsList";
-// import StartNewSession from "./StartNewSession";
 
 export default function ProjectSessionsRouter() {
   const pathWithNamespace = useSelector<RootStateOrAny, string>(
@@ -32,23 +31,12 @@ export default function ProjectSessionsRouter() {
     path: pathWithNamespace,
   };
   const sessionsListUrl = Url.get(Url.pages.project.session, projectUrlData);
-  const startSessionUrl = Url.get(
-    Url.pages.project.session.new,
-    projectUrlData
-  );
 
   return (
     <Switch>
       <Route exact path={sessionsListUrl}>
         <ProjectSessionsList projectPathWithNamespace={pathWithNamespace} />
       </Route>
-      {/* <Route path={startSessionUrl}>
-        <StartNewSession />
-      </Route>
-
-      <Route>
-        <span>Huh?</span>
-      </Route> */}
     </Switch>
   );
 }
