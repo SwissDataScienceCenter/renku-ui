@@ -58,6 +58,7 @@ import {
 import ProjectPageTitle from "../features/project/components/ProjectPageTitle";
 import { ProjectSettingsGeneral } from "../features/project/components/ProjectSettings";
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
+import ProjectSessionsRouter from "../features/session/components/ProjectSessionsRouter";
 import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
 import {
@@ -69,7 +70,6 @@ import {
 import { Docs } from "../utils/constants/Docs";
 import { Url } from "../utils/helpers/url";
 import { WorkflowsList } from "../workflows";
-import "./Project.css";
 import { CloneButton } from "./clone/CloneButton";
 import GitLabConnectButton, {
   externalUrlToGitLabIdeUrl,
@@ -80,6 +80,7 @@ import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 import { ProjectSettingsNav } from "./settings";
+import "./Project.css";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -1251,37 +1252,29 @@ function ProjectView(props) {
         <Route
           exact
           path={props.baseUrl}
-          render={() => (
-            <ProjectViewHeader {...props} minimalistHeader={false} />
-          )}
+          render={() => <ProjectViewHeader {...props} />}
         />
         <Route
           path={props.overviewUrl}
-          render={() => (
-            <ProjectViewHeader {...props} minimalistHeader={false} />
-          )}
+          render={() => <ProjectViewHeader {...props} />}
         />
-        <Route path={props.notebookServersUrl} render={() => null} />
-        <Route path={props.editDatasetUrl} render={() => null} />
-        <Route path={props.datasetUrl} render={() => null} />
-        <Route path={props.sessionShowUrl} render={() => null} />
+        {/* <Route path={props.notebookServersUrl} render={() => null} /> */}
+        <Route path={props.editDatasetUrl} />
+        <Route path={props.datasetUrl} />
+        <Route path={props.launchNotebookUrl} />
+        <Route path={props.sessionShowUrl} />
         <Route
           path={props.newDatasetUrl}
-          component={() => (
-            <ProjectViewHeader {...props} minimalistHeader={true} />
-          )}
+          component={() => <ProjectViewHeader {...props} />}
         />
-        <Route
-          component={() => (
-            <ProjectViewHeader {...props} minimalistHeader={true} />
-          )}
-        />
+        <Route component={() => <ProjectViewHeader {...props} />} />
       </Switch>
       <Switch key="projectNav">
-        <Route path={props.notebookServersUrl} render={() => null} />
-        <Route path={props.editDatasetUrl} render={() => null} />
-        <Route path={props.datasetUrl} render={() => null} />
-        <Route path={props.sessionShowUrl} render={() => null} />
+        {/* <Route path={props.notebookServersUrl} render={() => null} /> */}
+        <Route path={props.editDatasetUrl} />
+        <Route path={props.datasetUrl} />
+        <Route path={props.launchNotebookUrl} />
+        <Route path={props.sessionShowUrl} />
         <Route component={() => <ProjectNav key="nav" {...props} />} />
       </Switch>
       <Row key="content">
@@ -1311,10 +1304,13 @@ function ProjectView(props) {
             path={props.settingsUrl}
             render={() => <ProjectSettings key="settings" {...props} />}
           />
-          <Route
+          {/* <Route
             path={props.notebookServersUrl}
             render={() => <ProjectSessions key="sessions" {...props} />}
-          />
+          /> */}
+          <Route path={props.notebookServersUrl}>
+            <ProjectSessionsRouter />
+          </Route>
           <Route component={NotFoundInsideProject} />
         </Switch>
       </Row>

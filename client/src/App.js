@@ -35,7 +35,6 @@ import { ProjectList } from "./project/list";
 import { NewProject } from "./project/new";
 import DatasetList from "./dataset/list/DatasetList.container";
 import { AnonymousHome, RenkuNavBar, FooterNavbar } from "./landing";
-import { Notebooks } from "./notebooks";
 import { Login, LoginHelper } from "./authentication";
 import Help from "./help";
 import { NotFound } from "./not-found";
@@ -56,6 +55,7 @@ import { Dashboard } from "./features/dashboard/Dashboard";
 
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
+import AnonymousSessionsList from "./features/session/components/AnonymousSessionsList";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize
@@ -88,8 +88,9 @@ function CentralContentContainer(props) {
 
   const appContext = {
     client: props.client,
-    params: props.params,
     location: props.location,
+    model: props.model,
+    params: props.params,
   };
 
   return (
@@ -209,26 +210,9 @@ function CentralContentContainer(props) {
               />
             )}
           />
-          <Route
-            exact
-            path="/sessions"
-            render={(p) =>
-              !user.logged ? (
-                <ContainerWrap>
-                  <Notebooks
-                    key="sessions"
-                    standalone={true}
-                    client={props.client}
-                    model={props.model}
-                    blockAnonymous={blockAnonymous}
-                    {...p}
-                  />
-                </ContainerWrap>
-              ) : (
-                <Redirect to="/" />
-              )
-            }
-          />
+          <Route exact path={Url.get(Url.pages.sessions)}>
+            {!user.logged ? <AnonymousSessionsList /> : <Redirect to="/" />}
+          </Route>
           <Route
             path="/datasets/:identifier/add"
             render={(p) => (
