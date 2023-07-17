@@ -1209,7 +1209,6 @@ function ProjectView(props) {
           path={props.overviewUrl}
           render={() => <ProjectViewHeader {...props} />}
         />
-        {/* <Route path={props.notebookServersUrl} render={() => null} /> */}
         <Route path={props.editDatasetUrl} />
         <Route path={props.datasetUrl} />
         <Route path={props.launchNotebookUrl} />
@@ -1221,7 +1220,6 @@ function ProjectView(props) {
         <Route component={() => <ProjectViewHeader {...props} />} />
       </Switch>
       <Switch key="projectNav">
-        {/* <Route path={props.notebookServersUrl} render={() => null} /> */}
         <Route path={props.editDatasetUrl} />
         <Route path={props.datasetUrl} />
         <Route path={props.launchNotebookUrl} />
