@@ -27,32 +27,24 @@ describe("display a dataset", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.datasets();
+    fixtures.entitySearch().getLastSearch();
     cy.visit("datasets");
   });
 
   it("displays the dataset list", () => {
-    cy.wait("@getDatasets").then((data) => {
+    cy.wait("@getEntities").then((data) => {
       const totalDatasets = data.response.body.length;
       // all datasets are displayed
       cy.get_cy("list-card").should("have.length", totalDatasets);
-
-      // the dataset title is displayed
-      cy.get_cy("datasets-title").should("contain.text", "Renku Datasets");
     });
   });
 
   it("displays the dataset overview", () => {
-    cy.wait("@getDatasets");
+    cy.wait("@getEntities");
     const datasetName = "abcd";
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
 
     fixtures.datasetById(datasetIdentifier);
-    cy.gui_search_dataset(
-      datasetName,
-      fixtures,
-      `datasets/datasets-search_${datasetIdentifier}.json`
-    );
     cy.get_cy("list-card-title").contains(datasetName).click();
     cy.wait("@getDatasetById")
       .its("response.body")
