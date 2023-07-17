@@ -115,6 +115,118 @@ describe("Project dataset", () => {
       });
   });
 
+  it("can edit project dataset", () => {
+    fixtures.getFiles().uploadDatasetFile().addFileDataset().editDataset();
+
+    cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getProject");
+    cy.wait("@datasetList")
+      .its("response.body")
+      .then((data) => {
+        const datasets = data.result.datasets;
+        const totalDatasets = datasets?.length;
+        cy.get_cy("list-card").should("have.length", totalDatasets);
+        const dataset = datasets[0];
+        const datasetIdentifier = dataset.identifier.replace(/-/g, "");
+        fixtures.datasetById(datasetIdentifier, "getDatasetById");
+        cy.get_cy("list-card-title").contains(dataset.title).click();
+        cy.wait("@getDatasetById");
+        cy.get_cy("edit-dataset-button").first().click();
+        cy.wait("@getFiles");
+
+        cy.get("input[name='title']").should("have.value", dataset.title);
+        cy.get("input[name='title']").type(" edited");
+
+        cy.get_cy("creator-name")
+          .first()
+          .should("have.value", dataset.creators[0].name);
+        cy.get_cy("creator-name")
+          .last()
+          .should("have.value", dataset.creators[2].name);
+        cy.get_cy("creator-name").first().type(" edited");
+
+        cy.get("div.input-tag").contains("test");
+        cy.get("div.input-tag").contains("testing datasets");
+        cy.get_cy("input-keywords").type("added");
+
+        cy.get("div.ck-editor__main").contains("Dataset for testing purposes");
+        cy.get_cy("ckeditor-description")
+          .find("p")
+          .click()
+          .type(". New description");
+
+        cy.get("div.tree-container").contains("air_quality_no2.txt");
+        cy.get('[data-cy="dropzone"]').attachFile(
+          "/datasets/files/count_flights.txt",
+          { subjectType: "drag-n-drop" }
+        );
+        cy.wait("@uploadDatasetFile");
+
+        // fixtures.projectKGDatasetList(projectPath);
+        // eslint-disable-next-line max-nested-callbacks
+        fixtures.projectDatasetList(undefined, undefined, (content) => {
+          content.result.datasets[0].title = `${dataset.title} edited`;
+          return content;
+        });
+        cy.get_cy("submit-button").click();
+        cy.wait("@editDataset")
+          .its("request.body")
+          // eslint-disable-next-line max-nested-callbacks
+          .then((body) => {
+            cy.wrap(body).its("name").should("equal", dataset.name);
+            cy.wrap(body)
+              .its("title")
+              .should("equal", `${dataset.title} edited`);
+            cy.wrap(body).its("keywords").should("include", "added");
+            cy.wrap(body.creators[0])
+              .its("name")
+              .should("to.match", /edited$/);
+          });
+        cy.wait("@addFile");
+        cy.wait("@datasetList", { timeout: 20_000 });
+        cy.wait("@getProjectLockStatus");
+        cy.get(".card-title").contains(dataset.title);
+      });
+  });
+
+  it("can edit project dataset with protected branch", () => {
+    fixtures
+      .getFiles()
+      .uploadDatasetFile()
+      .addFileDataset()
+      .editDataset(undefined, undefined, "protected");
+
+    cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getProject");
+    cy.wait("@datasetList")
+      .its("response.body")
+      .then((data) => {
+        const datasets = data.result.datasets;
+        const totalDatasets = datasets?.length;
+        cy.get_cy("list-card").should("have.length", totalDatasets);
+        const dataset = datasets[0];
+        const datasetIdentifier = dataset.identifier.replace(/-/g, "");
+        fixtures.datasetById(datasetIdentifier, "getDatasetById");
+        cy.get_cy("list-card-title").contains(dataset.title).click();
+        cy.wait("@getDatasetById");
+        cy.get_cy("edit-dataset-button").first().click();
+        cy.wait("@getFiles");
+
+        cy.get("input[name='title']").should("have.value", dataset.title);
+        cy.get("input[name='title']").type(" edited");
+
+        // eslint-disable-next-line max-nested-callbacks
+        fixtures.projectDatasetList(undefined, undefined, (content) => {
+          content.result.datasets[0].title = `${dataset.title} edited`;
+          return content;
+        });
+        cy.get_cy("submit-button").click();
+        cy.contains(
+          "The operation was successful, but this project requires use of merge requests to make changes."
+        ).should("be.visible");
+      });
+  });
+
   it("delete project dataset", () => {
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProject");

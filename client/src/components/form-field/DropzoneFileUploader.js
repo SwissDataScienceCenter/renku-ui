@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,12 +16,6 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  FileUploaderInput.js
- *  Presentational components.
- */
 import React, { useContext, useEffect, useState } from "react";
 import {
   Button,
@@ -112,6 +106,37 @@ class FileUploadHandler {
 }
 
 /**
+ * Calculate the tree for the existing files.
+ * @param {existingFiles} existingFiles
+ * @returns
+ */
+function calculateExistingFilePathAndTree(existingFiles) {
+  const defaultResult = {
+    partialPath: "",
+    filesTree: null,
+  };
+  if (existingFiles == null || existingFiles.hasPart == null)
+    return defaultResult;
+  if (existingFiles.hasPart.length < 1) return defaultResult;
+  const value = existingFiles.hasPart;
+  if (value[value.length - 1].atLocation == null) return defaultResult;
+
+  const openFolders = value[value.length - 1].atLocation.startsWith("data/")
+    ? 2
+    : 1;
+  const lastElement = value[value.length - 1].atLocation.split("/");
+  const partialPath =
+    lastElement[0] === "data"
+      ? lastElement[0] + "/" + lastElement[1] + "/"
+      : lastElement[0] + "/";
+  const filesTree = getFilesTree(value, openFolders);
+  return {
+    partialPath,
+    filesTree,
+  };
+}
+
+/**
  * Manage the display files state.
  */
 class DisplayFilesHandler extends FileUploadHandler {
@@ -119,49 +144,23 @@ class DisplayFilesHandler extends FileUploadHandler {
     disabled,
     displayFiles,
     errorOnDrop,
+    initialFilesTree,
     name,
     partialFilesPath,
     setDisplayFiles,
     setErrorOnDrop,
-    setInitialFilesTree,
-    setPartialFilesPath,
     setErrorUrlInput,
     setUrlInputValue,
     value,
   }) {
     super({ disabled, displayFiles, setDisplayFiles, setErrorOnDrop });
     this.errorOnDrop = errorOnDrop;
+    this.initialFilesTree = initialFilesTree;
     this.name = name;
     this.partialFilesPath = partialFilesPath;
-    this.setInitialFilesTree = setInitialFilesTree;
-    this.setPartialFilesPath = setPartialFilesPath;
     this.setErrorUrlInput = setErrorUrlInput;
     this.setUrlInputValue = setUrlInputValue;
     this.value = value;
-  }
-
-  calculateFilePathAndTree() {
-    const value = this.value;
-    if (value !== undefined && value.length > 0) {
-      if (value[value.length - 1].atLocation !== undefined) {
-        let openFolders = value[value.length - 1].atLocation.startsWith("data/")
-          ? 2
-          : 1;
-        let lastElement = value[value.length - 1].atLocation.split("/");
-        let partialPath;
-        if (lastElement[0] === "data")
-          partialPath = lastElement[0] + "/" + lastElement[1] + "/";
-        else partialPath = lastElement[0] + "/";
-        const filesTree = getFilesTree(value, openFolders);
-        this.setPartialFilesPath(partialPath);
-        this.setInitialFilesTree(filesTree);
-        return {
-          partialPath,
-          filesTree,
-        };
-      }
-    }
-    return null;
   }
 
   deleteFile(file_name) {
@@ -201,7 +200,7 @@ class DisplayFilesHandler extends FileUploadHandler {
       this.setErrorUrlInput(INPUT_URL_ERROR.DUPLICATED);
       return;
     }
-    if (fileThere === undefined && isURL(urlInputValue)) {
+    if (fileThere == null && isURL(urlInputValue)) {
       const file_url = {
         file_name: urlInputValue,
         file_path: urlInputValue,
@@ -409,7 +408,7 @@ class DropzoneHandler extends FileUploadHandler {
 }
 
 function CurrentFilesCard({ initialFilesTree }) {
-  if (initialFilesTree === undefined) return null;
+  if (initialFilesTree == null) return null;
   return (
     <Card className="mb-4">
       <CardBody style={{ backgroundColor: "#e9ecef" }}>
@@ -496,11 +495,47 @@ function FilesTableRowActions({
   return null;
 }
 
+function FileOverwriteWarning({ file, initialFilesTree, partialFilesPath }) {
+  if (initialFilesTree == null) return null;
+  if (file.file_uncompress === FILE_COMPRESSED.WAITING) return null;
+  if (
+    file.file_uncompress === FILE_COMPRESSED.UNCOMPRESS_NO ||
+    file.file_uncompress == null
+  ) {
+    return initialFilesTree.hash[file.file_path] ? (
+      <small>
+        <br></br>
+        <span className="text-info">
+          &nbsp;*This file will be skipped because &nbsp;there is a file with
+          the same name inside the dataset.
+        </span>
+      </small>
+    ) : null;
+  }
+  if (file.folder_structure !== undefined) {
+    const repeatedFiles = file.folder_structure.leafs.filter((file) => {
+      const suspectedRep = initialFilesTree.hash[partialFilesPath + file.path];
+      return suspectedRep !== undefined ? suspectedRep.isLeaf : null;
+    });
+    return repeatedFiles.length > 0 ? (
+      <small>
+        <br></br>
+        <span className="text-info">
+          &nbsp;*
+          {repeatedFiles.length > 1
+            ? `${repeatedFiles.length} files are already in the dataset and will be skipped.`
+            : `${repeatedFiles[0].name} is already in the dataset and will be skipped.`}
+        </span>
+      </small>
+    ) : null;
+  }
+  return null;
+}
+
 function FilesTableRow({
   displayFilesHandler,
   dropzoneHandler,
   file,
-  fileWillBeOverwritten,
   index,
   uploadThresholdSoft,
 }) {
@@ -514,7 +549,7 @@ function FilesTableRow({
       <td>{index + 1}</td>
       <td data-cy="file-name-column">
         <span>{file.file_name}</span>
-        {file.file_alias ? (
+        {file.file_alias && (
           <small>
             <br />
             <br />
@@ -523,9 +558,13 @@ function FilesTableRow({
               renamed to <i> {file.file_alias}</i>
             </span>
           </small>
-        ) : null}
-        {fileWillBeOverwritten(file)}
-        {file.folder_structure ? (
+        )}
+        <FileOverwriteWarning
+          file={file}
+          initialFilesTree={displayFilesHandler.initialFilesTree}
+          partialFilesPath={displayFilesHandler.partialFilesPath}
+        />
+        {file.folder_structure && (
           <div>
             <Button
               data-cy="display-zip-files-link"
@@ -550,7 +589,7 @@ function FilesTableRow({
               </small>
             </UncontrolledCollapse>
           </div>
-        ) : null}
+        )}
       </td>
       <td>{file.file_size ? formatBytes(file.file_size, 0) : "-"}</td>
       <td>
@@ -579,7 +618,6 @@ function FilesTable({
   displayFiles,
   displayFilesHandler,
   dropzoneHandler,
-  fileWillBeOverwritten,
   uploadThresholdSoft,
 }) {
   const currentFiles = displayFiles;
@@ -613,7 +651,6 @@ function FilesTable({
             dropzoneHandler={dropzoneHandler}
             key={index}
             file={file}
-            fileWillBeOverwritten={fileWillBeOverwritten}
             index={index}
             uploadThresholdSoft={uploadThresholdSoft}
           />
@@ -817,10 +854,10 @@ function FileStatusComp({ file, uploadCompressedFile, uploadThresholdSoft }) {
 }
 
 function FileUploaderInput({
-  value,
   alert,
   disabled = false,
   displayFiles,
+  existingFiles,
   help,
   label,
   name,
@@ -828,13 +865,12 @@ function FileUploaderInput({
   required = false,
   setDisplayFiles,
   uploadThresholdSoft,
+  value,
 }) {
   //send value as an already built tree/hash to display and
   // delete from the files/paths /data/dataset-name so i can check if the file is there or not
   //AFTER THIS ADD THE FILES AS DISPLAY FILES BUT DON'T DISPLAY THEM
   const [errorOnDrop, setErrorOnDrop] = useState("");
-  const [initialFilesTree, setInitialFilesTree] = useState(undefined);
-  const [partialFilesPath, setPartialFilesPath] = useState("");
   const [urlInputValue, setUrlInputValue] = useState("");
   const [errorUrlInput, setErrorUrlInput] = useState(null);
   const [displayFilesHandler, setDisplayFilesHandler] = useState(null);
@@ -843,18 +879,21 @@ function FileUploaderInput({
 
   const { client } = useContext(AppContext);
 
+  const pathAndTree = calculateExistingFilePathAndTree(existingFiles);
+  const { filesTree: initialFilesTree, partialPath: partialFilesPath } =
+    pathAndTree;
+
   useEffect(() => {
     if (dropzone != null) return;
     const displayFilesHandler = new DisplayFilesHandler({
       disabled,
       displayFiles,
       errorOnDrop,
+      initialFilesTree,
       name,
       partialFilesPath,
       setDisplayFiles,
       setErrorOnDrop,
-      setInitialFilesTree,
-      setPartialFilesPath,
       setErrorUrlInput,
       setUrlInputValue,
       value,
@@ -909,52 +948,17 @@ function FileUploaderInput({
   }, [displayFilesHandler, dropzoneHandler, displayFiles]);
   useEffect(() => {
     if (displayFilesHandler)
+      displayFilesHandler.initialFilesTree = initialFilesTree;
+  }, [displayFilesHandler, initialFilesTree]);
+  useEffect(() => {
+    if (displayFilesHandler)
       displayFilesHandler.partialFilesPath = partialFilesPath;
     if (dropzoneHandler) dropzoneHandler.partialFilesPath = partialFilesPath;
   }, [displayFilesHandler, dropzoneHandler, partialFilesPath]);
   useEffect(() => {
     if (!displayFilesHandler) return;
     displayFilesHandler.value = value;
-    displayFilesHandler.calculateFilePathAndTree();
   }, [displayFilesHandler, value]);
-
-  const fileWillBeOverwritten = (file) => {
-    if (initialFilesTree === undefined) return false;
-    if (file.file_uncompress === FILE_COMPRESSED.WAITING) return null;
-    if (
-      file.file_uncompress === FILE_COMPRESSED.UNCOMPRESS_NO ||
-      file.file_uncompress === undefined
-    ) {
-      return initialFilesTree.hash[file.file_path] ? (
-        <small>
-          <br></br>
-          <span className="text-info">
-            &nbsp;*This file will be skipped because &nbsp;there is a file with
-            the same name inside the dataset.
-          </span>
-        </small>
-      ) : null;
-    }
-    if (file.folder_structure !== undefined) {
-      const repeatedFiles = file.folder_structure.leafs.filter((file) => {
-        const suspectedRep =
-          initialFilesTree.hash[partialFilesPath + file.path];
-        return suspectedRep !== undefined ? suspectedRep.isLeaf : false;
-      });
-      return repeatedFiles.length > 0 ? (
-        <small>
-          <br></br>
-          <span className="text-info">
-            &nbsp;*
-            {repeatedFiles.length > 1
-              ? `${repeatedFiles.length} files are already in the dataset and will be skipped.`
-              : `${repeatedFiles[0].name} is already in the dataset and will be skipped.`}
-          </span>
-        </small>
-      ) : null;
-    }
-    return null;
-  };
 
   return (
     <FormGroup className="field-group">
@@ -965,7 +969,6 @@ function FileUploaderInput({
         displayFiles={displayFiles}
         displayFilesHandler={displayFilesHandler}
         dropzoneHandler={dropzoneHandler}
-        fileWillBeOverwritten={fileWillBeOverwritten}
         uploadThresholdSoft={uploadThresholdSoft}
       />
       <div className="p-2 bg-white upload-file-box">

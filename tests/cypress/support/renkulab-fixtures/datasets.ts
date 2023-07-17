@@ -94,13 +94,17 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
 
     projectDatasetList(
       name = "datasetList",
-      resultFile = "datasets/project-dataset-list.json"
+      resultFile = "datasets/project-dataset-list.json",
+      process = (result) => result
     ) {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept(
-        "/ui-server/api/renku/*/datasets.list?git_url=*",
-        fixture
-      ).as(name);
+      this.cy.fixture(resultFile).then((content) => {
+        const result = process(content);
+        const fixture = { body: result };
+        cy.intercept(
+          "/ui-server/api/renku/*/datasets.list?git_url=*",
+          fixture
+        ).as(name);
+      });
       return this;
     }
 
@@ -196,6 +200,23 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
     ) {
       const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
       cy.intercept("/ui-server/api/renku/*/datasets.create", fixture).as(name);
+      return this;
+    }
+
+    editDataset(
+      name = "editDataset",
+      edited = { name: "abcd", title: "abcd edited" },
+      remoteBranch = "master"
+    ) {
+      cy.intercept("/ui-server/api/renku/*/datasets.edit", {
+        body: {
+          result: {
+            edited: edited,
+            remote_branch: remoteBranch,
+            warnings: [],
+          },
+        },
+      }).as(name);
       return this;
     }
 
