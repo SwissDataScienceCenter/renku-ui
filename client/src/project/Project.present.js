@@ -862,7 +862,6 @@ const ProjectSessions = (props) => {
 function notebookWarning(
   userLogged,
   accessLevel,
-  forkUrl,
   postLoginUrl,
   externalUrl,
   props

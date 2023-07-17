@@ -69,7 +69,7 @@ function AnonymousSessionsEnabledList() {
     );
   }
 
-  console.log({ sessions });
+  const sessionNames = Object.keys(sessions);
 
   return (
     <>
@@ -79,11 +79,14 @@ function AnonymousSessionsEnabledList() {
         </Col>
       </Row>
       <SessionsList sessions={sessions} />
-      <InfoAlert timeout={0}>
-        <span>
-          You can start a new session from the <i>Sessions</i> tab of a project.
-        </span>
-      </InfoAlert>
+      {sessionNames.length == 0 && (
+        <InfoAlert timeout={0}>
+          <span>
+            You can start a new session from the <i>Sessions</i> tab of a
+            project.
+          </span>
+        </InfoAlert>
+      )}
     </>
   );
 }

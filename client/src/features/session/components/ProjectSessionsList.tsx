@@ -23,6 +23,7 @@ import { useGetSessionsQuery } from "../sessions.api";
 import { NotebooksHelper } from "../../../notebooks";
 import { Session, Sessions } from "../sessions.types";
 import SessionsList from "./SessionsList";
+import SessionSaveWarning from "./SessionSaveWarning";
 
 interface ProjectSessionsListProps {
   projectPathWithNamespace: string;
@@ -47,7 +48,12 @@ export default function ProjectSessionsList({
     );
   }
 
-  return <SessionsList sessions={projectSessions} />;
+  return (
+    <>
+      <SessionsList sessions={projectSessions} />
+      <SessionSaveWarning />
+    </>
+  );
 }
 
 function useProjectSessions({

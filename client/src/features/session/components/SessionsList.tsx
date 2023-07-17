@@ -32,6 +32,7 @@ import { Url } from "../../../utils/helpers/url";
 import { Session, Sessions } from "../sessions.types";
 import SessionButton from "./SessionButton";
 import SessionRowCommitInfo from "./SessionRowCommitInfo";
+import { Col, Row } from "reactstrap";
 
 interface SessionsListProps {
   sessions: Sessions;
@@ -45,11 +46,11 @@ export default function SessionsList({ sessions }: SessionsListProps) {
   }
 
   return (
-    <div className="mb-4">
-      {sessionNames.map((sessionName) => (
-        <SessionListItem key={sessionName} session={sessions[sessionName]} />
+    <Row className="mb-4 gy-4">
+      {Object.entries(sessions).map(([sessionName, session]) => (
+        <SessionListItem key={sessionName} session={session} />
       ))}
-    </div>
+    </Row>
   );
 }
 
@@ -180,14 +181,14 @@ function SessionRowFull({
     <span className="mb-auto">
       <SessionButton
         fullPath={`${annotations["namespace"]}/${annotations["projectName"]}`}
-        gitUrl={""}
+        runningSessionName={name}
       />
       <EnvironmentLogs annotations={annotations as any} name={name} />
     </span>
   );
 
   return (
-    <div
+    <Col
       data-cy="session-container"
       className={cx(
         "d-flex",
@@ -200,6 +201,7 @@ function SessionRowFull({
         "rk-search-result-100",
         "cursor-auto"
       )}
+      xs={12}
     >
       <div className={cx("d-flex", "flex-grow-1")}>
         <span className={cx("me-3", "mt-2")}>{icon}</span>
@@ -243,7 +245,7 @@ function SessionRowFull({
         </div>
       </div>
       <div>{actions}</div>
-    </div>
+    </Col>
   );
 }
 

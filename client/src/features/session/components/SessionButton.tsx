@@ -41,13 +41,15 @@ import SimpleSessionButton from "./SimpleSessionButton";
 interface SessionButtonProps {
   className?: string;
   fullPath: string;
-  gitUrl: string;
+  gitUrl?: string;
+  runningSessionName?: string;
 }
 
 export default function SessionButton({
   className,
   fullPath,
   gitUrl,
+  runningSessionName,
 }: SessionButtonProps) {
   const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, {
     namespace: "",
@@ -60,9 +62,14 @@ export default function SessionButton({
 
   const { data: sessions, isLoading, isError } = useGetSessionsQuery();
 
-  const runningSession = sessions
-    ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
-    : null;
+  console.log({ fullPath, gitUrl, sessions });
+
+  const runningSession =
+    sessions && runningSessionName && runningSessionName in sessions
+      ? sessions[runningSessionName]
+      : sessions
+      ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
+      : null;
 
   if (isLoading) {
     return (
@@ -97,7 +104,7 @@ export default function SessionButton({
             Start with options
           </Link>
         </DropdownItem>
-        <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />
+        {gitUrl && <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />}
       </ButtonWithMenu>
     );
   }
