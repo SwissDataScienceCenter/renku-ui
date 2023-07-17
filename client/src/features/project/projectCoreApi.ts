@@ -293,7 +293,7 @@ export const {
   useUpdateConfigMutation,
 } = projectCoreApi;
 
-export const transformGetConfigRawResponse = (
+const transformGetConfigRawResponse = (
   response: GetConfigRawResponse
 ): ProjectConfig => {
   if (response.error) {
