@@ -40,8 +40,8 @@ import {
 } from "../../features/project/Project";
 import { useGetConfigQuery } from "../../features/project/projectCoreApi";
 import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
-import { ServerOptions } from "../../features/session/session.types";
-import { useServerOptionsQuery } from "../../features/session/sessionApi";
+import { useServerOptionsQuery } from "../../features/session/sessions.api";
+import { ServerOptions } from "../../features/session/sessions.types";
 import {
   setDefaultUrl,
   setLfsAutoFetch,

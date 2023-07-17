@@ -24,9 +24,9 @@ import { Link } from "react-router-dom";
 import { Button } from "reactstrap";
 import { NotebooksHelper } from "../../../notebooks";
 import { Url } from "../../../utils/helpers/url";
-import { Session } from "../session.types";
-import { getRunningSession } from "../session.utils";
-import { useGetSessionsQuery } from "../sessionApi";
+import { Session } from "../sessions.types";
+import { getRunningSession } from "../sessions.utils";
+import { useGetSessionsQuery } from "../sessions.api";
 
 interface SimpleSessionButtonProps {
   className?: string;
@@ -54,7 +54,7 @@ export default function SimpleSessionButton({
   });
 
   const { data: sessions, isLoading } = useGetSessionsQuery(undefined, {
-    skip: skip,
+    skip,
   });
 
   const runningSession = sessions
@@ -76,6 +76,8 @@ export default function SimpleSessionButton({
       </Link>
     );
   }
+
+  // TODO: handle hibernating state
 
   const annotations = NotebooksHelper.cleanAnnotations(
     runningSession.annotations

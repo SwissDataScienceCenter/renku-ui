@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { useEffect, useState } from "react";
-import { useGetLogsQuery } from "../../features/session/sessionApi";
+import { useGetLogsQuery } from "../../features/session/sessions.api";
 import { ILogs } from "../../components/Logs";
 
 /**

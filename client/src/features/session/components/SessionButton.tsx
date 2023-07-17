@@ -33,9 +33,9 @@ import { NotebooksHelper } from "../../../notebooks";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
-import { Session } from "../session.types";
-import { getRunningSession } from "../session.utils";
-import { useGetSessionsQuery, useStopSessionMutation } from "../sessionApi";
+import { Session } from "../sessions.types";
+import { getRunningSession } from "../sessions.utils";
+import { useGetSessionsQuery, useStopSessionMutation } from "../sessions.api";
 import SimpleSessionButton from "./SimpleSessionButton";
 
 interface SessionButtonProps {
@@ -66,7 +66,7 @@ export default function SessionButton({
 
   if (isLoading) {
     return (
-      <Button className={className} disabled>
+      <Button className={cx("btn-sm", className)} disabled>
         <span>Loading...</span>
       </Button>
     );
@@ -143,6 +143,8 @@ function SessionActions({ className, session }: SessionActionsProps) {
     "start-session-button",
     "session-link-group"
   );
+
+  // TODO: handle hibernating state
 
   const defaultAction =
     status === "starting" || status === "running" ? (
