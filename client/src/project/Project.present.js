@@ -989,47 +989,6 @@ class ProjectShowSession extends Component {
   }
 }
 
-class ProjectNotebookServers extends Component {
-  render() {
-    const {
-      client,
-      metadata,
-      model,
-      user,
-      forkUrl,
-      location,
-      externalUrl,
-      launchNotebookUrl,
-      blockAnonymous,
-    } = this.props;
-    const warning = notebookWarning(
-      user.logged,
-      metadata.accessLevel,
-      forkUrl,
-      location.pathname,
-      externalUrl,
-      this.props
-    );
-
-    return (
-      <Notebooks
-        standalone={false}
-        client={client}
-        model={model}
-        location={location}
-        message={warning}
-        urlNewSession={launchNotebookUrl}
-        blockAnonymous={blockAnonymous}
-        scope={{
-          namespace: this.props.metadata.namespace,
-          project: this.props.metadata.path,
-          defaultBranch: this.props.metadata.defaultBranch,
-        }}
-      />
-    );
-  }
-}
-
 const ProjectStartNotebookServer = (props) => {
   const {
     branches,
