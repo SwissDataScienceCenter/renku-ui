@@ -20,53 +20,6 @@ import React, { Fragment } from "react";
 
 import { Row, Col, Card, CardBody, CardHeader } from "reactstrap";
 
-import FormGenerator, {
-  FormGenerator as FormPanel,
-} from "../components/formgenerator";
-import { Schema, StateModel, globalSchema } from "../model";
-import { DatasetImages } from "../components/formgenerator/fields/stockimages";
-
-let schema = new Schema({
-  name: {
-    initial: "",
-    name: "text",
-    label: "Text",
-    type: FormGenerator.FieldTypes.TEXT,
-    parseFun: FormGenerator.Parsers.parseOnlyLetterAndSpace,
-    help: "Help text",
-    edit: false,
-    validators: [
-      {
-        id: "text-length",
-        isValidFun: (input) =>
-          FormGenerator.Validators.isAtLeastLength(input, 3),
-        alert: "Text must be at least 3 characters long.",
-      },
-    ],
-  },
-  description: {
-    initial: "",
-    name: "textarea",
-    label: "TextArea",
-    type: FormGenerator.FieldTypes.TEXT_AREA,
-    edit: false,
-    validators: [
-      {
-        id: "textarea-length",
-        isValidFun: (input) => FormGenerator.Validators.isNotEmpty(input),
-        alert: "TextArea can't be empty",
-      },
-    ],
-  },
-  image: {
-    initial: { options: DatasetImages, selected: -1 },
-    name: "image",
-    label: "Image",
-    edit: false,
-    type: FormGenerator.FieldTypes.IMAGE,
-  },
-});
-
 /* eslint-disable */
 function CardsSection(props) {
   return (
@@ -99,27 +52,11 @@ function CardsSection(props) {
 }
 
 function FormsSection(props) {
-  const model = new StateModel(globalSchema);
-
-  const submitCallback = (e) =>
-    Object.values(schema)
-      .map((m) => m.label + ": " + m.value + ",\n")
-      .join("");
   return (
     <Row>
       <Col>
         <h3>Forms</h3>
-        <p>Forms should have standard buttons.</p>
-        <FormPanel
-          title="Example Form"
-          submitLoader={false}
-          btnName="Default Action"
-          submitCallback={submitCallback}
-          model={schema}
-          modelTop={model}
-          formLocation={props.location}
-        />
-        ,
+        <p>This section is being reworked...</p>
       </Col>
     </Row>
   );

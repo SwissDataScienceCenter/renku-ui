@@ -86,7 +86,7 @@ export function getCompareUrl(
  */
 export function getMigrationLevel(
   migrationStatus: MigrationStatus | undefined,
-  backendAvailable: boolean | undefined
+  backendAvailable: boolean
 ): ProjectMigrationLevel | null {
   // ? REF: https://www.notion.so/Project-status-889f7a0f16574c84a4b7af344683623b
   if (!migrationStatus) return null;

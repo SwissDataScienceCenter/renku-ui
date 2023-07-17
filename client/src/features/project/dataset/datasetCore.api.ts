@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-import type { Creator } from "../../../components/form-field/CreatorsInput";
 import { FILE_STATUS } from "../../../components/form-field/FileUploaderInput";
 import type { ImageInputImage } from "../../../components/form-field/ImageInput";
+import type { Creator } from "../Project";
 import type { DatasetFormState } from "./datasetForm.slice";
 import type { DatasetImage } from "./dataset.types";
 
