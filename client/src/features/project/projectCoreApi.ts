@@ -38,6 +38,8 @@ import type {
   UpdateDescriptionResponse,
 } from "./Project";
 import { MigrationStartScopes } from "./projectEnums";
+import { projectKgApi } from "./projectKgApi";
+import { projectsKgApi } from "../projects/projectsKgApi";
 
 interface GetConfigParams extends CoreServiceParams {
   projectRepositoryUrl: string;
@@ -111,12 +113,7 @@ function urlWithQueryParams(url: string, queryParams: any) {
 export const projectCoreApi = createApi({
   reducerPath: "projectCore",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
-  tagTypes: [
-    "project",
-    "project-status",
-    "project-kg-metadata",
-    "ProjectConfig",
-  ],
+  tagTypes: ["project-status", "project", "ProjectConfig"],
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getDatasetFiles: builder.query<IDatasetFiles, GetDatasetFilesParams>({
@@ -295,7 +292,7 @@ export const projectCoreApi = createApi({
     >({
       query: (data) => {
         return {
-          body: { git_url: data.gitUrl, description: data.description },
+          body: { description: data.description, git_url: data.gitUrl },
           method: "POST",
           url: `/renku/project.edit`,
           validateStatus: (response, body) => {
@@ -303,9 +300,26 @@ export const projectCoreApi = createApi({
           },
         };
       },
-      invalidatesTags: (result, error, params) => [
-        { type: "project-kg-metadata", id: params.slug },
-      ],
+      // ? Invalidating immediatley won't work since KG needs a moment to pick up the change.
+      onCacheEntryAdded: (params, { dispatch, cacheDataLoaded }) => {
+        cacheDataLoaded.then(() => {
+          // ? Wait until (hopefully) KG has picked the event from GitLab -invalidate the related tags.
+          setTimeout(() => {
+            dispatch(
+              projectKgApi.util.invalidateTags([
+                { type: "project-indexing", id: params.projectId },
+                // ! TODO: merge projectKgApi and projectsKgApi
+              ])
+            );
+            // ? invalidate also metadata in the unlikely case the change is quicker than the timeout.
+            dispatch(
+              projectsKgApi.util.invalidateTags([
+                { type: "project-kg-metadata", id: params.projectId },
+              ])
+            );
+          }, 1000 * 5);
+        });
+      },
     }),
   }),
 });

@@ -16,11 +16,6 @@
  * limitations under the License.
  */
 
-import React, { CSSProperties, Fragment, ReactNode } from "react";
-import { Link } from "react-router-dom";
-import { RootStateOrAny, useSelector } from "react-redux";
-import { RenkuMarkdown } from "../markdown/RenkuMarkdown";
-
 /**
  *  renku-ui
  *
@@ -28,31 +23,32 @@ import { RenkuMarkdown } from "../markdown/RenkuMarkdown";
  *  Entity Description component
  */
 
+import React, { CSSProperties, ReactNode } from "react";
+import { Link } from "react-router-dom";
+import cx from "classnames";
+
+import { RenkuMarkdown } from "../markdown/RenkuMarkdown";
+
 export interface EntityDescriptionProps {
-  description: string | ReactNode;
-
-  /** when the height is fixed for card design */
-  isHeightFixed: boolean;
-
-  hasDevAccess?: boolean;
-
-  showSuggestion: boolean;
-
-  urlChangeDescription?: string;
-
   className?: string;
-
+  description: string | ReactNode;
+  hasDevAccess?: boolean;
+  isHeightFixed: boolean;
+  loading?: boolean | undefined;
   numberLines?: number;
+  showSuggestion: boolean;
+  urlChangeDescription?: string;
 }
 
 function EntityDescription({
+  className,
   description,
-  isHeightFixed = true,
   hasDevAccess,
+  isHeightFixed = true,
+  loading = false,
+  numberLines = 3,
   showSuggestion,
   urlChangeDescription,
-  className,
-  numberLines = 3,
 }: EntityDescriptionProps) {
   const descriptionStyles: CSSProperties = {
     overflow: "hidden",
@@ -67,7 +63,7 @@ function EntityDescription({
 
   const markdownDescription =
     description && typeof description === "string" ? (
-      <Fragment>
+      <>
         <RenkuMarkdown
           markdownText={description}
           singleLine={numberLines === 1}
@@ -76,36 +72,22 @@ function EntityDescription({
         <span className="ms-1">
           {description.includes("\n") ? " [...]" : ""}
         </span>
-      </Fragment>
+      </>
     ) : (
       description
     );
 
-  const isUpdatingValue = useSelector(
-    (state: RootStateOrAny) =>
-      state.stateModel?.project?.metadata?.description?.updating
-  );
-  if (isUpdatingValue) {
-    return (
-      <div
-        className="card-text text-rk-text-light"
-        style={descriptionStyles}
-        data-cy="updating-description"
-      >
-        <small>
-          <i>Updating description...</i>
-        </small>
-      </div>
-    );
-  }
-
   return (
     <div
-      className={`card-text ${className}`}
+      className={cx("card-text", className)}
       style={{ ...descriptionStyles, margin: "12px 0 0 0" }}
       data-cy="entity-description"
     >
-      {description ? (
+      {loading ? (
+        <small className="card-text text-rk-text-light">
+          <i>Loading description...</i>
+        </small>
+      ) : description ? (
         markdownDescription
       ) : showSuggestion && hasDevAccess && urlChangeDescription ? (
         <i>

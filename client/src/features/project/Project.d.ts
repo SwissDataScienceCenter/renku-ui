@@ -323,7 +323,7 @@ export interface ProjectConfigSection {
 export interface UpdateDescriptionParams {
   description: string;
   gitUrl: string;
-  slug: string;
+  projectId: number;
 }
 
 export interface UpdateDescriptionDetails {

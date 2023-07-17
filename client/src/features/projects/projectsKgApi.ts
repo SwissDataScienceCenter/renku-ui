@@ -100,9 +100,13 @@ type KgMetadataResponse = {
 
 type ProjectKgContent = "ld+json" | "json";
 
-type ProjectKgParams = {
+interface ProjectKgParams {
   projectPath?: string;
-};
+}
+
+interface ProjectKgWithIdParams extends ProjectKgParams {
+  projectId?: number;
+}
 
 function kgProjectRequestHeaders(content: ProjectKgContent) {
   return {
@@ -121,13 +125,13 @@ export const projectsKgApi = createApi({
         headers: kgProjectRequestHeaders("ld+json"),
       }),
     }),
-    projectMetadata: builder.query<KgMetadataResponse, ProjectKgParams>({
+    projectMetadata: builder.query<KgMetadataResponse, ProjectKgWithIdParams>({
       query: (params) => ({
         url: `projects/${params.projectPath}`,
         headers: kgProjectRequestHeaders("json"),
       }),
       providesTags: (result, error, params) => [
-        { type: "project-kg-metadata", slug: params.projectPath },
+        { type: "project-kg-metadata", id: params.projectId },
       ],
     }),
   }),

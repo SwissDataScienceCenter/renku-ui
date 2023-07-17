@@ -226,12 +226,13 @@ function EntityHeader({
           />
           <Slug multiline={true} slug={slug ?? ""} />
           <EntityDescription
-            description={description?.value}
-            isHeightFixed={false}
-            showSuggestion={true}
-            hasDevAccess={devAccess}
-            urlChangeDescription={`${url}/settings`}
             className="text-rk-dark"
+            description={description?.value}
+            hasDevAccess={devAccess}
+            isHeightFixed={false}
+            loading={description?.isLoading}
+            showSuggestion={true}
+            urlChangeDescription={`${url}/settings`}
           />
         </div>
       </div>

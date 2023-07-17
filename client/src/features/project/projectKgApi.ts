@@ -30,6 +30,8 @@ import {
   ProjectActivateIndexingResponse,
   ProjectIndexingStatusResponse,
 } from "./Project";
+import { ProjectIndexingStatuses } from "./projectEnums";
+import { projectsKgApi } from "../projects/projectsKgApi";
 
 interface errorDataMessage {
   data: {
@@ -54,6 +56,34 @@ export const projectKgApi = createApi({
         invalidatesTags: (result, error, projectId) => [
           { type: "project-indexing", id: projectId },
         ],
+      }
+    ),
+    deleteProject: builder.mutation<DeleteProjectResponse, DeleteProjectParams>(
+      {
+        query: ({ projectPathWithNamespace }) => {
+          return {
+            method: "DELETE",
+            url: `projects/${projectPathWithNamespace}`,
+          };
+        },
+        invalidatesTags: ["project"],
+        transformErrorResponse: (error) => {
+          const { status, data } = error;
+          if (status === 500 && typeof data === "object" && data != null) {
+            const data_ = data as { message?: unknown };
+            if (
+              typeof data_.message === "string" &&
+              data_.message.match(/403 Forbidden/i)
+            ) {
+              const newError: FetchBaseQueryError = {
+                status: 403,
+                data,
+              };
+              return newError;
+            }
+          }
+          return error;
+        },
       }
     ),
     getDatasetKg: builder.query<DatasetKg, GetDatasetKgParams>({
@@ -95,35 +125,22 @@ export const projectKgApi = createApi({
         }
         throw errorData;
       },
-    }),
-    deleteProject: builder.mutation<DeleteProjectResponse, DeleteProjectParams>(
-      {
-        query: ({ projectPathWithNamespace }) => {
-          return {
-            method: "DELETE",
-            url: `projects/${projectPathWithNamespace}`,
-          };
-        },
-        invalidatesTags: ["project"],
-        transformErrorResponse: (error) => {
-          const { status, data } = error;
-          if (status === 500 && typeof data === "object" && data != null) {
-            const data_ = data as { message?: unknown };
-            if (
-              typeof data_.message === "string" &&
-              data_.message.match(/403 Forbidden/i)
-            ) {
-              const newError: FetchBaseQueryError = {
-                status: 403,
-                data,
-              };
-              return newError;
-            }
+      onQueryStarted: (projectId, { dispatch, queryFulfilled }) => {
+        queryFulfilled.then((result) => {
+          // When status is successful, re-fetch the up-to-date metadata
+          if (
+            result.data.activated &&
+            result.data.details?.status === ProjectIndexingStatuses.Success
+          ) {
+            dispatch(
+              projectsKgApi.util.invalidateTags([
+                { type: "project-kg-metadata", id: projectId },
+              ])
+            );
           }
-          return error;
-        },
-      }
-    ),
+        });
+      },
+    }),
   }),
 });
 

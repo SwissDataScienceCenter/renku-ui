@@ -44,20 +44,35 @@ export function ProjectSettingsDescription({
     skip: !projectFullPath || !projectId,
   });
   const projectMetadata = useProjectMetadataQuery(
-    { projectPath: projectFullPath },
-    { skip: !projectFullPath || !projectIndexingStatus.data?.activated }
+    { projectPath: projectFullPath, projectId },
+    {
+      skip:
+        !projectFullPath ||
+        !projectId ||
+        !projectIndexingStatus.data?.activated,
+    }
   );
   const [updateDescriptionMutation, updateDescriptionStatus] =
     useUpdateDescriptionMutation();
   const updateDescription = useCallback(
     (description: string) =>
-      updateDescriptionMutation({ description, gitUrl, slug: projectFullPath }),
-    [updateDescriptionMutation, gitUrl, projectFullPath]
+      updateDescriptionMutation({
+        description,
+        gitUrl,
+        projectId,
+      }),
+    [updateDescriptionMutation, gitUrl, projectId]
   );
-  // ! TODO: finish submit and verify re-fetching KG data
-  // ! TOOD: might be necessary to fetch from core :(
+
   const submit = () => {
     updateDescription(description);
+  };
+
+  const setDescriptionAndReset = (newDescription: string) => {
+    setDescription(newDescription);
+    // Reset mutation when changing description after an update.
+    if (!updateDescriptionStatus.isUninitialized)
+      updateDescriptionStatus.reset();
   };
 
   useEffect(() => {
@@ -97,7 +112,7 @@ export function ProjectSettingsDescription({
       data-cy="description-input"
       disabled={updateDescriptionStatus.isLoading}
       id="projectDescription"
-      onChange={(e) => setDescription(e.target.value)}
+      onChange={(e) => setDescriptionAndReset(e.target.value)}
       readOnly={readOnly}
       value={description}
     />
