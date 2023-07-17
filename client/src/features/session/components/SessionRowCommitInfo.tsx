@@ -25,7 +25,7 @@ import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
 import { TimeCaption } from "../../../components/TimeCaption";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
-import { useGetRepositoryCommitQuery } from "../../repository/repositoryApi";
+import { useGetRepositoryCommitQuery } from "../../repository/repository.api";
 
 interface SessionRowCommitInfoProps {
   commitSha?: string;

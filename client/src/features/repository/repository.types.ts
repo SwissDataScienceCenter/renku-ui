@@ -16,55 +16,6 @@
  * limitations under the License.
  */
 
-export interface Pagination {
-  currentPage?: number;
-  firstPageLink?: string;
-  lastPageLink?: string;
-  nextPage?: number;
-  nextPageLink?: string;
-  perPage?: number;
-  previousPage?: number;
-  totalItems?: number;
-  totalPages?: number;
-}
-
-export interface RepositoryBranch {
-  merged: boolean;
-  name: string;
-}
-
-export interface GetAllRepositoryBranchesParams {
-  perPage?: number;
-  projectId: string;
-}
-
-export type GetRepositoryBranchResponse = {
-  can_push: boolean;
-  commit: {
-    author_email: string;
-    author_name: string;
-    authored_date: string;
-    committed_date: string;
-    committer_email: string;
-    committer_name: string;
-    created_at: string;
-    id: string;
-    message: string;
-    parent_ids: unknown;
-    short_id: string;
-    title: string;
-    trailers: unknown;
-    web_url: string;
-  };
-  default: boolean;
-  developers_can_merge: boolean;
-  developers_can_push: boolean;
-  merged: boolean;
-  name: string;
-  protected: boolean;
-  web_url: string;
-}[];
-
 export interface RepositoryCommit {
   author_name: string;
   committed_date: string;
@@ -77,15 +28,4 @@ export interface RepositoryCommit {
 export interface GetRepositoryCommitParams {
   commitSha: string;
   projectId: string;
-}
-
-export interface GetRepositoryCommitsParams {
-  branch: string;
-  perPage?: number;
-  projectId: string;
-}
-
-export interface GetConfigFromRepositoryParams {
-  commit: string;
-  projectId: number;
 }
