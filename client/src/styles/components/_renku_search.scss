@@ -93,7 +93,6 @@
 
 .rk-search-result-compact {
   text-decoration: none;
-  color: $rk-dark;
   background-color: white;
   padding-top: 1em;
   padding-bottom: 0.75em;
@@ -102,9 +101,6 @@
   border-top: solid 1px $light;
   border-left: solid 1px $light;
   border-right: solid 1px $light;
-  a {
-    color: $rk-dark;
-  }
   p {
     margin-bottom: 0px;
     margin-block-end: 0px;

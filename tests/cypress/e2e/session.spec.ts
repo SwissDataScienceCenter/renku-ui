@@ -26,6 +26,7 @@ describe("display a session", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
+    fixtures.projectLockStatus().projectMigrationUpToDate();
     fixtures.getSessions();
     cy.visit("/projects/e2e/local-test-project/sessions");
   });
@@ -39,7 +40,9 @@ describe("display a session", () => {
     cy.wait("@getLogs").then((result) => {
       const logs = result.response.body;
       // validate see logs and can download it
-      cy.get_cy("log-tab").should("have.length", Object.keys(logs).length);
+      cy.get_cy("log-tab")
+        .filter(":visible")
+        .should("have.length", Object.keys(logs).length);
       cy.get_cy("session-log-download-button").should("be.enabled");
     });
   });
@@ -51,7 +54,7 @@ describe("display a session", () => {
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
     cy.gui_open_logs();
     // validate show a warning when there is an error loading the logs
-    cy.get_cy("no-logs-message").should("exist");
+    cy.get_cy("logs-unavailable-message").should("exist");
     cy.get_cy("session-log-download-button").should("be.disabled");
   });
 
@@ -169,7 +172,7 @@ describe("display a session", () => {
       .should("be.visible");
   });
 
-  it("pull changes button -- sidecar error`", () => {
+  it("pull changes button -- sidecar error", () => {
     fixtures.getSidecarHealth().getGitStatusError();
     cy.gui_open_session();
     // pull changes
@@ -242,6 +245,7 @@ describe("display a session with error", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
+    fixtures.projectLockStatus().projectMigrationUpToDate();
     fixtures.getSessionsError();
     cy.visit("/projects/e2e/local-test-project/sessions");
   });
@@ -261,6 +265,7 @@ describe("display a session when session is being stopped", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
+    fixtures.projectLockStatus().projectMigrationUpToDate();
     fixtures.getSessionsStopping();
     cy.visit("/projects/e2e/local-test-project/sessions");
   });

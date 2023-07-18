@@ -18,18 +18,22 @@
 
 import React from "react";
 import cx from "classnames";
+import Media from "react-media";
 import { Link } from "react-router-dom";
+import { Col, Row } from "reactstrap";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { EnvironmentLogs } from "../../../components/Logs";
 import { NotebooksHelper } from "../../../notebooks";
+import { NotebookAnnotations } from "../../../notebooks/components/Session";
 import {
   SessionListRowStatus,
   SessionListRowStatusIcon,
 } from "../../../notebooks/components/SessionListStatus";
+import Sizes from "../../../utils/constants/Media";
 import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 import { Url } from "../../../utils/helpers/url";
-import { Session, Sessions } from "../session.types";
+import { Session, Sessions } from "../sessions.types";
 import SessionButton from "./SessionButton";
 import SessionRowCommitInfo from "./SessionRowCommitInfo";
 
@@ -45,11 +49,11 @@ export default function SessionsList({ sessions }: SessionsListProps) {
   }
 
   return (
-    <div className="mb-4">
-      {sessionNames.map((sessionName) => (
-        <SessionListItem key={sessionName} session={sessions[sessionName]} />
+    <Row className="mb-4 gy-4">
+      {Object.entries(sessions).map(([sessionName, session]) => (
+        <SessionListItem key={sessionName} session={session} />
       ))}
-    </div>
+    </Row>
   );
 }
 
@@ -89,21 +93,28 @@ function SessionListItem({ session }: SessionListItemProps) {
   };
   const image = session.image;
 
-  // TODO(@leafty): compact row
+  const rowProps: SessionRowProps = {
+    annotations: cleanAnnotations,
+    details,
+    image,
+    name: session.name,
+    repositoryLinks,
+    resourceRequests,
+    startTime,
+    status,
+    uid,
+  };
+
   return (
-    <>
-      <SessionRowFull
-        annotations={cleanAnnotations}
-        details={details}
-        image={image}
-        name={session.name}
-        repositoryLinks={repositoryLinks}
-        resourceRequests={resourceRequests}
-        startTime={startTime}
-        status={status}
-        uid={uid}
-      />
-    </>
+    <Media query={Sizes.md}>
+      {(matches) =>
+        matches ? (
+          <SessionRowFull {...rowProps} />
+        ) : (
+          <SessionRowCompact {...rowProps} />
+        )
+      }
+    </Media>
   );
 }
 
@@ -133,7 +144,7 @@ function SessionRowFull({
   const icon = (
     <div className="align-middle">
       <SessionListRowStatusIcon
-        annotations={annotations as any}
+        annotations={annotations as NotebookAnnotations}
         details={details}
         image={image}
         status={status}
@@ -168,7 +179,7 @@ function SessionRowFull({
 
   const statusOut = (
     <SessionListRowStatus
-      annotations={annotations as any}
+      annotations={annotations as NotebookAnnotations}
       details={details}
       startTime={startTime}
       status={status}
@@ -180,15 +191,17 @@ function SessionRowFull({
     <span className="mb-auto">
       <SessionButton
         fullPath={`${annotations["namespace"]}/${annotations["projectName"]}`}
-        gitUrl={""}
+        runningSessionName={name}
       />
-      <EnvironmentLogs annotations={annotations as any} name={name} />
+      <EnvironmentLogs
+        annotations={annotations as NotebookAnnotations}
+        name={name}
+      />
     </span>
   );
 
   return (
-    <div
-      data-cy="session-container"
+    <Col
       className={cx(
         "d-flex",
         "flex-row",
@@ -200,6 +213,8 @@ function SessionRowFull({
         "rk-search-result-100",
         "cursor-auto"
       )}
+      data-cy="session-container"
+      xs={12}
     >
       <div className={cx("d-flex", "flex-grow-1")}>
         <span className={cx("me-3", "mt-2")}>{icon}</span>
@@ -243,7 +258,7 @@ function SessionRowFull({
         </div>
       </div>
       <div>{actions}</div>
-    </div>
+    </Col>
   );
 }
 
@@ -290,5 +305,115 @@ function SessionRowResourceRequests({
         </span>
       ))}
     </>
+  );
+}
+
+function SessionRowCompact({
+  annotations,
+  details,
+  image,
+  name,
+  repositoryLinks,
+  resourceRequests,
+  startTime,
+  status,
+  uid,
+}: SessionRowProps) {
+  const icon = (
+    <span>
+      <SessionListRowStatusIcon
+        annotations={annotations as NotebookAnnotations}
+        details={details}
+        image={image}
+        status={status}
+        uid={uid}
+      />
+    </span>
+  );
+
+  const branch = (
+    <>
+      <span className="fw-bold">Branch: </span>
+      <ExternalLink
+        role="text"
+        showLinkIcon={true}
+        title={annotations["branch"]}
+        url={repositoryLinks.branch}
+      />
+      <br />
+    </>
+  );
+
+  const commit = (
+    <>
+      <span className="fw-bold">Commit: </span>
+      <ExternalLink
+        role="text"
+        showLinkIcon={true}
+        title={`${annotations["commit-sha"]}`.substring(0, 8)}
+        url={repositoryLinks.commit}
+      />{" "}
+      <SessionRowCommitInfo
+        commitSha={annotations["commit-sha"] as string | undefined}
+        projectId={annotations["gitlabProjectId"] as string | undefined}
+      />
+      <br />
+    </>
+  );
+
+  const statusOut = (
+    <span>
+      <SessionListRowStatus
+        annotations={annotations as NotebookAnnotations}
+        details={details}
+        startTime={startTime}
+        status={status}
+        uid={uid}
+      />
+    </span>
+  );
+
+  const actions = (
+    <span>
+      <SessionButton
+        fullPath={`${annotations["namespace"]}/${annotations["projectName"]}`}
+        runningSessionName={name}
+      />
+      <EnvironmentLogs
+        annotations={annotations as NotebookAnnotations}
+        name={name}
+      />
+    </span>
+  );
+
+  return (
+    <Col
+      className={cx(
+        "rk-search-result-compact",
+        "bg-white",
+        "cursor-auto",
+        "border-radius-8",
+        "border-0"
+      )}
+      data-cy="session-container"
+    >
+      <span className="fw-bold">Project: </span>
+      <span>
+        <SessionRowProject annotations={annotations} />
+      </span>
+      <br />
+      {branch}
+      {commit}
+
+      <span className="fw-bold">Resources: </span>
+      <span>
+        <SessionRowResourceRequests resourceRequests={resourceRequests} />
+      </span>
+      <br />
+      <div className="d-inline-flex">
+        {icon} &nbsp; {statusOut}
+      </div>
+      <div className="mt-1">{actions}</div>
+    </Col>
   );
 }

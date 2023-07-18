@@ -33,21 +33,23 @@ import { NotebooksHelper } from "../../../notebooks";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
+import { useGetSessionsQuery, useStopSessionMutation } from "../sessions.api";
 import { Session } from "../sessions.types";
 import { getRunningSession } from "../sessions.utils";
-import { useGetSessionsQuery, useStopSessionMutation } from "../sessions.api";
 import SimpleSessionButton from "./SimpleSessionButton";
 
 interface SessionButtonProps {
   className?: string;
   fullPath: string;
-  gitUrl: string;
+  gitUrl?: string;
+  runningSessionName?: string;
 }
 
 export default function SessionButton({
   className,
   fullPath,
   gitUrl,
+  runningSessionName,
 }: SessionButtonProps) {
   const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, {
     namespace: "",
@@ -60,9 +62,12 @@ export default function SessionButton({
 
   const { data: sessions, isLoading, isError } = useGetSessionsQuery();
 
-  const runningSession = sessions
-    ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
-    : null;
+  const runningSession =
+    sessions && runningSessionName && runningSessionName in sessions
+      ? sessions[runningSessionName]
+      : sessions
+      ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
+      : null;
 
   if (isLoading) {
     return (
@@ -97,7 +102,7 @@ export default function SessionButton({
             Start with options
           </Link>
         </DropdownItem>
-        <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />
+        {gitUrl && <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />}
       </ButtonWithMenu>
     );
   }

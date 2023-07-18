@@ -62,7 +62,6 @@ import ProjectSessionsRouter from "../features/session/components/ProjectSession
 import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
 import {
-  Notebooks,
   NotebooksCoordinator,
   ShowSession,
   StartNotebookServer,
@@ -832,16 +831,9 @@ const ProjectSessions = (props) => {
   return [
     <Col key="content" xs={12}>
       <Switch>
-        <Route
-          exact
-          path={props.notebookServersUrl}
-          render={() => (
-            <>
-              {backButton}
-              <ProjectNotebookServers {...props} />
-            </>
-          )}
-        />
+        <Route exact path={props.notebookServersUrl}>
+          <ProjectSessionsRouter />
+        </Route>
         <Route
           path={props.launchNotebookUrl}
           render={() => (
@@ -869,7 +861,6 @@ const ProjectSessions = (props) => {
 function notebookWarning(
   userLogged,
   accessLevel,
-  forkUrl,
   postLoginUrl,
   externalUrl,
   props
@@ -992,47 +983,6 @@ class ProjectShowSession extends Component {
         urlNewSession={launchNotebookUrl}
         notebookServersUrl={notebookServersUrl}
         projectName={this.props.metadata.title}
-      />
-    );
-  }
-}
-
-class ProjectNotebookServers extends Component {
-  render() {
-    const {
-      client,
-      metadata,
-      model,
-      user,
-      forkUrl,
-      location,
-      externalUrl,
-      launchNotebookUrl,
-      blockAnonymous,
-    } = this.props;
-    const warning = notebookWarning(
-      user.logged,
-      metadata.accessLevel,
-      forkUrl,
-      location.pathname,
-      externalUrl,
-      this.props
-    );
-
-    return (
-      <Notebooks
-        standalone={false}
-        client={client}
-        model={model}
-        location={location}
-        message={warning}
-        urlNewSession={launchNotebookUrl}
-        blockAnonymous={blockAnonymous}
-        scope={{
-          namespace: this.props.metadata.namespace,
-          project: this.props.metadata.path,
-          defaultBranch: this.props.metadata.defaultBranch,
-        }}
       />
     );
   }
@@ -1258,7 +1208,6 @@ function ProjectView(props) {
           path={props.overviewUrl}
           render={() => <ProjectViewHeader {...props} />}
         />
-        {/* <Route path={props.notebookServersUrl} render={() => null} /> */}
         <Route path={props.editDatasetUrl} />
         <Route path={props.datasetUrl} />
         <Route path={props.launchNotebookUrl} />
@@ -1270,7 +1219,6 @@ function ProjectView(props) {
         <Route component={() => <ProjectViewHeader {...props} />} />
       </Switch>
       <Switch key="projectNav">
-        {/* <Route path={props.notebookServersUrl} render={() => null} /> */}
         <Route path={props.editDatasetUrl} />
         <Route path={props.datasetUrl} />
         <Route path={props.launchNotebookUrl} />
@@ -1304,13 +1252,10 @@ function ProjectView(props) {
             path={props.settingsUrl}
             render={() => <ProjectSettings key="settings" {...props} />}
           />
-          {/* <Route
+          <Route
             path={props.notebookServersUrl}
             render={() => <ProjectSessions key="sessions" {...props} />}
-          /> */}
-          <Route path={props.notebookServersUrl}>
-            <ProjectSessionsRouter />
-          </Route>
+          />
           <Route component={NotFoundInsideProject} />
         </Switch>
       </Row>

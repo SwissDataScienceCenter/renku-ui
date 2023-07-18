@@ -19,10 +19,11 @@
 import React, { useMemo } from "react";
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
-import { useGetSessionsQuery } from "../sessionApi";
+import { useGetSessionsQuery } from "../sessions.api";
 import { NotebooksHelper } from "../../../notebooks";
-import { Session, Sessions } from "../session.types";
+import { Session, Sessions } from "../sessions.types";
 import SessionsList from "./SessionsList";
+import SessionSaveWarning from "./SessionSaveWarning";
 
 interface ProjectSessionsListProps {
   projectPathWithNamespace: string;
@@ -33,7 +34,6 @@ export default function ProjectSessionsList({
 }: ProjectSessionsListProps) {
   const { isLoading } = useGetSessionsQuery();
   const projectSessions = useProjectSessions({ projectPathWithNamespace });
-  console.log({ projectSessions });
 
   if (isLoading) {
     return <Loader />;
@@ -47,7 +47,12 @@ export default function ProjectSessionsList({
     );
   }
 
-  return <SessionsList sessions={projectSessions} />;
+  return (
+    <>
+      <SessionsList sessions={projectSessions} />
+      <SessionSaveWarning />
+    </>
+  );
 }
 
 function useProjectSessions({

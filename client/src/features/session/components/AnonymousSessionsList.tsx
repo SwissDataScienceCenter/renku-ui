@@ -25,7 +25,7 @@ import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { User } from "../../../model/RenkuModels";
 import AppContext from "../../../utils/context/appContext";
-import { useGetSessionsQuery } from "../sessionApi";
+import { useGetSessionsQuery } from "../sessions.api";
 import SessionsList from "./SessionsList";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 
@@ -69,7 +69,7 @@ function AnonymousSessionsEnabledList() {
     );
   }
 
-  console.log({ sessions });
+  const sessionNames = Object.keys(sessions);
 
   return (
     <>
@@ -79,11 +79,14 @@ function AnonymousSessionsEnabledList() {
         </Col>
       </Row>
       <SessionsList sessions={sessions} />
-      <InfoAlert timeout={0}>
-        <span>
-          You can start a new session from the <i>Sessions</i> tab of a project.
-        </span>
-      </InfoAlert>
+      {sessionNames.length == 0 && (
+        <InfoAlert timeout={0}>
+          <span>
+            You can start a new session from the <i>Sessions</i> tab of a
+            project.
+          </span>
+        </InfoAlert>
+      )}
     </>
   );
 }
