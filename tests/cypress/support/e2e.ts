@@ -26,7 +26,6 @@ declare global {
     interface Chainable {
       get_cy(element: string): Chainable;
       gui_logout(): void;
-      gui_search_dataset(datasetName: string, fixtures, resultFile): void;
       gui_new_dataset(newDataset: Dataset): void;
       gui_open_logs(): void;
       gui_open_session(): void;
