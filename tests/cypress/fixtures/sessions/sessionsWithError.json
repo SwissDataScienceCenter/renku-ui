@@ -128,6 +128,69 @@
         "totalNumContainers": 7
       },
       "url": "https://renku-ci-ui-2333.dev.renku.ch/sessions/dalatinrof-flights-2dusa-51d6c930"
+    },
+    "lorenzo-readme-123456": {
+      "annotations": {
+        "renku.io/branch": "master",
+        "renku.io/commit-sha": "172a784d465a7bd45bacc165df2b64a591ac6b18",
+        "renku.io/default_image_used": "False",
+        "renku.io/git-host": "gitlab.dev.renku.ch",
+        "renku.io/gitlabProjectId": "55402",
+        "renku.io/namespace": "lorenzo.cavazzi.tech",
+        "renku.io/projectName": "readme-file-dev",
+        "renku.io/repository": "https://gitlab.dev.renku.ch/lorenzo.cavazzi.tech/readme-file-dev",
+        "renku.io/servername": "lorenzo-readme-123456",
+        "renku.io/username": "dalatinrofrau@gmail.com"
+      },
+      "image": "registry.dev.renku.ch/dalatinrofrau/flights-usa:5d0515c",
+      "name": "lorenzo-readme-123456",
+      "resources": {
+        "requests": {
+          "cpu": 0.1,
+          "memory": "1G"
+        },
+        "usage": {}
+      },
+      "started": "2023-02-01T09:43:52+00:00",
+      "state": {
+        "pod_name": "lorenzo-readme-123456-0"
+      },
+      "status": {
+        "details": [
+          {
+            "status": "ready",
+            "step": "Initialization"
+          },
+          {
+            "status": "ready",
+            "step": "Downloading server image"
+          },
+          {
+            "status": "ready",
+            "step": "Cloning and configuring the repository"
+          },
+          {
+            "status": "ready",
+            "step": "Git credentials services"
+          },
+          {
+            "status": "ready",
+            "step": "Authentication and proxying services"
+          },
+          {
+            "status": "ready",
+            "step": "Auxiliary session services"
+          },
+          {
+            "status": "ready",
+            "step": "Starting session"
+          }
+        ],
+        "readyNumContainers": 7,
+        "state": "running",
+        "totalNumContainers": 7
+      },
+      "url": "https://renku-ci-ui-2333.dev.renku.ch/sessions/lorenzo-readme-123456"
     }
   }
 }

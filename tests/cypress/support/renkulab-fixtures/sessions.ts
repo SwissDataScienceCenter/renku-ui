@@ -25,56 +25,29 @@ import { FixturesConstructor } from "./fixtures";
 function Sessions<T extends FixturesConstructor>(Parent: T) {
   return class SessionsFixtures extends Parent {
     getSessions(name = "getSessions", resultFile = "sessions/sessions.json") {
-      const fixtureA = this.useMockedData
-        ? { fixture: "sessions/sessionsV2.json" }
-        : undefined;
-      const fixtureB = this.useMockedData ? { fixture: resultFile } : undefined;
+      cy.intercept(
+        "/ui-server/api/notebooks/servers",
+        this.useMockedData ? { fixture: resultFile } : undefined
+      ).as(name);
 
-      // intercept: different times to get different results
-      cy.intercept("/ui-server/api/notebooks/servers*", fixtureA).as(name);
-      cy.intercept(
-        "/ui-server/api/notebooks/servers*",
-        { times: 4 },
-        fixtureB
-      ).as(name);
-      cy.intercept(
-        "/ui-server/api/notebooks/servers*",
-        { times: 4 },
-        fixtureA
-      ).as(name);
-      cy.intercept(
-        "/ui-server/api/notebooks/servers*",
-        { times: 4 },
-        fixtureB
-      ).as(name);
       return this;
     }
 
     getSessionsError(
       name = "getSessionsError",
-      namespace = "*",
       resultFile = "sessions/sessionError.json"
     ) {
       const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-
-      cy.intercept(
-        "/ui-server/api/notebooks/servers?namespace=" + namespace,
-        fixture
-      ).as(name);
+      cy.intercept("/ui-server/api/notebooks/servers", fixture).as(name);
       return this;
     }
 
     getSessionsStopping(
       name = "getSessionsStopping",
-      namespace = "*",
       resultFile = "sessions/sessionStopping.json"
     ) {
       const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-
-      cy.intercept(
-        "/ui-server/api/notebooks/servers?namespace=" + namespace,
-        fixture
-      ).as(name);
+      cy.intercept("/ui-server/api/notebooks/servers", fixture).as(name);
       return this;
     }
 

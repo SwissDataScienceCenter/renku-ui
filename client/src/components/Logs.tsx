@@ -239,7 +239,7 @@ function SessionLogsBody(props: LogBodyProps) {
   if (logs.fetching) return <Loader />;
   if (!logs.fetched) {
     return (
-      <p>
+      <p data-cy="logs-unavailable-message">
         Logs unavailable. Please{" "}
         <Button
           className="btn-outline-rk-green"

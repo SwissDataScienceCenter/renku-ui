@@ -193,12 +193,19 @@ describe("dashboard", () => {
         false
       );
 
-    fixtures.project(
-      "lorenzo.cavazzi.tech/readme-file-dev",
-      "getFirstProject",
-      "projects/project_30929.json",
-      true
-    );
+    fixtures
+      .project(
+        "lorenzo.cavazzi.tech/readme-file-dev",
+        "getFirstProject",
+        "projects/project_30929.json",
+        true
+      )
+      .projectLockStatus()
+      .projectMigrationUpToDate({
+        queryUrl:
+          "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Florenzo.cavazzi.tech%2Freadme-file-dev&branch=master",
+        fixtureName: "getMigration",
+      });
     cy.visit("projects/lorenzo.cavazzi.tech/readme-file-dev/sessions");
     cy.wait("@getFirstProject");
 
@@ -207,8 +214,7 @@ describe("dashboard", () => {
     cy.get_cy("session-container").should("be.visible");
     cy.get_cy("link-home").click({ force: true }); // eslint-disable-line cypress/no-force
     cy.wait("@getLastVisitedProjects");
-    cy.get_cy("container-session").should("have.length", 2);
-    cy.get_cy("container-session").should("have.length", 2);
+    cy.get_cy("container-session").should("have.length", 3);
     cy.get_cy("container-session")
       .first()
       .find(".session-time")

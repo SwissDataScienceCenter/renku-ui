@@ -17,10 +17,12 @@
  */
 
 Cypress.Commands.add("gui_open_logs", () => {
-  cy.get(".sessionsButton").find("[data-cy='more-menu']").click();
-  cy.get_cy("session-log-button").click();
+  cy.get(".sessionsButton").first().find("[data-cy='more-menu']").click();
+  cy.get_cy("session-log-button").filter(":visible").click();
 });
 
 Cypress.Commands.add("gui_open_session", () => {
-  cy.get_cy("open-session").click();
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(1000, { log: false });
+  cy.get_cy("open-session").first().click();
 });
