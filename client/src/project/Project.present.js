@@ -1212,8 +1212,6 @@ function ProjectView(props) {
         <Route path={props.datasetUrl} />
         <Route path={props.launchNotebookUrl} />
         <Route path={props.sessionShowUrl} />
-        {/* HEY HEY */}
-        {/* <Route exact path={props.notebookServersUrl} /> */}
         <Route
           path={props.newDatasetUrl}
           component={() => <ProjectViewHeader {...props} />}
