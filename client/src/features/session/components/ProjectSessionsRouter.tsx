@@ -27,6 +27,13 @@ export default function ProjectSessionsRouter() {
   const pathWithNamespace = useSelector<RootStateOrAny, string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
+  const namespace = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.namespace
+  );
+  const path = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.path
+  );
+
   const projectUrlData = {
     namespace: "",
     path: pathWithNamespace,
@@ -36,6 +43,11 @@ export default function ProjectSessionsRouter() {
     Url.pages.project.session.new,
     projectUrlData
   );
+  const sessionShowUrl = Url.get(Url.pages.project.session.show, {
+    namespace,
+    path,
+    server: ":server",
+  });
 
   return (
     <Switch>
@@ -45,9 +57,8 @@ export default function ProjectSessionsRouter() {
       <Route path={startSessionUrl}>
         <StartNewSession />
       </Route>
-
-      <Route>
-        <span>Huh?</span>
+      <Route path={sessionShowUrl}>
+        <p>{"[Show]"}</p>
       </Route>
     </Switch>
   );
