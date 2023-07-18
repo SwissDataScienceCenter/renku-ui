@@ -28,6 +28,7 @@ import {
   Sessions,
   StartSessionParams,
 } from "./session.types";
+import { GetSessionsParams } from "./sessions.types";
 
 interface StopSessionArgs {
   serverName: string;
@@ -58,10 +59,22 @@ const sessionsApi = createApi({
         return { image, available: true };
       },
     }),
-    getSessions: builder.query<Sessions, void>({
-      query: () => ({ url: "servers" }),
+    getSessions: builder.query<Sessions, GetSessionsParams | void>({
+      query: (params) => ({ url: "servers", params: params ?? undefined }),
       transformResponse: ({ servers }: GetSessionsRawResponse) => servers,
-      providesTags: ["Session"],
+      providesTags: (result) =>
+        result
+          ? [
+              ...Object.keys(result).map(
+                (sessionName) =>
+                  ({
+                    id: sessionName,
+                    type: "Session",
+                  } as const)
+              ),
+              "Session",
+            ]
+          : ["Session"],
     }),
     invalidateSessions: builder.mutation<null, void>({
       queryFn: () => ({ data: null }),

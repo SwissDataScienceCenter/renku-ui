@@ -69,7 +69,7 @@ export const sessionSidecarApi = createApi({
     health: builder.query<HealthState, SidecarRequestArgs>({
       query: (args) => {
         return {
-          url: `${args.serverName}/sidecar/health`,
+          url: `${args.serverName}/sidecar/health/`,
         };
       },
     }),

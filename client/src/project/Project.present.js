@@ -39,6 +39,7 @@ import {
   NavItem,
   Row,
 } from "reactstrap";
+import cx from "classnames";
 import { ContainerWrap } from "../App";
 import { ACCESS_LEVELS } from "../api-client";
 import { InfoAlert } from "../components/Alert";
@@ -1225,7 +1226,7 @@ function ProjectView(props) {
         <Route path={props.sessionShowUrl} />
         <Route component={() => <ProjectNav key="nav" {...props} />} />
       </Switch>
-      <Row key="content">
+      <Row key="content" className={cx(isShowSession && "m-0")}>
         <Switch>
           <Route
             exact

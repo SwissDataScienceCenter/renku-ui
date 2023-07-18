@@ -21,6 +21,7 @@ import { RootStateOrAny, useSelector } from "react-redux";
 import { Route, Switch } from "react-router";
 import { Url } from "../../../utils/helpers/url";
 import ProjectSessionsList from "./ProjectSessionsList";
+import ShowSession from "./ShowSession";
 import StartNewSession from "./StartNewSession";
 
 export default function ProjectSessionsRouter() {
@@ -58,7 +59,7 @@ export default function ProjectSessionsRouter() {
         <StartNewSession />
       </Route>
       <Route path={sessionShowUrl}>
-        <p>{"[Show]"}</p>
+        <ShowSession />
       </Route>
     </Switch>
   );
