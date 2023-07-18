@@ -24,29 +24,27 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import { Col, Row } from "reactstrap";
 import {
   Button,
   ButtonDropdown,
+  Col,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
   FormGroup,
   Input,
+  InputGroup,
+  Row,
 } from "reactstrap";
-import { InputGroup } from "reactstrap";
 
 import { ImageFieldPropertyName as Prop } from "./stockimages";
-import { formatBytes } from "../../../utils/helpers/HelperFunctions";
+import { formatBytes } from "../../utils/helpers/HelperFunctions";
 import {
   ErrorLabel,
   InputHintLabel,
   InputLabel,
-} from "../../formlabels/FormLabels";
-import ImageEditor, {
-  CARD_IMAGE_DIMENSIONS,
-} from "../../imageEditor/ImageEditor";
-import { Label } from "../../../utils/ts-wrappers";
+} from "../formlabels/FormLabels";
+import ImageEditor, { CARD_IMAGE_DIMENSIONS } from "../imageEditor/ImageEditor";
 
 function userInputOption(options) {
   let userInput = options.find((o) => o[Prop.STOCK] === false);
@@ -419,7 +417,6 @@ function ImageInput(props) {
     disabled = false,
     required = false,
     submitting,
-    includeRequiredLabel = true,
   } = props;
   const [sizeAlert, setSizeAlert] = useState(null);
   const [originalImageInput, setOriginalImageInput] = useState(null);
@@ -457,11 +454,7 @@ function ImageInput(props) {
   return (
     <>
       <Row key="row-title">
-        {includeRequiredLabel ? (
-          <InputLabel className="ps-3" text={label} isRequired={required} />
-        ) : (
-          <Label className="ps-3"> {label} </Label>
-        )}
+        <InputLabel className="ps-3" text={label} isRequired={required} />
       </Row>
       <Row key="row-content" className="field-group">
         <Col xs={12}>

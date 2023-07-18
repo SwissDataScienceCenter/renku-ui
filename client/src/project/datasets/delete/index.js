@@ -23,6 +23,6 @@
  *  Components for the remove dataset from project
  */
 
-import DeleteDataset from "./DeleteDataset.container";
+import DeleteDataset from "./DeleteDataset";
 
 export default DeleteDataset;

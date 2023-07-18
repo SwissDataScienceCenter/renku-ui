@@ -77,31 +77,6 @@ const CoreServiceProjectMixin = {
 };
 
 const DatasetsMixin = {
-  fetchProjectDatasetsFromKg(client) {
-    //from KG
-    if (this.get("datasets.datasets_kg") === SpecialPropVal.UPDATING) return;
-    const pathWithNamespace = this.get("metadata.pathWithNamespace");
-    if (!pathWithNamespace) return;
-    this.setUpdating({ datasets: { datasets_kg: true } });
-    return client
-      .getProjectDatasetsFromKG(pathWithNamespace)
-      .then((datasets) => {
-        const updatedState = {
-          datasets_kg: { $set: datasets },
-          transient: { requests: { datasets_kg: false } },
-        };
-        this.setObject({ datasets: updatedState });
-        return datasets;
-      })
-      .catch(() => {
-        const datasets = [];
-        const updatedState = {
-          datasets_kg: { $set: datasets },
-          transient: { requests: { datasets_kg: false } },
-        };
-        this.setObject({ datasets: updatedState });
-      });
-  },
   fetchProjectDatasets(client, forceReFetch, versionUrl) {
     if (!versionUrl) return false;
     let core = this.get("datasets.core");

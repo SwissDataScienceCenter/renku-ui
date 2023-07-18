@@ -28,8 +28,8 @@ import React, { useEffect, useState } from "react";
 
 import ImageInput, {
   ImageFieldPropertyName as Prop,
-} from "../../components/formgenerator/fields/ImageInput";
-import { ImageInputMode } from "../../components/formgenerator/fields/ImageInput";
+} from "../../components/form-field/FormGeneratorImageInput";
+import { ImageInputMode } from "../../components/form-field/FormGeneratorImageInput";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { InlineSubmitButton } from "../../components/buttons/Button";
 import { PROJECT_AVATAR_MAX_SIZE } from "../new/components/NewProjectAvatar";

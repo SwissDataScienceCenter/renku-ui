@@ -23,8 +23,14 @@ import { useGetMigrationStatusQuery } from "./projectCoreApi";
 export type CoreSupport =
   | {
       backendAvailable: undefined;
-      backendErrorMessage: string | undefined;
+      backendErrorMessage: undefined;
       computed: false;
+      versionUrl: undefined;
+    }
+  | {
+      backendAvailable: false;
+      backendErrorMessage: string;
+      computed: true;
       versionUrl: undefined;
     }
   | {
@@ -92,12 +98,20 @@ export const computeBackendData = ({
   backendErrorMessage: string | undefined;
   projectVersion: number | undefined;
 }): CoreSupport => {
+  if (backendErrorMessage) {
+    return {
+      backendAvailable: false,
+      backendErrorMessage,
+      computed: true,
+      versionUrl: undefined,
+    };
+  }
   if (!availableVersions || typeof projectVersion !== "number")
     return {
       backendAvailable: undefined,
+      backendErrorMessage: undefined,
       computed: false,
       versionUrl: undefined,
-      backendErrorMessage,
     };
   if (availableVersions.includes(projectVersion))
     return {

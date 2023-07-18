@@ -19,17 +19,6 @@
 import "../../support/utils";
 
 Cypress.Commands.add(
-  "gui_search_dataset",
-  (datasetName: string, fixtures, resultFile) => {
-    fixtures.datasets("getDatasetsSearch", resultFile);
-    cy.get("[data-cy='search-dataset-input']").type(datasetName);
-    cy.get("[data-cy='search-dataset-submit']").click();
-    cy.wait("@getDatasetsSearch");
-    cy.get("[data-cy='list-card-title']").contains(datasetName);
-  }
-);
-
-Cypress.Commands.add(
   "gui_select_project_autosuggestion_list",
   (project: string, fixtures, migrationCheckResult) => {
     fixtures.interceptMigrationCheck(
