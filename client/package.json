@@ -24,7 +24,7 @@
     "dropzone": "^6.0.0-beta.2",
     "file-saver": "^2.0.5",
     "filesize": "^6.4.0",
-    "graphql": "^16.6.0",
+    "graphql": "^16.7.1",
     "highlight.js": "^11.8.0",
     "http-proxy": "^1.18.1",
     "immutability-helper": "^3.0.1",
