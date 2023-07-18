@@ -63,9 +63,14 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-
-    projectById(name = "getProjectsById", idProject, fixture = "projects/project.json") {
-      cy.intercept(`/ui-server/api/projects/${idProject}`, { fixture }).as(name);
+    projectById(
+      name = "getProjectsById",
+      idProject,
+      fixture = "projects/project.json"
+    ) {
+      cy.intercept(`/ui-server/api/projects/${idProject}`, { fixture }).as(
+        name
+      );
       return this;
     }
 

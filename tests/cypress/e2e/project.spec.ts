@@ -128,7 +128,11 @@ describe("display a project", () => {
   fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
-    fixtures.projects().landingUserProjects().projectTest().projectById("getProjectsById", 39646);
+    fixtures
+      .projects()
+      .landingUserProjects()
+      .projectTest()
+      .projectById("getProjectsById", 39646);
     fixtures.projectLockStatus().projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project");
   });
@@ -190,7 +194,10 @@ describe("display a project", () => {
     cy.get_cy("visibility-public").click();
     cy.get_cy("update-visibility-btn").click();
     cy.wait("@updateProject");
-    cy.get(".modal-body").should("contain.text", "The visibility of the project has been modified");
+    cy.get(".modal-body").should(
+      "contain.text",
+      "The visibility of the project has been modified"
+    );
 
     // error updating visibility
     fixtures.updateProject(
@@ -204,8 +211,10 @@ describe("display a project", () => {
     cy.get_cy("visibility-internal").click();
     cy.get_cy("update-visibility-btn").click();
     cy.wait("@updateVisibility");
-    cy.get(".modal-body").should("contain.text", "Internal is not allowed in a private group.");
-
+    cy.get(".modal-body").should(
+      "contain.text",
+      "Internal is not allowed in a private group."
+    );
   });
 
   it("displays project settings sessions", () => {
