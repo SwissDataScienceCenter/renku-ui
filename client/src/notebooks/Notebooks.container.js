@@ -216,7 +216,7 @@ class Notebooks extends Component {
 
   componentWillUnmount() {
     this.coordinator.reset();
-    // this.coordinator.fetchNotebooks();
+    this.coordinator.fetchNotebooks();
     this.coordinator.stopNotebookPolling();
   }
 
@@ -381,7 +381,7 @@ class StartNotebookServer extends Component {
 
   resetNotebookList() {
     this.coordinator.reset();
-    // this.coordinator.fetchNotebooks();
+    this.coordinator.fetchNotebooks();
   }
   async componentDidMount() {
     this._isMounted = true;
@@ -413,7 +413,7 @@ class StartNotebookServer extends Component {
         this.refreshBranches().then(() => this.selectBranchWhenReady());
         if (this.state.scope) {
           this.coordinator.setNotebookFilters(this.state.scope);
-          // this.coordinator.fetchNotebooks();
+          this.coordinator.fetchNotebooks();
         }
       }
     }
