@@ -40,7 +40,7 @@ import SessionCommitOption from "./SessionCommitOption";
 import SessionDockerImage from "./SessionDockerImage";
 import { StartNotebookServerOptions } from "../../../notebooks/components/StartNotebookServerOptions";
 import { useStartSessionOptionsSelector } from "../startSessionOptionsSlice";
-import { useStartSessionMutation } from "../sessionApi";
+import { useStartSessionMutation } from "../sessions.api";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);

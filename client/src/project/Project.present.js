@@ -831,10 +831,10 @@ const ProjectSessions = (props) => {
   return [
     <Col key="content" xs={12}>
       <Switch>
-        <Route exact path={props.notebookServersUrl}>
+        <Route path={props.notebookServersUrl}>
           <ProjectSessionsRouter />
         </Route>
-        <Route
+        {/* <Route
           path={props.launchNotebookUrl}
           render={() => (
             <ProjectStartNotebookServer
@@ -852,7 +852,7 @@ const ProjectSessions = (props) => {
               <ProjectShowSession {...props} match={p.match} />
             </Fragment>
           )}
-        />
+        /> */}
       </Switch>
     </Col>,
   ];

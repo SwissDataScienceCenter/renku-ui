@@ -18,25 +18,22 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  faBook,
-  faCog,
-  faCogs,
   faExclamationTriangle,
   faInfoCircle,
-  faLink,
-  faRedo,
-  faSyncAlt,
-  faUserClock,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { Badge, Button, Collapse, FormText, Input } from "reactstrap";
+import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
+import { Docs } from "../../../utils/constants/Docs";
 import { PipelineJob } from "../../pipelines/pipelines.types";
 import pipelinesApi from "../../pipelines/pipelinesApi";
 import { useCoreSupport } from "../../project/useProjectCoreSupport";
 import registryApi from "../../registry/registryApi";
 import usePatchedProjectConfig from "../hooks/usePatchedProjectConfig.hook";
-import { useGetDockerImageQuery } from "../sessionApi";
+import { useGetDockerImageQuery } from "../sessions.api";
 import {
   SESSION_CI_IMAGE_BUILD_JOB,
   SESSION_CI_PIPELINE_POLLING_INTERVAL_MS,
@@ -48,10 +45,6 @@ import {
   setPinnedDockerImage,
   useStartSessionOptionsSelector,
 } from "../startSessionOptionsSlice";
-import { Badge, Button, Collapse, FormText, Input } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ExternalLink } from "../../../components/ExternalLinks";
-import { Docs } from "../../../utils/constants/Docs";
 
 export default function SessionDockerImage() {
   const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
