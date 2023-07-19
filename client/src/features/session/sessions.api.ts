@@ -20,6 +20,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import {
   DockerImage,
   GetDockerImageParams,
+  GetSessionsParams,
   GetSessionsRawResponse,
   ServerOption,
   ServerOptions,
@@ -27,8 +28,7 @@ import {
   Session,
   Sessions,
   StartSessionParams,
-} from "./session.types";
-import { GetSessionsParams } from "./sessions.types";
+} from "./sessions.types";
 
 interface StopSessionArgs {
   serverName: string;

@@ -40,7 +40,7 @@ type SessionRunningStatus = "failed" | "running" | "starting" | "stopping";
 
 type SessionListRowCoreProps = {
   annotations: NotebookAnnotations;
-  details: { message: string };
+  details: { message: string | undefined };
   status: SessionRunningStatus;
   uid: string;
 };

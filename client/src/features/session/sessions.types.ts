@@ -65,12 +65,34 @@ interface SessionResources {
   usage?: { cpu?: number; memory?: string; storage?: string };
 }
 
-interface SessionStatus {
-  message: string;
+export interface SessionStatus {
+  details: SessionStatusStep[];
+  message?: string;
+  readyNumContainers: number;
   state: "failed" | "running" | "starting" | "stopping";
+  totalNumContainers: number;
   [key: string]: unknown;
+}
+
+interface SessionStatusStep {
+  status: string;
+  step: string;
 }
 
 export interface GetSessionsRawResponse {
   servers: Record<string, Session>;
+}
+
+export interface StartSessionParams {
+  branch: string;
+  cloudstorage?: unknown[];
+  commit: string;
+  defaultUrl: string;
+  environmentVariables?: Record<string, string>;
+  image?: string;
+  lfsAutoFetch: boolean;
+  namespace: string;
+  project: string;
+  sessionClass: number;
+  storage: number;
 }

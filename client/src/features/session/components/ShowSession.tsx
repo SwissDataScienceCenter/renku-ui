@@ -32,10 +32,16 @@ import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
 import { Url } from "../../../utils/helpers/url";
 import { Button, Row, UncontrolledTooltip } from "reactstrap";
-import { ArrowClockwise } from "react-bootstrap-icons";
+import { ArrowClockwise, Journals } from "react-bootstrap-icons";
 import PullSessionModal from "./PullSessionModal";
 import { useGetSessionsQuery } from "../sessions.api";
-import { useParams } from "react-router";
+import { Redirect, useLocation, useParams } from "react-router";
+import SessionUnavailable from "./SessionUnavailable";
+import StartSessionProgressBar from "./StartSessionProgressBar";
+import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
+import ResourcesSessionModal from "./ResourcesSessionModal";
+import SessionJupyter from "./SessionJupyter";
+import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 
 export default function ShowSession() {
   const { params } = useContext(AppContext);
@@ -84,7 +90,14 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     path: pathWithNamespace,
   });
 
-  const { data: sessions } = useGetSessionsQuery({ namespace, project: path });
+  const location = useLocation<
+    { redirectFromStartServer?: boolean } | undefined
+  >();
+
+  const { data: sessions, isLoading } = useGetSessionsQuery({
+    namespace,
+    project: path,
+  });
   const thisSession = useMemo(() => {
     if (sessions == null) {
       return undefined;
@@ -98,12 +111,22 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   // const [showModalAboutData, setShowModalAboutData] = useState(false);
   // const toggleModalAbout = () => setShowModalAboutData(!showModalAboutData);
 
-  // const [showModalResourcesData, setShowModalResourcesData] = useState(false);
-  // const toggleModalResources = () =>
-  //   setShowModalResourcesData(!showModalResourcesData);
-  // const [activeResourcesTab, setActiveResourcesTab] = useState<string>(
-  //   SESSION_TABS.commands
-  // );
+  const [showModalResourcesData, setShowModalResourcesData] = useState(false);
+  const toggleModalResources = useCallback(
+    () => setShowModalResourcesData((show) => !show),
+    []
+  );
+  const [activeResourcesTab, setActiveResourcesTab] = useState<string>(
+    SESSION_TABS.commands
+  );
+  const toggleToResourcesLogs = useCallback(() => {
+    setActiveResourcesTab(SESSION_TABS.logs);
+    toggleModalResources();
+  }, [toggleModalResources]);
+  const toggleResources = useCallback(() => {
+    setActiveResourcesTab(SESSION_TABS.commands);
+    toggleModalResources();
+  }, [toggleModalResources]);
 
   // const [showModalStopSession, setShowModalStopSession] = useState(false);
   // const toggleStopSession = () =>
@@ -121,9 +144,9 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   // const togglePullSession = () =>
   //   setShowModalPullSession(!showModalPullSession);
 
-  // const { height } = useWindowSize();
+  const { height } = useWindowSize();
   // const ref = useRef<any>(null);
-  // const iframeHeight = height ? height - 42 : 800;
+  const iframeHeight = height ? height - 42 : 800;
 
   // const history = useHistory();
   // const location = useLocation();
@@ -133,22 +156,25 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   // });
 
   useEffect(() => {
+    // Wait 4 seconds before setting `isTheSessionReady` for session view
     if (thisSession?.status.state === "running") {
-      setIsTheSessionReady(true);
-      return;
+      const timeout = window.setTimeout(() => {
+        setIsTheSessionReady(true);
+      }, 4_000);
+      return () => window.clearTimeout(timeout);
     }
     setIsTheSessionReady(false);
   }, [thisSession?.status.state]);
 
-  // const pullSessionModal = (
-  //   <PullSession
-  //     isSessionReady={isTheSessionReady}
-  //     notebook={notebook}
-  //     closeModal={togglePullSession}
-  //     urlList={urlList}
-  //     isOpen={showModalPullSession}
-  //   />
-  // );
+  const resourcesModal = (
+    <ResourcesSessionModal
+      activeTab={activeResourcesTab}
+      isOpen={showModalResourcesData}
+      sessionName={sessionName}
+      setActiveTab={setActiveResourcesTab}
+      toggleModal={toggleResources}
+    />
+  );
   const pullSessionModal = (
     <PullSessionModal
       isOpen={showModalPullSession}
@@ -157,6 +183,37 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
       toggleModal={togglePullSession}
     />
   );
+
+  const includeStepInTitle = location.state?.redirectFromStartServer;
+  const content =
+    !isLoading && thisSession == null ? (
+      <SessionUnavailable />
+    ) : thisSession != null ? (
+      <>
+        {!isTheSessionReady && (
+          <StartSessionProgressBar
+            includeStepInTitle={includeStepInTitle}
+            session={thisSession}
+            toggleLogs={toggleToResourcesLogs}
+          />
+        )}
+        <SessionJupyter
+          height={`${iframeHeight}px`}
+          isSessionReady={isTheSessionReady}
+          session={thisSession}
+        />
+      </>
+    ) : (
+      <StartSessionProgressBar
+        includeStepInTitle={includeStepInTitle}
+        toggleLogs={toggleToResourcesLogs}
+      />
+    );
+
+  // Redirect to the sessions list if the session has failed
+  if (thisSession?.status.state === "failed") {
+    return <Redirect to={sessionsListUrl} />;
+  }
 
   return (
     <div className={cx("bg-white", "p-0")}>
@@ -173,16 +230,18 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
             <GoBackBtn urlBack={sessionsListUrl} />
             <PullSessionBtn togglePullSession={togglePullSession} />
             {/* <SaveSessionBtn toggleSaveSession={toggleSaveSession} /> */}
-            {/* <ResourcesBtn toggleModalResources={toggleModalResources} /> */}
+            <ResourcesBtn toggleModalResources={toggleModalResources} />
             {/* <StopSessionBtn toggleStopSession={toggleStopSession} /> */}
           </div>
         </div>
         <div /*ref={ref}*/ className={cx("fullscreen-content", "w-100")}>
+          {content}
           {/* {content}
           {sessionView} */}
         </div>
       </div>
       {/* modals */}
+      {resourcesModal}
       {pullSessionModal}
     </div>
   );
@@ -214,6 +273,36 @@ function PullSessionBtn({ togglePullSession }: PullSessionBtnProps) {
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
         Pull changes
+      </UncontrolledTooltip>
+    </div>
+  );
+}
+
+interface ResourcesProps {
+  toggleModalResources: () => void;
+}
+function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  return (
+    <div>
+      <Button
+        data-cy="resources-button"
+        className={cx(
+          "border-0",
+          "bg-transparent",
+          "text-dark",
+          "p-0",
+          "no-focus"
+        )}
+        id="resources-button"
+        innerRef={ref}
+        onClick={toggleModalResources}
+      >
+        <Journals className="text-rk-dark" title="help" />
+      </Button>
+      <UncontrolledTooltip placement="bottom" target={ref}>
+        Resources
       </UncontrolledTooltip>
     </div>
   );
