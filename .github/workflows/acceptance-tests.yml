@@ -109,18 +109,28 @@ jobs:
           test-timeout-mins: "60"
 
   run-cypress-acceptance-tests:
+    if: |
+      github.event.action != 'closed' &&
+      needs.check-deploy.outputs.pr-contains-string == 'true' &&
+      (needs.check-deploy.outputs.test-cypress-enabled == 'true' || needs.check-deploy.outputs.test-cypress-enabled == 'true')
     needs: [check-deploy, deploy-pr]
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-cypress-enabled == 'true'
     runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        tests: [publicProject, updateProjects, useSession]
+
     steps:
-      - name: Extract renku repo ref
-        run: echo "RENKU=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
-      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.4.6
+      - name: Extract Renku repository reference
+        run: echo "RENKU_REFERENCE=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
+      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@renku3150-update-cypress-tests
         with:
-          gitlab-token: ${{ secrets.DEV_GITLAB_TOKEN }}
+          e2e-target: ${{ matrix.tests }}
+          renku-reference: ${{ env.RENKU_REFERENCE }}
           renku-release: renku-ci-ui-${{ github.event.number }}
           test-user-password: ${{ secrets.RENKU_BOT_DEV_PASSWORD }}
-          renku: ${{ env.RENKU }}
 
   cleanup:
     needs: check-deploy
