@@ -93,7 +93,7 @@ jobs:
           renku_notebooks: "${{ needs.check-deploy.outputs.renku-notebooks }}"
           extra_values: "${{ needs.check-deploy.outputs.extra-values }}"
 
-  run-selenium-acceptance-tests:
+  selenium-acceptance-tests:
     needs: [check-deploy, deploy-pr]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
     runs-on: ubuntu-22.04
@@ -108,7 +108,7 @@ jobs:
           s3-results-secret-key: ${{ secrets.ACCEPTANCE_TESTS_BUCKET_SECRET_KEY }}
           test-timeout-mins: "60"
 
-  run-cypress-acceptance-tests:
+  cypress-acceptance-tests:
     if: |
       github.event.action != 'closed' &&
       needs.check-deploy.outputs.pr-contains-string == 'true' &&
