@@ -20,13 +20,15 @@ import React from "react";
 
 type IAppContext = {
   client: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-  params: unknown;
   location: unknown;
+  model: unknown;
+  params: unknown;
 };
 
 const AppContext = React.createContext<IAppContext>({
   client: undefined,
   params: undefined,
+  model: undefined,
   location: undefined,
 });
 

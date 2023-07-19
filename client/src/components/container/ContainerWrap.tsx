@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,18 +16,27 @@
  * limitations under the License.
  */
 
-Cypress.Commands.add("gui_open_logs", () => {
-  cy.get_cy("session-container")
-    .find(".sessionsButton")
-    .first()
-    .find("[data-cy='more-menu']")
-    .click();
-  cy.get_cy("session-log-button").filter(":visible").click();
-});
+import React, { ReactNode } from "react";
+import cx from "classnames";
 
-Cypress.Commands.add("gui_open_session", () => {
-  cy.get_cy("session-container")
-    .find("[data-cy='open-session']")
-    .first()
-    .click();
-});
+interface ContainerWrapProps {
+  children?: ReactNode;
+  className?: string;
+  fullSize?: boolean;
+}
+
+export default function ContainerWrap({
+  children,
+  className: className_,
+  fullSize,
+}: ContainerWrapProps) {
+  if (!children) {
+    return null;
+  }
+
+  const className = cx(
+    fullSize ? "w-100" : ["container-xxl", "py-4", "mt-2", "renku-container"],
+    className_
+  );
+  return <div className={className}>{children}</div>;
+}

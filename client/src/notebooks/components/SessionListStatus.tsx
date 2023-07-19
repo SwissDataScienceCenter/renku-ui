@@ -159,7 +159,7 @@ function SessionListRowStatus(props: SessionListRowStatusProps) {
 
 interface SessionListRowStatusIconProps extends SessionListRowCoreProps {
   image: string;
-  spaced: boolean;
+  spaced?: boolean;
 }
 
 type SessionListRowStatusIconPopoverProps = Pick<

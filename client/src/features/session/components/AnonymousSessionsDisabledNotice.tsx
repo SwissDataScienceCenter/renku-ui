@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,18 +16,14 @@
  * limitations under the License.
  */
 
-Cypress.Commands.add("gui_open_logs", () => {
-  cy.get_cy("session-container")
-    .find(".sessionsButton")
-    .first()
-    .find("[data-cy='more-menu']")
-    .click();
-  cy.get_cy("session-log-button").filter(":visible").click();
-});
+import React from "react";
+import LoginAlert from "../../../components/loginAlert/LoginAlert";
 
-Cypress.Commands.add("gui_open_session", () => {
-  cy.get_cy("session-container")
-    .find("[data-cy='open-session']")
-    .first()
-    .click();
-});
+export default function AnonymousSessionsDisabledNotice() {
+  const textIntro =
+    "This Renkulab deployment does not allow unauthenticated users to start sessions.";
+  const textPost = "to use sessions.";
+  return (
+    <LoginAlert logged={false} textIntro={textIntro} textPost={textPost} />
+  );
+}
