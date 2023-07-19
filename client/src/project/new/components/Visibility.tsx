@@ -22,7 +22,7 @@
  *  Visibility field group component
  */
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
-import VisibilityInput, {
+import VisibilitiesInput, {
   Visibilities,
   VISIBILITY_ITEMS,
 } from "../../../components/visibility/Visibility";
@@ -56,7 +56,7 @@ const Visibility = ({ handlers, meta, input }: VisibilityProps) => {
 
   return (
     <FormGroup className="field-group">
-      <VisibilityInput
+      <VisibilitiesInput
         isLoadingData={
           meta.namespace.fetching ||
           !meta.namespace.visibilities ||
@@ -74,13 +74,13 @@ const Visibility = ({ handlers, meta, input }: VisibilityProps) => {
 };
 
 interface EditVisibilityModalConfirmationProps {
-  onConfirm: Function; // eslint-disable-line @typescript-eslint/ban-types
-  toggleModal: Function; // eslint-disable-line @typescript-eslint/ban-types
+  onConfirm: (visibility: Visibilities) => void; // eslint-disable-line @typescript-eslint/ban-types
+  toggleModal: () => void; // eslint-disable-line @typescript-eslint/ban-types
   isOpen: boolean;
   isError: boolean;
   isLoading: boolean;
   isSuccess: boolean;
-  message: ReactNode | string;
+  message: ReactNode;
   visibility: Visibilities;
 }
 
@@ -98,7 +98,7 @@ function EditVisibilityModalConfirmation({
     <div className="mt-2 d-flex flex-row gap-2 justify-content-end">
       <Button
         className="float-right mt-1 btn-outline-rk-green"
-        onClick={() => toggleModal()}
+        onClick={toggleModal}
         data-cy="cancel-visibility-btn"
       >
         Cancel
@@ -246,7 +246,7 @@ const EditVisibility = ({
   return (
     projectData?.visibility && (
       <div className="mb-3">
-        <VisibilityInput
+        <VisibilitiesInput
           isLoadingData={
             isFetchingProject ||
             isLoadingProject ||

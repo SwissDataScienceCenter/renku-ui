@@ -10,12 +10,12 @@ describe("extractTextFromObject", () => {
           deeplyNestedKey: "Even more text.",
         },
       },
-      key3: "Text in key 3.",
+      key3: "text in key 3.",
       key4: ["Array text 1", "Array text 2"],
       key5: {
         nestedArray: ["Array text 3", "Array text 4"],
         nestedObject: {
-          objectArray: ["Array text 5", "Array text 6"],
+          objectArray: ["Array text 5", "array text 6"],
         },
       },
     };

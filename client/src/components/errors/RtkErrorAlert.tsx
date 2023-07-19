@@ -57,7 +57,9 @@ export function RtkErrorAlert({
       error.data !== null &&
       "message" in error.data
     ) {
-      return extractTextFromObject(error.data).join(" ");
+      return extractTextFromObject(error.data as Record<string, unknown>).join(
+        " "
+      );
     }
     if ("data" in error) return JSON.stringify(error.data);
     return "No details available.";

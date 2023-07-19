@@ -99,17 +99,17 @@ function ProjectSettingsGeneral(props) {
     <div className="form-rk-green">
       <Row className="mt-2">
         <Col xs={12}>
-          <div className="rk-form-section">
+          <div className="form-rk-section">
             <ProjectTags
               tagList={props.metadata.tagList}
               onProjectTagsChange={props.onProjectTagsChange}
               settingsReadOnly={props.settingsReadOnly}
             />
           </div>
-          <div className="rk-form-section">
+          <div className="form-rk-section">
             <ProjectDescription {...props} />
           </div>
-          <div className="rk-form-section">
+          <div className="form-rk-section">
             <EditVisibility
               projectId={props.metadata.id}
               namespace={namespace}
@@ -117,7 +117,7 @@ function ProjectSettingsGeneral(props) {
               visibility={props.metadata.visibility}
             />
           </div>
-          <div className="rk-form-section">
+          <div className="form-rk-section">
             <ProjectAvatarEdit
               externalUrl={props.externalUrl}
               avatarUrl={props.metadata.avatarUrl}

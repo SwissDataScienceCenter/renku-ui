@@ -28,22 +28,15 @@ import {
   UpdateProjectVisibilityParams,
 } from "./Project";
 
-export const projectGitlabApi = createApi({
+const projectGitlabApi = createApi({
   reducerPath: "projectGitlab",
-  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getProjectById: builder.query<GitlabProjectResponse, number>({
       query: (projectId: number) => {
-        const headers = {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest",
-        };
         return {
-          url: `projects/${projectId}`,
-          method: "GET",
-          headers: new Headers(headers),
+          url: `${projectId}`,
         };
       },
     }),
@@ -57,7 +50,7 @@ export const projectGitlabApi = createApi({
         };
         return {
           method: "PUT",
-          url: `projects/${projectId}`,
+          url: `${projectId}`,
           body,
           validateStatus: (response, body) =>
             response.status >= 200 && response.status < 300 && !body.error,
@@ -83,5 +76,6 @@ export const projectGitlabApi = createApi({
   }),
 });
 
+export default projectGitlabApi;
 export const { useUpdateVisibilityMutation, useGetProjectByIdQuery } =
   projectGitlabApi;

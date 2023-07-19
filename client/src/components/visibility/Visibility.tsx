@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { ChangeEvent, useEffect, useState } from "react";
-import { Input, Label } from "../../utils/ts-wrappers";
+import { ChangeEvent, ReactNode, useEffect, useRef, useState } from "react";
+import { Input } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
@@ -31,13 +31,16 @@ import { computeVisibilities } from "../../utils/helpers/HelperFunctions";
 import {
   ErrorLabel,
   HelperLabel,
-  InputHintLabel,
   InputLabel,
   LoadingLabel,
+  RequiredLabel,
 } from "../formlabels/FormLabels";
 import { ExternalLink } from "../ExternalLinks";
 import { GitlabLinks } from "../../utils/constants/Docs";
 import { ThrottledTooltip } from "../Tooltip";
+import { FormText } from "reactstrap";
+import cx from "classnames";
+import { IconDefinition } from "@fortawesome/free-brands-svg-icons";
 
 /**
  *  renku-ui
@@ -52,7 +55,14 @@ export enum Visibilities {
   Internal = "internal",
 }
 
-const VISIBILITY_ITEMS = [
+interface VisibilityItem {
+  title: string;
+  value: string;
+  icon: IconDefinition;
+  hint: string;
+}
+
+export const VISIBILITY_ITEMS: VisibilityItem[] = [
   {
     title: "Public",
     value: "public",
@@ -73,7 +83,7 @@ const VISIBILITY_ITEMS = [
   },
 ];
 
-export interface VisibilityInputProps {
+export interface VisibilitiesInputProps {
   /** It restrict the options to show */
   namespaceVisibility: Visibilities;
 
@@ -116,7 +126,7 @@ export interface VisibilityInputProps {
  * Project Visibility functional component
  * @param {VisibilityInputProps} props - visibility options
  */
-const VisibilityInput = ({
+const VisibilitiesInput = ({
   namespaceVisibility,
   disabled,
   value,
@@ -127,7 +137,7 @@ const VisibilityInput = ({
   isLoadingData,
   isForked,
   includeRequiredLabel = true,
-}: VisibilityInputProps) => {
+}: VisibilitiesInputProps) => {
   const [visibility, setVisibility] = useState<string | null>(null);
   useEffect(() => setVisibility(value), [value]);
 
@@ -183,7 +193,7 @@ const VisibilityInput = ({
           url={GitlabLinks.PROJECT_VISIBILITY}
           role="text"
           title="documentation"
-          className={isTooltip ? "link-rk-white" : ""}
+          className={cx(isTooltip && "link-rk-white")}
         />
         .
       </>
@@ -191,67 +201,18 @@ const VisibilityInput = ({
   };
 
   const options = VISIBILITY_ITEMS.map((item) => {
-    const disabledByNamespace = visibilities.disabled.includes(item.value);
-    const isDisabled = disabled || disabledByNamespace;
-
+    const isDisabledByNamespace = visibilities.disabled.includes(item.value);
     return (
-      <div
-        className="visibility-box col-sm-12 col-md-4 col-lg-4 px-0"
-        key={`visibility-${item.value}`}
-      >
-        <div id={`visibility-${item.value}`} className="d-flex">
-          <div
-            className={isDisabled ? "cursor-not-allowed d-inline" : "d-inline"}
-          >
-            <Input
-              type="radio"
-              name={name}
-              value={item.value}
-              disabled={isDisabled}
-              checked={visibility === item.value}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                changeVisibility(e.target.value)
-              }
-              className={
-                markInvalid && !isDisabled
-                  ? "visibility-input--error"
-                  : "visibility-input"
-              }
-              data-cy={`visibility-${item.value}`}
-            />
-          </div>
-          <div
-            className={
-              isDisabled ? "cursor-not-allowed px-2" : "cursor-pointer px-2"
-            }
-            onClick={() => changeVisibility(item.value, isDisabled)}
-          >
-            <label
-              className={
-                isDisabled
-                  ? "cursor-not-allowed label-disabled"
-                  : "cursor-pointer"
-              }
-            >
-              {item.title}
-            </label>
-            <FontAwesomeIcon
-              icon={item.icon}
-              className={isDisabled ? "icon-disabled" : ""}
-            />
-          </div>
-        </div>
-        {isDisabled ? (
-          <ThrottledTooltip
-            target={`visibility-${item.value}`}
-            autoHide={false}
-            tooltip={feedbackByNamespace(true)}
-          />
-        ) : null}
-        <div onClick={() => changeVisibility(item.value, isDisabled)}>
-          <InputHintLabel text={item.hint} />
-        </div>
-      </div>
+      <VisibilityInput
+        key={item.value}
+        item={item}
+        name={name}
+        isDisabled={disabled || isDisabledByNamespace}
+        changeVisibility={changeVisibility}
+        isChecked={visibility === item.value}
+        markInvalid={markInvalid}
+        tooltipContent={feedbackByNamespace(true)}
+      />
     );
   });
 
@@ -261,20 +222,103 @@ const VisibilityInput = ({
 
   return (
     <>
-      {includeRequiredLabel ? (
-        <InputLabel text="Visibility" isRequired={isRequired} />
-      ) : (
-        <Label> Visibility </Label>
-      )}
+      <legend>
+        {" "}
+        Visibility{" "}
+        {includeRequiredLabel ? (
+          <RequiredLabel isRequired={isRequired} />
+        ) : (
+          ""
+        )}{" "}
+      </legend>
       <div className="visibilities-box row">{options}</div>
       {errorFeedback}
       <div className="d-flex gap-1 align-items-baseline">
         <FontAwesomeIcon className="text-muted" icon={faExclamationCircle} />
-        <InputHintLabel text="">{feedbackByNamespace(false)}</InputHintLabel>
+        <FormText className="input-hint">{feedbackByNamespace(false)}</FormText>
       </div>
     </>
   );
 };
 
-export default VisibilityInput;
-export { VISIBILITY_ITEMS };
+interface VisibilityInputProps {
+  item: VisibilityItem;
+  name: string;
+  isDisabled: boolean;
+  changeVisibility: (value: string, disabledInput?: boolean) => void;
+  isChecked: boolean;
+  markInvalid?: boolean;
+  tooltipContent: ReactNode;
+}
+const VisibilityInput = ({
+  item,
+  name,
+  isDisabled,
+  changeVisibility,
+  isChecked,
+  markInvalid,
+  tooltipContent,
+}: VisibilityInputProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  return (
+    <div
+      className="visibility-box col-sm-12 col-md-4 col-lg-4 px-0"
+      key={`visibility-${item.value}`}
+    >
+      <div ref={ref} className="d-flex">
+        <div
+          className={isDisabled ? "cursor-not-allowed d-inline" : "d-inline"}
+        >
+          <Input
+            type="radio"
+            name={name}
+            value={item.value}
+            disabled={isDisabled}
+            checked={isChecked}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              changeVisibility(e.target.value)
+            }
+            className={
+              markInvalid && !isDisabled
+                ? "visibility-input--error"
+                : "visibility-input"
+            }
+            data-cy={`visibility-${item.value}`}
+          />
+        </div>
+        <div
+          className={
+            isDisabled ? "cursor-not-allowed px-2" : "cursor-pointer px-2"
+          }
+          onClick={() => changeVisibility(item.value, isDisabled)}
+        >
+          <label
+            className={
+              isDisabled
+                ? "cursor-not-allowed label-disabled"
+                : "cursor-pointer"
+            }
+          >
+            {item.title}
+          </label>
+          <FontAwesomeIcon
+            icon={item.icon}
+            className={isDisabled ? "icon-disabled" : ""}
+          />
+        </div>
+      </div>
+      {isDisabled ? (
+        <ThrottledTooltip
+          target={ref}
+          autoHide={false}
+          tooltip={tooltipContent}
+        />
+      ) : null}
+      <div onClick={() => changeVisibility(item.value, isDisabled)}>
+        <FormText className="input-hint">{item.hint}</FormText>
+      </div>
+    </div>
+  );
+};
+
+export default VisibilitiesInput;

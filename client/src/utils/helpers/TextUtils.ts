@@ -15,29 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// eslint-disable-next-line
-function extractTextFromObject(obj: Record<string, any>): string[] {
-  // eslint-disable-line
-  const textValues: string[] = [];
 
-  for (const key in obj) {
-    const value = obj[key];
-
+export function extractTextFromObject(obj: Record<string, unknown>): string[] {
+  return Object.values(obj).flatMap((value) => {
     if (typeof value === "string") {
-      textValues.push(value.charAt(0).toUpperCase() + value.slice(1));
-    } else if (Array.isArray(value)) {
-      for (const element of value) {
-        if (typeof element === "string") {
-          textValues.push(element.charAt(0).toUpperCase() + element.slice(1));
-        } else if (typeof element === "object") {
-          textValues.push(...extractTextFromObject(element));
-        }
-      }
-    } else if (typeof value === "object") {
-      textValues.push(...extractTextFromObject(value));
+      return [(value.charAt(0).toUpperCase() + value.slice(1)) as string];
     }
-  }
-  return textValues;
+    if (Array.isArray(value)) {
+      return (value as unknown[]).flatMap((element) => {
+        if (typeof element === "string") {
+          return [
+            (element.charAt(0).toUpperCase() + element.slice(1)) as string,
+          ];
+        }
+        if (typeof element === "object") {
+          return extractTextFromObject(element as Record<string, unknown>);
+        }
+        return [];
+      });
+    }
+    if (typeof value === "object") {
+      return extractTextFromObject(value as Record<string, unknown>);
+    }
+    return [];
+  });
 }
-
-export { extractTextFromObject };
