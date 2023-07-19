@@ -44,6 +44,7 @@ import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import { GitlabLinks } from "../../../utils/constants/Docs";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { SuccessAlert } from "../../../components/Alert";
+import { useUpdateProjectMutation } from "../../../features/project/projectKgApi";
 
 interface VisibilityProps {
   handlers: NewProjectHandlers;
@@ -162,6 +163,8 @@ const EditVisibility = ({
 }: VisibilityProps) => {
   const [updateVisibility, { isLoading, isSuccess, isError, error, reset }] =
     useUpdateVisibilityMutation();
+
+  const [updateProject, { isLoading: isLoadingEditP, isSuccess: isSuccessEditP, isError: isErrorEditP, error: errEditP, reset: resetEditP }] = useUpdateProjectMutation();
   const {
     data: projectData,
     isFetching: isFetchingProject,
@@ -209,9 +212,10 @@ const EditVisibility = ({
 
   const onConfirm = useCallback(
     (newVisibility: Visibilities) => {
-      updateVisibility({ projectId, visibility: newVisibility });
+      if (projectData)
+        updateProject({ projectPathWithNamespace: projectData.path_with_namespace, visibility: newVisibility });
     },
-    [projectId, updateVisibility]
+    [projectId, updateVisibility, projectData]
   );
 
   const onChange = useCallback(

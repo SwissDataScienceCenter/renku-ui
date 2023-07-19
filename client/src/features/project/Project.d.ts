@@ -286,6 +286,10 @@ export type TemplateMigrationLevel = {
 export interface DeleteProjectParams {
   projectPathWithNamespace: string;
 }
+export interface EditProjectParams {
+  projectPathWithNamespace: string;
+  visibility: Visibilities;
+}
 
 export interface DeleteProjectResponse {
   accepted: true;
@@ -332,4 +336,5 @@ export interface UpdateProjectResponse {
 
 export interface GitlabProjectResponse {
   visibility: Visibilities;
+  path_with_namespace: string;
 }

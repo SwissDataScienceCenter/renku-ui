@@ -26,6 +26,7 @@ import {
   DatasetKg,
   DeleteProjectParams,
   DeleteProjectResponse,
+  EditProjectParams,
   GetDatasetKgParams,
   ProjectActivateIndexingResponse,
   ProjectIndexingStatusResponse,
@@ -124,6 +125,37 @@ export const projectKgApi = createApi({
         },
       }
     ),
+    updateProject: builder.mutation<DeleteProjectResponse, EditProjectParams>(
+      {
+        query: ({ projectPathWithNamespace, visibility }) => {
+          return {
+            method: "PUT",
+            url: `projects/${projectPathWithNamespace}`,
+            body: {
+              visibility,
+            }
+          };
+        },
+        invalidatesTags: ["project"],
+        transformErrorResponse: (error) => {
+          const { status, data } = error;
+          if (status === 500 && typeof data === "object" && data != null) {
+            const data_ = data as { message?: unknown };
+            if (
+              typeof data_.message === "string" &&
+              data_.message.match(/403 Forbidden/i)
+            ) {
+              const newError: FetchBaseQueryError = {
+                status: 403,
+                data,
+              };
+              return newError;
+            }
+          }
+          return error;
+        },
+      }
+    ),
   }),
 });
 
@@ -132,4 +164,5 @@ export const {
   useGetDatasetKgQuery,
   useGetProjectIndexingStatusQuery,
   useDeleteProjectMutation,
+  useUpdateProjectMutation
 } = projectKgApi;
