@@ -16,15 +16,11 @@ on:
       - .github/workflows/**
       - chartpress.yaml
 
-jobs:
-  cleanup-previous-runs:
-    runs-on: ubuntu-22.04
-    if: github.event.action != 'closed'
-    steps:
-      - uses: rokroskar/workflow-run-cleanup-action@v0.3.3
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
+jobs:
   check-deploy:
     runs-on: ubuntu-22.04
     outputs:
@@ -46,7 +42,7 @@ jobs:
           pr_ref: ${{ github.event.number }}
 
   deploy-pr:
-    needs: [check-deploy, cleanup-previous-runs]
+    needs: [check-deploy]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
     runs-on: ubuntu-22.04
     environment:
