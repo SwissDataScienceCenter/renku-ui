@@ -222,19 +222,17 @@ const VisibilitiesInput = ({
 
   return (
     <>
-      <legend>
-        {" "}
+      <legend className="form-label fs-6">
         Visibility{" "}
-        {includeRequiredLabel ? (
-          <RequiredLabel isRequired={isRequired} />
-        ) : (
-          ""
-        )}{" "}
+        {includeRequiredLabel ? <RequiredLabel isRequired={isRequired} /> : ""}
       </legend>
       <div className="visibilities-box row">{options}</div>
       {errorFeedback}
       <div className="d-flex gap-1 align-items-baseline">
-        <FontAwesomeIcon className="text-muted" icon={faExclamationCircle} />
+        <FontAwesomeIcon
+          className="text-muted fs-small"
+          icon={faExclamationCircle}
+        />
         <FormText className="input-hint">{feedbackByNamespace(false)}</FormText>
       </div>
     </>
@@ -265,7 +263,7 @@ const VisibilityInput = ({
       className="visibility-box col-sm-12 col-md-4 col-lg-4 px-0"
       key={`visibility-${item.value}`}
     >
-      <div ref={ref} className="d-flex">
+      <div className="d-flex">
         <div
           className={isDisabled ? "cursor-not-allowed d-inline" : "d-inline"}
         >
@@ -287,6 +285,7 @@ const VisibilityInput = ({
           />
         </div>
         <div
+          ref={ref}
           className={
             isDisabled ? "cursor-not-allowed px-2" : "cursor-pointer px-2"
           }

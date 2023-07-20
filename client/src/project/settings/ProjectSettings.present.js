@@ -97,19 +97,19 @@ function ProjectSettingsGeneral(props) {
 
   return (
     <div className="form-rk-green">
-      <Row className="mt-2">
+      <Row>
         <Col xs={12}>
-          <div className="form-rk-section">
+          <div className="card card-body mb-4">
             <ProjectTags
               tagList={props.metadata.tagList}
               onProjectTagsChange={props.onProjectTagsChange}
               settingsReadOnly={props.settingsReadOnly}
             />
           </div>
-          <div className="form-rk-section">
+          <div className="card card-body mb-4">
             <ProjectDescription {...props} />
           </div>
-          <div className="form-rk-section">
+          <div className="card card-body mb-4">
             <EditVisibility
               projectId={props.metadata.id}
               namespace={namespace}
@@ -117,7 +117,7 @@ function ProjectSettingsGeneral(props) {
               visibility={props.metadata.visibility}
             />
           </div>
-          <div className="form-rk-section">
+          <div className="card card-body mb-4">
             <ProjectAvatarEdit
               externalUrl={props.externalUrl}
               avatarUrl={props.metadata.avatarUrl}
@@ -191,7 +191,9 @@ class ProjectDescription extends Component {
     );
     return (
       <Form onSubmit={this.onSubmit}>
-        <FormGroup>
+        <FormGroup
+          cssModule={{ "mb-3": this.props.settingsReadOnly ? "mb-3" : "mb-0" }}
+        >
           <Label for="projectDescription">Project Description</Label>
           <div className="d-flex">
             {inputField}

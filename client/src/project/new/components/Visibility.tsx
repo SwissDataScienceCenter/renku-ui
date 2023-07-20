@@ -245,7 +245,7 @@ const EditVisibility = ({
 
   return (
     projectData?.visibility && (
-      <div className="mb-3">
+      <div>
         <VisibilitiesInput
           isLoadingData={
             isFetchingProject ||
