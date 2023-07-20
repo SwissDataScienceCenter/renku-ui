@@ -28,9 +28,8 @@ import {
 } from "../../features/project/dataset";
 import type { DatasetFormState } from "../../features/project/dataset";
 
-import FormGeneratorFileUploaderInput, {
-  FILE_STATUS,
-} from "./DropzoneFileUploader";
+import DropzoneFileUploader, { FILE_STATUS } from "./DropzoneFileUploader";
+import { IDatasetFiles } from "../../features/project/Project";
 
 // Not sure where this comes from -- just trying to maintain existing behavior.
 const UPLOAD_THRESHOLD_SOFT = 104_857_600;
@@ -78,6 +77,7 @@ function notificationFunction(props: NotificationFunctionArgs) {
 type FileUploaderInputProps = {
   dataset: unknown;
   error?: FieldError;
+  existingFiles: IDatasetFiles | undefined;
   help?: string | React.ReactNode;
   label: string;
   location: unknown;
@@ -94,10 +94,19 @@ function FileUploaderInput(props: FileUploaderInputProps) {
     (state) => state.form.files
   );
   const dispatch = useDispatch();
+  const { setValue } = props;
+  const setDisplayFiles = React.useCallback(
+    (files: DatasetFormState["form"]["files"]) => {
+      dispatch(setFiles(files));
+      setValue(files);
+    },
+    [dispatch, setValue]
+  );
   return (
-    <FormGeneratorFileUploaderInput
+    <DropzoneFileUploader
       alert={props.error?.message}
       displayFiles={datasetUploaderFiles}
+      existingFiles={props.existingFiles}
       help={props.help}
       label={props.label}
       name={props.name}
@@ -109,10 +118,7 @@ function FileUploaderInput(props: FileUploaderInputProps) {
         projectPathWithNamespace: props.projectPathWithNamespace,
         location: props.location,
       })}
-      setDisplayFiles={(files: DatasetFormState["form"]["files"]) => {
-        dispatch(setFiles(files));
-        props.setValue(files);
-      }}
+      setDisplayFiles={setDisplayFiles}
       uploadThresholdSoft={UPLOAD_THRESHOLD_SOFT}
       value={props.value}
     />

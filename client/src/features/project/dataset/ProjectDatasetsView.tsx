@@ -30,14 +30,25 @@ import { Loader } from "../../../components/Loader";
 import { DatasetCoordinator } from "../../../dataset/Dataset.state";
 import { SpecialPropVal } from "../../../model/Model";
 import { Url } from "../../../utils/helpers/url";
+
+import type { DatasetCore } from "../Project";
 import ProjectDatasetListView from "./ProjectDatasetsListView";
 import ProjectDatasetShow from "./ProjectDatasetShow";
 import ProjectDatasetImport from "./ProjectDatasetImport";
 import { ProjectDatasetEdit, ProjectDatasetNew } from "./ProjectDatasetNewEdit";
+import type { ProjectDatasetEditProps } from "./ProjectDatasetNewEdit";
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { StateModelProject } from "../Project";
 import { useCoreSupport } from "../useProjectCoreSupport";
+
+type LocationState = {
+  dataset: DatasetCore;
+  files: ProjectDatasetEditProps["files"];
+  isFilesFetching: boolean;
+  filesFetchError: ProjectDatasetEditProps["filesFetchError"];
+  reload: boolean;
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetLockAlert({ lockStatus }: any) {
@@ -87,24 +98,17 @@ function ProjectStatusAlert(props: ProjectStatusAlertProps) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProjectDatasetsNav(props: any) {
   const coreDatasets = props.datasets.core.datasets;
-  const projectId = props.metadata?.id;
-  const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
-    skip: !projectId,
-  });
-  const isGraphReady = projectIndexingStatus.data?.activated === true;
   if (coreDatasets == null) return null;
   if (coreDatasets.error != null) return null;
   if (coreDatasets.length === 0) return null;
 
   return (
     <ProjectDatasetListView
-      datasets_kg={props.datasets.datasets_kg}
       datasets={props.datasets.core.datasets}
       datasetsUrl={props.datasetsUrl}
       locked={props.lockStatus?.locked ?? true}
       newDatasetUrl={props.newDatasetUrl}
       accessLevel={props.metadata.accessLevel}
-      graphStatus={isGraphReady}
     />
   );
 }
@@ -197,6 +201,7 @@ function ProjectDatasetsView(props: any) {
   const {
     backendAvailable,
     computed: coreSupportComputed,
+    backendErrorMessage,
     versionUrl,
   } = coreSupport;
 
@@ -232,6 +237,30 @@ function ProjectDatasetsView(props: any) {
     versionUrl,
   ]);
 
+  if (coreSupportComputed && backendErrorMessage)
+    return (
+      <ErrorAlert>
+        <p>
+          <b>There was an error verifying support for this project.</b>
+        </p>
+
+        <p>
+          <code>{backendErrorMessage}</code>
+        </p>
+
+        <p className="mb-0">
+          You can try to{" "}
+          <a
+            className="btn btn-danger"
+            href={window.location.href}
+            onClick={() => window.location.reload()}
+          >
+            reload the page
+          </a>
+        </p>
+      </ErrorAlert>
+    );
+
   if (coreSupportComputed && !backendAvailable) {
     const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace: props.metadata.namespace,
@@ -264,13 +293,6 @@ function ProjectDatasetsView(props: any) {
   }
 
   if (!coreSupportComputed) {
-    if (coreSupport.backendErrorMessage)
-      return (
-        <ErrorAlert>
-          <b>There was an error verifying support for this project.</b>
-          <p>{coreSupport.backendErrorMessage}</p>
-        </ErrorAlert>
-      );
     return (
       <div>
         <p>Checking project version and RenkuLab compatibility...</p>
@@ -365,32 +387,36 @@ function ProjectDatasetsView(props: any) {
         />
         <Route
           path={props.editDatasetUrl}
-          render={(p) => (
-            <>
-              <Col key="btn" md={12}>
-                <GoBackButton
-                  label="Back to dataset"
-                  url={`${props.datasetsUrl}/${p.match.params.datasetId}/`}
+          render={(p) => {
+            const locationState = p.location.state
+              ? (p.location.state as LocationState)
+              : undefined;
+            return (
+              <>
+                <Col key="btn" md={12}>
+                  <GoBackButton
+                    label="Back to dataset"
+                    url={`${props.datasetsUrl}/${p.match.params.datasetId}/`}
+                  />
+                </Col>
+                <ProjectDatasetEdit
+                  client={props.client}
+                  dataset={locationState?.dataset}
+                  datasetId={decodeURIComponent(p.match.params.datasetId ?? "")}
+                  fetchDatasets={props.fetchDatasets}
+                  files={locationState?.files ?? { hasPart: [] }}
+                  filesFetchError={locationState?.filesFetchError}
+                  history={props.history}
+                  isFilesFetching={locationState?.isFilesFetching ?? false}
+                  location={props.location}
+                  model={props.model}
+                  notifications={props.notifications}
+                  params={props.params}
+                  versionUrl={versionUrl}
                 />
-              </Col>
-              <ProjectDatasetEdit
-                client={props.client}
-                dataset={
-                  p.location.state
-                    ? (p.location.state as Record<string, string>).dataset
-                    : undefined
-                }
-                datasetId={decodeURIComponent(p.match.params.datasetId ?? "")}
-                fetchDatasets={props.fetchDatasets}
-                history={props.history}
-                location={props.location}
-                model={props.model}
-                notifications={props.notifications}
-                params={props.params}
-                versionUrl={versionUrl}
-              />
-            </>
-          )}
+              </>
+            );
+          }}
         />
         <Route
           path={props.datasetUrl}

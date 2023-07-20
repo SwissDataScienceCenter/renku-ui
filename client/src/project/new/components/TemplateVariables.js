@@ -22,7 +22,7 @@
  *  Template Variables field group component
  */
 import React, { Component } from "react";
-import { capitalize } from "../../../components/formgenerator/FormGenerator.present";
+import { toCapitalized as capitalize } from "../../../utils/helpers/HelperFunctions";
 import {
   Button,
   FormGroup,
