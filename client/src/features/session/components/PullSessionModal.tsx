@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import cx from "classnames";
 import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 import { Loader } from "../../../components/Loader";
@@ -127,12 +127,11 @@ function PullSessionStatusBody({
   });
   const [renkuPull, { isLoading: pulling }] = useRenkuPullMutation();
 
-  const pullSession = async () => {
+  const pullSession = useCallback(async () => {
     setSucceeded(undefined);
     const result = await renkuPull({ serverName: sessionName }).unwrap();
-    if (result.error == null) setSucceeded(true);
-    else setSucceeded(false);
-  };
+    setSucceeded(result.error == null);
+  }, [renkuPull, sessionName]);
 
   if (isFetching || data == null) {
     return <CenteredLoader />;

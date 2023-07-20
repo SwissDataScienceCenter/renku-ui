@@ -34,7 +34,12 @@ import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
 import { Url } from "../../../utils/helpers/url";
 import { Button, Row, UncontrolledTooltip } from "reactstrap";
-import { ArrowClockwise, Briefcase, Journals } from "react-bootstrap-icons";
+import {
+  ArrowClockwise,
+  Briefcase,
+  Journals,
+  Save,
+} from "react-bootstrap-icons";
 import PullSessionModal from "./PullSessionModal";
 import { useGetSessionsQuery } from "../sessions.api";
 import { Redirect, useLocation, useParams } from "react-router";
@@ -46,6 +51,7 @@ import SessionJupyter from "./SessionJupyter";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import StopSessionModal from "./StopSessionModal";
 import AboutSessionModal from "./AboutSessionModal";
+import SaveSessionModal from "./SaveSessionModal";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -144,9 +150,11 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     []
   );
 
-  // const [showModalSaveSession, setShowModalSaveSession] = useState(false);
-  // const toggleSaveSession = () =>
-  //   setShowModalSaveSession(!showModalSaveSession);
+  const [showModalSaveSession, setShowModalSaveSession] = useState(false);
+  const toggleSaveSession = useCallback(
+    () => setShowModalSaveSession((show) => !show),
+    []
+  );
 
   const [showModalPullSession, setShowModalPullSession] = useState(false);
   const togglePullSession = useCallback(
@@ -178,6 +186,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     setIsTheSessionReady(false);
   }, [thisSession?.status.state]);
 
+  // Modals
   const aboutModal = (
     <AboutSessionModal
       isOpen={showModalAboutData}
@@ -203,6 +212,22 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
       isOpen={showModalStopSession}
       sessionName={sessionName}
       toggleModal={toggleStopSession}
+    />
+  );
+  const saveSessionModal = (
+    <SaveSessionModal
+      isOpen={showModalSaveSession}
+      isSessionReady={isTheSessionReady}
+      sessionName={sessionName}
+      toggleModal={toggleSaveSession}
+
+      // isLogged={props.isLogged}
+      // isSessionReady={isTheSessionReady}
+      // hasSaveAccess={props.accessLevel >= ACCESS_LEVELS.DEVELOPER}
+      // notebook={notebook}
+      // closeModal={toggleSaveSession}
+      // urlList={urlList}
+      // isOpen={showModalSaveSession}
     />
   );
   const pullSessionModal = (
@@ -259,7 +284,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
           >
             <GoBackBtn urlBack={sessionsListUrl} />
             <PullSessionBtn togglePullSession={togglePullSession} />
-            {/* <SaveSessionBtn toggleSaveSession={toggleSaveSession} /> */}
+            <SaveSessionBtn toggleSaveSession={toggleSaveSession} />
             <ResourcesBtn toggleModalResources={toggleModalResources} />
             <StopSessionBtn toggleStopSession={toggleStopSession} />
           </div>
@@ -293,6 +318,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
       {/* modals */}
       {aboutModal}
       {resourcesModal}
+      {saveSessionModal}
       {pullSessionModal}
       {stopSessionModal}
     </div>
@@ -309,7 +335,6 @@ function PullSessionBtn({ togglePullSession }: PullSessionBtnProps) {
   return (
     <div>
       <Button
-        data-cy="pull-changes-button"
         className={cx(
           "border-0",
           "bg-transparent",
@@ -317,6 +342,7 @@ function PullSessionBtn({ togglePullSession }: PullSessionBtnProps) {
           "p-0",
           "no-focus"
         )}
+        data-cy="pull-changes-button"
         id="pull-changes-button"
         innerRef={ref}
         onClick={togglePullSession}
@@ -330,6 +356,37 @@ function PullSessionBtn({ togglePullSession }: PullSessionBtnProps) {
   );
 }
 
+interface SaveSessionProps {
+  toggleSaveSession: () => void;
+}
+function SaveSessionBtn({ toggleSaveSession }: SaveSessionProps) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  return (
+    <div>
+      <Button
+        data-cy="save-session-button"
+        className={cx(
+          "border-0",
+          "bg-transparent",
+          "text-dark",
+          "p-0",
+          "no-focus"
+        )}
+        id="save-session-button"
+        innerRef={ref}
+        onClick={toggleSaveSession}
+      >
+        <Save className="text-rk-dark" title="save" />
+      </Button>
+      <UncontrolledTooltip placement="bottom" target={ref}>
+        Save session
+      </UncontrolledTooltip>
+      {/* <ThrottledTooltip target="save-session-button" tooltip="Save session" /> */}
+    </div>
+  );
+}
+
 interface ResourcesProps {
   toggleModalResources: () => void;
 }
@@ -339,7 +396,6 @@ function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
   return (
     <div>
       <Button
-        data-cy="resources-button"
         className={cx(
           "border-0",
           "bg-transparent",
@@ -347,6 +403,7 @@ function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
           "p-0",
           "no-focus"
         )}
+        data-cy="resources-button"
         id="resources-button"
         innerRef={ref}
         onClick={toggleModalResources}
