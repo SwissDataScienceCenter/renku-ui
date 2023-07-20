@@ -24,17 +24,6 @@ function cleanDatasetId(dataset) {
 }
 
 export default function addDatasetMethods(client) {
-  client.searchDatasets = (queryParams = { query: "" }) => {
-    const url = `${client.baseUrl}/kg/datasets`;
-    const headers = client.getBasicHeaders();
-
-    return client.clientFetch(url, {
-      method: "GET",
-      headers,
-      queryParams,
-    });
-  };
-
   function createFileUploadFormData(file) {
     const data = new FormData();
     data.append("file", file);
