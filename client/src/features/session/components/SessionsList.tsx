@@ -120,7 +120,7 @@ function SessionListItem({ session }: SessionListItemProps) {
 
 interface SessionRowProps {
   annotations: Session["annotations"];
-  details: { message: string };
+  details: { message: string | undefined };
   image: string;
   name: string;
   repositoryLinks: { branch: string; commit: string };

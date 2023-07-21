@@ -22,6 +22,7 @@ import {
   faExclamationTriangle,
   faInfoCircle,
   faTimesCircle,
+  faPause,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -33,21 +34,19 @@ import {
 } from "reactstrap";
 import { Clipboard } from "../../components/Clipboard";
 import { Loader } from "../../components/Loader";
-import { SessionStatus } from "../../utils/constants/Notebooks";
 import type { NotebookAnnotations } from "./Session";
-
-type SessionRunningStatus = "failed" | "running" | "starting" | "stopping";
+import { SessionStatusState } from "../../features/session/sessions.types";
 
 type SessionListRowCoreProps = {
   annotations: NotebookAnnotations;
-  details: { message: string };
-  status: SessionRunningStatus;
+  details: { message: string | undefined };
+  status: SessionStatusState;
   uid: string;
 };
 
-function getStatusObject(status: SessionRunningStatus, defaultImage: boolean) {
+function getStatusObject(status: SessionStatusState, defaultImage: boolean) {
   switch (status) {
-    case SessionStatus.running:
+    case "running":
       return {
         color: defaultImage ? "warning" : "success",
         icon: defaultImage ? (
@@ -61,23 +60,29 @@ function getStatusObject(status: SessionRunningStatus, defaultImage: boolean) {
         ),
         text: "Running",
       };
-    case SessionStatus.starting:
+    case "starting":
       return {
         color: "warning",
         icon: <Loader size={16} inline />,
         text: "Starting...",
       };
-    case SessionStatus.stopping:
+    case "stopping":
       return {
         color: "warning",
         icon: <Loader size={16} inline />,
         text: "Stopping...",
       };
-    case SessionStatus.failed:
+    case "failed":
       return {
         color: "danger",
         icon: <FontAwesomeIcon icon={faTimesCircle} size="lg" />,
         text: "Error",
+      };
+    case "hibernated":
+      return {
+        color: "rk-text-light",
+        icon: <FontAwesomeIcon icon={faPause} size="lg" />,
+        text: "Paused",
       };
     default:
       return {
@@ -136,11 +141,14 @@ function SessionListRowStatus(props: SessionListRowStatusProps) {
     failed: "text-danger",
     starting: "text-secondary",
     stopping: "text-secondary",
+    hibernated: "text-rk-text-light",
   };
 
   const textStatus =
-    status === SessionStatus.running
+    status === "running"
       ? `${data.text} since ${startTime}`
+      : status === "hibernated"
+      ? `${data.text}, started ${startTime}`
       : data.text;
 
   return (
@@ -176,9 +184,12 @@ function SessionListRowStatusIconPopover({
   id,
   status,
 }: SessionListRowStatusIconPopoverProps) {
-  if (status !== SessionStatus.running && status !== SessionStatus.failed)
+  // TODO: handle showing hibernating data in popover
+
+  if (status !== "running" && status !== "failed") {
     return null;
-  if (status === SessionStatus.failed) {
+  }
+  if (status === "failed") {
     return (
       <UncontrolledPopover target={id} trigger="legacy" placement="right">
         <PopoverHeader>Kubernetes pod status</PopoverHeader>
@@ -241,4 +252,3 @@ function SessionListRowStatusIcon({
 }
 
 export { SessionListRowStatus, SessionListRowStatusIcon, getStatusObject };
-export type { SessionRunningStatus };

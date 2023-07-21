@@ -44,7 +44,7 @@ import {
 import { Notebook, SessionHandlers } from "./Session";
 import useWindowSize from "../../utils/helpers/UseWindowsSize";
 import { Url } from "../../utils/helpers/url";
-import { SessionStatus } from "../../utils/constants/Notebooks";
+// import { SessionStatus } from "../../utils/constants/Notebooks";
 import { SESSION_TABS, SessionJupyter } from "../Notebooks.present";
 import StartSessionProgressBar, {
   SessionStatusData,
@@ -132,7 +132,7 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
   }, [notebook.data.status]); // eslint-disable-line
 
   // redirect immediately if the session fail
-  if (history && notebook.data?.status?.state === SessionStatus.failed)
+  if (history && notebook.data?.status?.state === "failed")
     history.push(urlList);
 
   /* modals */
@@ -226,7 +226,7 @@ function ShowSessionFullscreen(props: ShowSessionFullscreenProps) {
       </div>
     ) : null;
     sessionView =
-      status === SessionStatus.running ? (
+      status === "running" ? (
         <SessionJupyter
           ready={isTheSessionReady}
           filters={filters}

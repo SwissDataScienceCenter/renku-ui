@@ -41,15 +41,14 @@ import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
 import { Clipboard } from "../Clipboard";
-import { SessionStatus } from "../../utils/constants/Notebooks";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import AppContext from "../../utils/context/appContext";
 import { getStatusObject } from "../../notebooks/components/SessionListStatus";
-import type { SessionRunningStatus } from "../../notebooks/components/SessionListStatus";
 import SessionButton from "../../features/session/components/SessionButton";
 import { Notebook } from "../../notebooks/components/Session";
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import "./ListBar.scss";
+import { SessionStatusState } from "../../features/session/sessions.types";
 
 /** Helper function for formatting the resource list */
 interface ResourceListProps {
@@ -71,7 +70,7 @@ function ResourceList({ resources }: ResourceListProps) {
 }
 
 interface SessionStatusIconProps {
-  status: string;
+  status: SessionStatusState;
   data: {
     icon: ReactNode;
     color: string;
@@ -90,17 +89,14 @@ function SessionStatusIcon({
 }: SessionStatusIconProps) {
   const policy = defaultImage ? <div>A fallback image was used.</div> : null;
   const popover =
-    status === SessionStatus.failed ||
-    (status === SessionStatus.running && defaultImage) ? (
+    status === "failed" || (status === "running" && defaultImage) ? (
       <UncontrolledPopover
         target={sessionId}
         trigger="hover"
         placement="bottom"
       >
         <PopoverHeader>
-          {status === SessionStatus.failed
-            ? "Error Details"
-            : "Warning Details"}
+          {status === "failed" ? "Error Details" : "Warning Details"}
         </PopoverHeader>
         <PopoverBody>
           {errorSession}
@@ -113,7 +109,7 @@ function SessionStatusIcon({
     <div
       id={sessionId}
       className={`d-flex align-items-center gap-1 ${
-        status === SessionStatus.failed ? "cursor-pointer" : ""
+        status === "failed" ? "cursor-pointer" : ""
       }`}
     >
       <Badge color={data.color}>{data.icon}</Badge>
@@ -214,7 +210,8 @@ function ListBarSession({
   const { client } = useContext(AppContext);
   const [commit, setCommit] = useState(null);
 
-  const [sessionStatus, setSessionStatus] = useState(SessionStatus.starting);
+  const [sessionStatus, setSessionStatus] =
+    useState<SessionStatusState>("starting");
   useEffect(() => {
     setSessionStatus(notebook?.status?.state);
   }, [notebook?.status?.state]);
@@ -242,13 +239,11 @@ function ListBarSession({
   const resources = notebook.resources?.requests;
   const sessionId = notebook.name;
   const statusData = getStatusObject(
-    sessionStatus as SessionRunningStatus,
+    sessionStatus,
     notebook.annotations["default_image_used"]
   );
   const sessionTimeLabel =
-    sessionStatus === SessionStatus.running
-      ? `${statusData.text} since `
-      : statusData.text;
+    sessionStatus === "running" ? `${statusData.text} since ` : statusData.text;
   const sessionDetailsPopover = commit ? (
     <SessionDetailsPopOver commit={commit} image={notebook.image} />
   ) : null;
