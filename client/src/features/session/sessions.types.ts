@@ -103,3 +103,8 @@ export interface StartSessionParams {
   sessionClass: number;
   storage: number;
 }
+
+export interface PatchSessionParams {
+  sessionName: string;
+  state: Extract<"running" | "hibernated", SessionStatusState>;
+}

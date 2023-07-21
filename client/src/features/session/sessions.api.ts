@@ -22,6 +22,7 @@ import {
   GetDockerImageParams,
   GetSessionsParams,
   GetSessionsRawResponse,
+  PatchSessionParams,
   ServerOption,
   ServerOptions,
   ServerOptionsResponse,
@@ -143,6 +144,15 @@ const sessionsApi = createApi({
         };
       },
       invalidatesTags: ["Session"],
+    }),
+    patchSession: builder.mutation<Session, PatchSessionParams>({
+      query: ({ sessionName }) => ({
+        method: "PATCH",
+        url: `servers/${sessionName}`,
+      }),
+      invalidatesTags: (_resut, _error, { sessionName }) => [
+        { id: sessionName, type: "Session" },
+      ],
     }),
   }),
 });
