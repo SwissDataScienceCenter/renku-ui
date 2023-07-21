@@ -34,7 +34,7 @@ import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
 import { Url } from "../../../utils/helpers/url";
 import { Button, Row, UncontrolledTooltip } from "reactstrap";
-import { ArrowClockwise, Journals } from "react-bootstrap-icons";
+import { ArrowClockwise, Briefcase, Journals } from "react-bootstrap-icons";
 import PullSessionModal from "./PullSessionModal";
 import { useGetSessionsQuery } from "../sessions.api";
 import { Redirect, useLocation, useParams } from "react-router";
@@ -45,6 +45,9 @@ import ResourcesSessionModal from "./ResourcesSessionModal";
 import SessionJupyter from "./SessionJupyter";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import StopSessionModal from "./StopSessionModal";
+import AboutSessionModal from "./AboutSessionModal";
+
+const logo = "/static/public/img/logo.svg";
 
 export default function ShowSession() {
   const { params } = useContext(AppContext);
@@ -111,8 +114,12 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   // const { filters, notebook, urlBack, projectName, handlers } = props;
   // const [sessionStatus, setSessionStatus] = useState<SessionStatusData>();
   const [isTheSessionReady, setIsTheSessionReady] = useState(false);
-  // const [showModalAboutData, setShowModalAboutData] = useState(false);
-  // const toggleModalAbout = () => setShowModalAboutData(!showModalAboutData);
+
+  const [showModalAboutData, setShowModalAboutData] = useState(false);
+  const toggleModalAbout = useCallback(
+    () => setShowModalAboutData((show) => !show),
+    []
+  );
 
   const [showModalResourcesData, setShowModalResourcesData] = useState(false);
   const toggleModalResources = useCallback(
@@ -171,6 +178,17 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     setIsTheSessionReady(false);
   }, [thisSession?.status.state]);
 
+  const aboutModal = (
+    <AboutSessionModal
+      isOpen={showModalAboutData}
+      session={thisSession}
+      toggleModal={toggleModalAbout}
+      // toggleModal={toggleModalAbout}
+      // isOpen={showModalAboutData}
+      // projectMetadata={projectMetadata}
+      // notebook={notebook}
+    />
+  );
   const resourcesModal = (
     <ResourcesSessionModal
       activeTab={activeResourcesTab}
@@ -245,6 +263,26 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
             <ResourcesBtn toggleModalResources={toggleModalResources} />
             <StopSessionBtn toggleStopSession={toggleStopSession} />
           </div>
+          <div
+            className={cx(
+              "d-flex",
+              "align-items-center",
+              "justify-content-between",
+              "bg-primary",
+              "flex-grow-1",
+              "py-2"
+            )}
+          >
+            <div className={cx("px-3", "text-rk-green")}>
+              <AboutBtn
+                projectName={path}
+                toggleModalAbout={toggleModalAbout}
+              />
+            </div>
+            <div className="px-3">
+              <img alt="Renku" className="d-block" height="22" src={logo} />
+            </div>
+          </div>
         </div>
         <div /*ref={ref}*/ className={cx("fullscreen-content", "w-100")}>
           {content}
@@ -253,6 +291,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
         </div>
       </div>
       {/* modals */}
+      {aboutModal}
       {resourcesModal}
       {pullSessionModal}
       {stopSessionModal}
@@ -349,5 +388,27 @@ function StopSessionBtn({ toggleStopSession }: StopSessionBtnProps) {
         Stop session
       </UncontrolledTooltip>
     </div>
+  );
+}
+
+interface AboutBtnProps {
+  projectName: string;
+  toggleModalAbout: () => void;
+}
+function AboutBtn({ toggleModalAbout, projectName }: AboutBtnProps) {
+  return (
+    <Button
+      className={cx(
+        "border-0",
+        "bg-transparent",
+        "no-focus",
+        "text-rk-green",
+        "p-0"
+      )}
+      data-cy="about-button"
+      onClick={toggleModalAbout}
+    >
+      <Briefcase /> {projectName}
+    </Button>
   );
 }
