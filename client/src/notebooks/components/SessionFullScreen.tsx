@@ -44,7 +44,6 @@ import {
 import { Notebook, SessionHandlers } from "./Session";
 import useWindowSize from "../../utils/helpers/UseWindowsSize";
 import { Url } from "../../utils/helpers/url";
-// import { SessionStatus } from "../../utils/constants/Notebooks";
 import { SESSION_TABS, SessionJupyter } from "../Notebooks.present";
 import StartSessionProgressBar, {
   SessionStatusData,
