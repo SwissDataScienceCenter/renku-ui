@@ -115,6 +115,7 @@ function ProjectSettingsGeneral(props) {
               namespace={namespace}
               forkedProjectId={props.forkedFromProject?.id}
               visibility={props.metadata.visibility}
+              pathWithNamespace={props.metadata.pathWithNamespace}
             />
           </div>
           <div className="card card-body mb-4">

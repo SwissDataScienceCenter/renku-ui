@@ -176,10 +176,10 @@ const VisibilitiesInput = ({
 
   const disableByNamespaceOptions = {
     public: "",
-    private: `Public and Internal options are not available due to ${
+    private: `Public and Internal not available due to ${
       isForked ? "forked project or " : ""
     }group namespace restrictions. `,
-    internal: `Public is not available due to ${
+    internal: `Public not available due to ${
       isForked ? "forked project or " : ""
     }group namespace restrictions. `,
   };
@@ -187,15 +187,14 @@ const VisibilitiesInput = ({
   const feedbackByNamespace = (isTooltip: boolean) => {
     return (
       <>
-        {disableByNamespaceOptions[namespaceVisibility]} If you need more
-        information about visibility, please check the{" "}
+        {disableByNamespaceOptions[namespaceVisibility]} Check the{" "}
         <ExternalLink
           url={GitlabLinks.PROJECT_VISIBILITY}
           role="text"
-          title="documentation"
+          title="visibility documentation"
           className={cx(isTooltip && "link-rk-white")}
-        />
-        .
+        />{" "}
+        for more details.
       </>
     );
   };
@@ -228,12 +227,11 @@ const VisibilitiesInput = ({
       </legend>
       <div className="visibilities-box row">{options}</div>
       {errorFeedback}
-      <div className="d-flex gap-1 align-items-baseline">
-        <FontAwesomeIcon
-          className="text-muted fs-small"
-          icon={faExclamationCircle}
-        />
-        <FormText className="input-hint">{feedbackByNamespace(false)}</FormText>
+      <div>
+        <FormText className="input-hint py-1">
+          <FontAwesomeIcon icon={faExclamationCircle} />{" "}
+          {feedbackByNamespace(false)}
+        </FormText>
       </div>
     </>
   );

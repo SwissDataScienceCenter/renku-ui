@@ -16,17 +16,9 @@
  * limitations under the License.
  */
 
-import {
-  createApi,
-  fetchBaseQuery,
-  FetchBaseQueryError,
-} from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import {
-  GitlabProjectResponse,
-  UpdateProjectResponse,
-  UpdateProjectVisibilityParams,
-} from "./Project";
+import { GitlabProjectResponse } from "./Project";
 
 const projectGitlabApi = createApi({
   reducerPath: "projectGitlab",
@@ -40,42 +32,8 @@ const projectGitlabApi = createApi({
         };
       },
     }),
-    updateVisibility: builder.mutation<
-      UpdateProjectResponse,
-      UpdateProjectVisibilityParams
-    >({
-      query: ({ projectId, visibility }) => {
-        const body = {
-          visibility,
-        };
-        return {
-          method: "PUT",
-          url: `${projectId}`,
-          body,
-          validateStatus: (response, body) =>
-            response.status >= 200 && response.status < 300 && !body.error,
-        };
-      },
-      transformErrorResponse: (error): FetchBaseQueryError => {
-        const { status, data } = error;
-        if (status === 500 && typeof data === "object" && data != null) {
-          const data_ = data as { message?: unknown };
-          if (
-            typeof data_.message === "string" &&
-            data_.message.match(/403 Forbidden/i)
-          ) {
-            return {
-              status: 403,
-              data,
-            };
-          }
-        }
-        return error as FetchBaseQueryError;
-      },
-    }),
   }),
 });
 
 export default projectGitlabApi;
-export const { useUpdateVisibilityMutation, useGetProjectByIdQuery } =
-  projectGitlabApi;
+export const { useGetProjectByIdQuery } = projectGitlabApi;

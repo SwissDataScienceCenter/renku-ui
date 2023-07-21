@@ -32,18 +32,20 @@ import {
   NewProjectInputs,
   NewProjectMeta,
 } from "./newProject.d";
-import {
-  useGetProjectByIdQuery,
-  useUpdateVisibilityMutation,
-} from "../../../features/project/projectGitlabApi";
-import { Modal, ModalBody, ModalHeader } from "reactstrap";
 import { LoadingLabel } from "../../../components/formlabels/FormLabels";
-import { computeVisibilities } from "../../../utils/helpers/HelperFunctions";
-import { useGetGroupByPathQuery } from "../../../features/projects/projectsApi";
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import { GitlabLinks } from "../../../utils/constants/Docs";
 import { ExternalLink } from "../../../components/ExternalLinks";
-import { SuccessAlert } from "../../../components/Alert";
+import { Modal, ModalBody, ModalHeader } from "reactstrap";
+import {
+  useProjectMetadataQuery,
+  useUpdateProjectMutation,
+} from "../../../features/project/projectKgApi";
+import { useGetProjectByIdQuery } from "../../../features/project/projectGitlabApi";
+import { useGetGroupByPathQuery } from "../../../features/projects/projectsApi";
+import { computeVisibilities } from "../../../utils/helpers/HelperFunctions";
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { SuccessAlert, WarnAlert } from "../../../components/Alert";
+import { Loader } from "../../../components/Loader";
 
 interface VisibilityProps {
   handlers: NewProjectHandlers;
@@ -113,6 +115,10 @@ function EditVisibilityModalConfirmation({
     </div>
   );
 
+  const modalContent =
+    visibility === Visibilities.Private
+      ? "Users will not find this project anymore unless you explicitly add them to the Members list. "
+      : "Please note that users will not need your explicit permission to see this project. ";
   const content =
     isError || isSuccess ? (
       message
@@ -120,22 +126,21 @@ function EditVisibilityModalConfirmation({
       <LoadingLabel text="Updating visibility" />
     ) : (
       <>
-        Please note that users will not need your explicit permission to see
-        this project. If you need more information about visibility, please
-        check the{" "}
+        {modalContent}
+        Check the{" "}
         <ExternalLink
           url={GitlabLinks.PROJECT_VISIBILITY}
           role="text"
-          title="documentation"
-        />
-        .
+          title="visibility documentation"
+        />{" "}
+        for more details.
       </>
     );
 
   return (
     <Modal isOpen={isOpen} toggle={() => toggleModal()} size="lg">
       <ModalHeader toggle={() => toggleModal()}>
-        Edit visibility to{" "}
+        Change visibility to{" "}
         {VISIBILITY_ITEMS.find((item) => item.value === visibility)?.title}
       </ModalHeader>
       <ModalBody>
@@ -147,27 +152,30 @@ function EditVisibilityModalConfirmation({
 }
 
 interface VisibilityProps {
-  projectId: number;
   namespace: {
     name: string;
     kind: string;
   };
   forkedProjectId: number;
+  pathWithNamespace: string;
 }
 
 const EditVisibility = ({
-  projectId,
   namespace,
   forkedProjectId,
+  pathWithNamespace,
 }: VisibilityProps) => {
-  const [updateVisibility, { isLoading, isSuccess, isError, error, reset }] =
-    useUpdateVisibilityMutation();
+  const [updateProject, { isLoading, isSuccess, isError, error, reset }] =
+    useUpdateProjectMutation();
   const {
     data: projectData,
     isFetching: isFetchingProject,
     isLoading: isLoadingProject,
     refetch: refetchProjectData,
-  } = useGetProjectByIdQuery(projectId);
+  } = useProjectMetadataQuery(
+    { projectPath: pathWithNamespace },
+    { skip: !pathWithNamespace }
+  );
   const {
     data: forkProjectData,
     isFetching: isFetchingForkProject,
@@ -209,17 +217,23 @@ const EditVisibility = ({
 
   const onConfirm = useCallback(
     (newVisibility: Visibilities) => {
-      updateVisibility({ projectId, visibility: newVisibility });
+      if (projectData)
+        updateProject({
+          projectPathWithNamespace: projectData.path,
+          visibility: newVisibility,
+        });
     },
-    [projectId, updateVisibility]
+    [projectData, updateProject]
   );
 
   const onChange = useCallback(
     (visibility: Visibilities) => {
-      setIsOpen(true);
-      setNewVisibility(visibility);
+      if (newVisibility !== visibility) {
+        setIsOpen(true);
+        setNewVisibility(visibility);
+      }
     },
-    [setIsOpen, setNewVisibility]
+    [setIsOpen, setNewVisibility, newVisibility]
   );
 
   const onCancel = useCallback(() => {
@@ -243,14 +257,24 @@ const EditVisibility = ({
       ""
     );
 
+  if (!isLoadingProject && !isFetchingProject && !projectData)
+    return (
+      <WarnAlert>
+        Knowledge Graph integration must be enabled to change visibility from
+        the RenkuLab web interface.
+      </WarnAlert>
+    );
+
+  if (isLoadingProject && isFetchingProject && !projectData) return <Loader />;
+
   return (
-    projectData?.visibility && (
+    projectData && (
       <div>
         <VisibilitiesInput
           isLoadingData={
             isFetchingProject ||
             isLoadingProject ||
-            !projectData.visibility ||
+            !projectData?.visibility ||
             isFetchingForkProject
           }
           namespaceVisibility={availableVisibilities.default as Visibilities}

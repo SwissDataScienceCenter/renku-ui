@@ -388,10 +388,28 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    updateProjectKG(
+      name = "updateProjectKG",
+      result = "project/update-project.json",
+      statusCode = 200
+    ) {
+      const fixture = this.useMockedData
+        ? { fixture: result, delay: 100, statusCode }
+        : undefined;
+      cy.intercept("PUT", "/ui-server/api/kg/projects/**", fixture).as(name);
+      return this;
+    }
+
     deleteProject(name = "deleteProject", forbidden = false) {
       cy.intercept("DELETE", "/ui-server/api/kg/projects/**", {
         statusCode: forbidden ? 403 : 200,
       }).as(name);
+      return this;
+    }
+
+    getProjectKG(name = "getProjectKG", result = "project/project-kg.json") {
+      const fixture = this.useMockedData ? { fixture: result } : undefined;
+      cy.intercept("GET", "/ui-server/api/kg/projects/**", fixture).as(name);
       return this;
     }
 
