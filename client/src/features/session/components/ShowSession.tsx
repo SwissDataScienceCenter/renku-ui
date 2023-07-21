@@ -23,6 +23,8 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStop } from "@fortawesome/free-solid-svg-icons";
 import { useContext } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { User } from "../../../model/RenkuModels";
@@ -42,6 +44,7 @@ import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
 import ResourcesSessionModal from "./ResourcesSessionModal";
 import SessionJupyter from "./SessionJupyter";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
+import StopSessionModal from "./StopSessionModal";
 
 export default function ShowSession() {
   const { params } = useContext(AppContext);
@@ -128,9 +131,11 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     toggleModalResources();
   }, [toggleModalResources]);
 
-  // const [showModalStopSession, setShowModalStopSession] = useState(false);
-  // const toggleStopSession = () =>
-  //   setShowModalStopSession(!showModalStopSession);
+  const [showModalStopSession, setShowModalStopSession] = useState(false);
+  const toggleStopSession = useCallback(
+    () => setShowModalStopSession((show) => !show),
+    []
+  );
 
   // const [showModalSaveSession, setShowModalSaveSession] = useState(false);
   // const toggleSaveSession = () =>
@@ -173,6 +178,13 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
       sessionName={sessionName}
       setActiveTab={setActiveResourcesTab}
       toggleModal={toggleResources}
+    />
+  );
+  const stopSessionModal = (
+    <StopSessionModal
+      isOpen={showModalStopSession}
+      sessionName={sessionName}
+      toggleModal={toggleStopSession}
     />
   );
   const pullSessionModal = (
@@ -231,7 +243,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
             <PullSessionBtn togglePullSession={togglePullSession} />
             {/* <SaveSessionBtn toggleSaveSession={toggleSaveSession} /> */}
             <ResourcesBtn toggleModalResources={toggleModalResources} />
-            {/* <StopSessionBtn toggleStopSession={toggleStopSession} /> */}
+            <StopSessionBtn toggleStopSession={toggleStopSession} />
           </div>
         </div>
         <div /*ref={ref}*/ className={cx("fullscreen-content", "w-100")}>
@@ -243,6 +255,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
       {/* modals */}
       {resourcesModal}
       {pullSessionModal}
+      {stopSessionModal}
     </div>
   );
 }
@@ -303,6 +316,37 @@ function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
         Resources
+      </UncontrolledTooltip>
+    </div>
+  );
+}
+
+interface StopSessionBtnProps {
+  toggleStopSession: () => void;
+}
+function StopSessionBtn({ toggleStopSession }: StopSessionBtnProps) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  return (
+    <div>
+      <Button
+        className={cx(
+          "border-0",
+          "bg-transparent",
+          "text-dark",
+          "p-0",
+          "mt-1",
+          "no-focus"
+        )}
+        data-cy="stop-session-button"
+        id="stop-session-button"
+        innerRef={ref}
+        onClick={toggleStopSession}
+      >
+        <FontAwesomeIcon className="text-rk-dark" icon={faStop} />
+      </Button>
+      <UncontrolledTooltip placement="bottom" target={ref}>
+        Stop session
       </UncontrolledTooltip>
     </div>
   );
