@@ -36,7 +36,6 @@ import { Loader } from "./components/Loader";
 import ShowDataset from "./dataset/Dataset.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
-import DatasetList from "./dataset/list/DatasetList.container";
 import { Dashboard } from "./features/dashboard/Dashboard";
 import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
 import SearchPage from "./features/kgSearch/KgSearchPage";
@@ -247,19 +246,9 @@ function CentralContentContainer(props) {
               />
             )}
           />
-          <Route
-            path="/datasets"
-            render={(p) => (
-              <ContainerWrap>
-                <DatasetList
-                  key="datasets"
-                  client={props.client}
-                  model={props.model}
-                  {...p}
-                />
-              </ContainerWrap>
-            )}
-          />
+          <Route path="/datasets">
+            <Redirect to="/search?type=dataset" />
+          </Route>
           <Route
             path="/privacy"
             render={(p) => (
