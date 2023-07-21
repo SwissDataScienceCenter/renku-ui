@@ -42,7 +42,7 @@ export default function StopSessionModal({
   const onStopSession = useCallback(async () => {
     stopSession({ serverName: sessionName });
     setIsStopping(true);
-  }, []);
+  }, [sessionName, stopSession]);
 
   return (
     <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
