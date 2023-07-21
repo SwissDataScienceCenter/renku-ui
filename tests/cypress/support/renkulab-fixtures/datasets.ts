@@ -37,15 +37,6 @@ function toLegacyIdentifier(datasetId) {
  */
 function Datasets<T extends FixturesConstructor>(Parent: T) {
   return class DatasetsFixtures extends Parent {
-    datasets(name = "getDatasets", resultFile = "datasets/datasets.json") {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept(
-        "/ui-server/api/kg/datasets?query=*&sort=projectsCount%3Adesc&per_page=12&page=1",
-        fixture
-      ).as(name);
-      return this;
-    }
-
     datasetById(
       id = "a20838d8cd514eaab3efbd54a8104732",
       name = "getDatasetById"
@@ -53,7 +44,7 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
       const fixture = this.useMockedData
         ? { fixture: `datasets/dataset_${id}.json` }
         : undefined;
-      cy.intercept("/ui-server/api/kg/datasets/" + id, fixture).as(name);
+      cy.intercept(`/ui-server/api/kg/datasets/${id}`, fixture).as(name);
       return this;
     }
 
@@ -76,7 +67,7 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
       const fixture = this.useMockedData
         ? { fixture: `datasets/no-dataset.json`, statusCode: 404 }
         : undefined;
-      cy.intercept("/ui-server/api/kg/datasets/" + id, fixture).as(name);
+      cy.intercept(`/ui-server/api/kg/datasets/${id}`, fixture).as(name);
       return this;
     }
 
