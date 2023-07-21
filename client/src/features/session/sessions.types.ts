@@ -69,7 +69,7 @@ export interface SessionStatus {
   details: SessionStatusStep[];
   message?: string;
   readyNumContainers: number;
-  state: "failed" | "running" | "starting" | "stopping";
+  state: SessionStatusState;
   totalNumContainers: number;
   [key: string]: unknown;
 }
@@ -78,6 +78,13 @@ interface SessionStatusStep {
   status: string;
   step: string;
 }
+
+export type SessionStatusState =
+  | "failed"
+  | "running"
+  | "starting"
+  | "stopping"
+  | "hibernated";
 
 export interface GetSessionsRawResponse {
   servers: Record<string, Session>;

@@ -48,7 +48,6 @@ import { TimeCaption } from "../components/TimeCaption";
 import { ButtonWithMenu } from "../components/buttons/Button";
 import LoginAlert from "../components/loginAlert/LoginAlert";
 import Sizes from "../utils/constants/Media";
-import { SessionStatus } from "../utils/constants/Notebooks";
 import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
 import { formatBytes, simpleHash } from "../utils/helpers/HelperFunctions";
 import { Url, appendCustomUrlPath } from "../utils/helpers/url";
@@ -121,7 +120,7 @@ function SessionJupyter(props) {
 
   let content = null;
   const status = notebook.data?.status?.state;
-  if (status === SessionStatus.running) {
+  if (status === "running") {
     const locationFilePath = history?.location?.state?.filePath;
     const notebookUrl = locationFilePath
       ? appendCustomUrlPath({
@@ -150,7 +149,7 @@ function SessionJupyter(props) {
         title="session iframe"
       />
     );
-  } else if (status === SessionStatus.stopping) {
+  } else if (status === "stopping") {
     content = <Loader />;
   }
   return content;
@@ -771,7 +770,7 @@ const NotebookServerRowAction = memo((props) => {
     </DropdownItem>
   );
 
-  if (status !== SessionStatus.stopping) {
+  if (status !== "stopping") {
     actions.stop = (
       <Fragment>
         <DropdownItem divider />
@@ -781,7 +780,7 @@ const NotebookServerRowAction = memo((props) => {
       </Fragment>
     );
   }
-  if (status === SessionStatus.running || status === SessionStatus.starting) {
+  if (status === "running" || status === "starting") {
     const state = scope?.filePath ? { filePath: scope?.filePath } : undefined;
     defaultAction = (
       <Link
@@ -800,7 +799,7 @@ const NotebookServerRowAction = memo((props) => {
         Open in new tab
       </DropdownItem>
     );
-  } else if (status === SessionStatus.stopping) {
+  } else if (status === "stopping") {
     defaultAction = (
       <Button
         data-cy="stopping-btn"
@@ -833,7 +832,7 @@ const NotebookServerRowAction = memo((props) => {
       size="sm"
       default={defaultAction}
       color="rk-green"
-      disabled={status === SessionStatus.stopping}
+      disabled={status === "stopping"}
     >
       {actions.openExternal}
       {actions.logs}

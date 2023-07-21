@@ -66,7 +66,6 @@ import { ButtonWithMenu } from "../components/buttons/Button";
 import CommitSelector from "../components/commitSelector/CommitSelector";
 import { ShareLinkSessionModal } from "../components/shareLinkSession/ShareLinkSession";
 import { Docs } from "../utils/constants/Docs";
-import { SessionStatus } from "../utils/constants/Notebooks";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
 import {
@@ -1233,7 +1232,7 @@ class StartNotebookOptionsRunning extends Component {
     const { notebook } = this.props;
 
     const status = notebook.status?.state;
-    if (status === SessionStatus.running) {
+    if (status === "running") {
       const annotations = NotebooksHelper.cleanAnnotations(
         notebook.annotations
       );
@@ -1261,10 +1260,7 @@ class StartNotebookOptionsRunning extends Component {
           </div>
         </FormGroup>
       );
-    } else if (
-      status === SessionStatus.starting ||
-      status === SessionStatus.stopping
-    ) {
+    } else if (status === "starting" || status === "stopping") {
       return (
         <FormGroup>
           <Label>
@@ -1533,7 +1529,7 @@ const CheckNotebookIcon = ({
     aligner = null;
   if (notebook) {
     const status = notebook.status?.state;
-    if (status === SessionStatus.running) {
+    if (status === "running") {
       const annotations = NotebooksHelper.cleanAnnotations(
         notebook.annotations
       );
@@ -1546,12 +1542,9 @@ const CheckNotebookIcon = ({
       tooltip = "Connect to JupyterLab";
       icon = <JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />;
       link = <Link to={{ pathname: sessionUrl, state }}>{icon}</Link>;
-    } else if (
-      status === SessionStatus.starting ||
-      status === SessionStatus.stopping
-    ) {
+    } else if (status === "starting" || status === "stopping") {
       tooltip =
-        status === SessionStatus.stopping
+        status === "stopping"
           ? "The session is stopping, please wait..."
           : "The session is starting, please wait...";
       aligner = "pb-1";
