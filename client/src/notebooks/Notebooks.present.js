@@ -47,6 +47,7 @@ import {
 import { TimeCaption } from "../components/TimeCaption";
 import { ButtonWithMenu } from "../components/buttons/Button";
 import LoginAlert from "../components/loginAlert/LoginAlert";
+import { SessionStatusStateEnum } from "../features/session/sessions.types";
 import Sizes from "../utils/constants/Media";
 import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
 import { formatBytes, simpleHash } from "../utils/helpers/HelperFunctions";
@@ -120,7 +121,7 @@ function SessionJupyter(props) {
 
   let content = null;
   const status = notebook.data?.status?.state;
-  if (status === "running") {
+  if (status === SessionStatusStateEnum.running) {
     const locationFilePath = history?.location?.state?.filePath;
     const notebookUrl = locationFilePath
       ? appendCustomUrlPath({
@@ -149,7 +150,7 @@ function SessionJupyter(props) {
         title="session iframe"
       />
     );
-  } else if (status === "stopping") {
+  } else if (status === SessionStatusStateEnum.stopping) {
     content = <Loader />;
   }
   return content;
@@ -769,7 +770,7 @@ const NotebookServerRowAction = memo((props) => {
     </DropdownItem>
   );
 
-  if (status !== "stopping") {
+  if (status !== SessionStatusStateEnum.stopping) {
     actions.stop = (
       <Fragment>
         <DropdownItem divider />
@@ -779,7 +780,10 @@ const NotebookServerRowAction = memo((props) => {
       </Fragment>
     );
   }
-  if (status === "running" || status === "starting") {
+  if (
+    status === SessionStatusStateEnum.running ||
+    status === SessionStatusStateEnum.starting
+  ) {
     const state = scope?.filePath ? { filePath: scope?.filePath } : undefined;
     defaultAction = (
       <Link
@@ -798,7 +802,7 @@ const NotebookServerRowAction = memo((props) => {
         Open in new tab
       </DropdownItem>
     );
-  } else if (status === "stopping") {
+  } else if (status === SessionStatusStateEnum.stopping) {
     defaultAction = (
       <Button
         data-cy="stopping-btn"
@@ -831,7 +835,7 @@ const NotebookServerRowAction = memo((props) => {
       size="sm"
       default={defaultAction}
       color="rk-green"
-      disabled={status === "stopping"}
+      disabled={status === SessionStatusStateEnum.stopping}
     >
       {actions.openExternal}
       {actions.logs}
@@ -843,17 +847,17 @@ NotebookServerRowAction.displayName = "NotebookServerRowAction";
 
 export {
   CheckNotebookIcon,
+  NotebookServerRow,
+  NotebookServerRowCommitInfo,
+  NotebookServerRowFull,
   Notebooks,
   NotebooksDisabled,
+  SESSION_TABS,
   ServerOptionBoolean,
   ServerOptionEnum,
   ServerOptionRange,
+  SessionJupyter,
+  SessionLogs,
   StartNotebookServer,
   mergeEnumOptions,
-  SessionJupyter,
-  NotebookServerRowFull,
-  NotebookServerRow,
-  SESSION_TABS,
-  SessionLogs,
-  NotebookServerRowCommitInfo,
 };

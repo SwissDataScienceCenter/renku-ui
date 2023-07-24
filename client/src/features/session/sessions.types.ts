@@ -79,12 +79,15 @@ interface SessionStatusStep {
   step: string;
 }
 
-export type SessionStatusState =
-  | "failed"
-  | "running"
-  | "starting"
-  | "stopping"
-  | "hibernated";
+export type SessionStatusState = keyof typeof SessionStatusStateEnum;
+
+export enum SessionStatusStateEnum {
+  failed = "failed",
+  running = "running",
+  starting = "starting",
+  stopping = "stopping",
+  hibernated = "hibernated",
+}
 
 export interface GetSessionsRawResponse {
   servers: Record<string, Session>;
