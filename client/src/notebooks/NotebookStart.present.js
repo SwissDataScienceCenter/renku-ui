@@ -1263,7 +1263,7 @@ class StartNotebookOptionsRunning extends Component {
       );
     } else if (
       status === SessionStatusStateEnum.starting ||
-      status === "stopping"
+      status === SessionStatusStateEnum.stopping
     ) {
       return (
         <FormGroup>
