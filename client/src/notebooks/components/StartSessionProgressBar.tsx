@@ -15,14 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 
+import React from "react";
 import ProgressStepsIndicator, {
   ProgressStyle,
   ProgressType,
   StatusStepProgressBar,
   StepsProgressBar,
 } from "../../components/progress/ProgressSteps";
+import { SessionStatusState } from "../../features/session/sessions.types";
 import { Button } from "../../utils/ts-wrappers";
 
 interface StatusDetail {
@@ -33,7 +34,7 @@ export interface SessionStatusData {
   details: StatusDetail[];
   message: string;
   readyNumContainers: number;
-  state: string;
+  state: SessionStatusState;
   totalNumContainers: number;
 }
 interface StartSessionProgressBarProps {

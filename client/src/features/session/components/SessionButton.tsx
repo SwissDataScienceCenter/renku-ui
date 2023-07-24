@@ -20,6 +20,7 @@ import React, { useCallback, useState } from "react";
 import {
   faExternalLinkAlt,
   faFileAlt,
+  faPlay,
   faStop,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -163,6 +164,21 @@ function SessionActions({ className, session }: SessionActionsProps) {
           Connect
         </div>
       </Link>
+    ) : status === "hibernated" ? (
+      <Button
+        className={buttonClassName}
+        data-cy="resume-session-button"
+        onClick={() => {
+          // eslint-disable-next-line no-console
+          console.log("TODO: implement resume session");
+        }}
+      >
+        <FontAwesomeIcon
+          className={cx("rk-icon", "rk-icon-md")}
+          icon={faPlay}
+        />{" "}
+        Resume
+      </Button>
     ) : status === "stopping" || isStopping ? (
       <Button className={buttonClassName} data-cy="stopping-btn" disabled>
         Stopping...
@@ -206,6 +222,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
     </DropdownItem>
   );
 
+  // TODO: only enable when session is hibernating (or user is anonymous)
   const stopAction = status !== "stopping" && status !== "failed" && (
     <>
       <DropdownItem onClick={onStopSession}>

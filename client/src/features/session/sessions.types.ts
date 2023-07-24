@@ -25,6 +25,11 @@ export interface GetDockerImageParams {
   image: string;
 }
 
+export interface GetSessionsParams {
+  namespace: string;
+  project: string;
+}
+
 export interface ServerOption<T extends number | string = number | string> {
   allow_any_value?: boolean;
   default: T;
@@ -60,10 +65,28 @@ interface SessionResources {
   usage?: { cpu?: number; memory?: string; storage?: string };
 }
 
-interface SessionStatus {
-  message: string;
-  state: "failed" | "running" | "starting" | "stopping";
+export interface SessionStatus {
+  details: SessionStatusStep[];
+  message?: string;
+  readyNumContainers: number;
+  state: SessionStatusState;
+  totalNumContainers: number;
   [key: string]: unknown;
+}
+
+interface SessionStatusStep {
+  status: string;
+  step: string;
+}
+
+export type SessionStatusState = keyof typeof SessionStatusStateEnum;
+
+export enum SessionStatusStateEnum {
+  failed = "failed",
+  running = "running",
+  starting = "starting",
+  stopping = "stopping",
+  hibernated = "hibernated",
 }
 
 export interface GetSessionsRawResponse {
