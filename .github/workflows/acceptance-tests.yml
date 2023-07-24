@@ -121,7 +121,7 @@ jobs:
     steps:
       - name: Extract Renku repository reference
         run: echo "RENKU_REFERENCE=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
-      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@master
+      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@000-fix-npm-18
         with:
           e2e-target: ${{ matrix.tests }}
           renku-reference: ${{ env.RENKU_REFERENCE }}
