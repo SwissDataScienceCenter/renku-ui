@@ -26,6 +26,7 @@
 import React, { Component, Fragment, useEffect } from "react";
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { Link, Route, Switch } from "react-router-dom";
 import {
   Alert,
@@ -1164,7 +1165,7 @@ function ProjectView(props) {
         <Route path={props.sessionShowUrl} />
         <Route component={() => <ProjectNav key="nav" {...props} />} />
       </Switch>
-      <Row key="content">
+      <Row key="content" className={cx(isShowSession && "m-0")}>
         <Switch>
           <Route
             exact
