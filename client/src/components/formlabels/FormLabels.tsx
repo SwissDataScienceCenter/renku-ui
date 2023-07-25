@@ -75,7 +75,7 @@ const HelperLabel = ({ text }: LabelProps) => {
 };
 
 const InputHintLabel = ({ text }: LabelProps) => {
-  // TODO: remove this component
+  // TODO: remove Non-Simplifying Components ref: #2696
   return <FormText className="input-hint">{text}</FormText>;
 };
 

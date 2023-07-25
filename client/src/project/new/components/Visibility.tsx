@@ -76,8 +76,8 @@ const Visibility = ({ handlers, meta, input }: VisibilityProps) => {
 };
 
 interface EditVisibilityModalConfirmationProps {
-  onConfirm: (visibility: Visibilities) => void; // eslint-disable-line @typescript-eslint/ban-types
-  toggleModal: () => void; // eslint-disable-line @typescript-eslint/ban-types
+  onConfirm: (visibility: Visibilities) => void;
+  toggleModal: () => void;
   isOpen: boolean;
   isError: boolean;
   isLoading: boolean;
@@ -259,7 +259,7 @@ const EditVisibility = ({
 
   if (!isLoadingProject && !isFetchingProject && !projectData)
     return (
-      <WarnAlert>
+      <WarnAlert dismissible={false}>
         Knowledge Graph integration must be enabled to change visibility from
         the RenkuLab web interface.
       </WarnAlert>
