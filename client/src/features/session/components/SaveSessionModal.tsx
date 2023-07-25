@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -23,6 +23,8 @@ import React, {
   useCallback,
   useState,
 } from "react";
+import cx from "classnames";
+import { RootStateOrAny, useSelector } from "react-redux";
 import {
   Button,
   Col,
@@ -36,22 +38,20 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import cx from "classnames";
+import { ACCESS_LEVELS } from "../../../api-client";
+import { Loader } from "../../../components/Loader";
+import { User } from "../../../model/RenkuModels";
 import {
   CenteredLoader,
   InformationalBody,
   commitsPhrasing,
 } from "../../../notebooks/components/Sidecar";
-import { RootStateOrAny, useSelector } from "react-redux";
-import { User } from "../../../model/RenkuModels";
-import { ACCESS_LEVELS } from "../../../api-client";
 import {
   GitStatusResult,
   useGitStatusQuery,
   useHealthQuery,
   useRenkuSaveMutation,
 } from "../sidecarApi";
-import { Loader } from "../../../components/Loader";
 
 interface SaveSessionModalProps {
   isOpen: boolean;
@@ -255,10 +255,6 @@ function SaveSessionFailedBody({ toggleModal }: SaveSessionFailedBodyProps) {
     </InformationalBody>
   );
 }
-
-// interface SaveSessionBodyProps extends SaveSessionStatusBodyProps {
-//   gitStatus: GitStatusResult;
-// }
 
 interface SaveSessionNoFFBodyProps {
   gitStatus: GitStatusResult;

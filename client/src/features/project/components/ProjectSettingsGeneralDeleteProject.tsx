@@ -33,9 +33,9 @@ import {
 } from "reactstrap";
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
-import { useDeleteProjectMutation } from "../projectKgApi";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
 import { NotificationsInterface } from "../../../notifications/notifications.types";
+import { useDeleteProjectMutation } from "../projectKgApi";
 
 interface ProjectSettingsGeneralDeleteProjectProps {
   isMaintainer: boolean;

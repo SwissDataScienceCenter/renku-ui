@@ -46,15 +46,6 @@ export default function StartSessionProgressBar({
     </Button>
   );
 
-  //     const title = isAutoSave
-  //     ? "Starting Session (continuing from autosave)"
-  //     : "Starting Session";
-  //   const logButton = (
-  //     <Button onClick={toggleLogs} className="btn-outline-rk-green mt-3">
-  //       Open Logs
-  //     </Button>
-  //   );
-
   return (
     <div className={cx("progress-box-small", "progress-box-small--steps")}>
       <ProgressStepsIndicator
