@@ -24,7 +24,7 @@ import React, {
   useState,
 } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStop } from "@fortawesome/free-solid-svg-icons";
+import { faStop, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useContext } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { User } from "../../../model/RenkuModels";
@@ -117,8 +117,6 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     return Object.values(sessions).find(({ name }) => name === sessionName);
   }, [sessionName, sessions]);
 
-  // const { filters, notebook, urlBack, projectName, handlers } = props;
-  // const [sessionStatus, setSessionStatus] = useState<SessionStatusData>();
   const [isTheSessionReady, setIsTheSessionReady] = useState(false);
 
   const [showModalAboutData, setShowModalAboutData] = useState(false);
@@ -161,19 +159,9 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     () => setShowModalPullSession((show) => !show),
     []
   );
-  // const togglePullSession = () =>
-  //   setShowModalPullSession(!showModalPullSession);
 
   const { height } = useWindowSize();
-  // const ref = useRef<any>(null);
   const iframeHeight = height ? height - 42 : 800;
-
-  // const history = useHistory();
-  // const location = useLocation();
-  // const urlList = Url.get(Url.pages.project.session, {
-  //   namespace: filters.namespace,
-  //   path: filters.project,
-  // });
 
   useEffect(() => {
     // Wait 4 seconds before setting `isTheSessionReady` for session view
@@ -192,10 +180,6 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
       isOpen={showModalAboutData}
       session={thisSession}
       toggleModal={toggleModalAbout}
-      // toggleModal={toggleModalAbout}
-      // isOpen={showModalAboutData}
-      // projectMetadata={projectMetadata}
-      // notebook={notebook}
     />
   );
   const resourcesModal = (
@@ -220,14 +204,6 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
       isSessionReady={isTheSessionReady}
       sessionName={sessionName}
       toggleModal={toggleSaveSession}
-
-      // isLogged={props.isLogged}
-      // isSessionReady={isTheSessionReady}
-      // hasSaveAccess={props.accessLevel >= ACCESS_LEVELS.DEVELOPER}
-      // notebook={notebook}
-      // closeModal={toggleSaveSession}
-      // urlList={urlList}
-      // isOpen={showModalSaveSession}
     />
   );
   const pullSessionModal = (
@@ -309,11 +285,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
             </div>
           </div>
         </div>
-        <div /*ref={ref}*/ className={cx("fullscreen-content", "w-100")}>
-          {content}
-          {/* {content}
-          {sessionView} */}
-        </div>
+        <div className={cx("fullscreen-content", "w-100")}>{content}</div>
       </div>
       {/* modals */}
       {aboutModal}
@@ -382,7 +354,6 @@ function SaveSessionBtn({ toggleSaveSession }: SaveSessionProps) {
       <UncontrolledTooltip placement="bottom" target={ref}>
         Save session
       </UncontrolledTooltip>
-      {/* <ThrottledTooltip target="save-session-button" tooltip="Save session" /> */}
     </div>
   );
 }
@@ -421,7 +392,15 @@ interface StopSessionBtnProps {
   toggleStopSession: () => void;
 }
 function StopSessionBtn({ toggleStopSession }: StopSessionBtnProps) {
+  const logged = useSelector<RootStateOrAny, User["logged"]>(
+    (state) => state.stateModel.user.logged
+  );
+
   const ref = useRef<HTMLButtonElement>(null);
+
+  const buttonId = logged ? "stop-session-button" : "delete-session-button";
+  const icon = logged ? faStop : faTrash;
+  const tooltip = logged ? "Stop session" : "Delete session";
 
   return (
     <div>
@@ -434,15 +413,15 @@ function StopSessionBtn({ toggleStopSession }: StopSessionBtnProps) {
           "mt-1",
           "no-focus"
         )}
-        data-cy="stop-session-button"
-        id="stop-session-button"
+        data-cy={buttonId}
+        id={buttonId}
         innerRef={ref}
         onClick={toggleStopSession}
       >
-        <FontAwesomeIcon className="text-rk-dark" icon={faStop} />
+        <FontAwesomeIcon className="text-rk-dark" icon={icon} />
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
-        Stop session
+        {tooltip}
       </UncontrolledTooltip>
     </div>
   );

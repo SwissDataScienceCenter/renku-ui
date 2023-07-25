@@ -16,18 +16,24 @@
  * limitations under the License.
  */
 
-import React, { useState, useCallback } from "react";
-import { Button, Col, FormText, Modal, Row } from "reactstrap";
-import { ModalBody, ModalHeader } from "reactstrap";
+import React, { useCallback, useState } from "react";
+import cx from "classnames";
+import { RootStateOrAny, useSelector } from "react-redux";
+import {
+  Button,
+  Col,
+  FormText,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Row,
+} from "reactstrap";
+import { Loader } from "../../../components/Loader";
+import { User } from "../../../model/RenkuModels";
 import {
   usePatchSessionMutation,
   useStopSessionMutation,
 } from "../sessions.api";
-import { Save } from "react-bootstrap-icons";
-import cx from "classnames";
-import { Loader } from "../../../components/Loader";
-import { RootStateOrAny, useSelector } from "react-redux";
-import { User } from "../../../model/RenkuModels";
 
 interface StopSessionModalProps {
   isOpen: boolean;
@@ -79,7 +85,7 @@ function AnonymousStopSessionModal({
 
   return (
     <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
-      <ModalHeader toggle={toggleModal}>Stop Session</ModalHeader>
+      <ModalHeader toggle={toggleModal}>Delete Session</ModalHeader>
       <ModalBody>
         <Row>
           <Col>
@@ -137,21 +143,9 @@ function HibernateSessionModal({
         <Row>
           <Col>
             <p>
-              Are you sure you want to stop this session? Make sure to commit
-              any changes you want to be saved for next time (for example, by
-              using the{" "}
-              <b>
-                <Save
-                  className={cx("text-rk-dark", "align-middle")}
-                  title="save"
-                />{" "}
-                (Save)
-              </b>{" "}
-              button).
-            </p>
-            <p>
-              TODO: change the above message if the user cannot push changes
-              (access level).
+              Are you sure you want to stop this session? The current state of
+              the session (new and edited files) will be preserved while the
+              session is stopped.
             </p>
             {isStopping ? (
               <FormText color="primary">
