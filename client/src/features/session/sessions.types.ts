@@ -92,3 +92,8 @@ export enum SessionStatusStateEnum {
 export interface GetSessionsRawResponse {
   servers: Record<string, Session>;
 }
+
+export interface PatchSessionParams {
+  sessionName: string;
+  state: Extract<"running" | "hibernated", SessionStatusState>;
+}
