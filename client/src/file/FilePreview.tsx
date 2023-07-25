@@ -163,16 +163,22 @@ function FilePreview(props: FilePreviewProps) {
   const getFileExtension = () => filenameExtension(props.file?.file_name);
 
   // LFS files and big files
+  console.log({
+    fileType,
+    fileSize: props.file.size,
+    previewThreshold: props.previewThreshold,
+    previewAnyway,
+  });
   if (
     "lfs" === fileType ||
     (props.previewThreshold &&
-      props.file.size > props.previewThreshold.soft &&
+      props.file.size > props.previewThreshold.hard &&
       !previewAnyway)
   ) {
     return (
       <FileNoPreview
         url={props.downloadLink}
-        lfs={true}
+        lfs={"lfs" === fileType}
         softLimit={props.previewThreshold.soft}
         softLimitReached={props.file.size > props.previewThreshold.soft}
         hardLimit={props.previewThreshold.hard}

@@ -291,7 +291,7 @@ class FileNoPreview extends React.Component {
           color="link"
           className="p-0 align-baseline"
           onClick={() => {
-            this.props.loadAnyway();
+            this.props.loadAnyway(true);
           }}
         >
           preview it anyway
