@@ -199,6 +199,8 @@ function StyleGuideHeader(props) {
               }}
             >
               <Loader inline size={48} />
+              <Loader inline size={48} />
+              <Loader inline size={48} />
               <LoaderSpinner inline size={48} />
             </div>
             <div

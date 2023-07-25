@@ -22,9 +22,9 @@ import styles from "./Loader.module.scss";
 
 interface LoaderProps {
   className?: string;
-  color?: string;
+  // color?: string;
   inline?: boolean;
-  margin?: 0 | 1 | 2 | 3 | 4 | 5 | "auto";
+  // margin?: 0 | 1 | 2 | 3 | 4 | 5 | "auto";
   size?: number;
 }
 
@@ -38,12 +38,40 @@ export const Loader = ({ inline, size = 120, ...rest }: LoaderProps) => {
 
 function LoaderSpinnerV2({
   className,
-  color = "#01192D", // Renku blue
+  // color = "#01192D", // Renku blue
   inline,
-  margin,
+  // margin,
   size,
 }: LoaderSpinnerProps) {
   const borderSize = size / 8;
+
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Synchronizes all spinners
+  useEffect(() => {
+    const existingSpinners = [
+      ...document.querySelectorAll(`.${styles.spinner}`),
+    ];
+    const baseSpinner = existingSpinners.find(
+      (spinner) =>
+        spinner !== ref.current &&
+        spinner.getAnimations?.().at(0)?.startTime != null
+    );
+    if (!baseSpinner) {
+      return;
+    }
+    const currentAnimation = ref?.current?.getAnimations?.().at(0);
+    const baseAnimation = baseSpinner.getAnimations?.().at(0);
+    if (
+      currentAnimation == null ||
+      baseAnimation == null ||
+      baseAnimation.startTime == null
+    ) {
+      return;
+    }
+    currentAnimation.startTime = baseAnimation.startTime;
+  }, []);
+
   return (
     <div
       className={className}
@@ -51,7 +79,6 @@ function LoaderSpinnerV2({
         display: "inline-block",
         width: `${size}px`,
         height: `${size}px`,
-        // color,
       }}
     >
       <div
@@ -77,6 +104,7 @@ function LoaderSpinnerV2({
         ></div>
         <div
           className={styles.spinner}
+          ref={ref}
           style={{
             position: "absolute",
             top: 0,
@@ -104,7 +132,10 @@ export const LoaderSpinner = ({
   inline,
   margin,
   size,
-}: LoaderSpinnerProps) => {
+}: LoaderSpinnerProps & {
+  color?: string;
+  margin?: 0 | 1 | 2 | 3 | 4 | 5 | "auto";
+}) => {
   const d = `${size}px`;
   // Inspired from https://www.w3schools.com/howto/howto_css_loader.asp
   const border = `${size / 10}px solid transparent`;
