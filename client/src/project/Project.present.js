@@ -827,9 +827,6 @@ const ProjectSessions = (props) => {
   return [
     <Col key="content" xs={12}>
       <Switch>
-        <Route exact path={props.notebookServersUrl}>
-          <ProjectSessionsRouter />
-        </Route>
         <Route
           path={props.launchNotebookUrl}
           render={() => (
@@ -841,6 +838,9 @@ const ProjectSessions = (props) => {
             />
           )}
         />
+        <Route path={props.notebookServersUrl}>
+          <ProjectSessionsRouter />
+        </Route>
       </Switch>
     </Col>,
   ];
