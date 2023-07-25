@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import cx from "classnames";
 import { RootStateOrAny, useSelector } from "react-redux";
 import {
@@ -34,6 +34,13 @@ import {
   usePatchSessionMutation,
   useStopSessionMutation,
 } from "../sessions.api";
+import { Redirect } from "react-router";
+import { Url } from "../../../utils/helpers/url";
+import AppContext from "../../../utils/context/appContext";
+import { NotificationsInterface } from "../../../notifications/notifications.types";
+import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { SerializedError } from "@reduxjs/toolkit";
 
 interface StopSessionModalProps {
   isOpen: boolean;
@@ -74,7 +81,15 @@ function AnonymousStopSessionModal({
   sessionName,
   toggleModal,
 }: StopSessionModalProps) {
-  const [stopSession] = useStopSessionMutation();
+  const pathWithNamespace = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.pathWithNamespace
+  );
+  const sessionsListUrl = Url.get(Url.pages.project.session, {
+    namespace: "",
+    path: pathWithNamespace,
+  });
+
+  const [stopSession, { isSuccess, error }] = useStopSessionMutation();
 
   const [isStopping, setIsStopping] = useState(false);
 
@@ -82,6 +97,21 @@ function AnonymousStopSessionModal({
     stopSession({ serverName: sessionName });
     setIsStopping(true);
   }, [sessionName, stopSession]);
+
+  const { notifications } = useContext(AppContext);
+
+  useEffect(() => {
+    if (error != null) {
+      addErrorNotification({
+        error,
+        notifications: notifications as NotificationsInterface,
+      });
+    }
+  }, [error, notifications]);
+
+  if (isSuccess) {
+    return <Redirect to={sessionsListUrl} />;
+  }
 
   return (
     <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
@@ -127,7 +157,15 @@ function HibernateSessionModal({
   sessionName,
   toggleModal,
 }: StopSessionModalProps) {
-  const [patchSession] = usePatchSessionMutation();
+  const pathWithNamespace = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.pathWithNamespace
+  );
+  const sessionsListUrl = Url.get(Url.pages.project.session, {
+    namespace: "",
+    path: pathWithNamespace,
+  });
+
+  const [patchSession, { isSuccess, error }] = usePatchSessionMutation();
 
   const [isStopping, setIsStopping] = useState(false);
 
@@ -135,6 +173,21 @@ function HibernateSessionModal({
     patchSession({ sessionName, state: "hibernated" });
     setIsStopping(true);
   }, [patchSession, sessionName]);
+
+  const { notifications } = useContext(AppContext);
+
+  useEffect(() => {
+    if (error != null) {
+      addErrorNotification({
+        error,
+        notifications: notifications as NotificationsInterface,
+      });
+    }
+  }, [error, notifications]);
+
+  if (isSuccess) {
+    return <Redirect to={sessionsListUrl} />;
+  }
 
   return (
     <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
@@ -176,5 +229,28 @@ function HibernateSessionModal({
         </Row>
       </ModalBody>
     </Modal>
+  );
+}
+
+function addErrorNotification({
+  error,
+  notifications,
+}: {
+  error: FetchBaseQueryError | SerializedError;
+  notifications: NotificationsInterface;
+}) {
+  const message =
+    "message" in error && error.message != null
+      ? error.message
+      : "error" in error && error.error != null
+      ? error.error
+      : "Unknown error";
+  notifications.addError(
+    NOTIFICATION_TOPICS.SESSION_START,
+    "Unable to stop the current session",
+    undefined,
+    undefined,
+    undefined,
+    `Error message: "${message}"`
   );
 }

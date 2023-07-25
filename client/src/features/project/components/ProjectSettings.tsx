@@ -23,10 +23,8 @@ import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../..
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ProjectMigrationStatus } from "./migrations/ProjectCoreMigrations";
 import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
-import {
-  ProjectSettingsGeneralDeleteProject,
-  Notifications,
-} from "./ProjectSettingsGeneralDeleteProject";
+import { ProjectSettingsGeneralDeleteProject } from "./ProjectSettingsGeneralDeleteProject";
+import { NotificationsInterface } from "../../../notifications/notifications.types";
 
 // ****** SETTINGS COMPONENTS ****** //
 
@@ -39,7 +37,7 @@ interface ProjectSettingsGeneralProps {
     id: number;
     [key: string]: unknown;
   };
-  notifications: Notifications;
+  notifications: NotificationsInterface;
   projectPathWithNamespace: string;
   user: {
     logged: boolean;

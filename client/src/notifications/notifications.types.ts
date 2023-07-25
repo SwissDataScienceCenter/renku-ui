@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,23 +16,20 @@
  * limitations under the License.
  */
 
-import React from "react";
+import { ReactNode } from "react";
 
-type IAppContext = {
-  client: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-  location: unknown;
-  model: unknown;
-  notifications: unknown;
-  params: unknown;
-};
+export interface NotificationsInterface {
+  addInfo: NotificationFunction;
+  addSuccess: NotificationFunction;
+  addWarning: NotificationFunction;
+  addError: NotificationFunction;
+}
 
-const AppContext = React.createContext<IAppContext>({
-  client: undefined,
-  params: undefined,
-  model: undefined,
-  notifications: undefined,
-  location: undefined,
-});
-
-export default AppContext;
-export type { IAppContext };
+type NotificationFunction = (
+  topic: string,
+  desc?: ReactNode,
+  link?: string,
+  linkText?: string,
+  awareLocations?: string[],
+  longDesc?: string
+) => NotificationsInterface;

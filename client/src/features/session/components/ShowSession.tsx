@@ -52,6 +52,7 @@ import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import StopSessionModal from "./StopSessionModal";
 import AboutSessionModal from "./AboutSessionModal";
 import SaveSessionModal from "./SaveSessionModal";
+import SessionHibernated from "./SessionHibernated";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -219,6 +220,8 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   const content =
     !isLoading && thisSession == null ? (
       <SessionUnavailable />
+    ) : thisSession?.status.state === "hibernated" ? (
+      <SessionHibernated />
     ) : thisSession != null ? (
       <>
         {!isTheSessionReady && (

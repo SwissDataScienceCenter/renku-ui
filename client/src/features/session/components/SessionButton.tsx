@@ -26,7 +26,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Button, DropdownItem } from "reactstrap";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
 import { SshDropdown } from "../../../components/ssh/ssh";
@@ -34,7 +34,11 @@ import { NotebooksHelper } from "../../../notebooks";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
-import { useGetSessionsQuery, useStopSessionMutation } from "../sessions.api";
+import {
+  useGetSessionsQuery,
+  usePatchSessionMutation,
+  useStopSessionMutation,
+} from "../sessions.api";
 import { Session } from "../sessions.types";
 import { getRunningSession } from "../sessions.utils";
 import SimpleSessionButton from "./SimpleSessionButton";
@@ -117,6 +121,8 @@ interface SessionActionsProps {
 }
 
 function SessionActions({ className, session }: SessionActionsProps) {
+  const history = useHistory();
+
   const dispatch = useDispatch();
   const onToggleLogs = useCallback(() => {
     dispatch(toggleSessionLogsModal({ targetServer: session.name }));
@@ -140,6 +146,12 @@ function SessionActions({ className, session }: SessionActionsProps) {
     path: annotations.projectName,
     server: session.name,
   });
+
+  const [patchSession] = usePatchSessionMutation();
+  const onResumeSession = useCallback(() => {
+    patchSession({ sessionName: session.name, state: "running" });
+    history.push({ pathname: showSessionUrl });
+  }, [history, patchSession, session.name, showSessionUrl]);
 
   const buttonClassName = cx(
     "btn",
@@ -168,10 +180,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
       <Button
         className={buttonClassName}
         data-cy="resume-session-button"
-        onClick={() => {
-          // eslint-disable-next-line no-console
-          console.log("TODO: implement resume session");
-        }}
+        onClick={onResumeSession}
       >
         <FontAwesomeIcon
           className={cx("rk-icon", "rk-icon-md")}
