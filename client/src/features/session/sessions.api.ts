@@ -146,9 +146,10 @@ const sessionsApi = createApi({
       invalidatesTags: ["Session"],
     }),
     patchSession: builder.mutation<Session, PatchSessionParams>({
-      query: ({ sessionName }) => ({
+      query: ({ sessionName, state }) => ({
         method: "PATCH",
         url: `servers/${sessionName}`,
+        body: { state },
       }),
       invalidatesTags: (_resut, _error, { sessionName }) => [
         { id: sessionName, type: "Session" },
@@ -165,4 +166,5 @@ export const {
   useStopSessionMutation,
   useGetLogsQuery,
   useStartSessionMutation,
+  usePatchSessionMutation,
 } = sessionsApi;

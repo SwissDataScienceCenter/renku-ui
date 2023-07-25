@@ -16,10 +16,13 @@
  * limitations under the License.
  */
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Button, Col, FormText, Modal, Row } from "reactstrap";
 import { ModalBody, ModalHeader } from "reactstrap";
-import { useStopSessionMutation } from "../sessions.api";
+import {
+  usePatchSessionMutation,
+  useStopSessionMutation,
+} from "../sessions.api";
 import { Save } from "react-bootstrap-icons";
 import cx from "classnames";
 import { Loader } from "../../../components/Loader";
@@ -36,6 +39,11 @@ export default function StopSessionModal({
   toggleModal,
 }: StopSessionModalProps) {
   const [stopSession] = useStopSessionMutation();
+  const [patchSession] = usePatchSessionMutation();
+
+  useEffect(() => {
+    console.log({ patchSession });
+  }, [patchSession]);
 
   const [isStopping, setIsStopping] = useState(false);
 
