@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { Button, Col, FormText, Modal, Row } from "reactstrap";
 import { ModalBody, ModalHeader } from "reactstrap";
 import {
@@ -26,6 +26,8 @@ import {
 import { Save } from "react-bootstrap-icons";
 import cx from "classnames";
 import { Loader } from "../../../components/Loader";
+import { RootStateOrAny, useSelector } from "react-redux";
+import { User } from "../../../model/RenkuModels";
 
 interface StopSessionModalProps {
   isOpen: boolean;
@@ -38,12 +40,35 @@ export default function StopSessionModal({
   sessionName,
   toggleModal,
 }: StopSessionModalProps) {
-  const [stopSession] = useStopSessionMutation();
-  const [patchSession] = usePatchSessionMutation();
+  const logged = useSelector<RootStateOrAny, User["logged"]>(
+    (state) => state.stateModel.user.logged
+  );
 
-  useEffect(() => {
-    console.log({ patchSession });
-  }, [patchSession]);
+  if (!logged) {
+    return (
+      <AnonymousStopSessionModal
+        isOpen={isOpen}
+        sessionName={sessionName}
+        toggleModal={toggleModal}
+      />
+    );
+  }
+
+  return (
+    <HibernateSessionModal
+      isOpen={isOpen}
+      sessionName={sessionName}
+      toggleModal={toggleModal}
+    />
+  );
+}
+
+function AnonymousStopSessionModal({
+  isOpen,
+  sessionName,
+  toggleModal,
+}: StopSessionModalProps) {
+  const [stopSession] = useStopSessionMutation();
 
   const [isStopping, setIsStopping] = useState(false);
 
@@ -51,6 +76,59 @@ export default function StopSessionModal({
     stopSession({ serverName: sessionName });
     setIsStopping(true);
   }, [sessionName, stopSession]);
+
+  return (
+    <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
+      <ModalHeader toggle={toggleModal}>Stop Session</ModalHeader>
+      <ModalBody>
+        <Row>
+          <Col>
+            <p>Are you sure you want to delete this session?</p>
+            {isStopping ? (
+              <FormText color="primary">
+                <Loader inline margin={2} size={16} />
+                Deleting Session
+                <br />
+              </FormText>
+            ) : null}
+            <div className="d-flex justify-content-end">
+              <Button
+                className={cx("float-right", "mt-1", "btn-outline-rk-green")}
+                disabled={isStopping}
+                onClick={toggleModal}
+              >
+                Back to Session
+              </Button>
+              <Button
+                className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
+                data-cy="stop-session-modal-button"
+                disabled={isStopping}
+                type="submit"
+                onClick={onStopSession}
+              >
+                Delete Session
+              </Button>
+            </div>
+          </Col>
+        </Row>
+      </ModalBody>
+    </Modal>
+  );
+}
+
+function HibernateSessionModal({
+  isOpen,
+  sessionName,
+  toggleModal,
+}: StopSessionModalProps) {
+  const [patchSession] = usePatchSessionMutation();
+
+  const [isStopping, setIsStopping] = useState(false);
+
+  const onHibernateSession = useCallback(async () => {
+    patchSession({ sessionName, state: "hibernated" });
+    setIsStopping(true);
+  }, [patchSession, sessionName]);
 
   return (
     <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
@@ -70,6 +148,10 @@ export default function StopSessionModal({
                 (Save)
               </b>{" "}
               button).
+            </p>
+            <p>
+              TODO: change the above message if the user cannot push changes
+              (access level).
             </p>
             {isStopping ? (
               <FormText color="primary">
@@ -91,7 +173,7 @@ export default function StopSessionModal({
                 data-cy="stop-session-modal-button"
                 disabled={isStopping}
                 type="submit"
-                onClick={onStopSession}
+                onClick={onHibernateSession}
               >
                 Stop Session
               </Button>

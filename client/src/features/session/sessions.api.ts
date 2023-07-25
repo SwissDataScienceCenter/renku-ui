@@ -115,7 +115,7 @@ const sessionsApi = createApi({
         body: { state },
       }),
       transformResponse: () => null,
-      invalidatesTags: (_resut, _error, { sessionName }) => [
+      invalidatesTags: (_result, _error, { sessionName }) => [
         { id: sessionName, type: "Session" },
       ],
     }),
