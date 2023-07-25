@@ -41,6 +41,7 @@ import { NotificationsInterface } from "../../../notifications/notifications.typ
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { SerializedError } from "@reduxjs/toolkit";
+import styles from "./SessionModals.module.scss";
 
 interface StopSessionModalProps {
   isOpen: boolean;
@@ -114,7 +115,7 @@ function AnonymousStopSessionModal({
   }
 
   return (
-    <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
+    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Delete Session</ModalHeader>
       <ModalBody>
         <Row>
@@ -190,7 +191,7 @@ function HibernateSessionModal({
   }
 
   return (
-    <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
+    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Stop Session</ModalHeader>
       <ModalBody>
         <Row>

@@ -53,6 +53,7 @@ import StopSessionModal from "./StopSessionModal";
 import AboutSessionModal from "./AboutSessionModal";
 import SaveSessionModal from "./SaveSessionModal";
 import SessionHibernated from "./SessionHibernated";
+import styles from "./ShowSession.module.scss";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -252,7 +253,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   return (
     <div className={cx("bg-white", "p-0")}>
       <div className={cx("d-lg-flex", "flex-column")}>
-        <div className={cx("fullscreen-header", "d-flex", "gap-3")}>
+        <div className={cx(styles.fullscreenHeader, "d-flex", "gap-3")}>
           <div
             className={cx(
               "d-flex",
@@ -288,7 +289,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
             </div>
           </div>
         </div>
-        <div className={cx("fullscreen-content", "w-100")}>{content}</div>
+        <div className={cx(styles.fullscreenContent, "w-100")}>{content}</div>
       </div>
       {/* modals */}
       {aboutModal}
