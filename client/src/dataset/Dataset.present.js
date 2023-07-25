@@ -71,9 +71,18 @@ function DisplayFiles(props) {
   }
 
   const files = props.files.hasPart;
+  const filesMap = _.groupBy(files, (file) => file.atLocation.split("/")[0]);
+  const filesFolderLength = Object.keys(filesMap);
+  const fileLengthCutoff = 5;
 
-  let openFolders =
-    files.length > 0 ? (files[0].atLocation.startsWith("data/") ? 2 : 1) : 0;
+  const openFolders =
+    files.length < 1
+      ? 0
+      : filesFolderLength > 1
+      ? 1
+      : files.length < fileLengthCutoff
+      ? 2
+      : 1;
 
   // ? This re-adds the name property on the datasets.
   // TODO: consider refactoring FileExplorer
@@ -314,7 +323,15 @@ function AddToProjectButton({ insideKg, locked, logged, identifier }) {
   );
 }
 
-function EditDatasetButton({ dataset, insideProject, locked, maintainer }) {
+function EditDatasetButton({
+  dataset,
+  files,
+  isFilesFetching,
+  filesFetchError,
+  insideProject,
+  locked,
+  maintainer,
+}) {
   if (!insideProject || !maintainer) return null;
   if (locked) {
     return (
@@ -339,7 +356,10 @@ function EditDatasetButton({ dataset, insideProject, locked, maintainer }) {
       className="float-right mb-1"
       id="editDatasetTooltip"
       data-cy="edit-dataset-button"
-      to={{ pathname: "modify", state: { dataset: dataset } }}
+      to={{
+        pathname: "modify",
+        state: { dataset, files, isFilesFetching, filesFetchError },
+      }}
     >
       <Button
         className="btn-rk-white text-rk-pink icon-button"
@@ -403,6 +423,9 @@ export default function DatasetView(props) {
     <EditDatasetButton
       key="editDatasetButton"
       dataset={dataset}
+      files={props.files}
+      isFilesFetching={props.isFilesFetching}
+      filesFetchError={props.filesFetchError}
       insideProject={props.insideProject}
       locked={locked}
       maintainer={props.maintainer}

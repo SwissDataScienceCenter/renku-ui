@@ -490,14 +490,6 @@ function addProjectMethods(client) {
       .then((dataset) => dataset.data);
   };
 
-  client.getProjectDatasetsFromKG = (projectPath) => {
-    const url = `${client.baseUrl}/kg/projects/${projectPath}/datasets`;
-    const headers = client.getBasicHeaders();
-    return client
-      .clientFetch(url, { method: "GET", headers })
-      .then((resp) => resp.data);
-  };
-
   /**
    * Get project config file data
    * @see {@link https://github.com/SwissDataScienceCenter/renku-python/blob/master/renku/service/views/config.py}

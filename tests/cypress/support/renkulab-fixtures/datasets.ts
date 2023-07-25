@@ -37,15 +37,6 @@ function toLegacyIdentifier(datasetId) {
  */
 function Datasets<T extends FixturesConstructor>(Parent: T) {
   return class DatasetsFixtures extends Parent {
-    datasets(name = "getDatasets", resultFile = "datasets/datasets.json") {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept(
-        "/ui-server/api/kg/datasets?query=*&sort=projectsCount%3Adesc&per_page=12&page=1",
-        fixture
-      ).as(name);
-      return this;
-    }
-
     datasetById(
       id = "a20838d8cd514eaab3efbd54a8104732",
       name = "getDatasetById"
@@ -53,7 +44,7 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
       const fixture = this.useMockedData
         ? { fixture: `datasets/dataset_${id}.json` }
         : undefined;
-      cy.intercept("/ui-server/api/kg/datasets/" + id, fixture).as(name);
+      cy.intercept(`/ui-server/api/kg/datasets/${id}`, fixture).as(name);
       return this;
     }
 
@@ -76,7 +67,7 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
       const fixture = this.useMockedData
         ? { fixture: `datasets/no-dataset.json`, statusCode: 404 }
         : undefined;
-      cy.intercept("/ui-server/api/kg/datasets/" + id, fixture).as(name);
+      cy.intercept(`/ui-server/api/kg/datasets/${id}`, fixture).as(name);
       return this;
     }
 
@@ -94,13 +85,17 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
 
     projectDatasetList(
       name = "datasetList",
-      resultFile = "datasets/project-dataset-list.json"
+      resultFile = "datasets/project-dataset-list.json",
+      process = (result) => result
     ) {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept(
-        "/ui-server/api/renku/*/datasets.list?git_url=*",
-        fixture
-      ).as(name);
+      this.cy.fixture(resultFile).then((content) => {
+        const result = process(content);
+        const fixture = { body: result };
+        cy.intercept(
+          "/ui-server/api/renku/*/datasets.list?git_url=*",
+          fixture
+        ).as(name);
+      });
       return this;
     }
 
@@ -196,6 +191,23 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
     ) {
       const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
       cy.intercept("/ui-server/api/renku/*/datasets.create", fixture).as(name);
+      return this;
+    }
+
+    editDataset(
+      name = "editDataset",
+      edited = { name: "abcd", title: "abcd edited" },
+      remoteBranch = "master"
+    ) {
+      cy.intercept("/ui-server/api/renku/*/datasets.edit", {
+        body: {
+          result: {
+            edited: edited,
+            remote_branch: remoteBranch,
+            warnings: [],
+          },
+        },
+      }).as(name);
       return this;
     }
 

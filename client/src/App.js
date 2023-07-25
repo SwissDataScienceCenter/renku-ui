@@ -33,7 +33,6 @@ import { useSelector } from "react-redux";
 import { Project } from "./project";
 import { ProjectList } from "./project/list";
 import { NewProject } from "./project/new";
-import DatasetList from "./dataset/list/DatasetList.container";
 import { AnonymousHome, RenkuNavBar, FooterNavbar } from "./landing";
 import { Notebooks } from "./notebooks";
 import { Login, LoginHelper } from "./authentication";
@@ -263,19 +262,9 @@ function CentralContentContainer(props) {
               />
             )}
           />
-          <Route
-            path="/datasets"
-            render={(p) => (
-              <ContainerWrap>
-                <DatasetList
-                  key="datasets"
-                  client={props.client}
-                  model={props.model}
-                  {...p}
-                />
-              </ContainerWrap>
-            )}
-          />
+          <Route path="/datasets">
+            <Redirect to="/search?type=dataset" />
+          </Route>
           <Route
             path="/privacy"
             render={(p) => (

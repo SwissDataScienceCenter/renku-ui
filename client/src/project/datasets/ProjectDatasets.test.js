@@ -32,7 +32,6 @@ import { MemoryRouter } from "react-router-dom";
 
 import { ACCESS_LEVELS, testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
-import ChangeDataset from "./change/index";
 import DatasetImport from "./import/index";
 import { generateFakeUser } from "../../user/User.test";
 
@@ -60,30 +59,6 @@ describe("rendering", () => {
 
   afterEach(() => {
     spy.mockRestore();
-  });
-
-  it("renders NewDataset form without crashing", async () => {
-    const div = document.createElement("div");
-    document.body.appendChild(div);
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <ChangeDataset
-              client={client}
-              edit={false}
-              location={fakeHistory}
-              maintainer={ACCESS_LEVELS.maintainer}
-              migration={migration}
-              model={model}
-              params={{ UPLOAD_THRESHOLD: { soft: 104857600 } }}
-              user={loggedUser}
-            />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
   });
 
   it("renders DatasetImport form without crashing", async () => {

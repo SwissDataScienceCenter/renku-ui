@@ -33,7 +33,6 @@ import ShowDataset from "./Dataset.container";
 import { getDatasetImageUrl, mapDataset } from "./DatasetFunctions";
 import { testClient as client } from "../api-client";
 import { StateModel, globalSchema } from "../model";
-import DatasetList from "./list";
 
 describe("Dataset functions", () => {
   const model = new StateModel(globalSchema);
@@ -61,27 +60,6 @@ describe("Dataset functions", () => {
       ],
     },
   ];
-
-  it("renders datasets list view without crashing", async () => {
-    const div = document.createElement("div");
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <DatasetList
-              key="datasets"
-              client={client}
-              history={fakeHistory}
-              location={fakeHistory.location}
-              migration={migration}
-              model={model}
-            />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
-  });
 
   it("renders dataset view without crashing", async () => {
     const div = document.createElement("div");

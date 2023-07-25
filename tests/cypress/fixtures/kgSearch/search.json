@@ -24,7 +24,7 @@
     ],
     "type": "dataset",
     "matchingScore": 1.0,
-    "name": "abcdef",
+    "name": "defgh",
     "visibility": "public",
     "date": "2022-08-19T09:22:44Z",
     "creators": ["Andrea Cordoba"],
@@ -154,6 +154,22 @@
     "date": "2022-06-01T16:00:34Z",
     "creators": ["Andrea Cordoba", "Darlin Andrea Cordoba Osnas"],
     "keywords": ["filter flight data", "url data"],
+    "images": []
+  },
+  {
+    "_links": [
+      {
+        "rel": "details",
+        "href": "https://renku-ci-ui-1894.dev.renku.ch/knowledge-graph/datasets/4577b68957b7478bba1f07d6513b43d2"
+      }
+    ],
+    "type": "dataset",
+    "matchingScore": 1.0,
+    "name": "abcd",
+    "visibility": "public",
+    "date": "2022-02-15T09:25:54Z",
+    "creators": ["E2E User", "Andrea", "e2e User"],
+    "keywords": ["test", "testing datasets"],
     "images": []
   }
 ]

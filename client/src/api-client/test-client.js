@@ -111,11 +111,6 @@ const methods = {
       },
     },
   },
-  searchDatasets: {
-    response: {
-      data: [],
-    },
-  },
   fetchDatasetFromKG: {
     name: "test-dataset-name",
     title: "Test dataset title",

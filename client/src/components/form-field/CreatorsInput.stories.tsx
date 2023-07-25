@@ -16,24 +16,30 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { FormGeneratorCreatorsInput } from "./CreatorsInput";
+import type { CreatorInputProps } from "./CreatorsInput";
 import { Story } from "@storybook/react";
 
-import FileUploaderInput from "./FileUploaderInput";
-
 export default {
-  title: "components/FileUploaderInput",
-  component: FileUploaderInput,
-  argTypes: {},
+  title: "components/CreatorsInput",
+  component: FormGeneratorCreatorsInput,
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const Template: Story<any> = (args) => <FileUploaderInput {...args} />;
-
+const Template: Story<CreatorInputProps> = (args) => (
+  <FormGeneratorCreatorsInput {...args} />
+);
 export const Default = Template.bind({});
 Default.args = {
-  label: "Files",
-  required: false,
-  handlers: {
-    getFormDraftInternalValuesProperty: () => undefined,
-  },
+  name: "author",
+  label: "Creators",
+  setInputs: () => true,
+  value: [
+    {
+      id: 1,
+      name: "E2E User",
+      email: "e2e.test@renku.ch",
+      affiliation: "creator",
+      default: true,
+    },
+  ],
 };

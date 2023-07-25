@@ -20,7 +20,7 @@ import React from "react";
 import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
 import { FormGroup, FormText } from "reactstrap";
-import FormLabel from "../formgenerator/fields/FormLabel";
+import FormLabel from "./FormLabel";
 import { ErrorLabel } from "../formlabels/FormLabels";
 
 type TextInputProps = {
