@@ -17,7 +17,7 @@
  */
 import * as React from "react";
 import { ChangeEvent, ReactNode, useEffect, useRef, useState } from "react";
-import { Input } from "reactstrap";
+import { Input, UncontrolledTooltip } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
@@ -37,7 +37,6 @@ import {
 } from "../formlabels/FormLabels";
 import { ExternalLink } from "../ExternalLinks";
 import { GitlabLinks } from "../../utils/constants/Docs";
-import { ThrottledTooltip } from "../Tooltip";
 import { FormText } from "reactstrap";
 import cx from "classnames";
 import { IconDefinition } from "@fortawesome/free-brands-svg-icons";
@@ -305,11 +304,9 @@ const VisibilityInput = ({
         </div>
       </div>
       {isDisabled ? (
-        <ThrottledTooltip
-          target={ref}
-          autoHide={false}
-          tooltip={tooltipContent}
-        />
+        <UncontrolledTooltip autohide={false} placement="top" target={ref}>
+          {tooltipContent}
+        </UncontrolledTooltip>
       ) : null}
       <div onClick={() => changeVisibility(item.value, isDisabled)}>
         <FormText className="input-hint">{item.hint}</FormText>

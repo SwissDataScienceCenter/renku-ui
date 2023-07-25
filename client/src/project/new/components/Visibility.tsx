@@ -22,11 +22,11 @@
  *  Visibility field group component
  */
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import { Button, FormGroup, Modal, ModalBody, ModalHeader } from "reactstrap";
 import VisibilitiesInput, {
   Visibilities,
   VISIBILITY_ITEMS,
 } from "../../../components/visibility/Visibility";
-import { Button, FormGroup } from "../../../utils/ts-wrappers";
 import {
   NewProjectHandlers,
   NewProjectInputs,
@@ -35,7 +35,6 @@ import {
 import { LoadingLabel } from "../../../components/formlabels/FormLabels";
 import { GitlabLinks } from "../../../utils/constants/Docs";
 import { ExternalLink } from "../../../components/ExternalLinks";
-import { Modal, ModalBody, ModalHeader } from "reactstrap";
 import {
   useProjectMetadataQuery,
   useUpdateProjectMutation,
