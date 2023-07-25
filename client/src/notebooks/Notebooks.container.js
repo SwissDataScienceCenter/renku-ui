@@ -31,7 +31,6 @@ import {
 import { StatusHelper } from "../model/Model";
 import { Url } from "../utils/helpers/url";
 import { sleep } from "../utils/helpers/HelperFunctions";
-import ShowSessionFullscreen from "./components/SessionFullScreen";
 import { versionsApi } from "../features/versions/versionsApi";
 import { projectCoreApi } from "../features/project/projectCoreApi";
 import { computeBackendData } from "../features/project/useProjectCoreSupport";
@@ -41,118 +40,6 @@ import {
   setSessionClass,
   setStorage,
 } from "../features/session/startSessionOptionsSlice";
-
-/**
- * This component is needed to map properties from the redux store and keep local states cleared by the
- * mapping function. We can remove it when we switch to the useSelector hook
-
- * @param {Object} client - api-client used to query the gateway
- * @param {Object} model - global model for the ui
- * @param {boolean} blockAnonymous - When true, block non logged in users
- * @param {Object} scope - object containing filtering parameters
- * @param {string} scope.namespace - full path of the reference namespace
- * @param {string} scope.project - path of the reference project
- * @param {string} scope.defaultBranch - default branch of the project
- * @param {Object} notifications - Notifications object
- * @param {Object} [location] - react location object
- * @param {Object} [history] - react history object
- */
-
-function mapSessionStateToProps(state, ownProps) {
-  const metadata = state.stateModel.project.metadata;
-  const notebooks = state.stateModel.notebooks.notebooks;
-  const available = !!notebooks.all[ownProps.target];
-  const notebook = {
-    available,
-    fetched: notebooks.fetched,
-    fetching: notebooks.fetching,
-    data: available ? notebooks.all[ownProps.target] : {},
-    logs: state.stateModel.notebooks.logs,
-  };
-  return {
-    accessLevel: metadata.accessLevel,
-    handlers: ownProps.handlers,
-    target: ownProps.target,
-    filters: state.stateModel.notebooks.filters,
-    notebook,
-  };
-}
-
-const ShowSessionMapped = connect(mapSessionStateToProps)(
-  ShowSessionFullscreen
-);
-class ShowSession extends Component {
-  constructor(props) {
-    super(props);
-    this.model = props.model.subModel("notebooks");
-    this.userModel = props.model.subModel("user");
-    this.coordinator = new NotebooksCoordinator(
-      props.client,
-      this.model,
-      this.userModel
-    );
-    this.coordinator.reset();
-    this.notifications = props.notifications;
-    this.target = props.match.params.server;
-    this.userLogged = this.userModel.get("logged");
-
-    if (props.scope) this.coordinator.setNotebookFilters(props.scope, true);
-
-    this.handlers = {
-      stopNotebook: this.stopNotebook.bind(this),
-      fetchLogs: this.fetchLogs.bind(this),
-    };
-  }
-
-  componentDidMount() {
-    if (!this.props.blockAnonymous) this.coordinator.startNotebookPolling();
-  }
-
-  componentWillUnmount() {
-    this.coordinator.stopNotebookPolling();
-  }
-
-  async stopNotebook(serverName, redirectLocation = null) {
-    try {
-      await this.coordinator.stopNotebook(serverName, false);
-      // redirect immediately
-      if (this.props.history && redirectLocation)
-        this.props.history.push(redirectLocation);
-    } catch (error) {
-      // add notification
-      this.notifications.addError(
-        this.notifications.Topics.SESSION_START,
-        "Unable to stop the current session.",
-        null,
-        null,
-        null,
-        `Error message: "${error.message}"`
-      );
-      return false;
-    }
-  }
-
-  async fetchLogs(serverName, full = false) {
-    if (!serverName) return;
-    return this.coordinator.fetchLogs(serverName, full);
-  }
-
-  render() {
-    if (this.props.blockAnonymous && !this.userLogged)
-      return <NotebooksDisabled logged={this.userLogged} />;
-    return (
-      <ShowSessionMapped
-        isLogged={this.userLogged}
-        target={this.target}
-        handlers={this.handlers}
-        store={this.model.reduxStore}
-        history={this.props.history}
-        urlBack={this.props.notebookServersUrl}
-        projectName={this.props.projectName}
-      />
-    );
-  }
-}
 
 function mapSessionListStateToProps(state, ownProps) {
   return {
@@ -1170,4 +1057,4 @@ class CheckNotebookStatus extends Component {
   }
 }
 
-export { CheckNotebookStatus, Notebooks, ShowSession, StartNotebookServer };
+export { CheckNotebookStatus, Notebooks, StartNotebookServer };
