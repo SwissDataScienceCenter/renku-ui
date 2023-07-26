@@ -39,6 +39,10 @@ const Links = {
   HOMEPAGE: "https://datascience.ch",
 };
 
+const GitlabLinks = {
+  PROJECT_VISIBILITY: "https://docs.gitlab.com/ee/user/public_access.html",
+};
+
 const REKNU_PYTHON_READ_THE_DOCS_ROOT =
   "https://renku-python.readthedocs.io/en/stable";
 
@@ -46,4 +50,4 @@ const RenkuPythonDocs = {
   READ_THE_DOCS_ROOT: REKNU_PYTHON_READ_THE_DOCS_ROOT,
 };
 
-export { Docs, Links, RenkuPythonDocs };
+export { Docs, Links, RenkuPythonDocs, GitlabLinks };
