@@ -16,15 +16,11 @@ on:
       - .github/workflows/**
       - chartpress.yaml
 
-jobs:
-  cleanup-previous-runs:
-    runs-on: ubuntu-22.04
-    if: github.event.action != 'closed'
-    steps:
-      - uses: rokroskar/workflow-run-cleanup-action@v0.3.3
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
+jobs:
   check-deploy:
     runs-on: ubuntu-22.04
     outputs:
@@ -40,13 +36,13 @@ jobs:
       extra-values: ${{ steps.deploy-comment.outputs.extra-values}}
     steps:
       - id: deploy-comment
-        uses: SwissDataScienceCenter/renku-actions/check-pr-description@v1.4.6
+        uses: SwissDataScienceCenter/renku-actions/check-pr-description@v1.5.2
         with:
           string: /deploy
           pr_ref: ${{ github.event.number }}
 
   deploy-pr:
-    needs: [check-deploy, cleanup-previous-runs]
+    needs: [check-deploy]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
     runs-on: ubuntu-22.04
     environment:
@@ -69,7 +65,7 @@ jobs:
           body: |
             You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
       - name: Build and deploy
-        uses: SwissDataScienceCenter/renku-actions/deploy-renku@v1.4.6
+        uses: SwissDataScienceCenter/renku-actions/deploy-renku@v1.5.2
         env:
           RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
           DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
@@ -93,12 +89,12 @@ jobs:
           renku_notebooks: "${{ needs.check-deploy.outputs.renku-notebooks }}"
           extra_values: "${{ needs.check-deploy.outputs.extra-values }}"
 
-  run-selenium-acceptance-tests:
+  selenium-acceptance-tests:
     needs: [check-deploy, deploy-pr]
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
     runs-on: ubuntu-22.04
     steps:
-      - uses: SwissDataScienceCenter/renku-actions/test-renku@v1.4.6
+      - uses: SwissDataScienceCenter/renku-actions/test-renku@v1.5.2
         with:
           kubeconfig: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
           renku-release: renku-ci-ui-${{ github.event.number }}
@@ -108,19 +104,29 @@ jobs:
           s3-results-secret-key: ${{ secrets.ACCEPTANCE_TESTS_BUCKET_SECRET_KEY }}
           test-timeout-mins: "60"
 
-  run-cypress-acceptance-tests:
+  cypress-acceptance-tests:
+    if: |
+      github.event.action != 'closed' &&
+      needs.check-deploy.outputs.pr-contains-string == 'true' &&
+      (needs.check-deploy.outputs.test-enabled == 'true' || needs.check-deploy.outputs.test-cypress-enabled == 'true')
     needs: [check-deploy, deploy-pr]
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-cypress-enabled == 'true'
     runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        tests: [publicProject, updateProjects, useSession]
+
     steps:
-      - name: Extract renku repo ref
-        run: echo "RENKU=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
-      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.4.6
+      - name: Extract Renku repository reference
+        run: echo "RENKU_REFERENCE=`echo '${{ needs.check-deploy.outputs.renku }}' | cut -d'@' -f2`" >> $GITHUB_ENV
+      - uses: SwissDataScienceCenter/renku-actions/test-renku-cypress@v1.5.2
         with:
-          gitlab-token: ${{ secrets.DEV_GITLAB_TOKEN }}
+          e2e-target: ${{ matrix.tests }}
+          renku-reference: ${{ env.RENKU_REFERENCE }}
           renku-release: renku-ci-ui-${{ github.event.number }}
           test-user-password: ${{ secrets.RENKU_BOT_DEV_PASSWORD }}
-          renku: ${{ env.RENKU }}
 
   cleanup:
     needs: check-deploy
@@ -143,7 +149,7 @@ jobs:
           body: |
             Tearing down the temporary RenkuLab deplyoment for this PR.
       - name: renku teardown
-        uses: SwissDataScienceCenter/renku-actions/cleanup-renku-ci-deployments@v1.4.6
+        uses: SwissDataScienceCenter/renku-actions/cleanup-renku-ci-deployments@v1.5.2
         env:
           HELM_RELEASE_REGEX: "^renku-ci-ui-${{ github.event.number }}$"
           GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
