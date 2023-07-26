@@ -110,7 +110,7 @@ function AnonymousStopSessionModal({
   }, [error, notifications]);
 
   if (isSuccess) {
-    return <Redirect to={sessionsListUrl} />;
+    return <Redirect push to={sessionsListUrl} />;
   }
 
   return (
@@ -122,7 +122,7 @@ function AnonymousStopSessionModal({
             <p>Are you sure you want to delete this session?</p>
             {isStopping ? (
               <FormText color="primary">
-                <Loader inline margin={2} size={16} />
+                <Loader className="me-1" inline size={16} />
                 Deleting Session
                 <br />
               </FormText>
@@ -186,7 +186,7 @@ function HibernateSessionModal({
   }, [error, notifications]);
 
   if (isSuccess) {
-    return <Redirect to={sessionsListUrl} />;
+    return <Redirect push to={sessionsListUrl} />;
   }
 
   return (
@@ -202,7 +202,7 @@ function HibernateSessionModal({
             </p>
             {isStopping ? (
               <FormText color="primary">
-                <Loader inline margin={2} size={16} />
+                <Loader className="me-1" inline size={16} />
                 Stopping Session
                 <br />
               </FormText>

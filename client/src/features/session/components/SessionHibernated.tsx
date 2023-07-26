@@ -16,16 +16,28 @@
  * limitations under the License.
  */
 
-import React from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Alert } from "reactstrap";
+import { Alert, Button } from "reactstrap";
+import { Loader } from "../../../components/Loader";
+import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
+import { NotificationsInterface } from "../../../notifications/notifications.types";
+import AppContext from "../../../utils/context/appContext";
 import { Url } from "../../../utils/helpers/url";
+import { usePatchSessionMutation } from "../sessions.api";
+import { Session } from "../sessions.types";
 
-export default function SessionHibernated() {
+interface SessionHibernatedProps {
+  session: Session;
+}
+
+export default function SessionHibernated({ session }: SessionHibernatedProps) {
   const pathWithNamespace = useSelector<RootStateOrAny, string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
@@ -35,35 +47,82 @@ export default function SessionHibernated() {
     path: pathWithNamespace,
   };
   const sessionsListUrl = Url.get(Url.pages.project.session, projectUrlData);
-  const startSessionUrl = Url.get(
-    Url.pages.project.session.new,
-    projectUrlData
-  );
+
+  const [patchSession, { error }] = usePatchSessionMutation();
+
+  const [isResuming, setIsResuming] = useState(false);
+
+  const onResumeSession = useCallback(() => {
+    patchSession({ sessionName: session.name, state: "running" });
+    setIsResuming(true);
+  }, [patchSession, session.name]);
+
+  const { notifications } = useContext(AppContext);
+
+  useEffect(() => {
+    if (error != null) {
+      addErrorNotification({
+        error,
+        notifications: notifications as NotificationsInterface,
+      });
+    }
+  }, [error, notifications]);
 
   return (
     <div className={cx("p-2", "p-lg-3", "text-nowrap", "container-lg")}>
-      <p className="mt-2">
-        This session is currently stopped. TODO: button to resume session
-      </p>
+      <p className="mt-2">This session is currently stopped.</p>
       <Alert color="primary">
         <p className="mb-0">
-          <FontAwesomeIcon size="lg" icon={faQuestionCircle} /> You should
-          either{" "}
-          <Link
-            className={cx("btn", "btn-primary", "btn-sm")}
-            to={startSessionUrl}
-          >
-            start a new session
-          </Link>{" "}
-          or{" "}
-          <Link
-            className={cx("btn", "btn-primary", "btn-sm")}
-            to={sessionsListUrl}
-          >
-            check the running sessions
-          </Link>
+          {isResuming ? (
+            <>
+              <Loader className="me-1" inline size={16} />
+              Resuming session...
+            </>
+          ) : (
+            <>
+              <FontAwesomeIcon size="lg" icon={faQuestionCircle} /> You should
+              either{" "}
+              <Button
+                className={cx("btn", "btn-primary", "btn-sm")}
+                onClick={onResumeSession}
+                disabled={isResuming}
+              >
+                resume the session
+              </Button>{" "}
+              or{" "}
+              <Link
+                className={cx("btn", "btn-primary", "btn-sm")}
+                to={sessionsListUrl}
+              >
+                go to the sessions list
+              </Link>
+            </>
+          )}
         </p>
       </Alert>
     </div>
+  );
+}
+
+function addErrorNotification({
+  error,
+  notifications,
+}: {
+  error: FetchBaseQueryError | SerializedError;
+  notifications: NotificationsInterface;
+}) {
+  const message =
+    "message" in error && error.message != null
+      ? error.message
+      : "error" in error && error.error != null
+      ? error.error
+      : "Unknown error";
+  notifications.addError(
+    NOTIFICATION_TOPICS.SESSION_START,
+    "Unable to stop the current session",
+    undefined,
+    undefined,
+    undefined,
+    `Error message: "${message}"`
   );
 }
