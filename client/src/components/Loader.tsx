@@ -18,12 +18,11 @@
 
 import React, { useEffect, useRef } from "react";
 import cx from "classnames";
+import styles from "./Loader.module.scss";
 
 interface LoaderProps {
   className?: string;
-  color?: string;
   inline?: boolean;
-  margin?: 0 | 1 | 2 | 3 | 4 | 5 | "auto";
   size?: number;
 }
 
@@ -37,31 +36,39 @@ export const Loader = ({ inline, size = 120, ...rest }: LoaderProps) => {
 
 type LoaderSpinnerProps = LoaderProps & Required<Pick<LoaderProps, "size">>;
 
-const LoaderSpinner = ({
-  className,
-  color = "#01192D", // Renku blue
-  inline,
-  margin,
-  size,
-}: LoaderSpinnerProps) => {
-  const d = `${size}px`;
-  // Inspired from https://www.w3schools.com/howto/howto_css_loader.asp
-  const border = `${size / 10}px solid transparent`;
-  const borderTop = `${size / 10}px solid ${color}`;
-  const borderRight = borderTop; // Added a borderRight to make a half-circle
-  const borderRadius = "50%";
-  const animation = "spin 2s linear infinite";
-  const left = inline ? "" : "40%";
-  const right = left;
-  const display = inline ? "inline-block" : "";
-  const verticalAlign = inline ? "middle" : "";
-  const marginClassName = margin ? `m-${margin}` : `m-0`;
+function LoaderSpinner({ className, inline, size }: LoaderSpinnerProps) {
+  const borderSize = size / 8;
+  const style = {
+    width: `${size}px`,
+    height: `${size}px`,
+  };
+  // This makes the spinner fit nicely with text of the same size when `inline=true`
+  const containerStyle = {
+    ...style,
+    ...(inline ? { verticalAlign: `-${borderSize}px` } : {}),
+  };
+  const trackStyle = {
+    ...style,
+    // eslint-disable-next-line spellcheck/spell-checker
+    borderColor: "currentcolor",
+    borderWidth: `${borderSize}px`,
+    borderStyle: "solid",
+    borderRadius: "50%",
+  };
+  const spinnerStyle = {
+    ...trackStyle,
+    borderColor: "transparent",
+    // eslint-disable-next-line spellcheck/spell-checker
+    borderTopColor: "currentcolor",
+  };
 
   const ref = useRef<HTMLDivElement>(null);
 
   // Synchronizes all spinners
   useEffect(() => {
-    const existingSpinners = [...document.querySelectorAll(".rk-spinner")];
+    const existingSpinners = [
+      ...document.querySelectorAll(`.${styles.spinner}`),
+    ];
     const baseSpinner = existingSpinners.find(
       (spinner) =>
         spinner !== ref.current &&
@@ -84,27 +91,31 @@ const LoaderSpinner = ({
 
   return (
     <div
-      ref={ref}
-      className={cx("rk-spinner", marginClassName, className)}
-      style={{
-        width: d,
-        height: d,
-        border,
-        borderTop,
-        borderRight,
-        borderRadius,
-        animation,
-        left,
-        right,
-        display,
-        verticalAlign,
-        position: "relative",
-      }}
-    ></div>
+      className={cx(className, inline && "d-inline-block")}
+      style={containerStyle}
+    >
+      <div className="position-relative" style={style}>
+        <div
+          className={cx("position-absolute", "top-0", "start-0", "opacity-25")}
+          style={trackStyle}
+        ></div>
+        <div
+          className={cx(
+            styles.spinner,
+            "position-absolute",
+            "top-0",
+            "start-0",
+            "opacity-100"
+          )}
+          ref={ref}
+          style={spinnerStyle}
+        ></div>
+      </div>
+    </div>
   );
-};
+}
 
-const LoaderBouncer = ({ className }: LoaderProps) => {
+function LoaderBouncer({ className }: LoaderProps) {
   return (
     <div className={cx("bouncer", className)}>
       <span></span>
@@ -112,4 +123,4 @@ const LoaderBouncer = ({ className }: LoaderProps) => {
       <span></span>
     </div>
   );
-};
+}

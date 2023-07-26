@@ -170,7 +170,7 @@ const LogDownloadButton = ({
     >
       <FontAwesomeIcon icon={faSave} />
       {downloading ? " Downloading " : " Download"}
-      {downloading ? <Loader inline size={16} /> : ""}
+      {downloading && <Loader inline size={16} />}
     </Button>
   );
 };
