@@ -17,8 +17,11 @@
  */
 
 import React, { useCallback, useContext, useEffect, useState } from "react";
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { RootStateOrAny, useSelector } from "react-redux";
+import { Redirect } from "react-router";
 import {
   Button,
   Col,
@@ -30,17 +33,15 @@ import {
 } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/RenkuModels";
+import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
+import { NotificationsInterface } from "../../../notifications/notifications.types";
+import AppContext from "../../../utils/context/appContext";
+import { Url } from "../../../utils/helpers/url";
 import {
   usePatchSessionMutation,
   useStopSessionMutation,
 } from "../sessions.api";
-import { Redirect } from "react-router";
-import { Url } from "../../../utils/helpers/url";
-import AppContext from "../../../utils/context/appContext";
-import { NotificationsInterface } from "../../../notifications/notifications.types";
-import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { SerializedError } from "@reduxjs/toolkit";
+import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
 
 interface StopSessionModalProps {
   isOpen: boolean;
@@ -174,6 +175,12 @@ function HibernateSessionModal({
     setIsStopping(true);
   }, [patchSession, sessionName]);
 
+  const { isWaiting } = useWaitForSessionStatus({
+    desiredStatus: "hibernated",
+    sessionName,
+    skip: !isStopping,
+  });
+
   const { notifications } = useContext(AppContext);
 
   useEffect(() => {
@@ -185,7 +192,7 @@ function HibernateSessionModal({
     }
   }, [error, notifications]);
 
-  if (isSuccess) {
+  if (isSuccess && !isWaiting) {
     return <Redirect push to={sessionsListUrl} />;
   }
 

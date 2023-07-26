@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   faExternalLinkAlt,
   faFileAlt,
@@ -42,6 +42,8 @@ import {
 import { Session } from "../sessions.types";
 import { getRunningSession } from "../sessions.utils";
 import SimpleSessionButton from "./SimpleSessionButton";
+import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
+import { Loader } from "../../../components/Loader";
 
 interface SessionButtonProps {
   className?: string;
@@ -147,11 +149,24 @@ function SessionActions({ className, session }: SessionActionsProps) {
     server: session.name,
   });
 
-  const [patchSession] = usePatchSessionMutation();
+  const [isResuming, setIsResuming] = useState(false);
+  const [patchSession, { isSuccess: isResumingSuccess }] =
+    usePatchSessionMutation();
   const onResumeSession = useCallback(() => {
     patchSession({ sessionName: session.name, state: "running" });
-    history.push({ pathname: showSessionUrl });
-  }, [history, patchSession, session.name, showSessionUrl]);
+    setIsResuming(true);
+    // history.push({ pathname: showSessionUrl });
+  }, [patchSession, session.name]);
+  const { isWaiting: isWaitingForResumedSession } = useWaitForSessionStatus({
+    desiredStatus: "starting",
+    sessionName: session.name,
+    skip: !isResuming,
+  });
+  useEffect(() => {
+    if (isResumingSuccess && !isWaitingForResumedSession) {
+      history.push({ pathname: showSessionUrl });
+    }
+  }, [history, isResumingSuccess, isWaitingForResumedSession, showSessionUrl]);
 
   const buttonClassName = cx(
     "btn",
@@ -180,13 +195,23 @@ function SessionActions({ className, session }: SessionActionsProps) {
       <Button
         className={buttonClassName}
         data-cy="resume-session-button"
+        disabled={isResuming}
         onClick={onResumeSession}
       >
-        <FontAwesomeIcon
-          className={cx("rk-icon", "rk-icon-md")}
-          icon={faPlay}
-        />{" "}
-        Resume
+        {isResuming ? (
+          <>
+            <Loader className="me-1" inline size={16} />
+            Resuming
+          </>
+        ) : (
+          <>
+            <FontAwesomeIcon
+              className={cx("rk-icon", "rk-icon-md", "me-1")}
+              icon={faPlay}
+            />
+            Resume
+          </>
+        )}
       </Button>
     ) : status === "stopping" || isStopping ? (
       <Button className={buttonClassName} data-cy="stopping-btn" disabled>
