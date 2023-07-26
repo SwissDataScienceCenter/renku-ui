@@ -34,7 +34,7 @@ import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
 import { TimeCaption } from "../components/TimeCaption";
 import { RenkuNavLink } from "../components/RenkuNavLink";
-import { Loader, LoaderSpinner } from "../components/Loader";
+import { Loader } from "../components/Loader";
 
 function Overview() {
   return (
@@ -43,6 +43,9 @@ function Overview() {
       <p>
         The style guide explains the different elements of the RenkuLab UI, how
         they should look and when to use what element.
+      </p>
+      <p>
+        <Loader inline size={16} /> Some text
       </p>
     </Fragment>
   );
@@ -190,28 +193,6 @@ function StyleGuideHeader(props) {
             <h2>Style Guide</h2>
             <div className="text-rk-text">
               An guide to the RenkuLab UI elements.
-            </div>
-            <div
-              style={{
-                color: "#01192d",
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <Loader inline size={48} />
-              <Loader inline size={48} />
-              <Loader inline size={48} />
-              <LoaderSpinner inline size={48} />
-            </div>
-            <div
-              style={{
-                color: "#01192d",
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <Loader inline size={16} />
-              <LoaderSpinner inline size={16} />
             </div>
           </div>
           <div className="d-flex flex-column justify-content-between">
