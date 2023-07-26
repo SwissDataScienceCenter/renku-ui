@@ -26,6 +26,7 @@ import {
   ServerOption,
   ServerOptions,
   ServerOptionsResponse,
+  Session,
   Sessions,
 } from "./sessions.types";
 
@@ -52,11 +53,26 @@ const sessionsApi = createApi({
         },
       }),
       transformResponse: (_value, meta, { image }) => {
-        if (meta?.response?.status != null && meta.response.status == 404) {
+        if (meta?.response?.status == 404) {
           return { image, available: false };
         }
         return { image, available: true };
       },
+    }),
+    getSession: builder.query<Session | null, { sessionName: string }>({
+      query: ({ sessionName }) => ({
+        url: `servers/${sessionName}`,
+        validateStatus: (response) =>
+          response.status < 400 || response.status == 404,
+      }),
+      transformResponse: (session: Session, meta) => {
+        if (meta?.response?.status == 404) {
+          return null;
+        }
+        return session;
+      },
+      providesTags: (result) =>
+        result ? [{ id: result.name, type: "Session" }] : [],
     }),
     getSessions: builder.query<Sessions, GetSessionsParams | void>({
       query: (params) => ({ url: "servers", params: params ?? undefined }),
@@ -125,6 +141,7 @@ const sessionsApi = createApi({
 export default sessionsApi;
 export const {
   useGetDockerImageQuery,
+  useGetSessionQuery,
   useGetSessionsQuery,
   useServerOptionsQuery,
   useStopSessionMutation,

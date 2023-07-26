@@ -32,7 +32,7 @@ import SessionsList from "./SessionsList";
 
 interface AboutSessionModalProps {
   isOpen: boolean;
-  session: Session | undefined;
+  session: Session | null | undefined;
   toggleModal: () => void;
 }
 
@@ -100,7 +100,7 @@ function ProjectHeader() {
 }
 
 interface SessionStatusProps {
-  session: Session | undefined;
+  session: Session | null | undefined;
 }
 
 function SessionStatus({ session }: SessionStatusProps) {

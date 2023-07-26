@@ -18,41 +18,40 @@
 
 import React, {
   useCallback,
+  useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStop, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { useContext } from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
-import { User } from "../../../model/RenkuModels";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import AppContext from "../../../utils/context/appContext";
-import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
-import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
-import { Url } from "../../../utils/helpers/url";
-import { Button, Row, UncontrolledTooltip } from "reactstrap";
 import {
   ArrowClockwise,
   Briefcase,
   Journals,
   Save,
 } from "react-bootstrap-icons";
-import PullSessionModal from "./PullSessionModal";
-import { useGetSessionsQuery } from "../sessions.api";
+import { RootStateOrAny, useSelector } from "react-redux";
 import { Redirect, useLocation, useParams } from "react-router";
-import SessionUnavailable from "./SessionUnavailable";
-import StartSessionProgressBar from "./StartSessionProgressBar";
+import { Button, Row, UncontrolledTooltip } from "reactstrap";
+import { User } from "../../../model/RenkuModels";
 import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
-import ResourcesSessionModal from "./ResourcesSessionModal";
-import SessionJupyter from "./SessionJupyter";
+import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
+import AppContext from "../../../utils/context/appContext";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
-import StopSessionModal from "./StopSessionModal";
+import { Url } from "../../../utils/helpers/url";
+import { useGetSessionQuery } from "../sessions.api";
 import AboutSessionModal from "./AboutSessionModal";
+import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
+import PullSessionModal from "./PullSessionModal";
+import ResourcesSessionModal from "./ResourcesSessionModal";
 import SaveSessionModal from "./SaveSessionModal";
 import SessionHibernated from "./SessionHibernated";
+import SessionJupyter from "./SessionJupyter";
+import SessionUnavailable from "./SessionUnavailable";
+import StartSessionProgressBar from "./StartSessionProgressBar";
+import StopSessionModal from "./StopSessionModal";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -66,7 +65,7 @@ export default function ShowSession() {
     (state) => state.stateModel.user.logged
   );
 
-  const { server } = useParams<{ server: string }>();
+  const { server: sessionName } = useParams<{ server: string }>();
 
   if (!logged && !anonymousSessionsEnabled) {
     return (
@@ -78,7 +77,7 @@ export default function ShowSession() {
 
   return (
     <Row>
-      <ShowSessionFullscreen sessionName={server} />
+      <ShowSessionFullscreen sessionName={sessionName} />
     </Row>
   );
 }
@@ -90,9 +89,6 @@ interface ShowSessionFullscreenProps {
 function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   const pathWithNamespace = useSelector<RootStateOrAny, string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
-  );
-  const namespace = useSelector<RootStateOrAny, string>(
-    (state) => state.stateModel.project.metadata.namespace
   );
   const path = useSelector<RootStateOrAny, string>(
     (state) => state.stateModel.project.metadata.path
@@ -107,16 +103,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     { redirectFromStartServer?: boolean } | undefined
   >();
 
-  const { data: sessions, isLoading } = useGetSessionsQuery({
-    namespace,
-    project: path,
-  });
-  const thisSession = useMemo(() => {
-    if (sessions == null) {
-      return undefined;
-    }
-    return Object.values(sessions).find(({ name }) => name === sessionName);
-  }, [sessionName, sessions]);
+  const { data: thisSession, isLoading } = useGetSessionQuery({ sessionName });
 
   const [isTheSessionReady, setIsTheSessionReady] = useState(false);
 
