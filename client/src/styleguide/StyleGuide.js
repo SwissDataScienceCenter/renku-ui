@@ -34,7 +34,6 @@ import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
 import { TimeCaption } from "../components/TimeCaption";
 import { RenkuNavLink } from "../components/RenkuNavLink";
-import { Loader } from "../components/Loader";
 
 function Overview() {
   return (
@@ -43,9 +42,6 @@ function Overview() {
       <p>
         The style guide explains the different elements of the RenkuLab UI, how
         they should look and when to use what element.
-      </p>
-      <p>
-        <Loader inline size={16} /> Some text
       </p>
     </Fragment>
   );
