@@ -118,6 +118,7 @@ function ProjectAvatarEdit({
   onAvatarChange,
   externalUrl,
   settingsReadOnly,
+  includeRequiredLabel = true,
 }) {
   const initial = avatarUrl
     ? {
@@ -158,7 +159,7 @@ function ProjectAvatarEdit({
 
   // format: image/png, image/jpeg, image/gif, image/tiff
   return (
-    <div className="mb-3">
+    <div>
       <ImageInput
         name="project-avatar"
         label="Project Avatar"
@@ -173,6 +174,7 @@ function ProjectAvatarEdit({
         setInputs={(e) => {
           changeValue(e.target.value);
         }}
+        includeRequiredLabel={includeRequiredLabel}
       />
       <ProjectAvatarSubmitButtons
         value={value}

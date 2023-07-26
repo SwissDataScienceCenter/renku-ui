@@ -203,7 +203,7 @@ class ShowFile extends React.Component {
             &nbsp;
           </CardHeader>
           <CardBody>
-            Downloading... <Loader size={14} inline />
+            Downloading... <Loader inline size={16} />
           </CardBody>
         </Card>
       );
@@ -524,7 +524,7 @@ const JupyterButtonPresent = (props) => {
   if (props.updating) {
     return (
       <span className="ms-2 pb-1">
-        <Loader size={19} inline />
+        <Loader inline size={19} />
       </span>
     );
   }

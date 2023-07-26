@@ -41,19 +41,25 @@ interface LabelProps {
   children?: React.ReactNode;
 }
 
+interface RequiredLabelProps {
+  isRequired: boolean;
+}
+const RequiredLabel = ({ isRequired }: RequiredLabelProps) => {
+  return isRequired ? (
+    <span className="required-label">*</span>
+  ) : (
+    <span> (Optional)</span>
+  );
+};
+
 interface InputLabelProps extends LabelProps {
   isRequired?: boolean;
 }
 
 const InputLabel = ({ text, isRequired = false }: InputLabelProps) => {
-  const labelType = isRequired ? (
-    <span className="required-label">*</span>
-  ) : (
-    <span> (Optional)</span>
-  );
   return (
     <Label>
-      {text} {labelType}
+      {text} <RequiredLabel isRequired={isRequired} />
     </Label>
   );
 };
@@ -73,6 +79,7 @@ const HelperLabel = ({ text }: LabelProps) => {
 };
 
 const InputHintLabel = ({ text }: LabelProps) => {
+  // TODO: remove Non-Simplifying Components ref: #2696
   return <FormText className="input-hint">{text}</FormText>;
 };
 
@@ -100,5 +107,6 @@ export {
   HelperLabel,
   InputHintLabel,
   ErrorLabel,
+  RequiredLabel,
   SuccessLabel,
 };

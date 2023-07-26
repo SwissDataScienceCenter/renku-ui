@@ -18,11 +18,11 @@
 
 import React from "react";
 
-import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
+import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
 
 type ProjectEntityHeaderProps = EntityHeaderProps & {
   branch: string;
@@ -66,6 +66,7 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
       {...props}
       description={descriptionKg}
       statusButton={statusButton}
+      visibility={projectMetadata.data?.visibility || props.visibility}
     />
   );
 }

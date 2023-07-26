@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { KgMetadataResponse, ProjectKgParams } from "../project/Project";
 
 type JsonLdValue<T> = {
   "@value": T;
@@ -46,69 +47,13 @@ type KgJsonLdResponse = {
   "http://schema.org/keywords": string[];
 };
 
-type KgMetadataLink = {
-  rel: string;
-  href: string;
-};
-
-type KgDateString = string; // ISO 8601 UTC date string, e.g., "2021-03-10T14:38:20.368Z"
-
-type KgMetadataResponse = {
-  version: string;
-  description: string;
-  _links: KgMetadataLink[];
-  identifier: number;
-  path: string;
-  name: string;
-  visibility: "public" | "internal" | "private";
-  created: {
-    creator: {
-      email: string;
-      name: string;
-    };
-    dateCreated: KgDateString;
-  };
-  updatedAt: KgDateString;
-  urls: {
-    readme: string;
-    ssh: string;
-    http: string;
-    web: string;
-  };
-  forking: {
-    forksCount: number;
-  };
-  keywords: string[];
-  starsCount: number;
-  permissions: {
-    projectAccess: {
-      level: {
-        name: string;
-        value: number;
-      };
-    };
-  };
-  images: string[];
-  statistics: {
-    commitsCount: number;
-    storageSize: number;
-    repositorySize: number;
-    lfsObjectsSize: number;
-    jobArtifactsSize: number;
-  };
-};
-
 type ProjectKgContent = "ld+json" | "json";
-
-interface ProjectKgParams {
-  projectPath?: string;
-}
 
 interface ProjectKgWithIdParams extends ProjectKgParams {
   projectId?: number;
 }
 
-function kgProjectRequestHeaders(content: ProjectKgContent) {
+export function kgProjectRequestHeaders(content: ProjectKgContent) {
   return {
     Accept: `application/${content}`,
   };

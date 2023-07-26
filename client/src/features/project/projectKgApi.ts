@@ -26,12 +26,19 @@ import {
   DatasetKg,
   DeleteProjectParams,
   DeleteProjectResponse,
+  EditProjectParams,
   GetDatasetKgParams,
+  KgMetadataResponse,
   ProjectActivateIndexingResponse,
   ProjectIndexingStatusResponse,
+  ProjectKgParams,
+  UpdateProjectResponse,
 } from "./Project";
 import { ProjectIndexingStatuses } from "./projectEnums";
-import { projectsKgApi } from "../projects/projectsKgApi";
+import {
+  kgProjectRequestHeaders,
+  projectsKgApi,
+} from "../projects/projectsKgApi";
 
 interface errorDataMessage {
   data: {
@@ -141,6 +148,37 @@ export const projectKgApi = createApi({
         });
       },
     }),
+    updateProject: builder.mutation<UpdateProjectResponse, EditProjectParams>({
+      query: ({ projectPathWithNamespace, visibility }) => {
+        return {
+          method: "PUT",
+          url: `projects/${projectPathWithNamespace}`,
+          body: {
+            visibility,
+          },
+        };
+      },
+      invalidatesTags: (result, err, args) => [
+        { type: "project", id: args.projectPathWithNamespace },
+      ],
+      transformErrorResponse: (error) => {
+        const { status, data } = error;
+        if (status === 500 && typeof data === "object" && data != null) {
+          const data_ = data as { message?: unknown };
+          if (
+            typeof data_.message === "string" &&
+            data_.message.match(/403 Forbidden/i)
+          ) {
+            const newError: FetchBaseQueryError = {
+              status: 403,
+              data,
+            };
+            return newError;
+          }
+        }
+        return error;
+      },
+    }),
   }),
 });
 
@@ -149,4 +187,5 @@ export const {
   useGetDatasetKgQuery,
   useGetProjectIndexingStatusQuery,
   useDeleteProjectMutation,
+  useUpdateProjectMutation,
 } = projectKgApi;
