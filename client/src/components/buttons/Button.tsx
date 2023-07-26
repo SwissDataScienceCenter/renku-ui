@@ -226,7 +226,7 @@ function InlineSubmitButton({
     return (
       <div className="inlineSubmit">
         {" "}
-        <Loader className="mx-1" inline={true} size={16} />
+        <Loader className="mx-1" inline size={16} />
       </div>
     );
   }
