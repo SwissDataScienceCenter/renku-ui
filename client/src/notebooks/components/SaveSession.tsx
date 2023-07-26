@@ -295,8 +295,7 @@ function SaveSessionBody({
         <Fragment>
           {saving ? (
             <FormText color="primary">
-              <Loader className="m-2" inline size={16} />
-              Saving Session
+              <Loader inline size={16} /> Saving Session
               <br />
             </FormText>
           ) : null}

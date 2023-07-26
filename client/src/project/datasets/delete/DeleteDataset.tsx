@@ -51,8 +51,7 @@ function ModalContent({
     return (
       <div className="d-flex flex-row-reverse">
         <FormText color="primary">
-          <Loader className="m-2" inline size={16} />
-          {submitLoader.text}
+          <Loader inline size={16} /> {submitLoader.text}
           <br />
         </FormText>
       </div>
@@ -73,8 +72,7 @@ function ModalContent({
         >
           {submitLoader.isSubmitting ? (
             <FormText color="primary">
-              <Loader className="m-2" inline size={16} />
-              Deleting dataset...
+              <Loader inline size={16} /> Deleting dataset...
             </FormText>
           ) : (
             "Delete dataset"

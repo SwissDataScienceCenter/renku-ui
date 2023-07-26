@@ -92,8 +92,7 @@ function StopSessionModal({
       <Fragment>
         {stopping ? (
           <FormText color="primary">
-            <Loader className="m-2" inline size={16} />
-            Stopping Session
+            <Loader inline size={16} /> Stopping Session
             <br />
           </FormText>
         ) : null}
