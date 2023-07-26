@@ -53,7 +53,7 @@ type RenkuMarkdownWithPathTranslationProps = {
   /** Sizes at which the UI shows a preview or not */
   previewThreshold: FilePreviewProps["previewThreshold"];
   /** The project id */
-  projectId: string;
+  projectId: number;
   /** The project path */
   projectPathWithNamespace: string;
   /** If true, render the output as a single line without line breaks */

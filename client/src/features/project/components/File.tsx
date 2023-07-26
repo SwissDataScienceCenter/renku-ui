@@ -79,6 +79,7 @@ function ProjectFileLineage(props: ProjectFileLineageProps) {
     ""
   );
 
+  // console.log("2", { filesTree, hash: filesTree?.hash[props.filePath], filePath: props.filePath })
   return (
     <LazyFileLineage
       key="lineage"
@@ -155,7 +156,7 @@ function ProjectFileView(props: ProjectFileViewProps) {
   );
   const sessionNewUrl = Url.get(Url.pages.project.session.new, projectUrlProps);
   const filePath = props.location.pathname.replace(fileContentUrl, "");
-
+  // console.log("2 🤍", { filesTree, hash: filesTree?.hash[filePath], filePath: filePath })
   return (
     <ShowFile
       key="filePreview"
@@ -169,7 +170,7 @@ function ProjectFileView(props: ProjectFileViewProps) {
       filePath={filePath}
       filesTree={filesTree}
       forked={forked}
-      hashElement={filesTree ? filesTree.hash[props.filePath] : undefined}
+      hashElement={filesTree ? filesTree.hash[filePath] : undefined}
       history={props.history}
       httpProjectUrl={httpProjectUrl}
       insideProject={true}

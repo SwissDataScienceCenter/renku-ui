@@ -25,6 +25,8 @@ import { atobUTF8 } from "../utils/helpers/Encoding";
 import { FileNoPreview, StyledNotebook } from "./File.present";
 import LazyCodePreview from "./LazyCodePreview";
 import LazyPDFViewer from "./LazyPDFViewer";
+import { useGetLFSFileQuery } from "../features/project/projectGitlabApi";
+import { Loader } from "../components/Loader";
 
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
@@ -95,7 +97,7 @@ const TEXT_EXTENSIONS = [
 
 type HashElement = { isLfs: boolean };
 
-function filenameExtension(filename: string | undefined) {
+export function filenameExtension(filename: string | undefined) {
   if (!filename) return null;
 
   if (filename.match(/\.(.*)/) === null) return null;
@@ -154,8 +156,15 @@ type FilePreviewProps = {
 
 function FilePreview(props: FilePreviewProps) {
   const [previewAnyway, setPreviewAnyway] = React.useState(false);
-  const fileType = fileInfoToType(props.hashElement, props.file?.file_name);
-  const fileIsCode = "code" === fileType;
+  const fileTypeLfs = fileInfoToType(props.hashElement, props.file?.file_name);
+  const fileIsCode = "code" === fileTypeLfs;
+
+  const { data, isFetching, isLoading, error } = useGetLFSFileQuery(
+    { projectId: props.projectId, filePath: encodeURIComponent(props?.file?.file_path || "") , branch: props.branch },
+    { skip: !props?.file || "lfs" !== fileTypeLfs}
+  );
+
+  console.log("1. LFS FILE DATA ", { content: data?.content, isFetching, isLoading, skip: "lfs" !== fileTypeLfs, error })
 
   // File has not yet been fetched
   if (!props.file) return null;
@@ -163,22 +172,18 @@ function FilePreview(props: FilePreviewProps) {
   const getFileExtension = () => filenameExtension(props.file?.file_name);
 
   // LFS files and big files
-  console.log({
-    fileType,
-    fileSize: props.file.size,
-    previewThreshold: props.previewThreshold,
-    previewAnyway,
-  });
+  if( isFetching || isLoading)
+    return <Loader/>
   if (
-    "lfs" === fileType ||
+    // "lfs" === fileTypeLfs ||
     (props.previewThreshold &&
-      props.file.size > props.previewThreshold.hard &&
+      props.file.size > props.previewThreshold.soft  &&
       !previewAnyway)
   ) {
     return (
       <FileNoPreview
         url={props.downloadLink}
-        lfs={"lfs" === fileType}
+        lfs={"lfs" === fileTypeLfs}
         softLimit={props.previewThreshold.soft}
         softLimitReached={props.file.size > props.previewThreshold.soft}
         hardLimit={props.previewThreshold.hard}
@@ -188,7 +193,14 @@ function FilePreview(props: FilePreviewProps) {
       />
     );
   }
-
+  const fileType = filenameExtension(props.file?.file_name);
+  // console.log("🚀", {
+  //   props: props,
+  //   previewThreshold: props.previewThreshold,
+  //   previewAnyway,
+  //   content: props.file.content,
+  //   ext: fileType
+  // });
   // Various types of images
   if ("image" === fileType) {
     return (
