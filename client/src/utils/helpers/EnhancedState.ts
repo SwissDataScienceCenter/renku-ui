@@ -40,6 +40,7 @@ import { projectKgApi } from "../../features/project/projectKgApi";
 import { projectsApi } from "../../features/projects/projectsApi";
 import { projectsKgApi } from "../../features/projects/projectsKgApi";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
+import repositoryApi from "../../features/repository/repository.api";
 import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
@@ -67,6 +68,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectsKgApi.reducerPath]: projectsKgApi.reducer,
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
+    [repositoryApi.reducerPath]: repositoryApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
@@ -90,8 +92,9 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(projectsKgApi.middleware)
         .concat(projectsApi.middleware)
         .concat(recentUserActivityApi.middleware)
-        .concat(sessionSidecarApi.middleware)
+        .concat(repositoryApi.middleware)
         .concat(sessionsApi.middleware)
+        .concat(sessionSidecarApi.middleware)
         .concat(versionsApi.middleware)
         .concat(workflowsApi.middleware),
     enhancers,

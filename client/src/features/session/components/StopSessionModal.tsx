@@ -99,6 +99,12 @@ function AnonymousStopSessionModal({
     setIsStopping(true);
   }, [sessionName, stopSession]);
 
+  const { isWaiting } = useWaitForSessionStatus({
+    desiredStatus: "stopping",
+    sessionName,
+    skip: !isStopping,
+  });
+
   const { notifications } = useContext(AppContext);
 
   useEffect(() => {
@@ -110,7 +116,7 @@ function AnonymousStopSessionModal({
     }
   }, [error, notifications]);
 
-  if (isSuccess) {
+  if (isSuccess && !isWaiting) {
     return <Redirect push to={sessionsListUrl} />;
   }
 

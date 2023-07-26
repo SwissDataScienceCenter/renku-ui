@@ -52,8 +52,11 @@ export default function useWaitForSessionStatus({
     if (skip) {
       return;
     }
-    setIsWaiting(result.currentData?.status.state !== desiredStatus);
-  }, [desiredStatus, result.currentData?.status.state, skip]);
+    const isWaiting =
+      result.currentData?.status.state !== desiredStatus ||
+      (result.currentData == null && desiredStatus === "stopping");
+    setIsWaiting(isWaiting);
+  }, [desiredStatus, result.currentData, skip]);
 
   return { isWaiting, getSessionQuery: result };
 }
