@@ -43,8 +43,11 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
 
   // overwrite description when available from KG
   const descriptionKg: EntityHeaderProps["description"] = {
-    isLoading: projectMetadata.isLoading || projectMetadata.isUninitialized,
+    isLoading: projectMetadata.isLoading || projectIndexingStatus.isLoading,
     value: projectMetadata.data?.description || "",
+    unavailable: !projectIndexingStatus.data?.activated
+      ? "requires processing metadata"
+      : undefined,
   };
 
   const statusButton = (

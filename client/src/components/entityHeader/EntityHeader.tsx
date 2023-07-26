@@ -51,7 +51,7 @@ import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 export interface EntityHeaderProps {
   client?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   creators: EntityCreator[];
-  description?: { value: string; isLoading?: boolean };
+  description?: { isLoading?: boolean; unavailable?: string; value: string };
   devAccess: boolean;
   email?: string;
   fullPath?: string;
@@ -232,6 +232,7 @@ function EntityHeader({
             isHeightFixed={false}
             loading={description?.isLoading}
             showSuggestion={true}
+            unavailable={description?.unavailable}
             urlChangeDescription={`${url}/settings`}
           />
         </div>

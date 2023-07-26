@@ -37,10 +37,11 @@ export interface EntityDescriptionProps {
   loading?: boolean | undefined;
   numberLines?: number;
   showSuggestion: boolean;
+  unavailable?: string;
   urlChangeDescription?: string;
 }
 
-function EntityDescription({
+export default function EntityDescription({
   className,
   description,
   hasDevAccess,
@@ -48,34 +49,81 @@ function EntityDescription({
   loading = false,
   numberLines = 3,
   showSuggestion,
+  unavailable,
   urlChangeDescription,
 }: EntityDescriptionProps) {
-  const descriptionStyles: CSSProperties = {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    display: "-webkit-box", // eslint-disable-line
-    lineClamp: isHeightFixed ? numberLines : undefined,
-    WebkitLineClamp: isHeightFixed ? numberLines : undefined, // eslint-disable-line
-    WebkitBoxOrient: "vertical", // eslint-disable-line
-    minHeight: isHeightFixed ? `${25 * numberLines}px` : undefined,
-    height: isHeightFixed ? `${25 * numberLines}px` : undefined,
-  };
+  let content: React.ReactNode = null;
 
-  const markdownDescription =
-    description && typeof description === "string" ? (
+  if (description && typeof description === "string") {
+    content = (
       <>
         <RenkuMarkdown
           markdownText={description}
           singleLine={numberLines === 1}
-          style={descriptionStyles}
         />
         <span className="ms-1">
           {description.includes("\n") ? " [...]" : ""}
         </span>
       </>
-    ) : (
-      description
     );
+  } else if (description) {
+    content = <span>{description}</span>;
+  } else if (loading) {
+    content = (
+      <small className="card-text text-rk-text-light">
+        <i>Loading description...</i>
+      </small>
+    );
+  } else if (unavailable) {
+    content = (
+      <small className="card-text text-rk-text-light">
+        <i>(Description unavailable: {unavailable})</i>
+      </small>
+    );
+  } else if (showSuggestion && hasDevAccess && urlChangeDescription) {
+    content = (
+      <i>
+        (This project has no description. You can provide one{" "}
+        <Link to={urlChangeDescription}>here</Link>.)
+      </i>
+    );
+  }
+
+  return (
+    <EntityDescriptionContainer
+      className={className}
+      isHeightFixed={isHeightFixed}
+      numberLines={numberLines}
+    >
+      {content}
+    </EntityDescriptionContainer>
+  );
+}
+
+interface EntityDescriptionContainerProps {
+  children: React.ReactNode;
+  className?: string;
+  isHeightFixed: boolean;
+  numberLines: number;
+}
+
+function EntityDescriptionContainer({
+  children,
+  className,
+  isHeightFixed,
+  numberLines,
+}: EntityDescriptionContainerProps) {
+  const descriptionStyles: CSSProperties = {
+    display: "-webkit-box",
+    height: isHeightFixed ? `${25 * numberLines}px` : undefined,
+    lineClamp: isHeightFixed ? numberLines : undefined,
+    margin: "12px 0 0 0",
+    minHeight: isHeightFixed ? `${25 * numberLines}px` : undefined,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    WebkitBoxOrient: "vertical",
+    WebkitLineClamp: isHeightFixed ? numberLines : undefined,
+  };
 
   return (
     <div
@@ -83,20 +131,7 @@ function EntityDescription({
       style={{ ...descriptionStyles, margin: "12px 0 0 0" }}
       data-cy="entity-description"
     >
-      {loading ? (
-        <small className="card-text text-rk-text-light">
-          <i>Loading description...</i>
-        </small>
-      ) : description ? (
-        markdownDescription
-      ) : showSuggestion && hasDevAccess && urlChangeDescription ? (
-        <i>
-          (This project has no description. You can provide one{" "}
-          <Link to={urlChangeDescription}>here</Link>.)
-        </i>
-      ) : null}
+      {children}
     </div>
   );
 }
-
-export default EntityDescription;

@@ -308,7 +308,6 @@ export const projectCoreApi = createApi({
             dispatch(
               projectKgApi.util.invalidateTags([
                 { type: "project-indexing", id: params.projectId },
-                // ! TODO: merge projectKgApi and projectsKgApi
               ])
             );
             // ? invalidate also metadata in the unlikely case the change is quicker than the timeout.
@@ -320,6 +319,7 @@ export const projectCoreApi = createApi({
           }, 1000 * 5);
         });
       },
+      transformErrorResponse: (error) => transformRenkuCoreErrorResponse(error),
     }),
   }),
 });

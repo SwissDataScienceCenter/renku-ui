@@ -26,6 +26,8 @@ import { InlineSubmitButton } from "../../../components/buttons/Button";
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
 import { useUpdateDescriptionMutation } from "../projectCoreApi";
+import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
+import { CoreErrorContent } from "../../../utils/definitions";
 
 interface ProjectSettingsDescriptionProps {
   gitUrl: string;
@@ -133,6 +135,14 @@ export function ProjectSettingsDescription({
       tooltipPristine="Modify description to update value"
     />
   );
+
+  const error =
+    updateDescriptionStatus.error && "data" in updateDescriptionStatus.error ? (
+      <CoreErrorAlert
+        error={updateDescriptionStatus.error.data as CoreErrorContent}
+      />
+    ) : null;
+
   return (
     <Form>
       <FormGroup>
@@ -142,6 +152,7 @@ export function ProjectSettingsDescription({
           {submitButton}
         </div>
         <FormText>A short description for the project</FormText>
+        {error}
       </FormGroup>
     </Form>
   );
