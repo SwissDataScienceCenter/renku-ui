@@ -22,7 +22,15 @@
  *  Visibility field group component
  */
 import React, { ReactNode, useCallback, useEffect, useState } from "react";
-import { Button, FormGroup, Modal, ModalBody, ModalHeader } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  FormGroup,
+  Modal,
+  ModalBody,
+  ModalHeader,
+} from "reactstrap";
 import VisibilitiesInput, {
   Visibilities,
   VISIBILITY_ITEMS,
@@ -35,14 +43,18 @@ import {
 import { LoadingLabel } from "../../../components/formlabels/FormLabels";
 import { GitlabLinks } from "../../../utils/constants/Docs";
 import { ExternalLink } from "../../../components/ExternalLinks";
-import { useUpdateProjectMutation } from "../../../features/project/projectKgApi";
+import {
+  useGetProjectIndexingStatusQuery,
+  useUpdateProjectMutation,
+} from "../../../features/project/projectKgApi";
 import { useGetProjectByIdQuery } from "../../../features/project/projectGitlabApi";
 import { useGetGroupByPathQuery } from "../../../features/projects/projectsApi";
 import { computeVisibilities } from "../../../utils/helpers/HelperFunctions";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import { SuccessAlert, WarnAlert } from "../../../components/Alert";
+import { SuccessAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { useProjectMetadataQuery } from "../../../features/projects/projectsKgApi";
+import { SettingRequiresKg } from "../../../features/project/components/ProjectSettingsUtils";
 
 interface VisibilityProps {
   handlers: NewProjectHandlers;
@@ -50,7 +62,7 @@ interface VisibilityProps {
   input: NewProjectInputs;
 }
 
-const Visibility = ({ handlers, meta, input }: VisibilityProps) => {
+export default function Visibility({ handlers, meta, input }: VisibilityProps) {
   const error = meta.validation.errors["visibility"];
 
   return (
@@ -66,11 +78,11 @@ const Visibility = ({ handlers, meta, input }: VisibilityProps) => {
         data-cy="visibility-select"
         isRequired={true}
         onChange={(value: string) => handlers.setProperty("visibility", value)}
-        value={input.visibility ?? null}
+        value={input.visibility ?? undefined}
       />
     </FormGroup>
   );
-};
+}
 
 interface EditVisibilityModalConfirmationProps {
   onConfirm: (visibility: Visibilities) => void;
@@ -80,7 +92,7 @@ interface EditVisibilityModalConfirmationProps {
   isLoading: boolean;
   isSuccess: boolean;
   message: ReactNode;
-  visibility: Visibilities;
+  visibility?: Visibilities;
 }
 
 function EditVisibilityModalConfirmation({
@@ -104,7 +116,7 @@ function EditVisibilityModalConfirmation({
       </Button>
       <Button
         className="float-right mt-1 btn-rk-green"
-        onClick={() => onConfirm(visibility)}
+        onClick={() => onConfirm(visibility as Visibilities)}
         data-cy="update-visibility-btn"
       >
         Agree
@@ -148,20 +160,21 @@ function EditVisibilityModalConfirmation({
   );
 }
 
-interface VisibilityProps {
-  namespace: {
-    name: string;
-    kind: string;
-  };
-  forkedProjectId: number;
+interface EditVisibilityProps {
+  forkedProjectId?: number;
+  namespace: string;
+  namespaceKind: string;
   pathWithNamespace: string;
+  projectId: number;
 }
 
-const EditVisibility = ({
-  namespace,
+export function EditVisibility({
   forkedProjectId,
+  namespace,
+  namespaceKind,
   pathWithNamespace,
-}: VisibilityProps) => {
+  projectId,
+}: EditVisibilityProps) {
   const [updateProject, { isLoading, isSuccess, isError, error, reset }] =
     useUpdateProjectMutation();
   const {
@@ -170,21 +183,28 @@ const EditVisibility = ({
     isLoading: isLoadingProject,
     refetch: refetchProjectData,
   } = useProjectMetadataQuery(
-    { projectPath: pathWithNamespace }, // ! TODO: check missing ID
+    { projectPath: pathWithNamespace },
     { skip: !pathWithNamespace }
   );
   const {
     data: forkProjectData,
     isFetching: isFetchingForkProject,
     isLoading: isLoadingForkProject,
-  } = useGetProjectByIdQuery(forkedProjectId, { skip: !forkedProjectId });
+  } = useGetProjectByIdQuery(forkedProjectId as number, {
+    skip: !forkedProjectId,
+  });
   const {
     data: namespaceData,
     isFetching: isFetchingNamespace,
     isLoading: isLoadingNamespace,
-  } = useGetGroupByPathQuery(namespace.name, {
-    skip: namespace.kind != "group",
+  } = useGetGroupByPathQuery(namespace, {
+    skip: namespaceKind !== "group",
   });
+
+  const { data: indexingStatusData, isLoading: isLoadingIndexingStatus } =
+    useGetProjectIndexingStatusQuery(projectId, {
+      skip: !projectId,
+    });
 
   const [isOpen, setIsOpen] = useState(false);
   const [newVisibility, setNewVisibility] = useState<Visibilities>();
@@ -254,49 +274,51 @@ const EditVisibility = ({
       ""
     );
 
-  if (!isLoadingProject && !isFetchingProject && !projectData)
-    return (
-      <WarnAlert dismissible={false}>
-        Knowledge Graph integration must be enabled to change visibility from
-        the RenkuLab web interface.
-      </WarnAlert>
-    );
+  const isLoadingSomething =
+    isLoadingNamespace || isLoadingProject || isLoadingIndexingStatus;
 
-  if (isLoadingProject && isFetchingProject && !projectData) return <Loader />;
+  const content = isLoadingSomething ? (
+    <>
+      <label>Visibility</label>
+      <Loader className="ms-2" inline size={16} />
+    </>
+  ) : !indexingStatusData?.activated ? (
+    <>
+      <label>Visibility</label>
+      <SettingRequiresKg />
+    </>
+  ) : (
+    <VisibilitiesInput
+      isLoadingData={
+        isFetchingProject || !projectData?.visibility || isFetchingForkProject
+      }
+      namespaceVisibility={availableVisibilities.default as Visibilities}
+      isInvalid={isError}
+      data-cy="edit-visibility-select"
+      isRequired={true}
+      onChange={onChange}
+      value={newVisibility || projectData?.visibility}
+      isForked={!!forkedProjectId}
+      includeRequiredLabel={false}
+    />
+  );
 
   return (
-    projectData && (
-      <div>
-        <VisibilitiesInput
-          isLoadingData={
-            isFetchingProject ||
-            isLoadingProject ||
-            !projectData?.visibility ||
-            isFetchingForkProject
-          }
-          namespaceVisibility={availableVisibilities.default as Visibilities}
-          isInvalid={isError}
-          data-cy="edit-visibility-select"
-          isRequired={false}
-          onChange={onChange}
-          value={newVisibility || projectData?.visibility}
-          isForked={!!forkedProjectId}
-          includeRequiredLabel={false}
-        />
-        <EditVisibilityModalConfirmation
-          onConfirm={onConfirm}
-          isOpen={isOpen}
-          toggleModal={onCancel}
-          isError={isError}
-          isLoading={isLoading}
-          isSuccess={isSuccess}
-          message={message}
-          visibility={newVisibility || projectData?.visibility}
-        />
-      </div>
-    )
-  );
-};
+    <div className="form-rk-green">
+      <Card className="mb-4 ">
+        <CardBody>{content}</CardBody>
+      </Card>
 
-export default Visibility;
-export { EditVisibility };
+      <EditVisibilityModalConfirmation
+        onConfirm={onConfirm}
+        isOpen={isOpen}
+        toggleModal={onCancel}
+        isError={isError}
+        isLoading={isLoading}
+        isSuccess={isSuccess}
+        message={message}
+        visibility={newVisibility || projectData?.visibility}
+      />
+    </div>
+  );
+}

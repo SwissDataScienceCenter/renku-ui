@@ -87,7 +87,7 @@ export interface VisibilitiesInputProps {
   namespaceVisibility: Visibilities;
 
   /** Default value */
-  value: Visibilities | null;
+  value?: Visibilities;
 
   /**
    * To show error feedback and mark input as invalid if there is no selection
@@ -138,7 +138,7 @@ const VisibilitiesInput = ({
   includeRequiredLabel = true,
 }: VisibilitiesInputProps) => {
   const [visibility, setVisibility] = useState<string | null>(null);
-  useEffect(() => setVisibility(value), [value]);
+  useEffect(() => setVisibility(value ? value : null), [value]);
 
   if (isLoadingData) {
     return (

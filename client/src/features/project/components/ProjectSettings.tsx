@@ -28,16 +28,25 @@ import {
   Notifications,
 } from "./ProjectSettingsGeneralDeleteProject";
 import { ProjectSettingsDescription } from "./ProjectSettingsDescription";
+import { EditVisibility } from "../../../project/new/components/Visibility";
+import { Visibilities } from "../../../components/visibility/Visibility";
 
 // ****** SETTINGS COMPONENTS ****** //
 
 interface ProjectSettingsGeneralProps {
   client: unknown;
+  forkedFromProject?: {
+    id: number;
+    [key: string]: unknown;
+  };
   metadata: {
     accessLevel: number;
     defaultBranch: string;
     externalUrl: string;
     id: number;
+    namespace: string;
+    namespaceKind: string;
+    visibility: Visibilities;
     [key: string]: unknown;
   };
   notifications: Notifications;
@@ -61,6 +70,13 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
         gitUrl={props.metadata?.externalUrl}
         projectId={props.metadata?.id}
         projectFullPath={props.projectPathWithNamespace}
+      />
+      <EditVisibility
+        namespace={props.metadata.namespace}
+        namespaceKind={props.metadata.namespaceKind}
+        forkedProjectId={props.forkedFromProject?.id}
+        pathWithNamespace={props.projectPathWithNamespace}
+        projectId={props.metadata?.id}
       />
       <ProjectSettingsGeneralLegacy {...props} />
       <ProjectSettingsGeneralDeleteProject

@@ -28,17 +28,12 @@ import {
   DeleteProjectResponse,
   EditProjectParams,
   GetDatasetKgParams,
-  KgMetadataResponse,
   ProjectActivateIndexingResponse,
   ProjectIndexingStatusResponse,
-  ProjectKgParams,
   UpdateProjectResponse,
 } from "./Project";
 import { ProjectIndexingStatuses } from "./projectEnums";
-import {
-  kgProjectRequestHeaders,
-  projectsKgApi,
-} from "../projects/projectsKgApi";
+import { projectsKgApi } from "../projects/projectsKgApi";
 
 interface errorDataMessage {
   data: {

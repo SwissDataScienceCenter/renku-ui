@@ -46,7 +46,7 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
     isLoading: projectMetadata.isLoading || projectIndexingStatus.isLoading,
     value: projectMetadata.data?.description || "",
     unavailable: !projectIndexingStatus.data?.activated
-      ? "requires processing metadata"
+      ? "requires Knowledge Graph integration"
       : undefined,
   };
 

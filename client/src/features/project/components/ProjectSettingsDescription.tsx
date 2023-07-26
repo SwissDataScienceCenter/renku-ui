@@ -17,9 +17,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Form, FormGroup, FormText, Input, Label } from "reactstrap";
+import { Card, CardBody, FormText, Input, Label } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import { InlineSubmitButton } from "../../../components/buttons/Button";
@@ -28,6 +26,7 @@ import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
 import { useUpdateDescriptionMutation } from "../projectCoreApi";
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { CoreErrorContent } from "../../../utils/definitions";
+import { SettingRequiresKg } from "./ProjectSettingsUtils";
 
 interface ProjectSettingsDescriptionProps {
   gitUrl: string;
@@ -90,23 +89,16 @@ export function ProjectSettingsDescription({
 
   if (projectIndexingStatus.isLoading || projectMetadata.isLoading)
     return (
-      <>
-        <DescriptionLabel />
-        <Loader inline size={14} />
-      </>
+      <DescriptionCard>
+        <Loader className="ms-1" inline size={16} />
+      </DescriptionCard>
     );
 
   if (projectIndexingStatus.data?.activated === false)
     return (
-      <>
-        <DescriptionLabel />
-        <div>
-          <small>
-            <FontAwesomeIcon icon={faExclamationTriangle} /> This requires
-            processing the metadata.
-          </small>
-        </div>
-      </>
+      <DescriptionCard>
+        <SettingRequiresKg />
+      </DescriptionCard>
     );
 
   const inputField = (
@@ -144,24 +136,29 @@ export function ProjectSettingsDescription({
     ) : null;
 
   return (
-    <Form>
-      <FormGroup>
-        <DescriptionLabel />
-        <div className="d-flex">
-          {inputField}
-          {submitButton}
-        </div>
-        <FormText>A short description for the project</FormText>
-        {error}
-      </FormGroup>
-    </Form>
+    <DescriptionCard>
+      <div className="d-flex">
+        {inputField}
+        {submitButton}
+      </div>
+      <FormText>A short description for the project</FormText>
+      {error}
+    </DescriptionCard>
   );
 }
 
-function DescriptionLabel() {
+interface DescriptionCardProps {
+  children: React.ReactNode;
+}
+function DescriptionCard({ children }: DescriptionCardProps) {
   return (
-    <Label className="me-2" for="projectDescription">
-      Project Description
-    </Label>
+    <Card className="mb-4">
+      <CardBody>
+        <Label className="me-2" for="projectDescription">
+          Project Description
+        </Label>
+        {children}
+      </CardBody>
+    </Card>
   );
 }
