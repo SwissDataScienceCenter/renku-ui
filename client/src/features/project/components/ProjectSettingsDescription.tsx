@@ -137,7 +137,7 @@ export function ProjectSettingsDescription({
 
   return (
     <DescriptionCard>
-      <div className="d-flex">
+      <div className="d-flex" data-cy="settings-description">
         {inputField}
         {submitButton}
       </div>
