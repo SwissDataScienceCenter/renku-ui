@@ -68,7 +68,8 @@ function SessionRowCommitInfoDetails({
 
   const content = isLoading ? (
     <span>
-      <Loader size={16} /> Fetching data...
+      <Loader className="me-1" inline size={16} />
+      Fetching data...
     </span>
   ) : isError || !commit ? (
     <span>Data not available.</span>

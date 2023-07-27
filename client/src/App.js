@@ -89,6 +89,7 @@ function CentralContentContainer(props) {
     client: props.client,
     location: props.location,
     model: props.model,
+    notifications,
     params: props.params,
   };
 

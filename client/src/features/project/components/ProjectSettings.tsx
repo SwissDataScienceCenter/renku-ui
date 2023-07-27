@@ -18,15 +18,12 @@
 
 import React from "react";
 import { Card, CardBody, Col, Row } from "reactstrap";
-
-import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";
 import { ACCESS_LEVELS } from "../../../api-client";
+import { NotificationsInterface } from "../../../notifications/notifications.types";
+import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";
+import { ProjectSettingsGeneralDeleteProject } from "./ProjectSettingsGeneralDeleteProject";
 import { ProjectMigrationStatus } from "./migrations/ProjectCoreMigrations";
 import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
-import {
-  ProjectSettingsGeneralDeleteProject,
-  Notifications,
-} from "./ProjectSettingsGeneralDeleteProject";
 
 // ****** SETTINGS COMPONENTS ****** //
 
@@ -39,7 +36,7 @@ interface ProjectSettingsGeneralProps {
     id: number;
     [key: string]: unknown;
   };
-  notifications: Notifications;
+  notifications: NotificationsInterface;
   projectPathWithNamespace: string;
   user: {
     logged: boolean;

@@ -17,21 +17,17 @@
  */
 
 import React from "react";
+import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { RootStateOrAny, useSelector } from "react-redux";
-import { Route, Switch } from "react-router";
+import { Link } from "react-router-dom";
+import { Alert } from "reactstrap";
 import { Url } from "../../../utils/helpers/url";
-import ProjectSessionsList from "./ProjectSessionsList";
-import ShowSession from "./ShowSession";
 
-export default function ProjectSessionsRouter() {
+export default function SessionUnavailable() {
   const pathWithNamespace = useSelector<RootStateOrAny, string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
-  );
-  const namespace = useSelector<RootStateOrAny, string>(
-    (state) => state.stateModel.project.metadata.namespace
-  );
-  const path = useSelector<RootStateOrAny, string>(
-    (state) => state.stateModel.project.metadata.path
   );
 
   const projectUrlData = {
@@ -39,20 +35,35 @@ export default function ProjectSessionsRouter() {
     path: pathWithNamespace,
   };
   const sessionsListUrl = Url.get(Url.pages.project.session, projectUrlData);
-  const sessionShowUrl = Url.get(Url.pages.project.session.show, {
-    namespace,
-    path,
-    server: ":server",
-  });
+  const startSessionUrl = Url.get(
+    Url.pages.project.session.new,
+    projectUrlData
+  );
 
   return (
-    <Switch>
-      <Route exact path={sessionsListUrl}>
-        <ProjectSessionsList projectPathWithNamespace={pathWithNamespace} />
-      </Route>
-      <Route path={sessionShowUrl}>
-        <ShowSession />
-      </Route>
-    </Switch>
+    <div className={cx("p-2", "p-lg-3", "text-nowrap", "container-lg")}>
+      <p className="mt-2">
+        The session you are trying to open is not available.
+      </p>
+      <Alert color="primary">
+        <p className="mb-0">
+          <FontAwesomeIcon size="lg" icon={faQuestionCircle} /> You should
+          either{" "}
+          <Link
+            className={cx("btn", "btn-primary", "btn-sm")}
+            to={startSessionUrl}
+          >
+            start a new session
+          </Link>{" "}
+          or{" "}
+          <Link
+            className={cx("btn", "btn-primary", "btn-sm")}
+            to={sessionsListUrl}
+          >
+            check the running sessions
+          </Link>
+        </p>
+      </Alert>
+    </div>
   );
 }

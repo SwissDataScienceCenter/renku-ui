@@ -20,8 +20,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import {
   DockerImage,
   GetDockerImageParams,
-  GetSessionsParams,
   GetSessionsRawResponse,
+  PatchSessionParams,
   ServerOption,
   ServerOptions,
   ServerOptionsResponse,
@@ -51,14 +51,14 @@ const sessionsApi = createApi({
         },
       }),
       transformResponse: (_value, meta, { image }) => {
-        if (meta?.response?.status != null && meta.response.status == 404) {
+        if (meta?.response?.status == 404) {
           return { image, available: false };
         }
         return { image, available: true };
       },
     }),
-    getSessions: builder.query<Sessions, GetSessionsParams | void>({
-      query: (params) => ({ url: "servers", params: params ?? undefined }),
+    getSessions: builder.query<Sessions, void>({
+      query: () => ({ url: "servers" }),
       transformResponse: ({ servers }: GetSessionsRawResponse) => servers,
       providesTags: (result) =>
         result
@@ -107,6 +107,17 @@ const sessionsApi = createApi({
       },
       keepUnusedDataFor: 0,
     }),
+    patchSession: builder.mutation<null, PatchSessionParams>({
+      query: ({ sessionName, state }) => ({
+        method: "PATCH",
+        url: `servers/${sessionName}`,
+        body: { state },
+      }),
+      transformResponse: () => null,
+      invalidatesTags: (_result, _error, { sessionName }) => [
+        { id: sessionName, type: "Session" },
+      ],
+    }),
   }),
 });
 
@@ -117,4 +128,5 @@ export const {
   useServerOptionsQuery,
   useStopSessionMutation,
   useGetLogsQuery,
+  usePatchSessionMutation,
 } = sessionsApi;

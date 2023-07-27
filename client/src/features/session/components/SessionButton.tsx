@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   faExternalLinkAlt,
   faFileAlt,
@@ -26,7 +26,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Button, DropdownItem } from "reactstrap";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
 import { SshDropdown } from "../../../components/ssh/ssh";
@@ -34,10 +34,16 @@ import { NotebooksHelper } from "../../../notebooks";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
-import { useGetSessionsQuery, useStopSessionMutation } from "../sessions.api";
+import {
+  useGetSessionsQuery,
+  usePatchSessionMutation,
+  useStopSessionMutation,
+} from "../sessions.api";
 import { Session } from "../sessions.types";
 import { getRunningSession } from "../sessions.utils";
 import SimpleSessionButton from "./SimpleSessionButton";
+import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
+import { Loader } from "../../../components/Loader";
 
 interface SessionButtonProps {
   className?: string;
@@ -117,6 +123,8 @@ interface SessionActionsProps {
 }
 
 function SessionActions({ className, session }: SessionActionsProps) {
+  const history = useHistory();
+
   const dispatch = useDispatch();
   const onToggleLogs = useCallback(() => {
     dispatch(toggleSessionLogsModal({ targetServer: session.name }));
@@ -141,6 +149,24 @@ function SessionActions({ className, session }: SessionActionsProps) {
     server: session.name,
   });
 
+  const [isResuming, setIsResuming] = useState(false);
+  const [patchSession, { isSuccess: isResumingSuccess }] =
+    usePatchSessionMutation();
+  const onResumeSession = useCallback(() => {
+    patchSession({ sessionName: session.name, state: "running" });
+    setIsResuming(true);
+  }, [patchSession, session.name]);
+  const { isWaiting: isWaitingForResumedSession } = useWaitForSessionStatus({
+    desiredStatus: ["starting", "running"],
+    sessionName: session.name,
+    skip: !isResuming,
+  });
+  useEffect(() => {
+    if (isResumingSuccess && !isWaitingForResumedSession) {
+      history.push({ pathname: showSessionUrl });
+    }
+  }, [history, isResumingSuccess, isWaitingForResumedSession, showSessionUrl]);
+
   const buttonClassName = cx(
     "btn",
     "btn-rk-green",
@@ -149,8 +175,6 @@ function SessionActions({ className, session }: SessionActionsProps) {
     "start-session-button",
     "session-link-group"
   );
-
-  // TODO: handle hibernating state
 
   const defaultAction =
     status === "starting" || status === "running" ? (
@@ -168,16 +192,23 @@ function SessionActions({ className, session }: SessionActionsProps) {
       <Button
         className={buttonClassName}
         data-cy="resume-session-button"
-        onClick={() => {
-          // eslint-disable-next-line no-console
-          console.log("TODO: implement resume session");
-        }}
+        disabled={isResuming}
+        onClick={onResumeSession}
       >
-        <FontAwesomeIcon
-          className={cx("rk-icon", "rk-icon-md")}
-          icon={faPlay}
-        />{" "}
-        Resume
+        {isResuming ? (
+          <>
+            <Loader className="me-1" inline size={16} />
+            Resuming
+          </>
+        ) : (
+          <>
+            <FontAwesomeIcon
+              className={cx("rk-icon", "rk-icon-md", "me-1")}
+              icon={faPlay}
+            />
+            Resume
+          </>
+        )}
       </Button>
     ) : status === "stopping" || isStopping ? (
       <Button className={buttonClassName} data-cy="stopping-btn" disabled>
