@@ -42,7 +42,7 @@ import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import CommitSelector from "../../../components/commitSelector/CommitSelector";
 import { UncontrolledPopover } from "../../../utils/ts-wrappers";
-import { useGetRepositoryCommitsQuery } from "../../repository/repositoryApi";
+import { useGetRepositoryCommitsQuery } from "../../repository/repository.api";
 import {
   setCommit,
   useStartSessionOptionsSelector,

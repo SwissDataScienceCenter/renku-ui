@@ -17,9 +17,9 @@
  */
 
 import { useMemo } from "react";
-import { useGetConfigQuery } from "../../project/projectCoreApi";
-import { useGetConfigFromRepositoryQuery } from "../../repository/repositoryApi";
 import { ProjectConfig } from "../../project/Project";
+import { useGetConfigQuery } from "../../project/projectCoreApi";
+import { useGetConfigFromRepositoryQuery } from "../../repository/repository.api";
 
 interface UsePatchedProjectConfigArgs {
   commit: string;

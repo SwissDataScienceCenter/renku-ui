@@ -20,7 +20,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import {
   DockerImage,
   GetDockerImageParams,
-  GetSessionsParams,
   GetSessionsRawResponse,
   PatchSessionParams,
   ServerOption,
@@ -60,8 +59,8 @@ const sessionsApi = createApi({
         return { image, available: true };
       },
     }),
-    getSessions: builder.query<Sessions, GetSessionsParams | void>({
-      query: (params) => ({ url: "servers", params: params ?? undefined }),
+    getSessions: builder.query<Sessions, void>({
+      query: () => ({ url: "servers" }),
       transformResponse: ({ servers }: GetSessionsRawResponse) => servers,
       providesTags: (result) =>
         result

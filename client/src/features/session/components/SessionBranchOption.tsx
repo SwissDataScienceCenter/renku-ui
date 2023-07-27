@@ -23,7 +23,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { faSyncAlt, faCogs } from "@fortawesome/free-solid-svg-icons";
+import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
@@ -41,12 +41,12 @@ import { ErrorAlert, InfoAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
 import { Url } from "../../../utils/helpers/url";
-import { useGetAllRepositoryBranchesQuery } from "../../repository/repositoryApi";
+import { UncontrolledPopover } from "../../../utils/ts-wrappers";
+import { useGetAllRepositoryBranchesQuery } from "../../repository/repository.api";
 import {
   setBranch,
   useStartSessionOptionsSelector,
 } from "../startSessionOptionsSlice";
-import { UncontrolledPopover } from "../../../utils/ts-wrappers";
 
 export default function SessionBranchOption() {
   const defaultBranch = useSelector<RootStateOrAny, string>(

@@ -219,4 +219,5 @@ export const {
   useGetAllRepositoryBranchesQuery,
   useGetConfigFromRepositoryQuery,
   useGetRepositoryCommitQuery,
+  useGetRepositoryCommitsQuery,
 } = repositoryApi;
