@@ -66,17 +66,17 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
         isMaintainer={isMaintainer}
         projectId={props.metadata?.id}
       />
-      <ProjectSettingsDescription
-        gitUrl={props.metadata?.externalUrl}
-        projectId={props.metadata?.id}
-        projectFullPath={props.projectPathWithNamespace}
-      />
       <EditVisibility
         namespace={props.metadata.namespace}
         namespaceKind={props.metadata.namespaceKind}
         forkedProjectId={props.forkedFromProject?.id}
         pathWithNamespace={props.projectPathWithNamespace}
         projectId={props.metadata?.id}
+      />
+      <ProjectSettingsDescription
+        gitUrl={props.metadata?.externalUrl}
+        projectId={props.metadata?.id}
+        projectFullPath={props.projectPathWithNamespace}
       />
       <ProjectSettingsGeneralLegacy {...props} />
       <ProjectSettingsGeneralDeleteProject
