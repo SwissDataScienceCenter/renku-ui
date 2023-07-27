@@ -23,7 +23,7 @@ import { SessionStatusState } from "./sessions.types";
 const DEFAULT_POLLING_INTERVAL = 1_000;
 
 interface UseWaitForSessionStatusArgs {
-  desiredStatus: SessionStatusState;
+  desiredStatus: SessionStatusState | SessionStatusState[];
   pollingInterval?: number;
   sessionName: string;
   skip?: boolean;
@@ -52,9 +52,12 @@ export default function useWaitForSessionStatus({
     if (skip) {
       return;
     }
+    const desiredStatuses =
+      typeof desiredStatus === "string" ? [desiredStatus] : desiredStatus;
     const isWaiting =
-      result.currentData?.status.state !== desiredStatus ||
-      (result.currentData == null && desiredStatus === "stopping");
+      (result.currentData != null &&
+        !desiredStatuses.includes(result.currentData.status.state)) ||
+      (result.currentData == null && !desiredStatuses.includes("stopping"));
     setIsWaiting(isWaiting);
   }, [desiredStatus, result.currentData, skip]);
 

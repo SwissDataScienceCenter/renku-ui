@@ -155,10 +155,9 @@ function SessionActions({ className, session }: SessionActionsProps) {
   const onResumeSession = useCallback(() => {
     patchSession({ sessionName: session.name, state: "running" });
     setIsResuming(true);
-    // history.push({ pathname: showSessionUrl });
   }, [patchSession, session.name]);
   const { isWaiting: isWaitingForResumedSession } = useWaitForSessionStatus({
-    desiredStatus: "starting",
+    desiredStatus: ["starting", "running"],
     sessionName: session.name,
     skip: !isResuming,
   });
@@ -176,8 +175,6 @@ function SessionActions({ className, session }: SessionActionsProps) {
     "start-session-button",
     "session-link-group"
   );
-
-  // TODO: handle hibernating state
 
   const defaultAction =
     status === "starting" || status === "running" ? (
