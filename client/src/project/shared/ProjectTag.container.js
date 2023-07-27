@@ -129,7 +129,7 @@ class ProjectTags extends Component {
     );
     return (
       <Form onSubmit={this.onSubmit}>
-        <FormGroup>
+        <FormGroup cssModule={{ "mb-3": "mb-0" }}>
           <Label for="projectTags">Project Tags</Label>
           <div className="d-flex">
             {inputField}

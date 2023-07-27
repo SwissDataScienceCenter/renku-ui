@@ -17,14 +17,14 @@
  */
 import * as React from "react";
 import { Story } from "@storybook/react";
-import VisibilityInput, {
+import VisibilitiesInput, {
   Visibilities,
-  VisibilityInputProps,
+  VisibilitiesInputProps,
 } from "./Visibility";
 
 export default {
   title: "components/Visibility",
-  component: VisibilityInput,
+  component: VisibilitiesInput,
   argTypes: {
     namespaceVisibility: {
       options: Visibilities,
@@ -57,8 +57,8 @@ export default {
   },
 };
 
-const Template: Story<VisibilityInputProps> = (args) => (
-  <VisibilityInput {...args} />
+const Template: Story<VisibilitiesInputProps> = (args) => (
+  <VisibilitiesInput {...args} />
 );
 
 export const Default = Template.bind({});

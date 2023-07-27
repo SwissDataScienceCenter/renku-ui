@@ -18,10 +18,12 @@
 
 import React from "react";
 
-import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
-import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
+import {
+  useGetProjectIndexingStatusQuery,
+  useProjectMetadataQuery,
+} from "../projectKgApi";
 import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
 
 type ProjectEntityHeaderProps = EntityHeaderProps & {
@@ -39,7 +41,7 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
     }
   );
 
-  useProjectMetadataQuery(
+  const { data: projectInKgData } = useProjectMetadataQuery(
     { projectPath: fullPath },
     { skip: !fullPath || !projectIndexingStatus.data?.activated }
   );
@@ -55,5 +57,11 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
     />
   );
 
-  return <EntityHeader {...props} statusButton={statusButton} />;
+  return (
+    <EntityHeader
+      {...props}
+      statusButton={statusButton}
+      visibility={projectInKgData?.visibility || props.visibility}
+    />
+  );
 }
