@@ -16,210 +16,22 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  faExclamationTriangle,
-  faInfoCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cx from "classnames";
+import React, { useEffect } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { Badge, Button, Collapse, FormText, Input } from "reactstrap";
-import { ExternalLink } from "../../../components/ExternalLinks";
-import { Loader } from "../../../components/Loader";
-import { Docs } from "../../../utils/constants/Docs";
-import { PipelineJob } from "../../pipelines/pipelines.types";
-import pipelinesApi from "../../pipelines/pipelines.api";
-import { useCoreSupport } from "../../project/useProjectCoreSupport";
-import registryApi from "../../registry/registry.api";
-import usePatchedProjectConfig from "../hooks/usePatchedProjectConfig.hook";
-import { useGetDockerImageQuery } from "../sessions.api";
+import pipelinesApi from "../../../pipelines/pipelines.api";
+import { PipelineJob } from "../../../pipelines/pipelines.types";
+import registryApi from "../../../registry/registry.api";
 import {
   SESSION_CI_IMAGE_BUILD_JOB,
   SESSION_CI_PIPELINE_POLLING_INTERVAL_MS,
-} from "../startSessionOptions.constants";
-import { DockerImageStatus } from "../startSessionOptions.types";
+} from "../../startSessionOptions.constants";
 import {
   setDockerImageBuildStatus,
   setDockerImageStatus,
-  setPinnedDockerImage,
   useStartSessionOptionsSelector,
-} from "../startSessionOptionsSlice";
+} from "../../startSessionOptionsSlice";
 
-export default function SessionDockerImage() {
-  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
-    (state) => state.stateModel.project.metadata.externalUrl
-  );
-  const defaultBranch = useSelector<RootStateOrAny, string>(
-    (state) => state.stateModel.project.metadata.defaultBranch
-  );
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
-    (state) => state.stateModel.project.metadata.id ?? null
-  );
-  const { coreSupport } = useCoreSupport({
-    gitUrl: projectRepositoryUrl ?? undefined,
-    branch: defaultBranch ?? undefined,
-  });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
-
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
-
-  const { data: projectConfig, isFetching: projectConfigIsFetching } =
-    usePatchedProjectConfig({
-      commit,
-      gitLabProjectId: gitLabProjectId ?? 0,
-      projectRepositoryUrl,
-      versionUrl,
-      skip: !coreSupportComputed,
-    });
-
-  useEffect(() => {
-    console.log({ commit });
-  }, [commit]);
-
-  useEffect(() => {
-    console.log({ coreSupport });
-  }, [coreSupport]);
-  useEffect(() => {
-    console.log({ projectConfig });
-  }, [projectConfig]);
-
-  if (!coreSupportComputed || projectConfigIsFetching) {
-    return (
-      <div className="field-group">
-        <div className="form-label">
-          Loading Docker image status... <Loader inline size={16} />
-        </div>
-      </div>
-    );
-  }
-
-  if (projectConfig?.config.sessions?.dockerImage) {
-    return (
-      <SessionPinnedDockerImage
-        dockerImage={projectConfig?.config.sessions?.dockerImage}
-      />
-    );
-  }
-
-  return <SessionProjectDockerImage />;
-}
-
-interface SessionPinnedDockerImageProps {
-  dockerImage: string;
-}
-
-function SessionPinnedDockerImage({
-  dockerImage,
-}: SessionPinnedDockerImageProps) {
-  const status = useStartSessionOptionsSelector(
-    ({ dockerImageStatus }) => dockerImageStatus
-  );
-
-  const { data: dockerImageStatus, isLoading } = useGetDockerImageQuery(
-    {
-      image: dockerImage,
-    },
-    {
-      pollingInterval:
-        status === "not-available"
-          ? SESSION_CI_PIPELINE_POLLING_INTERVAL_MS
-          : 0,
-    }
-  );
-
-  const [show, setShow] = useState<boolean>(false);
-  const toggleShow = useCallback(() => setShow((show) => !show), []);
-
-  const dispatch = useDispatch();
-
-  // Set the pinned image option
-  useEffect(() => {
-    dispatch(setPinnedDockerImage(dockerImage));
-  }, [dispatch, dockerImage]);
-
-  // Set the image status
-  useEffect(() => {
-    const newStatus: DockerImageStatus = isLoading
-      ? "unknown"
-      : dockerImageStatus == null
-      ? "not-available"
-      : dockerImageStatus.available
-      ? "available"
-      : "not-available";
-    if (newStatus !== status) {
-      dispatch(setDockerImageStatus(newStatus));
-    }
-  }, [dispatch, dockerImageStatus, isLoading, status]);
-
-  if (status === "unknown") {
-    return (
-      <div className="field-group">
-        <div className="form-label">
-          Loading Docker image status... <Loader inline size={16} />
-        </div>
-      </div>
-    );
-  }
-
-  const moreInfoButton = (
-    <Button className={cx("ms-3", "p-0")} color="link" onClick={toggleShow}>
-      more info
-    </Button>
-  );
-  const pinnedImagesDoc = (
-    <ExternalLink
-      role="text"
-      iconSup={true}
-      iconAfter={true}
-      url={Docs.rtdReferencePage("templates.html#pin-a-docker-image")}
-      title="pinned image"
-    />
-  );
-  const badge =
-    status === "not-available" ? (
-      <Badge color="danger">pinned not available</Badge>
-    ) : (
-      <Badge color="success">pinned available</Badge>
-    );
-  const moreInfo =
-    status === "not-available" ? (
-      <>
-        <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" />{" "}
-        Pinned Docker image not found. Since this project specifies a{" "}
-        {pinnedImagesDoc}, it is unlikely to work with a base image.
-      </>
-    ) : (
-      <>
-        <Input
-          type="text"
-          disabled={true}
-          id="customImage"
-          value={dockerImage}
-        ></Input>
-        <FormText>
-          <FontAwesomeIcon icon={faInfoCircle} /> This project specifies a{" "}
-          {pinnedImagesDoc}. A pinned image has advantages for projects with
-          many forks, but it will not reflect changes to the{" "}
-          <code>Dockerfile</code> or any project dependency files.
-        </FormText>
-      </>
-    );
-
-  return (
-    <div className="field-group">
-      <div className="form-label">
-        Docker image: {badge}
-        {moreInfoButton}
-        <Collapse isOpen={show}>
-          <div className="mt-3">{moreInfo}</div>
-        </Collapse>
-      </div>
-    </div>
-  );
-}
-
-function SessionProjectDockerImage() {
+export default function SessionProjectDockerImage() {
   const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );

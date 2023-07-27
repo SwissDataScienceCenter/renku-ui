@@ -37,7 +37,7 @@ import { Url } from "../../../utils/helpers/url";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import SessionBranchOption from "./SessionBranchOption";
 import SessionCommitOption from "./SessionCommitOption";
-import SessionDockerImage from "./SessionDockerImage";
+import SessionDockerImage from "./options/SessionDockerImage";
 import { StartNotebookServerOptions } from "../../../notebooks/components/StartNotebookServerOptions";
 import { useStartSessionOptionsSelector } from "../startSessionOptionsSlice";
 import { useStartSessionMutation } from "../sessions.api";
@@ -72,7 +72,6 @@ export default function StartNewSession() {
           <Form className="form-rk-green">
             <SessionSaveWarning />
             <StartNewSessionOptions />
-
             <StartSessionButton />
           </Form>
         </Col>

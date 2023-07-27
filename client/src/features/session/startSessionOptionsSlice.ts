@@ -43,6 +43,8 @@ export const startSessionOptionsSlice = createSlice({
   reducers: {
     setBranch: (state, action: PayloadAction<string>) => {
       state.branch = action.payload;
+      // Also reset the commit when a branch is set
+      state.commit = "";
       // Also reset the docker image status when a branch is set
       state.dockerImageStatus = "unknown";
     },
