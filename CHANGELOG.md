@@ -1,5 +1,20 @@
 # Changes
 
+## [3.10.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.9.0...3.10.0) (2023-07-24)
+
+### Features
+
+- implement a global error boundary ([#2604](https://github.com/SwissDataScienceCenter/renku-ui/issues/2604), [#2498](https://github.com/SwissDataScienceCenter/renku-ui/issues/2498))
+- support additional common R file extensions ([#2637](https://github.com/SwissDataScienceCenter/renku-ui/issues/2637), [#2639](https://github.com/SwissDataScienceCenter/renku-ui/issues/2639))
+
+### Bug Fixes
+
+- prevent endless loader on migration errors ([#2650](https://github.com/SwissDataScienceCenter/renku-ui/issues/2650))
+- do not open folder by default in dataset view when containing too many elements ([#1930](https://github.com/SwissDataScienceCenter/renku-ui/issues/1930), [#2628](https://github.com/SwissDataScienceCenter/renku-ui/issues/2628))
+- properly render rstudio components ([#2660](https://github.com/SwissDataScienceCenter/renku-ui/issues/2660), [#2652](https://github.com/SwissDataScienceCenter/renku-ui/issues/2652))
+- validate keywords input when editing datasets ([#2356](https://github.com/SwissDataScienceCenter/renku-ui/issues/2356), [#2628](https://github.com/SwissDataScienceCenter/renku-ui/issues/2628))
+- remove info from project page about datasets in kg ([#2622](https://github.com/SwissDataScienceCenter/renku-ui/issues/2622), [#2628](https://github.com/SwissDataScienceCenter/renku-ui/issues/2628))
+
 ## [3.9.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.8.1...3.9.0) (2023-07-07)
 
 ### Features

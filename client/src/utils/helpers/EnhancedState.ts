@@ -46,6 +46,7 @@ import { startSessionOptionsSlice } from "../../features/session/startSessionOpt
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
+import projectGitlabApi from "../../features/project/projectGitlabApi";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -62,6 +63,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
+    [projectGitlabApi.reducerPath]: projectGitlabApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
     [projectsKgApi.reducerPath]: projectsKgApi.reducer,
@@ -93,7 +95,8 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsApi.middleware)
         .concat(versionsApi.middleware)
-        .concat(workflowsApi.middleware),
+        .concat(workflowsApi.middleware)
+        .concat(projectGitlabApi.middleware),
     enhancers,
   });
   return store;
