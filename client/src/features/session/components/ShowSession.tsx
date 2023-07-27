@@ -20,6 +20,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -41,7 +42,7 @@ import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
 import AppContext from "../../../utils/context/appContext";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { Url } from "../../../utils/helpers/url";
-import { useGetSessionQuery } from "../sessions.api";
+import { useGetSessionsQuery } from "../sessions.api";
 import AboutSessionModal from "./AboutSessionModal";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import PullSessionModal from "./PullSessionModal";
@@ -103,7 +104,13 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     { redirectFromStartServer?: boolean } | undefined
   >();
 
-  const { data: thisSession, isLoading } = useGetSessionQuery({ sessionName });
+  const { data: sessions, isLoading } = useGetSessionsQuery();
+  const thisSession = useMemo(() => {
+    if (sessions == null) {
+      return undefined;
+    }
+    return Object.values(sessions).find(({ name }) => name === sessionName);
+  }, [sessionName, sessions]);
 
   const [isTheSessionReady, setIsTheSessionReady] = useState(false);
 

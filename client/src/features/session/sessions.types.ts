@@ -25,11 +25,6 @@ export interface GetDockerImageParams {
   image: string;
 }
 
-export interface GetSessionsParams {
-  namespace: string;
-  project: string;
-}
-
 export interface ServerOption<T extends number | string = number | string> {
   allow_any_value?: boolean;
   default: T;

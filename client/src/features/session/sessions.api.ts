@@ -20,13 +20,11 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import {
   DockerImage,
   GetDockerImageParams,
-  GetSessionsParams,
   GetSessionsRawResponse,
   PatchSessionParams,
   ServerOption,
   ServerOptions,
   ServerOptionsResponse,
-  Session,
   Sessions,
 } from "./sessions.types";
 
@@ -59,23 +57,8 @@ const sessionsApi = createApi({
         return { image, available: true };
       },
     }),
-    getSession: builder.query<Session | null, { sessionName: string }>({
-      query: ({ sessionName }) => ({
-        url: `servers/${sessionName}`,
-        validateStatus: (response) =>
-          response.status < 400 || response.status == 404,
-      }),
-      transformResponse: (session: Session, meta) => {
-        if (meta?.response?.status == 404) {
-          return null;
-        }
-        return session;
-      },
-      providesTags: (result) =>
-        result ? [{ id: result.name, type: "Session" }] : [],
-    }),
-    getSessions: builder.query<Sessions, GetSessionsParams | void>({
-      query: (params) => ({ url: "servers", params: params ?? undefined }),
+    getSessions: builder.query<Sessions, void>({
+      query: () => ({ url: "servers" }),
       transformResponse: ({ servers }: GetSessionsRawResponse) => servers,
       providesTags: (result) =>
         result
@@ -141,7 +124,6 @@ const sessionsApi = createApi({
 export default sessionsApi;
 export const {
   useGetDockerImageQuery,
-  useGetSessionQuery,
   useGetSessionsQuery,
   useServerOptionsQuery,
   useStopSessionMutation,

@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from "react";
-import { useGetSessionQuery } from "./sessions.api";
+import { useEffect, useMemo, useState } from "react";
+import { useGetSessionsQuery } from "./sessions.api";
 import { SessionStatusState } from "./sessions.types";
 
-const DEFAULT_POLLING_INTERVAL = 1_000;
+const DEFAULT_POLLING_INTERVAL_MS = 5_000;
 
 interface UseWaitForSessionStatusArgs {
   desiredStatus: SessionStatusState | SessionStatusState[];
@@ -31,16 +31,22 @@ interface UseWaitForSessionStatusArgs {
 
 export default function useWaitForSessionStatus({
   desiredStatus,
-  pollingInterval = DEFAULT_POLLING_INTERVAL,
+  pollingInterval = DEFAULT_POLLING_INTERVAL_MS,
   sessionName,
   skip,
 }: UseWaitForSessionStatusArgs) {
   const [isWaiting, setIsWaiting] = useState(false);
 
-  const result = useGetSessionQuery(
-    { sessionName },
-    { pollingInterval, skip: skip || !isWaiting }
-  );
+  const result = useGetSessionsQuery(undefined, {
+    pollingInterval,
+    skip: skip || !isWaiting,
+  });
+  const session = useMemo(() => {
+    if (result.data == null) {
+      return undefined;
+    }
+    return Object.values(result.data).find(({ name }) => name === sessionName);
+  }, [result.data, sessionName]);
 
   useEffect(() => {
     if (skip) {
@@ -55,11 +61,10 @@ export default function useWaitForSessionStatus({
     const desiredStatuses =
       typeof desiredStatus === "string" ? [desiredStatus] : desiredStatus;
     const isWaiting =
-      (result.currentData != null &&
-        !desiredStatuses.includes(result.currentData.status.state)) ||
-      (result.currentData == null && !desiredStatuses.includes("stopping"));
+      (session != null && !desiredStatuses.includes(session.status.state)) ||
+      (session == null && !desiredStatuses.includes("stopping"));
     setIsWaiting(isWaiting);
-  }, [desiredStatus, result.currentData, skip]);
+  }, [desiredStatus, session, skip]);
 
-  return { isWaiting, getSessionQuery: result };
+  return { isWaiting, session };
 }
