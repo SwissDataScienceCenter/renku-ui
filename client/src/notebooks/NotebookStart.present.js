@@ -63,8 +63,10 @@ import { JupyterIcon } from "../components/Icon";
 import { Loader } from "../components/Loader";
 import { ThrottledTooltip } from "../components/Tooltip";
 import { ButtonWithMenu } from "../components/buttons/Button";
+import { CommandCopy } from "../components/commandCopy/CommandCopy";
 import CommitSelector from "../components/commitSelector/CommitSelector";
 import { ShareLinkSessionModal } from "../components/shareLinkSession/ShareLinkSession";
+import { SessionStatusStateEnum } from "../features/session/sessions.types";
 import { Docs } from "../utils/constants/Docs";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
@@ -75,16 +77,15 @@ import {
 import EnvironmentVariables from "./components/EnviromentVariables";
 import LaunchErrorAlert from "./components/LaunchErrorAlert";
 import {
-  StartNotebookServerOptions,
   ServerOptionBoolean,
   ServerOptionEnum,
+  StartNotebookServerOptions,
 } from "./components/StartNotebookServerOptions";
 import {
   StartNotebookAutostartLoader,
   StartNotebookLoader,
 } from "./components/StartSessionLoader";
 import { NotebooksHelper } from "./index";
-import { CommandCopy } from "../components/commandCopy/CommandCopy";
 
 function ProjectSessionLockAlert({ lockStatus }) {
   if (lockStatus == null) return null;
@@ -336,7 +337,7 @@ function AutosavesInfoAlert({
   if (deleteOngoing) {
     return (
       <InfoAlert dismissible={false} timeout={0}>
-        Deleting the autosave... <Loader size={14} inline />
+        Deleting the autosave... <Loader inline size={16} />
       </InfoAlert>
     );
   }
@@ -433,7 +434,7 @@ class StartNotebookBranches extends Component {
     if (this.props.fetchingBranches || this.props.delays.branch) {
       content = (
         <Label>
-          Updating branches... <Loader size={14} inline />
+          Updating branches... <Loader inline size={16} />
         </Label>
       );
     } else if (branches.length === 0) {
@@ -632,13 +633,13 @@ class StartNotebookPipelines extends Component {
     if (ciStatus.ongoing !== false)
       return (
         <Label>
-          Checking Docker image status... <Loader size={14} inline />
+          Checking Docker image status... <Loader inline size={16} />
         </Label>
       );
     if (this.state.justTriggered)
       return (
         <Label>
-          Triggering Docker image build... <Loader size={14} inline />
+          Triggering Docker image build... <Loader inline size={16} />
         </Label>
       );
 
@@ -1004,7 +1005,7 @@ class StartNotebookCommits extends Component {
       return (
         <FormGroup>
           <Label>
-            Updating commits... <Loader size={14} inline />
+            Updating commits... <Loader inline size={16} />
           </Label>
         </FormGroup>
       );
@@ -1012,7 +1013,7 @@ class StartNotebookCommits extends Component {
       return (
         <FormGroup>
           <Label>
-            Verifying commit autosaves... <Loader size={14} inline />
+            Verifying commit autosaves... <Loader inline size={16} />
           </Label>
         </FormGroup>
       );
@@ -1153,7 +1154,7 @@ function StartNotebookOptions(props) {
   if (justStarted)
     return (
       <Label>
-        Starting a new session... <Loader size={14} inline />
+        Starting a new session... <Loader inline size={16} />
       </Label>
     );
 
@@ -1162,7 +1163,7 @@ function StartNotebookOptions(props) {
   if (!fetched) {
     return (
       <Label>
-        Verifying available sessions... <Loader size={14} inline />
+        Verifying available sessions... <Loader inline size={16} />
       </Label>
     );
   }
@@ -1170,7 +1171,7 @@ function StartNotebookOptions(props) {
   if (Object.keys(options.global).length === 0 || options.fetching)
     return (
       <Label>
-        Loading session parameters... <Loader size={14} inline />
+        Loading session parameters... <Loader inline size={16} />
       </Label>
     );
 
@@ -1232,7 +1233,7 @@ class StartNotebookOptionsRunning extends Component {
     const { notebook } = this.props;
 
     const status = notebook.status?.state;
-    if (status === "running") {
+    if (status === SessionStatusStateEnum.running) {
       const annotations = NotebooksHelper.cleanAnnotations(
         notebook.annotations
       );
@@ -1260,7 +1261,10 @@ class StartNotebookOptionsRunning extends Component {
           </div>
         </FormGroup>
       );
-    } else if (status === "starting" || status === "stopping") {
+    } else if (
+      status === SessionStatusStateEnum.starting ||
+      status === SessionStatusStateEnum.stopping
+    ) {
       return (
         <FormGroup>
           <Label>
@@ -1529,7 +1533,7 @@ const CheckNotebookIcon = ({
     aligner = null;
   if (notebook) {
     const status = notebook.status?.state;
-    if (status === "running") {
+    if (status === SessionStatusStateEnum.running) {
       const annotations = NotebooksHelper.cleanAnnotations(
         notebook.annotations
       );
@@ -1542,9 +1546,12 @@ const CheckNotebookIcon = ({
       tooltip = "Connect to JupyterLab";
       icon = <JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />;
       link = <Link to={{ pathname: sessionUrl, state }}>{icon}</Link>;
-    } else if (status === "starting" || status === "stopping") {
+    } else if (
+      status === SessionStatusStateEnum.starting ||
+      status === SessionStatusStateEnum.stopping
+    ) {
       tooltip =
-        status === "stopping"
+        status === SessionStatusStateEnum.stopping
           ? "The session is stopping, please wait..."
           : "The session is starting, please wait...";
       aligner = "pb-1";
@@ -1592,9 +1599,9 @@ const CheckNotebookIcon = ({
 
 export {
   CheckNotebookIcon,
-  StartNotebookServer,
-  mergeEnumOptions,
   ServerOptionBoolean,
   ServerOptionEnum,
   ServerOptionRange,
+  StartNotebookServer,
+  mergeEnumOptions,
 };

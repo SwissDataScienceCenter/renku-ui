@@ -54,7 +54,7 @@ const sessionsApi = createApi({
         },
       }),
       transformResponse: (_value, meta, { image }) => {
-        if (meta?.response?.status != null && meta.response.status == 404) {
+        if (meta?.response?.status == 404) {
           return { image, available: false };
         }
         return { image, available: true };
@@ -145,13 +145,14 @@ const sessionsApi = createApi({
       },
       invalidatesTags: ["Session"],
     }),
-    patchSession: builder.mutation<Session, PatchSessionParams>({
+    patchSession: builder.mutation<null, PatchSessionParams>({
       query: ({ sessionName, state }) => ({
         method: "PATCH",
         url: `servers/${sessionName}`,
         body: { state },
       }),
-      invalidatesTags: (_resut, _error, { sessionName }) => [
+      transformResponse: () => null,
+      invalidatesTags: (_result, _error, { sessionName }) => [
         { id: sessionName, type: "Session" },
       ],
     }),

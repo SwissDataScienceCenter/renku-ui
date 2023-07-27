@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -23,6 +23,8 @@ import React, {
   useCallback,
   useState,
 } from "react";
+import cx from "classnames";
+import { RootStateOrAny, useSelector } from "react-redux";
 import {
   Button,
   Col,
@@ -36,22 +38,21 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import cx from "classnames";
+import { ACCESS_LEVELS } from "../../../api-client";
+import { Loader } from "../../../components/Loader";
+import { User } from "../../../model/RenkuModels";
 import {
   CenteredLoader,
   InformationalBody,
   commitsPhrasing,
 } from "../../../notebooks/components/Sidecar";
-import { RootStateOrAny, useSelector } from "react-redux";
-import { User } from "../../../model/RenkuModels";
-import { ACCESS_LEVELS } from "../../../api-client";
 import {
   GitStatusResult,
   useGitStatusQuery,
   useHealthQuery,
   useRenkuSaveMutation,
 } from "../sidecarApi";
-import { Loader } from "../../../components/Loader";
+import styles from "./SessionModals.module.scss";
 
 interface SaveSessionModalProps {
   isOpen: boolean;
@@ -67,7 +68,7 @@ export default function SaveSessionModal({
   toggleModal,
 }: SaveSessionModalProps) {
   return (
-    <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
+    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Save Session</ModalHeader>
       <ModalBody>
         {isSessionReady ? (
@@ -256,10 +257,6 @@ function SaveSessionFailedBody({ toggleModal }: SaveSessionFailedBodyProps) {
   );
 }
 
-// interface SaveSessionBodyProps extends SaveSessionStatusBodyProps {
-//   gitStatus: GitStatusResult;
-// }
-
 interface SaveSessionNoFFBodyProps {
   gitStatus: GitStatusResult;
   toggleModal: () => void;
@@ -299,7 +296,7 @@ function SaveSessionBody({
   );
   const saveText = saving ? (
     <span>
-      <Loader inline size={16} />
+      <Loader className="me-1" inline size={16} />
       Saving Session
     </span>
   ) : (
@@ -321,7 +318,7 @@ function SaveSessionBody({
         />
         {saving && (
           <FormText color="primary">
-            <Loader inline margin={2} size={16} />
+            <Loader className="me-1" inline size={16} />
             Saving Session
             <br />
           </FormText>

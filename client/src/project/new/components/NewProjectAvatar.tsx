@@ -61,7 +61,7 @@ function NewProjectAvatar({ onAvatarChange }: NewProjectAvatarProps) {
 
   // format: image/png, image/jpeg, image/gif, image/tiff
   return (
-    <div className="mb-3">
+    <div className="mb-4">
       <ImageInput
         name="project-avatar"
         label="Project Avatar"

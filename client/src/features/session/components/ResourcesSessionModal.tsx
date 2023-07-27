@@ -33,6 +33,7 @@ import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
 import SessionCheatSheetGenerated from "../../../notebooks/components/SessionCheatSheet";
 import { Docs } from "../../../utils/constants/Docs";
 import useGetSessionLogs from "../../../utils/customHooks/UseGetSessionLogs";
+import styles from "./SessionModals.module.scss";
 
 interface ResourcesSessionModalProps {
   activeTab: string;
@@ -51,7 +52,11 @@ export default function ResourcesSessionModal({
 }: ResourcesSessionModalProps) {
   return (
     <Modal
-      className={cx("resources-modal", "modal-fullscreen-lg-down", "modal-xl")}
+      className={cx(
+        styles.resourcesModal,
+        "modal-fullscreen-lg-down",
+        "modal-xl"
+      )}
       isOpen={isOpen}
       scrollable
       toggle={toggleModal}
@@ -72,7 +77,10 @@ export default function ResourcesSessionModal({
           )}
         >
           <div className="pe-2">Resources</div>
-          <Nav className={cx("nav-pills-underline", "modal-header-nav")} pills>
+          <Nav
+            className={cx(styles.resourcesHeaderNav, "nav-pills-underline")}
+            pills
+          >
             <NavItem
               data-cy="cheat-sheet-tab"
               key={SESSION_TABS.commands}
@@ -136,7 +144,7 @@ function Resources({ activeTab, sessionName }: ResourcesProps) {
           tabId={SESSION_TABS.commands}
         >
           <div
-            className={cx("session-cheat-sheet", "bg-white", "border-radius-8")}
+            className={cx(styles.resourcesCard, "bg-white", "border-radius-8")}
           >
             <SessionCheatSheetGenerated />
           </div>
@@ -164,7 +172,7 @@ function Resources({ activeTab, sessionName }: ResourcesProps) {
           tabId={SESSION_TABS.logs}
         >
           <div
-            className={cx("session-cheat-sheet", "bg-white", "border-radius-8")}
+            className={cx(styles.resourcesCard, "bg-white", "border-radius-8")}
           >
             {logs && (
               <SessionLogs

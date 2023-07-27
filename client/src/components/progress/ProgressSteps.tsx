@@ -103,7 +103,7 @@ function ProgressStep({ step }: progressStepProps) {
     case StatusStepProgressBar.EXECUTING:
       content = (
         <>
-          <Loader size={14} inline />
+          <Loader inline size={16} />
           {step.step}
         </>
       );
@@ -119,7 +119,7 @@ function ProgressStep({ step }: progressStepProps) {
     case StatusStepProgressBar.WAITING:
       content = (
         <>
-          <Loader size={14} inline />
+          <Loader inline size={16} />
           <span className="text-rk-text-light">{step.step}</span>
         </>
       );

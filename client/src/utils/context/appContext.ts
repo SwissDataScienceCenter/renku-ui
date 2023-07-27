@@ -22,6 +22,7 @@ type IAppContext = {
   client: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   location: unknown;
   model: unknown;
+  notifications: unknown;
   params: unknown;
 };
 
@@ -29,6 +30,7 @@ const AppContext = React.createContext<IAppContext>({
   client: undefined,
   location: undefined,
   model: undefined,
+  notifications: undefined,
   params: undefined,
 });
 

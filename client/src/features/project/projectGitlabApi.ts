@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,18 +16,24 @@
  * limitations under the License.
  */
 
-Cypress.Commands.add("gui_open_logs", () => {
-  cy.get_cy("session-container")
-    .find(".sessionsButton")
-    .first()
-    .find("[data-cy='more-menu']")
-    .click();
-  cy.get_cy("session-log-button").filter(":visible").click();
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+import { GitlabProjectResponse } from "./Project";
+
+const projectGitlabApi = createApi({
+  reducerPath: "projectGitlab",
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
+  keepUnusedDataFor: 10,
+  endpoints: (builder) => ({
+    getProjectById: builder.query<GitlabProjectResponse, number>({
+      query: (projectId: number) => {
+        return {
+          url: `${projectId}`,
+        };
+      },
+    }),
+  }),
 });
 
-Cypress.Commands.add("gui_open_session", () => {
-  cy.get_cy("session-container")
-    .find("[data-cy='open-session']")
-    .first()
-    .click();
-});
+export default projectGitlabApi;
+export const { useGetProjectByIdQuery } = projectGitlabApi;

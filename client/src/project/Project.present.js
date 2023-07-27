@@ -26,6 +26,7 @@
 import React, { Component, Fragment, useEffect } from "react";
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { Link, Route, Switch } from "react-router-dom";
 import {
   Alert,
@@ -62,11 +63,7 @@ import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import ProjectSessionsRouter from "../features/session/components/ProjectSessionsRouter";
 import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
-import {
-  NotebooksCoordinator,
-  ShowSession,
-  StartNotebookServer,
-} from "../notebooks";
+import { NotebooksCoordinator, StartNotebookServer } from "../notebooks";
 import { Docs } from "../utils/constants/Docs";
 import { Url } from "../utils/helpers/url";
 import { WorkflowsList } from "../workflows";
@@ -832,9 +829,6 @@ const ProjectSessions = (props) => {
   return [
     <Col key="content" xs={12}>
       <Switch>
-        <Route path={props.notebookServersUrl}>
-          <ProjectSessionsRouter />
-        </Route>
         {/* <Route
           path={props.launchNotebookUrl}
           render={() => (
@@ -845,15 +839,10 @@ const ProjectSessions = (props) => {
               defaultBackButton={backButton}
             />
           )}
-        />
-        <Route
-          path={props.sessionShowUrl}
-          render={(p) => (
-            <Fragment>
-              <ProjectShowSession {...props} match={p.match} />
-            </Fragment>
-          )}
         /> */}
+        <Route path={props.notebookServersUrl}>
+          <ProjectSessionsRouter />
+        </Route>
       </Switch>
     </Col>,
   ];
@@ -938,55 +927,6 @@ function notebookWarning(
     );
   }
   return null;
-}
-
-class ProjectShowSession extends Component {
-  render() {
-    const {
-      blockAnonymous,
-      client,
-      externalUrl,
-      history,
-      launchNotebookUrl,
-      location,
-      match,
-      metadata,
-      model,
-      notifications,
-      forkUrl,
-      user,
-      notebookServersUrl,
-    } = this.props;
-    const warning = notebookWarning(
-      user.logged,
-      metadata.accessLevel,
-      forkUrl,
-      location.pathname,
-      externalUrl,
-      this.props
-    );
-
-    return (
-      <ShowSession
-        blockAnonymous={blockAnonymous}
-        client={client}
-        history={history}
-        location={location}
-        match={match}
-        message={warning}
-        model={model}
-        notifications={notifications}
-        scope={{
-          namespace: this.props.metadata.namespace,
-          project: this.props.metadata.path,
-        }}
-        standalone={false}
-        urlNewSession={launchNotebookUrl}
-        notebookServersUrl={notebookServersUrl}
-        projectName={this.props.metadata.title}
-      />
-    );
-  }
 }
 
 const ProjectStartNotebookServer = (props) => {

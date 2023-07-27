@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -31,6 +31,7 @@ import {
   useHealthQuery,
   useRenkuPullMutation,
 } from "../sidecarApi";
+import styles from "./SessionModals.module.scss";
 
 interface PullSessionModalProps {
   isOpen: boolean;
@@ -46,7 +47,7 @@ export default function PullSessionModal({
   toggleModal,
 }: PullSessionModalProps) {
   return (
-    <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
+    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Refresh Session</ModalHeader>
       <ModalBody>
         {isSessionReady ? (
@@ -247,7 +248,7 @@ function PullSessionBody({
   const commitsToken = commitsPhrasing(gitStatus.result.behind);
   const pullText = pulling ? (
     <span>
-      <Loader inline size={16} />
+      <Loader className="me-1" inline size={16} />
       Pulling Changes
     </span>
   ) : (

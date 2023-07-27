@@ -18,40 +18,42 @@
 
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+import { faStop, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStop } from "@fortawesome/free-solid-svg-icons";
-import { useContext } from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
-import { User } from "../../../model/RenkuModels";
 import cx from "classnames";
-import AppContext from "../../../utils/context/appContext";
-import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
-import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
-import { Url } from "../../../utils/helpers/url";
-import { Button, Row, UncontrolledTooltip } from "reactstrap";
 import {
   ArrowClockwise,
   Briefcase,
   Journals,
   Save,
 } from "react-bootstrap-icons";
-import PullSessionModal from "./PullSessionModal";
-import { useGetSessionsQuery } from "../sessions.api";
+import { RootStateOrAny, useSelector } from "react-redux";
 import { Redirect, useLocation, useParams } from "react-router";
-import SessionUnavailable from "./SessionUnavailable";
-import StartSessionProgressBar from "./StartSessionProgressBar";
+import { Button, Row, UncontrolledTooltip } from "reactstrap";
+import { User } from "../../../model/RenkuModels";
 import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
-import ResourcesSessionModal from "./ResourcesSessionModal";
-import SessionJupyter from "./SessionJupyter";
+import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
+import AppContext from "../../../utils/context/appContext";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
-import StopSessionModal from "./StopSessionModal";
+import { Url } from "../../../utils/helpers/url";
+import { useGetSessionsQuery } from "../sessions.api";
 import AboutSessionModal from "./AboutSessionModal";
+import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
+import PullSessionModal from "./PullSessionModal";
+import ResourcesSessionModal from "./ResourcesSessionModal";
 import SaveSessionModal from "./SaveSessionModal";
+import SessionHibernated from "./SessionHibernated";
+import SessionJupyter from "./SessionJupyter";
+import SessionUnavailable from "./SessionUnavailable";
+import styles from "./ShowSession.module.scss";
+import StartSessionProgressBar from "./StartSessionProgressBar";
+import StopSessionModal from "./StopSessionModal";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -65,7 +67,7 @@ export default function ShowSession() {
     (state) => state.stateModel.user.logged
   );
 
-  const { server } = useParams<{ server: string }>();
+  const { server: sessionName } = useParams<{ server: string }>();
 
   if (!logged && !anonymousSessionsEnabled) {
     return (
@@ -77,7 +79,7 @@ export default function ShowSession() {
 
   return (
     <Row>
-      <ShowSessionFullscreen sessionName={server} />
+      <ShowSessionFullscreen sessionName={sessionName} />
     </Row>
   );
 }
@@ -89,9 +91,6 @@ interface ShowSessionFullscreenProps {
 function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   const pathWithNamespace = useSelector<RootStateOrAny, string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
-  );
-  const namespace = useSelector<RootStateOrAny, string>(
-    (state) => state.stateModel.project.metadata.namespace
   );
   const path = useSelector<RootStateOrAny, string>(
     (state) => state.stateModel.project.metadata.path
@@ -106,10 +105,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     { redirectFromStartServer?: boolean } | undefined
   >();
 
-  const { data: sessions, isLoading } = useGetSessionsQuery({
-    namespace,
-    project: path,
-  });
+  const { data: sessions, isLoading } = useGetSessionsQuery();
   const thisSession = useMemo(() => {
     if (sessions == null) {
       return undefined;
@@ -117,8 +113,6 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     return Object.values(sessions).find(({ name }) => name === sessionName);
   }, [sessionName, sessions]);
 
-  // const { filters, notebook, urlBack, projectName, handlers } = props;
-  // const [sessionStatus, setSessionStatus] = useState<SessionStatusData>();
   const [isTheSessionReady, setIsTheSessionReady] = useState(false);
 
   const [showModalAboutData, setShowModalAboutData] = useState(false);
@@ -161,19 +155,9 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     () => setShowModalPullSession((show) => !show),
     []
   );
-  // const togglePullSession = () =>
-  //   setShowModalPullSession(!showModalPullSession);
 
   const { height } = useWindowSize();
-  // const ref = useRef<any>(null);
   const iframeHeight = height ? height - 42 : 800;
-
-  // const history = useHistory();
-  // const location = useLocation();
-  // const urlList = Url.get(Url.pages.project.session, {
-  //   namespace: filters.namespace,
-  //   path: filters.project,
-  // });
 
   useEffect(() => {
     // Wait 4 seconds before setting `isTheSessionReady` for session view
@@ -192,10 +176,6 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
       isOpen={showModalAboutData}
       session={thisSession}
       toggleModal={toggleModalAbout}
-      // toggleModal={toggleModalAbout}
-      // isOpen={showModalAboutData}
-      // projectMetadata={projectMetadata}
-      // notebook={notebook}
     />
   );
   const resourcesModal = (
@@ -220,14 +200,6 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
       isSessionReady={isTheSessionReady}
       sessionName={sessionName}
       toggleModal={toggleSaveSession}
-
-      // isLogged={props.isLogged}
-      // isSessionReady={isTheSessionReady}
-      // hasSaveAccess={props.accessLevel >= ACCESS_LEVELS.DEVELOPER}
-      // notebook={notebook}
-      // closeModal={toggleSaveSession}
-      // urlList={urlList}
-      // isOpen={showModalSaveSession}
     />
   );
   const pullSessionModal = (
@@ -243,6 +215,8 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   const content =
     !isLoading && thisSession == null ? (
       <SessionUnavailable />
+    ) : thisSession?.status.state === "hibernated" ? (
+      <SessionHibernated session={thisSession} />
     ) : thisSession != null ? (
       <>
         {!isTheSessionReady && (
@@ -273,7 +247,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   return (
     <div className={cx("bg-white", "p-0")}>
       <div className={cx("d-lg-flex", "flex-column")}>
-        <div className={cx("fullscreen-header", "d-flex", "gap-3")}>
+        <div className={cx(styles.fullscreenHeader, "d-flex", "gap-3")}>
           <div
             className={cx(
               "d-flex",
@@ -309,11 +283,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
             </div>
           </div>
         </div>
-        <div /*ref={ref}*/ className={cx("fullscreen-content", "w-100")}>
-          {content}
-          {/* {content}
-          {sessionView} */}
-        </div>
+        <div className={cx(styles.fullscreenContent, "w-100")}>{content}</div>
       </div>
       {/* modals */}
       {aboutModal}
@@ -382,7 +352,6 @@ function SaveSessionBtn({ toggleSaveSession }: SaveSessionProps) {
       <UncontrolledTooltip placement="bottom" target={ref}>
         Save session
       </UncontrolledTooltip>
-      {/* <ThrottledTooltip target="save-session-button" tooltip="Save session" /> */}
     </div>
   );
 }
@@ -421,7 +390,15 @@ interface StopSessionBtnProps {
   toggleStopSession: () => void;
 }
 function StopSessionBtn({ toggleStopSession }: StopSessionBtnProps) {
+  const logged = useSelector<RootStateOrAny, User["logged"]>(
+    (state) => state.stateModel.user.logged
+  );
+
   const ref = useRef<HTMLButtonElement>(null);
+
+  const buttonId = logged ? "stop-session-button" : "delete-session-button";
+  const icon = logged ? faStop : faTrash;
+  const tooltip = logged ? "Stop session" : "Delete session";
 
   return (
     <div>
@@ -434,15 +411,15 @@ function StopSessionBtn({ toggleStopSession }: StopSessionBtnProps) {
           "mt-1",
           "no-focus"
         )}
-        data-cy="stop-session-button"
-        id="stop-session-button"
+        data-cy={buttonId}
+        id={buttonId}
         innerRef={ref}
         onClick={toggleStopSession}
       >
-        <FontAwesomeIcon className="text-rk-dark" icon={faStop} />
+        <FontAwesomeIcon className="text-rk-dark" icon={icon} />
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
-        Stop session
+        {tooltip}
       </UncontrolledTooltip>
     </div>
   );

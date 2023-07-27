@@ -456,7 +456,7 @@ function ImageInput(props) {
       <Row key="row-title">
         <InputLabel className="ps-3" text={label} isRequired={required} />
       </Row>
-      <Row key="row-content" className="field-group">
+      <Row key="row-content">
         <Col xs={12}>
           <div className="d-block d-md-flex d-lg-flex gap-5">
             {contentImage}

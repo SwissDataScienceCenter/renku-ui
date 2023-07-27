@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -20,7 +20,7 @@ import React from "react";
 import cx from "classnames";
 import { InfoCircle } from "react-bootstrap-icons";
 import { RootStateOrAny, useSelector } from "react-redux";
-import { Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Container, Modal, ModalBody, ModalHeader } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { EntityType } from "../../../components/entities/Entities";
@@ -28,11 +28,12 @@ import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import { ProjectMetadata } from "../../../notebooks/components/Session";
 import { Docs } from "../../../utils/constants/Docs";
 import { Session } from "../sessions.types";
+import styles from "./SessionModals.module.scss";
 import SessionsList from "./SessionsList";
 
 interface AboutSessionModalProps {
   isOpen: boolean;
-  session: Session | undefined;
+  session: Session | null | undefined;
   toggleModal: () => void;
 }
 
@@ -43,7 +44,7 @@ export default function AboutSessionModal({
 }: AboutSessionModalProps) {
   return (
     <Modal
-      className="about-modal"
+      className={styles.aboutModal}
       isOpen={isOpen}
       scrollable={true}
       toggle={toggleModal}
@@ -56,13 +57,10 @@ export default function AboutSessionModal({
         About
       </ModalHeader>
       <ModalBody className="bg-body">
-        <div className={cx("about-box", "d-flex", "flex-column")}>
+        <div className={cx(styles.aboutBox, "d-flex", "flex-column")}>
           <ProjectHeader />
           <SessionStatus session={session} />
           <Help />
-          {/* {projectHeader}
-          {session}
-          {help} */}
         </div>
       </ModalBody>
     </Modal>
@@ -103,14 +101,16 @@ function ProjectHeader() {
 }
 
 interface SessionStatusProps {
-  session: Session | undefined;
+  session: Session | null | undefined;
 }
 
 function SessionStatus({ session }: SessionStatusProps) {
   return (
     <div>
       <h3 className="text-rk-text-light">Session</h3>
-      <SessionsList sessions={session ? { [session.name]: session } : {}} />
+      <Container>
+        <SessionsList sessions={session ? { [session.name]: session } : {}} />
+      </Container>
     </div>
   );
 }

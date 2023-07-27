@@ -26,7 +26,6 @@
 import {
   CheckNotebookStatus,
   Notebooks,
-  ShowSession,
   StartNotebookServer,
 } from "./Notebooks.container";
 import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
@@ -48,6 +47,5 @@ export {
   ServerOptionBoolean,
   ServerOptionEnum,
   ServerOptionRange,
-  ShowSession,
   StartNotebookServer,
 };

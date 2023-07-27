@@ -15,9 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from "react";
-import { Link } from "react-router-dom";
-import {
+
+import React, {
   Fragment,
   ReactNode,
   useContext,
@@ -25,30 +24,31 @@ import {
   useRef,
   useState,
 } from "react";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link } from "react-router-dom";
 import {
   Badge,
   PopoverBody,
   PopoverHeader,
   UncontrolledPopover,
 } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { ListElementProps } from "./List.d";
+import SessionButton from "../../features/session/components/SessionButton";
+import { SessionStatusState } from "../../features/session/sessions.types";
+import { Notebook } from "../../notebooks/components/Session";
+import { getStatusObject } from "../../notebooks/components/SessionListStatus";
+import AppContext from "../../utils/context/appContext";
+import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
+import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
+import { Clipboard } from "../Clipboard";
 import { ExternalLink } from "../ExternalLinks";
 import { TimeCaption } from "../TimeCaption";
-import VisibilityIcon from "../entities/VisibilityIcon";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
-import { Clipboard } from "../Clipboard";
-import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
-import AppContext from "../../utils/context/appContext";
-import { getStatusObject } from "../../notebooks/components/SessionListStatus";
-import SessionButton from "../../features/session/components/SessionButton";
-import { Notebook } from "../../notebooks/components/Session";
-import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
+import VisibilityIcon from "../entities/VisibilityIcon";
+import { ListElementProps } from "./List.d";
 import "./ListBar.scss";
-import { SessionStatusState } from "../../features/session/sessions.types";
 
 /** Helper function for formatting the resource list */
 interface ResourceListProps {
