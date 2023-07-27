@@ -47,8 +47,8 @@ import { startSessionOptionsSlice } from "../../features/session/startSessionOpt
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
-import registryApi from "../../features/registry/registryApi";
-import pipelinesApi from "../../features/pipelines/pipelinesApi";
+import registryApi from "../../features/registry/registry.api";
+import pipelinesApi from "../../features/pipelines/pipelines.api";
 import projectGitlabApi from "../../features/project/projectGitlabApi";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

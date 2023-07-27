@@ -29,9 +29,9 @@ import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
 import { Docs } from "../../../utils/constants/Docs";
 import { PipelineJob } from "../../pipelines/pipelines.types";
-import pipelinesApi from "../../pipelines/pipelinesApi";
+import pipelinesApi from "../../pipelines/pipelines.api";
 import { useCoreSupport } from "../../project/useProjectCoreSupport";
-import registryApi from "../../registry/registryApi";
+import registryApi from "../../registry/registry.api";
 import usePatchedProjectConfig from "../hooks/usePatchedProjectConfig.hook";
 import { useGetDockerImageQuery } from "../sessions.api";
 import {
