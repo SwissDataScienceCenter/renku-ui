@@ -26,7 +26,7 @@ function Sessions<T extends FixturesConstructor>(Parent: T) {
   return class SessionsFixtures extends Parent {
     getSessions(name = "getSessions", resultFile = "sessions/sessions.json") {
       cy.intercept(
-        "/ui-server/api/notebooks/servers*",
+        "/ui-server/api/notebooks/servers",
         this.useMockedData ? { fixture: resultFile } : undefined
       ).as(name);
 
