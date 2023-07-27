@@ -40,6 +40,7 @@ import { RenkuNavLink } from "../../components/RenkuNavLink";
 import { InlineSubmitButton } from "../../components/buttons/Button";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { ProjectAvatarEdit, ProjectTags } from "../shared";
+import { EditVisibility } from "../new/components/Visibility";
 
 //** Navigation **//
 
@@ -89,26 +90,43 @@ function ProjectSettingsGeneral(props) {
     );
   }
 
+  const namespace = {
+    name: props.metadata.namespace,
+    kind: props.metadata.namespaceKind,
+  };
+
   return (
     <div className="form-rk-green">
-      <Row className="mt-2">
-        <Col xs={12}>
-          <ProjectTags
-            tagList={props.metadata.tagList}
-            onProjectTagsChange={props.onProjectTagsChange}
-            settingsReadOnly={props.settingsReadOnly}
-          />
-          <ProjectDescription {...props} />
-        </Col>
-      </Row>
       <Row>
         <Col xs={12}>
-          <ProjectAvatarEdit
-            externalUrl={props.externalUrl}
-            avatarUrl={props.metadata.avatarUrl}
-            onAvatarChange={props.onAvatarChange}
-            settingsReadOnly={props.settingsReadOnly}
-          />
+          <div className="card card-body mb-4">
+            <ProjectTags
+              tagList={props.metadata.tagList}
+              onProjectTagsChange={props.onProjectTagsChange}
+              settingsReadOnly={props.settingsReadOnly}
+            />
+          </div>
+          <div className="card card-body mb-4">
+            <ProjectDescription {...props} />
+          </div>
+          <div className="card card-body mb-4">
+            <EditVisibility
+              projectId={props.metadata.id}
+              namespace={namespace}
+              forkedProjectId={props.forkedFromProject?.id}
+              visibility={props.metadata.visibility}
+              pathWithNamespace={props.metadata.pathWithNamespace}
+            />
+          </div>
+          <div className="card card-body mb-4">
+            <ProjectAvatarEdit
+              externalUrl={props.externalUrl}
+              avatarUrl={props.metadata.avatarUrl}
+              onAvatarChange={props.onAvatarChange}
+              settingsReadOnly={props.settingsReadOnly}
+              includeRequiredLabel={false}
+            />
+          </div>
         </Col>
       </Row>
     </div>
@@ -174,7 +192,9 @@ class ProjectDescription extends Component {
     );
     return (
       <Form onSubmit={this.onSubmit}>
-        <FormGroup>
+        <FormGroup
+          cssModule={{ "mb-3": this.props.settingsReadOnly ? "mb-3" : "mb-0" }}
+        >
           <Label for="projectDescription">Project Description</Label>
           <div className="d-flex">
             {inputField}

@@ -17,8 +17,11 @@
  */
 
 import React, { useCallback, useContext, useEffect, useState } from "react";
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { RootStateOrAny, useSelector } from "react-redux";
+import { Redirect } from "react-router";
 import {
   Button,
   Col,
@@ -30,17 +33,15 @@ import {
 } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/RenkuModels";
+import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
+import { NotificationsInterface } from "../../../notifications/notifications.types";
+import AppContext from "../../../utils/context/appContext";
+import { Url } from "../../../utils/helpers/url";
 import {
   usePatchSessionMutation,
   useStopSessionMutation,
 } from "../sessions.api";
-import { Redirect } from "react-router";
-import { Url } from "../../../utils/helpers/url";
-import AppContext from "../../../utils/context/appContext";
-import { NotificationsInterface } from "../../../notifications/notifications.types";
-import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { SerializedError } from "@reduxjs/toolkit";
+import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
 import styles from "./SessionModals.module.scss";
 
 interface StopSessionModalProps {
@@ -99,6 +100,12 @@ function AnonymousStopSessionModal({
     setIsStopping(true);
   }, [sessionName, stopSession]);
 
+  const { isWaiting } = useWaitForSessionStatus({
+    desiredStatus: "stopping",
+    sessionName,
+    skip: !isStopping,
+  });
+
   const { notifications } = useContext(AppContext);
 
   useEffect(() => {
@@ -110,8 +117,8 @@ function AnonymousStopSessionModal({
     }
   }, [error, notifications]);
 
-  if (isSuccess) {
-    return <Redirect to={sessionsListUrl} />;
+  if (isSuccess && !isWaiting) {
+    return <Redirect push to={sessionsListUrl} />;
   }
 
   return (
@@ -123,7 +130,7 @@ function AnonymousStopSessionModal({
             <p>Are you sure you want to delete this session?</p>
             {isStopping ? (
               <FormText color="primary">
-                <Loader inline margin={2} size={16} />
+                <Loader className="me-1" inline size={16} />
                 Deleting Session
                 <br />
               </FormText>
@@ -175,6 +182,12 @@ function HibernateSessionModal({
     setIsStopping(true);
   }, [patchSession, sessionName]);
 
+  const { isWaiting } = useWaitForSessionStatus({
+    desiredStatus: "hibernated",
+    sessionName,
+    skip: !isStopping,
+  });
+
   const { notifications } = useContext(AppContext);
 
   useEffect(() => {
@@ -186,8 +199,8 @@ function HibernateSessionModal({
     }
   }, [error, notifications]);
 
-  if (isSuccess) {
-    return <Redirect to={sessionsListUrl} />;
+  if (isSuccess && !isWaiting) {
+    return <Redirect push to={sessionsListUrl} />;
   }
 
   return (
@@ -203,7 +216,7 @@ function HibernateSessionModal({
             </p>
             {isStopping ? (
               <FormText color="primary">
-                <Loader inline margin={2} size={16} />
+                <Loader className="me-1" inline size={16} />
                 Stopping Session
                 <br />
               </FormText>

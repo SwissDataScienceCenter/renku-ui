@@ -21,14 +21,30 @@
  *  Visibility.js
  *  Visibility field group component
  */
-import React from "react";
-import VisibilityInput from "../../../components/visibility/Visibility";
-import { FormGroup } from "../../../utils/ts-wrappers";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import { Button, FormGroup, Modal, ModalBody, ModalHeader } from "reactstrap";
+import VisibilitiesInput, {
+  Visibilities,
+  VISIBILITY_ITEMS,
+} from "../../../components/visibility/Visibility";
 import {
   NewProjectHandlers,
   NewProjectInputs,
   NewProjectMeta,
 } from "./newProject.d";
+import { LoadingLabel } from "../../../components/formlabels/FormLabels";
+import { GitlabLinks } from "../../../utils/constants/Docs";
+import { ExternalLink } from "../../../components/ExternalLinks";
+import {
+  useProjectMetadataQuery,
+  useUpdateProjectMutation,
+} from "../../../features/project/projectKgApi";
+import { useGetProjectByIdQuery } from "../../../features/project/projectGitlabApi";
+import { useGetGroupByPathQuery } from "../../../features/projects/projectsApi";
+import { computeVisibilities } from "../../../utils/helpers/HelperFunctions";
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { SuccessAlert, WarnAlert } from "../../../components/Alert";
+import { Loader } from "../../../components/Loader";
 
 interface VisibilityProps {
   handlers: NewProjectHandlers;
@@ -41,7 +57,7 @@ const Visibility = ({ handlers, meta, input }: VisibilityProps) => {
 
   return (
     <FormGroup className="field-group">
-      <VisibilityInput
+      <VisibilitiesInput
         isLoadingData={
           meta.namespace.fetching ||
           !meta.namespace.visibilities ||
@@ -58,4 +74,231 @@ const Visibility = ({ handlers, meta, input }: VisibilityProps) => {
   );
 };
 
+interface EditVisibilityModalConfirmationProps {
+  onConfirm: (visibility: Visibilities) => void;
+  toggleModal: () => void;
+  isOpen: boolean;
+  isError: boolean;
+  isLoading: boolean;
+  isSuccess: boolean;
+  message: ReactNode;
+  visibility: Visibilities;
+}
+
+function EditVisibilityModalConfirmation({
+  isOpen,
+  toggleModal,
+  onConfirm,
+  isError,
+  isLoading,
+  isSuccess,
+  message,
+  visibility,
+}: EditVisibilityModalConfirmationProps) {
+  const buttons = !isError && !isLoading && !isSuccess && (
+    <div className="mt-2 d-flex flex-row gap-2 justify-content-end">
+      <Button
+        className="float-right mt-1 btn-outline-rk-green"
+        onClick={toggleModal}
+        data-cy="cancel-visibility-btn"
+      >
+        Cancel
+      </Button>
+      <Button
+        className="float-right mt-1 btn-rk-green"
+        onClick={() => onConfirm(visibility)}
+        data-cy="update-visibility-btn"
+      >
+        Agree
+      </Button>
+    </div>
+  );
+
+  const modalContent =
+    visibility === Visibilities.Private
+      ? "Users will not find this project anymore unless you explicitly add them to the Members list. "
+      : "Please note that users will not need your explicit permission to see this project. ";
+  const content =
+    isError || isSuccess ? (
+      message
+    ) : isLoading ? (
+      <LoadingLabel text="Updating visibility" />
+    ) : (
+      <>
+        {modalContent}
+        Check the{" "}
+        <ExternalLink
+          url={GitlabLinks.PROJECT_VISIBILITY}
+          role="text"
+          title="visibility documentation"
+        />{" "}
+        for more details.
+      </>
+    );
+
+  return (
+    <Modal isOpen={isOpen} toggle={() => toggleModal()} size="lg">
+      <ModalHeader toggle={() => toggleModal()}>
+        Change visibility to{" "}
+        {VISIBILITY_ITEMS.find((item) => item.value === visibility)?.title}
+      </ModalHeader>
+      <ModalBody>
+        {content}
+        {buttons}
+      </ModalBody>
+    </Modal>
+  );
+}
+
+interface VisibilityProps {
+  namespace: {
+    name: string;
+    kind: string;
+  };
+  forkedProjectId: number;
+  pathWithNamespace: string;
+}
+
+const EditVisibility = ({
+  namespace,
+  forkedProjectId,
+  pathWithNamespace,
+}: VisibilityProps) => {
+  const [updateProject, { isLoading, isSuccess, isError, error, reset }] =
+    useUpdateProjectMutation();
+  const {
+    data: projectData,
+    isFetching: isFetchingProject,
+    isLoading: isLoadingProject,
+    refetch: refetchProjectData,
+  } = useProjectMetadataQuery(
+    { projectPath: pathWithNamespace },
+    { skip: !pathWithNamespace }
+  );
+  const {
+    data: forkProjectData,
+    isFetching: isFetchingForkProject,
+    isLoading: isLoadingForkProject,
+  } = useGetProjectByIdQuery(forkedProjectId, { skip: !forkedProjectId });
+  const {
+    data: namespaceData,
+    isFetching: isFetchingNamespace,
+    isLoading: isLoadingNamespace,
+  } = useGetGroupByPathQuery(namespace.name, {
+    skip: namespace.kind != "group",
+  });
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [newVisibility, setNewVisibility] = useState<Visibilities>();
+  const [availableVisibilities, setAvailableVisibilities] = useState(
+    computeVisibilities([])
+  );
+
+  useEffect(() => {
+    const namespaces = [];
+    if (!isFetchingForkProject && !isLoadingForkProject && forkProjectData)
+      namespaces.push(forkProjectData.visibility);
+    if (!isFetchingNamespace && !isLoadingNamespace && namespaceData)
+      namespaces.push(namespaceData.visibility);
+    setAvailableVisibilities(computeVisibilities(namespaces));
+  }, [
+    isFetchingForkProject,
+    isLoadingForkProject,
+    forkProjectData,
+    isFetchingNamespace,
+    isLoadingNamespace,
+    namespaceData,
+  ]);
+
+  useEffect(() => {
+    if (projectData) setNewVisibility(projectData.visibility);
+  }, [projectData]);
+
+  const onConfirm = useCallback(
+    (newVisibility: Visibilities) => {
+      if (projectData)
+        updateProject({
+          projectPathWithNamespace: projectData.path,
+          visibility: newVisibility,
+        });
+    },
+    [projectData, updateProject]
+  );
+
+  const onChange = useCallback(
+    (visibility: Visibilities) => {
+      if (newVisibility !== visibility) {
+        setIsOpen(true);
+        setNewVisibility(visibility);
+      }
+    },
+    [setIsOpen, setNewVisibility, newVisibility]
+  );
+
+  const onCancel = useCallback(() => {
+    setIsOpen(!isOpen);
+    if (!isSuccess) {
+      setNewVisibility(projectData?.visibility);
+    } else {
+      reset();
+      refetchProjectData(); //make sure the visibility is updated
+    }
+  }, [isOpen, isSuccess, projectData?.visibility, refetchProjectData, reset]);
+
+  const message =
+    isError && error ? (
+      <RtkErrorAlert error={error} dismissible={false} />
+    ) : isSuccess ? (
+      <SuccessAlert dismissible={false} timeout={0}>
+        The visibility of the project has been modified
+      </SuccessAlert>
+    ) : (
+      ""
+    );
+
+  if (!isLoadingProject && !isFetchingProject && !projectData)
+    return (
+      <WarnAlert dismissible={false}>
+        Knowledge Graph integration must be enabled to change visibility from
+        the RenkuLab web interface.
+      </WarnAlert>
+    );
+
+  if (isLoadingProject && isFetchingProject && !projectData) return <Loader />;
+
+  return (
+    projectData && (
+      <div>
+        <VisibilitiesInput
+          isLoadingData={
+            isFetchingProject ||
+            isLoadingProject ||
+            !projectData?.visibility ||
+            isFetchingForkProject
+          }
+          namespaceVisibility={availableVisibilities.default as Visibilities}
+          isInvalid={isError}
+          data-cy="edit-visibility-select"
+          isRequired={false}
+          onChange={onChange}
+          value={newVisibility || projectData?.visibility}
+          isForked={!!forkedProjectId}
+          includeRequiredLabel={false}
+        />
+        <EditVisibilityModalConfirmation
+          onConfirm={onConfirm}
+          isOpen={isOpen}
+          toggleModal={onCancel}
+          isError={isError}
+          isLoading={isLoading}
+          isSuccess={isSuccess}
+          message={message}
+          visibility={newVisibility || projectData?.visibility}
+        />
+      </div>
+    )
+  );
+};
+
 export default Visibility;
+export { EditVisibility };

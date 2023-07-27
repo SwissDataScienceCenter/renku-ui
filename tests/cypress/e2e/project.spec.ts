@@ -128,7 +128,11 @@ describe("display a project", () => {
   fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
-    fixtures.projects().landingUserProjects().projectTest();
+    fixtures
+      .projects()
+      .landingUserProjects()
+      .projectTest()
+      .projectById("getProjectsById", 39646);
     fixtures.projectLockStatus().projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project");
   });
@@ -163,6 +167,7 @@ describe("display a project", () => {
       "updateProject",
       "project/update-project-tag-description.json"
     );
+    fixtures.getProjectKG();
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.get_cy("tags-input").type("abcde");
     cy.get_cy("update-tag-button").click();
@@ -178,6 +183,42 @@ describe("display a project", () => {
     );
     cy.wait("@updateProject");
     cy.get_cy("entity-description").should("contain.text", "description abcde");
+    // Change visibility
+    fixtures.updateProjectKG("updateProjectKG");
+    cy.wait("@getProjectKG");
+    // should keep visibility status after cancel update
+    cy.get_cy("visibility-private").click();
+    cy.get(".modal-title").should(
+      "contain.text",
+      "Change visibility to Private"
+    );
+    cy.get_cy("cancel-visibility-btn").click();
+    cy.get_cy("visibility-public").should("be.checked");
+
+    // success update
+    cy.get_cy("visibility-internal").click();
+    cy.get_cy("update-visibility-btn").click();
+    cy.wait("@updateProjectKG");
+    cy.get(".modal-body").should(
+      "contain.text",
+      "The visibility of the project has been modified"
+    );
+
+    // error updating visibility
+    fixtures.updateProjectKG(
+      "updateProjectKGerror",
+      "project/error-update-visibility.json",
+      400
+    );
+    cy.get(".btn-close").click();
+    cy.wait("@getProjectKG");
+    cy.get_cy("visibility-private").click();
+    cy.get_cy("update-visibility-btn").click();
+    cy.wait("@updateProjectKGerror");
+    cy.get(".modal-body").should(
+      "contain.text",
+      "Internal is not allowed in a private group."
+    );
   });
 
   it("displays project settings sessions", () => {

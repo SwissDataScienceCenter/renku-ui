@@ -28,12 +28,12 @@ import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import { ProjectMetadata } from "../../../notebooks/components/Session";
 import { Docs } from "../../../utils/constants/Docs";
 import { Session } from "../sessions.types";
-import SessionsList from "./SessionsList";
 import styles from "./SessionModals.module.scss";
+import SessionsList from "./SessionsList";
 
 interface AboutSessionModalProps {
   isOpen: boolean;
-  session: Session | undefined;
+  session: Session | null | undefined;
   toggleModal: () => void;
 }
 
@@ -101,7 +101,7 @@ function ProjectHeader() {
 }
 
 interface SessionStatusProps {
-  session: Session | undefined;
+  session: Session | null | undefined;
 }
 
 function SessionStatus({ session }: SessionStatusProps) {

@@ -383,7 +383,7 @@ const SavingBadge = ({ projectConfigIsFetching }: SavingBadgeProps) => {
     if (updating) {
       setContent(
         <>
-          Saving <Loader inline size={13} color={"white"} />
+          Saving <Loader inline size={13} />
         </>
       );
     }

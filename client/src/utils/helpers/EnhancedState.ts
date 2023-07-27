@@ -40,12 +40,14 @@ import { projectKgApi } from "../../features/project/projectKgApi";
 import { projectsApi } from "../../features/projects/projectsApi";
 import { projectsKgApi } from "../../features/projects/projectsKgApi";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
+import repositoryApi from "../../features/repository/repository.api";
 import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
+import projectGitlabApi from "../../features/project/projectGitlabApi";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -62,11 +64,13 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
+    [projectGitlabApi.reducerPath]: projectGitlabApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
     [projectsKgApi.reducerPath]: projectsKgApi.reducer,
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
+    [repositoryApi.reducerPath]: repositoryApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
@@ -90,10 +94,12 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(projectsKgApi.middleware)
         .concat(projectsApi.middleware)
         .concat(recentUserActivityApi.middleware)
-        .concat(sessionSidecarApi.middleware)
+        .concat(repositoryApi.middleware)
         .concat(sessionsApi.middleware)
+        .concat(sessionSidecarApi.middleware)
         .concat(versionsApi.middleware)
-        .concat(workflowsApi.middleware),
+        .concat(workflowsApi.middleware)
+        .concat(projectGitlabApi.middleware),
     enhancers,
   });
   return store;

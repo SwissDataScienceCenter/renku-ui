@@ -296,7 +296,7 @@ function SaveSessionBody({
   );
   const saveText = saving ? (
     <span>
-      <Loader inline size={16} />
+      <Loader className="me-1" inline size={16} />
       Saving Session
     </span>
   ) : (
@@ -318,7 +318,7 @@ function SaveSessionBody({
         />
         {saving && (
           <FormText color="primary">
-            <Loader inline margin={2} size={16} />
+            <Loader className="me-1" inline size={16} />
             Saving Session
             <br />
           </FormText>
