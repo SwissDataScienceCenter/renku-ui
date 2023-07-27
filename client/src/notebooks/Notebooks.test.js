@@ -32,7 +32,6 @@ import {
   Notebooks,
   NotebooksDisabled,
   NotebooksHelper,
-  ShowSession,
   StartNotebookServer,
 } from "./index";
 import { mergeEnumOptions } from "./Notebooks.present";
@@ -416,28 +415,6 @@ describe("rendering", () => {
       );
     });
   });
-
-  // it("renders ShowSession", async () => {
-  //   const props = {
-  //     client,
-  //     model,
-  //     match: { params: { server: "server-session-fake-name" } },
-  //     notebookServersUrl: "fake-url-server",
-  //   };
-
-  //   const div = document.createElement("div");
-  //   document.body.appendChild(div);
-  //   const root = createRoot(div);
-  //   await act(async () => {
-  //     root.render(
-  //       <Provider store={model.reduxStore}>
-  //         <MemoryRouter>
-  //           <ShowSession {...props} urlNewSession="new_session" />
-  //         </MemoryRouter>
-  //       </Provider>
-  //     );
-  //   });
-  // });
 
   it("renders Notebooks", async () => {
     const props = {
