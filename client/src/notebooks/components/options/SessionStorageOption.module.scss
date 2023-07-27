@@ -14,8 +14,21 @@
 }
 
 .range {
+  $form-range-track-bg: var(--bs-rk-border-input);
   $form-range-thumb-bg: var(--bs-rk-green);
   $form-range-thumb-active-bg: rgba(var(--bs-rk-green-rgb), 0.75);
+
+  &::-webkit-slider-runnable-track {
+    background-color: $form-range-track-bg;
+    @include border-radius($form-range-track-border-radius);
+    @include box-shadow($form-range-track-box-shadow);
+  }
+
+  &::-moz-range-track {
+    background-color: $form-range-track-bg;
+    @include border-radius($form-range-track-border-radius);
+    @include box-shadow($form-range-track-box-shadow);
+  }
 
   &::-webkit-slider-thumb {
     border-radius: 50%;
