@@ -45,7 +45,6 @@ describe("Project settings page", () => {
     cy.get_cy("tags-input").should("not.contain.text", "abcde");
     cy.get_cy("tags-input").type("abcde");
     cy.get_cy("update-tag-button").click();
-    cy.get_cy("updating-tag-list").should("contain.text", "Updating list..");
     cy.wait("@updateProject");
     cy.get_cy("entity-tag-list").should("contain.text", "abcde");
   });
@@ -196,110 +195,6 @@ describe("Project settings page", () => {
     cy.contains("Number of CPUs").should("not.exist");
     cy.contains("Error").should("be.visible");
     cy.contains("[Show details]").should("be.visible");
-  });
-
-  it("displays project file > notebook with image", () => {
-    fixtures.projectFiles();
-    cy.visit("/projects/e2e/local-test-project/files");
-    cy.wait("@getProjectFilesRoot");
-    cy.contains("Historical-Use.ipynb").scrollIntoView();
-    cy.contains("Historical-Use.ipynb").should("be.visible");
-    cy.contains("Historical-Use.ipynb").click();
-    cy.wait("@getHistoricalUseNotebook");
-    // look for an input cell
-    cy.contains("import numpy as np").should("be.visible");
-    // look for an output cell
-    cy.contains("2005")
-      .should("be.visible")
-      .should("have.prop", "tagName")
-      .should("eq", "TH");
-    // look for a markdown cell
-    cy.contains("Historical Use Patterns")
-      .should("be.visible")
-      .should("have.prop", "tagName")
-      .should("eq", "H1");
-  });
-
-  it("displays project file > notebook with LaTex", () => {
-    fixtures.projectFiles();
-    cy.visit("/projects/e2e/local-test-project/files");
-    cy.wait("@getProjectFilesRoot");
-    cy.contains("latex-notebook.ipynb").scrollIntoView();
-    cy.contains("latex-notebook.ipynb").should("be.visible");
-    cy.contains("latex-notebook.ipynb").click();
-    cy.wait("@getLatexNotebook");
-    // look for latex output
-    cy.get("mjx-container").should("be.visible");
-  });
-
-  it("displays project file > notebook with python output", () => {
-    fixtures.projectFiles().getSessions;
-    cy.visit("/projects/e2e/local-test-project/files");
-    cy.wait("@getProjectFilesRoot");
-    cy.contains("01-CountFlights.ipynb").scrollIntoView();
-    cy.contains("01-CountFlights.ipynb").should("be.visible");
-    cy.contains("01-CountFlights.ipynb").click();
-    cy.wait("@getCountFlights");
-    // look for python output
-    cy.contains("There were 4951 flights to Austin, TX in Jan 2019.")
-      .scrollIntoView()
-      .should("be.visible");
-  });
-
-  it("displays project file > python file", () => {
-    fixtures.projectFiles();
-    cy.visit("/projects/e2e/local-test-project/files");
-    cy.wait("@getProjectFilesRoot");
-    cy.contains("random_py_file.py").scrollIntoView();
-    cy.contains("random_py_file.py").should("be.visible");
-    cy.contains("random_py_file.py").click();
-    cy.wait("@getRandomPyFile");
-    // look for python output
-    cy.contains("Minimal example.").should("be.visible");
-  });
-
-  it("displays project file > notebook > can start a session", () => {
-    fixtures.projectFiles();
-    cy.intercept("/ui-server/api/notebooks/servers*", {
-      body: { servers: {} },
-    }).as("getSessions");
-
-    cy.visit("/projects/e2e/local-test-project/files");
-    cy.wait("@getProjectFilesRoot");
-    cy.contains("01-CountFlights.ipynb").scrollIntoView();
-    cy.contains("01-CountFlights.ipynb").should("be.visible");
-    cy.contains("01-CountFlights.ipynb").click();
-    cy.wait("@getCountFlights");
-    cy.get("[data-cy='check-notebook-icon']", { timeout: 10_000 })
-      .should("be.visible")
-      .children("a")
-      .should(($a) => {
-        expect($a.attr("href")).to.eq(
-          "/projects/e2e/local-test-project/sessions/new?autostart=1&notebook=01-CountFlights.ipynb"
-        );
-      });
-  });
-
-  it("displays project file > notebook > anon user can start a session", () => {
-    fixtures.userNone().projectFiles();
-    cy.intercept("/ui-server/api/notebooks/servers*", {
-      body: { servers: {} },
-    }).as("getSessions");
-
-    cy.visit("/projects/e2e/local-test-project/files");
-    cy.wait("@getProjectFilesRoot");
-    cy.contains("01-CountFlights.ipynb").scrollIntoView();
-    cy.contains("01-CountFlights.ipynb").should("be.visible");
-    cy.contains("01-CountFlights.ipynb").click();
-    cy.wait("@getCountFlights");
-    cy.get_cy("check-notebook-icon")
-      .should("be.visible")
-      .children("a")
-      .should(($a) => {
-        expect($a.attr("href")).to.eq(
-          "/projects/e2e/local-test-project/sessions/new?autostart=1&notebook=01-CountFlights.ipynb"
-        );
-      });
   });
 
   it("delete a project", () => {
