@@ -22,6 +22,8 @@ import {
   GetPipelinesParams,
   Pipeline,
   PipelineJob,
+  RetryPipelineParams,
+  RunPipelineParams,
 } from "./pipelines.types";
 
 const pipelinesApi = createApi({
@@ -56,6 +58,8 @@ const pipelinesApi = createApi({
 
         return { data: null };
       },
+      providesTags: (result) =>
+        result ? [{ id: result.id, type: "Job" }] : [],
     }),
     getPipelines: builder.query<Pipeline[], GetPipelinesParams>({
       query: ({ commit, projectId }) => ({
@@ -64,10 +68,42 @@ const pipelinesApi = createApi({
           ...(commit ? { sha: commit } : {}),
         },
       }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(
+                ({ id }) => ({ id: `${id}`, type: "Pipeline" } as const)
+              ),
+              "Pipeline",
+            ]
+          : ["Pipeline"],
+    }),
+    retryPipeline: builder.mutation<Pipeline, RetryPipelineParams>({
+      query: ({ pipelineId, projectId }) => ({
+        method: "POST",
+        url: `${projectId}/pipelines/${pipelineId}/retry`,
+      }),
+      invalidatesTags: (_result, _error, { pipelineId }) => [
+        { id: pipelineId, type: "Pipeline" },
+      ],
+    }),
+    runPipeline: builder.mutation<Pipeline, RunPipelineParams>({
+      query: ({ projectId, ref }) => ({
+        method: "POST",
+        url: `${projectId}/pipeline`,
+        body: {
+          ref,
+        },
+      }),
+      invalidatesTags: ["Pipeline"],
     }),
   }),
 });
 
 export default pipelinesApi;
-export const { useGetPipelineJobByNameQuery, useGetPipelinesQuery } =
-  pipelinesApi;
+export const {
+  useGetPipelineJobByNameQuery,
+  useGetPipelinesQuery,
+  useRetryPipelineMutation,
+  useRunPipelineMutation,
+} = pipelinesApi;

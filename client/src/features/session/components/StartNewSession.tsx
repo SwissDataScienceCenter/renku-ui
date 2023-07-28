@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { faUserClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -30,17 +30,17 @@ import { ExternalLink } from "../../../components/ExternalLinks";
 import { GoBackButton } from "../../../components/buttons/Button";
 import { LockStatus, User } from "../../../model/RenkuModels";
 import { ProjectMetadata } from "../../../notebooks/components/Session";
+import { StartNotebookServerOptions } from "../../../notebooks/components/StartNotebookServerOptions";
 import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import { Url } from "../../../utils/helpers/url";
+import { useStartSessionMutation } from "../sessions.api";
+import { useStartSessionOptionsSelector } from "../startSessionOptionsSlice";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import SessionBranchOption from "./SessionBranchOption";
 import SessionCommitOption from "./SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
-import { StartNotebookServerOptions } from "../../../notebooks/components/StartNotebookServerOptions";
-import { useStartSessionOptionsSelector } from "../startSessionOptionsSlice";
-import { useStartSessionMutation } from "../sessions.api";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -298,7 +298,7 @@ function StartSessionButton() {
 
   const enabled = dockerImageStatus === "available";
 
-  const [startSession, result] = useStartSessionMutation();
+  const [startSession] = useStartSessionMutation();
 
   const onStart = useCallback(() => {
     startSession({
@@ -324,10 +324,6 @@ function StartSessionButton() {
     startSession,
     storage,
   ]);
-
-  useEffect(() => {
-    console.log({ result });
-  }, [result]);
 
   return (
     <div className="field-group">

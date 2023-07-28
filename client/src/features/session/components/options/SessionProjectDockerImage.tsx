@@ -16,23 +16,24 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from "react";
-import cx from "classnames";
+import React, { useCallback, useEffect } from "react";
 import {
-  faBook,
   faCog,
-  faCogs,
   faExclamationTriangle,
-  faInfoCircle,
-  faLink,
   faRedo,
-  faSyncAlt,
-  faUserClock,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { Badge, Button, UncontrolledTooltip } from "reactstrap";
+import { ACCESS_LEVELS } from "../../../../api-client";
+import { ExternalLink } from "../../../../components/ExternalLinks";
+import { Loader } from "../../../../components/Loader";
 import pipelinesApi, {
   useGetPipelineJobByNameQuery,
   useGetPipelinesQuery,
+  useRetryPipelineMutation,
+  useRunPipelineMutation,
 } from "../../../pipelines/pipelines.api";
 import { PipelineJob } from "../../../pipelines/pipelines.types";
 import registryApi from "../../../registry/registry.api";
@@ -45,10 +46,6 @@ import {
   setDockerImageStatus,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
-import { Loader } from "../../../../components/Loader";
-import { Badge, UncontrolledTooltip } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ExternalLink } from "../../../../components/ExternalLinks";
 
 export default function SessionProjectDockerImage() {
   const { dockerImageBuildStatus: status, dockerImageStatus } =
@@ -77,7 +74,7 @@ export default function SessionProjectDockerImage() {
     return (
       <div className="field-group">
         <div className="form-label">
-          Docker image: <Badge color="success">available</Badge>
+          Docker image <Badge color="success">available</Badge>
         </div>
       </div>
     );
@@ -89,28 +86,39 @@ export default function SessionProjectDockerImage() {
         <div>
           <div className={cx("form-label", "mt-3")}>
             <FontAwesomeIcon
-              className="text-danger"
+              className={cx("text-danger", "me-1")}
               icon={faExclamationTriangle}
-            />{" "}
+            />
             The Docker image build failed. You can use the base image to start a
             session, but project-specific dependencies will not be available.
           </div>
           <div>
-            {/* {buildAgain} */}
+            <BuildAgainButton />
             <ViewPipelineLink />
           </div>
         </div>
-      ) : null;
+      ) : (
+        <div>
+          <div className={cx("form-label", "mt-3")}>
+            <FontAwesomeIcon
+              className={cx("text-danger", "me-1")}
+              icon={faExclamationTriangle}
+            />
+            No Docker image found. You can use the base image to start a
+            session, but project-specific dependencies will not be available.
+          </div>
+          <div>
+            <RunPipeline />
+          </div>
+        </div>
+      );
 
     return (
       <div className="field-group">
         <div className="form-label">
-          Docker image: <Badge color="danger">not available</Badge>
+          Docker image <Badge color="danger">not available</Badge>
         </div>
         {moreInfo}
-        <div>
-          {status} {dockerImageStatus}
-        </div>
       </div>
     );
   }
@@ -118,9 +126,95 @@ export default function SessionProjectDockerImage() {
   return (
     <div className="field-group">
       <div className="form-label">
-        Docker image: {status} {dockerImageStatus}
+        Docker image <Badge color="warning">building</Badge>
+      </div>
+      <div>
+        <div className={cx("form-label", "mt-3")}>
+          <FontAwesomeIcon className="me-1" icon={faCog} spin />
+          The Docker image for the session is being built. Please wait a
+          moment...
+        </div>
+        <div className={cx("form-label", "mt-1")}>
+          You can use the base image to start a session instead of waiting, but
+          project-specific dependencies will not be available.
+        </div>
+      </div>
+      <div>
+        <ViewPipelineLink />
       </div>
     </div>
+  );
+}
+
+function BuildAgainButton() {
+  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
+  const accessLevel = useSelector<RootStateOrAny, number>(
+    (state) => state.stateModel.project.metadata.accessLevel
+  );
+
+  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+
+  const hasDevAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
+
+  const { data: pipelines } = useGetPipelinesQuery(
+    { commit, projectId: gitLabProjectId ?? 0 },
+    { skip: !gitLabProjectId }
+  );
+
+  const { data: pipelineJob } = useGetPipelineJobByNameQuery(
+    {
+      jobName: SESSION_CI_IMAGE_BUILD_JOB,
+      pipelineIds: (pipelines ?? []).map(({ id }) => id),
+      projectId: gitLabProjectId ?? 0,
+    },
+    { skip: !gitLabProjectId || !pipelines }
+  );
+
+  const [retryPipeline] = useRetryPipelineMutation();
+
+  const dispatch = useDispatch();
+
+  const onRetryPipeline = useCallback(() => {
+    if (!gitLabProjectId || !pipelineJob) {
+      return;
+    }
+
+    retryPipeline({
+      pipelineId: pipelineJob.pipeline.id,
+      projectId: gitLabProjectId,
+    });
+    dispatch(setDockerImageBuildStatus("unknown"));
+    dispatch(setDockerImageStatus("unknown"));
+  }, [dispatch, gitLabProjectId, pipelineJob, retryPipeline]);
+
+  if (!hasDevAccess) {
+    return null;
+  }
+
+  return (
+    <>
+      <Button
+        className="me-1"
+        color="primary"
+        id="image-build-again"
+        size="sm"
+        onClick={onRetryPipeline}
+      >
+        <FontAwesomeIcon className="me-1" icon={faRedo} />
+        Build again
+      </Button>
+      <UncontrolledTooltip
+        placement="top"
+        target="image-build-again"
+        trigger="hover"
+        offset={[0, 5]} // offset the tooltip a bit higher
+      >
+        Try to build again if it is the first time you see this error on this
+        commit.
+      </UncontrolledTooltip>
+    </>
   );
 }
 
@@ -173,6 +267,56 @@ function ViewPipelineLink() {
   );
 }
 
+function RunPipeline() {
+  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
+  const accessLevel = useSelector<RootStateOrAny, number>(
+    (state) => state.stateModel.project.metadata.accessLevel
+  );
+
+  const branch = useStartSessionOptionsSelector(({ branch }) => branch);
+
+  const hasDevAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
+
+  const [runPipeline] = useRunPipelineMutation();
+
+  const dispatch = useDispatch();
+
+  const onRunPipeline = useCallback(() => {
+    if (!branch || !gitLabProjectId) {
+      return;
+    }
+
+    runPipeline({
+      projectId: gitLabProjectId,
+      ref: branch,
+    });
+    dispatch(setDockerImageBuildStatus("unknown"));
+    dispatch(setDockerImageStatus("unknown"));
+  }, [branch, dispatch, gitLabProjectId, runPipeline]);
+
+  if (!hasDevAccess) {
+    return null;
+  }
+
+  return (
+    <>
+      If you are seeing this error for the first time,{" "}
+      <Button
+        color="primary"
+        size="sm"
+        id="image-build"
+        onClick={onRunPipeline}
+      >
+        <FontAwesomeIcon className="me-1" icon={faRedo} />
+        building the branch image
+      </Button>{" "}
+      will probably solve the problem.
+    </>
+  );
+}
+
 function useDockerImageStatusStateMachine() {
   const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
@@ -197,11 +341,7 @@ function useDockerImageStatusStateMachine() {
 
   const [
     getRegistryTag,
-    {
-      data: registryTag,
-      error: registryTagError,
-      isFetching: registryTagIsFetching,
-    },
+    { error: registryTagError, isFetching: registryTagIsFetching },
   ] = registryApi.useLazyGetRegistryTagQuery();
 
   const [
@@ -217,22 +357,6 @@ function useDockerImageStatusStateMachine() {
       isFetching: pipelineJobIsFetching,
     },
   ] = pipelinesApi.useLazyGetPipelineJobByNameQuery();
-
-  useEffect(() => {
-    console.log({ status });
-  }, [status]);
-  useEffect(() => {
-    console.log({ registryTag });
-  }, [registryTag]);
-  useEffect(() => {
-    console.log({ registryTagError });
-  }, [registryTagError]);
-  useEffect(() => {
-    console.log({ pipelines });
-  }, [pipelines]);
-  useEffect(() => {
-    console.log({ pipelineJob });
-  }, [pipelineJob]);
 
   // Start checking for Docker images in CI/CD
   useEffect(() => {

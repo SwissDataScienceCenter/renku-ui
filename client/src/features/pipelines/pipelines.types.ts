@@ -23,6 +23,7 @@ export interface Pipeline {
 export interface PipelineJob {
   id: number;
   name: string;
+  pipeline: Pipeline;
   status:
     | "success"
     | "running"
@@ -42,4 +43,14 @@ export interface GetPipelineJobByNameParams {
 export interface GetPipelinesParams {
   commit?: string;
   projectId: number;
+}
+
+export interface RetryPipelineParams {
+  pipelineId: number;
+  projectId: number;
+}
+
+export interface RunPipelineParams {
+  projectId: number;
+  ref: string;
 }

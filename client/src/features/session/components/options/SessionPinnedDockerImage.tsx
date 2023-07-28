@@ -96,7 +96,11 @@ export default function SessionPinnedDockerImage({
   }
 
   const moreInfoButton = (
-    <Button className={cx("ms-3", "p-0")} color="link" onClick={toggleShow}>
+    <Button
+      className={cx("ms-3", "p-0", "btn-sm")}
+      color="link"
+      onClick={toggleShow}
+    >
       more info
     </Button>
   );
@@ -142,7 +146,7 @@ export default function SessionPinnedDockerImage({
   return (
     <div className="field-group">
       <div className="form-label">
-        Docker image: {badge}
+        Docker image {badge}
         {moreInfoButton}
         <Collapse isOpen={show}>
           <div className="mt-3">{moreInfo}</div>
