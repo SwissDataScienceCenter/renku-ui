@@ -42,6 +42,7 @@ import {
   useStopSessionMutation,
 } from "../sessions.api";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
+import styles from "./SessionModals.module.scss";
 
 interface StopSessionModalProps {
   isOpen: boolean;
@@ -121,7 +122,7 @@ function AnonymousStopSessionModal({
   }
 
   return (
-    <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
+    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Delete Session</ModalHeader>
       <ModalBody>
         <Row>
@@ -203,7 +204,7 @@ function HibernateSessionModal({
   }
 
   return (
-    <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
+    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Stop Session</ModalHeader>
       <ModalBody>
         <Row>

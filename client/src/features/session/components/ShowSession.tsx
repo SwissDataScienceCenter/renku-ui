@@ -51,6 +51,7 @@ import SaveSessionModal from "./SaveSessionModal";
 import SessionHibernated from "./SessionHibernated";
 import SessionJupyter from "./SessionJupyter";
 import SessionUnavailable from "./SessionUnavailable";
+import styles from "./ShowSession.module.scss";
 import StartSessionProgressBar from "./StartSessionProgressBar";
 import StopSessionModal from "./StopSessionModal";
 
@@ -246,7 +247,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   return (
     <div className={cx("bg-white", "p-0")}>
       <div className={cx("d-lg-flex", "flex-column")}>
-        <div className={cx("fullscreen-header", "d-flex", "gap-3")}>
+        <div className={cx(styles.fullscreenHeader, "d-flex", "gap-3")}>
           <div
             className={cx(
               "d-flex",
@@ -282,7 +283,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
             </div>
           </div>
         </div>
-        <div className={cx("fullscreen-content", "w-100")}>{content}</div>
+        <div className={cx(styles.fullscreenContent, "w-100")}>{content}</div>
       </div>
       {/* modals */}
       {aboutModal}

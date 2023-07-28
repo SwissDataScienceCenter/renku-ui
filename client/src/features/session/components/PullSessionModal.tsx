@@ -31,6 +31,7 @@ import {
   useHealthQuery,
   useRenkuPullMutation,
 } from "../sidecarApi";
+import styles from "./SessionModals.module.scss";
 
 interface PullSessionModalProps {
   isOpen: boolean;
@@ -46,7 +47,7 @@ export default function PullSessionModal({
   toggleModal,
 }: PullSessionModalProps) {
   return (
-    <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
+    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Refresh Session</ModalHeader>
       <ModalBody>
         {isSessionReady ? (

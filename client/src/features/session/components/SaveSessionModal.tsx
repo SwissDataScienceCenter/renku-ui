@@ -52,6 +52,7 @@ import {
   useHealthQuery,
   useRenkuSaveMutation,
 } from "../sidecarApi";
+import styles from "./SessionModals.module.scss";
 
 interface SaveSessionModalProps {
   isOpen: boolean;
@@ -67,7 +68,7 @@ export default function SaveSessionModal({
   toggleModal,
 }: SaveSessionModalProps) {
   return (
-    <Modal className="modal-session" isOpen={isOpen} toggle={toggleModal}>
+    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Save Session</ModalHeader>
       <ModalBody>
         {isSessionReady ? (

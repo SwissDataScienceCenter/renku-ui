@@ -17,13 +17,14 @@
  */
 
 import React, { useMemo } from "react";
+import { Container } from "reactstrap";
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
-import { useGetSessionsQuery } from "../sessions.api";
 import { NotebooksHelper } from "../../../notebooks";
+import { useGetSessionsQuery } from "../sessions.api";
 import { Session, Sessions } from "../sessions.types";
-import SessionsList from "./SessionsList";
 import SessionSaveWarning from "./SessionSaveWarning";
+import SessionsList from "./SessionsList";
 
 interface ProjectSessionsListProps {
   projectPathWithNamespace: string;
@@ -49,7 +50,9 @@ export default function ProjectSessionsList({
 
   return (
     <>
-      <SessionsList sessions={projectSessions} />
+      <Container fluid>
+        <SessionsList sessions={projectSessions} />
+      </Container>
       <SessionSaveWarning />
     </>
   );
