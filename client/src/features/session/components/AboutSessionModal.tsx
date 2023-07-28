@@ -108,7 +108,7 @@ function SessionStatus({ session }: SessionStatusProps) {
   return (
     <div>
       <h3 className="text-rk-text-light">Session</h3>
-      <Container>
+      <Container fluid>
         <SessionsList sessions={session ? { [session.name]: session } : {}} />
       </Container>
     </div>
