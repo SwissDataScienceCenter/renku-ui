@@ -277,8 +277,9 @@ const Url = {
       base: "/help",
       documentation: "/help/docs",
       features: "/help/features",
+      getting: "/help/getting",
+      release: "/help/release",
       status: "/help/status",
-      changes: "/help/changes",
     },
     login: {
       base: "/login",
