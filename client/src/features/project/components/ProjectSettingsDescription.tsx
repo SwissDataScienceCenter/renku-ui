@@ -114,7 +114,7 @@ export function ProjectSettingsDescription({
       isDone={updateDescriptionStatus.isSuccess}
       isReadOnly={readOnly || pristine}
       isSubmitting={updateDescriptionStatus.isLoading}
-      onSubmit={() => onSubmit()}
+      onSubmit={onSubmit}
       pristine={pristine}
       submittingText="Updating"
       text="Update"
