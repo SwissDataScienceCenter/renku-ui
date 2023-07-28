@@ -69,7 +69,6 @@ export function ProjectStatusIcon({
   const maintainerText =
     isMaintainer && !matchRoute ? " Click to see details." : "";
 
-  // if (isLoading) return null;
   if (!kgStatus.isLoading && !kgActivated)
     return (
       <ProjectStatusElement

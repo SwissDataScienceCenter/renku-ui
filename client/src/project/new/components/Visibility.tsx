@@ -78,7 +78,7 @@ export default function Visibility({ handlers, meta, input }: VisibilityProps) {
         data-cy="visibility-select"
         isRequired={true}
         onChange={(value: string) => handlers.setProperty("visibility", value)}
-        value={input.visibility ?? undefined}
+        value={input.visibility ?? null}
       />
     </FormGroup>
   );
@@ -92,7 +92,7 @@ interface EditVisibilityModalConfirmationProps {
   isLoading: boolean;
   isSuccess: boolean;
   message: ReactNode;
-  visibility?: Visibilities;
+  visibility?: Visibilities | null;
 }
 
 function EditVisibilityModalConfirmation({
@@ -103,7 +103,7 @@ function EditVisibilityModalConfirmation({
   isLoading,
   isSuccess,
   message,
-  visibility,
+  visibility = null,
 }: EditVisibilityModalConfirmationProps) {
   const buttons = !isError && !isLoading && !isSuccess && (
     <div className="mt-2 d-flex flex-row gap-2 justify-content-end">
@@ -177,8 +177,10 @@ export function EditVisibility({
   pathWithNamespace,
   projectId,
 }: EditVisibilityProps) {
-  const [updateProject, { isLoading, isSuccess, isError, error, reset }] =
-    useUpdateProjectMutation();
+  const [
+    updateProject,
+    { isLoading: isLoadingMutation, isSuccess, isError, error, reset },
+  ] = useUpdateProjectMutation();
   const {
     data: projectData,
     isFetching: isFetchingProject,
@@ -192,7 +194,7 @@ export function EditVisibility({
     data: forkProjectData,
     isFetching: isFetchingForkProject,
     isLoading: isLoadingForkProject,
-  } = useGetProjectByIdQuery(forkedProjectId as number, {
+  } = useGetProjectByIdQuery(forkedProjectId ?? 0, {
     skip: !forkedProjectId,
   });
   const {
@@ -276,17 +278,17 @@ export function EditVisibility({
       ""
     );
 
-  const isLoadingSomething =
+  const isLoadingAnything =
     isLoadingNamespace || isLoadingProject || isLoadingIndexingStatus;
 
-  const content = isLoadingSomething ? (
+  const content = isLoadingAnything ? (
     <>
-      <label>Visibility</label>
+      <div className="form-label">Visibility</div>
       <Loader className="ms-2" inline size={16} />
     </>
   ) : !indexingStatusData?.activated ? (
     <>
-      <label>Visibility</label>
+      <div className="form-label">Visibility</div>
       <SettingRequiresKg />
     </>
   ) : (
@@ -314,7 +316,7 @@ export function EditVisibility({
 
       <EditVisibilityModalConfirmation
         isError={isError}
-        isLoading={isLoading}
+        isLoading={isLoadingMutation}
         isOpen={isOpen}
         isSuccess={isSuccess}
         message={message}
