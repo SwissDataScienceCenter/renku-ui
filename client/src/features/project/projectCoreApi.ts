@@ -113,7 +113,7 @@ function urlWithQueryParams(url: string, queryParams: any) {
 export const projectCoreApi = createApi({
   reducerPath: "projectCore",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
-  tagTypes: ["project-status", "project", "ProjectConfig"],
+  tagTypes: ["project", "project-status", "ProjectConfig"],
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getDatasetFiles: builder.query<IDatasetFiles, GetDatasetFilesParams>({

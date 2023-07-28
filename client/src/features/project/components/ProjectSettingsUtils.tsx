@@ -17,7 +17,6 @@
  */
 
 import React from "react";
-import cx from "classnames";
 
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,12 +25,12 @@ interface SettingRequiresKgProps {
   className?: string;
 }
 export function SettingRequiresKg({ className }: SettingRequiresKgProps) {
-  const localClass = className ? cx(className) : "d-block mt-2";
+  const localClass = className ?? "d-block mt-2";
 
   return (
     <small className={localClass}>
-      <FontAwesomeIcon icon={faExclamationTriangle} /> This requires Knowledge
-      Graph integration
+      <FontAwesomeIcon className="me-1" icon={faExclamationTriangle} />
+      This requires Knowledge Graph integration
     </small>
   );
 }

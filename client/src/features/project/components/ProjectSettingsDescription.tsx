@@ -55,19 +55,13 @@ export function ProjectSettingsDescription({
   );
   const [updateDescriptionMutation, updateDescriptionStatus] =
     useUpdateDescriptionMutation();
-  const updateDescription = useCallback(
-    (description: string) =>
-      updateDescriptionMutation({
-        description,
-        gitUrl,
-        projectId,
-      }),
-    [updateDescriptionMutation, gitUrl, projectId]
-  );
-
-  const submit = () => {
-    updateDescription(description);
-  };
+  const onSubmit = useCallback(() => {
+    updateDescriptionMutation({
+      description,
+      gitUrl,
+      projectId,
+    });
+  }, [description, gitUrl, projectId, updateDescriptionMutation]);
 
   const setDescriptionAndReset = (newDescription: string) => {
     setDescription(newDescription);
@@ -120,7 +114,7 @@ export function ProjectSettingsDescription({
       isDone={updateDescriptionStatus.isSuccess}
       isReadOnly={readOnly || pristine}
       isSubmitting={updateDescriptionStatus.isLoading}
-      onSubmit={() => submit()}
+      onSubmit={() => onSubmit()}
       pristine={pristine}
       submittingText="Updating"
       text="Update"

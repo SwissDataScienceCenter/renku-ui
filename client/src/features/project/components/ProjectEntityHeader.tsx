@@ -30,21 +30,22 @@ type ProjectEntityHeaderProps = EntityHeaderProps & {
 };
 
 export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
-  const { branch, devAccess, fullPath, gitUrl, projectId } = props;
+  const { branch, devAccess, fullPath, gitUrl, projectId, visibility } = props;
 
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
     skip: !fullPath || !projectId,
   });
 
-  const projectMetadata = useProjectMetadataQuery(
+  const projectMetadataQuery = useProjectMetadataQuery(
     { projectPath: fullPath, projectId },
     { skip: !fullPath || !projectId || !projectIndexingStatus.data?.activated }
   );
 
   // overwrite description when available from KG
   const descriptionKg: EntityHeaderProps["description"] = {
-    isLoading: projectMetadata.isLoading || projectIndexingStatus.isLoading,
-    value: projectMetadata.data?.description || "",
+    isLoading:
+      projectMetadataQuery.isLoading || projectIndexingStatus.isLoading,
+    value: projectMetadataQuery.data?.description ?? "",
     unavailable: !projectIndexingStatus.data?.activated
       ? "requires Knowledge Graph integration"
       : undefined,
@@ -66,7 +67,7 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
       {...props}
       description={descriptionKg}
       statusButton={statusButton}
-      visibility={projectMetadata.data?.visibility || props.visibility}
+      visibility={projectMetadataQuery.data?.visibility || visibility}
     />
   );
 }
