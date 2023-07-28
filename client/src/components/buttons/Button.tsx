@@ -218,14 +218,17 @@ function InlineSubmitButton({
   isSubmitting,
   onSubmit,
   pristine,
-  submittingText,
+  submittingText = "",
   text,
   tooltipPristine,
 }: InlineSubmitButtonProps) {
   if (isDone) return <SuccessLabel text={doneText} />;
   if (isSubmitting)
     return (
-      <LoadingLabel className="feedback mx-1" text={submittingText || " "} />
+      <LoadingLabel
+        className="feedback mx-1 my-auto text-nowrap"
+        text={submittingText}
+      />
     );
 
   const submit = !isDone ? (
