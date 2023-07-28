@@ -278,10 +278,10 @@ export function EditVisibility({
       ""
     );
 
-  const isLoadingAnything =
+  const isLoadingQueries =
     isLoadingNamespace || isLoadingProject || isLoadingIndexingStatus;
 
-  const content = isLoadingAnything ? (
+  const content = isLoadingQueries ? (
     <>
       <div className="form-label">Visibility</div>
       <Loader className="ms-2" inline size={16} />
