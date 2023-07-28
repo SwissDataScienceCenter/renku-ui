@@ -30,15 +30,15 @@ import { SettingRequiresKg } from "./ProjectSettingsUtils";
 
 interface ProjectSettingsDescriptionProps {
   gitUrl: string;
+  isMaintainer: boolean;
   projectFullPath: string;
   projectId: number;
-  settingsReadOnly?: boolean;
 }
 export function ProjectSettingsDescription({
   gitUrl,
+  isMaintainer,
   projectFullPath,
   projectId,
-  settingsReadOnly = false,
 }: ProjectSettingsDescriptionProps) {
   const [description, setDescription] = useState("");
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
@@ -82,7 +82,7 @@ export function ProjectSettingsDescription({
   }, [projectMetadata.data?.description]);
 
   const readOnly =
-    settingsReadOnly ||
+    !isMaintainer ||
     projectIndexingStatus.isLoading ||
     projectMetadata.isLoading;
   const pristine = description === projectMetadata.data?.description;

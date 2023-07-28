@@ -162,6 +162,7 @@ function EditVisibilityModalConfirmation({
 
 interface EditVisibilityProps {
   forkedProjectId?: number;
+  isMaintainer: boolean;
   namespace: string;
   namespaceKind: string;
   pathWithNamespace: string;
@@ -170,6 +171,7 @@ interface EditVisibilityProps {
 
 export function EditVisibility({
   forkedProjectId,
+  isMaintainer,
   namespace,
   namespaceKind,
   pathWithNamespace,
@@ -289,17 +291,18 @@ export function EditVisibility({
     </>
   ) : (
     <VisibilitiesInput
+      data-cy="edit-visibility-select"
+      disabled={!isMaintainer}
+      includeRequiredLabel={false}
+      isForked={!!forkedProjectId}
+      isInvalid={isError}
       isLoadingData={
         isFetchingProject || !projectData?.visibility || isFetchingForkProject
       }
-      namespaceVisibility={availableVisibilities.default as Visibilities}
-      isInvalid={isError}
-      data-cy="edit-visibility-select"
       isRequired={true}
+      namespaceVisibility={availableVisibilities.default as Visibilities}
       onChange={onChange}
       value={newVisibility || projectData?.visibility}
-      isForked={!!forkedProjectId}
-      includeRequiredLabel={false}
     />
   );
 
@@ -310,13 +313,13 @@ export function EditVisibility({
       </Card>
 
       <EditVisibilityModalConfirmation
-        onConfirm={onConfirm}
-        isOpen={isOpen}
-        toggleModal={onCancel}
         isError={isError}
         isLoading={isLoading}
+        isOpen={isOpen}
         isSuccess={isSuccess}
         message={message}
+        onConfirm={onConfirm}
+        toggleModal={onCancel}
         visibility={newVisibility || projectData?.visibility}
       />
     </div>

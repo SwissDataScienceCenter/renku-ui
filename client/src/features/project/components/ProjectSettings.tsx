@@ -70,11 +70,13 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
         namespace={props.metadata.namespace}
         namespaceKind={props.metadata.namespaceKind}
         forkedProjectId={props.forkedFromProject?.id}
+        isMaintainer={isMaintainer}
         pathWithNamespace={props.projectPathWithNamespace}
         projectId={props.metadata?.id}
       />
       <ProjectSettingsDescription
         gitUrl={props.metadata?.externalUrl}
+        isMaintainer={isMaintainer}
         projectId={props.metadata?.id}
         projectFullPath={props.projectPathWithNamespace}
       />

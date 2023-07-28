@@ -198,6 +198,12 @@ const VisibilitiesInput = ({
     );
   };
 
+  const tooltipContent = disabled ? (
+    <span>Only maintainers can change the visibility.</span>
+  ) : (
+    feedbackByNamespace(true)
+  );
+
   const options = VISIBILITY_ITEMS.map((item) => {
     const isDisabledByNamespace = visibilities.disabled.includes(item.value);
     return (
@@ -209,7 +215,7 @@ const VisibilitiesInput = ({
         changeVisibility={changeVisibility}
         isChecked={visibility === item.value}
         markInvalid={markInvalid}
-        tooltipContent={feedbackByNamespace(true)}
+        tooltipContent={tooltipContent}
       />
     );
   });
