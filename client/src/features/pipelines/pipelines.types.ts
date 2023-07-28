@@ -30,6 +30,7 @@ export interface PipelineJob {
     | "stopping"
     | "failed"
     | "canceled";
+  web_url: string;
 }
 
 export interface GetPipelineJobByNameParams {

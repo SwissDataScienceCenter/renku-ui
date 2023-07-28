@@ -17,8 +17,23 @@
  */
 
 import React, { useEffect } from "react";
+import cx from "classnames";
+import {
+  faBook,
+  faCog,
+  faCogs,
+  faExclamationTriangle,
+  faInfoCircle,
+  faLink,
+  faRedo,
+  faSyncAlt,
+  faUserClock,
+} from "@fortawesome/free-solid-svg-icons";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import pipelinesApi from "../../../pipelines/pipelines.api";
+import pipelinesApi, {
+  useGetPipelineJobByNameQuery,
+  useGetPipelinesQuery,
+} from "../../../pipelines/pipelines.api";
 import { PipelineJob } from "../../../pipelines/pipelines.types";
 import registryApi from "../../../registry/registry.api";
 import {
@@ -30,23 +45,145 @@ import {
   setDockerImageStatus,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
+import { Loader } from "../../../../components/Loader";
+import { Badge, UncontrolledTooltip } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 
 export default function SessionProjectDockerImage() {
+  const { dockerImageBuildStatus: status, dockerImageStatus } =
+    useStartSessionOptionsSelector(
+      ({ commit, dockerImageBuildStatus, dockerImageStatus }) => ({
+        commit,
+        dockerImageBuildStatus,
+        dockerImageStatus,
+      })
+    );
+
+  useDockerImageStatusStateMachine();
+
+  if (dockerImageStatus === "unknown") {
+    return (
+      <div className="field-group">
+        <div className="form-label">
+          <Loader className="me-1" inline size={16} />
+          Loading Docker image status...
+        </div>
+      </div>
+    );
+  }
+
+  if (dockerImageStatus === "available") {
+    return (
+      <div className="field-group">
+        <div className="form-label">
+          Docker image: <Badge color="success">available</Badge>
+        </div>
+      </div>
+    );
+  }
+
+  if (dockerImageStatus === "not-available") {
+    const moreInfo =
+      status === "error" ? (
+        <div>
+          <div className={cx("form-label", "mt-3")}>
+            <FontAwesomeIcon
+              className="text-danger"
+              icon={faExclamationTriangle}
+            />{" "}
+            The Docker image build failed. You can use the base image to start a
+            session, but project-specific dependencies will not be available.
+          </div>
+          <div>
+            {/* {buildAgain} */}
+            <ViewPipelineLink />
+          </div>
+        </div>
+      ) : null;
+
+    return (
+      <div className="field-group">
+        <div className="form-label">
+          Docker image: <Badge color="danger">not available</Badge>
+        </div>
+        {moreInfo}
+        <div>
+          {status} {dockerImageStatus}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="field-group">
+      <div className="form-label">
+        Docker image: {status} {dockerImageStatus}
+      </div>
+    </div>
+  );
+}
+
+function ViewPipelineLink() {
   const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
 
-  const {
-    commit,
-    dockerImageBuildStatus: status,
-    dockerImageStatus,
-  } = useStartSessionOptionsSelector(
-    ({ commit, dockerImageBuildStatus, dockerImageStatus }) => ({
+  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+
+  const { data: pipelines } = useGetPipelinesQuery(
+    { commit, projectId: gitLabProjectId ?? 0 },
+    { skip: !gitLabProjectId }
+  );
+
+  const { data: pipelineJob } = useGetPipelineJobByNameQuery(
+    {
+      jobName: SESSION_CI_IMAGE_BUILD_JOB,
+      pipelineIds: (pipelines ?? []).map(({ id }) => id),
+      projectId: gitLabProjectId ?? 0,
+    },
+    { skip: !gitLabProjectId || !pipelines }
+  );
+
+  const pipelineJobUrl = pipelineJob?.web_url;
+
+  if (!pipelineJobUrl) {
+    return null;
+  }
+
+  return (
+    <>
+      <ExternalLink
+        id="image-check-pipeline"
+        role="button"
+        showLinkIcon={true}
+        size="sm"
+        title="View pipeline in GitLab"
+        url={pipelineJobUrl}
+      />
+      <UncontrolledTooltip
+        placement="top"
+        target="image-check-pipeline"
+        trigger="hover"
+        offset={[0, 5]} // offset the tooltip a bit higher
+      >
+        Check the GitLab pipeline. For expert users.
+      </UncontrolledTooltip>
+    </>
+  );
+}
+
+function useDockerImageStatusStateMachine() {
+  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
+
+  const { commit, dockerImageBuildStatus: status } =
+    useStartSessionOptionsSelector(({ commit, dockerImageBuildStatus }) => ({
       commit,
       dockerImageBuildStatus,
-      dockerImageStatus,
-    })
-  );
+    }));
+
   const dispatch = useDispatch();
 
   const [
@@ -320,12 +457,4 @@ export default function SessionProjectDockerImage() {
       window.clearTimeout(timeout);
     };
   }, [dispatch, registryTagError, registryTagIsFetching, status]);
-
-  return (
-    <div className="field-group">
-      <div className="form-label">
-        Docker image: {status} {dockerImageStatus}
-      </div>
-    </div>
-  );
 }
