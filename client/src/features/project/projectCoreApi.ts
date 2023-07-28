@@ -54,6 +54,10 @@ interface GetConfigRawResponse {
   error?: unknown;
 }
 
+// Expected seconds of delay before the KG is aware of the latest changes.
+// TODO: this won't be useful anymore once we get status updates though WebSockets.
+const KG_STATUS_DELAY = 5;
+
 const KNOWN_CONFIG_KEYS = [
   "interactive.default_url",
   "interactive.lfs_auto_fetch",
@@ -316,7 +320,7 @@ export const projectCoreApi = createApi({
                 { type: "project-kg-metadata", id: params.projectId },
               ])
             );
-          }, 1000 * 5);
+          }, KG_STATUS_DELAY * 1000);
         });
       },
       transformErrorResponse: (error) => transformRenkuCoreErrorResponse(error),
