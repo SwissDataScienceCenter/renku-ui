@@ -16,13 +16,6 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  Entity Description.tsx
- *  Entity Description component
- */
-
 import React, { CSSProperties, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import cx from "classnames";
@@ -52,10 +45,8 @@ export default function EntityDescription({
   unavailable,
   urlChangeDescription,
 }: EntityDescriptionProps) {
-  let content: React.ReactNode = null;
-
-  if (description && typeof description === "string") {
-    content = (
+  const content =
+    description && typeof description === "string" ? (
       <>
         <RenkuMarkdown
           markdownText={description}
@@ -65,29 +56,22 @@ export default function EntityDescription({
           {description.includes("\n") ? " [...]" : ""}
         </span>
       </>
-    );
-  } else if (description) {
-    content = <span>{description}</span>;
-  } else if (loading) {
-    content = (
+    ) : description ? (
+      <span>{description}</span>
+    ) : loading ? (
       <small className="card-text text-rk-text-light">
         <i>Loading description...</i>
       </small>
-    );
-  } else if (unavailable) {
-    content = (
+    ) : unavailable ? (
       <small className="card-text text-rk-text-light">
         <i>(Description unavailable: {unavailable})</i>
       </small>
-    );
-  } else if (showSuggestion && hasDevAccess && urlChangeDescription) {
-    content = (
+    ) : showSuggestion && hasDevAccess && urlChangeDescription ? (
       <i>
         (This project has no description. You can provide one{" "}
         <Link to={urlChangeDescription}>here</Link>.)
       </i>
-    );
-  }
+    ) : null;
 
   return (
     <EntityDescriptionContainer
@@ -113,7 +97,7 @@ function EntityDescriptionContainer({
   isHeightFixed,
   numberLines,
 }: EntityDescriptionContainerProps) {
-  const descriptionStyles: CSSProperties = {
+  const style: CSSProperties = {
     display: "-webkit-box",
     height: isHeightFixed ? `${25 * numberLines}px` : undefined,
     lineClamp: isHeightFixed ? numberLines : undefined,
@@ -128,7 +112,7 @@ function EntityDescriptionContainer({
   return (
     <div
       className={cx("card-text", className)}
-      style={{ ...descriptionStyles, margin: "12px 0 0 0" }}
+      style={style}
       data-cy="entity-description"
     >
       {children}
