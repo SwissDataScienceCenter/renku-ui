@@ -94,6 +94,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.global.redis.existingSecret }}
                   key: {{ .Values.global.redis.existingSecretPasswordKey }}
+            - name: PROMETHEUS_ENABLED
+              value: {{ .Values.server.prometheus.enabled | quote }}
           livenessProbe:
             httpGet:
               path: /liveness

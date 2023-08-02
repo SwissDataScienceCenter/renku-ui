@@ -23,7 +23,10 @@ import config from "../../config";
 import logger from "../../logger";
 
 export function initializePrometheus(app: express.Application): void {
-  if (config.prometheus.enabled === false) return;
+  if (config.prometheus.enabled === false) {
+    logger.info("Prometheus is turned OFF, skipping initialization.");
+    return;
+  }
 
   const fullPath = config.server.prefix + config.prometheus.path;
   const metricsMiddleware = promBundle({
