@@ -285,5 +285,5 @@ server:
     enabled: true
     annotations:
       prometheus.io/path: "/ui-server/metrics"
-      prometheus.io/port: 8080
-      prometheus.io/scrape: true
+      prometheus.io/port: "8080"
+      prometheus.io/scrape: "true"
