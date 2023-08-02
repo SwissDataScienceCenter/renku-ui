@@ -28,12 +28,13 @@ export function initializePrometheus(app: express.Application): void {
     return;
   }
 
-  const fullPath = config.server.prefix + config.prometheus.path;
   const metricsMiddleware = promBundle({
     autoregister: true,
     includeMethod: true,
-    metricsPath: fullPath,
+    metricsPath: config.prometheus.path,
   });
-  logger.info(`Setting up Prometheus metrics, reachable at "${fullPath}"`);
+  logger.info(
+    `Setting up Prometheus metrics, reachable at "${config.prometheus.path}"`
+  );
   app.use(metricsMiddleware);
 }
