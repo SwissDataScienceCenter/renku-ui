@@ -21,18 +21,18 @@ import express from "express";
 import morgan from "morgan";
 import ws from "ws";
 
+import APIClient from "./api-client";
 import config from "./config";
+import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
 import logger from "./logger";
 import routes from "./routes";
 import { Authenticator } from "./authentication";
-import { registerAuthenticationRoutes } from "./authentication/routes";
-import { RedisStorage } from "./storage/RedisStorage";
-import { errorHandler } from "./utils/errorHandler";
-import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
-import { initializeSentry } from "./utils/sentry/sentry";
 import { configureWebsocket } from "./websocket";
-import APIClient from "./api-client";
-import promBundle from "express-prom-bundle";
+import { errorHandler } from "./utils/errorHandler";
+import { initializePrometheus } from "./utils/prometheus/prometheus";
+import { initializeSentry } from "./utils/sentry/sentry";
+import { RedisStorage } from "./storage/RedisStorage";
+import { registerAuthenticationRoutes } from "./authentication/routes";
 
 const app = express();
 const port = config.server.port;
@@ -60,6 +60,9 @@ logger.info("Server configuration: " + JSON.stringify(config));
 // initialize sentry if the SENTRY_URL is set
 initializeSentry(app);
 
+// set up Promotheus metrics
+initializePrometheus(app);
+
 // configure storage
 const storage = new RedisStorage();
 
@@ -77,15 +80,6 @@ authPromise.then(() => {
 
 // register middlewares
 app.use(cookieParser());
-
-const metricsMiddleware = promBundle({
-  autoregister: true,
-  includeMethod: true,
-  metricsPath: "/ui-server/metrics",
-});
-logger.info("!!! --- setting up metrics --- !!!");
-app.use(metricsMiddleware);
-// logger.info(JSON.stringify(metricsMiddleware));
 
 // register routes
 routes.register(app, prefix, authenticator, storage);

@@ -99,10 +99,16 @@ const WEBSOCKET = {
   timeoutActivationStatus: 120, // in minutes
 };
 
+const PROMETHEUS = {
+  enabled: [true, "true"].includes(process.env.PROMETHEUS_ENABLED),
+  path: "/metrics",
+};
+
 const config = {
   auth: AUTHENTICATION,
   data: DATA,
   deployment: DEPLOYMENT,
+  prometheus: PROMETHEUS,
   redis: REDIS,
   routes: ROUTES,
   sentry: SENTRY,
