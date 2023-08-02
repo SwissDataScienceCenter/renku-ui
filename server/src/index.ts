@@ -32,6 +32,7 @@ import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
 import { initializeSentry } from "./utils/sentry/sentry";
 import { configureWebsocket } from "./websocket";
 import APIClient from "./api-client";
+import promBundle from "express-prom-bundle";
 
 const app = express();
 const port = config.server.port;
@@ -76,6 +77,15 @@ authPromise.then(() => {
 
 // register middlewares
 app.use(cookieParser());
+
+const metricsMiddleware = promBundle({
+  autoregister: true,
+  includeMethod: true,
+  metricsPath: "/ui-server/metrics",
+});
+logger.info("!!! --- setting up metrics --- !!!");
+app.use(metricsMiddleware);
+// logger.info(JSON.stringify(metricsMiddleware));
 
 // register routes
 routes.register(app, prefix, authenticator, storage);
