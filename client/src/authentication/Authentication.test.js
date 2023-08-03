@@ -40,7 +40,7 @@ const history = {
 };
 const url = "https://fakedev.renku.ch/";
 delete window.location;
-window.location = { reload: jest.fn() };
+window.location = { reload: jest.fn(), replace: jest.fn() };
 
 // Mock localStorage event generator
 function dispatchFakeStorageEvent(key, newValue) {

@@ -23,7 +23,7 @@
  *  Authentication components to log in and out.
  */
 
-import React, { Component } from "react";
+import React from "react";
 
 const RenkuQueryParams = {
   login: "renku_login",
@@ -123,21 +123,25 @@ const LoginHelper = {
   queryParams: RenkuQueryParams,
 };
 
-// always pass "previous" with the current `location.pathname`
-class Login extends Component {
-  render() {
+function LoginRedirect(props) {
+  React.useEffect(() => {
     // build redirect url
-    let url = this.props.params.BASE_URL;
-    if (this.props.location.state && this.props.location.state.previous)
-      url += this.props.location.state.previous;
-    const redirectUrl = LoginHelper.createLoginUrl(url);
+    let url = props.params.BASE_URL;
+    // always pass "previous" with the current `location.pathname`
+    if (props.location.state && props.location.state.previous)
+      url += props.location.state.previous;
+    const redirectParam = encodeURIComponent(LoginHelper.createLoginUrl(url));
+    const uiServerUrl = props.params.UISERVER_URL;
+    const authUrl = `${uiServerUrl}/auth/login?redirect_url=${redirectParam}`;
 
     // set new location
-    window.location = `${
-      this.props.params.UISERVER_URL
-    }/auth/login?redirect_url=${encodeURIComponent(redirectUrl)}`;
-    return <p>logging in</p>;
-  }
+    window.location.replace(authUrl);
+  });
+  return <div className="bg-primary h-100"></div>;
+}
+
+function Login(props) {
+  return <LoginRedirect {...props} />;
 }
 
 export { Login, LoginHelper };

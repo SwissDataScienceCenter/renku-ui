@@ -102,7 +102,7 @@ function CentralContentContainer(props) {
             exact
             path="/login"
             render={(p) => (
-              <ContainerWrap>
+              <ContainerWrap fullSize>
                 <Login key="login" {...p} {...props} />
               </ContainerWrap>
             )}
