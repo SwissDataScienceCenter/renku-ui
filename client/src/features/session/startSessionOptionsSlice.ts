@@ -22,12 +22,14 @@ import { MIN_SESSION_STORAGE_GB } from "./startSessionOptions.constants";
 import {
   DockerImageBuildStatus,
   DockerImageStatus,
+  SessionCloudStorageMount,
   SessionEnvironmentVariable,
   StartSessionOptions,
 } from "./startSessionOptions.types";
 
 const initialState: StartSessionOptions = {
   branch: "",
+  cloudStorage: [],
   commit: "",
   defaultUrl: "",
   dockerImageBuildStatus: "unknown",
@@ -43,8 +45,17 @@ export const startSessionOptionsSlice = createSlice({
   name: "startSessionOptions",
   initialState,
   reducers: {
+    addCloudStorageMount: (state) => {
+      state.cloudStorage.push({ bucket: "", endpoint: "" });
+    },
     addEnvironmentVariable: (state) => {
       state.environmentVariables.push({ name: "", value: "" });
+    },
+    removeCloudStorageMount: (
+      state,
+      action: PayloadAction<{ index: number }>
+    ) => {
+      state.cloudStorage.splice(action.payload.index, 1);
     },
     removeEnvironmentVariable: (
       state,
@@ -89,6 +100,15 @@ export const startSessionOptionsSlice = createSlice({
     setStorage: (state, action: PayloadAction<number>) => {
       state.storage = action.payload;
     },
+    updateCloudStorageMount: (
+      state,
+      action: PayloadAction<{
+        index: number;
+        mount: SessionCloudStorageMount;
+      }>
+    ) => {
+      state.cloudStorage[action.payload.index] = action.payload.mount;
+    },
     updateEnvironmentVariable: (
       state,
       action: PayloadAction<{
@@ -104,7 +124,9 @@ export const startSessionOptionsSlice = createSlice({
 });
 
 export const {
+  addCloudStorageMount,
   addEnvironmentVariable,
+  removeCloudStorageMount,
   removeEnvironmentVariable,
   setBranch,
   setCommit,
@@ -115,6 +137,7 @@ export const {
   setPinnedDockerImage,
   setSessionClass,
   setStorage,
+  updateCloudStorageMount,
   updateEnvironmentVariable,
   reset,
 } = startSessionOptionsSlice.actions;

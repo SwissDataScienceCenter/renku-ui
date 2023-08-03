@@ -18,6 +18,7 @@
 
 export interface StartSessionOptions {
   branch: string;
+  cloudStorage: SessionCloudStorageMount[];
   commit: string;
   defaultUrl: string;
   dockerImageBuildStatus: DockerImageBuildStatus;
@@ -27,6 +28,13 @@ export interface StartSessionOptions {
   pinnedDockerImage: string;
   sessionClass: number;
   storage: number;
+}
+
+export interface SessionCloudStorageMount {
+  accessKey?: string;
+  bucket: string;
+  endpoint: string;
+  secretKey?: string;
 }
 
 export type DockerImageBuildStatus =

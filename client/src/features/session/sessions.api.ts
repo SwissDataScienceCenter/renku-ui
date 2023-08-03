@@ -112,7 +112,7 @@ const sessionsApi = createApi({
     startSession: builder.mutation<Session, StartSessionParams>({
       query: ({
         branch,
-        // cloudstorage,
+        cloudStorage,
         commit,
         defaultUrl,
         environmentVariables,
@@ -125,10 +125,10 @@ const sessionsApi = createApi({
       }) => {
         const body = {
           branch,
-          // cloudstorage: cloudstorage ?? [],
+          cloudstorage: cloudStorage,
           commit_sha: commit,
           default_url: defaultUrl,
-          environment_variables: environmentVariables ?? {},
+          environment_variables: environmentVariables,
           image: image || null,
           lfs_auto_fetch: lfsAutoFetch,
           namespace,

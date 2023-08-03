@@ -133,7 +133,7 @@ function EnvironmentVariable({ index, name, value }: EnvironmentVariableProps) {
   );
 
   return (
-    <Row>
+    <Row className={cx(hasDuplicate && "mb-3")}>
       <Col xs={5}>
         <Input
           invalid={hasDuplicate}

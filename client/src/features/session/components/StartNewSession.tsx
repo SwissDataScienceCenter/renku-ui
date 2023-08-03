@@ -38,10 +38,15 @@ import { useStartSessionMutation } from "../sessions.api";
 import { useStartSessionOptionsSelector } from "../startSessionOptionsSlice";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import SessionBranchOption from "./options/SessionBranchOption";
+import SessionCloudStorageOption from "./options/SessionCloudStorageOption";
 import SessionCommitOption from "./options/SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
 import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
 import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
+import {
+  isCloudStorageBucketValid,
+  isCloudStorageEndpointValid,
+} from "../../../notebooks/ObjectStoresConfig.present";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -275,6 +280,7 @@ function StartNewSessionOptions() {
       <SessionCommitOption />
       <StartNotebookServerOptions />
       <SessionEnvironmentVariables />
+      <SessionCloudStorageOption />
     </>
   );
 }
@@ -289,6 +295,7 @@ function StartSessionButton() {
 
   const {
     branch,
+    cloudStorage,
     commit,
     defaultUrl,
     dockerImageStatus,
@@ -304,6 +311,17 @@ function StartSessionButton() {
   const [startSession] = useStartSessionMutation();
 
   const onStart = useCallback(() => {
+    const cloudStorageValidated = cloudStorage.filter(
+      ({ bucket, endpoint }) => {
+        const isEndpointValid = isCloudStorageEndpointValid({ endpoint });
+        const hasDuplicate =
+          !!bucket &&
+          cloudStorage.filter((mount) => mount.bucket === bucket).length > 1;
+        const isBucketValid = isCloudStorageBucketValid({ bucket });
+        return isEndpointValid && !hasDuplicate && isBucketValid;
+      }
+    );
+
     const environmentVariablesRecord = environmentVariables
       .filter(({ name, value }) => name && value)
       .reduce(
@@ -313,6 +331,7 @@ function StartSessionButton() {
 
     startSession({
       branch,
+      cloudStorage: cloudStorageValidated,
       commit,
       defaultUrl,
       environmentVariables: environmentVariablesRecord,
@@ -325,6 +344,7 @@ function StartSessionButton() {
     });
   }, [
     branch,
+    cloudStorage,
     commit,
     defaultUrl,
     environmentVariables,
