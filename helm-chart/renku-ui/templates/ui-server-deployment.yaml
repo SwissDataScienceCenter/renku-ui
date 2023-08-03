@@ -3,7 +3,11 @@ kind: Deployment
 metadata:
   name: {{ include "ui-server.fullname" . }}
   labels:
-{{ include "ui-server.labels" . | indent 4 }}
+    {{- include "ui-server.labels" . | nindent 4 }}
+  {{- if .Values.server.prometheus.enabled }}
+  annotations:
+    {{- .Values.server.prometheus.annotations | toYaml | nindent 4 }}
+  {{- end }}
 spec:
   {{- if not .Values.server.autoscaling.enabled }}
   replicas: {{ .Values.server.replicaCount }}
@@ -90,6 +94,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.global.redis.existingSecret }}
                   key: {{ .Values.global.redis.existingSecretPasswordKey }}
+            - name: PROMETHEUS_ENABLED
+              value: {{ .Values.server.prometheus.enabled | quote }}
           livenessProbe:
             httpGet:
               path: /liveness
