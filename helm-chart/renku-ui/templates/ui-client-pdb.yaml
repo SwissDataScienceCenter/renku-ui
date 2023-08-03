@@ -1,0 +1,12 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "ui.fullname" . }}-client
+spec:
+  # NOTE: The server that hosts the javascript bundles should always be available
+  # and should not be shut down
+  maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: {{ template "ui.name" . }}
+      release: {{ .Release.Name }}
