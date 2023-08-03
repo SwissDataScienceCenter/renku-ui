@@ -40,6 +40,7 @@ import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import SessionBranchOption from "./options/SessionBranchOption";
 import SessionCommitOption from "./options/SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
+import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
 import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
 
 export default function StartNewSession() {
@@ -273,6 +274,7 @@ function StartNewSessionOptions() {
       <SessionBranchOption />
       <SessionCommitOption />
       <StartNotebookServerOptions />
+      <SessionEnvironmentVariables />
     </>
   );
 }
@@ -290,6 +292,7 @@ function StartSessionButton() {
     commit,
     defaultUrl,
     dockerImageStatus,
+    environmentVariables,
     lfsAutoFetch,
     pinnedDockerImage,
     sessionClass,
@@ -301,10 +304,18 @@ function StartSessionButton() {
   const [startSession] = useStartSessionMutation();
 
   const onStart = useCallback(() => {
+    const environmentVariablesRecord = environmentVariables
+      .filter(({ name, value }) => name && value)
+      .reduce(
+        (obj, { name, value }) => ({ ...obj, [name]: value }),
+        {} as Record<string, string>
+      );
+
     startSession({
       branch,
       commit,
       defaultUrl,
+      environmentVariables: environmentVariablesRecord,
       image: pinnedDockerImage,
       lfsAutoFetch,
       namespace,
@@ -316,6 +327,7 @@ function StartSessionButton() {
     branch,
     commit,
     defaultUrl,
+    environmentVariables,
     lfsAutoFetch,
     namespace,
     pinnedDockerImage,

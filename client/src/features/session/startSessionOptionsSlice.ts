@@ -22,6 +22,7 @@ import { MIN_SESSION_STORAGE_GB } from "./startSessionOptions.constants";
 import {
   DockerImageBuildStatus,
   DockerImageStatus,
+  SessionEnvironmentVariable,
   StartSessionOptions,
 } from "./startSessionOptions.types";
 
@@ -31,6 +32,7 @@ const initialState: StartSessionOptions = {
   defaultUrl: "",
   dockerImageBuildStatus: "unknown",
   dockerImageStatus: "unknown",
+  environmentVariables: [],
   lfsAutoFetch: false,
   pinnedDockerImage: "",
   sessionClass: 0,
@@ -41,6 +43,15 @@ export const startSessionOptionsSlice = createSlice({
   name: "startSessionOptions",
   initialState,
   reducers: {
+    addEnvironmentVariable: (state) => {
+      state.environmentVariables.push({ name: "", value: "" });
+    },
+    removeEnvironmentVariable: (
+      state,
+      action: PayloadAction<{ index: number }>
+    ) => {
+      state.environmentVariables.splice(action.payload.index, 1);
+    },
     setBranch: (state, action: PayloadAction<string>) => {
       state.branch = action.payload;
       // Also reset the commit when a branch is set
@@ -78,11 +89,23 @@ export const startSessionOptionsSlice = createSlice({
     setStorage: (state, action: PayloadAction<number>) => {
       state.storage = action.payload;
     },
+    updateEnvironmentVariable: (
+      state,
+      action: PayloadAction<{
+        index: number;
+        variable: SessionEnvironmentVariable;
+      }>
+    ) => {
+      state.environmentVariables[action.payload.index] =
+        action.payload.variable;
+    },
     reset: () => initialState,
   },
 });
 
 export const {
+  addEnvironmentVariable,
+  removeEnvironmentVariable,
   setBranch,
   setCommit,
   setDefaultUrl,
@@ -92,6 +115,7 @@ export const {
   setPinnedDockerImage,
   setSessionClass,
   setStorage,
+  updateEnvironmentVariable,
   reset,
 } = startSessionOptionsSlice.actions;
 

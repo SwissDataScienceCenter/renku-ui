@@ -99,13 +99,6 @@ export const StartNotebookServerOptions = () => {
       <SessionStorageOption />
       <AutoFetchLfsOption />
     </>
-
-    // <Row>
-    //   <DefaultUrlOption />
-    //   <SessionClassOption />
-    //   <SessionStorageOption />
-    //   <AutoFetchLfsOption />
-    // </Row>
   );
 };
 

@@ -93,7 +93,7 @@ export interface StartSessionParams {
   cloudstorage?: unknown[];
   commit: string;
   defaultUrl: string;
-  environmentVariables?: Record<string, string>;
+  environmentVariables: Record<string, string>;
   image?: string;
   lfsAutoFetch: boolean;
   namespace: string;

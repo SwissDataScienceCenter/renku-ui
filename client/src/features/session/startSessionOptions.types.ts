@@ -22,6 +22,7 @@ export interface StartSessionOptions {
   defaultUrl: string;
   dockerImageBuildStatus: DockerImageBuildStatus;
   dockerImageStatus: DockerImageStatus;
+  environmentVariables: SessionEnvironmentVariable[];
   lfsAutoFetch: boolean;
   pinnedDockerImage: string;
   sessionClass: number;
@@ -52,3 +53,8 @@ export type DockerImageStatus =
   | "available"
   | "not-available"
   | "building";
+
+export interface SessionEnvironmentVariable {
+  name: string;
+  value: string;
+}

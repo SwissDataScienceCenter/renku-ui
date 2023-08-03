@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
+import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
 import { clamp } from "lodash";
-import React, { useCallback, useEffect, useMemo } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Input, InputGroup, InputGroupText } from "reactstrap";
 import { ThrottledTooltip } from "../../../../components/Tooltip";
