@@ -32,8 +32,6 @@ import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
 import {
   CheckNotebookIcon,
   NotebooksDisabled,
-  ServerOptionBoolean,
-  ServerOptionEnum,
   ServerOptionRange,
 } from "./Notebooks.present";
 
@@ -44,8 +42,6 @@ export {
   NotebooksCoordinator,
   NotebooksDisabled,
   NotebooksHelper,
-  ServerOptionBoolean,
-  ServerOptionEnum,
   ServerOptionRange,
   StartNotebookServer,
 };

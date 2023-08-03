@@ -35,24 +35,21 @@ import Select, {
   components,
 } from "react-select";
 import { Col, FormGroup, Label } from "reactstrap";
-import { ErrorAlert, WarnAlert } from "../../../components/Alert";
-import { Loader } from "../../../components/Loader";
+import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
+import { Loader } from "../../../../components/Loader";
 import {
   ResourceClass,
   ResourcePool,
-} from "../../../features/dataServices/dataServices";
-import { useGetResourcePoolsQuery } from "../../../features/dataServices/dataServicesApi";
-import {
-  ProjectConfig,
-  StateModelProject,
-} from "../../../features/project/Project";
-import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
-import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
+} from "../../../dataServices/dataServices";
+import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
+import { ProjectConfig, StateModelProject } from "../../../project/Project";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
+import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import {
   reset,
   setSessionClass,
   useStartSessionOptionsSelector,
-} from "../../../features/session/startSessionOptionsSlice";
+} from "../../startSessionOptionsSlice";
 import styles from "./SessionClassOption.module.scss";
 
 export const SessionClassOption = () => {

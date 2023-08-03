@@ -30,7 +30,6 @@ import { ExternalLink } from "../../../components/ExternalLinks";
 import { GoBackButton } from "../../../components/buttons/Button";
 import { LockStatus, User } from "../../../model/RenkuModels";
 import { ProjectMetadata } from "../../../notebooks/components/Session";
-import { StartNotebookServerOptions } from "../../../notebooks/components/StartNotebookServerOptions";
 import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
@@ -41,6 +40,7 @@ import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import SessionBranchOption from "./options/SessionBranchOption";
 import SessionCommitOption from "./options/SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
+import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);

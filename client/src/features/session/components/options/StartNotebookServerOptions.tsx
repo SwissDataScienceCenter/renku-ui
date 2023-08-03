@@ -33,23 +33,20 @@ import {
   Row,
   UncontrolledDropdown,
 } from "reactstrap";
-import { Loader } from "../../components/Loader";
-import {
-  ProjectConfig,
-  StateModelProject,
-} from "../../features/project/Project";
-import { useGetConfigQuery } from "../../features/project/projectCoreApi";
-import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
-import { useServerOptionsQuery } from "../../features/session/sessions.api";
-import { ServerOptions } from "../../features/session/sessions.types";
+import { Loader } from "../../../../components/Loader";
+import { ProjectConfig, StateModelProject } from "../../../project/Project";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
+import { useCoreSupport } from "../../../project/useProjectCoreSupport";
+import { useServerOptionsQuery } from "../../sessions.api";
+import { ServerOptions } from "../../sessions.types";
 import {
   setDefaultUrl,
   setLfsAutoFetch,
   useStartSessionOptionsSelector,
-} from "../../features/session/startSessionOptionsSlice";
+} from "../../startSessionOptionsSlice";
+import { SessionClassOption } from "./SessionClassOption";
+import { SessionStorageOption } from "./SessionStorageOption";
 import styles from "./StartNotebookServerOptions.module.scss";
-import { SessionClassOption } from "./options/SessionClassOption";
-import { SessionStorageOption } from "./options/SessionStorageOption";
 
 export const StartNotebookServerOptions = () => {
   // Wait for options to load

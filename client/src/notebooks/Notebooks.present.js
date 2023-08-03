@@ -54,8 +54,6 @@ import { formatBytes, simpleHash } from "../utils/helpers/HelperFunctions";
 import { Url, appendCustomUrlPath } from "../utils/helpers/url";
 import {
   CheckNotebookIcon,
-  ServerOptionBoolean,
-  ServerOptionEnum,
   ServerOptionRange,
   StartNotebookServer,
   mergeEnumOptions,
@@ -853,8 +851,6 @@ export {
   Notebooks,
   NotebooksDisabled,
   SESSION_TABS,
-  ServerOptionBoolean,
-  ServerOptionEnum,
   ServerOptionRange,
   SessionJupyter,
   SessionLogs,

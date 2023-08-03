@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
 import { clamp } from "lodash";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import {
   Col,
@@ -28,20 +28,20 @@ import {
   InputGroupText,
   Label,
 } from "reactstrap";
-import { ThrottledTooltip } from "../../../components/Tooltip";
-import { ResourceClass } from "../../../features/dataServices/dataServices";
-import { useGetResourcePoolsQuery } from "../../../features/dataServices/dataServicesApi";
-import { StateModelProject } from "../../../features/project/Project";
-import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
-import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
+import { ThrottledTooltip } from "../../../../components/Tooltip";
+import { ResourceClass } from "../../../dataServices/dataServices";
+import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
+import { StateModelProject } from "../../../project/Project";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
+import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
-} from "../../../features/session/startSessionOptions.constants";
+} from "../../startSessionOptions.constants";
 import {
   setStorage,
   useStartSessionOptionsSelector,
-} from "../../../features/session/startSessionOptionsSlice";
+} from "../../startSessionOptionsSlice";
 import styles from "./SessionStorageOption.module.scss";
 
 export const SessionStorageOption = () => {
