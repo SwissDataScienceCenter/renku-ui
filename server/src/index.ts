@@ -60,7 +60,7 @@ logger.info("Server configuration: " + JSON.stringify(config));
 // initialize sentry if the SENTRY_URL is set
 initializeSentry(app);
 
-// set up Promotheus metrics
+// set up Prometheus metrics
 initializePrometheus(app);
 
 // configure storage

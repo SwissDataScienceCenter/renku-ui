@@ -23,7 +23,7 @@ import config from "../../config";
 import logger from "../../logger";
 
 export function initializePrometheus(app: express.Application): void {
-  if (config.prometheus.enabled === false) {
+  if (!config.prometheus.enabled) {
     logger.info("Prometheus is turned OFF, skipping initialization.");
     return;
   }
