@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,21 +16,14 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  Maintenance.js
- *  Maintenance components.
- */
-
 import React from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { Button, Row, Col } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWrench } from "@fortawesome/free-solid-svg-icons";
 
-import { FooterNavbar } from "./landing";
-import { StatuspageDisplay, isStatusConfigured } from "./statuspage";
+import { FooterNavbar } from "../../landing";
+import { StatuspageDisplay, isStatusConfigured } from "../../statuspage";
 
 interface MaintenanceProps {
   info: string;

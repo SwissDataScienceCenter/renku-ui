@@ -14,7 +14,7 @@ import App from "./App";
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
 import { LoginHelper } from "./authentication";
-import { Maintenance } from "./Maintenance";
+import { Maintenance } from "./features/maintenance/Maintenance";
 import { StateModel, globalSchema } from "./model";
 import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";

@@ -38,9 +38,9 @@ function Global<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    config(name = "getConfig") {
+    config(name = "getConfig", fixture = "config.json") {
       cy.intercept("/config.json", {
-        fixture: "config.json",
+        fixture,
       }).as(name);
       return this;
     }
