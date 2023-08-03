@@ -38,15 +38,15 @@ import {
   PopoverHeader,
   UncontrolledTooltip,
 } from "reactstrap";
-import { ErrorAlert } from "../../../components/Alert";
-import { Loader } from "../../../components/Loader";
-import CommitSelector from "../../../components/commitSelector/CommitSelector";
-import { UncontrolledPopover } from "../../../utils/ts-wrappers";
-import { useGetRepositoryCommitsQuery } from "../../repository/repository.api";
+import { ErrorAlert } from "../../../../components/Alert";
+import { Loader } from "../../../../components/Loader";
+import CommitSelector from "../../../../components/commitSelector/CommitSelector";
+import { UncontrolledPopover } from "../../../../utils/ts-wrappers";
+import { useGetRepositoryCommitsQuery } from "../../../repository/repository.api";
 import {
   setCommit,
   useStartSessionOptionsSelector,
-} from "../startSessionOptionsSlice";
+} from "../../startSessionOptionsSlice";
 
 export default function SessionCommitOption() {
   const defaultBranch = useSelector<RootStateOrAny, string>(
@@ -100,9 +100,10 @@ export default function SessionCommitOption() {
   if (isFetching) {
     return (
       <div className="field-group">
-        <Label>
-          Loading commits... <Loader inline size={16} />
-        </Label>
+        <div className="form-label">
+          <Loader className="me-1" inline size={16} />
+          Loading commits...
+        </div>
       </div>
     );
   }

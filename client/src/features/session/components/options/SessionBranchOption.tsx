@@ -37,16 +37,16 @@ import {
   PopoverHeader,
   UncontrolledTooltip,
 } from "reactstrap";
-import { ErrorAlert, InfoAlert } from "../../../components/Alert";
-import { ExternalLink } from "../../../components/ExternalLinks";
-import { Loader } from "../../../components/Loader";
-import { Url } from "../../../utils/helpers/url";
-import { UncontrolledPopover } from "../../../utils/ts-wrappers";
-import { useGetAllRepositoryBranchesQuery } from "../../repository/repository.api";
+import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
+import { ExternalLink } from "../../../../components/ExternalLinks";
+import { Loader } from "../../../../components/Loader";
+import { Url } from "../../../../utils/helpers/url";
+import { UncontrolledPopover } from "../../../../utils/ts-wrappers";
+import { useGetAllRepositoryBranchesQuery } from "../../../repository/repository.api";
 import {
   setBranch,
   useStartSessionOptionsSelector,
-} from "../startSessionOptionsSlice";
+} from "../../startSessionOptionsSlice";
 
 export default function SessionBranchOption() {
   const defaultBranch = useSelector<RootStateOrAny, string>(
@@ -115,7 +115,8 @@ export default function SessionBranchOption() {
     return (
       <div className="field-group">
         <div className="form-label">
-          Loading branches... <Loader inline size={16} />
+          <Loader className="me-1" inline size={16} />
+          Loading branches...
         </div>
       </div>
     );

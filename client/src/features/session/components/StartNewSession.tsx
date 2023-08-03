@@ -38,8 +38,8 @@ import { Url } from "../../../utils/helpers/url";
 import { useStartSessionMutation } from "../sessions.api";
 import { useStartSessionOptionsSelector } from "../startSessionOptionsSlice";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
-import SessionBranchOption from "./SessionBranchOption";
-import SessionCommitOption from "./SessionCommitOption";
+import SessionBranchOption from "./options/SessionBranchOption";
+import SessionCommitOption from "./options/SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
 
 export default function StartNewSession() {
