@@ -47,13 +47,6 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
       params["PRIVACY_STATEMENT"] = null;
     else params["PRIVACY_STATEMENT"] = privacy;
 
-    // show maintenance page when necessary
-    const maintenance = params["MAINTENANCE"];
-    if (maintenance) {
-      root.render(<Maintenance info={maintenance} />);
-      return;
-    }
-
     // configure base url
     Url.setBaseUrl(params["BASE_URL"]);
 
@@ -65,6 +58,17 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
 
     // Create the global model containing the formal schema definition and the redux store
     const model = new StateModel(globalSchema);
+
+    // show maintenance page when necessary
+    const maintenance = params["MAINTENANCE"];
+    if (maintenance) {
+      root.render(
+        <Provider store={model.reduxStore}>
+          <Maintenance info={maintenance} />
+        </Provider>
+      );
+      return;
+    }
 
     // Query user data
     const userCoordinator = new UserCoordinator(client, model.subModel("user"));

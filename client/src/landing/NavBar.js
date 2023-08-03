@@ -486,40 +486,6 @@ class AnonymousNavBar extends Component {
   }
 }
 
-class MaintenanceNavBar extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isOpen: true,
-    };
-  }
-
-  render() {
-    return (
-      <header>
-        <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
-          <span className="navbar-brand">
-            <Link to="/">
-              <img src={logo} alt="Renku" height="24" />
-            </Link>
-          </span>
-          <button
-            className="navbar-toggler mt-3"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-        </nav>
-      </header>
-    );
-  }
-}
-
 function FooterNavbar({ params }) {
   const projectMetadata = useSelector(
     (state) => state.stateModel.project?.metadata
@@ -585,5 +551,5 @@ function FooterNavbar({ params }) {
   );
 }
 
-export { RenkuNavBar, FooterNavbar, MaintenanceNavBar };
+export { RenkuNavBar, FooterNavbar };
 export { RenkuToolbarHelpMenu, RenkuToolbarNotifications };
