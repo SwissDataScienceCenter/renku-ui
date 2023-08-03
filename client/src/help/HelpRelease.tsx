@@ -38,13 +38,32 @@ type Params = {
   UI_VERSION: string;
 };
 
+function componentDocsUrl(
+  componentUrl: string,
+  taggedVersion: string | undefined,
+  devHash: string | undefined | null
+) {
+  const releasesUrl = `${componentUrl}/releases/`;
+  return taggedVersion == null
+    ? releasesUrl
+    : devHash == null
+    ? `${componentUrl}/releases/tag/${taggedVersion}`
+    : releasesUrl;
+}
+
 /**
  * Parse the chart version into components according to https://github.com/jupyterhub/chartpress/tree/1.3.0
  * NB This may need to change if chartpress is updated.
  * @param version the chart version
  * @returns the version components
  */
-function parseChartVersion(version: string) {
+function parseChartVersion(version: string | undefined) {
+  if (version == null) {
+    return {
+      taggedVersion: "unknown",
+      devHash: "unknown",
+    };
+  }
   const versionComponents = version.split("-");
   if (versionComponents.length === 1) {
     return {
@@ -73,7 +92,7 @@ function parseChartVersion(version: string) {
 }
 
 type ComponentVersionsProps = {
-  componentUrl: string;
+  componentUrl: string /* URL of the component's repository, without a trailing slash */;
   isFetching: boolean;
   taggedVersion: string | undefined;
 };
@@ -124,10 +143,11 @@ function NotebookRelease() {
 
 function RenkuRelease({ chartVersion }: { chartVersion: string }) {
   const { taggedVersion, devHash } = parseChartVersion(chartVersion);
-  const releaseUrl =
-    devHash == null
-      ? `https://github.com/SwissDataScienceCenter/renku/releases/tag/${taggedVersion}`
-      : "https://github.com/SwissDataScienceCenter/renku/releases/";
+  const releaseUrl = componentDocsUrl(
+    "https://github.com/SwissDataScienceCenter/renku",
+    taggedVersion,
+    devHash
+  );
   return (
     <>
       <ExternalLink role="text" title={taggedVersion} url={releaseUrl} />
@@ -138,10 +158,11 @@ function RenkuRelease({ chartVersion }: { chartVersion: string }) {
 
 function UiRelease({ uiVersion }: { uiVersion: string }) {
   const { taggedVersion, devHash } = parseChartVersion(uiVersion);
-  const releaseUrl =
-    devHash == null
-      ? `https://github.com/SwissDataScienceCenter/renku-ui/releases/tag/${taggedVersion}`
-      : "https://github.com/SwissDataScienceCenter/renku-ui/releases/";
+  const releaseUrl = componentDocsUrl(
+    "https://github.com/SwissDataScienceCenter/renku-ui",
+    taggedVersion,
+    devHash
+  );
   return (
     <>
       <ExternalLink role="text" title={taggedVersion} url={releaseUrl} />

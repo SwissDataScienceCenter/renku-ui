@@ -558,7 +558,7 @@ function FooterNavbar({ params }) {
           </span>
         </div>
         <div className="w-100">
-          <Nav className="justify-content-center">
+          <Nav className="justify-content-center" data-cy="version-info">
             <Link className="nav-link" to={Url.pages.help.release}>
               <img src={logo} alt="Renku" className="pb-2" height="44" />
               <span className="ps-2">{displayVersion}</span>
