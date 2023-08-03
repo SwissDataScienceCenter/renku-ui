@@ -23,14 +23,11 @@ import {
   Badge,
   Button,
   ButtonGroup,
-  Col,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
-  FormGroup,
   Input,
   Label,
-  Row,
   UncontrolledDropdown,
 } from "reactstrap";
 import { Loader } from "../../../../components/Loader";
@@ -85,20 +82,30 @@ export const StartNotebookServerOptions = () => {
       ? "Checking project version and RenkuLab compatibility..."
       : "Please wait...";
     return (
-      <Row>
-        <p>{message}</p>
+      <div className="field-group">
+        <div className="form-label">
+          <Loader className="me-1" inline size={16} />
+          {message}
+        </div>
         <Loader />
-      </Row>
+      </div>
     );
   }
 
   return (
-    <Row>
+    <>
       <DefaultUrlOption />
       <SessionClassOption />
       <SessionStorageOption />
       <AutoFetchLfsOption />
-    </Row>
+    </>
+
+    // <Row>
+    //   <DefaultUrlOption />
+    //   <SessionClassOption />
+    //   <SessionStorageOption />
+    //   <AutoFetchLfsOption />
+    // </Row>
   );
 };
 
@@ -151,7 +158,7 @@ const DefaultUrlOption = () => {
   }, [dispatch, projectConfig]);
 
   const onChange = useCallback(
-    (event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
+    (_event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
       if (value) {
         dispatch(setDefaultUrl(value));
       }
@@ -169,20 +176,40 @@ const DefaultUrlOption = () => {
   }
 
   const { defaultUrl } = serverOptions;
+  const safeOptions =
+    selectedDefaultUrl &&
+    defaultUrlOptions &&
+    defaultUrlOptions.length &&
+    !defaultUrlOptions.includes(selectedDefaultUrl)
+      ? [...defaultUrlOptions, selectedDefaultUrl]
+      : defaultUrlOptions;
+
+  if (safeOptions.length === 1) {
+    return (
+      <div className="field-group">
+        <div className="form-label">
+          {defaultUrl.displayName}{" "}
+          <ServerOptionEnum
+            {...defaultUrl}
+            options={defaultUrlOptions}
+            selected={selectedDefaultUrl}
+            onChange={onChange}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <Col xs={12}>
-      <FormGroup className="field-group">
-        <Label className="me-2">{defaultUrl.displayName}</Label>
-        {defaultUrlOptions.length > 1 && <br />}
-        <ServerOptionEnum
-          {...defaultUrl}
-          options={defaultUrlOptions}
-          selected={selectedDefaultUrl}
-          onChange={onChange}
-        />
-      </FormGroup>
-    </Col>
+    <div className="field-group">
+      <div className="form-label">{defaultUrl.displayName}</div>
+      <ServerOptionEnum
+        {...defaultUrl}
+        options={defaultUrlOptions}
+        selected={selectedDefaultUrl}
+        onChange={onChange}
+      />
+    </div>
   );
 };
 
@@ -242,16 +269,14 @@ const AutoFetchLfsOption = () => {
   }, [dispatch, lfsAutoFetch]);
 
   return (
-    <Col xs={12}>
-      <FormGroup className="field-group">
-        <ServerOptionBoolean
-          id="option-lfs-auto-fetch"
-          displayName="Automatically fetch LFS data"
-          onChange={onChange}
-          selected={lfsAutoFetch}
-        />
-      </FormGroup>
-    </Col>
+    <div className="field-group">
+      <ServerOptionBoolean
+        id="option-lfs-auto-fetch"
+        displayName="Automatically fetch LFS data"
+        onChange={onChange}
+        selected={lfsAutoFetch}
+      />
+    </div>
   );
 };
 

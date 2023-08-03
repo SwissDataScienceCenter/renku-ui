@@ -34,7 +34,6 @@ import Select, {
   SingleValueProps,
   components,
 } from "react-select";
-import { Col, FormGroup, Label } from "reactstrap";
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import {
@@ -150,15 +149,18 @@ export const SessionClassOption = () => {
 
   if (isLoading) {
     return (
-      <Col xs={12}>
-        Fetching available resource pools... <Loader size={16} inline />
-      </Col>
+      <div className="field-group">
+        <div className="form-label">
+          <Loader className="me-1" inline size={16} />
+          Fetching available resource pools...
+        </div>
+      </div>
     );
   }
 
   if (!resourcePools || resourcePools.length == 0 || isError) {
     return (
-      <Col xs={12}>
+      <div className="field-group">
         <ErrorAlert dismissible={false}>
           <h3 className={cx("fs-6", "fw-bold")}>
             Error on loading available session resource pools
@@ -168,28 +170,26 @@ export const SessionClassOption = () => {
             be successful.
           </p>
         </ErrorAlert>
-      </Col>
+      </div>
     );
   }
 
   return (
-    <Col xs={12}>
-      <FormGroup className="field-group">
-        <Label>Session class</Label>
-        <SessionRequirements
-          currentSessionClass={currentSessionClass}
-          resourcePools={resourcePools}
-          projectConfig={projectConfig}
-        />
-        <SessionClassSelector
-          resourcePools={resourcePools}
-          currentSessionClass={currentSessionClass}
-          defaultSessionClass={defaultSessionClass}
-          onChange={onChange}
-        />
-        <SessionClassWarning currentSessionClass={currentSessionClass} />
-      </FormGroup>
-    </Col>
+    <div className="field-group">
+      <div className="form-label">Session class</div>
+      <SessionRequirements
+        currentSessionClass={currentSessionClass}
+        resourcePools={resourcePools}
+        projectConfig={projectConfig}
+      />
+      <SessionClassSelector
+        resourcePools={resourcePools}
+        currentSessionClass={currentSessionClass}
+        defaultSessionClass={defaultSessionClass}
+        onChange={onChange}
+      />
+      <SessionClassWarning currentSessionClass={currentSessionClass} />
+    </div>
   );
 };
 
