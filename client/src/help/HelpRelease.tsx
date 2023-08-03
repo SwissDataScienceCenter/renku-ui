@@ -16,14 +16,7 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  Help.present.js
- *  Presentational components for help.
- */
-
-import React, { Fragment } from "react";
+import React from "react";
 import { Row, Col } from "reactstrap";
 
 import { Loader } from "../components/Loader";
@@ -32,6 +25,7 @@ import {
   useGetCoreVersionsQuery,
   useGetNotebooksVersionsQuery,
 } from "../features/versions/versionsApi";
+import { RenkuRepositories } from "../utils/constants/Repositories";
 
 type Params = {
   RENKU_CHART_VERSION: string;
@@ -91,7 +85,7 @@ function parseChartVersion(version: string | undefined) {
   };
 }
 
-type ComponentVersionsProps = {
+type ComponentVersionProps = {
   componentUrl: string /* URL of the component's repository, without a trailing slash */;
   isFetching: boolean;
   taggedVersion: string | undefined;
@@ -100,7 +94,7 @@ function ComponentVersion({
   componentUrl,
   isFetching,
   taggedVersion,
-}: ComponentVersionsProps) {
+}: ComponentVersionProps) {
   if (isFetching) {
     return <Loader inline size={16} />;
   }
@@ -119,11 +113,37 @@ function ComponentVersion({
   );
 }
 
+type ComponentAndDevVersionProps = {
+  componentUrl: string /* URL of the component's repository, without a trailing slash */;
+  devHash: string | undefined | null;
+  taggedVersion: string | undefined;
+};
+function ComponentAndDevVersion({
+  componentUrl,
+  devHash,
+  taggedVersion,
+}: ComponentAndDevVersionProps) {
+  const releaseUrl = componentDocsUrl(componentUrl, taggedVersion, devHash);
+  return (
+    <>
+      <ExternalLink role="text" title={taggedVersion} url={releaseUrl} />
+      {devHash != null && (
+        <>
+          {" "}
+          <span>
+            (dev version <code className="user-select-all">{devHash}</code>)
+          </span>
+        </>
+      )}
+    </>
+  );
+}
+
 function CoreRelease() {
   const { data, isFetching } = useGetCoreVersionsQuery();
   return (
     <ComponentVersion
-      componentUrl="https://github.com/SwissDataScienceCenter/renku-python"
+      componentUrl={RenkuRepositories.Python}
       isFetching={isFetching}
       taggedVersion={data?.coreVersions[0]}
     />
@@ -134,7 +154,7 @@ function NotebookRelease() {
   const { data, isFetching } = useGetNotebooksVersionsQuery();
   return (
     <ComponentVersion
-      componentUrl="https://github.com/SwissDataScienceCenter/renku-notebooks"
+      componentUrl={RenkuRepositories.Notebooks}
       isFetching={isFetching}
       taggedVersion={data?.version}
     />
@@ -143,31 +163,23 @@ function NotebookRelease() {
 
 function RenkuRelease({ chartVersion }: { chartVersion: string }) {
   const { taggedVersion, devHash } = parseChartVersion(chartVersion);
-  const releaseUrl = componentDocsUrl(
-    "https://github.com/SwissDataScienceCenter/renku",
-    taggedVersion,
-    devHash
-  );
   return (
-    <>
-      <ExternalLink role="text" title={taggedVersion} url={releaseUrl} />
-      {devHash != null && <span>&nbsp;(dev version {devHash})</span>}
-    </>
+    <ComponentAndDevVersion
+      componentUrl={RenkuRepositories.Renku}
+      devHash={devHash}
+      taggedVersion={taggedVersion}
+    />
   );
 }
 
 function UiRelease({ uiVersion }: { uiVersion: string }) {
   const { taggedVersion, devHash } = parseChartVersion(uiVersion);
-  const releaseUrl = componentDocsUrl(
-    "https://github.com/SwissDataScienceCenter/renku-ui",
-    taggedVersion,
-    devHash
-  );
   return (
-    <>
-      <ExternalLink role="text" title={taggedVersion} url={releaseUrl} />
-      {devHash != null && <span>&nbsp;(dev version {devHash})</span>}
-    </>
+    <ComponentAndDevVersion
+      componentUrl={RenkuRepositories.UI}
+      devHash={devHash}
+      taggedVersion={taggedVersion}
+    />
   );
 }
 
