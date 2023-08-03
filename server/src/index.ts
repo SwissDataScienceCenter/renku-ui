@@ -21,17 +21,18 @@ import express from "express";
 import morgan from "morgan";
 import ws from "ws";
 
+import APIClient from "./api-client";
 import config from "./config";
+import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
 import logger from "./logger";
 import routes from "./routes";
 import { Authenticator } from "./authentication";
-import { registerAuthenticationRoutes } from "./authentication/routes";
-import { RedisStorage } from "./storage/RedisStorage";
-import { errorHandler } from "./utils/errorHandler";
-import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
-import { initializeSentry } from "./utils/sentry/sentry";
 import { configureWebsocket } from "./websocket";
-import APIClient from "./api-client";
+import { errorHandler } from "./utils/errorHandler";
+import { initializePrometheus } from "./utils/prometheus/prometheus";
+import { initializeSentry } from "./utils/sentry/sentry";
+import { RedisStorage } from "./storage/RedisStorage";
+import { registerAuthenticationRoutes } from "./authentication/routes";
 
 const app = express();
 const port = config.server.port;
@@ -58,6 +59,9 @@ logger.info("Server configuration: " + JSON.stringify(config));
 
 // initialize sentry if the SENTRY_URL is set
 initializeSentry(app);
+
+// set up Prometheus metrics
+initializePrometheus(app);
 
 // configure storage
 const storage = new RedisStorage();
