@@ -549,7 +549,7 @@ function FooterNavbar({ params }) {
   const footer = (
     <footer className="footer">
       <Navbar
-        className="container-fluid flex-wrap flex-lg-nowrap justify-content-between
+        className="container-fluid flex-nowrap justify-content-between
         renku-container navbar bg-primary navbar-dark"
       >
         <div className="w-100">
@@ -558,7 +558,10 @@ function FooterNavbar({ params }) {
           </span>
         </div>
         <div className="w-100">
-          <Nav className="justify-content-center" data-cy="version-info">
+          <Nav
+            className="justify-content-end justify-content-lg-center"
+            data-cy="version-info"
+          >
             <Link className="nav-link" to={Url.pages.help.release}>
               <img src={logo} alt="Renku" className="pb-2" height="44" />
               <span className="ps-2">{displayVersion}</span>
