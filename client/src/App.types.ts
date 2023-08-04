@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 
-import LoginRedirect from "./LoginRedirect.tsx";
-import { LoginHelper } from "./Authentication.container.js";
+type Params = {
+  BASE_URL: string;
+  RENKU_CHART_VERSION: string;
+  UI_VERSION: string;
+  UISERVER_URL: string;
+};
 
-export { LoginHelper, LoginRedirect };
+export type { Params };
