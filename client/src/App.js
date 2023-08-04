@@ -43,7 +43,7 @@ import { Cookie, Privacy } from "./privacy";
 import { NotificationsManager, NotificationsPage } from "./notifications";
 import { StyleGuide } from "./styleguide";
 import { Url } from "./utils/helpers/url";
-import { Unavailable } from "./Maintenance";
+import { Unavailable } from "./features/maintenance/Maintenance";
 import { Loader } from "./components/Loader";
 import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
