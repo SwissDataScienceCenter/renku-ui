@@ -24,36 +24,48 @@ import React, {
   useState,
 } from "react";
 import {
-  faUserClock,
+  faExclamationTriangle,
   faLink,
   faPlay,
-  faExclamationTriangle,
+  faUserClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router";
+import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
-import {
-  ErrorAlert,
-  InfoAlert,
-  RenkuAlert,
-  WarnAlert,
-} from "../../../components/Alert";
+import { InfoAlert, RenkuAlert, WarnAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import {
   ButtonWithMenu,
   GoBackButton,
 } from "../../../components/buttons/Button";
+import ProgressStepsIndicator, {
+  ProgressStyle,
+  ProgressType,
+  StatusStepProgressBar,
+} from "../../../components/progress/ProgressSteps";
+import { ShareLinkSessionModal } from "../../../components/shareLinkSession/ShareLinkSession";
 import { LockStatus, User } from "../../../model/RenkuModels";
+import {
+  isCloudStorageBucketValid,
+  isCloudStorageEndpointValid,
+} from "../../../notebooks/ObjectStoresConfig.present";
 import { ProjectMetadata } from "../../../notebooks/components/Session";
 import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
+import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
 import { Url } from "../../../utils/helpers/url";
 import { useStartSessionMutation } from "../sessions.api";
+import {
+  setError,
+  setStarting,
+  setSteps,
+  useStartSessionSelector,
+} from "../startSession.slice";
 import { useStartSessionOptionsSelector } from "../startSessionOptionsSlice";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import SessionBranchOption from "./options/SessionBranchOption";
@@ -62,22 +74,6 @@ import SessionCommitOption from "./options/SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
 import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
 import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
-import {
-  isCloudStorageBucketValid,
-  isCloudStorageEndpointValid,
-} from "../../../notebooks/ObjectStoresConfig.present";
-import { ShareLinkSessionModal } from "../../../components/shareLinkSession/ShareLinkSession";
-import {
-  setError,
-  setStarting,
-  setSteps,
-  useStartSessionSelector,
-} from "../startSession.slice";
-import ProgressStepsIndicator, {
-  ProgressStyle,
-  ProgressType,
-  StatusStepProgressBar,
-} from "../../../components/progress/ProgressSteps";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -96,13 +92,7 @@ export default function StartNewSession() {
     (state) => state.stateModel.user.logged
   );
 
-  const { error, errorMessage, starting } = useStartSessionSelector(
-    ({ error, errorMessage, starting }) => ({
-      error,
-      errorMessage,
-      starting,
-    })
-  );
+  const starting = useStartSessionSelector(({ starting }) => starting);
 
   if (!logged && !anonymousSessionsEnabled) {
     return (
@@ -139,11 +129,10 @@ export default function StartNewSession() {
       <BackButton />
       <Row>
         <Col sm={12} md={3} lg={4}>
-          {error}
-          {errorMessage}
           <SessionStartSidebar />
         </Col>
         <Col sm={12} md={9} lg={8}>
+          <SessionStartError />
           <Form className="form-rk-green">
             <SessionSaveWarning />
             <StartNewSessionOptions />
@@ -194,12 +183,15 @@ function SessionStarting() {
 
   useEffect(() => {
     if (error) {
-      // "data" in error;
-      console.log({ error });
+      const errorMessage = isFetchBaseQueryError(error)
+        ? (error.data as { error?: { message?: string } }).error?.message ??
+          JSON.stringify(error.data)
+        : `${error}`;
+      // console.log({ error: error.data });
       dispatch(
         setError({
           error: "backend-error",
-          errorMessage: `${error}`,
+          errorMessage,
         })
       );
     }
@@ -227,14 +219,40 @@ function SessionStartError() {
     return null;
   }
 
-  const color = "danger";
+  const color =
+    error === "docker-image-building" || error === "session-class"
+      ? "warning"
+      : "danger";
+
+  const content =
+    error === "backend-error" ? (
+      <>
+        An error occurred when trying to start a new session. Error message:{" "}
+        {errorMessage}
+      </>
+    ) : error === "no-commit" ? (
+      <>This project has no commit</>
+    ) : error === "docker-image-building" ? (
+      <>
+        The session could not start because the image is still building. Please
+        wait for the build to finish, or start the session with the base image.
+      </>
+    ) : error === "docker-image-not-available" ? (
+      <>
+        The session could not start because no image is available. Please select
+        a different commit or start the session with the base image.
+      </>
+    ) : (
+      <>
+        The session could not start because no suitable session class could be
+        automatically selected. Please select a session class to start a
+        session.
+      </>
+    );
 
   return (
     <RenkuAlert color={color} timeout={0}>
-      <p className="mb-0">
-        An error occurred when trying to start a new session. Error message:{" "}
-        {errorMessage}
-      </p>
+      <p className="mb-0">{content}</p>
     </RenkuAlert>
   );
 }
