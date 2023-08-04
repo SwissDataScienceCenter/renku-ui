@@ -28,9 +28,7 @@ import { StatuspageDisplay, isStatusConfigured } from "../../statuspage";
 interface MaintenanceProps {
   info: string;
 }
-function Maintenance(props: MaintenanceProps) {
-  const { info } = props;
-
+function Maintenance({ info }: MaintenanceProps) {
   const headerText = "Maintenance ongoing";
   const body =
     info && info !== "true" && info !== "1"
@@ -43,11 +41,11 @@ function Maintenance(props: MaintenanceProps) {
           <main role="main" className="container-fluid">
             <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
               <h1 className="text-center text-primary">
-                <FontAwesomeIcon icon={faWrench} /> {headerText}{" "}
-                <FontAwesomeIcon icon={faWrench} />
+                <FontAwesomeIcon className="me-3" icon={faWrench} />
+                {headerText}
+                <FontAwesomeIcon className="ms-3" icon={faWrench} />
               </h1>
-              <br />
-              <p className="text-center">{body}</p>
+              <p className="text-center mt-4">{body}</p>
             </section>
           </main>
         </div>
