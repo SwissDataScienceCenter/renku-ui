@@ -75,3 +75,18 @@ describe("display the maintenance page", () => {
     cy.get("h4").contains("Scheduled Maintenance Details").should("be.visible");
   });
 });
+
+describe("display version information", () => {
+  beforeEach(() => {
+    new Fixtures(cy).config().versions().userNone();
+    cy.visit("/");
+  });
+
+  it("shows release and component versions", () => {
+    cy.get_cy("version-info").should("be.visible").click();
+    cy.contains("Renku version 3.10.0").should("be.visible");
+    cy.contains("UI: 3.10.0").should("be.visible");
+    cy.contains("Core: v2.4.1").should("be.visible");
+    cy.contains("Notebooks: 1.15.2").should("be.visible");
+  });
+});

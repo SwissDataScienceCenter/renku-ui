@@ -139,6 +139,7 @@ fi
 tee > ./public/config.json << EOF
 {
   "UI_VERSION": "${CURRENT_CHART}-${CURRENT_COMMIT}",
+  "RENKU_CHART_VERSION": "${CURRENT_CHART}-telepresence",
   "UI_SHORT_SHA": "development",
   "TELEPRESENCE": "true",
   "BASE_URL": "${BASE_URL}",

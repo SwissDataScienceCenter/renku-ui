@@ -91,6 +91,11 @@ spec:
               value: {{ toJson .Values.client.uploadSizeThreshold | quote }}
             - name: UI_VERSION
               value: {{ .Chart.Version | quote }}
+            - name: RENKU_CHART_VERSION
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-version
+                  key: chart_version
             - name: HOMEPAGE
               value: {{ toJson .Values.client.homepage | quote }}
           livenessProbe:
