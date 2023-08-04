@@ -21,6 +21,7 @@ export NGINX_PATH=/usr/share/nginx/html
 echo "Config file contains the following settings:"
 echo "==================================================="
 echo " UI_VERSION=${UI_VERSION}"
+echo " RENKU_CHART_VERSION=${RENKU_CHART_VERSION}"
 echo " UI_SHORT_SHA=${RENKU_UI_SHORT_SHA}"
 echo " GATEWAY_URL=${GATEWAY_URL:-http://gateway.renku.build}"
 echo " UISERVER_URL=${UISERVER_URL:-http://uiserver.renku.build}"
@@ -48,6 +49,7 @@ echo "==================================================="
 tee > "${NGINX_PATH}/config.json" << EOF
 {
   "UI_VERSION": "${UI_VERSION}",
+  "RENKU_CHART_VERSION": "${RENKU_CHART_VERSION}",
   "UI_SHORT_SHA": "${RENKU_UI_SHORT_SHA}",
   "BASE_URL": "${BASE_URL:-http://renku.build}",
   "GATEWAY_URL": "${GATEWAY_URL:-http://gateway.renku.build}",

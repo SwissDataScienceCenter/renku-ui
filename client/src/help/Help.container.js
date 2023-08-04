@@ -27,22 +27,11 @@ import React from "react";
 
 import { Help as HelpPresent } from "./Help.present";
 
-function urlMap(baseUrl) {
-  return {
-    base: baseUrl,
-    getting: `${baseUrl}/getting`,
-    documentation: `${baseUrl}/docs`,
-    features: `${baseUrl}/features`,
-    status: `${baseUrl}/status`,
-    changes: `${baseUrl}/changes`,
-  };
-}
-
 function Help(props) {
   return (
     <HelpPresent
-      url={urlMap(props.match.url)}
       model={props.model}
+      params={props.params}
       statuspageId={props.statuspageId}
     />
   );
