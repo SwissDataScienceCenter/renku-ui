@@ -136,15 +136,25 @@ function EnvironmentVariable({ index, name, value }: EnvironmentVariableProps) {
     <Row className={cx(hasDuplicate && "mb-3")}>
       <Col xs={5}>
         <Input
+          autoComplete="variableName"
           invalid={hasDuplicate}
+          name="variableName"
           onChange={onUpdateName}
+          placeholder="Variable"
           type="text"
           value={name}
         />
         {hasDuplicate && <ErrorLabel text="Variable names must be unique" />}
       </Col>
       <Col xs={5}>
-        <Input onChange={onUpdateValue} type="text" value={value} />
+        <Input
+          autoComplete="variableValue"
+          name="variableValue"
+          onChange={onUpdateValue}
+          placeholder="Value"
+          type="text"
+          value={value}
+        />
       </Col>
       <Col xs={2}>
         <Button

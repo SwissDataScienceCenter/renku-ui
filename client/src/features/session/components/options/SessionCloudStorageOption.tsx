@@ -207,27 +207,12 @@ function SessionS3CloudStorageModal({
             Add Bucket
           </Button>
         </div>
-        {/* <ObjectStoresTable
-            objectStoresConfiguration={storesConfig}
-            onChangeValue={onChangeValue}
-            onDeleteValue={onDeleteValue}
-            setCredentials={setStoresConfig}
-          />  */}
       </ModalBody>
       <ModalFooter>
         <Button className="btn-outline-rk-green" onClick={toggleModal}>
           Close
         </Button>
       </ModalFooter>
-      {/* <ModalFooter>
-          <FormText color="danger">{saveStatusMessage}</FormText>
-          <Button color="primary" onClick={onAddValue}>
-            Add Bucket
-          </Button>
-          <Button color="secondary" onClick={onSave}>
-            Save
-          </Button>
-        </ModalFooter> */}
     </Modal>
   );
 }

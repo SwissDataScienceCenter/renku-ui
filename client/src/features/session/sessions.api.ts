@@ -137,7 +137,7 @@ const sessionsApi = createApi({
           commit_sha: commit,
           default_url: defaultUrl,
           environment_variables: environmentVariables,
-          image: image || null,
+          ...(image ? { image } : {}),
           lfs_auto_fetch: lfsAutoFetch,
           namespace,
           project,

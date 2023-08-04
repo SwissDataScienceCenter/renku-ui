@@ -17,17 +17,25 @@
  */
 
 import React, { useCallback, useContext, useState } from "react";
-import { faUserClock } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUserClock,
+  faLink,
+  faPlay,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
-import { Button, Col, Form, Modal, Row } from "reactstrap";
+import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { InfoAlert, WarnAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
-import { GoBackButton } from "../../../components/buttons/Button";
+import {
+  ButtonWithMenu,
+  GoBackButton,
+} from "../../../components/buttons/Button";
 import { LockStatus, User } from "../../../model/RenkuModels";
 import { ProjectMetadata } from "../../../notebooks/components/Session";
 import { ForkProject } from "../../../project/new";
@@ -47,6 +55,7 @@ import {
   isCloudStorageBucketValid,
   isCloudStorageEndpointValid,
 } from "../../../notebooks/ObjectStoresConfig.present";
+import { ShareLinkSessionModal } from "../../../components/shareLinkSession/ShareLinkSession";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -329,13 +338,19 @@ function StartSessionButton() {
         {} as Record<string, string>
       );
 
+    const imageValidated =
+      dockerImageStatus === "not-available" ? undefined : pinnedDockerImage;
+
     startSession({
       branch,
-      cloudStorage: cloudStorageValidated,
+      cloudStorage: [
+        ...cloudStorageValidated,
+        { endpoint: "http://example.com", bucket: "foobar" },
+      ],
       commit,
       defaultUrl,
       environmentVariables: environmentVariablesRecord,
-      image: pinnedDockerImage,
+      image: imageValidated,
       lfsAutoFetch,
       namespace,
       project,
@@ -347,6 +362,7 @@ function StartSessionButton() {
     cloudStorage,
     commit,
     defaultUrl,
+    dockerImageStatus,
     environmentVariables,
     lfsAutoFetch,
     namespace,
@@ -357,11 +373,70 @@ function StartSessionButton() {
     storage,
   ]);
 
+  const [createLinkIsOpen, setCreateLinkIsOpen] = useState(false);
+  const toggleCreateLink = useCallback(() => {
+    setCreateLinkIsOpen((isOpen) => !isOpen);
+  }, []);
+
+  const startSessionButton = (
+    <Button disabled={!enabled} onClick={onStart}>
+      <FontAwesomeIcon className="me-2" icon={faPlay} />
+      Start Session
+    </Button>
+  );
+
   return (
     <div className="field-group">
-      <Button disabled={!enabled} onClick={onStart}>
-        Start Session
-      </Button>
+      {dockerImageStatus === "not-available" && (
+        <div className="pb-2">
+          <FontAwesomeIcon
+            className={cx("text-warning", "me-1")}
+            icon={faExclamationTriangle}
+          />
+          The image for this commit is not available. See the{" "}
+          <strong>Docker Image</strong> section for details.
+        </div>
+      )}
+
+      <div className={cx("d-flex", "flex-row-reverse", "gap-2")}>
+        <ButtonWithMenu
+          color="rk-green"
+          default={startSessionButton}
+          direction="up"
+          isPrincipal
+        >
+          <DropdownItem onClick={toggleCreateLink}>
+            <FontAwesomeIcon
+              className={cx("text-rk-green", "me-2")}
+              icon={faLink}
+            />
+            Create Link
+          </DropdownItem>
+        </ButtonWithMenu>
+
+        {dockerImageStatus === "not-available" && (
+          <Button color="primary" onClick={onStart}>
+            <FontAwesomeIcon className="me-2" icon={faPlay} />
+            Start with base image
+          </Button>
+        )}
+
+        <ShareLinkSessionModal
+          environmentVariables={environmentVariables.map(({ name, value }) => ({
+            key: name,
+            value,
+          }))}
+          filters={{
+            branch: { name: branch },
+            commit: { id: commit },
+            namespace,
+            project,
+          }}
+          notebookFilePath=""
+          showModal={createLinkIsOpen}
+          toggleModal={toggleCreateLink}
+        />
+      </div>
     </div>
   );
 }
