@@ -71,7 +71,7 @@ export default function SessionBranchOption() {
     { skip: !gitLabProjectId }
   );
 
-  const currentBranch = useStartSessionOptionsSelector((state) => state.branch);
+  const currentBranch = useStartSessionOptionsSelector(({ branch }) => branch);
 
   const dispatch = useDispatch();
   const onChange = useCallback(

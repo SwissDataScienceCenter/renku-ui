@@ -133,7 +133,7 @@ const sessionsApi = createApi({
         );
         const body = {
           branch,
-          cloudstorage,
+          ...(cloudstorage.length > 0 ? { cloudstorage } : {}),
           commit_sha: commit,
           default_url: defaultUrl,
           environment_variables: environmentVariables,

@@ -60,13 +60,17 @@ export const StartNotebookServerOptions = () => {
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const {
+    backendAvailable,
+    computed: coreSupportComputed,
+    versionUrl,
+  } = coreSupport;
   const { isLoading: projectConfigIsLoading } = useGetConfigQuery(
     {
       projectRepositoryUrl,
       versionUrl,
     },
-    { skip: !coreSupportComputed }
+    { skip: !backendAvailable || !coreSupportComputed }
   );
 
   if (

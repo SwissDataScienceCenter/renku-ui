@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useContext, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   faUserClock,
   faLink,
@@ -25,12 +31,17 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { RootStateOrAny, useSelector } from "react-redux";
-import { useLocation } from "react-router";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { useLocation, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
-import { InfoAlert, WarnAlert } from "../../../components/Alert";
+import {
+  ErrorAlert,
+  InfoAlert,
+  RenkuAlert,
+  WarnAlert,
+} from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import {
   ButtonWithMenu,
@@ -56,6 +67,17 @@ import {
   isCloudStorageEndpointValid,
 } from "../../../notebooks/ObjectStoresConfig.present";
 import { ShareLinkSessionModal } from "../../../components/shareLinkSession/ShareLinkSession";
+import {
+  setError,
+  setStarting,
+  setSteps,
+  useStartSessionSelector,
+} from "../startSession.slice";
+import ProgressStepsIndicator, {
+  ProgressStyle,
+  ProgressType,
+  StatusStepProgressBar,
+} from "../../../components/progress/ProgressSteps";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -63,8 +85,23 @@ export default function StartNewSession() {
     params as { ANONYMOUS_SESSIONS?: boolean }
   ).ANONYMOUS_SESSIONS;
 
+  const location = useLocation();
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const autostart = !!searchParams.get("autostart");
+
   const logged = useSelector<RootStateOrAny, User["logged"]>(
     (state) => state.stateModel.user.logged
+  );
+
+  const { error, errorMessage, starting } = useStartSessionSelector(
+    ({ error, errorMessage, starting }) => ({
+      error,
+      errorMessage,
+      starting,
+    })
   );
 
   if (!logged && !anonymousSessionsEnabled) {
@@ -76,11 +113,34 @@ export default function StartNewSession() {
     );
   }
 
+  if (starting) {
+    return (
+      <>
+        <BackButton />
+        <SessionStarting />
+      </>
+    );
+  }
+
+  if (autostart) {
+    return (
+      <>
+        <BackButton />
+        <Row>AUTOSTARTING</Row>
+        <div className="d-none">
+          <StartNewSessionOptions />
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <BackButton />
       <Row>
         <Col sm={12} md={3} lg={4}>
+          {error}
+          {errorMessage}
           <SessionStartSidebar />
         </Col>
         <Col sm={12} md={9} lg={8}>
@@ -121,6 +181,62 @@ function BackButton() {
 interface LocationState {
   from?: string;
   filePath?: string;
+}
+
+function SessionStarting() {
+  const steps = useStartSessionSelector(({ steps }) => steps);
+
+  const [, { error }] = useStartSessionMutation({
+    fixedCacheKey: "start-session",
+  });
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (error) {
+      // "data" in error;
+      console.log({ error });
+      dispatch(
+        setError({
+          error: "backend-error",
+          errorMessage: `${error}`,
+        })
+      );
+    }
+  }, [dispatch, error]);
+
+  return (
+    <div className={cx("progress-box-small", "progress-box-small--steps")}>
+      <ProgressStepsIndicator
+        description="Preparing session"
+        type={ProgressType.Determinate}
+        style={ProgressStyle.Light}
+        title="Step 1 of 2: Preparing session"
+        status={steps}
+      />
+    </div>
+  );
+}
+
+function SessionStartError() {
+  const { error, errorMessage } = useStartSessionSelector(
+    ({ error, errorMessage }) => ({ error, errorMessage })
+  );
+
+  if (!error) {
+    return null;
+  }
+
+  const color = "danger";
+
+  return (
+    <RenkuAlert color={color} timeout={0}>
+      <p className="mb-0">
+        An error occurred when trying to start a new session. Error message:{" "}
+        {errorMessage}
+      </p>
+    </RenkuAlert>
+  );
 }
 
 function SessionStartSidebar() {
@@ -317,7 +433,11 @@ function StartSessionButton() {
 
   const enabled = dockerImageStatus === "available";
 
-  const [startSession] = useStartSessionMutation();
+  const dispatch = useDispatch();
+
+  const [startSession] = useStartSessionMutation({
+    fixedCacheKey: "start-session",
+  });
 
   const onStart = useCallback(() => {
     const cloudStorageValidated = cloudStorage.filter(
@@ -341,6 +461,16 @@ function StartSessionButton() {
     const imageValidated =
       dockerImageStatus === "not-available" ? undefined : pinnedDockerImage;
 
+    dispatch(setStarting(true));
+    dispatch(
+      setSteps([
+        {
+          id: 0,
+          status: StatusStepProgressBar.EXECUTING,
+          step: "Requesting session",
+        },
+      ])
+    );
     startSession({
       branch,
       cloudStorage: [
@@ -362,6 +492,7 @@ function StartSessionButton() {
     cloudStorage,
     commit,
     defaultUrl,
+    dispatch,
     dockerImageStatus,
     environmentVariables,
     lfsAutoFetch,

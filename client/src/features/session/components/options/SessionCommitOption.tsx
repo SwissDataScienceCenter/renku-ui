@@ -128,12 +128,14 @@ export default function SessionCommitOption() {
         <RefreshCommitsButton refresh={refetch} />
         <CommitOptionsButton limit={limit} onChangeLimit={onChangeLimit} />
       </div>
-      <CommitSelector
-        commits={filteredCommits}
-        disabled={false}
-        key={`branch-${currentBranch || defaultBranch}`}
-        onChange={onChange}
-      />
+      {filteredCommits.length > 0 && (
+        <CommitSelector
+          commits={filteredCommits}
+          disabled={false}
+          key={`branch-${currentBranch || defaultBranch}`}
+          onChange={onChange}
+        />
+      )}
     </div>
   );
 }
