@@ -61,11 +61,11 @@ export default function SessionCloudStorageOption() {
     );
   }
 
-  // const s3CloudStorageEnabled = !!data?.cloudStorageEnabled.s3;
+  const s3CloudStorageEnabled = !!data?.cloudStorageEnabled.s3;
 
-  // if (!s3CloudStorageEnabled) {
-  //   return null;
-  // }
+  if (!s3CloudStorageEnabled) {
+    return null;
+  }
 
   return <SessionS3CloudStorageOption />;
 }
@@ -79,6 +79,10 @@ function SessionS3CloudStorageOption() {
   return (
     <div className="field-group">
       <div className="form-label">Cloud Storage</div>
+      <div className={cx("form-text", "mt-0", "mb-1")}>
+        Use data from <S3ExplanationLink /> sources like AWS S3, Google Cloud
+        Storage, etc.
+      </div>
       <SessionS3CloudStorageDisplay />
       <div>
         <Button className="btn-outline-rk-green" onClick={toggleModal}>
