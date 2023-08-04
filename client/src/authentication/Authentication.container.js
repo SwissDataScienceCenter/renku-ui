@@ -23,8 +23,6 @@
  *  Authentication components to log in and out.
  */
 
-import React from "react";
-
 const RenkuQueryParams = {
   login: "renku_login",
   logout: "renku_logout",
@@ -38,21 +36,6 @@ const LOGOUT_EVENT_TIMEOUT = 5000;
  * the events between tabs, and uses sessionStorage to remember an event after a refresh within a tab.
  */
 const LoginHelper = {
-  /**
-   * Add the renku login query parameters
-   *
-   * @param {string} url - return url for the authentication backend
-   */
-  createLoginUrl: (url) => {
-    let redirectUrl = new URL(url);
-    if (!redirectUrl.search.includes(RenkuQueryParams.login))
-      redirectUrl.searchParams.append(
-        RenkuQueryParams.login,
-        RenkuQueryParams.loginValue
-      );
-
-    return redirectUrl.toString();
-  },
   /**
    * Remove renku login parameters and set localStorage object
    *
@@ -123,25 +106,4 @@ const LoginHelper = {
   queryParams: RenkuQueryParams,
 };
 
-function LoginRedirect(props) {
-  React.useEffect(() => {
-    // build redirect url
-    let url = props.params.BASE_URL;
-    // always pass "previous" with the current `location.pathname`
-    if (props.location.state && props.location.state.previous)
-      url += props.location.state.previous;
-    const redirectParam = encodeURIComponent(LoginHelper.createLoginUrl(url));
-    const uiServerUrl = props.params.UISERVER_URL;
-    const authUrl = `${uiServerUrl}/auth/login?redirect_url=${redirectParam}`;
-
-    // set new location
-    window.location.replace(authUrl);
-  });
-  return <div className="bg-primary h-100"></div>;
-}
-
-function Login(props) {
-  return <LoginRedirect {...props} />;
-}
-
-export { Login, LoginHelper };
+export { LoginHelper, RenkuQueryParams };

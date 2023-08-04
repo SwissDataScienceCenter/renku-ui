@@ -22,13 +22,8 @@
  *  Authentication.test.js
  *  Tests for authentication.
  */
-
-import React from "react";
-import { createRoot } from "react-dom/client";
-import { act } from "react-dom/test-utils";
-import { MemoryRouter } from "react-router-dom";
-
-import { LoginHelper, Login } from "./index";
+import { LoginHelper } from "./Authentication.container";
+import { createLoginUrl } from "./LoginRedirect";
 
 // Mock relevant react objects
 const location = { pathname: "", state: "", previous: "", search: "" };
@@ -52,39 +47,16 @@ function dispatchFakeStorageEvent(key, newValue) {
   /* eslint-enable no-console */
 }
 
-describe("rendering", () => {
-  const params = { BASE_URL: "https://fake" };
-  it("renders Login", async () => {
-    const props = {
-      params,
-      location,
-    };
-
-    const div = document.createElement("div");
-    document.body.appendChild(div);
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <Login {...props} />
-        </MemoryRouter>
-      );
-    });
-  });
-});
-
 describe("LoginHelper functions", () => {
   const { queryParams } = LoginHelper;
 
   it("createLoginUrl", async () => {
     const extraParam = `${queryParams.login}=${queryParams.loginValue}`;
 
-    expect(LoginHelper.createLoginUrl(url)).toBe(`${url}?${extraParam}`);
+    expect(createLoginUrl(url)).toBe(`${url}?${extraParam}`);
 
     const urlWithParam = `${url}?test=1`;
-    expect(LoginHelper.createLoginUrl(urlWithParam)).toBe(
-      `${urlWithParam}&${extraParam}`
-    );
+    expect(createLoginUrl(urlWithParam)).toBe(`${urlWithParam}&${extraParam}`);
   });
 
   it("handleLoginParams", async () => {
@@ -92,7 +64,7 @@ describe("LoginHelper functions", () => {
 
     LoginHelper.handleLoginParams(history);
     expect(Object.keys(localStorage.__STORE__).length).toBe(0);
-    const loginUrl = LoginHelper.createLoginUrl(url);
+    const loginUrl = createLoginUrl(url);
     const loginHistory = {
       ...history,
       location: { ...location, search: loginUrl.replace(url, "") },
