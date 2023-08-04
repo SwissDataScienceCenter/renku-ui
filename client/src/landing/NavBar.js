@@ -58,6 +58,7 @@ import { RenkuNavLink } from "../components/RenkuNavLink";
 import { Loader } from "../components/Loader";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 import { useSelector } from "react-redux";
+import { parseChartVersion } from "../help/HelpRelease";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -500,26 +501,41 @@ function FooterNavbar({ params }) {
     params && params["PRIVACY_STATEMENT"] ? (
       <RenkuNavLink to="/privacy" title="Privacy" />
     ) : null;
+  const chartVersion = params && params["RENKU_CHART_VERSION"];
+  const parsedChartVersion = chartVersion && parseChartVersion(chartVersion);
+  const taggedVersion = parsedChartVersion?.taggedVersion;
+  const isDevVersion = parsedChartVersion?.devHash != null;
+  const displayVersion =
+    taggedVersion == null
+      ? "unknown"
+      : isDevVersion == null
+      ? taggedVersion
+      : `${taggedVersion} (dev)`;
+
   const footer = (
     <footer className="footer">
       <Navbar
-        className="container-fluid flex-wrap flex-lg-nowrap justify-content-between
+        className="container-fluid flex-nowrap justify-content-between
         renku-container navbar bg-primary navbar-dark"
       >
-        <div>
+        <div className="w-100">
           <span className="text-white-50">
             &copy; SDSC {new Date().getFullYear()}
           </span>
         </div>
-        <div>
-          <Nav className="ms-auto">
-            <Link className="nav-link" to="/">
+        <div className="w-100">
+          <Nav
+            className="justify-content-end justify-content-lg-center"
+            data-cy="version-info"
+          >
+            <Link className="nav-link" to={Url.pages.help.release}>
               <img src={logo} alt="Renku" className="pb-2" height="44" />
+              <span className="ps-2">{displayVersion}</span>
             </Link>
           </Nav>
         </div>
-        <div className="d-none d-lg-inline">
-          <Nav className="ms-auto">
+        <div className="d-none d-lg-inline w-100">
+          <Nav className="justify-content-end">
             <RenkuNavLink to="/help" title="Help" />
             {privacyLink}
             <ExternalDocsLink
