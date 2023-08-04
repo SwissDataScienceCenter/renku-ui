@@ -97,6 +97,9 @@ export default function SessionBranchOption() {
     dispatch(setBranch(branch.name));
   }, [branches, defaultBranch, dispatch]);
 
+  // TODO: set 'no-commit' error when no branches are available
+  // useEffect(() => {}, [])
+
   // Branch filter
   const [includeMergedBranches, setIncludeMergedBranches] =
     useState<boolean>(false);

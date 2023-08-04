@@ -32,7 +32,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router";
+import { Redirect, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -60,7 +60,7 @@ import AppContext from "../../../utils/context/appContext";
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
 import { Url } from "../../../utils/helpers/url";
 import { useStartSessionMutation } from "../sessions.api";
-import {
+import startSessionSlice, {
   setError,
   setStarting,
   setSteps,
@@ -94,6 +94,15 @@ export default function StartNewSession() {
 
   const starting = useStartSessionSelector(({ starting }) => starting);
 
+  const dispatch = useDispatch();
+
+  // Reset start session slice when we navigate away
+  useEffect(() => {
+    return () => {
+      dispatch(startSessionSlice.actions.reset());
+    };
+  }, [dispatch]);
+
   if (!logged && !anonymousSessionsEnabled) {
     return (
       <>
@@ -103,23 +112,16 @@ export default function StartNewSession() {
     );
   }
 
-  if (starting) {
+  if (autostart || starting) {
     return (
       <>
         <BackButton />
         <SessionStarting />
-      </>
-    );
-  }
-
-  if (autostart) {
-    return (
-      <>
-        <BackButton />
-        <Row>AUTOSTARTING</Row>
-        <div className="d-none">
-          <StartNewSessionOptions />
-        </div>
+        {autostart && (
+          <div className="d-none">
+            <StartNewSessionOptions />
+          </div>
+        )}
       </>
     );
   }
@@ -173,9 +175,16 @@ interface LocationState {
 }
 
 function SessionStarting() {
+  const namespace = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.namespace
+  );
+  const path = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.path
+  );
+
   const steps = useStartSessionSelector(({ steps }) => steps);
 
-  const [, { error }] = useStartSessionMutation({
+  const [, { data: session, error }] = useStartSessionMutation({
     fixedCacheKey: "start-session",
   });
 
@@ -187,7 +196,6 @@ function SessionStarting() {
         ? (error.data as { error?: { message?: string } }).error?.message ??
           JSON.stringify(error.data)
         : `${error}`;
-      // console.log({ error: error.data });
       dispatch(
         setError({
           error: "backend-error",
@@ -196,6 +204,21 @@ function SessionStarting() {
       );
     }
   }, [dispatch, error]);
+
+  if (session != null) {
+    return (
+      <Redirect
+        to={{
+          pathname: Url.get(Url.pages.project.session.show, {
+            namespace,
+            path,
+            server: session.name,
+          }),
+          state: { redirectFromStartServer: true },
+        }}
+      />
+    );
+  }
 
   return (
     <div className={cx("progress-box-small", "progress-box-small--steps")}>
@@ -231,7 +254,7 @@ function SessionStartError() {
         {errorMessage}
       </>
     ) : error === "no-commit" ? (
-      <>This project has no commit</>
+      <>Starting a session is not possible because this project has no commit</>
     ) : error === "docker-image-building" ? (
       <>
         The session could not start because the image is still building. Please
@@ -493,7 +516,7 @@ function StartSessionButton() {
       branch,
       cloudStorage: [
         ...cloudStorageValidated,
-        { endpoint: "http://example.com", bucket: "foobar" },
+        // { endpoint: "http://example.com", bucket: "foobar" },
       ],
       commit,
       defaultUrl,
