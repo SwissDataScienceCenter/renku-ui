@@ -368,6 +368,7 @@ export default function addDatasetMethods(client) {
     return Promise.resolve(filesPromise);
   };
 
+  // ! TODO - remove this
   client.deleteDataset = (projectUrl, datasetName, versionUrl = null) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");

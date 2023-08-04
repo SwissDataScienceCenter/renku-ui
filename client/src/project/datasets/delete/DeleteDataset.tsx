@@ -169,6 +169,7 @@ function DeleteDataset(props: DeleteDatasetProps) {
     setServerErrors(undefined);
     setSubmitting(true);
     setSubmitLoaderText(undefined);
+    // ! TODO - use useDeleteDatasetMutation here
     props.client
       .deleteDataset(props.externalUrl, props.dataset.name, props.versionUrl)
       .then((response) => {
