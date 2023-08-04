@@ -295,7 +295,7 @@ function ProjectMigrationStatusDetails({
   const renkuTitleId = "settings-renku-version";
   const renkuTitle = "Renku version";
   const renkuTitleInfo =
-    "The Renku version defined what Renku features are supported. Keep it updated!";
+    "The Renku version defines what Renku features are supported. Keep it updated!";
 
   const contentRenku = (
     <DetailsSection
