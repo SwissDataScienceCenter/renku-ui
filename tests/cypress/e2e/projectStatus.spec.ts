@@ -35,10 +35,10 @@ describe("display KG status information", () => {
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
     cy.get_cy("project-settings-knowledge-graph")
-      .contains("Knowledge Graph metadata")
+      .contains("Metadata processing")
       .should("exist");
     cy.get_cy("project-settings-knowledge-graph")
-      .contains("Knowledge Graph metadata (processing)")
+      .contains("Metadata indexing in progress")
       .should("not.exist");
     cy.get_cy("kg-status-section-close").should("not.exist");
     cy.get_cy("kg-status-section-open").should("exist").click();
@@ -56,10 +56,10 @@ describe("display KG status information", () => {
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
     cy.get_cy("project-settings-knowledge-graph")
-      .contains("Knowledge Graph metadata")
+      .contains("Metadata processing")
       .should("exist");
     cy.get_cy("project-settings-knowledge-graph")
-      .contains("Knowledge Graph metadata (processing)")
+      .contains("Metadata indexing in progress")
       .should("not.exist");
     cy.get_cy("kg-status-section-close").should("not.exist");
     cy.get_cy("kg-status-section-open").should("exist").click();
@@ -79,7 +79,7 @@ describe("display KG status information", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
     cy.get_cy("project-settings-knowledge-graph")
-      .contains("Knowledge Graph metadata (processing)")
+      .contains("Metadata indexing in progress...")
       .should("exist");
     cy.get_cy("kg-status-section-close").should("not.exist");
     cy.get_cy("kg-status-section-open").should("exist").click();
@@ -96,7 +96,7 @@ describe("display KG status information", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
     cy.get_cy("project-settings-knowledge-graph")
-      .contains("Activate Knowledge Graph integration")
+      .contains("Activate metadata processing")
       .should("exist");
     cy.get_cy("kg-status-section-close").should("not.exist");
     cy.get_cy("kg-status-section-open").should("exist").click();
