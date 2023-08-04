@@ -123,9 +123,17 @@ const sessionsApi = createApi({
         sessionClass,
         storage,
       }) => {
+        const cloudstorage = cloudStorage.map(
+          ({ accessKey, bucket, endpoint, secretKey }) => ({
+            access_key: accessKey,
+            bucket,
+            endpoint,
+            secret_key: secretKey,
+          })
+        );
         const body = {
           branch,
-          cloudstorage: cloudStorage,
+          cloudstorage,
           commit_sha: commit,
           default_url: defaultUrl,
           environment_variables: environmentVariables,

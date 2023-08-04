@@ -61,11 +61,11 @@ export default function SessionCloudStorageOption() {
     );
   }
 
-  const s3CloudStorageEnabled = !!data?.cloudStorageEnabled.s3;
+  // const s3CloudStorageEnabled = !!data?.cloudStorageEnabled.s3;
 
-  if (!s3CloudStorageEnabled) {
-    return null;
-  }
+  // if (!s3CloudStorageEnabled) {
+  //   return null;
+  // }
 
   return <SessionS3CloudStorageOption />;
 }
