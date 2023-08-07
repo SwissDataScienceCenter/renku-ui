@@ -35,7 +35,7 @@ import { ProjectList } from "./project/list";
 import { NewProject } from "./project/new";
 import { AnonymousHome, RenkuNavBar, FooterNavbar } from "./landing";
 import { Notebooks } from "./notebooks";
-import { Login, LoginHelper } from "./authentication";
+import { LoginRedirect, LoginHelper } from "./authentication";
 import Help from "./help";
 import { NotFound } from "./not-found";
 import ShowDataset from "./dataset/Dataset.container";
@@ -43,7 +43,7 @@ import { Cookie, Privacy } from "./privacy";
 import { NotificationsManager, NotificationsPage } from "./notifications";
 import { StyleGuide } from "./styleguide";
 import { Url } from "./utils/helpers/url";
-import { Unavailable } from "./Maintenance";
+import { Unavailable } from "./features/maintenance/Maintenance";
 import { Loader } from "./components/Loader";
 import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
@@ -102,8 +102,8 @@ function CentralContentContainer(props) {
             exact
             path="/login"
             render={(p) => (
-              <ContainerWrap>
-                <Login key="login" {...p} {...props} />
+              <ContainerWrap fullSize>
+                <LoginRedirect key="login" {...p} {...props} />
               </ContainerWrap>
             )}
           />
