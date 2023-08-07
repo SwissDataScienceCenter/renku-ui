@@ -121,7 +121,13 @@ type DatasetsListViewProps = {
 };
 
 export default function DatasetsListView(props: DatasetsListViewProps) {
-  const datasets = useMemo(() => props.datasets, [props.datasets]);
+  const datasets = useMemo(
+    () =>
+      props.datasets.sort((d1, d2) =>
+        d1.title > d2.title ? 1 : d2.title > d1.title ? -1 : 0
+      ),
+    [props.datasets]
+  );
 
   return (
     <>

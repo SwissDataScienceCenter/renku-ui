@@ -17,6 +17,8 @@
  */
 
 export const RenkuRepositories = {
+  Notebooks: "https://github.com/SwissDataScienceCenter/renku-notebooks",
   Python: "https://github.com/SwissDataScienceCenter/renku-python",
+  Renku: "https://github.com/SwissDataScienceCenter/renku",
   UI: "https://github.com/SwissDataScienceCenter/renku-ui",
 };

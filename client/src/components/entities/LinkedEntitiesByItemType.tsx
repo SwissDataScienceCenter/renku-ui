@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import * as React from "react";
+import React, { ReactNode, useRef } from "react";
+import { UncontrolledTooltip } from "reactstrap";
 import "./Entities.css";
 import { Link } from "react-router-dom";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
@@ -32,8 +33,9 @@ import { EntityType } from "./Entities";
  */
 
 export interface EntityLinksData {
-  title: string;
   url: string;
+  title: string;
+  tooltip?: string;
 }
 export interface EntityLinksHeader {
   data: EntityLinksData[];
@@ -43,15 +45,15 @@ export interface EntityLinksHeader {
 }
 
 export interface LinkedEntitiesByItemTypeProps {
+  devAccess: boolean;
   itemType: EntityType;
   links?: EntityLinksHeader;
-  devAccess: boolean;
   url: string;
 }
 function LinkedEntitiesByItemType({
+  devAccess,
   itemType,
   links,
-  devAccess,
   url,
 }: LinkedEntitiesByItemTypeProps) {
   if (!links) return null;
@@ -82,7 +84,6 @@ function LinkedEntitiesByItemType({
       icon: <Briefcase />,
     },
   };
-  const stylesByItem = stylesByItemType(itemType);
 
   const addDatasetLink =
     devAccess && itemType === "project" ? (
@@ -116,21 +117,14 @@ function LinkedEntitiesByItemType({
           ) : null}
         </small>
       ) : null}
-      {links.data.map((link) => {
-        // ? URl without the final slash aren't working well with the current Datasets elements
-        const fixedUrl = link.url.endsWith("/") ? link.url : link.url + "/";
-        return (
-          <div className="d-grid" key={link.title}>
-            <Link
-              className={`${stylesByItem.colorText} linked-entities-link text-truncate`}
-              to={fixedUrl}
-            >
-              {dataByItem[itemType].icon}
-              {link.title}
-            </Link>
-          </div>
-        );
-      })}
+      {links.data.map((link) => (
+        <LinkedItem
+          key={link.url}
+          link={link}
+          itemType={itemType}
+          icon={dataByItem[itemType].icon}
+        />
+      ))}
       {links.total > 3 ? (
         <SeeMoreByType
           itemType={itemType}
@@ -179,4 +173,32 @@ function SeeMoreByType({ itemType, text, linkTo }: SeeMoreByTypeProps) {
   }
 }
 
+interface LinkedItemProps {
+  icon: ReactNode;
+  itemType: EntityType;
+  link: EntityLinksData;
+}
+function LinkedItem({ icon, itemType, link }: LinkedItemProps) {
+  const stylesByItem = stylesByItemType(itemType);
+  const linkRef = useRef(null);
+  return (
+    <>
+      <div className="d-flex" key={link.title}>
+        <Link
+          ref={linkRef}
+          className={`${stylesByItem.colorText} linked-entities-link text-truncate`}
+          to={link.url}
+        >
+          {icon}
+          {link.title}
+        </Link>
+      </div>
+      {link.tooltip && (
+        <UncontrolledTooltip target={linkRef}>
+          {link.tooltip}
+        </UncontrolledTooltip>
+      )}
+    </>
+  );
+}
 export default LinkedEntitiesByItemType;

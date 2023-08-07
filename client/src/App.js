@@ -30,8 +30,7 @@ import { Redirect } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
-import { Unavailable } from "./Maintenance";
-import { Login, LoginHelper } from "./authentication";
+import { LoginHelper, LoginRedirect } from "./authentication";
 import { Loader } from "./components/Loader";
 import ShowDataset from "./dataset/Dataset.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
@@ -39,6 +38,7 @@ import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
 import { Dashboard } from "./features/dashboard/Dashboard";
 import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
 import SearchPage from "./features/kgSearch/KgSearchPage";
+import { Unavailable } from "./features/maintenance/Maintenance";
 import AnonymousSessionsList from "./features/session/components/AnonymousSessionsList";
 import Help from "./help";
 import { AnonymousHome, FooterNavbar, RenkuNavBar } from "./landing";
@@ -53,8 +53,8 @@ import AppContext from "./utils/context/appContext";
 import { Url } from "./utils/helpers/url";
 import { setupWebSocket } from "./websocket";
 
-import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
+import "./App.css";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize
@@ -104,8 +104,8 @@ function CentralContentContainer(props) {
             exact
             path="/login"
             render={(p) => (
-              <ContainerWrap>
-                <Login key="login" {...p} {...props} />
+              <ContainerWrap fullSize>
+                <LoginRedirect key="login" {...p} {...props} />
               </ContainerWrap>
             )}
           />
