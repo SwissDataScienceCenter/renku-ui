@@ -277,86 +277,25 @@ function ProjectMigrationStatusDetails({
   updateProject,
 }: ProjectMigrationStatusDetailsProps) {
   // Renku Version details
-  const docker =
-    data?.details?.dockerfile_renku_status.type === "detail"
-      ? data.details.dockerfile_renku_status
-      : null;
-  const metadata =
-    data?.details?.core_compatibility_status.type === "detail"
-      ? data.details.core_compatibility_status
-      : null;
-  const renkuProjectVersion = cleanVersion(
-    docker?.dockerfile_renku_version,
-    true
-  );
-  const renkuLatestVersion = cleanVersion(docker?.latest_renku_version, true);
-
-  let renkuDetails: React.ReactNode = <span>No details</span>;
   const renkuMigrationLevel = getRenkuLevel(data, isSupported);
-  const renkuTitleId = "settings-renku-version";
-  const renkuTitle = "Renku version";
   const renkuTitleDocsUrl = Docs.rtdHowToGuide("general/upgrading-renku.html");
-  const renkuTitleInfo =
-    "The Renku version defined what Renku features are supported. Keep it updated!";
-  let renkuLevel = "danger";
-  let renkuIcon = faExclamationCircle;
-  let renkuText: string | React.ReactNode = "No data";
-  if (renkuMigrationLevel?.level === ProjectMigrationLevel.LevelX) {
-    renkuText = "Unknown version";
-    renkuDetails = (
-      <span>Details are not available for this unknown version of Renku.</span>
-    );
-  } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.LevelE) {
-    renkuDetails = (
-      <ProjectSettingsGeneralCoreError
-        errorData={data?.error as CoreSectionError}
-      />
-    );
-  } else if (
-    renkuMigrationLevel?.level !== undefined &&
-    [
-      ProjectMigrationLevel.Level5,
-      ProjectMigrationLevel.Level4,
-      ProjectMigrationLevel.Level3,
-      ProjectMigrationLevel.Level1,
-    ].includes(renkuMigrationLevel?.level)
-  ) {
-    renkuText = (
-      <RenkuVersionOutdated
-        renkuLatestVersion={renkuLatestVersion}
-        renkuProjectVersion={renkuProjectVersion}
-      />
-    );
-    renkuDetails = (
-      <RenkuVersionContext
-        automated={renkuMigrationLevel?.automated}
-        docsUrl={renkuTitleDocsUrl}
-        isMaintainer={isMaintainer}
-        latestVersion={metadata?.current_metadata_version}
-        migrationLevel={renkuMigrationLevel?.level}
-        projectVersion={metadata?.project_metadata_version}
-      />
-    );
-  }
-  if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level5) {
-    renkuIcon = faExclamationCircle;
-  } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level4) {
-    renkuLevel = "warning";
-    renkuIcon = faExclamationCircle;
-  } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level3) {
-    renkuLevel = "info";
-    renkuIcon = faInfoCircle;
-  } else if (renkuMigrationLevel?.level === ProjectMigrationLevel.Level1) {
-    renkuIcon = faCheckCircle;
-    renkuLevel = "success";
-  }
-
+  const { renkuDetails, renkuLevel, renkuIcon, renkuText } =
+    computeMigrationStatusDisplayDetails({
+      data,
+      isMaintainer,
+      isSupported,
+    });
   const renkuVersionButtonShow =
     isMaintainer && canUpdateProjectAutomatically(renkuMigrationLevel);
   const renkuButtonText = buttonDisable ? "Updating version" : "Update version";
   const renkuButtonAction = !renkuVersionButtonShow
     ? undefined
     : () => updateProject(MigrationStartScopes.OnlyVersion);
+
+  const renkuTitleId = "settings-renku-version";
+  const renkuTitle = "Renku version";
+  const renkuTitleInfo =
+    "The Renku version defines what Renku features are supported. Keep it updated!";
 
   const contentRenku = (
     <DetailsSection
@@ -478,6 +417,131 @@ function ProjectMigrationStatusDetails({
       {contentTemplate}
     </Collapse>
   );
+}
+
+type ComputeMigrationStatusDisplayDetailsParams = Pick<
+  ProjectMigrationStatusDetailsProps,
+  "data" | "isMaintainer" | "isSupported"
+>;
+
+function computeMigrationStatusDisplayDetails({
+  data,
+  isMaintainer,
+  isSupported,
+}: ComputeMigrationStatusDisplayDetailsParams) {
+  // Renku Version details
+  const docker =
+    data?.details?.dockerfile_renku_status.type === "detail"
+      ? data.details.dockerfile_renku_status
+      : null;
+  const metadata =
+    data?.details?.core_compatibility_status.type === "detail"
+      ? data.details.core_compatibility_status
+      : null;
+  const renkuProjectVersion = cleanVersion(
+    docker?.dockerfile_renku_version,
+    true
+  );
+  const renkuLatestVersion = cleanVersion(docker?.latest_renku_version, true);
+  const renkuMigrationLevel = getRenkuLevel(data, isSupported);
+  const renkuTitleDocsUrl = Docs.rtdHowToGuide("general/upgrading-renku.html");
+
+  if (renkuMigrationLevel == null) {
+    return {
+      renkuDetails: <span>No details</span>,
+      renkuIcon: faExclamationCircle,
+      renkuLevel: "danger",
+      renkuText: "No data",
+    };
+  }
+  if (renkuMigrationLevel.level === ProjectMigrationLevel.LevelX) {
+    return {
+      renkuDetails: (
+        <span>
+          Details are not available for this unknown version of Renku.
+        </span>
+      ),
+      renkuIcon: faExclamationCircle,
+      renkuLevel: "danger",
+      renkuText: "Unknown version",
+    };
+  }
+  if (renkuMigrationLevel.level === ProjectMigrationLevel.LevelE) {
+    return {
+      renkuDetails: (
+        <ProjectSettingsGeneralCoreError
+          errorData={data?.error as CoreSectionError}
+        />
+      ),
+      renkuIcon: faExclamationCircle,
+      renkuLevel: "danger",
+      renkuText: "No data",
+    };
+  }
+  if (
+    renkuMigrationLevel.level !== undefined &&
+    [
+      ProjectMigrationLevel.Level5,
+      ProjectMigrationLevel.Level4,
+      ProjectMigrationLevel.Level3,
+      ProjectMigrationLevel.Level1,
+    ].includes(renkuMigrationLevel.level)
+  ) {
+    const renkuText = (
+      <RenkuVersionOutdated
+        renkuLatestVersion={renkuLatestVersion}
+        renkuProjectVersion={renkuProjectVersion}
+      />
+    );
+    const renkuDetails = (
+      <RenkuVersionContext
+        automated={renkuMigrationLevel.automated}
+        docsUrl={renkuTitleDocsUrl}
+        isMaintainer={isMaintainer}
+        latestVersion={metadata?.current_metadata_version}
+        migrationLevel={renkuMigrationLevel.level}
+        projectVersion={metadata?.project_metadata_version}
+      />
+    );
+    if (renkuMigrationLevel.level === ProjectMigrationLevel.Level5) {
+      return {
+        renkuDetails,
+        renkuIcon: faExclamationCircle,
+        renkuLevel: "danger",
+        renkuText,
+      };
+    }
+    if (renkuMigrationLevel.level === ProjectMigrationLevel.Level4) {
+      return {
+        renkuDetails,
+        renkuIcon: faExclamationCircle,
+        renkuLevel: "warning",
+        renkuText,
+      };
+    }
+    if (renkuMigrationLevel.level === ProjectMigrationLevel.Level3) {
+      return {
+        renkuDetails,
+        renkuIcon: faInfoCircle,
+        renkuLevel: "info",
+        renkuText,
+      };
+    }
+    if (renkuMigrationLevel.level === ProjectMigrationLevel.Level1) {
+      return {
+        renkuDetails,
+        renkuIcon: faCheckCircle,
+        renkuLevel: "success",
+        renkuText,
+      };
+    }
+  }
+  return {
+    renkuDetails: <span>No details</span>,
+    renkuIcon: faExclamationCircle,
+    renkuLevel: "danger",
+    renkuText: "No data",
+  };
 }
 
 // ****** KNOWLEDGE GRAPH ****** //
