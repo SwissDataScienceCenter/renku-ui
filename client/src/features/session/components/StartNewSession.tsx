@@ -107,6 +107,17 @@ export default function StartNewSession() {
     };
   }, [dispatch]);
 
+  const [, { reset }] = useStartSessionMutation({
+    fixedCacheKey: "start-session",
+  });
+
+  // Reinitialize the mutation state when we navigate away
+  useEffect(() => {
+    return () => {
+      reset();
+    };
+  }, [reset]);
+
   if (!logged && !anonymousSessionsEnabled) {
     return (
       <>
