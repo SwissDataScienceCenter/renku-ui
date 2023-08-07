@@ -392,10 +392,6 @@ function addProjectMethods(client) {
     return client.putProjectField(projectId, "tag_list", tags);
   };
 
-  client.setDescription = (projectId, description) => {
-    return client.putProjectField(projectId, "description", description);
-  };
-
   client.setAvatar = (projectId, avatarFile) => {
     // https://docs.gitlab.com/ee/api/projects.html#upload-a-project-avatar
 
