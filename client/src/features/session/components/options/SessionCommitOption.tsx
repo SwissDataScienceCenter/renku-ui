@@ -16,13 +16,7 @@
  * limitations under the License.
  */
 
-import React, {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, useCallback, useRef, useState } from "react";
 import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -47,6 +41,7 @@ import {
   setCommit,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
+import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
 
 export default function SessionCommitOption() {
   const defaultBranch = useSelector<RootStateOrAny, string>(
@@ -81,13 +76,15 @@ export default function SessionCommitOption() {
     [dispatch]
   );
 
-  // Select the default commit
-  useEffect(() => {
-    if (commits == null || commits.length == 0) {
-      return;
-    }
-    dispatch(setCommit(commits[0].id));
-  }, [commits, dispatch]);
+  useDefaultCommitOption({ commits });
+
+  // // Select the default commit
+  // useEffect(() => {
+  //   if (commits == null || commits.length == 0) {
+  //     return;
+  //   }
+  //   dispatch(setCommit(commits[0].id));
+  // }, [commits, dispatch]);
 
   // Commit limit
   const [limit, setLimit] = useState<number>(25);

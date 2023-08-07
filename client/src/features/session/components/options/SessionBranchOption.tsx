@@ -16,13 +16,7 @@
  * limitations under the License.
  */
 
-import React, {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, useCallback, useRef, useState } from "react";
 import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -47,6 +41,7 @@ import {
   setBranch,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
+import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 
 export default function SessionBranchOption() {
   const defaultBranch = useSelector<RootStateOrAny, string>(
@@ -85,20 +80,22 @@ export default function SessionBranchOption() {
     [branches, dispatch]
   );
 
-  // Select the default branch
-  useEffect(() => {
-    if (branches == null || branches.length == 0) {
-      return;
-    }
-    const matchedDefaultBranch = branches.find(
-      (branch) => branch.name === defaultBranch
-    );
-    const branch = matchedDefaultBranch ?? branches[0];
-    dispatch(setBranch(branch.name));
-  }, [branches, defaultBranch, dispatch]);
+  useDefaultBranchOption({ branches, defaultBranch });
 
-  // TODO: set 'no-commit' error when no branches are available
-  // useEffect(() => {}, [])
+  // // Select the default branch
+  // useEffect(() => {
+  //   if (branches == null || branches.length == 0) {
+  //     return;
+  //   }
+  //   const matchedDefaultBranch = branches.find(
+  //     (branch) => branch.name === defaultBranch
+  //   );
+  //   const branch = matchedDefaultBranch ?? branches[0];
+  //   dispatch(setBranch(branch.name));
+  // }, [branches, defaultBranch, dispatch]);
+
+  // // TODO: set 'no-commit' error when no branches are available
+  // // useEffect(() => {}, [])
 
   // Branch filter
   const [includeMergedBranches, setIncludeMergedBranches] =

@@ -44,6 +44,8 @@ import {
 import { SessionClassOption } from "./SessionClassOption";
 import { SessionStorageOption } from "./SessionStorageOption";
 import styles from "./StartNotebookServerOptions.module.scss";
+import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
+import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 
 export const StartNotebookServerOptions = () => {
   // Wait for options to load
@@ -112,24 +114,51 @@ const DefaultUrlOption = () => {
     useServerOptionsQuery();
 
   // Project options
-  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+
+  // const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
+  //   RootStateOrAny,
+  //   StateModelProject["metadata"]
+  // >((state) => state.stateModel.project.metadata);
+  // const { coreSupport } = useCoreSupport({
+  //   gitUrl: projectRepositoryUrl ?? undefined,
+  //   branch: defaultBranch ?? undefined,
+  // });
+  // const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  // const { data: projectConfig, isLoading: projectConfigIsLoading } =
+  //   useGetConfigQuery(
+  //     {
+  //       projectRepositoryUrl,
+  //       versionUrl,
+  //       // ...(branchName ? { branch: branchName } : {}),
+  //     },
+  //     { skip: !coreSupportComputed }
+  //   );
+
+  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.externalUrl
+  );
+  const defaultBranch = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.defaultBranch
+  );
+  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
   const { computed: coreSupportComputed, versionUrl } = coreSupport;
-  const { data: projectConfig, isLoading: projectConfigIsLoading } =
-    useGetConfigQuery(
-      {
-        projectRepositoryUrl,
-        versionUrl,
-        // ...(branchName ? { branch: branchName } : {}),
-      },
-      { skip: !coreSupportComputed }
-    );
+
+  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+
+  const { data: projectConfig, isFetching: projectConfigIsFetching } =
+    usePatchedProjectConfig({
+      commit,
+      gitLabProjectId: gitLabProjectId ?? 0,
+      projectRepositoryUrl,
+      versionUrl,
+      skip: !coreSupportComputed || !commit,
+    });
 
   const defaultUrlOptions = mergeDefaultUrlOptions({
     serverOptions,
@@ -141,18 +170,18 @@ const DefaultUrlOption = () => {
   );
   const dispatch = useDispatch();
 
-  // Set initial default URL
-  useEffect(() => {
-    if (projectConfig != null) {
-      dispatch(
-        setDefaultUrl(
-          projectConfig.config.sessions?.defaultUrl ??
-            projectConfig.default.sessions?.defaultUrl ??
-            ""
-        )
-      );
-    }
-  }, [dispatch, projectConfig]);
+  // // Set initial default URL
+  // useEffect(() => {
+  //   if (projectConfig != null) {
+  //     dispatch(
+  //       setDefaultUrl(
+  //         projectConfig.config.sessions?.defaultUrl ??
+  //           projectConfig.default.sessions?.defaultUrl ??
+  //           ""
+  //       )
+  //     );
+  //   }
+  // }, [dispatch, projectConfig]);
 
   const onChange = useCallback(
     (_event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
@@ -163,9 +192,11 @@ const DefaultUrlOption = () => {
     [dispatch]
   );
 
+  useDefaultUrlOption({ projectConfig });
+
   if (
     serverOptionsIsLoading ||
-    projectConfigIsLoading ||
+    projectConfigIsFetching ||
     !serverOptions ||
     !projectConfig
   ) {

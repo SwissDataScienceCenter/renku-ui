@@ -74,6 +74,7 @@ import SessionCommitOption from "./options/SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
 import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
 import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
+import AutostartSessionOptions from "./options/AutostartSessionOptions";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -92,7 +93,7 @@ export default function StartNewSession() {
     (state) => state.stateModel.user.logged
   );
 
-  const starting = useStartSessionSelector(({ starting }) => starting);
+  const { starting, error } = useStartSessionSelector();
 
   const dispatch = useDispatch();
 
@@ -112,16 +113,17 @@ export default function StartNewSession() {
     );
   }
 
-  if (autostart || starting) {
+  if (starting || (autostart && !error)) {
     return (
       <>
         <BackButton />
         <SessionStarting />
-        {autostart && (
+        {/* {autostart && (
           <div className="d-none">
             <StartNewSessionOptions />
           </div>
-        )}
+        )} */}
+        {autostart && <AutostartSessionOptions />}
       </>
     );
   }
