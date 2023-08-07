@@ -86,8 +86,8 @@ export function ProjectKnowledgeGraph({
   if (isLoading || skip || (isFetching && justChanged)) {
     const fetchingTitle =
       isLoading || skip
-        ? "Fetching project metadata..."
-        : "Refreshing project metadata...";
+        ? "Fetching metadata processing status..."
+        : "Refreshing metadata processing status...";
     return (
       <CompositeTitle
         icon={faTimesCircle}
@@ -121,13 +121,13 @@ export function ProjectKnowledgeGraph({
 
   let icon = faCheckCircle;
   let level = "success";
-  let title = "Knowledge Graph metadata";
+  let title = "Metadata processing";
   if (!data?.activated) {
-    title = "Activate Knowledge Graph integration";
+    title = "Activate metadata processing";
     level = "danger";
     icon = faExclamationCircle;
   } else if (data?.progress?.done !== data?.progress?.total) {
-    title = "Knowledge Graph metadata (processing)";
+    title = "Metadata indexing in progress...";
     level = "info";
   } else if (data.details?.status === ProjectIndexingStatuses.Failure) {
     level = "info";

@@ -1,6 +1,5 @@
 {
-  "UI_VERSION": "3.10.0-7bae0472",
-  "RENKU_CHART_VERSION": "3.10.0-cypress",
+  "UI_VERSION": "1.2.2-7bae0472",
   "UI_SHORT_SHA": "development",
   "TELEPRESENCE": "false",
   "BASE_URL": "http://localhost:3000",
@@ -30,6 +29,7 @@
   "UPLOAD_THRESHOLD": { "soft": "104857600" },
   "STATUSPAGE_ID": "abcdef123456",
   "REAL_STATUSPAGE_ID": "r3j2c84ftq49",
+  "MAINTENANCE": "Maintenance ongoing",
   "HOMEPAGE": {
     "custom": {
       "enabled": false,

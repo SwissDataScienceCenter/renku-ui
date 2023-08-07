@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,14 +16,11 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  landing
- *  Components for the landing page
- */
+type Params = {
+  BASE_URL: string;
+  RENKU_CHART_VERSION: string;
+  UI_VERSION: string;
+  UISERVER_URL: string;
+};
 
-import AnonymousHome from "./AnonymousHome";
-import { RenkuNavBar, FooterNavbar } from "./NavBar";
-
-export { AnonymousHome, FooterNavbar, RenkuNavBar };
+export type { Params };

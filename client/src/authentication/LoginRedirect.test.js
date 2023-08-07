@@ -19,48 +19,40 @@
 /**
  *  renku-ui
  *
- *  Maintenance.js
- *  Tests for maintenance components.
+ *  Authentication.test.js
+ *  Tests for authentication.
  */
 
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
-import { act } from "react-test-renderer";
 
-import { Maintenance } from "./Maintenance";
-import { globalSchema, StateModel } from "./model";
-import { Provider } from "react-redux";
+import LoginRedirect from "./LoginRedirect";
+
+// Mock relevant react objects
+const location = { pathname: "", state: "", previous: "", search: "" };
+delete window.location;
+window.location = { reload: jest.fn(), replace: jest.fn() };
+
+// Mock localStorage event generator
 
 describe("rendering", () => {
-  const model = new StateModel(globalSchema);
+  const params = { BASE_URL: "https://fake" };
+  it("renders Login", async () => {
+    const props = {
+      params,
+      location,
+    };
 
-  it("renders Maintenance without info", async () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
     const root = createRoot(div);
     await act(async () => {
       root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <Maintenance info={null} />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
-  });
-
-  it("renders Maintenance with info", async () => {
-    const div = document.createElement("div");
-    document.body.appendChild(div);
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <Maintenance info={"Important info"} />
-          </MemoryRouter>
-        </Provider>
+        <MemoryRouter>
+          <LoginRedirect {...props} />
+        </MemoryRouter>
       );
     });
   });
