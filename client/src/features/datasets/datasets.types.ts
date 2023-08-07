@@ -24,7 +24,9 @@ import {
 
 export interface DeleteDatasetParams
   extends CoreVersionUrl,
-    CoreRepositoryParams {}
+    CoreRepositoryParams {
+  name: string;
+}
 
 export interface DeleteDatasetResponse extends CoreResponse {
   result?: {

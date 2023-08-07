@@ -18,7 +18,7 @@
 
 export function getCoreVersionedUrl(
   endpoint: string,
-  versionUrl: string | undefined | null
+  versionUrl?: string | undefined | null
 ): string {
   const endpoint_ = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
   const versionUrl_ = versionUrl?.startsWith("/")

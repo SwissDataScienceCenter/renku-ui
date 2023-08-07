@@ -318,6 +318,14 @@ const Url = {
         "/projects/new",
         "/projects/new?data=eyJ0aXRsZSI6InRlC3QifQ==",
       ]),
+      datasets: {
+        base: new UrlRule(projectPageUrlBuilder("/datasets"), ["path"], null, [
+          "/projects/namespace/path/datasets",
+          "/projects/namespace/path/datasets/target",
+          "/projects/group/subgroup/path/datasets",
+          "/projects/group/subgroup/path/datasets/target",
+        ]),
+      },
       file: new UrlRule(
         projectPageUrlBuilder("/files/blob/"),
         ["namespace", "path", "target"],

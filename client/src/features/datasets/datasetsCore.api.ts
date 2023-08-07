@@ -26,16 +26,16 @@ import {
 
 export const datasetsCoreApi = createApi({
   reducerPath: "datasetsCore",
-  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/renku" }),
   tagTypes: ["datasets"],
   endpoints: (builder) => ({
     deleteDataset: builder.mutation<DeleteDataset, DeleteDatasetParams>({
-      query: ({ gitUrl, versionUrl }) => {
-        const body = { git_url: gitUrl };
+      query: ({ gitUrl, name, versionUrl }) => {
+        const body = { git_url: gitUrl, name };
         return {
           body,
-          method: "DELETE",
-          url: getCoreVersionedUrl("datasets.delete", versionUrl),
+          method: "POST",
+          url: getCoreVersionedUrl("datasets.remove", versionUrl),
           validateStatus: (response, body) =>
             response.status >= 200 && response.status < 300 && !body.error,
         };
