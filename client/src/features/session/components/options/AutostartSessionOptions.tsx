@@ -18,29 +18,29 @@
 
 import React, { useEffect, useMemo } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { StatusStepProgressBar } from "../../../../components/progress/ProgressSteps";
+import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
+import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import {
   useGetAllRepositoryBranchesQuery,
   useGetRepositoryCommitsQuery,
 } from "../../../repository/repository.api";
+import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
-import { useStartSessionOptionsSelector } from "../../startSessionOptionsSlice";
-import SessionDockerImage from "./SessionDockerImage";
+import useDefaultSessionClassOption from "../../hooks/options/useDefaultSessionClassOption.hook";
+import useDefaultStorageOption from "../../hooks/options/useDefaultStorageOption.hook";
 import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
 import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
-import { useCoreSupport } from "../../../project/useProjectCoreSupport";
-import useDefaultSessionClassOption from "../../hooks/options/useDefaultSessionClassOption.hook";
-import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
-import useDefaultStorageOption from "../../hooks/options/useDefaultStorageOption.hook";
-import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
+import { useStartSessionMutation } from "../../sessions.api";
 import {
   setError,
   setStarting,
   setSteps,
   updateStepStatus,
 } from "../../startSession.slice";
-import { StatusStepProgressBar } from "../../../../components/progress/ProgressSteps";
-import { useStartSessionMutation } from "../../sessions.api";
+import { useStartSessionOptionsSelector } from "../../startSessionOptionsSlice";
+import SessionDockerImage from "./SessionDockerImage";
 
 export default function AutostartSessionOptions() {
   useAutostartSessionOptions();

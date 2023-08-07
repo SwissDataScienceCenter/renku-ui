@@ -78,14 +78,6 @@ export default function SessionCommitOption() {
 
   useDefaultCommitOption({ commits });
 
-  // // Select the default commit
-  // useEffect(() => {
-  //   if (commits == null || commits.length == 0) {
-  //     return;
-  //   }
-  //   dispatch(setCommit(commits[0].id));
-  // }, [commits, dispatch]);
-
   // Commit limit
   const [limit, setLimit] = useState<number>(25);
   const onChangeLimit = useCallback((limit: number) => {

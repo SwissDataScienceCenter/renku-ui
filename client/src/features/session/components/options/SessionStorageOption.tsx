@@ -23,9 +23,8 @@ import { Input, InputGroup, InputGroupText } from "reactstrap";
 import { ThrottledTooltip } from "../../../../components/Tooltip";
 import { ResourceClass } from "../../../dataServices/dataServices";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
-import { StateModelProject } from "../../../project/Project";
-import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
+import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
@@ -39,22 +38,28 @@ import styles from "./SessionStorageOption.module.scss";
 
 export const SessionStorageOption = () => {
   // Project options
-  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.externalUrl
+  );
+  const defaultBranch = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.defaultBranch
+  );
+  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
   const { computed: coreSupportComputed, versionUrl } = coreSupport;
-  const { data: projectConfig } = useGetConfigQuery(
-    {
-      projectRepositoryUrl,
-      versionUrl,
-    },
-    { skip: !coreSupportComputed }
-  );
+  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const { data: projectConfig } = usePatchedProjectConfig({
+    commit,
+    gitLabProjectId: gitLabProjectId ?? 0,
+    projectRepositoryUrl,
+    versionUrl,
+    skip: !coreSupportComputed || !commit,
+  });
 
   // Resource pools
   const {

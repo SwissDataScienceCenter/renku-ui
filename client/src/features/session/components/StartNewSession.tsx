@@ -71,13 +71,13 @@ import {
   useStartSessionOptionsSelector,
 } from "../startSessionOptionsSlice";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
+import AutostartSessionOptions from "./options/AutostartSessionOptions";
 import SessionBranchOption from "./options/SessionBranchOption";
 import SessionCloudStorageOption from "./options/SessionCloudStorageOption";
 import SessionCommitOption from "./options/SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
 import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
 import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
-import AutostartSessionOptions from "./options/AutostartSessionOptions";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -121,12 +121,7 @@ export default function StartNewSession() {
       <>
         <BackButton />
         <SessionStarting />
-        {/* {autostart && (
-          <div className="d-none">
-            <StartNewSessionOptions />
-          </div>
-        )} */}
-        {autostart && <AutostartSessionOptions />}
+        {autostart && !starting && <AutostartSessionOptions />}
       </>
     );
   }
@@ -530,10 +525,7 @@ function StartSessionButton() {
     );
     startSession({
       branch,
-      cloudStorage: [
-        ...cloudStorageValidated,
-        // { endpoint: "http://example.com", bucket: "foobar" },
-      ],
+      cloudStorage: cloudStorageValidated,
       commit,
       defaultUrl,
       environmentVariables: environmentVariablesRecord,

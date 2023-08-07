@@ -37,11 +37,11 @@ import { Loader } from "../../../../components/Loader";
 import { Url } from "../../../../utils/helpers/url";
 import { UncontrolledPopover } from "../../../../utils/ts-wrappers";
 import { useGetAllRepositoryBranchesQuery } from "../../../repository/repository.api";
+import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 import {
   setBranch,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
-import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 
 export default function SessionBranchOption() {
   const defaultBranch = useSelector<RootStateOrAny, string>(
@@ -81,21 +81,6 @@ export default function SessionBranchOption() {
   );
 
   useDefaultBranchOption({ branches, defaultBranch });
-
-  // // Select the default branch
-  // useEffect(() => {
-  //   if (branches == null || branches.length == 0) {
-  //     return;
-  //   }
-  //   const matchedDefaultBranch = branches.find(
-  //     (branch) => branch.name === defaultBranch
-  //   );
-  //   const branch = matchedDefaultBranch ?? branches[0];
-  //   dispatch(setBranch(branch.name));
-  // }, [branches, defaultBranch, dispatch]);
-
-  // // TODO: set 'no-commit' error when no branches are available
-  // // useEffect(() => {}, [])
 
   // Branch filter
   const [includeMergedBranches, setIncludeMergedBranches] =

@@ -18,10 +18,8 @@
 
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { RepositoryBranch } from "../../../repository/repository.types";
-import { setError } from "../../startSession.slice";
-import { setBranch, setLfsAutoFetch } from "../../startSessionOptionsSlice";
 import { ProjectConfig } from "../../../project/Project";
+import { setLfsAutoFetch } from "../../startSessionOptionsSlice";
 
 interface UseDefaultAutoFetchLfsOptionArgs {
   projectConfig: ProjectConfig | undefined;

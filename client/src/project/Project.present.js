@@ -811,6 +811,8 @@ class ProjectViewFiles extends Component {
   }
 }
 
+// eslint-disable-next-line spellcheck/spell-checker
+// TODO(@leafty): replace this with directly using `ProjectSessionsRouter`
 const ProjectSessions = (props) => {
   return (
     <Col key="content" xs={12}>

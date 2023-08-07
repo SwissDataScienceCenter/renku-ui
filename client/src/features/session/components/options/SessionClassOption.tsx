@@ -41,9 +41,9 @@ import {
   ResourcePool,
 } from "../../../dataServices/dataServices";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
-import { ProjectConfig, StateModelProject } from "../../../project/Project";
-import { useGetConfigQuery } from "../../../project/projectCoreApi";
+import { ProjectConfig } from "../../../project/Project";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
+import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import {
   setSessionClass,
   useStartSessionOptionsSelector,
@@ -52,22 +52,28 @@ import styles from "./SessionClassOption.module.scss";
 
 export const SessionClassOption = () => {
   // Project options
-  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.externalUrl
+  );
+  const defaultBranch = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.defaultBranch
+  );
+  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
   const { computed: coreSupportComputed, versionUrl } = coreSupport;
-  const { data: projectConfig } = useGetConfigQuery(
-    {
-      projectRepositoryUrl,
-      versionUrl,
-    },
-    { skip: !coreSupportComputed }
-  );
+  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const { data: projectConfig } = usePatchedProjectConfig({
+    commit,
+    gitLabProjectId: gitLabProjectId ?? 0,
+    projectRepositoryUrl,
+    versionUrl,
+    skip: !coreSupportComputed || !commit,
+  });
 
   // Resource pools
   const {
@@ -104,13 +110,14 @@ export const SessionClassOption = () => {
   );
 
   const dispatch = useDispatch();
-
-  // // Reset session class when we navigate away
-  // useEffect(() => {
-  //   return () => {
-  //     dispatch(reset());
-  //   };
-  // }, [dispatch]);
+  const onChange = useCallback(
+    (newValue: SingleValue<ResourceClass>) => {
+      if (newValue?.id) {
+        dispatch(setSessionClass(newValue?.id));
+      }
+    },
+    [dispatch]
+  );
 
   // Set initial session class
   // Order of preference:
@@ -136,15 +143,6 @@ export const SessionClassOption = () => {
       0;
     dispatch(setSessionClass(initialSessionClassId));
   }, [defaultSessionClass?.id, dispatch, projectConfig, resourcePools]);
-
-  const onChange = useCallback(
-    (newValue: SingleValue<ResourceClass>) => {
-      if (newValue?.id) {
-        dispatch(setSessionClass(newValue?.id));
-      }
-    },
-    [dispatch]
-  );
 
   if (isLoading) {
     return (
