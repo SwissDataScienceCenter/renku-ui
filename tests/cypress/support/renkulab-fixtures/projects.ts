@@ -281,11 +281,11 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         { fixture: "project/test-project-readme-commits.json" }
       ).as(projectReadmeCommits);
       cy.intercept(
-        "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=100&page=1",
+        "/ui-server/api/projects/*/repository/commits?ref_name=master&page=1&per_page=100",
         { fixture: "project/test-project-commits.json" }
       ).as(projectCommitsName);
       cy.intercept(
-        "/ui-server/api/projects/*/repository/branches?per_page=100&page=1",
+        "/ui-server/api/projects/*/repository/branches?page=1&per_page=100",
         { fixture: "project/test-project-branches.json" }
       ).as(projectBranchesName);
       cy.intercept("/ui-server/api/kg/webhooks/projects/*/events/status", {
@@ -307,7 +307,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
           },
         },
       }).as(coreServiceVersionName);
-      cy.intercept("/ui-server/api/renku/9/config.show?git_url=*", {
+      cy.intercept("/ui-server/api/renku/10/config.show?git_url=*", {
         fixture: "project/test-project_config.json",
       }).as(configName);
       return this;

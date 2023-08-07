@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
+import { useLocation } from "react-router";
 import { RepositoryCommit } from "../../../repository/repository.types";
-import { setCommit } from "../../startSessionOptionsSlice";
 import { setError } from "../../startSession.slice";
+import { setCommit } from "../../startSessionOptionsSlice";
 
 interface UseDefaultCommitOptionArgs {
   commits: RepositoryCommit[] | undefined;
@@ -29,6 +30,13 @@ interface UseDefaultCommitOptionArgs {
 export default function useDefaultCommitOption({
   commits,
 }: UseDefaultCommitOptionArgs): void {
+  const location = useLocation();
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const commitFromUrl = searchParams.get("commit") ?? "";
+
   const dispatch = useDispatch();
 
   // Select the default commit
@@ -42,6 +50,21 @@ export default function useDefaultCommitOption({
       return;
     }
 
+    if (commitFromUrl !== "") {
+      const matchedCommit = commits.find(
+        (commit) => commit.id === commitFromUrl
+      );
+      if (matchedCommit != null) {
+        dispatch(setCommit(matchedCommit.id));
+        return;
+      }
+
+      dispatch(
+        setError({ error: "invalid-commit", errorMessage: commitFromUrl })
+      );
+      // Continue with the code below so that we set the commit to the latest one
+    }
+
     dispatch(setCommit(commits[0].id));
-  }, [commits, dispatch]);
+  }, [commitFromUrl, commits, dispatch]);
 }

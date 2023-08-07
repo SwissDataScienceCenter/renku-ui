@@ -26,28 +26,23 @@ describe("launch autostart sessions", () => {
   beforeEach(() => {
     fixtures.config().versions().projects().landingUserProjects();
     fixtures.projectTest().projectMigrationUpToDate();
+
     fixtures
-      .sessionAutosave()
       .sessionServersEmpty()
       .renkuIni()
       .sessionServerOptions()
-      .projectLockStatus();
+      .projectLockStatus()
+      .resourcePoolsTest();
     fixtures.userTest().newSessionImages();
   });
 
-  it("autostart session - not found custom values branch and commit", () => {
-    const invalidCommit = "no-valid-commit";
+  it("autostart session - not found custom values branch", () => {
     const invalidBranch = "no-valid-branch";
-    cy.visit(
-      `${projectUrl}/sessions/new?autostart=1&commit=${invalidCommit}&branch=${invalidBranch}`
-    );
-    const alertMessage = `A session on the branch ${invalidBranch} and the commit ${invalidCommit} could not be started
-        because it does not exist in the repository. The branch has been set to the default
-        master.
-        You can change that and other options down below.`;
+    cy.visit(`${projectUrl}/sessions/new?autostart=1&branch=${invalidBranch}`);
+    const alertMessage = `The session could not start because the branch ${invalidBranch} does not exist. Please select another branch to start a session.`;
     cy.wait("@getProjectCommits");
     cy.wait("@getSessionServerOptions", { timeout: 10000 });
-    cy.get(".alert-warning").should("contain.text", alertMessage);
+    cy.get(".alert-danger").should("contain.text", alertMessage);
   });
 
   it("autostart session - not found custom values commit", () => {
@@ -55,12 +50,9 @@ describe("launch autostart sessions", () => {
     cy.visit(
       `${projectUrl}/sessions/new?autostart=1&commit=${invalidCommit}&branch=master`
     );
-    const alertMessage = `A session for the reference ${invalidCommit} could not be started
-        because it does not exist in the repository. The branch has been set to the default
-        master.
-        You can change that and other options down below.`;
+    const alertMessage = `The session could not start because the commit ${invalidCommit} does not exist. Please select another commit to start a session.`;
     cy.wait("@getProjectCommits");
     cy.wait("@getSessionServerOptions", { timeout: 10000 });
-    cy.get(".alert-warning").should("contain.text", alertMessage);
+    cy.get(".alert-danger").should("contain.text", alertMessage);
   });
 });

@@ -282,6 +282,18 @@ function SessionStartError() {
         automatically selected. Please select a session class to start a
         session.
       </>
+    ) : error === "invalid-branch" ? (
+      <>
+        The session could not start because the branch{" "}
+        <code>{errorMessage}</code> does not exist. Please select another branch
+        to start a session.
+      </>
+    ) : error === "invalid-commit" ? (
+      <>
+        The session could not start because the commit{" "}
+        <code>{errorMessage}</code> does not exist. Please select another commit
+        to start a session.
+      </>
     ) : (
       <>The session could not start for an unknown reason.</>
     );

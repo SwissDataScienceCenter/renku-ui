@@ -25,6 +25,8 @@ export interface StartSession {
     | "docker-image-building"
     | "session-class"
     | "backend-error"
+    | "invalid-branch"
+    | "invalid-commit"
     | null;
   errorMessage: string;
   starting: boolean;

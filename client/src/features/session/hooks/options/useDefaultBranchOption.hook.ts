@@ -16,8 +16,9 @@
  * limitations under the License.
  */
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
+import { useLocation } from "react-router";
 import { RepositoryBranch } from "../../../repository/repository.types";
 import { setError } from "../../startSession.slice";
 import { setBranch } from "../../startSessionOptionsSlice";
@@ -31,6 +32,13 @@ export default function useDefaultBranchOption({
   branches,
   defaultBranch,
 }: UseDefaultBranchOptionArgs): void {
+  const location = useLocation();
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const branchFromUrl = searchParams.get("branch") ?? "";
+
   const dispatch = useDispatch();
 
   // Select the default branch
@@ -44,10 +52,25 @@ export default function useDefaultBranchOption({
       return;
     }
 
+    if (branchFromUrl !== "") {
+      const matchedBranch = branches.find(
+        (branch) => branch.name === branchFromUrl
+      );
+      if (matchedBranch != null) {
+        dispatch(setBranch(matchedBranch.name));
+        return;
+      }
+
+      dispatch(
+        setError({ error: "invalid-branch", errorMessage: branchFromUrl })
+      );
+      // Continue with the code below so that we set the branch to the default
+    }
+
     const matchedDefaultBranch = branches.find(
       (branch) => branch.name === defaultBranch
     );
     const branch = matchedDefaultBranch ?? branches[0];
     dispatch(setBranch(branch.name));
-  }, [branches, defaultBranch, dispatch]);
+  }, [branchFromUrl, branches, defaultBranch, dispatch]);
 }
