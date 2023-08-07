@@ -18,30 +18,28 @@
 
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { RepositoryCommit } from "../../../repository/repository.types";
-import { setCommit } from "../../startSessionOptionsSlice";
+import { RepositoryBranch } from "../../../repository/repository.types";
 import { setError } from "../../startSession.slice";
+import { setBranch, setLfsAutoFetch } from "../../startSessionOptionsSlice";
+import { ProjectConfig } from "../../../project/Project";
 
-interface UseDefaultCommitOptionArgs {
-  commits: RepositoryCommit[] | undefined;
+interface UseDefaultAutoFetchLfsOptionArgs {
+  projectConfig: ProjectConfig | undefined;
 }
 
-export default function useDefaultCommitOption({
-  commits,
-}: UseDefaultCommitOptionArgs): void {
+export default function useDefaultAutoFetchLfsOption({
+  projectConfig,
+}: UseDefaultAutoFetchLfsOptionArgs): void {
   const dispatch = useDispatch();
 
-  // Select the default commit
+  // Set initial value
   useEffect(() => {
-    if (commits == null) {
+    if (projectConfig == null) {
       return;
     }
 
-    if (commits.length == 0) {
-      dispatch(setError({ error: "no-commit" }));
-      return;
-    }
-
-    dispatch(setCommit(commits[0].id));
-  }, [commits, dispatch]);
+    dispatch(
+      setLfsAutoFetch(projectConfig.config.sessions?.lfsAutoFetch ?? false)
+    );
+  }, [dispatch, projectConfig]);
 }

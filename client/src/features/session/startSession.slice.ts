@@ -44,6 +44,15 @@ const startSessionSlice = createSlice({
     setSteps: (state, action: PayloadAction<StepsProgressBar[]>) => {
       state.steps.splice(0, -1, ...action.payload);
     },
+    updateStepStatus: (
+      state,
+      action: PayloadAction<Omit<StepsProgressBar, "step">>
+    ) => {
+      const step = state.steps.find((step) => step.id === action.payload.id);
+      if (step) {
+        step.status = action.payload.status;
+      }
+    },
     reset: () => initialState,
   },
 });
@@ -52,7 +61,7 @@ type SetErrorPayload = Pick<StartSession, "error"> &
   Partial<Pick<StartSession, "errorMessage">>;
 
 export default startSessionSlice;
-export const { setError, setStarting, setSteps, reset } =
+export const { setError, setStarting, setSteps, updateStepStatus, reset } =
   startSessionSlice.actions;
 
 export const useStartSessionSelector = createSliceSelector(startSessionSlice);

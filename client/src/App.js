@@ -30,7 +30,6 @@ import { Redirect } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
-import { Unavailable } from "./Maintenance";
 import { LoginHelper, LoginRedirect } from "./authentication";
 import { Loader } from "./components/Loader";
 import ShowDataset from "./dataset/Dataset.container";
@@ -39,6 +38,7 @@ import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
 import { Dashboard } from "./features/dashboard/Dashboard";
 import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
 import SearchPage from "./features/kgSearch/KgSearchPage";
+import { Unavailable } from "./features/maintenance/Maintenance";
 import AnonymousSessionsList from "./features/session/components/AnonymousSessionsList";
 import Help from "./help";
 import { AnonymousHome, FooterNavbar, RenkuNavBar } from "./landing";

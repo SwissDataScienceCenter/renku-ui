@@ -45,7 +45,6 @@ import { ProjectConfig, StateModelProject } from "../../../project/Project";
 import { useGetConfigQuery } from "../../../project/projectCoreApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import {
-  reset,
   setSessionClass,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
@@ -106,12 +105,12 @@ export const SessionClassOption = () => {
 
   const dispatch = useDispatch();
 
-  // Reset session class when we navigate away
-  useEffect(() => {
-    return () => {
-      dispatch(reset());
-    };
-  }, [dispatch]);
+  // // Reset session class when we navigate away
+  // useEffect(() => {
+  //   return () => {
+  //     dispatch(reset());
+  //   };
+  // }, [dispatch]);
 
   // Set initial session class
   // Order of preference:

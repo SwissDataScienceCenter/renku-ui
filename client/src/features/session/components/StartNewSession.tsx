@@ -66,7 +66,10 @@ import startSessionSlice, {
   setSteps,
   useStartSessionSelector,
 } from "../startSession.slice";
-import { useStartSessionOptionsSelector } from "../startSessionOptionsSlice";
+import {
+  startSessionOptionsSlice,
+  useStartSessionOptionsSelector,
+} from "../startSessionOptionsSlice";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import SessionBranchOption from "./options/SessionBranchOption";
 import SessionCloudStorageOption from "./options/SessionCloudStorageOption";
@@ -267,12 +270,14 @@ function SessionStartError() {
         The session could not start because no image is available. Please select
         a different commit or start the session with the base image.
       </>
-    ) : (
+    ) : error === "session-class" ? (
       <>
         The session could not start because no suitable session class could be
         automatically selected. Please select a session class to start a
         session.
       </>
+    ) : (
+      <>The session could not start for an unknown reason.</>
     );
 
   return (
@@ -441,6 +446,15 @@ function ForkProjectModal() {
 }
 
 function StartNewSessionOptions() {
+  const dispatch = useDispatch();
+
+  // Reset start session options slice when we navigate away
+  useEffect(() => {
+    return () => {
+      dispatch(startSessionOptionsSlice.actions.reset());
+    };
+  }, [dispatch]);
+
   return (
     <>
       <SessionDockerImage />

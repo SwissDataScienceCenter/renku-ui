@@ -46,6 +46,7 @@ import { SessionStorageOption } from "./SessionStorageOption";
 import styles from "./StartNotebookServerOptions.module.scss";
 import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
 import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
+import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 
 export const StartNotebookServerOptions = () => {
   // Wait for options to load
@@ -149,7 +150,8 @@ const DefaultUrlOption = () => {
   });
   const { computed: coreSupportComputed, versionUrl } = coreSupport;
 
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const { commit, defaultUrl: selectedDefaultUrl } =
+    useStartSessionOptionsSelector();
 
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
     usePatchedProjectConfig({
@@ -165,9 +167,10 @@ const DefaultUrlOption = () => {
     projectConfig,
   });
 
-  const selectedDefaultUrl = useStartSessionOptionsSelector(
-    (state) => state.defaultUrl
-  );
+  // const selectedDefaultUrl = useStartSessionOptionsSelector(
+  //   (state) => state.defaultUrl
+  // );
+
   const dispatch = useDispatch();
 
   // // Set initial default URL
@@ -260,41 +263,71 @@ export const mergeDefaultUrlOptions = ({
 };
 
 const AutoFetchLfsOption = () => {
-  // Project options
-  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  // // Project options
+  // const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
+  //   RootStateOrAny,
+  //   StateModelProject["metadata"]
+  // >((state) => state.stateModel.project.metadata);
+  // const { coreSupport } = useCoreSupport({
+  //   gitUrl: projectRepositoryUrl ?? undefined,
+  //   branch: defaultBranch ?? undefined,
+  // });
+  // const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  // const { data: projectConfig } = useGetConfigQuery(
+  //   {
+  //     projectRepositoryUrl,
+  //     versionUrl,
+  //   },
+  //   { skip: !coreSupportComputed }
+  // );
+
+  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.externalUrl
+  );
+  const defaultBranch = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.defaultBranch
+  );
+  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
   const { computed: coreSupportComputed, versionUrl } = coreSupport;
-  const { data: projectConfig } = useGetConfigQuery(
-    {
+
+  const { commit, defaultUrl: selectedDefaultUrl } =
+    useStartSessionOptionsSelector();
+
+  const { data: projectConfig, isFetching: projectConfigIsFetching } =
+    usePatchedProjectConfig({
+      commit,
+      gitLabProjectId: gitLabProjectId ?? 0,
       projectRepositoryUrl,
       versionUrl,
-    },
-    { skip: !coreSupportComputed }
-  );
+      skip: !coreSupportComputed || !commit,
+    });
 
   const lfsAutoFetch = useStartSessionOptionsSelector(
     (state) => state.lfsAutoFetch
   );
+
   const dispatch = useDispatch();
 
-  // Set initial value
-  useEffect(() => {
-    if (projectConfig != null) {
-      dispatch(
-        setLfsAutoFetch(projectConfig.config.sessions?.lfsAutoFetch ?? false)
-      );
-    }
-  }, [dispatch, projectConfig]);
+  // // Set initial value
+  // useEffect(() => {
+  //   if (projectConfig != null) {
+  //     dispatch(
+  //       setLfsAutoFetch(projectConfig.config.sessions?.lfsAutoFetch ?? false)
+  //     );
+  //   }
+  // }, [dispatch, projectConfig]);
 
   const onChange = useCallback(() => {
     dispatch(setLfsAutoFetch(!lfsAutoFetch));
   }, [dispatch, lfsAutoFetch]);
+
+  useDefaultAutoFetchLfsOption({ projectConfig });
 
   return (
     <div className="field-group">

@@ -18,7 +18,6 @@
 
 import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
-import { clamp } from "lodash";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Input, InputGroup, InputGroupText } from "reactstrap";
 import { ThrottledTooltip } from "../../../../components/Tooltip";
@@ -35,6 +34,7 @@ import {
   setStorage,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
+import { validateStorageAmount } from "../../utils/sessionOptions.utils";
 import styles from "./SessionStorageOption.module.scss";
 
 export const SessionStorageOption = () => {
@@ -190,14 +190,3 @@ export const StorageSelector = ({
     </div>
   );
 };
-
-const validateStorageAmount = ({
-  value,
-  maxValue,
-}: {
-  value: number;
-  maxValue: number;
-}) =>
-  isNaN(value)
-    ? MIN_SESSION_STORAGE_GB
-    : clamp(Math.round(value), MIN_SESSION_STORAGE_GB, maxValue);

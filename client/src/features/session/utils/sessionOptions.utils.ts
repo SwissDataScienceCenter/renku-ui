@@ -16,32 +16,19 @@
  * limitations under the License.
  */
 
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { RepositoryCommit } from "../../../repository/repository.types";
-import { setCommit } from "../../startSessionOptionsSlice";
-import { setError } from "../../startSession.slice";
+import { clamp } from "lodash";
+import { MIN_SESSION_STORAGE_GB } from "../startSessionOptions.constants";
 
-interface UseDefaultCommitOptionArgs {
-  commits: RepositoryCommit[] | undefined;
+interface ValidateStorageAmountArgs {
+  value: number;
+  maxValue: number;
 }
 
-export default function useDefaultCommitOption({
-  commits,
-}: UseDefaultCommitOptionArgs): void {
-  const dispatch = useDispatch();
-
-  // Select the default commit
-  useEffect(() => {
-    if (commits == null) {
-      return;
-    }
-
-    if (commits.length == 0) {
-      dispatch(setError({ error: "no-commit" }));
-      return;
-    }
-
-    dispatch(setCommit(commits[0].id));
-  }, [commits, dispatch]);
+export function validateStorageAmount({
+  value,
+  maxValue,
+}: ValidateStorageAmountArgs) {
+  return isNaN(value)
+    ? MIN_SESSION_STORAGE_GB
+    : clamp(Math.round(value), MIN_SESSION_STORAGE_GB, maxValue);
 }
