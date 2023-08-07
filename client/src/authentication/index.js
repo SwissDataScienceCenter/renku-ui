@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
-import { Login, LoginHelper } from "./Authentication.container.js";
+import LoginRedirect from "./LoginRedirect.tsx";
+import { LoginHelper } from "./Authentication.container.js";
 
-export { Login, LoginHelper };
+export { LoginHelper, LoginRedirect };

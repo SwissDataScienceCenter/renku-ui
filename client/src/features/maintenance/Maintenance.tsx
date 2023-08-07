@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,47 +16,39 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  Maintenance.js
- *  Maintenance components.
- */
-
 import React from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { Button, Row, Col } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWrench } from "@fortawesome/free-solid-svg-icons";
 
-import { MaintenanceNavBar, FooterNavbar } from "./landing";
-import { StatuspageDisplay, isStatusConfigured } from "./statuspage";
+import { FooterNavbar } from "../../landing";
+import { StatuspageDisplay, isStatusConfigured } from "../../statuspage";
 
 interface MaintenanceProps {
   info: string;
 }
-function Maintenance(props: MaintenanceProps) {
-  const { info } = props;
-
-  const headerText = "Maintenance";
+function Maintenance({ info }: MaintenanceProps) {
+  const headerText = "Maintenance ongoing";
   const body =
     info && info !== "true" && info !== "1"
       ? info
       : "Renku is undergoing maintenance. It should be available again soon. Please check back in a little while.";
   return (
     <Router>
-      <div>
-        <Route component={MaintenanceNavBar} />
-        <main role="main" className="container-fluid">
-          <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
-            <h1 className="text-center text-primary">
-              <FontAwesomeIcon icon={faWrench} /> {headerText}{" "}
-              <FontAwesomeIcon icon={faWrench} />
-            </h1>
-            <br />
-            <p className="text-center">{body}</p>
-          </section>
-        </main>
+      <div className="min-vh-100 d-flex flex-column">
+        <div className="flex-grow-1">
+          <main role="main" className="container-fluid">
+            <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
+              <h1 className="text-center text-primary">
+                <FontAwesomeIcon className="me-3" icon={faWrench} />
+                {headerText}
+                <FontAwesomeIcon className="ms-3" icon={faWrench} />
+              </h1>
+              <p className="text-center mt-4">{body}</p>
+            </section>
+          </main>
+        </div>
         <Route component={FooterNavbar} />
       </div>
     </Router>

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,14 +16,25 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  landing
- *  Components for the landing page
- */
+import express from "express";
+import promBundle from "express-prom-bundle";
 
-import AnonymousHome from "./AnonymousHome";
-import { RenkuNavBar, FooterNavbar } from "./NavBar";
+import config from "../../config";
+import logger from "../../logger";
 
-export { AnonymousHome, FooterNavbar, RenkuNavBar };
+export function initializePrometheus(app: express.Application): void {
+  if (!config.prometheus.enabled) {
+    logger.info("Prometheus is turned OFF, skipping initialization.");
+    return;
+  }
+
+  const metricsMiddleware = promBundle({
+    autoregister: true,
+    includeMethod: true,
+    metricsPath: config.prometheus.path,
+  });
+  logger.info(
+    `Setting up Prometheus metrics, reachable at "${config.prometheus.path}"`
+  );
+  app.use(metricsMiddleware);
+}

@@ -49,7 +49,7 @@ tee > "${OUTPUT_FILE}" << EOF
     <loc>${BASE_URL}/help/status</loc>
   </url>
   <url>
-    <loc>${BASE_URL}/help/changes</loc>
+    <loc>${BASE_URL}/help/release</loc>
   </url>
 </urlset>
 EOF
