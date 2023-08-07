@@ -147,7 +147,7 @@ export const projectCoreApi = createApi({
         };
         if (migrationParams.branch) params.branch = migrationParams.branch;
         return {
-          url: "/renku/cache.migrations_check", // ? migrations check always invoked on the last renku version
+          url: getCoreVersionedUrl("/cache.migrations_check"), // ? migrations always uses the last renku version
           params,
         };
       },
@@ -223,7 +223,7 @@ export const projectCoreApi = createApi({
         return {
           body,
           method: "POST",
-          url: `/renku/cache.migrate`,
+          url: getCoreVersionedUrl("/cache.migrate"), // ? migrations always uses the last renku version
           validateStatus: (response, body) => {
             return response.status < 400 && !body.error?.code;
           },
