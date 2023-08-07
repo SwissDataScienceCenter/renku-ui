@@ -22,6 +22,7 @@ import { Route, Switch } from "react-router";
 import { Url } from "../../../utils/helpers/url";
 import ProjectSessionsList from "./ProjectSessionsList";
 import ShowSession from "./ShowSession";
+import StartNewSession from "./StartNewSession";
 
 export default function ProjectSessionsRouter() {
   const pathWithNamespace = useSelector<RootStateOrAny, string>(
@@ -39,6 +40,10 @@ export default function ProjectSessionsRouter() {
     path: pathWithNamespace,
   };
   const sessionsListUrl = Url.get(Url.pages.project.session, projectUrlData);
+  const startSessionUrl = Url.get(
+    Url.pages.project.session.new,
+    projectUrlData
+  );
   const sessionShowUrl = Url.get(Url.pages.project.session.show, {
     namespace,
     path,
@@ -49,6 +54,9 @@ export default function ProjectSessionsRouter() {
     <Switch>
       <Route exact path={sessionsListUrl}>
         <ProjectSessionsList projectPathWithNamespace={pathWithNamespace} />
+      </Route>
+      <Route path={startSessionUrl}>
+        <StartNewSession />
       </Route>
       <Route path={sessionShowUrl}>
         <ShowSession />

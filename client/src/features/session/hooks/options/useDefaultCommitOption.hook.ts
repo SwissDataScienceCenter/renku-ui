@@ -16,8 +16,32 @@
  * limitations under the License.
  */
 
-export const SESSION_CI_PIPELINE_POLLING_INTERVAL_MS = 5_000;
-export const SESSION_CI_IMAGE_BUILD_JOB = "image_build";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { RepositoryCommit } from "../../../repository/repository.types";
+import { setCommit } from "../../startSessionOptionsSlice";
+import { setError } from "../../startSession.slice";
 
-export const MIN_SESSION_STORAGE_GB = 1;
-export const STEP_SESSION_STORAGE_GB = 1;
+interface UseDefaultCommitOptionArgs {
+  commits: RepositoryCommit[] | undefined;
+}
+
+export default function useDefaultCommitOption({
+  commits,
+}: UseDefaultCommitOptionArgs): void {
+  const dispatch = useDispatch();
+
+  // Select the default commit
+  useEffect(() => {
+    if (commits == null) {
+      return;
+    }
+
+    if (commits.length == 0) {
+      dispatch(setError({ error: "no-commit" }));
+      return;
+    }
+
+    dispatch(setCommit(commits[0].id));
+  }, [commits, dispatch]);
+}

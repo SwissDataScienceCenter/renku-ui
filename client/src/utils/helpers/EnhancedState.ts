@@ -34,20 +34,23 @@ import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
+import pipelinesApi from "../../features/pipelines/pipelines.api";
 import { datasetFormSlice } from "../../features/project/dataset";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
+import projectGitlabApi from "../../features/project/projectGitlabApi";
 import { projectKgApi } from "../../features/project/projectKgApi";
 import { projectsApi } from "../../features/projects/projectsApi";
 import { projectsKgApi } from "../../features/projects/projectsKgApi";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
+import registryApi from "../../features/registry/registry.api";
 import repositoryApi from "../../features/repository/repository.api";
 import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
+import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
-import projectGitlabApi from "../../features/project/projectGitlabApi";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -63,15 +66,19 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
+    [pipelinesApi.reducerPath]: pipelinesApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
     [projectGitlabApi.reducerPath]: projectGitlabApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
     [projectsKgApi.reducerPath]: projectsKgApi.reducer,
+    [startSessionSlice.name]: startSessionSlice.reducer,
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [repositoryApi.reducerPath]: repositoryApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
+    [registryApi.reducerPath]: registryApi.reducer,
+    [repositoryApi.reducerPath]: repositoryApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
@@ -89,11 +96,15 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(dataServicesApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(kgSearchApi.middleware)
+        .concat(pipelinesApi.middleware)
         .concat(projectCoreApi.middleware)
         .concat(projectKgApi.middleware)
         .concat(projectsKgApi.middleware)
         .concat(projectsApi.middleware)
         .concat(recentUserActivityApi.middleware)
+        .concat(registryApi.middleware)
+        .concat(repositoryApi.middleware)
+        .concat(sessionSidecarApi.middleware)
         .concat(repositoryApi.middleware)
         .concat(sessionsApi.middleware)
         .concat(sessionSidecarApi.middleware)

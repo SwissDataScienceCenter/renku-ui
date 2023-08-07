@@ -18,30 +18,23 @@
 
 import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
-import { clamp } from "lodash";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import {
-  Col,
-  FormGroup,
-  Input,
-  InputGroup,
-  InputGroupText,
-  Label,
-} from "reactstrap";
-import { ThrottledTooltip } from "../../../components/Tooltip";
-import { ResourceClass } from "../../../features/dataServices/dataServices";
-import { useGetResourcePoolsQuery } from "../../../features/dataServices/dataServicesApi";
-import { StateModelProject } from "../../../features/project/Project";
-import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
-import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
+import { Input, InputGroup, InputGroupText } from "reactstrap";
+import { ThrottledTooltip } from "../../../../components/Tooltip";
+import { ResourceClass } from "../../../dataServices/dataServices";
+import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
+import { StateModelProject } from "../../../project/Project";
+import { useGetConfigQuery } from "../../../project/projectCoreApi";
+import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
-} from "../../../features/session/startSessionOptions.constants";
+} from "../../startSessionOptions.constants";
 import {
   setStorage,
   useStartSessionOptionsSelector,
-} from "../../../features/session/startSessionOptionsSlice";
+} from "../../startSessionOptionsSlice";
+import { validateStorageAmount } from "../../utils/sessionOptions.utils";
 import styles from "./SessionStorageOption.module.scss";
 
 export const SessionStorageOption = () => {
@@ -130,16 +123,14 @@ export const SessionStorageOption = () => {
   }
 
   return (
-    <Col xs={12}>
-      <FormGroup className="field-group">
-        <Label>Amount of Storage</Label>
-        <StorageSelector
-          currentSessionClass={currentSessionClass}
-          currentStorage={storage}
-          onChange={onChange}
-        />
-      </FormGroup>
-    </Col>
+    <div className="field-group">
+      <div className="form-label">Amount of Storage</div>
+      <StorageSelector
+        currentSessionClass={currentSessionClass}
+        currentStorage={storage}
+        onChange={onChange}
+      />
+    </div>
   );
 };
 
@@ -199,14 +190,3 @@ export const StorageSelector = ({
     </div>
   );
 };
-
-const validateStorageAmount = ({
-  value,
-  maxValue,
-}: {
-  value: number;
-  maxValue: number;
-}) =>
-  isNaN(value)
-    ? MIN_SESSION_STORAGE_GB
-    : clamp(Math.round(value), MIN_SESSION_STORAGE_GB, maxValue);

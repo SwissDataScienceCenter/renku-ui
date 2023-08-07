@@ -47,7 +47,7 @@ import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import { RenkuNavLink } from "../components/RenkuNavLink";
 import { ThrottledTooltip } from "../components/Tooltip";
-import { GoBackButton, RoundButtonGroup } from "../components/buttons/Button";
+import { RoundButtonGroup } from "../components/buttons/Button";
 import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
 import { SshModal } from "../components/ssh/ssh";
 import {
@@ -62,10 +62,10 @@ import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import ProjectSessionsRouter from "../features/session/components/ProjectSessionsRouter";
 import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
-import { NotebooksCoordinator, StartNotebookServer } from "../notebooks";
-import { Docs } from "../utils/constants/Docs";
+import { NotebooksCoordinator } from "../notebooks";
 import { Url } from "../utils/helpers/url";
 import { WorkflowsList } from "../workflows";
+import "./Project.css";
 import { CloneButton } from "./clone/CloneButton";
 import GitLabConnectButton, {
   externalUrlToGitLabIdeUrl,
@@ -76,7 +76,6 @@ import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 import { ProjectSettingsNav } from "./settings";
-import "./Project.css";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -813,196 +812,14 @@ class ProjectViewFiles extends Component {
 }
 
 const ProjectSessions = (props) => {
-  const locationFrom = props.history?.location?.state?.from;
-  const filePath = props.history?.location?.state?.filePath;
-  const backNotebookLabel = filePath
-    ? `Back to ${filePath}`
-    : "Back to notebook file";
-  const backButtonLabel = locationFrom
-    ? backNotebookLabel
-    : `Back to ${props.metadata.pathWithNamespace}`;
-  const backUrl = locationFrom ?? props.baseUrl;
-
-  const backButton = <GoBackButton label={backButtonLabel} url={backUrl} />;
-
-  return [
+  return (
     <Col key="content" xs={12}>
       <Switch>
-        <Route
-          path={props.launchNotebookUrl}
-          render={() => (
-            <ProjectStartNotebookServer
-              key="startNotebookForm"
-              {...props}
-              backUrl={backUrl}
-              defaultBackButton={backButton}
-            />
-          )}
-        />
         <Route path={props.notebookServersUrl}>
           <ProjectSessionsRouter />
         </Route>
       </Switch>
-    </Col>,
-  ];
-};
-
-function notebookWarning(
-  userLogged,
-  accessLevel,
-  postLoginUrl,
-  externalUrl,
-  props
-) {
-  if (!userLogged) {
-    const to = Url.get(Url.pages.login.link, { pathname: postLoginUrl });
-    return (
-      <InfoAlert timeout={0} key="permissions-warning">
-        <p>
-          As an anonymous user, you can start{" "}
-          <ExternalLink
-            role="text"
-            title="Sessions"
-            url={Docs.rtdHowToGuide(
-              "renkulab/session-stopping-and-saving.html"
-            )}
-          />
-          , but you cannot save your work.
-        </p>
-        <p className="mb-0">
-          <Link className="btn btn-primary btn-sm" to={to}>
-            Log in
-          </Link>{" "}
-          for full access.
-        </p>
-      </InfoAlert>
-    );
-  } else if (accessLevel < ACCESS_LEVELS.DEVELOPER) {
-    return (
-      <InfoAlert timeout={0} key="permissions-warning">
-        <p>
-          You have limited permissions for this project. You can launch a
-          session, but you will not be able to save any changes. If you want to
-          save your work, consider one of the following:
-        </p>
-        <ul className="mb-0">
-          <li>
-            <ForkProjectModal
-              className="btn btn-primary btn-sm"
-              client={props.client}
-              history={props.history}
-              model={props.model}
-              notifications={props.notifications}
-              title={
-                props.metadata && props.metadata.title
-                  ? props.metadata.title
-                  : ""
-              }
-              id={props.metadata && props.metadata.id ? props.metadata.id : 0}
-              forkProjectDisabled={false}
-              projectVisibility={props.metadata.visibility}
-              user={props.user}
-              externalUrl={props.externalUrl}
-              showForkCount={false}
-            />{" "}
-            and start a session from your fork.
-          </li>
-          <li className="pt-1">
-            <ExternalLink
-              size="sm"
-              title="Contact a maintainer"
-              url={`${externalUrl}/-/project_members`}
-            />{" "}
-            and ask them to{" "}
-            <ExternalLink
-              role="text"
-              title="grant you the necessary permissions"
-              url={Docs.rtdHowToGuide("renkulab/collaboration.html")}
-            />
-            .
-          </li>
-        </ul>
-      </InfoAlert>
-    );
-  }
-  return null;
-}
-
-const ProjectStartNotebookServer = (props) => {
-  const {
-    branches,
-    client,
-    commits,
-    model,
-    user,
-    forkUrl,
-    externalUrl,
-    location,
-    metadata,
-    fetchBranches,
-    fetchCommits,
-    notebookServersUrl,
-    history,
-    blockAnonymous,
-    notifications,
-    projectCoordinator,
-    lockStatus,
-    backUrl,
-    defaultBackButton,
-  } = props;
-  const warning = notebookWarning(
-    user.logged,
-    metadata.accessLevel,
-    forkUrl,
-    location.pathname,
-    externalUrl,
-    props
-  );
-
-  const locationEnhanced =
-    location && location.state && location.state.successUrl
-      ? location
-      : {
-          ...props.location,
-          state: {
-            ...props.location.state,
-            successUrl: notebookServersUrl,
-          },
-        };
-
-  const scope = {
-    defaultBranch: props.metadata.defaultBranch,
-    namespace: props.metadata.namespace,
-    project: props.metadata.path,
-    filePath: location?.state?.filePath,
-  };
-
-  return (
-    <StartNotebookServer
-      accessLevel={metadata?.accessLevel}
-      autosaved={branches.autosaved}
-      blockAnonymous={blockAnonymous}
-      branches={branches.standard}
-      client={client}
-      commits={commits}
-      externalUrl={externalUrl}
-      fetchingBranches={branches.fetching}
-      history={history}
-      location={locationEnhanced}
-      lockStatus={lockStatus}
-      message={warning}
-      model={model}
-      notebooks={projectCoordinator.model.baseModel.get("notebooks")}
-      notifications={notifications}
-      refreshBranches={fetchBranches}
-      refreshCommits={fetchCommits}
-      scope={scope}
-      successUrl={notebookServersUrl}
-      user={user}
-      openShareLinkModal={location?.state?.openShareLinkModal}
-      backUrl={backUrl}
-      defaultBackButton={defaultBackButton}
-    />
+    </Col>
   );
 };
 

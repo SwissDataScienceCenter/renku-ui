@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,32 +16,21 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- * Components for interacting with the notebook server (renku-notebooks)
- *
- */
+export interface RegistryTag {
+  location: string;
+}
 
-import {
-  CheckNotebookStatus,
-  Notebooks,
-  StartNotebookServer,
-} from "./Notebooks.container";
-import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
-import {
-  CheckNotebookIcon,
-  NotebooksDisabled,
-  ServerOptionRange,
-} from "./Notebooks.present";
+export interface GetRegistryTagParams {
+  projectId: number;
+  registryId: number;
+  tag: string;
+}
 
-export {
-  CheckNotebookIcon,
-  CheckNotebookStatus,
-  Notebooks,
-  NotebooksCoordinator,
-  NotebooksDisabled,
-  NotebooksHelper,
-  ServerOptionRange,
-  StartNotebookServer,
-};
+export interface Registry {
+  id: number;
+  name: string;
+}
+
+export interface GetRenkuRegistryParams {
+  projectId: string;
+}

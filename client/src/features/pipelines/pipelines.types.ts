@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,32 +16,41 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- * Components for interacting with the notebook server (renku-notebooks)
- *
- */
+export interface Pipeline {
+  id: number;
+}
 
-import {
-  CheckNotebookStatus,
-  Notebooks,
-  StartNotebookServer,
-} from "./Notebooks.container";
-import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
-import {
-  CheckNotebookIcon,
-  NotebooksDisabled,
-  ServerOptionRange,
-} from "./Notebooks.present";
+export interface PipelineJob {
+  id: number;
+  name: string;
+  pipeline: Pipeline;
+  status:
+    | "success"
+    | "running"
+    | "pending"
+    | "stopping"
+    | "failed"
+    | "canceled";
+  web_url: string;
+}
 
-export {
-  CheckNotebookIcon,
-  CheckNotebookStatus,
-  Notebooks,
-  NotebooksCoordinator,
-  NotebooksDisabled,
-  NotebooksHelper,
-  ServerOptionRange,
-  StartNotebookServer,
-};
+export interface GetPipelineJobByNameParams {
+  jobName: string;
+  pipelineIds: number[];
+  projectId: number;
+}
+
+export interface GetPipelinesParams {
+  commit?: string;
+  projectId: number;
+}
+
+export interface RetryPipelineParams {
+  pipelineId: number;
+  projectId: number;
+}
+
+export interface RunPipelineParams {
+  projectId: number;
+  ref: string;
+}

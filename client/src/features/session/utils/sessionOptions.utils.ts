@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,32 +16,19 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- * Components for interacting with the notebook server (renku-notebooks)
- *
- */
+import { clamp } from "lodash";
+import { MIN_SESSION_STORAGE_GB } from "../startSessionOptions.constants";
 
-import {
-  CheckNotebookStatus,
-  Notebooks,
-  StartNotebookServer,
-} from "./Notebooks.container";
-import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
-import {
-  CheckNotebookIcon,
-  NotebooksDisabled,
-  ServerOptionRange,
-} from "./Notebooks.present";
+interface ValidateStorageAmountArgs {
+  value: number;
+  maxValue: number;
+}
 
-export {
-  CheckNotebookIcon,
-  CheckNotebookStatus,
-  Notebooks,
-  NotebooksCoordinator,
-  NotebooksDisabled,
-  NotebooksHelper,
-  ServerOptionRange,
-  StartNotebookServer,
-};
+export function validateStorageAmount({
+  value,
+  maxValue,
+}: ValidateStorageAmountArgs) {
+  return isNaN(value)
+    ? MIN_SESSION_STORAGE_GB
+    : clamp(Math.round(value), MIN_SESSION_STORAGE_GB, maxValue);
+}

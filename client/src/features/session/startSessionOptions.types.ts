@@ -17,8 +17,52 @@
  */
 
 export interface StartSessionOptions {
+  branch: string;
+  cloudStorage: SessionCloudStorageMount[];
+  commit: string;
   defaultUrl: string;
+  dockerImageBuildStatus: DockerImageBuildStatus;
+  dockerImageStatus: DockerImageStatus;
+  environmentVariables: SessionEnvironmentVariable[];
+  lfsAutoFetch: boolean;
+  pinnedDockerImage: string;
   sessionClass: number;
   storage: number;
-  lfsAutoFetch: boolean;
+}
+
+export interface SessionCloudStorageMount {
+  accessKey?: string;
+  bucket: string;
+  endpoint: string;
+  secretKey?: string;
+}
+
+export type DockerImageBuildStatus =
+  | "unknown"
+  | "available"
+  | "checking-ci-registry-start"
+  | "checking-ci-registry"
+  | "checking-ci-image-start"
+  | "checking-ci-image"
+  | "checking-ci-pipelines-start"
+  | "checking-ci-pipelines"
+  | "checking-ci-jobs-start"
+  | "checking-ci-jobs"
+  | "ci-job-running"
+  | "checking-ci-done-registry-start"
+  | "checking-ci-done-registry"
+  | "checking-ci-done-image-start"
+  | "checking-ci-done-image"
+  | "waiting-ci-image"
+  | "error";
+
+export type DockerImageStatus =
+  | "unknown"
+  | "available"
+  | "not-available"
+  | "building";
+
+export interface SessionEnvironmentVariable {
+  name: string;
+  value: string;
 }

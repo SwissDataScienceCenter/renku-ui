@@ -1296,7 +1296,8 @@ class NotebooksCoordinator {
       branch,
       commit,
       image,
-      options,
+      // options,
+      { serverOptions: { defaultUrl: startSessionOptions.defaultUrl } },
       env_variables
     );
   }
