@@ -386,6 +386,7 @@ function getLinksDatasetHeader(projects) {
       linksHeader.data.push({
         title: project.name,
         url: `/projects/${project.path}`,
+        tooltip: project.path,
       });
     });
   }
