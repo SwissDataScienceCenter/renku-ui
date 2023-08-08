@@ -19,11 +19,11 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 
-import { useProjectJsonLdQuery } from "../../projects/projectsKgApi";
 import {
-  useGetProjectIndexingStatusQuery,
+  useProjectJsonLdQuery,
   useProjectMetadataQuery,
-} from "../projectKgApi";
+} from "../../projects/projectsKgApi";
+import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 
 type ProjectJsonLdProps = {
   projectId: number;
@@ -49,7 +49,7 @@ function ProjectPageTitle({
     options
   );
   const { data: kgData } = useProjectMetadataQuery(
-    kgProjectQueryParams,
+    { ...kgProjectQueryParams, projectId },
     options
   );
 

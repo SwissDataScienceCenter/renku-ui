@@ -24,7 +24,7 @@ import { DatasetCoordinator } from "../Dataset.state";
 import { ImportStateMessage } from "../../utils/constants/Dataset";
 import AppContext from "../../utils/context/appContext";
 import { useGetMigrationStatusQuery } from "../../features/project/projectCoreApi";
-import type { CoreCompatibilityStatus } from "../../features/project/Project.d";
+import type { CoreCompatibilityStatus } from "../../features/project/Project";
 import { useGetCoreVersionsQuery } from "../../features/versions/versionsApi";
 
 import type {

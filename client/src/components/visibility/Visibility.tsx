@@ -87,7 +87,7 @@ export interface VisibilitiesInputProps {
   namespaceVisibility: Visibilities;
 
   /** Default value */
-  value: Visibilities | null;
+  value?: Visibilities | null;
 
   /**
    * To show error feedback and mark input as invalid if there is no selection
@@ -126,16 +126,16 @@ export interface VisibilitiesInputProps {
  * @param {VisibilityInputProps} props - visibility options
  */
 const VisibilitiesInput = ({
-  namespaceVisibility,
   disabled,
-  value,
-  isInvalid,
-  isRequired,
-  onChange,
-  name = "visibility",
-  isLoadingData,
-  isForked,
   includeRequiredLabel = true,
+  isForked,
+  isInvalid,
+  isLoadingData,
+  isRequired,
+  name = "visibility",
+  namespaceVisibility,
+  onChange,
+  value = null,
 }: VisibilitiesInputProps) => {
   const [visibility, setVisibility] = useState<string | null>(null);
   useEffect(() => setVisibility(value), [value]);
@@ -198,6 +198,12 @@ const VisibilitiesInput = ({
     );
   };
 
+  const tooltipContent = disabled ? (
+    <span>Only maintainers can change the visibility.</span>
+  ) : (
+    feedbackByNamespace(true)
+  );
+
   const options = VISIBILITY_ITEMS.map((item) => {
     const isDisabledByNamespace = visibilities.disabled.includes(item.value);
     return (
@@ -209,7 +215,7 @@ const VisibilitiesInput = ({
         changeVisibility={changeVisibility}
         isChecked={visibility === item.value}
         markInvalid={markInvalid}
-        tooltipContent={feedbackByNamespace(true)}
+        tooltipContent={tooltipContent}
       />
     );
   });

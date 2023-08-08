@@ -226,15 +226,6 @@ const ProjectAttributesMixin = {
       this.set("metadata.pendingRefresh", true);
     });
   },
-  setDescription(client, description) {
-    this.set("metadata.description", { updating: true });
-    return client
-      .setDescription(this.get("metadata.id"), description)
-      .then(() => {
-        this.set("metadata.description", description); // to refresh view
-        this.set("metadata.pendingRefresh", true);
-      });
-  },
   setTags(client, tags) {
     this.set("metadata.tagList.updating", true);
     const currentTags = tags.trim();

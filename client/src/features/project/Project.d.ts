@@ -321,6 +321,22 @@ export interface ProjectConfigSection {
   };
 }
 
+export interface UpdateDescriptionParams {
+  description: string;
+  gitUrl: string;
+  projectId: number;
+}
+
+export interface UpdateDescriptionDetails {
+  edited?: Record<string, string>;
+  warning?: string;
+}
+
+export interface UpdateDescriptionResponse {
+  error?: CoreErrorContent;
+  result?: UpdateDescriptionDetails;
+}
+
 export interface EditProjectParams {
   projectPathWithNamespace: string;
   visibility: Visibilities;

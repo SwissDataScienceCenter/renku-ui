@@ -29,7 +29,7 @@ import type {
   DatasetKg,
   IDataset,
   StateModelProject,
-} from "../Project.d";
+} from "../Project";
 import { useGetDatasetKgQuery } from "../projectKgApi";
 import { useCoreSupport } from "../useProjectCoreSupport";
 
