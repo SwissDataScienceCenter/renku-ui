@@ -22,10 +22,11 @@ import {
   faFileAlt,
   faPlay,
   faStop,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { useDispatch } from "react-redux";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { Button, DropdownItem } from "reactstrap";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
@@ -44,9 +45,11 @@ import { getRunningSession } from "../sessions.utils";
 import SimpleSessionButton from "./SimpleSessionButton";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
 import { Loader } from "../../../components/Loader";
+import { User } from "../../../model/RenkuModels";
 
 interface SessionButtonProps {
   className?: string;
+  enableCreateSessionLink?: boolean;
   fullPath: string;
   gitUrl?: string;
   runningSessionName?: string;
@@ -54,6 +57,7 @@ interface SessionButtonProps {
 
 export default function SessionButton({
   className,
+  enableCreateSessionLink,
   fullPath,
   gitUrl,
   runningSessionName,
@@ -110,35 +114,46 @@ export default function SessionButton({
           </Link>
         </DropdownItem>
         {gitUrl && <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />}
+        {enableCreateSessionLink && (
+          <>
+            <DropdownItem divider />
+            <DropdownItem>TODO: Create session link</DropdownItem>
+          </>
+        )}
       </ButtonWithMenu>
     );
   }
 
-  return <SessionActions className={className} session={runningSession} />;
+  return (
+    <SessionActions
+      className={className}
+      enableCreateSessionLink={enableCreateSessionLink}
+      session={runningSession}
+    />
+  );
 }
 
 interface SessionActionsProps {
   className?: string;
+  enableCreateSessionLink?: boolean;
   session: Session;
 }
 
-function SessionActions({ className, session }: SessionActionsProps) {
+function SessionActions({
+  className,
+  enableCreateSessionLink,
+  session,
+}: SessionActionsProps) {
   const history = useHistory();
+
+  const logged = useSelector<RootStateOrAny, User["logged"]>(
+    (state) => state.stateModel.user.logged
+  );
 
   const dispatch = useDispatch();
   const onToggleLogs = useCallback(() => {
     dispatch(toggleSessionLogsModal({ targetServer: session.name }));
   }, [dispatch, session.name]);
-
-  const [stopSession] = useStopSessionMutation();
-  // Optimistically show a session as "stopping" when triggered from the UI
-  const [isStopping, setIsStopping] = useState<boolean>(false);
-  const onStopSession = useCallback(() => {
-    stopSession({ serverName: session.name });
-    setIsStopping(true);
-  }, [session.name, stopSession]);
-
-  const status = session.status.state;
 
   const annotations = NotebooksHelper.cleanAnnotations(
     session.annotations
@@ -149,23 +164,59 @@ function SessionActions({ className, session }: SessionActionsProps) {
     server: session.name,
   });
 
+  // Handle resuming session
   const [isResuming, setIsResuming] = useState(false);
-  const [patchSession, { isSuccess: isResumingSuccess }] =
+  const [resumeSession, { isSuccess: isSuccessResumeSession }] =
     usePatchSessionMutation();
   const onResumeSession = useCallback(() => {
-    patchSession({ sessionName: session.name, state: "running" });
+    resumeSession({ sessionName: session.name, state: "running" });
     setIsResuming(true);
-  }, [patchSession, session.name]);
+  }, [resumeSession, session.name]);
   const { isWaiting: isWaitingForResumedSession } = useWaitForSessionStatus({
     desiredStatus: ["starting", "running"],
     sessionName: session.name,
     skip: !isResuming,
   });
   useEffect(() => {
-    if (isResumingSuccess && !isWaitingForResumedSession) {
+    if (isSuccessResumeSession && !isWaitingForResumedSession) {
       history.push({ pathname: showSessionUrl });
     }
-  }, [history, isResumingSuccess, isWaitingForResumedSession, showSessionUrl]);
+  }, [
+    history,
+    isSuccessResumeSession,
+    isWaitingForResumedSession,
+    showSessionUrl,
+  ]);
+
+  // Handle hibernating session
+  const [isHibernating, setIsHibernating] = useState(false);
+  const [hibernateSession, { isSuccess: isSuccessHibernateSession }] =
+    usePatchSessionMutation();
+  const onHibernateSession = useCallback(() => {
+    hibernateSession({ sessionName: session.name, state: "hibernated" });
+    setIsHibernating(true);
+  }, [hibernateSession, session.name]);
+  const { isWaiting: isWaitingForHibernatedSession } = useWaitForSessionStatus({
+    desiredStatus: ["hibernated"],
+    sessionName: session.name,
+    skip: !isHibernating,
+  });
+  useEffect(() => {
+    if (isSuccessHibernateSession && !isWaitingForHibernatedSession) {
+      setIsHibernating(false);
+    }
+  }, [isSuccessHibernateSession, isWaitingForHibernatedSession]);
+
+  // Handle deleting session
+  const [stopSession] = useStopSessionMutation();
+  // Optimistically show a session as "stopping" when triggered from the UI
+  const [isStopping, setIsStopping] = useState<boolean>(false);
+  const onStopSession = useCallback(() => {
+    stopSession({ serverName: session.name });
+    setIsStopping(true);
+  }, [session.name, stopSession]);
+
+  const status = session.status.state;
 
   const buttonClassName = cx(
     "btn",
@@ -177,16 +228,24 @@ function SessionActions({ className, session }: SessionActionsProps) {
   );
 
   const defaultAction =
-    status === "starting" || status === "running" ? (
+    status === "stopping" || isHibernating || isStopping ? (
+      <Button className={buttonClassName} data-cy="stopping-btn" disabled>
+        <Loader className="me-2" inline size={16} />
+        Stopping
+      </Button>
+    ) : status === "starting" || status === "running" ? (
       <Link
         className={buttonClassName}
         data-cy="open-session"
         to={{ pathname: showSessionUrl }}
       >
-        <div className={cx("d-flex", "gap-2")}>
-          <img className={cx("rk-icon", "rk-icon-md")} src="/connect.svg" />{" "}
-          Connect
-        </div>
+        {/* <div className={cx("d-flex", "gap-2")}> */}
+        <img
+          className={cx("rk-icon", "rk-icon-md", "me-2")}
+          src="/connect.svg"
+        />
+        Connect
+        {/* </div> */}
       </Link>
     ) : status === "hibernated" ? (
       <Button
@@ -197,75 +256,92 @@ function SessionActions({ className, session }: SessionActionsProps) {
       >
         {isResuming ? (
           <>
-            <Loader className="me-1" inline size={16} />
+            <Loader className="me-2" inline size={16} />
             Resuming
           </>
         ) : (
           <>
             <FontAwesomeIcon
-              className={cx("rk-icon", "rk-icon-md", "me-1")}
+              className={cx("rk-icon", "rk-icon-md", "me-2")}
               icon={faPlay}
             />
             Resume
           </>
         )}
       </Button>
-    ) : status === "stopping" || isStopping ? (
-      <Button className={buttonClassName} data-cy="stopping-btn" disabled>
-        Stopping...
-      </Button>
     ) : (
       <Button
         className={buttonClassName}
-        data-cy="stop-session-button"
-        onClick={onStopSession}
+        data-cy={logged ? "stop-session-button" : "delete-session-button"}
+        onClick={logged ? onHibernateSession : onStopSession}
       >
-        <div className={cx("d-flex", "gap-2")}>
-          <FontAwesomeIcon
-            className={cx("rk-icon", "rk-icon-md")}
-            icon={faStop}
-          />{" "}
-          Stop
-        </div>
+        {/* <div className={cx("d-flex", "gap-2")}> */}
+        <FontAwesomeIcon
+          className={cx("rk-icon", "rk-icon-md", "me-2")}
+          icon={logged ? faStop : faTrash}
+        />
+        Stop
+        {/* </div> */}
       </Button>
     );
+
+  const hibernateOrDeleteAction = status !== "stopping" &&
+    status !== "failed" && (
+      <>
+        <DropdownItem onClick={logged ? onHibernateSession : onStopSession}>
+          <FontAwesomeIcon
+            className={cx("text-rk-green", "fa-w-14", "me-2")}
+            fixedWidth
+            icon={logged ? faStop : faTrash}
+          />
+          {logged ? "Stop session" : "Delete session"}
+        </DropdownItem>
+        <DropdownItem divider />
+      </>
+    );
+
+  const deleteAction = status === "failed" && (
+    <>
+      <DropdownItem onClick={onStopSession}>
+        <FontAwesomeIcon
+          className={cx("text-rk-green", "fa-w-14", "me-2")}
+          fixedWidth
+          icon={faTrash}
+        />
+        Delete session
+      </DropdownItem>
+      <DropdownItem divider />
+    </>
+  );
 
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
     <DropdownItem href={session.url} target="_blank">
       <FontAwesomeIcon
-        className={cx("text-rk-green", "fa-w-14")}
+        className={cx("text-rk-green", "fa-w-14", "me-2")}
         fixedWidth
         icon={faExternalLinkAlt}
-      />{" "}
+      />
       Open in new tab
     </DropdownItem>
+  );
+
+  const createSessionLinkAction = enableCreateSessionLink && (
+    <>
+      <DropdownItem divider />
+      <DropdownItem>TODO: Create session link</DropdownItem>
+    </>
   );
 
   const logsAction = (
     <DropdownItem data-cy="session-log-button" onClick={onToggleLogs}>
       <FontAwesomeIcon
-        className={cx("text-rk-green", "fa-w-14")}
+        className={cx("text-rk-green", "fa-w-14", "me-2")}
         fixedWidth
         icon={faFileAlt}
-      />{" "}
+      />
       Get logs
     </DropdownItem>
-  );
-
-  // TODO: only enable when session is hibernating (or user is anonymous)
-  const stopAction = status !== "stopping" && status !== "failed" && (
-    <>
-      <DropdownItem onClick={onStopSession}>
-        <FontAwesomeIcon
-          className={cx("text-rk-green", "fa-w-14")}
-          fixedWidth
-          icon={faStop}
-        />{" "}
-        Stop
-      </DropdownItem>
-      <DropdownItem divider />
-    </>
   );
 
   return (
@@ -277,9 +353,11 @@ function SessionActions({ className, session }: SessionActionsProps) {
       isPrincipal
       size="sm"
     >
-      {stopAction}
+      {hibernateOrDeleteAction}
+      {deleteAction}
       {openInNewTabAction}
       {logsAction}
+      {createSessionLinkAction}
     </ButtonWithMenu>
   );
 }
