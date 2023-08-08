@@ -287,7 +287,7 @@ export const projectCoreApi = createApi({
         return {
           body: { description: data.description, git_url: data.gitUrl },
           method: "POST",
-          url: `/renku/project.edit`,
+          url: `/project.edit`,
           validateStatus: (response, body) => {
             return response.status < 400 && !body.error?.code;
           },
