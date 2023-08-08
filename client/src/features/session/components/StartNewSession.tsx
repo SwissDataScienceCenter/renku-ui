@@ -617,7 +617,8 @@ function StartSessionButton() {
           </DropdownItem>
         </ButtonWithMenu>
 
-        {dockerImageStatus === "not-available" && (
+        {(dockerImageStatus === "not-available" ||
+          dockerImageStatus === "building") && (
           <Button color="primary" onClick={onStart}>
             <FontAwesomeIcon className="me-2" icon={faPlay} />
             Start with base image

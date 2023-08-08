@@ -198,7 +198,7 @@ function BuildAgainButton() {
       <Button
         className="me-1"
         color="primary"
-        id="image-build-again"
+        id="imageBuildAgain"
         size="sm"
         onClick={onRetryPipeline}
       >
@@ -207,7 +207,7 @@ function BuildAgainButton() {
       </Button>
       <UncontrolledTooltip
         placement="top"
-        target="image-build-again"
+        target="imageBuildAgain"
         trigger="hover"
         offset={[0, 5]} // offset the tooltip a bit higher
       >
@@ -248,7 +248,7 @@ function ViewPipelineLink() {
   return (
     <>
       <ExternalLink
-        id="image-check-pipeline"
+        id="imageCheckPipeline"
         role="button"
         showLinkIcon={true}
         size="sm"
@@ -257,7 +257,7 @@ function ViewPipelineLink() {
       />
       <UncontrolledTooltip
         placement="top"
-        target="image-check-pipeline"
+        target="imageCheckPipeline"
         trigger="hover"
         offset={[0, 5]} // offset the tooltip a bit higher
       >
@@ -303,12 +303,7 @@ function RunPipeline() {
   return (
     <>
       If you are seeing this error for the first time,{" "}
-      <Button
-        color="primary"
-        size="sm"
-        id="image-build"
-        onClick={onRunPipeline}
-      >
+      <Button color="primary" size="sm" id="imageBuild" onClick={onRunPipeline}>
         <FontAwesomeIcon className="me-1" icon={faRedo} />
         building the branch image
       </Button>{" "}

@@ -26,7 +26,7 @@ function Session<T extends FixturesConstructor>(Parent: T) {
   return class SessionFixtures extends Parent {
     renkuIni(
       name = "getRenkuIni",
-      projectId = "39646",
+      projectId = 39646,
       ref = "172a784d465a7bd45bacc165df2b64a591ac6b18"
     ) {
       cy.intercept(

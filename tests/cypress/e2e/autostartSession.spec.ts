@@ -26,14 +26,14 @@ describe("launch autostart sessions", () => {
   beforeEach(() => {
     fixtures.config().versions().projects().landingUserProjects();
     fixtures.projectTest().projectMigrationUpToDate();
-
     fixtures
       .sessionServersEmpty()
       .renkuIni()
       .sessionServerOptions()
       .projectLockStatus()
-      .resourcePoolsTest();
-    fixtures.userTest().newSessionImages();
+      .resourcePoolsTest()
+      .newSessionImages();
+    fixtures.userTest();
   });
 
   it("autostart session - not found custom values branch", () => {
