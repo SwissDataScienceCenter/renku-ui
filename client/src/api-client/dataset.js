@@ -163,11 +163,7 @@ export default function addDatasetMethods(client) {
       .then((response) => {
         if (response.data.error !== undefined) return response;
 
-        const cleanUrl = (url) => url.replace(".git", "");
-
-        const currentProjects = response.data.result.projects.find(
-          (project) => cleanUrl(project.git_url) === cleanUrl(projectUrl)
-        );
+        const currentProjects = response.data.result.projects;
         // We need to do this because there is a BUG in the CORE SERVICE!!!
         // ref is missing from the list of cloned projects and that makes it impossible for us
         // to know which project id to use, in this case we need to clone the project

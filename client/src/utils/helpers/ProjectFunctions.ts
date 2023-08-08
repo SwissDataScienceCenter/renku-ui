@@ -35,7 +35,7 @@ interface ProjectMetadata {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function formatProjectMetadata(project: any): ProjectMetadata {
+export function formatProjectMetadata(project: any): ProjectMetadata {
   let accessLevel = 0;
   // check permissions from v4 API
   if (project?.permissions) {
@@ -88,5 +88,11 @@ function formatProjectMetadata(project: any): ProjectMetadata {
   };
 }
 
-export { formatProjectMetadata };
+export function cleanGitUrl(url: string): string {
+  if (!url) return "";
+  if (url.endsWith(".git")) return url.substring(0, url.length - 4);
+  if (url.endsWith("/")) return url.substring(0, url.length - 1);
+  return url;
+}
+
 export type { ProjectMetadata };
