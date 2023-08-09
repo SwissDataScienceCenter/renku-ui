@@ -159,7 +159,14 @@ export const StorageSelector = ({
   const maxStorage = currentSessionClass.max_storage;
 
   return (
-    <div className={cx(styles.container, "d-grid gap-sm-3 align-items-center")}>
+    <div
+      className={cx(
+        styles.container,
+        "d-grid",
+        "gap-sm-3",
+        "align-items-center"
+      )}
+    >
       <Input
         type="range"
         className={styles.range}
@@ -181,10 +188,7 @@ export const StorageSelector = ({
           onChange={onChange}
           disabled={disabled}
         />
-        <InputGroupText
-          id="session-storage-option-gb"
-          className={"rounded-end"}
-        >
+        <InputGroupText id="session-storage-option-gb" className="rounded-end">
           GB
         </InputGroupText>
         <ThrottledTooltip
