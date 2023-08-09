@@ -29,20 +29,23 @@ export default function SessionPausedIcon({
 }: SessionPausedIconProps) {
   return (
     <svg
+      aria-hidden
       className={className}
+      focusable={false}
+      role="img"
       width={`${size}px`}
       height={`${size}px`}
       viewBox="0 0 20 20"
-      fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <rect
-        x="0.500061"
+        x="0.5"
         y="0.5"
         width="19"
         height="19"
         rx="3.5"
-        stroke="currentcolor"
+        fill="none"
+        stroke="currentColor"
       />
       <rect
         x="4"
@@ -50,15 +53,15 @@ export default function SessionPausedIcon({
         width="4.2"
         height="13.5"
         rx="1"
-        fill="currentcolor"
+        fill="currentColor"
       />
       <rect
-        x="11.8"
+        x="12"
         y="3.5"
         width="4.2"
         height="13.5"
         rx="1"
-        fill="currentcolor"
+        fill="currentColor"
       />
     </svg>
   );
