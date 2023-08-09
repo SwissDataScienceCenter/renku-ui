@@ -91,7 +91,6 @@ function getStatusObject({
     case "hibernated":
       return {
         color: "rk-text-light",
-        // icon: <FontAwesomeIcon icon={faStop} size="lg" />,
         icon: <SessionPausedIcon size={16} />,
         text: "Paused",
       };

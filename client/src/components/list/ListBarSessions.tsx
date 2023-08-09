@@ -52,8 +52,7 @@ import "./ListBar.scss";
 
 /** Helper function for formatting the resource list */
 interface ResourceListProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  resources: Record<string, any>;
+  resources: Record<string, number | string>;
 }
 function ResourceList({ resources }: ResourceListProps) {
   const resourcesKeys = Object.keys(resources);
@@ -112,7 +111,9 @@ function SessionStatusIcon({
         status === "failed" ? "cursor-pointer" : ""
       }`}
     >
-      <Badge color={data.color}>{data.icon}</Badge>
+      <Badge className="p-1" color={data.color}>
+        {data.icon}
+      </Badge>
       <span className={`text-${data.color} small session-status-text`}>
         {data.text}
       </span>
