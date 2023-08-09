@@ -19,9 +19,9 @@
 import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
+import { GitLabRepositoryCommit } from "../../../project/GitLab.types";
 import { setError } from "../../startSession.slice";
 import { setCommit } from "../../startSessionOptionsSlice";
-import { GitLabRepositoryCommit } from "../../../project/GitLab.types";
 
 interface UseDefaultCommitOptionArgs {
   commits: GitLabRepositoryCommit[] | undefined;

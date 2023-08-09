@@ -19,7 +19,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import processPaginationHeaders from "../../api-client/pagination";
 import { parseINIString } from "../../utils/helpers/HelperFunctions";
-import { RENKU_CONFIG_FILE_PATH } from "./GitLab.constants";
+import {
+  MAX_GITLAB_REPOSITORY_BRANCH_PAGES,
+  MAX_GITLAB_REPOSITORY_COMMIT_PAGES,
+  RENKU_CONFIG_FILE_PATH,
+} from "./GitLab.constants";
 import {
   GetAllRepositoryBranchesParams,
   GetConfigFromRepositoryParams,
@@ -195,9 +199,11 @@ const projectGitLabApi = createApi({
         const url = `${projectId}/repository/branches`;
 
         const allBranches: GitLabRepositoryBranch[] = [];
-        let currentPage = 1;
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
+        for (
+          let currentPage = 1;
+          currentPage <= MAX_GITLAB_REPOSITORY_BRANCH_PAGES;
+          ++currentPage
+        ) {
           const result = await fetchBaseQuery({
             url,
             params: {
@@ -221,8 +227,6 @@ const projectGitLabApi = createApi({
           if (pagination.nextPage == null) {
             break;
           }
-
-          ++currentPage;
         }
 
         return { data: allBranches };
@@ -315,9 +319,11 @@ const projectGitLabApi = createApi({
         const url = `${projectId}/repository/commits`;
 
         const allCommits: GitLabRepositoryCommit[] = [];
-        let currentPage = 1;
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
+        for (
+          let currentPage = 1;
+          currentPage <= MAX_GITLAB_REPOSITORY_COMMIT_PAGES;
+          ++currentPage
+        ) {
           const result = await fetchBaseQuery({
             url,
             params: {
@@ -342,8 +348,6 @@ const projectGitLabApi = createApi({
           if (pagination.nextPage == null) {
             break;
           }
-
-          ++currentPage;
         }
 
         return { data: allCommits };

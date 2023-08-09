@@ -17,3 +17,6 @@
  */
 
 export const RENKU_CONFIG_FILE_PATH = ".renku/renku.ini";
+
+export const MAX_GITLAB_REPOSITORY_BRANCH_PAGES = 10;
+export const MAX_GITLAB_REPOSITORY_COMMIT_PAGES = 10;
