@@ -61,13 +61,7 @@ export default function SessionCloudStorageOption() {
     );
   }
 
-  const s3CloudStorageEnabled = !!data?.cloudStorageEnabled.s3;
-
-  if (!s3CloudStorageEnabled) {
-    return null;
-  }
-
-  return <SessionS3CloudStorageOption />;
+  return data?.cloudStorageEnabled.s3 ? <SessionS3CloudStorageOption /> : null;
 }
 
 function SessionS3CloudStorageOption() {
@@ -218,25 +212,21 @@ function SessionS3CloudStorageModal({
 }
 
 function Header() {
+  const className = cx("form-label", "small", "text-rk-text");
+
   return (
     <Row className="my-1">
       <Col>
-        <div className={cx("form-label", "small", "text-rk-text")}>
-          Endpoint
-        </div>
+        <div className={className}>Endpoint</div>
       </Col>
       <Col>
-        <div className={cx("form-label", "small", "text-rk-text")}>Bucket</div>
+        <div className={className}>Bucket</div>
       </Col>
       <Col>
-        <div className={cx("form-label", "small", "text-rk-text")}>
-          Access Key
-        </div>
+        <div className={className}>Access Key</div>
       </Col>
       <Col>
-        <div className={cx("form-label", "small", "text-rk-text")}>
-          Secret Key
-        </div>
+        <div className={className}>Secret Key</div>
       </Col>
       <Col xs={1} />
     </Row>
