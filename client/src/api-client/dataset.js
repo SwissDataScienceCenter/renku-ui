@@ -1,10 +1,12 @@
+import { cleanGitUrl } from "../utils/helpers/ProjectFunctions";
+
 /**
  * Add the URL for the marquee image to the dataset. Modifies the dataset object.
  * @param {string} gitUrl
  * @param {object} dataset
  */
 function addMarqueeImageToDataset(gitUrl, dataset) {
-  const urlRoot = gitUrl.substring(0, gitUrl.length - 4) + "/-/raw/master";
+  const urlRoot = cleanGitUrl(gitUrl) + "/-/raw/master";
   let mediaUrl = null;
   if (dataset.images && dataset.images.length > 0)
     mediaUrl = `${urlRoot}/${dataset.images[0].content_url}`;
