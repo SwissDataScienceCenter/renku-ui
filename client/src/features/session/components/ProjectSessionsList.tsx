@@ -51,7 +51,7 @@ export default function ProjectSessionsList({
   return (
     <>
       <Container fluid>
-        <SessionsList sessions={projectSessions} />
+        <SessionsList disableProjectTitle sessions={projectSessions} />
       </Container>
       <SessionSaveWarning />
     </>

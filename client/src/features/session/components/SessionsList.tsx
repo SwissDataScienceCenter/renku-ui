@@ -38,10 +38,14 @@ import SessionButton from "./SessionButton";
 import SessionRowCommitInfo from "./SessionRowCommitInfo";
 
 interface SessionsListProps {
+  disableProjectTitle?: boolean;
   sessions: Sessions;
 }
 
-export default function SessionsList({ sessions }: SessionsListProps) {
+export default function SessionsList({
+  disableProjectTitle,
+  sessions,
+}: SessionsListProps) {
   const sessionNames = Object.keys(sessions);
 
   if (sessionNames.length == 0) {
@@ -51,17 +55,25 @@ export default function SessionsList({ sessions }: SessionsListProps) {
   return (
     <Row className="mb-4 gy-4">
       {Object.entries(sessions).map(([sessionName, session]) => (
-        <SessionListItem key={sessionName} session={session} />
+        <SessionListItem
+          key={sessionName}
+          disableProjectTitle={disableProjectTitle}
+          session={session}
+        />
       ))}
     </Row>
   );
 }
 
 interface SessionListItemProps {
+  disableProjectTitle?: boolean;
   session: Session;
 }
 
-function SessionListItem({ session }: SessionListItemProps) {
+function SessionListItem({
+  disableProjectTitle,
+  session,
+}: SessionListItemProps) {
   const renkuAnnotations = Object.entries(session.annotations)
     .filter(([key]) => key.startsWith("renku.io"))
     .reduce(
@@ -96,6 +108,7 @@ function SessionListItem({ session }: SessionListItemProps) {
   const rowProps: SessionRowProps = {
     annotations: cleanAnnotations,
     details,
+    disableProjectTitle,
     image,
     name: session.name,
     repositoryLinks,
@@ -121,6 +134,7 @@ function SessionListItem({ session }: SessionListItemProps) {
 interface SessionRowProps {
   annotations: Session["annotations"];
   details: { message: string | undefined };
+  disableProjectTitle?: boolean;
   image: string;
   name: string;
   repositoryLinks: { branch: string; commit: string };
@@ -133,6 +147,7 @@ interface SessionRowProps {
 function SessionRowFull({
   annotations,
   details,
+  disableProjectTitle,
   image,
   name,
   repositoryLinks,
@@ -217,7 +232,9 @@ function SessionRowFull({
       xs={12}
     >
       <div className={cx("d-flex", "flex-grow-1")}>
-        <span className={cx("me-3", "mt-2")}>{icon}</span>
+        <span className={cx("me-3", !disableProjectTitle && "mt-2")}>
+          {icon}
+        </span>
         <div
           className={cx(
             "d-flex",
@@ -226,9 +243,11 @@ function SessionRowFull({
             "overflow-hidden"
           )}
         >
-          <div className={cx("project", "d-inline-block", "text-truncate")}>
-            <SessionRowProject annotations={annotations} />
-          </div>
+          {!disableProjectTitle && (
+            <div className={cx("project", "d-inline-block", "text-truncate")}>
+              <SessionRowProject annotations={annotations} />
+            </div>
+          )}
           <table>
             <tbody className={cx("gx-4", "text-rk-text")}>
               <tr>
@@ -311,6 +330,7 @@ function SessionRowResourceRequests({
 function SessionRowCompact({
   annotations,
   details,
+  disableProjectTitle,
   image,
   name,
   repositoryLinks,
@@ -397,11 +417,15 @@ function SessionRowCompact({
       )}
       data-cy="session-container"
     >
-      <span className="fw-bold">Project: </span>
-      <span>
-        <SessionRowProject annotations={annotations} />
-      </span>
-      <br />
+      {!disableProjectTitle && (
+        <>
+          <span className="fw-bold">Project: </span>
+          <span>
+            <SessionRowProject annotations={annotations} />
+          </span>
+          <br />
+        </>
+      )}
       {branch}
       {commit}
 

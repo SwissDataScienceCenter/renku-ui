@@ -309,7 +309,7 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
             name={displayModal.targetServer}
             annotations={item.notebook?.annotations ?? {}}
           />
-          <ListBarSession
+          {/* <ListBarSession
             notebook={item.notebook}
             fullPath={item.slug}
             gitUrl={item.gitUrl}
@@ -327,7 +327,7 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
             itemType={EntityType.Project}
             imageUrl={item.imageUrl}
             showLogs={showLogs}
-          />
+          /> */}
         </Fragment>
       );
     });

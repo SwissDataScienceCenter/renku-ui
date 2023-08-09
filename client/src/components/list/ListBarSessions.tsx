@@ -238,10 +238,16 @@ function ListBarSession({
   /* session part */
   const resources = notebook.resources?.requests;
   const sessionId = notebook.name;
-  const statusData = getStatusObject(
-    sessionStatus,
-    notebook.annotations["default_image_used"]
-  );
+  // const statusData = getStatusObject(
+  //   sessionStatus,
+  //   notebook.annotations["default_image_used"]
+  // );
+  const statusData = getStatusObject({
+    annotations: notebook.annotations,
+    defaultImage: notebook.annotations["default_image_used"],
+    startTime: "",
+    status: sessionStatus,
+  });
   const sessionTimeLabel =
     sessionStatus === "running" ? `${statusData.text} since ` : statusData.text;
   const sessionDetailsPopover = commit ? (

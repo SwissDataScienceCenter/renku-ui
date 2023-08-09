@@ -239,13 +239,11 @@ function SessionActions({
         data-cy="open-session"
         to={{ pathname: showSessionUrl }}
       >
-        {/* <div className={cx("d-flex", "gap-2")}> */}
         <img
           className={cx("rk-icon", "rk-icon-md", "me-2")}
           src="/connect.svg"
         />
         Connect
-        {/* </div> */}
       </Link>
     ) : status === "hibernated" ? (
       <Button
@@ -275,44 +273,47 @@ function SessionActions({
         data-cy={logged ? "stop-session-button" : "delete-session-button"}
         onClick={logged ? onHibernateSession : onStopSession}
       >
-        {/* <div className={cx("d-flex", "gap-2")}> */}
         <FontAwesomeIcon
           className={cx("rk-icon", "rk-icon-md", "me-2")}
           icon={logged ? faStop : faTrash}
         />
-        Stop
-        {/* </div> */}
+        {logged ? "Stop" : "Delete"}
       </Button>
     );
 
-  const hibernateOrDeleteAction = status !== "stopping" &&
-    status !== "failed" && (
+  const hibernateOrDeleteAction =
+    status !== "stopping" &&
+    status !== "failed" &&
+    status !== "hibernated" &&
+    logged ? (
       <>
-        <DropdownItem onClick={logged ? onHibernateSession : onStopSession}>
+        <DropdownItem onClick={onHibernateSession}>
           <FontAwesomeIcon
             className={cx("text-rk-green", "fa-w-14", "me-2")}
             fixedWidth
-            icon={logged ? faStop : faTrash}
+            icon={faStop}
           />
-          {logged ? "Stop session" : "Delete session"}
+          Stop session
         </DropdownItem>
         <DropdownItem divider />
       </>
-    );
-
-  const deleteAction = status === "failed" && (
-    <>
-      <DropdownItem onClick={onStopSession}>
-        <FontAwesomeIcon
-          className={cx("text-rk-green", "fa-w-14", "me-2")}
-          fixedWidth
-          icon={faTrash}
-        />
-        Delete session
-      </DropdownItem>
-      <DropdownItem divider />
-    </>
-  );
+    ) : ((status === "failed" || status === "hibernated") && logged) ||
+      (status !== "stopping" &&
+        status !== "failed" &&
+        status !== "hibernated" &&
+        !logged) ? (
+      <>
+        <DropdownItem onClick={onStopSession}>
+          <FontAwesomeIcon
+            className={cx("text-rk-green", "fa-w-14", "me-2")}
+            fixedWidth
+            icon={faTrash}
+          />
+          Delete session
+        </DropdownItem>
+        <DropdownItem divider />
+      </>
+    ) : null;
 
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
@@ -354,7 +355,6 @@ function SessionActions({
       size="sm"
     >
       {hibernateOrDeleteAction}
-      {deleteAction}
       {openInNewTabAction}
       {logsAction}
       {createSessionLinkAction}

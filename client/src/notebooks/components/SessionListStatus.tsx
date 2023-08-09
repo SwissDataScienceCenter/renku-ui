@@ -19,6 +19,7 @@
 import React from "react";
 import {
   faCheckCircle,
+  faStop,
   faExclamationTriangle,
   faInfoCircle,
   faTimesCircle,
@@ -36,25 +37,34 @@ import { Clipboard } from "../../components/Clipboard";
 import { Loader } from "../../components/Loader";
 import type { NotebookAnnotations } from "./Session";
 import { SessionStatusState } from "../../features/session/sessions.types";
+import SessionPausedIcon from "../../components/icons/SessionPausedIcon";
 
-type SessionListRowCoreProps = {
+interface SessionListRowCoreProps {
   annotations: NotebookAnnotations;
   details: { message: string | undefined };
   status: SessionStatusState;
   uid: string;
-};
+}
 
-function getStatusObject(status: SessionStatusState, defaultImage: boolean) {
+interface GetStatusObjectArgs {
+  annotations: NotebookAnnotations;
+  defaultImage: boolean;
+  startTime: string;
+  status: SessionStatusState;
+}
+
+function getStatusObject({
+  annotations,
+  defaultImage,
+  startTime,
+  status,
+}: GetStatusObjectArgs) {
   switch (status) {
     case "running":
       return {
         color: defaultImage ? "warning" : "success",
         icon: defaultImage ? (
-          <FontAwesomeIcon
-            icon={faExclamationTriangle}
-            inverse={true}
-            size="lg"
-          />
+          <FontAwesomeIcon icon={faExclamationTriangle} size="lg" />
         ) : (
           <FontAwesomeIcon icon={faCheckCircle} size="lg" />
         ),
@@ -70,7 +80,7 @@ function getStatusObject(status: SessionStatusState, defaultImage: boolean) {
       return {
         color: "warning",
         icon: <Loader size={16} inline />,
-        text: "Stopping...",
+        text: "Deleting...",
       };
     case "failed":
       return {
@@ -81,7 +91,8 @@ function getStatusObject(status: SessionStatusState, defaultImage: boolean) {
     case "hibernated":
       return {
         color: "rk-text-light",
-        icon: <FontAwesomeIcon icon={faPause} size="lg" />,
+        // icon: <FontAwesomeIcon icon={faStop} size="lg" />,
+        icon: <SessionPausedIcon size={16} />,
         text: "Paused",
       };
     default:
@@ -135,7 +146,13 @@ function SessionListRowStatusExtraDetails({
 
 function SessionListRowStatus(props: SessionListRowStatusProps) {
   const { status, details, uid, annotations, startTime } = props;
-  const data = getStatusObject(status, annotations.default_image_used);
+  // const data = getStatusObject(status, annotations.default_image_used);
+  const data = getStatusObject({
+    annotations,
+    defaultImage: annotations.default_image_used,
+    startTime,
+    status,
+  });
   const textColor = {
     running: "text-secondary",
     failed: "text-danger",
@@ -231,7 +248,13 @@ function SessionListRowStatusIcon({
   status,
   uid,
 }: SessionListRowStatusIconProps) {
-  const data = getStatusObject(status, annotations.default_image_used);
+  // const data = getStatusObject(status, annotations.default_image_used);
+  const data = getStatusObject({
+    annotations,
+    defaultImage: annotations.default_image_used,
+    startTime: "",
+    status,
+  });
   const className = cx("text-nowrap p-1 cursor-pointer", spaced && "mb-2");
   const id = `${uid}-status`;
 
