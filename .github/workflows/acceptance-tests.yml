@@ -47,6 +47,7 @@ jobs:
     runs-on: ubuntu-22.04
     environment:
       name: renku-ci-ui-${{ github.event.number }}
+      url: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
     steps:
       - uses: actions/checkout@v3
       - name: Find deplyoment url
