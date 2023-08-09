@@ -265,7 +265,9 @@ function SessionStartError() {
         {errorMessage}
       </>
     ) : error === "no-commit" ? (
-      <>Starting a session is not possible because this project has no commit.</>
+      <>
+        Starting a session is not possible because this project has no commit.
+      </>
     ) : error === "docker-image-building" ? (
       <>
         The session could not start because the image is still building. Please
