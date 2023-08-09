@@ -41,7 +41,6 @@ import { projectsApi } from "../../features/projects/projectsApi";
 import { projectsKgApi } from "../../features/projects/projectsKgApi";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import registryApi from "../../features/registry/registry.api";
-import repositoryApi from "../../features/repository/repository.api";
 import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import startSessionSlice from "../../features/session/startSession.slice";
@@ -76,10 +75,8 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectsApi.reducerPath]: projectsApi.reducer,
     [projectsKgApi.reducerPath]: projectsKgApi.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
-    [repositoryApi.reducerPath]: repositoryApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [registryApi.reducerPath]: registryApi.reducer,
-    [repositoryApi.reducerPath]: repositoryApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
@@ -103,9 +100,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(projectsApi.middleware)
         .concat(recentUserActivityApi.middleware)
         .concat(registryApi.middleware)
-        .concat(repositoryApi.middleware)
         .concat(sessionSidecarApi.middleware)
-        .concat(repositoryApi.middleware)
         .concat(sessionsApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(versionsApi.middleware)

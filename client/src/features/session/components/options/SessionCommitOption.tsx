@@ -36,12 +36,12 @@ import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import CommitSelector from "../../../../components/commitSelector/CommitSelector";
 import { UncontrolledPopover } from "../../../../utils/ts-wrappers";
-import { useGetRepositoryCommitsQuery } from "../../../repository/repository.api";
+import { useGetRepositoryCommitsQuery } from "../../../project/projectGitLab.api";
+import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
 import {
   setCommit,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
-import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
 
 export default function SessionCommitOption() {
   const defaultBranch = useSelector<RootStateOrAny, string>(

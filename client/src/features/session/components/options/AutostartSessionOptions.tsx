@@ -20,11 +20,11 @@ import React, { useEffect, useMemo } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { StatusStepProgressBar } from "../../../../components/progress/ProgressSteps";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
-import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import {
   useGetAllRepositoryBranchesQuery,
   useGetRepositoryCommitsQuery,
-} from "../../../repository/repository.api";
+} from "../../../project/projectGitLab.api";
+import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";

@@ -19,12 +19,12 @@
 import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
-import { RepositoryBranch } from "../../../repository/repository.types";
+import { GitLabRepositoryBranch } from "../../../project/GitLab.types";
 import { setError } from "../../startSession.slice";
 import { setBranch } from "../../startSessionOptionsSlice";
 
 interface UseDefaultBranchOptionArgs {
-  branches: RepositoryBranch[] | undefined;
+  branches: GitLabRepositoryBranch[] | undefined;
   defaultBranch: string;
 }
 
