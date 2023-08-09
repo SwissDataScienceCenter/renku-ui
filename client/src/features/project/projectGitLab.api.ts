@@ -20,19 +20,29 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
   GetPipelineJobByNameParams,
   GetPipelinesParams,
-  Pipeline,
-  PipelineJob,
+  GitLabPipeline,
+  GitLabPipelineJob,
+  GitlabProjectResponse,
   RetryPipelineParams,
   RunPipelineParams,
-} from "./pipelines.types";
+} from "./GitLab.types";
 
-const pipelinesApi = createApi({
-  reducerPath: "pipelines",
+const projectGitLabApi = createApi({
+  reducerPath: "projectGitLab",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
   tagTypes: ["Job", "Pipeline"],
   endpoints: (builder) => ({
+    // Project API
+    getProjectById: builder.query<GitlabProjectResponse, number>({
+      query: (projectId: number) => {
+        return {
+          url: `${projectId}`,
+        };
+      },
+    }),
+    // Project pipelines API
     getPipelineJobByName: builder.query<
-      PipelineJob | null,
+      GitLabPipelineJob | null,
       GetPipelineJobByNameParams
     >({
       queryFn: async (
@@ -49,7 +59,7 @@ const pipelinesApi = createApi({
             return result;
           }
 
-          const jobs = result.data as PipelineJob[];
+          const jobs = result.data as GitLabPipelineJob[];
           const found = jobs.find(({ name }) => name === jobName);
           if (found) {
             return { data: found };
@@ -61,7 +71,7 @@ const pipelinesApi = createApi({
       providesTags: (result) =>
         result ? [{ id: result.id, type: "Job" }] : [],
     }),
-    getPipelines: builder.query<Pipeline[], GetPipelinesParams>({
+    getPipelines: builder.query<GitLabPipeline[], GetPipelinesParams>({
       query: ({ commit, projectId }) => ({
         url: `${projectId}/pipelines`,
         params: {
@@ -78,7 +88,7 @@ const pipelinesApi = createApi({
             ]
           : ["Pipeline"],
     }),
-    retryPipeline: builder.mutation<Pipeline, RetryPipelineParams>({
+    retryPipeline: builder.mutation<GitLabPipeline, RetryPipelineParams>({
       query: ({ pipelineId, projectId }) => ({
         method: "POST",
         url: `${projectId}/pipelines/${pipelineId}/retry`,
@@ -87,7 +97,7 @@ const pipelinesApi = createApi({
         { id: pipelineId, type: "Pipeline" },
       ],
     }),
-    runPipeline: builder.mutation<Pipeline, RunPipelineParams>({
+    runPipeline: builder.mutation<GitLabPipeline, RunPipelineParams>({
       query: ({ projectId, ref }) => ({
         method: "POST",
         url: `${projectId}/pipeline`,
@@ -100,10 +110,11 @@ const pipelinesApi = createApi({
   }),
 });
 
-export default pipelinesApi;
+export default projectGitLabApi;
 export const {
+  useGetProjectByIdQuery,
   useGetPipelineJobByNameQuery,
   useGetPipelinesQuery,
   useRetryPipelineMutation,
   useRunPipelineMutation,
-} = pipelinesApi;
+} = projectGitLabApi;

@@ -16,14 +16,23 @@
  * limitations under the License.
  */
 
-export interface Pipeline {
+import { Visibilities } from "../../components/visibility/Visibility";
+
+export interface GitlabProjectResponse {
+  visibility: Visibilities;
+  path_with_namespace: string;
+}
+
+// GitLab Pipelines API
+
+export interface GitLabPipeline {
   id: number;
 }
 
-export interface PipelineJob {
+export interface GitLabPipelineJob {
   id: number;
   name: string;
-  pipeline: Pipeline;
+  pipeline: GitLabPipeline;
   status:
     | "success"
     | "running"

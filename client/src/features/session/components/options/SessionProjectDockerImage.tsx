@@ -29,13 +29,13 @@ import { Badge, Button, UncontrolledTooltip } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../../api-client";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
-import pipelinesApi, {
+import { GitLabPipelineJob } from "../../../project/GitLab.types";
+import projectGitLabApi, {
   useGetPipelineJobByNameQuery,
   useGetPipelinesQuery,
   useRetryPipelineMutation,
   useRunPipelineMutation,
-} from "../../../pipelines/pipelines.api";
-import { PipelineJob } from "../../../pipelines/pipelines.types";
+} from "../../../project/projectGitLab.api";
 import registryApi from "../../../registry/registry.api";
 import {
   SESSION_CI_IMAGE_BUILD_JOB,
@@ -342,7 +342,7 @@ function useDockerImageStatusStateMachine() {
   const [
     getPipelines,
     { data: pipelines, error: pipelinesError, isFetching: pipelinesIsFetching },
-  ] = pipelinesApi.useLazyGetPipelinesQuery();
+  ] = projectGitLabApi.useLazyGetPipelinesQuery();
 
   const [
     getPipelineJobByName,
@@ -351,7 +351,7 @@ function useDockerImageStatusStateMachine() {
       error: pipelineJobError,
       isFetching: pipelineJobIsFetching,
     },
-  ] = pipelinesApi.useLazyGetPipelineJobByNameQuery();
+  ] = projectGitLabApi.useLazyGetPipelineJobByNameQuery();
 
   // Start checking for Docker images in CI/CD
   useEffect(() => {
@@ -483,9 +483,9 @@ function useDockerImageStatusStateMachine() {
       return;
     }
     if (
-      (["running", "pending", "stopping"] as PipelineJob["status"][]).includes(
-        pipelineJob.status
-      )
+      (
+        ["running", "pending", "stopping"] as GitLabPipelineJob["status"][]
+      ).includes(pipelineJob.status)
     ) {
       dispatch(setDockerImageBuildStatus("ci-job-running"));
       dispatch(setDockerImageStatus("building"));
