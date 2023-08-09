@@ -76,6 +76,27 @@ export interface RunPipelineParams {
   ref: string;
 }
 
+// GitLab Registry API
+
+export interface GitLabRegistryTag {
+  location: string;
+}
+
+export interface GitLabRegistry {
+  id: number;
+  name: string;
+}
+
+export interface GetRegistryTagParams {
+  projectId: number;
+  registryId: number;
+  tag: string;
+}
+
+export interface GetRenkuRegistryParams {
+  projectId: string;
+}
+
 // GitLab Repository API
 
 export interface GitLabRepositoryBranch {

@@ -17,15 +17,22 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import processPaginationHeaders from "../../api-client/pagination";
+import { parseINIString } from "../../utils/helpers/HelperFunctions";
+import { RENKU_CONFIG_FILE_PATH } from "./GitLab.constants";
 import {
   GetAllRepositoryBranchesParams,
   GetConfigFromRepositoryParams,
   GetPipelineJobByNameParams,
   GetPipelinesParams,
+  GetRegistryTagParams,
+  GetRenkuRegistryParams,
   GetRepositoryCommitParams,
   GetRepositoryCommitsParams,
   GitLabPipeline,
   GitLabPipelineJob,
+  GitLabRegistry,
+  GitLabRegistryTag,
   GitLabRepositoryBranch,
   GitLabRepositoryCommit,
   GitlabProjectResponse,
@@ -33,16 +40,13 @@ import {
   RetryPipelineParams,
   RunPipelineParams,
 } from "./GitLab.types";
-import processPaginationHeaders from "../../api-client/pagination";
 import { ProjectConfig } from "./Project";
-import { RENKU_CONFIG_FILE_PATH } from "./GitLab.constants";
-import { parseINIString } from "../../utils/helpers/HelperFunctions";
 import { transformGetConfigRawResponse } from "./projectCoreApi";
 
 const projectGitLabApi = createApi({
   reducerPath: "projectGitLab",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
-  tagTypes: ["Branch", "Commit", "Job", "Pipeline"],
+  tagTypes: ["Branch", "Commit", "Job", "Pipeline", "Registry", "RegistryTag"],
   endpoints: (builder) => ({
     // Project API
     getProjectById: builder.query<GitlabProjectResponse, number>({
@@ -119,6 +123,62 @@ const projectGitLabApi = createApi({
         },
       }),
       invalidatesTags: ["Pipeline"],
+    }),
+
+    //
+    getRegistryTag: builder.query<GitLabRegistryTag, GetRegistryTagParams>({
+      query: ({ projectId, registryId, tag }) => ({
+        url: `${projectId}/registry/repositories/${registryId}/tags/${tag}`,
+      }),
+      providesTags: (result, _error, { tag }) =>
+        result ? [{ type: "RegistryTag", id: tag }] : [],
+    }),
+    getRenkuRegistry: builder.query<GitLabRegistry, GetRenkuRegistryParams>({
+      queryFn: async (
+        { projectId },
+        _queryApi,
+        _extraOptions,
+        fetchBaseQuery
+      ) => {
+        const url = `${projectId}/registry/repositories`;
+
+        const result = await fetchBaseQuery({ url });
+
+        if (result.error) {
+          return result;
+        }
+
+        const registries = result.data as GitLabRegistry[];
+        if (registries.length == 0) {
+          return {
+            error: {
+              error: "This project does not have any Docker image repository",
+              status: "CUSTOM_ERROR",
+            },
+          };
+        }
+
+        if (registries.length == 1) {
+          return { ...result, data: registries[0] };
+        }
+
+        // The CI we define has no name
+        // ! This is not totally reliable since users can change it. We should probably give it a Renku name
+        const renkuRegistry = registries.find(({ name }) => name === "");
+        if (renkuRegistry != null) {
+          return { ...result, data: renkuRegistry };
+        }
+
+        return {
+          error: {
+            error:
+              "The project has multiple Docker image repositories. We can't identify the correct one",
+            status: "CUSTOM_ERROR",
+          },
+        };
+      },
+      providesTags: (result) =>
+        result ? [{ type: "Registry", id: result.id }] : [],
     }),
 
     // Project Repository API

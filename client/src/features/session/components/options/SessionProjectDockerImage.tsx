@@ -36,7 +36,6 @@ import projectGitLabApi, {
   useRetryPipelineMutation,
   useRunPipelineMutation,
 } from "../../../project/projectGitLab.api";
-import registryApi from "../../../registry/registry.api";
 import {
   SESSION_CI_IMAGE_BUILD_JOB,
   SESSION_CI_PIPELINE_POLLING_INTERVAL_MS,
@@ -332,12 +331,12 @@ function useDockerImageStatusStateMachine() {
       error: renkuRegistryError,
       isFetching: renkuRegistryIsFetching,
     },
-  ] = registryApi.useLazyGetRenkuRegistryQuery();
+  ] = projectGitLabApi.useLazyGetRenkuRegistryQuery();
 
   const [
     getRegistryTag,
     { error: registryTagError, isFetching: registryTagIsFetching },
-  ] = registryApi.useLazyGetRegistryTagQuery();
+  ] = projectGitLabApi.useLazyGetRegistryTagQuery();
 
   const [
     getPipelines,
