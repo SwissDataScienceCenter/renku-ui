@@ -46,6 +46,7 @@ import {
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
 
+// ? See: SessionProjectDockerImage.md
 export default function SessionProjectDockerImage() {
   const { dockerImageBuildStatus: status, dockerImageStatus } =
     useStartSessionOptionsSelector(
@@ -478,7 +479,7 @@ function useDockerImageStatusStateMachine() {
     }
 
     if (pipelineJob.status === "success") {
-      dispatch(setDockerImageBuildStatus("checking-ci-done-registry"));
+      dispatch(setDockerImageBuildStatus("checking-ci-done-registry-start"));
       return;
     }
     if (
