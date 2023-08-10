@@ -114,6 +114,7 @@ function SessionListItem({
     repositoryLinks,
     resourceRequests,
     startTime,
+    startTimestamp: session.started,
     status,
     uid,
   };
@@ -140,6 +141,7 @@ interface SessionRowProps {
   repositoryLinks: { branch: string; commit: string };
   resourceRequests: Session["resources"]["requests"];
   startTime: string;
+  startTimestamp: string;
   status: Session["status"]["state"];
   uid: string;
 }
@@ -153,6 +155,7 @@ function SessionRowFull({
   repositoryLinks,
   resourceRequests,
   startTime,
+  startTimestamp,
   status,
   uid,
 }: SessionRowProps) {
@@ -197,6 +200,7 @@ function SessionRowFull({
       annotations={annotations as NotebookAnnotations}
       details={details}
       startTime={startTime}
+      startTimestamp={startTimestamp}
       status={status}
       uid={uid}
     />
@@ -336,6 +340,7 @@ function SessionRowCompact({
   repositoryLinks,
   resourceRequests,
   startTime,
+  startTimestamp,
   status,
   uid,
 }: SessionRowProps) {
@@ -387,6 +392,7 @@ function SessionRowCompact({
         annotations={annotations as NotebookAnnotations}
         details={details}
         startTime={startTime}
+        startTimestamp={startTimestamp}
         status={status}
         uid={uid}
       />

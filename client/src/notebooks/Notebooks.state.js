@@ -81,6 +81,12 @@ const ExpectedAnnotations = {
       "gitlabProjectId",
       "projectName",
       "repository",
+      "hibernation",
+      "hibernation-branch",
+      "hibernation-commit-sha",
+      "hibernation-date",
+      "hibernation-dirty",
+      "hibernation-synchronized",
     ],
     default: {
       branch: "unknown",
@@ -90,6 +96,12 @@ const ExpectedAnnotations = {
       gitlabProjectId: 0,
       projectName: "unknown",
       repository: "https://none",
+      hibernation: "{}",
+      "hibernation-branch": "",
+      "hibernation-commit-sha": "",
+      "hibernation-date": "",
+      "hibernation-dirty": false,
+      "hibernation-synchronized": false,
     },
   },
 };
@@ -113,7 +125,11 @@ const NotebooksHelper = {
       ) {
         let value = annotations[prefix + annotation] ?? annotations[annotation];
         // convert text boolean where a boolean is expected
-        if (annotation === "default_image_used") {
+        if (
+          annotation === "default_image_used" ||
+          annotation === "hibernation-dirty" ||
+          annotation === "hibernation-synchronized"
+        ) {
           const origValue =
             annotations[prefix + annotation] ?? annotations[annotation];
           if (
@@ -124,6 +140,18 @@ const NotebooksHelper = {
           )
             value = true;
           else value = false;
+        }
+        // convert text json
+        if (annotation === "hibernation") {
+          try {
+            value = JSON.parse(value);
+          } catch (error) {
+            if (error instanceof SyntaxError) {
+              value = {};
+            } else {
+              throw error;
+            }
+          }
         }
         cleaned[annotation] = value;
       } else {

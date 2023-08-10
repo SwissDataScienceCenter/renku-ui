@@ -40,6 +40,7 @@ import { SessionStatusState } from "../../features/session/sessions.types";
 import SessionPausedIcon from "../../components/icons/SessionPausedIcon";
 import SessionStatusIcon from "../../features/session/components/status/SessionStatusIcon";
 import { getSessionStatusColor } from "../../features/session/utils/sessionStatus.utils";
+import SessionStatusText from "../../features/session/components/status/SessionStatusText";
 
 interface SessionListRowCoreProps {
   annotations: NotebookAnnotations;
@@ -107,6 +108,7 @@ function getStatusObject({
 
 interface SessionListRowStatusProps extends SessionListRowCoreProps {
   startTime: string;
+  startTimestamp: string;
 }
 
 function SessionListRowStatusExtraDetails({
@@ -146,7 +148,8 @@ function SessionListRowStatusExtraDetails({
 }
 
 function SessionListRowStatus(props: SessionListRowStatusProps) {
-  const { status, details, uid, annotations, startTime } = props;
+  const { status, details, uid, annotations, startTime, startTimestamp } =
+    props;
   // const data = getStatusObject(status, annotations.default_image_used);
   const data = getStatusObject({
     annotations,
@@ -158,12 +161,12 @@ function SessionListRowStatus(props: SessionListRowStatusProps) {
   // Do not use "warning" color when a default image is in use
   const color = getSessionStatusColor({ defaultImage: false, status });
 
-  const textStatus =
-    status === "running"
-      ? `${data.text} since ${startTime}`
-      : status === "hibernated"
-      ? `${data.text}, started ${startTime}`
-      : data.text;
+  // const textStatus =
+  //   status === "running"
+  //     ? `${data.text} since ${startTime}`
+  //     : status === "hibernated"
+  //     ? `${data.text}, started ${startTime}`
+  //     : data.text;
 
   return (
     <>
@@ -175,7 +178,12 @@ function SessionListRowStatus(props: SessionListRowStatusProps) {
           //  `${textColor[status]}`
         )}
       >
-        {textStatus}
+        {/* {textStatus} */}
+        <SessionStatusText
+          annotations={annotations}
+          startTimestamp={startTimestamp}
+          status={status}
+        />
         <SessionListRowStatusExtraDetails
           details={details}
           status={status}
