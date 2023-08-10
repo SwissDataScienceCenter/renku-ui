@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import * as Sentry from "@sentry/node";
 import express from "express";
 import { Issuer, generators, Client, TokenSet } from "openid-client";
 
@@ -35,6 +36,11 @@ import jwt from "jsonwebtoken";
 const verifierSuffix = "-verifier";
 const parametersSuffix = "-parameters";
 const maxAttempts = config.auth.retryConnectionAttempts;
+
+type GetStorageValueReturn = {
+  storageKey: string;
+  value: string | null;
+};
 
 class Authenticator {
   authServerUrl: string;
@@ -137,6 +143,45 @@ class Authenticator {
   }
 
   /**
+   * Delete a value from storage
+   * @param storageKey - the key under which the value has been stored
+   * @param actionDesc - a description of the action, used for error messages
+   * @returns true if the operation did not fail, false if it did fail
+   */
+  private async deleteStorageValue(
+    storageKey: string,
+    actionDesc: string
+  ): Promise<boolean> {
+    const numDeleted = await this.storage.delete(storageKey);
+    if (numDeleted < 0) {
+      const errorMessage = `Could not delete ${actionDesc} from storage.`;
+      logger.error(errorMessage);
+      Sentry.captureMessage(errorMessage);
+      return false;
+    }
+    return true;
+  }
+
+  private async getStorageValueAsString(
+    key: string
+  ): Promise<GetStorageValueReturn> {
+    const storageKey = `${config.auth.storagePrefix}${key}`;
+    const storageValue = await this.storage.get(
+      storageKey,
+      this.getStorageOptions
+    );
+    return { storageKey, value: storageValue as string };
+  }
+
+  private async saveStorageValueAsString(
+    key: string,
+    value: string
+  ): Promise<boolean> {
+    const storageKey = `${config.auth.storagePrefix}${key}`;
+    return await this.storage.save(storageKey, value, this.saveStorageOptions);
+  }
+
+  /**
    * The parameters for the redirect URL after login need to be temporarily stored. Get the parameter
    * string to attach to the final login, and optionally delete the entry from the storage.
    *
@@ -149,18 +194,16 @@ class Authenticator {
     deleteAfter = true
   ): Promise<string> {
     const parametersKey = this.getParametersKey(sessionId);
-    const parametersString = (await this.storage.get(
-      `${config.auth.storagePrefix}${parametersKey}`,
-      this.getStorageOptions
-    )) as string;
-    if (parametersString && parametersString != null) {
-      if (deleteAfter)
-        await this.storage.delete(
-          `${config.auth.storagePrefix}${parametersKey}`
-        );
-      return parametersString;
+    const { storageKey, value: parametersString } =
+      await this.getStorageValueAsString(parametersKey);
+    if (parametersString == null) return "";
+    if (deleteAfter) {
+      await this.deleteStorageValue(
+        storageKey,
+        `login parameters for session ${sessionId}`
+      );
     }
-    return "";
+    return parametersString;
   }
 
   /**
@@ -179,18 +222,16 @@ class Authenticator {
     const verifier = generators.codeVerifier();
     const challenge = generators.codeChallenge(verifier);
     const verifierKey = this.getVerifierKey(sessionId);
-    await this.storage.save(
-      `${config.auth.storagePrefix}${verifierKey}`,
-      verifier,
-      this.saveStorageOptions
-    );
+    if (!(await this.saveStorageValueAsString(verifierKey, verifier))) {
+      throw new Error("Redis not available to support auth flow.");
+    }
     if (redirectParams) {
       const parametersKey = this.getParametersKey(sessionId);
-      await this.storage.save(
-        `${config.auth.storagePrefix}${parametersKey}`,
-        redirectParams,
-        this.saveStorageOptions
-      );
+      if (
+        !(await this.saveStorageValueAsString(parametersKey, redirectParams))
+      ) {
+        throw new Error("Redis not available to support auth flow.");
+      }
     }
 
     // create and return the login url
@@ -227,13 +268,10 @@ class Authenticator {
 
     // get the verifier code and remove it from redis
     const verifierKey = this.getVerifierKey(sessionId);
-    const verifier = (await this.storage.get(
-      `${config.auth.storagePrefix}${verifierKey}`,
-      this.getStorageOptions
-    )) as string;
-    if (verifier != null) {
-      await this.storage.delete(`${config.auth.storagePrefix}${verifierKey}`);
-    } else {
+    const { storageKey, value: verifier } = await this.getStorageValueAsString(
+      verifierKey
+    );
+    if (verifier == null) {
       const error =
         "Code challenge not available. Are you re-loading an old page?";
       throw new APIError(
@@ -242,6 +280,11 @@ class Authenticator {
         error
       );
     }
+
+    await this.deleteStorageValue(
+      storageKey,
+      `cleanup verifier for ${sessionId}`
+    );
 
     try {
       const tokens = await this.authClient.callback(
@@ -269,11 +312,16 @@ class Authenticator {
   async storeTokens(sessionId: string, tokens: TokenSet): Promise<boolean> {
     this.checkInit();
 
-    return await this.storage.save(
-      `${config.auth.storagePrefix}${sessionId}`,
-      JSON.stringify(tokens),
-      this.saveStorageOptions
+    const result = await this.saveStorageValueAsString(
+      sessionId,
+      JSON.stringify(tokens)
     );
+    if (!result) {
+      const errorMessage = `Could not store refresh tokens for session ${sessionId}`;
+      logger.error(errorMessage);
+      Sentry.captureMessage(errorMessage);
+    }
+    return result;
   }
 
   /**
@@ -287,10 +335,9 @@ class Authenticator {
     this.checkInit();
 
     // Get tokens from the store
-    const stringyTokens = (await this.storage.get(
-      `${config.auth.storagePrefix}${sessionId}`,
-      this.getStorageOptions
-    )) as string;
+    const { value: stringyTokens } = await this.getStorageValueAsString(
+      sessionId
+    );
     if (stringyTokens == null) return null;
     let tokens = new TokenSet(JSON.parse(stringyTokens) as TokenSet);
 
@@ -337,11 +384,10 @@ class Authenticator {
    */
   async deleteTokens(sessionId: string): Promise<boolean> {
     this.checkInit();
-
-    const result = await this.storage.delete(
-      `${config.auth.storagePrefix}${sessionId}`
+    return await this.deleteStorageValue(
+      `${config.auth.storagePrefix}${sessionId}`,
+      `delete tokens for session ${sessionId}`
     );
-    return result >= 0 ? true : false;
   }
 
   /**

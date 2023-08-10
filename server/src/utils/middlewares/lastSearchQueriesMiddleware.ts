@@ -16,10 +16,13 @@
  * limitations under the License.
  */
 
-import { Storage, TypeData } from "../../storage";
+import * as Sentry from "@sentry/node";
 import express from "express";
-import config from "../../config";
+
 import { getUserIdFromToken } from "../../authentication";
+import config from "../../config";
+import logger from "../../logger";
+import { Storage, TypeData } from "../../storage";
 
 const lastSearchQueriesMiddleware =
   (storage: Storage) =>
@@ -38,16 +41,23 @@ const lastSearchQueriesMiddleware =
           next();
           return;
         }
-
-        storage.save(
-          `${config.data.searchStoragePrefix}${getUserIdFromToken(token)}`,
-          phrase,
-          {
+        const userId = getUserIdFromToken(token);
+        storage
+          .save(`${config.data.searchStoragePrefix}${userId}`, phrase, {
             type: TypeData.Collections,
             limit: config.data.searchDefaultLength,
             score: Date.now(),
-          }
-        );
+          })
+          .then((value) => {
+            if (!value) {
+              const errorMessage = `Error saving search query for user ${userId}`;
+              logger.error(errorMessage);
+              Sentry.captureMessage(errorMessage);
+            }
+          })
+          .catch((err) => {
+            Sentry.captureException(err);
+          });
       });
     }
     next();
