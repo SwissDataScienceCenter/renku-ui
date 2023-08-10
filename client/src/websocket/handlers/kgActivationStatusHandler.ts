@@ -55,21 +55,21 @@ function processStatusForNotifications(
       if (status === 100) {
         notifications.addSuccess(
           notifications.Topics.KG_ACTIVATION,
-          `The activation of the project in KG has finalized.`,
+          "The activation of project metadata processing has completed.",
           "/inactive-kg-projects",
           "Go to activation page",
           "/inactive-kg-projects",
-          "Check the status of all projects pending to activate in the Knowledge Graph."
+          "Check the status of all projects pending activation."
         );
       }
       if (status === -2) {
         notifications.addError(
           notifications.Topics.KG_ACTIVATION,
-          `The activation of the project in KG has finalized with error.`,
+          "The activation of project metadata processing has completed, but with errors.",
           "/inactive-kg-projects",
           "Go to activation page",
           "/inactive-kg-projects",
-          "Check the status of all projects pending to activate in the Knowledge Graph."
+          "Check the status of all projects pending activation."
         );
       }
     }

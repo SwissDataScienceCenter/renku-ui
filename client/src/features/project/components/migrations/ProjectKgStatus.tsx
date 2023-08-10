@@ -209,7 +209,7 @@ function KnowledgeGraphDetails({
         data.details?.status === ProjectIndexingStatuses.Success
           ? "success"
           : "info";
-      let text = "Knowledge Graph integration"; // ? should overwrite this with something more specific
+      let text = "Metadata processing"; // ? should overwrite this with something more specific
       let detailsElement: React.ReactNode = undefined;
       if (data.progress?.done === data.progress?.total) {
         if (data.details?.status === ProjectIndexingStatuses.Success) {
@@ -240,9 +240,9 @@ function KnowledgeGraphDetails({
       if (data.details?.status === ProjectIndexingStatuses.InProgress) {
         const detailsFirstPart = (
           <span>
-            The Knowledge Graph is processing the project&apos;s events. Some
-            information about the local entities might be unavailable or
-            outdated until this process has finished.
+            The project&apos;s events are being processed. Some information
+            about the local entities might be unavailable or outdated until this
+            process has finished.
           </span>
         );
         if (data.progress?.done === data.progress?.total) {

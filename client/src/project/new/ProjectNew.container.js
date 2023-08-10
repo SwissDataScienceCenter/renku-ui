@@ -250,9 +250,9 @@ function ForkProject(props) {
           throw new Error(verboseError);
         }
         if (forked.webhook.errorData) {
-          verboseError = "Knowledge graph error: ";
+          verboseError = "Metadata processing error: ";
           verboseError =
-            "the forked project is available, but the knowledge graph needs to be activated later.";
+            "the forked project is available, but metadata processing needs to be activated later.";
           throw new Error(verboseError);
         }
 

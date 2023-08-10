@@ -46,7 +46,7 @@ export function ProjectsInactiveKGWarning() {
   return (
     <WarnAlert>
       <div data-cy="inactive-kg-project-alert">
-        You have {totalProjects} projects that are not in the Knowledge Graph.{" "}
+        You have {totalProjects} projects with deactivated metadata processing.{" "}
         <Link to="/inactive-kg-projects">Activate your projects</Link> to make
         them searchable on Renku.
       </div>

@@ -244,7 +244,8 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
     ) : (
       <div className="col-md-12 p-4 border-radius-8 bg-white">
         <div className="d-flex justify-content-center align-items-center gap-2">
-          <Balloon size="30" /> All projects are in the Knowledge Graph.
+          <Balloon size="30" /> Metadata processing has been activated for all
+          projects.
         </div>
       </div>
     );
