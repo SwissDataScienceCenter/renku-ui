@@ -38,6 +38,8 @@ import { Loader } from "../../components/Loader";
 import type { NotebookAnnotations } from "./Session";
 import { SessionStatusState } from "../../features/session/sessions.types";
 import SessionPausedIcon from "../../components/icons/SessionPausedIcon";
+import SessionStatusIcon from "../../features/session/components/status/SessionStatusIcon";
+import { getSessionStatusColor } from "../../features/session/utils/sessionStatus.utils";
 
 interface SessionListRowCoreProps {
   annotations: NotebookAnnotations;
@@ -152,13 +154,9 @@ function SessionListRowStatus(props: SessionListRowStatusProps) {
     startTime,
     status,
   });
-  const textColor = {
-    running: "text-secondary",
-    failed: "text-danger",
-    starting: "text-secondary",
-    stopping: "text-secondary",
-    hibernated: "text-rk-text-light",
-  };
+
+  // Do not use "warning" color when a default image is in use
+  const color = getSessionStatusColor({ defaultImage: false, status });
 
   const textStatus =
     status === "running"
@@ -169,7 +167,14 @@ function SessionListRowStatus(props: SessionListRowStatusProps) {
 
   return (
     <>
-      <span className={`time-caption font-weight-bold ${textColor[status]}`}>
+      <span
+        className={cx(
+          "time-caption",
+          "font-weight-bold",
+          `text-${color}`
+          //  `${textColor[status]}`
+        )}
+      >
         {textStatus}
         <SessionListRowStatusExtraDetails
           details={details}
@@ -239,7 +244,7 @@ function SessionListRowStatusIconPopover({
   );
 }
 
-function SessionListRowStatusIcon({
+function SessionListRowStatusBadge({
   annotations,
   details,
   image,
@@ -248,19 +253,22 @@ function SessionListRowStatusIcon({
   uid,
 }: SessionListRowStatusIconProps) {
   // const data = getStatusObject(status, annotations.default_image_used);
-  const data = getStatusObject({
-    annotations,
-    defaultImage: annotations.default_image_used,
-    startTime: "",
-    status,
-  });
+  // const data = getStatusObject({
+  //   annotations,
+  //   defaultImage: annotations.default_image_used,
+  //   startTime: "",
+  //   status,
+  // });
+  const defaultImage = annotations.default_image_used;
+
   const className = cx("text-nowrap p-1 cursor-pointer", spaced && "mb-2");
+  const color = getSessionStatusColor({ defaultImage, status });
   const id = `${uid}-status`;
 
   return (
     <div>
-      <Badge id={id} color={data.color} className={className}>
-        {data.icon}
+      <Badge id={id} color={color} className={className}>
+        <SessionStatusIcon defaultImage={defaultImage} status={status} />
       </Badge>
       <SessionListRowStatusIconPopover
         annotations={annotations}
@@ -273,4 +281,8 @@ function SessionListRowStatusIcon({
   );
 }
 
-export { SessionListRowStatus, SessionListRowStatusIcon, getStatusObject };
+export {
+  SessionListRowStatus,
+  SessionListRowStatusBadge as SessionListRowStatusIcon,
+  getStatusObject,
+};

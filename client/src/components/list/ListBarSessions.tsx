@@ -48,7 +48,9 @@ import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
 import VisibilityIcon from "../entities/VisibilityIcon";
 import { ListElementProps } from "./List.d";
+import SessionStatusIcon from "../../features/session/components/status/SessionStatusIcon";
 import "./ListBar.scss";
+import { getSessionStatusColor } from "../../features/session/utils/sessionStatus.utils";
 
 /** Helper function for formatting the resource list */
 interface ResourceListProps {
@@ -79,30 +81,26 @@ interface SessionStatusIconProps {
   errorSession: string;
   defaultImage: boolean;
 }
-function SessionStatusIcon({
+function SessionStatusBadge({
   status,
   data,
   sessionId,
   errorSession,
   defaultImage,
 }: SessionStatusIconProps) {
-  const policy = defaultImage ? <div>A fallback image was used.</div> : null;
-  const popover =
-    status === "failed" || (status === "running" && defaultImage) ? (
-      <UncontrolledPopover
-        target={sessionId}
-        trigger="hover"
-        placement="bottom"
-      >
-        <PopoverHeader>
-          {status === "failed" ? "Error Details" : "Warning Details"}
-        </PopoverHeader>
-        <PopoverBody>
-          {errorSession}
-          {policy}
-        </PopoverBody>
-      </UncontrolledPopover>
-    ) : null;
+  const color = getSessionStatusColor({ defaultImage, status });
+  const popover = (status === "failed" ||
+    (status === "running" && defaultImage)) && (
+    <UncontrolledPopover target={sessionId} trigger="hover" placement="bottom">
+      <PopoverHeader>
+        {status === "failed" ? "Error Details" : "Warning Details"}
+      </PopoverHeader>
+      <PopoverBody>
+        {errorSession}
+        {defaultImage && <div>A fallback image was used.</div>}
+      </PopoverBody>
+    </UncontrolledPopover>
+  );
 
   return (
     <div
@@ -111,10 +109,10 @@ function SessionStatusIcon({
         status === "failed" ? "cursor-pointer" : ""
       }`}
     >
-      <Badge className="p-1" color={data.color}>
-        {data.icon}
+      <Badge className="p-1" color={color}>
+        <SessionStatusIcon defaultImage={defaultImage} status={status} />
       </Badge>
-      <span className={`text-${data.color} small session-status-text`}>
+      <span className={`text-${color} small session-status-text`}>
         {data.text}
       </span>
       {popover}
@@ -351,7 +349,7 @@ function ListBarSession({
         />
       </div>
       <div className="session-icon">
-        <SessionStatusIcon
+        <SessionStatusBadge
           status={sessionStatus}
           data={statusData}
           defaultImage={notebook.annotations["default_image_used"]}
