@@ -386,7 +386,7 @@ class Authenticator {
     this.checkInit();
     return await this.deleteStorageValue(
       `${config.auth.storagePrefix}${sessionId}`,
-      `delete tokens for session ${sessionId}`
+      `tokens for session ${sessionId}`
     );
   }
 
