@@ -200,7 +200,7 @@ function KnowledgeGraphDetails({
   } else {
     const titleId = "settings-kg-indexing";
     const titleInfo =
-      "Service that processes project's metadata. RenkuLab requires it for most functionalities.";
+      "Service that processes a project's metadata. RenkuLab requires it for most functionalities.";
     const titleDocsUrl = Docs.rtdTopicGuide(
       "miscellaneous/knowledge-graph.html"
     );
@@ -275,9 +275,9 @@ function KnowledgeGraphDetails({
     } else {
       const detailsText = (
         <span>
-          The Knowledge Graph integration must be activated to use this project
-          from the RenkuLab web interface. Otherwise, the functionalities will
-          be limited, and the project will not be discoverable from the search
+          Metadata processing must be activated to use this project from the
+          RenkuLab web interface. Otherwise, the functionalities will be
+          limited, and the project will not be discoverable from the search
           page. <MoreInfoLink url={titleDocsUrl} />
         </span>
       );

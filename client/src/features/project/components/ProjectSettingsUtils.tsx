@@ -30,7 +30,7 @@ export function SettingRequiresKg({ className }: SettingRequiresKgProps) {
   return (
     <small className={localClass}>
       <FontAwesomeIcon className="me-1" icon={faExclamationTriangle} />
-      This requires Knowledge Graph integration
+      This requires metadata processing to be enabled.
     </small>
   );
 }
