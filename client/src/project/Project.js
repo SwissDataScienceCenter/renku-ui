@@ -430,12 +430,6 @@ class View extends Component {
     onProjectTagsChange: (tags) => {
       return this.projectCoordinator.setTags(this.props.client, tags);
     },
-    onProjectDescriptionChange: (description) => {
-      return this.projectCoordinator.setDescription(
-        this.props.client,
-        description
-      );
-    },
     onAvatarChange: (avatarFile) => {
       return this.projectCoordinator.setAvatar(this.props.client, avatarFile);
     },

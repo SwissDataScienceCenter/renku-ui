@@ -19,8 +19,11 @@
 import React from "react";
 import { Card, CardBody, Col, Row } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
+import { Visibilities } from "../../../components/visibility/Visibility";
 import { NotificationsInterface } from "../../../notifications/notifications.types";
+import { EditVisibility } from "../../../project/new/components/Visibility";
 import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";
+import { ProjectSettingsDescription } from "./ProjectSettingsDescription";
 import { ProjectSettingsGeneralDeleteProject } from "./ProjectSettingsGeneralDeleteProject";
 import { ProjectMigrationStatus } from "./migrations/ProjectCoreMigrations";
 import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
@@ -29,11 +32,18 @@ import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
 
 interface ProjectSettingsGeneralProps {
   client: unknown;
+  forkedFromProject?: {
+    id: number;
+    [key: string]: unknown;
+  };
   metadata: {
     accessLevel: number;
     defaultBranch: string;
     externalUrl: string;
     id: number;
+    namespace: string;
+    namespaceKind: string;
+    visibility: Visibilities;
     [key: string]: unknown;
   };
   notifications: NotificationsInterface;
@@ -52,6 +62,20 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
         gitUrl={props.metadata?.externalUrl}
         isMaintainer={isMaintainer}
         projectId={props.metadata?.id}
+      />
+      <EditVisibility
+        namespace={props.metadata.namespace}
+        namespaceKind={props.metadata.namespaceKind}
+        forkedProjectId={props.forkedFromProject?.id}
+        isMaintainer={isMaintainer}
+        pathWithNamespace={props.projectPathWithNamespace}
+        projectId={props.metadata?.id}
+      />
+      <ProjectSettingsDescription
+        gitUrl={props.metadata?.externalUrl}
+        isMaintainer={isMaintainer}
+        projectId={props.metadata?.id}
+        projectFullPath={props.projectPathWithNamespace}
       />
       <ProjectSettingsGeneralLegacy {...props} />
       <ProjectSettingsGeneralDeleteProject

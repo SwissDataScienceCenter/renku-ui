@@ -22,18 +22,21 @@
  *  FormLabels.tsx
  *  FormLabels components.
  */
-import * as React from "react";
-import { FormText, FormFeedback, Label } from "../../utils/ts-wrappers";
+import React from "react";
+import { FormText, FormFeedback, Label } from "reactstrap";
+import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationTriangle,
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 
-import "./FormLabels.css";
 import { Loader } from "../Loader";
 
+import "./FormLabels.css";
+
 interface LabelProps {
+  className?: string;
   text: string;
   children?: React.ReactNode;
 }
@@ -61,11 +64,13 @@ const InputLabel = ({ text, isRequired = false }: InputLabelProps) => {
   );
 };
 
-const LoadingLabel = ({ text }: LabelProps) => {
+const LoadingLabel = ({ className, text }: LabelProps) => {
   return (
-    <FormText className="loading-label">
-      <span>{text}</span>
-      <Loader inline size={16} />
+    <FormText className={cx(className, "fst-italic")}>
+      <span className="my-auto">
+        {text}
+        <Loader className="ms-1" inline size={16} />
+      </span>
     </FormText>
   );
 };
