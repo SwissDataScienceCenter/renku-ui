@@ -16,16 +16,19 @@
  * limitations under the License.
  */
 
-export interface RepositoryCommit {
-  author_name: string;
-  committed_date: string;
-  id: string;
-  message: string;
-  short_id: string;
-  web_url: string;
+import { clamp } from "lodash";
+import { MIN_SESSION_STORAGE_GB } from "../startSessionOptions.constants";
+
+interface ValidateStorageAmountArgs {
+  value: number;
+  maxValue: number;
 }
 
-export interface GetRepositoryCommitParams {
-  commitSha: string;
-  projectId: string;
+export function validateStorageAmount({
+  value,
+  maxValue,
+}: ValidateStorageAmountArgs) {
+  return isNaN(value)
+    ? MIN_SESSION_STORAGE_GB
+    : clamp(Math.round(value), MIN_SESSION_STORAGE_GB, maxValue);
 }

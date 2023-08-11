@@ -25,7 +25,9 @@ import {
   ServerOption,
   ServerOptions,
   ServerOptionsResponse,
+  Session,
   Sessions,
+  StartSessionParams,
 } from "./sessions.types";
 
 interface StopSessionArgs {
@@ -107,6 +109,49 @@ const sessionsApi = createApi({
       },
       keepUnusedDataFor: 0,
     }),
+    startSession: builder.mutation<Session, StartSessionParams>({
+      query: ({
+        branch,
+        cloudStorage,
+        commit,
+        defaultUrl,
+        environmentVariables,
+        image,
+        lfsAutoFetch,
+        namespace,
+        project,
+        sessionClass,
+        storage,
+      }) => {
+        const cloudstorage = cloudStorage.map(
+          ({ accessKey, bucket, endpoint, secretKey }) => ({
+            access_key: accessKey,
+            bucket,
+            endpoint,
+            secret_key: secretKey,
+          })
+        );
+        const body = {
+          branch,
+          ...(cloudstorage.length > 0 ? { cloudstorage } : {}),
+          commit_sha: commit,
+          default_url: defaultUrl,
+          environment_variables: environmentVariables,
+          ...(image ? { image } : {}),
+          lfs_auto_fetch: lfsAutoFetch,
+          namespace,
+          project,
+          resource_class_id: sessionClass,
+          storage,
+        };
+        return {
+          body,
+          method: "POST",
+          url: "servers",
+        };
+      },
+      invalidatesTags: ["Session"],
+    }),
     patchSession: builder.mutation<null, PatchSessionParams>({
       query: ({ sessionName, state }) => ({
         method: "PATCH",
@@ -128,5 +173,6 @@ export const {
   useServerOptionsQuery,
   useStopSessionMutation,
   useGetLogsQuery,
+  useStartSessionMutation,
   usePatchSessionMutation,
 } = sessionsApi;

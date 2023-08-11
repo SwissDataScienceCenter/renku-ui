@@ -28,10 +28,10 @@ type IAppContext = {
 
 const AppContext = React.createContext<IAppContext>({
   client: undefined,
-  params: undefined,
+  location: undefined,
   model: undefined,
   notifications: undefined,
-  location: undefined,
+  params: undefined,
 });
 
 export default AppContext;

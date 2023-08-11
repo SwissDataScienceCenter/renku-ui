@@ -18,50 +18,48 @@
 
 import React, { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
-import { clamp } from "lodash";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import {
-  Col,
-  FormGroup,
-  Input,
-  InputGroup,
-  InputGroupText,
-  Label,
-} from "reactstrap";
-import { ThrottledTooltip } from "../../../components/Tooltip";
-import { ResourceClass } from "../../../features/dataServices/dataServices";
-import { useGetResourcePoolsQuery } from "../../../features/dataServices/dataServicesApi";
-import { StateModelProject } from "../../../features/project/Project";
-import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
-import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
+import { Input, InputGroup, InputGroupText } from "reactstrap";
+import { ThrottledTooltip } from "../../../../components/Tooltip";
+import { ResourceClass } from "../../../dataServices/dataServices";
+import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
+import { useCoreSupport } from "../../../project/useProjectCoreSupport";
+import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
-} from "../../../features/session/startSessionOptions.constants";
+} from "../../startSessionOptions.constants";
 import {
   setStorage,
   useStartSessionOptionsSelector,
-} from "../../../features/session/startSessionOptionsSlice";
+} from "../../startSessionOptionsSlice";
+import { validateStorageAmount } from "../../utils/sessionOptions.utils";
 import styles from "./SessionStorageOption.module.scss";
 
 export const SessionStorageOption = () => {
   // Project options
-  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.externalUrl
+  );
+  const defaultBranch = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.defaultBranch
+  );
+  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
   const { computed: coreSupportComputed, versionUrl } = coreSupport;
-  const { data: projectConfig } = useGetConfigQuery(
-    {
-      projectRepositoryUrl,
-      versionUrl,
-    },
-    { skip: !coreSupportComputed }
-  );
+  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const { data: projectConfig } = usePatchedProjectConfig({
+    commit,
+    gitLabProjectId: gitLabProjectId ?? 0,
+    projectRepositoryUrl,
+    versionUrl,
+    skip: !coreSupportComputed || !commit,
+  });
 
   // Resource pools
   const {
@@ -130,16 +128,14 @@ export const SessionStorageOption = () => {
   }
 
   return (
-    <Col xs={12}>
-      <FormGroup className="field-group">
-        <Label>Amount of Storage</Label>
-        <StorageSelector
-          currentSessionClass={currentSessionClass}
-          currentStorage={storage}
-          onChange={onChange}
-        />
-      </FormGroup>
-    </Col>
+    <div className="field-group">
+      <div className="form-label">Amount of Storage</div>
+      <StorageSelector
+        currentSessionClass={currentSessionClass}
+        currentStorage={storage}
+        onChange={onChange}
+      />
+    </div>
   );
 };
 
@@ -163,7 +159,14 @@ export const StorageSelector = ({
   const maxStorage = currentSessionClass.max_storage;
 
   return (
-    <div className={cx(styles.container, "d-grid gap-sm-3 align-items-center")}>
+    <div
+      className={cx(
+        styles.container,
+        "d-grid",
+        "gap-sm-3",
+        "align-items-center"
+      )}
+    >
       <Input
         type="range"
         className={styles.range}
@@ -185,10 +188,7 @@ export const StorageSelector = ({
           onChange={onChange}
           disabled={disabled}
         />
-        <InputGroupText
-          id="session-storage-option-gb"
-          className={"rounded-end"}
-        >
+        <InputGroupText id="session-storage-option-gb" className="rounded-end">
           GB
         </InputGroupText>
         <ThrottledTooltip
@@ -199,14 +199,3 @@ export const StorageSelector = ({
     </div>
   );
 };
-
-const validateStorageAmount = ({
-  value,
-  maxValue,
-}: {
-  value: number;
-  maxValue: number;
-}) =>
-  isNaN(value)
-    ? MIN_SESSION_STORAGE_GB
-    : clamp(Math.round(value), MIN_SESSION_STORAGE_GB, maxValue);

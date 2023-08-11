@@ -24,10 +24,14 @@ import { FixturesConstructor } from "./fixtures";
 
 function Session<T extends FixturesConstructor>(Parent: T) {
   return class SessionFixtures extends Parent {
-    renkuIni(name = "getRenkuIni") {
+    renkuIni(
+      name = "getRenkuIni",
+      projectId = 39646,
+      ref = "172a784d465a7bd45bacc165df2b64a591ac6b18"
+    ) {
       cy.intercept(
         // eslint-disable-next-line max-len
-        "/ui-server/api/projects/e2e%2Flocal-test-project/repository/files/.renku%2Frenku.ini/raw?ref=172a784d465a7bd45bacc165df2b64a591ac6b18",
+        `/ui-server/api/projects/${projectId}/repository/files/.renku%2Frenku.ini/raw?ref=${ref}`,
         {
           fixture: "session/renku.ini",
         }
@@ -49,12 +53,9 @@ function Session<T extends FixturesConstructor>(Parent: T) {
     }
 
     sessionServersEmpty(name = "getSessionServers") {
-      cy.intercept(
-        "/ui-server/api/notebooks/servers?namespace=e2e&project=local-test-project*",
-        {
-          body: { servers: {} },
-        }
-      ).as(name);
+      cy.intercept("/ui-server/api/notebooks/servers", {
+        body: { servers: {} },
+      }).as(name);
       return this;
     }
 

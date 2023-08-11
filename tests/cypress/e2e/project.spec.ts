@@ -409,6 +409,7 @@ describe("display a project", () => {
   it("delete a project - not allowed", () => {
     fixtures.userNone();
     cy.visit("/projects/e2e/local-test-project/settings");
+    cy.get_cy("settings-container").should("be.visible");
     cy.get_cy("project-settings-general-delete-project").should("not.exist");
   });
 });

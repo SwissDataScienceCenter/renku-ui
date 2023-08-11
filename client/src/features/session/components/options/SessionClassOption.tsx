@@ -34,45 +34,46 @@ import Select, {
   SingleValueProps,
   components,
 } from "react-select";
-import { Col, FormGroup, Label } from "reactstrap";
-import { ErrorAlert, WarnAlert } from "../../../components/Alert";
-import { Loader } from "../../../components/Loader";
+import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
+import { Loader } from "../../../../components/Loader";
 import {
   ResourceClass,
   ResourcePool,
-} from "../../../features/dataServices/dataServices";
-import { useGetResourcePoolsQuery } from "../../../features/dataServices/dataServicesApi";
+} from "../../../dataServices/dataServices";
+import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
+import { ProjectConfig } from "../../../project/Project";
+import { useCoreSupport } from "../../../project/useProjectCoreSupport";
+import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import {
-  ProjectConfig,
-  StateModelProject,
-} from "../../../features/project/Project";
-import { useGetConfigQuery } from "../../../features/project/projectCoreApi";
-import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
-import {
-  reset,
   setSessionClass,
   useStartSessionOptionsSelector,
-} from "../../../features/session/startSessionOptionsSlice";
+} from "../../startSessionOptionsSlice";
 import styles from "./SessionClassOption.module.scss";
 
 export const SessionClassOption = () => {
   // Project options
-  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.externalUrl
+  );
+  const defaultBranch = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.defaultBranch
+  );
+  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
   const { computed: coreSupportComputed, versionUrl } = coreSupport;
-  const { data: projectConfig } = useGetConfigQuery(
-    {
-      projectRepositoryUrl,
-      versionUrl,
-    },
-    { skip: !coreSupportComputed }
-  );
+  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const { data: projectConfig } = usePatchedProjectConfig({
+    commit,
+    gitLabProjectId: gitLabProjectId ?? 0,
+    projectRepositoryUrl,
+    versionUrl,
+    skip: !coreSupportComputed || !commit,
+  });
 
   // Resource pools
   const {
@@ -109,13 +110,14 @@ export const SessionClassOption = () => {
   );
 
   const dispatch = useDispatch();
-
-  // Reset session class when we navigate away
-  useEffect(() => {
-    return () => {
-      dispatch(reset());
-    };
-  }, [dispatch]);
+  const onChange = useCallback(
+    (newValue: SingleValue<ResourceClass>) => {
+      if (newValue?.id) {
+        dispatch(setSessionClass(newValue?.id));
+      }
+    },
+    [dispatch]
+  );
 
   // Set initial session class
   // Order of preference:
@@ -142,26 +144,20 @@ export const SessionClassOption = () => {
     dispatch(setSessionClass(initialSessionClassId));
   }, [defaultSessionClass?.id, dispatch, projectConfig, resourcePools]);
 
-  const onChange = useCallback(
-    (newValue: SingleValue<ResourceClass>) => {
-      if (newValue?.id) {
-        dispatch(setSessionClass(newValue?.id));
-      }
-    },
-    [dispatch]
-  );
-
   if (isLoading) {
     return (
-      <Col xs={12}>
-        Fetching available resource pools... <Loader size={16} inline />
-      </Col>
+      <div className="field-group">
+        <div className="form-label">
+          <Loader className="me-1" inline size={16} />
+          Fetching available resource pools...
+        </div>
+      </div>
     );
   }
 
   if (!resourcePools || resourcePools.length == 0 || isError) {
     return (
-      <Col xs={12}>
+      <div className="field-group">
         <ErrorAlert dismissible={false}>
           <h3 className={cx("fs-6", "fw-bold")}>
             Error on loading available session resource pools
@@ -171,28 +167,26 @@ export const SessionClassOption = () => {
             be successful.
           </p>
         </ErrorAlert>
-      </Col>
+      </div>
     );
   }
 
   return (
-    <Col xs={12}>
-      <FormGroup className="field-group">
-        <Label>Session class</Label>
-        <SessionRequirements
-          currentSessionClass={currentSessionClass}
-          resourcePools={resourcePools}
-          projectConfig={projectConfig}
-        />
-        <SessionClassSelector
-          resourcePools={resourcePools}
-          currentSessionClass={currentSessionClass}
-          defaultSessionClass={defaultSessionClass}
-          onChange={onChange}
-        />
-        <SessionClassWarning currentSessionClass={currentSessionClass} />
-      </FormGroup>
-    </Col>
+    <div className="field-group">
+      <div className="form-label">Session class</div>
+      <SessionRequirements
+        currentSessionClass={currentSessionClass}
+        resourcePools={resourcePools}
+        projectConfig={projectConfig}
+      />
+      <SessionClassSelector
+        resourcePools={resourcePools}
+        currentSessionClass={currentSessionClass}
+        defaultSessionClass={defaultSessionClass}
+        onChange={onChange}
+      />
+      <SessionClassWarning currentSessionClass={currentSessionClass} />
+    </div>
   );
 };
 

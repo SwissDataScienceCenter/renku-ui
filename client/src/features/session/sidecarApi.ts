@@ -62,14 +62,14 @@ export const sessionSidecarApi = createApi({
         return {
           body,
           method: "POST",
-          url: `${args.serverName}/sidecar/jsonrpc`,
+          url: `${args.serverName}/sidecar/jsonrpc/`,
         };
       },
     }),
     health: builder.query<HealthState, SidecarRequestArgs>({
       query: (args) => {
         return {
-          url: `${args.serverName}/sidecar/health`,
+          url: `${args.serverName}/sidecar/health/`,
         };
       },
     }),

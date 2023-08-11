@@ -24,40 +24,46 @@ import { FixturesConstructor } from "./fixtures";
 
 function NewSession<T extends FixturesConstructor>(Parent: T) {
   return class NewSessionFixtures extends Parent {
-    newSessionPipelines(empty = false) {
+    newSessionPipelines(
+      empty = false,
+      projectId = 39646,
+      ref = "172a784d465a7bd45bacc165df2b64a591ac6b18"
+    ) {
       const data = empty ? [] : { fixture: "session/ci-pipelines.json" };
       cy.intercept(
-        "/ui-server/api/projects/e2e%2Flocal-test-project/pipelines?sha=172a784d465a7bd45bacc165df2b64a591ac6b18",
+        `/ui-server/api/projects/${projectId}/pipelines?sha=${ref}`,
         data
       ).as("getSessionPipelines");
       return this;
     }
-    newSessionJobs(missing = false, running = false, failed = false) {
+    newSessionJobs(
+      missing = false,
+      running = false,
+      failed = false,
+      projectId = 39646,
+      pipelineId = 182743
+    ) {
       let fixture = "session/ci-jobs.json";
       if (missing) fixture = "session/ci-jobs-missing.json";
       else if (running) fixture = "session/ci-jobs-running.json";
       else if (failed) fixture = "session/ci-jobs-failed.json";
       cy.intercept(
-        "/ui-server/api/projects/e2e%2Flocal-test-project/pipelines/182743/jobs",
+        `/ui-server/api/projects/${projectId}/pipelines/${pipelineId}/jobs`,
         { fixture }
       ).as("getSessionJobs");
-      cy.intercept(
-        "/ui-server/api/projects/e2e%2Flocal-test-project/jobs/195001",
-        { fixture }
-      ).as("getSessionJob");
       return this;
     }
-    newSessionImages(missing = false) {
+    newSessionImages(missing = false, projectId = 39646, imageTag = "172a784") {
       const registryFixture = "session/ci-registry.json";
       let imageFixture = "session/ci-image.json";
       if (missing) imageFixture = "session/ci-image-missing.json";
       cy.intercept(
-        "/ui-server/api/projects/e2e%2Flocal-test-project/registry/repositories",
+        `/ui-server/api/projects/${projectId}/registry/repositories`,
         { fixture: registryFixture }
       ).as("getSessionRegistries");
       cy.intercept(
-        "/ui-server/api/projects/e2e%2Flocal-test-project/registry/repositories/1/tags/172a784",
-        { fixture: imageFixture }
+        `/ui-server/api/projects/${projectId}/registry/repositories/1/tags/${imageTag}`,
+        { fixture: imageFixture, ...(missing ? { statusCode: 404 } : {}) }
       ).as("getSessionImage");
       return this;
     }

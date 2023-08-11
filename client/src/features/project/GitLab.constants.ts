@@ -16,24 +16,7 @@
  * limitations under the License.
  */
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+export const RENKU_CONFIG_FILE_PATH = ".renku/renku.ini";
 
-import { GitlabProjectResponse } from "./Project";
-
-const projectGitlabApi = createApi({
-  reducerPath: "projectGitlab",
-  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
-  keepUnusedDataFor: 10,
-  endpoints: (builder) => ({
-    getProjectById: builder.query<GitlabProjectResponse, number>({
-      query: (projectId: number) => {
-        return {
-          url: `${projectId}`,
-        };
-      },
-    }),
-  }),
-});
-
-export default projectGitlabApi;
-export const { useGetProjectByIdQuery } = projectGitlabApi;
+export const MAX_GITLAB_REPOSITORY_BRANCH_PAGES = 10;
+export const MAX_GITLAB_REPOSITORY_COMMIT_PAGES = 10;

@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { SessionCloudStorageMount } from "./startSessionOptions.types";
+
 export interface DockerImage {
   image: string;
   available: boolean;
@@ -86,6 +88,20 @@ export enum SessionStatusStateEnum {
 
 export interface GetSessionsRawResponse {
   servers: Record<string, Session>;
+}
+
+export interface StartSessionParams {
+  branch: string;
+  cloudStorage: SessionCloudStorageMount[];
+  commit: string;
+  defaultUrl: string;
+  environmentVariables: Record<string, string>;
+  image?: string;
+  lfsAutoFetch: boolean;
+  namespace: string;
+  project: string;
+  sessionClass: number;
+  storage: number;
 }
 
 export interface PatchSessionParams {

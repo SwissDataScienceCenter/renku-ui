@@ -66,6 +66,7 @@ import { ButtonWithMenu } from "../components/buttons/Button";
 import { CommandCopy } from "../components/commandCopy/CommandCopy";
 import CommitSelector from "../components/commitSelector/CommitSelector";
 import { ShareLinkSessionModal } from "../components/shareLinkSession/ShareLinkSession";
+import { StartNotebookServerOptions } from "../features/session/components/options/StartNotebookServerOptions";
 import { SessionStatusStateEnum } from "../features/session/sessions.types";
 import { Docs } from "../utils/constants/Docs";
 import { sleep } from "../utils/helpers/HelperFunctions";
@@ -76,11 +77,6 @@ import {
 } from "./ObjectStoresConfig.present";
 import EnvironmentVariables from "./components/EnviromentVariables";
 import LaunchErrorAlert from "./components/LaunchErrorAlert";
-import {
-  ServerOptionBoolean,
-  ServerOptionEnum,
-  StartNotebookServerOptions,
-} from "./components/StartNotebookServerOptions";
 import {
   StartNotebookAutostartLoader,
   StartNotebookLoader,
@@ -1599,8 +1595,6 @@ const CheckNotebookIcon = ({
 
 export {
   CheckNotebookIcon,
-  ServerOptionBoolean,
-  ServerOptionEnum,
   ServerOptionRange,
   StartNotebookServer,
   mergeEnumOptions,

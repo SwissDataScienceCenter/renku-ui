@@ -19,21 +19,80 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { MIN_SESSION_STORAGE_GB } from "./startSessionOptions.constants";
-import { StartSessionOptions } from "./startSessionOptions.types";
+import {
+  DockerImageBuildStatus,
+  DockerImageStatus,
+  SessionCloudStorageMount,
+  SessionEnvironmentVariable,
+  StartSessionOptions,
+} from "./startSessionOptions.types";
 
 const initialState: StartSessionOptions = {
+  branch: "",
+  cloudStorage: [],
+  commit: "",
   defaultUrl: "",
+  dockerImageBuildStatus: "unknown",
+  dockerImageStatus: "unknown",
+  environmentVariables: [],
+  lfsAutoFetch: false,
+  pinnedDockerImage: "",
   sessionClass: 0,
   storage: MIN_SESSION_STORAGE_GB,
-  lfsAutoFetch: false,
 };
 
 export const startSessionOptionsSlice = createSlice({
   name: "startSessionOptions",
   initialState,
   reducers: {
+    addCloudStorageMount: (state) => {
+      state.cloudStorage.push({ bucket: "", endpoint: "" });
+    },
+    addEnvironmentVariable: (state) => {
+      state.environmentVariables.push({ name: "", value: "" });
+    },
+    removeCloudStorageMount: (
+      state,
+      action: PayloadAction<{ index: number }>
+    ) => {
+      state.cloudStorage.splice(action.payload.index, 1);
+    },
+    removeEnvironmentVariable: (
+      state,
+      action: PayloadAction<{ index: number }>
+    ) => {
+      state.environmentVariables.splice(action.payload.index, 1);
+    },
+    setBranch: (state, action: PayloadAction<string>) => {
+      state.branch = action.payload;
+      // Also reset the commit when a branch is set
+      state.commit = "";
+      // Also reset the docker image status when a branch is set
+      state.dockerImageStatus = "unknown";
+    },
+    setCommit: (state, action: PayloadAction<string>) => {
+      state.commit = action.payload;
+      // Also reset the docker image status when a commit is set
+      state.dockerImageBuildStatus = "unknown";
+      state.dockerImageStatus = "unknown";
+    },
     setDefaultUrl: (state, action: PayloadAction<string>) => {
       state.defaultUrl = action.payload;
+    },
+    setDockerImageBuildStatus: (
+      state,
+      action: PayloadAction<DockerImageBuildStatus>
+    ) => {
+      state.dockerImageBuildStatus = action.payload;
+    },
+    setDockerImageStatus: (state, action: PayloadAction<DockerImageStatus>) => {
+      state.dockerImageStatus = action.payload;
+    },
+    setLfsAutoFetch: (state, action: PayloadAction<boolean>) => {
+      state.lfsAutoFetch = action.payload;
+    },
+    setPinnedDockerImage: (state, action: PayloadAction<string>) => {
+      state.pinnedDockerImage = action.payload;
     },
     setSessionClass: (state, action: PayloadAction<number>) => {
       state.sessionClass = action.payload;
@@ -41,18 +100,45 @@ export const startSessionOptionsSlice = createSlice({
     setStorage: (state, action: PayloadAction<number>) => {
       state.storage = action.payload;
     },
-    setLfsAutoFetch: (state, action: PayloadAction<boolean>) => {
-      state.lfsAutoFetch = action.payload;
+    updateCloudStorageMount: (
+      state,
+      action: PayloadAction<{
+        index: number;
+        mount: SessionCloudStorageMount;
+      }>
+    ) => {
+      state.cloudStorage[action.payload.index] = action.payload.mount;
+    },
+    updateEnvironmentVariable: (
+      state,
+      action: PayloadAction<{
+        index: number;
+        variable: SessionEnvironmentVariable;
+      }>
+    ) => {
+      state.environmentVariables[action.payload.index] =
+        action.payload.variable;
     },
     reset: () => initialState,
   },
 });
 
 export const {
+  addCloudStorageMount,
+  addEnvironmentVariable,
+  removeCloudStorageMount,
+  removeEnvironmentVariable,
+  setBranch,
+  setCommit,
   setDefaultUrl,
+  setDockerImageBuildStatus,
+  setDockerImageStatus,
+  setLfsAutoFetch,
+  setPinnedDockerImage,
   setSessionClass,
   setStorage,
-  setLfsAutoFetch,
+  updateCloudStorageMount,
+  updateEnvironmentVariable,
   reset,
 } = startSessionOptionsSlice.actions;
 

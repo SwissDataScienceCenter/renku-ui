@@ -16,40 +16,36 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import cx from "classnames";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import {
   Badge,
   Button,
   ButtonGroup,
-  Col,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
-  FormGroup,
   Input,
   Label,
-  Row,
   UncontrolledDropdown,
 } from "reactstrap";
-import { Loader } from "../../components/Loader";
-import {
-  ProjectConfig,
-  StateModelProject,
-} from "../../features/project/Project";
-import { useGetConfigQuery } from "../../features/project/projectCoreApi";
-import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
-import { useServerOptionsQuery } from "../../features/session/sessions.api";
-import { ServerOptions } from "../../features/session/sessions.types";
+import { Loader } from "../../../../components/Loader";
+import { ProjectConfig } from "../../../project/Project";
+import { useCoreSupport } from "../../../project/useProjectCoreSupport";
+import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
+import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
+import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
+import { useServerOptionsQuery } from "../../sessions.api";
+import { ServerOptions } from "../../sessions.types";
 import {
   setDefaultUrl,
   setLfsAutoFetch,
   useStartSessionOptionsSelector,
-} from "../../features/session/startSessionOptionsSlice";
+} from "../../startSessionOptionsSlice";
+import { SessionClassOption } from "./SessionClassOption";
+import { SessionStorageOption } from "./SessionStorageOption";
 import styles from "./StartNotebookServerOptions.module.scss";
-import { SessionClassOption } from "./options/SessionClassOption";
-import { SessionStorageOption } from "./options/SessionStorageOption";
 
 export const StartNotebookServerOptions = () => {
   // Wait for options to load
@@ -58,22 +54,28 @@ export const StartNotebookServerOptions = () => {
   const { isLoading: serverOptionsIsLoading } = useServerOptionsQuery();
 
   // Project options
-  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.externalUrl
+  );
+  const defaultBranch = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.defaultBranch
+  );
+  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
   const { computed: coreSupportComputed, versionUrl } = coreSupport;
-  const { isLoading: projectConfigIsLoading } = useGetConfigQuery(
-    {
-      projectRepositoryUrl,
-      versionUrl,
-    },
-    { skip: !coreSupportComputed }
-  );
+  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const { isLoading: projectConfigIsLoading } = usePatchedProjectConfig({
+    commit,
+    gitLabProjectId: gitLabProjectId ?? 0,
+    projectRepositoryUrl,
+    versionUrl,
+    skip: !coreSupportComputed || !commit,
+  });
 
   if (
     serverOptionsIsLoading ||
@@ -88,20 +90,23 @@ export const StartNotebookServerOptions = () => {
       ? "Checking project version and RenkuLab compatibility..."
       : "Please wait...";
     return (
-      <Row>
-        <p>{message}</p>
+      <div className="field-group">
+        <div className="form-label">
+          <Loader className="me-1" inline size={16} />
+          {message}
+        </div>
         <Loader />
-      </Row>
+      </div>
     );
   }
 
   return (
-    <Row>
+    <>
       <DefaultUrlOption />
       <SessionClassOption />
       <SessionStorageOption />
       <AutoFetchLfsOption />
-    </Row>
+    </>
   );
 };
 
@@ -111,50 +116,40 @@ const DefaultUrlOption = () => {
     useServerOptionsQuery();
 
   // Project options
-  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.externalUrl
+  );
+  const defaultBranch = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.defaultBranch
+  );
+  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
   const { computed: coreSupportComputed, versionUrl } = coreSupport;
-  const { data: projectConfig, isLoading: projectConfigIsLoading } =
-    useGetConfigQuery(
-      {
-        projectRepositoryUrl,
-        versionUrl,
-        // ...(branchName ? { branch: branchName } : {}),
-      },
-      { skip: !coreSupportComputed }
-    );
+  const { commit, defaultUrl: selectedDefaultUrl } =
+    useStartSessionOptionsSelector();
+  const { data: projectConfig, isFetching: projectConfigIsFetching } =
+    usePatchedProjectConfig({
+      commit,
+      gitLabProjectId: gitLabProjectId ?? 0,
+      projectRepositoryUrl,
+      versionUrl,
+      skip: !coreSupportComputed || !commit,
+    });
 
   const defaultUrlOptions = mergeDefaultUrlOptions({
     serverOptions,
     projectConfig,
   });
 
-  const selectedDefaultUrl = useStartSessionOptionsSelector(
-    (state) => state.defaultUrl
-  );
   const dispatch = useDispatch();
 
-  // Set initial default URL
-  useEffect(() => {
-    if (projectConfig != null) {
-      dispatch(
-        setDefaultUrl(
-          projectConfig.config.sessions?.defaultUrl ??
-            projectConfig.default.sessions?.defaultUrl ??
-            ""
-        )
-      );
-    }
-  }, [dispatch, projectConfig]);
-
   const onChange = useCallback(
-    (event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
+    (_event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
       if (value) {
         dispatch(setDefaultUrl(value));
       }
@@ -162,9 +157,11 @@ const DefaultUrlOption = () => {
     [dispatch]
   );
 
+  useDefaultUrlOption({ projectConfig });
+
   if (
     serverOptionsIsLoading ||
-    projectConfigIsLoading ||
+    projectConfigIsFetching ||
     !serverOptions ||
     !projectConfig
   ) {
@@ -172,20 +169,40 @@ const DefaultUrlOption = () => {
   }
 
   const { defaultUrl } = serverOptions;
+  const safeOptions =
+    selectedDefaultUrl &&
+    defaultUrlOptions &&
+    defaultUrlOptions.length &&
+    !defaultUrlOptions.includes(selectedDefaultUrl)
+      ? [...defaultUrlOptions, selectedDefaultUrl]
+      : defaultUrlOptions;
+
+  if (safeOptions.length === 1) {
+    return (
+      <div className="field-group">
+        <div className="form-label">
+          {defaultUrl.displayName}{" "}
+          <ServerOptionEnum
+            {...defaultUrl}
+            options={defaultUrlOptions}
+            selected={selectedDefaultUrl}
+            onChange={onChange}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <Col xs={12}>
-      <FormGroup className="field-group">
-        <Label className="me-2">{defaultUrl.displayName}</Label>
-        {defaultUrlOptions.length > 1 && <br />}
-        <ServerOptionEnum
-          {...defaultUrl}
-          options={defaultUrlOptions}
-          selected={selectedDefaultUrl}
-          onChange={onChange}
-        />
-      </FormGroup>
-    </Col>
+    <div className="field-group">
+      <div className="form-label">{defaultUrl.displayName}</div>
+      <ServerOptionEnum
+        {...defaultUrl}
+        options={defaultUrlOptions}
+        selected={selectedDefaultUrl}
+        onChange={onChange}
+      />
+    </div>
   );
 };
 
@@ -209,52 +226,50 @@ export const mergeDefaultUrlOptions = ({
 
 const AutoFetchLfsOption = () => {
   // Project options
-  const { defaultBranch, externalUrl: projectRepositoryUrl } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.externalUrl
+  );
+  const defaultBranch = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.defaultBranch
+  );
+  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+    (state) => state.stateModel.project.metadata.id ?? null
+  );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
   const { computed: coreSupportComputed, versionUrl } = coreSupport;
-  const { data: projectConfig } = useGetConfigQuery(
-    {
-      projectRepositoryUrl,
-      versionUrl,
-    },
-    { skip: !coreSupportComputed }
-  );
+  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const { data: projectConfig } = usePatchedProjectConfig({
+    commit,
+    gitLabProjectId: gitLabProjectId ?? 0,
+    projectRepositoryUrl,
+    versionUrl,
+    skip: !coreSupportComputed || !commit,
+  });
 
   const lfsAutoFetch = useStartSessionOptionsSelector(
     (state) => state.lfsAutoFetch
   );
-  const dispatch = useDispatch();
 
-  // Set initial value
-  useEffect(() => {
-    if (projectConfig != null) {
-      dispatch(
-        setLfsAutoFetch(projectConfig.config.sessions?.lfsAutoFetch ?? false)
-      );
-    }
-  }, [dispatch, projectConfig]);
+  const dispatch = useDispatch();
 
   const onChange = useCallback(() => {
     dispatch(setLfsAutoFetch(!lfsAutoFetch));
   }, [dispatch, lfsAutoFetch]);
 
+  useDefaultAutoFetchLfsOption({ projectConfig });
+
   return (
-    <Col xs={12}>
-      <FormGroup className="field-group">
-        <ServerOptionBoolean
-          id="option-lfs-auto-fetch"
-          displayName="Automatically fetch LFS data"
-          onChange={onChange}
-          selected={lfsAutoFetch}
-        />
-      </FormGroup>
-    </Col>
+    <div className="field-group">
+      <ServerOptionBoolean
+        id="option-lfs-auto-fetch"
+        displayName="Automatically fetch LFS data"
+        onChange={onChange}
+        selected={lfsAutoFetch}
+      />
+    </div>
   );
 };
 
