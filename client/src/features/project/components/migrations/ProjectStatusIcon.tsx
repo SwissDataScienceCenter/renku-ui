@@ -59,7 +59,6 @@ export function ProjectStatusIcon({
       branch,
     });
   const { backendAvailable } = coreSupport;
-  const isLoading = migrationStatus.isLoading || kgStatus.isLoading;
   const kgActivated = kgStatus.data?.activated === true;
   const migrationLevel = getRenkuLevel(migrationStatus.data, backendAvailable);
   const settingsUrl = Url.get(Url.pages.project.settings, {
@@ -70,8 +69,7 @@ export function ProjectStatusIcon({
   const maintainerText =
     isMaintainer && !matchRoute ? " Click to see details." : "";
 
-  if (isLoading) return null;
-  if (!kgActivated)
+  if (!kgStatus.isLoading && !kgActivated)
     return (
       <ProjectStatusElement
         color="danger"
@@ -80,7 +78,10 @@ export function ProjectStatusIcon({
         text={`Project metadata not processed.${maintainerText}`}
       />
     );
-  if (migrationLevel?.level === ProjectMigrationLevel.LevelX)
+  if (
+    !migrationStatus.isLoading &&
+    migrationLevel?.level === ProjectMigrationLevel.LevelX
+  )
     return (
       <ProjectStatusElement
         color="danger"
@@ -89,7 +90,10 @@ export function ProjectStatusIcon({
         text={`Project not supported on this version of RenkuLab.${maintainerText}`}
       />
     );
-  if (migrationLevel?.level === ProjectMigrationLevel.LevelE)
+  if (
+    !migrationStatus.isLoading &&
+    migrationLevel?.level === ProjectMigrationLevel.LevelE
+  )
     return (
       <ProjectStatusElement
         color="danger"
@@ -98,7 +102,10 @@ export function ProjectStatusIcon({
         text={`Error checking the project version, please reload.${maintainerText}`}
       />
     );
-  if (migrationLevel?.level === ProjectMigrationLevel.Level5)
+  if (
+    !migrationStatus.isLoading &&
+    migrationLevel?.level === ProjectMigrationLevel.Level5
+  )
     return (
       <ProjectStatusElement
         color="danger"
@@ -107,7 +114,11 @@ export function ProjectStatusIcon({
         text={`Project very outdated, might be unstable.${maintainerText}`}
       />
     );
-  if (migrationLevel?.level === ProjectMigrationLevel.Level4 && isMaintainer)
+  if (
+    !migrationStatus.isLoading &&
+    migrationLevel?.level === ProjectMigrationLevel.Level4 &&
+    isMaintainer
+  )
     return (
       <ProjectStatusElement
         color="warning"

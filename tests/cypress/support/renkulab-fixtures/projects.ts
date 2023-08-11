@@ -375,7 +375,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       statusCode = 200
     ) {
       const fixture = this.useMockedData
-        ? { fixture: result, delay: 100, statusCode }
+        ? { fixture: result, statusCode }
         : undefined;
       cy.intercept("/ui-server/api/kg/webhooks/projects/*/webhooks", {
         body: { message: "Hook created" },
@@ -394,7 +394,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       statusCode = 200
     ) {
       const fixture = this.useMockedData
-        ? { fixture: result, delay: 100, statusCode }
+        ? { fixture: result, statusCode }
         : undefined;
       cy.intercept("PUT", "/ui-server/api/kg/projects/**", fixture).as(name);
       return this;
@@ -404,6 +404,17 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept("DELETE", "/ui-server/api/kg/projects/**", {
         statusCode: forbidden ? 403 : 200,
       }).as(name);
+      return this;
+    }
+
+    editProject(
+      name = "editProject",
+      result = "project/edit/edit-project-confirm.json"
+    ) {
+      const fixture = this.useMockedData ? { fixture: result } : undefined;
+      cy.intercept("POST", "/ui-server/api/renku/project.edit", fixture).as(
+        name
+      );
       return this;
     }
 

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { ProjectKgParams } from "../project/Project";
+import { KgMetadataResponse, ProjectKgParams } from "../project/Project";
 
 type JsonLdValue<T> = {
   "@value": T;
@@ -49,6 +49,10 @@ type KgJsonLdResponse = {
 
 type ProjectKgContent = "ld+json" | "json";
 
+interface ProjectKgWithIdParams extends ProjectKgParams {
+  projectId?: number;
+}
+
 export function kgProjectRequestHeaders(content: ProjectKgContent) {
   return {
     Accept: `application/${content}`,
@@ -58,6 +62,7 @@ export function kgProjectRequestHeaders(content: ProjectKgContent) {
 export const projectsKgApi = createApi({
   reducerPath: "projectKgApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/kg" }),
+  tagTypes: ["project-kg-metadata"],
   endpoints: (builder) => ({
     projectJsonLd: builder.query<KgJsonLdResponse, ProjectKgParams>({
       query: (params) => ({
@@ -65,10 +70,19 @@ export const projectsKgApi = createApi({
         headers: kgProjectRequestHeaders("ld+json"),
       }),
     }),
+    projectMetadata: builder.query<KgMetadataResponse, ProjectKgWithIdParams>({
+      query: (params) => ({
+        url: `projects/${params.projectPath}`,
+        headers: kgProjectRequestHeaders("json"),
+      }),
+      providesTags: (result, error, params) => [
+        { type: "project-kg-metadata", id: params.projectId },
+      ],
+    }),
   }),
 });
 
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
-export const { useProjectJsonLdQuery } = projectsKgApi;
+export const { useProjectJsonLdQuery, useProjectMetadataQuery } = projectsKgApi;
 export type { ProjectKgContent };
