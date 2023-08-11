@@ -16,16 +16,16 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from "react";
+import React, { useRef } from "react";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
+import { TimeCaption } from "../../../../components/TimeCaption";
 import { NotebookAnnotations } from "../../../../notebooks/components/Session";
 import { SessionStatusState } from "../../sessions.types";
-import { TimeCaption } from "../../../../components/TimeCaption";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 interface SessionStatusTextProps {
   annotations: NotebookAnnotations;
-  // defaultImage: boolean;
   startTimestamp: string;
   status: SessionStatusState;
 }
@@ -54,11 +54,9 @@ export default function SessionStatusText({
       created {startTimeText}
     </>
   ) : status === "hibernated" ? (
-    // TODO: tooltip here
     <>
       Paused
-      <FontAwesomeIcon className="ms-1" icon={faExclamationTriangle} />, created{" "}
-      {startTimeText}
+      <MissingHibernationInfo />, created {startTimeText}
     </>
   ) : status === "failed" ? (
     <>
@@ -67,5 +65,23 @@ export default function SessionStatusText({
     </>
   ) : (
     <>Unknown state</>
+  );
+}
+
+function MissingHibernationInfo() {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  return (
+    <>
+      <span ref={ref}>
+        <FontAwesomeIcon className="ms-1" icon={faExclamationTriangle} />
+      </span>
+      <UncontrolledPopover placement="bottom" target={ref} trigger="hover">
+        <PopoverHeader>Missing information</PopoverHeader>
+        <PopoverBody>
+          Information about when this session was paused is not available.
+        </PopoverBody>
+      </UncontrolledPopover>
+    </>
   );
 }

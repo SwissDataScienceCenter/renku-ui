@@ -29,7 +29,6 @@ import cx from "classnames";
 import { Link } from "react-router-dom";
 import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
 import SessionButton from "../../features/session/components/SessionButton";
-import { SessionStatusState } from "../../features/session/sessions.types";
 import { Notebook } from "../../notebooks/components/Session";
 import SessionStatusBadge from "../../features/session/components/status/SessionStatusBadge";
 import SessionStatusText from "../../features/session/components/status/SessionStatusText";

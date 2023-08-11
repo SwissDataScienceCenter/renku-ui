@@ -30,7 +30,6 @@ import {
   SessionListRowStatusIcon,
 } from "../../../notebooks/components/SessionListStatus";
 import Sizes from "../../../utils/constants/Media";
-import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 import { Url } from "../../../utils/helpers/url";
 import { Session, Sessions } from "../sessions.types";
@@ -95,10 +94,6 @@ function SessionListItem({
   ];
   const uid = `uid_${simpleHash(hashed.join(" "))}`;
   const resourceRequests = session.resources.requests;
-  const startTime = toHumanDateTime({
-    datetime: session.started,
-    format: "full",
-  });
   const repositoryLinks = {
     branch: `${cleanAnnotations["repository"]}/tree/${cleanAnnotations["branch"]}`,
     commit: `${cleanAnnotations["repository"]}/tree/${cleanAnnotations["commit-sha"]}`,
