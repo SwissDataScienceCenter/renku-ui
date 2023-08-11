@@ -17,14 +17,7 @@
  */
 
 import React from "react";
-import {
-  faCheckCircle,
-  faStop,
-  faExclamationTriangle,
-  faInfoCircle,
-  faTimesCircle,
-  faPause,
-} from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import {
@@ -34,13 +27,11 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import { Clipboard } from "../../components/Clipboard";
-import { Loader } from "../../components/Loader";
-import type { NotebookAnnotations } from "./Session";
-import { SessionStatusState } from "../../features/session/sessions.types";
-import SessionPausedIcon from "../../components/icons/SessionPausedIcon";
 import SessionStatusIcon from "../../features/session/components/status/SessionStatusIcon";
-import { getSessionStatusColor } from "../../features/session/utils/sessionStatus.utils";
 import SessionStatusText from "../../features/session/components/status/SessionStatusText";
+import { SessionStatusState } from "../../features/session/sessions.types";
+import { getSessionStatusColor } from "../../features/session/utils/sessionStatus.utils";
+import type { NotebookAnnotations } from "./Session";
 
 interface SessionListRowCoreProps {
   annotations: NotebookAnnotations;
@@ -49,65 +40,8 @@ interface SessionListRowCoreProps {
   uid: string;
 }
 
-interface GetStatusObjectArgs {
-  annotations: NotebookAnnotations;
-  defaultImage: boolean;
-  startTime: string;
-  status: SessionStatusState;
-}
-
-function getStatusObject({
-  annotations,
-  defaultImage,
-  startTime,
-  status,
-}: GetStatusObjectArgs) {
-  switch (status) {
-    case "running":
-      return {
-        color: defaultImage ? "warning" : "success",
-        icon: defaultImage ? (
-          <FontAwesomeIcon icon={faExclamationTriangle} size="lg" />
-        ) : (
-          <FontAwesomeIcon icon={faCheckCircle} size="lg" />
-        ),
-        text: "Running",
-      };
-    case "starting":
-      return {
-        color: "warning",
-        icon: <Loader size={16} inline />,
-        text: "Starting...",
-      };
-    case "stopping":
-      return {
-        color: "warning",
-        icon: <Loader size={16} inline />,
-        text: "Deleting...",
-      };
-    case "failed":
-      return {
-        color: "danger",
-        icon: <FontAwesomeIcon icon={faTimesCircle} size="lg" />,
-        text: "Error",
-      };
-    case "hibernated":
-      return {
-        color: "rk-text-light",
-        icon: <SessionPausedIcon size={16} />,
-        text: "Paused",
-      };
-    default:
-      return {
-        color: "danger",
-        icon: <FontAwesomeIcon icon={faExclamationTriangle} size="lg" />,
-        text: "Unknown",
-      };
-  }
-}
-
 interface SessionListRowStatusProps extends SessionListRowCoreProps {
-  startTime: string;
+  // startTime: string;
   startTimestamp: string;
 }
 
@@ -147,38 +81,19 @@ function SessionListRowStatusExtraDetails({
   );
 }
 
-function SessionListRowStatus(props: SessionListRowStatusProps) {
-  const { status, details, uid, annotations, startTime, startTimestamp } =
-    props;
-  // const data = getStatusObject(status, annotations.default_image_used);
-  const data = getStatusObject({
-    annotations,
-    defaultImage: annotations.default_image_used,
-    startTime,
-    status,
-  });
-
+function SessionListRowStatus({
+  status,
+  details,
+  uid,
+  annotations,
+  startTimestamp,
+}: SessionListRowStatusProps) {
   // Do not use "warning" color when a default image is in use
   const color = getSessionStatusColor({ defaultImage: false, status });
 
-  // const textStatus =
-  //   status === "running"
-  //     ? `${data.text} since ${startTime}`
-  //     : status === "hibernated"
-  //     ? `${data.text}, started ${startTime}`
-  //     : data.text;
-
   return (
     <>
-      <span
-        className={cx(
-          "time-caption",
-          "font-weight-bold",
-          `text-${color}`
-          //  `${textColor[status]}`
-        )}
-      >
-        {/* {textStatus} */}
+      <span className={cx("time-caption", "font-weight-bold", `text-${color}`)}>
         <SessionStatusText
           annotations={annotations}
           startTimestamp={startTimestamp}
@@ -260,13 +175,6 @@ function SessionListRowStatusBadge({
   status,
   uid,
 }: SessionListRowStatusIconProps) {
-  // const data = getStatusObject(status, annotations.default_image_used);
-  // const data = getStatusObject({
-  //   annotations,
-  //   defaultImage: annotations.default_image_used,
-  //   startTime: "",
-  //   status,
-  // });
   const defaultImage = annotations.default_image_used;
 
   const className = cx("text-nowrap p-1 cursor-pointer", spaced && "mb-2");
@@ -292,5 +200,4 @@ function SessionListRowStatusBadge({
 export {
   SessionListRowStatus,
   SessionListRowStatusBadge as SessionListRowStatusIcon,
-  getStatusObject,
 };
