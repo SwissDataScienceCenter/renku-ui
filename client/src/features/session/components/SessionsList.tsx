@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React from "react";
+import React, { ReactNode } from "react";
 import cx from "classnames";
 import Media from "react-media";
 import { Link } from "react-router-dom";
@@ -32,9 +32,11 @@ import {
 import Sizes from "../../../utils/constants/Media";
 import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 import { Url } from "../../../utils/helpers/url";
-import { Session, Sessions } from "../sessions.types";
+import { Session, SessionStatusState, Sessions } from "../sessions.types";
 import SessionButton from "./SessionButton";
 import SessionRowCommitInfo from "./SessionRowCommitInfo";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 interface SessionsListProps {
   disableProjectTitle?: boolean;
@@ -149,7 +151,6 @@ function SessionRowFull({
   name,
   repositoryLinks,
   resourceRequests,
-  // startTime,
   startTimestamp,
   status,
   uid,
@@ -194,7 +195,6 @@ function SessionRowFull({
     <SessionListRowStatus
       annotations={annotations as NotebookAnnotations}
       details={details}
-      // startTime={startTime}
       startTimestamp={startTimestamp}
       status={status}
       uid={uid}
@@ -271,6 +271,20 @@ function SessionRowFull({
               <tr>
                 <td colSpan={2}>{statusOut}</td>
               </tr>
+              <UnsavedWorkWarning
+                annotations={annotations as NotebookAnnotations}
+                status={status}
+                wrapper={({ children }) => (
+                  <tr>
+                    <td
+                      className={cx("time-caption", "text-rk-text-light")}
+                      colSpan={2}
+                    >
+                      {children}
+                    </td>
+                  </tr>
+                )}
+              />
             </tbody>
           </table>
         </div>
@@ -436,7 +450,65 @@ function SessionRowCompact({
       <div className="d-inline-flex">
         {icon} &nbsp; {statusOut}
       </div>
+      <UnsavedWorkWarning
+        annotations={annotations as NotebookAnnotations}
+        status={status}
+        wrapper={({ children }) => (
+          <div className={cx("mt-1", "time-caption", "text-rk-text-light")}>
+            {children}
+          </div>
+        )}
+      />
       <div className="mt-1">{actions}</div>
     </Col>
   );
+}
+
+interface UnsavedWorkWarningProps {
+  annotations: NotebookAnnotations;
+  status: SessionStatusState;
+  wrapper?: (props: { children?: ReactNode }) => JSX.Element;
+}
+
+function UnsavedWorkWarning({
+  annotations,
+  status,
+  wrapper: Wrapper,
+}: UnsavedWorkWarningProps) {
+  if (status !== "hibernated") {
+    return null;
+  }
+
+  const hasHibernationInfo = !!annotations["hibernation-date"];
+  const hasUnsavedWork =
+    !hasHibernationInfo ||
+    annotations["hibernation-dirty"] ||
+    !annotations["hibernation-synchronized"];
+
+  if (!hasUnsavedWork) {
+    return null;
+  }
+
+  const explanation = !hasHibernationInfo
+    ? "uncommitted files and/or unsynced commits"
+    : annotations["hibernation-dirty"] &&
+      !annotations["hibernation-synchronized"]
+    ? "uncommitted files and unsynced commits"
+    : annotations["hibernation-dirty"]
+    ? "uncommitted files"
+    : "unsynced commits";
+
+  const content = (
+    <>
+      <FontAwesomeIcon
+        className={cx("text-warning", "me-1")}
+        icon={faExclamationTriangle}
+      />
+      You have unsaved work {"("}
+      {explanation}
+      {")"} in this session
+    </>
+  );
+
+  return Wrapper ? <Wrapper>{content}</Wrapper> : content;
 }
