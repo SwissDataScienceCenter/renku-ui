@@ -367,33 +367,4 @@ export default function addDatasetMethods(client) {
       }));
     return Promise.resolve(filesPromise);
   };
-
-  // ! TODO - remove this
-  client.deleteDataset = (projectUrl, datasetName, versionUrl = null) => {
-    let headers = client.getBasicHeaders();
-    headers.append("Content-Type", "application/json");
-    headers.append("X-Requested-With", "XMLHttpRequest");
-
-    return client
-      .getProjectIdFromCoreService(projectUrl, versionUrl)
-      .then((response) => {
-        if (response.data !== undefined && response.data.error !== undefined)
-          return response;
-        const project_id = response;
-
-        const url = client.versionedCoreUrl("datasets.remove", versionUrl);
-
-        return client.clientFetch(url, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            name: datasetName,
-            project_id: project_id,
-          }),
-        });
-      })
-      .catch((error) => ({
-        data: { error: { reason: error.case } },
-      }));
-  };
 }

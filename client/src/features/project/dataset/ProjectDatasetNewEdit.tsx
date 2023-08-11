@@ -119,15 +119,17 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
   const { dataset, history, submitting, setSubmitting } = props;
 
   const onCancel = React.useCallback(() => {
-    const pathname = dataset
-      ? `/projects/${projectPathWithNamespace}/datasets/${dataset.name}`
-      : `/projects/${projectPathWithNamespace}/datasets`;
+    const targetPath = { path: projectPathWithNamespace };
+    const UrlData = dataset
+      ? { ...targetPath, target: dataset.name }
+      : targetPath;
+    const pathname = Url.get(Url.pages.project.datasets, UrlData);
     history.push({ pathname });
   }, [dataset, history, projectPathWithNamespace]);
 
   if (accessLevel < ACCESS_LEVELS.MAINTAINER) {
     return (
-      <Col sm={12} md={10} lg={8}>
+      <Col>
         <Alert timeout={0} color="primary">
           Your access level does not allow you to create or modify datasets in
           this project.
