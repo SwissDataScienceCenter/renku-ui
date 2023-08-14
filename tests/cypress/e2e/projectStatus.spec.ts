@@ -102,7 +102,7 @@ describe("display KG status information", () => {
     cy.get_cy("kg-status-section-open").should("exist").click();
     cy.get_cy("project-settings-knowledge-graph")
       .contains(
-        "integration must be activated to use this project from the RenkuLab web interface"
+        "processing must be activated to use this project from the RenkuLab web interface"
       )
       .should("exist");
     cy.get_cy("kg-status-section-close").should("exist");
