@@ -16,17 +16,19 @@
  * limitations under the License.
  */
 
-import React from "react";
+import React, { MouseEvent, useCallback, useEffect, useState } from "react";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Button } from "reactstrap";
+import { Loader } from "../../../components/Loader";
 import { NotebooksHelper } from "../../../notebooks";
 import { Url } from "../../../utils/helpers/url";
+import { useGetSessionsQuery, usePatchSessionMutation } from "../sessions.api";
 import { Session } from "../sessions.types";
 import { getRunningSession } from "../sessions.utils";
-import { useGetSessionsQuery } from "../sessions.api";
+import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
 
 interface SimpleSessionButtonProps {
   className?: string;
@@ -77,7 +79,24 @@ export default function SimpleSessionButton({
     );
   }
 
-  // TODO: handle hibernating state
+  return (
+    <ResumeOrConnectButton
+      className={className}
+      runningSession={runningSession}
+    />
+  );
+}
+
+interface ResumeOrConnectButtonProps {
+  className: string;
+  runningSession: Session;
+}
+
+function ResumeOrConnectButton({
+  className,
+  runningSession,
+}: ResumeOrConnectButtonProps) {
+  const history = useHistory();
 
   const annotations = NotebooksHelper.cleanAnnotations(
     runningSession.annotations
@@ -87,6 +106,62 @@ export default function SimpleSessionButton({
     path: annotations.projectName,
     server: runningSession.name,
   });
+
+  // Handle resuming session
+  const [isResuming, setIsResuming] = useState(false);
+  const [resumeSession, { isSuccess: isSuccessResumeSession }] =
+    usePatchSessionMutation();
+  const onResumeSession = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      // Prevents clicking on the Dashboard project card
+      event.preventDefault();
+
+      resumeSession({ sessionName: runningSession.name, state: "running" });
+      setIsResuming(true);
+    },
+    [resumeSession, runningSession.name]
+  );
+  const { isWaiting: isWaitingForResumedSession } = useWaitForSessionStatus({
+    desiredStatus: ["starting", "running"],
+    sessionName: runningSession.name,
+    skip: !isResuming,
+  });
+  useEffect(() => {
+    if (isSuccessResumeSession && !isWaitingForResumedSession) {
+      history.push({ pathname: showSessionUrl });
+    }
+  }, [
+    history,
+    isSuccessResumeSession,
+    isWaitingForResumedSession,
+    showSessionUrl,
+  ]);
+
+  if (runningSession.status.state === "hibernated" || isResuming) {
+    return (
+      <Button
+        className={className}
+        data-cy="resume-session-button"
+        disabled={isResuming}
+        onClick={onResumeSession}
+      >
+        {isResuming ? (
+          <>
+            <Loader className="me-2" inline size={16} />
+            Resuming
+          </>
+        ) : (
+          <>
+            <FontAwesomeIcon
+              className={cx("rk-icon", "rk-icon-md", "me-2")}
+              icon={faPlay}
+            />
+            Resume
+          </>
+        )}
+      </Button>
+    );
+  }
 
   return (
     <Link className={className} to={showSessionUrl}>
