@@ -39,12 +39,24 @@ import {
   setSteps,
   updateStepStatus,
 } from "../../startSession.slice";
-import { useStartSessionOptionsSelector } from "../../startSessionOptionsSlice";
+import {
+  startSessionOptionsSlice,
+  useStartSessionOptionsSelector,
+} from "../../startSessionOptionsSlice";
 import { useProjectSessions } from "../ProjectSessionsList";
 import SessionDockerImage from "./SessionDockerImage";
 
 export default function AutostartSessionOptions() {
   useAutostartSessionOptions();
+
+  const dispatch = useDispatch();
+
+  // Reset start session options slice when we navigate away
+  useEffect(() => {
+    return () => {
+      dispatch(startSessionOptionsSlice.actions.reset());
+    };
+  }, [dispatch]);
 
   // eslint-disable-next-line spellcheck/spell-checker
   // TODO(@leafty): refactor `SessionDockerImage` so that we can import hooks here

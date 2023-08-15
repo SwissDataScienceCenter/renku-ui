@@ -149,11 +149,6 @@ export default function StartNewSession() {
         <Col sm={12} md={9} lg={8}>
           <SessionStartError />
           <StartNewSessionContent />
-          {/* <Form className="form-rk-green">
-            <SessionSaveWarning />
-            <StartNewSessionOptions />
-            <StartSessionButton />
-          </Form> */}
         </Col>
       </Row>
     </>
