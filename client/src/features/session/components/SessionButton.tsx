@@ -295,7 +295,9 @@ function SessionActions({
         onClick={logged ? onHibernateSession : onStopSession}
       >
         {logged ? (
-          <SessionPausedIcon size={16} />
+          <span className="align-self-start">
+            <SessionPausedIcon size={16} />
+          </span>
         ) : (
           <FontAwesomeIcon
             className={cx("rk-icon", "rk-icon-md", "me-2")}

@@ -239,7 +239,7 @@ describe("dashboard", () => {
       .find(".entity-action")
       .find("button")
       .first()
-      .should("contain.text", "Stop");
+      .should("contain.text", "Pause");
   });
 });
 
