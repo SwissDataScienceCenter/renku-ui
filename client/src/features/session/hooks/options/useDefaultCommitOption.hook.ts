@@ -19,12 +19,12 @@
 import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
-import { RepositoryCommit } from "../../../repository/repository.types";
+import { GitLabRepositoryCommit } from "../../../project/GitLab.types";
 import { setError } from "../../startSession.slice";
 import { setCommit } from "../../startSessionOptionsSlice";
 
 interface UseDefaultCommitOptionArgs {
-  commits: RepositoryCommit[] | undefined;
+  commits: GitLabRepositoryCommit[] | undefined;
 }
 
 export default function useDefaultCommitOption({

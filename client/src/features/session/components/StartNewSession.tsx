@@ -265,7 +265,9 @@ function SessionStartError() {
         {errorMessage}
       </>
     ) : error === "no-commit" ? (
-      <>Starting a session is not possible because this project has no commit</>
+      <>
+        Starting a session is not possible because this project has no commit.
+      </>
     ) : error === "docker-image-building" ? (
       <>
         The session could not start because the image is still building. Please
@@ -385,7 +387,7 @@ function SessionSaveWarning() {
           , but you cannot save your work.
         </p>
         <p className="mb-0">
-          <Link className={cx("btn ", "btn-primary", "btn-sm")} to={loginUrl}>
+          <Link className={cx("btn", "btn-primary", "btn-sm")} to={loginUrl}>
             Log in
           </Link>{" "}
           for full access.

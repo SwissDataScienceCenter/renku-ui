@@ -19,26 +19,175 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import processPaginationHeaders from "../../api-client/pagination";
 import { parseINIString } from "../../utils/helpers/HelperFunctions";
-import { ProjectConfig } from "../project/Project";
-import { transformGetConfigRawResponse } from "../project/projectCoreApi";
-import { RENKU_CONFIG_FILE_PATH } from "./repository.constants";
+import {
+  MAX_GITLAB_REPOSITORY_BRANCH_PAGES,
+  MAX_GITLAB_REPOSITORY_COMMIT_PAGES,
+  RENKU_CONFIG_FILE_PATH,
+} from "./GitLab.constants";
 import {
   GetAllRepositoryBranchesParams,
   GetConfigFromRepositoryParams,
+  GetPipelineJobByNameParams,
+  GetPipelinesParams,
+  GetRegistryTagParams,
+  GetRenkuRegistryParams,
   GetRepositoryCommitParams,
   GetRepositoryCommitsParams,
+  GitLabPipeline,
+  GitLabPipelineJob,
+  GitLabRegistry,
+  GitLabRegistryTag,
+  GitLabRepositoryBranch,
+  GitLabRepositoryCommit,
+  GitlabProjectResponse,
   Pagination,
-  RepositoryBranch,
-  RepositoryCommit,
-} from "./repository.types";
+  RetryPipelineParams,
+  RunPipelineParams,
+} from "./GitLab.types";
+import { ProjectConfig } from "./Project";
+import { transformGetConfigRawResponse } from "./projectCoreApi";
 
-const repositoryApi = createApi({
-  reducerPath: "repository",
+const projectGitLabApi = createApi({
+  reducerPath: "projectGitLab",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
-  tagTypes: ["Branch", "Commit"],
+  tagTypes: ["Branch", "Commit", "Job", "Pipeline", "Registry", "RegistryTag"],
   endpoints: (builder) => ({
+    // Project API
+    getProjectById: builder.query<GitlabProjectResponse, number>({
+      query: (projectId: number) => {
+        return {
+          url: `${projectId}`,
+        };
+      },
+    }),
+
+    // Project pipelines API
+    getPipelineJobByName: builder.query<
+      GitLabPipelineJob | null,
+      GetPipelineJobByNameParams
+    >({
+      queryFn: async (
+        { jobName, pipelineIds, projectId },
+        _queryApi,
+        _extraOptions,
+        fetchBaseQuery
+      ) => {
+        for (const pipelineId of pipelineIds) {
+          const url = `${projectId}/pipelines/${pipelineId}/jobs`;
+          const result = await fetchBaseQuery({ url });
+
+          if (result.error) {
+            return result;
+          }
+
+          const jobs = result.data as GitLabPipelineJob[];
+          const found = jobs.find(({ name }) => name === jobName);
+          if (found) {
+            return { data: found };
+          }
+        }
+
+        return { data: null };
+      },
+      providesTags: (result) =>
+        result ? [{ id: result.id, type: "Job" }] : [],
+    }),
+    getPipelines: builder.query<GitLabPipeline[], GetPipelinesParams>({
+      query: ({ commit, projectId }) => ({
+        url: `${projectId}/pipelines`,
+        params: {
+          ...(commit ? { sha: commit } : {}),
+        },
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(
+                ({ id }) => ({ id: `${id}`, type: "Pipeline" } as const)
+              ),
+              "Pipeline",
+            ]
+          : ["Pipeline"],
+    }),
+    retryPipeline: builder.mutation<GitLabPipeline, RetryPipelineParams>({
+      query: ({ pipelineId, projectId }) => ({
+        method: "POST",
+        url: `${projectId}/pipelines/${pipelineId}/retry`,
+      }),
+      invalidatesTags: (_result, _error, { pipelineId }) => [
+        { id: pipelineId, type: "Pipeline" },
+      ],
+    }),
+    runPipeline: builder.mutation<GitLabPipeline, RunPipelineParams>({
+      query: ({ projectId, ref }) => ({
+        method: "POST",
+        url: `${projectId}/pipeline`,
+        body: {
+          ref,
+        },
+      }),
+      invalidatesTags: ["Pipeline"],
+    }),
+
+    //
+    getRegistryTag: builder.query<GitLabRegistryTag, GetRegistryTagParams>({
+      query: ({ projectId, registryId, tag }) => ({
+        url: `${projectId}/registry/repositories/${registryId}/tags/${tag}`,
+      }),
+      providesTags: (result, _error, { tag }) =>
+        result ? [{ type: "RegistryTag", id: tag }] : [],
+    }),
+    getRenkuRegistry: builder.query<GitLabRegistry, GetRenkuRegistryParams>({
+      queryFn: async (
+        { projectId },
+        _queryApi,
+        _extraOptions,
+        fetchBaseQuery
+      ) => {
+        const url = `${projectId}/registry/repositories`;
+
+        const result = await fetchBaseQuery({ url });
+
+        if (result.error) {
+          return result;
+        }
+
+        const registries = result.data as GitLabRegistry[];
+        if (registries.length == 0) {
+          return {
+            error: {
+              error: "This project does not have any Docker image repository",
+              status: "CUSTOM_ERROR",
+            },
+          };
+        }
+
+        if (registries.length == 1) {
+          return { ...result, data: registries[0] };
+        }
+
+        // The CI we define has no name
+        // ! This is not totally reliable since users can change it. We should probably give it a Renku name
+        const renkuRegistry = registries.find(({ name }) => name === "");
+        if (renkuRegistry != null) {
+          return { ...result, data: renkuRegistry };
+        }
+
+        return {
+          error: {
+            error:
+              "The project has multiple Docker image repositories. We can't identify the correct one",
+            status: "CUSTOM_ERROR",
+          },
+        };
+      },
+      providesTags: (result) =>
+        result ? [{ type: "Registry", id: result.id }] : [],
+    }),
+
+    // Project Repository API
     getAllRepositoryBranches: builder.query<
-      RepositoryBranch[],
+      GitLabRepositoryBranch[],
       GetAllRepositoryBranchesParams
     >({
       queryFn: async (
@@ -49,10 +198,12 @@ const repositoryApi = createApi({
       ) => {
         const url = `${projectId}/repository/branches`;
 
-        const allBranches: RepositoryBranch[] = [];
-        let currentPage = 1;
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
+        const allBranches: GitLabRepositoryBranch[] = [];
+        for (
+          let currentPage = 1;
+          currentPage <= MAX_GITLAB_REPOSITORY_BRANCH_PAGES;
+          ++currentPage
+        ) {
           const result = await fetchBaseQuery({
             url,
             params: {
@@ -65,7 +216,7 @@ const repositoryApi = createApi({
             return result;
           }
 
-          const branches = result.data as RepositoryBranch[];
+          const branches = result.data as GitLabRepositoryBranch[];
           allBranches.push(...branches);
 
           const responseHeaders = result.meta?.response?.headers;
@@ -76,8 +227,6 @@ const repositoryApi = createApi({
           if (pagination.nextPage == null) {
             break;
           }
-
-          ++currentPage;
         }
 
         return { data: allBranches };
@@ -148,7 +297,7 @@ const repositoryApi = createApi({
       },
     }),
     getRepositoryCommit: builder.query<
-      RepositoryCommit,
+      GitLabRepositoryCommit,
       GetRepositoryCommitParams
     >({
       query: ({ commitSha, projectId }) => ({
@@ -158,7 +307,7 @@ const repositoryApi = createApi({
         result ? [{ id: result.id, type: "Commit" }, "Commit"] : ["Commit"],
     }),
     getRepositoryCommits: builder.query<
-      RepositoryCommit[],
+      GitLabRepositoryCommit[],
       GetRepositoryCommitsParams
     >({
       queryFn: async (
@@ -169,10 +318,12 @@ const repositoryApi = createApi({
       ) => {
         const url = `${projectId}/repository/commits`;
 
-        const allCommits: RepositoryCommit[] = [];
-        let currentPage = 1;
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
+        const allCommits: GitLabRepositoryCommit[] = [];
+        for (
+          let currentPage = 1;
+          currentPage <= MAX_GITLAB_REPOSITORY_COMMIT_PAGES;
+          ++currentPage
+        ) {
           const result = await fetchBaseQuery({
             url,
             params: {
@@ -186,7 +337,7 @@ const repositoryApi = createApi({
             return result;
           }
 
-          const commits = result.data as RepositoryCommit[];
+          const commits = result.data as GitLabRepositoryCommit[];
           allCommits.push(...commits);
 
           const responseHeaders = result.meta?.response?.headers;
@@ -197,8 +348,6 @@ const repositoryApi = createApi({
           if (pagination.nextPage == null) {
             break;
           }
-
-          ++currentPage;
         }
 
         return { data: allCommits };
@@ -214,10 +363,15 @@ const repositoryApi = createApi({
   }),
 });
 
-export default repositoryApi;
+export default projectGitLabApi;
 export const {
+  useGetProjectByIdQuery,
+  useGetPipelineJobByNameQuery,
+  useGetPipelinesQuery,
+  useRetryPipelineMutation,
+  useRunPipelineMutation,
   useGetAllRepositoryBranchesQuery,
   useGetConfigFromRepositoryQuery,
   useGetRepositoryCommitQuery,
   useGetRepositoryCommitsQuery,
-} = repositoryApi;
+} = projectGitLabApi;

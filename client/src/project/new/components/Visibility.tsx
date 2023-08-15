@@ -47,7 +47,7 @@ import {
   useGetProjectIndexingStatusQuery,
   useUpdateProjectMutation,
 } from "../../../features/project/projectKgApi";
-import { useGetProjectByIdQuery } from "../../../features/project/projectGitlabApi";
+import { useGetProjectByIdQuery } from "../../../features/project/projectGitLab.api";
 import { useGetGroupByPathQuery } from "../../../features/projects/projectsApi";
 import { computeVisibilities } from "../../../utils/helpers/HelperFunctions";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";

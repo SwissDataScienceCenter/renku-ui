@@ -81,34 +81,6 @@ function parseChartVersion(version: string | undefined) {
   };
 }
 
-type ComponentVersionProps = {
-  componentUrl: string /* URL of the component's repository, without a trailing slash */;
-  isFetching: boolean;
-  taggedVersion: string | undefined;
-};
-function ComponentVersion({
-  componentUrl,
-  isFetching,
-  taggedVersion,
-}: ComponentVersionProps) {
-  if (isFetching) {
-    return <Loader inline size={16} />;
-  }
-  const releaseUrl =
-    taggedVersion != null
-      ? `${componentUrl}/releases/tag/${taggedVersion}`
-      : `${componentUrl}/releases/`;
-  return (
-    <>
-      <ExternalLink
-        role="text"
-        title={taggedVersion ?? "unknown"}
-        url={releaseUrl}
-      />
-    </>
-  );
-}
-
 type ComponentAndDevVersionProps = {
   componentUrl: string /* URL of the component's repository, without a trailing slash */;
   devHash: string | undefined | null;
@@ -137,22 +109,32 @@ function ComponentAndDevVersion({
 
 function CoreRelease() {
   const { data, isFetching } = useGetCoreVersionsQuery();
+  if (isFetching) {
+    return <Loader inline size={16} />;
+  }
+  const coreVersion = data?.coreVersions[0];
+  const { taggedVersion, devHash } = parseChartVersion(coreVersion);
   return (
-    <ComponentVersion
+    <ComponentAndDevVersion
       componentUrl={RenkuRepositories.Python}
-      isFetching={isFetching}
-      taggedVersion={data?.coreVersions[0]}
+      devHash={devHash}
+      taggedVersion={taggedVersion}
     />
   );
 }
 
 function NotebookRelease() {
   const { data, isFetching } = useGetNotebooksVersionsQuery();
+  if (isFetching) {
+    return <Loader inline size={16} />;
+  }
+  const notebooksVersion = data?.version;
+  const { taggedVersion, devHash } = parseChartVersion(notebooksVersion);
   return (
-    <ComponentVersion
+    <ComponentAndDevVersion
       componentUrl={RenkuRepositories.Notebooks}
-      isFetching={isFetching}
-      taggedVersion={data?.version}
+      devHash={devHash}
+      taggedVersion={taggedVersion}
     />
   );
 }

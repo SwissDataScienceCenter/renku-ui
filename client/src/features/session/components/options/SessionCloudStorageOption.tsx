@@ -98,7 +98,7 @@ function SessionS3CloudStorageDisplay() {
     <>
       {cloudStorage.map(({ bucket, endpoint }, index) => (
         <CloudStorageMountPoint
-          key={`${index}`}
+          key={index}
           bucket={bucket}
           endpoint={endpoint}
         />

@@ -29,14 +29,14 @@ import {
   Label,
   PopoverBody,
   PopoverHeader,
+  UncontrolledPopover,
   UncontrolledTooltip,
 } from "reactstrap";
 import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import { Url } from "../../../../utils/helpers/url";
-import { UncontrolledPopover } from "../../../../utils/ts-wrappers";
-import { useGetAllRepositoryBranchesQuery } from "../../../repository/repository.api";
+import { useGetAllRepositoryBranchesQuery } from "../../../project/projectGitLab.api";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 import {
   setBranch,

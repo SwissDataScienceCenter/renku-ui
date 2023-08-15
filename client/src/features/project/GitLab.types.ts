@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { Visibilities } from "../../components/visibility/Visibility";
+
 export interface Pagination {
   currentPage?: number;
   firstPageLink?: string;
@@ -28,9 +30,87 @@ export interface Pagination {
   totalPages?: number;
 }
 
-export interface RepositoryBranch {
+export interface GitlabProjectResponse {
+  visibility: Visibilities;
+  path_with_namespace: string;
+}
+
+// GitLab Pipelines API
+
+export interface GitLabPipeline {
+  id: number;
+}
+
+export interface GitLabPipelineJob {
+  id: number;
+  name: string;
+  pipeline: GitLabPipeline;
+  status:
+    | "success"
+    | "running"
+    | "pending"
+    | "stopping"
+    | "failed"
+    | "canceled";
+  web_url: string;
+}
+
+export interface GetPipelineJobByNameParams {
+  jobName: string;
+  pipelineIds: number[];
+  projectId: number;
+}
+
+export interface GetPipelinesParams {
+  commit?: string;
+  projectId: number;
+}
+
+export interface RetryPipelineParams {
+  pipelineId: number;
+  projectId: number;
+}
+
+export interface RunPipelineParams {
+  projectId: number;
+  ref: string;
+}
+
+// GitLab Registry API
+
+export interface GitLabRegistryTag {
+  location: string;
+}
+
+export interface GitLabRegistry {
+  id: number;
+  name: string;
+}
+
+export interface GetRegistryTagParams {
+  projectId: number;
+  registryId: number;
+  tag: string;
+}
+
+export interface GetRenkuRegistryParams {
+  projectId: string;
+}
+
+// GitLab Repository API
+
+export interface GitLabRepositoryBranch {
   merged: boolean;
   name: string;
+}
+
+export interface GitLabRepositoryCommit {
+  author_name: string;
+  committed_date: string;
+  id: string;
+  message: string;
+  short_id: string;
+  web_url: string;
 }
 
 export interface GetAllRepositoryBranchesParams {
@@ -64,15 +144,6 @@ export type GetRepositoryBranchResponse = {
   protected: boolean;
   web_url: string;
 }[];
-
-export interface RepositoryCommit {
-  author_name: string;
-  committed_date: string;
-  id: string;
-  message: string;
-  short_id: string;
-  web_url: string;
-}
 
 export interface GetRepositoryCommitParams {
   commitSha: string;

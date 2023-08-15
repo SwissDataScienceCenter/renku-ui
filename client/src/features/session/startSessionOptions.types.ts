@@ -37,6 +37,7 @@ export interface SessionCloudStorageMount {
   secretKey?: string;
 }
 
+// ? See: ./components/options/SessionProjectDockerImage.md
 export type DockerImageBuildStatus =
   | "unknown"
   | "available"

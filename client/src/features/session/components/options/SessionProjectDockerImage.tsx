@@ -29,14 +29,13 @@ import { Badge, Button, UncontrolledTooltip } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../../api-client";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
-import pipelinesApi, {
+import { GitLabPipelineJob } from "../../../project/GitLab.types";
+import projectGitLabApi, {
   useGetPipelineJobByNameQuery,
   useGetPipelinesQuery,
   useRetryPipelineMutation,
   useRunPipelineMutation,
-} from "../../../pipelines/pipelines.api";
-import { PipelineJob } from "../../../pipelines/pipelines.types";
-import registryApi from "../../../registry/registry.api";
+} from "../../../project/projectGitLab.api";
 import {
   SESSION_CI_IMAGE_BUILD_JOB,
   SESSION_CI_PIPELINE_POLLING_INTERVAL_MS,
@@ -47,6 +46,7 @@ import {
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
 
+// ? See: SessionProjectDockerImage.md
 export default function SessionProjectDockerImage() {
   const { dockerImageBuildStatus: status, dockerImageStatus } =
     useStartSessionOptionsSelector(
@@ -332,17 +332,17 @@ function useDockerImageStatusStateMachine() {
       error: renkuRegistryError,
       isFetching: renkuRegistryIsFetching,
     },
-  ] = registryApi.useLazyGetRenkuRegistryQuery();
+  ] = projectGitLabApi.useLazyGetRenkuRegistryQuery();
 
   const [
     getRegistryTag,
     { error: registryTagError, isFetching: registryTagIsFetching },
-  ] = registryApi.useLazyGetRegistryTagQuery();
+  ] = projectGitLabApi.useLazyGetRegistryTagQuery();
 
   const [
     getPipelines,
     { data: pipelines, error: pipelinesError, isFetching: pipelinesIsFetching },
-  ] = pipelinesApi.useLazyGetPipelinesQuery();
+  ] = projectGitLabApi.useLazyGetPipelinesQuery();
 
   const [
     getPipelineJobByName,
@@ -351,7 +351,7 @@ function useDockerImageStatusStateMachine() {
       error: pipelineJobError,
       isFetching: pipelineJobIsFetching,
     },
-  ] = pipelinesApi.useLazyGetPipelineJobByNameQuery();
+  ] = projectGitLabApi.useLazyGetPipelineJobByNameQuery();
 
   // Start checking for Docker images in CI/CD
   useEffect(() => {
@@ -479,13 +479,13 @@ function useDockerImageStatusStateMachine() {
     }
 
     if (pipelineJob.status === "success") {
-      dispatch(setDockerImageBuildStatus("checking-ci-done-registry"));
+      dispatch(setDockerImageBuildStatus("checking-ci-done-registry-start"));
       return;
     }
     if (
-      (["running", "pending", "stopping"] as PipelineJob["status"][]).includes(
-        pipelineJob.status
-      )
+      (
+        ["running", "pending", "stopping"] as GitLabPipelineJob["status"][]
+      ).includes(pipelineJob.status)
     ) {
       dispatch(setDockerImageBuildStatus("ci-job-running"));
       dispatch(setDockerImageStatus("building"));
