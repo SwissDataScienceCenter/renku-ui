@@ -31,7 +31,7 @@ export interface NotebookAnnotations {
   projectName: string;
   repository: string;
 
-  hibernation: string;
+  hibernation: Record<string, unknown>;
   "hibernation-branch": string;
   "hibernation-commit-sha": string;
   "hibernation-date": string;

@@ -28,10 +28,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
-import { Button, DropdownItem } from "reactstrap";
+import {
+  Button,
+  Col,
+  DropdownItem,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Row,
+} from "reactstrap";
+import { WarnAlert } from "../../../components/Alert";
+import { Loader } from "../../../components/Loader";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
+import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
 import { SshDropdown } from "../../../components/ssh/ssh";
+import { User } from "../../../model/RenkuModels";
 import { NotebooksHelper } from "../../../notebooks";
+import { NotebookAnnotations } from "../../../notebooks/components/Session";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
@@ -40,12 +53,10 @@ import {
   usePatchSessionMutation,
   useStopSessionMutation,
 } from "../sessions.api";
-import { Session } from "../sessions.types";
+import { Session, SessionStatusState } from "../sessions.types";
 import { getRunningSession } from "../sessions.utils";
-import SimpleSessionButton from "./SimpleSessionButton";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
-import { Loader } from "../../../components/Loader";
-import { User } from "../../../model/RenkuModels";
+import SimpleSessionButton from "./SimpleSessionButton";
 
 interface SessionButtonProps {
   className?: string;
@@ -215,6 +226,12 @@ function SessionActions({
     stopSession({ serverName: session.name });
     setIsStopping(true);
   }, [session.name, stopSession]);
+  // Modal for confirming session deletion
+  const [showModalStopSession, setShowModalStopSession] = useState(false);
+  const toggleStopSession = useCallback(
+    () => setShowModalStopSession((show) => !show),
+    []
+  );
 
   const status = session.status.state;
 
@@ -228,10 +245,15 @@ function SessionActions({
   );
 
   const defaultAction =
-    status === "stopping" || isHibernating || isStopping ? (
+    status === "stopping" || isStopping ? (
       <Button className={buttonClassName} data-cy="stopping-btn" disabled>
         <Loader className="me-2" inline size={16} />
-        Stopping
+        Deleting
+      </Button>
+    ) : isHibernating ? (
+      <Button className={buttonClassName} data-cy="stopping-btn" disabled>
+        <Loader className="me-2" inline size={16} />
+        Pausing
       </Button>
     ) : status === "starting" || status === "running" ? (
       <Link
@@ -281,39 +303,62 @@ function SessionActions({
       </Button>
     );
 
-  const hibernateOrDeleteAction =
-    status !== "stopping" &&
+  const hibernateAction = status !== "stopping" &&
     status !== "failed" &&
     status !== "hibernated" &&
-    logged ? (
-      <>
-        <DropdownItem onClick={onHibernateSession}>
-          <FontAwesomeIcon
-            className={cx("text-rk-green", "fa-w-14", "me-2")}
-            fixedWidth
-            icon={faStop}
-          />
-          Stop session
-        </DropdownItem>
-        <DropdownItem divider />
-      </>
-    ) : ((status === "failed" || status === "hibernated") && logged) ||
-      (status !== "stopping" &&
-        status !== "failed" &&
-        status !== "hibernated" &&
-        !logged) ? (
-      <>
-        <DropdownItem onClick={onStopSession}>
-          <FontAwesomeIcon
-            className={cx("text-rk-green", "fa-w-14", "me-2")}
-            fixedWidth
-            icon={faTrash}
-          />
-          Delete session
-        </DropdownItem>
-        <DropdownItem divider />
-      </>
-    ) : null;
+    !isStopping &&
+    !isHibernating &&
+    logged && (
+      <DropdownItem onClick={onHibernateSession}>
+        <SessionPausedIcon className="text-rk-green" size={16} />
+        Pause session
+      </DropdownItem>
+    );
+
+  const deleteAction = status !== "stopping" && !isStopping && (
+    <DropdownItem onClick={logged ? toggleStopSession : onStopSession}>
+      <FontAwesomeIcon
+        className={cx("text-rk-green", "fa-w-14", "me-2")}
+        fixedWidth
+        icon={faTrash}
+      />
+      Delete session
+    </DropdownItem>
+  );
+
+  // const hibernateOrDeleteAction =
+  //   status !== "stopping" &&
+  //   status !== "failed" &&
+  //   status !== "hibernated" &&
+  //   logged ? (
+  //     <>
+  //       <DropdownItem onClick={onHibernateSession}>
+  //         <FontAwesomeIcon
+  //           className={cx("text-rk-green", "fa-w-14", "me-2")}
+  //           fixedWidth
+  //           icon={faStop}
+  //         />
+  //         Stop session
+  //       </DropdownItem>
+  //       <DropdownItem divider />
+  //     </>
+  //   ) : ((status === "failed" || status === "hibernated") && logged) ||
+  //     (status !== "stopping" &&
+  //       status !== "failed" &&
+  //       status !== "hibernated" &&
+  //       !logged) ? (
+  //     <>
+  //       <DropdownItem onClick={onStopSession}>
+  //         <FontAwesomeIcon
+  //           className={cx("text-rk-green", "fa-w-14", "me-2")}
+  //           fixedWidth
+  //           icon={faTrash}
+  //         />
+  //         Delete session
+  //       </DropdownItem>
+  //       <DropdownItem divider />
+  //     </>
+  //   ) : null;
 
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
@@ -354,10 +399,122 @@ function SessionActions({
       isPrincipal
       size="sm"
     >
-      {hibernateOrDeleteAction}
+      {/* {hibernateOrDeleteAction} */}
+
+      {hibernateAction}
+      {deleteAction}
+      {(hibernateAction || deleteAction) && <DropdownItem divider />}
+
       {openInNewTabAction}
       {logsAction}
       {createSessionLinkAction}
+
+      <ConfirmDeleteModal
+        annotations={annotations as NotebookAnnotations}
+        isOpen={showModalStopSession}
+        isStopping={isStopping}
+        onStopSession={onStopSession}
+        status={status}
+        toggleModal={toggleStopSession}
+      />
     </ButtonWithMenu>
+  );
+}
+
+interface ConfirmDeleteModalProps {
+  annotations: NotebookAnnotations;
+  isOpen: boolean;
+  isStopping: boolean;
+  onStopSession: () => void;
+  status: SessionStatusState;
+  toggleModal: () => void;
+}
+
+function ConfirmDeleteModal({
+  annotations,
+  isOpen,
+  isStopping,
+  onStopSession,
+  status,
+  toggleModal,
+}: ConfirmDeleteModalProps) {
+  const onClick = useCallback(() => {
+    onStopSession();
+    toggleModal();
+  }, [onStopSession, toggleModal]);
+
+  return (
+    <Modal isOpen={isOpen} toggle={toggleModal}>
+      <ModalHeader toggle={toggleModal}>Delete Session</ModalHeader>
+      <ModalBody>
+        <Row>
+          <Col>
+            <p className="mb-1">
+              Are you sure you want to delete this session?
+            </p>
+            <p className="fw-bold">
+              Deleting a session will permanently remove any unsaved work.
+            </p>
+            <UnsavedWorkWarning annotations={annotations} status={status} />
+            <div className="d-flex justify-content-end">
+              <Button
+                className={cx("float-right", "mt-1", "btn-outline-rk-green")}
+                disabled={isStopping}
+                onClick={toggleModal}
+              >
+                No, keep this session
+              </Button>
+              <Button
+                className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
+                data-cy="stop-session-modal-button"
+                disabled={isStopping}
+                type="submit"
+                onClick={onClick}
+              >
+                Yes, delete this session
+              </Button>
+            </div>
+          </Col>
+        </Row>
+      </ModalBody>
+    </Modal>
+  );
+}
+
+interface UnsavedWorkWarningProps {
+  annotations: NotebookAnnotations;
+  status: SessionStatusState;
+}
+
+function UnsavedWorkWarning({ annotations, status }: UnsavedWorkWarningProps) {
+  // if (status !== "hibernated") {
+  //   return null;
+  // }
+
+  const hasHibernationInfo = !!annotations["hibernation-date"];
+  const hasUnsavedWork =
+    !hasHibernationInfo ||
+    annotations["hibernation-dirty"] ||
+    !annotations["hibernation-synchronized"];
+
+  if (!hasUnsavedWork) {
+    return null;
+  }
+
+  const explanation = !hasHibernationInfo
+    ? "uncommitted files and/or unsynced commits"
+    : annotations["hibernation-dirty"] &&
+      !annotations["hibernation-synchronized"]
+    ? "uncommitted files and unsynced commits"
+    : annotations["hibernation-dirty"]
+    ? "uncommitted files"
+    : "unsynced commits";
+
+  return (
+    <WarnAlert dismissible={false}>
+      You {status !== "hibernated" && <>may </>} have unsaved work {"("}
+      {explanation}
+      {")"} in this session
+    </WarnAlert>
   );
 }
