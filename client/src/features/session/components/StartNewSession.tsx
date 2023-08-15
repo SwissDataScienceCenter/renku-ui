@@ -78,6 +78,8 @@ import SessionCommitOption from "./options/SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
 import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
 import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
+import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
+import { Loader } from "../../../components/Loader";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -146,11 +148,12 @@ export default function StartNewSession() {
         </Col>
         <Col sm={12} md={9} lg={8}>
           <SessionStartError />
-          <Form className="form-rk-green">
+          <StartNewSessionContent />
+          {/* <Form className="form-rk-green">
             <SessionSaveWarning />
             <StartNewSessionOptions />
             <StartSessionButton />
-          </Form>
+          </Form> */}
         </Col>
       </Row>
     </>
@@ -250,6 +253,11 @@ function SessionStartError() {
   );
 
   if (!error) {
+    return null;
+  }
+
+  // Do not display a message when the error is "existing-session"
+  if (error === "existing-session") {
     return null;
   }
 
@@ -354,6 +362,63 @@ function ProjectSessionLockAlert() {
         conflicts you should not push any changes.
       </i>
     </WarnAlert>
+  );
+}
+
+function StartNewSessionContent() {
+  const projectPathWithNamespace = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.pathWithNamespace
+  );
+  const projectSessions = useProjectSessions({ projectPathWithNamespace });
+  const validSessions = useMemo(
+    () =>
+      projectSessions != null
+        ? Object.values(projectSessions).filter(
+            ({ status }) =>
+              status.state !== "failed" && status.state !== "stopping"
+          )
+        : null,
+    [projectSessions]
+  );
+
+  if (validSessions == null) {
+    return (
+      <p>
+        <Loader className="me-1" inline size={16} />
+        Checking existing sessions
+      </p>
+    );
+  }
+
+  if (validSessions.length > 0) {
+    return (
+      <>
+        <WarnAlert>
+          <p>
+            {validSessions.length > 1
+              ? "Multiple sessions already exist "
+              : "A session already exists "}
+            for this project. Please delete all existing sessions before
+            starting a new one.
+          </p>
+          <p className={cx("mb-0", "fst-italic")}>
+            Remember to save existing work before permanently deleting a
+            session.
+          </p>
+        </WarnAlert>
+        <ProjectSessionsList
+          projectPathWithNamespace={projectPathWithNamespace}
+        />
+      </>
+    );
+  }
+
+  return (
+    <Form className="form-rk-green">
+      <SessionSaveWarning />
+      <StartNewSessionOptions />
+      <StartSessionButton />
+    </Form>
   );
 }
 

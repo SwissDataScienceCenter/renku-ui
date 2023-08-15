@@ -236,6 +236,7 @@
           "unmount",
           "unschedulable",
           "unstar",
+          "unsynced",
           "uploadable",
           "uploader",
           "uploadprogress",

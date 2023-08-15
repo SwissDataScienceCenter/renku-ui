@@ -58,7 +58,7 @@ export default function ProjectSessionsList({
   );
 }
 
-function useProjectSessions({
+export function useProjectSessions({
   projectPathWithNamespace,
 }: ProjectSessionsListProps) {
   const { data: sessions } = useGetSessionsQuery();

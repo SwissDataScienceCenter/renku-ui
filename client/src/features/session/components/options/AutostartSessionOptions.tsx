@@ -40,6 +40,7 @@ import {
   updateStepStatus,
 } from "../../startSession.slice";
 import { useStartSessionOptionsSelector } from "../../startSessionOptionsSlice";
+import { useProjectSessions } from "../ProjectSessionsList";
 import SessionDockerImage from "./SessionDockerImage";
 
 export default function AutostartSessionOptions() {
@@ -69,6 +70,20 @@ function useAutostartSessionOptions(): void {
   );
   const project = useSelector<RootStateOrAny, string>(
     (state) => state.stateModel.project.metadata.path
+  );
+  const projectPathWithNamespace = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.pathWithNamespace
+  );
+  const projectSessions = useProjectSessions({ projectPathWithNamespace });
+  const validSessions = useMemo(
+    () =>
+      projectSessions != null
+        ? Object.values(projectSessions).filter(
+            ({ status }) =>
+              status.state !== "failed" && status.state !== "stopping"
+          )
+        : null,
+    [projectSessions]
   );
 
   const {
@@ -153,31 +168,36 @@ function useAutostartSessionOptions(): void {
       setSteps([
         {
           id: 0,
-          status: StatusStepProgressBar.WAITING,
-          step: "Loading branches",
+          status: StatusStepProgressBar.EXECUTING,
+          step: "Checking existing sessions",
         },
         {
           id: 1,
           status: StatusStepProgressBar.WAITING,
-          step: "Loading commits",
+          step: "Loading branches",
         },
         {
           id: 2,
           status: StatusStepProgressBar.WAITING,
-          step: "Loading project settings",
+          step: "Loading commits",
         },
         {
           id: 3,
           status: StatusStepProgressBar.WAITING,
-          step: "Loading docker image status",
+          step: "Loading project settings",
         },
         {
           id: 4,
           status: StatusStepProgressBar.WAITING,
-          step: "Loading resource pools",
+          step: "Loading docker image status",
         },
         {
           id: 5,
+          status: StatusStepProgressBar.WAITING,
+          step: "Loading resource pools",
+        },
+        {
+          id: 6,
           status: StatusStepProgressBar.WAITING,
           step: "Requesting session",
         },
@@ -186,16 +206,28 @@ function useAutostartSessionOptions(): void {
   }, [dispatch]);
 
   useEffect(() => {
+    if (validSessions != null && validSessions.length == 0) {
+      dispatch(
+        updateStepStatus({ id: 0, status: StatusStepProgressBar.READY })
+      );
+      return;
+    }
+    if (validSessions != null) {
+      dispatch(setError({ error: "existing-session" }));
+    }
+  }, [dispatch, validSessions]);
+
+  useEffect(() => {
     if (branchesIsFetching) {
       dispatch(
-        updateStepStatus({ id: 0, status: StatusStepProgressBar.EXECUTING })
+        updateStepStatus({ id: 1, status: StatusStepProgressBar.EXECUTING })
       );
     }
   }, [branchesIsFetching, dispatch]);
   useEffect(() => {
     if (branches != null) {
       dispatch(
-        updateStepStatus({ id: 0, status: StatusStepProgressBar.READY })
+        updateStepStatus({ id: 1, status: StatusStepProgressBar.READY })
       );
     }
   }, [branches, dispatch]);
@@ -203,14 +235,14 @@ function useAutostartSessionOptions(): void {
   useEffect(() => {
     if (commitsIsFetching) {
       dispatch(
-        updateStepStatus({ id: 1, status: StatusStepProgressBar.EXECUTING })
+        updateStepStatus({ id: 2, status: StatusStepProgressBar.EXECUTING })
       );
     }
   }, [commitsIsFetching, dispatch]);
   useEffect(() => {
     if (commits != null) {
       dispatch(
-        updateStepStatus({ id: 1, status: StatusStepProgressBar.READY })
+        updateStepStatus({ id: 2, status: StatusStepProgressBar.READY })
       );
     }
   }, [commits, dispatch]);
@@ -218,14 +250,14 @@ function useAutostartSessionOptions(): void {
   useEffect(() => {
     if (projectConfigIsFetching) {
       dispatch(
-        updateStepStatus({ id: 2, status: StatusStepProgressBar.EXECUTING })
+        updateStepStatus({ id: 3, status: StatusStepProgressBar.EXECUTING })
       );
     }
   }, [dispatch, projectConfigIsFetching]);
   useEffect(() => {
     if (projectConfig != null) {
       dispatch(
-        updateStepStatus({ id: 2, status: StatusStepProgressBar.READY })
+        updateStepStatus({ id: 3, status: StatusStepProgressBar.READY })
       );
     }
   }, [dispatch, projectConfig]);
@@ -233,14 +265,14 @@ function useAutostartSessionOptions(): void {
   useEffect(() => {
     if (dockerImageStatus === "unknown") {
       dispatch(
-        updateStepStatus({ id: 3, status: StatusStepProgressBar.EXECUTING })
+        updateStepStatus({ id: 4, status: StatusStepProgressBar.EXECUTING })
       );
     }
   }, [dispatch, dockerImageStatus]);
   useEffect(() => {
     if (dockerImageStatus === "available") {
       dispatch(
-        updateStepStatus({ id: 3, status: StatusStepProgressBar.READY })
+        updateStepStatus({ id: 4, status: StatusStepProgressBar.READY })
       );
     }
   }, [dispatch, dockerImageStatus]);
@@ -258,14 +290,14 @@ function useAutostartSessionOptions(): void {
   useEffect(() => {
     if (resourcePoolsIsFetching) {
       dispatch(
-        updateStepStatus({ id: 4, status: StatusStepProgressBar.EXECUTING })
+        updateStepStatus({ id: 5, status: StatusStepProgressBar.EXECUTING })
       );
     }
   }, [dispatch, resourcePoolsIsFetching]);
   useEffect(() => {
     if (resourcePools != null) {
       dispatch(
-        updateStepStatus({ id: 4, status: StatusStepProgressBar.READY })
+        updateStepStatus({ id: 5, status: StatusStepProgressBar.READY })
       );
     }
   }, [dispatch, resourcePools]);
@@ -273,6 +305,8 @@ function useAutostartSessionOptions(): void {
   // Request session
   useEffect(() => {
     if (
+      validSessions == null ||
+      validSessions.length > 0 ||
       branches == null ||
       commits == null ||
       dockerImageStatus !== "available" ||
@@ -320,5 +354,6 @@ function useAutostartSessionOptions(): void {
     resourcePools,
     startSession,
     storage,
+    validSessions,
   ]);
 }

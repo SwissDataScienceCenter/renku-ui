@@ -21,7 +21,6 @@ import {
   faExternalLinkAlt,
   faFileAlt,
   faPlay,
-  faStop,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -292,14 +291,18 @@ function SessionActions({
     ) : (
       <Button
         className={buttonClassName}
-        data-cy={logged ? "stop-session-button" : "delete-session-button"}
+        data-cy={logged ? "pause-session-button" : "delete-session-button"}
         onClick={logged ? onHibernateSession : onStopSession}
       >
-        <FontAwesomeIcon
-          className={cx("rk-icon", "rk-icon-md", "me-2")}
-          icon={logged ? faStop : faTrash}
-        />
-        {logged ? "Stop" : "Delete"}
+        {logged ? (
+          <SessionPausedIcon size={16} />
+        ) : (
+          <FontAwesomeIcon
+            className={cx("rk-icon", "rk-icon-md", "me-2")}
+            icon={faTrash}
+          />
+        )}
+        {logged ? "Pause" : "Delete"}
       </Button>
     );
 
@@ -309,7 +312,10 @@ function SessionActions({
     !isStopping &&
     !isHibernating &&
     logged && (
-      <DropdownItem onClick={onHibernateSession}>
+      <DropdownItem
+        disabled={status === "starting"}
+        onClick={onHibernateSession}
+      >
         <SessionPausedIcon className="text-rk-green" size={16} />
         Pause session
       </DropdownItem>
@@ -325,40 +331,6 @@ function SessionActions({
       Delete session
     </DropdownItem>
   );
-
-  // const hibernateOrDeleteAction =
-  //   status !== "stopping" &&
-  //   status !== "failed" &&
-  //   status !== "hibernated" &&
-  //   logged ? (
-  //     <>
-  //       <DropdownItem onClick={onHibernateSession}>
-  //         <FontAwesomeIcon
-  //           className={cx("text-rk-green", "fa-w-14", "me-2")}
-  //           fixedWidth
-  //           icon={faStop}
-  //         />
-  //         Stop session
-  //       </DropdownItem>
-  //       <DropdownItem divider />
-  //     </>
-  //   ) : ((status === "failed" || status === "hibernated") && logged) ||
-  //     (status !== "stopping" &&
-  //       status !== "failed" &&
-  //       status !== "hibernated" &&
-  //       !logged) ? (
-  //     <>
-  //       <DropdownItem onClick={onStopSession}>
-  //         <FontAwesomeIcon
-  //           className={cx("text-rk-green", "fa-w-14", "me-2")}
-  //           fixedWidth
-  //           icon={faTrash}
-  //         />
-  //         Delete session
-  //       </DropdownItem>
-  //       <DropdownItem divider />
-  //     </>
-  //   ) : null;
 
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
@@ -399,8 +371,6 @@ function SessionActions({
       isPrincipal
       size="sm"
     >
-      {/* {hibernateOrDeleteAction} */}
-
       {hibernateAction}
       {deleteAction}
       {(hibernateAction || deleteAction) && <DropdownItem divider />}
@@ -466,7 +436,7 @@ function ConfirmDeleteModal({
               </Button>
               <Button
                 className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
-                data-cy="stop-session-modal-button"
+                data-cy="delete-session-modal-button"
                 disabled={isStopping}
                 type="submit"
                 onClick={onClick}
@@ -487,10 +457,6 @@ interface UnsavedWorkWarningProps {
 }
 
 function UnsavedWorkWarning({ annotations, status }: UnsavedWorkWarningProps) {
-  // if (status !== "hibernated") {
-  //   return null;
-  // }
-
   const hasHibernationInfo = !!annotations["hibernation-date"];
   const hasUnsavedWork =
     !hasHibernationInfo ||
