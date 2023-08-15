@@ -568,8 +568,8 @@ export default function DatasetView(props) {
           <DeleteDataset
             client={props.client}
             dataset={dataset}
+            externalUrl={props.externalUrl}
             history={props.history}
-            httpProjectUrl={props.httpProjectUrl}
             modalOpen={deleteDatasetModalOpen}
             projectPathWithNamespace={props.projectPathWithNamespace}
             setModalOpen={setDeleteDatasetModalOpen}

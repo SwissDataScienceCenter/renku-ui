@@ -141,7 +141,7 @@ export interface DeleteDatasetProps {
   client: DatasetDeleteClient;
   dataset: DatasetCore;
   history: ReturnType<typeof useHistory>;
-  httpProjectUrl: string;
+  externalUrl: string;
   onCancel: () => void;
   modalOpen: boolean;
   projectPathWithNamespace: string;
@@ -170,7 +170,7 @@ function DeleteDataset(props: DeleteDatasetProps) {
     setSubmitting(true);
     setSubmitLoaderText(undefined);
     props.client
-      .deleteDataset(props.httpProjectUrl, props.dataset.name, props.versionUrl)
+      .deleteDataset(props.externalUrl, props.dataset.name, props.versionUrl)
       .then((response) => {
         setSubmitting(false);
         if (response.data.error != null) {

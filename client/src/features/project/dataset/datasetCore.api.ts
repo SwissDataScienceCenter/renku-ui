@@ -224,7 +224,7 @@ type PostDatasetProps = {
   client: DatasetPostClient;
   defaultBranch: string;
   edit: boolean;
-  httpProjectUrl: string;
+  externalUrl: string;
   versionUrl: string;
 };
 export async function postDataset(
@@ -240,7 +240,7 @@ export async function postDataset(
 
   // TODO: Convert to RTK query
   const response = await props.client.postDataset(
-    props.httpProjectUrl,
+    props.externalUrl,
     dataset,
     props.defaultBranch,
     props.edit,
