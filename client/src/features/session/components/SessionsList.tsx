@@ -140,7 +140,6 @@ interface SessionRowProps {
   name: string;
   repositoryLinks: { branch: string; commit: string };
   resourceRequests: Session["resources"]["requests"];
-  // startTime: string;
   startTimestamp: string;
   status: Session["status"]["state"];
   uid: string;
@@ -154,7 +153,6 @@ function SessionRowFull({
   name,
   repositoryLinks,
   resourceRequests,
-  // startTime,
   startTimestamp,
   status,
   uid,

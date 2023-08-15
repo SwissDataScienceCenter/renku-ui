@@ -34,9 +34,9 @@ import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
-import pipelinesApi from "../../features/pipelines/pipelines.api";
 import { datasetFormSlice } from "../../features/project/dataset";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
+import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKgApi";
 import { projectsApi } from "../../features/projects/projectsApi";
 import { projectsKgApi } from "../../features/projects/projectsKgApi";
@@ -48,7 +48,6 @@ import { startSessionOptionsSlice } from "../../features/session/startSessionOpt
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
-import projectGitLabApi from "../../features/project/projectGitLab.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -69,7 +68,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [dataServicesApi.reducerPath]: dataServicesApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
-    [pipelinesApi.reducerPath]: pipelinesApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
     [projectGitLabApi.reducerPath]: projectGitLabApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
@@ -95,7 +93,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(dataServicesApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(kgSearchApi.middleware)
-        .concat(pipelinesApi.middleware)
         .concat(projectCoreApi.middleware)
         .concat(projectGitLabApi.middleware)
         .concat(projectKgApi.middleware)

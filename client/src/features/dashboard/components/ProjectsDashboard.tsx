@@ -309,7 +309,6 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
             name={displayModal.targetServer}
             annotations={item.notebook?.annotations ?? {}}
           />
-          {/* TODO */}
           <ListBarSession
             notebook={item.notebook}
             fullPath={item.slug}
