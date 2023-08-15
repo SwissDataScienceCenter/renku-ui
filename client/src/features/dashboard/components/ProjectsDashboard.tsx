@@ -37,7 +37,10 @@ import ListDisplay from "../../../components/List";
 import { Loader } from "../../../components/Loader";
 import useGetRecentlyVisitedProjects from "../../../utils/customHooks/useGetRecentlyVisitedProjects";
 import AppContext from "../../../utils/context/appContext";
-import { formatProjectMetadata } from "../../../utils/helpers/ProjectFunctions";
+import {
+  cleanGitUrl,
+  formatProjectMetadata,
+} from "../../../utils/helpers/ProjectFunctions";
 import ListBarSession from "../../../components/list/ListBarSessions";
 import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionFunctions";
 import { Notebook } from "../../../notebooks/components/Session";
@@ -148,10 +151,13 @@ function getProjectFormatted(project: Record<string, any>) {
   const namespace = project.namespace ? project.namespace.full_path : "";
   const path = project.path;
   const url = Url.get(Url.pages.project, { namespace, path });
+  // We use the externalUrl property, which typically doesn't include ".git".
+  // However, in this context, the externalUrl is missing, so we remove ".git".
+  const gitUrl = cleanGitUrl(project.http_url_to_repo);
   return {
     creators: project.owner ? [project.owner] : [project.namespace],
     description: project.description,
-    gitUrl: project.http_url_to_repo,
+    gitUrl,
     id: project.id,
     imageUrl: project.avatar_url,
     itemType: "project",

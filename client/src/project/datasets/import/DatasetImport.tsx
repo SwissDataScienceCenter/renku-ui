@@ -190,6 +190,7 @@ function DatasetImportForm(
 
 type ImportDatasetArgs = {
   client: DatasetImportClient;
+  externalUrl: string;
   formValues: DatasetInputFormFields;
   handlers: {
     setSubmitLoader: React.Dispatch<
@@ -200,20 +201,19 @@ type ImportDatasetArgs = {
     >;
     setServerErrors: React.Dispatch<React.SetStateAction<string | undefined>>;
   };
-  httpProjectUrl: string;
   redirectUser: () => void;
   versionUrl: string;
 };
 async function importDatasetAndWaitForResult({
   client,
+  externalUrl,
   formValues,
   handlers,
-  httpProjectUrl,
   redirectUser,
   versionUrl,
 }: ImportDatasetArgs) {
   const response = await client.datasetImport(
-    httpProjectUrl,
+    externalUrl,
     formValues.uri,
     versionUrl
   );
@@ -292,9 +292,9 @@ function DatasetImportContainer(
   props: DatasetImportProps & { versionUrl: string }
 ) {
   const {
-    history,
-    httpProjectUrl,
+    externalUrl,
     fetchDatasets,
+    history,
     projectPathWithNamespace,
     versionUrl,
   } = props;
@@ -338,9 +338,9 @@ function DatasetImportContainer(
       try {
         await importDatasetAndWaitForResult({
           client,
+          externalUrl,
           formValues,
           handlers,
-          httpProjectUrl,
           redirectUser,
           versionUrl,
         });
@@ -350,7 +350,7 @@ function DatasetImportContainer(
       }
     },
     [
-      httpProjectUrl,
+      externalUrl,
       client,
       redirectUser,
       setServerErrors,
@@ -389,9 +389,9 @@ function DatasetImportContainer(
 type DatasetImportProps = {
   accessLevel: number;
   client: DatasetImportClient;
+  externalUrl: string;
   fetchDatasets: (force: boolean, versionUrl: string) => void;
   history: ReturnType<typeof useHistory>;
-  httpProjectUrl: string;
   projectPathWithNamespace: string;
   location: { pathname: string };
   toggleNewDataset: DatasetImportFormProps["toggleNewDataset"];

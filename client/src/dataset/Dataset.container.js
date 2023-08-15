@@ -79,10 +79,10 @@ export default function ShowDataset(props) {
 
   // use effect to calculate files
   useEffect(() => {
-    const fetchFiles = (name, httpProjectUrl, versionUrl) => {
+    const fetchFiles = (name, externalUrl, versionUrl) => {
       props.datasetCoordinator.fetchDatasetFilesFromCoreService(
         name,
-        httpProjectUrl,
+        externalUrl,
         versionUrl
       );
     };
@@ -100,12 +100,12 @@ export default function ShowDataset(props) {
         backendAvailable &&
         !isFilesFetching
       ) {
-        fetchFiles(dataset?.name, props.httpProjectUrl, versionUrl);
+        fetchFiles(dataset?.name, externalUrl, versionUrl);
       }
     }
   }, [
     dataset,
-    props.httpProjectUrl,
+    externalUrl,
     props.insideProject,
     coreSupportComputed,
     backendAvailable,
@@ -145,12 +145,12 @@ export default function ShowDataset(props) {
       client={props.client}
       dataset={dataset}
       datasets={props.datasets}
+      externalUrl={externalUrl}
       files={datasetFiles}
       fetchError={dataset?.fetchError}
       fetchedKg={dataset?.fetched}
       fileContentUrl={props.fileContentUrl}
       history={props.history}
-      httpProjectUrl={props.httpProjectUrl}
       identifier={props.identifier}
       insideProject={props.insideProject}
       lineagesUrl={props.lineagesUrl}

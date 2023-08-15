@@ -430,7 +430,6 @@ export default function DatasetModify(props: DatasetModifyProps) {
     externalUrl,
     fetchDatasets,
     history,
-    httpProjectUrl,
     location,
     overviewCommitsUrl,
     projectPathWithNamespace,
@@ -470,7 +469,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
           client,
           defaultBranch,
           edit,
-          httpProjectUrl,
+          externalUrl,
           versionUrl,
         });
         if (response.data.error != null) {
@@ -554,9 +553,9 @@ export default function DatasetModify(props: DatasetModifyProps) {
       defaultBranch,
       dispatch,
       edit,
+      externalUrl,
       fetchDatasets,
       history,
-      httpProjectUrl,
       name,
       projectPathWithNamespace,
       props.dataset?.name,

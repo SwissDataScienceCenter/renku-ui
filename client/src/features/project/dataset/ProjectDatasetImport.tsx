@@ -23,7 +23,7 @@ function ProjectDatasetImport(props: ProjectDatasetImportProps) {
   );
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
-  const httpProjectUrl = projectMetadata.httpUrl;
+  const externalUrl = projectMetadata.externalUrl;
 
   const projectPath = projectMetadata.path;
   const projectNamespace = projectMetadata.namespace;
@@ -34,9 +34,9 @@ function ProjectDatasetImport(props: ProjectDatasetImportProps) {
       key="datasetImport"
       accessLevel={accessLevel}
       client={props.client}
+      externalUrl={externalUrl}
       fetchDatasets={props.fetchDatasets}
       history={props.history}
-      httpProjectUrl={httpProjectUrl}
       location={props.location}
       projectPathWithNamespace={projectPathWithNamespace}
       toggleNewDataset={props.toggleNewDataset}

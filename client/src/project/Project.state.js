@@ -51,7 +51,7 @@ const CoreServiceProjectMixin = {
 
     const fetchLockStatus = async () => {
       const client = this.client;
-      const gitUrl = this.get("metadata.httpUrl");
+      const gitUrl = this.get("metadata.externalUrl");
       let lockStatusObject = { fetching: true, error: null };
       this.setObject({ lockStatus: lockStatusObject });
       const lockStatus = await client.getProjectLockStatus(gitUrl);
@@ -83,7 +83,7 @@ const DatasetsMixin = {
     if (core === SpecialPropVal.UPDATING) return;
     if (core.datasets && core.error == null && !forceReFetch) return core;
     this.setUpdating({ datasets: { core: true } });
-    const gitUrl = this.get("metadata.httpUrl");
+    const gitUrl = this.get("metadata.externalUrl");
     return client
       .listProjectDatasetsFromCoreService(gitUrl, versionUrl)
       .then((response) => {
