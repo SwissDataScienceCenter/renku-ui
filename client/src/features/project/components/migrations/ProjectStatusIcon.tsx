@@ -75,7 +75,7 @@ export function ProjectStatusIcon({
         color="danger"
         icon={faExclamationCircle}
         linkUrl={settingsUrl}
-        text={`Project metadata not processed.${maintainerText}`}
+        text={`Project metadata not indexed.${maintainerText}`}
       />
     );
   if (

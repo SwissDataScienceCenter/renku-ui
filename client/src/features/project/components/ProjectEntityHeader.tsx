@@ -47,7 +47,7 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
       projectMetadataQuery.isLoading || projectIndexingStatus.isLoading,
     value: projectMetadataQuery.data?.description ?? "",
     unavailable: !projectIndexingStatus.data?.activated
-      ? "requires metadata processing to be activated"
+      ? "requires indexing to be activated"
       : undefined,
   };
 

@@ -539,12 +539,12 @@ export default function DatasetView(props) {
           <WarnAlert className="not-in-kg-warning">
             <p>
               <strong data-cy="not-in-kg-warning">
-                The metadata for this dataset is being processed.
+                The metadata for this dataset is being indexed.
               </strong>{" "}
               Some features will not be available until processing completes.
             </p>
             <p>
-              If the dataset was created recently, processing should complete
+              If the dataset was created recently, indexing should complete
               soon. You can&nbsp;
               <Button
                 size="sm"
@@ -555,8 +555,8 @@ export default function DatasetView(props) {
               </Button>{" "}
               to see if the status changed.
             </p>
-            For more information about the metadata processing status you can go
-            to the&nbsp;
+            For more information about the indexing status you can go to
+            the&nbsp;
             <Link className="btn btn-sm btn-warning" to={settingsUrl}>
               project settings page
             </Link>

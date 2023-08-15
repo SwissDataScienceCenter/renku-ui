@@ -27,15 +27,15 @@ function KgActivationHeader() {
   const docKg = Docs.rtdTopicGuide("miscellaneous/knowledge-graph.html");
   const tooltip = (
     <>
-      Activating metadata processing captures the relationships between
-      projects, datasets, metadata, and more.
+      Indexing captures the relationships between projects, datasets, metadata,
+      and more.
       <br />
       <ExternalLink
         url={docKg}
         size="sm"
         role="link"
         className="link-rk-white"
-        title="Learn more about metadata processing"
+        title="Learn more about indexing"
       />
     </>
   );
@@ -43,7 +43,7 @@ function KgActivationHeader() {
   return (
     <>
       <h1 className="activationHeader d-flex gap-2 my-3 align-items-center">
-        Projects with deactivated metadata processing
+        Projects that are not indexed
         <FontAwesomeIcon
           id="activation-question"
           className="cursor-pointer"

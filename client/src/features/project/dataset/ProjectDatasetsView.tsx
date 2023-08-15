@@ -84,9 +84,8 @@ function ProjectStatusAlert(props: ProjectStatusAlertProps) {
   return (
     <WarnAlert>
       <p>
-        <strong>Metadata processing is deactivated.</strong> This means that
-        some operations on datasets are not possible, we recommend activating
-        it.
+        <strong>Project is not indexed.</strong> This means that some operations
+        on datasets are not possible, we recommend activating indexing.
       </p>
       <Link className="btn btn-warning" to={targetUrl}>
         See details
@@ -159,7 +158,7 @@ function EmptyDatasets({ locked, membership, newDatasetUrl }: any) {
         <div>
           <p>
             <FontAwesomeIcon icon={faInfoCircle} /> If you recently activated
-            the metadata processing or added datasets try refreshing the page.{" "}
+            the indexing or added datasets try refreshing the page.{" "}
           </p>
           <p>
             You can also click on the button to{" "}

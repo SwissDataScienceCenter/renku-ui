@@ -250,9 +250,9 @@ function ForkProject(props) {
           throw new Error(verboseError);
         }
         if (forked.webhook.errorData) {
-          verboseError = "Metadata processing error: ";
+          verboseError = "Indexing error: ";
           verboseError =
-            "the forked project is available, but metadata processing needs to be activated later.";
+            "the forked project is available, but indexing will need to be activated manually.";
           throw new Error(verboseError);
         }
 

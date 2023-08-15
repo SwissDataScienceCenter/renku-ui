@@ -85,7 +85,7 @@ Determinate.args = {
   title: "Creating Project",
   description: "We've receive your project information. This may take a while.",
   percentage: 10,
-  currentStatus: "Metadata processing is running... ",
+  currentStatus: "Indexing is running... ",
   feedback:
     "You'll be redirected to the new project page when the creation is completed.",
 };
@@ -97,7 +97,7 @@ LightStyle.args = {
   title: "Creating Project",
   description: "We've receive your project information. This may take a while.",
   percentage: 60,
-  currentStatus: "Metadata processing is running... ",
+  currentStatus: "Indexing is running... ",
   feedback:
     "You'll be redirected to the new project page when the creation is completed.",
 };

@@ -731,7 +731,7 @@ class NewProjectCoordinator {
           if (succeeded) modelUpdates.meta.creation.kgUpdated = true;
           else
             modelUpdates.meta.creation.kgError =
-              "Activating metadata processing failed on server side.";
+              "Activating project indexing failed on server side.";
         } catch (error) {
           modelUpdates.meta.creation.kgError = error.message
             ? error.message

@@ -30,7 +30,7 @@ export function SettingRequiresKg({ className }: SettingRequiresKgProps) {
   return (
     <small className={localClass}>
       <FontAwesomeIcon className="me-1" icon={faExclamationTriangle} />
-      This requires metadata processing to be enabled.
+      This requires indexing to be enabled.
     </small>
   );
 }
