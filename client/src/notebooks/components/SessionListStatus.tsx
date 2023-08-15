@@ -45,7 +45,6 @@ interface SessionListRowCoreProps {
 }
 
 interface SessionListRowStatusProps extends SessionListRowCoreProps {
-  // startTime: string;
   startTimestamp: string;
 }
 

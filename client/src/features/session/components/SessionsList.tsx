@@ -110,7 +110,6 @@ function SessionListItem({
     name: session.name,
     repositoryLinks,
     resourceRequests,
-    // startTime,
     startTimestamp: session.started,
     status,
     uid,

@@ -73,8 +73,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
     [projectsKgApi.reducerPath]: projectsKgApi.reducer,
-    [startSessionSlice.name]: startSessionSlice.reducer,
-    [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
