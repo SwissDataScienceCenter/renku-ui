@@ -96,7 +96,7 @@ const ExpectedAnnotations = {
       gitlabProjectId: 0,
       projectName: "unknown",
       repository: "https://none",
-      hibernation: "{}",
+      hibernation: {},
       "hibernation-branch": "",
       "hibernation-commit-sha": "",
       "hibernation-date": "",
