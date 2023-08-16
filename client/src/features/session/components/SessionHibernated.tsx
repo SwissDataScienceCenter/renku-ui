@@ -23,7 +23,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { RootStateOrAny, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Alert, Button } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
@@ -38,6 +38,9 @@ interface SessionHibernatedProps {
 }
 
 export default function SessionHibernated({ session }: SessionHibernatedProps) {
+  const location = useLocation<{ filePath?: string } | undefined>();
+  const locationFilePath = location.state?.filePath;
+
   const pathWithNamespace = useSelector<RootStateOrAny, string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
@@ -67,6 +70,14 @@ export default function SessionHibernated({ session }: SessionHibernatedProps) {
       });
     }
   }, [error, notifications]);
+
+  // Resume session if opening a notebook from the file explorer
+  useEffect(() => {
+    console.log({ locationFilePath });
+    if (locationFilePath) {
+      onResumeSession();
+    }
+  }, [locationFilePath, onResumeSession]);
 
   return (
     <div className={cx("p-2", "p-lg-3", "text-nowrap", "container-lg")}>
