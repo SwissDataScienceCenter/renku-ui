@@ -72,7 +72,7 @@ function AddDatasetNewProject({
     // 1. get github url of project
     setCurrentStatus({ status: "importing", text: "Get new project data..." });
     const fetchProject = await client.getProject(projectPath);
-    const urlProjectOrigin = fetchProject?.data?.all?.http_url_to_repo;
+    const urlProjectOrigin = fetchProject?.data?.all?.web_url; // same as externalUrl
     if (!urlProjectOrigin) {
       setCurrentStatus({
         status: "error",
