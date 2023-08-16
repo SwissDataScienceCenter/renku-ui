@@ -20,6 +20,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   faExternalLinkAlt,
   faFileAlt,
+  faLink,
   faPlay,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -127,7 +128,24 @@ export default function SessionButton({
         {enableCreateSessionLink && (
           <>
             <DropdownItem divider />
-            <DropdownItem>TODO: Create session link</DropdownItem>
+            <DropdownItem>
+              <Link
+                className="text-decoration-none"
+                to={{
+                  pathname: sessionStartUrl,
+                  search: new URLSearchParams({
+                    showCreateLink: "1",
+                  }).toString(),
+                }}
+              >
+                <FontAwesomeIcon
+                  className={cx("text-rk-green", "fa-w-14", "me-2")}
+                  fixedWidth
+                  icon={faLink}
+                />
+                Create session link
+              </Link>
+            </DropdownItem>
           </>
         )}
       </ButtonWithMenu>
@@ -172,6 +190,10 @@ function SessionActions({
     namespace: annotations.namespace,
     path: annotations.projectName,
     server: session.name,
+  });
+  const sessionStartUrl = Url.get(Url.pages.project.session.new, {
+    namespace: annotations.namespace,
+    path: annotations.projectName,
   });
 
   // Handle resuming session
@@ -352,7 +374,24 @@ function SessionActions({
   const createSessionLinkAction = enableCreateSessionLink && (
     <>
       <DropdownItem divider />
-      <DropdownItem>TODO: Create session link</DropdownItem>
+      <DropdownItem>
+        <Link
+          className="text-decoration-none"
+          to={{
+            pathname: sessionStartUrl,
+            search: new URLSearchParams({
+              showCreateLink: "1",
+            }).toString(),
+          }}
+        >
+          <FontAwesomeIcon
+            className={cx("text-rk-green", "fa-w-14", "me-2")}
+            fixedWidth
+            icon={faLink}
+          />
+          Create session link
+        </Link>
+      </DropdownItem>
     </>
   );
 

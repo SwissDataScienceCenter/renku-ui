@@ -50,13 +50,12 @@ export default function SessionStatusText({
   ) : status === "hibernated" && hibernationTimestamp ? (
     <>
       Paused{" "}
-      <TimeCaption datetime={hibernationTimestamp} enableTooltip noCaption />,
-      created {startTimeText}
+      <TimeCaption datetime={hibernationTimestamp} enableTooltip noCaption />
     </>
   ) : status === "hibernated" ? (
     <>
       Paused
-      <MissingHibernationInfo />, created {startTimeText}
+      <MissingHibernationInfo />
     </>
   ) : status === "failed" ? (
     <>
