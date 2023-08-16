@@ -318,7 +318,10 @@ function SessionActions({
         disabled={status === "starting"}
         onClick={onHibernateSession}
       >
-        <SessionPausedIcon className="text-rk-green" size={16} />
+        <SessionPausedIcon
+          className={cx("text-rk-green", "svg-inline--fa", "fa-fw", "me-2")}
+          size={16}
+        />
         Pause session
       </DropdownItem>
     );
