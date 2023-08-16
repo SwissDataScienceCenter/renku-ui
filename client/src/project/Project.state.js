@@ -51,7 +51,7 @@ const CoreServiceProjectMixin = {
 
     const fetchLockStatus = async () => {
       const client = this.client;
-      const gitUrl = this.get("metadata.httpUrl");
+      const gitUrl = this.get("metadata.externalUrl");
       let lockStatusObject = { fetching: true, error: null };
       this.setObject({ lockStatus: lockStatusObject });
       const lockStatus = await client.getProjectLockStatus(gitUrl);
@@ -83,7 +83,7 @@ const DatasetsMixin = {
     if (core === SpecialPropVal.UPDATING) return;
     if (core.datasets && core.error == null && !forceReFetch) return core;
     this.setUpdating({ datasets: { core: true } });
-    const gitUrl = this.get("metadata.httpUrl");
+    const gitUrl = this.get("metadata.externalUrl");
     return client
       .listProjectDatasetsFromCoreService(gitUrl, versionUrl)
       .then((response) => {
@@ -226,15 +226,6 @@ const ProjectAttributesMixin = {
       this.set("metadata.pendingRefresh", true);
     });
   },
-  setDescription(client, description) {
-    this.set("metadata.description", { updating: true });
-    return client
-      .setDescription(this.get("metadata.id"), description)
-      .then(() => {
-        this.set("metadata.description", description); // to refresh view
-        this.set("metadata.pendingRefresh", true);
-      });
-  },
   setTags(client, tags) {
     this.set("metadata.tagList.updating", true);
     const currentTags = tags.trim();
@@ -357,6 +348,7 @@ function metadataFromData(data) {
     id: data.all.id,
     lastActivityAt: data.metadata.core.last_activity_at,
     namespace: data.all.namespace.full_path,
+    namespaceKind: data.all.namespace.kind,
     owner: data.metadata.core.owner ?? data.all.namespace,
     path: data.all.path,
     pathWithNamespace: data.all.path_with_namespace,

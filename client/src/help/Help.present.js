@@ -23,7 +23,7 @@
  *  Presentational components for help.
  */
 
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import { Route } from "react-router-dom";
 
 import { Row, Col } from "reactstrap";
@@ -35,44 +35,48 @@ import {
   faGitter,
 } from "@fortawesome/free-brands-svg-icons";
 
-import { WhatsNew1_0_0 as WhatsNew } from "./WhatsNew";
 import { StatuspageDisplay, isStatusConfigured } from "../statuspage";
 import { RenkuNavLink } from "../components/RenkuNavLink";
 import {
   ExternalDocsLink,
   ExternalIconLink,
-  ExternalLink,
 } from "../components/ExternalLinks";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
+import { Url } from "../utils/helpers/url";
+
+import HelpRelease from "./HelpRelease";
 
 class HelpNav extends Component {
   render() {
     const statusLink = isStatusConfigured(this.props.statuspageId) ? (
       <NavItem>
-        <RenkuNavLink to={this.props.url.status} title="Status" />
+        <RenkuNavLink to={Url.pages.help.status} title="Status" />
       </NavItem>
     ) : null;
     return (
       <Nav pills className={"nav-pills-underline"}>
         <NavItem>
           <RenkuNavLink
-            to={this.props.url.base}
-            alternate={this.props.url.getting}
+            to={Url.pages.help.base}
+            alternate={Url.pages.help.getting}
             title="Getting Help"
           />
         </NavItem>
         <NavItem>
           <RenkuNavLink
-            to={this.props.url.documentation}
+            to={Url.pages.help.documentation}
             title="Documentation"
           />
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={this.props.url.features} title="Features" />
+          <RenkuNavLink to={Url.pages.help.features} title="Features" />
         </NavItem>
         {statusLink}
         <NavItem>
-          <RenkuNavLink to={this.props.url.changes} title="What's New" />
+          <RenkuNavLink
+            to={Url.pages.help.release}
+            title="Release Information"
+          />
         </NavItem>
       </Nav>
     );
@@ -273,98 +277,42 @@ class HelpFeatures extends Component {
   }
 }
 
-function HelpChanges() {
-  // eslint-disable-next-line
-  const discourseNewTopicUrl = `${Links.DISCOURSE}/new-topic?category=Renkulab`;
-
-  return (
-    <Fragment>
-      <Row>
-        <Col md={8}>
-          <h3>Changes to the UI [version 1.0.0]</h3>
-          <p>
-            For this new version, we have been working hard to improve the
-            experience of using RenkuLab. Here are some of the changes you can
-            expect to find.
-          </p>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <WhatsNew />
-        </Col>
-      </Row>
-      <Row className="mt-4 pt-4">
-        <Col md={8}>
-          <h4>Feedback</h4>
-          <p>
-            We are interested in hearing from you about the new UI!{" "}
-            <ExternalLink
-              url={discourseNewTopicUrl}
-              role="text"
-              title="Feel free to share your suggestions or general thoughts"
-            />
-            .
-          </p>
-        </Col>
-      </Row>
-      <Row className="mt-4 pt-4">
-        <Col md={8}>
-          <h3>Ongoing Improvements</h3>
-          <p>
-            And we are not done yet! We have some are deeper improvements
-            planned to streamline the user experience and make RenkuLab easier
-            and more enjoyable to use. If you have any ideas for features you
-            would like, feel free to{" "}
-            <ExternalLink
-              url={discourseNewTopicUrl}
-              role="text"
-              title="let us know"
-            />
-            !
-          </p>
-        </Col>
-      </Row>
-    </Fragment>
-  );
-}
-
 class HelpContent extends Component {
   render() {
     return [
       <Route
         exact
-        path={this.props.url.base}
+        path={Url.pages.help.base}
         key="base"
         render={() => <HelpGetting key="getting" {...this.props} />}
       />,
       <Route
-        path={this.props.url.getting}
+        path={Url.pages.help.getting}
         key="getting"
         render={() => <HelpGetting key="getting" {...this.props} />}
       />,
 
       <Route
-        path={this.props.url.documentation}
+        path={Url.pages.help.documentation}
         key="documentation"
         render={() => <HelpDocumentation key="documentation" {...this.props} />}
       />,
       <Route
-        path={this.props.url.features}
+        path={Url.pages.help.features}
         key="features"
         render={() => <HelpFeatures key="features" {...this.props} />}
       />,
       <Route
-        path={this.props.url.status}
+        path={Url.pages.help.status}
         key="status"
         render={() => (
           <StatuspageDisplay key="status" model={this.props.model} />
         )}
       />,
       <Route
-        path={this.props.url.changes}
-        key="changes"
-        render={() => <HelpChanges key="changes" {...this.props} />}
+        path={Url.pages.help.release}
+        key="release"
+        render={() => <HelpRelease key="release" params={this.props.params} />}
       />,
     ];
   }

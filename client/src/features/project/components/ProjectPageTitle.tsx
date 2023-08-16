@@ -49,7 +49,7 @@ function ProjectPageTitle({
     options
   );
   const { data: kgData } = useProjectMetadataQuery(
-    kgProjectQueryParams,
+    { ...kgProjectQueryParams, projectId },
     options
   );
 

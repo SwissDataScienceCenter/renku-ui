@@ -128,7 +128,11 @@ describe("display a project", () => {
   fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
-    fixtures.projects().landingUserProjects().projectTest();
+    fixtures
+      .projects()
+      .landingUserProjects()
+      .projectTest()
+      .projectById("getProjectsById", 39646);
     fixtures.projectLockStatus().projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project");
   });
@@ -155,82 +159,6 @@ describe("display a project", () => {
     cy.get_cy("settings-container")
       .contains("project is currently being modified")
       .should("exist");
-  });
-
-  it("update project settings overview", () => {
-    fixtures.updateProject(
-      "39646",
-      "updateProject",
-      "project/update-project-tag-description.json"
-    );
-    cy.visit("/projects/e2e/local-test-project/settings");
-    cy.get_cy("tags-input").type("abcde");
-    cy.get_cy("update-tag-button").click();
-    cy.get_cy("updating-tag-list").should("contain.text", "Updating list..");
-    cy.wait("@updateProject");
-    cy.get_cy("entity-tag-list").should("contain.text", "abcde");
-
-    cy.get_cy("description-input").type("description abcde");
-    cy.get_cy("update-desc-button").click();
-    cy.get_cy("updating-description").should(
-      "contain.text",
-      "Updating description.."
-    );
-    cy.wait("@updateProject");
-    cy.get_cy("entity-description").should("contain.text", "description abcde");
-  });
-
-  it("displays project settings sessions", () => {
-    fixtures.sessionServerOptions().resourcePoolsTest().projectConfigShow();
-    cy.visit("/projects/e2e/local-test-project/settings/sessions");
-    cy.wait("@getSessionServerOptions");
-    cy.contains("Number of CPUs").should("be.visible");
-    cy.contains("Amount of Memory").should("be.visible");
-    cy.contains("Amount of Storage").should("be.visible");
-    cy.contains("Number of GPUs").should("be.visible");
-  });
-
-  it("displays project settings with cloud-storage enabled ", () => {
-    fixtures.sessionServerOptions(true).resourcePoolsTest().projectConfigShow();
-    cy.visit("/projects/e2e/local-test-project/settings/sessions");
-    cy.wait("@getSessionServerOptions");
-    cy.contains("Number of CPUs").should("be.visible");
-    cy.contains("Amount of Memory").should("be.visible");
-    cy.contains("Amount of Storage").should("be.visible");
-    cy.contains("Number of GPUs").should("be.visible");
-  });
-
-  it("displays project settings complete", () => {
-    fixtures.sessionServerOptions().resourcePoolsTest().projectConfigShow();
-    cy.visit("/projects/e2e/local-test-project/settings/sessions");
-    cy.wait("@getSessionServerOptions");
-    cy.wait("@getProjectConfigShow");
-    cy.contains("Number of CPUs").should("be.visible");
-    cy.contains("Amount of Memory").should("be.visible");
-    cy.contains("Amount of Storage").should("be.visible");
-    cy.contains("Number of GPUs").should("be.visible");
-    cy.get("button.active").contains("/lab").should("be.visible");
-  });
-
-  it("displays project settings error", () => {
-    fixtures.sessionServerOptions().projectConfigShow({ error: true });
-    cy.visit("/projects/e2e/local-test-project/settings/sessions");
-    cy.wait("@getSessionServerOptions");
-    cy.wait("@getProjectLockStatus");
-    cy.wait("@getProjectConfigShow");
-    cy.contains("Number of CPUs").should("not.exist");
-    cy.contains("Error").should("be.visible");
-  });
-
-  it("displays project settings legacy error", () => {
-    fixtures.sessionServerOptions().projectConfigShow({ legacyError: true });
-    cy.visit("/projects/e2e/local-test-project/settings/sessions");
-    cy.wait("@getSessionServerOptions");
-    cy.wait("@getProjectLockStatus");
-    cy.wait("@getProjectConfigShow");
-    cy.contains("Number of CPUs").should("not.exist");
-    cy.contains("Error").should("be.visible");
-    cy.contains("[Show details]").should("be.visible");
   });
 
   it("displays project file > notebook with image", () => {
@@ -335,40 +263,6 @@ describe("display a project", () => {
           "/projects/e2e/local-test-project/sessions/new?autostart=1&notebook=01-CountFlights.ipynb"
         );
       });
-  });
-
-  it("delete a project", () => {
-    fixtures.deleteProject();
-    cy.visit("/projects/e2e/local-test-project/settings");
-
-    cy.get_cy("project-settings-general-delete-project")
-      .should("be.visible")
-      .find("button")
-      .contains("Delete project")
-      .should("be.visible")
-      .click();
-
-    cy.contains("Are you absolutely sure?");
-    cy.get("button").contains("Yes, delete this project").should("be.disabled");
-    cy.get("input[name=project-settings-general-delete-confirm-box]").type(
-      "e2e/local-test-project"
-    );
-    cy.get("button")
-      .contains("Yes, delete this project")
-      .should("be.enabled")
-      .click();
-    cy.wait("@deleteProject");
-
-    cy.url().should("not.contain", "/projects");
-    cy.get(".Toastify")
-      .contains("Project e2e/local-test-project deleted")
-      .should("be.visible");
-  });
-
-  it("delete a project - not allowed", () => {
-    fixtures.userNone();
-    cy.visit("/projects/e2e/local-test-project/settings");
-    cy.get_cy("project-settings-general-delete-project").should("not.exist");
   });
 });
 

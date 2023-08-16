@@ -51,7 +51,7 @@ import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 export interface EntityHeaderProps {
   client?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   creators: EntityCreator[];
-  description?: { value: string; isLoading?: boolean };
+  description?: { isLoading?: boolean; unavailable?: string; value: string };
   devAccess: boolean;
   email?: string;
   fullPath?: string;
@@ -226,12 +226,14 @@ function EntityHeader({
           />
           <Slug multiline={true} slug={slug ?? ""} />
           <EntityDescription
-            description={description?.value}
-            isHeightFixed={false}
-            showSuggestion={true}
-            hasDevAccess={devAccess}
-            urlChangeDescription={`${url}/settings`}
             className="text-rk-dark"
+            description={description?.value}
+            hasDevAccess={devAccess}
+            isHeightFixed={false}
+            loading={description?.isLoading}
+            showSuggestion={true}
+            unavailable={description?.unavailable}
+            urlChangeDescription={`${url}/settings`}
           />
         </div>
       </div>

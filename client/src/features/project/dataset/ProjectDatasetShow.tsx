@@ -29,7 +29,7 @@ import type {
   DatasetKg,
   IDataset,
   StateModelProject,
-} from "../Project.d";
+} from "../Project";
 import { useGetDatasetKgQuery } from "../projectKgApi";
 import { useCoreSupport } from "../useProjectCoreSupport";
 
@@ -58,6 +58,7 @@ type ProjectDatasetViewProps = {
   datasetCoordinator: IDatasetCoordinator;
   datasets: DatasetCore[] | undefined;
   datasetId: string;
+  externalUrl: string;
   fileContentUrl: string;
   graphStatus: boolean;
   history: unknown;
@@ -149,7 +150,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     error: filesFetchError,
     isFetching: isFilesFetching,
   } = useGetDatasetFilesQuery(
-    { git_url: props.httpProjectUrl, name: datasetName ?? "", versionUrl },
+    { git_url: props.externalUrl, name: datasetName ?? "", versionUrl },
     { skip: !datasetName }
   );
 
@@ -162,6 +163,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
       client={client}
       dataset={currentDataset}
       datasets={props.datasets}
+      externalUrl={props.externalUrl}
       files={datasetFiles}
       isFilesFetching={isFilesFetching}
       filesFetchError={filesFetchError}
@@ -221,6 +223,7 @@ function ProjectDatasetShow(props: ProjectDatasetShowProps) {
       datasets={datasets as DatasetCore[] | undefined}
       datasetCoordinator={props.datasetCoordinator as IDatasetCoordinator}
       datasetId={props.datasetId}
+      externalUrl={projectMetadata.externalUrl}
       fileContentUrl={fileContentUrl}
       graphStatus={props.graphStatus}
       history={props.history}

@@ -23,21 +23,10 @@
  *  Project settings presentational components.
  */
 
-import React, { Component } from "react";
-import {
-  Col,
-  Form,
-  FormGroup,
-  FormText,
-  Input,
-  Label,
-  Nav,
-  NavItem,
-  Row,
-} from "reactstrap";
+import React from "react";
+import { Col, Nav, NavItem, Row } from "reactstrap";
 import { InfoAlert } from "../../components/Alert";
 import { RenkuNavLink } from "../../components/RenkuNavLink";
-import { InlineSubmitButton } from "../../components/buttons/Button";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { ProjectAvatarEdit, ProjectTags } from "../shared";
 
@@ -91,100 +80,28 @@ function ProjectSettingsGeneral(props) {
 
   return (
     <div className="form-rk-green">
-      <Row className="mt-2">
-        <Col xs={12}>
-          <ProjectTags
-            tagList={props.metadata.tagList}
-            onProjectTagsChange={props.onProjectTagsChange}
-            settingsReadOnly={props.settingsReadOnly}
-          />
-          <ProjectDescription {...props} />
-        </Col>
-      </Row>
       <Row>
         <Col xs={12}>
-          <ProjectAvatarEdit
-            externalUrl={props.externalUrl}
-            avatarUrl={props.metadata.avatarUrl}
-            onAvatarChange={props.onAvatarChange}
-            settingsReadOnly={props.settingsReadOnly}
-          />
+          <div className="card card-body mb-4">
+            <ProjectTags
+              tagList={props.metadata.tagList}
+              onProjectTagsChange={props.onProjectTagsChange}
+              settingsReadOnly={props.settingsReadOnly}
+            />
+          </div>
+          <div className="card card-body mb-4">
+            <ProjectAvatarEdit
+              externalUrl={props.externalUrl}
+              avatarUrl={props.metadata.avatarUrl}
+              onAvatarChange={props.onAvatarChange}
+              settingsReadOnly={props.settingsReadOnly}
+              includeRequiredLabel={false}
+            />
+          </div>
         </Col>
       </Row>
     </div>
   );
-}
-
-class ProjectDescription extends Component {
-  constructor(props) {
-    super(props);
-    this.state = ProjectDescription.getDerivedStateFromProps(props, {});
-    this.onValueChange = this.handleChange.bind(this);
-    this.onSubmit = this.handleSubmit.bind(this);
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const update = { value: nextProps.metadata.description, pristine: true };
-    return { ...update, ...prevState };
-  }
-
-  handleChange(e) {
-    if (e.target.values !== this.state.value)
-      this.setState({ value: e.target.value, updated: false, pristine: false });
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
-    this.setState({ value: this.state.value, updating: true });
-    this.props.onProjectDescriptionChange(this.state.value).then(() => {
-      this.setState({
-        value: this.state.value,
-        updated: true,
-        updating: false,
-      });
-    });
-  }
-
-  render() {
-    const inputField =
-      this.props.settingsReadOnly || this.state.updating ? (
-        <Input id="projectDescription" readOnly value={this.state.value} />
-      ) : (
-        <Input
-          id="projectDescription"
-          onChange={this.onValueChange}
-          data-cy="description-input"
-          value={this.state.value === null ? "" : this.state.value}
-        />
-      );
-
-    const submitButton = this.props.settingsReadOnly ? null : (
-      <InlineSubmitButton
-        id="update-desc"
-        className="updateProjectSettings"
-        submittingText="Updating"
-        doneText="Updated"
-        text="Update"
-        isDone={this.state.updated}
-        isReadOnly={this.state.updating || this.state.pristine}
-        isSubmitting={this.state.updating}
-        pristine={this.state.pristine}
-        tooltipPristine="Modify description to update value"
-      />
-    );
-    return (
-      <Form onSubmit={this.onSubmit}>
-        <FormGroup>
-          <Label for="projectDescription">Project Description</Label>
-          <div className="d-flex">
-            {inputField}
-            {submitButton}
-          </div>
-          <FormText>A short description for the project</FormText>
-        </FormGroup>
-      </Form>
-    );
-  }
 }
 
 export { ProjectSettingsGeneral, ProjectSettingsNav };

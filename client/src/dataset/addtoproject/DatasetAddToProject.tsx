@@ -24,7 +24,7 @@ import { DatasetCoordinator } from "../Dataset.state";
 import { ImportStateMessage } from "../../utils/constants/Dataset";
 import AppContext from "../../utils/context/appContext";
 import { useGetMigrationStatusQuery } from "../../features/project/projectCoreApi";
-import type { CoreCompatibilityStatus } from "../../features/project/Project.d";
+import type { CoreCompatibilityStatus } from "../../features/project/Project";
 import { useGetCoreVersionsQuery } from "../../features/versions/versionsApi";
 
 import type {
@@ -32,6 +32,7 @@ import type {
   AddDatasetStatus,
   SubmitProject,
 } from "./DatasetAdd.types";
+import { cleanGitUrl } from "../../utils/helpers/ProjectFunctions";
 
 type DatasetImportResponse = {
   data?: {
@@ -140,7 +141,7 @@ function DatasetAddToProject({
       const fetchDatasetProject = await client.getProject(
         dataset.project?.path
       );
-      const urlProjectOrigin = fetchDatasetProject?.data?.all?.http_url_to_repo;
+      const urlProjectOrigin = fetchDatasetProject?.data?.all?.web_url;
       if (!urlProjectOrigin) {
         setCurrentStatus({ status: "error", text: "Invalid Dataset" });
         setIsDatasetValid(false);
@@ -210,8 +211,9 @@ function DatasetAddToProject({
       text: "Checking dataset/project compatibility...",
     });
     // check selected project migration status
-
-    setTargetDatasetProjectUrl(project.value);
+    // We utilize the externalUrl property, which typically doesn't include ".git".
+    // However, graphql return the httpUrlToRepo, so we remove ".git".
+    setTargetDatasetProjectUrl(cleanGitUrl(project.value));
   };
   // check whether the target dataset is supported
   useEffect(() => {
@@ -286,7 +288,11 @@ function DatasetAddToProject({
     if (dataset == null) return;
     setImportingDataset(true);
     client
-      .datasetImport(selectedProject.value, dataset.url, versionUrl)
+      .datasetImport(
+        cleanGitUrl(selectedProject.value),
+        dataset.url,
+        versionUrl
+      )
       .then((response: DatasetImportResponse) => {
         if (response?.data?.error !== undefined) {
           const error = response.data.error;

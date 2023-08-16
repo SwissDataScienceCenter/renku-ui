@@ -51,8 +51,7 @@ function ModalContent({
     return (
       <div className="d-flex flex-row-reverse">
         <FormText color="primary">
-          <Loader size={16} inline margin={2} />
-          {submitLoader.text}
+          <Loader inline size={16} /> {submitLoader.text}
           <br />
         </FormText>
       </div>
@@ -73,8 +72,7 @@ function ModalContent({
         >
           {submitLoader.isSubmitting ? (
             <FormText color="primary">
-              <Loader size={16} inline margin={2} />
-              Deleting dataset...
+              <Loader inline size={16} /> Deleting dataset...
             </FormText>
           ) : (
             "Delete dataset"
@@ -143,7 +141,7 @@ export interface DeleteDatasetProps {
   client: DatasetDeleteClient;
   dataset: DatasetCore;
   history: ReturnType<typeof useHistory>;
-  httpProjectUrl: string;
+  externalUrl: string;
   onCancel: () => void;
   modalOpen: boolean;
   projectPathWithNamespace: string;
@@ -172,7 +170,7 @@ function DeleteDataset(props: DeleteDatasetProps) {
     setSubmitting(true);
     setSubmitLoaderText(undefined);
     props.client
-      .deleteDataset(props.httpProjectUrl, props.dataset.name, props.versionUrl)
+      .deleteDataset(props.externalUrl, props.dataset.name, props.versionUrl)
       .then((response) => {
         setSubmitting(false);
         if (response.data.error != null) {

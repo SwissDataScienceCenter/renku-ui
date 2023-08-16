@@ -22,6 +22,7 @@ import {
   ProjectIndexingStatuses,
   ProjectMigrationLevel,
 } from "./projectEnums";
+import { Visibilities } from "../../components/visibility/Visibility";
 
 export interface CoreServiceParams {
   versionUrl?: string;
@@ -319,3 +320,89 @@ export interface ProjectConfigSection {
     };
   };
 }
+
+export interface UpdateDescriptionParams {
+  description: string;
+  gitUrl: string;
+  projectId: number;
+}
+
+export interface UpdateDescriptionDetails {
+  edited?: Record<string, string>;
+  warning?: string;
+}
+
+export interface UpdateDescriptionResponse {
+  error?: CoreErrorContent;
+  result?: UpdateDescriptionDetails;
+}
+
+export interface EditProjectParams {
+  projectPathWithNamespace: string;
+  visibility: Visibilities;
+}
+
+export interface UpdateProjectResponse {
+  projectId: number;
+}
+
+export interface GitlabProjectResponse {
+  visibility: Visibilities;
+  path_with_namespace: string;
+}
+
+type KgMetadataLink = {
+  rel: string;
+  href: string;
+};
+
+type KgDateString = string; // ISO 8601 UTC date string, e.g., "2021-03-10T14:38:20.368Z"
+
+export type KgMetadataResponse = {
+  version: string;
+  description: string;
+  _links: KgMetadataLink[];
+  identifier: number;
+  path: string;
+  name: string;
+  visibility: Visibilities;
+  created: {
+    creator: {
+      email: string;
+      name: string;
+    };
+    dateCreated: KgDateString;
+  };
+  updatedAt: KgDateString;
+  urls: {
+    readme: string;
+    ssh: string;
+    http: string;
+    web: string;
+  };
+  forking: {
+    forksCount: number;
+  };
+  keywords: string[];
+  starsCount: number;
+  permissions: {
+    projectAccess: {
+      level: {
+        name: string;
+        value: number;
+      };
+    };
+  };
+  images: string[];
+  statistics: {
+    commitsCount: number;
+    storageSize: number;
+    repositorySize: number;
+    lfsObjectsSize: number;
+    jobArtifactsSize: number;
+  };
+};
+
+export type ProjectKgParams = {
+  projectPath?: string;
+};

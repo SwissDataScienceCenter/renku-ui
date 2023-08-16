@@ -16,105 +16,106 @@
  * limitations under the License.
  */
 
-import React, { CSSProperties, Fragment, ReactNode } from "react";
+import React, { CSSProperties, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { RootStateOrAny, useSelector } from "react-redux";
+import cx from "classnames";
+
 import { RenkuMarkdown } from "../markdown/RenkuMarkdown";
 
-/**
- *  renku-ui
- *
- *  Entity Description.tsx
- *  Entity Description component
- */
-
 export interface EntityDescriptionProps {
-  description: string | ReactNode;
-
-  /** when the height is fixed for card design */
-  isHeightFixed: boolean;
-
-  hasDevAccess?: boolean;
-
-  showSuggestion: boolean;
-
-  urlChangeDescription?: string;
-
   className?: string;
-
+  description: string | ReactNode;
+  hasDevAccess?: boolean;
+  isHeightFixed: boolean;
+  loading?: boolean | undefined;
   numberLines?: number;
+  showSuggestion: boolean;
+  unavailable?: string;
+  urlChangeDescription?: string;
 }
 
-function EntityDescription({
-  description,
-  isHeightFixed = true,
-  hasDevAccess,
-  showSuggestion,
-  urlChangeDescription,
+export default function EntityDescription({
   className,
+  description,
+  hasDevAccess,
+  isHeightFixed = true,
+  loading = false,
   numberLines = 3,
+  showSuggestion,
+  unavailable,
+  urlChangeDescription,
 }: EntityDescriptionProps) {
-  const descriptionStyles: CSSProperties = {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    display: "-webkit-box", // eslint-disable-line
-    lineClamp: isHeightFixed ? numberLines : undefined,
-    WebkitLineClamp: isHeightFixed ? numberLines : undefined, // eslint-disable-line
-    WebkitBoxOrient: "vertical", // eslint-disable-line
-    minHeight: isHeightFixed ? `${25 * numberLines}px` : undefined,
-    height: isHeightFixed ? `${25 * numberLines}px` : undefined,
-  };
-
-  const markdownDescription =
+  const content =
     description && typeof description === "string" ? (
-      <Fragment>
+      <>
         <RenkuMarkdown
           markdownText={description}
           singleLine={numberLines === 1}
-          style={descriptionStyles}
         />
         <span className="ms-1">
           {description.includes("\n") ? " [...]" : ""}
         </span>
-      </Fragment>
-    ) : (
-      description
-    );
-
-  const isUpdatingValue = useSelector(
-    (state: RootStateOrAny) =>
-      state.stateModel?.project?.metadata?.description?.updating
-  );
-  if (isUpdatingValue) {
-    return (
-      <div
-        className="card-text text-rk-text-light"
-        style={descriptionStyles}
-        data-cy="updating-description"
-      >
-        <small>
-          <i>Updating description...</i>
-        </small>
-      </div>
-    );
-  }
+      </>
+    ) : description ? (
+      <span>{description}</span>
+    ) : loading ? (
+      <small className="card-text text-rk-text-light">
+        <i>Loading description...</i>
+      </small>
+    ) : unavailable ? (
+      <small className="card-text text-rk-text-light">
+        <i>(Description unavailable: {unavailable})</i>
+      </small>
+    ) : showSuggestion && hasDevAccess && urlChangeDescription ? (
+      <i>
+        (This project has no description. You can provide one{" "}
+        <Link to={urlChangeDescription}>here</Link>.)
+      </i>
+    ) : null;
 
   return (
-    <div
-      className={`card-text ${className}`}
-      style={{ ...descriptionStyles, margin: "12px 0 0 0" }}
-      data-cy="entity-description"
+    <EntityDescriptionContainer
+      className={className}
+      isHeightFixed={isHeightFixed}
+      numberLines={numberLines}
     >
-      {description ? (
-        markdownDescription
-      ) : showSuggestion && hasDevAccess && urlChangeDescription ? (
-        <i>
-          (This project has no description. You can provide one{" "}
-          <Link to={urlChangeDescription}>here</Link>.)
-        </i>
-      ) : null}
-    </div>
+      {content}
+    </EntityDescriptionContainer>
   );
 }
 
-export default EntityDescription;
+interface EntityDescriptionContainerProps {
+  children: React.ReactNode;
+  className?: string;
+  isHeightFixed: boolean;
+  numberLines: number;
+}
+
+function EntityDescriptionContainer({
+  children,
+  className,
+  isHeightFixed,
+  numberLines,
+}: EntityDescriptionContainerProps) {
+  const style: CSSProperties = {
+    display: "-webkit-box",
+    height: isHeightFixed ? `${25 * numberLines}px` : undefined,
+    lineClamp: isHeightFixed ? numberLines : undefined,
+    margin: "12px 0 0 0",
+    minHeight: isHeightFixed ? `${25 * numberLines}px` : undefined,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    WebkitBoxOrient: "vertical",
+    WebkitLineClamp: isHeightFixed ? numberLines : undefined,
+  };
+
+  return (
+    <div
+      className={cx("card-text", className)}
+      style={style}
+      data-cy="entity-description"
+    >
+      {children}
+    </div>
+  );
+}

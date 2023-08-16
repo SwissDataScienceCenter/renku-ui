@@ -18,11 +18,11 @@
 
 import React from "react";
 
-import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
+import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
 
 type ProjectEntityHeaderProps = EntityHeaderProps & {
   branch: string;
@@ -30,30 +30,44 @@ type ProjectEntityHeaderProps = EntityHeaderProps & {
 };
 
 export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
-  const { fullPath } = props;
+  const { branch, devAccess, fullPath, gitUrl, projectId, visibility } = props;
 
-  const projectIndexingStatus = useGetProjectIndexingStatusQuery(
-    props.projectId,
-    {
-      skip: !fullPath || !props.projectId,
-    }
+  const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
+    skip: !fullPath || !projectId,
+  });
+
+  const projectMetadataQuery = useProjectMetadataQuery(
+    { projectPath: fullPath, projectId },
+    { skip: !fullPath || !projectId || !projectIndexingStatus.data?.activated }
   );
 
-  useProjectMetadataQuery(
-    { projectPath: fullPath },
-    { skip: !fullPath || !projectIndexingStatus.data?.activated }
-  );
+  // overwrite description when available from KG
+  const descriptionKg: EntityHeaderProps["description"] = {
+    isLoading:
+      projectMetadataQuery.isLoading || projectIndexingStatus.isLoading,
+    value: projectMetadataQuery.data?.description ?? "",
+    unavailable: !projectIndexingStatus.data?.activated
+      ? "requires Knowledge Graph integration"
+      : undefined,
+  };
 
   const statusButton = (
     <ProjectStatusIcon
-      branch={props.branch}
-      gitUrl={props.gitUrl ?? ""}
-      isMaintainer={props.devAccess}
-      projectId={props.projectId}
+      branch={branch}
+      gitUrl={gitUrl ?? ""}
+      isMaintainer={devAccess}
+      projectId={projectId}
       projectNamespace=""
-      projectPath={props.fullPath ?? ""}
+      projectPath={fullPath ?? ""}
     />
   );
 
-  return <EntityHeader {...props} statusButton={statusButton} />;
+  return (
+    <EntityHeader
+      {...props}
+      description={descriptionKg}
+      statusButton={statusButton}
+      visibility={projectMetadataQuery.data?.visibility || visibility}
+    />
+  );
 }
