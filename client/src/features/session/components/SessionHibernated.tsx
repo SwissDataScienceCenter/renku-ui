@@ -73,7 +73,6 @@ export default function SessionHibernated({ session }: SessionHibernatedProps) {
 
   // Resume session if opening a notebook from the file explorer
   useEffect(() => {
-    console.log({ locationFilePath });
     if (locationFilePath) {
       onResumeSession();
     }

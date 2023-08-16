@@ -23,17 +23,22 @@ import {
   PopoverHeader,
   UncontrolledPopover,
 } from "reactstrap";
+import cx from "classnames";
 import { SessionStatus, SessionStatusState } from "../../sessions.types";
 import { getSessionStatusColor } from "../../utils/sessionStatus.utils";
 import SessionStatusIcon from "./SessionStatusIcon";
+import SessionHibernationStatusDetails from "./SessionHibernationStatusDetails";
+import { NotebookAnnotations } from "../../../../notebooks/components/Session";
 
 interface SessionStatusBadgeProps {
+  annotations: NotebookAnnotations;
   defaultImage: boolean;
   name: string;
   status: SessionStatus;
 }
 
 export default function SessionStatusBadge({
+  annotations,
   defaultImage,
   name,
   status: statusObject,
@@ -42,14 +47,22 @@ export default function SessionStatusBadge({
 
   const color = getSessionStatusColor({ defaultImage, status });
   const popover = (status === "failed" ||
-    (status === "running" && defaultImage)) && (
+    (status === "running" && defaultImage) ||
+    status === "hibernated") && (
     <UncontrolledPopover target={name} trigger="hover" placement="bottom">
       <PopoverHeader>
-        {status === "failed" ? "Error Details" : "Warning Details"}
+        {status === "failed"
+          ? "Error Details"
+          : status === "running"
+          ? "Warning Details"
+          : "Paused Session"}
       </PopoverHeader>
       <PopoverBody>
         {message}
         {defaultImage && <div>A fallback image was used.</div>}
+        {status === "hibernated" && (
+          <SessionHibernationStatusDetails annotations={annotations} />
+        )}
       </PopoverBody>
     </UncontrolledPopover>
   );
@@ -57,9 +70,12 @@ export default function SessionStatusBadge({
   return (
     <div
       id={name}
-      className={`d-flex align-items-center gap-1 ${
-        status === "failed" ? "cursor-pointer" : ""
-      }`}
+      className={cx(
+        "d-flex",
+        "align-items-center",
+        "gap-1",
+        popover && "cursor-pointer"
+      )}
     >
       <Badge className="p-1" color={color}>
         <SessionStatusIcon defaultImage={defaultImage} status={status} />
