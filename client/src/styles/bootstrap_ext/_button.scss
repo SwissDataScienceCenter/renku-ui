@@ -135,6 +135,18 @@ $borderRadius: 1000px;
   }
 }
 
+.btn-outline-rk-white {
+  border-color: $rk-white;
+  color: $rk-white;
+  &:hover,
+  &:focus,
+  &:active {
+    border-color: $rk-green;
+    background-color: $rk-green;
+    color: $rk-white;
+  }
+}
+
 .btn-rk {
   color: white;
 

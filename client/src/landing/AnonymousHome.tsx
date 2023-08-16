@@ -23,24 +23,17 @@
  *  Presentational components.
  */
 
-import React, { Fragment, useState } from "react";
+import React, { Fragment } from "react";
+import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
-import { Button, Row, Col } from "reactstrap";
-import { Navbar, Nav, Collapse, NavItem } from "reactstrap";
+import { Row, Col } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faBook } from "@fortawesome/free-solid-svg-icons";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
-import {
-  faYoutube,
-  faTwitter,
-  faMedium,
-  faGithub,
-} from "@fortawesome/free-brands-svg-icons";
-
-import { Url } from "../utils/helpers/url";
 import { StatuspageBanner } from "../statuspage";
-import { RenkuToolbarHelpMenu, RenkuToolbarNotifications } from "./NavBar";
+import { Url } from "../utils/helpers/url";
+
 import { NavBarWarnings } from "./NavBarWarnings";
 
 import VisualHead from "./Assets/Visual_Head.svg";
@@ -62,26 +55,21 @@ import logo_EPFL from "./Logos/EPFL.svg";
 import logo_ETH from "./Logos/ETH.svg";
 import logo_SDSC from "./Logos/SDSC.svg";
 
-import { RenkuNavLink } from "../components/RenkuNavLink";
-import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
+import { ExternalLink } from "../components/ExternalLinks";
 import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
 import { Docs } from "../utils/constants/Docs";
-import { Search } from "react-bootstrap-icons";
+
+import type { AnonymousHomeConfig } from "./anonymousHome.types";
+import { BottomNav, TopNav } from "./anonymousHomeNav";
 
 const logo = "/static/public/img/logo.svg";
 
-function HomeHeader(props) {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggleOpen = () => setIsOpen(!isOpen);
+const standardBgOpacity = {
+  "--bs-bg-opacity": 0.4,
+} as CSSProperties;
+
+function HomeHeader(props: AnonymousHomeConfig) {
   const { urlMap } = props;
-  const externalLinks = {
-    medium: "https://medium.com/the-renku-blog",
-    twitter: "https://twitter.com/RenkuIO",
-    youtube: "https://www.youtube.com/channel/UCMF2tBtWU1sKWvtPl_HpI4A",
-    github: "https://github.com/SwissDataScienceCenter/renku",
-    docs: Docs.READ_THE_DOCS_ROOT,
-  };
-  const searchIcon = <Search />;
   return (
     <Fragment>
       <Row key="statuspage">
@@ -97,160 +85,35 @@ function HomeHeader(props) {
           />
         </Col>
       </Row>
-      <header className="px-0 pt-2 pb-4 d-flex rk-anon-home">
-        <div className="align-self-center flex-grow-1">
-          <img src={logo} alt="Renku" height="68" className="d-block my-1" />
-        </div>
-        <div
-          className="px-2 mt-3 d-flex justify-content-center icons-menu
-        align-items-center bg-primary gap-3"
-        >
-          <div className="d-none d-md-inline-block">
-            <ExternalIconLink
-              className="text-white text-decoration-none"
-              tooltip="Documentation"
-              role="link"
-              url={externalLinks.docs}
-              icon={faBook}
-            />
-          </div>
-          <div className="d-none d-md-inline-block">
-            <ExternalIconLink
-              className="text-white"
-              tooltip="Twitter"
-              role="link"
-              url={externalLinks.twitter}
-              icon={faTwitter}
-            />
-          </div>
-          <div className="d-none d-md-inline-block">
-            <ExternalIconLink
-              className="text-white"
-              tooltip="Medium"
-              role="link"
-              url={externalLinks.medium}
-              icon={faMedium}
-            />
-          </div>
-          <div className="d-none d-md-inline-block">
-            <ExternalIconLink
-              className="text-white"
-              tooltip="Youtube"
-              role="link"
-              url={externalLinks.youtube}
-              icon={faYoutube}
-            />
-          </div>
-          <div className="d-none d-md-inline-block">
-            <ExternalIconLink
-              className="text-white"
-              tooltip="Github"
-              role="link"
-              url={externalLinks.github}
-              icon={faGithub}
-            />
-          </div>
-          <Link
-            className="btn btn-outline-secondary"
-            role="button"
-            id="login-button"
-            to="/login"
-          >
-            Login
-          </Link>
-          <Button onClick={toggleOpen} id="nav-hamburger" className="border-0">
-            <FontAwesomeIcon className="m-0" icon={faBars} id="userIcon" />
-          </Button>
-        </div>
-      </header>
-      <div className="rk-navbar-home">
-        <Collapse isOpen={isOpen}>
-          <Navbar className="navbar rk-anon-home px-0">
-            <Nav
-              className="ms-auto flex-column rk-bg-shaded-dark text-end"
-              style={{ "--rk-bg-opacity": 0.8 }}
-            >
-              <NavItem className="nav-item">
-                <RenkuNavLink
-                  to="/search"
-                  title="Search"
-                  id="link-search"
-                  icon={searchIcon}
-                />
-              </NavItem>
-              <NavItem className="nav-item">
-                <RenkuNavLink
-                  to="/sessions"
-                  title="Sessions"
-                  id="link-sessions"
-                />
-              </NavItem>
-              <NavItem className="d-inline d-md-none">
-                <ExternalLink
-                  className="nav-link"
-                  title="Docs"
-                  role="text"
-                  showLinkIcon={true}
-                  customIcon={faBook}
-                  url={externalLinks.docs}
-                />
-              </NavItem>
-              <NavItem className="d-inline d-md-none">
-                <ExternalLink
-                  className="nav-link"
-                  title="GitHub"
-                  role="text"
-                  showLinkIcon={true}
-                  customIcon={faGithub}
-                  url={externalLinks.github}
-                />
-              </NavItem>
-              <NavItem className="d-inline d-md-none">
-                <ExternalLink
-                  className="nav-link"
-                  title="Youtube"
-                  role="text"
-                  showLinkIcon={true}
-                  customIcon={faYoutube}
-                  url={externalLinks.youtube}
-                />
-              </NavItem>
-              <NavItem className="d-inline d-md-none">
-                <ExternalLink
-                  className="nav-link"
-                  title="Medium"
-                  role="text"
-                  showLinkIcon={true}
-                  customIcon={faMedium}
-                  url={externalLinks.medium}
-                />
-              </NavItem>
-              <NavItem className="d-inline d-md-none">
-                <ExternalLink
-                  className="nav-link"
-                  title="Twitter"
-                  role="text"
-                  showLinkIcon={true}
-                  customIcon={faTwitter}
-                  url={externalLinks.twitter}
-                />
-              </NavItem>
-              <NavItem>
-                <RenkuToolbarHelpMenu />
-              </NavItem>
-              <NavItem className="nav-item">
-                <RenkuToolbarNotifications {...props} />
-              </NavItem>
-            </Nav>
-          </Navbar>
-        </Collapse>
-      </div>
+      <TopNav {...props} />
     </Fragment>
   );
 }
 
-function Section1(props) {
+function SearchInput() {
+  return (
+    <div className="d-flex flex-nowrap w-100 flex-sm-grow-1 mx-0 mx-lg-2">
+      <div className="search-box flex-nowrap justify-content-center m-auto">
+        <div className="quick-nav input-group flex-nowrap input-group-sm justify-content-center">
+          <input
+            type="text"
+            autoComplete="off"
+            className="form-control form-control-sm rk-landing-search"
+            placeholder="Explore existing public projects and datasets"
+            aria-label="Search input"
+          />
+          <span className="quick-nav-icon d-flex justify-content-center align-items-center mx-4 cursor-pointer">
+            <FontAwesomeIcon icon={faSearch} />
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Section1(props: AnonymousHomeConfig) {
   const backgroundUrl = VisualHead;
+  const tutorialLink = props.homeCustomized.tutorialLink;
   return (
     <div
       id="rk-anon-home-section1"
@@ -260,9 +123,9 @@ function Section1(props) {
     >
       <HomeHeader {...props} />
       <div className="rk-anon-home-section-content">
-        <div className="rk-bg-shaded-dark">
+        <div className="rk-bg-shaded-dark text-center">
           <Row>
-            <Col className="rk-pt-l">
+            <Col className="rk-pt-m">
               <h1 className="text-white">
                 An open-source knowledge infrastructure for collaborative and
                 reproducible data science
@@ -277,14 +140,38 @@ function Section1(props) {
             </Col>
           </Row>
           <Row>
-            <Col className="rk-pt-s rk-w-s">
-              <HashLink
-                className="btn btn-secondary-home"
-                role="button"
-                to="#rk-anon-home-section-features"
-              >
-                Learn more
-              </HashLink>
+            <Col className="rk-pt-s">
+              <SearchInput />
+            </Col>
+          </Row>
+          <Row>
+            <Col className="rk-pt-s">
+              <div>
+                <h4 className="text-white">Do you want to try Renku out?</h4>
+              </div>
+              <div className="mt-3">
+                <Link
+                  className="btn btn-outline-rk-white me-4"
+                  role="button"
+                  id="link-sign_up"
+                  to="/login"
+                >
+                  Sign Up
+                </Link>
+                <TutorialLink
+                  className="btn btn-outline-rk-white me-4"
+                  role="button"
+                  title="Get Started"
+                  url={tutorialLink}
+                />
+                <HashLink
+                  className="btn btn-outline-rk-white"
+                  role="button"
+                  to="#rk-anon-home-section-features"
+                >
+                  Learn more
+                </HashLink>
+              </div>
             </Col>
           </Row>
         </div>
@@ -293,35 +180,40 @@ function Section1(props) {
   );
 }
 
-function TutorialLink(props) {
-  const url = props.url;
+type TutorialLinkProps = {
+  className?: string;
+  role?: string;
+  title: string;
+  url: string;
+};
+function TutorialLink({ className, role, title, url }: TutorialLinkProps) {
   if (url == null || url.length < 1) return null;
+  if (className == null) {
+    className = "btn btn-secondary-home";
+  }
+  if (role == null) {
+    role = "button";
+  }
 
   if (url.startsWith("http")) {
     return (
       <ExternalLink
-        title="Follow the tutorial"
-        className="btn btn-secondary-home"
-        role="button"
-        id="link-learn"
-        showLinkIcon={true}
+        title={title}
+        className={className}
+        role={role}
+        showLinkIcon={false}
         url={url}
       />
     );
   }
   return (
-    <Link
-      className="btn btn-secondary-home"
-      role="link"
-      id="link-tutorial"
-      to={url}
-    >
-      Follow the tutorial
+    <Link className={className} role={role} to={url}>
+      {title}
     </Link>
   );
 }
 
-function Section4(props) {
+function Section4(props: { tutorialLink: string }) {
   const backgroundUrl = VisualDetail;
   return (
     <div
@@ -361,7 +253,11 @@ function Section4(props) {
             </span>
           </div>
           <div className="pt-2" style={{ minWidth: "185px" }}>
-            <TutorialLink url={props.tutorialLink} />
+            <TutorialLink
+              role="button"
+              title="Follow the tutorial"
+              url={props.tutorialLink}
+            />
           </div>
           <div className="pt-2" style={{ minWidth: "180px" }}>
             <ExternalLink
@@ -379,7 +275,9 @@ function Section4(props) {
   );
 }
 
-function Section5(props) {
+function Section5(
+  props: Pick<AnonymousHomeConfig["homeCustomized"], "projects">
+) {
   return props.projects == null || props.projects.length < 1 ? null : (
     <div id="rk-anon-home-section5">
       <div className="rk-anon-home-section-content">
@@ -405,7 +303,10 @@ function Section6() {
           <div>
             <img src={logo} alt="Renku" height="92" className="d-block my-1" />
           </div>
-          <Row className="rk-pt-l bg-white" style={{ "--bs-bg-opacity": 0.9 }}>
+          <Row
+            className="rk-pt-l bg-white"
+            style={{ "--bs-bg-opacity": 0.9 } as CSSProperties}
+          >
             <Col xs={12} lg={4}>
               <h3>Developed at</h3>
               <a
@@ -509,7 +410,7 @@ function SectionFeatures() {
               </div>
               <div
                 className="align-self-center p-3 m-4"
-                style={{ "--bs-bg-opacity": 0.4 }}
+                style={standardBgOpacity}
               >
                 <img
                   src={graphic_sessions}
@@ -614,7 +515,7 @@ function SectionUseCases() {
                   Ensure computational reproducibility between you and your
                   colleagues throughout the entire scientific process.
                 </div>
-                <div className="p-2" style={{ "--bs-bg-opacity": 0.4 }}>
+                <div className="p-2" style={standardBgOpacity}>
                   <img
                     src={graphic_collaborate}
                     alt="Versioned Data"
@@ -640,7 +541,7 @@ function SectionUseCases() {
                     They can work together in the browser in or out of class.
                   </div>
                 </div>
-                <div className="p-2" style={{ "--bs-bg-opacity": 0.4 }}>
+                <div className="p-2" style={standardBgOpacity}>
                   <img
                     src={graphic_teach}
                     alt="Interactive Computing"
@@ -663,7 +564,7 @@ function SectionUseCases() {
                   re-executions are reproducible given the same computational
                   environment.
                 </div>
-                <div className="p-2" style={{ "--bs-bg-opacity": 0.4 }}>
+                <div className="p-2" style={standardBgOpacity}>
                   <img
                     src={graphic_build}
                     alt="Automatic Provenance"
@@ -679,20 +580,21 @@ function SectionUseCases() {
   );
 }
 
-function StandardHome(props) {
+function StandardHome(props: AnonymousHomeConfig) {
   return (
-    <Fragment>
+    <>
       <Section1 {...props} />
       <SectionFeatures />
       <SectionUseCases />
       <Section4 tutorialLink={props.homeCustomized.tutorialLink} />
       <Section5 projects={props.homeCustomized.projects} />
       <Section6 />
-    </Fragment>
+      <BottomNav {...props} />
+    </>
   );
 }
 
-function CustomizedAnonymousHome(props) {
+function CustomizedAnonymousHome(props: AnonymousHomeConfig) {
   let content = props.homeCustomized.custom.main.contentMd;
   if (content.length < 1)
     content = "[No content provided: please configure text to display here.]";
@@ -723,7 +625,7 @@ function CustomizedAnonymousHome(props) {
   );
 }
 
-function AnonymousHome(props) {
+function AnonymousHome(props: AnonymousHomeConfig) {
   const urlMap = {
     siteStatusUrl: Url.get(Url.pages.help.status),
   };
