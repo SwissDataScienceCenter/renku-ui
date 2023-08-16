@@ -174,6 +174,8 @@ specific use cases, you may need to modify the script directly, since not all op
 
 ## Coding Guidelines
 
+The coding guidelines are detailed in full in [CODING_GUIDELINES.md](CODING_GUIDELINES.md).
+
 As explained above, not all the code in the repo conforms to these guidelines, but this section explains how code _should_ be developed in the repo.
 
 ### **Use Typescript**

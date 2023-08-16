@@ -16,10 +16,13 @@
  * limitations under the License.
  */
 
-import { Storage, TypeData } from "../../storage";
+import * as Sentry from "@sentry/node";
 import express from "express";
-import config from "../../config";
+
 import { getUserIdFromToken } from "../../authentication";
+import config from "../../config";
+import logger from "../../logger";
+import { Storage, TypeData } from "../../storage";
 
 function projectNameIsId(projectName: string): boolean {
   return projectName.match(/^[0-9]*$/) !== null;
@@ -49,15 +52,22 @@ const lastProjectsMiddleware =
 
         const userId = getUserIdFromToken(token);
         // Save as ordered collection
-        storage.save(
-          `${config.data.projectsStoragePrefix}${userId}`,
-          projectName,
-          {
+        storage
+          .save(`${config.data.projectsStoragePrefix}${userId}`, projectName, {
             type: TypeData.Collections,
             limit: config.data.projectsDefaultLength,
             score: Date.now(),
-          }
-        );
+          })
+          .then((value) => {
+            if (!value) {
+              const errorMessage = `Error saving project ${projectName} for user ${userId}`;
+              logger.error(errorMessage);
+              Sentry.captureMessage(errorMessage);
+            }
+          })
+          .catch((err) => {
+            Sentry.captureException(err);
+          });
       });
     }
     next();
