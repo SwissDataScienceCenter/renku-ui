@@ -36,6 +36,7 @@ import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inact
 import { kgSearchApi } from "../../features/kgSearch";
 import { datasetFormSlice } from "../../features/project/dataset";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
+import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKgApi";
 import { projectsApi } from "../../features/projects/projectsApi";
 import { projectsKgApi } from "../../features/projects/projectsKgApi";
@@ -47,7 +48,6 @@ import { startSessionOptionsSlice } from "../../features/session/startSessionOpt
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
-import projectGitLabApi from "../../features/project/projectGitLab.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(

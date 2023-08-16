@@ -87,9 +87,7 @@ describe("notebook server clean annotation", () => {
       domain
     );
     const expectedAnnotations = { ...baseAnnotations };
-    expect(JSON.stringify(elaboratedAnnotations)).toBe(
-      JSON.stringify(expectedAnnotations)
-    );
+    expect(elaboratedAnnotations).toEqual(expectedAnnotations);
   });
   it("renku.io mixed", () => {
     const fakeAnswer = {
@@ -111,9 +109,7 @@ describe("notebook server clean annotation", () => {
       repository,
       default_image_used: defaultImageUsedBool,
     };
-    expect(JSON.stringify(elaboratedAnnotations)).toBe(
-      JSON.stringify(expectedAnnotations)
-    );
+    expect(elaboratedAnnotations).toEqual(expectedAnnotations);
   });
   it("renku.io occasionally missing.", () => {
     const fakeAnswer = {
@@ -135,9 +131,7 @@ describe("notebook server clean annotation", () => {
       repository,
       default_image_used: defaultImageUsedBool,
     };
-    expect(JSON.stringify(elaboratedAnnotations)).toBe(
-      JSON.stringify(expectedAnnotations)
-    );
+    expect(elaboratedAnnotations).toEqual(expectedAnnotations);
   });
   it("renku.io double-clean", () => {
     const fakeAnswer = {
@@ -163,9 +157,7 @@ describe("notebook server clean annotation", () => {
       repository,
       default_image_used: defaultImageUsedBool,
     };
-    expect(JSON.stringify(elaboratedAnnotations)).toBe(
-      JSON.stringify(expectedAnnotations)
-    );
+    expect(elaboratedAnnotations).toEqual(expectedAnnotations);
   });
 });
 

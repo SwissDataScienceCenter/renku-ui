@@ -322,7 +322,6 @@ function useDockerImageStatusStateMachine() {
       commit,
       dockerImageBuildStatus,
     }));
-
   const dispatch = useDispatch();
 
   const [
@@ -358,7 +357,14 @@ function useDockerImageStatusStateMachine() {
     if (status !== "unknown") {
       return;
     }
-    dispatch(setDockerImageBuildStatus("checking-ci-registry-start"));
+    // ? async dispatch required here because of race conditions with state reset
+    const timeout = window.setTimeout(
+      () => dispatch(setDockerImageBuildStatus("checking-ci-registry-start")),
+      0
+    );
+    return () => {
+      window.clearTimeout(timeout);
+    };
   }, [dispatch, status]);
 
   // Check the registry

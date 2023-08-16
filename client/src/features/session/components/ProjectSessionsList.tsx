@@ -51,14 +51,14 @@ export default function ProjectSessionsList({
   return (
     <>
       <Container fluid>
-        <SessionsList sessions={projectSessions} />
+        <SessionsList disableProjectTitle sessions={projectSessions} />
       </Container>
       <SessionSaveWarning />
     </>
   );
 }
 
-function useProjectSessions({
+export function useProjectSessions({
   projectPathWithNamespace,
 }: ProjectSessionsListProps) {
   const { data: sessions } = useGetSessionsQuery();

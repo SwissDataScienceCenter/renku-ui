@@ -31,6 +31,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+import { InfoAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/RenkuModels";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
@@ -145,7 +146,7 @@ function AnonymousStopSessionModal({
               </Button>
               <Button
                 className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
-                data-cy="stop-session-modal-button"
+                data-cy="delete-session-modal-button"
                 disabled={isStopping}
                 type="submit"
                 onClick={onStopSession}
@@ -205,19 +206,23 @@ function HibernateSessionModal({
 
   return (
     <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
-      <ModalHeader toggle={toggleModal}>Stop Session</ModalHeader>
+      <ModalHeader toggle={toggleModal}>Pause Session</ModalHeader>
       <ModalBody>
         <Row>
           <Col>
             <p>
-              Are you sure you want to stop this session? The current state of
+              Are you sure you want to pause this session? The current state of
               the session (new and edited files) will be preserved while the
-              session is stopped.
+              session is paused.
             </p>
+            <InfoAlert dismissible={false} timeout={0}>
+              Please note that paused session are deleted after 30 days of
+              inactivity.
+            </InfoAlert>
             {isStopping ? (
               <FormText color="primary">
                 <Loader className="me-1" inline size={16} />
-                Stopping Session
+                Pausing Session
                 <br />
               </FormText>
             ) : null}
@@ -231,12 +236,12 @@ function HibernateSessionModal({
               </Button>
               <Button
                 className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
-                data-cy="stop-session-modal-button"
+                data-cy="pause-session-modal-button"
                 disabled={isStopping}
                 type="submit"
                 onClick={onHibernateSession}
               >
-                Stop Session
+                Pause Session
               </Button>
             </div>
           </Col>

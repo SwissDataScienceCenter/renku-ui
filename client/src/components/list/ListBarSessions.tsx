@@ -18,7 +18,6 @@
 
 import React, {
   Fragment,
-  ReactNode,
   useContext,
   useEffect,
   useRef,
@@ -26,17 +25,13 @@ import React, {
 } from "react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { Link } from "react-router-dom";
-import {
-  Badge,
-  PopoverBody,
-  PopoverHeader,
-  UncontrolledPopover,
-} from "reactstrap";
+import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
 import SessionButton from "../../features/session/components/SessionButton";
-import { SessionStatusState } from "../../features/session/sessions.types";
 import { Notebook } from "../../notebooks/components/Session";
-import { getStatusObject } from "../../notebooks/components/SessionListStatus";
+import SessionStatusBadge from "../../features/session/components/status/SessionStatusBadge";
+import SessionStatusText from "../../features/session/components/status/SessionStatusText";
 import AppContext from "../../utils/context/appContext";
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
@@ -52,8 +47,7 @@ import "./ListBar.scss";
 
 /** Helper function for formatting the resource list */
 interface ResourceListProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  resources: Record<string, any>;
+  resources: Record<string, number | string>;
 }
 function ResourceList({ resources }: ResourceListProps) {
   const resourcesKeys = Object.keys(resources);
@@ -67,58 +61,6 @@ function ResourceList({ resources }: ResourceListProps) {
     );
   });
   return <div className="text-truncate">{items}</div>;
-}
-
-interface SessionStatusIconProps {
-  status: SessionStatusState;
-  data: {
-    icon: ReactNode;
-    color: string;
-    text: string;
-  };
-  sessionId: string;
-  errorSession: string;
-  defaultImage: boolean;
-}
-function SessionStatusIcon({
-  status,
-  data,
-  sessionId,
-  errorSession,
-  defaultImage,
-}: SessionStatusIconProps) {
-  const policy = defaultImage ? <div>A fallback image was used.</div> : null;
-  const popover =
-    status === "failed" || (status === "running" && defaultImage) ? (
-      <UncontrolledPopover
-        target={sessionId}
-        trigger="hover"
-        placement="bottom"
-      >
-        <PopoverHeader>
-          {status === "failed" ? "Error Details" : "Warning Details"}
-        </PopoverHeader>
-        <PopoverBody>
-          {errorSession}
-          {policy}
-        </PopoverBody>
-      </UncontrolledPopover>
-    ) : null;
-
-  return (
-    <div
-      id={sessionId}
-      className={`d-flex align-items-center gap-1 ${
-        status === "failed" ? "cursor-pointer" : ""
-      }`}
-    >
-      <Badge color={data.color}>{data.icon}</Badge>
-      <span className={`text-${data.color} small session-status-text`}>
-        {data.text}
-      </span>
-      {popover}
-    </div>
-  );
 }
 
 /*
@@ -210,12 +152,6 @@ function ListBarSession({
   const { client } = useContext(AppContext);
   const [commit, setCommit] = useState(null);
 
-  const [sessionStatus, setSessionStatus] =
-    useState<SessionStatusState>("starting");
-  useEffect(() => {
-    setSessionStatus(notebook?.status?.state);
-  }, [notebook?.status?.state]);
-
   useEffect(() => {
     client
       .getCommits(id, notebook.annotations.branch)
@@ -237,13 +173,7 @@ function ListBarSession({
 
   /* session part */
   const resources = notebook.resources?.requests;
-  const sessionId = notebook.name;
-  const statusData = getStatusObject(
-    sessionStatus,
-    notebook.annotations["default_image_used"]
-  );
-  const sessionTimeLabel =
-    sessionStatus === "running" ? `${statusData.text} since ` : statusData.text;
+
   const sessionDetailsPopover = commit ? (
     <SessionDetailsPopOver commit={commit} image={notebook.image} />
   ) : null;
@@ -336,20 +266,21 @@ function ListBarSession({
           </span>
           <div className="session-icon-details">{sessionDetailsPopover}</div>
         </div>
-        <TimeCaption
-          className="text-rk-text-light text-truncate"
-          enableTooltip
-          datetime={notebook.started}
-          prefix={sessionTimeLabel || ""}
-        />
+        <span
+          className={cx("time-caption", "text-rk-text-light", "text-truncate")}
+        >
+          <SessionStatusText
+            annotations={notebook.annotations}
+            startTimestamp={notebook.started}
+            status={notebook.status.state}
+          />
+        </span>
       </div>
       <div className="session-icon">
-        <SessionStatusIcon
-          status={sessionStatus}
-          data={statusData}
+        <SessionStatusBadge
           defaultImage={notebook.annotations["default_image_used"]}
-          errorSession={notebook.status.message || ""}
-          sessionId={sessionId}
+          name={notebook.name}
+          status={notebook.status}
         />
       </div>
     </div>

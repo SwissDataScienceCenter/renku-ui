@@ -54,7 +54,7 @@ describe("display a session", () => {
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
     cy.gui_open_logs();
     // validate show a warning when there is an error loading the logs
-    cy.get_cy("logs-unavailable-message").should("exist");
+    cy.get_cy("logs-unavailable-message").should("be.visible");
     cy.get_cy("session-log-download-button").should("be.disabled");
   });
 
@@ -97,8 +97,10 @@ describe("display a session", () => {
     cy.get_cy("logs-tab").should("exist");
     cy.get_cy("modal-header").find(".btn-close").click();
     // stop session
-    cy.get_cy("stop-session-button").click();
-    cy.get_cy("stop-session-modal-button").should("exist");
+    cy.get_cy("pause-session-button").should("be.visible").click();
+    cy.get_cy("pause-session-modal-button")
+      .should("be.visible")
+      .and("be.enabled");
   });
 
   it("save session button -- no sidecar", () => {
@@ -255,7 +257,7 @@ describe("display a session with error", () => {
     cy.wait("@getSessionsError");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
-    cy.get_cy("stop-session-button").should("be.visible");
+    cy.get_cy("pause-session-button").should("be.visible");
   });
 });
 

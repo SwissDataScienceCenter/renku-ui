@@ -18,11 +18,8 @@
 
 import React from "react";
 import {
-  faCheckCircle,
   faExclamationTriangle,
   faInfoCircle,
-  faTimesCircle,
-  faPause,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -33,68 +30,22 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import { Clipboard } from "../../components/Clipboard";
-import { Loader } from "../../components/Loader";
-import type { NotebookAnnotations } from "./Session";
+import SessionStatusIcon from "../../features/session/components/status/SessionStatusIcon";
+import SessionStatusText from "../../features/session/components/status/SessionStatusText";
 import { SessionStatusState } from "../../features/session/sessions.types";
+import { getSessionStatusColor } from "../../features/session/utils/sessionStatus.utils";
+import type { NotebookAnnotations } from "./Session";
+import { TimeCaption } from "../../components/TimeCaption";
 
-type SessionListRowCoreProps = {
+interface SessionListRowCoreProps {
   annotations: NotebookAnnotations;
   details: { message: string | undefined };
   status: SessionStatusState;
   uid: string;
-};
-
-function getStatusObject(status: SessionStatusState, defaultImage: boolean) {
-  switch (status) {
-    case "running":
-      return {
-        color: defaultImage ? "warning" : "success",
-        icon: defaultImage ? (
-          <FontAwesomeIcon
-            icon={faExclamationTriangle}
-            inverse={true}
-            size="lg"
-          />
-        ) : (
-          <FontAwesomeIcon icon={faCheckCircle} size="lg" />
-        ),
-        text: "Running",
-      };
-    case "starting":
-      return {
-        color: "warning",
-        icon: <Loader size={16} inline />,
-        text: "Starting...",
-      };
-    case "stopping":
-      return {
-        color: "warning",
-        icon: <Loader size={16} inline />,
-        text: "Stopping...",
-      };
-    case "failed":
-      return {
-        color: "danger",
-        icon: <FontAwesomeIcon icon={faTimesCircle} size="lg" />,
-        text: "Error",
-      };
-    case "hibernated":
-      return {
-        color: "rk-text-light",
-        icon: <FontAwesomeIcon icon={faPause} size="lg" />,
-        text: "Paused",
-      };
-    default:
-      return {
-        color: "danger",
-        icon: <FontAwesomeIcon icon={faExclamationTriangle} size="lg" />,
-        text: "Unknown",
-      };
-  }
 }
 
 interface SessionListRowStatusProps extends SessionListRowCoreProps {
-  startTime: string;
+  startTimestamp: string;
 }
 
 function SessionListRowStatusExtraDetails({
@@ -133,28 +84,24 @@ function SessionListRowStatusExtraDetails({
   );
 }
 
-function SessionListRowStatus(props: SessionListRowStatusProps) {
-  const { status, details, uid, annotations, startTime } = props;
-  const data = getStatusObject(status, annotations.default_image_used);
-  const textColor = {
-    running: "text-secondary",
-    failed: "text-danger",
-    starting: "text-secondary",
-    stopping: "text-secondary",
-    hibernated: "text-rk-text-light",
-  };
-
-  const textStatus =
-    status === "running"
-      ? `${data.text} since ${startTime}`
-      : status === "hibernated"
-      ? `${data.text}, started ${startTime}`
-      : data.text;
+function SessionListRowStatus({
+  status,
+  details,
+  uid,
+  annotations,
+  startTimestamp,
+}: SessionListRowStatusProps) {
+  // Do not use "warning" color when a default image is in use
+  const color = getSessionStatusColor({ defaultImage: false, status });
 
   return (
     <>
-      <span className={`time-caption font-weight-bold ${textColor[status]}`}>
-        {textStatus}
+      <span className={cx("time-caption", "font-weight-bold", `text-${color}`)}>
+        <SessionStatusText
+          annotations={annotations}
+          startTimestamp={startTimestamp}
+          status={status}
+        />
         <SessionListRowStatusExtraDetails
           details={details}
           status={status}
@@ -186,9 +133,10 @@ function SessionListRowStatusIconPopover({
 }: SessionListRowStatusIconPopoverProps) {
   // TODO: handle showing hibernating data in popover
 
-  if (status !== "running" && status !== "failed") {
+  if (status !== "running" && status !== "failed" && status !== "hibernated") {
     return null;
   }
+
   if (status === "failed") {
     return (
       <UncontrolledPopover target={id} trigger="legacy" placement="right">
@@ -201,19 +149,102 @@ function SessionListRowStatusIconPopover({
     );
   }
 
-  if (!image) return null;
-  const policy = annotations.default_image_used ? (
+  const policy = annotations.default_image_used && (
     <span>
       <br />
-      <span className="font-weight-bold">Warning:</span> a fallback image was
-      used.
+      <span className="fw-bold">Warning:</span> a fallback image was used.
     </span>
-  ) : null;
+  );
+
+  const hasHibernationInfo = !!annotations["hibernation-date"];
+
+  if (status === "hibernated") {
+    return (
+      <UncontrolledPopover placement="bottom" target={id} trigger="legacy">
+        <PopoverHeader>Details</PopoverHeader>
+        <PopoverBody>
+          <h3 className="fs-6 fw-bold">Paused session</h3>
+          {hasHibernationInfo ? (
+            <>
+              <p className="mb-0">
+                <span className="fw-bold">Paused:</span>{" "}
+                <TimeCaption
+                  datetime={annotations["hibernation-date"]}
+                  enableTooltip
+                  noCaption
+                />
+              </p>
+              <p className="mb-0">
+                <span className="fw-bold">Current commit:</span>{" "}
+                <code>{annotations["hibernation-commit-sha"].slice(0, 8)}</code>
+              </p>
+              <p className="mb-0">
+                <span className="fw-bold">
+                  {annotations["hibernation-dirty"] ? (
+                    <>
+                      <FontAwesomeIcon
+                        className={cx("text-warning", "me-1")}
+                        icon={faExclamationTriangle}
+                      />
+                      Uncommitted files
+                    </>
+                  ) : (
+                    "No uncommitted files"
+                  )}
+                </span>
+              </p>
+              <p className="mb-2">
+                <span className="fw-bold">
+                  {!annotations["hibernation-synchronized"] ? (
+                    <>
+                      <FontAwesomeIcon
+                        className={cx("text-warning", "me-1")}
+                        icon={faExclamationTriangle}
+                      />
+                      Some commits are not synced to the remote
+                    </>
+                  ) : (
+                    "All commits pushed to remote"
+                  )}
+                </span>
+              </p>
+            </>
+          ) : (
+            <p className="mb-2">
+              <span className="fw-bold">
+                <FontAwesomeIcon
+                  className={cx("text-warning", "me-1")}
+                  icon={faExclamationTriangle}
+                />
+                Could not retrieve session information before the session was
+                paused. There may be uncommitted files or unsynced commits.
+              </span>
+            </p>
+          )}
+
+          {image && (
+            <>
+              <span className="fw-bold">Image source:</span> {image}
+              <span className="ms-1">
+                <Clipboard clipboardText={image} />
+              </span>
+              {policy}
+            </>
+          )}
+        </PopoverBody>
+      </UncontrolledPopover>
+    );
+  }
+
+  if (!image) {
+    return null;
+  }
+
   return (
-    <UncontrolledPopover target={id} trigger="legacy" placement="bottom">
+    <UncontrolledPopover placement="bottom" target={id} trigger="legacy">
       <PopoverHeader>Details</PopoverHeader>
       <PopoverBody>
-        <span className="font-weight-bold">Image source:</span> {image}
+        <span className="fw-bold">Image source:</span> {image}
         <span className="ms-1">
           <Clipboard clipboardText={image} />
         </span>
@@ -223,7 +254,7 @@ function SessionListRowStatusIconPopover({
   );
 }
 
-function SessionListRowStatusIcon({
+function SessionListRowStatusBadge({
   annotations,
   details,
   image,
@@ -231,14 +262,16 @@ function SessionListRowStatusIcon({
   status,
   uid,
 }: SessionListRowStatusIconProps) {
-  const data = getStatusObject(status, annotations.default_image_used);
+  const defaultImage = annotations.default_image_used;
+
   const className = cx("text-nowrap p-1 cursor-pointer", spaced && "mb-2");
+  const color = getSessionStatusColor({ defaultImage, status });
   const id = `${uid}-status`;
 
   return (
     <div>
-      <Badge id={id} color={data.color} className={className}>
-        {data.icon}
+      <Badge id={id} color={color} className={className}>
+        <SessionStatusIcon defaultImage={defaultImage} status={status} />
       </Badge>
       <SessionListRowStatusIconPopover
         annotations={annotations}
@@ -251,4 +284,7 @@ function SessionListRowStatusIcon({
   );
 }
 
-export { SessionListRowStatus, SessionListRowStatusIcon, getStatusObject };
+export {
+  SessionListRowStatus,
+  SessionListRowStatusBadge as SessionListRowStatusIcon,
+};

@@ -30,6 +30,13 @@ export interface NotebookAnnotations {
   gitlabProjectId: number;
   projectName: string;
   repository: string;
+
+  hibernation: Record<string, unknown>;
+  "hibernation-branch": string;
+  "hibernation-commit-sha": string;
+  "hibernation-date": string;
+  "hibernation-dirty": boolean;
+  "hibernation-synchronized": boolean;
   [key: string]: string;
 }
 

@@ -24,7 +24,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { faStop, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import {
@@ -36,6 +36,7 @@ import {
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Redirect, useLocation, useParams } from "react-router";
 import { Button, Row, UncontrolledTooltip } from "reactstrap";
+import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
 import { User } from "../../../model/RenkuModels";
 import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
 import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
@@ -396,9 +397,13 @@ function StopSessionBtn({ toggleStopSession }: StopSessionBtnProps) {
 
   const ref = useRef<HTMLButtonElement>(null);
 
-  const buttonId = logged ? "stop-session-button" : "delete-session-button";
-  const icon = logged ? faStop : faTrash;
-  const tooltip = logged ? "Stop session" : "Delete session";
+  const buttonId = logged ? "pause-session-button" : "delete-session-button";
+  const icon = logged ? (
+    <SessionPausedIcon className="text-rk-dark" size={16} />
+  ) : (
+    <FontAwesomeIcon className="text-rk-dark" icon={faTrash} />
+  );
+  const tooltip = logged ? "Pause session" : "Delete session";
 
   return (
     <div>
@@ -408,7 +413,6 @@ function StopSessionBtn({ toggleStopSession }: StopSessionBtnProps) {
           "bg-transparent",
           "text-dark",
           "p-0",
-          "mt-1",
           "no-focus"
         )}
         data-cy={buttonId}
@@ -416,7 +420,7 @@ function StopSessionBtn({ toggleStopSession }: StopSessionBtnProps) {
         innerRef={ref}
         onClick={toggleStopSession}
       >
-        <FontAwesomeIcon className="text-rk-dark" icon={icon} />
+        {icon}
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
         {tooltip}

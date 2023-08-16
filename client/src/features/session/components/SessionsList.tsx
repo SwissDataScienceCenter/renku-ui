@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React from "react";
+import React, { ReactNode } from "react";
 import cx from "classnames";
 import Media from "react-media";
 import { Link } from "react-router-dom";
@@ -30,18 +30,23 @@ import {
   SessionListRowStatusIcon,
 } from "../../../notebooks/components/SessionListStatus";
 import Sizes from "../../../utils/constants/Media";
-import { toHumanDateTime } from "../../../utils/helpers/DateTimeUtils";
 import { simpleHash } from "../../../utils/helpers/HelperFunctions";
 import { Url } from "../../../utils/helpers/url";
-import { Session, Sessions } from "../sessions.types";
+import { Session, SessionStatusState, Sessions } from "../sessions.types";
 import SessionButton from "./SessionButton";
 import SessionRowCommitInfo from "./SessionRowCommitInfo";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 interface SessionsListProps {
+  disableProjectTitle?: boolean;
   sessions: Sessions;
 }
 
-export default function SessionsList({ sessions }: SessionsListProps) {
+export default function SessionsList({
+  disableProjectTitle,
+  sessions,
+}: SessionsListProps) {
   const sessionNames = Object.keys(sessions);
 
   if (sessionNames.length == 0) {
@@ -51,17 +56,25 @@ export default function SessionsList({ sessions }: SessionsListProps) {
   return (
     <Row className="mb-4 gy-4">
       {Object.entries(sessions).map(([sessionName, session]) => (
-        <SessionListItem key={sessionName} session={session} />
+        <SessionListItem
+          key={sessionName}
+          disableProjectTitle={disableProjectTitle}
+          session={session}
+        />
       ))}
     </Row>
   );
 }
 
 interface SessionListItemProps {
+  disableProjectTitle?: boolean;
   session: Session;
 }
 
-function SessionListItem({ session }: SessionListItemProps) {
+function SessionListItem({
+  disableProjectTitle,
+  session,
+}: SessionListItemProps) {
   const renkuAnnotations = Object.entries(session.annotations)
     .filter(([key]) => key.startsWith("renku.io"))
     .reduce(
@@ -83,10 +96,6 @@ function SessionListItem({ session }: SessionListItemProps) {
   ];
   const uid = `uid_${simpleHash(hashed.join(" "))}`;
   const resourceRequests = session.resources.requests;
-  const startTime = toHumanDateTime({
-    datetime: session.started,
-    format: "full",
-  });
   const repositoryLinks = {
     branch: `${cleanAnnotations["repository"]}/tree/${cleanAnnotations["branch"]}`,
     commit: `${cleanAnnotations["repository"]}/tree/${cleanAnnotations["commit-sha"]}`,
@@ -96,11 +105,12 @@ function SessionListItem({ session }: SessionListItemProps) {
   const rowProps: SessionRowProps = {
     annotations: cleanAnnotations,
     details,
+    disableProjectTitle,
     image,
     name: session.name,
     repositoryLinks,
     resourceRequests,
-    startTime,
+    startTimestamp: session.started,
     status,
     uid,
   };
@@ -121,11 +131,12 @@ function SessionListItem({ session }: SessionListItemProps) {
 interface SessionRowProps {
   annotations: Session["annotations"];
   details: { message: string | undefined };
+  disableProjectTitle?: boolean;
   image: string;
   name: string;
   repositoryLinks: { branch: string; commit: string };
   resourceRequests: Session["resources"]["requests"];
-  startTime: string;
+  startTimestamp: string;
   status: Session["status"]["state"];
   uid: string;
 }
@@ -133,11 +144,12 @@ interface SessionRowProps {
 function SessionRowFull({
   annotations,
   details,
+  disableProjectTitle,
   image,
   name,
   repositoryLinks,
   resourceRequests,
-  startTime,
+  startTimestamp,
   status,
   uid,
 }: SessionRowProps) {
@@ -181,7 +193,7 @@ function SessionRowFull({
     <SessionListRowStatus
       annotations={annotations as NotebookAnnotations}
       details={details}
-      startTime={startTime}
+      startTimestamp={startTimestamp}
       status={status}
       uid={uid}
     />
@@ -217,7 +229,9 @@ function SessionRowFull({
       xs={12}
     >
       <div className={cx("d-flex", "flex-grow-1")}>
-        <span className={cx("me-3", "mt-2")}>{icon}</span>
+        <span className={cx("me-3", !disableProjectTitle && "mt-2")}>
+          {icon}
+        </span>
         <div
           className={cx(
             "d-flex",
@@ -226,9 +240,11 @@ function SessionRowFull({
             "overflow-hidden"
           )}
         >
-          <div className={cx("project", "d-inline-block", "text-truncate")}>
-            <SessionRowProject annotations={annotations} />
-          </div>
+          {!disableProjectTitle && (
+            <div className={cx("project", "d-inline-block", "text-truncate")}>
+              <SessionRowProject annotations={annotations} />
+            </div>
+          )}
           <table>
             <tbody className={cx("gx-4", "text-rk-text")}>
               <tr>
@@ -253,6 +269,20 @@ function SessionRowFull({
               <tr>
                 <td colSpan={2}>{statusOut}</td>
               </tr>
+              <UnsavedWorkWarning
+                annotations={annotations as NotebookAnnotations}
+                status={status}
+                wrapper={({ children }) => (
+                  <tr>
+                    <td
+                      className={cx("time-caption", "text-rk-text-light")}
+                      colSpan={2}
+                    >
+                      {children}
+                    </td>
+                  </tr>
+                )}
+              />
             </tbody>
           </table>
         </div>
@@ -311,11 +341,12 @@ function SessionRowResourceRequests({
 function SessionRowCompact({
   annotations,
   details,
+  disableProjectTitle,
   image,
   name,
   repositoryLinks,
   resourceRequests,
-  startTime,
+  startTimestamp,
   status,
   uid,
 }: SessionRowProps) {
@@ -366,7 +397,7 @@ function SessionRowCompact({
       <SessionListRowStatus
         annotations={annotations as NotebookAnnotations}
         details={details}
-        startTime={startTime}
+        startTimestamp={startTimestamp}
         status={status}
         uid={uid}
       />
@@ -397,11 +428,15 @@ function SessionRowCompact({
       )}
       data-cy="session-container"
     >
-      <span className="fw-bold">Project: </span>
-      <span>
-        <SessionRowProject annotations={annotations} />
-      </span>
-      <br />
+      {!disableProjectTitle && (
+        <>
+          <span className="fw-bold">Project: </span>
+          <span>
+            <SessionRowProject annotations={annotations} />
+          </span>
+          <br />
+        </>
+      )}
       {branch}
       {commit}
 
@@ -413,7 +448,65 @@ function SessionRowCompact({
       <div className="d-inline-flex">
         {icon} &nbsp; {statusOut}
       </div>
+      <UnsavedWorkWarning
+        annotations={annotations as NotebookAnnotations}
+        status={status}
+        wrapper={({ children }) => (
+          <div className={cx("mt-1", "time-caption", "text-rk-text-light")}>
+            {children}
+          </div>
+        )}
+      />
       <div className="mt-1">{actions}</div>
     </Col>
   );
+}
+
+interface UnsavedWorkWarningProps {
+  annotations: NotebookAnnotations;
+  status: SessionStatusState;
+  wrapper?: (props: { children?: ReactNode }) => JSX.Element;
+}
+
+function UnsavedWorkWarning({
+  annotations,
+  status,
+  wrapper: Wrapper,
+}: UnsavedWorkWarningProps) {
+  if (status !== "hibernated") {
+    return null;
+  }
+
+  const hasHibernationInfo = !!annotations["hibernation-date"];
+  const hasUnsavedWork =
+    !hasHibernationInfo ||
+    annotations["hibernation-dirty"] ||
+    !annotations["hibernation-synchronized"];
+
+  if (!hasUnsavedWork) {
+    return null;
+  }
+
+  const explanation = !hasHibernationInfo
+    ? "uncommitted files and/or unsynced commits"
+    : annotations["hibernation-dirty"] &&
+      !annotations["hibernation-synchronized"]
+    ? "uncommitted files and unsynced commits"
+    : annotations["hibernation-dirty"]
+    ? "uncommitted files"
+    : "unsynced commits";
+
+  const content = (
+    <>
+      <FontAwesomeIcon
+        className={cx("text-warning", "me-1")}
+        icon={faExclamationTriangle}
+      />
+      You have unsaved work {"("}
+      {explanation}
+      {")"} in this session
+    </>
+  );
+
+  return Wrapper ? <Wrapper>{content}</Wrapper> : content;
 }

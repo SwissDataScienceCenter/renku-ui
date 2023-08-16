@@ -16,20 +16,24 @@
  * limitations under the License.
  */
 
-import { StepsProgressBar } from "../../components/progress/ProgressSteps";
+import { SessionStatusState } from "../sessions.types";
 
-export interface StartSession {
-  error:
-    | "no-commit"
-    | "docker-image-not-available"
-    | "docker-image-building"
-    | "session-class"
-    | "backend-error"
-    | "invalid-branch"
-    | "invalid-commit"
-    | "existing-session"
-    | null;
-  errorMessage: string;
-  starting: boolean;
-  steps: StepsProgressBar[];
+interface GetSessionStatusColorArgs {
+  defaultImage: boolean;
+  status: SessionStatusState;
+}
+
+export function getSessionStatusColor({
+  defaultImage,
+  status,
+}: GetSessionStatusColorArgs): string {
+  return status === "running" && defaultImage
+    ? "warning"
+    : status === "running"
+    ? "success"
+    : status === "starting" || status === "stopping"
+    ? "warning"
+    : status === "hibernated"
+    ? "rk-text-light"
+    : "danger";
 }
