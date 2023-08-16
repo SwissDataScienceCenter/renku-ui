@@ -38,6 +38,7 @@ import rkIconSshTicked from "../../styles/icons/ssh-ticked.svg";
 import rkIconSshCross from "../../styles/icons/ssh-cross.svg";
 import { CommandCopy } from "../commandCopy/CommandCopy";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
+import { cleanGitUrl } from "../../utils/helpers/ProjectFunctions";
 
 const docsIconStyle = {
   showLinkIcon: true,
@@ -88,13 +89,6 @@ function SshModal() {
   if (!displayModal.show) return null;
 
   // fetch migration data when necessary (i.e. outside the project context, when not already fetched)
-  function cleanGitUrl(url: string): string {
-    if (!url) return "";
-    if (url.endsWith(".git")) return url.substring(0, url.length - 4);
-    if (url.endsWith("/")) return url.substring(0, url.length - 1);
-    return url;
-  }
-
   const loading = notebooksSupport.isLoading || coreSupport.isFetching;
   const errorCore = coreSupport.isError;
   const sshCoreSupport =
