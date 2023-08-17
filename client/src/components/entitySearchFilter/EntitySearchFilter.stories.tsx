@@ -16,16 +16,40 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Story } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 import { FilterEntitySearch, FilterProps } from "./EntitySearchFilter";
+import { KgSearchContextProvider } from "../../features/kgSearch/KgSearchContext";
+import { DateFilterTypes } from "../dateFilter/DateFilter";
 
-export default {
+const meta: Meta<typeof FilterEntitySearch> = {
   title: "components/FilterEntitySearch",
   component: FilterEntitySearch,
-  argTypes: {},
 };
-
-const Template: Story<FilterProps> = (args) => <FilterEntitySearch {...args} />;
-
-export const Default = Template.bind({});
-Default.args = {};
+export default meta;
+type Story = StoryObj<typeof FilterEntitySearch>;
+const args: FilterProps = {
+  author: "all",
+  type: {
+    project: true,
+    dataset: true,
+  },
+  visibility: {
+    public: true,
+    internal: false,
+    private: false,
+  },
+  isLoggedUser: true,
+  valuesDate: {
+    type: DateFilterTypes.all,
+  },
+};
+export const Default: Story = {
+  args,
+  decorators: [
+    (Story) => (
+      <KgSearchContextProvider>
+        <Story />
+      </KgSearchContextProvider>
+    ),
+  ],
+};

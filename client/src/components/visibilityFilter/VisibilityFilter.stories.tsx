@@ -30,4 +30,10 @@ const Template: Story<VisibilityFilterProps> = (args) => (
 );
 
 export const Default = Template.bind({});
-Default.args = {};
+Default.args = {
+  value: {
+    public: false,
+    internal: false,
+    private: false,
+  },
+};
