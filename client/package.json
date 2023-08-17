@@ -13,7 +13,6 @@
     "@reduxjs/toolkit": "^1.9.5",
     "@renku/ckeditor5-build-renku": "0.0.6",
     "@sentry/react": "^7.60.1",
-    "@sentry/tracing": "^7.60.1",
     "ajv": "^6.12.6",
     "bootstrap": "^5.3.0",
     "classnames": "^2.3.2",
