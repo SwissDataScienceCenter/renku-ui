@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { within, userEvent } from "@storybook/testing-library";
+import { expect } from "@storybook/jest";
 import { ButtonWithMenu } from "./Button";
 import { StoryObj } from "@storybook/react";
 import { DropdownItem } from "reactstrap";
@@ -90,6 +92,11 @@ export const Primary: Story = {
       story: { height: "150px" },
     },
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByTestId("more-menu"));
+    await expect(canvas.getByTestId("option-a")).toBeVisible();
+  },
 };
 
 const defaultActionSecondary = (
@@ -109,5 +116,10 @@ export const Secondary: Story = {
     docs: {
       story: { height: "150px" },
     },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByTestId("more-menu"));
+    await expect(canvas.getByTestId("option-b")).toBeVisible();
   },
 };

@@ -87,6 +87,7 @@ function CreatorForm(props: CreatorFormProps) {
             data-cy="creator-name"
             disabled={props.disabled}
             onChange={onChangeCreator}
+            data-testId="creator-name"
           />
         </FormGroup>
       </Col>
@@ -129,6 +130,7 @@ function CreatorForm(props: CreatorFormProps) {
             disabled={props.disabled}
             className="mb-3 p-0 border-0 text-danger bg-transparent"
             onClick={props.deleteCreator}
+            data-testId="creator-delete"
           >
             <FontAwesomeIcon icon={faUserMinus} />
           </Button>
@@ -278,6 +280,7 @@ export function FormGeneratorCreatorsInput({
         <Col>
           <Button
             data-cy="addCreatorButton"
+            data-testId="creator-add"
             size="sm"
             color="rk-white"
             disabled={disabled}

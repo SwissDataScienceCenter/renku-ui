@@ -171,6 +171,15 @@ The full documentation for Storybook can be found [here](https://storybook.js.or
 - Wherever relevant, please include stories that demonstrate responsive behavior across various devices.
 - You can use `addon-redux` for state management on components that require to get data from the Redis store.
 
+4. Testing Stories:
+
+Storybook's test runner transforms stories into executable tests, supporting Chromium and Firefox browsers. It ensures error-free rendering for non-play stories. For interactive stories with play functions, it validates both play function errors and successful assertions.
+
+         $ npm run test-stories
+
+**Note**: Please be aware that the test runner requires either a locally running Storybook instance or a published Storybook in order to execute the tests.
+
+
 ### Telepresence
 
 Telepresence can be used to develop the UI in a realistic setting. The client folder includes a `run-telepresence.sh` script that is tailored for the SDSC development cluster.

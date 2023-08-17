@@ -15,31 +15,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { StoryObj } from "@storybook/react";
 import { FormGeneratorCreatorsInput } from "./CreatorsInput";
-import type { CreatorInputProps } from "./CreatorsInput";
-import { StoryFn as Story } from "@storybook/react";
+import { userEvent, within } from "@storybook/testing-library";
+import { expect } from "@storybook/jest";
 
 export default {
   title: "Components/Forms/FormGeneratorCreatorsInput",
   component: FormGeneratorCreatorsInput,
 };
-
-const Template: Story<CreatorInputProps> = (args) => (
-  <FormGeneratorCreatorsInput {...args} />
-);
-export const Default = Template.bind({});
-Default.args = {
-  name: "author",
-  label: "Creators",
-  setInputs: () => true,
-  value: [
-    {
-      id: 1,
-      name: "E2E User",
-      email: "e2e.test@renku.ch",
-      affiliation: "creator",
-      default: true,
-    },
-  ],
+type Story = StoryObj<typeof FormGeneratorCreatorsInput>;
+export const Default: Story = {
+  args: {
+    name: "author",
+    label: "Creators",
+    setInputs: () => true,
+    value: [
+      {
+        id: 1,
+        name: "E2E User",
+        email: "e2e.test@renku.ch",
+        affiliation: "creator",
+        default: true,
+      },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByTestId("creator-add"));
+    await expect(canvas.getAllByTestId("creator-name").length).toEqual(1);
+    await userEvent.click(canvas.getByTestId("creator-delete"));
+    await expect(canvas.queryAllByTestId("creator-name")).toHaveLength(0);
+  },
 };
