@@ -24,7 +24,7 @@ import { Col, Row } from "reactstrap";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { EnvironmentLogs } from "../../../components/Logs";
 import { NotebooksHelper } from "../../../notebooks";
-import { NotebookAnnotations } from "../../../notebooks/components/Session";
+import { NotebookAnnotations } from "../../../notebooks/components/session.types";
 import {
   SessionListRowStatus,
   SessionListRowStatusIcon,
@@ -83,7 +83,7 @@ function SessionListItem({
     );
   const cleanAnnotations = NotebooksHelper.cleanAnnotations(
     renkuAnnotations
-  ) as typeof renkuAnnotations;
+  ) as NotebookAnnotations;
   const status = session.status.state;
   const details = {
     message: session.status.message,
@@ -129,7 +129,7 @@ function SessionListItem({
 }
 
 interface SessionRowProps {
-  annotations: Session["annotations"];
+  annotations: NotebookAnnotations;
   details: { message: string | undefined };
   disableProjectTitle?: boolean;
   image: string;
@@ -156,7 +156,7 @@ function SessionRowFull({
   const icon = (
     <div className="align-middle">
       <SessionListRowStatusIcon
-        annotations={annotations as NotebookAnnotations}
+        annotations={annotations}
         details={details}
         image={image}
         status={status}
@@ -183,15 +183,15 @@ function SessionRowFull({
         url={repositoryLinks.commit}
       />{" "}
       <SessionRowCommitInfo
-        commitSha={annotations["commit-sha"] as string | undefined}
-        projectId={annotations["gitlabProjectId"] as string | undefined}
+        commitSha={annotations["commit-sha"]}
+        projectId={`${annotations["gitlabProjectId"]}`}
       />
     </>
   );
 
   const statusOut = (
     <SessionListRowStatus
-      annotations={annotations as NotebookAnnotations}
+      annotations={annotations}
       details={details}
       startTimestamp={startTimestamp}
       status={status}
@@ -206,7 +206,7 @@ function SessionRowFull({
         runningSessionName={name}
       />
       <EnvironmentLogs
-        annotations={annotations as NotebookAnnotations}
+        annotations={annotations as Record<string, string>}
         name={name}
       />
     </span>
@@ -270,7 +270,7 @@ function SessionRowFull({
                 <td colSpan={2}>{statusOut}</td>
               </tr>
               <UnsavedWorkWarning
-                annotations={annotations as NotebookAnnotations}
+                annotations={annotations}
                 status={status}
                 wrapper={({ children }) => (
                   <tr>
@@ -353,7 +353,7 @@ function SessionRowCompact({
   const icon = (
     <span>
       <SessionListRowStatusIcon
-        annotations={annotations as NotebookAnnotations}
+        annotations={annotations}
         details={details}
         image={image}
         status={status}
@@ -386,7 +386,7 @@ function SessionRowCompact({
       />{" "}
       <SessionRowCommitInfo
         commitSha={annotations["commit-sha"] as string | undefined}
-        projectId={annotations["gitlabProjectId"] as string | undefined}
+        projectId={`${annotations["gitlabProjectId"]}`}
       />
       <br />
     </>
@@ -395,7 +395,7 @@ function SessionRowCompact({
   const statusOut = (
     <span>
       <SessionListRowStatus
-        annotations={annotations as NotebookAnnotations}
+        annotations={annotations}
         details={details}
         startTimestamp={startTimestamp}
         status={status}
@@ -411,7 +411,7 @@ function SessionRowCompact({
         runningSessionName={name}
       />
       <EnvironmentLogs
-        annotations={annotations as NotebookAnnotations}
+        annotations={annotations as Record<string, string>}
         name={name}
       />
     </span>
@@ -449,7 +449,7 @@ function SessionRowCompact({
         {icon} &nbsp; {statusOut}
       </div>
       <UnsavedWorkWarning
-        annotations={annotations as NotebookAnnotations}
+        annotations={annotations}
         status={status}
         wrapper={({ children }) => (
           <div className={cx("mt-1", "time-caption", "text-rk-text-light")}>

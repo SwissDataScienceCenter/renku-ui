@@ -25,7 +25,7 @@ import { ACCESS_LEVELS } from "../../../api-client";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { EntityType } from "../../../components/entities/Entities";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
-import { ProjectMetadata } from "../../../notebooks/components/Session";
+import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { Docs } from "../../../utils/constants/Docs";
 import { Session } from "../sessions.types";
 import styles from "./SessionModals.module.scss";

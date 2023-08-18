@@ -28,7 +28,7 @@ import { SessionStatus, SessionStatusState } from "../../sessions.types";
 import { getSessionStatusColor } from "../../utils/sessionStatus.utils";
 import SessionStatusIcon from "./SessionStatusIcon";
 import SessionHibernationStatusDetails from "./SessionHibernationStatusDetails";
-import { NotebookAnnotations } from "../../../../notebooks/components/Session";
+import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
 
 interface SessionStatusBadgeProps {
   annotations: NotebookAnnotations;

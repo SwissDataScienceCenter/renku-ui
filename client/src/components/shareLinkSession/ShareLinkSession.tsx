@@ -35,7 +35,6 @@ import {
 } from "../../utils/ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ThrottledTooltip } from "../Tooltip";
-import { EnvVariablesField } from "../../notebooks/components/EnviromentVariables";
 import { CommandCopy } from "../commandCopy/CommandCopy";
 
 interface ShareLinkSessionProps {
@@ -85,6 +84,11 @@ interface ProjectFilters {
   commit: {
     id: string;
   };
+}
+
+interface EnvVariablesField {
+  key: string;
+  value: string;
 }
 
 interface ShareLinkSessionModalProps {

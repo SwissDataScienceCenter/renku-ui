@@ -44,7 +44,7 @@ import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
 import { SshDropdown } from "../../../components/ssh/ssh";
 import { User } from "../../../model/RenkuModels";
 import { NotebooksHelper } from "../../../notebooks";
-import { NotebookAnnotations } from "../../../notebooks/components/Session";
+import { NotebookAnnotations } from "../../../notebooks/components/session.types";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
@@ -185,7 +185,7 @@ function SessionActions({
 
   const annotations = NotebooksHelper.cleanAnnotations(
     session.annotations
-  ) as Session["annotations"];
+  ) as NotebookAnnotations;
   const showSessionUrl = Url.get(Url.pages.project.session.show, {
     namespace: annotations.namespace,
     path: annotations.projectName,
@@ -424,7 +424,7 @@ function SessionActions({
       {createSessionLinkAction}
 
       <ConfirmDeleteModal
-        annotations={annotations as NotebookAnnotations}
+        annotations={annotations}
         isOpen={showModalStopSession}
         isStopping={isStopping}
         onStopSession={onStopSession}
