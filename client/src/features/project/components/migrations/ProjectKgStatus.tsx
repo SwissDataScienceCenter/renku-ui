@@ -86,8 +86,8 @@ export function ProjectKnowledgeGraph({
   if (isLoading || skip || (isFetching && justChanged)) {
     const fetchingTitle =
       isLoading || skip
-        ? "Fetching metadata processing status..."
-        : "Refreshing metadata processing status...";
+        ? "Fetching indexing status..."
+        : "Refreshing indexing status...";
     return (
       <CompositeTitle
         icon={faTimesCircle}
@@ -109,7 +109,7 @@ export function ProjectKnowledgeGraph({
           loading={false}
           sectionId={sectionCyId}
           showDetails={showDetails}
-          title="Error on project metadata"
+          title="Error on project indexing"
           toggleShowDetails={toggleShowDetails}
         />
         <Collapse isOpen={showDetails}>
@@ -121,9 +121,9 @@ export function ProjectKnowledgeGraph({
 
   let icon = faCheckCircle;
   let level = "success";
-  let title = "Metadata processing";
+  let title = "Project indexing";
   if (!data?.activated) {
-    title = "Activate metadata processing";
+    title = "Activate indexing";
     level = "danger";
     icon = faExclamationCircle;
   } else if (data?.progress?.done !== data?.progress?.total) {
@@ -200,7 +200,7 @@ function KnowledgeGraphDetails({
   } else {
     const titleId = "settings-kg-indexing";
     const titleInfo =
-      "Service that processes project's metadata. RenkuLab requires it for most functionalities.";
+      "Service that processes a project's metadata. RenkuLab requires it for most functionalities.";
     const titleDocsUrl = Docs.rtdTopicGuide(
       "miscellaneous/knowledge-graph.html"
     );
@@ -209,13 +209,13 @@ function KnowledgeGraphDetails({
         data.details?.status === ProjectIndexingStatuses.Success
           ? "success"
           : "info";
-      let text = "Knowledge Graph integration"; // ? should overwrite this with something more specific
+      let text = "Indexing"; // ? should overwrite this with something more specific
       let detailsElement: React.ReactNode = undefined;
       if (data.progress?.done === data.progress?.total) {
         if (data.details?.status === ProjectIndexingStatuses.Success) {
-          text = "Everything processed";
+          text = "Everything indexed";
         } else if (data.details?.status === ProjectIndexingStatuses.Failure) {
-          text = "Everything processed*";
+          text = "Everything indexed*";
           if (data.details?.message) {
             const maintainerDetails = isMaintainer ? (
               <span>
@@ -240,9 +240,9 @@ function KnowledgeGraphDetails({
       if (data.details?.status === ProjectIndexingStatuses.InProgress) {
         const detailsFirstPart = (
           <span>
-            The Knowledge Graph is processing the project&apos;s events. Some
-            information about the local entities might be unavailable or
-            outdated until this process has finished.
+            The project&apos;s events are being indexed. Some information about
+            the local entities might be unavailable or outdated until this
+            process has finished.
           </span>
         );
         if (data.progress?.done === data.progress?.total) {
@@ -275,10 +275,10 @@ function KnowledgeGraphDetails({
     } else {
       const detailsText = (
         <span>
-          The Knowledge Graph integration must be activated to use this project
-          from the RenkuLab web interface. Otherwise, the functionalities will
-          be limited, and the project will not be discoverable from the search
-          page. <MoreInfoLink url={titleDocsUrl} />
+          Indexing must be activated to use this project from the RenkuLab web
+          interface. Otherwise, the functionalities will be limited, and the
+          project will not be findable from the search page.{" "}
+          <MoreInfoLink url={titleDocsUrl} />
         </span>
       );
       content = (

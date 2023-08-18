@@ -468,13 +468,13 @@ class Creation extends Component {
         </div>
       );
     } else if (creation.kgUpdating) {
-      message = "Activating the knowledge graph...";
+      message = "Activating project indexing...";
     } else if (creation.kgError) {
       color = "warning";
       message = (
         <div>
           <p>
-            An error occurred while activating the knowledge graph. You can
+            An error occurred while activating the project indexing. You can
             activate it later to get the lineage.
           </p>
           <p>Error details: {creation.kgError}</p>
