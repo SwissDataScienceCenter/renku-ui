@@ -347,8 +347,9 @@ export interface UpdateProjectResponse {
 }
 
 export interface GitlabProjectResponse {
-  visibility: Visibilities;
+  http_url_to_repo: string;
   path_with_namespace: string;
+  visibility: Visibilities;
 }
 
 type KgMetadataLink = {

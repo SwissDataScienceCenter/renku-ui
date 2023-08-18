@@ -23,7 +23,10 @@ import { faSadCry } from "@fortawesome/free-solid-svg-icons";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { SerializedError } from "@reduxjs/toolkit";
 
-import { KgSearchResult, ListResponse } from "../../features/kgSearch/KgSearch";
+import {
+  KgSearchResult,
+  ListResponse,
+} from "../../features/kgSearch/kgSearch.types";
 import {
   FiltersProperties,
   hasInitialFilterValues,

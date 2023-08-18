@@ -33,7 +33,7 @@ import {
   VisibilitiesFilter,
   arrayToVisibilitiesFilter,
 } from "../../components/visibilityFilter/VisibilityFilter";
-import { KgAuthor, KgSearchState } from "./KgSearch";
+import { KgAuthor, KgSearchState } from "./kgSearch.types";
 
 type KgStateAuthorKey = "author";
 const numKeys = ["page", "perPage"] as const;

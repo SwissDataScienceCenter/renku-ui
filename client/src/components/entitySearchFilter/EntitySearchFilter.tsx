@@ -17,7 +17,7 @@
  */
 import React from "react";
 
-import { KgAuthor } from "../../features/kgSearch/KgSearch";
+import { KgAuthor } from "../../features/kgSearch/kgSearch.types";
 import {
   TypeEntityFilter,
   TypeEntitySelection,

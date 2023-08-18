@@ -17,10 +17,15 @@
  */
 import { FetchBaseQueryMeta } from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { KgAuthor, KgSearchResult, ListResponse } from "./KgSearch";
-import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
-import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
+import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
+import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
+import type {
+  KgAuthor,
+  KgSearchResult,
+  ListResponse,
+  RecentlyViewedEntitiesParams,
+} from "./kgSearch.types";
 
 export type SearchEntitiesQueryParams = {
   phrase: string;
@@ -91,7 +96,7 @@ const setSort = (query: string, sort: SortingOptions) => {
 const KG_SEARCH_API_REFETCH_AFTER_DURATION_S = 30;
 
 // Define a service using a base URL and expected endpoints
-export const kgSearchApi = createApi({
+const kgSearchApi = createApi({
   reducerPath: "kgSearchApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/kg/" }),
   endpoints: (builder) => ({
@@ -155,10 +160,29 @@ export const kgSearchApi = createApi({
         };
       },
     }),
+    recentlyViewedEntities: builder.query<
+      KgSearchResult[],
+      RecentlyViewedEntitiesParams | void
+    >({
+      query: (args) => {
+        const { limit, types } = args ?? {};
+        return {
+          url: "/current-user/recently-viewed",
+          // This handles repeated "type" parameter
+          params: new URLSearchParams([
+            ...(limit != null ? [["limit", `${limit}`]] : []),
+            ...(types?.dataset ? [["type", "dataset"]] : []),
+            ...(types?.project ? [["type", "project"]] : []),
+          ]),
+        };
+      },
+    }),
   }),
   refetchOnMountOrArgChange: KG_SEARCH_API_REFETCH_AFTER_DURATION_S,
 });
 
+export default kgSearchApi;
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
-export const { useSearchEntitiesQuery } = kgSearchApi;
+export const { useSearchEntitiesQuery, useRecentlyViewedEntitiesQuery } =
+  kgSearchApi;

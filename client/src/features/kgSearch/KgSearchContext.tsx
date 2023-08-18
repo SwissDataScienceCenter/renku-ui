@@ -31,7 +31,7 @@ import {
 import { SortingOptions } from "../../components/sortingEntities/SortingEntities";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
-import { KgAuthor, KgSearchState } from "./KgSearch";
+import { KgAuthor, KgSearchState } from "./kgSearch.types";
 import {
   defaultSearchState,
   searchStringToState,

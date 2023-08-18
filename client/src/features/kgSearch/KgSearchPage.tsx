@@ -32,8 +32,8 @@ import SortingEntities, {
 import { FilterEntitySearch } from "../../components/entitySearchFilter/EntitySearchFilter";
 import { SearchResultsHeader } from "../../components/searchResultsHeader/SearchResultsHeader";
 import { SearchResultsContent } from "../../components/searchResultsContent/SearchResultsContent";
-import { useSearchEntitiesQuery } from "./KgSearchApi";
-import { KgAuthor } from "./KgSearch";
+import { useSearchEntitiesQuery } from "./kgSearch.api";
+import { KgAuthor } from "./kgSearch.types";
 import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
 import { DatesFilter } from "../../components/dateFilter/DateFilter";

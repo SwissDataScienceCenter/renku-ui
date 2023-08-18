@@ -19,7 +19,7 @@ import * as React from "react";
 import "./AutorFilter.css";
 import { Input } from "../../utils/ts-wrappers";
 import { ChangeEvent } from "react";
-import { KgAuthor } from "../../features/kgSearch/KgSearch";
+import { KgAuthor } from "../../features/kgSearch/kgSearch.types";
 /**
  *  renku-ui
  *

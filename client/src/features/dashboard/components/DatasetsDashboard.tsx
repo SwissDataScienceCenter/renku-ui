@@ -18,14 +18,14 @@
 import {
   SearchEntitiesQueryParams,
   useSearchEntitiesQuery,
-} from "../../kgSearch/KgSearchApi";
+} from "../../kgSearch/kgSearch.api";
 import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 
 import ListDisplay from "../../../components/List";
 import { Loader } from "../../../components/Loader";
-import { KgAuthor } from "../../kgSearch/KgSearch";
+import { KgAuthor } from "../../kgSearch/kgSearch.types";
 import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
 import { stateToSearchString } from "../../kgSearch/KgSearchState";
 import { Url } from "../../../utils/helpers/url";

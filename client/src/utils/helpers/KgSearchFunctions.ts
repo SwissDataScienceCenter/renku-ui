@@ -76,7 +76,7 @@ export const mapSearchResultToEntity = (
     itemType: entity.type,
     labelCaption: "Created",
     path: EntityType.Project ? entity.path : "",
-    slug: entity.type === EntityType.Project ? entity.namespace : "",
+    slug: entity.slug,
     tagList: entity.keywords,
     timeCaption: entity.date,
     title: entity.name,

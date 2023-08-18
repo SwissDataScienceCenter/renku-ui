@@ -29,6 +29,7 @@ import EntityLabel from "../entities/Label";
 import { EntityType } from "../../features/kgSearch";
 
 import "./ListBar.scss";
+import { useGetProjectByPathWithNamespaceQuery } from "../../features/project/projectGitlabApi";
 
 export function getMainActionByEntity(
   entityType: EntityType,
@@ -50,7 +51,6 @@ export function getMainActionByEntity(
 function ListBar({
   creators,
   description,
-  gitUrl = "",
   imageUrl,
   itemType,
   labelCaption,
@@ -62,7 +62,13 @@ function ListBar({
 }: ListElementProps) {
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);
-  const mainButton = getMainActionByEntity(itemType, slug, gitUrl);
+
+  const { data: gitLabProject } = useGetProjectByPathWithNamespaceQuery(slug, {
+    skip: itemType !== EntityType.Project,
+  });
+  const gitUrl_ = gitLabProject?.http_url_to_repo;
+
+  const mainButton = getMainActionByEntity(itemType, slug, gitUrl_ ?? "");
 
   return (
     <div className="container-entity-listBar">

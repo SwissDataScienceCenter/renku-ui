@@ -23,7 +23,7 @@ import { GitlabProjectResponse } from "./Project";
 const projectGitlabApi = createApi({
   reducerPath: "projectGitlab",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
-  keepUnusedDataFor: 10,
+  tagTypes: ["GitLabProject"],
   endpoints: (builder) => ({
     getProjectById: builder.query<GitlabProjectResponse, number>({
       query: (projectId: number) => {
@@ -31,9 +31,27 @@ const projectGitlabApi = createApi({
           url: `${projectId}`,
         };
       },
+      providesTags: (result) =>
+        result
+          ? [{ id: result.path_with_namespace, type: "GitLabProject" }]
+          : [],
     }),
+    getProjectByPathWithNamespace: builder.query<GitlabProjectResponse, string>(
+      {
+        query: (pathWithNamespace: string) => {
+          return {
+            url: encodeURIComponent(pathWithNamespace),
+          };
+        },
+        providesTags: (result) =>
+          result
+            ? [{ id: result.path_with_namespace, type: "GitLabProject" }]
+            : [],
+      }
+    ),
   }),
 });
 
 export default projectGitlabApi;
-export const { useGetProjectByIdQuery } = projectGitlabApi;
+export const { useGetProjectByIdQuery, useGetProjectByPathWithNamespaceQuery } =
+  projectGitlabApi;

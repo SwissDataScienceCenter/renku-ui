@@ -22,11 +22,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { EntityType } from "../../kgSearch";
-import { KgAuthor } from "../../kgSearch/KgSearch";
+import { KgAuthor, KgSearchResult } from "../../kgSearch/kgSearch.types";
 import {
   SearchEntitiesQueryParams,
   useSearchEntitiesQuery,
-} from "../../kgSearch/KgSearchApi";
+} from "../../kgSearch/kgSearch.api";
 import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
 import { InfoAlert } from "../../../components/Alert";
 import { Docs } from "../../../utils/constants/Docs";
@@ -47,6 +47,7 @@ import { Notebook } from "../../../notebooks/components/Session";
 import { stateToSearchString } from "../../kgSearch/KgSearchState";
 import { displaySlice, useDisplaySelector } from "../../display";
 import { EnvironmentLogs } from "../../../components/Logs";
+import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -171,31 +172,31 @@ function getProjectFormatted(project: Record<string, any>) {
 }
 
 interface ProjectListProps {
-  projects: Record<string, any>[];
+  projects: KgSearchResult[];
   gridDisplay: boolean;
 }
 function ProjectListRows({ projects, gridDisplay }: ProjectListProps) {
-  const projectItems = projects?.map((project) => getProjectFormatted(project));
+  const projectItems = projects?.map((project) =>
+    mapSearchResultToEntity(project)
+  );
 
   return (
-    <Fragment>
-      <ListDisplay
-        key="list-projects"
-        itemsType="project"
-        search={null}
-        currentPage={null}
-        gridDisplay={gridDisplay}
-        totalItems={projectItems.length}
-        perPage={projectItems.length}
-        items={projectItems}
-        gridColumnsBreakPoint={{
-          default: 2,
-          1100: 2,
-          700: 2,
-          500: 1,
-        }}
-      />
-    </Fragment>
+    <ListDisplay
+      key="list-projects"
+      itemsType="project"
+      search={null}
+      currentPage={null}
+      gridDisplay={gridDisplay}
+      totalItems={projectItems.length}
+      perPage={projectItems.length}
+      items={projectItems}
+      gridColumnsBreakPoint={{
+        default: 2,
+        1100: 2,
+        700: 2,
+        500: 1,
+      }}
+    />
   );
 }
 
@@ -233,7 +234,7 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
     projectsToShow = <Loader />;
   } else {
     projectsToShow =
-      projects?.length > 0 ? (
+      projects != null && projects.length > 0 ? (
         <ProjectListRows projects={projects} gridDisplay={false} />
       ) : sessionsFormatted.length === 0 ? (
         <p className="rk-dashboard-section-header">

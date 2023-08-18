@@ -1,5 +1,5 @@
 import { Visibilities } from "../visibility/Visibility";
-import { EntityType } from "../../features/kgSearch/KgSearch";
+import { EntityType } from "../../features/kgSearch/kgSearch.types";
 import { EntityCreator } from "../entities/Creators";
 
 export interface Creator {
