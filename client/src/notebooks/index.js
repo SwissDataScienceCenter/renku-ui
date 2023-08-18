@@ -23,11 +23,7 @@
  *
  */
 
-import {
-  CheckNotebookStatus,
-  Notebooks,
-  StartNotebookServer,
-} from "./Notebooks.container";
+import { CheckNotebookStatus, Notebooks } from "./Notebooks.container";
 import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
 import {
   CheckNotebookIcon,
@@ -43,5 +39,4 @@ export {
   NotebooksDisabled,
   NotebooksHelper,
   ServerOptionRange,
-  StartNotebookServer,
 };

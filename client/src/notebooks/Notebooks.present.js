@@ -55,7 +55,6 @@ import { Url, appendCustomUrlPath } from "../utils/helpers/url";
 import {
   CheckNotebookIcon,
   ServerOptionRange,
-  StartNotebookServer,
   mergeEnumOptions,
 } from "./NotebookStart.present";
 import "./Notebooks.css";
@@ -854,6 +853,5 @@ export {
   ServerOptionRange,
   SessionJupyter,
   SessionLogs,
-  StartNotebookServer,
   mergeEnumOptions,
 };
