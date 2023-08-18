@@ -63,12 +63,13 @@ function ListBar({
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
   const colorByType = stylesByItemType(itemType);
 
+  // Get the git URL from the GitLab API
   const { data: gitLabProject } = useGetProjectByPathWithNamespaceQuery(slug, {
     skip: itemType !== EntityType.Project,
   });
-  const gitUrl_ = gitLabProject?.http_url_to_repo;
+  const gitUrl = gitLabProject?.http_url_to_repo;
 
-  const mainButton = getMainActionByEntity(itemType, slug, gitUrl_ ?? "");
+  const mainButton = getMainActionByEntity(itemType, slug, gitUrl ?? "");
 
   return (
     <div className="container-entity-listBar">
