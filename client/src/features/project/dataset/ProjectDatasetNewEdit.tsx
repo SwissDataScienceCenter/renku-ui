@@ -100,7 +100,6 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
   const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
-  const httpProjectUrl = projectMetadata.httpUrl;
   const projectPathWithNamespace = projectMetadata.pathWithNamespace;
 
   const projectPath = projectMetadata.path;
@@ -120,10 +119,12 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
 
   const onCancel = React.useCallback(() => {
     const targetPath = { path: projectPathWithNamespace };
-    const UrlData = dataset
-      ? { ...targetPath, target: dataset.name }
-      : targetPath;
-    const pathname = Url.get(Url.pages.project.datasets, UrlData);
+    const pathname = dataset
+      ? Url.get(Url.pages.project.datasets.dataset, {
+          ...targetPath,
+          dataset: dataset.name,
+        })
+      : Url.get(Url.pages.project.datasets.base, { ...targetPath });
     history.push({ pathname });
   }, [dataset, history, projectPathWithNamespace]);
 
@@ -179,7 +180,6 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
       fetchDatasets={props.fetchDatasets}
       initialized={true}
       history={props.history}
-      httpProjectUrl={httpProjectUrl}
       location={props.location}
       notifications={props.notifications}
       onCancel={onCancel}

@@ -40,5 +40,6 @@ export interface CoreErrorResponse {
 
 export interface CoreResponse {
   error?: CoreErrorContent;
+  // ? we should avoid `any`, but this is meant to be re-defined when extending the interface
   result?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }

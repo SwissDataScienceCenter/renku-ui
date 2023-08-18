@@ -205,7 +205,7 @@ function DeleteDataset(props: DeleteDatasetProps) {
     setServerErrors(undefined);
     setSubmitLoaderText(undefined);
     deleteDataset({
-      gitUrl: props.httpProjectUrl,
+      gitUrl: props.externalUrl,
       name: props.dataset.name,
       versionUrl: props.versionUrl,
     });

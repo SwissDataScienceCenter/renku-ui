@@ -190,12 +190,29 @@ function projectPageUrlBuilder(subSection) {
 }
 
 /**
- * Construct a URL for a project page.
+ * Construct a URL for a project session page.
  * @returns {function} A function to construct a URL from data.
  */
 function projectSessionUrlBuilder() {
   return (data) => {
     return `/projects/${data.namespace}/${data.path}/sessions/show/${data.server}`;
+  };
+}
+
+/**
+ * Construct a URL for a project dataset page.
+ * @returns {function} A function to construct a URL from data.
+ * @param {string} subSection
+ */
+function projectDatabaseUrlBuilder(subSection = "") {
+  return (data) => {
+    let url =
+      data.namespace && data.namespace.length
+        ? `/projects/${data.namespace}/${data.path}/datasets`
+        : `/projects/${data.path}/datasets`;
+    if (data.dataset) url += `/${data.dataset}`;
+    if (subSection) url += subSection;
+    return url;
   };
 }
 
@@ -319,12 +336,19 @@ const Url = {
         "/projects/new?data=eyJ0aXRsZSI6InRlC3QifQ==",
       ]),
       datasets: {
-        base: new UrlRule(projectPageUrlBuilder("/datasets"), ["path"], null, [
+        base: new UrlRule(projectDatabaseUrlBuilder(), ["path"], null, [
           "/projects/namespace/path/datasets",
-          "/projects/namespace/path/datasets/target",
           "/projects/group/subgroup/path/datasets",
-          "/projects/group/subgroup/path/datasets/target",
         ]),
+        dataset: new UrlRule(
+          projectDatabaseUrlBuilder(),
+          ["path", "dataset"],
+          null,
+          [
+            "/projects/namespace/path/datasets/dataset",
+            "/projects/group/subgroup/path/datasets/dataset",
+          ]
+        ),
       },
       file: new UrlRule(
         projectPageUrlBuilder("/files/blob/"),
