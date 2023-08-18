@@ -83,6 +83,8 @@ export const datasetsCoreApi = createApi({
         // files must be added after the dataset is created
         const groomedDataset = { ...dataset };
         if ("files" in groomedDataset) delete groomedDataset.files;
+        if (groomedDataset.images && !groomedDataset.images.length)
+          delete groomedDataset.images;
         return {
           body: { ...groomedDataset, branch, git_url: gitUrl },
           method: "POST",

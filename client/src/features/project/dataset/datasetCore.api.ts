@@ -42,7 +42,7 @@ export type PostDataset = {
   creators: Partial<Creator>[];
   description: string;
   files?: PostDatasetFile[];
-  images: DatasetImage[];
+  images?: DatasetImage[];
   keywords: string[];
   name: string;
   title: string;
