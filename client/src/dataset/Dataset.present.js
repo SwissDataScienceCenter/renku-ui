@@ -263,7 +263,13 @@ function ErrorAfterCreation(props) {
     <Link
       className="float-right me-1 mb-1"
       id="editDatasetTooltip"
-      to={{ pathname: "modify", state: { dataset: props.dataset } }}
+      to={(location) => ({
+        ...location,
+        pathname: location.pathname.endsWith("/")
+          ? location.pathname + "modify"
+          : location.pathname + "/modify",
+        state: { dataset: props.dataset },
+      })}
     >
       <Button size="sm" color="danger" className="btn-icon-text">
         <FontAwesomeIcon icon={faPen} color="dark" /> Edit
@@ -356,10 +362,13 @@ function EditDatasetButton({
       className="float-right mb-1"
       id="editDatasetTooltip"
       data-cy="edit-dataset-button"
-      to={{
-        pathname: "modify",
+      to={(location) => ({
+        ...location,
+        pathname: location.pathname.endsWith("/")
+          ? location.pathname + "modify"
+          : location.pathname + "/modify",
         state: { dataset, files, isFilesFetching, filesFetchError },
-      }}
+      })}
     >
       <Button
         className="btn-rk-white text-rk-pink icon-button"
