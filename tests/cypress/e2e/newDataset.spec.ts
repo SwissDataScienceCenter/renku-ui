@@ -65,7 +65,7 @@ describe("Project new dataset", () => {
     cy.wait("@addFile");
     cy.url().should(
       "include",
-      `projects/${projectPath}/datasets/new-dataset-completed/`
+      `projects/${projectPath}/datasets/new-dataset-completed`
     );
   });
 
@@ -95,7 +95,7 @@ describe("Project new dataset", () => {
     cy.wait("@addFile");
     cy.url().should(
       "include",
-      `projects/${projectPath}/datasets/new-dataset-completed/`
+      `projects/${projectPath}/datasets/new-dataset-completed`
     );
   });
 
@@ -158,6 +158,7 @@ describe("Project new dataset", () => {
     cy.get_cy("file-name-column").contains("New Folder With Items");
     cy.get_cy("delete-file-button").click();
     cy.get_cy("file-name-column").should("not.exist");
+
     // load multiple files
     fixtures.uploadDatasetFile();
     cy.get('[data-cy="dropzone"]').attachFile(
@@ -167,16 +168,10 @@ describe("Project new dataset", () => {
     cy.get('[data-cy="dropzone"]').attachFile("/datasets/files/bigFile.bin", {
       subjectType: "drag-n-drop",
     });
-    // Needed for tests on the server
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000, { log: false });
     cy.get('[data-cy="dropzone"]').attachFile(
       "/datasets/files/count_flights.txt",
       { subjectType: "drag-n-drop" }
     );
-    // Needed for tests on the server
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(5000, { log: false });
     cy.wait("@uploadDatasetFile");
     cy.get_cy("file-name-column").should("have.length", 3);
   });
