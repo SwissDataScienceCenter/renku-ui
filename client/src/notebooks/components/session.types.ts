@@ -43,7 +43,9 @@ interface LogsData {
 }
 
 export interface SessionHandlers {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   fetchLogs: Function;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   stopNotebook: Function;
 }
 
@@ -58,6 +60,7 @@ export interface Notebook {
       };
     };
     started: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     commits?: any;
     image: string;
     name: string;
@@ -70,7 +73,9 @@ export interface Notebook {
     fetching: boolean;
   };
   available: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fetched: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fetching: any;
 }
 
