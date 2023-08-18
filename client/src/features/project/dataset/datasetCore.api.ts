@@ -25,14 +25,6 @@ import type { DatasetImage } from "./dataset.types";
 export type DatasetFormFields = DatasetFormState["form"];
 
 export type DatasetPostClient = {
-  getAllJobStatus(versionUrl: string): Promise<{ jobs: RemoteJob[] }>;
-  postDataset(
-    projectUrl: string,
-    renkuDataset: PostDataset,
-    defaultBranch: string,
-    edit: boolean,
-    versionUrl: string | undefined
-  ): Promise<PostDatasetResponse>;
   uploadSingleFile(
     file: unknown,
     unpackArchive: boolean,
@@ -40,23 +32,16 @@ export type DatasetPostClient = {
   ): Promise<PostImageUploadResponse>;
 };
 
-type JobStatus = "ENQUEUED" | "IN_PROGRESS" | "COMPLETED" | "FAILED";
-
-export type FileUploadJob = {
-  job_id: string;
-  file_url: string;
-  job_status?: JobStatus;
-  extras?: unknown;
-};
-
 type ImageUploadJob = {
   file_id: string;
 };
 
+export type PostDatasetFile = { file_id: string } | { file_url: string };
+
 export type PostDataset = {
   creators: Partial<Creator>[];
   description: string;
-  files: ({ file_id: string } | { file_url: string })[];
+  files?: PostDatasetFile[];
   images: DatasetImage[];
   keywords: string[];
   name: string;
@@ -72,18 +57,6 @@ export type PostDatasetErrorResponse = {
   result: null | undefined;
 };
 
-export type PostDatasetSuccessResponse = {
-  error: null | undefined;
-  result: {
-    remote_branch: string;
-    files?: FileUploadJob[];
-  };
-};
-
-type PostDatasetResponse = {
-  data: PostDatasetErrorResponse | PostDatasetSuccessResponse;
-};
-
 type PostImageUploadSuccessResponse = {
   error: null | undefined;
   result: {
@@ -95,13 +68,7 @@ type PostImageUploadResponse = {
   data: PostDatasetErrorResponse | PostImageUploadSuccessResponse;
 };
 
-type RemoteJob = {
-  job_id: string;
-  state?: JobStatus;
-  extras: unknown;
-};
-
-async function createSubmitDataset(
+export async function createSubmitDataset(
   datasetInput: DatasetFormFields,
   client: DatasetPostClient,
   versionUrl: string
@@ -181,20 +148,6 @@ async function getDatasetImagesForSubmit(
   return uploadedImages ?? [];
 }
 
-function updateJobStatuses(jobs: RemoteJob[], uploadJobs: FileUploadJob[]) {
-  const remoteJobDict = jobs.reduce((acc, job) => {
-    acc[job.job_id] = job;
-    return acc;
-  }, {} as Record<string, RemoteJob>);
-
-  uploadJobs.forEach((localJob) => {
-    const r = remoteJobDict[localJob.job_id];
-    if (r == null) return;
-    localJob.job_status = r.state;
-    localJob.extras = r.extras;
-  });
-}
-
 async function uploadDatasetImages(
   client: DatasetPostClient,
   versionUrl: string,
@@ -218,89 +171,4 @@ async function uploadDatasetImages(
       ];
     });
   return result;
-}
-
-type PostDatasetProps = {
-  client: DatasetPostClient;
-  defaultBranch: string;
-  edit: boolean;
-  externalUrl: string;
-  versionUrl: string;
-};
-export async function postDataset(
-  datasetInput: DatasetFormFields,
-  props: PostDatasetProps
-): Promise<{ dataset: PostDataset | null; response: PostDatasetResponse }> {
-  const dataset = await createSubmitDataset(
-    datasetInput,
-    props.client,
-    props.versionUrl
-  );
-  if ("data" in dataset) return { dataset: null, response: dataset };
-
-  // TODO: Convert to RTK query
-  const response = await props.client.postDataset(
-    props.externalUrl,
-    dataset,
-    props.defaultBranch,
-    props.edit,
-    props.versionUrl
-  );
-  return { dataset, response };
-}
-
-type PostDatasetCreationResponse = {
-  problemJobs: FileUploadJob[];
-};
-export async function pollForDatasetCreation(
-  result: PostDatasetSuccessResponse["result"],
-  client: DatasetPostClient,
-  versionUrl: string
-): Promise<PostDatasetCreationResponse> {
-  if (result.files == null) return { problemJobs: [] };
-  const uploadJobs: FileUploadJob[] = result.files
-    .filter((f) => f.job_id != null)
-    .map((f) => ({
-      job_id: f.job_id,
-      file_url: f.file_url,
-      job_status: undefined,
-    }));
-  if (uploadJobs.length < 1) return { problemJobs: [] };
-
-  const POLL_INTERVAL_MS = 5_000;
-  return await new Promise<PostDatasetCreationResponse>((resolve) => {
-    let pollCount = 0;
-    const monitorJobs = setInterval(async () => {
-      try {
-        // Get all the running jobs
-        const response = await client.getAllJobStatus(versionUrl);
-        updateJobStatuses(response.jobs, uploadJobs);
-
-        // If all jobs are completed, we are done
-        if (uploadJobs.every((j) => j.job_status === "COMPLETED")) {
-          clearInterval(monitorJobs);
-          resolve({ problemJobs: [] });
-          return;
-        }
-
-        // If all the jobs have completed or failed, report back about the failed jobs
-        const unfinishedJobs = uploadJobs.filter(
-          (j) => j.job_status !== "COMPLETED"
-        );
-        if (unfinishedJobs.every((j) => j.job_status === "FAILED")) {
-          clearInterval(monitorJobs);
-          resolve({ problemJobs: unfinishedJobs });
-          return;
-        }
-      } finally {
-        if (++pollCount >= 24) {
-          const unfinishedJobs = uploadJobs.filter(
-            (j) => j.job_status !== "COMPLETED"
-          );
-          clearInterval(monitorJobs);
-          resolve({ problemJobs: unfinishedJobs });
-        }
-      }
-    }, POLL_INTERVAL_MS);
-  });
 }

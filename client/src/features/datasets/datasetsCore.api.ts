@@ -19,9 +19,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getCoreVersionedUrl } from "../../utils/helpers/url/versionedUrls";
 import {
+  AddFiles,
+  AddFilesParams,
+  AddFilesResponse,
   DeleteDataset,
   DeleteDatasetParams,
   DeleteDatasetResponse,
+  PostDataset,
+  PostDatasetParams,
+  PostDatasetResponse,
 } from "./datasets.types";
 
 export const datasetsCoreApi = createApi({
@@ -29,6 +35,27 @@ export const datasetsCoreApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/renku" }),
   tagTypes: ["datasets"],
   endpoints: (builder) => ({
+    addFiles: builder.mutation<AddFiles, AddFilesParams>({
+      query: ({ branch, files, gitUrl, name, versionUrl }) => {
+        const url = getCoreVersionedUrl("datasets.add", versionUrl);
+        return {
+          body: { branch, files, git_url: gitUrl, name },
+          method: "POST",
+          url,
+          validateStatus: (response, body) => {
+            return response.status < 400 && !body.error?.code;
+          },
+        };
+      },
+      transformResponse: (response: AddFilesResponse) => {
+        if (!response.result) throw new Error("Unexpected response");
+        return {
+          files: response.result.files,
+          name: response.result.name,
+          remoteBranch: response.result.remote_branch,
+        };
+      },
+    }),
     deleteDataset: builder.mutation<DeleteDataset, DeleteDatasetParams>({
       query: ({ gitUrl, name, versionUrl }) => {
         const body = { git_url: gitUrl, name };
@@ -48,7 +75,36 @@ export const datasetsCoreApi = createApi({
         };
       },
     }),
+    // ? This includes both "create" and "edit" operations
+    postDataset: builder.mutation<PostDataset, PostDatasetParams>({
+      query: ({ branch, dataset, edit, gitUrl, versionUrl }) => {
+        const targetApi = edit ? "datasets.edit" : "datasets.create";
+        const url = getCoreVersionedUrl(targetApi, versionUrl);
+        // files must be added after the dataset is created
+        const groomedDataset = { ...dataset };
+        if ("files" in groomedDataset) delete groomedDataset.files;
+        return {
+          body: { ...groomedDataset, branch, git_url: gitUrl },
+          method: "POST",
+          url,
+          validateStatus: (response, body) => {
+            return response.status < 400 && !body.error?.code;
+          },
+        };
+      },
+      transformResponse: (response: PostDatasetResponse) => {
+        if (!response.result) throw new Error("Unexpected response");
+        return {
+          name: response.result.name,
+          remoteBranch: response.result.remote_branch,
+        };
+      },
+    }),
   }),
 });
 
-export const { useDeleteDatasetMutation } = datasetsCoreApi;
+export const {
+  useAddFilesMutation,
+  useDeleteDatasetMutation,
+  usePostDatasetMutation,
+} = datasetsCoreApi;

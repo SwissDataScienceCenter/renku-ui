@@ -21,6 +21,7 @@ import {
   CoreResponse,
   CoreVersionUrl,
 } from "../../utils/types/coreService.types";
+import { PostDataset as DatasetAsApiBody } from "../project/dataset/datasetCore.api";
 
 export interface DeleteDatasetParams
   extends CoreVersionUrl,
@@ -28,14 +29,57 @@ export interface DeleteDatasetParams
   name: string;
 }
 
+interface DatasetOperationResponse {
+  name: string;
+  remote_branch: string;
+}
+
 export interface DeleteDatasetResponse extends CoreResponse {
-  result?: {
-    name: string;
-    remote_branch: string;
-  };
+  result?: DatasetOperationResponse;
 }
 
 export interface DeleteDataset {
-  name: string; // do we need this?
+  name: string;
+  remoteBranch: string;
+}
+
+export interface PostDatasetParams
+  extends CoreVersionUrl,
+    CoreRepositoryParams {
+  dataset: DatasetAsApiBody;
+  edit: boolean;
+}
+
+export interface PostDataset {
+  name: string;
+  remoteBranch: string;
+}
+
+export interface PostDatasetResponse extends CoreResponse {
+  result?: DatasetOperationResponse;
+}
+
+export interface AddFilesParams extends CoreVersionUrl, CoreRepositoryParams {
+  files: DatasetFile[];
+  name: string;
+}
+
+export interface DatasetFile {
+  file_id?: string;
+  file_path?: string;
+  file_url?: string;
+  job_id?: string;
+}
+export interface AddFilesOperationResponse extends DatasetOperationResponse {
+  files: DatasetFile[];
+}
+
+export interface AddFilesResponse extends CoreResponse {
+  result?: AddFilesOperationResponse;
+}
+
+export interface AddFiles {
+  files: DatasetFile[];
+  name: string;
   remoteBranch: string;
 }
