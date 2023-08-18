@@ -18,7 +18,7 @@
 
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { CheckNotebookIcon } from "./Notebooks.present";
+import { CheckNotebookIcon } from "./NotebookStart.present";
 import { NotebooksCoordinator } from "./Notebooks.state";
 
 function mapNotebookStatusStateToProps(state) {

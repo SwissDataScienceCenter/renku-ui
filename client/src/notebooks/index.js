@@ -25,17 +25,5 @@
 
 import { CheckNotebookStatus } from "./Notebooks.container";
 import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
-import {
-  CheckNotebookIcon,
-  NotebooksDisabled,
-  ServerOptionRange,
-} from "./Notebooks.present";
 
-export {
-  CheckNotebookIcon,
-  CheckNotebookStatus,
-  NotebooksCoordinator,
-  NotebooksDisabled,
-  NotebooksHelper,
-  ServerOptionRange,
-};
+export { CheckNotebookStatus, NotebooksCoordinator, NotebooksHelper };

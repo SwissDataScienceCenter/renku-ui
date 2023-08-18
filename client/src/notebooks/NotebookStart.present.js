@@ -16,9 +16,8 @@
  * limitations under the License.
  */
 
-import React, { Component } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { Input } from "reactstrap";
 import { JupyterIcon } from "../components/Icon";
 import { Loader } from "../components/Loader";
 import { ThrottledTooltip } from "../components/Tooltip";
@@ -26,42 +25,8 @@ import { SessionStatusStateEnum } from "../features/session/sessions.types";
 import { Url } from "../utils/helpers/url";
 import { NotebooksHelper } from "./index";
 
-/**
- * Combine the globalOptions and projectOptions to cover all valid options.
- */
-function mergeEnumOptions(globalOptions, projectOptions, key) {
-  let options = globalOptions[key].options;
-  // default_url can extend the existing options, but not the other ones
-  if (
-    key === "default_url" &&
-    Object.keys(projectOptions).indexOf(key) >= 0 &&
-    globalOptions[key].options.indexOf(projectOptions[key]) === -1
-  )
-    options = [...globalOptions[key].options, projectOptions[key]];
-
-  return options;
-}
-
-class ServerOptionRange extends Component {
-  render() {
-    const { disabled } = this.props;
-    return (
-      <Input
-        type="range"
-        id={this.props.id}
-        value={this.props.selected}
-        onChange={this.props.onChange}
-        min={this.props.range[0]}
-        max={this.props.range[1]}
-        step={this.props.step}
-        disabled={disabled}
-      />
-    );
-  }
-}
-
 // * CheckNotebookIcon code * //
-const CheckNotebookIcon = ({
+export const CheckNotebookIcon = ({
   fetched,
   notebook,
   location,
@@ -147,5 +112,3 @@ const CheckNotebookIcon = ({
     </>
   );
 };
-
-export { CheckNotebookIcon, ServerOptionRange, mergeEnumOptions };
