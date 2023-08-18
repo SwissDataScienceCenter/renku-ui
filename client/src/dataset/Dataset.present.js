@@ -136,21 +136,21 @@ function DisplayProjects(props) {
         <Table size="sm" borderless>
           <thead>
             <tr>
-              <th>Name</th>
-              <th className="text-center">Date Created</th>
-              <th className="text-center">Created By</th>
+              <th className="bg-transparent">Name</th>
+              <th className="bg-transparent text-center">Date Created</th>
+              <th className="bg-transparent text-center">Created By</th>
             </tr>
           </thead>
           <tbody>
             {props.projects.map((project, index) => (
               <tr data-cy="project-using-dataset" key={project.name + index}>
-                <td className="text-break">
+                <td className="bg-transparent text-break">
                   <Link to={`${props.projectsUrl}/${project.path}`}>
                     {project.path}
                   </Link>
                 </td>
                 {project.created && project.created.dateCreated ? (
-                  <td className="text-center">
+                  <td className="bg-transparent text-center">
                     {toHumanDateTime({
                       datetime: project.created.dateCreated,
                       format: "date",
@@ -158,7 +158,9 @@ function DisplayProjects(props) {
                   </td>
                 ) : null}
                 {project.created && project.created.agent ? (
-                  <td className="text-center">{project.created.agent.name}</td>
+                  <td className="bg-transparent text-center">
+                    {project.created.agent.name}
+                  </td>
                 ) : null}
               </tr>
             ))}
@@ -241,16 +243,21 @@ function DisplayInfoTable(props) {
       <tbody className="text-rk-text">
         {source ? (
           <tr>
-            <td className="text-dark fw-bold" style={{ width: "120px" }}>
+            <td
+              className="text-dark fw-bold bg-transparent"
+              style={{ width: "120px" }}
+            >
               Source
             </td>
-            <td>{source}</td>
+            <td className="bg-transparent">{source}</td>
           </tr>
         ) : null}
         {dataset.published?.creator?.length >= 3 ? (
           <tr>
-            <td className="text-dark fw-bold col-auto">Author(s)</td>
-            <td>{authors}</td>
+            <td className="text-dark fw-bold col-auto bg-transparent">
+              Author(s)
+            </td>
+            <td className="bg-transparent">{authors}</td>
           </tr>
         ) : null}
       </tbody>
