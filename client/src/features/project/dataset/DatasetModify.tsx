@@ -467,17 +467,19 @@ export default function DatasetModify(props: DatasetModifyProps) {
               });
             }
 
-            // return when there are no files to add
+            // return when there are no files to add and the branch is not protected
             if (!groomedDataset.files?.length) {
-              await redirectAfterSubmit({
-                datasetId: dataset?.name ?? response.data.name,
-                fetchDatasets,
-                history,
-                projectPathWithNamespace,
-                state: undefined,
-                dispatch,
-                versionUrl,
-              });
+              if (response.data.remoteBranch === defaultBranch) {
+                await redirectAfterSubmit({
+                  datasetId: dataset?.name ?? response.data.name,
+                  fetchDatasets,
+                  history,
+                  projectPathWithNamespace,
+                  state: undefined,
+                  dispatch,
+                  versionUrl,
+                });
+              }
 
               setSubmitting(false);
               return;
@@ -486,9 +488,10 @@ export default function DatasetModify(props: DatasetModifyProps) {
             // step 3: add the files (if any)
             const addFilesParams: AddFilesParams = {
               branch: response.data.remoteBranch ?? defaultBranch,
-              gitUrl: externalUrl,
               files: groomedDataset.files,
+              gitUrl: externalUrl,
               name: groomedDataset.name,
+              versionUrl,
             };
             addFilesMutation(addFilesParams)
               .then(async (filesResponse) => {
@@ -506,15 +509,18 @@ export default function DatasetModify(props: DatasetModifyProps) {
                   return;
                 }
 
-                await redirectAfterSubmit({
-                  datasetId: dataset?.name ?? response.data.name,
-                  fetchDatasets,
-                  history,
-                  projectPathWithNamespace,
-                  state: undefined,
-                  dispatch,
-                  versionUrl,
-                });
+                // ? Do not redirect if the dataset was created in another branch, we should display the warning
+                if (response.data.remoteBranch === defaultBranch) {
+                  await redirectAfterSubmit({
+                    datasetId: dataset?.name ?? response.data.name,
+                    fetchDatasets,
+                    history,
+                    projectPathWithNamespace,
+                    state: undefined,
+                    dispatch,
+                    versionUrl,
+                  });
+                }
 
                 setSubmitting(false);
                 return;
