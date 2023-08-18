@@ -1,7 +1,6 @@
 /**
  * Some nonsense to temporarily work around typescript issues.
  */
-import React from "react";
 
 import {
   Accordion as WrappedAccordion,

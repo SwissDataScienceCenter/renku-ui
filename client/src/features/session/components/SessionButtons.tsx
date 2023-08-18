@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { Button, DropdownItem } from "reactstrap";

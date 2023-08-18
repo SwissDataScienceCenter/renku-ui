@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 import qs from "query-string";
 

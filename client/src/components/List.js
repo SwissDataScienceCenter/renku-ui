@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import Masonry from "react-masonry-css";
 import { Pagination } from "./Pagination";
 import ListCard from "./list/ListCard";

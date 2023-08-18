@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import Masonry from "react-masonry-css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSadCry } from "@fortawesome/free-solid-svg-icons";

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { FormGroup } from "reactstrap";
 import TemplateSelector from "../../../components/templateSelector/TemplateSelector";
 import {

@@ -22,7 +22,7 @@
  *  EntityHeader.tsx
  *  Entity Header component
  */
-import React from "react";
+
 import { useDispatch, useSelector, RootStateOrAny } from "react-redux";
 
 import Creators, { EntityCreator } from "../entities/Creators";

@@ -22,7 +22,7 @@
  *  TemplateSelector.tsx
  *  TemplateSelector component
  */
-import React from "react";
+
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";

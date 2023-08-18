@@ -21,7 +21,7 @@
  *  TemplateVariables.js
  *  Template Variables field group component
  */
-import React, { Component } from "react";
+import { Component } from "react";
 import { toCapitalized as capitalize } from "../../../utils/helpers/HelperFunctions";
 import {
   Button,

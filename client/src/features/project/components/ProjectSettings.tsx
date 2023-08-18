@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { Card, CardBody, Col, Row } from "reactstrap";
 
 import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";

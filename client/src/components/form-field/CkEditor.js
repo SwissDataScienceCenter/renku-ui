@@ -21,7 +21,6 @@
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import RenkuCKEditor from "@renku/ckeditor5-build-renku";
-import React from "react";
 
 function CkEditor({
   data,

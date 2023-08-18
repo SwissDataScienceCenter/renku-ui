@@ -21,7 +21,7 @@
  *  ShareLinkModal.js
  *  Share Link Modal component to create a project
  */
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FormGroup,
   FormText,

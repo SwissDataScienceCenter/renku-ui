@@ -23,7 +23,7 @@
  *  NavBar for logged-in and logged-out users.
  */
 
-import React, { Component, Fragment } from "react";
+import { Component, Fragment } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import {
   UncontrolledDropdown,

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
+import { useState } from "react";
 import cx from "classnames";
 import { Clipboard } from "../Clipboard";
 import { ThrottledTooltip } from "../Tooltip";

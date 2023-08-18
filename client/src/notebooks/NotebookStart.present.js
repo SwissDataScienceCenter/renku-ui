@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, useEffect, useState } from "react";
+import { Component, Fragment, useEffect, useState } from "react";
 import {
   faBook,
   faCog,

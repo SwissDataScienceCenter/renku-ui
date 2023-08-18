@@ -20,7 +20,7 @@ import {
   useSearchEntitiesQuery,
 } from "../../kgSearch/KgSearchApi";
 import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { Link } from "react-router-dom";
 
 import ListDisplay from "../../../components/List";

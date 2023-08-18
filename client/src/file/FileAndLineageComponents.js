@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { Button, ButtonGroup } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faProjectDiagram } from "@fortawesome/free-solid-svg-icons";

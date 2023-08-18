@@ -3,7 +3,6 @@
  * New implementation of the Project component in TypeScript.
  */
 
-import React from "react";
 import type { RouteComponentProps, StaticContext } from "react-router";
 
 import ProjectV1 from "./Project";

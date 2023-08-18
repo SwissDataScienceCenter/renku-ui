@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
 import { FormGroup, FormText } from "reactstrap";

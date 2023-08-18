@@ -17,7 +17,7 @@
  */
 
 import { Progress } from "../../../utils/ts-wrappers";
-import React from "react";
+
 import { InactiveKgProjects } from "../InactiveKgProjects";
 
 interface ActivationProgressProps {

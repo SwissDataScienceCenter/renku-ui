@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Story } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
 

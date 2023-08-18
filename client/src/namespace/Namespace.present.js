@@ -23,7 +23,6 @@
  *  Namespace presentational components.
  */
 
-import React from "react";
 import { Link } from "react-router-dom";
 import { Row, Col } from "reactstrap";
 import { Loader } from "../components/Loader";

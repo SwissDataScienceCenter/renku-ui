@@ -23,7 +23,7 @@
  *  Container components for project overview.
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 
 import { withProjectMapped } from "../Project";
 import {

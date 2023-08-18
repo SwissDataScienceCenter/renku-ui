@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { Row, Col } from "reactstrap";
 
 import type { Params } from "../App.types";
