@@ -23,7 +23,7 @@
  *
  */
 
-import { CheckNotebookStatus, Notebooks } from "./Notebooks.container";
+import { CheckNotebookStatus } from "./Notebooks.container";
 import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
 import {
   CheckNotebookIcon,
@@ -34,7 +34,6 @@ import {
 export {
   CheckNotebookIcon,
   CheckNotebookStatus,
-  Notebooks,
   NotebooksCoordinator,
   NotebooksDisabled,
   NotebooksHelper,
