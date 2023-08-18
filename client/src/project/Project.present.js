@@ -811,20 +811,6 @@ class ProjectViewFiles extends Component {
   }
 }
 
-// eslint-disable-next-line spellcheck/spell-checker
-// TODO(@leafty): replace this with directly using `ProjectSessionsRouter`
-const ProjectSessions = (props) => {
-  return (
-    <Col key="content" xs={12}>
-      <Switch>
-        <Route path={props.notebookServersUrl}>
-          <ProjectSessionsRouter />
-        </Route>
-      </Switch>
-    </Col>
-  );
-};
-
 function ProjectSettings(props) {
   return (
     <Col key="settings">
@@ -1011,10 +997,9 @@ function ProjectView(props) {
             path={props.settingsUrl}
             render={() => <ProjectSettings key="settings" {...props} />}
           />
-          <Route
-            path={props.notebookServersUrl}
-            render={() => <ProjectSessions key="sessions" {...props} />}
-          />
+          <Route path={props.notebookServersUrl}>
+            <ProjectSessionsRouter key="sessions" />
+          </Route>
           <Route component={NotFoundInsideProject} />
         </Switch>
       </Row>
