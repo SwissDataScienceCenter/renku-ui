@@ -98,7 +98,7 @@ function BottomNav(props: AnonymousHomeConfig) {
                 url={Docs.READ_THE_DOCS_ROOT}
               />
               <BottomNavExternalLink title="Get Started" url={tutorialLink} />
-              <BottomNavLink title="Help" to={Url.pages.help.base} />
+              <BottomNavLink title="Help" to={Url.get(Url.pages.help)} />
             </BottomNavSection>
           </Col>
           <Col md={3}>
@@ -119,7 +119,7 @@ function BottomNav(props: AnonymousHomeConfig) {
             <BottomNavSection sectionTitle="About">
               <BottomNavLink
                 title="Renku version"
-                to={Url.pages.help.release}
+                to={Url.get(Url.pages.help.release)}
               />
               <BottomNavExternalLink
                 title="Why Renku?"
@@ -170,10 +170,10 @@ function TopNav(props: AnonymousHomeConfig) {
         align-items-center bg-primary gap-3"
         >
           <div className="d-none d-md-inline-block">
-            <TopNavLink title="Sessions" to={Url.pages.sessions.base} />
+            <TopNavLink title="Sessions" to={Url.get(Url.pages.sessions)} />
           </div>
           <div className="d-none d-md-inline-block">
-            <TopNavLink title="Help" to={Url.pages.help.base} />
+            <TopNavLink title="Help" to={Url.get(Url.pages.help)} />
           </div>
           <Link
             className="btn btn-outline-secondary"
@@ -220,10 +220,10 @@ function TopNav(props: AnonymousHomeConfig) {
                 <TopNavExternalLink title="GitHub" url={Links.GITHUB} />
               </NavItem>
               <NavItem className="d-inline d-md-none nav-item">
-                <TopNavLink title="Sessions" to={Url.pages.sessions.base} />
+                <TopNavLink title="Sessions" to={Url.get(Url.pages.sessions)} />
               </NavItem>
               <NavItem className="d-inline d-md-none nav-item">
-                <TopNavLink title="Help" to={Url.pages.help.base} />
+                <TopNavLink title="Help" to={Url.get(Url.pages.help)} />
               </NavItem>
               <NavItem className="nav-item">
                 <RenkuToolbarNotifications {...props} />
