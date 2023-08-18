@@ -537,26 +537,25 @@ export default function DatasetView(props) {
         }
         {dataset.insideKg === false && props.projectInsideKg === true ? (
           <WarnAlert className="not-in-kg-warning">
-            <strong data-cy="not-in-kg-warning">
-              This dataset is not in the Knowledge Graph;
-            </strong>{" "}
-            this means that some operations on it are not possible.
-            <br />
-            <br />
-            If the dataset was created recently, and the Knowledge Graph
-            integration for the project is active, the dataset should be added
-            to the Knowledge Graph soon, you can&nbsp;
-            <Button
-              size="sm"
-              color="warning"
-              onClick={() => window.location.reload()}
-            >
-              refresh the page
-            </Button>{" "}
-            to see if the status changed.
-            <br />
-            <br />
-            For more information about the Knowledge Graph status you can go to
+            <p>
+              <strong data-cy="not-in-kg-warning">
+                The metadata for this dataset is being indexed.
+              </strong>{" "}
+              Some features will not be available until processing completes.
+            </p>
+            <p>
+              If the dataset was created recently, indexing should complete
+              soon. You can&nbsp;
+              <Button
+                size="sm"
+                color="warning"
+                onClick={() => window.location.reload()}
+              >
+                refresh the page
+              </Button>{" "}
+              to see if the status changed.
+            </p>
+            For more information about the indexing status you can go to
             the&nbsp;
             <Link className="btn btn-sm btn-warning" to={settingsUrl}>
               project settings page
