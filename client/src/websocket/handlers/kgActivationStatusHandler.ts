@@ -55,21 +55,21 @@ function processStatusForNotifications(
       if (status === 100) {
         notifications.addSuccess(
           notifications.Topics.KG_ACTIVATION,
-          `The activation of the project in KG has finalized.`,
+          "Project indexing has been activated.",
           "/inactive-kg-projects",
           "Go to activation page",
           "/inactive-kg-projects",
-          "Check the status of all projects pending to activate in the Knowledge Graph."
+          "Check the status of projects that need to be indexed."
         );
       }
       if (status === -2) {
         notifications.addError(
           notifications.Topics.KG_ACTIVATION,
-          `The activation of the project in KG has finalized with error.`,
+          "Project indexing has been activated, but with errors.",
           "/inactive-kg-projects",
           "Go to activation page",
           "/inactive-kg-projects",
-          "Check the status of all projects pending to activate in the Knowledge Graph."
+          "Check the status of projects that need to be indexed"
         );
       }
     }
