@@ -55,6 +55,18 @@ function KgSearch<T extends FixturesConstructor>(Parent: T) {
       }).as(name);
       return this;
     }
+
+    getRecentlyViewedEntities(
+      name = "getRecentlyViewedEntities",
+      fixture = "kgSearch/recently-viewed-entities.json"
+    ) {
+      const options = this.useMockedData ? { fixture } : undefined;
+      cy.intercept(
+        "/ui-server/api/kg/current-user/recently-viewed*",
+        options
+      ).as(name);
+      return this;
+    }
   };
 }
 

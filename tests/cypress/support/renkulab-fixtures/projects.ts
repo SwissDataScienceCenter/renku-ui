@@ -40,15 +40,15 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    getLastVisitedProjects(
-      name = "getLastVisitedProjects",
-      fixture = "projects/last-visited-projects.json"
-    ) {
-      cy.intercept("/ui-server/api/last-projects/*", {
-        fixture,
-      }).as(name);
-      return this;
-    }
+    // getLastVisitedProjects(
+    //   name = "getLastVisitedProjects",
+    //   fixture = "projects/last-visited-projects.json"
+    // ) {
+    //   cy.intercept("/ui-server/api/last-projects/*", {
+    //     fixture,
+    //   }).as(name);
+    //   return this;
+    // }
 
     projects(name = "getProjects", fixture = "projects.json") {
       cy.intercept(
@@ -85,6 +85,20 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         `/ui-server/api/projects/${encodeURIComponent(
           path
         )}?statistics=${statistics}&doNotTrack=*`,
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    // Same as above but for queries triggered by RTK Query
+    getProjectRTK(
+      path = "",
+      name = "getProjectRTK",
+      result = "projects/project.json"
+    ) {
+      const fixture = this.useMockedData ? { fixture: result } : undefined;
+      cy.intercept(
+        `/ui-server/api/projects/${encodeURIComponent(path)}`,
         fixture
       ).as(name);
       return this;

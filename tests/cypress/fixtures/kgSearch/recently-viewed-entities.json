@@ -1,0 +1,83 @@
+[
+  {
+    "_links": [
+      {
+        "rel": "details",
+        "href": "https://dev.renku.ch/knowledge-graph/projects/e2e/nuevo-projecto"
+      }
+    ],
+    "creator": "e2e User",
+    "type": "project",
+    "matchingScore": 1,
+    "name": "nuevo-projecto",
+    "slug": "e2e/nuevo-projecto",
+    "path": "e2e/nuevo-projecto",
+    "namespace": "e2e",
+    "namespaces": [
+      {
+        "rel": "e2e",
+        "namespace": "e2e"
+      }
+    ],
+    "visibility": "public",
+    "date": "2022-01-20T14:14:53Z",
+    "dateCreated": "2022-01-20T14:14:53Z",
+    "dateModified": "2023-08-21T12:19:32.181Z",
+    "keywords": [],
+    "images": []
+  },
+  {
+    "_links": [
+      {
+        "rel": "details",
+        "href": "https://dev.renku.ch/knowledge-graph/projects/e2e/testing-datasets"
+      }
+    ],
+    "creator": "e2e User",
+    "type": "project",
+    "matchingScore": 1,
+    "name": "testing-datasets",
+    "slug": "e2e/testing-datasets",
+    "path": "e2e/testing-datasets",
+    "namespace": "e2e",
+    "namespaces": [
+      {
+        "rel": "e2e",
+        "namespace": "e2e"
+      }
+    ],
+    "visibility": "public",
+    "date": "2022-01-20T14:14:53Z",
+    "dateCreated": "2022-01-20T14:14:53Z",
+    "dateModified": "2023-08-21T12:19:32.181Z",
+    "keywords": [],
+    "images": []
+  },
+  {
+    "_links": [
+      {
+        "rel": "details",
+        "href": "https://dev.renku.ch/knowledge-graph/projects/e2e/local-test-project"
+      }
+    ],
+    "creator": "e2e User",
+    "type": "project",
+    "matchingScore": 1,
+    "name": "local-test-project",
+    "slug": "e2e/local-test-project",
+    "path": "e2e/local-test-project",
+    "namespace": "e2e",
+    "namespaces": [
+      {
+        "rel": "e2e",
+        "namespace": "e2e"
+      }
+    ],
+    "visibility": "public",
+    "date": "2022-01-20T14:14:53Z",
+    "dateCreated": "2022-01-20T14:14:53Z",
+    "dateModified": "2023-08-21T12:19:32.181Z",
+    "keywords": [],
+    "images": []
+  }
+]

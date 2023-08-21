@@ -25,6 +25,7 @@ import {
 import "../support/utils";
 
 const findProject = (path, projects) => {
+  console.log({ path, projects });
   return projects.find(
     (result) => result.response.body.path_with_namespace === path
   );
@@ -41,77 +42,68 @@ describe("dashboard", () => {
     fixtures
       .projects()
       .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/empty-last-visited-projects.json"
+      .getRecentlyViewedEntities(
+        "getRecentlyViewedEntities",
+        "kgSearch/no-recently-viewed-entities.json"
       )
       .noActiveProjects("getNoActiveProjects");
 
     cy.visit("/");
     cy.wait("@getUser");
     cy.wait("@getEntities");
-    cy.wait("@getLastVisitedProjects");
+    cy.wait("@getRecentlyViewedEntities");
     cy.wait("@getNoActiveProjects");
 
-    cy.get_cy("dashboard-title").should(
-      "have.text",
-      "Renku Dashboard - E2E User"
-    );
-    cy.get_cy("project-alert").should(
-      "contain.text",
-      "You do not have any projects yet"
-    );
-    cy.get_cy("projects-container").should(
-      "contain.text",
-      "You do not have any recently-visited projects"
-    );
+    cy.get_cy("dashboard-title")
+      .should("be.visible")
+      .and("have.text", "Renku Dashboard - E2E User");
+    cy.get_cy("project-alert")
+      .should("be.visible")
+      .and("contain.text", "You do not have any projects yet");
+    cy.get_cy("projects-container")
+      .should("be.visible")
+      .and("contain.text", "You do not have any recently-visited projects");
     cy.get_cy("explore-other-projects-btn").should("be.visible");
-    cy.get_cy("inactive-kg-project-alert").should("exist");
+    cy.get_cy("inactive-kg-project-alert").should("be.visible");
   });
 
   it("user does not have own project but has visited projects", () => {
     fixtures
       .projects()
       .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
-      .getLastVisitedProjects();
+      .getRecentlyViewedEntities();
     const files = {
-      "lorenzo.cavazzi.tech/readme-file-dev": 30929,
       "e2e/nuevo-projecto": 44966,
       "e2e/testing-datasets": 43781,
       "e2e/local-test-project": 39646,
     };
     // fixture landing page project data
-    for (const filesKey in files)
-      fixtures.project(
+    for (const filesKey in files) {
+      fixtures.getProjectRTK(
         filesKey,
-        "projectLanding",
-        `projects/project_${files[filesKey]}.json`,
-        false
+        "getProject",
+        `projects/project_${files[filesKey]}.json`
       );
+    }
 
     cy.visit("/");
     let projects;
     cy.wait("@getUser");
-    cy.wait("@getLastVisitedProjects").then(
-      (result) => (projects = result.response.body.projects)
+    cy.wait("@getRecentlyViewedEntities").then(
+      (result) => (projects = result.response.body)
     );
-    cy.wait([
-      "@projectLanding",
-      "@projectLanding",
-      "@projectLanding",
-      "@projectLanding",
-    ]).then((results) => {
-      const firstProject = findProject(projects[0], results);
+    cy.wait(Object.keys(files).map((_) => "@getProject")).then((results) => {
+      const firstProject = findProject(projects[0].slug, results);
       const projectData = firstProject.response?.body;
       cy.get_cy("projects-container")
         .find('[data-cy="list-card-title"]')
         .first()
-        .should("have.text", projectData.name);
+        .should("be.visible")
+        .and("have.text", projectData.name);
       cy.get_cy("explore-other-projects-btn").should("be.visible");
-      cy.get_cy("project-alert").should(
-        "contain.text",
-        "You do not have any projects yet"
-      );
+      cy.get_cy("project-alert")
+        .should("be.visible")
+        .and("contain.text", "You do not have any projects yet");
       cy.get_cy("inactive-kg-project-alert").should("not.exist");
     });
   });
@@ -120,45 +112,35 @@ describe("dashboard", () => {
     fixtures
       .projects()
       .entitySearch("getEntities", "kgSearch/search.json", "7")
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/last-visited-projects-5.json"
-      );
+      .getRecentlyViewedEntities();
     const files = {
-      "lorenzo.cavazzi.tech/readme-file-dev": 30929,
+      "e2e/nuevo-projecto": 44966,
       "e2e/testing-datasets": 43781,
       "e2e/local-test-project": 39646,
-      "e2e/nuevo-project": 44966,
-      "e2e/local-test-project-2": 44967,
     };
     // fixture landing page project data
-    for (const filesKey in files)
-      fixtures.project(
+    for (const filesKey in files) {
+      fixtures.getProjectRTK(
         filesKey,
         "getProject",
-        `projects/project_${files[filesKey]}.json`,
-        false
+        `projects/project_${files[filesKey]}.json`
       );
+    }
 
     cy.visit("/");
     let projects;
     cy.wait("@getUser");
-    cy.wait("@getLastVisitedProjects").then(
-      (result) => (projects = result.response.body.projects)
+    cy.wait("@getRecentlyViewedEntities").then(
+      (result) => (projects = result.response.body)
     );
-    cy.wait([
-      "@getProject",
-      "@getProject",
-      "@getProject",
-      "@getProject",
-      "@getProject",
-    ]).then((results) => {
-      const firstProject = findProject(projects[0], results);
+    cy.wait(Object.keys(files).map((_) => "@getProject")).then((results) => {
+      const firstProject = findProject(projects[0].slug, results);
       const projectData = firstProject.response?.body;
       cy.get_cy("projects-container")
         .find('[data-cy="list-card-title"]')
         .first()
-        .should("have.text", projectData.name);
+        .should("be.visible")
+        .and("have.text", projectData.name);
       cy.get_cy("project-alert").should("not.exist");
       cy.get_cy("explore-other-projects-btn").should("not.exist");
       cy.get_cy("view-my-projects-btn").should("be.visible");
@@ -169,10 +151,7 @@ describe("dashboard", () => {
     fixtures
       .projects()
       .entitySearch("getEntities", "kgSearch/search.json", "7")
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/last-visited-projects-5.json"
-      )
+      .getRecentlyViewedEntities()
       .getSessions("getSessions", "*", "sessions/sessionsWithError.json")
       .getProjectCommits();
     const files = {
@@ -185,13 +164,14 @@ describe("dashboard", () => {
       "e2e/local-test-project-2": 44967,
     };
     // fixture landing page project data
-    for (const filesKey in files)
+    for (const filesKey in files) {
       fixtures.project(
         filesKey,
         "getProject",
         `projects/project_${files[filesKey]}.json`,
         false
       );
+    }
 
     fixtures.project(
       "lorenzo.cavazzi.tech/readme-file-dev",
@@ -206,27 +186,31 @@ describe("dashboard", () => {
     cy.wait("@getSessions");
     cy.get_cy("session-container").should("be.visible");
     cy.get_cy("link-home").click({ force: true }); // eslint-disable-line cypress/no-force
-    cy.wait("@getLastVisitedProjects");
+    cy.wait("@getRecentlyViewedEntities");
     cy.get_cy("container-session").should("have.length", 2);
     cy.get_cy("container-session").should("have.length", 2);
     cy.get_cy("container-session")
       .first()
       .find(".session-time")
-      .should("contain.text", "Error");
+      .should("be.visible")
+      .and("contain.text", "Error");
     cy.get_cy("container-session")
       .first()
       .find(".session-info")
-      .should("contain.text", "master");
+      .should("be.visible")
+      .and("contain.text", "master");
     cy.get_cy("container-session")
       .first()
       .find(".session-icon")
-      .should("have.text", "Error");
+      .should("be.visible")
+      .and("have.text", "Error");
     cy.get_cy("container-session")
       .first()
       .find(".entity-action")
       .find("button")
       .first()
-      .should("contain.text", "Stop");
+      .should("be.visible")
+      .and("contain.text", "Stop");
   });
 });
 
@@ -239,9 +223,9 @@ describe("dashboard message", () => {
       .userTest()
       .projects()
       .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/empty-last-visited-projects.json"
+      .getRecentlyViewedEntities(
+        "getRecentlyViewedEntities",
+        "kgSearch/no-recently-viewed-entities.json"
       )
       .noActiveProjects("getNoActiveProjects");
   });
@@ -250,7 +234,7 @@ describe("dashboard message", () => {
     cy.visit("/");
     cy.wait("@getUser");
     cy.wait("@getEntities");
-    cy.wait("@getLastVisitedProjects");
+    cy.wait("@getRecentlyViewedEntities");
     cy.wait("@getNoActiveProjects");
   };
 
