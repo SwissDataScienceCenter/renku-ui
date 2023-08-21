@@ -60,7 +60,6 @@ import SimpleSessionButton from "./SimpleSessionButton";
 
 interface SessionButtonProps {
   className?: string;
-  enableCreateSessionLink?: boolean;
   fullPath: string;
   gitUrl?: string;
   runningSessionName?: string;
@@ -68,7 +67,6 @@ interface SessionButtonProps {
 
 export default function SessionButton({
   className,
-  enableCreateSessionLink,
   fullPath,
   gitUrl,
   runningSessionName,
@@ -125,53 +123,38 @@ export default function SessionButton({
           </Link>
         </DropdownItem>
         {gitUrl && <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />}
-        {enableCreateSessionLink && (
-          <>
-            <DropdownItem divider />
-            <DropdownItem>
-              <Link
-                className="text-decoration-none"
-                to={{
-                  pathname: sessionStartUrl,
-                  search: new URLSearchParams({
-                    showCreateLink: "1",
-                  }).toString(),
-                }}
-              >
-                <FontAwesomeIcon
-                  className={cx("text-rk-green", "fa-w-14", "me-2")}
-                  fixedWidth
-                  icon={faLink}
-                />
-                Create session link
-              </Link>
-            </DropdownItem>
-          </>
-        )}
+        <DropdownItem divider />
+        <DropdownItem>
+          <Link
+            className="text-decoration-none"
+            to={{
+              pathname: sessionStartUrl,
+              search: new URLSearchParams({
+                showCreateLink: "1",
+              }).toString(),
+            }}
+          >
+            <FontAwesomeIcon
+              className={cx("text-rk-green", "fa-w-14", "me-2")}
+              fixedWidth
+              icon={faLink}
+            />
+            Create session link
+          </Link>
+        </DropdownItem>
       </ButtonWithMenu>
     );
   }
 
-  return (
-    <SessionActions
-      className={className}
-      enableCreateSessionLink={enableCreateSessionLink}
-      session={runningSession}
-    />
-  );
+  return <SessionActions className={className} session={runningSession} />;
 }
 
 interface SessionActionsProps {
   className?: string;
-  enableCreateSessionLink?: boolean;
   session: Session;
 }
 
-function SessionActions({
-  className,
-  enableCreateSessionLink,
-  session,
-}: SessionActionsProps) {
+function SessionActions({ className, session }: SessionActionsProps) {
   const history = useHistory();
 
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -371,7 +354,7 @@ function SessionActions({
     </DropdownItem>
   );
 
-  const createSessionLinkAction = enableCreateSessionLink && (
+  const createSessionLinkAction = (
     <>
       <DropdownItem divider />
       <DropdownItem>
