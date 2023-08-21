@@ -38,8 +38,7 @@ export interface CoreErrorResponse {
   error: CoreErrorContent;
 }
 
-export interface CoreResponse {
+export interface CoreResponse<T> {
   error?: CoreErrorContent;
-  // ? we should avoid `any`, but this is meant to be re-defined when extending the interface
-  result?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  result?: T;
 }

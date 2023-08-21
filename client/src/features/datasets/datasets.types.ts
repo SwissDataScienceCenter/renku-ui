@@ -34,9 +34,7 @@ interface DatasetOperationResponse {
   remote_branch: string;
 }
 
-export interface DeleteDatasetResponse extends CoreResponse {
-  result?: DatasetOperationResponse;
-}
+export type DeleteDatasetResponse = CoreResponse<DatasetOperationResponse>;
 
 export interface DeleteDataset {
   name: string;
@@ -55,9 +53,7 @@ export interface PostDataset {
   remoteBranch: string;
 }
 
-export interface PostDatasetResponse extends CoreResponse {
-  result?: DatasetOperationResponse;
-}
+export type PostDatasetResponse = CoreResponse<DatasetOperationResponse>;
 
 export interface AddFilesParams extends CoreVersionUrl, CoreRepositoryParams {
   files: DatasetFile[];
@@ -74,9 +70,7 @@ export interface AddFilesOperationResponse extends DatasetOperationResponse {
   files: DatasetFile[];
 }
 
-export interface AddFilesResponse extends CoreResponse {
-  result?: AddFilesOperationResponse;
-}
+export type AddFilesResponse = CoreResponse<AddFilesOperationResponse>;
 
 export interface AddFiles {
   files: DatasetFile[];
