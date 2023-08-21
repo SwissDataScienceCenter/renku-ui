@@ -325,7 +325,10 @@ function formatServerError(error: ServerError) {
   if (error.source === "edit")
     return (
       <div>
-        <p>Some files could not be updated.</p>
+        <p>
+          Metadata changes were successfully applied, but some files could not
+          be updated.
+        </p>
         <p>
           {error.error.userMessage
             ? error.error.userMessage
@@ -503,8 +506,20 @@ export default function DatasetModify(props: DatasetModifyProps) {
                   const error = fileCoreError
                     ? { ...fileCoreError, reason: fileCoreError.devMessage }
                     : { reason: filesResponse.error.toString() };
-                  setError({ source: "general", error });
                   dispatch(setFiles([]));
+                  // ? redirect to the dataset page if dataset was created
+                  if (!edit) {
+                    await redirectAfterSubmit({
+                      datasetId: response.data.name,
+                      fetchDatasets,
+                      history,
+                      projectPathWithNamespace,
+                      state: { errorOnCreation: true },
+                      dispatch,
+                      versionUrl,
+                    });
+                  }
+                  setError({ source: "edit", error });
                   setSubmitting(false);
                   return;
                 }
