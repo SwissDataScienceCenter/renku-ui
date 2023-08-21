@@ -25,13 +25,18 @@
 
 import React, { Fragment } from "react";
 import type { CSSProperties } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { Row, Col } from "reactstrap";
+import { useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
+import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
+import { ExternalLink } from "../components/ExternalLinks";
+import { stateToSearchString } from "../features/kgSearch";
 import { StatuspageBanner } from "../statuspage";
+import { Docs } from "../utils/constants/Docs";
 import { Url } from "../utils/helpers/url";
 
 import { NavBarWarnings } from "./NavBarWarnings";
@@ -54,10 +59,6 @@ import graphic_teach from "./Graphics/Features/Teach.svg";
 import logo_EPFL from "./Logos/EPFL.svg";
 import logo_ETH from "./Logos/ETH.svg";
 import logo_SDSC from "./Logos/SDSC.svg";
-
-import { ExternalLink } from "../components/ExternalLinks";
-import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
-import { Docs } from "../utils/constants/Docs";
 
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import { BottomNav, TopNav } from "./anonymousHomeNav";
@@ -90,22 +91,43 @@ function HomeHeader(props: AnonymousHomeConfig) {
   );
 }
 
+type SearchInputFormFields = {
+  phrase: string;
+};
+
 function SearchInput() {
+  const { handleSubmit, register } = useForm<SearchInputFormFields>({
+    defaultValues: { phrase: "" },
+  });
+  const history = useHistory();
+  const onSubmit = (inputs: SearchInputFormFields) => {
+    const searchState = { phrase: inputs.phrase };
+    const searchString = stateToSearchString(searchState);
+    const searchUrl = `${Url.get(Url.pages.search)}/?${searchString}`;
+    history.push(searchUrl);
+  };
   return (
     <div className="d-flex flex-nowrap w-100 flex-sm-grow-1 mx-0 mx-lg-2">
       <div className="search-box flex-nowrap justify-content-center m-auto">
-        <div className="quick-nav input-group flex-nowrap input-group-sm justify-content-center">
+        <form
+          className="quick-nav input-group flex-nowrap input-group-sm justify-content-center"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <input
             type="text"
             autoComplete="off"
             className="form-control form-control-sm rk-landing-search"
             placeholder="Explore existing public projects and datasets"
             aria-label="Search input"
+            {...register("phrase")}
           />
-          <span className="quick-nav-icon d-flex justify-content-center align-items-center mx-4 cursor-pointer">
+          <span
+            className="quick-nav-icon d-flex justify-content-center align-items-center mx-4 cursor-pointer"
+            onClick={handleSubmit(onSubmit)}
+          >
             <FontAwesomeIcon icon={faSearch} />
           </span>
-        </div>
+        </form>
       </div>
     </div>
   );
