@@ -25,7 +25,6 @@ import {
 import "../support/utils";
 
 const findProject = (path, projects) => {
-  console.log({ path, projects });
   return projects.find(
     (result) => result.response.body.path_with_namespace === path
   );
@@ -92,7 +91,7 @@ describe("dashboard", () => {
     cy.wait("@getRecentlyViewedEntities").then(
       (result) => (projects = result.response.body)
     );
-    cy.wait(Object.keys(files).map((_) => "@getProject")).then((results) => {
+    cy.wait(Object.keys(files).map(() => "@getProject")).then((results) => {
       const firstProject = findProject(projects[0].slug, results);
       const projectData = firstProject.response?.body;
       cy.get_cy("projects-container")
@@ -133,7 +132,7 @@ describe("dashboard", () => {
     cy.wait("@getRecentlyViewedEntities").then(
       (result) => (projects = result.response.body)
     );
-    cy.wait(Object.keys(files).map((_) => "@getProject")).then((results) => {
+    cy.wait(Object.keys(files).map(() => "@getProject")).then((results) => {
       const firstProject = findProject(projects[0].slug, results);
       const projectData = firstProject.response?.body;
       cy.get_cy("projects-container")
