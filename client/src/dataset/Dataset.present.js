@@ -39,6 +39,7 @@ import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
 import { Url } from "../utils/helpers/url";
 import { DatasetError } from "./DatasetError";
 import {
+  cleanModifyLocation,
   getDatasetAuthors,
   getDatasetImageUrl,
   getUpdatedDatasetImage,
@@ -270,13 +271,9 @@ function ErrorAfterCreation(props) {
     <Link
       className="float-right me-1 mb-1"
       id="editDatasetTooltip"
-      to={(location) => ({
-        ...location,
-        pathname: location.pathname.endsWith("/")
-          ? location.pathname + "modify"
-          : location.pathname + "/modify",
-        state: { dataset: props.dataset },
-      })}
+      to={(location) =>
+        cleanModifyLocation(location, { dataset: props.dataset })
+      }
     >
       <Button size="sm" color="danger" className="btn-icon-text">
         <FontAwesomeIcon icon={faPen} color="dark" /> Edit
@@ -369,13 +366,14 @@ function EditDatasetButton({
       className="float-right mb-1"
       id="editDatasetTooltip"
       data-cy="edit-dataset-button"
-      to={(location) => ({
-        ...location,
-        pathname: location.pathname.endsWith("/")
-          ? location.pathname + "modify"
-          : location.pathname + "/modify",
-        state: { dataset, files, isFilesFetching, filesFetchError },
-      })}
+      to={(location) =>
+        cleanModifyLocation(location, {
+          dataset,
+          files,
+          isFilesFetching,
+          filesFetchError,
+        })
+      }
     >
       <Button
         className="btn-rk-white text-rk-pink icon-button"
