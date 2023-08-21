@@ -37,6 +37,7 @@ export const Loader = ({ inline, size = 120, ...rest }: LoaderProps) => {
 type LoaderSpinnerProps = LoaderProps & Required<Pick<LoaderProps, "size">>;
 
 function LoaderSpinner({ className, inline, size }: LoaderSpinnerProps) {
+  const Tag = inline ? "span" : "div";
   const borderSize = size / 8;
   const style = {
     width: `${size}px`,
@@ -90,28 +91,38 @@ function LoaderSpinner({ className, inline, size }: LoaderSpinnerProps) {
   }, []);
 
   return (
-    <div
+    <Tag
       className={cx(className, inline && "d-inline-block")}
       style={containerStyle}
     >
-      <div className="position-relative" style={style}>
-        <div
-          className={cx("position-absolute", "top-0", "start-0", "opacity-25")}
+      <Tag
+        className={cx("position-relative", inline && "d-inline-block")}
+        style={style}
+      >
+        <Tag
+          className={cx(
+            "position-absolute",
+            "top-0",
+            "start-0",
+            "opacity-25",
+            inline && "d-inline-block"
+          )}
           style={trackStyle}
-        ></div>
-        <div
+        ></Tag>
+        <Tag
           className={cx(
             styles.spinner,
             "position-absolute",
             "top-0",
             "start-0",
-            "opacity-100"
+            "opacity-100",
+            inline && "d-inline-block"
           )}
           ref={ref}
           style={spinnerStyle}
-        ></div>
-      </div>
-    </div>
+        ></Tag>
+      </Tag>
+    </Tag>
   );
 }
 

@@ -64,7 +64,7 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
   if (isLoading) {
     return (
       <p>
-        Checking project metadata status... <Loader size={16} inline />
+        Checking project indexing status... <Loader size={16} inline />
       </p>
     );
   }
@@ -72,7 +72,8 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
     return (
       <WarnAlert>
         <p>
-          Unexpected error while checking project metadata! You can try to{" "}
+          Unexpected error while checking project indexing status! You can try
+          to{" "}
           <Link
             to="."
             onClick={(e) => {
@@ -98,20 +99,19 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
     });
     const goToSettings = props.maintainer ? (
       <p className="mb-0 mt-3">
-        You can start processing the metadata from the{" "}
+        You can start indexing the metadata from the{" "}
         <Link to={settingsUrl}>settings page</Link>.
       </p>
     ) : (
       <p className="mb-0 mt-3">
-        Only maintainers can activate metadata processing; you can still fork
-        the project from the <Link to={projectUrl}>overview page</Link> to get
-        the lineage.
+        Only maintainers can activate indexing; you can still fork the project
+        from the <Link to={projectUrl}>overview page</Link> to get the lineage.
       </p>
     );
     return (
       <InfoAlert dismissible={false} timeout={0}>
         <p className="mb-0">
-          Project metadata needs to be processed to view the Lineage.
+          Project metadata needs to be indexed to view the Lineage.
         </p>
         {goToSettings}
       </InfoAlert>
@@ -123,12 +123,12 @@ export function KgStatusWrapper(props: KgStatusWrapperProps) {
       data.progress.percentage > 0 &&
       data.progress.percentage < 100 ? (
         <>
-          <p>Processing project metadata: {data.progress.percentage}%</p>
+          <p>Indexing project metadata: {data.progress.percentage}%</p>
           <Progress value={data.progress.percentage} />
         </>
       ) : (
         <p>
-          Processing project metadata... <Loader inline size={16} />
+          Indexing project metadata... <Loader inline size={16} />
         </p>
       );
     return (
