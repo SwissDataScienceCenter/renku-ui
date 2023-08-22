@@ -12,6 +12,12 @@ header.rk-anon-home .nav-link {
   --bs-dropdown-divider-bg: white;
 }
 
+@media screen and (max-width: 992px) {
+  .rk-anon-home-nav-link {
+    padding: 0.5rem 1rem;
+  }
+}
+
 .rk-anon-home-nav-link,
 nav.rk-anon-home .nav-link,
 #rk-anon-home-bottom-nav .nav-link {

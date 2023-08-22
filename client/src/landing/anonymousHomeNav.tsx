@@ -219,10 +219,10 @@ function TopNav(props: AnonymousHomeConfig) {
               <NavItem className="nav-item mb-2">
                 <TopNavExternalLink title="GitHub" url={Links.GITHUB} />
               </NavItem>
-              <NavItem className="d-inline d-md-none nav-item mb-2">
+              <NavItem className="d-block d-md-none nav-item mb-2">
                 <TopNavLink title="Sessions" to={Url.get(Url.pages.sessions)} />
               </NavItem>
-              <NavItem className="d-inline d-md-none nav-item">
+              <NavItem className="d-block d-md-none nav-item">
                 <TopNavLink title="Help" to={Url.get(Url.pages.help)} />
               </NavItem>
               <NavItem className="nav-item mb-2">
