@@ -40,7 +40,7 @@ type BottomNavExternalLinkProps = {
 function BottomNavExternalLink({ title, url }: BottomNavExternalLinkProps) {
   return (
     <ExternalLink
-      className="text-white text-decoration-none nav-link"
+      className="text-white text-decoration-none nav-link mb-2"
       role="link"
       title={title}
       url={url}
@@ -54,7 +54,7 @@ type BottomNavLinkProps = {
 };
 function BottomNavLink({ title, to }: BottomNavLinkProps) {
   return (
-    <Link className="nav-link" to={to}>
+    <Link className="nav-link mb-2" to={to}>
       {title}
     </Link>
   );
@@ -140,7 +140,7 @@ function BottomNav(props: AnonymousHomeConfig) {
 function TopNavExternalLink({ title, url }: BottomNavExternalLinkProps) {
   return (
     <ExternalLink
-      className="d-inline text-white text-decoration-none nav-link mb-3"
+      className="d-inline text-white text-decoration-none nav-link"
       role="link"
       title={title}
       url={url}
@@ -150,7 +150,7 @@ function TopNavExternalLink({ title, url }: BottomNavExternalLinkProps) {
 
 function TopNavLink({ title, to }: BottomNavLinkProps) {
   return (
-    <Link className="rk-anon-home-nav-link mb-3" to={to}>
+    <Link className="rk-anon-home-nav-link" to={to}>
       {title}
     </Link>
   );
@@ -195,37 +195,37 @@ function TopNav(props: AnonymousHomeConfig) {
               className="ms-auto flex-column rk-bg-shaded-dark text-end"
               style={{ "--rk-bg-opacity": 0.8 } as CSSProperties}
             >
-              <NavItem className="nav-item">
+              <NavItem className="nav-item mb-2">
                 <TopNavExternalLink
                   title="Renku Docs"
                   url={Docs.READ_THE_DOCS_ROOT}
                 />
               </NavItem>
-              <NavItem className="nav-item">
+              <NavItem className="nav-item mb-2">
                 <TopNavExternalLink
                   title="Renku CLI Docs"
                   url={RenkuPythonDocs.READ_THE_DOCS_ROOT}
                 />
               </NavItem>
               <NavItem>
-                <hr className="dropdown-divider" />
+                <hr className="dropdown-divider mb-2" />
               </NavItem>
-              <NavItem className="nav-item">
+              <NavItem className="nav-item mb-2">
                 <TopNavExternalLink title="Form" url={Links.DISCOURSE} />
               </NavItem>
-              <NavItem className="nav-item">
-                <TopNavExternalLink title="Chat (Gitter)" url={Links.GITTER} />
+              <NavItem className="nav-item mb-2">
+                <TopNavExternalLink title="Gitter" url={Links.GITTER} />
               </NavItem>
-              <NavItem className="nav-item">
+              <NavItem className="nav-item mb-2">
                 <TopNavExternalLink title="GitHub" url={Links.GITHUB} />
               </NavItem>
-              <NavItem className="d-inline d-md-none nav-item">
+              <NavItem className="d-inline d-md-none nav-item mb-2">
                 <TopNavLink title="Sessions" to={Url.get(Url.pages.sessions)} />
               </NavItem>
               <NavItem className="d-inline d-md-none nav-item">
                 <TopNavLink title="Help" to={Url.get(Url.pages.help)} />
               </NavItem>
-              <NavItem className="nav-item">
+              <NavItem className="nav-item mb-2">
                 <RenkuToolbarNotifications {...props} />
               </NavItem>
             </Nav>
