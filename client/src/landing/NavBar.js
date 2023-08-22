@@ -523,7 +523,7 @@ function FooterNavbarLoggedInLinks({ privacyLink }) {
   );
 }
 
-function FooterNavbar({ params }) {
+function FooterNavbar({ location, params }) {
   const projectMetadata = useSelector(
     (state) => state.stateModel.project?.metadata
   );
@@ -573,10 +573,11 @@ function FooterNavbar({ params }) {
         </div>
         <div className="d-none d-lg-inline w-100">
           <Nav className="justify-content-end">
-            {user.logged ? (
-              <FooterNavbarLoggedInLinks privacyLink={privacyLink} />
-            ) : (
+            {!user.logged &&
+            location.pathname === Url.get(Url.pages.landing) ? (
               <FooterNavbarAnonymousLinks />
+            ) : (
+              <FooterNavbarLoggedInLinks privacyLink={privacyLink} />
             )}
           </Nav>
         </div>
