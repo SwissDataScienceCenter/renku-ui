@@ -1363,6 +1363,7 @@ class ServerOptionLaunch extends Component {
       (key) =>
         ![
           "cpu_request",
+          "mem_request",
           "memory_request",
           "disk_request",
           "gpu_request",
