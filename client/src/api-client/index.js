@@ -55,10 +55,12 @@ class APIClient {
   /**
    * @param {string} apiUrl - base API url
    * @param {string} uiserverUrl - UI server base url, mainly used for authentication
+   * @param {CoreApiVersionedUrlHelper} coreApiVersionedUrlHelper - helper object for computing versioned URLs.
    */
-  constructor(apiUrl, uiserverUrl) {
+  constructor(apiUrl, uiserverUrl, coreApiVersionedUrlHelper) {
     this.baseUrl = apiUrl;
     this.uiserverUrl = uiserverUrl;
+    this.coreApiVersionedUrlHelper = coreApiVersionedUrlHelper;
     this.returnTypes = RETURN_TYPES;
 
     addDatasetMethods(this);
@@ -228,6 +230,7 @@ class APIClient {
    * @returns string
    */
   versionedCoreUrl(endpoint, version) {
+    // TODO: read the coreApiVersion variable or override and insert it between the urlAddition and the endpoint
     const urlAddition = version ? version : "";
     return `${this.baseUrl}/renku${urlAddition}/${endpoint}`;
   }

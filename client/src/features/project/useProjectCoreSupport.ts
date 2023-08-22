@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
+import AppContext from "../../utils/context/appContext";
+import type { CoreApiVersionedUrlHelper } from "../../utils/helpers/url";
 import { useGetCoreVersionsQuery } from "../versions/versionsApi";
 import { useGetMigrationStatusQuery } from "./projectCoreApi";
 
@@ -25,24 +27,28 @@ export type CoreSupport =
       backendAvailable: undefined;
       backendErrorMessage: undefined;
       computed: false;
+      urlHelper: undefined;
       versionUrl: undefined;
     }
   | {
       backendAvailable: false;
       backendErrorMessage: string;
       computed: true;
+      urlHelper: undefined;
       versionUrl: undefined;
     }
   | {
       backendAvailable: false;
       backendErrorMessage: undefined;
       computed: true;
+      urlHelper: undefined;
       versionUrl: undefined;
     }
   | {
       backendAvailable: true;
       backendErrorMessage: undefined;
       computed: true;
+      urlHelper: CoreApiVersionedUrlHelper;
       versionUrl: string;
     };
 
@@ -53,6 +59,7 @@ export const useCoreSupport = ({
   gitUrl: string | undefined;
   branch?: string | undefined;
 }) => {
+  const { coreApiVersionedUrlHelper } = useContext(AppContext);
   const getMigrationStatusQuery = useGetMigrationStatusQuery(
     { gitUrl: gitUrl ?? "", branch },
     { skip: !gitUrl || !branch }
@@ -79,8 +86,9 @@ export const useCoreSupport = ({
       availableVersions,
       backendErrorMessage,
       projectVersion,
+      urlHelper: coreApiVersionedUrlHelper,
     });
-  }, [coreVersions, migrationStatus]);
+  }, [coreApiVersionedUrlHelper, coreVersions, migrationStatus]);
 
   return {
     coreSupport,
@@ -93,16 +101,19 @@ export const computeBackendData = ({
   availableVersions,
   backendErrorMessage,
   projectVersion,
+  urlHelper,
 }: {
   availableVersions: number[] | undefined;
   backendErrorMessage: string | undefined;
   projectVersion: number | undefined;
+  urlHelper: CoreApiVersionedUrlHelper;
 }): CoreSupport => {
   if (backendErrorMessage) {
     return {
       backendAvailable: false,
       backendErrorMessage,
       computed: true,
+      urlHelper: undefined,
       versionUrl: undefined,
     };
   }
@@ -111,6 +122,7 @@ export const computeBackendData = ({
       backendAvailable: undefined,
       backendErrorMessage: undefined,
       computed: false,
+      urlHelper: undefined,
       versionUrl: undefined,
     };
   if (availableVersions.includes(projectVersion))
@@ -118,12 +130,14 @@ export const computeBackendData = ({
       backendAvailable: true,
       backendErrorMessage: undefined,
       computed: true,
+      urlHelper,
       versionUrl: `/${projectVersion}`,
     };
   return {
     backendAvailable: false,
     backendErrorMessage: undefined,
     computed: true,
+    urlHelper: undefined,
     versionUrl: undefined,
   };
 };

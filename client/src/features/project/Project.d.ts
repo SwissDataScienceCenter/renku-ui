@@ -160,7 +160,7 @@ export interface CoreSectionError extends CoreErrorContent {
   type: "error";
 }
 
-export interface MigrationStatusParams {
+export interface MigrationStatusParams extends Pick<CoreVersionUrl, "helper"> {
   branch?: string;
   gitUrl: string;
 }

@@ -25,3 +25,4 @@
 
 export { appendCustomUrlPath } from "./NotebookUrl";
 export { Url, getSearchParams } from "./Url";
+export { CoreApiVersionedUrlHelper } from "./versionedUrls";
