@@ -29,13 +29,13 @@ describe("display KG status information", () => {
     cy.visit("/projects/e2e/local-test-project");
   });
 
-  it("Metadata processed", () => {
+  it("Metadata indexed", () => {
     fixtures.getKgStatus();
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
     cy.get_cy("project-settings-knowledge-graph")
-      .contains("Metadata processing")
+      .contains("Project indexing")
       .should("exist");
     cy.get_cy("project-settings-knowledge-graph")
       .contains("Metadata indexing in progress")
@@ -43,7 +43,7 @@ describe("display KG status information", () => {
     cy.get_cy("kg-status-section-close").should("not.exist");
     cy.get_cy("kg-status-section-open").should("exist").click();
     cy.get_cy("project-settings-knowledge-graph")
-      .contains("Everything processed")
+      .contains("Everything indexed")
       .should("exist");
     cy.get_cy("kg-status-section-close").should("exist");
     cy.get_cy("kg-status-section-open").should("not.exist");
@@ -56,7 +56,7 @@ describe("display KG status information", () => {
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
     cy.get_cy("project-settings-knowledge-graph")
-      .contains("Metadata processing")
+      .contains("Project indexing")
       .should("exist");
     cy.get_cy("project-settings-knowledge-graph")
       .contains("Metadata indexing in progress")
@@ -64,7 +64,7 @@ describe("display KG status information", () => {
     cy.get_cy("kg-status-section-close").should("not.exist");
     cy.get_cy("kg-status-section-open").should("exist").click();
     cy.get_cy("project-settings-knowledge-graph")
-      .contains("Everything processed*")
+      .contains("Everything indexed*")
       .should("exist");
     cy.get_cy("project-settings-knowledge-graph")
       .contains("An error was raised while processing the metadata")
@@ -74,7 +74,7 @@ describe("display KG status information", () => {
     cy.get_cy("project-status-icon-element").should("not.exist");
   });
 
-  it("Metadata processing", () => {
+  it("Metadata indexing", () => {
     fixtures.getKgStatus("project/kgStatus/kgStatusIndexing.json");
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
@@ -91,18 +91,18 @@ describe("display KG status information", () => {
     cy.get_cy("project-status-icon-element").should("not.exist");
   });
 
-  it("Metadata not available", () => {
+  it("Metadata not indexed", () => {
     fixtures.getKgStatus("project/kgStatus/kgStatus404.json");
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
     cy.get_cy("project-settings-knowledge-graph")
-      .contains("Activate metadata processing")
+      .contains("Activate indexing")
       .should("exist");
     cy.get_cy("kg-status-section-close").should("not.exist");
     cy.get_cy("kg-status-section-open").should("exist").click();
     cy.get_cy("project-settings-knowledge-graph")
       .contains(
-        "integration must be activated to use this project from the RenkuLab web interface"
+        "Indexing must be activated to use this project from the RenkuLab web interface"
       )
       .should("exist");
     cy.get_cy("kg-status-section-close").should("exist");

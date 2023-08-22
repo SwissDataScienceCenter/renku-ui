@@ -84,9 +84,8 @@ function ProjectStatusAlert(props: ProjectStatusAlertProps) {
   return (
     <WarnAlert>
       <p>
-        <strong>Knowledge Graph integration not active. </strong>
-        This means that some operations on datasets are not possible, we
-        recommend activating it.
+        <strong>Project is not indexed.</strong> This means that some operations
+        on datasets are not possible, we recommend activating indexing.
       </p>
       <Link className="btn btn-warning" to={targetUrl}>
         See details
@@ -154,17 +153,19 @@ function ProjectAddDataset(props: any) {
 function EmptyDatasets({ locked, membership, newDatasetUrl }: any) {
   return (
     <Alert timeout={0} color="primary">
-      No datasets found for this project.
+      <p>No datasets found for this project.</p>
       {membership && !locked ? (
         <div>
-          <br />
-          <FontAwesomeIcon icon={faInfoCircle} /> If you recently activated the
-          knowledge graph or added the datasets try refreshing the page. <br />
-          <br />
-          You can also click on the button to{" "}
-          <Link className="btn btn-primary btn-sm" to={newDatasetUrl}>
-            Add a Dataset
-          </Link>
+          <p>
+            <FontAwesomeIcon icon={faInfoCircle} /> If you recently activated
+            the indexing or added datasets try refreshing the page.{" "}
+          </p>
+          <p>
+            You can also click on the button to{" "}
+            <Link className="btn btn-primary btn-sm" to={newDatasetUrl}>
+              Add a Dataset
+            </Link>
+          </p>
         </div>
       ) : null}
     </Alert>
