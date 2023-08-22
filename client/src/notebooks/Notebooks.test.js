@@ -27,19 +27,10 @@ import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 
-import {
-  CheckNotebookStatus,
-  Notebooks,
-  NotebooksDisabled,
-  NotebooksHelper,
-  StartNotebookServer,
-} from "./index";
-import { mergeEnumOptions } from "./Notebooks.present";
+import { CheckNotebookStatus, NotebooksHelper } from "./index";
 import { ExpectedAnnotations } from "./Notebooks.state";
 import { StateModel, globalSchema } from "../model";
-import { ProjectCoordinator } from "../project";
 import { testClient as client } from "../api-client";
-import { Provider } from "react-redux";
 
 const model = new StateModel(globalSchema);
 
@@ -274,35 +265,6 @@ describe("verify project settings validity", () => {
   });
 });
 
-describe("verify project/global options merging", () => {
-  it("merges options", () => {
-    const projectOptionsIni = `
-      [interactive]
-      default_url = /tree
-      cpu_request = 4
-      mem_request = 8G
-      lfs_auto_fetch = True
-    `;
-    const projectOptions =
-      NotebooksHelper.parseProjectOptions(projectOptionsIni);
-
-    const testValues = [
-      { option: "default_url", value: ["/lab", "/rstudio", "/tree"] },
-      { option: "cpu_request", value: [0.5, 1, 2] },
-      { option: "mem_request", value: ["1G", "2G"] },
-    ];
-
-    testValues.forEach((v) => {
-      const result = mergeEnumOptions(
-        simplifiedGlobalOptions,
-        projectOptions,
-        v["option"]
-      );
-      expect(result).toEqual(v.value);
-    });
-  });
-});
-
 describe("verify defaults", () => {
   it("get defaults", () => {
     const projectOptions = {
@@ -393,118 +355,6 @@ describe("rendering", () => {
     project: "fake",
     branch: { name: "master" },
   };
-  const fakeLocation = { pathname: "" };
-
-  it("renders NotebooksDisabled", async () => {
-    const div = document.createElement("div");
-    document.body.appendChild(div);
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <NotebooksDisabled location={fakeLocation} />
-        </MemoryRouter>
-      );
-    });
-  });
-
-  it("renders Notebooks", async () => {
-    const props = {
-      client,
-      model,
-    };
-
-    const div = document.createElement("div");
-    document.body.appendChild(div);
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <Notebooks {...props} standalone={true} urlNewSession="new_session" />
-        </MemoryRouter>
-      );
-    });
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <Notebooks
-            {...props}
-            standalone={false}
-            urlNewSession="new_session"
-          />
-        </MemoryRouter>
-      );
-    });
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <Notebooks
-            {...props}
-            standalone={true}
-            scope={scope}
-            urlNewSession="new_session"
-          />
-        </MemoryRouter>
-      );
-    });
-  });
-
-  it("renders StartNotebookServer without crashing", async () => {
-    const projectCoordinator = new ProjectCoordinator(
-      client,
-      model.subModel("project")
-    );
-    await act(async () => {
-      await projectCoordinator.fetchProject(client, "test");
-      await projectCoordinator.fetchCommits();
-    });
-    const props = {
-      client,
-      model,
-      commits: projectCoordinator.get("commits"),
-      notebooks: model.get("notebooks"),
-      user: { logged: true, data: { username: "test" } },
-      branches: [],
-      autosaved: [],
-      location: fakeLocation,
-      refreshBranches: () => {
-        // eslint-disable-line @typescript-eslint/no-empty-function
-      },
-    };
-
-    const div = document.createElement("div");
-    document.body.appendChild(div);
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <StartNotebookServer {...props} />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
-    await act(async () => {
-      root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <StartNotebookServer {...props} scope={scope} />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
-    // autostart session
-    const autostartFakeLocation = { pathname: "", search: "autostart=1" };
-    await act(async () => {
-      root.render(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <StartNotebookServer {...props} location={autostartFakeLocation} />
-          </MemoryRouter>
-        </Provider>
-      );
-    });
-  });
 
   it("renders CheckNotebookStatus", async () => {
     const props = {

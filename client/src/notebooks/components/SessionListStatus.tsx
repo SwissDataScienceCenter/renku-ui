@@ -32,7 +32,7 @@ import SessionStatusIcon from "../../features/session/components/status/SessionS
 import SessionStatusText from "../../features/session/components/status/SessionStatusText";
 import { SessionStatusState } from "../../features/session/sessions.types";
 import { getSessionStatusColor } from "../../features/session/utils/sessionStatus.utils";
-import type { NotebookAnnotations } from "./Session";
+import type { NotebookAnnotations } from "./session.types";
 
 interface SessionListRowCoreProps {
   annotations: NotebookAnnotations;

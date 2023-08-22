@@ -16,11 +16,8 @@
  * limitations under the License.
  */
 
-import { EntityCreator } from "../entities/Creators";
-import { SessionStatusData } from "./StartSessionProgressBar";
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-types */
+import { EntityCreator } from "../../components/entities/Creators";
+import { SessionStatus } from "../../features/session/sessions.types";
 
 export interface NotebookAnnotations {
   branch: string;
@@ -37,7 +34,8 @@ export interface NotebookAnnotations {
   "hibernation-date": string;
   "hibernation-dirty": boolean;
   "hibernation-synchronized": boolean;
-  [key: string]: string;
+
+  [key: string]: unknown;
 }
 
 interface LogsData {
@@ -45,7 +43,9 @@ interface LogsData {
 }
 
 export interface SessionHandlers {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   fetchLogs: Function;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   stopNotebook: Function;
 }
 
@@ -60,10 +60,11 @@ export interface Notebook {
       };
     };
     started: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     commits?: any;
     image: string;
     name: string;
-    status: SessionStatusData;
+    status: SessionStatus;
     url: string;
   };
   logs: {
@@ -72,7 +73,9 @@ export interface Notebook {
     fetching: boolean;
   };
   available: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fetched: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fetching: any;
 }
 

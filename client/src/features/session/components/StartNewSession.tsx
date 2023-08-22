@@ -53,7 +53,7 @@ import {
   isCloudStorageBucketValid,
   isCloudStorageEndpointValid,
 } from "../../../notebooks/ObjectStoresConfig.present";
-import { ProjectMetadata } from "../../../notebooks/components/Session";
+import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";

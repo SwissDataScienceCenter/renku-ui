@@ -17,9 +17,9 @@
  */
 
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useDispatch } from "react-redux";
 import {
   Button,
   Modal,
@@ -32,15 +32,16 @@ import {
   TabPane,
 } from "reactstrap";
 
-import { Loader } from "./Loader";
+import { displaySlice, useDisplaySelector } from "../features/display";
+import { NotebooksHelper } from "../notebooks";
+import { LOG_ERROR_KEY } from "../notebooks/Notebooks.state";
+import { NotebookAnnotations } from "../notebooks/components/session.types";
+import useGetSessionLogs from "../utils/customHooks/UseGetSessionLogs";
 import {
   capitalizeFirstLetter,
   generateZip,
 } from "../utils/helpers/HelperFunctions";
-import { LOG_ERROR_KEY } from "../notebooks/Notebooks.state";
-import { displaySlice, useDisplaySelector } from "../features/display";
-import useGetSessionLogs from "../utils/customHooks/UseGetSessionLogs";
-import { NotebooksHelper } from "../notebooks";
+import { Loader } from "./Loader";
 
 import "./Logs.css";
 
@@ -314,7 +315,7 @@ function SessionLogs(props: LogBodyProps) {
  * @param {object} annotations - list of cleaned annotations
  */
 interface EnvironmentLogsProps {
-  annotations: Record<string, string>;
+  annotations: Record<string, unknown>;
   name: string;
 }
 const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
@@ -351,7 +352,7 @@ const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
  * @param {object} annotations - list of annotations
  */
 interface EnvironmentLogsPresentProps {
-  annotations: Record<string, string>;
+  annotations: Record<string, unknown>;
   fetchLogs: IFetchableLogs["fetchLogs"];
   logs?: ILogs;
   name: string;
@@ -366,8 +367,9 @@ const EnvironmentLogsPresent = ({
 }: EnvironmentLogsPresentProps) => {
   if (!logs?.show || logs?.show !== name || !logs) return null;
 
-  const cleanAnnotations: Record<string, string> =
-    NotebooksHelper.cleanAnnotations(annotations);
+  const cleanAnnotations = NotebooksHelper.cleanAnnotations(
+    annotations
+  ) as NotebookAnnotations;
 
   return (
     <Modal

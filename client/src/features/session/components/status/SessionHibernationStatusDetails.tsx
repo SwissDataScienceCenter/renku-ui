@@ -18,7 +18,7 @@
 
 import React from "react";
 import cx from "classnames";
-import { NotebookAnnotations } from "../../../../notebooks/components/Session";
+import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
 import { TimeCaption } from "../../../../components/TimeCaption";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

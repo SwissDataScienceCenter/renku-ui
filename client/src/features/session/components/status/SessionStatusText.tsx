@@ -21,7 +21,7 @@ import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
 import { TimeCaption } from "../../../../components/TimeCaption";
-import { NotebookAnnotations } from "../../../../notebooks/components/Session";
+import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
 import { SessionStatusState } from "../../sessions.types";
 
 interface SessionStatusTextProps {

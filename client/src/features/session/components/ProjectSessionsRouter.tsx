@@ -19,6 +19,7 @@
 import React from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Route, Switch } from "react-router";
+import { Col } from "reactstrap";
 import { Url } from "../../../utils/helpers/url";
 import ProjectSessionsList from "./ProjectSessionsList";
 import ShowSession from "./ShowSession";
@@ -51,16 +52,18 @@ export default function ProjectSessionsRouter() {
   });
 
   return (
-    <Switch>
-      <Route exact path={sessionsListUrl}>
-        <ProjectSessionsList projectPathWithNamespace={pathWithNamespace} />
-      </Route>
-      <Route path={startSessionUrl}>
-        <StartNewSession />
-      </Route>
-      <Route path={sessionShowUrl}>
-        <ShowSession />
-      </Route>
-    </Switch>
+    <Col key="content" xs={12}>
+      <Switch>
+        <Route exact path={sessionsListUrl}>
+          <ProjectSessionsList projectPathWithNamespace={pathWithNamespace} />
+        </Route>
+        <Route path={startSessionUrl}>
+          <StartNewSession />
+        </Route>
+        <Route path={sessionShowUrl}>
+          <ShowSession />
+        </Route>
+      </Switch>
+    </Col>
   );
 }

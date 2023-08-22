@@ -29,7 +29,7 @@ import cx from "classnames";
 import { Link } from "react-router-dom";
 import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
 import SessionButton from "../../features/session/components/SessionButton";
-import { Notebook } from "../../notebooks/components/Session";
+import { Notebook } from "../../notebooks/components/session.types";
 import SessionStatusBadge from "../../features/session/components/status/SessionStatusBadge";
 import SessionStatusText from "../../features/session/components/status/SessionStatusText";
 import AppContext from "../../utils/context/appContext";
