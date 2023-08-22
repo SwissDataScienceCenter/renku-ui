@@ -32,6 +32,7 @@ import { dashboardMessageSlice } from "../../features/dashboard/message/dashboar
 import { dataServicesApi } from "../../features/dataServices/dataServicesApi";
 import { displaySlice } from "../../features/display/displaySlice";
 import { datasetFormSlice } from "../../features/project/dataset";
+import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
@@ -57,20 +58,21 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     ...renkuStateModelReducer,
     [dashboardMessageSlice.name]: dashboardMessageSlice.reducer,
     [dataServicesApi.reducerPath]: dataServicesApi.reducer,
-    [displaySlice.name]: displaySlice.reducer,
     [datasetFormSlice.name]: datasetFormSlice.reducer,
+    [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
+    [displaySlice.name]: displaySlice.reducer,
+    [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
-    [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
     [projectGitlabApi.reducerPath]: projectGitlabApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
     [projectsKgApi.reducerPath]: projectsKgApi.reducer,
-    [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [sessionApi.reducerPath]: sessionApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
+    [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
@@ -85,18 +87,19 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         serializableCheck: false,
       })
         .concat(dataServicesApi.middleware)
+        .concat(datasetsCoreApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(kgSearchApi.middleware)
         .concat(projectCoreApi.middleware)
+        .concat(projectGitlabApi.middleware)
         .concat(projectKgApi.middleware)
-        .concat(projectsKgApi.middleware)
         .concat(projectsApi.middleware)
+        .concat(projectsKgApi.middleware)
         .concat(recentUserActivityApi.middleware)
-        .concat(sessionSidecarApi.middleware)
         .concat(sessionApi.middleware)
+        .concat(sessionSidecarApi.middleware)
         .concat(versionsApi.middleware)
-        .concat(workflowsApi.middleware)
-        .concat(projectGitlabApi.middleware),
+        .concat(workflowsApi.middleware),
     enhancers,
   });
   return store;
