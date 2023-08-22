@@ -85,3 +85,19 @@ export {
   getDatasetImageUrl,
   getUpdatedDatasetImage,
 };
+
+/**
+ * Prevents issues with the leading slash  on the dataset modify link.
+ *
+ * @param {*} location - current location object
+ * @param {*} newState - any new state to set
+ */
+export function cleanModifyLocation(location, newState) {
+  return {
+    ...location,
+    pathname: location.pathname.endsWith("/")
+      ? location.pathname + "modify"
+      : location.pathname + "/modify",
+    state: newState,
+  };
+}

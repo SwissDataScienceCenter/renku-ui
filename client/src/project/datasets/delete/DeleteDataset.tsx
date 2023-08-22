@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import {
   Row,
@@ -31,6 +31,12 @@ import {
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { Loader } from "../../../components/Loader";
 import type { DatasetCore } from "../../../features/project/Project";
+import { useDeleteDatasetMutation } from "../../../features/datasets/datasetsCore.api";
+import {
+  CoreErrorContent,
+  CoreErrorResponse,
+} from "../../../utils/types/coreService.types";
+import { Url } from "../../../utils/helpers/url";
 
 function ModalContent({
   closeModal,
@@ -40,6 +46,13 @@ function ModalContent({
   submitLoader,
 }: DatasetDeleteModalProps) {
   if (serverErrors) {
+    if (typeof serverErrors === "string") {
+      serverErrors = {
+        code: 2000,
+        userMessage: serverErrors,
+        devMessage: serverErrors,
+      };
+    }
     return (
       <Col>
         <CoreErrorAlert error={serverErrors} />
@@ -96,7 +109,7 @@ type DatasetDeleteModalProps = {
   deleteDataset: () => void;
   history: DeleteDatasetProps["history"];
   modalOpen: DeleteDatasetProps["modalOpen"];
-  serverErrors: string | undefined;
+  serverErrors: CoreErrorContent | string | undefined;
   submitLoader: { isSubmitting: boolean; text: string | undefined };
 };
 
@@ -150,13 +163,53 @@ export interface DeleteDatasetProps {
 }
 
 function DeleteDataset(props: DeleteDatasetProps) {
-  const [serverErrors, setServerErrors] = useState<string | undefined>(
-    undefined
-  );
+  const [serverErrors, setServerErrors] = useState<
+    CoreErrorContent | string | undefined
+  >(undefined);
   const [isSubmitting, setSubmitting] = useState(false);
   const [submitLoaderText, setSubmitLoaderText] = useState<string | undefined>(
     undefined
   );
+
+  const [deleteDataset, deleteDatasetStatus] = useDeleteDatasetMutation();
+
+  const projectDatasetsUrl = Url.get(Url.pages.project.datasets, {
+    path: props.projectPathWithNamespace,
+  });
+
+  // handle deleting dataset
+  useEffect(() => {
+    if (deleteDatasetStatus.error && "data" in deleteDatasetStatus.error) {
+      const errorResponse = deleteDatasetStatus.error.data as CoreErrorResponse;
+      setSubmitting(false);
+      setServerErrors(errorResponse.error);
+    } else if (deleteDatasetStatus.error) {
+      // ? This cases is unlikely to happen with the current implementation of renku-core
+      setSubmitting(false);
+      const errorMessage =
+        "There was an unexpected problem deleting the dataset: " +
+        deleteDatasetStatus.error.toString();
+      setServerErrors(errorMessage);
+    } else if (deleteDatasetStatus.isSuccess) {
+      setSubmitting(false);
+      setSubmitLoaderText("Dataset deleted, you will be redirected soon...");
+      props.history.push({
+        pathname: projectDatasetsUrl,
+        state: { reload: true },
+      });
+    }
+  }, [deleteDatasetStatus, props.history, projectDatasetsUrl]);
+
+  const localDeleteDataset = () => {
+    setSubmitting(true);
+    setServerErrors(undefined);
+    setSubmitLoaderText(undefined);
+    deleteDataset({
+      gitUrl: props.externalUrl,
+      name: props.dataset.name,
+      versionUrl: props.versionUrl,
+    });
+  };
 
   const closeModal = () => {
     if (!isSubmitting) {
@@ -165,38 +218,12 @@ function DeleteDataset(props: DeleteDatasetProps) {
     }
   };
 
-  const deleteDataset = () => {
-    setServerErrors(undefined);
-    setSubmitting(true);
-    setSubmitLoaderText(undefined);
-    props.client
-      .deleteDataset(props.externalUrl, props.dataset.name, props.versionUrl)
-      .then((response) => {
-        setSubmitting(false);
-        if (response.data.error != null) {
-          setServerErrors(response.data.error);
-          return;
-        }
-        setSubmitLoaderText("Dataset deleted, you will be redirected soon...");
-        props.history.push({
-          pathname: `/projects/${props.projectPathWithNamespace}/datasets`,
-          state: { reload: true },
-        });
-      })
-      .catch(() => {
-        setSubmitting(false);
-        setServerErrors(
-          "There was an unexpected problem deleting the dataset. You may want to try again."
-        );
-      });
-  };
-
   return (
     <DatasetDeleteModal
       dataset={props.dataset}
       modalOpen={props.modalOpen}
       closeModal={closeModal}
-      deleteDataset={deleteDataset}
+      deleteDataset={localDeleteDataset}
       serverErrors={serverErrors}
       submitLoader={{ isSubmitting, text: submitLoaderText }}
       history={props.history}
