@@ -17,10 +17,7 @@
  */
 
 import React from "react";
-import {
-  faExclamationTriangle,
-  faInfoCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import {
@@ -30,12 +27,12 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import { Clipboard } from "../../components/Clipboard";
+import SessionHibernationStatusDetails from "../../features/session/components/status/SessionHibernationStatusDetails";
 import SessionStatusIcon from "../../features/session/components/status/SessionStatusIcon";
 import SessionStatusText from "../../features/session/components/status/SessionStatusText";
 import { SessionStatusState } from "../../features/session/sessions.types";
 import { getSessionStatusColor } from "../../features/session/utils/sessionStatus.utils";
 import type { NotebookAnnotations } from "./Session";
-import { TimeCaption } from "../../components/TimeCaption";
 
 interface SessionListRowCoreProps {
   annotations: NotebookAnnotations;
@@ -131,8 +128,6 @@ function SessionListRowStatusIconPopover({
   id,
   status,
 }: SessionListRowStatusIconPopoverProps) {
-  // TODO: handle showing hibernating data in popover
-
   if (status !== "running" && status !== "failed" && status !== "hibernated") {
     return null;
   }
@@ -156,71 +151,13 @@ function SessionListRowStatusIconPopover({
     </span>
   );
 
-  const hasHibernationInfo = !!annotations["hibernation-date"];
-
   if (status === "hibernated") {
     return (
       <UncontrolledPopover placement="bottom" target={id} trigger="legacy">
         <PopoverHeader>Details</PopoverHeader>
         <PopoverBody>
           <h3 className="fs-6 fw-bold">Paused session</h3>
-          {hasHibernationInfo ? (
-            <>
-              <p className="mb-0">
-                <span className="fw-bold">Paused:</span>{" "}
-                <TimeCaption
-                  datetime={annotations["hibernation-date"]}
-                  enableTooltip
-                  noCaption
-                />
-              </p>
-              <p className="mb-0">
-                <span className="fw-bold">Current commit:</span>{" "}
-                <code>{annotations["hibernation-commit-sha"].slice(0, 8)}</code>
-              </p>
-              <p className="mb-0">
-                <span className="fw-bold">
-                  {annotations["hibernation-dirty"] ? (
-                    <>
-                      <FontAwesomeIcon
-                        className={cx("text-warning", "me-1")}
-                        icon={faExclamationTriangle}
-                      />
-                      Uncommitted files
-                    </>
-                  ) : (
-                    "No uncommitted files"
-                  )}
-                </span>
-              </p>
-              <p className="mb-2">
-                <span className="fw-bold">
-                  {!annotations["hibernation-synchronized"] ? (
-                    <>
-                      <FontAwesomeIcon
-                        className={cx("text-warning", "me-1")}
-                        icon={faExclamationTriangle}
-                      />
-                      Some commits are not synced to the remote
-                    </>
-                  ) : (
-                    "All commits pushed to remote"
-                  )}
-                </span>
-              </p>
-            </>
-          ) : (
-            <p className="mb-2">
-              <span className="fw-bold">
-                <FontAwesomeIcon
-                  className={cx("text-warning", "me-1")}
-                  icon={faExclamationTriangle}
-                />
-                Could not retrieve session information before the session was
-                paused. There may be uncommitted files or unsynced commits.
-              </span>
-            </p>
-          )}
+          <SessionHibernationStatusDetails annotations={annotations} />
 
           {image && (
             <>

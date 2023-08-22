@@ -361,6 +361,13 @@ function ProjectSessionLockAlert() {
 }
 
 function StartNewSessionContent() {
+  const location = useLocation();
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const showCreateLink = !!searchParams.get("showCreateLink");
+
   const projectPathWithNamespace = useSelector<RootStateOrAny, string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
@@ -388,6 +395,8 @@ function StartNewSessionContent() {
   if (validSessions.length > 0) {
     return (
       <>
+        {showCreateLink && <SessionCreateLink />}
+
         <WarnAlert>
           <p>
             {validSessions.length > 1
@@ -413,6 +422,61 @@ function StartNewSessionContent() {
       <SessionSaveWarning />
       <StartNewSessionOptions />
       <StartSessionButton />
+    </Form>
+  );
+}
+
+function SessionCreateLink() {
+  const location = useLocation();
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const filePath = searchParams.get("filePath") ?? "";
+
+  const namespace = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.namespace
+  );
+  const project = useSelector<RootStateOrAny, string>(
+    (state) => state.stateModel.project.metadata.path
+  );
+
+  const { branch, commit, environmentVariables } =
+    useStartSessionOptionsSelector();
+
+  const [createLinkIsOpen, setCreateLinkIsOpen] = useState(true);
+  const toggleCreateLink = useCallback(() => {
+    setCreateLinkIsOpen((isOpen) => !isOpen);
+  }, []);
+
+  return (
+    <Form className={cx("form-rk-green", "mb-5")}>
+      <h2>Create session link</h2>
+
+      <SessionBranchOption />
+      <SessionCommitOption />
+      <SessionEnvironmentVariables />
+
+      <Button color="secondary" onClick={toggleCreateLink}>
+        <FontAwesomeIcon className="me-2" icon={faLink} />
+        Create Link
+      </Button>
+
+      <ShareLinkSessionModal
+        environmentVariables={environmentVariables.map(({ name, value }) => ({
+          key: name,
+          value,
+        }))}
+        filters={{
+          branch: { name: branch },
+          commit: { id: commit },
+          namespace,
+          project,
+        }}
+        notebookFilePath={filePath}
+        showModal={createLinkIsOpen}
+        toggleModal={toggleCreateLink}
+      />
     </Form>
   );
 }
@@ -548,6 +612,14 @@ function StartNewSessionOptions() {
 }
 
 function StartSessionButton() {
+  const location = useLocation();
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const showCreateLink = !!searchParams.get("showCreateLink");
+  const filePath = searchParams.get("filePath") ?? "";
+
   const namespace = useSelector<RootStateOrAny, string>(
     (state) => state.stateModel.project.metadata.namespace
   );
@@ -638,7 +710,7 @@ function StartSessionButton() {
     storage,
   ]);
 
-  const [createLinkIsOpen, setCreateLinkIsOpen] = useState(false);
+  const [createLinkIsOpen, setCreateLinkIsOpen] = useState(showCreateLink);
   const toggleCreateLink = useCallback(() => {
     setCreateLinkIsOpen((isOpen) => !isOpen);
   }, []);
@@ -698,7 +770,7 @@ function StartSessionButton() {
             namespace,
             project,
           }}
-          notebookFilePath=""
+          notebookFilePath={filePath}
           showModal={createLinkIsOpen}
           toggleModal={toggleCreateLink}
         />

@@ -278,6 +278,7 @@ function ListBarSession({
       </div>
       <div className="session-icon">
         <SessionStatusBadge
+          annotations={notebook.annotations}
           defaultImage={notebook.annotations["default_image_used"]}
           name={notebook.name}
           status={notebook.status}

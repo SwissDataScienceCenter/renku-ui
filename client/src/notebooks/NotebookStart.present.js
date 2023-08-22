@@ -1529,7 +1529,10 @@ const CheckNotebookIcon = ({
     aligner = null;
   if (notebook) {
     const status = notebook.status?.state;
-    if (status === SessionStatusStateEnum.running) {
+    if (
+      status === SessionStatusStateEnum.running ||
+      status === SessionStatusStateEnum.hibernated
+    ) {
       const annotations = NotebooksHelper.cleanAnnotations(
         notebook.annotations
       );

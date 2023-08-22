@@ -283,12 +283,13 @@ const ShareLinkSessionOpenFileModal = ({
   }, [filters, filePath]);
 
   const goToSpecifyCommit = () => {
-    const state = {
-      filePath,
-      showShareLinkModal: true,
-      from: location.pathname,
-    };
-    history.push({ pathname: launchNotebookUrl, search: "", state });
+    const search = new URLSearchParams({ filePath, showCreateLink: "1" });
+    const state = { from: location.pathname };
+    history.push({
+      pathname: launchNotebookUrl,
+      search: search.toString(),
+      state,
+    });
   };
 
   const markdown = `[![launch - renku](${Url.get(

@@ -219,13 +219,6 @@ function HibernateSessionModal({
               Please note that paused session are deleted after 30 days of
               inactivity.
             </InfoAlert>
-            {isStopping ? (
-              <FormText color="primary">
-                <Loader className="me-1" inline size={16} />
-                Pausing Session
-                <br />
-              </FormText>
-            ) : null}
             <div className="d-flex justify-content-end">
               <Button
                 className={cx("float-right", "mt-1", "btn-outline-rk-green")}
@@ -241,7 +234,14 @@ function HibernateSessionModal({
                 type="submit"
                 onClick={onHibernateSession}
               >
-                Pause Session
+                {isStopping ? (
+                  <>
+                    <Loader className="me-2" inline size={16} />
+                    Pausing session
+                  </>
+                ) : (
+                  <>Pause Session</>
+                )}
               </Button>
             </div>
           </Col>

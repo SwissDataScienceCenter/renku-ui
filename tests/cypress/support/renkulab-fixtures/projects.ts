@@ -288,6 +288,11 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         "/ui-server/api/projects/*/repository/branches?page=1&per_page=100",
         { fixture: "project/test-project-branches.json" }
       ).as(projectBranchesName);
+      // Intercepting with swapped pagination params is necessary because of the legacy API client
+      cy.intercept(
+        "/ui-server/api/projects/*/repository/branches?per_page=100&page=1",
+        { fixture: "project/test-project-branches.json" }
+      ).as(projectBranchesName);
       cy.intercept("/ui-server/api/kg/webhooks/projects/*/events/status", {
         fixture: "project/kgStatus/kgStatusIndexing.json",
       });
