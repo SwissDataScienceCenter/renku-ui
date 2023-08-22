@@ -173,7 +173,7 @@ function Section1(props: AnonymousHomeConfig) {
               </div>
               <div className="mt-3">
                 <Link
-                  className="btn btn-outline-rk-white me-4"
+                  className="btn btn-outline-rk-white m-2"
                   role="button"
                   id="link-sign_up"
                   to="/login"
@@ -181,13 +181,13 @@ function Section1(props: AnonymousHomeConfig) {
                   Sign Up
                 </Link>
                 <TutorialLink
-                  className="btn btn-outline-rk-white me-4"
+                  className="btn btn-outline-rk-white m-2"
                   role="button"
                   title="Get Started"
                   url={tutorialLink}
                 />
                 <HashLink
-                  className="btn btn-outline-rk-white"
+                  className="btn btn-outline-rk-white m-2"
                   role="button"
                   to="#rk-anon-home-section-features"
                 >

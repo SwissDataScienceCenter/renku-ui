@@ -103,7 +103,7 @@ function BottomNav(props: AnonymousHomeConfig) {
           </Col>
           <Col md={3}>
             <BottomNavSection sectionTitle="Community">
-              <BottomNavExternalLink title="Form" url={Links.DISCOURSE} />
+              <BottomNavExternalLink title="Forum" url={Links.DISCOURSE} />
               <BottomNavExternalLink title="Chat (Gitter)" url={Links.GITTER} />
               <BottomNavExternalLink title="GitHub" url={Links.GITHUB} />
             </BottomNavSection>
@@ -208,10 +208,10 @@ function TopNav(props: AnonymousHomeConfig) {
                 />
               </NavItem>
               <NavItem>
-                <hr className="dropdown-divider mb-2" />
+                <hr className="dropdown-divider my-2 mx-3" />
               </NavItem>
               <NavItem className="nav-item mb-2">
-                <TopNavExternalLink title="Form" url={Links.DISCOURSE} />
+                <TopNavExternalLink title="Forum" url={Links.DISCOURSE} />
               </NavItem>
               <NavItem className="nav-item mb-2">
                 <TopNavExternalLink title="Gitter" url={Links.GITTER} />

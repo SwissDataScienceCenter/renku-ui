@@ -8,7 +8,6 @@ header.rk-anon-home .nav-link {
 }
 
 .nav-item hr.dropdown-divider {
-  @extend .my-2, .mx-3;
   --bs-dropdown-divider-bg: white;
 }
 
