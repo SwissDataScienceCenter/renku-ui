@@ -1,5 +1,24 @@
 # Changes
 
+## [3.11.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.10.0...3.11.0) (2023-08-22)
+
+### Features
+
+- Simplify distinguishing projects linked to datasets by showing the full slug in a tooltip when hovering on the project name ([#2617](https://github.com/SwissDataScienceCenter/renku-ui/issues/2617), [#2707](https://github.com/SwissDataScienceCenter/renku-ui/issues/2707)).
+- Add a new section in the project settings to change visibility ([#2515](https://github.com/SwissDataScienceCenter/renku-ui/issues/2515), [#2648](https://github.com/SwissDataScienceCenter/renku-ui/issues/2648)).
+- Use KG to fetch and store project descriptions ([#2631](https://github.com/SwissDataScienceCenter/renku-ui/issues/2631), [#2438](https://github.com/SwissDataScienceCenter/renku-ui/issues/2438)).
+- Show version of Renku and the backend components ([#2664](https://github.com/SwissDataScienceCenter/renku-ui/issues/2664), [#2703](https://github.com/SwissDataScienceCenter/renku-ui/issues/2703)).
+- Use 'metadata processing' instead of 'Knowledge Graph' ([#2553](https://github.com/SwissDataScienceCenter/renku-ui/issues/2553), [#2709](https://github.com/SwissDataScienceCenter/renku-ui/issues/2709)).
+
+### Bug Fixes
+
+- Allow navigating back after login ([#2682](https://github.com/SwissDataScienceCenter/renku-ui/issues/2682), [#2711](https://github.com/SwissDataScienceCenter/renku-ui/issues/2711)).
+- Sort project datasets by the user-friendly title instead of the hidden name ([#1514](https://github.com/SwissDataScienceCenter/renku-ui/issues/1514), [#2702](https://github.com/SwissDataScienceCenter/renku-ui/issues/2702)).
+- Update the loader spinner to fix DOM nesting errors ([#2658](https://github.com/SwissDataScienceCenter/renku-ui/issues/2658), [#2750](https://github.com/SwissDataScienceCenter/renku-ui/issues/2750)).
+- Restore maintenance page ([#2715](https://github.com/SwissDataScienceCenter/renku-ui/issues/2715)).
+- Use a common project URL when invoking renku-core APIs ([#2714](https://github.com/SwissDataScienceCenter/renku-ui/issues/2714), [#2722](https://github.com/SwissDataScienceCenter/renku-ui/issues/2722)).
+- Prevent fake warnings from memory constraints on sessions ([#2757](https://github.com/SwissDataScienceCenter/renku-ui/issues/2714)).
+
 ## [3.10.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.9.0...3.10.0) (2023-07-24)
 
 ### Features
