@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
+import type { CoreApiVersionedUrlHelper } from "../helpers/url";
+
 export interface CoreVersionUrl {
+  helper?: CoreApiVersionedUrlHelper;
   versionUrl?: string;
 }
 

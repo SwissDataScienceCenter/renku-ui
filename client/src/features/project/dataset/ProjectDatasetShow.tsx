@@ -136,7 +136,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     gitUrl: externalUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { versionUrl } = coreSupport;
+  const { versionUrl, urlHelper } = coreSupport;
 
   const {
     data: kgDataset,
@@ -150,7 +150,12 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     error: filesFetchError,
     isFetching: isFilesFetching,
   } = useGetDatasetFilesQuery(
-    { git_url: props.externalUrl, name: datasetName ?? "", versionUrl },
+    {
+      git_url: props.externalUrl,
+      helper: urlHelper,
+      name: datasetName ?? "",
+      versionUrl,
+    },
     { skip: !datasetName }
   );
 

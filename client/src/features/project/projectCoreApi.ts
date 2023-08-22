@@ -119,7 +119,11 @@ export const projectCoreApi = createApi({
         };
         return {
           url: urlWithQueryParams(
-            getCoreVersionedUrl("datasets.files_list", params.versionUrl),
+            getCoreVersionedUrl(
+              "datasets.files_list",
+              params.versionUrl,
+              params.helper
+            ),
             queryParams
           ),
           method: "GET",
