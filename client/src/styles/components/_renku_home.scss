@@ -20,7 +20,6 @@ header.rk-anon-home .nav-link {
 .rk-anon-home-nav-link,
 nav.rk-anon-home .nav-link,
 #rk-anon-home-bottom-nav .nav-link {
-  color: $rk-white;
   text-decoration: none;
   &:hover {
     color: $rk-green-highlight !important;
@@ -117,11 +116,6 @@ nav.rk-anon-home .nav-link,
   @extend .section-content, .bg-primary;
   color: $rk-white;
   min-height: 300px;
-}
-
-ul.rk-anon-home-bottom-nav-section {
-  list-style-type: none;
-  padding-left: 0px;
 }
 
 #rk-anon-home-section2 {

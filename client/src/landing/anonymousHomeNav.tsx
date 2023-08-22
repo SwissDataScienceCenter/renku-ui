@@ -76,7 +76,7 @@ function BottomNavSection(props: BottomNavSectionProps) {
   return (
     <>
       <BottomNavSectionHeader title={props.sectionTitle} />
-      <ul className="rk-anon-home-bottom-nav-section">
+      <ul className="rk-anon-home-bottom-nav-section list-unstyled pl-0">
         {props.children.map((l, i) => (
           <li key={i}>{l}</li>
         ))}
@@ -140,7 +140,7 @@ function BottomNav(props: AnonymousHomeConfig) {
 function TopNavExternalLink({ title, url }: BottomNavExternalLinkProps) {
   return (
     <ExternalLink
-      className="d-inline text-white text-decoration-none nav-link"
+      className="d-inline text-white nav-link"
       role="link"
       title={title}
       url={url}
@@ -150,7 +150,7 @@ function TopNavExternalLink({ title, url }: BottomNavExternalLinkProps) {
 
 function TopNavLink({ title, to }: BottomNavLinkProps) {
   return (
-    <Link className="rk-anon-home-nav-link" to={to}>
+    <Link className="rk-anon-home-nav-link text-white" to={to}>
       {title}
     </Link>
   );

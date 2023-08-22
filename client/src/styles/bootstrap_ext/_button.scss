@@ -135,18 +135,6 @@ $borderRadius: 1000px;
   }
 }
 
-.btn-outline-rk-white {
-  border-color: $rk-white;
-  color: $rk-white;
-  &:hover,
-  &:focus,
-  &:active {
-    border-color: $rk-green;
-    background-color: $rk-green;
-    color: $rk-white;
-  }
-}
-
 .btn-rk {
   color: white;
 
@@ -174,6 +162,16 @@ $borderRadius: 1000px;
 .btn-rk-green {
   @extend .btn-rk;
   --bs-btn-active-color: white;
+}
+
+.btn-rk-over-green {
+  --bs-btn-active-bg: #{$rk-green};
+  --bs-btn-active-border-color: #{$rk-green};
+  --bs-btn-active-color: #{$rk-white};
+
+  --bs-btn-hover-bg: #{$rk-green};
+  --bs-btn-hover-border-color: #{$rk-green};
+  --bs-btn-hover-color: #{$rk-white};
 }
 
 .rk-btn-group-light {
