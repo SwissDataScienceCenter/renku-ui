@@ -17,7 +17,7 @@
 - Update the loader spinner to fix DOM nesting errors ([#2658](https://github.com/SwissDataScienceCenter/renku-ui/issues/2658), [#2750](https://github.com/SwissDataScienceCenter/renku-ui/issues/2750)).
 - Restore maintenance page ([#2715](https://github.com/SwissDataScienceCenter/renku-ui/issues/2715)).
 - Use a common project URL when invoking renku-core APIs ([#2714](https://github.com/SwissDataScienceCenter/renku-ui/issues/2714), [#2722](https://github.com/SwissDataScienceCenter/renku-ui/issues/2722)).
-- Prevent fake warnings from memory constraints on sessions ([#2757](https://github.com/SwissDataScienceCenter/renku-ui/issues/2714)).
+- Prevent fake warnings from memory constraints on sessions ([#2757](https://github.com/SwissDataScienceCenter/renku-ui/issues/2757)).
 
 ## [3.10.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.9.0...3.10.0) (2023-07-24)
 
