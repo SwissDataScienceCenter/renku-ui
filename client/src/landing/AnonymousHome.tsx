@@ -167,7 +167,7 @@ function Section1(props: AnonymousHomeConfig) {
             </Col>
           </Row>
           <Row>
-            <Col className="rk-pt-s">
+            <Col className="rk-pt-s pb-5">
               <div>
                 <h4 className="text-white">Do you want to try Renku out?</h4>
               </div>
