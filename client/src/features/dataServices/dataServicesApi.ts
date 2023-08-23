@@ -17,13 +17,21 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { ResourcePool, ResourcePoolsQueryParams } from "./dataServices";
+import {
+  AddCloudStorageForProjectParams,
+  CloudStorage,
+  GetCloudStorageForProjectParams,
+  ResourcePool,
+  ResourcePoolsQueryParams,
+  UpdateCloudStorageForProjectParams,
+} from "./dataServices.types";
 
 export const dataServicesApi = createApi({
   reducerPath: "dataServices",
   baseQuery: fetchBaseQuery({
     baseUrl: "/ui-server/api/data",
   }),
+  tagTypes: ["CloudStorage", "ResourcePool"],
   endpoints: (builder) => ({
     getResourcePools: builder.query<ResourcePool[], ResourcePoolsQueryParams>({
       query: ({ cpuRequest, gpuRequest, memoryRequest, storageRequest }) => {
@@ -38,6 +46,54 @@ export const dataServicesApi = createApi({
           params,
         };
       },
+      providesTags: ["ResourcePool"],
+    }),
+    getCloudStorageForProject: builder.query<
+      CloudStorage[],
+      GetCloudStorageForProjectParams
+    >({
+      query: ({ projectId }) => {
+        return {
+          url: "storage",
+          params: { projectId },
+        };
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(
+                ({ storage_id }) =>
+                  ({ id: storage_id, type: "CloudStorage" } as const)
+              ),
+              { id: "LIST", type: "CloudStorage" },
+            ]
+          : [{ id: "LIST", type: "CloudStorage" }],
+    }),
+    addCloudStorageForProject: builder.mutation<
+      CloudStorage,
+      AddCloudStorageForProjectParams
+    >({
+      query: ({ configuration, project_id, source_path, target_path }) => {
+        return {
+          url: "storage",
+          body: { configuration, project_id, source_path, target_path },
+        };
+      },
+      invalidatesTags: [{ id: "LIST", type: "CloudStorage" }],
+    }),
+    updateCloudStorageForProjectParams: builder.mutation<
+      CloudStorage,
+      UpdateCloudStorageForProjectParams
+    >({
+      query: ({ configuration, storage_id, source_path, target_path }) => {
+        return {
+          url: `storage/${storage_id}`,
+          body: { configuration, source_path, target_path },
+        };
+      },
+      invalidatesTags: (_result, _error, { storage_id }) => [
+        { id: storage_id, type: "CloudStorage" },
+      ],
     }),
   }),
 });

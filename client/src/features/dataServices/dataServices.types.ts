@@ -59,3 +59,30 @@ export interface ResourcePoolsQueryParams {
   memoryRequest?: number;
   storageRequest?: number;
 }
+
+export interface CloudStorage {
+  configuration: Record<string, string | undefined>;
+  project_id: string;
+  source_path: string;
+  storage_id: string;
+  storage_type: string;
+  target_path: string;
+}
+
+export interface GetCloudStorageForProjectParams {
+  projectId: string;
+}
+
+export interface AddCloudStorageForProjectParams {
+  configuration: Record<string, string | undefined>;
+  project_id: string;
+  source_path: string;
+  target_path: string;
+}
+
+export interface UpdateCloudStorageForProjectParams {
+  configuration?: Record<string, string | null | undefined>;
+  storage_id: string;
+  source_path?: string;
+  target_path?: string;
+}
