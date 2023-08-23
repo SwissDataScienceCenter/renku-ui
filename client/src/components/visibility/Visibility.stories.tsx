@@ -23,7 +23,7 @@ import VisibilitiesInput, {
 } from "./Visibility";
 
 export default {
-  title: "components/Visibility",
+  title: "Components/Forms/VisibilitiesInput",
   component: VisibilitiesInput,
   argTypes: {
     namespaceVisibility: {

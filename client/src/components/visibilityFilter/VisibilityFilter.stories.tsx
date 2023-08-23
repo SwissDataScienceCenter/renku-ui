@@ -20,7 +20,7 @@ import { StoryFn as Story } from "@storybook/react";
 import { VisibilityFilterProps, VisibilityFilter } from "./VisibilityFilter";
 
 export default {
-  title: "components/VisibilityFilter",
+  title: "components/Search/VisibilityFilter",
   component: VisibilityFilter,
   argTypes: {},
 };

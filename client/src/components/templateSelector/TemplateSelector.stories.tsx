@@ -22,7 +22,7 @@ import { NewProjectTemplate, Repository } from "../../model/RenkuModels";
 import TemplateSelector, { TemplateSelectorProps } from "./TemplateSelector";
 
 export default {
-  title: "components/TemplateSelector",
+  title: "Components/Forms/Template Selector",
   component: TemplateSelector,
   argTypes: {
     repositories: {

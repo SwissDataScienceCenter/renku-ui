@@ -19,36 +19,76 @@ import * as React from "react";
 import { Button } from "../../utils/ts-wrappers";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ButtonWithMenu, RoundButtonGroup } from "./Button";
+import { Meta, StoryObj } from "@storybook/react";
 
 interface LabelsProps {
   text: string;
   isRequired: boolean;
 }
 
-export default {
+const componentDescription = `
+  Custom Buttons for actions in forms, cards, and more.
+  Utilize a defined color palette for various states and entities.
+  - **Entities:** Projects, Datasets y Workflows
+  - **States:** Error, Information, Alert
+ 
+<details>
+<summary>Best Practices</summary>
+<ul>
+<li>For modals and single-page forms right-align buttons with the container.</li>
+<li>Always place the primary button on the right, the secondary button just to the left of it.</li>
+</ul>
+</details>
+`;
+const meta: Meta<typeof Button> = {
+  component: Button,
   title: "components/Buttons",
+  parameters: {
+    docs: {
+      description: {
+        component: componentDescription,
+      },
+    },
+  },
 };
 
-export const PrimaryGreen = (args: LabelsProps) => (
+export default meta;
+
+type Story = StoryObj<typeof Button>;
+export const Primary: Story = (args: LabelsProps) => (
   <>
     <Button className="btn-rk-green">{args.text}</Button>
   </>
 );
-PrimaryGreen.args = {
+Primary.args = {
   text: "My Button",
 };
+Primary.parameters = {
+  docs: {
+    description: {
+      story: "This is the primary button variant, suitable for key actions.",
+    },
+  },
+};
 
-export const SecondaryGreen = (args: LabelsProps) => (
+export const Secondary: Story = (args: LabelsProps) => (
   <>
     <Button className="btn-outline-rk-green">{args.text}</Button>
   </>
 );
-SecondaryGreen.args = {
+Secondary.args = {
   text: "My Button",
 };
+Secondary.parameters = {
+  docs: {
+    description: {
+      story:
+        "The secondary button is used for secondary or less emphasized actions.",
+    },
+  },
+};
 
-export const PrimaryGreenWithIcon = (args: LabelsProps) => (
+export const WithIcon: Story = (args: LabelsProps) => (
   <>
     <Button className="btn-rk-green btn-icon-text">
       <FontAwesomeIcon icon={faPen} color="dark" />
@@ -56,11 +96,19 @@ export const PrimaryGreenWithIcon = (args: LabelsProps) => (
     </Button>
   </>
 );
-PrimaryGreenWithIcon.args = {
+WithIcon.args = {
   text: "My Button",
 };
+WithIcon.parameters = {
+  docs: {
+    description: {
+      story:
+        "This variation when include icon, place icon to the left of the text",
+    },
+  },
+};
 
-export const SecondaryGreenWithIcon = (args: LabelsProps) => (
+export const SecondaryWithIcon = (args: LabelsProps) => (
   <>
     <Button className="btn-outline-rk-green btn-icon-text">
       <FontAwesomeIcon icon={faPen} color="dark" />
@@ -68,67 +116,98 @@ export const SecondaryGreenWithIcon = (args: LabelsProps) => (
     </Button>
   </>
 );
-SecondaryGreenWithIcon.args = {
+SecondaryWithIcon.args = {
   text: "My Button",
 };
+SecondaryWithIcon.parameters = {
+  docs: {
+    description: {
+      story:
+        "This variation when include icon, place icon to the left of the text",
+    },
+  },
+};
 
-export const PrimaryPink = (args: LabelsProps) => (
+export const Project = (args: LabelsProps) => (
+  <>
+    <Button className="btn-rk-green">{args.text}</Button>
+  </>
+);
+Project.args = {
+  text: "My Button",
+};
+Project.parameters = {
+  docs: {
+    description: {
+      story:
+        'Apply the className "btn-rk-green" when utilizing the button for a project entity.',
+    },
+  },
+};
+export const Datasets = (args: LabelsProps) => (
   <>
     <Button className="btn-rk-pink">{args.text}</Button>
   </>
 );
-PrimaryPink.args = {
+Datasets.args = {
   text: "My Button",
 };
-
-export const SecondaryPink = (args: LabelsProps) => (
-  <>
-    <Button className="btn-outline-rk-pink">{args.text}</Button>
-  </>
-);
-SecondaryPink.args = {
-  text: "My Button",
+Datasets.parameters = {
+  docs: {
+    description: {
+      story:
+        'Apply the className "btn-rk-pink" when utilizing the button for a dataset entity.',
+    },
+  },
 };
 
-const defaultAction = <Button key="button-main-primary">Main Action</Button>;
-const options = [
-  <Button key="button-a">Option A</Button>,
-  <Button key="button-B">Option B</Button>,
-];
-export const menuWithOptionPrimary = () => (
+export const Workflows = (args: LabelsProps) => (
   <>
-    <ButtonWithMenu default={defaultAction} isPrincipal={true} color="rk-green">
-      {options}
-    </ButtonWithMenu>
+    <Button className="btn-rk-yellow">{args.text}</Button>
   </>
 );
-const defaultActionSecondary = (
-  <Button key="button-a" className="btn-outline-rk-green">
-    Main Action
-  </Button>
-);
-export const menuWithOptionSecondary = () => (
-  <>
-    <ButtonWithMenu
-      default={defaultActionSecondary}
-      isPrincipal={false}
-      color="rk-green"
-    >
-      {options}
-    </ButtonWithMenu>
-  </>
-);
+Workflows.args = {
+  text: "My Button",
+};
+Workflows.parameters = {
+  docs: {
+    description: {
+      story:
+        'Apply the className "btn-rk-yellow" when utilizing the button for a workflow entity.',
+    },
+  },
+};
 
-const optionsGroupButton = [
-  <Button key="button-x" className="btn-outline-rk-green">
-    Option X
-  </Button>,
-  <Button key="button-y" className="btn-outline-rk-green">
-    Option y
-  </Button>,
-];
-export const roundButtonGroup = () => (
+export const Informative = (args: LabelsProps) => (
   <>
-    <RoundButtonGroup>{optionsGroupButton}</RoundButtonGroup>
+    <Button className="btn-info">{args.text}</Button>
   </>
 );
+Informative.args = {
+  text: "My Button",
+};
+Informative.parameters = {
+  docs: {
+    description: {
+      story:
+        'When employing a button for a non-entity-associated action that is not obligatory, apply the "btn-info" className.',
+    },
+  },
+};
+
+export const Error = (args: LabelsProps) => (
+  <>
+    <Button className="btn-danger">{args.text}</Button>
+  </>
+);
+Error.args = {
+  text: "My Button",
+};
+Error.parameters = {
+  docs: {
+    description: {
+      story:
+        'For a button that performs a potentially risky action leading to a change in operation state, apply the "btn-danger" className',
+    },
+  },
+};

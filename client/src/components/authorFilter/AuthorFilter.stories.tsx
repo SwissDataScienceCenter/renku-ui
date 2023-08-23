@@ -22,9 +22,14 @@ import { StoryFn as Story } from "@storybook/react";
 import { AuthorFilter, AuthorFilterProps } from "./AuthorFilter";
 
 export default {
-  title: "components/AuthorFilter",
+  title: "components/Search/AuthorFilter",
   component: AuthorFilter,
-  argTypes: {},
+  argTypes: {
+    value: {
+      options: ["user", "all"],
+      control: { type: "radio" },
+    },
+  },
 };
 
 const Template: Story<AuthorFilterProps> = (args) => <AuthorFilter {...args} />;

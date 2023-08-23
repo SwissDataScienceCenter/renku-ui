@@ -24,7 +24,7 @@ import ProgressStepsIndicator, {
 } from "./ProgressSteps";
 
 export default {
-  title: "components/ProgressStepsIndicator",
+  title: "components/ProgressIndicatorSteps",
   component: ProgressStepsIndicator,
   argTypes: {
     title: {

@@ -140,6 +140,37 @@ We have an ever-growing suite of UI tests developed with Cypress. The tests can 
     $ npm install
     $ npm run e2e:local
 
+
+### Storybook
+We utilize Storybook to create interactive stories for our UI components.
+Stories provide a visual representation of how our components behave in different scenarios.
+
+1. Running Storybook:
+
+        $ npm run storybook
+
+Open your browser and navigate to http://localhost:6006 to see your components in action.
+
+2. Writing Stories:
+
+Create story files for your components, following the <ComponentName>.stories.tsx naming convention.
+<details>
+<summary>Best Practices for Writing Stories</summary>
+<ul>
+<li>Story Structure: Organize your stories within the same directory as your component.</li>
+<li>Descriptive Names: Name your stories descriptively, following a clear naming convention. Use the title property in the story definition to create a category for related stories. e.g. `components/buttons/buttonWithMenu`</li>
+<li>Variations: Showcase different variations of your component. Use multiple stories to demonstrate various props, states, or use cases.</li>
+<li>Description: Provide a clear and concise description for each story. Include details about the component's purpose, usage, and any important notes.</li>
+<li>Enhance Controls: Utilize Storybook's "Args" feature to make props interactive. This allows you to tweak props' values and observe their impact on the component in real-time.</li>
+<li>Responsive Showcase: Include stories that demonstrate responsive behavior across various devices.</li>
+<li>Addon-Redux: Use addon-redux for component state management if using Redux.</li>
+</ul>
+</details>
+
+3. Example Story:
+
+Here's an example of a well-structured and documented story for a Button component `client/src/components/buttons/Buttons.stories.tsx`
+
 ### Telepresence
 
 Telepresence can be used to develop the UI in a realistic setting. The client folder includes a `run-telepresence.sh` script that is tailored for the SDSC development cluster.

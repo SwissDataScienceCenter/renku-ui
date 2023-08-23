@@ -16,24 +16,35 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { StoryFn as Story } from "@storybook/react";
-import SortingEntities, {
-  SortingInputProps,
-  SortingOptions,
-} from "./SortingEntities";
+import { Button } from "../../utils/ts-wrappers";
+import { RoundButtonGroup } from "./Button";
+import { Meta } from "@storybook/react";
 
-export default {
-  title: "components/Search/SortingEntities",
-  component: SortingEntities,
-  argTypes: {},
+const meta: Meta<typeof Button> = {
+  component: RoundButtonGroup,
+  title: "components/Buttons/RoundButtonGroup",
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Group a series of buttons together on a single line or stack",
+      },
+    },
+  },
 };
 
-const Template: Story<SortingInputProps> = (args) => (
-  <SortingEntities {...args} />
+export default meta;
+
+const optionsGroupButton = [
+  <Button key="button-x" className="btn-outline-rk-green">
+    Option X
+  </Button>,
+  <Button key="button-y" className="btn-outline-rk-green">
+    Option Y
+  </Button>,
+];
+export const Default = () => (
+  <>
+    <RoundButtonGroup>{optionsGroupButton}</RoundButtonGroup>
+  </>
 );
-
-export const Default = Template.bind({});
-Default.args = {
-  styleType: "mobile",
-  sort: SortingOptions.AscTitle,
-};

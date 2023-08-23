@@ -30,7 +30,7 @@ interface LabelsProps {
 }
 
 export default {
-  title: "components/FormLabels",
+  title: "Components/Forms/Labels",
 };
 
 export const Input = (args: LabelsProps) => (
