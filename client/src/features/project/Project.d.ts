@@ -16,22 +16,21 @@
  * limitations under the License.
  */
 
-import { CoreErrorContent } from "../../utils/definitions";
+import {
+  CoreErrorContent,
+  CoreVersionUrl,
+} from "../../utils/types/coreService.types";
 import {
   MigrationStartScopes,
   ProjectIndexingStatuses,
   ProjectMigrationLevel,
 } from "./projectEnums";
 
-export interface CoreServiceParams {
-  versionUrl?: string;
-}
-
 type DatasetImage = {
   _links: { href: string }[];
 };
 
-export interface GetDatasetFilesParams extends CoreServiceParams {
+export interface GetDatasetFilesParams extends CoreVersionUrl {
   git_url: string;
   name: string;
 }

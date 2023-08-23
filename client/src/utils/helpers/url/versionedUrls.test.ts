@@ -16,17 +16,25 @@
  * limitations under the License.
  */
 
-interface CoreErrorContent {
-  code: number;
-  devMessage: string;
-  devReference?: string;
-  sentry?: string;
-  userMessage: string;
-  userReference?: string;
-}
+import { getCoreVersionedUrl } from "./versionedUrls";
 
-interface CoreErrorResponse {
-  error: CoreErrorContent;
-}
+describe("Test versionedUrl", () => {
+  const FAKE_URL = "renkuEntity.edit";
 
-export type { CoreErrorContent, CoreErrorResponse };
+  it("Version: number only", () => {
+    const numberedUrl = getCoreVersionedUrl(FAKE_URL, "10");
+    expect(numberedUrl).toBe(`/10/${FAKE_URL}`);
+  });
+  it("Version: trailing slash", () => {
+    const numberedUrl = getCoreVersionedUrl(FAKE_URL, "/10");
+    expect(numberedUrl).toBe(`/10/${FAKE_URL}`);
+  });
+  it("Version: none", () => {
+    const numberedUrl = getCoreVersionedUrl(FAKE_URL, null);
+    expect(numberedUrl).toBe(`/${FAKE_URL}`);
+  });
+  it("Endpoint: missing", () => {
+    const numberedUrl = getCoreVersionedUrl("", null);
+    expect(numberedUrl).toBe("/");
+  });
+});
