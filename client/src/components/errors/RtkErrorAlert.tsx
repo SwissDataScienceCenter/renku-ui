@@ -21,7 +21,7 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 
 import { ErrorAlert } from "../Alert";
 import { CoreErrorAlert } from "./CoreErrorAlert";
-import { CoreErrorResponse } from "../../utils/definitions";
+import { CoreErrorResponse } from "../../utils/types/coreService.types";
 import { extractTextFromObject } from "../../utils/helpers/TextUtils";
 
 interface RtkErrorAlertProps {
