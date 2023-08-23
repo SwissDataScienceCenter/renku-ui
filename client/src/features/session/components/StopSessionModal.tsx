@@ -241,10 +241,12 @@ function HibernateSessionModal({
               the session (new and edited files) will be preserved while the
               session is paused.
             </p>
-            <InfoAlert dismissible={false} timeout={0}>
-              Please note that paused session are deleted after{" "}
-              {hibernationThreshold} of inactivity.
-            </InfoAlert>
+            {hibernatedSecondsThreshold > 0 && (
+              <InfoAlert dismissible={false} timeout={0}>
+                Please note that paused session are deleted after{" "}
+                {hibernationThreshold} of inactivity.
+              </InfoAlert>
+            )}
             <div className="d-flex justify-content-end">
               <Button
                 className={cx("float-right", "mt-1", "btn-outline-rk-green")}
