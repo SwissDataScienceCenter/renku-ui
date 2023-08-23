@@ -69,6 +69,7 @@ jobs:
         uses: SwissDataScienceCenter/renku-actions/deploy-renku@v1.5.2
         env:
           RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
           DOCKER_USERNAME: ${{ secrets.RENKU_DOCKER_USERNAME }}
           GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}

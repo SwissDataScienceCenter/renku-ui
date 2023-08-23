@@ -88,7 +88,8 @@
     "format-commit": "pretty-quick --staged --pattern \"client/**/*.*\"",
     "storybook": "storybook dev -p 6006 -s public",
     "build-storybook": "storybook build -s public",
-    "test-storybook": "test-storybook --browsers firefox chromium"
+    "test-storybook": "test-storybook --browsers firefox chromium",
+    "chromatic": "npx chromatic --project-token=CHROMATIC_PROJECT_TOKEN"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
@@ -130,6 +131,7 @@
     "@typescript-eslint/eslint-plugin": "^5.18.0",
     "@typescript-eslint/parser": "^5.18.0",
     "addon-redux": "^2.0.11",
+    "chromatic": "^6.23.0",
     "core-js": "^3.22.4",
     "cz-conventional-changelog": "^3.1.0",
     "eslint-config-prettier": "^8.8.0",
@@ -208,5 +210,7 @@
     "transformIgnorePatterns": [
       "^node_modules/(?!(highlight.js|katex|react-markdown|react-pdf)).*/"
     ]
-  }
+  },
+  "readme": "ERROR: No README data found!",
+  "_id": "renku-ui@3.11.0"
 }
