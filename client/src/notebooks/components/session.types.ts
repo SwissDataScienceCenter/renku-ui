@@ -34,6 +34,7 @@ export interface NotebookAnnotations {
   "hibernation-date": string;
   "hibernation-dirty": boolean;
   "hibernation-synchronized": boolean;
+  hibernatedSecondsThreshold: string;
 
   [key: string]: unknown;
 }

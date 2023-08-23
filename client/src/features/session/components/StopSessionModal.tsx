@@ -44,15 +44,22 @@ import {
 } from "../sessions.api";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
 import styles from "./SessionModals.module.scss";
+import { Session } from "../sessions.types";
+import { NotebooksHelper } from "../../../notebooks";
+import { NotebookAnnotations } from "../../../notebooks/components/session.types";
+import { toHumanDuration } from "../../../utils/helpers/DurationUtils";
+import { Duration } from "luxon";
 
 interface StopSessionModalProps {
   isOpen: boolean;
+  session: Session | undefined;
   sessionName: string;
   toggleModal: () => void;
 }
 
 export default function StopSessionModal({
   isOpen,
+  session,
   sessionName,
   toggleModal,
 }: StopSessionModalProps) {
@@ -64,6 +71,7 @@ export default function StopSessionModal({
     return (
       <AnonymousStopSessionModal
         isOpen={isOpen}
+        session={session}
         sessionName={sessionName}
         toggleModal={toggleModal}
       />
@@ -73,6 +81,7 @@ export default function StopSessionModal({
   return (
     <HibernateSessionModal
       isOpen={isOpen}
+      session={session}
       sessionName={sessionName}
       toggleModal={toggleModal}
     />
@@ -163,6 +172,7 @@ function AnonymousStopSessionModal({
 
 function HibernateSessionModal({
   isOpen,
+  session,
   sessionName,
   toggleModal,
 }: StopSessionModalProps) {
@@ -204,6 +214,22 @@ function HibernateSessionModal({
     return <Redirect push to={sessionsListUrl} />;
   }
 
+  const annotations = session
+    ? (NotebooksHelper.cleanAnnotations(
+        session.annotations
+      ) as NotebookAnnotations)
+    : null;
+  const hibernatedSecondsThreshold = parseInt(
+    annotations?.hibernatedSecondsThreshold ?? "",
+    10
+  );
+  const duration = isNaN(hibernatedSecondsThreshold)
+    ? Duration.fromISO("")
+    : Duration.fromObject({ seconds: hibernatedSecondsThreshold });
+  const hibernationThreshold = duration.isValid
+    ? toHumanDuration({ duration })
+    : "a period";
+
   return (
     <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Pause Session</ModalHeader>
@@ -216,8 +242,8 @@ function HibernateSessionModal({
               session is paused.
             </p>
             <InfoAlert dismissible={false} timeout={0}>
-              Please note that paused session are deleted after 30 days of
-              inactivity.
+              Please note that paused session are deleted after{" "}
+              {hibernationThreshold} of inactivity.
             </InfoAlert>
             <div className="d-flex justify-content-end">
               <Button

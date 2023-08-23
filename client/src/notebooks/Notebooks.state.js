@@ -87,6 +87,7 @@ const ExpectedAnnotations = {
       "hibernation-date",
       "hibernation-dirty",
       "hibernation-synchronized",
+      "hibernatedSecondsThreshold",
     ],
     default: {
       branch: "unknown",
@@ -102,6 +103,7 @@ const ExpectedAnnotations = {
       "hibernation-date": "",
       "hibernation-dirty": false,
       "hibernation-synchronized": false,
+      hibernatedSecondsThreshold: "0",
     },
   },
 };
