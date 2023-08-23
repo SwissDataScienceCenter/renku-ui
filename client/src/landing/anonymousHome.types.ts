@@ -28,7 +28,7 @@ export type AnonymousHomeConfig = {
         contentMd: string;
       };
     };
-    projects: [];
+    projects: unknown[];
     tutorialLink: string;
   };
   model: unknown;
