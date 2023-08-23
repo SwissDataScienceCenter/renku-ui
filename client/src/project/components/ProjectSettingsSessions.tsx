@@ -79,6 +79,7 @@ import { Docs } from "../../utils/constants/Docs";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { Url } from "../../utils/helpers/url";
 import styles from "./ProjectSettingsSessions.module.scss";
+import SessionCloudStorageOption from "../../features/session/components/options/SessionCloudStorageOption";
 
 export const ProjectSettingsSessions = () => {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -317,6 +318,8 @@ export const ProjectSettingsSessions = () => {
         versionUrl={versionUrl}
         devAccess={devAccess}
       />
+
+      <SessionCloudStorageOption />
 
       <ProjectSettingsSessionsAdvanced
         projectConfig={projectConfig}

@@ -92,7 +92,7 @@ export const versionsApi = createApi({
             singleVersion?.data?.anonymousSessionsEnabled ?? false,
           sshEnabled: singleVersion?.data?.sshEnabled ?? false,
           cloudStorageEnabled: {
-            s3: singleVersion?.data?.cloudstorageEnabled?.s3 ?? false,
+            s3: true, // singleVersion?.data?.cloudstorageEnabled?.s3 ?? false,
             azureBlob:
               singleVersion?.data?.cloudstorageEnabled?.azure_blob ?? false,
           },
