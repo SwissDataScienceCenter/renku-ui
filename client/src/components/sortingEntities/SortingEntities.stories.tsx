@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Story } from "@storybook/react";
+import { StoryFn as Story } from "@storybook/react";
 import SortingEntities, {
   SortingInputProps,
   SortingOptions,
@@ -34,6 +34,6 @@ const Template: Story<SortingInputProps> = (args) => (
 
 export const Default = Template.bind({});
 Default.args = {
-  styleType: "desk",
+  styleType: "mobile",
   sort: SortingOptions.AscTitle,
 };

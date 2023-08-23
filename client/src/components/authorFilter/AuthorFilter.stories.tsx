@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Story } from "@storybook/react";
+
+// Story type is deprecated but at the moment we can use this type
+import { StoryFn as Story } from "@storybook/react";
 import { AuthorFilter, AuthorFilterProps } from "./AuthorFilter";
 
 export default {
