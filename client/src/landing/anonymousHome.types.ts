@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -15,21 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 
-// Story type is deprecated but at the moment we can use this type
-import { StoryFn as Story } from "@storybook/react";
-import { AuthorFilter, AuthorFilterProps } from "./AuthorFilter";
-
-export default {
-  title: "components/AuthorFilter",
-  component: AuthorFilter,
-  argTypes: {},
-};
-
-const Template: Story<AuthorFilterProps> = (args) => <AuthorFilter {...args} />;
-
-export const Default = Template.bind({});
-Default.args = {
-  value: "user",
+export type AnonymousHomeConfig = {
+  client: unknown;
+  homeCustomized: {
+    custom: {
+      enabled: boolean;
+      main: {
+        backgroundImage: {
+          url: string;
+        };
+        contentMd: string;
+      };
+    };
+    projects: unknown[];
+    tutorialLink: string;
+  };
+  model: unknown;
+  params: {
+    UI_SHORT_SHA: string;
+  };
+  urlMap: {
+    siteStatusUrl: string;
+  };
 };
