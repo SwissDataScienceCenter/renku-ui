@@ -17,10 +17,15 @@
  */
 
 import {
+  BaseQueryFn,
+  FetchArgs,
   FetchBaseQueryError,
   createApi,
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
+
+import { RootStateOrAny } from "react-redux";
+
 import type {
   GetDatasetFilesParams,
   GetDatasetFilesResponse,
@@ -39,7 +44,10 @@ import type {
 import { MigrationStartScopes } from "./projectEnums";
 import { projectKgApi } from "./projectKgApi";
 import { projectsKgApi } from "../projects/projectsKgApi";
-import { getCoreVersionedUrl } from "../../utils/helpers/url/versionedUrls";
+import {
+  CoreApiVersionedUrlHelper,
+  getCoreVersionedUrl,
+} from "../../utils/helpers/url/versionedUrls";
 import { CoreVersionUrl } from "../../utils/types/coreService.types";
 
 interface GetConfigParams extends CoreVersionUrl {
@@ -103,9 +111,40 @@ function urlWithQueryParams(url: string, queryParams: any) {
   return `${url}?${query}`;
 }
 
+const rawBaseQuery = fetchBaseQuery({ baseUrl: "/ui-server/api/renku" });
+
+interface CoreServiceFetchArgs extends FetchArgs {
+  apiVersion?: string;
+  metadataVersion?: string;
+}
+
+const dynamicBaseQuery: BaseQueryFn<
+  CoreServiceFetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+  const coreApiVersion = (api.getState() as RootStateOrAny).coreApiVersion as
+    | string
+    | undefined;
+  const overrideCoreApiVersion = args.apiVersion;
+  const helper = new CoreApiVersionedUrlHelper({
+    coreApiVersion: coreApiVersion ?? "/",
+  });
+  const endpoint = args.url;
+  const metadataVersion = args.metadataVersion;
+  const adjustedUrl = helper.urlForEndpoint(
+    endpoint,
+    metadataVersion,
+    overrideCoreApiVersion
+  );
+  const adjustedArgs = { ...args, url: adjustedUrl };
+  // provide the amended url and other params to the raw base query
+  return rawBaseQuery(adjustedArgs, api, extraOptions);
+};
+
 export const projectCoreApi = createApi({
   reducerPath: "projectCore",
-  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/renku" }),
+  baseQuery: dynamicBaseQuery,
   tagTypes: ["project", "project-status", "ProjectConfig"],
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
@@ -118,14 +157,8 @@ export const projectCoreApi = createApi({
           "X-Requested-With": "XMLHttpRequest",
         };
         return {
-          url: urlWithQueryParams(
-            getCoreVersionedUrl(
-              "datasets.files_list",
-              params.versionUrl,
-              params.helper
-            ),
-            queryParams
-          ),
+          url: urlWithQueryParams("datasets.files_list", queryParams),
+          metadataVersion: params.versionUrl,
           method: "GET",
           headers: new Headers(headers),
           validateStatus: (response, body) => {

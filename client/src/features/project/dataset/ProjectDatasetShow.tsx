@@ -136,7 +136,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
     gitUrl: externalUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { versionUrl, urlHelper } = coreSupport;
+  const { versionUrl } = coreSupport;
 
   const {
     data: kgDataset,
@@ -152,7 +152,6 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
   } = useGetDatasetFilesQuery(
     {
       git_url: props.externalUrl,
-      helper: urlHelper,
       name: datasetName ?? "",
       versionUrl,
     },
