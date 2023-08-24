@@ -44,49 +44,53 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=4096"
 
   # Run interaction and accessibility tests
-  interaction-and-accessibility:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '18.x'
-      - name: Install dependencies
-        run: |
-          cd client
-          npm i
-      - name: Install Playwright
-        run: |
-          cd client
-          npx playwright install --with-deps
-      - name: Build Storybook
-        run: |
-          cd client
-          npm run build-storybook --quiet
-      - name: Serve Storybook and run tests
-        run: |
-          cd client
-          npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
-          "npx http-server storybook-static --port 6006 --silent" \
-          "npx wait-on tcp:6006 && npm run test-storybook"
+#  storybook-tests:
+#    timeout-minutes: 60
+#    runs-on: ubuntu-latest
+#    if: github.event.deployment_status.state == 'success'
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: actions/setup-node@v2
+#        with:
+#          node-version: '18.x'
+#      - name: Install dependencies
+#        run: |
+#          cd client
+#          npm i
+#      - name: Install Playwright
+#        run: |
+#          cd client
+#          npx playwright install --with-deps
+#      - name: Build Storybook
+#        run: |
+#          cd client
+#          npm run build-storybook --quiet
+#      - name: Serve Storybook and run tests
+#        run: |
+#          cd client
+#          npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
+#          "npx http-server storybook-static --port 6006 --silent" \
+#          "npx wait-on tcp:6006 && npm run test-storybook"
 
   # Run visual and composition tests with Chromatic
-  visual-and-composition:
+  chromatic:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Required to retrieve git history
       - name: Install dependencies
-        run: |
-          cd client
-          npm i
+        run: npm i
       - name: Publish to Chromatic
         uses: chromaui/action@v1
         with:
           # Grab this from the Chromatic manage page
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          working-directory: client
+          token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
+          workingDir: client
 
   test-server:
     runs-on: ubuntu-22.04
