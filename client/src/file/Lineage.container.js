@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 
 import { API_ERRORS } from "../api-client";
 import { FileLineage as FileLineagePresent } from "./Lineage.present";

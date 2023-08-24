@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useRef } from "react";
+import { ReactNode, useRef } from "react";
 import { UncontrolledTooltip } from "reactstrap";
 import "./Entities.css";
 import { Link } from "react-router-dom";

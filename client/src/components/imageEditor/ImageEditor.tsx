@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import AvatarEditor, { Position } from "react-avatar-editor";
 import picaFn from "pica";
 

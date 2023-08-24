@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
 import _ from "lodash";

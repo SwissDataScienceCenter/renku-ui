@@ -16,13 +16,7 @@
  * limitations under the License.
  */
 
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   faCheck,
   faEdit,

@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
-
 import { Button, Col, Row } from "../../utils/ts-wrappers";
 import { Loader } from "../../components/Loader";
 

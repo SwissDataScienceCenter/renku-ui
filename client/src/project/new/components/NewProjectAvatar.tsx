@@ -23,7 +23,7 @@
  *  ProjectAvatar container and present code.
  */
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import ImageInput from "../../../components/form-field/FormGeneratorImageInput";
 import { ImageInputMode } from "../../../components/form-field/FormGeneratorImageInput";

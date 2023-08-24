@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Card, CardBody, FormText, Input, Label } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";

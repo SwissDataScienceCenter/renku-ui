@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader } from "reactstrap";

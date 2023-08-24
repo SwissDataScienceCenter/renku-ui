@@ -23,7 +23,6 @@
  *  FieldGroup component.
  */
 
-import React from "react";
 import { FormGroup, FormText, Input, Label } from "../utils/ts-wrappers";
 import { ErrorLabel, InputLabel } from "./formlabels/FormLabels";
 

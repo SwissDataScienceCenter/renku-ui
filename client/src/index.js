@@ -1,4 +1,3 @@
-import React from "react";
 import { createRoot } from "react-dom/client";
 import { connect, Provider } from "react-redux";
 import { BrowserRouter as Router, Route } from "react-router-dom";

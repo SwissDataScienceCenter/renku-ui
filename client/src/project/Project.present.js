@@ -23,7 +23,7 @@
  *  Presentational components.
  */
 
-import React, { Component, Fragment, useEffect } from "react";
+import { Component, Fragment, useEffect } from "react";
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, Route, Switch } from "react-router-dom";

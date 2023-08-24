@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
-
 import SortingEntities, {
   SortingOptions,
 } from "../sortingEntities/SortingEntities";

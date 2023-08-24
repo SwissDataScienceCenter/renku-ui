@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 import { Link } from "react-router-dom";
 import Autosuggest from "react-autosuggest";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

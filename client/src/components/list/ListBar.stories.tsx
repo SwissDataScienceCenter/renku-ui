@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+
 import { ListElementProps } from "./List.d";
 import ListBar from "./ListBar";
 import { EntityType } from "../../features/kgSearch";

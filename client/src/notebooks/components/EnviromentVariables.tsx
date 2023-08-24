@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ChangeEvent } from "react";
+import { ChangeEvent } from "react";
 import {
   Button,
   Col,

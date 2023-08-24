@@ -1,4 +1,3 @@
-import React from "react";
 import { Label } from "reactstrap";
 import { InputLabel } from "../formlabels/FormLabels";
 

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { Location } from "history";
 import { Link } from "react-router-dom";
 import { NotFound } from "../../not-found";
