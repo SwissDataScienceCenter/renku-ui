@@ -122,6 +122,7 @@
     "@types/react-helmet": "^6.1.6",
     "@types/react-pdf": "^6.2.0",
     "@types/react-router-dom": "^5.1.2",
+    "@types/react-router-hash-link": "^2.4.6",
     "@types/styled-components": "^5.1.25",
     "@typescript-eslint/eslint-plugin": "^5.18.0",
     "@typescript-eslint/parser": "^5.18.0",
