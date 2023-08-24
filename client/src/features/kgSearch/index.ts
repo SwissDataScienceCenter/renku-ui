@@ -4,6 +4,7 @@ import {
   KgSearchResultLink,
   KgSearchResult,
 } from "../kgSearch/KgSearch.d";
+import { stateToSearchString } from "./KgSearchState";
 
-export { kgSearchApi, EntityType };
+export { kgSearchApi, EntityType, stateToSearchString };
 export type { KgSearchResult, KgSearchResultLink };

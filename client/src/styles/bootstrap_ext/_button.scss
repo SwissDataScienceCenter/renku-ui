@@ -164,6 +164,16 @@ $borderRadius: 1000px;
   --bs-btn-active-color: white;
 }
 
+.btn-rk-over-green {
+  --bs-btn-active-bg: #{$rk-green};
+  --bs-btn-active-border-color: #{$rk-green};
+  --bs-btn-active-color: #{$rk-white};
+
+  --bs-btn-hover-bg: #{$rk-green};
+  --bs-btn-hover-border-color: #{$rk-green};
+  --bs-btn-hover-color: #{$rk-white};
+}
+
 .rk-btn-group-light {
   border-style: solid;
   border-width: 1px;
