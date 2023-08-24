@@ -34,6 +34,7 @@ import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
 import { TimeCaption } from "../components/TimeCaption";
 import { RenkuNavLink } from "../components/RenkuNavLink";
+import ColorPalette from "./ColorPalette";
 
 function Overview() {
   return (
@@ -239,11 +240,14 @@ function StyleGuide(props) {
         />
       </Switch>
       <Switch>
-        <Route
+        {/* <Route
           exact
           path={urlMap.colorsUrl}
           render={(p) => <ColorsGuide key="colors" {...p} urlMap={urlMap} />}
-        />
+        /> */}
+        <Route exact path={urlMap.colorsUrl}>
+          <ColorPalette />
+        </Route>
       </Switch>
       <Switch>
         <Route

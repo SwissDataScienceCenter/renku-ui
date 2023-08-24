@@ -1,12 +1,50 @@
-$utilities: (
-  "rk-opacity": (
-    property: opacity,
-    values: (
-      0: 0,
-      25: 0.25,
-      50: 0.5,
-      75: 0.75,
-      100: 1,
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+
+@import "./custom_color_palette";
+
+$all-colors: map-merge-multiple($rk-blues);
+
+$utilities: map-merge(
+  $utilities,
+  (
+    "rk-opacity": (
+      property: opacity,
+      values: (
+        0: 0,
+        25: 0.25,
+        50: 0.5,
+        75: 0.75,
+        100: 1,
+      ),
     ),
-  ),
+    "color":
+      map-merge(
+        map-get($utilities, "color"),
+        (
+          values:
+            map-merge(
+              map-get(map-get($utilities, "color"), "values"),
+              ($all-colors)
+            ),
+        )
+      ),
+    "background-color":
+      map-merge(
+        map-get($utilities, "background-color"),
+        (
+          values:
+            map-merge(
+              map-get(map-get($utilities, "background-color"), "values"),
+              ($all-colors)
+            ),
+        )
+      ),
+  )
 );
+
+@import "bootstrap/scss/utilities/api";

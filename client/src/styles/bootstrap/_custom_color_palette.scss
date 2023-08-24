@@ -1,0 +1,23 @@
+@import "bootstrap/scss/functions";
+
+$rk-blue-100: tint-color($rk-blue, 80%) !default;
+$rk-blue-200: tint-color($rk-blue, 60%) !default;
+$rk-blue-300: tint-color($rk-blue, 40%) !default;
+$rk-blue-400: tint-color($rk-blue, 20%) !default;
+$rk-blue-500: $rk-blue !default;
+$rk-blue-600: shade-color($rk-blue, 20%) !default;
+$rk-blue-700: shade-color($rk-blue, 40%) !default;
+$rk-blue-800: shade-color($rk-blue, 60%) !default;
+$rk-blue-900: shade-color($rk-blue, 80%) !default;
+
+$rk-blues: (
+  "rk-blue-100": $rk-blue-100,
+  "rk-blue-200": $rk-blue-200,
+  "rk-blue-300": $rk-blue-300,
+  "rk-blue-400": $rk-blue-400,
+  "rk-blue-500": $rk-blue-500,
+  "rk-blue-600": $rk-blue-600,
+  "rk-blue-700": $rk-blue-700,
+  "rk-blue-800": $rk-blue-800,
+  "rk-blue-900": $rk-blue-900,
+) !default;
