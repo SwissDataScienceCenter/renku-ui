@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Story } from "@storybook/react";
+import { StoryFn as Story } from "@storybook/react";
 import { TypeEntityFilter, TypeFilterProps } from "./TypeEntityFilter";
 
 export default {

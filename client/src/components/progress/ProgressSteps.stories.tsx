@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Story } from "@storybook/react";
+import { StoryFn as Story } from "@storybook/react";
 import { ProgressStyle, ProgressType } from "./Progress";
 import ProgressStepsIndicator, {
   ProgressStepsIndicatorProps,

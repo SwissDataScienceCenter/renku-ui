@@ -17,7 +17,7 @@
  */
 
 import React from "react";
-import { Story } from "@storybook/react";
+import { StoryFn as Story } from "@storybook/react";
 import { NewProjectTemplate, Repository } from "../../model/RenkuModels";
 import TemplateSelector, { TemplateSelectorProps } from "./TemplateSelector";
 
