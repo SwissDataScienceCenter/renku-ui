@@ -151,11 +151,7 @@ export const projectCoreApi = createApi({
         };
         if (migrationParams.branch) params.branch = migrationParams.branch;
         return {
-          url: getCoreVersionedUrl(
-            "/cache.migrations_check",
-            undefined, // migrations always uses the most recent renku metadata version
-            migrationParams.helper
-          ),
+          url: getCoreVersionedUrl("/cache.migrations_check"), // ? migrations always uses the last renku version
           params,
         };
       },
