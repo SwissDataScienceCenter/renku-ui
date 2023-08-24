@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { Story } from "@storybook/react";
+import { StoryFn as Story } from "@storybook/react";
 import VisibilitiesInput, {
   Visibilities,
   VisibilitiesInputProps,

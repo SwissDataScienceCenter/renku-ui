@@ -1,4 +1,4 @@
-FROM node:18.16.0-alpine AS builder
+FROM node:18.17.1-alpine AS builder
 
 RUN apk update && apk add python3 make g++
 

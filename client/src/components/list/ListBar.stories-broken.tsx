@@ -1,4 +1,4 @@
-import { Story } from "@storybook/react";
+import { StoryFn as Story } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
 
 import { EntityType } from "../../features/kgSearch";

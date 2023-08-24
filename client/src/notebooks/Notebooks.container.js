@@ -724,6 +724,8 @@ class StartNotebookServer extends Component {
     this.state.rtkQuerySubscriptions.push(getConfig.unsubscribe);
 
     const { data: projectConfig } = await getConfig;
+    // TODO Do not mutate state directly. Use setState()
+    // eslint-disable-next-line react/no-direct-mutation-state
     this.state.projectConfig = projectConfig;
   }
 
@@ -742,6 +744,8 @@ class StartNotebookServer extends Component {
     this.state.rtkQuerySubscriptions.push(getResourcePools.unsubscribe);
 
     const { data: resourcePools } = await getResourcePools;
+    // TODO: Do not mutate state directly. Use setState()
+    // eslint-disable-next-line react/no-direct-mutation-state
     this.state.resourcePools = resourcePools;
   }
 
