@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import DatasetAdd from "./DatasetAdd.present";

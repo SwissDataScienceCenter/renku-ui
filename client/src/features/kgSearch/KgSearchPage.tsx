@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { useSelector } from "react-redux";
 
 import {

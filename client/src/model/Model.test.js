@@ -23,7 +23,7 @@
  *  Tests for models.
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 import { createRoot } from "react-dom/client";
 import { act } from "react-test-renderer";
 

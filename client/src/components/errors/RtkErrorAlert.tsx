@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 

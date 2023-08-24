@@ -19,7 +19,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PopoverBody, UncontrolledPopover } from "../utils/ts-wrappers";
 
-import React, { ReactNode, useRef } from "react";
+import { ReactNode, useRef } from "react";
 
 interface InformativeIconProps {
   children: string | ReactNode;

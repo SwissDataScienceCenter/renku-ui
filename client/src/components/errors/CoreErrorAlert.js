@@ -22,7 +22,7 @@
  *  Error Alert for errors coming from renku-core.
  */
 
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import { Button, Collapse } from "reactstrap";
 
 import { RenkuAlert } from "../Alert";

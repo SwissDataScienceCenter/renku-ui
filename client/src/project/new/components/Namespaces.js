@@ -23,7 +23,7 @@
  *  Namespace form group component.
  */
 
-import React, { Component, Fragment } from "react";
+import { Component, Fragment } from "react";
 import Autosuggest from "react-autosuggest";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";

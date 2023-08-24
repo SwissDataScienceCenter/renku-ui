@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { Link } from "react-router-dom";
 import { JupyterIcon } from "../components/Icon";
 import { Loader } from "../components/Loader";

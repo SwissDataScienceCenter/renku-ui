@@ -16,6 +16,7 @@
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
     "plugin:jest/recommended",
     "prettier"
   ],
@@ -41,6 +42,7 @@
         // We probably want to turn this on at some point
         // "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "plugin:react/recommended",
+        "plugin:react/jsx-runtime",
         "plugin:react-hooks/recommended",
         "plugin:jest/recommended",
         "prettier"

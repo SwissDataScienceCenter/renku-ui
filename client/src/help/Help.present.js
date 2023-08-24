@@ -23,7 +23,7 @@
  *  Presentational components for help.
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 import { Route } from "react-router-dom";
 
 import { Row, Col } from "reactstrap";

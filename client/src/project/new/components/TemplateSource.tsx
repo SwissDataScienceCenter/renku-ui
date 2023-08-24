@@ -22,7 +22,6 @@
  *  TemplateSource.tsx
  *  Template Source field group component
  */
-import React from "react";
 import { Button, ButtonGroup, FormGroup } from "../../../utils/ts-wrappers";
 import { InputLabel } from "../../../components/formlabels/FormLabels";
 import { NewProjectInputs } from "./newProject.d";

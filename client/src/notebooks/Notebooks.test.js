@@ -22,7 +22,6 @@
  * Tests for the session components
  */
 
-import React from "react";
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";

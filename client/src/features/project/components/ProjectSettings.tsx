@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { Card, CardBody, Col, Row } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { Visibilities } from "../../../components/visibility/Visibility";

@@ -24,7 +24,7 @@
  */
 
 import { Button } from "reactstrap";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import ImageInput, {
   ImageFieldPropertyName as Prop,

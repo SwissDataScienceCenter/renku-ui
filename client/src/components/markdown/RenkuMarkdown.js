@@ -22,7 +22,7 @@
  *  RenkuMarkdown code and presentation.
  */
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import mermaid from "mermaid";
 import RenkuMarkdownWithPathTranslation from "./RenkuMarkdownWithPathTranslation";
 import { sanitizedHTMLFromMarkdown } from "../../utils/helpers/HelperFunctions";

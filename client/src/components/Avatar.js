@@ -22,7 +22,7 @@
  *  Avatar code and presentation.
  */
 
-import React, { Component, useEffect, useState } from "react";
+import { Component, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 

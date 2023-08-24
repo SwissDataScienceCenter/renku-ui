@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import * as React from "react";
 import { Link } from "react-router-dom";
 import { EntityType } from "../../features/kgSearch";
 import SessionButton from "../../features/session/components/SessionButton";
