@@ -22,7 +22,7 @@
  *  UserTemplate.js
  *  UserTemplate field group component
  */
-import React, { Component, Fragment } from "react";
+import { Component, Fragment } from "react";
 import { Button, FormGroup, FormText, Input } from "reactstrap";
 
 import { Docs, Links } from "../../../utils/constants/Docs";

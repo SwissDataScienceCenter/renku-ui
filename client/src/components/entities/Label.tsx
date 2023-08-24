@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import * as React from "react";
 import { EntityType, WorkflowType } from "./Entities";
 import {
   Briefcase,

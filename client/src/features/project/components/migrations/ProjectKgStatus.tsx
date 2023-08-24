@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Collapse } from "reactstrap";
 import { Link } from "react-router-dom";
 import {

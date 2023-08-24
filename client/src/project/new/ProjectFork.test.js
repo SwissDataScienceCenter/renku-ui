@@ -23,7 +23,6 @@
  *  New project test code.
  */
 
-import React from "react";
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";

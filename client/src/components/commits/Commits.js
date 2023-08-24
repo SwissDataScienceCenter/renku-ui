@@ -23,7 +23,6 @@
  *  Commits code and presentation.
  */
 
-import React from "react";
 import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DateTime } from "luxon";

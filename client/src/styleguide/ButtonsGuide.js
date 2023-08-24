@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 
 import { Button, ButtonGroup, DropdownItem, Table } from "reactstrap";
 import { Loader } from "../components/Loader";

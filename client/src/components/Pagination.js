@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { Component } from "react";
+import { Component } from "react";
 import ReactPagination from "react-js-pagination";
 
 /**

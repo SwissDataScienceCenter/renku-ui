@@ -22,7 +22,7 @@
  *  RenkuNavLink code and presentation.
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 import { NavLink as RRNavLink } from "react-router-dom";
 import { NavLink } from "reactstrap";
 

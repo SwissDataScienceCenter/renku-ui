@@ -23,7 +23,7 @@
  *  The StyleGuide explains the components of the RenkuLab UI.
  */
 
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 
 import { Col, Nav, NavItem, Row, Table } from "reactstrap";
 import { Route, Switch } from "react-router-dom";

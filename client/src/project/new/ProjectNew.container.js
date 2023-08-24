@@ -23,13 +23,7 @@
  *  Container components for new project
  */
 
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useContext,
-  Component,
-} from "react";
+import { useEffect, useState, useRef, useContext, Component } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { useHistory } from "react-router";

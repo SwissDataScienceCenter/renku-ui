@@ -23,7 +23,6 @@
  *  LoginAlert component storybook
  */
 
-import * as React from "react";
 import { StoryFn as Story } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
 import LoginAlert, { LoginAlertProps } from "./LoginAlert";

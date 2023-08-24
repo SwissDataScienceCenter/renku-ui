@@ -23,7 +23,7 @@
  *  Coordinator for the application.
  */
 
-import React, { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
 import { Redirect } from "react-router";

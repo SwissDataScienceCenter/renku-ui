@@ -21,7 +21,7 @@
  *  Visibility.js
  *  Visibility field group component
  */
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import {
   Button,
   Card,

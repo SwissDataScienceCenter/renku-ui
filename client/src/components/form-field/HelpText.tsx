@@ -23,8 +23,6 @@
  *  Presentational components.
  */
 
-import React from "react";
-
 export default function HelpText({ content }: { content: React.ReactNode }) {
   return (
     <div>

@@ -22,8 +22,6 @@
  *  FormValidation.tsx
  *  FormValidation components.
  */
-import React from "react";
-
 import { toCapitalized as capitalize } from "../../../utils/helpers/HelperFunctions";
 import {
   ErrorLabel,

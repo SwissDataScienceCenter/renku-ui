@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { Button, Row, Col } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
