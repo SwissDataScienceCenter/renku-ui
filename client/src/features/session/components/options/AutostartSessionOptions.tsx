@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { StatusStepProgressBar } from "../../../../components/progress/ProgressSteps";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";

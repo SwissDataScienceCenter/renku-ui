@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
   faCog,
   faExclamationTriangle,
