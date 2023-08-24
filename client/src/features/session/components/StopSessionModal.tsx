@@ -258,7 +258,7 @@ function HibernateSessionModal({
               <Button
                 className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
                 data-cy="pause-session-modal-button"
-                disabled={isStopping}
+                disabled={isStopping || session?.status.state === "starting"}
                 type="submit"
                 onClick={onHibernateSession}
               >
