@@ -332,7 +332,7 @@ function useAutostartSessionOptions(): void {
     dispatch(setStarting(true));
     dispatch(
       updateStepStatus({
-        id: 5,
+        id: 6,
         status: StatusStepProgressBar.EXECUTING,
       })
     );
