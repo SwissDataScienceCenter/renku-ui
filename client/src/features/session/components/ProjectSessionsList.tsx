@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Container } from "reactstrap";
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";

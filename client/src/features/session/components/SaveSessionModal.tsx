@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, {
+import {
   ChangeEvent,
   Dispatch,
   SetStateAction,

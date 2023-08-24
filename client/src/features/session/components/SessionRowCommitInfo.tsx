@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";

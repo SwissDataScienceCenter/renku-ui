@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import cx from "classnames";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { useLocation } from "react-router";

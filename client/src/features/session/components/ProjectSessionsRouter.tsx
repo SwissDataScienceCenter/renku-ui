@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Route, Switch } from "react-router";
 import { Col } from "reactstrap";

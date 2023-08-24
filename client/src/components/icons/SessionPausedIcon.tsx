@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
-
 interface SessionPausedIconProps {
   className?: string;
   size: number;

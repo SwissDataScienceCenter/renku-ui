@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import cx from "classnames";
 import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
 import { TimeCaption } from "../../../../components/TimeCaption";

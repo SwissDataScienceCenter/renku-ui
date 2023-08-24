@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import cx from "classnames";
 import { InfoCircle } from "react-bootstrap-icons";
 import { RootStateOrAny, useSelector } from "react-redux";

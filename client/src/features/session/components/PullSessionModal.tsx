@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import cx from "classnames";
 import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 import { Loader } from "../../../components/Loader";

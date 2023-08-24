@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { Session, SessionStatus } from "../sessions.types";
 import ProgressStepsIndicator, {
   ProgressStyle,

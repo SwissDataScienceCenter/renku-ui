@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Loader } from "../../../../components/Loader";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";

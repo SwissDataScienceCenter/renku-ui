@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   faExternalLinkAlt,
   faFileAlt,
@@ -394,7 +394,6 @@ function SessionActions({ className, session }: SessionActionsProps) {
       className={cx("sessionsButton", className)}
       color="rk-green"
       default={defaultAction}
-      disabled={status === "stopping" || isStopping}
       isPrincipal
       size="sm"
     >

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import cx from "classnames";
 import Media from "react-media";
 import { Link } from "react-router-dom";

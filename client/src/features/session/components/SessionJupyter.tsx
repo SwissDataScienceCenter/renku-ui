@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import cx from "classnames";
 import { useLocation } from "react-router";
 import { appendCustomUrlPath } from "../../../utils/helpers/url";

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, useCallback, useMemo } from "react";
+import { ChangeEvent, useCallback, useMemo } from "react";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Col, Input, Row } from "reactstrap";
