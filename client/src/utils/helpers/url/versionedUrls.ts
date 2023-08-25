@@ -37,50 +37,92 @@ export type CoreApiVersionedUrlConfig = {
   overrides: Record<string, string>;
 };
 
-/**
- * Helper class to generate versioned urls for the core api.
- */
-export class CoreApiVersionedUrlHelper {
-  config: CoreApiVersionedUrlConfig;
-  constructor(
-    config: Pick<CoreApiVersionedUrlConfig, "coreApiVersion"> &
-      Partial<Pick<CoreApiVersionedUrlConfig, "overrides">>
-  ) {
-    this.config = {
-      coreApiVersion: config.coreApiVersion,
-      overrides: config.overrides ?? {},
-    };
-  }
+// /**
+//  * Helper class to generate versioned urls for the core api.
+//  */
+// export class CoreApiVersionedUrlHelper {
+//   config: CoreApiVersionedUrlConfig;
+//   constructor(
+//     config: Pick<CoreApiVersionedUrlConfig, "coreApiVersion"> &
+//       Partial<Pick<CoreApiVersionedUrlConfig, "overrides">>
+//   ) {
+//     this.config = {
+//       coreApiVersion: config.coreApiVersion,
+//       overrides: config.overrides ?? {},
+//     };
+//   }
 
-  urlForEndpoint(
-    endpoint: string,
-    metadataVersion: string | undefined | null,
-    apiVersionOverride?: string
-  ): string {
-    const endpoint_ = stripInitialSlash(endpoint);
-    const metadataVersion_ = stripInitialSlash(metadataVersion ?? "");
-    const apiVersion = apiVersionOverride
-      ? apiVersionOverride
-      : this.config.overrides[metadataVersion_] ?? this.config.coreApiVersion;
-    const apiPath = metadataVersion_
-      ? `${metadataVersion_}/${apiVersion}`
-      : apiVersion;
-    if (endpoint_.length > 0 || metadataVersion_.length > 0)
-      return simplifyPath(`/${apiPath}/${endpoint_}`);
-    if (apiPath !== "/") return `/${apiPath}/`;
-    return "/";
-  }
+//   urlForEndpoint(
+//     endpoint: string,
+//     metadataVersion: string | undefined | null,
+//     apiVersionOverride?: string
+//   ): string {
+//     const endpoint_ = stripInitialSlash(endpoint);
+//     const metadataVersion_ = stripInitialSlash(metadataVersion ?? "");
+//     const apiVersion = apiVersionOverride
+//       ? apiVersionOverride
+//       : this.config.overrides[metadataVersion_] ?? this.config.coreApiVersion;
+//     const apiPath = metadataVersion_
+//       ? `${metadataVersion_}/${apiVersion}`
+//       : apiVersion;
+//     if (endpoint_.length > 0 || metadataVersion_.length > 0)
+//       return simplifyPath(`/${apiPath}/${endpoint_}`);
+//     if (apiPath !== "/") return `/${apiPath}/`;
+//     return "/";
+//   }
+// }
+
+// export function getCoreVersionedUrl(
+//   endpoint: string,
+//   metadataVersion?: string | null,
+//   helper?: CoreApiVersionedUrlHelper,
+//   apiVersionOverride?: string
+// ): string {
+//   const helper_ =
+//     helper != null
+//       ? helper
+//       : new CoreApiVersionedUrlHelper({ coreApiVersion: "/" });
+//   return helper_.urlForEndpoint(endpoint, metadataVersion, apiVersionOverride);
+// }
+
+interface GetCoreVersionedUrlArgs {
+  endpoint: string;
+  metadataVersion?: string | null;
+  apiVersionOverride?: string;
+  coreApiVersion?: string;
+  overrides?: Record<string, string>;
 }
 
-export function getCoreVersionedUrl(
-  endpoint: string,
-  metadataVersion?: string | null,
-  helper?: CoreApiVersionedUrlHelper,
-  apiVersionOverride?: string
-): string {
-  const helper_ =
-    helper != null
-      ? helper
-      : new CoreApiVersionedUrlHelper({ coreApiVersion: "/" });
-  return helper_.urlForEndpoint(endpoint, metadataVersion, apiVersionOverride);
+export function getCoreVersionedUrl({
+  endpoint: endpoint_,
+  metadataVersion: metadataVersion_,
+  apiVersionOverride,
+  coreApiVersion,
+  overrides,
+}: GetCoreVersionedUrlArgs): string {
+  const metadataVersion = ensureEmptyOrStartWithSlash(metadataVersion_);
+  const apiVersion = ensureEmptyOrStartWithSlash(
+    apiVersionOverride
+      ? apiVersionOverride
+      : overrides
+      ? overrides[stripInitialSlash(metadataVersion)] ?? coreApiVersion
+      : coreApiVersion
+  );
+  const endpoint = ensureStartWithSlash(endpoint_);
+
+  return `${metadataVersion}${apiVersion}${endpoint}`;
+}
+
+function ensureEmptyOrStartWithSlash(path: string | null | undefined): string {
+  if (!path || path === "/") {
+    return "";
+  }
+  return path.startsWith("/") ? path : `/${path}`;
+}
+
+function ensureStartWithSlash(path: string | null | undefined): string {
+  if (!path) {
+    return "/";
+  }
+  return path.startsWith("/") ? path : `/${path}`;
 }

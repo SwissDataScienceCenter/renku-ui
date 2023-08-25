@@ -123,20 +123,30 @@ const dynamicBaseQuery: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  const coreApiVersion = (api.getState() as RootStateOrAny).coreApiVersion as
-    | string
-    | undefined;
+  // const coreApiVersion = (api.getState() as RootStateOrAny).coreApiVersion as
+  //   | string
+  //   | undefined;
   const overrideCoreApiVersion = args.apiVersion;
-  const helper = new CoreApiVersionedUrlHelper({
-    coreApiVersion: coreApiVersion ?? "/",
-  });
+  // const helper = new CoreApiVersionedUrlHelper({
+  //   coreApiVersion: coreApiVersion ?? "/",
+  // });
+
   const endpoint = args.url;
   const metadataVersion = args.metadataVersion;
-  const adjustedUrl = helper.urlForEndpoint(
+  // const adjustedUrl = helper.urlForEndpoint(
+  //   endpoint,
+  //   metadataVersion,
+  //   overrideCoreApiVersion
+  // );
+
+  const adjustedUrl = getCoreVersionedUrl({
     endpoint,
     metadataVersion,
-    overrideCoreApiVersion
-  );
+    apiVersionOverride: overrideCoreApiVersion,
+    // TODO: provide the following two arguments from the App context or the Redux store
+    // coreApiVersion: null,
+    // overrides: null,
+  });
   const adjustedArgs = { ...args, url: adjustedUrl };
   // provide the amended url and other params to the raw base query
   return rawBaseQuery(adjustedArgs, api, extraOptions);
@@ -184,7 +194,7 @@ export const projectCoreApi = createApi({
         };
         if (migrationParams.branch) params.branch = migrationParams.branch;
         return {
-          url: getCoreVersionedUrl("/cache.migrations_check"), // ? migrations always uses the last renku version
+          url: getCoreVersionedUrl({ endpoint: "/cache.migrations_check" }), // ? migrations always uses the last renku version
           params,
         };
       },
@@ -260,7 +270,7 @@ export const projectCoreApi = createApi({
         return {
           body,
           method: "POST",
-          url: getCoreVersionedUrl("/cache.migrate"), // ? migrations always uses the last renku version
+          url: getCoreVersionedUrl({ endpoint: "/cache.migrate" }), // ? migrations always uses the last renku version
           validateStatus: (response, body) => {
             return response.status < 400 && !body.error?.code;
           },
@@ -277,7 +287,10 @@ export const projectCoreApi = createApi({
           ...(branch ? { branch } : {}),
         };
         return {
-          url: getCoreVersionedUrl("config.show", versionUrl),
+          url: getCoreVersionedUrl({
+            endpoint: "config.show",
+            metadataVersion: versionUrl,
+          }),
           params,
           validateStatus: (response, body) =>
             response.status >= 200 && response.status < 300 && !body.error,
@@ -298,7 +311,10 @@ export const projectCoreApi = createApi({
           config: update,
         };
         return {
-          url: getCoreVersionedUrl("config.set", versionUrl),
+          url: getCoreVersionedUrl({
+            endpoint: "config.set",
+            metadataVersion: versionUrl,
+          }),
           method: "POST",
           body,
           validateStatus: (response, body) =>
