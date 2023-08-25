@@ -30,6 +30,7 @@ import {
   Col,
   Container,
   Form,
+  FormText,
   Input,
   Label,
   Modal,
@@ -168,16 +169,119 @@ function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
           </div>
         </div>
       </ModalBody>
-      {advanced ? null : <SimpleAddCloudStorage toggle={toggle} />}
+      {advanced ? (
+        <AdvancedAddCloudStorage toggle={toggle} />
+      ) : (
+        <SimpleAddCloudStorage toggle={toggle} />
+      )}
     </Modal>
   );
 }
 
-interface SimpleAddCloudStorageProps {
+interface FormAddCloudStorageProps {
   toggle: () => void;
 }
 
-function SimpleAddCloudStorage({ toggle }: SimpleAddCloudStorageProps) {
+function AdvancedAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({
+    defaultValues: {
+      name: "",
+      config: "",
+    },
+  });
+  const onSubmit = (data: unknown) => {
+    console.log(data);
+  };
+
+  const configPlaceHolder =
+    "[example]\n\
+type = s3\n\
+provider = AWS\n\
+access_key_id = ACCESS_KEY_ID\n\
+secret_access_key = SECRET_ACCESS_KEY\n\
+region = us-east-1";
+
+  return (
+    <Form
+      className="form-rk-green"
+      noValidate
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <ModalBody>
+        <div className="form-rk-green">
+          <p className="mb-3">
+            Advanded mode uses <code>rclone</code> configurations to set up
+            cloud storage.
+          </p>
+
+          <div className="mb-3">
+            <Label className="form-label" for="addCloudStorageName">
+              Name
+            </Label>
+            <Controller
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <Input
+                  className={cx("form-control", errors.name && "is-invalid")}
+                  id="addCloudStorageName"
+                  placeholder="storage"
+                  type="text"
+                  {...field}
+                />
+              )}
+              rules={{ required: true }}
+            />
+            <div className="invalid-feedback">Please provide a name</div>
+          </div>
+
+          <div className="mb-3">
+            <Label className="form-label" for="addCloudStorageConfig">
+              Configuration
+            </Label>
+            <FormText id="addCloudStorageConfigHelp" tag="div">
+              You can paste here the output of{" "}
+              <code className="user-select-all">
+                rclone config show &lt;name&gt;
+              </code>
+              .
+            </FormText>
+            <Controller
+              control={control}
+              name="config"
+              render={({ field }) => (
+                <textarea
+                  aria-describedby="addCloudStorageConfigHelp"
+                  className={cx("form-control", errors.config && "is-invalid")}
+                  id="addCloudStorageConfig"
+                  placeholder={configPlaceHolder}
+                  rows={10}
+                  {...field}
+                />
+              )}
+              rules={{ required: true }}
+            />
+            <div className="invalid-feedback">
+              Please provide a valid <code>rclone</code> configuration
+            </div>
+          </div>
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button className="btn-outline-rk-green" onClick={toggle}>
+          Close
+        </Button>
+        <Button type="submit">Next</Button>
+      </ModalFooter>
+    </Form>
+  );
+}
+
+function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
   const {
     control,
     formState: { errors },
