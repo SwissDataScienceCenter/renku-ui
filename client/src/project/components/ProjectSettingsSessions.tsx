@@ -79,9 +79,8 @@ import { Docs } from "../../utils/constants/Docs";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { Url } from "../../utils/helpers/url";
 import styles from "./ProjectSettingsSessions.module.scss";
-import SessionCloudStorageOption from "../../features/session/components/options/SessionCloudStorageOption";
 
-export const ProjectSettingsSessions = () => {
+export default function ProjectSettingsSessions() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
     (state) => state.stateModel.user.logged
   );
@@ -172,7 +171,7 @@ export const ProjectSettingsSessions = () => {
     );
   }
 
-  const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER;
+  const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
   if (!backendAvailable) {
     const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace,
@@ -319,7 +318,7 @@ export const ProjectSettingsSessions = () => {
         devAccess={devAccess}
       />
 
-      <SessionCloudStorageOption />
+      {/* <SessionCloudStorageOption /> */}
 
       <ProjectSettingsSessionsAdvanced
         projectConfig={projectConfig}
@@ -338,7 +337,7 @@ export const ProjectSettingsSessions = () => {
       />
     </SessionsDiv>
   );
-};
+}
 
 interface SessionsDivProps {
   enableSavingBadge?: boolean;

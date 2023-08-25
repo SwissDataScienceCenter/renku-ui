@@ -75,6 +75,7 @@ export const dataServicesApi = createApi({
     >({
       query: ({ configuration, project_id, source_path, target_path }) => {
         return {
+          method: "POST",
           url: "storage",
           body: { configuration, project_id, source_path, target_path },
         };
@@ -87,6 +88,7 @@ export const dataServicesApi = createApi({
     >({
       query: ({ configuration, storage_id, source_path, target_path }) => {
         return {
+          method: "PATCH",
           url: `storage/${storage_id}`,
           body: { configuration, source_path, target_path },
         };
@@ -98,4 +100,9 @@ export const dataServicesApi = createApi({
   }),
 });
 
-export const { useGetResourcePoolsQuery } = dataServicesApi;
+export const {
+  useGetResourcePoolsQuery,
+  useGetCloudStorageForProjectQuery,
+  useAddCloudStorageForProjectMutation,
+  useUpdateCloudStorageForProjectParamsMutation,
+} = dataServicesApi;

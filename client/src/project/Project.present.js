@@ -70,12 +70,13 @@ import { CloneButton } from "./clone/CloneButton";
 import GitLabConnectButton, {
   externalUrlToGitLabIdeUrl,
 } from "./components/GitLabConnect";
-import { ProjectSettingsSessions } from "./components/ProjectSettingsSessions";
+import ProjectSettingsSessions from "./components/ProjectSettingsSessions";
 import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 import { ProjectSettingsNav } from "./settings";
+import ProjectSettingsCloudStorage from "./components/ProjectSettingsCloudStorage";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -827,13 +828,12 @@ function ProjectSettings(props) {
                 return <ProjectSettingsGeneral {...props} />;
               }}
             />
-            <Route
-              exact
-              path={props.settingsSessionsUrl}
-              render={() => {
-                return <ProjectSettingsSessions {...props} />;
-              }}
-            />
+            <Route exact path={props.settingsSessionsUrl}>
+              <ProjectSettingsSessions />
+            </Route>
+            <Route exact path={props.settingsCloudStorageUrl}>
+              <ProjectSettingsCloudStorage />
+            </Route>
           </Switch>
         </Col>
       </Row>

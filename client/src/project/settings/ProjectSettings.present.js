@@ -44,6 +44,12 @@ function ProjectSettingsNav(props) {
       <NavItem>
         <RenkuNavLink to={props.settingsSessionsUrl} title="Sessions" />
       </NavItem>
+      <NavItem>
+        <RenkuNavLink
+          to={props.settingsCloudStorageUrl}
+          title="Cloud Storage"
+        />
+      </NavItem>
     </Nav>
   );
 }
