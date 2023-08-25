@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from "react";
+import React, { ReactNode, useCallback, useState } from "react";
 import cx from "classnames";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { ACCESS_LEVELS } from "../../api-client";
@@ -25,8 +25,21 @@ import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { useGetCloudStorageForProjectQuery } from "../../features/dataServices/dataServicesApi";
 import { StateModelProject } from "../../features/project/Project";
 import { User } from "../../model/RenkuModels";
-import { Button, Col, Container, Row } from "reactstrap";
-import { PlusLg } from "react-bootstrap-icons";
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Row,
+} from "reactstrap";
+import { PlusLg, CloudFill } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -96,14 +109,149 @@ function CloudStorageSection({ children }: { children?: ReactNode }) {
 }
 
 function AddCloudStorageButton() {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((open) => !open);
+  }, []);
+
   return (
     <Row>
       <Col>
-        <Button className={cx("btn-outline-rk-green")}>
+        <Button className={cx("btn-outline-rk-green")} onClick={toggle}>
           <PlusLg className={cx("bi", "me-1")} />
           Add Cloud Storage
         </Button>
+        <AddCloudStorageModal isOpen={isOpen} toggle={toggle} />
       </Col>
     </Row>
+  );
+}
+
+interface AddCloudStorageModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+}
+
+function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
+  const [advanced, setAdvanced] = useState(false);
+  const toggleAdvanced = useCallback(() => {
+    setAdvanced((advanced) => !advanced);
+  }, []);
+
+  return (
+    <Modal fullscreen="lg" isOpen={isOpen} size="lg" toggle={toggle}>
+      <ModalHeader toggle={toggle}>
+        <CloudFill className={cx("bi", "me-2")} />
+        Add Cloud Storage
+      </ModalHeader>
+      <ModalBody>
+        <div className="form-rk-green">
+          <div className={cx("form-check", "form-switch")}>
+            <Input
+              className={cx(
+                "form-check-input",
+                "rounded-pill",
+                "cursor-pointer"
+              )}
+              checked={advanced}
+              id="addCloudStorageAdvancedSwitch"
+              onChange={toggleAdvanced}
+              role="switch"
+              type="checkbox"
+            />
+            <Label
+              className={cx("form-check-label", "cursor-pointer")}
+              for="addCloudStorageAdvancedSwitch"
+            >
+              Advanced mode
+            </Label>
+          </div>
+        </div>
+      </ModalBody>
+      {advanced ? null : <SimpleAddCloudStorage toggle={toggle} />}
+    </Modal>
+  );
+}
+
+interface SimpleAddCloudStorageProps {
+  toggle: () => void;
+}
+
+function SimpleAddCloudStorage({ toggle }: SimpleAddCloudStorageProps) {
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({
+    defaultValues: {
+      name: "",
+      endpointUrl: "",
+    },
+  });
+  const onSubmit = (data: unknown) => {
+    console.log(data);
+  };
+
+  return (
+    <Form
+      className="form-rk-green"
+      noValidate
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <ModalBody>
+        <div className="form-rk-green">
+          <div className="mb-3">
+            <Label className="form-label" for="addCloudStorageName">
+              Name
+            </Label>
+            <Controller
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <Input
+                  className={cx("form-control", errors.name && "is-invalid")}
+                  id="addCloudStorageName"
+                  placeholder="storage"
+                  type="text"
+                  {...field}
+                />
+              )}
+              rules={{ required: true }}
+            />
+            <div className="invalid-feedback">Please provide a name</div>
+          </div>
+
+          <div className="mb-3">
+            <Label className="form-label" for="addCloudStorageUrl">
+              Endpoint URL
+            </Label>
+            <Controller
+              control={control}
+              name="endpointUrl"
+              render={({ field }) => (
+                <Input
+                  className={cx(
+                    "form-control",
+                    errors.endpointUrl && "is-invalid"
+                  )}
+                  id="addCloudStorageUrl"
+                  placeholder="s3://bucket.endpoint.example.com/"
+                  type="text"
+                  {...field}
+                />
+              )}
+              rules={{ required: true }}
+            />
+            <div className="invalid-feedback">Please provide a valid URL</div>
+          </div>
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button className="btn-outline-rk-green" onClick={toggle}>
+          Close
+        </Button>
+        <Button type="submit">Next</Button>
+      </ModalFooter>
+    </Form>
   );
 }
