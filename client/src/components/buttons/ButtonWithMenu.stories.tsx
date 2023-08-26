@@ -19,7 +19,6 @@
 import { ButtonWithMenu } from "./Button";
 import { StoryObj } from "@storybook/react";
 import { DropdownItem } from "reactstrap";
-import * as React from "react";
 import { Button } from "../../utils/ts-wrappers";
 
 export default {

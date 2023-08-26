@@ -43,9 +43,8 @@ const componentDescription = `
 </ul>
 </details>
 
-###ReactstrapComponents
-This component uses Button from reactstrap internally. So please take a look also there at their extensive documentation.
-
+### Reactstrap Components
+This component uses [Button](https://reactstrap.github.io/?path=/docs/components-button--button) from reactstrap internally. So please take a look also there at their extensive documentation.
 `;
 const meta: Meta<typeof Button> = {
   component: Button,
