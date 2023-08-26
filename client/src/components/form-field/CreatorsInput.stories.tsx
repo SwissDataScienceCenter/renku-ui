@@ -17,7 +17,7 @@
  */
 import { StoryObj } from "@storybook/react";
 import { FormGeneratorCreatorsInput } from "./CreatorsInput";
-import { userEvent, within } from "@storybook/testing-library";
+import { userEvent } from "@storybook/testing-library";
 import { expect } from "@storybook/jest";
 
 export default {
@@ -41,10 +41,17 @@ export const Default: Story = {
     ],
   },
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByTestId("creator-add"));
-    await expect(canvas.getAllByTestId("creator-name").length).toEqual(1);
-    await userEvent.click(canvas.getByTestId("creator-delete"));
-    await expect(canvas.queryAllByTestId("creator-name")).toHaveLength(0);
+    await userEvent.click(
+      canvasElement.querySelector('[data-cy="addCreatorButton"]') as Element
+    );
+    await expect(
+      canvasElement.querySelectorAll('[data-cy="creator-name"]').length
+    ).toEqual(1);
+    await userEvent.click(
+      canvasElement.querySelector('[data-cy="creator-delete"]') as Element
+    );
+    await expect(
+      canvasElement.querySelectorAll('[data-cy="creator-name"]')
+    ).toHaveLength(0);
   },
 };

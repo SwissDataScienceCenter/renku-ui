@@ -78,7 +78,6 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
     <>
       <DropdownToggle
         data-cy="more-menu"
-        data-testId="more-menu"
         className={`${props.className} ${classes}`}
         disabled={props.disabled}
       >
