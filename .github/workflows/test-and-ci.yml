@@ -43,41 +43,14 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
 
-  # Run interaction and accessibility tests
-#  storybook-tests:
-#    timeout-minutes: 60
-#    runs-on: ubuntu-latest
-#    if: github.event.deployment_status.state == 'success'
-#    steps:
-#      - uses: actions/checkout@v2
-#      - uses: actions/setup-node@v2
-#        with:
-#          node-version: '18.x'
-#      - name: Install dependencies
-#        run: |
-#          cd client
-#          npm i
-#      - name: Install Playwright
-#        run: |
-#          cd client
-#          npx playwright install --with-deps
-#      - name: Build Storybook
-#        run: |
-#          cd client
-#          npm run build-storybook --quiet
-#      - name: Serve Storybook and run tests
-#        run: |
-#          cd client
-#          npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
-#          "npx http-server storybook-static --port 6006 --silent" \
-#          "npx wait-on tcp:6006 && npm run test-storybook"
-
   # Run visual and composition tests with Chromatic
   deploy-storybook:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./client
+    outputs:
+      storybookUrl: ${{ steps.publish-chromatic.outputs.storybookUrl}}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -85,6 +58,7 @@ jobs:
       - name: Install dependencies
         run: npm i
       - name: Publish to Chromatic
+        id: publish-chromatic
         uses: chromaui/action@v1
         with:
           # Grab this from the Chromatic manage page
@@ -95,22 +69,26 @@ jobs:
   # Run test-runner Storybook
   test-storybook:
     timeout-minutes: 60
-    needs: [ deploy-storybook ]
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./client
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: '18.x'
       - name: Install dependencies
         run: npm i
-      - name: Run Storybook tests
-        run: npm run test-storybook
-        env:
-          TARGET_URL: '${{ needs.deploy-storybook.outputs.storybookUrl }}'
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+      - name: Build Storybook
+        run: yarn build-storybook --quiet
+      - name: Serve Storybook and run tests
+        run: |
+          npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
+            "npx http-server storybook-static --port 6006 --silent" \
+            "npx wait-on tcp:6006 && yarn test-storybook"
 
 
   test-server:

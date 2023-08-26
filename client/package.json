@@ -88,7 +88,7 @@
     "format-commit": "pretty-quick --staged --pattern \"client/**/*.*\"",
     "storybook": "storybook dev -p 6006 -s public",
     "build-storybook": "storybook build -s public",
-    "test-storybook": "test-storybook --browsers firefox chromium",
+    "test-storybook": "test-storybook",
     "chromatic": "npx chromatic --project-token=CHROMATIC_PROJECT_TOKEN"
   },
   "devDependencies": {
