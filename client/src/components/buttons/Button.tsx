@@ -22,7 +22,7 @@
  *  Button code and presentation.
  */
 
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";

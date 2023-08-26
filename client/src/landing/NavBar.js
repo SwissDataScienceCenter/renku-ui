@@ -23,7 +23,7 @@
  *  NavBar for logged-in and logged-out users.
  */
 
-import React, { Component, Fragment } from "react";
+import { Component, Fragment } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import {
   UncontrolledDropdown,
@@ -487,10 +487,47 @@ class AnonymousNavBar extends Component {
   }
 }
 
-function FooterNavbar({ params }) {
+function FooterNavbarAnonymousLinks() {
+  return (
+    <>
+      <ExternalDocsLink
+        url={`${Links.GITHUB}/blob/master/LICENSE`}
+        title="Renku License"
+        className="nav-link"
+      />
+    </>
+  );
+}
+
+function FooterNavbarLoggedInLinks({ privacyLink }) {
+  return (
+    <>
+      <RenkuNavLink to="/help" title="Help" />
+      {privacyLink}
+      <ExternalDocsLink
+        url={Links.DISCOURSE}
+        title="Forum"
+        className="nav-link"
+      />
+      <ExternalDocsLink
+        url={Links.GITTER}
+        title="Gitter"
+        className="nav-link"
+      />
+      <ExternalDocsLink
+        url={`${Links.HOMEPAGE}/who-we-are`}
+        title="About"
+        className="nav-link"
+      />
+    </>
+  );
+}
+
+function FooterNavbar({ location, params }) {
   const projectMetadata = useSelector(
     (state) => state.stateModel.project?.metadata
   );
+  const user = useSelector((state) => state.stateModel.user);
   const sessionShowUrl = Url.get(Url.pages.project.session.show, {
     namespace: projectMetadata["namespace"],
     path: projectMetadata["path"],
@@ -536,23 +573,12 @@ function FooterNavbar({ params }) {
         </div>
         <div className="d-none d-lg-inline w-100">
           <Nav className="justify-content-end">
-            <RenkuNavLink to="/help" title="Help" />
-            {privacyLink}
-            <ExternalDocsLink
-              url={Links.DISCOURSE}
-              title="Forum"
-              className="nav-link"
-            />
-            <ExternalDocsLink
-              url={Links.GITTER}
-              title="Gitter"
-              className="nav-link"
-            />
-            <ExternalDocsLink
-              url={`${Links.HOMEPAGE}/who-we-are`}
-              title="About"
-              className="nav-link"
-            />
+            {!user.logged &&
+            location.pathname === Url.get(Url.pages.landing) ? (
+              <FooterNavbarAnonymousLinks />
+            ) : (
+              <FooterNavbarLoggedInLinks privacyLink={privacyLink} />
+            )}
           </Nav>
         </div>
       </Navbar>

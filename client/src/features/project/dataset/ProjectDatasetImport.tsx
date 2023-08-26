@@ -1,4 +1,3 @@
-import React from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
 import DatasetImport from "../../../project/datasets/import";

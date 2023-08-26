@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 

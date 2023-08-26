@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useRef } from "react";
+import { useContext, useRef } from "react";
 import { Globe, Lock, Shield } from "../../utils/ts-wrappers";
 
 import AppContext from "../../utils/context/appContext";

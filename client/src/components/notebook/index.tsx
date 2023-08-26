@@ -1,5 +1,4 @@
 // Code taken from https://github.com/sdobz/notebook-render/blob/master/src/index.tsx
-import React from "react";
 
 import { IpynbRenderer } from "react-ipynb-renderer";
 import type { BaseProps, CellType, LanguageType } from "react-ipynb-renderer";

@@ -22,7 +22,7 @@
  *  AddDatasetButtons.tsx
  *  AddDatasetButtons components.
  */
-import * as React from "react";
+
 import { Button, ButtonGroup } from "../../utils/ts-wrappers";
 
 export interface AddDatasetButtonsProps {

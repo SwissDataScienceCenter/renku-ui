@@ -32,7 +32,6 @@ import {
   ProjectSuggestionReadme,
 } from "./Project.present";
 import { MemoryRouter } from "react-router-dom";
-import React from "react";
 
 const getProjectSuggestionProps = (
   props,

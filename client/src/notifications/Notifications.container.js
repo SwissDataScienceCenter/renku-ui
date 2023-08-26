@@ -23,7 +23,7 @@
  *  Container components for notifications
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 import cx from "classnames";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";

@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
-
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";

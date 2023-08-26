@@ -20,7 +20,6 @@ import { Url } from "../../utils/helpers/url";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import React from "react";
 import { Alert } from "../../utils/ts-wrappers";
 
 interface SessionUnavailableProps {

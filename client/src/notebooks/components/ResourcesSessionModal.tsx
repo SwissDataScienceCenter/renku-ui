@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
-
 import "./SessionModal.css";
 import { Notebook, SessionHandlers } from "./Session";
 import {

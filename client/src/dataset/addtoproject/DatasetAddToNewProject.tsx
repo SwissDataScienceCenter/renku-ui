@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Link } from "react-router-dom";

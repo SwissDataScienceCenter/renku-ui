@@ -16,19 +16,26 @@
  * limitations under the License.
  */
 
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-interface SettingRequiresKgProps {
-  className?: string;
-}
-export function SettingRequiresKg({ className }: SettingRequiresKgProps) {
-  const localClass = className ?? "d-block mt-2";
-
-  return (
-    <small className={localClass}>
-      <FontAwesomeIcon className="me-1" icon={faExclamationTriangle} />
-      This requires indexing to be enabled.
-    </small>
-  );
-}
+export type AnonymousHomeConfig = {
+  client: unknown;
+  homeCustomized: {
+    custom: {
+      enabled: boolean;
+      main: {
+        backgroundImage: {
+          url: string;
+        };
+        contentMd: string;
+      };
+    };
+    projects: unknown[];
+    tutorialLink: string;
+  };
+  model: unknown;
+  params: {
+    UI_SHORT_SHA: string;
+  };
+  urlMap: {
+    siteStatusUrl: string;
+  };
+};

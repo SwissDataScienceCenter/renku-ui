@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
 import { DashboardMessage } from "./components/DashboardMessage";

@@ -23,7 +23,6 @@
  *  AboutSessionModal component
  */
 
-import React from "react";
 import { useSelector } from "react-redux";
 import { ACCESS_LEVELS } from "../../api-client";
 import { ExternalLink } from "../../components/ExternalLinks";

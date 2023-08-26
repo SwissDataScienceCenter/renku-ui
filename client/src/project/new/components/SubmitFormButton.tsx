@@ -22,7 +22,7 @@
  *  SubmitFormButton.tsx
  *  Submit Button create new project
  */
-import React, { MouseEventHandler, useState } from "react";
+import { MouseEventHandler, useState } from "react";
 import ShareLinkModal from "./ShareLinkModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
