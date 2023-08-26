@@ -73,7 +73,7 @@ jobs:
 #          "npx wait-on tcp:6006 && npm run test-storybook"
 
   # Run visual and composition tests with Chromatic
-  chromatic:
+  deploy-storybook:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -91,6 +91,27 @@ jobs:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
           workingDir: client
+
+  # Run test-runner Storybook
+  test-storybook:
+    timeout-minutes: 60
+    needs: [ deploy-storybook ]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18.x'
+      - name: Install dependencies
+        run: npm i
+      - name: Run Storybook tests
+        run: npm run test-storybook
+        env:
+          TARGET_URL: '${{ needs.deploy-storybook.outputs.storybookUrl }}'
+
 
   test-server:
     runs-on: ubuntu-22.04
