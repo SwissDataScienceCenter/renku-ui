@@ -9,8 +9,10 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
   annotations:
-    # force to restart the pod on configmap changes; otherwise, we don't get the new renku release version
-    reloader: {{ .Release.Revision | quote }}
+    # Force a restart of the pod on every helm chart upgrade, rollback and install, because we need to make sure we
+    # have the latest chart version in the environment variables derived from a configmap, and environment variables
+    # from configmaps do not update automatically.
+    reloader: {{ randAlphaNum 16 | quote }}
 spec:
   replicas: {{ .Values.client.replicaCount }}
   selector:
