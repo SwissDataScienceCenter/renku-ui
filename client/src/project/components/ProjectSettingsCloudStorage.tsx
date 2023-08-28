@@ -41,10 +41,12 @@ import {
   ModalFooter,
   ModalHeader,
   Row,
+  Table,
 } from "reactstrap";
-import { PlusLg, CloudFill } from "react-bootstrap-icons";
+import { PlusLg, CloudFill, TrashFill } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { Loader } from "../../components/Loader";
+import { CloudStorage } from "../../features/dataServices/dataServices.types";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -64,7 +66,7 @@ export default function ProjectSettingsCloudStorage() {
     error,
     isLoading,
   } = useGetCloudStorageForProjectQuery({
-    project_id: projectId,
+    project_id: `${projectId}`,
   });
 
   if (!logged) {
@@ -109,6 +111,7 @@ export default function ProjectSettingsCloudStorage() {
   return (
     <CloudStorageSection>
       <AddCloudStorageButton />
+      <CloudStorageList storageForProject={storageForProject} />
       <pre>{JSON.stringify(storageForProject, null, 2)}</pre>
       <pre>{JSON.stringify(error, null, 2)}</pre>
     </CloudStorageSection>
@@ -156,7 +159,13 @@ function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
   }, []);
 
   return (
-    <Modal fullscreen="lg" isOpen={isOpen} size="lg" toggle={toggle}>
+    <Modal
+      className="modal-dialog-centered"
+      fullscreen="lg"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       <ModalHeader toggle={toggle}>
         <CloudFill className={cx("bi", "me-2")} />
         Add Cloud Storage
@@ -394,4 +403,139 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
 interface SimpleAddCloudStorageForm {
   name: string;
   endpointUrl: string;
+}
+
+interface CloudStorageListProps {
+  storageForProject: { storage: CloudStorage }[];
+}
+
+function CloudStorageList({ storageForProject }: CloudStorageListProps) {
+  if (storageForProject.length == 0) {
+    return null;
+  }
+
+  return (
+    <Row className="mt-4">
+      <Col className="table-responsive">
+        <Table className="table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Source Path</th>
+              <th scope="col">Mount Point</th>
+              <th scope="col">
+                <span className="visually-hidden">Actions</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="align-middle">
+            {storageForProject.map(({ storage }) => (
+              <CloudStorageItem
+                key={storage.target_path} // TODO: replace with `name`
+                storage={storage}
+              />
+            ))}
+          </tbody>
+        </Table>
+      </Col>
+    </Row>
+  );
+}
+
+interface CloudStorageItemProps {
+  storage: CloudStorage;
+}
+
+function CloudStorageItem({ storage }: CloudStorageItemProps) {
+  const { source_path, target_path } = storage;
+
+  return (
+    <tr>
+      <th scope="row">
+        {target_path} {/* // TODO: replace with `name` */}
+      </th>
+      <td>
+        <code>{source_path}</code>
+      </td>
+      <td>
+        <code>{target_path}</code>
+      </td>
+      <td className="text-end">
+        <span
+          className={cx("d-inline-flex", "flex-row", "flex-no-wrap")}
+          style={{ width: "max-content" }}
+        >
+          <Button>View Details</Button>
+          <DeleteCloudStorageButton storage={storage} />
+        </span>
+      </td>
+    </tr>
+  );
+}
+
+function DeleteCloudStorageButton({ storage }: CloudStorageItemProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((open) => !open);
+  }, []);
+
+  return (
+    <>
+      <Button className="ms-2" color="outline-danger" onClick={toggle}>
+        Delete
+      </Button>
+      <DeleteCloudStorageModal
+        isOpen={isOpen}
+        storage={storage}
+        toggle={toggle}
+      />
+    </>
+  );
+}
+
+interface DeleteCloudStorageModalProps {
+  isOpen: boolean;
+  storage: CloudStorage;
+  toggle: () => void;
+}
+
+function DeleteCloudStorageModal({
+  isOpen,
+  storage,
+  toggle,
+}: DeleteCloudStorageModalProps) {
+  const { target_path } = storage;
+
+  return (
+    <Modal
+      className="modal-dialog-centered"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
+      <ModalBody>
+        <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
+          Are you sure?
+        </h3>
+        <p>
+          Please confirm that you want to delete the{" "}
+          <strong>
+            {target_path}
+            {/* // TODO: replace with `name` */}
+          </strong>{" "}
+          storage configuration.
+        </p>
+        <div
+          className={cx("mt-2", "d-flex", "flex-row", "justify-content-end")}
+        >
+          <Button className="ms-2" color="outline-secondary" onClick={toggle}>
+            Cancel, keep configuration
+          </Button>
+          <Button className="ms-2" color="danger" onClick={toggle}>
+            Yes, delete this configuration
+          </Button>
+        </div>
+      </ModalBody>
+    </Modal>
+  );
 }

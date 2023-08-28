@@ -49,7 +49,7 @@ export const dataServicesApi = createApi({
       providesTags: ["ResourcePool"],
     }),
     getCloudStorageForProject: builder.query<
-      CloudStorage[],
+      { storage: CloudStorage }[],
       GetCloudStorageForProjectParams
     >({
       query: ({ project_id }) => {
@@ -62,8 +62,8 @@ export const dataServicesApi = createApi({
         result
           ? [
               ...result.map(
-                ({ storage_id }) =>
-                  ({ id: storage_id, type: "CloudStorage" } as const)
+                ({ storage }) =>
+                  ({ id: storage.storage_id, type: "CloudStorage" } as const)
               ),
               { id: "LIST", type: "CloudStorage" },
             ]
