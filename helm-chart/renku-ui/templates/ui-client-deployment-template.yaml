@@ -10,7 +10,7 @@ metadata:
     heritage: {{ .Release.Service }}
   annotations:
     {{- $configMap := (lookup "v1" "ConfigMap" .Release.Namespace (printf "%s-version" .Release.Name)) -}}
-    {{- $version := index $version_configmap.data "chart_version" -}}
+    {{- $version := index $configMap.data "chart_version" -}}
     {{- if $version }}
     renkuVersion: {{ $version | quote }}
     {{- end }}
