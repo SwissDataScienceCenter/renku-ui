@@ -70,13 +70,23 @@ export interface CloudStorage {
 }
 
 export interface GetCloudStorageForProjectParams {
-  projectId: string;
+  project_id: string;
 }
 
-export interface AddCloudStorageForProjectParams {
+export type AddCloudStorageForProjectParams =
+  | AdvancedAddCloudStorageForProjectParams
+  | SimpleAddCloudStorageForProjectParams;
+
+export interface AdvancedAddCloudStorageForProjectParams {
   configuration: Record<string, string | undefined>;
   project_id: string;
   source_path: string;
+  target_path: string;
+}
+
+export interface SimpleAddCloudStorageForProjectParams {
+  project_id: string;
+  storage_url: string;
   target_path: string;
 }
 

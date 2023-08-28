@@ -52,10 +52,10 @@ export const dataServicesApi = createApi({
       CloudStorage[],
       GetCloudStorageForProjectParams
     >({
-      query: ({ projectId }) => {
+      query: ({ project_id }) => {
         return {
           url: "storage",
-          params: { projectId },
+          params: { project_id },
         };
       },
       providesTags: (result) =>
@@ -73,11 +73,11 @@ export const dataServicesApi = createApi({
       CloudStorage,
       AddCloudStorageForProjectParams
     >({
-      query: ({ configuration, project_id, source_path, target_path }) => {
+      query: (params) => {
         return {
           method: "POST",
           url: "storage",
-          body: { configuration, project_id, source_path, target_path },
+          body: { ...params },
         };
       },
       invalidatesTags: [{ id: "LIST", type: "CloudStorage" }],

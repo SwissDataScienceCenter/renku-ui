@@ -22,7 +22,10 @@ import { RootStateOrAny, useSelector } from "react-redux";
 import { ACCESS_LEVELS } from "../../api-client";
 import { ErrorAlert } from "../../components/Alert";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
-import { useGetCloudStorageForProjectQuery } from "../../features/dataServices/dataServicesApi";
+import {
+  useAddCloudStorageForProjectMutation,
+  useGetCloudStorageForProjectQuery,
+} from "../../features/dataServices/dataServicesApi";
 import { StateModelProject } from "../../features/project/Project";
 import { User } from "../../model/RenkuModels";
 import {
@@ -41,6 +44,7 @@ import {
 } from "reactstrap";
 import { PlusLg, CloudFill } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
+import { Loader } from "../../components/Loader";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -55,8 +59,12 @@ export default function ProjectSettingsCloudStorage() {
 
   const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
-  const { data: storageForProject, error } = useGetCloudStorageForProjectQuery({
-    projectId,
+  const {
+    data: storageForProject,
+    error,
+    isLoading,
+  } = useGetCloudStorageForProjectQuery({
+    project_id: projectId,
   });
 
   if (!logged) {
@@ -78,17 +86,25 @@ export default function ProjectSettingsCloudStorage() {
     );
   }
 
-  // if (!storageForProject || error) {
-  //   return (
-  //     <CloudStorageSection>
-  //       <ErrorAlert dismissible={false}>
-  //         <h3 className={cx("fs-6", "fw-bold")}>
-  //           Error on loading cloud storage settings
-  //         </h3>
-  //       </ErrorAlert>
-  //     </CloudStorageSection>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <CloudStorageSection>
+        <Loader />
+      </CloudStorageSection>
+    );
+  }
+
+  if (!storageForProject || error) {
+    return (
+      <CloudStorageSection>
+        <ErrorAlert dismissible={false}>
+          <h3 className={cx("fs-6", "fw-bold")}>
+            Error on loading cloud storage settings
+          </h3>
+        </ErrorAlert>
+      </CloudStorageSection>
+    );
+  }
 
   return (
     <CloudStorageSection>
@@ -282,19 +298,34 @@ region = us-east-1";
 }
 
 function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
+  const projectId = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]["id"]
+  >((state) => state.stateModel.project.metadata.id);
+
+  const [addCloudStorageForProject] = useAddCloudStorageForProjectMutation();
+
   const {
     control,
     formState: { errors },
     handleSubmit,
-  } = useForm({
+  } = useForm<SimpleAddCloudStorageForm>({
     defaultValues: {
       name: "",
       endpointUrl: "",
     },
   });
-  const onSubmit = (data: unknown) => {
-    console.log(data);
-  };
+  const onSubmit = useCallback(
+    (data: SimpleAddCloudStorageForm) => {
+      console.log(data);
+      addCloudStorageForProject({
+        project_id: `${projectId}`,
+        storage_url: data.endpointUrl,
+        target_path: data.name,
+      });
+    },
+    [addCloudStorageForProject, projectId]
+  );
 
   return (
     <Form
@@ -358,4 +389,9 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
       </ModalFooter>
     </Form>
   );
+}
+
+interface SimpleAddCloudStorageForm {
+  name: string;
+  endpointUrl: string;
 }
