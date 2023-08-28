@@ -90,9 +90,15 @@ export interface SimpleAddCloudStorageForProjectParams {
   target_path: string;
 }
 
-export interface UpdateCloudStorageForProjectParams {
+export interface UpdateCloudStorageParams {
   configuration?: Record<string, string | null | undefined>;
+  project_id: string;
   storage_id: string;
   source_path?: string;
   target_path?: string;
+}
+
+export interface DeleteCloudStorageParams {
+  project_id: string;
+  storage_id: string;
 }

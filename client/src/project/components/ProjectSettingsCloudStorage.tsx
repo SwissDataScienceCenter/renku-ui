@@ -16,22 +16,14 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useCallback, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
 import cx from "classnames";
+import { CloudFill, PencilSquare, PlusLg, XLg } from "react-bootstrap-icons";
+import { Controller, useForm } from "react-hook-form";
 import { RootStateOrAny, useSelector } from "react-redux";
-import { ACCESS_LEVELS } from "../../api-client";
-import { ErrorAlert } from "../../components/Alert";
-import LoginAlert from "../../components/loginAlert/LoginAlert";
-import {
-  useAddCloudStorageForProjectMutation,
-  useGetCloudStorageForProjectQuery,
-} from "../../features/dataServices/dataServicesApi";
-import { StateModelProject } from "../../features/project/Project";
-import { User } from "../../model/RenkuModels";
 import {
   Button,
   Col,
-  Container,
   Form,
   FormText,
   Input,
@@ -43,10 +35,19 @@ import {
   Row,
   Table,
 } from "reactstrap";
-import { PlusLg, CloudFill, TrashFill } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { ACCESS_LEVELS } from "../../api-client";
+import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
+import LoginAlert from "../../components/loginAlert/LoginAlert";
 import { CloudStorage } from "../../features/dataServices/dataServices.types";
+import {
+  useAddCloudStorageForProjectMutation,
+  useDeleteCloudStorageMutation,
+  useGetCloudStorageForProjectQuery,
+  useUpdateCloudStorageMutation,
+} from "../../features/dataServices/dataServicesApi";
+import { StateModelProject } from "../../features/project/Project";
+import { User } from "../../model/RenkuModels";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -112,8 +113,6 @@ export default function ProjectSettingsCloudStorage() {
     <CloudStorageSection>
       <AddCloudStorageButton />
       <CloudStorageList storageForProject={storageForProject} />
-      <pre>{JSON.stringify(storageForProject, null, 2)}</pre>
-      <pre>{JSON.stringify(error, null, 2)}</pre>
     </CloudStorageSection>
   );
 }
@@ -207,6 +206,14 @@ interface FormAddCloudStorageProps {
   toggle: () => void;
 }
 
+const configPlaceHolder =
+  "[example]\n\
+type = s3\n\
+provider = AWS\n\
+access_key_id = ACCESS_KEY_ID\n\
+secret_access_key = SECRET_ACCESS_KEY\n\
+region = us-east-1";
+
 function AdvancedAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
   const {
     control,
@@ -221,14 +228,6 @@ function AdvancedAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
   const onSubmit = (data: unknown) => {
     console.log(data);
   };
-
-  const configPlaceHolder =
-    "[example]\n\
-type = s3\n\
-provider = AWS\n\
-access_key_id = ACCESS_KEY_ID\n\
-secret_access_key = SECRET_ACCESS_KEY\n\
-region = us-east-1";
 
   return (
     <Form
@@ -465,11 +464,376 @@ function CloudStorageItem({ storage }: CloudStorageItemProps) {
           className={cx("d-inline-flex", "flex-row", "flex-no-wrap")}
           style={{ width: "max-content" }}
         >
-          <Button>View Details</Button>
+          <ViewCloudStorageButton storage={storage} />
           <DeleteCloudStorageButton storage={storage} />
         </span>
       </td>
     </tr>
+  );
+}
+
+function ViewCloudStorageButton({ storage }: CloudStorageItemProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((open) => !open);
+  }, []);
+
+  return (
+    <>
+      <Button color="outline-secondary" onClick={toggle}>
+        View Details
+      </Button>
+      <ViewCloudStorageModal
+        isOpen={isOpen}
+        storage={storage}
+        toggle={toggle}
+      />
+    </>
+  );
+}
+
+interface CloudStorageModalProps {
+  isOpen: boolean;
+  storage: CloudStorage;
+  toggle: () => void;
+}
+
+function ViewCloudStorageModal({
+  isOpen,
+  storage,
+  toggle,
+}: CloudStorageModalProps) {
+  const { configuration, target_path } = storage;
+
+  // TODO: replace `target_path` with `name`
+  const configContent = `[${target_path}]
+${Object.entries(configuration)
+  .map(([key, value]) => `${key} = ${value}`)
+  .join("\n")}`;
+
+  const [editMode, setEditMode] = useState(false);
+  const toggleEditMode = useCallback(() => {
+    setEditMode((editMode) => !editMode);
+  }, []);
+
+  // Reset `editMode` when closing modal
+  useEffect(() => {
+    if (!isOpen) {
+      setEditMode(false);
+    }
+  }, [isOpen]);
+
+  return (
+    <Modal
+      className="modal-dialog-centered"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
+      <ModalHeader toggle={toggle}>Cloud Storage Details</ModalHeader>
+      {editMode ? (
+        <EditCloudStorage
+          configContent={configContent}
+          storage={storage}
+          toggleEditMode={toggleEditMode}
+        />
+      ) : (
+        <CloudStorageDetails
+          configContent={configContent}
+          storage={storage}
+          toggleEditMode={toggleEditMode}
+        />
+      )}
+    </Modal>
+  );
+}
+
+interface CloudStorageDetailsProps {
+  configContent: string;
+  storage: CloudStorage;
+  toggleEditMode: () => void;
+}
+
+function EditCloudStorage({
+  configContent,
+  storage,
+  toggleEditMode,
+}: CloudStorageDetailsProps) {
+  const { source_path, storage_id, target_path } = storage;
+
+  const projectId = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]["id"]
+  >((state) => state.stateModel.project.metadata.id);
+
+  const [updateCloudStorage, result] = useUpdateCloudStorageMutation();
+
+  const {
+    control,
+    formState: { errors, isDirty },
+    handleSubmit,
+  } = useForm<UpdateCloudStorageForm>({
+    defaultValues: {
+      configContent,
+      name: target_path, // TODO: replace with `name`
+      source_path,
+    },
+  });
+  const onSubmit = useCallback(
+    (data: UpdateCloudStorageForm) => {
+      console.log(data);
+
+      const sourcePathUpdate =
+        source_path !== data.source_path
+          ? { source_path: data.source_path }
+          : {};
+      const targetPathUpdate =
+        target_path !== data.name
+          ? { target_path: data.name } // TODO: replace with `target_path`
+          : {};
+      const configUpdate =
+        configContent !== data.configContent
+          ? {
+              configuration: parseConfigContent(data.configContent),
+            }
+          : {};
+
+      updateCloudStorage({
+        storage_id,
+        project_id: `${projectId}`,
+        ...sourcePathUpdate,
+        ...targetPathUpdate,
+        ...configUpdate,
+      });
+    },
+    [
+      configContent,
+      projectId,
+      source_path,
+      storage_id,
+      target_path,
+      updateCloudStorage,
+    ]
+  );
+
+  useEffect(() => {
+    if (result.isSuccess || result.isError) {
+      toggleEditMode();
+    }
+  }, [result.isError, result.isSuccess, toggleEditMode]);
+
+  return (
+    <>
+      <ModalBody>
+        <div className="form-rk-green">
+          <div className="mb-3">
+            <Label className="form-label" for="updateCloudStorageName">
+              Name
+            </Label>
+            <Controller
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <Input
+                  className={cx("form-control", errors.name && "is-invalid")}
+                  id="updateCloudStorageName"
+                  placeholder="storage"
+                  type="text"
+                  {...field}
+                />
+              )}
+              rules={{ required: true }}
+            />
+            <div className="invalid-feedback">Please provide a name</div>
+          </div>
+
+          <div className="mb-3">
+            <Label className="form-label" for="updateCloudStorageSourcePath">
+              Source Path
+            </Label>
+            <Controller
+              control={control}
+              name="source_path"
+              render={({ field }) => (
+                <Input
+                  className={cx(
+                    "form-control",
+                    errors.source_path && "is-invalid"
+                  )}
+                  id="updateCloudStorageSourcePath"
+                  placeholder="bucket/folder"
+                  type="text"
+                  {...field}
+                />
+              )}
+              rules={{ required: true }}
+            />
+            <div className="invalid-feedback">
+              Please provide a valid source path
+            </div>
+          </div>
+
+          {/* // TODO: edit `target_path` */}
+
+          <div className="mb-3">
+            <Label className="form-label" for="updateCloudStorageConfig">
+              Configuration
+            </Label>
+            <FormText id="updateCloudStorageConfigHelp" tag="div">
+              You can paste here the output of{" "}
+              <code className="user-select-all">
+                rclone config show &lt;name&gt;
+              </code>
+              .
+            </FormText>
+            <Controller
+              control={control}
+              name="configContent"
+              render={({ field }) => (
+                <textarea
+                  aria-describedby="updateCloudStorageConfigHelp"
+                  className={cx(
+                    "form-control",
+                    errors.configContent && "is-invalid"
+                  )}
+                  id="updateCloudStorageConfig"
+                  placeholder={configPlaceHolder}
+                  rows={10}
+                  {...field}
+                />
+              )}
+              rules={{ required: true }}
+            />
+            <div className="invalid-feedback">
+              Please provide a valid <code>rclone</code> configuration
+            </div>
+          </div>
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          className="ms-2"
+          color="outline-secondary"
+          onClick={toggleEditMode}
+        >
+          <XLg className={cx("bi", "me-1")} />
+          Discard
+        </Button>
+        <Button
+          className="ms-2"
+          disabled={!isDirty}
+          onClick={handleSubmit(onSubmit)}
+        >
+          <PencilSquare className={cx("bi", "me-1")} type="submit" />
+          Save changes
+        </Button>
+      </ModalFooter>
+    </>
+  );
+}
+
+interface UpdateCloudStorageForm {
+  configContent: string;
+  name: string;
+  source_path: string;
+}
+
+function parseConfigContent(configContent: string): Record<string, string> {
+  // Parse lines of rclone configuration
+  const configLineRegex = /^(?<key>[^=]+)=(?<value>.*)$/;
+
+  const entries = configContent.split("\n").flatMap((line) => {
+    const match = line.match(configLineRegex);
+    if (!match) {
+      return [];
+    }
+
+    const key = match.groups?.["key"]?.trim() ?? "";
+    const value = match.groups?.["value"]?.trim() ?? "";
+    if (!key) {
+      return [];
+    }
+    return [{ key, value }];
+  });
+
+  return entries.reduce(
+    (obj, { key, value }) => ({ ...obj, [key]: value }),
+    {}
+  );
+}
+
+function CloudStorageDetails({
+  configContent,
+  storage,
+  toggleEditMode,
+}: CloudStorageDetailsProps) {
+  const { configuration, source_path, storage_type, target_path } = storage;
+
+  return (
+    <>
+      <ModalBody>
+        <div>
+          <div className="text-rk-text-light">
+            <small>Name</small>
+          </div>
+          <div>{target_path}</div>
+          {/* // TODO: replace with `name` */}
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>Storage Type</small>
+          </div>
+          <div>{storage_type}</div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>
+              Source Path {"("}usually &lt;bucket&gt; or
+              &lt;bucket&gt;/&lt;folder&gt;{")"}
+            </small>
+          </div>
+          <div>
+            <code>{source_path}</code>
+          </div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>
+              Target Path {"("}this is where the storage will be mounted during
+              sessions{")"}
+            </small>
+          </div>
+          <div>
+            <code>{target_path}</code>
+          </div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>
+              Configuration (uses <code>rclone config</code>)
+            </small>
+          </div>
+          <div>
+            <textarea
+              className="form-control"
+              readOnly
+              rows={Object.keys(configuration).length + 2}
+              value={configContent}
+            />
+          </div>
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          className="ms-2"
+          color="outline-secondary"
+          onClick={toggleEditMode}
+        >
+          <PencilSquare className={cx("bi", "me-1")} />
+          Edit
+        </Button>
+      </ModalFooter>
+    </>
   );
 }
 
@@ -493,18 +857,31 @@ function DeleteCloudStorageButton({ storage }: CloudStorageItemProps) {
   );
 }
 
-interface DeleteCloudStorageModalProps {
-  isOpen: boolean;
-  storage: CloudStorage;
-  toggle: () => void;
-}
-
 function DeleteCloudStorageModal({
   isOpen,
   storage,
   toggle,
-}: DeleteCloudStorageModalProps) {
-  const { target_path } = storage;
+}: CloudStorageModalProps) {
+  const { storage_id, target_path } = storage;
+
+  const projectId = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]["id"]
+  >((state) => state.stateModel.project.metadata.id);
+
+  const [deleteCloudStorage, result] = useDeleteCloudStorageMutation();
+  const onDelete = useCallback(() => {
+    deleteCloudStorage({
+      project_id: `${projectId}`,
+      storage_id,
+    });
+  }, [deleteCloudStorage, projectId, storage_id]);
+
+  useEffect(() => {
+    if (result.isSuccess || result.isError) {
+      toggle();
+    }
+  }, [result.isError, result.isSuccess, toggle]);
 
   return (
     <Modal
@@ -517,7 +894,7 @@ function DeleteCloudStorageModal({
         <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
           Are you sure?
         </h3>
-        <p>
+        <p className="mb-0">
           Please confirm that you want to delete the{" "}
           <strong>
             {target_path}
@@ -525,17 +902,15 @@ function DeleteCloudStorageModal({
           </strong>{" "}
           storage configuration.
         </p>
-        <div
-          className={cx("mt-2", "d-flex", "flex-row", "justify-content-end")}
-        >
-          <Button className="ms-2" color="outline-secondary" onClick={toggle}>
-            Cancel, keep configuration
-          </Button>
-          <Button className="ms-2" color="danger" onClick={toggle}>
-            Yes, delete this configuration
-          </Button>
-        </div>
       </ModalBody>
+      <ModalFooter className="pt-0">
+        <Button className="ms-2" color="outline-secondary" onClick={toggle}>
+          Cancel, keep configuration
+        </Button>
+        <Button className="ms-2" color="danger" onClick={onDelete}>
+          Yes, delete this configuration
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 }

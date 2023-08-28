@@ -20,10 +20,11 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import {
   AddCloudStorageForProjectParams,
   CloudStorage,
+  DeleteCloudStorageParams,
   GetCloudStorageForProjectParams,
   ResourcePool,
   ResourcePoolsQueryParams,
-  UpdateCloudStorageForProjectParams,
+  UpdateCloudStorageParams,
 } from "./dataServices.types";
 
 export const dataServicesApi = createApi({
@@ -82,20 +83,36 @@ export const dataServicesApi = createApi({
       },
       invalidatesTags: [{ id: "LIST", type: "CloudStorage" }],
     }),
-    updateCloudStorageForProjectParams: builder.mutation<
+    updateCloudStorage: builder.mutation<
       CloudStorage,
-      UpdateCloudStorageForProjectParams
+      UpdateCloudStorageParams
     >({
-      query: ({ configuration, storage_id, source_path, target_path }) => {
+      query: ({
+        configuration,
+        project_id,
+        storage_id,
+        source_path,
+        target_path,
+      }) => {
         return {
           method: "PATCH",
           url: `storage/${storage_id}`,
-          body: { configuration, source_path, target_path },
+          body: { configuration, project_id, source_path, target_path },
         };
       },
       invalidatesTags: (_result, _error, { storage_id }) => [
         { id: storage_id, type: "CloudStorage" },
       ],
+    }),
+    deleteCloudStorage: builder.mutation<void, DeleteCloudStorageParams>({
+      query: ({ project_id, storage_id }) => {
+        return {
+          method: "DELETE",
+          url: `storage/${storage_id}`,
+          body: { project_id },
+        };
+      },
+      invalidatesTags: [{ id: "LIST", type: "CloudStorage" }],
     }),
   }),
 });
@@ -104,5 +121,6 @@ export const {
   useGetResourcePoolsQuery,
   useGetCloudStorageForProjectQuery,
   useAddCloudStorageForProjectMutation,
-  useUpdateCloudStorageForProjectParamsMutation,
+  useUpdateCloudStorageMutation,
+  useDeleteCloudStorageMutation,
 } = dataServicesApi;
