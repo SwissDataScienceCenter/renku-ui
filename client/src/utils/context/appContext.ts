@@ -17,18 +17,19 @@
  */
 
 import React from "react";
-import { CoreApiVersionedUrlHelper } from "../helpers/url";
+import { createCoreApiVersionedUrlConfig } from "../helpers/url";
+import type { CoreApiVersionedUrlConfig } from "../helpers/url";
 
 type IAppContext = {
   client: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-  coreApiVersionedUrlHelper: CoreApiVersionedUrlHelper;
+  coreApiVersionedUrlConfig: CoreApiVersionedUrlConfig;
   params: unknown;
   location: unknown;
 };
 
 const AppContext = React.createContext<IAppContext>({
   client: undefined,
-  coreApiVersionedUrlHelper: new CoreApiVersionedUrlHelper({
+  coreApiVersionedUrlConfig: createCoreApiVersionedUrlConfig({
     coreApiVersion: "/",
   }),
   params: undefined,

@@ -18,7 +18,7 @@ import { StateModel, globalSchema } from "./model";
 import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
 import { Sentry } from "./utils/helpers/sentry";
-import { CoreApiVersionedUrlHelper, Url } from "./utils/helpers/url";
+import { Url, createCoreApiVersionedUrlConfig } from "./utils/helpers/url";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 
 const configFetch = fetch("/config.json");
@@ -47,12 +47,11 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
     else params["PRIVACY_STATEMENT"] = privacy;
 
     // configure core api versioned url helper
-    const coreApiVersion = params["CORE_API_VERSION"] ?? "/";
-    const coreApiVersionOverrides = params["CORE_API_VERSION_OVERRIDES"] ?? {};
-    const coreApiVersionedUrlHelper = new CoreApiVersionedUrlHelper({
-      coreApiVersion,
-      overrides: coreApiVersionOverrides,
-    });
+    const coreApiVersionConfig = params["CORE_API_VERSION"] ?? {
+      coreApiVersion: "/",
+    };
+    const coreApiVersionedUrlConfig =
+      createCoreApiVersionedUrlConfig(coreApiVersionConfig);
 
     // configure base url
     Url.setBaseUrl(params["BASE_URL"]);
@@ -61,7 +60,7 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
     const client = new APIClient(
       params.UISERVER_URL + "/api",
       params.UISERVER_URL,
-      coreApiVersionedUrlHelper
+      coreApiVersionedUrlConfig
     );
 
     // Create the global model containing the formal schema definition and the redux store
@@ -119,7 +118,7 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
                 return (
                   <VisibleApp
                     client={client}
-                    coreApiVersionedUrlHelper={coreApiVersionedUrlHelper}
+                    coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
                     params={params}
                     model={model}
                     location={props.location}

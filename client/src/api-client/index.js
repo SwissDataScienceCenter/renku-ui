@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CoreApiVersionedUrlHelper } from "../utils/helpers/url";
 
 import addDatasetMethods from "./dataset";
 import addGraphMethods from "./graph";
@@ -55,12 +56,14 @@ class APIClient {
   /**
    * @param {string} apiUrl - base API url
    * @param {string} uiserverUrl - UI server base url, mainly used for authentication
-   * @param {CoreApiVersionedUrlHelper} coreApiVersionedUrlHelper - helper object for computing versioned URLs.
+   * @param {CoreApiVersionedUrlConfig} coreApiVersionedUrlConfig - helper object for computing versioned URLs.
    */
-  constructor(apiUrl, uiserverUrl, coreApiVersionedUrlHelper) {
+  constructor(apiUrl, uiserverUrl, coreApiVersionedUrlConfig) {
     this.baseUrl = apiUrl;
     this.uiserverUrl = uiserverUrl;
-    this.coreApiVersionedUrlHelper = coreApiVersionedUrlHelper;
+    this.coreApiVersionedUrlHelper = new CoreApiVersionedUrlHelper(
+      coreApiVersionedUrlConfig
+    );
     this.returnTypes = RETURN_TYPES;
 
     addDatasetMethods(this);

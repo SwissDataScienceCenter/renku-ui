@@ -18,50 +18,62 @@
 
 import { useContext, useMemo } from "react";
 import AppContext from "../../utils/context/appContext";
-import type { CoreApiVersionedUrlHelper } from "../../utils/helpers/url";
+import { apiVersionForMetadataVersion } from "../../utils/helpers/url";
+import type { CoreApiVersionedUrlConfig } from "../../utils/helpers/url";
 import { useGetCoreVersionsQuery } from "../versions/versionsApi";
 import { useGetMigrationStatusQuery } from "./projectCoreApi";
 
 export type CoreSupport =
   | {
+      apiVersion: undefined;
       backendAvailable: undefined;
       backendErrorMessage: undefined;
       computed: false;
-      urlHelper: undefined;
+      metadataVersion: undefined;
       versionUrl: undefined;
     }
   | {
+      apiVersion: undefined;
       backendAvailable: false;
       backendErrorMessage: string;
       computed: true;
-      urlHelper: undefined;
+      metadataVersion: undefined;
       versionUrl: undefined;
     }
   | {
+      apiVersion: undefined;
       backendAvailable: false;
       backendErrorMessage: undefined;
       computed: true;
-      urlHelper: undefined;
+      metadataVersion: undefined;
       versionUrl: undefined;
     }
   | {
+      apiVersion: string | undefined;
       backendAvailable: true;
       backendErrorMessage: undefined;
       computed: true;
-      urlHelper: CoreApiVersionedUrlHelper;
+      metadataVersion: number;
       versionUrl: string;
     };
 
 export const useCoreSupport = ({
+  apiVersionOverride,
   gitUrl,
   branch,
 }: {
+  apiVersionOverride?: string;
   gitUrl: string | undefined;
   branch?: string | undefined;
 }) => {
-  const { coreApiVersionedUrlHelper } = useContext(AppContext);
+  const { coreApiVersionedUrlConfig } = useContext(AppContext);
+  const migrationStatusApiVersion = apiVersionForMetadataVersion(
+    coreApiVersionedUrlConfig,
+    undefined,
+    undefined // do not use the override for getting migration status
+  );
   const getMigrationStatusQuery = useGetMigrationStatusQuery(
-    { gitUrl: gitUrl ?? "", branch },
+    { apiVersion: migrationStatusApiVersion, gitUrl: gitUrl ?? "", branch },
     { skip: !gitUrl || !branch }
   );
   const getCoreVersionsQuery = useGetCoreVersionsQuery();
@@ -83,12 +95,18 @@ export const useCoreSupport = ({
         ? undefined
         : migrationStatus?.error?.userMessage;
     return computeBackendData({
+      apiVersionOverride,
       availableVersions,
       backendErrorMessage,
+      coreApiVersionedUrlConfig,
       projectVersion,
-      urlHelper: coreApiVersionedUrlHelper,
     });
-  }, [coreApiVersionedUrlHelper, coreVersions, migrationStatus]);
+  }, [
+    apiVersionOverride,
+    coreApiVersionedUrlConfig,
+    coreVersions,
+    migrationStatus,
+  ]);
 
   return {
     coreSupport,
@@ -98,46 +116,56 @@ export const useCoreSupport = ({
 };
 
 export const computeBackendData = ({
+  apiVersionOverride,
   availableVersions,
   backendErrorMessage,
+  coreApiVersionedUrlConfig,
   projectVersion,
-  urlHelper,
 }: {
+  apiVersionOverride: string | undefined;
   availableVersions: number[] | undefined;
   backendErrorMessage: string | undefined;
+  coreApiVersionedUrlConfig: CoreApiVersionedUrlConfig;
   projectVersion: number | undefined;
-  urlHelper: CoreApiVersionedUrlHelper;
 }): CoreSupport => {
   if (backendErrorMessage) {
     return {
+      apiVersion: undefined,
       backendAvailable: false,
       backendErrorMessage,
       computed: true,
-      urlHelper: undefined,
+      metadataVersion: undefined,
       versionUrl: undefined,
     };
   }
   if (!availableVersions || typeof projectVersion !== "number")
     return {
+      apiVersion: undefined,
       backendAvailable: undefined,
       backendErrorMessage: undefined,
       computed: false,
-      urlHelper: undefined,
+      metadataVersion: undefined,
       versionUrl: undefined,
     };
   if (availableVersions.includes(projectVersion))
     return {
+      apiVersion: apiVersionForMetadataVersion(
+        coreApiVersionedUrlConfig,
+        projectVersion,
+        apiVersionOverride
+      ),
       backendAvailable: true,
       backendErrorMessage: undefined,
       computed: true,
-      urlHelper,
+      metadataVersion: projectVersion,
       versionUrl: `/${projectVersion}`,
     };
   return {
+    apiVersion: undefined,
     backendAvailable: false,
     backendErrorMessage: undefined,
     computed: true,
-    urlHelper: undefined,
+    metadataVersion: undefined,
     versionUrl: undefined,
   };
 };

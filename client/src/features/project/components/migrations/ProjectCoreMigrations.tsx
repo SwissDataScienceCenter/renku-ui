@@ -77,21 +77,26 @@ export function ProjectMigrationStatus({
     gitUrl,
     branch,
   });
-  const { backendAvailable, computed: coreSupportComputed } = coreSupport;
+  const {
+    apiVersion,
+    backendAvailable,
+    computed: coreSupportComputed,
+  } = coreSupport;
   const isSupported = coreSupportComputed && backendAvailable;
   const checkingSupport = !coreSupportComputed;
 
   const skip = !gitUrl || !branch;
   const { data, isLoading, isFetching, error } =
     projectCoreApi.useGetMigrationStatusQuery(
-      { gitUrl, branch },
+      { apiVersion, gitUrl, branch },
       { refetchOnMountOrArgChange: 60 * 5, skip }
     );
   const [startMigration, migrationStatus] =
     projectCoreApi.useStartMigrationMutation();
   const updateProject = useCallback(
-    (scope: MigrationStartScopes) => startMigration({ branch, gitUrl, scope }),
-    [branch, gitUrl, startMigration]
+    (scope: MigrationStartScopes) =>
+      startMigration({ apiVersion, branch, gitUrl, scope }),
+    [apiVersion, branch, gitUrl, startMigration]
   );
 
   const sectionCyId = "project-version";

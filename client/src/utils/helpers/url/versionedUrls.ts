@@ -37,11 +37,8 @@ export type CoreApiVersionedUrlConfig = {
  */
 export class CoreApiVersionedUrlHelper {
   config: CoreApiVersionedUrlConfig;
-  constructor(
-    config: Pick<CoreApiVersionedUrlConfig, "coreApiVersion"> &
-      Partial<Pick<CoreApiVersionedUrlConfig, "overrides">>
-  ) {
-    this.config = createCoreApiVersionedUrlConfig(config);
+  constructor(config: CoreApiVersionedUrlConfig) {
+    this.config = config;
   }
 
   urlForEndpoint(
@@ -49,23 +46,24 @@ export class CoreApiVersionedUrlHelper {
     metadataVersion: string | undefined | null,
     apiVersionOverride?: string
   ): string {
+    metadataVersion = stripInitialSlash(metadataVersion);
     return coreVersionedUrl(this.config, {
       apiVersion: apiVersionOverride,
       endpoint,
-      metadataVersion,
+      metadataVersion: metadataVersion ? parseInt(metadataVersion) : undefined,
     });
   }
 }
 
 export function apiVersionForMetadataVersion(
   config: CoreApiVersionedUrlConfig,
-  metadataVersion: string | undefined | null,
+  metadataVersion: number | undefined | null,
   apiVersionOverride?: string
 ) {
   const apiVersion = apiVersionOverride
     ? apiVersionOverride
     : metadataVersion
-    ? config.overrides[metadataVersion] ?? config.coreApiVersion
+    ? config.overrides[metadataVersion.toString()] ?? config.coreApiVersion
     : config.coreApiVersion;
   return stripInitialSlash(apiVersion);
 }
@@ -106,6 +104,9 @@ export function getCoreVersionedUrl(
     helper != null
       ? helper
       : new CoreApiVersionedUrlHelper({ coreApiVersion: "/" });
+  metadataVersion = metadataVersion
+    ? stripInitialSlash(metadataVersion)
+    : undefined;
   return helper_.urlForEndpoint(endpoint, metadataVersion, apiVersionOverride);
 }
 
@@ -119,7 +120,6 @@ export function sanitizedVersionedPathParams({
   metadataVersion,
 }: Partial<VersionedPathForEndpointParams>) {
   endpoint = stripInitialSlash(endpoint);
-  metadataVersion = stripInitialSlash(metadataVersion);
   apiVersion = stripInitialSlash(apiVersion);
   return {
     apiVersion,
@@ -134,7 +134,7 @@ export type VersionedPathForEndpointParams = {
   /* The endpoint, with any initial slash stripped. undefined/null => root */
   endpoint: string | undefined | null;
   /* The metadata version, with any initial slash stripped. undefined/null => latest */
-  metadataVersion: string | undefined | null;
+  metadataVersion: number | undefined | null;
 };
 
 export function versionedPathForEndpoint({

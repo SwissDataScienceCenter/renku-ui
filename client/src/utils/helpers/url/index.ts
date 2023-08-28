@@ -25,4 +25,11 @@
 
 export { appendCustomUrlPath } from "./NotebookUrl";
 export { Url, getSearchParams } from "./Url";
-export { CoreApiVersionedUrlHelper } from "./versionedUrls";
+export {
+  CoreApiVersionedUrlHelper,
+  apiVersionForMetadataVersion,
+  coreVersionedUrl,
+  createCoreApiVersionedUrlConfig,
+  sanitizedVersionedPathParams,
+} from "./versionedUrls";
+export type { CoreApiVersionedUrlConfig } from "./versionedUrls";
