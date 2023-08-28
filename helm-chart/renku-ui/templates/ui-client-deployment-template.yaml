@@ -9,11 +9,8 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
   annotations:
-    {{- $configMap := (lookup "v1" "ConfigMap" .Release.Namespace (printf "%s-version" .Release.Name)) -}}
-    {{- $version := index $configMap.data "chart_version" -}}
-    {{- if $version }}
-    renkuVersion: {{ $version | quote }}
-    {{- end }}
+    # force to restart the pod on configmap changes; otherwise, we don't get the new renku release version
+    reloader: {{ .Release.Revision | quote }}
 spec:
   replicas: {{ .Values.client.replicaCount }}
   selector:
