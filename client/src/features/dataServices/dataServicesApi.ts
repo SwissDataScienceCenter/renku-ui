@@ -87,17 +87,11 @@ export const dataServicesApi = createApi({
       CloudStorage,
       UpdateCloudStorageParams
     >({
-      query: ({
-        configuration,
-        project_id,
-        storage_id,
-        source_path,
-        target_path,
-      }) => {
+      query: ({ storage_id, ...params }) => {
         return {
           method: "PATCH",
           url: `storage/${storage_id}`,
-          body: { configuration, project_id, source_path, target_path },
+          body: { ...params },
         };
       },
       invalidatesTags: (_result, _error, { storage_id }) => [

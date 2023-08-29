@@ -327,6 +327,7 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
     (data: SimpleAddCloudStorageForm) => {
       console.log(data);
       addCloudStorageForProject({
+        name: data.name,
         project_id: `${projectId}`,
         storage_url: data.endpointUrl,
         target_path: data.name,
@@ -429,10 +430,7 @@ function CloudStorageList({ storageForProject }: CloudStorageListProps) {
           </thead>
           <tbody className="align-middle">
             {storageForProject.map(({ storage }) => (
-              <CloudStorageItem
-                key={storage.target_path} // TODO: replace with `name`
-                storage={storage}
-              />
+              <CloudStorageItem key={storage.name} storage={storage} />
             ))}
           </tbody>
         </Table>
@@ -446,13 +444,11 @@ interface CloudStorageItemProps {
 }
 
 function CloudStorageItem({ storage }: CloudStorageItemProps) {
-  const { source_path, target_path } = storage;
+  const { name, source_path, target_path } = storage;
 
   return (
     <tr>
-      <th scope="row">
-        {target_path} {/* // TODO: replace with `name` */}
-      </th>
+      <th scope="row">{name}</th>
       <td>
         <code>{source_path}</code>
       </td>
@@ -503,10 +499,9 @@ function ViewCloudStorageModal({
   storage,
   toggle,
 }: CloudStorageModalProps) {
-  const { configuration, target_path } = storage;
+  const { configuration, name } = storage;
 
-  // TODO: replace `target_path` with `name`
-  const configContent = `[${target_path}]
+  const configContent = `[${name}]
 ${Object.entries(configuration)
   .map(([key, value]) => `${key} = ${value}`)
   .join("\n")}`;
@@ -559,7 +554,7 @@ function EditCloudStorage({
   storage,
   toggleEditMode,
 }: CloudStorageDetailsProps) {
-  const { source_path, storage_id, target_path } = storage;
+  const { name, source_path, storage_id, target_path } = storage;
 
   const projectId = useSelector<
     RootStateOrAny,
@@ -575,21 +570,23 @@ function EditCloudStorage({
   } = useForm<UpdateCloudStorageForm>({
     defaultValues: {
       configContent,
-      name: target_path, // TODO: replace with `name`
+      name,
       source_path,
+      target_path,
     },
   });
   const onSubmit = useCallback(
     (data: UpdateCloudStorageForm) => {
       console.log(data);
 
+      const nameUpdate = name !== data.name ? { name: data.name } : {};
       const sourcePathUpdate =
         source_path !== data.source_path
           ? { source_path: data.source_path }
           : {};
       const targetPathUpdate =
-        target_path !== data.name
-          ? { target_path: data.name } // TODO: replace with `target_path`
+        target_path !== data.target_path
+          ? { target_path: data.target_path }
           : {};
       const configUpdate =
         configContent !== data.configContent
@@ -601,6 +598,7 @@ function EditCloudStorage({
       updateCloudStorage({
         storage_id,
         project_id: `${projectId}`,
+        ...nameUpdate,
         ...sourcePathUpdate,
         ...targetPathUpdate,
         ...configUpdate,
@@ -608,6 +606,7 @@ function EditCloudStorage({
     },
     [
       configContent,
+      name,
       projectId,
       source_path,
       storage_id,
@@ -736,6 +735,7 @@ interface UpdateCloudStorageForm {
   configContent: string;
   name: string;
   source_path: string;
+  target_path: string;
 }
 
 function parseConfigContent(configContent: string): Record<string, string> {
@@ -767,7 +767,8 @@ function CloudStorageDetails({
   storage,
   toggleEditMode,
 }: CloudStorageDetailsProps) {
-  const { configuration, source_path, storage_type, target_path } = storage;
+  const { configuration, name, source_path, storage_type, target_path } =
+    storage;
 
   return (
     <>
@@ -776,8 +777,7 @@ function CloudStorageDetails({
           <div className="text-rk-text-light">
             <small>Name</small>
           </div>
-          <div>{target_path}</div>
-          {/* // TODO: replace with `name` */}
+          <div>{name}</div>
         </div>
         <div className="mt-2">
           <div className="text-rk-text-light">
@@ -862,7 +862,7 @@ function DeleteCloudStorageModal({
   storage,
   toggle,
 }: CloudStorageModalProps) {
-  const { storage_id, target_path } = storage;
+  const { name, storage_id } = storage;
 
   const projectId = useSelector<
     RootStateOrAny,
@@ -895,11 +895,7 @@ function DeleteCloudStorageModal({
           Are you sure?
         </h3>
         <p className="mb-0">
-          Please confirm that you want to delete the{" "}
-          <strong>
-            {target_path}
-            {/* // TODO: replace with `name` */}
-          </strong>{" "}
+          Please confirm that you want to delete the <strong>{name}</strong>{" "}
           storage configuration.
         </p>
       </ModalBody>
