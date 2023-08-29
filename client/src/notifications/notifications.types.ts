@@ -25,7 +25,7 @@ export interface NotificationsInterface {
   addError: NotificationFunction;
 }
 
-type NotificationFunction = (
+type NotificationCreator = (
   topic: string,
   desc?: ReactNode,
   link?: string,
