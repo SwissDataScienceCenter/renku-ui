@@ -16,13 +16,8 @@
  * limitations under the License.
  */
 
+import { Briefcase, CardList, Diagram3, HddStack } from "react-bootstrap-icons";
 import { EntityType, WorkflowType } from "./Entities";
-import {
-  Briefcase,
-  CardList,
-  Diagram3,
-  HddStack,
-} from "../../utils/ts-wrappers";
 
 /**
  *  renku-ui

@@ -17,11 +17,10 @@
  */
 
 import { useContext, useRef } from "react";
-import { Globe, Lock, Shield } from "../../utils/ts-wrappers";
-
+import { Globe, Lock, Shield } from "react-bootstrap-icons";
 import AppContext from "../../utils/context/appContext";
-import { ThrottledTooltip } from "../Tooltip";
 import { capitalizeFirstLetter } from "../../utils/helpers/HelperFunctions";
+import { ThrottledTooltip } from "../Tooltip";
 
 /**
  *  renku-ui
