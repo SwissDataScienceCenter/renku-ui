@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-import cx from "classnames";
-import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
-import { TimeCaption } from "../../../../components/TimeCaption";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ensureDateTime } from "../../../../utils/helpers/DateTimeUtils";
+import cx from "classnames";
 import { Duration } from "luxon";
+import { TimeCaption } from "../../../../components/TimeCaption";
+import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
+import { ensureDateTime } from "../../../../utils/helpers/DateTimeUtils";
 
 interface SessionHibernationStatusDetailsProps {
   annotations: NotebookAnnotations;
