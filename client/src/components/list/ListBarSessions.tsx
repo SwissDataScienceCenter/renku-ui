@@ -252,12 +252,12 @@ function ListBarSession({
       </div>
       <div className="session-time text-truncate">
         <div className="d-flex">
-          <span className="session-info">
+          {/* <span className="session-info">
             Branch
             <span className="text-decoration-underline mx-1">
               {notebook.annotations["branch"]}
             </span>
-          </span>
+          </span> */}
           <div className="session-icon-details">{sessionDetailsPopover}</div>
         </div>
         <span

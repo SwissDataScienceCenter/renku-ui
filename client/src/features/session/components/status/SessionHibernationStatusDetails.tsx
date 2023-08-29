@@ -21,6 +21,8 @@ import { NotebookAnnotations } from "../../../../notebooks/components/session.ty
 import { TimeCaption } from "../../../../components/TimeCaption";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ensureDateTime } from "../../../../utils/helpers/DateTimeUtils";
+import { Duration } from "luxon";
 
 interface SessionHibernationStatusDetailsProps {
   annotations: NotebookAnnotations;
@@ -30,6 +32,23 @@ export default function SessionHibernationStatusDetails({
   annotations,
 }: SessionHibernationStatusDetailsProps) {
   const hasHibernationInfo = !!annotations["hibernation-date"];
+
+  const hibernationTimestamp = annotations["hibernation-date"] ?? "";
+  const hibernationDateTime = hibernationTimestamp
+    ? ensureDateTime(hibernationTimestamp)
+    : null;
+
+  const hibernatedSecondsThreshold = parseInt(
+    annotations?.hibernatedSecondsThreshold ?? "",
+    10
+  );
+  const hibernationThresholdDuration = isNaN(hibernatedSecondsThreshold)
+    ? Duration.fromISO("")
+    : Duration.fromObject({ seconds: hibernatedSecondsThreshold });
+  const hibernationCullTimestamp =
+    hibernationDateTime && hibernationThresholdDuration
+      ? hibernationDateTime.plus(hibernationThresholdDuration)
+      : null;
 
   return (
     <>
@@ -43,6 +62,16 @@ export default function SessionHibernationStatusDetails({
               noCaption
             />
           </p>
+          {hibernationCullTimestamp && (
+            <p className="mb-0">
+              <span className="fw-bold">Will be deleted:</span>{" "}
+              <TimeCaption
+                datetime={hibernationCullTimestamp}
+                enableTooltip
+                noCaption
+              />
+            </p>
+          )}
           <p className="mb-0">
             <span className="fw-bold">Current commit:</span>{" "}
             <code>{annotations["hibernation-commit-sha"].slice(0, 8)}</code>
