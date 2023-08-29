@@ -355,30 +355,27 @@ function SessionActions({ className, session }: SessionActionsProps) {
   );
 
   const createSessionLinkAction = (
-    <>
-      <DropdownItem divider />
-      <DropdownItem>
-        <Link
-          className="text-decoration-none"
-          to={{
-            pathname: sessionStartUrl,
-            search: new URLSearchParams({
-              showCreateLink: "1",
-            }).toString(),
-          }}
-        >
-          <FontAwesomeIcon
-            className={cx("text-rk-green", "fa-w-14", "me-2")}
-            fixedWidth
-            icon={faLink}
-          />
-          Create session link
-        </Link>
-      </DropdownItem>
-    </>
+    <DropdownItem>
+      <Link
+        className="text-decoration-none"
+        to={{
+          pathname: sessionStartUrl,
+          search: new URLSearchParams({
+            showCreateLink: "1",
+          }).toString(),
+        }}
+      >
+        <FontAwesomeIcon
+          className={cx("text-rk-green", "fa-w-14", "me-2")}
+          fixedWidth
+          icon={faLink}
+        />
+        Create session link
+      </Link>
+    </DropdownItem>
   );
 
-  const logsAction = (
+  const logsAction = status !== "hibernated" && (
     <DropdownItem data-cy="session-log-button" onClick={onToggleLogs}>
       <FontAwesomeIcon
         className={cx("text-rk-green", "fa-w-14", "me-2")}
@@ -403,6 +400,8 @@ function SessionActions({ className, session }: SessionActionsProps) {
 
       {openInNewTabAction}
       {logsAction}
+      {(openInNewTabAction || logsAction) && <DropdownItem divider />}
+
       {createSessionLinkAction}
 
       <ConfirmDeleteModal
