@@ -119,10 +119,10 @@ function useAutostartSessionOptions(): void {
   const { data: commits, isFetching: commitsIsFetching } =
     useGetRepositoryCommitsQuery(
       {
-        branch: currentBranch || defaultBranch,
+        branch: currentBranch,
         projectId: `${gitLabProjectId ?? 0}`,
       },
-      { skip: !gitLabProjectId }
+      { skip: !gitLabProjectId || !currentBranch }
     );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
