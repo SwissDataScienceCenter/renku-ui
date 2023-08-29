@@ -19,7 +19,7 @@
 import { Card, CardBody, Col, Row } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { Visibilities } from "../../../components/visibility/Visibility";
-import { NotificationsInterface } from "../../../notifications/notifications.types";
+import { NotificationsManager } from "../../../notifications/notifications.types";
 import { EditVisibility } from "../../../project/new/components/Visibility";
 import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";
 import { ProjectSettingsDescription } from "./ProjectSettingsDescription";
@@ -45,7 +45,7 @@ interface ProjectSettingsGeneralProps {
     visibility: Visibilities;
     [key: string]: unknown;
   };
-  notifications: NotificationsInterface;
+  notifications: NotificationsManager;
   projectPathWithNamespace: string;
   user: {
     logged: boolean;

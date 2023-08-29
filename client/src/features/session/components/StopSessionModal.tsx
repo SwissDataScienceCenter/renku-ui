@@ -35,7 +35,7 @@ import { InfoAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/RenkuModels";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
-import { NotificationsInterface } from "../../../notifications/notifications.types";
+import { NotificationsManager } from "../../../notifications/notifications.types";
 import AppContext from "../../../utils/context/appContext";
 import { Url } from "../../../utils/helpers/url";
 import {
@@ -122,7 +122,7 @@ function AnonymousStopSessionModal({
     if (error != null) {
       addErrorNotification({
         error,
-        notifications: notifications as NotificationsInterface,
+        notifications: notifications as NotificationsManager,
       });
     }
   }, [error, notifications]);
@@ -205,7 +205,7 @@ function HibernateSessionModal({
     if (error != null) {
       addErrorNotification({
         error,
-        notifications: notifications as NotificationsInterface,
+        notifications: notifications as NotificationsManager,
       });
     }
   }, [error, notifications]);
@@ -284,7 +284,7 @@ function addErrorNotification({
   notifications,
 }: {
   error: FetchBaseQueryError | SerializedError;
-  notifications: NotificationsInterface;
+  notifications: NotificationsManager;
 }) {
   const message =
     "message" in error && error.message != null

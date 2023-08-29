@@ -34,12 +34,12 @@ import {
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
-import { NotificationsInterface } from "../../../notifications/notifications.types";
+import { NotificationsManager } from "../../../notifications/notifications.types";
 import { useDeleteProjectMutation } from "../projectKgApi";
 
 interface ProjectSettingsGeneralDeleteProjectProps {
   isMaintainer: boolean;
-  notifications: NotificationsInterface;
+  notifications: NotificationsManager;
   projectPathWithNamespace: string;
   userLogged: boolean;
 }
@@ -196,7 +196,7 @@ const addNotification = ({
   notifications,
   projectPathWithNamespace,
 }: {
-  notifications: NotificationsInterface;
+  notifications: NotificationsManager;
   projectPathWithNamespace: string;
 }) => {
   notifications.addSuccess(

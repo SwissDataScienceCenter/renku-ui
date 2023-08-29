@@ -19,10 +19,10 @@
 import { ReactNode } from "react";
 
 export interface NotificationsManager {
-  addInfo: NotificationFunction;
-  addSuccess: NotificationFunction;
-  addWarning: NotificationFunction;
-  addError: NotificationFunction;
+  addInfo: NotificationCreator;
+  addSuccess: NotificationCreator;
+  addWarning: NotificationCreator;
+  addError: NotificationCreator;
 }
 
 type NotificationCreator = (
@@ -32,4 +32,4 @@ type NotificationCreator = (
   linkText?: string,
   awareLocations?: string[],
   longDesc?: string
-) => NotificationsInterface;
+) => NotificationsManager;
