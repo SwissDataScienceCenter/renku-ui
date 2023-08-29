@@ -18,7 +18,7 @@
 
 import { ReactNode } from "react";
 
-export interface NotificationsInterface {
+export interface NotificationsManager {
   addInfo: NotificationFunction;
   addSuccess: NotificationFunction;
   addWarning: NotificationFunction;
