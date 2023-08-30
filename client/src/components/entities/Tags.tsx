@@ -40,7 +40,7 @@ function EntityTags({ hideEmptyTags, multiline, tagList }: EntityTagsProps) {
     : "text-truncate text-dark";
   const isUpdatingValue = useSelector(
     (state: RootStateOrAny) =>
-      state.stateModel.project?.metadata?.tagList?.updating
+      state.stateModel?.project?.metadata?.tagList?.updating
   );
 
   if (isUpdatingValue) {

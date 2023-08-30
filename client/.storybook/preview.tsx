@@ -36,9 +36,20 @@ const preview: Preview = {
   parameters: {
     actions: { argTypesRegex: "^on[A-Z].*" },
     controls: {
+      disable: true,
+      expanded: true,
       matchers: {
         color: /(background|color)$/i,
         date: /Date$/,
+      },
+    },
+    viewMode: "docs",
+    docs: {
+      toc: true,
+    },
+    options: {
+      storySort: {
+        method: "alphabetical",
       },
     },
   },
