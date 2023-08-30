@@ -175,7 +175,7 @@ The full documentation for Storybook can be found [here](https://storybook.js.or
 
 Storybook's test runner transforms stories into executable tests, supporting Chromium and Firefox browsers. It ensures error-free rendering for non-play stories. For interactive stories with play functions, it validates both play function errors and successful assertions.
 
-         $ npm run start-storybook-and-test
+    $ npm run start-storybook-and-test
 
 ### Telepresence
 
@@ -188,9 +188,7 @@ Telepresence replaces the UI client pod in the target Kubernetes instance. All t
 
 The `run-telepresence.sh` script uses the current K8s context as returned by `kubectl config current-context`. You can deploy your own RenkuLab application (using the helm chart in the renku repository) for development; alternatively the renku-ui repository includes CI tasks that can deploy the code for a PR. To take advantage of this task, add
 
-```
-/deploy #persist
-```
+    $ /deploy #persist
 
 To the body of your PR description.
 
@@ -202,9 +200,7 @@ There are a few environment variables you may want to set when starting telepres
 
 For example:
 
-```
     $ SENTRY=0 PR=1166 ./run-telepresence.sh
-```
 
 There are also further configuration possibilities offered by the `run-telepresence.sh` script. For
 specific use cases, you may need to modify the script directly, since not all options are configurable through environment variables.
