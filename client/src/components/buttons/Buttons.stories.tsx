@@ -27,21 +27,18 @@ interface LabelsProps {
 }
 
 const componentDescription = `
-  Custom Buttons for actions in forms, cards, and more.
-  Utilize a defined color palette for various states and entities.
-  - **Entities:** Projects, Datasets and Workflows
-  - **States:** Error, Information, Alert
- 
-<details>
-<summary>Best Practices</summary>
-<ul>
-<li>Use labels that accurately describe the action the button performs. Frame the label as an action the user is taking, such as "Submit," "Save," "Cancel," "Delete," "Edit," etc.</li>
-<li>Ensure that the design and color of the button align with the context in which it's used. For example, use primary buttons for main actions and secondary buttons for less prominent actions.</li>
-<li>Don't overload a single page or section with too many buttons. Prioritize the most essential actions to avoid overwhelming users.</li>
-<li>For modals and single-page forms right-align buttons with the container.</li>
-<li>Always place the primary button on the right, the secondary button just to the left of it.</li>
-</ul>
-</details>
+Custom Buttons for actions in forms, cards, and more.
+Utilize a defined color palette for various states and entities.
+* **Entities:** Projects, Datasets and Workflows
+* **States:** Error, Information, Alert
+
+
+### Best Practices
+* Use labels that accurately describe the action the button performs. Frame the label as an action the user is taking, such as "Submit," "Save," "Cancel," "Delete," "Edit," etc.
+* Ensure that the design and color of the button align with the context in which it's used. For example, use primary buttons for main actions and secondary buttons for less prominent actions.
+* Don't overload a single page or section with too many buttons. Prioritize the most essential actions to avoid overwhelming users.
+* For modals and single-page forms right-align buttons with the container.
+* Always place the primary button on the right, the secondary button just to the left of it.
 
 ### Reactstrap Components
 This component uses [Button](https://reactstrap.github.io/?path=/docs/components-button--button) from reactstrap internally. So please take a look also there at their extensive documentation.
@@ -210,7 +207,7 @@ Error.parameters = {
   docs: {
     description: {
       story:
-        "Use `btn-danger` in the context of a Danger Alert, or when suggesting a high-risk actions action that can lead to critical or irreversible outcomes. (E.G. `Delete Project` or updating a project when it is on a very outdated version not supported anymore by the UI).",
+        "Use `btn-danger` in the context of a Danger Alert, or when suggesting a high-risk action that can lead to critical or irreversible outcomes. (E.G. `Delete Project` or updating a project when it is on a very outdated version not supported anymore by the UI).",
     },
   },
 };
