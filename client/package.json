@@ -87,10 +87,9 @@
     "format-changed": "pretty-quick --pattern \"client/**/*.*\"",
     "format-commit": "pretty-quick --staged --pattern \"client/**/*.*\"",
     "storybook": "storybook dev -p 6006 -s public",
-    "test-storybook:local": "test-storybook --browsers firefox chromium",
-    "start-storybook": "concurrently \"npm run build-storybook\" \"npm run test-storybook\"",
-    "build-storybook": "storybook build -s public && http-server storybook-static --port 6006 --silent",
-    "test-storybook": "wait-on tcp:6006 && test-storybook"
+    "start-storybook-and-test": "concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"npm run build-storybook\" \"npm run test-storybook\"",
+    "build-storybook": "storybook build -s public --quiet && http-server storybook-static --port 6006 --silent",
+    "test-storybook": "wait-on tcp:6006 && test-storybook --browsers firefox chromium"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
