@@ -21,7 +21,7 @@ import type { CreatorInputProps } from "./CreatorsInput";
 import { StoryFn as Story } from "@storybook/react";
 
 export default {
-  title: "components/CreatorsInput",
+  title: "Components/Forms/FormGeneratorCreatorsInput",
   component: FormGeneratorCreatorsInput,
 };
 

@@ -20,7 +20,7 @@ import { StoryFn as Story } from "@storybook/react";
 import { VisibilityFilterProps, VisibilityFilter } from "./VisibilityFilter";
 
 export default {
-  title: "components/VisibilityFilter",
+  title: "components/Search/VisibilityFilter",
   component: VisibilityFilter,
   argTypes: {},
 };
@@ -30,4 +30,10 @@ const Template: Story<VisibilityFilterProps> = (args) => (
 );
 
 export const Default = Template.bind({});
-Default.args = {};
+Default.args = {
+  value: {
+    public: false,
+    internal: false,
+    private: false,
+  },
+};

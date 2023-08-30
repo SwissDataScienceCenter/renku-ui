@@ -140,6 +140,37 @@ We have an ever-growing suite of UI tests developed with Cypress. The tests can 
     $ npm install
     $ npm run e2e:local
 
+### Storybook
+
+We use [Storybook](https://storybook.js.org) to create interactive stories for our UI components.
+Stories provide a visual representation of how our components behave in different scenarios.
+
+#### Run Storybook
+
+Run the following command to start Storybook:
+
+    $ npm run storybook
+
+This should automatically open your browser at http://localhost:6006 where you can see your components in action.
+
+#### Write stories
+
+To create new story files for your components, just add a new `<ComponentName>.stories.tsx` file.
+As an example of a well-structured and documented story, you can check out the Button component
+in `client/src/components/buttons/Buttons.stories.tsx`.
+
+The full documentation for Storybook can be found [here](https://storybook.js.org/docs/react/writing-stories/introduction).
+
+#### Best Practices
+
+- Add stories files in the same directory as your component.
+- Name your story after the target component `<ComponentName>.stories.tsx`. Use the `title` property in the story definition to group related stories by categories. E.G.. `components/buttons/buttonWithMenu`.
+- It's good to showcase different variations of your component. Use multiple stories to demonstrate how props and states affect the component and how that helps in serving different use cases.
+- Provide a clear and concise description for each story. Include details on its purpose, usage, and any relevant notes.
+- Use `Args` to tweak props' values, making the components interactive so that users can play with them.
+- Wherever relevant, please include stories that demonstrate responsive behavior across various devices.
+- You can use `addon-redux` for state management on components that require to get data from the Redis store.
+
 ### Telepresence
 
 Telepresence can be used to develop the UI in a realistic setting. The client folder includes a `run-telepresence.sh` script that is tailored for the SDSC development cluster.
