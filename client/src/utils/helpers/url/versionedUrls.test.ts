@@ -19,29 +19,7 @@
 import {
   coreVersionedUrl,
   createCoreApiVersionedUrlConfig,
-  getCoreVersionedUrl,
 } from "./versionedUrls";
-
-describe("Test versionedUrl", () => {
-  const FAKE_ENDPOINT = "renkuEntity.edit";
-
-  it("Version: number only", () => {
-    const numberedUrl = getCoreVersionedUrl(FAKE_ENDPOINT, "10");
-    expect(numberedUrl).toBe(`/10/${FAKE_ENDPOINT}`);
-  });
-  it("Version: initial slash", () => {
-    const numberedUrl = getCoreVersionedUrl(FAKE_ENDPOINT, "/10");
-    expect(numberedUrl).toBe(`/10/${FAKE_ENDPOINT}`);
-  });
-  it("Version: none", () => {
-    const numberedUrl = getCoreVersionedUrl(FAKE_ENDPOINT, null);
-    expect(numberedUrl).toBe(`/${FAKE_ENDPOINT}`);
-  });
-  it("Endpoint: missing", () => {
-    const numberedUrl = getCoreVersionedUrl("", null);
-    expect(numberedUrl).toBe("/");
-  });
-});
 
 describe("Test versionedUrl config, always latest", () => {
   const FAKE_ENDPOINT = "renkuEntity.edit";
@@ -114,10 +92,10 @@ describe("Test versionedUrl config, default, no overrides", () => {
 describe("Test versionedUrl config, with overrides", () => {
   const FAKE_ENDPOINT = "renkuEntity.edit";
   const config = createCoreApiVersionedUrlConfig({
-    coreApiVersion: "2.0",
+    coreApiVersion: "/2.0",
     overrides: {
       "9": "/",
-      "11": "/3.0",
+      "11": "3.0",
     },
   });
 

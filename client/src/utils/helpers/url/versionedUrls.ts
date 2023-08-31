@@ -94,22 +94,6 @@ export function coreVersionedUrl(
   return versionedPathForEndpoint(sanitized);
 }
 
-export function getCoreVersionedUrl(
-  endpoint: string,
-  metadataVersion?: string | null,
-  helper?: CoreApiVersionedUrlHelper,
-  apiVersionOverride?: string
-): string {
-  const helper_ =
-    helper != null
-      ? helper
-      : new CoreApiVersionedUrlHelper({ coreApiVersion: "/" });
-  metadataVersion = metadataVersion
-    ? stripInitialSlash(metadataVersion)
-    : undefined;
-  return helper_.urlForEndpoint(endpoint, metadataVersion, apiVersionOverride);
-}
-
 /**
  * Take a proposed set of endpoint params and remove initial slashes and convert empty string to undefined.
  * @param param Proposed endpoint params to clean up
