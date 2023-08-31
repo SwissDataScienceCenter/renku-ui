@@ -1,5 +1,16 @@
 # Changes
 
+## [3.12.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.11.0...3.12.0) (2023-08-31)
+
+### Features
+
+- Update landing page for non-logged users ([#2681](https://github.com/SwissDataScienceCenter/renku-ui/issues/2681), [#2741](https://github.com/SwissDataScienceCenter/renku-ui/issues/2741)).
+
+### Bug Fixes
+
+- Use the migrations endpoint corretly -- we were accidentally routing older projects the wrong backend version ([#2766](https://github.com/SwissDataScienceCenter/renku-ui/issues/2766)).
+- Use the "dev" label propertly on the footer in the Renku version section ([#2776](https://github.com/SwissDataScienceCenter/renku-ui/issues/2776)).
+
 ## [3.11.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.10.0...3.11.0) (2023-08-22)
 
 ### Features
