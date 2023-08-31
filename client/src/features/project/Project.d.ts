@@ -322,7 +322,7 @@ export interface ProjectConfigSection {
   };
 }
 
-export interface UpdateDescriptionParams {
+export interface UpdateDescriptionParams extends CoreVersionUrl {
   description: string;
   gitUrl: string;
   projectId: number;

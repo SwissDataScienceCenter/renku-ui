@@ -26,17 +26,22 @@ import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
 import { useUpdateDescriptionMutation } from "../projectCoreApi";
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { SettingRequiresKg } from "./ProjectSettingsUtils";
-import { CoreErrorContent } from "../../../utils/types/coreService.types";
+import {
+  CoreErrorContent,
+  CoreVersionUrl,
+} from "../../../utils/types/coreService.types";
 
-interface ProjectSettingsDescriptionProps {
+interface ProjectSettingsDescriptionProps extends CoreVersionUrl {
   gitUrl: string;
   isMaintainer: boolean;
   projectFullPath: string;
   projectId: number;
 }
 export function ProjectSettingsDescription({
+  apiVersion,
   gitUrl,
   isMaintainer,
+  metadataVersion,
   projectFullPath,
   projectId,
 }: ProjectSettingsDescriptionProps) {
@@ -57,11 +62,20 @@ export function ProjectSettingsDescription({
     useUpdateDescriptionMutation();
   const onSubmit = useCallback(() => {
     updateDescriptionMutation({
+      apiVersion,
       description,
       gitUrl,
+      metadataVersion,
       projectId,
     });
-  }, [description, gitUrl, projectId, updateDescriptionMutation]);
+  }, [
+    apiVersion,
+    description,
+    gitUrl,
+    metadataVersion,
+    projectId,
+    updateDescriptionMutation,
+  ]);
 
   const setDescriptionAndReset = (newDescription: string) => {
     setDescription(newDescription);

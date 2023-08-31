@@ -318,7 +318,11 @@ export const projectCoreApi = createApi({
         return {
           body: { description: data.description, git_url: data.gitUrl },
           method: "POST",
-          url: `/project.edit`,
+          url: versionedPathForEndpoint({
+            endpoint: "project.edit",
+            metadataVersion: data.metadataVersion,
+            apiVersion: data.apiVersion,
+          }),
           validateStatus: (response, body) => {
             return response.status < 400 && !body.error?.code;
           },
