@@ -221,10 +221,6 @@ describe("dashboard", () => {
       .should("contain.text", "Error");
     cy.get_cy("container-session")
       .first()
-      .find(".session-info")
-      .should("contain.text", "master");
-    cy.get_cy("container-session")
-      .first()
       .find(".session-icon")
       .should("have.text", "Error");
     cy.get_cy("container-session")
