@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState } from "react";
 import {
   faExternalLinkAlt,
   faFileAlt,
@@ -25,7 +24,10 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import {
@@ -45,7 +47,10 @@ import { SshDropdown } from "../../../components/ssh/ssh";
 import { User } from "../../../model/RenkuModels";
 import { NotebooksHelper } from "../../../notebooks";
 import { NotebookAnnotations } from "../../../notebooks/components/session.types";
+import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
+import { NotificationsManager } from "../../../notifications/notifications.types";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
+import AppContext from "../../../utils/context/appContext";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
 import {
@@ -157,6 +162,8 @@ interface SessionActionsProps {
 function SessionActions({ className, session }: SessionActionsProps) {
   const history = useHistory();
 
+  const { notifications } = useContext(AppContext);
+
   const logged = useSelector<RootStateOrAny, User["logged"]>(
     (state) => state.stateModel.user.logged
   );
@@ -181,8 +188,10 @@ function SessionActions({ className, session }: SessionActionsProps) {
 
   // Handle resuming session
   const [isResuming, setIsResuming] = useState(false);
-  const [resumeSession, { isSuccess: isSuccessResumeSession }] =
-    usePatchSessionMutation();
+  const [
+    resumeSession,
+    { isSuccess: isSuccessResumeSession, error: errorResumeSession },
+  ] = usePatchSessionMutation();
   const onResumeSession = useCallback(() => {
     resumeSession({ sessionName: session.name, state: "running" });
     setIsResuming(true);
@@ -202,11 +211,23 @@ function SessionActions({ className, session }: SessionActionsProps) {
     isWaitingForResumedSession,
     showSessionUrl,
   ]);
+  useEffect(() => {
+    if (errorResumeSession) {
+      addErrorNotification({
+        error: errorResumeSession,
+        notifications: notifications as NotificationsManager,
+        title: "Unable to resume the session",
+      });
+      setIsResuming(false);
+    }
+  }, [errorResumeSession, notifications]);
 
   // Handle hibernating session
   const [isHibernating, setIsHibernating] = useState(false);
-  const [hibernateSession, { isSuccess: isSuccessHibernateSession }] =
-    usePatchSessionMutation();
+  const [
+    hibernateSession,
+    { isSuccess: isSuccessHibernateSession, error: errorHibernateSession },
+  ] = usePatchSessionMutation();
   const onHibernateSession = useCallback(() => {
     hibernateSession({ sessionName: session.name, state: "hibernated" });
     setIsHibernating(true);
@@ -221,15 +242,35 @@ function SessionActions({ className, session }: SessionActionsProps) {
       setIsHibernating(false);
     }
   }, [isSuccessHibernateSession, isWaitingForHibernatedSession]);
+  useEffect(() => {
+    if (errorHibernateSession) {
+      addErrorNotification({
+        error: errorHibernateSession,
+        notifications: notifications as NotificationsManager,
+        title: "Unable to pause the session",
+      });
+      setIsHibernating(false);
+    }
+  }, [errorHibernateSession, notifications]);
 
   // Handle deleting session
-  const [stopSession] = useStopSessionMutation();
+  const [stopSession, { error: errorStopSession }] = useStopSessionMutation();
   // Optimistically show a session as "stopping" when triggered from the UI
   const [isStopping, setIsStopping] = useState<boolean>(false);
   const onStopSession = useCallback(() => {
     stopSession({ serverName: session.name });
     setIsStopping(true);
   }, [session.name, stopSession]);
+  useEffect(() => {
+    if (errorStopSession) {
+      addErrorNotification({
+        error: errorStopSession,
+        notifications: notifications as NotificationsManager,
+        title: "Unable to delete the session",
+      });
+      setIsStopping(false);
+    }
+  }, [errorStopSession, notifications]);
   // Modal for confirming session deletion
   const [showModalStopSession, setShowModalStopSession] = useState(false);
   const toggleStopSession = useCallback(
@@ -507,5 +548,30 @@ function UnsavedWorkWarning({ annotations, status }: UnsavedWorkWarningProps) {
       {explanation}
       {")"} in this session
     </WarnAlert>
+  );
+}
+
+function addErrorNotification({
+  error,
+  notifications,
+  title,
+}: {
+  error: FetchBaseQueryError | SerializedError;
+  notifications: NotificationsManager;
+  title: string;
+}) {
+  const message =
+    "message" in error && error.message != null
+      ? error.message
+      : "error" in error && error.error != null
+      ? error.error
+      : "Unknown error";
+  notifications.addError(
+    NOTIFICATION_TOPICS.SESSION_START,
+    title,
+    undefined,
+    undefined,
+    undefined,
+    `Error message: "${message}"`
   );
 }
