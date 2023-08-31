@@ -88,4 +88,11 @@ else
   echo "privacy-statement.md created in ${NGINX_PATH}"
 fi
 
+# Deploy Storybook if the directory exists
+if [ -d "/app/storybook-static" ]; then
+    echo "Deploying Storybook 📚..."
+    cp -r /app/storybook-static/* "${NGINX_PATH}/storybook/"
+    echo "Storybook deployed successfully."
+fi
+
 exec -- "$@"
