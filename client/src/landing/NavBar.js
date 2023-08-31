@@ -545,9 +545,9 @@ function FooterNavbar({ location, params }) {
   const displayVersion =
     taggedVersion == null
       ? "unknown"
-      : isDevVersion == null
-      ? taggedVersion
-      : `${taggedVersion} (dev)`;
+      : isDevVersion
+      ? `${taggedVersion} (dev)`
+      : taggedVersion;
 
   const footer = (
     <footer className="footer">
