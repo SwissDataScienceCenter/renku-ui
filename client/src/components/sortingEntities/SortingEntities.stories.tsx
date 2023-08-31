@@ -23,7 +23,7 @@ import SortingEntities, {
 } from "./SortingEntities";
 
 export default {
-  title: "components/SortingEntities",
+  title: "components/Search/SortingEntities",
   component: SortingEntities,
   argTypes: {},
 };
