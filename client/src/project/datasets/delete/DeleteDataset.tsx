@@ -35,6 +35,7 @@ import { useDeleteDatasetMutation } from "../../../features/datasets/datasetsCor
 import {
   CoreErrorContent,
   CoreErrorResponse,
+  CoreVersionUrl,
 } from "../../../utils/types/coreService.types";
 import { Url } from "../../../utils/helpers/url";
 
@@ -138,20 +139,7 @@ export type DeleteDatasetSuccessResponse = {
   };
 };
 
-type DeleteDatasetResponse = {
-  data: DeleteDatasetErrorResponse | DeleteDatasetSuccessResponse;
-};
-
-type DatasetDeleteClient = {
-  deleteDataset: (
-    projectUrl: string,
-    datasetName: string,
-    versionUrl: string
-  ) => Promise<DeleteDatasetResponse>;
-};
-
-export interface DeleteDatasetProps {
-  client: DatasetDeleteClient;
+export interface DeleteDatasetProps extends CoreVersionUrl {
   dataset: DatasetCore;
   history: ReturnType<typeof useHistory>;
   externalUrl: string;
@@ -159,7 +147,6 @@ export interface DeleteDatasetProps {
   modalOpen: boolean;
   projectPathWithNamespace: string;
   setModalOpen: (modalOpen: boolean) => void;
-  versionUrl: string;
 }
 
 function DeleteDataset(props: DeleteDatasetProps) {
@@ -205,9 +192,10 @@ function DeleteDataset(props: DeleteDatasetProps) {
     setServerErrors(undefined);
     setSubmitLoaderText(undefined);
     deleteDataset({
+      apiVersion: props.apiVersion,
       gitUrl: props.externalUrl,
+      metadataVersion: props.metadataVersion,
       name: props.dataset.name,
-      versionUrl: props.versionUrl,
     });
   };
 

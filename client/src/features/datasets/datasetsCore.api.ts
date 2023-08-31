@@ -17,7 +17,7 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { getCoreVersionedUrl } from "../../utils/helpers/url/versionedUrls";
+import { versionedPathForEndpoint } from "../../utils/helpers/url/versionedUrls";
 import {
   AddFiles,
   AddFilesParams,
@@ -36,12 +36,15 @@ export const datasetsCoreApi = createApi({
   tagTypes: ["datasets"],
   endpoints: (builder) => ({
     addFiles: builder.mutation<AddFiles, AddFilesParams>({
-      query: ({ branch, files, gitUrl, name, versionUrl }) => {
-        const url = getCoreVersionedUrl("datasets.add", versionUrl);
+      query: ({ apiVersion, branch, files, gitUrl, metadataVersion, name }) => {
         return {
           body: { branch, files, git_url: gitUrl, name },
           method: "POST",
-          url,
+          url: versionedPathForEndpoint({
+            endpoint: "datasets.add",
+            metadataVersion,
+            apiVersion,
+          }),
           validateStatus: (response, body) => {
             return response.status < 400 && !body.error?.code;
           },
@@ -57,12 +60,16 @@ export const datasetsCoreApi = createApi({
       },
     }),
     deleteDataset: builder.mutation<DeleteDataset, DeleteDatasetParams>({
-      query: ({ gitUrl, name, versionUrl }) => {
+      query: ({ apiVersion, gitUrl, metadataVersion, name }) => {
         const body = { git_url: gitUrl, name };
         return {
           body,
           method: "POST",
-          url: getCoreVersionedUrl("datasets.remove", versionUrl),
+          url: versionedPathForEndpoint({
+            endpoint: "datasets.remove",
+            metadataVersion,
+            apiVersion,
+          }),
           validateStatus: (response, body) =>
             response.status >= 200 && response.status < 300 && !body.error,
         };
@@ -77,9 +84,15 @@ export const datasetsCoreApi = createApi({
     }),
     // ? This includes both "create" and "edit" operations
     postDataset: builder.mutation<PostDataset, PostDatasetParams>({
-      query: ({ branch, dataset, edit, gitUrl, versionUrl }) => {
+      query: ({
+        apiVersion,
+        branch,
+        dataset,
+        edit,
+        gitUrl,
+        metadataVersion,
+      }) => {
         const targetApi = edit ? "datasets.edit" : "datasets.create";
-        const url = getCoreVersionedUrl(targetApi, versionUrl);
         // files must be added after the dataset is created
         const groomedDataset = { ...dataset };
         if ("files" in groomedDataset) delete groomedDataset.files;
@@ -88,7 +101,11 @@ export const datasetsCoreApi = createApi({
         return {
           body: { ...groomedDataset, branch, git_url: gitUrl },
           method: "POST",
-          url,
+          url: versionedPathForEndpoint({
+            endpoint: targetApi,
+            metadataVersion,
+            apiVersion,
+          }),
           validateStatus: (response, body) => {
             return response.status < 400 && !body.error?.code;
           },
