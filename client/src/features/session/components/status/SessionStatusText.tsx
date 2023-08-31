@@ -16,12 +16,14 @@
  * limitations under the License.
  */
 
-import { useRef } from "react";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Duration } from "luxon";
+import { useRef } from "react";
 import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
 import { TimeCaption } from "../../../../components/TimeCaption";
 import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
+import { ensureDateTime } from "../../../../utils/helpers/DateTimeUtils";
 import { SessionStatusState } from "../../sessions.types";
 
 interface SessionStatusTextProps {
@@ -40,6 +42,22 @@ export default function SessionStatusText({
   );
   const hibernationTimestamp =
     status === "hibernated" ? annotations["hibernation-date"] ?? "" : null;
+  const hibernationDateTime = hibernationTimestamp
+    ? ensureDateTime(hibernationTimestamp)
+    : null;
+
+  const hibernatedSecondsThreshold =
+    status === "hibernated"
+      ? parseInt(annotations?.hibernatedSecondsThreshold ?? "", 10)
+      : null;
+  const hibernationThresholdDuration =
+    !hibernatedSecondsThreshold || isNaN(hibernatedSecondsThreshold)
+      ? Duration.fromISO("")
+      : Duration.fromObject({ seconds: hibernatedSecondsThreshold });
+  const hibernationCullTimestamp =
+    hibernationDateTime && hibernationThresholdDuration
+      ? hibernationDateTime.plus(hibernationThresholdDuration)
+      : null;
 
   return status === "running" ? (
     <>Running, created {startTimeText}</>
@@ -47,6 +65,15 @@ export default function SessionStatusText({
     <>Starting, created {startTimeText}</>
   ) : status === "stopping" ? (
     <>Deleting...</>
+  ) : status === "hibernated" && hibernationCullTimestamp ? (
+    <>
+      Paused, will be deleted{" "}
+      <TimeCaption
+        datetime={hibernationCullTimestamp}
+        enableTooltip
+        noCaption
+      />
+    </>
   ) : status === "hibernated" && hibernationTimestamp ? (
     <>
       Paused{" "}
