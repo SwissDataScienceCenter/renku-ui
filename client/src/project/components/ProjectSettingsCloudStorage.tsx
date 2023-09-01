@@ -210,24 +210,52 @@ const configPlaceHolder =
   "[example]\n\
 type = s3\n\
 provider = AWS\n\
-access_key_id = ACCESS_KEY_ID\n\
-secret_access_key = SECRET_ACCESS_KEY\n\
 region = us-east-1";
 
 function AdvancedAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
+  const projectId = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]["id"]
+  >((state) => state.stateModel.project.metadata.id);
+
+  const [addCloudStorageForProject, result] =
+    useAddCloudStorageForProjectMutation();
+
   const {
     control,
     formState: { errors },
     handleSubmit,
-  } = useForm({
+  } = useForm<AdvancedAddCloudStorageForm>({
     defaultValues: {
-      name: "",
       config: "",
+      name: "",
+      private: false,
+      source_path: "",
     },
   });
-  const onSubmit = (data: unknown) => {
-    console.log(data);
-  };
+  const onSubmit = useCallback(
+    (data: AdvancedAddCloudStorageForm) => {
+      console.log(data);
+
+      const configuration = parseConfigContent(data.config);
+
+      addCloudStorageForProject({
+        configuration,
+        name: data.name,
+        private: data.private,
+        project_id: `${projectId}`,
+        source_path: data.source_path,
+        target_path: data.name,
+      });
+    },
+    [addCloudStorageForProject, projectId]
+  );
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      toggle();
+    }
+  }, [result.isSuccess, toggle]);
 
   return (
     <Form
@@ -261,6 +289,61 @@ function AdvancedAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
               rules={{ required: true }}
             />
             <div className="invalid-feedback">Please provide a name</div>
+          </div>
+
+          <div className="mb-3">
+            <Controller
+              control={control}
+              name="private"
+              render={({ field }) => (
+                <Input
+                  aria-describedby="addCloudStoragePrivateHelp"
+                  className="form-check-input"
+                  id="addCloudStoragePrivate"
+                  type="checkbox"
+                  checked={field.value}
+                  innerRef={field.ref}
+                  onBlur={field.onBlur}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <Label
+              className={cx("form-check-label", "ms-2")}
+              for="addCloudStoragePrivate"
+            >
+              Requires credentials
+            </Label>
+            <FormText id="addCloudStoragePrivateHelp" tag="div">
+              Check this box if this cloud storage requires credentials to be
+              used.
+            </FormText>
+          </div>
+
+          <div className="mb-3">
+            <Label className="form-label" for="addCloudStorageSourcePath">
+              Source Path
+            </Label>
+            <Controller
+              control={control}
+              name="source_path"
+              render={({ field }) => (
+                <Input
+                  className={cx(
+                    "form-control",
+                    errors.source_path && "is-invalid"
+                  )}
+                  id="addCloudStorageSourcePath"
+                  placeholder="bucket/folder"
+                  type="text"
+                  {...field}
+                />
+              )}
+              rules={{ required: true }}
+            />
+            <div className="invalid-feedback">
+              Please provide a valid source path
+            </div>
           </div>
 
           <div className="mb-3">
@@ -305,13 +388,21 @@ function AdvancedAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
   );
 }
 
+interface AdvancedAddCloudStorageForm {
+  config: string;
+  name: string;
+  private: boolean;
+  source_path: string;
+}
+
 function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
   const projectId = useSelector<
     RootStateOrAny,
     StateModelProject["metadata"]["id"]
   >((state) => state.stateModel.project.metadata.id);
 
-  const [addCloudStorageForProject] = useAddCloudStorageForProjectMutation();
+  const [addCloudStorageForProject, result] =
+    useAddCloudStorageForProjectMutation();
 
   const {
     control,
@@ -337,6 +428,12 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
     },
     [addCloudStorageForProject, projectId]
   );
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      toggle();
+    }
+  }, [result.isSuccess, toggle]);
 
   return (
     <Form
@@ -425,7 +522,7 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
         <Button className="btn-outline-rk-green" onClick={toggle}>
           Close
         </Button>
-        <Button type="submit">Next</Button>
+        <Button type="submit">Add Storage</Button>
       </ModalFooter>
     </Form>
   );
