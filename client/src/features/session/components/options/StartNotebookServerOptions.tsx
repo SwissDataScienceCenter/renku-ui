@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import { useCallback } from "react";
 import cx from "classnames";
+import { useCallback } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import {
   Badge,
@@ -30,6 +30,7 @@ import {
   Label,
   UncontrolledDropdown,
 } from "reactstrap";
+import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { ProjectConfig } from "../../../project/Project";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
@@ -69,13 +70,14 @@ export const StartNotebookServerOptions = () => {
   });
   const { computed: coreSupportComputed, versionUrl } = coreSupport;
   const commit = useStartSessionOptionsSelector(({ commit }) => commit);
-  const { isLoading: projectConfigIsLoading } = usePatchedProjectConfig({
-    commit,
-    gitLabProjectId: gitLabProjectId ?? 0,
-    projectRepositoryUrl,
-    versionUrl,
-    skip: !coreSupportComputed || !commit,
-  });
+  const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
+    usePatchedProjectConfig({
+      commit,
+      gitLabProjectId: gitLabProjectId ?? 0,
+      projectRepositoryUrl,
+      versionUrl,
+      skip: !coreSupportComputed || !commit,
+    });
 
   if (
     serverOptionsIsLoading ||
@@ -97,6 +99,16 @@ export const StartNotebookServerOptions = () => {
         </div>
         <Loader />
       </div>
+    );
+  }
+
+  if (errorProjectConfig) {
+    return (
+      <ErrorAlert dismissible={false}>
+        <h3 className={cx("fs-6", "fw-bold")}>
+          Error while loading project configuration
+        </h3>
+      </ErrorAlert>
     );
   }
 

@@ -129,14 +129,17 @@ function useAutostartSessionOptions(): void {
     branch: defaultBranch ?? undefined,
   });
   const { computed: coreSupportComputed, versionUrl } = coreSupport;
-  const { data: projectConfig, isFetching: projectConfigIsFetching } =
-    usePatchedProjectConfig({
-      commit,
-      gitLabProjectId: gitLabProjectId ?? 0,
-      projectRepositoryUrl,
-      versionUrl,
-      skip: !coreSupportComputed || !commit,
-    });
+  const {
+    data: projectConfig,
+    error: errorProjectConfig,
+    isFetching: projectConfigIsFetching,
+  } = usePatchedProjectConfig({
+    commit,
+    gitLabProjectId: gitLabProjectId ?? 0,
+    projectRepositoryUrl,
+    versionUrl,
+    skip: !coreSupportComputed || !commit,
+  });
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =
     useGetResourcePoolsQuery(
       {
@@ -173,6 +176,18 @@ function useAutostartSessionOptions(): void {
   const [startSession] = useStartSessionMutation({
     fixedCacheKey: "start-session",
   });
+
+  // Handle errors
+  useEffect(() => {
+    if (errorProjectConfig) {
+      dispatch(
+        setError({
+          error: "backend-error",
+          errorMessage: "Error while loading project configuration",
+        })
+      );
+    }
+  }, [dispatch, errorProjectConfig]);
 
   // Handle starting steps
   useEffect(() => {
