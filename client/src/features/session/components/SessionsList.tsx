@@ -477,11 +477,11 @@ function UnsavedWorkWarning({
     return null;
   }
 
-  const hasHibernationInfo = !!annotations["hibernation-date"];
+  const hasHibernationInfo = !!annotations["hibernationDate"];
   const hasUnsavedWork =
     !hasHibernationInfo ||
-    annotations["hibernation-dirty"] ||
-    !annotations["hibernation-synchronized"];
+    annotations["hibernationDirty"] ||
+    !annotations["hibernationSynchronized"];
 
   if (!hasUnsavedWork) {
     return null;
@@ -489,10 +489,9 @@ function UnsavedWorkWarning({
 
   const explanation = !hasHibernationInfo
     ? "uncommitted files and/or unsynced commits"
-    : annotations["hibernation-dirty"] &&
-      !annotations["hibernation-synchronized"]
+    : annotations["hibernationDirty"] && !annotations["hibernationSynchronized"]
     ? "uncommitted files and unsynced commits"
-    : annotations["hibernation-dirty"]
+    : annotations["hibernationDirty"]
     ? "uncommitted files"
     : "unsynced commits";
 
