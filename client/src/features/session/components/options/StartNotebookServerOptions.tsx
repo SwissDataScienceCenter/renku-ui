@@ -68,7 +68,11 @@ export const StartNotebookServerOptions = () => {
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const {
+    backendAvailable,
+    computed: coreSupportComputed,
+    versionUrl,
+  } = coreSupport;
   const commit = useStartSessionOptionsSelector(({ commit }) => commit);
   const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
     usePatchedProjectConfig({
@@ -76,7 +80,7 @@ export const StartNotebookServerOptions = () => {
       gitLabProjectId: gitLabProjectId ?? 0,
       projectRepositoryUrl,
       versionUrl,
-      skip: !coreSupportComputed || !commit,
+      skip: !backendAvailable || !coreSupportComputed || !commit,
     });
 
   if (
@@ -102,11 +106,15 @@ export const StartNotebookServerOptions = () => {
     );
   }
 
-  if (errorProjectConfig) {
+  if (!backendAvailable || errorProjectConfig) {
     return (
       <ErrorAlert dismissible={false}>
         <h3 className={cx("fs-6", "fw-bold")}>
-          Error while loading project configuration
+          {!backendAvailable ? (
+            <>Error: This project is not supported</>
+          ) : (
+            <>Error while loading project configuration</>
+          )}
         </h3>
       </ErrorAlert>
     );

@@ -128,7 +128,11 @@ function useAutostartSessionOptions(): void {
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const {
+    backendAvailable,
+    computed: coreSupportComputed,
+    versionUrl,
+  } = coreSupport;
   const {
     data: projectConfig,
     error: errorProjectConfig,
@@ -138,7 +142,7 @@ function useAutostartSessionOptions(): void {
     gitLabProjectId: gitLabProjectId ?? 0,
     projectRepositoryUrl,
     versionUrl,
-    skip: !coreSupportComputed || !commit,
+    skip: !backendAvailable || !coreSupportComputed || !commit,
   });
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =
     useGetResourcePoolsQuery(
@@ -178,6 +182,16 @@ function useAutostartSessionOptions(): void {
   });
 
   // Handle errors
+  useEffect(() => {
+    if (!backendAvailable) {
+      dispatch(
+        setError({
+          error: "backend-error",
+          errorMessage: "Error: This project is not supported",
+        })
+      );
+    }
+  }, [backendAvailable, dispatch]);
   useEffect(() => {
     if (errorProjectConfig) {
       dispatch(
