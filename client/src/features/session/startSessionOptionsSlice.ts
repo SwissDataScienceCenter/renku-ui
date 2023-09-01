@@ -30,6 +30,7 @@ import {
 const initialState: StartSessionOptions = {
   branch: "",
   cloudStorage: [],
+  cloudStorageV2: [],
   commit: "",
   defaultUrl: "",
   dockerImageBuildStatus: "unknown",
