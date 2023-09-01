@@ -80,6 +80,7 @@ import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
 import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
 import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
 import { Loader } from "../../../components/Loader";
+import SessionCloudStorageOptionV2 from "./options/SessionCloudStorageOptionV2";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -606,7 +607,8 @@ function StartNewSessionOptions() {
       <SessionCommitOption />
       <StartNotebookServerOptions />
       <SessionEnvironmentVariables />
-      <SessionCloudStorageOption />
+      {/* <SessionCloudStorageOption /> */}
+      <SessionCloudStorageOptionV2 />
     </>
   );
 }

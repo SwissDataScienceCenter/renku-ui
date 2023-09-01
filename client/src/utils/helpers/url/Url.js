@@ -384,6 +384,15 @@ const Url = {
             "/projects/group/subgroup/path/settings",
           ]
         ),
+        storage: new UrlRule(
+          projectPageUrlBuilder("/settings/storage"),
+          ["namespace", "path"],
+          null,
+          [
+            "/projects/namespace/path/settings/storage",
+            "/projects/group/subgroup/path/settings/storage",
+          ]
+        ),
       },
       workflows: {
         base: new UrlRule(
