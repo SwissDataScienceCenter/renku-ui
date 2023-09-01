@@ -229,13 +229,15 @@ class APIClient {
   /**
    * Return a versioned endpoint url for the core service.
    * @param {string} endpoint
-   * @param {string or null} version
+   * @param {string or null} metadataVersion
    * @returns string
    */
-  versionedCoreUrl(endpoint, version) {
-    // TODO: read the coreApiVersion variable or override and insert it between the urlAddition and the endpoint
-    const urlAddition = version ? version : "";
-    return `${this.baseUrl}/renku${urlAddition}/${endpoint}`;
+  versionedCoreUrl(endpoint, metadataVersion) {
+    const path = this.coreApiVersionedUrlHelper.urlForEndpoint(
+      endpoint,
+      metadataVersion
+    );
+    return `${this.baseUrl}/renku${path}`;
   }
 
   /**
