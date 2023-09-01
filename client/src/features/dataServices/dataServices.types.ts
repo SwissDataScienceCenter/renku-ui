@@ -63,6 +63,7 @@ export interface ResourcePoolsQueryParams {
 export interface CloudStorage {
   configuration: Record<string, string | undefined>;
   name: string;
+  private: boolean;
   project_id: string;
   source_path: string;
   storage_id: string;
@@ -81,6 +82,7 @@ export type AddCloudStorageForProjectParams =
 export interface AdvancedAddCloudStorageForProjectParams {
   configuration: Record<string, string | undefined>;
   name: string;
+  private: boolean;
   project_id: string;
   source_path: string;
   target_path: string;
@@ -88,6 +90,7 @@ export interface AdvancedAddCloudStorageForProjectParams {
 
 export interface SimpleAddCloudStorageForProjectParams {
   name: string;
+  private: boolean;
   project_id: string;
   storage_url: string;
   target_path: string;
@@ -96,6 +99,7 @@ export interface SimpleAddCloudStorageForProjectParams {
 export interface UpdateCloudStorageParams {
   configuration?: Record<string, string | null | undefined>;
   name?: string;
+  private?: boolean;
   project_id: string;
   storage_id: string;
   source_path?: string;

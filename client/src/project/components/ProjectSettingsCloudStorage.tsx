@@ -321,6 +321,7 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
     defaultValues: {
       name: "",
       endpointUrl: "",
+      private: false,
     },
   });
   const onSubmit = useCallback(
@@ -328,6 +329,7 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
       console.log(data);
       addCloudStorageForProject({
         name: data.name,
+        private: data.private,
         project_id: `${projectId}`,
         storage_url: data.endpointUrl,
         target_path: data.name,
@@ -388,6 +390,35 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
             />
             <div className="invalid-feedback">Please provide a valid URL</div>
           </div>
+
+          <div className="mb-3">
+            <Controller
+              control={control}
+              name="private"
+              render={({ field }) => (
+                <Input
+                  aria-describedby="addCloudStoragePrivateHelp"
+                  className="form-check-input"
+                  id="addCloudStoragePrivate"
+                  type="checkbox"
+                  checked={field.value}
+                  innerRef={field.ref}
+                  onBlur={field.onBlur}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <Label
+              className={cx("form-check-label", "ms-2")}
+              for="addCloudStoragePrivate"
+            >
+              Requires credentials
+            </Label>
+            <FormText id="addCloudStoragePrivateHelp" tag="div">
+              Check this box if this cloud storage requires credentials to be
+              used.
+            </FormText>
+          </div>
         </div>
       </ModalBody>
       <ModalFooter>
@@ -403,6 +434,7 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
 interface SimpleAddCloudStorageForm {
   name: string;
   endpointUrl: string;
+  private: boolean;
 }
 
 interface CloudStorageListProps {
@@ -806,6 +838,12 @@ function CloudStorageDetails({
           <div>
             <code>{target_path}</code>
           </div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>Requires credentials</small>
+          </div>
+          <div>{storage.private ? "Yes" : "No"}</div>
         </div>
         <div className="mt-2">
           <div className="text-rk-text-light">
