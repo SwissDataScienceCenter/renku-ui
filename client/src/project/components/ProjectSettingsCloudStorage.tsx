@@ -603,6 +603,7 @@ function EditCloudStorage({
     defaultValues: {
       configContent,
       name,
+      private: storage.private,
       source_path,
       target_path,
     },
@@ -620,6 +621,8 @@ function EditCloudStorage({
         target_path !== data.target_path
           ? { target_path: data.target_path }
           : {};
+      const privateUpdate =
+        storage.private !== data.private ? { private: data.private } : {};
       const configUpdate =
         configContent !== data.configContent
           ? {
@@ -633,6 +636,7 @@ function EditCloudStorage({
         ...nameUpdate,
         ...sourcePathUpdate,
         ...targetPathUpdate,
+        ...privateUpdate,
         ...configUpdate,
       });
     },
@@ -641,6 +645,7 @@ function EditCloudStorage({
       name,
       projectId,
       source_path,
+      storage.private,
       storage_id,
       target_path,
       updateCloudStorage,
@@ -704,7 +709,60 @@ function EditCloudStorage({
             </div>
           </div>
 
-          {/* // TODO: edit `target_path` */}
+          <div className="mb-3">
+            <Label className="form-label" for="updateCloudStorageTargetPath">
+              Target Path
+            </Label>
+            <Controller
+              control={control}
+              name="target_path"
+              render={({ field }) => (
+                <Input
+                  className={cx(
+                    "form-control",
+                    errors.target_path && "is-invalid"
+                  )}
+                  id="updateCloudStorageTargetPath"
+                  placeholder="folder"
+                  type="text"
+                  {...field}
+                />
+              )}
+              rules={{ required: true }}
+            />
+            <div className="invalid-feedback">
+              Please provide a valid target path
+            </div>
+          </div>
+
+          <div className="mb-3">
+            <Controller
+              control={control}
+              name="private"
+              render={({ field }) => (
+                <Input
+                  aria-describedby="updateCloudStoragePrivateHelp"
+                  className="form-check-input"
+                  id="updateCloudStoragePrivate"
+                  type="checkbox"
+                  checked={field.value}
+                  innerRef={field.ref}
+                  onBlur={field.onBlur}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <Label
+              className={cx("form-check-label", "ms-2")}
+              for="updateCloudStoragePrivate"
+            >
+              Requires credentials
+            </Label>
+            <FormText id="updateCloudStoragePrivateHelp" tag="div">
+              Check this box if this cloud storage requires credentials to be
+              used.
+            </FormText>
+          </div>
 
           <div className="mb-3">
             <Label className="form-label" for="updateCloudStorageConfig">
@@ -729,7 +787,7 @@ function EditCloudStorage({
                   )}
                   id="updateCloudStorageConfig"
                   placeholder={configPlaceHolder}
-                  rows={10}
+                  rows={Object.keys(storage.configuration).length + 2}
                   {...field}
                 />
               )}
@@ -766,6 +824,7 @@ function EditCloudStorage({
 interface UpdateCloudStorageForm {
   configContent: string;
   name: string;
+  private: boolean;
   source_path: string;
   target_path: string;
 }
