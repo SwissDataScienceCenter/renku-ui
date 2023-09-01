@@ -25,7 +25,7 @@ import Fixtures from "../support/renkulab-fixtures";
 
 const config = {
   overrides: {
-    CORE_API_VERSION: {
+    CORE_API_VERSION_CONFIG: {
       coreApiVersion: "2.0",
       overrides: {
         "9": "1.0",

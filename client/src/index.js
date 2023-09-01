@@ -47,7 +47,7 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
     else params["PRIVACY_STATEMENT"] = privacy;
 
     // configure core api versioned url helper
-    const coreApiVersionConfig = params["CORE_API_VERSION"] ?? {
+    const coreApiVersionConfig = params["CORE_API_VERSION_CONFIG"] ?? {
       coreApiVersion: "/",
     };
     const coreApiVersionedUrlConfig =
