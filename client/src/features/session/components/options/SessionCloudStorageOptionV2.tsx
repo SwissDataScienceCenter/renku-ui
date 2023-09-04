@@ -51,6 +51,7 @@ import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
 import { SessionCloudStorageV2 } from "../../startSessionOptions.types";
 import {
   setCloudStorageV2,
+  updateCloudStorageV2Item,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
 
@@ -173,8 +174,12 @@ function CloudStorageList() {
                 </tr>
               </thead>
               <tbody className="align-middle">
-                {cloudStorageList.map((storage) => (
-                  <CloudStorageItem key={storage.name} storage={storage} />
+                {cloudStorageList.map((storage, index) => (
+                  <CloudStorageItem
+                    index={index}
+                    key={storage.name}
+                    storage={storage}
+                  />
                 ))}
               </tbody>
             </Table>
@@ -186,11 +191,23 @@ function CloudStorageList() {
 }
 
 interface CloudStorageItemProps {
+  index: number;
   storage: SessionCloudStorageV2;
 }
 
-function CloudStorageItem({ storage }: CloudStorageItemProps) {
+function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
   const { active, name, target_path } = storage;
+
+  const dispatch = useDispatch();
+
+  const onToggleActive = useCallback(() => {
+    dispatch(
+      updateCloudStorageV2Item({
+        index,
+        storage: { ...storage, active: !storage.active },
+      })
+    );
+  }, [dispatch, index, storage]);
 
   return (
     <tr>
@@ -199,14 +216,19 @@ function CloudStorageItem({ storage }: CloudStorageItemProps) {
         <code>{target_path}</code>
       </td>
       <td>
-        <Input className="form-check-input" type="checkbox" checked={active} />
+        <Input
+          className="form-check-input"
+          type="checkbox"
+          checked={active}
+          onChange={onToggleActive}
+        />
       </td>
       <td className="text-end">
         <span
           className={cx("d-inline-flex", "flex-row", "flex-no-wrap")}
           style={{ width: "max-content" }}
         >
-          <ConfigureCloudStorageButton storage={storage} />
+          <ConfigureCloudStorageButton index={index} storage={storage} />
         </span>
       </td>
     </tr>

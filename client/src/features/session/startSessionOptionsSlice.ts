@@ -153,6 +153,7 @@ export const {
   setSessionClass,
   setStorage,
   updateCloudStorageMount,
+  updateCloudStorageV2Item,
   updateEnvironmentVariable,
   reset,
 } = startSessionOptionsSlice.actions;
