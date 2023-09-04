@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { EntityType } from "./Entities";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { People, Person } from "../../utils/ts-wrappers";

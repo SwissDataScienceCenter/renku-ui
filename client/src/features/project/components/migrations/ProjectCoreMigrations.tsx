@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   faArrowAltCircleUp,
   faCheckCircle,
@@ -32,7 +32,7 @@ import { RtkOrCoreError } from "../../../../components/errors/RtkErrorAlert";
 import { Docs } from "../../../../utils/constants/Docs";
 import { TemplateSourceRenku } from "../../../../utils/constants/Migrations";
 import { RenkuRepositories } from "../../../../utils/constants/Repositories";
-import { CoreErrorContent } from "../../../../utils/definitions";
+import { CoreErrorContent } from "../../../../utils/types/coreService.types";
 import {
   CoreSectionError,
   MigrationStatus,

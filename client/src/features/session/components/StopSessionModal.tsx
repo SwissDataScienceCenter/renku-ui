@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
@@ -35,7 +35,7 @@ import { InfoAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/RenkuModels";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
-import { NotificationsInterface } from "../../../notifications/notifications.types";
+import { NotificationsManager } from "../../../notifications/notifications.types";
 import AppContext from "../../../utils/context/appContext";
 import { Url } from "../../../utils/helpers/url";
 import {
@@ -44,15 +44,22 @@ import {
 } from "../sessions.api";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
 import styles from "./SessionModals.module.scss";
+import { Session } from "../sessions.types";
+import { NotebooksHelper } from "../../../notebooks";
+import { NotebookAnnotations } from "../../../notebooks/components/session.types";
+import { toHumanDuration } from "../../../utils/helpers/DurationUtils";
+import { Duration } from "luxon";
 
 interface StopSessionModalProps {
   isOpen: boolean;
+  session: Session | undefined;
   sessionName: string;
   toggleModal: () => void;
 }
 
 export default function StopSessionModal({
   isOpen,
+  session,
   sessionName,
   toggleModal,
 }: StopSessionModalProps) {
@@ -64,6 +71,7 @@ export default function StopSessionModal({
     return (
       <AnonymousStopSessionModal
         isOpen={isOpen}
+        session={session}
         sessionName={sessionName}
         toggleModal={toggleModal}
       />
@@ -73,6 +81,7 @@ export default function StopSessionModal({
   return (
     <HibernateSessionModal
       isOpen={isOpen}
+      session={session}
       sessionName={sessionName}
       toggleModal={toggleModal}
     />
@@ -113,7 +122,7 @@ function AnonymousStopSessionModal({
     if (error != null) {
       addErrorNotification({
         error,
-        notifications: notifications as NotificationsInterface,
+        notifications: notifications as NotificationsManager,
       });
     }
   }, [error, notifications]);
@@ -163,6 +172,7 @@ function AnonymousStopSessionModal({
 
 function HibernateSessionModal({
   isOpen,
+  session,
   sessionName,
   toggleModal,
 }: StopSessionModalProps) {
@@ -195,7 +205,7 @@ function HibernateSessionModal({
     if (error != null) {
       addErrorNotification({
         error,
-        notifications: notifications as NotificationsInterface,
+        notifications: notifications as NotificationsManager,
       });
     }
   }, [error, notifications]);
@@ -203,6 +213,22 @@ function HibernateSessionModal({
   if (isSuccess && !isWaiting) {
     return <Redirect push to={sessionsListUrl} />;
   }
+
+  const annotations = session
+    ? (NotebooksHelper.cleanAnnotations(
+        session.annotations
+      ) as NotebookAnnotations)
+    : null;
+  const hibernatedSecondsThreshold = parseInt(
+    annotations?.hibernatedSecondsThreshold ?? "",
+    10
+  );
+  const duration = isNaN(hibernatedSecondsThreshold)
+    ? Duration.fromISO("")
+    : Duration.fromObject({ seconds: hibernatedSecondsThreshold });
+  const hibernationThreshold = duration.isValid
+    ? toHumanDuration({ duration })
+    : "a period";
 
   return (
     <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
@@ -215,10 +241,12 @@ function HibernateSessionModal({
               the session (new and edited files) will be preserved while the
               session is paused.
             </p>
-            <InfoAlert dismissible={false} timeout={0}>
-              Please note that paused session are deleted after 30 days of
-              inactivity.
-            </InfoAlert>
+            {hibernatedSecondsThreshold > 0 && (
+              <InfoAlert dismissible={false} timeout={0}>
+                Please note that paused session are deleted after{" "}
+                {hibernationThreshold} of inactivity.
+              </InfoAlert>
+            )}
             <div className="d-flex justify-content-end">
               <Button
                 className={cx("float-right", "mt-1", "btn-outline-rk-green")}
@@ -230,7 +258,7 @@ function HibernateSessionModal({
               <Button
                 className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
                 data-cy="pause-session-modal-button"
-                disabled={isStopping}
+                disabled={isStopping || session?.status.state === "starting"}
                 type="submit"
                 onClick={onHibernateSession}
               >
@@ -256,7 +284,7 @@ function addErrorNotification({
   notifications,
 }: {
   error: FetchBaseQueryError | SerializedError;
-  notifications: NotificationsInterface;
+  notifications: NotificationsManager;
 }) {
   const message =
     "message" in error && error.message != null

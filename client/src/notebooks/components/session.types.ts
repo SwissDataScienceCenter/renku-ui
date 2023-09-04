@@ -29,11 +29,12 @@ export interface NotebookAnnotations {
   repository: string;
 
   hibernation: Record<string, unknown>;
-  "hibernation-branch": string;
-  "hibernation-commit-sha": string;
-  "hibernation-date": string;
-  "hibernation-dirty": boolean;
-  "hibernation-synchronized": boolean;
+  hibernationBranch: string;
+  hibernationCommitSha: string;
+  hibernationDate: string;
+  hibernationDirty: boolean;
+  hibernationSynchronized: boolean;
+  hibernatedSecondsThreshold: string;
 
   [key: string]: unknown;
 }

@@ -23,7 +23,6 @@
  *  Project settings presentational components.
  */
 
-import React from "react";
 import { Col, Nav, NavItem, Row } from "reactstrap";
 import { InfoAlert } from "../../components/Alert";
 import { RenkuNavLink } from "../../components/RenkuNavLink";

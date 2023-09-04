@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+
 import { FormGeneratorCreatorsInput } from "./CreatorsInput";
 import type { CreatorInputProps } from "./CreatorsInput";
-import { Story } from "@storybook/react";
+import { StoryFn as Story } from "@storybook/react";
 
 export default {
-  title: "components/CreatorsInput",
+  title: "Components/Forms/FormGeneratorCreatorsInput",
   component: FormGeneratorCreatorsInput,
 };
 

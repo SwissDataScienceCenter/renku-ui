@@ -20,7 +20,6 @@ import { useInactiveProjectSelector } from "../../inactiveKgProjects/inactiveKgP
 import useGetInactiveProjects from "../../../utils/customHooks/UseGetInactiveProjects";
 import { WarnAlert } from "../../../components/Alert";
 import { Link } from "react-router-dom";
-import React from "react";
 
 export function ProjectsInactiveKGWarning() {
   const user = useSelector((state: RootStateOrAny) => state.stateModel.user);

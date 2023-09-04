@@ -22,7 +22,7 @@
  *  FormLabels.tsx
  *  FormLabels components.
  */
-import React from "react";
+
 import { FormText, FormFeedback, Label } from "reactstrap";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

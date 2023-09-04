@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from "react";
+import { useContext } from "react";
 import cx from "classnames";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Col, Row } from "reactstrap";

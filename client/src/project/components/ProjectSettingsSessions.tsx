@@ -16,13 +16,7 @@
  * limitations under the License.
  */
 
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   faCheck,
   faEdit,
@@ -172,7 +166,7 @@ export default function ProjectSettingsSessions() {
   }
 
   const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
-  if (!backendAvailable) {
+  if (coreSupportComputed && !backendAvailable) {
     const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace,
       path,

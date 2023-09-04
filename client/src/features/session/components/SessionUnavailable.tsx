@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";

@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from "react";
 import cx from "classnames";
+import { useCallback } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import {
   Badge,
@@ -30,6 +30,7 @@ import {
   Label,
   UncontrolledDropdown,
 } from "reactstrap";
+import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import { ProjectConfig } from "../../../project/Project";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
@@ -67,15 +68,20 @@ export const StartNotebookServerOptions = () => {
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
-  const { isLoading: projectConfigIsLoading } = usePatchedProjectConfig({
-    commit,
-    gitLabProjectId: gitLabProjectId ?? 0,
-    projectRepositoryUrl,
+  const {
+    backendAvailable,
+    computed: coreSupportComputed,
     versionUrl,
-    skip: !coreSupportComputed || !commit,
-  });
+  } = coreSupport;
+  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
+    usePatchedProjectConfig({
+      commit,
+      gitLabProjectId: gitLabProjectId ?? 0,
+      projectRepositoryUrl,
+      versionUrl,
+      skip: !backendAvailable || !coreSupportComputed || !commit,
+    });
 
   if (
     serverOptionsIsLoading ||
@@ -97,6 +103,20 @@ export const StartNotebookServerOptions = () => {
         </div>
         <Loader />
       </div>
+    );
+  }
+
+  if (!backendAvailable || errorProjectConfig) {
+    return (
+      <ErrorAlert dismissible={false}>
+        <h3 className={cx("fs-6", "fw-bold")}>
+          {!backendAvailable ? (
+            <>Error: This project is not supported</>
+          ) : (
+            <>Error while loading project configuration</>
+          )}
+        </h3>
+      </ErrorAlert>
     );
   }
 

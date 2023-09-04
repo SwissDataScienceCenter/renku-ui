@@ -23,7 +23,6 @@
  *  Tests for project/list.
  */
 
-import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
 import TestRenderer, { act } from "react-test-renderer";

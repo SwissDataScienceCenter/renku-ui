@@ -105,7 +105,8 @@ export default function usePatchedProjectConfig({
 
   return {
     data: patchedData,
-    isError: getConfigResult.isError || getConfigFromRepositoryResult.error,
+    error: getConfigResult.error ?? getConfigFromRepositoryResult.error,
+    isError: getConfigResult.isError || getConfigFromRepositoryResult.isError,
     isFetching:
       getConfigResult.isFetching || getConfigFromRepositoryResult.isFetching,
     isLoading:

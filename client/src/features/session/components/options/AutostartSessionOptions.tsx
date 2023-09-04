@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { StatusStepProgressBar } from "../../../../components/progress/ProgressSteps";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
@@ -119,24 +119,31 @@ function useAutostartSessionOptions(): void {
   const { data: commits, isFetching: commitsIsFetching } =
     useGetRepositoryCommitsQuery(
       {
-        branch: currentBranch || defaultBranch,
+        branch: currentBranch,
         projectId: `${gitLabProjectId ?? 0}`,
       },
-      { skip: !gitLabProjectId }
+      { skip: !gitLabProjectId || !currentBranch }
     );
   const { coreSupport } = useCoreSupport({
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
-  const { data: projectConfig, isFetching: projectConfigIsFetching } =
-    usePatchedProjectConfig({
-      commit,
-      gitLabProjectId: gitLabProjectId ?? 0,
-      projectRepositoryUrl,
-      versionUrl,
-      skip: !coreSupportComputed || !commit,
-    });
+  const {
+    backendAvailable,
+    computed: coreSupportComputed,
+    versionUrl,
+  } = coreSupport;
+  const {
+    data: projectConfig,
+    error: errorProjectConfig,
+    isFetching: projectConfigIsFetching,
+  } = usePatchedProjectConfig({
+    commit,
+    gitLabProjectId: gitLabProjectId ?? 0,
+    projectRepositoryUrl,
+    versionUrl,
+    skip: !backendAvailable || !coreSupportComputed || !commit,
+  });
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =
     useGetResourcePoolsQuery(
       {
@@ -173,6 +180,28 @@ function useAutostartSessionOptions(): void {
   const [startSession] = useStartSessionMutation({
     fixedCacheKey: "start-session",
   });
+
+  // Handle errors
+  useEffect(() => {
+    if (coreSupportComputed && !backendAvailable) {
+      dispatch(
+        setError({
+          error: "backend-error",
+          errorMessage: "Error: This project is not supported",
+        })
+      );
+    }
+  }, [backendAvailable, dispatch]);
+  useEffect(() => {
+    if (errorProjectConfig) {
+      dispatch(
+        setError({
+          error: "backend-error",
+          errorMessage: "Error while loading project configuration",
+        })
+      );
+    }
+  }, [dispatch, errorProjectConfig]);
 
   // Handle starting steps
   useEffect(() => {
@@ -332,7 +361,7 @@ function useAutostartSessionOptions(): void {
     dispatch(setStarting(true));
     dispatch(
       updateStepStatus({
-        id: 5,
+        id: 6,
         status: StatusStepProgressBar.EXECUTING,
       })
     );

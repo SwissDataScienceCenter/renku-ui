@@ -23,7 +23,7 @@
  *  Presentational components for presenting images.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Button,
   ButtonDropdown,
@@ -120,10 +120,8 @@ function ImagePreview({
       />
     ) : null;
   const imageView = !isNewFileUploaded ? (
-    <div style={imageSize}>
-      <div className="d-flex justify-content-around card">
-        <div style={imageSize}>{image}</div>
-      </div>
+    <div className="d-flex justify-content-around card bg-transparent">
+      {image}
     </div>
   ) : null;
 

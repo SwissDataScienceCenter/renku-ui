@@ -15,17 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { Story } from "@storybook/react";
-import { FilterEntitySearch, FilterProps } from "./EntitySearchFilter";
+
+import { StoryFn as Story } from "@storybook/react";
+import SortingEntities, {
+  SortingInputProps,
+  SortingOptions,
+} from "./SortingEntities";
 
 export default {
-  title: "components/FilterEntitySearch",
-  component: FilterEntitySearch,
+  title: "components/Search/SortingEntities",
+  component: SortingEntities,
   argTypes: {},
 };
 
-const Template: Story<FilterProps> = (args) => <FilterEntitySearch {...args} />;
+const Template: Story<SortingInputProps> = (args) => (
+  <SortingEntities {...args} />
+);
 
 export const Default = Template.bind({});
-Default.args = {};
+Default.args = {
+  styleType: "mobile",
+  sort: SortingOptions.AscTitle,
+};

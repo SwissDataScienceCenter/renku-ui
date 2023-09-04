@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { Story } from "@storybook/react";
+
+import { StoryFn as Story } from "@storybook/react";
 import { ProgressStyle, ProgressType } from "./Progress";
 import ProgressStepsIndicator, {
   ProgressStepsIndicatorProps,
@@ -24,7 +24,7 @@ import ProgressStepsIndicator, {
 } from "./ProgressSteps";
 
 export default {
-  title: "components/ProgressStepsIndicator",
+  title: "components/ProgressIndicatorSteps",
   component: ProgressStepsIndicator,
   argTypes: {
     title: {

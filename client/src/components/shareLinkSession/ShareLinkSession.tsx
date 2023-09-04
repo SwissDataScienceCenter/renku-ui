@@ -17,7 +17,7 @@
  */
 import { useHistory, useLocation } from "react-router-dom";
 import { faInfoCircle, faLink } from "@fortawesome/free-solid-svg-icons";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Url } from "../../utils/helpers/url";
 import {
   Col,

@@ -1,4 +1,3 @@
-import React from "react";
 import { DropdownItem } from "reactstrap";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { ButtonWithMenu } from "../../components/buttons/Button";

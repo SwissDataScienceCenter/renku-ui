@@ -23,7 +23,7 @@
  *  Clipboard code and presentation.
  */
 
-import React, {
+import {
   Fragment,
   ReactNode,
   useCallback,

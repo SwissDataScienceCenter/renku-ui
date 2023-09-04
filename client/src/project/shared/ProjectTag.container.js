@@ -23,7 +23,7 @@
  *  ProjectTag container and present code.
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 
 import { Form, FormGroup, FormText, Label } from "reactstrap";
 import { Badge, Input } from "reactstrap";

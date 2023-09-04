@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 
-import React from "react";
-import cx from "classnames";
-import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
-import { TimeCaption } from "../../../../components/TimeCaption";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+import { Duration } from "luxon";
+import { TimeCaption } from "../../../../components/TimeCaption";
+import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
+import { ensureDateTime } from "../../../../utils/helpers/DateTimeUtils";
 
 interface SessionHibernationStatusDetailsProps {
   annotations: NotebookAnnotations;
@@ -30,7 +31,24 @@ interface SessionHibernationStatusDetailsProps {
 export default function SessionHibernationStatusDetails({
   annotations,
 }: SessionHibernationStatusDetailsProps) {
-  const hasHibernationInfo = !!annotations["hibernation-date"];
+  const hasHibernationInfo = !!annotations["hibernationDate"];
+
+  const hibernationTimestamp = annotations["hibernationDate"] ?? "";
+  const hibernationDateTime = hibernationTimestamp
+    ? ensureDateTime(hibernationTimestamp)
+    : null;
+
+  const hibernatedSecondsThreshold = parseInt(
+    annotations?.hibernatedSecondsThreshold ?? "",
+    10
+  );
+  const hibernationThresholdDuration = isNaN(hibernatedSecondsThreshold)
+    ? Duration.fromISO("")
+    : Duration.fromObject({ seconds: hibernatedSecondsThreshold });
+  const hibernationCullTimestamp =
+    hibernationDateTime && hibernationThresholdDuration
+      ? hibernationDateTime.plus(hibernationThresholdDuration)
+      : null;
 
   return (
     <>
@@ -39,18 +57,28 @@ export default function SessionHibernationStatusDetails({
           <p className="mb-0">
             <span className="fw-bold">Paused:</span>{" "}
             <TimeCaption
-              datetime={annotations["hibernation-date"]}
+              datetime={annotations["hibernationDate"]}
               enableTooltip
               noCaption
             />
           </p>
+          {hibernationCullTimestamp && (
+            <p className="mb-0">
+              <span className="fw-bold">Will be deleted:</span>{" "}
+              <TimeCaption
+                datetime={hibernationCullTimestamp}
+                enableTooltip
+                noCaption
+              />
+            </p>
+          )}
           <p className="mb-0">
             <span className="fw-bold">Current commit:</span>{" "}
-            <code>{annotations["hibernation-commit-sha"].slice(0, 8)}</code>
+            <code>{annotations["hibernationCommitSha"].slice(0, 8)}</code>
           </p>
           <p className="mb-0">
             <span className="fw-bold">
-              {annotations["hibernation-dirty"] ? (
+              {annotations["hibernationDirty"] ? (
                 <>
                   <FontAwesomeIcon
                     className={cx("text-warning", "me-1")}
@@ -65,7 +93,7 @@ export default function SessionHibernationStatusDetails({
           </p>
           <p className="mb-2">
             <span className="fw-bold">
-              {!annotations["hibernation-synchronized"] ? (
+              {!annotations["hibernationSynchronized"] ? (
                 <>
                   <FontAwesomeIcon
                     className={cx("text-warning", "me-1")}

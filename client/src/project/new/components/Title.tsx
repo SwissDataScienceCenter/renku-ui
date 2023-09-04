@@ -21,7 +21,6 @@
  *  Title.js
  *  Project Title field group component
  */
-import * as React from "react";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import FieldGroup from "../../../components/FieldGroups";
 import {

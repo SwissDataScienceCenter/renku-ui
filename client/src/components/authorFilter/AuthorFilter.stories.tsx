@@ -15,14 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { Story } from "@storybook/react";
+
+// Story type is deprecated but at the moment we can use this type
+import { StoryFn as Story } from "@storybook/react";
 import { AuthorFilter, AuthorFilterProps } from "./AuthorFilter";
 
 export default {
-  title: "components/AuthorFilter",
+  title: "components/Search/AuthorFilter",
   component: AuthorFilter,
-  argTypes: {},
+  argTypes: {
+    value: {
+      options: ["user", "all"],
+      control: { type: "radio" },
+    },
+  },
 };
 
 const Template: Story<AuthorFilterProps> = (args) => <AuthorFilter {...args} />;

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+
 import "./Progress.css";
 import { CheckCircleFill, XCircleFill } from "../../utils/ts-wrappers";
 import { Loader } from "../Loader";

@@ -18,18 +18,18 @@
 
 import { ReactNode } from "react";
 
-export interface NotificationsInterface {
-  addInfo: NotificationFunction;
-  addSuccess: NotificationFunction;
-  addWarning: NotificationFunction;
-  addError: NotificationFunction;
+export interface NotificationsManager {
+  addInfo: NotificationCreator;
+  addSuccess: NotificationCreator;
+  addWarning: NotificationCreator;
+  addError: NotificationCreator;
 }
 
-type NotificationFunction = (
+type NotificationCreator = (
   topic: string,
   desc?: ReactNode,
   link?: string,
   linkText?: string,
   awareLocations?: string[],
   longDesc?: string
-) => NotificationsInterface;
+) => NotificationsManager;

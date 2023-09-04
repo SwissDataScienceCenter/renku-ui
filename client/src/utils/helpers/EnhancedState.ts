@@ -30,6 +30,7 @@ import {
 
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 import { dataServicesApi } from "../../features/dataServices/dataServicesApi";
+import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
@@ -58,16 +59,17 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     ...renkuStateModelReducer,
     // Slices
     [dashboardMessageSlice.name]: dashboardMessageSlice.reducer,
-    [displaySlice.name]: displaySlice.reducer,
     [datasetFormSlice.name]: datasetFormSlice.reducer,
+    [displaySlice.name]: displaySlice.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
     [startSessionSlice.name]: startSessionSlice.reducer,
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
     [dataServicesApi.reducerPath]: dataServicesApi.reducer,
-    [kgSearchApi.reducerPath]: kgSearchApi.reducer,
+    [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
+    [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
     [projectGitLabApi.reducerPath]: projectGitLabApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
@@ -89,13 +91,14 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         serializableCheck: false,
       })
         .concat(dataServicesApi.middleware)
+        .concat(datasetsCoreApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(kgSearchApi.middleware)
         .concat(projectCoreApi.middleware)
         .concat(projectGitLabApi.middleware)
         .concat(projectKgApi.middleware)
-        .concat(projectsKgApi.middleware)
         .concat(projectsApi.middleware)
+        .concat(projectsKgApi.middleware)
         .concat(recentUserActivityApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsApi.middleware)

@@ -23,7 +23,7 @@
  *  Presentational components for notifications
  */
 
-import React, { Component, Fragment, useState } from "react";
+import { Component, Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Badge,

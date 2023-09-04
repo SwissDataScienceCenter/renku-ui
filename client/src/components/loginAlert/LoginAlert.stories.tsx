@@ -23,9 +23,8 @@
  *  LoginAlert component storybook
  */
 
-import * as React from "react";
-import { Story } from "@storybook/react";
-// import { MemoryRouter } from "react-router-dom";
+import { StoryFn as Story } from "@storybook/react";
+import { MemoryRouter } from "react-router-dom";
 import LoginAlert, { LoginAlertProps } from "./LoginAlert";
 
 // TODO: re-enable MemoryRouter as soon as the version is compatible again
@@ -57,12 +56,11 @@ export default {
   },
 };
 
-// const Template: Story<LoginAlertProps> = (args) => (
-//   <MemoryRouter>
-//     <LoginAlert {...args} />
-//   </MemoryRouter>
-// );
-const Template: Story<LoginAlertProps> = (args) => <LoginAlert {...args} />;
+const Template: Story<LoginAlertProps> = (args) => (
+  <MemoryRouter>
+    <LoginAlert {...args} />
+  </MemoryRouter>
+);
 
 export const Complete = Template.bind({});
 Complete.args = {

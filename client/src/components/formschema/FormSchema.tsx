@@ -22,7 +22,7 @@
  *  FormSchema.tsx
  *  FormSchema component.
  */
-import * as React from "react";
+
 import { Col, Row } from "../../utils/ts-wrappers";
 import { ReactNode } from "react";
 

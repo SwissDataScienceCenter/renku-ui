@@ -22,7 +22,7 @@
  *  EntityHeader.tsx
  *  Entity Header component
  */
-import React from "react";
+
 import { RootStateOrAny, useSelector } from "react-redux";
 import { useDisplaySelector } from "../../features/display";
 import SessionButton from "../../features/session/components/SessionButton";

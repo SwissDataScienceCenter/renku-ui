@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import * as Sentry from "@sentry/react";
 import cx from "classnames";
 import styles from "./ErrorBoundary.module.scss";

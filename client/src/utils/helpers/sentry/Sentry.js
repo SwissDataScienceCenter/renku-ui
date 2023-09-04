@@ -24,7 +24,6 @@
  */
 
 import * as SentryLib from "@sentry/react";
-import { Integrations as TracingIntegrations } from "@sentry/tracing";
 import _ from "lodash";
 import { API_ERRORS } from "../../../api-client/errors";
 
@@ -130,9 +129,9 @@ function sentryInit(
     beforeSend: (event) => hookBeforeSend(event),
     denyUrls: sentryDenyUrls,
     integrations: [
-      new TracingIntegrations.BrowserTracing({
-        tracingOrigins,
-        maxTransactionDuration: 30,
+      new SentryLib.BrowserTracing({
+        shouldCreateSpanForRequest: (url) =>
+          tracingOrigins.includes(new URL(url).origin),
       }),
     ],
     tracesSampleRate: sentrySampleRate, // number between 0 and 1. (e.g. to send 20% of transactions use 0.2)

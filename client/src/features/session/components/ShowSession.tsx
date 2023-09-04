@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, {
+import {
   useCallback,
   useContext,
   useEffect,
@@ -191,6 +191,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   const stopSessionModal = (
     <StopSessionModal
       isOpen={showModalStopSession}
+      session={thisSession}
       sessionName={sessionName}
       toggleModal={toggleStopSession}
     />

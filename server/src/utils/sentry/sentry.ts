@@ -24,7 +24,6 @@
  */
 
 import * as SentryLib from "@sentry/node";
-import * as Tracing from "@sentry/tracing";
 import express from "express";
 
 import { getRelease } from "../index";
@@ -95,7 +94,7 @@ class Sentry {
         // enable HTTP calls tracing
         new SentryLib.Integrations.Http({ tracing: true }),
         // enable Express.js middleware tracing
-        new Tracing.Integrations.Express({ app }),
+        new SentryLib.Integrations.Express({ app }),
       ],
       tracesSampleRate: clamp(options.sampleRate, 0, 1),
     });

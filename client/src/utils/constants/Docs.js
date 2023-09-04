@@ -17,6 +17,7 @@ const Docs = {
   READ_THE_DOCS_TUTORIALS: `${READ_THE_DOCS_ROOT}/tutorials`,
   // eslint-disable-next-line
   READ_THE_DOCS_TUTORIALS_STARTING: `${READ_THE_DOCS_ROOT}/tutorials/01_firststeps.html`,
+  READ_THE_DOCS_WHY_RENKU: `${READ_THE_DOCS_ROOT}/introduction/why.html`,
 
   rtdHowToGuide(subPage) {
     return `${Docs.READ_THE_DOCS_HOW_TO_GUIDES}/${subPage}`;
@@ -37,6 +38,9 @@ const Links = {
   GITTER: "https://gitter.im/SwissDataScienceCenter/renku",
   GITHUB: "https://github.com/SwissDataScienceCenter/renku",
   HOMEPAGE: "https://datascience.ch",
+  MEDIUM: "https://medium.com/the-renku-blog",
+  TWITTER: "https://twitter.com/RenkuIO",
+  YOUTUBE: "https://www.youtube.com/channel/UCMF2tBtWU1sKWvtPl_HpI4A",
 };
 
 const GitlabLinks = {

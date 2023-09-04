@@ -16,13 +16,7 @@
  * limitations under the License.
  */
 
-import React, {
-  Fragment,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -258,12 +252,6 @@ function ListBarSession({
       </div>
       <div className="session-time text-truncate">
         <div className="d-flex">
-          <span className="session-info">
-            Branch
-            <span className="text-decoration-underline mx-1">
-              {notebook.annotations["branch"]}
-            </span>
-          </span>
           <div className="session-icon-details">{sessionDetailsPopover}</div>
         </div>
         <span

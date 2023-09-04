@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { Story } from "@storybook/react";
+
+import { StoryFn as Story } from "@storybook/react";
 import { TypeEntityFilter, TypeFilterProps } from "./TypeEntityFilter";
 
 export default {
-  title: "components/TypeEntityFilter",
+  title: "components/Search/TypeEntityFilter",
   component: TypeEntityFilter,
   argTypes: {},
 };
