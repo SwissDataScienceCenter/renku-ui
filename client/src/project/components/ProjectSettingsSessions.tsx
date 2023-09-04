@@ -166,7 +166,7 @@ export const ProjectSettingsSessions = () => {
   }
 
   const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER;
-  if (coreSupportComputed && !backendAvailable) {
+  if (!backendAvailable) {
     const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace,
       path,
