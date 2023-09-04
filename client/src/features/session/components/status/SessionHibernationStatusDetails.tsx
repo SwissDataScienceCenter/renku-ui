@@ -31,9 +31,9 @@ interface SessionHibernationStatusDetailsProps {
 export default function SessionHibernationStatusDetails({
   annotations,
 }: SessionHibernationStatusDetailsProps) {
-  const hasHibernationInfo = !!annotations["hibernation-date"];
+  const hasHibernationInfo = !!annotations["hibernationDate"];
 
-  const hibernationTimestamp = annotations["hibernation-date"] ?? "";
+  const hibernationTimestamp = annotations["hibernationDate"] ?? "";
   const hibernationDateTime = hibernationTimestamp
     ? ensureDateTime(hibernationTimestamp)
     : null;
@@ -57,7 +57,7 @@ export default function SessionHibernationStatusDetails({
           <p className="mb-0">
             <span className="fw-bold">Paused:</span>{" "}
             <TimeCaption
-              datetime={annotations["hibernation-date"]}
+              datetime={annotations["hibernationDate"]}
               enableTooltip
               noCaption
             />
@@ -74,11 +74,11 @@ export default function SessionHibernationStatusDetails({
           )}
           <p className="mb-0">
             <span className="fw-bold">Current commit:</span>{" "}
-            <code>{annotations["hibernation-commit-sha"].slice(0, 8)}</code>
+            <code>{annotations["hibernationCommitSha"].slice(0, 8)}</code>
           </p>
           <p className="mb-0">
             <span className="fw-bold">
-              {annotations["hibernation-dirty"] ? (
+              {annotations["hibernationDirty"] ? (
                 <>
                   <FontAwesomeIcon
                     className={cx("text-warning", "me-1")}
@@ -93,7 +93,7 @@ export default function SessionHibernationStatusDetails({
           </p>
           <p className="mb-2">
             <span className="fw-bold">
-              {!annotations["hibernation-synchronized"] ? (
+              {!annotations["hibernationSynchronized"] ? (
                 <>
                   <FontAwesomeIcon
                     className={cx("text-warning", "me-1")}

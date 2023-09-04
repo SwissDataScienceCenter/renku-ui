@@ -41,7 +41,7 @@ export default function SessionStatusText({
     <TimeCaption datetime={startTimestamp} enableTooltip noCaption />
   );
   const hibernationTimestamp =
-    status === "hibernated" ? annotations["hibernation-date"] ?? "" : null;
+    status === "hibernated" ? annotations["hibernationDate"] ?? "" : null;
   const hibernationDateTime = hibernationTimestamp
     ? ensureDateTime(hibernationTimestamp)
     : null;

@@ -82,11 +82,11 @@ const ExpectedAnnotations = {
       "projectName",
       "repository",
       "hibernation",
-      "hibernation-branch",
-      "hibernation-commit-sha",
-      "hibernation-date",
-      "hibernation-dirty",
-      "hibernation-synchronized",
+      "hibernationBranch",
+      "hibernationCommitSha",
+      "hibernationDate",
+      "hibernationDirty",
+      "hibernationSynchronized",
       "hibernatedSecondsThreshold",
     ],
     default: {
@@ -98,11 +98,11 @@ const ExpectedAnnotations = {
       projectName: "unknown",
       repository: "https://none",
       hibernation: {},
-      "hibernation-branch": "",
-      "hibernation-commit-sha": "",
-      "hibernation-date": "",
-      "hibernation-dirty": false,
-      "hibernation-synchronized": false,
+      hibernationBranch: "",
+      hibernationCommitSha: "",
+      hibernationDate: "",
+      hibernationDirty: false,
+      hibernationSynchronized: false,
       hibernatedSecondsThreshold: "0",
     },
   },
@@ -129,8 +129,8 @@ const NotebooksHelper = {
         // convert text boolean where a boolean is expected
         if (
           annotation === "default_image_used" ||
-          annotation === "hibernation-dirty" ||
-          annotation === "hibernation-synchronized"
+          annotation === "hibernationDirty" ||
+          annotation === "hibernationSynchronized"
         ) {
           const origValue =
             annotations[prefix + annotation] ?? annotations[annotation];
