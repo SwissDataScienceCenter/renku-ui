@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   faExclamationTriangle,
   faLink,
@@ -25,6 +24,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Redirect, useLocation } from "react-router";
 import { Link } from "react-router-dom";
@@ -32,6 +32,7 @@ import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { InfoAlert, RenkuAlert, WarnAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
+import { Loader } from "../../../components/Loader";
 import {
   ButtonWithMenu,
   GoBackButton,
@@ -65,16 +66,14 @@ import {
   useStartSessionOptionsSelector,
 } from "../startSessionOptionsSlice";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
+import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
 import AutostartSessionOptions from "./options/AutostartSessionOptions";
 import SessionBranchOption from "./options/SessionBranchOption";
-import SessionCloudStorageOption from "./options/SessionCloudStorageOption";
+import SessionCloudStorageOptionV2 from "./options/SessionCloudStorageOptionV2";
 import SessionCommitOption from "./options/SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
 import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
 import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
-import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
-import { Loader } from "../../../components/Loader";
-import SessionCloudStorageOptionV2 from "./options/SessionCloudStorageOptionV2";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);

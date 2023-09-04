@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import cx from "classnames";
 import { CloudFill, PencilSquare, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
@@ -756,7 +756,11 @@ function EditCloudStorage({
   }, [result.isError, result.isSuccess, toggleEditMode]);
 
   return (
-    <>
+    <Form
+      className="form-rk-green"
+      noValidate
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <ModalBody>
         <div className="form-rk-green">
           <div className="mb-3">
@@ -908,13 +912,14 @@ function EditCloudStorage({
         <Button
           className="ms-2"
           disabled={!isDirty}
-          onClick={handleSubmit(onSubmit)}
+          // onClick={handleSubmit(onSubmit)}
+          type="submit"
         >
-          <PencilSquare className={cx("bi", "me-1")} type="submit" />
+          <PencilSquare className={cx("bi", "me-1")} />
           Save changes
         </Button>
       </ModalFooter>
-    </>
+    </Form>
   );
 }
 

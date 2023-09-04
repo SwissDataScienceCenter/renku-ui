@@ -23,6 +23,7 @@ import {
   DockerImageBuildStatus,
   DockerImageStatus,
   SessionCloudStorageMount,
+  SessionCloudStorageV2,
   SessionEnvironmentVariable,
   StartSessionOptions,
 } from "./startSessionOptions.types";
@@ -71,6 +72,12 @@ export const startSessionOptionsSlice = createSlice({
       // Also reset the docker image status when a branch is set
       state.dockerImageStatus = "unknown";
     },
+    setCloudStorageV2: (
+      state,
+      action: PayloadAction<SessionCloudStorageV2[]>
+    ) => {
+      state.cloudStorageV2.splice(0, -1, ...action.payload);
+    },
     setCommit: (state, action: PayloadAction<string>) => {
       state.commit = action.payload;
       // Also reset the docker image status when a commit is set
@@ -110,6 +117,12 @@ export const startSessionOptionsSlice = createSlice({
     ) => {
       state.cloudStorage[action.payload.index] = action.payload.mount;
     },
+    updateCloudStorageV2Item: (
+      state,
+      action: PayloadAction<{ index: number; storage: SessionCloudStorageV2 }>
+    ) => {
+      state.cloudStorageV2[action.payload.index] = action.payload.storage;
+    },
     updateEnvironmentVariable: (
       state,
       action: PayloadAction<{
@@ -130,6 +143,7 @@ export const {
   removeCloudStorageMount,
   removeEnvironmentVariable,
   setBranch,
+  setCloudStorageV2,
   setCommit,
   setDefaultUrl,
   setDockerImageBuildStatus,

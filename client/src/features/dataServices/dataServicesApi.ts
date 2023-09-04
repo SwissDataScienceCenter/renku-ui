@@ -20,6 +20,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import {
   AddCloudStorageForProjectParams,
   CloudStorage,
+  CloudStorageListItem,
   DeleteCloudStorageParams,
   GetCloudStorageForProjectParams,
   ResourcePool,
@@ -50,7 +51,7 @@ export const dataServicesApi = createApi({
       providesTags: ["ResourcePool"],
     }),
     getCloudStorageForProject: builder.query<
-      { storage: CloudStorage }[],
+      CloudStorageListItem[],
       GetCloudStorageForProjectParams
     >({
       query: ({ project_id }) => {

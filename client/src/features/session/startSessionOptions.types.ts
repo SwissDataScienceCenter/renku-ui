@@ -44,8 +44,8 @@ export interface SessionCloudStorageV2 {
   name: string;
   private: boolean;
   source_path: string;
-  sensitive_fields?: Record<string, string | undefined>;
-  storage_id: string;
+  sensitive_fields?: { name: string; value: string }[];
+  storage_id: string | null;
   storage_type: string;
   target_path: string;
 }

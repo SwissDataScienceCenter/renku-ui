@@ -71,6 +71,15 @@ export interface CloudStorage {
   target_path: string;
 }
 
+export interface CloudStorageSensitiveFieldDefinition {
+  name: string;
+}
+
+export interface CloudStorageListItem {
+  storage: CloudStorage;
+  sensitive_fields?: CloudStorageSensitiveFieldDefinition[];
+}
+
 export interface GetCloudStorageForProjectParams {
   project_id: string;
 }
