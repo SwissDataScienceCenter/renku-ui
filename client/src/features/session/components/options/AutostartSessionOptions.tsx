@@ -183,7 +183,7 @@ function useAutostartSessionOptions(): void {
 
   // Handle errors
   useEffect(() => {
-    if (!backendAvailable) {
+    if (coreSupportComputed && !backendAvailable) {
       dispatch(
         setError({
           error: "backend-error",
