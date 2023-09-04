@@ -191,7 +191,7 @@ function useAutostartSessionOptions(): void {
         })
       );
     }
-  }, [backendAvailable, dispatch]);
+  }, [backendAvailable, coreSupportComputed, dispatch]);
   useEffect(() => {
     if (errorProjectConfig) {
       dispatch(
