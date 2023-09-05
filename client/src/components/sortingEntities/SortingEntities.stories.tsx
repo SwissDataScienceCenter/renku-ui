@@ -16,24 +16,41 @@
  * limitations under the License.
  */
 
-import { StoryFn as Story } from "@storybook/react";
-import SortingEntities, {
-  SortingInputProps,
-  SortingOptions,
-} from "./SortingEntities";
+import { Meta, StoryObj } from "@storybook/react";
+import SortingEntities, { SortingOptions } from "./SortingEntities";
 
-export default {
+const meta: Meta<typeof SortingEntities> = {
   title: "components/Search/SortingEntities",
   component: SortingEntities,
-  argTypes: {},
+  argTypes: {
+    styleType: {
+      control: "radio",
+      options: ["mobile", "desk"],
+    },
+    sort: {
+      control: "select",
+      options: [
+        SortingOptions.AscTitle,
+        SortingOptions.DescTitle,
+        SortingOptions.AscMatchingScore,
+        SortingOptions.DescMatchingScore,
+        SortingOptions.AscDate,
+        SortingOptions.DescDate,
+      ],
+    },
+    setSort: {
+      table: {
+        disable: true,
+      },
+    },
+  },
 };
+export default meta;
+type Story = StoryObj<typeof SortingEntities>;
 
-const Template: Story<SortingInputProps> = (args) => (
-  <SortingEntities {...args} />
-);
-
-export const Default = Template.bind({});
-Default.args = {
-  styleType: "mobile",
-  sort: SortingOptions.AscTitle,
+export const Default: Story = {
+  args: {
+    styleType: "mobile",
+    sort: SortingOptions.AscTitle,
+  },
 };

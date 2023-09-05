@@ -26,16 +26,24 @@ import { Button } from "../../utils/ts-wrappers";
 export default {
   component: ButtonWithMenu,
   title: "components/Buttons/ButtonWithMenu",
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Button with a menu, often referred to as a `split button` or `dropdown button`, use to provide users with multiple related actions or options associated with a primary action.",
+      },
+    },
+  },
 };
 type Story = StoryObj<typeof ButtonWithMenu>;
 
-const defaultAction = <Button key="button-main-primary">Main Action</Button>;
+const defaultAction = <Button key="button-main-primary">Star Server</Button>;
 const options = [
   <DropdownItem key="option-a" data-cy="option-a">
-    Option A
+    Start with options
   </DropdownItem>,
   <DropdownItem key="option-b" data-cy="option-b">
-    Option B
+    Start Default
   </DropdownItem>,
 ];
 export const Primary: Story = {
@@ -44,6 +52,7 @@ export const Primary: Story = {
     default: defaultAction,
     isPrincipal: true,
     color: "rk-green",
+    disabled: false,
   },
   argTypes: {
     children: {
@@ -104,7 +113,7 @@ export const Primary: Story = {
 
 const defaultActionSecondary = (
   <Button key="button-a" className="btn-outline-rk-green">
-    Main Action
+    Start Server
   </Button>
 );
 
@@ -114,6 +123,7 @@ export const Secondary: Story = {
     default: defaultActionSecondary,
     isPrincipal: false,
     color: "rk-green",
+    disabled: false,
   },
   parameters: {
     docs: {

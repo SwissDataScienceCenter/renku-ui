@@ -17,10 +17,10 @@
  */
 
 // Story type is deprecated but at the moment we can use this type
-import { StoryFn as Story } from "@storybook/react";
-import { AuthorFilter, AuthorFilterProps } from "./AuthorFilter";
+import { Meta, StoryObj } from "@storybook/react";
+import { AuthorFilter } from "./AuthorFilter";
 
-export default {
+const meta: Meta<typeof AuthorFilter> = {
   title: "components/Search/AuthorFilter",
   component: AuthorFilter,
   argTypes: {
@@ -28,12 +28,18 @@ export default {
       options: ["user", "all"],
       control: { type: "radio" },
     },
+    handler: {
+      table: {
+        disable: true,
+      },
+    },
   },
 };
+export default meta;
+type Story = StoryObj<typeof AuthorFilter>;
 
-const Template: Story<AuthorFilterProps> = (args) => <AuthorFilter {...args} />;
-
-export const Default = Template.bind({});
-Default.args = {
-  value: "user",
+export const Default: Story = {
+  args: {
+    value: "all",
+  },
 };

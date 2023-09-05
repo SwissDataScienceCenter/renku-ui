@@ -16,23 +16,27 @@
  * limitations under the License.
  */
 
-import { StoryFn as Story } from "@storybook/react";
-import { TypeEntityFilter, TypeFilterProps } from "./TypeEntityFilter";
+import { Meta, StoryObj } from "@storybook/react";
+import { TypeEntityFilter } from "./TypeEntityFilter";
 
-export default {
+const meta: Meta<typeof TypeEntityFilter> = {
   title: "components/Search/TypeEntityFilter",
   component: TypeEntityFilter,
-  argTypes: {},
+  argTypes: {
+    handler: {
+      table: {
+        disable: true,
+      },
+    },
+  },
 };
-
-const Template: Story<TypeFilterProps> = (args) => (
-  <TypeEntityFilter {...args} />
-);
-
-export const Default = Template.bind({});
-Default.args = {
-  value: {
-    project: true,
-    dataset: true,
+export default meta;
+type Story = StoryObj<typeof TypeEntityFilter>;
+export const Default: Story = {
+  args: {
+    value: {
+      project: true,
+      dataset: true,
+    },
   },
 };
