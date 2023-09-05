@@ -602,6 +602,7 @@ ${Object.entries(configuration)
                 "border-0"
               )}
               onClick={toggle}
+              type="button"
             >
               <div className="fw-bold">{name}</div>
               <div className={cx("small", "d-none", "d-sm-block")}>
@@ -688,7 +689,12 @@ function CloudStorageList({ storageForProject }: CloudStorageListProps) {
   }
 
   return (
-    <Row className="mt-4">
+    <Row
+      className={cx(
+        "mt-4",
+        "d-none" // TODO: remove these components
+      )}
+    >
       <Col className="table-responsive">
         <Table className="table-hover">
           <thead>

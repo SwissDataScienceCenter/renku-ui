@@ -17,8 +17,9 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  ChevronDown,
   ExclamationTriangleFill,
   PencilSquare,
   XLg,
@@ -28,7 +29,11 @@ import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Button,
+  Card,
+  CardBody,
   Col,
+  Collapse,
+  Container,
   Form,
   FormText,
   Input,
@@ -160,7 +165,22 @@ function CloudStorageList() {
         </ErrorAlert>
       )}
       {cloudStorageList.length > 0 && (
-        <Row>
+        <Container className="p-0" fluid>
+          <Row className={cx("row-cols-1", "gy-2")}>
+            {cloudStorageList.map((storage, index) => (
+              <CloudStorageItemAlt
+                index={index}
+                key={`${storage.name}-${index}`}
+                storage={storage}
+              />
+            ))}
+          </Row>
+        </Container>
+      )}
+      {cloudStorageList.length > 0 && (
+        <Row
+          className="d-none" // TODO: remove these components
+        >
           <Col className="table-responsive">
             <Table className="table-hover">
               <thead>
@@ -187,6 +207,141 @@ function CloudStorageList() {
         </Row>
       )}
     </>
+  );
+}
+
+function CloudStorageItemAlt({ index, storage }: CloudStorageItemProps) {
+  const {
+    active,
+    configuration,
+    name,
+    sensitive_fields,
+    source_path,
+    storage_type,
+    target_path,
+  } = storage;
+
+  const providedSensitiveFields = useMemo(
+    () =>
+      Object.entries(configuration)
+        .filter(([, value]) => value === "<sensitive>")
+        .map(([key]) => key),
+    [configuration]
+  );
+  const requiredSensitiveFields = useMemo(
+    () =>
+      sensitive_fields?.filter(({ name }) =>
+        providedSensitiveFields.includes(name)
+      ),
+    [providedSensitiveFields, sensitive_fields]
+  );
+
+  const configContent = `[${name}]
+${Object.entries(configuration)
+  .map(([key, value]) => `${key} = ${value}`)
+  .join("\n")}`;
+
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((isOpen) => !isOpen);
+  }, []);
+
+  const dispatch = useDispatch();
+
+  const onToggleActive = useCallback(() => {
+    dispatch(
+      updateCloudStorageV2Item({
+        index,
+        storage: { ...storage, active: !storage.active },
+      })
+    );
+  }, [dispatch, index, storage]);
+
+  return (
+    <Col>
+      <Card>
+        <CardBody className={cx("p-0", "d-flex", "align-items-center")}>
+          <div className={cx("ps-3", "py-3")}>
+            <Input
+              className="form-check-input"
+              checked={active}
+              id="cloudStorageItemActive"
+              onChange={onToggleActive}
+              type="checkbox"
+            />
+            <Label className="visually-hidden" for="cloudStorageItemActive">
+              Mount in this session
+            </Label>
+          </div>
+          <h3 className={cx("fs-6", "m-0", "w-100")}>
+            <button
+              className={cx(
+                "d-flex",
+                "gap-3",
+                "align-items-center",
+                "w-100",
+                "p-3",
+                "bg-transparent",
+                "border-0"
+              )}
+              onClick={toggle}
+              type="button"
+            >
+              <div
+                className={cx(
+                  "fw-bold",
+                  !active && [
+                    "text-decoration-line-through",
+                    "text-rk-text-light",
+                  ]
+                )}
+              >
+                {name}
+              </div>
+              <div className={cx("small", "d-none", "d-sm-block")}>
+                <span className="text-rk-text-light">Mount Point: </span>
+                {active ? (
+                  <span>{target_path}</span>
+                ) : (
+                  <span className="fst-italic">Not mounted</span>
+                )}
+              </div>
+              <div className="ms-auto">
+                <ChevronDown />
+              </div>
+            </button>
+          </h3>
+        </CardBody>
+        {requiredSensitiveFields != null &&
+          requiredSensitiveFields.length > 0 && (
+            <CardBody className="pt-0">
+              <h5 className={cx("fs-6", "m-0")}>Credentials</h5>
+              <p className={cx("form-text", "mt-0", "mb-1")}>
+                Please fill in the credentials required to use this cloud
+                storage
+              </p>
+              {requiredSensitiveFields.map((item, index) => (
+                <div className="mb-3" key={index}>
+                  <Label
+                    className="form-label"
+                    for={`credentials-${item.name}`}
+                  >
+                    {item.name}
+                  </Label>
+                  <Input
+                    id={`credentials-${item.name}`}
+                    type="text"
+                    value={item.value}
+                  />
+                </div>
+              ))}
+            </CardBody>
+          )}
+        <Collapse isOpen={isOpen}>
+          <CardBody className="pt-0">Storage details</CardBody>
+        </Collapse>
+      </Card>
+    </Col>
   );
 }
 
