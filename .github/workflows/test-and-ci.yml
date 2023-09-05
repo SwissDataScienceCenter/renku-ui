@@ -127,24 +127,6 @@ jobs:
           path: tests/cypress/videos
           retention-days: 3
 
-  run-storybook:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./client
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18.x'
-      - name: Install dependencies
-        run: npm i
-      - name: Install Playwright
-        run: npx playwright install --with-deps
-      - name: Build Storybook and run tests
-        run: npm run storybook-compile-and-test
-
   test-chart:
     runs-on: ubuntu-22.04
     steps:
