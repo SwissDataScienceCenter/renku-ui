@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { DropdownItem, Modal, ModalBody, ModalHeader } from "reactstrap";
@@ -28,7 +29,9 @@ import {
   toggleSshModal,
   useDisplaySelector,
 } from "../../features/display";
+import AppContext from "../../utils/context/appContext";
 import { Url } from "../../utils/helpers/url";
+
 import { InfoAlert } from "../Alert";
 import { ExternalDocsLink } from "../ExternalLinks";
 import { Docs } from "../../utils/constants/Docs";
@@ -37,6 +40,7 @@ import rkIconSshTicked from "../../styles/icons/ssh-ticked.svg";
 import rkIconSshCross from "../../styles/icons/ssh-cross.svg";
 import { CommandCopy } from "../commandCopy/CommandCopy";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
+import { apiVersionForMetadataVersion } from "../../utils/helpers/url";
 import { cleanGitUrl } from "../../utils/helpers/ProjectFunctions";
 
 const docsIconStyle = {
@@ -77,8 +81,15 @@ function SshModal() {
   const gitUrl = cleanGitUrl(displayModal.gitUrl);
 
   const notebooksSupport = useGetNotebooksVersionsQuery();
+  const { coreApiVersionedUrlConfig } = useContext(AppContext);
+  const migrationStatusApiVersion = apiVersionForMetadataVersion(
+    coreApiVersionedUrlConfig,
+    undefined,
+    undefined // do not use the override for getting migration status
+  );
   const coreSupport = projectCoreApi.useGetMigrationStatusQuery(
     {
+      apiVersion: migrationStatusApiVersion,
       gitUrl,
     },
     { skip: !gitUrl }

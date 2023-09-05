@@ -92,7 +92,7 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
         const result = process(content);
         const fixture = { body: result };
         cy.intercept(
-          "/ui-server/api/renku/*/datasets.list?git_url=*",
+          "/ui-server/api/renku/**/datasets.list?git_url=*",
           fixture
         ).as(name);
       });
