@@ -20,7 +20,7 @@ import { StoryFn as Story } from "@storybook/react";
 import { TypeEntityFilter, TypeFilterProps } from "./TypeEntityFilter";
 
 export default {
-  title: "components/TypeEntityFilter",
+  title: "components/Search/TypeEntityFilter",
   component: TypeEntityFilter,
   argTypes: {},
 };

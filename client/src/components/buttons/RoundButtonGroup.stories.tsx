@@ -15,17 +15,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Button } from "../../utils/ts-wrappers";
+import { RoundButtonGroup } from "./Button";
+import { Meta } from "@storybook/react";
 
-import { Story } from "@storybook/react";
-import { FilterEntitySearch, FilterProps } from "./EntitySearchFilter";
-
-export default {
-  title: "components/FilterEntitySearch",
-  component: FilterEntitySearch,
-  argTypes: {},
+const meta: Meta<typeof Button> = {
+  component: RoundButtonGroup,
+  title: "components/Buttons/RoundButtonGroup",
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Group a series of buttons together on a single line or stack",
+      },
+    },
+  },
 };
 
-const Template: Story<FilterProps> = (args) => <FilterEntitySearch {...args} />;
+export default meta;
 
-export const Default = Template.bind({});
-Default.args = {};
+const optionsGroupButton = [
+  <Button key="button-x" className="btn-outline-rk-green">
+    Option X
+  </Button>,
+  <Button key="button-y" className="btn-outline-rk-green">
+    Option Y
+  </Button>,
+];
+export const Default = () => (
+  <>
+    <RoundButtonGroup>{optionsGroupButton}</RoundButtonGroup>
+  </>
+);

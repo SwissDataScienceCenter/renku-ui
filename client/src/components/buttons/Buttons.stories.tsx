@@ -19,36 +19,81 @@
 import { Button } from "../../utils/ts-wrappers";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ButtonWithMenu, RoundButtonGroup } from "./Button";
+import { Meta, StoryObj } from "@storybook/react";
 
 interface LabelsProps {
   text: string;
   isRequired: boolean;
 }
 
-export default {
-  title: "components/Buttons",
+const componentDescription = `
+Custom Buttons for actions in forms, cards, and more.
+Utilize a defined color palette for various states and entities.
+* **Entities:** Projects, Datasets and Workflows
+* **States:** Error, Information, Alert
+
+
+### Best Practices
+* Use labels that accurately describe the action the button performs. Frame the label as an action the user is taking, such as "Submit," "Save," "Cancel," "Delete," "Edit," etc.
+* Ensure that the design and color of the button align with the context in which it's used. For example, use primary buttons for main actions and secondary buttons for less prominent actions.
+* Don't overload a single page or section with too many buttons. Prioritize the most essential actions to avoid overwhelming users.
+* For modals and single-page forms right-align buttons with the container.
+* Always place the primary button on the right, the secondary button just to the left of it.
+
+### Reactstrap Components
+This component uses [Button](https://reactstrap.github.io/?path=/docs/components-button--button) from reactstrap internally. So please take a look also there at their extensive documentation.
+`;
+const meta: Meta<typeof Button> = {
+  component: Button,
+  title: "components/Buttons/Normal Buttons",
+
+  parameters: {
+    docs: {
+      description: {
+        component: componentDescription,
+      },
+    },
+  },
 };
 
-export const PrimaryGreen = (args: LabelsProps) => (
+export default meta;
+
+type Story = StoryObj<typeof Button>;
+export const Primary: Story = (args: LabelsProps) => (
   <>
     <Button className="btn-rk-green">{args.text}</Button>
   </>
 );
-PrimaryGreen.args = {
-  text: "My Button",
+Primary.args = {
+  text: "Create Project",
+};
+Primary.parameters = {
+  docs: {
+    description: {
+      story:
+        "This is the primary button variant. Use this for the main action.",
+    },
+  },
 };
 
-export const SecondaryGreen = (args: LabelsProps) => (
+export const Secondary: Story = (args: LabelsProps) => (
   <>
     <Button className="btn-outline-rk-green">{args.text}</Button>
   </>
 );
-SecondaryGreen.args = {
-  text: "My Button",
+Secondary.args = {
+  text: "Cancel",
+};
+Secondary.parameters = {
+  docs: {
+    description: {
+      story:
+        "The secondary button is used for actions we don't want to emphasize too much (E.G: a `Cancel` button in a modal) or actions that are not required (E.G: `Add Variable` in the new session page to add an optional environment variable)",
+    },
+  },
 };
 
-export const PrimaryGreenWithIcon = (args: LabelsProps) => (
+export const WithIcon: Story = (args: LabelsProps) => (
   <>
     <Button className="btn-rk-green btn-icon-text">
       <FontAwesomeIcon icon={faPen} color="dark" />
@@ -56,79 +101,113 @@ export const PrimaryGreenWithIcon = (args: LabelsProps) => (
     </Button>
   </>
 );
-PrimaryGreenWithIcon.args = {
-  text: "My Button",
+WithIcon.args = {
+  text: "Edit Project",
+};
+WithIcon.parameters = {
+  docs: {
+    description: {
+      story:
+        "Here is a variation including an icon. Mind it always goes on the left.",
+    },
+  },
 };
 
-export const SecondaryGreenWithIcon = (args: LabelsProps) => (
+export const Project = (args: LabelsProps) => (
   <>
-    <Button className="btn-outline-rk-green btn-icon-text">
-      <FontAwesomeIcon icon={faPen} color="dark" />
-      {args.text}
-    </Button>
+    <Button className="btn-rk-green">{args.text}</Button>
   </>
 );
-SecondaryGreenWithIcon.args = {
+Project.args = {
   text: "My Button",
 };
-
-export const PrimaryPink = (args: LabelsProps) => (
+Project.parameters = {
+  docs: {
+    description: {
+      story: 'Use the class "btn-rk-green" when working on project components.',
+    },
+  },
+};
+export const Datasets = (args: LabelsProps) => (
   <>
     <Button className="btn-rk-pink">{args.text}</Button>
   </>
 );
-PrimaryPink.args = {
+Datasets.args = {
   text: "My Button",
 };
-
-export const SecondaryPink = (args: LabelsProps) => (
-  <>
-    <Button className="btn-outline-rk-pink">{args.text}</Button>
-  </>
-);
-SecondaryPink.args = {
-  text: "My Button",
+Datasets.parameters = {
+  docs: {
+    description: {
+      story: 'Use the class "btn-rk-pink" when working on dataset components.',
+    },
+  },
 };
 
-const defaultAction = <Button key="button-main-primary">Main Action</Button>;
-const options = [
-  <Button key="button-a">Option A</Button>,
-  <Button key="button-B">Option B</Button>,
-];
-export const menuWithOptionPrimary = () => (
+export const Workflows = (args: LabelsProps) => (
   <>
-    <ButtonWithMenu default={defaultAction} isPrincipal={true} color="rk-green">
-      {options}
-    </ButtonWithMenu>
+    <Button className="btn-rk-yellow">{args.text}</Button>
   </>
 );
-const defaultActionSecondary = (
-  <Button key="button-a" className="btn-outline-rk-green">
-    Main Action
-  </Button>
-);
-export const menuWithOptionSecondary = () => (
-  <>
-    <ButtonWithMenu
-      default={defaultActionSecondary}
-      isPrincipal={false}
-      color="rk-green"
-    >
-      {options}
-    </ButtonWithMenu>
-  </>
-);
+Workflows.args = {
+  text: "My Button",
+};
+Workflows.parameters = {
+  docs: {
+    description: {
+      story:
+        'Use the class "btn-rk-yellow" when working on workflow components.',
+    },
+  },
+};
 
-const optionsGroupButton = [
-  <Button key="button-x" className="btn-outline-rk-green">
-    Option X
-  </Button>,
-  <Button key="button-y" className="btn-outline-rk-green">
-    Option y
-  </Button>,
-];
-export const roundButtonGroup = () => (
+export const Informative = (args: LabelsProps) => (
   <>
-    <RoundButtonGroup>{optionsGroupButton}</RoundButtonGroup>
+    <Button className="btn-info">{args.text}</Button>
   </>
 );
+Informative.args = {
+  text: "Update Version",
+};
+Informative.parameters = {
+  docs: {
+    description: {
+      story:
+        "Use `btn-info` in the context of an Info alert or to enhance user experience by offering context or supplementary actions. It is not associated with critical actions. E.G `Update Version`.",
+    },
+  },
+};
+
+export const Warning = (args: LabelsProps) => (
+  <>
+    <Button className="btn-warning">{args.text}</Button>
+  </>
+);
+Warning.args = {
+  text: "Discard Changes",
+};
+Warning.parameters = {
+  docs: {
+    description: {
+      story:
+        "Use `btn-warning` in the context of a Warning Alert, or to signal caution or potential risks. It is employed for actions that might have consequences but can still be undone or rectified.",
+    },
+  },
+};
+
+export const Error = (args: LabelsProps) => (
+  <>
+    <Button className="btn-danger">{args.text}</Button>
+  </>
+);
+Error.args = {
+  text: "Delete Project",
+};
+Error.parameters = {
+  docs: {
+    description: {
+      story:
+        "Use `btn-danger` in the context of a Danger Alert, or when suggesting a high-risk action that can lead to critical or irreversible outcomes. (E.G. `Delete Project` or updating a project when it is on a very outdated version not supported anymore by the UI).",
+    },
+  },
+};
