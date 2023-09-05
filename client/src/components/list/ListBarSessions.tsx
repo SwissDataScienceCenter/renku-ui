@@ -289,11 +289,6 @@ function ListBarSession({
           annotations={notebook.annotations}
           status={notebook.status.state}
         />
-        {/* <span
-          className={cx("time-caption", "text-rk-text-light", "text-truncate")}
-        >
-          Unsynced / Uncommitted
-        </span> */}
       </div>
       <div className="session-icon">
         <SessionStatusBadge
