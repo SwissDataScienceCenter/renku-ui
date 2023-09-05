@@ -263,6 +263,7 @@ function ListBarSession({
             status={notebook.status.state}
           />
         </span>
+        <span>Unsynced / Uncommitted</span>
       </div>
       <div className="session-icon">
         <SessionStatusBadge
