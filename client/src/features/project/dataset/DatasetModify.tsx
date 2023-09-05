@@ -346,6 +346,7 @@ function formatServerError(error: ServerError) {
   );
 }
 export interface DatasetModifyProps extends DatasetModifyDisplayProps {
+  apiVersion: string | undefined;
   client: DatasetPostClient;
   dataset: DatasetModifyFormProps["dataset"];
   defaultBranch: string;
@@ -355,6 +356,7 @@ export interface DatasetModifyProps extends DatasetModifyDisplayProps {
   history: ReturnType<typeof useHistory>;
   initialized: boolean;
   location: { pathname: string };
+  metadataVersion: number | undefined;
   notifications: unknown;
   onCancel: () => void;
   overviewCommitsUrl: string;
@@ -366,6 +368,7 @@ export interface DatasetModifyProps extends DatasetModifyDisplayProps {
 export default function DatasetModify(props: DatasetModifyProps) {
   const dispatch = useDispatch();
   const {
+    apiVersion,
     client,
     dataset,
     defaultBranch,
@@ -373,6 +376,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
     fetchDatasets,
     history,
     location,
+    metadataVersion,
     overviewCommitsUrl,
     projectPathWithNamespace,
     setSubmitting,
@@ -441,11 +445,12 @@ export default function DatasetModify(props: DatasetModifyProps) {
 
         // step 2: create or modify the dataset metadata -- no files
         const datasetMutationParams: PostDatasetParams = {
+          apiVersion,
           branch: defaultBranch,
           dataset: groomedDataset as PostDataset,
           edit,
           gitUrl: externalUrl,
-          versionUrl,
+          metadataVersion,
         };
         // ? this was a quick fix; we should _not_ use then/catch but rather rely on postDatasetStatus
         postDatasetMutation(datasetMutationParams)
@@ -490,11 +495,12 @@ export default function DatasetModify(props: DatasetModifyProps) {
 
             // step 3: add the files (if any)
             const addFilesParams: AddFilesParams = {
+              apiVersion,
               branch: response.data.remoteBranch ?? defaultBranch,
               files: groomedDataset.files,
               gitUrl: externalUrl,
+              metadataVersion,
               name: groomedDataset.name,
-              versionUrl,
             };
             addFilesMutation(addFilesParams)
               .then(async (filesResponse) => {
@@ -578,6 +584,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
       }
     },
     [
+      apiVersion,
       addFilesMutation,
       client,
       dataset?.name,
@@ -587,6 +594,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
       externalUrl,
       fetchDatasets,
       history,
+      metadataVersion,
       name,
       postDatasetMutation,
       projectPathWithNamespace,

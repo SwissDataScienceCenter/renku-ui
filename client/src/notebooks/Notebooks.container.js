@@ -29,6 +29,7 @@ import {
   CheckNotebookIcon,
 } from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
+import AppContext from "../utils/context/appContext";
 import { Url } from "../utils/helpers/url";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import ShowSessionFullscreen from "./components/SessionFullScreen";
@@ -289,6 +290,8 @@ class Notebooks extends Component {
  * @param {string} [message] - provide a useful information or warning message
  */
 class StartNotebookServer extends Component {
+  static contextType = AppContext;
+
   constructor(props) {
     super(props);
     this.model = props.model.subModel("notebooks");
@@ -709,8 +712,10 @@ class StartNotebookServer extends Component {
           )
         : undefined;
 
+    const { coreApiVersionedUrlConfig } = this.context;
     const coreSupport = computeBackendData({
       availableVersions,
+      coreApiVersionedUrlConfig,
       projectVersion,
     });
 

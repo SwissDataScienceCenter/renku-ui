@@ -54,11 +54,16 @@ export const SessionStorageOption = () => {
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const {
+    apiVersion,
+    computed: coreSupportComputed,
+    metadataVersion,
+  } = coreSupport;
   const { data: projectConfig } = useGetConfigQuery(
     {
+      apiVersion,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
     },
     { skip: !coreSupportComputed }
   );

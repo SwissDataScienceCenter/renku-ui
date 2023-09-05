@@ -50,12 +50,14 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { Loader } from "../../../components/Loader";
 
 type ChangeDatasetProps = {
+  apiVersion: string | undefined;
   client: DatasetPostClient;
   fetchDatasets: PostSubmitProps["fetchDatasets"];
   history: ReturnType<typeof useHistory>;
   location: { pathname: string };
   model: unknown;
   notifications: unknown;
+  metadataVersion: number | undefined;
   params: unknown;
   submitting: boolean;
   setSubmitting: (submitting: boolean) => void;
@@ -172,6 +174,7 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
 
   return (
     <DatasetModify
+      apiVersion={props.apiVersion}
       client={props.client}
       dataset={props.dataset}
       defaultBranch={projectMetadata.defaultBranch}
@@ -181,6 +184,7 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
       initialized={true}
       history={props.history}
       location={props.location}
+      metadataVersion={props.metadataVersion}
       notifications={props.notifications}
       onCancel={onCancel}
       overviewCommitsUrl={overviewCommitsUrl}
@@ -225,10 +229,12 @@ function ProjectDatasetNew(
         />
         <ProjectDatasetNewEdit
           key="datasetCreate"
+          apiVersion={props.apiVersion}
           client={props.client}
           fetchDatasets={props.fetchDatasets}
           history={props.history}
           location={props.location}
+          metadataVersion={props.metadataVersion}
           model={props.model}
           notifications={props.notifications}
           params={props.params}
@@ -269,6 +275,7 @@ function ProjectDatasetEditForm(
   return (
     <ProjectDatasetNewEdit
       key="datasetModify"
+      apiVersion={props.apiVersion}
       client={props.client}
       dataset={props.dataset}
       datasetId={props.datasetId}
@@ -276,6 +283,7 @@ function ProjectDatasetEditForm(
       files={files}
       history={props.history}
       location={props.location}
+      metadataVersion={props.metadataVersion}
       model={props.model}
       notifications={props.notifications}
       setSubmitting={setSubmitting}
@@ -329,6 +337,7 @@ function ProjectDatasetEdit(props: ProjectDatasetEditProps) {
     >
       <ProjectDatasetEditForm
         key="datasetModify"
+        apiVersion={props.apiVersion}
         client={props.client}
         dataset={dataset}
         datasetId={datasetId}
@@ -336,6 +345,7 @@ function ProjectDatasetEdit(props: ProjectDatasetEditProps) {
         files={props.files}
         history={props.history}
         location={props.location}
+        metadataVersion={props.metadataVersion}
         model={props.model}
         notifications={props.notifications}
         setSubmitting={setSubmitting}

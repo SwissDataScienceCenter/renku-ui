@@ -17,15 +17,21 @@
  */
 
 import React from "react";
+import { createCoreApiVersionedUrlConfig } from "../helpers/url";
+import type { CoreApiVersionedUrlConfig } from "../helpers/url";
 
 type IAppContext = {
   client: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  coreApiVersionedUrlConfig: CoreApiVersionedUrlConfig;
   params: unknown;
   location: unknown;
 };
 
 const AppContext = React.createContext<IAppContext>({
   client: undefined,
+  coreApiVersionedUrlConfig: createCoreApiVersionedUrlConfig({
+    coreApiVersion: "/",
+  }),
   params: undefined,
   location: undefined,
 });
