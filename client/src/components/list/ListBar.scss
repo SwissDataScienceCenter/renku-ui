@@ -149,8 +149,6 @@
   }
 
   .listBar-entity-date {
-    // TODO: remove
-    // align-self: center;
     justify-content: start;
   }
 
@@ -162,11 +160,6 @@
   .session-status-text {
     width: 60px;
   }
-
-  // TODO: remove
-  // .session-time {
-  //   gap: 10px;
-  // }
 }
 
 @media (max-width: 992px) {
