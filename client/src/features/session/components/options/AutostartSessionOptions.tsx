@@ -133,7 +133,6 @@ function useAutostartSessionOptions(): void {
     backendAvailable,
     computed: coreSupportComputed,
     metadataVersion,
-    // versionUrl,
   } = coreSupport;
   const {
     data: projectConfig,
@@ -145,7 +144,6 @@ function useAutostartSessionOptions(): void {
     gitLabProjectId: gitLabProjectId ?? 0,
     metadataVersion,
     projectRepositoryUrl,
-    // versionUrl,
     skip: !backendAvailable || !coreSupportComputed || !commit,
   });
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =

@@ -53,7 +53,6 @@ export default function SessionDockerImage() {
       gitLabProjectId: gitLabProjectId ?? 0,
       metadataVersion,
       projectRepositoryUrl,
-      // versionUrl,
       skip: !coreSupportComputed || !commit,
     });
 

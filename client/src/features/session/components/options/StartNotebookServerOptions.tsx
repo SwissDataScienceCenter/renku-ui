@@ -73,7 +73,6 @@ export const StartNotebookServerOptions = () => {
     backendAvailable,
     computed: coreSupportComputed,
     metadataVersion,
-    // versionUrl,
   } = coreSupport;
   const commit = useStartSessionOptionsSelector(({ commit }) => commit);
   const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
@@ -83,7 +82,6 @@ export const StartNotebookServerOptions = () => {
       gitLabProjectId: gitLabProjectId ?? 0,
       metadataVersion,
       projectRepositoryUrl,
-      // versionUrl,
       skip: !backendAvailable || !coreSupportComputed || !commit,
     });
 
@@ -167,7 +165,6 @@ const DefaultUrlOption = () => {
       gitLabProjectId: gitLabProjectId ?? 0,
       metadataVersion,
       projectRepositoryUrl,
-      // versionUrl,
       skip: !coreSupportComputed || !commit,
     });
 
@@ -281,7 +278,6 @@ const AutoFetchLfsOption = () => {
     gitLabProjectId: gitLabProjectId ?? 0,
     metadataVersion,
     projectRepositoryUrl,
-    // versionUrl,
     skip: !coreSupportComputed || !commit,
   });
 

@@ -28,7 +28,6 @@ interface UsePatchedProjectConfigArgs {
   metadataVersion: number | undefined;
   projectRepositoryUrl: string;
   skip?: boolean;
-  // versionUrl: string | undefined;
 }
 
 // For starting new sessions, we need to read the configuration file directly
@@ -41,14 +40,12 @@ export default function usePatchedProjectConfig({
   metadataVersion,
   projectRepositoryUrl,
   skip,
-}: // versionUrl,
-UsePatchedProjectConfigArgs) {
+}: UsePatchedProjectConfigArgs) {
   const getConfigResult = useGetConfigQuery(
     {
       apiVersion,
       metadataVersion,
       projectRepositoryUrl,
-      // versionUrl,
     },
     { skip: skip || !commit }
   );
