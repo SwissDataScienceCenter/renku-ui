@@ -28,7 +28,7 @@ RUN npm ci && \
 
 COPY .storybook /app/.storybook
 
-RUN npm run build-storybook -- -o storybook-static
+RUN npm run storybook-build -- -o storybook-static
 
 FROM nginxinc/nginx-unprivileged:1.20-alpine
 
