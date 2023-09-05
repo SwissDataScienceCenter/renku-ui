@@ -34,14 +34,14 @@ function EntityLabel({ type, workflowType = null }: EntityLabelProps) {
   switch (type) {
     case "project":
       return (
-        <div className="card-type-label text-rk-green gap-2 d-flex align-items-baseline">
+        <div className="card-type-label text-rk-green gap-2 d-flex align-items-center">
           <Briefcase title="project" />
           Project
         </div>
       );
     case "dataset":
       return (
-        <div className="card-type-label text-rk-pink gap-2 d-flex align-items-baseline">
+        <div className="card-type-label text-rk-pink gap-2 d-flex align-items-center">
           <HddStack title="dataset" />
           Dataset
         </div>
@@ -59,7 +59,7 @@ function EntityLabel({ type, workflowType = null }: EntityLabelProps) {
       /* eslint-enable no-case-declarations */
 
       return (
-        <div className="card-type-label text-rk-yellow gap-2 d-flex align-items-baseline">
+        <div className="card-type-label text-rk-yellow gap-2 d-flex align-items-center">
           {icon} {text}
         </div>
       );
