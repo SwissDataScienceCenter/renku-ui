@@ -149,7 +149,8 @@
   }
 
   .listBar-entity-date {
-    align-self: center;
+    // TODO: remove
+    // align-self: center;
     justify-content: start;
   }
 
@@ -162,9 +163,10 @@
     width: 60px;
   }
 
-  .session-time {
-    gap: 10px;
-  }
+  // TODO: remove
+  // .session-time {
+  //   gap: 10px;
+  // }
 }
 
 @media (max-width: 992px) {

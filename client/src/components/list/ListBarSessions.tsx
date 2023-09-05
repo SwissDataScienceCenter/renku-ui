@@ -16,16 +16,24 @@
  * limitations under the License.
  */
 
-import { Fragment, useContext, useEffect, useRef, useState } from "react";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationTriangle,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
 import SessionButton from "../../features/session/components/SessionButton";
-import { Notebook } from "../../notebooks/components/session.types";
+import SessionHibernationStatusDetails from "../../features/session/components/status/SessionHibernationStatusDetails";
 import SessionStatusBadge from "../../features/session/components/status/SessionStatusBadge";
 import SessionStatusText from "../../features/session/components/status/SessionStatusText";
+import { SessionStatusState } from "../../features/session/sessions.types";
+import {
+  Notebook,
+  NotebookAnnotations,
+} from "../../notebooks/components/session.types";
 import AppContext from "../../utils/context/appContext";
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
@@ -236,7 +244,14 @@ function ListBarSession({
           className="listBar-entity-creators"
         />
       </div>
-      <div className="entity-date listBar-entity-date">
+      <div
+        className={cx(
+          "entity-date",
+          "listBar-entity-date",
+          "align-self-start",
+          "mt-2"
+        )}
+      >
         <TimeCaption
           className="text-rk-text-light text-truncate"
           enableTooltip
@@ -250,7 +265,14 @@ function ListBarSession({
       <div className="session-resources text-truncate">
         <ResourceList resources={resources} />
       </div>
-      <div className="session-time text-truncate">
+      <div
+        className={cx(
+          "session-time",
+          "text-truncate",
+          "flex-wrap",
+          "column-gap-2"
+        )}
+      >
         <div className="d-flex">
           <div className="session-icon-details">{sessionDetailsPopover}</div>
         </div>
@@ -263,7 +285,15 @@ function ListBarSession({
             status={notebook.status.state}
           />
         </span>
-        <span>Unsynced / Uncommitted</span>
+        <UnsavedWorkWarning
+          annotations={notebook.annotations}
+          status={notebook.status.state}
+        />
+        {/* <span
+          className={cx("time-caption", "text-rk-text-light", "text-truncate")}
+        >
+          Unsynced / Uncommitted
+        </span> */}
       </div>
       <div className="session-icon">
         <SessionStatusBadge
@@ -274,6 +304,60 @@ function ListBarSession({
         />
       </div>
     </div>
+  );
+}
+
+interface UnsavedWorkWarningProps {
+  annotations: NotebookAnnotations;
+  status: SessionStatusState;
+}
+
+function UnsavedWorkWarning({ annotations, status }: UnsavedWorkWarningProps) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  if (status !== "hibernated") {
+    return null;
+  }
+
+  const hasHibernationInfo = !!annotations["hibernationDate"];
+  const hasUnsavedWork =
+    !hasHibernationInfo ||
+    annotations["hibernationDirty"] ||
+    !annotations["hibernationSynchronized"];
+
+  if (!hasUnsavedWork) {
+    return null;
+  }
+
+  const explanation = !hasHibernationInfo
+    ? "uncommitted files and/or unsynced commits"
+    : annotations["hibernationDirty"] && !annotations["hibernationSynchronized"]
+    ? "uncommitted files and unsynced commits"
+    : annotations["hibernationDirty"]
+    ? "uncommitted files"
+    : "unsynced commits";
+
+  return (
+    <>
+      <span
+        className={cx("time-caption", "text-rk-text-light", "text-truncate")}
+        ref={ref}
+      >
+        <FontAwesomeIcon
+          className={cx("text-warning", "me-1")}
+          icon={faExclamationTriangle}
+        />
+        Unsaved work {"("}
+        {explanation}
+        {")"}
+      </span>
+      <UncontrolledPopover target={ref} trigger="hover" placement="bottom">
+        <PopoverHeader>Paused Session</PopoverHeader>
+        <PopoverBody>
+          <SessionHibernationStatusDetails annotations={annotations} />
+        </PopoverBody>
+      </UncontrolledPopover>
+    </>
   );
 }
 
