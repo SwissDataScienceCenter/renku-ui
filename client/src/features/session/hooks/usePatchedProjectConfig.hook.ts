@@ -22,27 +22,33 @@ import { useGetConfigQuery } from "../../project/projectCoreApi";
 import { useGetConfigFromRepositoryQuery } from "../../project/projectGitLab.api";
 
 interface UsePatchedProjectConfigArgs {
+  apiVersion: string | undefined;
   commit: string;
   gitLabProjectId: number;
+  metadataVersion: number | undefined;
   projectRepositoryUrl: string;
   skip?: boolean;
-  versionUrl: string | undefined;
+  // versionUrl: string | undefined;
 }
 
 // For starting new sessions, we need to read the configuration file directly
 // from GitLab until renku-core is capable of providing the "config.show" API
 // endpoint at a requested commit
 export default function usePatchedProjectConfig({
+  apiVersion,
   commit,
   gitLabProjectId,
+  metadataVersion,
   projectRepositoryUrl,
   skip,
-  versionUrl,
-}: UsePatchedProjectConfigArgs) {
+}: // versionUrl,
+UsePatchedProjectConfigArgs) {
   const getConfigResult = useGetConfigQuery(
     {
+      apiVersion,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
+      // versionUrl,
     },
     { skip: skip || !commit }
   );

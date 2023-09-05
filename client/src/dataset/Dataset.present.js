@@ -579,10 +579,12 @@ export default function DatasetView(props) {
         ) : null}
         {props.insideProject && props.maintainer ? (
           <DeleteDataset
+            apiVersion={props.apiVersion}
             client={props.client}
             dataset={dataset}
             externalUrl={props.externalUrl}
             history={props.history}
+            metadataVersion={props.metadataVersion}
             modalOpen={deleteDatasetModalOpen}
             projectPathWithNamespace={props.projectPathWithNamespace}
             setModalOpen={setDeleteDatasetModalOpen}

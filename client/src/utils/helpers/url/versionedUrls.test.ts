@@ -16,25 +16,154 @@
  * limitations under the License.
  */
 
-import { getCoreVersionedUrl } from "./versionedUrls";
+import {
+  coreVersionedUrl,
+  createCoreApiVersionedUrlConfig,
+} from "./versionedUrls";
 
-describe("Test versionedUrl", () => {
-  const FAKE_URL = "renkuEntity.edit";
+describe("Test versionedUrl config, always latest", () => {
+  const FAKE_ENDPOINT = "renkuEntity.edit";
+  const config = createCoreApiVersionedUrlConfig({ coreApiVersion: "/" });
 
   it("Version: number only", () => {
-    const numberedUrl = getCoreVersionedUrl(FAKE_URL, "10");
-    expect(numberedUrl).toBe(`/10/${FAKE_URL}`);
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: FAKE_ENDPOINT,
+      metadataVersion: 10,
+    });
+    expect(numberedUrl).toBe(`/10/${FAKE_ENDPOINT}`);
   });
-  it("Version: trailing slash", () => {
-    const numberedUrl = getCoreVersionedUrl(FAKE_URL, "/10");
-    expect(numberedUrl).toBe(`/10/${FAKE_URL}`);
+  it("Version: initial slash", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: `/${FAKE_ENDPOINT}`,
+      metadataVersion: 10,
+    });
+    expect(numberedUrl).toBe(`/10/${FAKE_ENDPOINT}`);
   });
   it("Version: none", () => {
-    const numberedUrl = getCoreVersionedUrl(FAKE_URL, null);
-    expect(numberedUrl).toBe(`/${FAKE_URL}`);
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: FAKE_ENDPOINT,
+      metadataVersion: null,
+    });
+    expect(numberedUrl).toBe(`/${FAKE_ENDPOINT}`);
   });
   it("Endpoint: missing", () => {
-    const numberedUrl = getCoreVersionedUrl("", null);
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: "",
+      metadataVersion: null,
+    });
     expect(numberedUrl).toBe("/");
+  });
+});
+
+describe("Test versionedUrl config, default, no overrides", () => {
+  const FAKE_ENDPOINT = "renkuEntity.edit";
+  const config = createCoreApiVersionedUrlConfig({ coreApiVersion: "2.0" });
+
+  it("Version: number only", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: FAKE_ENDPOINT,
+      metadataVersion: 10,
+    });
+    expect(numberedUrl).toBe(`/10/2.0/${FAKE_ENDPOINT}`);
+  });
+  it("Version: initial slash", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: `/${FAKE_ENDPOINT}`,
+      metadataVersion: 10,
+    });
+    expect(numberedUrl).toBe(`/10/2.0/${FAKE_ENDPOINT}`);
+  });
+  it("Version: none", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: FAKE_ENDPOINT,
+      metadataVersion: null,
+    });
+    expect(numberedUrl).toBe(`/2.0/${FAKE_ENDPOINT}`);
+  });
+  it("Endpoint: missing", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: "",
+      metadataVersion: null,
+    });
+    expect(numberedUrl).toBe("/2.0/");
+  });
+});
+
+describe("Test versionedUrl config, with overrides", () => {
+  const FAKE_ENDPOINT = "renkuEntity.edit";
+  const config = createCoreApiVersionedUrlConfig({
+    coreApiVersion: "/2.0",
+    overrides: {
+      "9": "/",
+      "11": "3.0",
+    },
+  });
+
+  it("Version 10", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: FAKE_ENDPOINT,
+      metadataVersion: 10,
+    });
+    expect(numberedUrl).toBe(`/10/2.0/${FAKE_ENDPOINT}`);
+  });
+  it("Version 9", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: FAKE_ENDPOINT,
+      metadataVersion: 9,
+    });
+    expect(numberedUrl).toBe(`/9/${FAKE_ENDPOINT}`);
+  });
+  it("Version 11", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: FAKE_ENDPOINT,
+      metadataVersion: 11,
+    });
+    expect(numberedUrl).toBe(`/11/3.0/${FAKE_ENDPOINT}`);
+  });
+  it("Initial slash, version 10", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: `/${FAKE_ENDPOINT}`,
+      metadataVersion: 10,
+    });
+    expect(numberedUrl).toBe(`/10/2.0/${FAKE_ENDPOINT}`);
+  });
+  it("Initial slash, version 9", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: `/${FAKE_ENDPOINT}`,
+      metadataVersion: 9,
+    });
+    expect(numberedUrl).toBe(`/9/${FAKE_ENDPOINT}`);
+  });
+  it("Initial slash,version 11", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: `/${FAKE_ENDPOINT}`,
+      metadataVersion: 11,
+    });
+    expect(numberedUrl).toBe(`/11/3.0/${FAKE_ENDPOINT}`);
+  });
+
+  it("Version 10 locally overridden", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: FAKE_ENDPOINT,
+      metadataVersion: 10,
+      apiVersion: "3.0",
+    });
+    expect(numberedUrl).toBe(`/10/3.0/${FAKE_ENDPOINT}`);
+  });
+  it("Version 9 locally overridden", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: FAKE_ENDPOINT,
+      metadataVersion: 9,
+      apiVersion: "3.0",
+    });
+    expect(numberedUrl).toBe(`/9/3.0/${FAKE_ENDPOINT}`);
+  });
+  it("Version 11 locally overridden", () => {
+    const numberedUrl = coreVersionedUrl(config, {
+      endpoint: FAKE_ENDPOINT,
+      metadataVersion: 11,
+      apiVersion: "/",
+    });
+    expect(numberedUrl).toBe(`/11/${FAKE_ENDPOINT}`);
   });
 });

@@ -69,17 +69,21 @@ export const StartNotebookServerOptions = () => {
     branch: defaultBranch ?? undefined,
   });
   const {
+    apiVersion,
     backendAvailable,
     computed: coreSupportComputed,
-    versionUrl,
+    metadataVersion,
+    // versionUrl,
   } = coreSupport;
   const commit = useStartSessionOptionsSelector(({ commit }) => commit);
   const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
     usePatchedProjectConfig({
+      apiVersion,
       commit,
       gitLabProjectId: gitLabProjectId ?? 0,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
+      // versionUrl,
       skip: !backendAvailable || !coreSupportComputed || !commit,
     });
 
@@ -149,15 +153,21 @@ const DefaultUrlOption = () => {
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const {
+    apiVersion,
+    computed: coreSupportComputed,
+    metadataVersion,
+  } = coreSupport;
   const { commit, defaultUrl: selectedDefaultUrl } =
     useStartSessionOptionsSelector();
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
     usePatchedProjectConfig({
+      apiVersion,
       commit,
       gitLabProjectId: gitLabProjectId ?? 0,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
+      // versionUrl,
       skip: !coreSupportComputed || !commit,
     });
 
@@ -259,13 +269,19 @@ const AutoFetchLfsOption = () => {
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const {
+    apiVersion,
+    computed: coreSupportComputed,
+    metadataVersion,
+  } = coreSupport;
   const commit = useStartSessionOptionsSelector(({ commit }) => commit);
   const { data: projectConfig } = usePatchedProjectConfig({
+    apiVersion,
     commit,
     gitLabProjectId: gitLabProjectId ?? 0,
+    metadataVersion,
     projectRepositoryUrl,
-    versionUrl,
+    // versionUrl,
     skip: !coreSupportComputed || !commit,
   });
 

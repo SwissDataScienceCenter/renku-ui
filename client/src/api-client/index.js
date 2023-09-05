@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CoreApiVersionedUrlHelper } from "../utils/helpers/url";
 
 import addDatasetMethods from "./dataset";
 import addGraphMethods from "./graph";
@@ -55,10 +56,14 @@ class APIClient {
   /**
    * @param {string} apiUrl - base API url
    * @param {string} uiserverUrl - UI server base url, mainly used for authentication
+   * @param {CoreApiVersionedUrlConfig} coreApiVersionedUrlConfig - helper object for computing versioned URLs.
    */
-  constructor(apiUrl, uiserverUrl) {
+  constructor(apiUrl, uiserverUrl, coreApiVersionedUrlConfig) {
     this.baseUrl = apiUrl;
     this.uiserverUrl = uiserverUrl;
+    this.coreApiVersionedUrlHelper = new CoreApiVersionedUrlHelper(
+      coreApiVersionedUrlConfig
+    );
     this.returnTypes = RETURN_TYPES;
 
     addDatasetMethods(this);
@@ -224,12 +229,15 @@ class APIClient {
   /**
    * Return a versioned endpoint url for the core service.
    * @param {string} endpoint
-   * @param {string or null} version
+   * @param {string or null} metadataVersion
    * @returns string
    */
-  versionedCoreUrl(endpoint, version) {
-    const urlAddition = version ? version : "";
-    return `${this.baseUrl}/renku${urlAddition}/${endpoint}`;
+  versionedCoreUrl(endpoint, metadataVersion) {
+    const path = this.coreApiVersionedUrlHelper.urlForEndpoint(
+      endpoint,
+      metadataVersion
+    );
+    return `${this.baseUrl}/renku${path}`;
   }
 
   /**

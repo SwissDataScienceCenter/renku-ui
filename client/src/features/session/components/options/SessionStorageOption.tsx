@@ -51,13 +51,19 @@ export const SessionStorageOption = () => {
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const {
+    apiVersion,
+    computed: coreSupportComputed,
+    metadataVersion,
+  } = coreSupport;
   const commit = useStartSessionOptionsSelector(({ commit }) => commit);
   const { data: projectConfig } = usePatchedProjectConfig({
+    apiVersion,
     commit,
     gitLabProjectId: gitLabProjectId ?? 0,
+    metadataVersion,
     projectRepositoryUrl,
-    versionUrl,
+    // versionUrl,
     skip: !coreSupportComputed || !commit,
   });
 
