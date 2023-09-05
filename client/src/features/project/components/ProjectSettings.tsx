@@ -33,6 +33,7 @@ import { Visibilities } from "../../../components/visibility/Visibility";
 // ****** SETTINGS COMPONENTS ****** //
 
 interface ProjectSettingsGeneralProps {
+  apiVersion?: string;
   client: unknown;
   forkedFromProject?: {
     id: number;
@@ -48,6 +49,7 @@ interface ProjectSettingsGeneralProps {
     visibility: Visibilities;
     [key: string]: unknown;
   };
+  metadataVersion?: number;
   notifications: Notifications;
   projectPathWithNamespace: string;
   user: {
@@ -74,8 +76,10 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
         projectId={props.metadata?.id}
       />
       <ProjectSettingsDescription
+        apiVersion={props.apiVersion}
         gitUrl={props.metadata?.externalUrl}
         isMaintainer={isMaintainer}
+        metadataVersion={props.metadataVersion}
         projectId={props.metadata?.id}
         projectFullPath={props.projectPathWithNamespace}
       />

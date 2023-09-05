@@ -103,6 +103,8 @@ spec:
                   key: chart_version
             - name: HOMEPAGE
               value: {{ toJson .Values.client.homepage | quote }}
+            - name: CORE_API_VERSION_CONFIG
+              value: {{ toJson .Values.client.coreApiVersionConfig | quote }}
           livenessProbe:
             httpGet:
               path: /
