@@ -18,12 +18,23 @@
 
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import cx from "classnames";
-import { CloudFill, PencilSquare, PlusLg, XLg } from "react-bootstrap-icons";
+import {
+  ChevronDown,
+  CloudFill,
+  PencilSquare,
+  PlusLg,
+  XLg,
+} from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { RootStateOrAny, useSelector } from "react-redux";
 import {
   Button,
+  Card,
+  CardBody,
+  CardHeader,
   Col,
+  Collapse,
+  Container,
   Form,
   FormText,
   Input,
@@ -39,7 +50,10 @@ import { ACCESS_LEVELS } from "../../api-client";
 import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
-import { CloudStorage } from "../../features/dataServices/dataServices.types";
+import {
+  CloudStorage,
+  CloudStorageListItem,
+} from "../../features/dataServices/dataServices.types";
 import {
   useAddCloudStorageForProjectMutation,
   useDeleteCloudStorageMutation,
@@ -112,6 +126,7 @@ export default function ProjectSettingsCloudStorage() {
   return (
     <CloudStorageSection>
       <AddCloudStorageButton />
+      <CloudStorageListAlt storageForProject={storageForProject} />
       <CloudStorageList storageForProject={storageForProject} />
     </CloudStorageSection>
   );
@@ -535,7 +550,136 @@ interface SimpleAddCloudStorageForm {
 }
 
 interface CloudStorageListProps {
-  storageForProject: { storage: CloudStorage }[];
+  storageForProject: CloudStorageListItem[];
+}
+
+function CloudStorageListAlt({ storageForProject }: CloudStorageListProps) {
+  if (storageForProject.length == 0) {
+    return null;
+  }
+
+  return (
+    <Container className={cx("p-0", "mt-4")} fluid>
+      <Row className={cx("row-cols-1", "gy-2")}>
+        {storageForProject.map(({ storage }, index) => (
+          <CloudStorageItemAlt
+            key={`${storage.name}-${index}`}
+            storage={storage}
+          />
+        ))}
+      </Row>
+    </Container>
+  );
+}
+
+function CloudStorageItemAlt({ storage }: CloudStorageItemProps) {
+  const { configuration, name, source_path, storage_type, target_path } =
+    storage;
+
+  const configContent = `[${name}]
+${Object.entries(configuration)
+  .map(([key, value]) => `${key} = ${value}`)
+  .join("\n")}`;
+
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((isOpen) => !isOpen);
+  }, []);
+
+  return (
+    <Col>
+      <Card>
+        <CardBody className="p-0">
+          <h3 className={cx("fs-6", "m-0")}>
+            <button
+              className={cx(
+                "d-flex",
+                "gap-3",
+                "align-items-center",
+                "w-100",
+                "p-3",
+                "bg-transparent",
+                "border-0"
+              )}
+              onClick={toggle}
+            >
+              <div className="fw-bold">{name}</div>
+              <div className={cx("small", "d-none", "d-sm-block")}>
+                <span className="text-rk-text-light">Source Path: </span>
+                <span>{source_path}</span>
+              </div>
+              <div className={cx("small", "d-none", "d-sm-block")}>
+                <span className="text-rk-text-light">Mount Point: </span>
+                <span>{target_path}</span>
+              </div>
+              <div className="ms-auto">
+                <ChevronDown />
+              </div>
+            </button>
+          </h3>
+        </CardBody>
+        <Collapse isOpen={isOpen}>
+          <CardBody className="pt-0">
+            <div>
+              <div className="text-rk-text-light">
+                <small>Name</small>
+              </div>
+              <div>{name}</div>
+            </div>
+            <div className="mt-2">
+              <div className="text-rk-text-light">
+                <small>Storage Type</small>
+              </div>
+              <div>{storage_type}</div>
+            </div>
+            <div className="mt-2">
+              <div className="text-rk-text-light">
+                <small>
+                  Source Path {"("}usually &lt;bucket&gt; or
+                  &lt;bucket&gt;/&lt;folder&gt;{")"}
+                </small>
+              </div>
+              <div>
+                <code>{source_path}</code>
+              </div>
+            </div>
+            <div className="mt-2">
+              <div className="text-rk-text-light">
+                <small>
+                  Target Path {"("}this is where the storage will be mounted
+                  during sessions{")"}
+                </small>
+              </div>
+              <div>
+                <code>{target_path}</code>
+              </div>
+            </div>
+            <div className="mt-2">
+              <div className="text-rk-text-light">
+                <small>Requires credentials</small>
+              </div>
+              <div>{storage.private ? "Yes" : "No"}</div>
+            </div>
+            <div className="mt-2">
+              <div className="text-rk-text-light">
+                <small>
+                  Configuration (uses <code>rclone config</code>)
+                </small>
+              </div>
+              <div>
+                <textarea
+                  className="form-control"
+                  readOnly
+                  rows={Object.keys(configuration).length + 2}
+                  value={configContent}
+                />
+              </div>
+            </div>
+          </CardBody>
+        </Collapse>
+      </Card>
+    </Col>
+  );
 }
 
 function CloudStorageList({ storageForProject }: CloudStorageListProps) {
