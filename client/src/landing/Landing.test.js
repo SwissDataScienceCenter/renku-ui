@@ -28,6 +28,7 @@ import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 import AppContext from "../utils/context/appContext";
+import { createCoreApiVersionedUrlConfig } from "../utils/helpers/url";
 import { testClient as client } from "../api-client";
 import { generateFakeUser } from "../user/User.test";
 import { StateModel, globalSchema } from "../model";
@@ -38,6 +39,9 @@ import { AnonymousHome } from "./index";
 const appContext = {
   client: client,
   location: { pathname: "" },
+  coreApiVersionedUrlConfig: createCoreApiVersionedUrlConfig({
+    coreApiVersion: "/",
+  }),
 };
 
 describe("rendering", () => {

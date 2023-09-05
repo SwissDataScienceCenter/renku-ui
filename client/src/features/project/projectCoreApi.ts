@@ -39,7 +39,7 @@ import type {
 import { MigrationStartScopes } from "./projectEnums";
 import { projectKgApi } from "./projectKgApi";
 import { projectsKgApi } from "../projects/projectsKgApi";
-import { getCoreVersionedUrl } from "../../utils/helpers/url/versionedUrls";
+import { versionedPathForEndpoint } from "../../utils/helpers/url/versionedUrls";
 import { CoreVersionUrl } from "../../utils/types/coreService.types";
 
 interface GetConfigParams extends CoreVersionUrl {
@@ -119,7 +119,11 @@ export const projectCoreApi = createApi({
         };
         return {
           url: urlWithQueryParams(
-            getCoreVersionedUrl("datasets.files_list", params.versionUrl),
+            versionedPathForEndpoint({
+              endpoint: "datasets.files_list",
+              metadataVersion: params.metadataVersion,
+              apiVersion: params.apiVersion,
+            }),
             queryParams
           ),
           method: "GET",
@@ -147,11 +151,15 @@ export const projectCoreApi = createApi({
         };
         if (migrationParams.branch) params.branch = migrationParams.branch;
         return {
-          url: "/cache.migrations_check", // ? migrations always uses the last renku version
+          url: versionedPathForEndpoint({
+            endpoint: "cache.migrations_check",
+            metadataVersion: undefined, // ? migrations always uses the last renku metadata version
+            apiVersion: migrationParams.apiVersion,
+          }),
           params,
         };
       },
-      providesTags: (result, error, migrationParams) => [
+      providesTags: (_result, _error, migrationParams) => [
         { type: "project-status", id: migrationParams.gitUrl },
       ],
       transformResponse: (response: MigrationStatusResponse) => {
@@ -223,7 +231,11 @@ export const projectCoreApi = createApi({
         return {
           body,
           method: "POST",
-          url: getCoreVersionedUrl("/cache.migrate"), // ? migrations always uses the last renku version
+          url: versionedPathForEndpoint({
+            endpoint: "cache.migrate",
+            metadataVersion: undefined, // ? migrations always uses the last renku metadata version
+            apiVersion: data.apiVersion,
+          }),
           validateStatus: (response, body) => {
             return response.status < 400 && !body.error?.code;
           },
@@ -234,13 +246,22 @@ export const projectCoreApi = createApi({
       ],
     }),
     getConfig: builder.query<ProjectConfig, GetConfigParams>({
-      query: ({ branch, projectRepositoryUrl, versionUrl }) => {
+      query: ({
+        apiVersion,
+        branch,
+        projectRepositoryUrl,
+        metadataVersion,
+      }) => {
         const params = {
           git_url: projectRepositoryUrl,
           ...(branch ? { branch } : {}),
         };
         return {
-          url: getCoreVersionedUrl("config.show", versionUrl),
+          url: versionedPathForEndpoint({
+            endpoint: "config.show",
+            metadataVersion,
+            apiVersion,
+          }),
           params,
           validateStatus: (response, body) =>
             response.status >= 200 && response.status < 300 && !body.error,
@@ -254,14 +275,24 @@ export const projectCoreApi = createApi({
       ],
     }),
     updateConfig: builder.mutation<UpdateConfigResponse, UpdateConfigParams>({
-      query: ({ branch, projectRepositoryUrl, versionUrl, update }) => {
+      query: ({
+        apiVersion,
+        branch,
+        metadataVersion,
+        projectRepositoryUrl,
+        update,
+      }) => {
         const body = {
           git_url: projectRepositoryUrl,
           ...(branch ? { branch } : {}),
           config: update,
         };
         return {
-          url: getCoreVersionedUrl("config.set", versionUrl),
+          url: versionedPathForEndpoint({
+            endpoint: "config.set",
+            metadataVersion,
+            apiVersion,
+          }),
           method: "POST",
           body,
           validateStatus: (response, body) =>
@@ -287,7 +318,11 @@ export const projectCoreApi = createApi({
         return {
           body: { description: data.description, git_url: data.gitUrl },
           method: "POST",
-          url: `/project.edit`,
+          url: versionedPathForEndpoint({
+            endpoint: "project.edit",
+            metadataVersion: data.metadataVersion,
+            apiVersion: data.apiVersion,
+          }),
           validateStatus: (response, body) => {
             return response.status < 400 && !body.error?.code;
           },
@@ -316,15 +351,6 @@ export const projectCoreApi = createApi({
     }),
   }),
 });
-
-export const {
-  useGetDatasetFilesQuery,
-  useGetMigrationStatusQuery,
-  useStartMigrationMutation,
-  useGetConfigQuery,
-  useUpdateConfigMutation,
-  useUpdateDescriptionMutation,
-} = projectCoreApi;
 
 export const transformGetConfigRawResponse = (
   response: GetConfigRawResponse
@@ -425,3 +451,12 @@ const transformRenkuCoreErrorResponse = (
     data: data.error,
   };
 };
+
+export const {
+  useGetDatasetFilesQuery,
+  useGetMigrationStatusQuery,
+  useStartMigrationMutation,
+  useGetConfigQuery,
+  useUpdateConfigMutation,
+  useUpdateDescriptionMutation,
+} = projectCoreApi;

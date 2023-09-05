@@ -894,7 +894,8 @@ function ProjectView(props) {
     gitUrl,
     branch,
   });
-  const { backendAvailable, versionUrl } = coreSupport;
+  const { apiVersion, backendAvailable, metadataVersion, versionUrl } =
+    coreSupport;
 
   const { datasets, fetchDatasets } = props;
   useEffect(() => {
@@ -995,7 +996,14 @@ function ProjectView(props) {
           />
           <Route
             path={props.settingsUrl}
-            render={() => <ProjectSettings key="settings" {...props} />}
+            render={() => (
+              <ProjectSettings
+                key="settings"
+                {...props}
+                apiVersion={apiVersion}
+                metadataVersion={metadataVersion}
+              />
+            )}
           />
           <Route path={props.notebookServersUrl}>
             <ProjectSessionsRouter key="sessions" />

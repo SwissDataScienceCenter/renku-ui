@@ -64,7 +64,7 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 };
 
 function CentralContentContainer(props) {
-  const { notifications, user, socket } = props;
+  const { coreApiVersionedUrlConfig, notifications, socket, user } = props;
 
   if (
     !props.user.logged &&
@@ -87,6 +87,7 @@ function CentralContentContainer(props) {
 
   const appContext = {
     client: props.client,
+    coreApiVersionedUrlConfig,
     location: props.location,
     model: props.model,
     notifications,

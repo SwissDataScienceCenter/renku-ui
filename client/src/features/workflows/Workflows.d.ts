@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+import {
+  CoreRepositoryParams,
+  CoreVersionUrl,
+} from "../../utils/types/coreService.types";
+
 import { WorkflowType } from "../../components/entities";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -96,9 +101,9 @@ export interface WorkflowsDisplay {
   showInactive: boolean;
 }
 
-export interface WorkflowRequestParams {
-  coreUrl: string;
-  gitUrl: string;
+export interface WorkflowRequestParams
+  extends CoreVersionUrl,
+    CoreRepositoryParams {
   reference: string;
   fullPath: string;
 }

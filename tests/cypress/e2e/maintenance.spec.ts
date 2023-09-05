@@ -24,7 +24,7 @@ describe("display the maintenance page", () => {
   fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
 
   // e of the resources on RenkuLab are t
-  it("Shows the standard error when UI is down but no maintenace is set", () => {
+  it("Shows the standard error when UI is down but no maintenance is set", () => {
     fixtures.config();
     cy.visit("/");
     cy.get("h1").first().should("contain.text", "RenkuLab Down");
@@ -33,8 +33,11 @@ describe("display the maintenance page", () => {
     cy.get("h1").first().should("not.contain.text", "Maintenance ongoing");
   });
 
-  it("Keep showing the maintenace page on every URL", () => {
-    fixtures.config("getConfigMaintenace", "config_maintenance.json");
+  it("Keep showing the maintenance page on every URL", () => {
+    fixtures.config({
+      name: "getConfigMaintenance",
+      fixture: "config_maintenance.json",
+    });
     cy.visit("/");
     cy.get("h1").first().should("contain.text", "Maintenance ongoing");
     cy.visit("/projects");
