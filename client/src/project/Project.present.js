@@ -62,7 +62,6 @@ import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import ProjectSessionsRouter from "../features/session/components/ProjectSessionsRouter";
 import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
-import { NotebooksCoordinator } from "../notebooks";
 import { Url } from "../utils/helpers/url";
 import { WorkflowsList } from "../workflows";
 import "./Project.css";
@@ -503,35 +502,21 @@ function ForkedFromLink({ forkedFromProject, projectsUrl }) {
   );
 }
 
-class ProjectViewHeader extends Component {
-  constructor(props) {
-    // ? Temporary workaround to fetch sessions at least once when opening the project header.
-    super(props);
-    const notebooksModel = props.model.subModel("notebooks");
-    const userModel = props.model.subModel("user");
-    const notebookCoordinator = new NotebooksCoordinator(
-      props.client,
-      notebooksModel,
-      userModel
-    );
-    notebookCoordinator.fetchNotebooks();
-  }
+function ProjectViewHeader(props) {
+  const forkedFromLink = (
+    <ForkedFromLink
+      forkedFromProject={props.forkedFromProject}
+      projectsUrl={props.projectsUrl}
+    />
+  );
 
-  render() {
-    const forkedFromLink = (
-      <ForkedFromLink
-        forkedFromProject={this.props.forkedFromProject}
-        projectsUrl={this.props.projectsUrl}
-      />
-    );
-    return (
-      <ProjectViewHeaderMinimal
-        key="minimalHeader"
-        forkedFromLink={forkedFromLink}
-        {...this.props}
-      />
-    );
-  }
+  return (
+    <ProjectViewHeaderMinimal
+      key="minimalHeader"
+      forkedFromLink={forkedFromLink}
+      {...props}
+    />
+  );
 }
 
 class ProjectNav extends Component {
@@ -894,7 +879,8 @@ function ProjectView(props) {
     gitUrl,
     branch,
   });
-  const { backendAvailable, versionUrl } = coreSupport;
+  const { apiVersion, backendAvailable, metadataVersion, versionUrl } =
+    coreSupport;
 
   const { datasets, fetchDatasets } = props;
   useEffect(() => {
@@ -995,7 +981,14 @@ function ProjectView(props) {
           />
           <Route
             path={props.settingsUrl}
-            render={() => <ProjectSettings key="settings" {...props} />}
+            render={() => (
+              <ProjectSettings
+                key="settings"
+                {...props}
+                apiVersion={apiVersion}
+                metadataVersion={metadataVersion}
+              />
+            )}
           />
           <Route path={props.notebookServersUrl}>
             <ProjectSessionsRouter key="sessions" />

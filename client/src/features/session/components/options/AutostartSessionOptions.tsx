@@ -129,19 +129,21 @@ function useAutostartSessionOptions(): void {
     branch: defaultBranch ?? undefined,
   });
   const {
+    apiVersion,
     backendAvailable,
     computed: coreSupportComputed,
-    versionUrl,
+    metadataVersion,
   } = coreSupport;
   const {
     data: projectConfig,
     error: errorProjectConfig,
     isFetching: projectConfigIsFetching,
   } = usePatchedProjectConfig({
+    apiVersion,
     commit,
     gitLabProjectId: gitLabProjectId ?? 0,
+    metadataVersion,
     projectRepositoryUrl,
-    versionUrl,
     skip: !backendAvailable || !coreSupportComputed || !commit,
   });
   const { data: resourcePools, isFetching: resourcePoolsIsFetching } =

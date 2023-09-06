@@ -184,7 +184,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     }
 
     interceptMigrationCheck(name, fixture, queryUrl = null) {
-      const coreUrl = "/ui-server/api/renku/cache.migrations_check";
+      const coreUrl = "/ui-server/api/renku/**/cache.migrations_check";
       const defaultQuery =
         "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Fe2e%2Flocal-test-project&branch=master";
       cy.intercept(`${coreUrl}?${queryUrl || defaultQuery}`, {
@@ -237,7 +237,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       error = false,
       legacyError = false,
     } = {}) {
-      const coreUrl = "/ui-server/api/renku/project.lock_status";
+      const coreUrl = "/ui-server/api/renku/**/project.lock_status";
       const params = "git_url=*";
       const errorFixture = legacyError
         ? "errors/core-error-old.json"
@@ -417,7 +417,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       result = "project/edit/edit-project-confirm.json"
     ) {
       const fixture = this.useMockedData ? { fixture: result } : undefined;
-      cy.intercept("POST", "/ui-server/api/renku/project.edit", fixture).as(
+      cy.intercept("POST", "/ui-server/api/renku/**/project.edit", fixture).as(
         name
       );
       return this;

@@ -16,39 +16,42 @@
  * limitations under the License.
  */
 
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+import { useRef } from "react";
 import {
   Badge,
   PopoverBody,
   PopoverHeader,
   UncontrolledPopover,
 } from "reactstrap";
-import cx from "classnames";
+import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
 import { SessionStatus, SessionStatusState } from "../../sessions.types";
 import { getSessionStatusColor } from "../../utils/sessionStatus.utils";
-import SessionStatusIcon from "./SessionStatusIcon";
 import SessionHibernationStatusDetails from "./SessionHibernationStatusDetails";
-import { NotebookAnnotations } from "../../../../notebooks/components/session.types";
+import SessionStatusIcon from "./SessionStatusIcon";
 
 interface SessionStatusBadgeProps {
   annotations: NotebookAnnotations;
   defaultImage: boolean;
-  name: string;
   status: SessionStatus;
 }
 
 export default function SessionStatusBadge({
   annotations,
   defaultImage,
-  name,
   status: statusObject,
 }: SessionStatusBadgeProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
   const { message, state: status } = statusObject;
 
   const color = getSessionStatusColor({ defaultImage, status });
   const popover = (status === "failed" ||
     (status === "running" && defaultImage) ||
     status === "hibernated") && (
-    <UncontrolledPopover target={name} trigger="hover" placement="bottom">
+    <UncontrolledPopover target={ref} trigger="hover" placement="bottom">
       <PopoverHeader>
         {status === "failed"
           ? "Error Details"
@@ -67,23 +70,26 @@ export default function SessionStatusBadge({
   );
 
   return (
-    <div
-      id={name}
-      className={cx(
-        "d-flex",
-        "align-items-center",
-        "gap-1",
-        popover && "cursor-pointer"
-      )}
-    >
-      <Badge className="p-1" color={color}>
-        <SessionStatusIcon defaultImage={defaultImage} status={status} />
-      </Badge>
-      <span className={`text-${color} small session-status-text`}>
-        {displayedSessionStatus(status)}
-      </span>
+    <>
+      <div
+        className={cx(
+          "d-flex",
+          "align-items-center",
+          "gap-1",
+          popover && "cursor-pointer"
+        )}
+        ref={ref}
+      >
+        <UnsavedWorkWarning annotations={annotations} status={status} />
+        <Badge className="p-1" color={color}>
+          <SessionStatusIcon defaultImage={defaultImage} status={status} />
+        </Badge>
+        <span className={`text-${color} small session-status-text`}>
+          {displayedSessionStatus(status)}
+        </span>
+      </div>
       {popover}
-    </div>
+    </>
   );
 }
 
@@ -99,4 +105,42 @@ function displayedSessionStatus(status: SessionStatusState): string {
     : status === "failed"
     ? "Error"
     : "Unknown state";
+}
+
+interface UnsavedWorkWarningProps {
+  annotations: NotebookAnnotations;
+  status: SessionStatusState;
+}
+
+function UnsavedWorkWarning({ annotations, status }: UnsavedWorkWarningProps) {
+  if (status !== "hibernated") {
+    return null;
+  }
+
+  const hasHibernationInfo = !!annotations["hibernationDate"];
+  const hasUnsavedWork =
+    !hasHibernationInfo ||
+    annotations["hibernationDirty"] ||
+    !annotations["hibernationSynchronized"];
+
+  if (!hasUnsavedWork) {
+    return null;
+  }
+
+  return (
+    <span
+      className={cx(
+        "time-caption",
+        "text-rk-text-light",
+        "text-truncate",
+        "me-2"
+      )}
+    >
+      <FontAwesomeIcon
+        className={cx("text-warning", "me-1")}
+        icon={faExclamationTriangle}
+      />
+      Unsaved work
+    </span>
+  );
 }

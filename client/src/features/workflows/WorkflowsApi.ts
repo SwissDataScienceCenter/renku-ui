@@ -18,24 +18,31 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+import { CoreResponse } from "../../utils/types/coreService.types";
+import { Url } from "../../utils/helpers/url";
+import { versionedPathForEndpoint } from "../../utils/helpers/url/versionedUrls";
+
 import {
   WorkflowDetails,
   WorkflowDetailsRequestParams,
   WorkflowListElement,
   WorkflowRequestParams,
 } from "./Workflows";
-import { Url } from "../../utils/helpers/url";
+
+type GetWorkflowListResponse = CoreResponse<{
+  plans: Array<Record<string, unknown>>;
+}>;
+
+type GetWorkflowDetailsResponse = CoreResponse<Record<string, string>>;
 
 const PLANS_PREFIX = "/plans/";
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
  * Convert creators list into a single string
  * @param creators - array of Creators
  * @returns single string of Creators
  */
-function stringifyCreators(creators: Array<Record<string, any>>): string {
+function stringifyCreators(creators: Array<Record<string, string>>): string {
   const creatorNames = creators.map((c) => (c.name ? c.name : null));
   return creatorNames.join(" ");
 }
@@ -46,6 +53,7 @@ function stringifyCreators(creators: Array<Record<string, any>>): string {
  * @returns list containing enhanced workflows objects
  */
 function adjustWorkflowsList(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   workflowsList: Array<Record<string, any>>,
   fullPath: string
 ): WorkflowListElement[] {
@@ -87,7 +95,7 @@ function adjustWorkflowsList(
  * @returns object containing enhanced workflow details
  */
 function adjustWorkflowDetails(
-  workflowDetails: Record<string, any>,
+  workflowDetails: Record<string, string>,
   fullPath: string
 ): WorkflowDetails {
   return {
@@ -106,22 +114,25 @@ function adjustWorkflowDetails(
 
 export const workflowsApi = createApi({
   reducerPath: "workflowsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/renku" }),
   endpoints: (builder) => ({
     getWorkflowList: builder.query<
       WorkflowListElement[],
       WorkflowRequestParams
     >({
       query: (data) => {
-        const url = `/renku${data.coreUrl}/workflow_plans.list`;
-        const params: Record<string, any> = { git_url: data.gitUrl };
+        const params: Record<string, string> = { git_url: data.gitUrl };
         if (data.reference) params.branch = data.reference;
         return {
-          url: "/ui-server/api" + url,
+          url: versionedPathForEndpoint({
+            endpoint: "workflow_plans.list",
+            metadataVersion: data.metadataVersion,
+            apiVersion: data.apiVersion,
+          }),
           params,
         };
       },
-      transformResponse: (response: any, meta, arg) => {
+      transformResponse: (response: GetWorkflowListResponse, _meta, arg) => {
         if (response.result)
           return adjustWorkflowsList(response.result.plans, arg.fullPath);
         else if (response.error)
@@ -134,19 +145,22 @@ export const workflowsApi = createApi({
       WorkflowDetailsRequestParams
     >({
       query: (data) => {
-        const url = `/renku${data.coreUrl}/workflow_plans.show`;
         const workflowFullId = PLANS_PREFIX + data.workflowId;
-        const params: Record<string, any> = {
+        const params: Record<string, string> = {
           git_url: data.gitUrl,
           plan_id: workflowFullId,
         };
         if (data.reference) params.branch = data.reference;
         return {
-          url: "/ui-server/api" + url,
+          url: versionedPathForEndpoint({
+            endpoint: "workflow_plans.show",
+            metadataVersion: data.metadataVersion,
+            apiVersion: data.apiVersion,
+          }),
           params,
         };
       },
-      transformResponse: (response: any, meta, arg) => {
+      transformResponse: (response: GetWorkflowDetailsResponse, _meta, arg) => {
         if (response.result)
           return adjustWorkflowDetails(response.result, arg.fullPath);
         else if (response.error)

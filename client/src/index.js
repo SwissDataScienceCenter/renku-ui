@@ -18,7 +18,7 @@ import { StateModel, globalSchema } from "./model";
 import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
 import { Sentry } from "./utils/helpers/sentry";
-import { Url } from "./utils/helpers/url";
+import { Url, createCoreApiVersionedUrlConfig } from "./utils/helpers/url";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
 
 const configFetch = fetch("/config.json");
@@ -46,13 +46,21 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
       params["PRIVACY_STATEMENT"] = null;
     else params["PRIVACY_STATEMENT"] = privacy;
 
+    // configure core api versioned url helper
+    const coreApiVersionConfig = params["CORE_API_VERSION_CONFIG"] ?? {
+      coreApiVersion: "/",
+    };
+    const coreApiVersionedUrlConfig =
+      createCoreApiVersionedUrlConfig(coreApiVersionConfig);
+
     // configure base url
     Url.setBaseUrl(params["BASE_URL"]);
 
     // create client to be passed to coordinators
     const client = new APIClient(
       params.UISERVER_URL + "/api",
-      params.UISERVER_URL
+      params.UISERVER_URL,
+      coreApiVersionedUrlConfig
     );
 
     // Create the global model containing the formal schema definition and the redux store
@@ -110,6 +118,7 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
                 return (
                   <VisibleApp
                     client={client}
+                    coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
                     params={params}
                     model={model}
                     location={props.location}

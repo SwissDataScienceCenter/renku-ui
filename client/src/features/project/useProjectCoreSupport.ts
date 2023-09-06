@@ -16,45 +16,64 @@
  * limitations under the License.
  */
 
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
+import AppContext from "../../utils/context/appContext";
+import { apiVersionForMetadataVersion } from "../../utils/helpers/url";
+import type { CoreApiVersionedUrlConfig } from "../../utils/helpers/url";
 import { useGetCoreVersionsQuery } from "../versions/versionsApi";
 import { useGetMigrationStatusQuery } from "./projectCoreApi";
 
 export type CoreSupport =
   | {
+      apiVersion: undefined;
       backendAvailable: undefined;
       backendErrorMessage: undefined;
       computed: false;
+      metadataVersion: undefined;
       versionUrl: undefined;
     }
   | {
+      apiVersion: undefined;
       backendAvailable: false;
       backendErrorMessage: string;
       computed: true;
+      metadataVersion: undefined;
       versionUrl: undefined;
     }
   | {
+      apiVersion: undefined;
       backendAvailable: false;
       backendErrorMessage: undefined;
       computed: true;
+      metadataVersion: undefined;
       versionUrl: undefined;
     }
   | {
+      apiVersion: string | undefined;
       backendAvailable: true;
       backendErrorMessage: undefined;
       computed: true;
+      metadataVersion: number;
       versionUrl: string;
     };
 
 export const useCoreSupport = ({
+  apiVersionOverride,
   gitUrl,
   branch,
 }: {
+  apiVersionOverride?: string;
   gitUrl: string | undefined;
   branch?: string | undefined;
 }) => {
+  const { coreApiVersionedUrlConfig } = useContext(AppContext);
+  const migrationStatusApiVersion = apiVersionForMetadataVersion(
+    coreApiVersionedUrlConfig,
+    undefined,
+    undefined // do not use the override for getting migration status
+  );
   const getMigrationStatusQuery = useGetMigrationStatusQuery(
-    { gitUrl: gitUrl ?? "", branch },
+    { apiVersion: migrationStatusApiVersion, gitUrl: gitUrl ?? "", branch },
     { skip: !gitUrl || !branch }
   );
   const getCoreVersionsQuery = useGetCoreVersionsQuery();
@@ -76,11 +95,18 @@ export const useCoreSupport = ({
         ? undefined
         : migrationStatus?.error?.userMessage;
     return computeBackendData({
+      apiVersionOverride,
       availableVersions,
       backendErrorMessage,
+      coreApiVersionedUrlConfig,
       projectVersion,
     });
-  }, [coreVersions, migrationStatus]);
+  }, [
+    apiVersionOverride,
+    coreApiVersionedUrlConfig,
+    coreVersions,
+    migrationStatus,
+  ]);
 
   return {
     coreSupport,
@@ -90,40 +116,56 @@ export const useCoreSupport = ({
 };
 
 export const computeBackendData = ({
+  apiVersionOverride,
   availableVersions,
   backendErrorMessage,
+  coreApiVersionedUrlConfig,
   projectVersion,
 }: {
+  apiVersionOverride: string | undefined;
   availableVersions: number[] | undefined;
   backendErrorMessage: string | undefined;
+  coreApiVersionedUrlConfig: CoreApiVersionedUrlConfig;
   projectVersion: number | undefined;
 }): CoreSupport => {
   if (backendErrorMessage) {
     return {
+      apiVersion: undefined,
       backendAvailable: false,
       backendErrorMessage,
       computed: true,
+      metadataVersion: undefined,
       versionUrl: undefined,
     };
   }
   if (!availableVersions || typeof projectVersion !== "number")
     return {
+      apiVersion: undefined,
       backendAvailable: undefined,
       backendErrorMessage: undefined,
       computed: false,
+      metadataVersion: undefined,
       versionUrl: undefined,
     };
   if (availableVersions.includes(projectVersion))
     return {
+      apiVersion: apiVersionForMetadataVersion(
+        coreApiVersionedUrlConfig,
+        projectVersion,
+        apiVersionOverride
+      ),
       backendAvailable: true,
       backendErrorMessage: undefined,
       computed: true,
+      metadataVersion: projectVersion,
       versionUrl: `/${projectVersion}`,
     };
   return {
+    apiVersion: undefined,
     backendAvailable: false,
     backendErrorMessage: undefined,
     computed: true,
+    metadataVersion: undefined,
     versionUrl: undefined,
   };
 };

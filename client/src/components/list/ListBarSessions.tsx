@@ -16,16 +16,16 @@
  * limitations under the License.
  */
 
-import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
 import SessionButton from "../../features/session/components/SessionButton";
-import { Notebook } from "../../notebooks/components/session.types";
 import SessionStatusBadge from "../../features/session/components/status/SessionStatusBadge";
 import SessionStatusText from "../../features/session/components/status/SessionStatusText";
+import { Notebook } from "../../notebooks/components/session.types";
 import AppContext from "../../utils/context/appContext";
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
@@ -236,7 +236,14 @@ function ListBarSession({
           className="listBar-entity-creators"
         />
       </div>
-      <div className="entity-date listBar-entity-date">
+      <div
+        className={cx(
+          "entity-date",
+          "listBar-entity-date",
+          "align-self-start",
+          "mt-2"
+        )}
+      >
         <TimeCaption
           className="text-rk-text-light text-truncate"
           enableTooltip
@@ -250,7 +257,14 @@ function ListBarSession({
       <div className="session-resources text-truncate">
         <ResourceList resources={resources} />
       </div>
-      <div className="session-time text-truncate">
+      <div
+        className={cx(
+          "session-time",
+          "text-truncate",
+          "flex-wrap",
+          "column-gap-2"
+        )}
+      >
         <div className="d-flex">
           <div className="session-icon-details">{sessionDetailsPopover}</div>
         </div>
@@ -268,7 +282,6 @@ function ListBarSession({
         <SessionStatusBadge
           annotations={notebook.annotations}
           defaultImage={notebook.annotations["default_image_used"]}
-          name={notebook.name}
           status={notebook.status}
         />
       </div>

@@ -373,7 +373,10 @@ function SessionActions({ className, session }: SessionActionsProps) {
     );
 
   const deleteAction = status !== "stopping" && !isStopping && (
-    <DropdownItem onClick={logged ? toggleStopSession : onStopSession}>
+    <DropdownItem
+      data-cy="delete-session-button"
+      onClick={logged ? toggleStopSession : onStopSession}
+    >
       <FontAwesomeIcon
         className={cx("text-rk-green", "fa-w-14", "me-2")}
         fixedWidth

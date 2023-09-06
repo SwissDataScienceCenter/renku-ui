@@ -38,10 +38,29 @@ function Global<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    config(name = "getConfig", fixture = "config.json") {
-      cy.intercept("/config.json", {
-        fixture,
-      }).as(name);
+    config(params?: {
+      name?: string;
+      fixture?: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      overrides?: any;
+    }) {
+      const {
+        name = "getConfig",
+        fixture = "config.json",
+        overrides,
+      } = params || {};
+      if (overrides == null) {
+        cy.intercept("/config.json", {
+          fixture,
+        }).as(name);
+        return this;
+      }
+      cy.fixture("config.json").then((baseConfig) => {
+        const combinedConfig = { ...baseConfig, ...overrides };
+        cy.intercept("/config.json", {
+          body: combinedConfig,
+        }).as(name);
+      });
       return this;
     }
 

@@ -17,7 +17,8 @@
  */
 
 export interface CoreVersionUrl {
-  versionUrl?: string;
+  apiVersion?: string;
+  metadataVersion?: number;
 }
 
 export interface CoreRepositoryParams {
