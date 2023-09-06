@@ -17,23 +17,23 @@
  */
 
 import { useContext, useEffect, useState } from "react";
+import { Balloon, Briefcase } from "react-bootstrap-icons";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-
+import { Table } from "reactstrap";
 import { Loader } from "../../components/Loader";
-import { Balloon, Briefcase, Table } from "../../utils/ts-wrappers";
+import AppContext from "../../utils/context/appContext";
+import useGetInactiveProjects from "../../utils/customHooks/UseGetInactiveProjects";
+import { WsMessage } from "../../websocket/WsMessages";
+import { projectKgApi } from "../project/projectKgApi";
+import ActivationProgress from "./components/ActivationProgress";
+import KgActivationHeader from "./components/KgActivationHeader";
 import "./inactiveKgProjects.css";
 import {
   addFullList,
   updateProgress,
   useInactiveProjectSelector,
 } from "./inactiveKgProjectsSlice";
-import AppContext from "../../utils/context/appContext";
-import { WsMessage } from "../../websocket/WsMessages";
-import KgActivationHeader from "./components/KgActivationHeader";
-import ActivationProgress from "./components/ActivationProgress";
-import useGetInactiveProjects from "../../utils/customHooks/UseGetInactiveProjects";
-import { projectKgApi } from "../project/projectKgApi";
 
 export interface InactiveKgProjects {
   id: number;

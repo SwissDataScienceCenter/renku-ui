@@ -23,18 +23,17 @@
  *  SessionButtons components.
  */
 
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStop } from "@fortawesome/free-solid-svg-icons";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   ArrowClockwise,
   ArrowLeft,
   Briefcase,
-  Button,
   Journals,
   Save,
-} from "../../utils/ts-wrappers";
+} from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
+import { Button } from "reactstrap";
 import { ThrottledTooltip } from "../../components/Tooltip";
 
 /* eslint-disable @typescript-eslint/ban-types */

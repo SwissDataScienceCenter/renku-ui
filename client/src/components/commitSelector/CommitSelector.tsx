@@ -22,11 +22,9 @@ import Autosuggest, {
   ShouldRenderReasons,
   SuggestionSelectedEventData,
 } from "react-autosuggest";
-
-import { TimeCaption } from "../TimeCaption";
-import { ChevronDown, ChevronUp } from "../../utils/ts-wrappers";
+import { ChevronDown, ChevronUp } from "react-bootstrap-icons";
 import { Loader } from "../Loader";
-
+import { TimeCaption } from "../TimeCaption";
 import "./CommitSelector.scss";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

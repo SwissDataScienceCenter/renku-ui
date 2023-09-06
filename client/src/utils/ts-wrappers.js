@@ -43,39 +43,6 @@ import {
 } from "reactstrap";
 
 import {
-  ArrowClockwise as WrappedArrowClockwise,
-  ArrowLeft as WrappedArrowLeft,
-  Briefcase as WrappedBriefcase,
-  Bookmarks as WrappedBookmarks,
-  XLg as WrappedXLg,
-  CheckCircleFill as WrappedCheckCircleFill,
-  Calendar4 as WrappedCalendar4,
-  CardList as WrappedCardList,
-  CaretDownFill as WrappedCaretDownFill,
-  CaretRightFill as WrappedCaretRightFill,
-  ChevronDown as WrappedChevronDown,
-  ChevronUp as WrappedChevronUp,
-  Diagram2 as WrappedDiagram2,
-  Diagram3 as WrappedDiagram3,
-  HddStack as WrappedHddStack,
-  Globe as WrappedGlobe,
-  People as WrappedPeople,
-  Shield as WrappedShield,
-  Person as WrappedPerson,
-  Lock as WrappedLock,
-  Download as WrappedDownload,
-  Save as WrappedSave,
-  Journals as WrappedJournals,
-  InfoCircle as WrappedInfoCircle,
-  XCircleFill as WrappedXCircleFill,
-  Funnel as WrappedFunnel,
-  FunnelFill as WrappedFunnelFull,
-  Balloon as WrappedBalloon,
-  ZoomIn as WrappedZoomIn,
-  ZoomOut as WrappedZoomOut,
-} from "react-bootstrap-icons";
-
-import {
   FormGroup as WrappedFormGroup,
   Input as WrappedInput,
   InputGroup as WrappedInputGroup,
@@ -91,10 +58,6 @@ import {
 
 function Alert(props) {
   return <WrappedAlert {...props} />;
-}
-
-function ArrowClockwise(props) {
-  return <WrappedArrowClockwise {...props} />;
 }
 
 function Badge(props) {
@@ -135,26 +98,6 @@ function CardText(props) {
 
 function CardFooter(props) {
   return <WrappedCardFooter {...props} />;
-}
-
-function CaretDownFill(props) {
-  return <WrappedCaretDownFill {...props} />;
-}
-
-function CaretRightFill(props) {
-  return <WrappedCaretRightFill {...props} />;
-}
-
-function ChevronDown(props) {
-  return <WrappedChevronDown {...props} />;
-}
-
-function ChevronUp(props) {
-  return <WrappedChevronUp {...props} />;
-}
-
-function Diagram2(props) {
-  return <WrappedDiagram2 {...props} />;
 }
 
 function DropdownMenu(props) {
@@ -241,58 +184,6 @@ function Table(props) {
   return <WrappedTable {...props} />;
 }
 
-function Briefcase(props) {
-  return <WrappedBriefcase {...props} />;
-}
-
-function CardList(props) {
-  return <WrappedCardList {...props} />;
-}
-
-function Diagram3(props) {
-  return <WrappedDiagram3 {...props} />;
-}
-
-function HddStack(props) {
-  return <WrappedHddStack {...props} />;
-}
-
-function Globe(props) {
-  return <WrappedGlobe {...props} />;
-}
-
-function People(props) {
-  return <WrappedPeople {...props} />;
-}
-
-function Person(props) {
-  return <WrappedPerson {...props} />;
-}
-
-function Lock(props) {
-  return <WrappedLock {...props} />;
-}
-
-function Download(props) {
-  return <WrappedDownload {...props} />;
-}
-
-function Save(props) {
-  return <WrappedSave {...props} />;
-}
-
-function Journals(props) {
-  return <WrappedJournals {...props} />;
-}
-
-function ArrowLeft(props) {
-  return <WrappedArrowLeft {...props} />;
-}
-
-function InfoCircle(props) {
-  return <WrappedInfoCircle {...props} />;
-}
-
 function Nav(props) {
   return <WrappedNav {...props} />;
 }
@@ -329,66 +220,12 @@ function AccordionBody(props) {
   return <WrappedAccordionBody {...props} />;
 }
 
-function CheckCircleFill(props) {
-  return <WrappedCheckCircleFill {...props} />;
-}
-
-function XCircleFill(props) {
-  return <WrappedXCircleFill {...props} />;
-}
-
-function Funnel(props) {
-  return <WrappedFunnel {...props} />;
-}
-
-function FunnelFill(props) {
-  return <WrappedFunnelFull {...props} />;
-}
-
-function Bookmarks(props) {
-  return <WrappedBookmarks {...props} />;
-}
-
-function Calendar4(props) {
-  return <WrappedCalendar4 {...props} />;
-}
-
-function XLg(props) {
-  return <WrappedXLg {...props} />;
-}
-
 function Progress(props) {
   return <WrappedProgress {...props} />;
 }
 
-function Balloon(props) {
-  return <WrappedBalloon {...props} />;
-}
-
-function ZoomIn(props) {
-  return <WrappedZoomIn {...props} />;
-}
-
-function ZoomOut(props) {
-  return <WrappedZoomOut {...props} />;
-}
-
-function Shield(props) {
-  return <WrappedShield {...props} />;
-}
-
-export { ArrowClockwise };
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
-export {
-  Alert,
-  Badge,
-  Button,
-  ButtonDropdown,
-  ButtonGroup,
-  Progress,
-  CheckCircleFill,
-  XCircleFill,
-};
+export { Alert, Badge, Button, ButtonDropdown, ButtonGroup, Progress };
 export {
   Card,
   CardBody,
@@ -413,28 +250,4 @@ export {
 export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
-export {
-  ArrowLeft,
-  Briefcase,
-  CardList,
-  Diagram3,
-  Download,
-  Globe,
-  HddStack,
-  InfoCircle,
-  Journals,
-  Lock,
-};
-export { People, Save, Balloon, Person };
-export { Nav, NavItem, NavLink, TabContent, TabPane, ZoomIn, ZoomOut };
-export {
-  Bookmarks,
-  CaretDownFill,
-  CaretRightFill,
-  Calendar4,
-  ChevronDown,
-  Diagram2,
-  XLg,
-  ChevronUp,
-};
-export { Funnel, FunnelFill, Shield };
+export { Nav, NavItem, NavLink, TabContent, TabPane };

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { useState } from "react";
 import {
   faArrowRight,
   faCheck,
@@ -27,7 +26,31 @@ import {
   faSortAmountUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
+import {
+  Bookmarks,
+  Calendar4,
+  Diagram2,
+  Journals,
+  People,
+  XLg,
+} from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
+import {
+  Button,
+  ButtonDropdown,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Input,
+  Label,
+  Row,
+  Table,
+} from "reactstrap";
 import { InfoAlert, WarnAlert } from "../components/Alert";
 import {
   ExternalDocsLink,
@@ -46,28 +69,7 @@ import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
 import { toShortHumanDuration } from "../utils/helpers/DurationUtils";
 import { simpleHash } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
-import {
-  Bookmarks,
-  Button,
-  ButtonDropdown,
-  Calendar4,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Diagram2,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Input,
-  Journals,
-  Label,
-  People,
-  Row,
-  Table,
-  UncontrolledTooltip,
-  XLg,
-} from "../utils/ts-wrappers";
+import { UncontrolledTooltip } from "../utils/ts-wrappers";
 import "./Workflows.scss";
 
 /** BROWSER **/

@@ -17,11 +17,10 @@
  */
 
 import { useContext, useRef } from "react";
-import { Globe, Lock, Shield } from "../../utils/ts-wrappers";
-
+import { Globe, Lock, Shield } from "react-bootstrap-icons";
 import AppContext from "../../utils/context/appContext";
-import { ThrottledTooltip } from "../Tooltip";
 import { capitalizeFirstLetter } from "../../utils/helpers/HelperFunctions";
+import { ThrottledTooltip } from "../Tooltip";
 
 /**
  *  renku-ui
@@ -57,7 +56,7 @@ const VisibilityIcon = ({ visibility, className }: VisibilityIconProps) => {
     <>
       <div
         ref={ref}
-        className={`card-visibility-icon d-flex gap-2 align-items-baseline ${className}`}
+        className={`card-visibility-icon d-flex gap-2 align-items-center ${className}`}
       >
         {icon[visibility] || ""} {capitalizeFirstLetter(visibility)}
       </div>

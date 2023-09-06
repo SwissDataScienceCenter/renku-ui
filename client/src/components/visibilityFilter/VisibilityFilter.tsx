@@ -17,8 +17,9 @@
  */
 
 import { ChangeEvent } from "react";
+import { Globe, Lock, People } from "react-bootstrap-icons";
+import { Input } from "reactstrap";
 import "./VisibilityFilter.css";
-import { Globe, Input, Lock, People } from "../../utils/ts-wrappers";
 
 /**
  *  renku-ui
