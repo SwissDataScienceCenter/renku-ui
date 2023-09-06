@@ -72,7 +72,7 @@ export const dataServicesApi = createApi({
           : [{ id: "LIST", type: "CloudStorage" }],
     }),
     addCloudStorageForProject: builder.mutation<
-      CloudStorage,
+      CloudStorageListItem,
       AddCloudStorageForProjectParams
     >({
       query: (params) => {

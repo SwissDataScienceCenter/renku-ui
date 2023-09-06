@@ -64,6 +64,7 @@ import {
 } from "../../features/dataServices/dataServicesApi";
 import { StateModelProject } from "../../features/project/Project";
 import { User } from "../../model/RenkuModels";
+import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -147,6 +148,7 @@ function CloudStorageSection({ children }: { children?: ReactNode }) {
 function AddCloudStorageButton() {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
+    console.log("source toggle()");
     setIsOpen((open) => !open);
   }, []);
 
@@ -429,7 +431,7 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
     defaultValues: {
       name: "",
       endpointUrl: "",
-      private: false,
+      private: true,
     },
   });
   const onSubmit = useCallback(
@@ -447,10 +449,15 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
   );
 
   useEffect(() => {
-    if (result.isSuccess) {
+    if (result.isSuccess && !result.data.storage.private) {
+      console.log("Toggle!");
       toggle();
     }
-  }, [result.isSuccess, toggle]);
+  }, [result.data?.storage.private, result.isSuccess, toggle]);
+
+  if (result.isSuccess && result.data.storage.private) {
+    return <AddCloudStorageCredentialsForm />;
+  }
 
   return (
     <Form
@@ -459,6 +466,8 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
       onSubmit={handleSubmit(onSubmit)}
     >
       <ModalBody>
+        {result.error && <RtkErrorAlert error={result.error} />}
+
         <div className="form-rk-green">
           <div className="mb-3">
             <Label className="form-label" for="addCloudStorageName">
@@ -537,9 +546,17 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
       </ModalBody>
       <ModalFooter>
         <Button className="btn-outline-rk-green" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button type="submit">Add Storage</Button>
+        <Button disabled={result.isLoading} type="submit">
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <PlusLg className={cx("bi", "me-1")} />
+          )}
+          Add Storage
+        </Button>
       </ModalFooter>
     </Form>
   );
@@ -549,6 +566,14 @@ interface SimpleAddCloudStorageForm {
   name: string;
   endpointUrl: string;
   private: boolean;
+}
+
+function AddCloudStorageCredentialsForm() {
+  return (
+    <div>
+      <h5>Ask for creds</h5>
+    </div>
+  );
 }
 
 interface CloudStorageListProps {
@@ -561,7 +586,7 @@ function CloudStorageListAlt({ storageForProject }: CloudStorageListProps) {
   }
 
   return (
-    <Container className={cx("p-0", "mt-4")} fluid>
+    <Container className={cx("p-0", "mt-2")} fluid>
       <Row className={cx("row-cols-1", "gy-2")}>
         {storageForProject.map(({ storage }, index) => (
           <CloudStorageItemAlt
