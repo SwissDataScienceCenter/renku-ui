@@ -80,13 +80,13 @@ export default function SessionStatusBadge({
         )}
         ref={ref}
       >
+        <UnsavedWorkWarning annotations={annotations} status={status} />
         <Badge className="p-1" color={color}>
           <SessionStatusIcon defaultImage={defaultImage} status={status} />
         </Badge>
         <span className={`text-${color} small session-status-text`}>
           {displayedSessionStatus(status)}
         </span>
-        <UnsavedWorkWarning annotations={annotations} status={status} />
       </div>
       {popover}
     </>
@@ -127,23 +127,19 @@ function UnsavedWorkWarning({ annotations, status }: UnsavedWorkWarningProps) {
     return null;
   }
 
-  // const explanation = !hasHibernationInfo
-  //   ? "uncommitted files and/or unsynced commits"
-  //   : annotations["hibernationDirty"] && !annotations["hibernationSynchronized"]
-  //   ? "uncommitted files and unsynced commits"
-  //   : annotations["hibernationDirty"]
-  //   ? "uncommitted files"
-  //   : "unsynced commits";
-
   return (
-    <span className={cx("time-caption", "text-rk-text-light", "text-truncate")}>
+    <span
+      className={cx(
+        "time-caption",
+        "text-rk-text-light",
+        "text-truncate",
+        "me-2"
+      )}
+    >
       <FontAwesomeIcon
         className={cx("text-warning", "me-1")}
         icon={faExclamationTriangle}
       />
-      {/* Unsaved work {"("}
-        {explanation}
-        {")"} */}
       Unsaved work
     </span>
   );
