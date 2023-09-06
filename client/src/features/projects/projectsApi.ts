@@ -95,6 +95,9 @@ export const projectsApi = createApi({
               hasNextPage
             }
             nodes {
+              repository {
+                rootRef
+              }
               id
               name
               fullPath

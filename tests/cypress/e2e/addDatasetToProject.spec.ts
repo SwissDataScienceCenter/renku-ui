@@ -38,11 +38,10 @@ describe("Add dataset to existing project", () => {
     fixtures
       .project(pathOrigin, "getProject", "projects/project.json", false)
       .cacheProjectList();
-    fixtures.interceptMigrationCheck(
-      "migrationCheckDatasetProject",
-      "project/migrationStatus/level1-all-good.json",
-      "*"
-    );
+    fixtures.projectMigrationUpToDate({
+      queryUrl: "*",
+      fixtureName: "migrationCheckDatasetProject",
+    });
     fixtures.importToProject();
     fixtures.importJobCompleted();
     cy.visit(`datasets/${datasetIdentifier}/add`);

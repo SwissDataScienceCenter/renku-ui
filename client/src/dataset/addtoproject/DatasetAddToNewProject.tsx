@@ -80,8 +80,13 @@ function AddDatasetNewProject({
       });
       return false;
     }
+    const default_branch = fetchProject?.data?.all?.default_branch;
     // 2. create project object for importing
-    const project = { value: urlProjectOrigin, name: projectPath };
+    const project = {
+      default_branch,
+      value: urlProjectOrigin,
+      name: projectPath,
+    };
     setNewProject(project);
     // 3. send to import dataset
     handlers.submitCallback(project);
