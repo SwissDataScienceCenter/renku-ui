@@ -23,6 +23,8 @@ import {
   CloudFill,
   PencilSquare,
   PlusLg,
+  Trash3Fill,
+  TrashFill,
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
@@ -573,8 +575,7 @@ function CloudStorageListAlt({ storageForProject }: CloudStorageListProps) {
 }
 
 function CloudStorageItemAlt({ storage }: CloudStorageItemProps) {
-  const { configuration, name, source_path, storage_type, target_path } =
-    storage;
+  const { configuration, name, source_path, target_path } = storage;
 
   const configContent = `[${name}]
 ${Object.entries(configuration)
@@ -620,66 +621,121 @@ ${Object.entries(configuration)
           </h3>
         </CardBody>
         <Collapse isOpen={isOpen}>
-          <CardBody className="pt-0">
-            <div>
-              <div className="text-rk-text-light">
-                <small>Name</small>
-              </div>
-              <div>{name}</div>
-            </div>
-            <div className="mt-2">
-              <div className="text-rk-text-light">
-                <small>Storage Type</small>
-              </div>
-              <div>{storage_type}</div>
-            </div>
-            <div className="mt-2">
-              <div className="text-rk-text-light">
-                <small>
-                  Source Path {"("}usually &lt;bucket&gt; or
-                  &lt;bucket&gt;/&lt;folder&gt;{")"}
-                </small>
-              </div>
-              <div>
-                <code>{source_path}</code>
-              </div>
-            </div>
-            <div className="mt-2">
-              <div className="text-rk-text-light">
-                <small>
-                  Target Path {"("}this is where the storage will be mounted
-                  during sessions{")"}
-                </small>
-              </div>
-              <div>
-                <code>{target_path}</code>
-              </div>
-            </div>
-            <div className="mt-2">
-              <div className="text-rk-text-light">
-                <small>Requires credentials</small>
-              </div>
-              <div>{storage.private ? "Yes" : "No"}</div>
-            </div>
-            <div className="mt-2">
-              <div className="text-rk-text-light">
-                <small>
-                  Configuration (uses <code>rclone config</code>)
-                </small>
-              </div>
-              <div>
-                <textarea
-                  className="form-control"
-                  readOnly
-                  rows={Object.keys(configuration).length + 2}
-                  value={configContent}
-                />
-              </div>
-            </div>
-          </CardBody>
+          <CloudStorageItemCollapsibleContent
+            configContent={configContent}
+            storage={storage}
+          />
         </Collapse>
       </Card>
     </Col>
+  );
+}
+
+function CloudStorageItemCollapsibleContent({
+  configContent,
+  storage,
+}: CloudStorageDetailsAltProps) {
+  const [editMode, setEditMode] = useState(false);
+  const toggleEditMode = useCallback(() => {
+    setEditMode((editMode) => !editMode);
+  }, []);
+
+  return (
+    <CardBody className="pt-0">
+      {editMode ? (
+        <EditCloudStorage
+          configContent={configContent}
+          storage={storage}
+          toggleEditMode={toggleEditMode}
+        />
+      ) : (
+        <CloudStorageDetailsAlt
+          configContent={configContent}
+          storage={storage}
+        />
+      )}
+
+      <section className={cx("d-flex", "justify-content-end", "mt-3")}>
+        <Button color="outline-secondary" onClick={toggleEditMode}>
+          <PencilSquare className={cx("bi", "me-1")} />
+          Edit
+        </Button>
+        <DeleteCloudStorageButton storage={storage} />
+      </section>
+    </CardBody>
+  );
+}
+
+interface CloudStorageDetailsAltProps {
+  configContent: string;
+  storage: CloudStorage;
+}
+
+function CloudStorageDetailsAlt({
+  configContent,
+  storage,
+}: CloudStorageDetailsAltProps) {
+  const { configuration, name, source_path, storage_type, target_path } =
+    storage;
+
+  return (
+    <section>
+      <div>
+        <div className="text-rk-text-light">
+          <small>Name</small>
+        </div>
+        <div>{name}</div>
+      </div>
+      <div className="mt-2">
+        <div className="text-rk-text-light">
+          <small>Storage Type</small>
+        </div>
+        <div>{storage_type}</div>
+      </div>
+      <div className="mt-2">
+        <div className="text-rk-text-light">
+          <small>
+            Source Path {"("}usually &lt;bucket&gt; or
+            &lt;bucket&gt;/&lt;folder&gt;{")"}
+          </small>
+        </div>
+        <div>
+          <code>{source_path}</code>
+        </div>
+      </div>
+      <div className="mt-2">
+        <div className="text-rk-text-light">
+          <small>
+            Target Path {"("}this is where the storage will be mounted during
+            sessions{")"}
+          </small>
+        </div>
+        <div>
+          <code>{target_path}</code>
+        </div>
+      </div>
+      <div className="mt-2">
+        <div className="text-rk-text-light">
+          <small>Requires credentials</small>
+        </div>
+        <div>{storage.private ? "Yes" : "No"}</div>
+      </div>
+      <div className="mt-2">
+        <div className="text-rk-text-light">
+          <small>
+            Configuration (uses <code>rclone config</code>)
+          </small>
+        </div>
+        <div>
+          <textarea
+            className="form-control"
+            readOnly
+            rows={Object.keys(configuration).length + 2}
+            value={configContent}
+          />
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1195,6 +1251,7 @@ function DeleteCloudStorageButton({ storage }: CloudStorageItemProps) {
   return (
     <>
       <Button className="ms-2" color="outline-danger" onClick={toggle}>
+        <TrashFill className={cx("bi", "me-1")} />
         Delete
       </Button>
       <DeleteCloudStorageModal
