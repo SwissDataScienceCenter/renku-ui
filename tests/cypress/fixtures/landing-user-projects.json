@@ -4,6 +4,7 @@
       "pageInfo": { "endCursor": "eyJpZCI6IjQxIn0", "hasNextPage": false },
       "nodes": [
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/417",
           "name": "flights tutorial julia",
           "fullPath": "julia/flights-tutorial-julia",
@@ -11,6 +12,7 @@
           "path": "flights-tutorial-julia"
         },
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/247",
           "name": "julia-playground",
           "fullPath": "test-user/julia-playground",
@@ -18,6 +20,7 @@
           "path": "julia-playground"
         },
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/240",
           "name": "outdated",
           "fullPath": "test-user/outdated",
@@ -25,6 +28,7 @@
           "path": "outdated"
         },
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/239",
           "name": "internal playground",
           "fullPath": "test-user-internal/internal-playground",
@@ -32,6 +36,7 @@
           "path": "internal-playground"
         },
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/238",
           "name": "julia playground future",
           "fullPath": "test-user/julia-playground-future",
@@ -39,6 +44,7 @@
           "path": "julia-playground-future"
         },
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/237",
           "name": "a private project with space",
           "fullPath": "test-user-private/a-private-project-with-space",
@@ -46,6 +52,7 @@
           "path": "a-private-project-with-space"
         },
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/236",
           "name": "New test",
           "fullPath": "test-user/new-test",
@@ -53,6 +60,7 @@
           "path": "new-test"
         },
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/190",
           "name": "old-title",
           "fullPath": "renku-qa/old-title",
@@ -60,6 +68,7 @@
           "path": "old-title"
         },
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/186",
           "name": "new-project-testing",
           "fullPath": "test-user/new-project-testing",
@@ -67,6 +76,7 @@
           "path": "new-project-testing"
         },
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/79",
           "name": "dataset-test-project",
           "fullPath": "test-user/dataset-test-project",
@@ -74,6 +84,7 @@
           "path": "dataset-test-project"
         },
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/41",
           "name": "covid-19-dashboard",
           "fullPath": "test-user/covid-19-dashboard",

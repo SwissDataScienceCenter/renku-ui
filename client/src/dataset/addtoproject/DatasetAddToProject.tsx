@@ -16,29 +16,33 @@
  * limitations under the License.
  */
 
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import DatasetAdd from "./DatasetAdd.present";
-import { DatasetCoordinator } from "../Dataset.state";
+import { useCoreSupport } from "../../features/project/useProjectCoreSupport";
 import { ImportStateMessage } from "../../utils/constants/Dataset";
 import AppContext from "../../utils/context/appContext";
-import { useGetMigrationStatusQuery } from "../../features/project/projectCoreApi";
-import type { CoreCompatibilityStatus } from "../../features/project/Project";
-import { useGetCoreVersionsQuery } from "../../features/versions/versionsApi";
+import { cleanGitUrl } from "../../utils/helpers/ProjectFunctions";
 
+import { DatasetCoordinator } from "../Dataset.state";
+
+import DatasetAdd from "./DatasetAdd.present";
 import type {
   AddDatasetDataset,
   AddDatasetStatus,
   SubmitProject,
 } from "./DatasetAdd.types";
-import { cleanGitUrl } from "../../utils/helpers/ProjectFunctions";
 
 type DatasetImportResponse = {
   data?: {
     result?: { job_id: string };
     error?: { userMessage?: string; reason: string };
   };
+};
+
+type ProjectDetails = {
+  gitUrl: string;
+  branch: string;
 };
 
 type AddDatasetToProjectProps = {
@@ -58,36 +62,18 @@ function DatasetAddToProject({
   );
   const [importingDataset, setImportingDataset] = useState(false);
   const [isDatasetValid, setIsDatasetValid] = useState<boolean | null>(null);
-  const [datasetProjectVersion, setDatasetProjectVersion] = useState<
-    number | null
-  >(null);
   const [dataset, setDataset] = useState<AddDatasetDataset | null>(null);
   const [datasetCoordinator, setDatasetCoordinator] =
     useState<DatasetCoordinator | null>(null);
   const { client } = useContext(AppContext);
   const history = useHistory();
 
-  const [datasetProjectUrl, setDatasetProjectUrl] = useState<string | null>(
-    null
-  );
+  const [srcProjectDetails, setSrcProjectDetails] =
+    useState<ProjectDetails | null>(null);
   const [versionUrl, setVersionUrl] = useState<string | null>(null);
 
-  const coreSupport = useGetCoreVersionsQuery();
-  const datasetProjectMigrationStatus = useGetMigrationStatusQuery(
-    { gitUrl: datasetProjectUrl ?? "" },
-    {
-      skip: !datasetProjectUrl,
-    }
-  );
-  const [targetDatasetProjectUrl, setTargetDatasetProjectUrl] = useState<
-    string | null
-  >(null);
-  const targetDatasetProjectMigrationStatus = useGetMigrationStatusQuery(
-    { gitUrl: targetDatasetProjectUrl ?? "" },
-    {
-      skip: !targetDatasetProjectUrl,
-    }
-  );
+  const [dstProjectDetails, setDstProjectDetails] =
+    useState<ProjectDetails | null>(null);
 
   useEffect(() => {
     setDatasetCoordinator(
@@ -115,87 +101,77 @@ function DatasetAddToProject({
     }
   }, [datasetCoordinator && identifier]); // eslint-disable-line
 
-  useEffect(() => {
-    if (dataset) validateDatasetProject();
-  }, [dataset]); // eslint-disable-line
-
   /* validate project */
-  const validateDatasetProject = async (isSubmit = false) => {
-    // check dataset has valid project url
-    setCurrentStatus({
-      status: isSubmit ? "importing" : "inProcess",
-      text: "Checking dataset...",
-    });
-    if (!dataset?.project || !dataset?.project.path) {
+  const validateDatasetProject = useCallback(
+    async (isSubmit = false) => {
+      // check dataset has valid project url
       setCurrentStatus({
-        status: "error",
-        text: "Invalid Dataset, refresh the page to get updated values",
+        status: isSubmit ? "importing" : "inProcess",
+        text: "Checking dataset...",
       });
-      setIsDatasetValid(false);
-      return false;
-    }
+      if (!dataset?.project || !dataset?.project.path) {
+        setCurrentStatus({
+          status: "error",
+          text: "Invalid Dataset, refresh the page to get updated values",
+        });
+        setIsDatasetValid(false);
+        return false;
+      }
 
-    // fetch dataset project values and check it has a valid git url
-    // TODO remove this request when dataset include httpUrlToRepo
-    try {
-      const fetchDatasetProject = await client.getProject(
-        dataset.project?.path
-      );
-      const urlProjectOrigin = fetchDatasetProject?.data?.all?.web_url;
-      if (!urlProjectOrigin) {
+      // fetch dataset project values and check it has a valid git url
+      // TODO remove this request when dataset include httpUrlToRepo
+      try {
+        const fetchDatasetProject = await client.getProject(
+          dataset.project?.path
+        );
+        const urlProjectOrigin = fetchDatasetProject?.data?.all?.web_url;
+        if (!urlProjectOrigin) {
+          setCurrentStatus({ status: "error", text: "Invalid Dataset" });
+          setIsDatasetValid(false);
+          return false;
+        }
+        const branch = fetchDatasetProject?.data?.all?.default_branch;
+        setSrcProjectDetails({ gitUrl: urlProjectOrigin, branch });
+      } catch (e) {
         setCurrentStatus({ status: "error", text: "Invalid Dataset" });
         setIsDatasetValid(false);
         return false;
       }
-      setDatasetProjectUrl(urlProjectOrigin);
-    } catch (e) {
-      setCurrentStatus({ status: "error", text: "Invalid Dataset" });
-      setIsDatasetValid(false);
-      return false;
-    }
-    setIsDatasetValid(true);
-  };
+      setIsDatasetValid(true);
+    },
+    [dataset, client]
+  );
+
+  useEffect(() => {
+    if (dataset) validateDatasetProject();
+  }, [dataset, validateDatasetProject]);
+
+  const { coreSupport: srcCoreSupport } = useCoreSupport({
+    gitUrl: srcProjectDetails?.gitUrl ?? undefined,
+    branch: srcProjectDetails?.branch ?? undefined,
+  });
+
   // check whether the selected dataset is supported
   useEffect(() => {
+    if (!srcCoreSupport.computed) return;
     if (
-      !datasetProjectMigrationStatus.isUninitialized &&
-      !datasetProjectMigrationStatus.isFetching
+      !srcCoreSupport.backendAvailable &&
+      srcCoreSupport.backendErrorMessage != null
     ) {
-      if (datasetProjectMigrationStatus.isError) {
-        setCurrentStatus({ status: "error", text: "Invalid Dataset" });
-        setIsDatasetValid(false);
-      } else {
-        setIsDatasetValid(true);
-        const metadataVersion = parseInt(
-          (
-            datasetProjectMigrationStatus.data?.details
-              ?.core_compatibility_status as CoreCompatibilityStatus
-          )?.project_metadata_version ?? 0
-        );
-        if (
-          metadataVersion &&
-          !coreSupport.isLoading &&
-          coreSupport.data?.metadataVersions &&
-          coreSupport.data?.metadataVersions.includes(metadataVersion)
-        ) {
-          setDatasetProjectVersion(metadataVersion);
-          setCurrentStatus(null);
-        } else {
-          setCurrentStatus({
-            status: "error",
-            text: `The dataset project version ${metadataVersion} is not supported`,
-          });
-        }
-      }
+      setCurrentStatus({ status: "error", text: "Invalid Dataset" });
+      setIsDatasetValid(false);
+      return;
     }
-  }, [
-    datasetProjectMigrationStatus.data,
-    datasetProjectMigrationStatus.isFetching,
-    datasetProjectMigrationStatus.isUninitialized,
-    datasetProjectMigrationStatus.isError,
-    coreSupport.isLoading,
-    coreSupport.data,
-  ]);
+    setIsDatasetValid(true);
+    if (!srcCoreSupport.backendAvailable) {
+      setCurrentStatus({
+        status: "error",
+        text: `The dataset project version ${srcCoreSupport.metadataVersion} is not supported`,
+      });
+      return;
+    }
+    setCurrentStatus(null);
+  }, [srcCoreSupport]);
 
   const validateProject = async (
     project: SubmitProject,
@@ -213,64 +189,52 @@ function DatasetAddToProject({
     // check selected project migration status
     // We utilize the externalUrl property, which typically doesn't include ".git".
     // However, graphql return the httpUrlToRepo, so we remove ".git".
-    setTargetDatasetProjectUrl(cleanGitUrl(project.value));
+    const gitUrl = cleanGitUrl(project.value);
+    const branch = project.default_branch;
+    setDstProjectDetails({ gitUrl, branch });
   };
-  // check whether the target dataset is supported
-  useEffect(() => {
-    if (
-      !targetDatasetProjectMigrationStatus.isUninitialized &&
-      !targetDatasetProjectMigrationStatus.isFetching
-    ) {
-      if (targetDatasetProjectMigrationStatus.isError) {
-        setCurrentStatus({
-          status: "error",
-          text: "Unexpected error with the target database.",
-        });
-        return;
-      }
-      // wait for this to be set
-      if (datasetProjectVersion == null) return;
 
-      const targetDatasetProjectVersion = parseInt(
-        (
-          targetDatasetProjectMigrationStatus.data?.details
-            ?.core_compatibility_status as CoreCompatibilityStatus
-        )?.project_metadata_version ?? 0
-      );
-      setVersionUrl("/" + targetDatasetProjectVersion);
-      if (
-        coreSupport.data?.metadataVersions == null ||
-        !coreSupport.data?.metadataVersions.includes(
-          targetDatasetProjectVersion
-        )
-      ) {
-        setCurrentStatus({
-          status: "error",
-          text: "The target project is either too old or unavailable.",
-        });
-        return;
-      }
-      if (targetDatasetProjectVersion < datasetProjectVersion) {
-        setCurrentStatus({
-          status: "error",
-          text: `Dataset project metadata version (${datasetProjectVersion})
-                cannot be newer than the project metadata version (${targetDatasetProjectVersion}) for import.`,
-        });
-        return;
-      }
+  // check whether the target dataset is supported
+  const { coreSupport: dstCoreSupport } = useCoreSupport({
+    gitUrl: dstProjectDetails?.gitUrl ?? undefined,
+    branch: dstProjectDetails?.branch ?? undefined,
+  });
+  useEffect(() => {
+    if (!dstCoreSupport.computed) return;
+    if (
+      !dstCoreSupport.backendAvailable &&
+      dstCoreSupport.backendErrorMessage != null
+    ) {
       setCurrentStatus({
-        status: "validProject",
-        text: "Selected project is compatible with dataset.",
+        status: "error",
+        text: "There is a problem with the destination project that prevents adding the dataset.",
       });
+      return;
     }
-  }, [
-    coreSupport.data,
-    datasetProjectVersion,
-    targetDatasetProjectMigrationStatus.isError,
-    targetDatasetProjectMigrationStatus.isFetching,
-    targetDatasetProjectMigrationStatus.isUninitialized,
-    targetDatasetProjectMigrationStatus.data,
-  ]);
+    if (!dstCoreSupport.backendAvailable) {
+      setCurrentStatus({
+        status: "error",
+        text: "The target project is either too old or unavailable.",
+      });
+      return;
+    }
+    setVersionUrl(dstCoreSupport.versionUrl);
+
+    // wait for this to be set
+    if (!srcCoreSupport.computed || !srcCoreSupport.backendAvailable) return;
+    if (dstCoreSupport.metadataVersion < srcCoreSupport.metadataVersion) {
+      setCurrentStatus({
+        status: "error",
+        text: `Source project metadata version (${srcCoreSupport.metadataVersion})
+                cannot be newer than the project metadata version (${dstCoreSupport.metadataVersion}) for import.`,
+      });
+      return;
+    }
+    setCurrentStatus({
+      status: "validProject",
+      text: "Selected project is compatible with dataset.",
+    });
+  }, [srcCoreSupport, dstCoreSupport]);
 
   /* end validate project */
 
@@ -348,46 +312,45 @@ function DatasetAddToProject({
     projectPath: string,
     datasetName: string
   ) {
-    if (job) {
-      switch (job.state) {
-        case "ENQUEUED":
-          setCurrentStatus({
-            status: "importing",
-            text: ImportStateMessage.ENQUEUED,
-          });
-          break;
-        case "IN_PROGRESS":
-          setCurrentStatus({
-            status: "importing",
-            text: ImportStateMessage.IN_PROGRESS,
-          });
-          break;
-        case "COMPLETED":
-          setCurrentStatus({
-            status: "completed",
-            text: ImportStateMessage.COMPLETED,
-          });
-          setImportingDataset(false);
-          clearInterval(monitorJob);
-          redirectUser(projectPath, datasetName);
-          break;
-        case "FAILED":
-          setCurrentStatus({
-            status: "error",
-            text: ImportStateMessage.FAILED + job.extras.error,
-          });
-          setImportingDataset(false);
-          clearInterval(monitorJob);
-          break;
-        default:
-          setCurrentStatus({
-            status: "error",
-            text: ImportStateMessage.FAILED_NO_INFO,
-          });
-          setImportingDataset(false);
-          clearInterval(monitorJob);
-          break;
-      }
+    if (!job) return;
+    switch (job.state) {
+      case "ENQUEUED":
+        setCurrentStatus({
+          status: "importing",
+          text: ImportStateMessage.ENQUEUED,
+        });
+        break;
+      case "IN_PROGRESS":
+        setCurrentStatus({
+          status: "importing",
+          text: ImportStateMessage.IN_PROGRESS,
+        });
+        break;
+      case "COMPLETED":
+        setCurrentStatus({
+          status: "completed",
+          text: ImportStateMessage.COMPLETED,
+        });
+        setImportingDataset(false);
+        clearInterval(monitorJob);
+        redirectUser(projectPath, datasetName);
+        break;
+      case "FAILED":
+        setCurrentStatus({
+          status: "error",
+          text: ImportStateMessage.FAILED + job.extras.error,
+        });
+        setImportingDataset(false);
+        clearInterval(monitorJob);
+        break;
+      default:
+        setCurrentStatus({
+          status: "error",
+          text: ImportStateMessage.FAILED_NO_INFO,
+        });
+        setImportingDataset(false);
+        clearInterval(monitorJob);
+        break;
     }
     if (
       (waitedSeconds > 180 && job.state !== "IN_PROGRESS") ||
