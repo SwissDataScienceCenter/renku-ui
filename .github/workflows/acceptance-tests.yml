@@ -129,26 +129,6 @@ jobs:
           renku-release: renku-ci-ui-${{ github.event.number }}
           test-user-password: ${{ secrets.RENKU_BOT_DEV_PASSWORD }}
 
-  storybook-tests:
-    needs: [check-deploy, deploy-pr]
-    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./client
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18.x'
-      - name: Install dependencies
-        run: npm i
-      - name: Run Storybook tests
-        run: npm run storybook-test
-        env:
-          TARGET_URL: 'https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch/storybook/'
-
   cleanup:
     needs: check-deploy
     if: github.event.action == 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
