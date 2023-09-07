@@ -1,5 +1,11 @@
 # Changes
 
+## [3.11.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.11.0...3.11.1) (2023-09-07)
+
+### Bug Fixes
+
+- Handle embedded template variables in project creation links ([#2789](https://github.com/SwissDataScienceCenter/renku-ui/issues/2789))
+
 ## [3.11.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.10.0...3.11.0) (2023-08-22)
 
 ### Features
