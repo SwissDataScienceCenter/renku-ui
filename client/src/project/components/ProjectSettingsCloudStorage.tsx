@@ -27,7 +27,7 @@ import {
   TrashFill,
   XLg,
 } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { RootStateOrAny, useSelector } from "react-redux";
 import {
   Button,
@@ -449,14 +449,21 @@ function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
   );
 
   useEffect(() => {
-    if (result.isSuccess && !result.data.storage.private) {
-      console.log("Toggle!");
+    if (
+      result.isSuccess &&
+      (result.data.sensitive_fields == null ||
+        result.data.sensitive_fields.length == 0)
+    ) {
       toggle();
     }
-  }, [result.data?.storage.private, result.isSuccess, toggle]);
+  }, [result.data?.sensitive_fields, result.isSuccess, toggle]);
 
-  if (result.isSuccess && result.data.storage.private) {
-    return <AddCloudStorageCredentialsForm />;
+  if (
+    result.isSuccess &&
+    result.data.sensitive_fields != null &&
+    result.data.sensitive_fields.length > 0
+  ) {
+    return <AddCloudStorageCredentialsStep item={result.data} />;
   }
 
   return (
@@ -568,12 +575,111 @@ interface SimpleAddCloudStorageForm {
   private: boolean;
 }
 
-function AddCloudStorageCredentialsForm() {
-  return (
-    <div>
-      <h5>Ask for creds</h5>
-    </div>
+interface AddCloudStorageCredentialsStepProps {
+  item: CloudStorageListItem;
+}
+
+function AddCloudStorageCredentialsStep({
+  item,
+}: AddCloudStorageCredentialsStepProps) {
+  const { sensitive_fields, storage } = item;
+  const { configuration, name, project_id, storage_id } = storage;
+
+  const [updateCloudStorage, result] = useUpdateCloudStorageMutation();
+
+  const { control, handleSubmit } = useForm<AddCloudStorageCredentialsForm>({
+    defaultValues: {
+      sensitiveFields: (sensitive_fields ?? []).map(({ name }) => ({
+        name,
+        required: false,
+      })),
+    },
+  });
+  const { fields: sensitiveFields } = useFieldArray({
+    control,
+    name: "sensitiveFields",
+  });
+  const onSubmit = useCallback(
+    (data: AddCloudStorageCredentialsForm) => {
+      console.log(data);
+
+      const updateConfig = data.sensitiveFields.reduce(
+        (prev, { name, required }) => ({
+          ...prev,
+          ...(required ? { [name]: "<sensitive>" } : {}),
+        }),
+        {} as Record<string, string>
+      );
+
+      updateCloudStorage({
+        project_id,
+        storage_id,
+        configuration: {
+          ...configuration,
+          ...updateConfig,
+        },
+      });
+    },
+    [configuration, project_id, storage_id, updateCloudStorage]
   );
+
+  return (
+    <Form
+      className="form-rk-green"
+      noValidate
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <ModalBody>
+        <h5>Credentials</h5>
+        <p>
+          Please select which credentials are required for the{" "}
+          <strong>{name}</strong> cloud storage.
+        </p>
+
+        <div className="form-rk-green">
+          {sensitiveFields.map((item, index) => (
+            <div className="mb-3" key={item.id}>
+              <Controller
+                control={control}
+                name={`sensitiveFields.${index}.required`}
+                render={({ field }) => (
+                  <Input
+                    className="form-check-input"
+                    id={`configureCloudStorageCredentials-${item.id}`}
+                    type="checkbox"
+                    checked={field.value}
+                    innerRef={field.ref}
+                    onBlur={field.onBlur}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <Label
+                className={cx("form-check-label", "ms-2")}
+                for={`configureCloudStorageCredentials-${item.id}`}
+              >
+                {item.name}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button disabled={result.isLoading} type="submit">
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <PlusLg className={cx("bi", "me-1")} />
+          )}
+          Save credentials
+        </Button>
+      </ModalFooter>
+    </Form>
+  );
+}
+
+interface AddCloudStorageCredentialsForm {
+  sensitiveFields: { name: string; required: boolean }[];
 }
 
 interface CloudStorageListProps {
