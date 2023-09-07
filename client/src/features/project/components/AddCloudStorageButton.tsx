@@ -157,10 +157,7 @@ interface AddCloudStorageProps {
 }
 
 const configPlaceHolder =
-  "[example]\n\
-  type = s3\n\
-  provider = AWS\n\
-  region = us-east-1";
+  "[example]\ntype = s3\nprovider = AWS\nregion = us-east-1";
 
 function AdvancedAddCloudStorage({
   goToCredentialsStep,
@@ -635,7 +632,9 @@ interface AddCloudStorageCredentialsForm {
   sensitiveFields: { name: string; required: boolean }[];
 }
 
-function parseConfigContent(configContent: string): Record<string, string> {
+export function parseConfigContent(
+  configContent: string
+): Record<string, string> {
   // Parse lines of rclone configuration
   const configLineRegex = /^(?<key>[^=]+)=(?<value>.*)$/;
 

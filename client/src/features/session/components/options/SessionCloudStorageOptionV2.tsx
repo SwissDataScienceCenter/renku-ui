@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ChevronDown,
   ExclamationTriangleFill,
@@ -59,6 +59,7 @@ import {
   updateCloudStorageV2Item,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
+import { parseConfigContent } from "../../../project/components/AddCloudStorageButton";
 
 export default function SessionCloudStorageOptionV2() {
   const { data, isLoading } = useGetNotebooksVersionsQuery();
@@ -211,15 +212,8 @@ function CloudStorageList() {
 }
 
 function CloudStorageItemAlt({ index, storage }: CloudStorageItemProps) {
-  const {
-    active,
-    configuration,
-    name,
-    sensitive_fields,
-    source_path,
-    storage_type,
-    target_path,
-  } = storage;
+  const { active, configuration, name, sensitive_fields, target_path } =
+    storage;
 
   const providedSensitiveFields = useMemo(
     () =>
@@ -236,11 +230,6 @@ function CloudStorageItemAlt({ index, storage }: CloudStorageItemProps) {
     [providedSensitiveFields, sensitive_fields]
   );
 
-  const configContent = `[${name}]
-${Object.entries(configuration)
-  .map(([key, value]) => `${key} = ${value}`)
-  .join("\n")}`;
-
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((isOpen) => !isOpen);
@@ -256,12 +245,37 @@ ${Object.entries(configuration)
       })
     );
   }, [dispatch, index, storage]);
+  const onChangeCredential = useCallback(
+    (fieldIndex: number) => (event: ChangeEvent<HTMLInputElement>) => {
+      if (sensitive_fields == null) {
+        return;
+      }
+
+      const name = sensitive_fields[fieldIndex].name;
+      const value = event.target.value;
+      const newSensitiveFields = [...sensitive_fields];
+      newSensitiveFields.splice(fieldIndex, 1, {
+        name,
+        value,
+      });
+      dispatch(
+        updateCloudStorageV2Item({
+          index,
+          storage: {
+            ...storage,
+            sensitive_fields: newSensitiveFields,
+          },
+        })
+      );
+    },
+    [dispatch, index, sensitive_fields, storage]
+  );
 
   return (
     <Col>
       <Card>
-        <CardBody className={cx("p-0", "d-flex", "align-items-center")}>
-          <div className={cx("ps-3", "py-3")}>
+        <CardBody className={cx("pb-2", "d-flex", "align-items-center")}>
+          <div>
             <Input
               className="form-check-input"
               checked={active}
@@ -273,75 +287,250 @@ ${Object.entries(configuration)
               Mount in this session
             </Label>
           </div>
-          <h3 className={cx("fs-6", "m-0", "w-100")}>
-            <button
-              className={cx(
-                "d-flex",
-                "gap-3",
-                "align-items-center",
-                "w-100",
-                "p-3",
-                "bg-transparent",
-                "border-0"
-              )}
-              onClick={toggle}
-              type="button"
-            >
-              <div
-                className={cx(
-                  "fw-bold",
-                  !active && [
-                    "text-decoration-line-through",
-                    "text-rk-text-light",
-                  ]
-                )}
-              >
-                {name}
-              </div>
-              <div className={cx("small", "d-none", "d-sm-block")}>
-                <span className="text-rk-text-light">Mount Point: </span>
-                {active ? (
-                  <span>{target_path}</span>
-                ) : (
-                  <span className="fst-italic">Not mounted</span>
-                )}
-              </div>
-              <div className="ms-auto">
-                <ChevronDown />
-              </div>
-            </button>
+          <h3
+            className={cx(
+              "fs-6",
+              "fw-bold",
+              "m-0",
+              "ms-2",
+              !active && ["text-decoration-line-through", "text-rk-text-light"]
+            )}
+          >
+            {name}
           </h3>
+          <div className={cx("small", "d-none", "d-sm-block", "ms-3")}>
+            <span className="text-rk-text-light">Mount point: </span>
+            {active ? (
+              <span>{target_path}</span>
+            ) : (
+              <span className="fst-italic">Not mounted</span>
+            )}
+          </div>
         </CardBody>
+
         {requiredSensitiveFields != null &&
           requiredSensitiveFields.length > 0 && (
-            <CardBody className="pt-0">
+            <CardBody className="py-0">
               <h5 className={cx("fs-6", "m-0")}>Credentials</h5>
               <p className={cx("form-text", "mt-0", "mb-1")}>
                 Please fill in the credentials required to use this cloud
                 storage
               </p>
-              {requiredSensitiveFields.map((item, index) => (
-                <div className="mb-3" key={index}>
+              {requiredSensitiveFields.map((item, fieldIndex) => (
+                <div className="mb-3" key={fieldIndex}>
                   <Label
                     className="form-label"
-                    for={`credentials-${item.name}`}
+                    for={`credentials-${index}-${item.name}`}
                   >
                     {item.name}
                   </Label>
                   <Input
-                    id={`credentials-${item.name}`}
+                    id={`credentials-${index}-${item.name}`}
                     type="text"
                     value={item.value}
+                    onChange={onChangeCredential(fieldIndex)}
                   />
                 </div>
               ))}
             </CardBody>
           )}
+
+        <CardBody className="p-0">
+          <button
+            className={cx(
+              "d-flex",
+              "align-items-center",
+              "w-100",
+              "p-3",
+              "pt-2",
+              "bg-transparent",
+              "border-0"
+            )}
+            onClick={toggle}
+            type="button"
+          >
+            <div>Storage details</div>
+            <div className="ms-auto">
+              <ChevronDown />
+            </div>
+          </button>
+        </CardBody>
         <Collapse isOpen={isOpen}>
-          <CardBody className="pt-0">Storage details</CardBody>
+          <CardBody className="pt-0">
+            <CloudStorageDetails index={index} storage={storage} />
+          </CardBody>
         </Collapse>
       </Card>
     </Col>
+  );
+}
+
+function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
+  const { namespace, path } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+
+  const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
+    namespace,
+    path,
+  });
+
+  const { configuration, name, source_path, target_path } = storage;
+
+  const providedSensitiveFields = useMemo(
+    () =>
+      Object.entries(configuration)
+        .filter(([, value]) => value === "<sensitive>")
+        .map(([key]) => key),
+    [configuration]
+  );
+  const requiredSensitiveFields = useMemo(
+    () =>
+      storage.sensitive_fields?.filter(({ name }) =>
+        providedSensitiveFields.includes(name)
+      ),
+    [providedSensitiveFields, storage.sensitive_fields]
+  );
+  const configCredentials = (requiredSensitiveFields ?? []).reduce(
+    (prev, { name, value }) => ({ ...prev, [name]: value }),
+    {} as Record<string, string>
+  );
+  const configWithCredentials = { ...configuration, ...configCredentials };
+  const configContent = `[${name}]\n${Object.entries(configWithCredentials)
+    .map(([key, value]) => `${key} = ${value}`)
+    .join("\n")}\n`;
+
+  const dispatch = useDispatch();
+
+  const onChangeSourcePath = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      dispatch(
+        updateCloudStorageV2Item({
+          index,
+          storage: { ...storage, source_path: value },
+        })
+      );
+    },
+    [dispatch, index, storage]
+  );
+  const onChangeTargetPath = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      dispatch(
+        updateCloudStorageV2Item({
+          index,
+          storage: { ...storage, target_path: value },
+        })
+      );
+    },
+    [dispatch, index, storage]
+  );
+  const onChangeConfiguration = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
+      const value = event.target.value;
+      const parsedConfig = parseConfigContent(value);
+
+      const sensitiveFieldKeys =
+        storage.sensitive_fields?.map(({ name }) => name) ?? [];
+      const filteredConfig = Object.entries(parsedConfig)
+        .filter(([key]) => !sensitiveFieldKeys.includes(key))
+        .reduce(
+          (prev, [key, value]) => ({ ...prev, [key]: value }),
+          {} as Record<string, string>
+        );
+      const newSensitiveFields = Object.entries(parsedConfig)
+        .filter(([key]) => sensitiveFieldKeys.includes(key))
+        .map(([name, value]) => ({ name, value }));
+      const sensitiveConfig = newSensitiveFields.reduce(
+        (prev, { name }) => ({ ...prev, [name]: "<sensitive>" }),
+        {} as Record<string, string>
+      );
+
+      console.log({
+        configuration: { ...filteredConfig, ...sensitiveConfig },
+        sensitive_fields: newSensitiveFields,
+      });
+
+      dispatch(
+        updateCloudStorageV2Item({
+          index,
+          storage: {
+            ...storage,
+            configuration: { ...filteredConfig, ...sensitiveConfig },
+            sensitive_fields: newSensitiveFields,
+          },
+        })
+      );
+    },
+    [dispatch, index, storage]
+  );
+
+  return (
+    <div className="form-rk-green">
+      <FormText>
+        Changes made here will apply only for this session. Use the{" "}
+        <Link to={settingsStorageUrl}>project&apos;s settings</Link> to
+        permanently change cloud storage settings.
+      </FormText>
+
+      <div className="mb-3">
+        <Label
+          className="form-label"
+          for={`updateCloudStorageSourcePath-${index}`}
+        >
+          Source Path
+        </Label>
+        <Input
+          className="form-control"
+          id={`updateCloudStorageSourcePath-${index}`}
+          placeholder="bucket/folder"
+          type="text"
+          value={source_path}
+          onChange={onChangeSourcePath}
+        />
+      </div>
+
+      <div className="mb-3">
+        <Label
+          className="form-label"
+          for={`updateCloudStorageTargetPath-${index}`}
+        >
+          Mount Point
+        </Label>
+        <Input
+          className="form-control"
+          id={`updateCloudStorageTargetPath-${index}`}
+          placeholder="folder"
+          type="text"
+          value={target_path}
+          onChange={onChangeTargetPath}
+        />
+      </div>
+
+      <div className="mb-3">
+        <Label className="form-label" for={`updateCloudStorageConfig-${index}`}>
+          Configuration
+        </Label>
+        <FormText id={`updateCloudStorageConfigHelp-${index}`} tag="div">
+          You can paste here the output of{" "}
+          <code className="user-select-all">
+            rclone config show &lt;name&gt;
+          </code>
+          .
+        </FormText>
+        <textarea
+          aria-describedby={`updateCloudStorageConfigHelp-${index}`}
+          className="form-control"
+          id={`updateCloudStorageConfig-${index}`}
+          // placeholder={configPlaceHolder}
+          rows={Object.keys(storage.configuration).length + 2}
+          value={configContent}
+          onChange={onChangeConfiguration}
+        />
+      </div>
+    </div>
   );
 }
 

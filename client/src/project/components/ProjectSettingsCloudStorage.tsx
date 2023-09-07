@@ -58,7 +58,9 @@ import {
   useUpdateCloudStorageMutation,
 } from "../../features/dataServices/dataServicesApi";
 import { StateModelProject } from "../../features/project/Project";
-import AddCloudStorageButton from "../../features/project/components/AddCloudStorageButton";
+import AddCloudStorageButton, {
+  parseConfigContent,
+} from "../../features/project/components/AddCloudStorageButton";
 import { User } from "../../model/RenkuModels";
 
 export default function ProjectSettingsCloudStorage() {
@@ -207,11 +209,11 @@ ${Object.entries(configuration)
             >
               <div className="fw-bold">{name}</div>
               <div className={cx("small", "d-none", "d-sm-block")}>
-                <span className="text-rk-text-light">Source Path: </span>
+                <span className="text-rk-text-light">Source path: </span>
                 <span>{source_path}</span>
               </div>
               <div className={cx("small", "d-none", "d-sm-block")}>
-                <span className="text-rk-text-light">Mount Point: </span>
+                <span className="text-rk-text-light">Mount point: </span>
                 <span>{target_path}</span>
               </div>
               <div className="ms-auto">
@@ -735,30 +737,6 @@ interface UpdateCloudStorageForm {
   private: boolean;
   source_path: string;
   target_path: string;
-}
-
-function parseConfigContent(configContent: string): Record<string, string> {
-  // Parse lines of rclone configuration
-  const configLineRegex = /^(?<key>[^=]+)=(?<value>.*)$/;
-
-  const entries = configContent.split("\n").flatMap((line) => {
-    const match = line.match(configLineRegex);
-    if (!match) {
-      return [];
-    }
-
-    const key = match.groups?.["key"]?.trim() ?? "";
-    const value = match.groups?.["value"]?.trim() ?? "";
-    if (!key) {
-      return [];
-    }
-    return [{ key, value }];
-  });
-
-  return entries.reduce(
-    (obj, { key, value }) => ({ ...obj, [key]: value }),
-    {}
-  );
 }
 
 function CloudStorageDetails({
