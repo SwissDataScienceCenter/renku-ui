@@ -448,11 +448,6 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
         {} as Record<string, string>
       );
 
-      console.log({
-        configuration: { ...filteredConfig, ...sensitiveConfig },
-        sensitive_fields: newSensitiveFields,
-      });
-
       dispatch(
         updateCloudStorageV2Item({
           index,
