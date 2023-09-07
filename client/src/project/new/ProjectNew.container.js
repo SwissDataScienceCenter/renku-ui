@@ -422,6 +422,30 @@ function NewProject(props) {
   const { availableVisibilities, isFetchingVisibilities } =
     useGetVisibilities(namespace);
 
+  const validateForm = useCallback(
+    (newInput = null, newTemplates = null, update = null) => {
+      const projects = {
+        members: projectsMember,
+        fetching: isFetchingProjects,
+      };
+      coordinator?.validate(
+        newInput,
+        newTemplates,
+        update,
+        projects,
+        namespaces,
+        isFetchingVisibilities
+      );
+    },
+    [
+      coordinator,
+      isFetchingProjects,
+      namespaces,
+      projectsMember,
+      isFetchingVisibilities,
+    ]
+  );
+
   /*
    * Start fetching templates and get automatedData. We can execute that only once
    */
@@ -515,30 +539,6 @@ function NewProject(props) {
   const removeAutomated = (manuallyReset = true) => {
     coordinator?.resetAutomated(manuallyReset);
   };
-
-  const validateForm = useCallback(
-    (newInput = null, newTemplates = null, update = null) => {
-      const projects = {
-        members: projectsMember,
-        fetching: isFetchingProjects,
-      };
-      coordinator?.validate(
-        newInput,
-        newTemplates,
-        update,
-        projects,
-        namespaces,
-        isFetchingVisibilities
-      );
-    },
-    [
-      coordinator,
-      isFetchingProjects,
-      namespaces,
-      projectsMember,
-      isFetchingVisibilities,
-    ]
-  );
 
   const createEncodedUrl = (data) => {
     if (!data || !Object.keys(data).length)
