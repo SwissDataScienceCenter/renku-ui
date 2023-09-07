@@ -773,7 +773,7 @@ function FileStatusComp({ file, uploadCompressedFile, uploadThresholdSoft }) {
           icon={faExclamationTriangle}
         />
         <span className="mb-1">&nbsp;Unzip on upload?</span>
-        <span className="me-1">
+        <span className="me-1 d-flex  gap-2">
           <span
             data-cy="upload-compressed-yes"
             className="text-primary text-button"
@@ -786,7 +786,7 @@ function FileStatusComp({ file, uploadCompressedFile, uploadThresholdSoft }) {
             }
           >
             Yes
-          </span>{" "}
+          </span>
           or
           <span
             data-cy="upload-compressed-no"
