@@ -16,24 +16,20 @@
  * limitations under the License.
  */
 
-import { ReactNode, useCallback, useEffect, useState } from "react";
 import cx from "classnames";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import {
   ChevronDown,
-  CloudFill,
   PencilSquare,
-  PlusLg,
-  Trash3Fill,
   TrashFill,
   XLg,
 } from "react-bootstrap-icons";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { RootStateOrAny, useSelector } from "react-redux";
 import {
   Button,
   Card,
   CardBody,
-  CardHeader,
   Col,
   Collapse,
   Container,
@@ -57,14 +53,13 @@ import {
   CloudStorageListItem,
 } from "../../features/dataServices/dataServices.types";
 import {
-  useAddCloudStorageForProjectMutation,
   useDeleteCloudStorageMutation,
   useGetCloudStorageForProjectQuery,
   useUpdateCloudStorageMutation,
 } from "../../features/dataServices/dataServicesApi";
 import { StateModelProject } from "../../features/project/Project";
+import AddCloudStorageButton from "../../features/project/components/AddCloudStorageButton";
 import { User } from "../../model/RenkuModels";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -128,7 +123,12 @@ export default function ProjectSettingsCloudStorage() {
 
   return (
     <CloudStorageSection>
-      <AddCloudStorageButton />
+      <Row>
+        <Col>
+          <AddCloudStorageButton />
+        </Col>
+      </Row>
+
       <CloudStorageListAlt storageForProject={storageForProject} />
       <CloudStorageList storageForProject={storageForProject} />
     </CloudStorageSection>
@@ -145,542 +145,11 @@ function CloudStorageSection({ children }: { children?: ReactNode }) {
   );
 }
 
-function AddCloudStorageButton() {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = useCallback(() => {
-    console.log("source toggle()");
-    setIsOpen((open) => !open);
-  }, []);
-
-  return (
-    <Row>
-      <Col>
-        <Button className={cx("btn-outline-rk-green")} onClick={toggle}>
-          <PlusLg className={cx("bi", "me-1")} />
-          Add Cloud Storage
-        </Button>
-        <AddCloudStorageModal isOpen={isOpen} toggle={toggle} />
-      </Col>
-    </Row>
-  );
-}
-
-interface AddCloudStorageModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-}
-
-function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
-  const [advanced, setAdvanced] = useState(false);
-  const toggleAdvanced = useCallback(() => {
-    setAdvanced((advanced) => !advanced);
-  }, []);
-
-  return (
-    <Modal
-      className="modal-dialog-centered"
-      fullscreen="lg"
-      isOpen={isOpen}
-      size="lg"
-      toggle={toggle}
-    >
-      <ModalHeader toggle={toggle}>
-        <CloudFill className={cx("bi", "me-2")} />
-        Add Cloud Storage
-      </ModalHeader>
-      <ModalBody>
-        <div className="form-rk-green">
-          <div className={cx("form-check", "form-switch")}>
-            <Input
-              className={cx(
-                "form-check-input",
-                "rounded-pill",
-                "cursor-pointer"
-              )}
-              checked={advanced}
-              id="addCloudStorageAdvancedSwitch"
-              onChange={toggleAdvanced}
-              role="switch"
-              type="checkbox"
-            />
-            <Label
-              className={cx("form-check-label", "cursor-pointer")}
-              for="addCloudStorageAdvancedSwitch"
-            >
-              Advanced mode
-            </Label>
-          </div>
-        </div>
-      </ModalBody>
-      {advanced ? (
-        <AdvancedAddCloudStorage toggle={toggle} />
-      ) : (
-        <SimpleAddCloudStorage toggle={toggle} />
-      )}
-    </Modal>
-  );
-}
-
-interface FormAddCloudStorageProps {
-  toggle: () => void;
-}
-
 const configPlaceHolder =
   "[example]\n\
 type = s3\n\
 provider = AWS\n\
 region = us-east-1";
-
-function AdvancedAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
-  const projectId = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]["id"]
-  >((state) => state.stateModel.project.metadata.id);
-
-  const [addCloudStorageForProject, result] =
-    useAddCloudStorageForProjectMutation();
-
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-  } = useForm<AdvancedAddCloudStorageForm>({
-    defaultValues: {
-      config: "",
-      name: "",
-      private: false,
-      source_path: "",
-    },
-  });
-  const onSubmit = useCallback(
-    (data: AdvancedAddCloudStorageForm) => {
-      console.log(data);
-
-      const configuration = parseConfigContent(data.config);
-
-      addCloudStorageForProject({
-        configuration,
-        name: data.name,
-        private: data.private,
-        project_id: `${projectId}`,
-        source_path: data.source_path,
-        target_path: data.name,
-      });
-    },
-    [addCloudStorageForProject, projectId]
-  );
-
-  useEffect(() => {
-    if (result.isSuccess) {
-      toggle();
-    }
-  }, [result.isSuccess, toggle]);
-
-  return (
-    <Form
-      className="form-rk-green"
-      noValidate
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <ModalBody>
-        <div className="form-rk-green">
-          <p className="mb-3">
-            Advanded mode uses <code>rclone</code> configurations to set up
-            cloud storage.
-          </p>
-
-          <div className="mb-3">
-            <Label className="form-label" for="addCloudStorageName">
-              Name
-            </Label>
-            <Controller
-              control={control}
-              name="name"
-              render={({ field }) => (
-                <Input
-                  className={cx("form-control", errors.name && "is-invalid")}
-                  id="addCloudStorageName"
-                  placeholder="storage"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">Please provide a name</div>
-          </div>
-
-          <div className="mb-3">
-            <Controller
-              control={control}
-              name="private"
-              render={({ field }) => (
-                <Input
-                  aria-describedby="addCloudStoragePrivateHelp"
-                  className="form-check-input"
-                  id="addCloudStoragePrivate"
-                  type="checkbox"
-                  checked={field.value}
-                  innerRef={field.ref}
-                  onBlur={field.onBlur}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-            <Label
-              className={cx("form-check-label", "ms-2")}
-              for="addCloudStoragePrivate"
-            >
-              Requires credentials
-            </Label>
-            <FormText id="addCloudStoragePrivateHelp" tag="div">
-              Check this box if this cloud storage requires credentials to be
-              used.
-            </FormText>
-          </div>
-
-          <div className="mb-3">
-            <Label className="form-label" for="addCloudStorageSourcePath">
-              Source Path
-            </Label>
-            <Controller
-              control={control}
-              name="source_path"
-              render={({ field }) => (
-                <Input
-                  className={cx(
-                    "form-control",
-                    errors.source_path && "is-invalid"
-                  )}
-                  id="addCloudStorageSourcePath"
-                  placeholder="bucket/folder"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">
-              Please provide a valid source path
-            </div>
-          </div>
-
-          <div className="mb-3">
-            <Label className="form-label" for="addCloudStorageConfig">
-              Configuration
-            </Label>
-            <FormText id="addCloudStorageConfigHelp" tag="div">
-              You can paste here the output of{" "}
-              <code className="user-select-all">
-                rclone config show &lt;name&gt;
-              </code>
-              .
-            </FormText>
-            <Controller
-              control={control}
-              name="config"
-              render={({ field }) => (
-                <textarea
-                  aria-describedby="addCloudStorageConfigHelp"
-                  className={cx("form-control", errors.config && "is-invalid")}
-                  id="addCloudStorageConfig"
-                  placeholder={configPlaceHolder}
-                  rows={10}
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">
-              Please provide a valid <code>rclone</code> configuration
-            </div>
-          </div>
-        </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
-          Close
-        </Button>
-        <Button type="submit">Next</Button>
-      </ModalFooter>
-    </Form>
-  );
-}
-
-interface AdvancedAddCloudStorageForm {
-  config: string;
-  name: string;
-  private: boolean;
-  source_path: string;
-}
-
-function SimpleAddCloudStorage({ toggle }: FormAddCloudStorageProps) {
-  const projectId = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]["id"]
-  >((state) => state.stateModel.project.metadata.id);
-
-  const [addCloudStorageForProject, result] =
-    useAddCloudStorageForProjectMutation();
-
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-  } = useForm<SimpleAddCloudStorageForm>({
-    defaultValues: {
-      name: "",
-      endpointUrl: "",
-      private: true,
-    },
-  });
-  const onSubmit = useCallback(
-    (data: SimpleAddCloudStorageForm) => {
-      console.log(data);
-      addCloudStorageForProject({
-        name: data.name,
-        private: data.private,
-        project_id: `${projectId}`,
-        storage_url: data.endpointUrl,
-        target_path: data.name,
-      });
-    },
-    [addCloudStorageForProject, projectId]
-  );
-
-  useEffect(() => {
-    if (
-      result.isSuccess &&
-      (result.data.sensitive_fields == null ||
-        result.data.sensitive_fields.length == 0)
-    ) {
-      toggle();
-    }
-  }, [result.data?.sensitive_fields, result.isSuccess, toggle]);
-
-  if (
-    result.isSuccess &&
-    result.data.sensitive_fields != null &&
-    result.data.sensitive_fields.length > 0
-  ) {
-    return <AddCloudStorageCredentialsStep item={result.data} />;
-  }
-
-  return (
-    <Form
-      className="form-rk-green"
-      noValidate
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <ModalBody>
-        {result.error && <RtkErrorAlert error={result.error} />}
-
-        <div className="form-rk-green">
-          <div className="mb-3">
-            <Label className="form-label" for="addCloudStorageName">
-              Name
-            </Label>
-            <Controller
-              control={control}
-              name="name"
-              render={({ field }) => (
-                <Input
-                  className={cx("form-control", errors.name && "is-invalid")}
-                  id="addCloudStorageName"
-                  placeholder="storage"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">Please provide a name</div>
-          </div>
-
-          <div className="mb-3">
-            <Label className="form-label" for="addCloudStorageUrl">
-              Endpoint URL
-            </Label>
-            <Controller
-              control={control}
-              name="endpointUrl"
-              render={({ field }) => (
-                <Input
-                  className={cx(
-                    "form-control",
-                    errors.endpointUrl && "is-invalid"
-                  )}
-                  id="addCloudStorageUrl"
-                  placeholder="s3://bucket.endpoint.example.com/"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">Please provide a valid URL</div>
-          </div>
-
-          <div className="mb-3">
-            <Controller
-              control={control}
-              name="private"
-              render={({ field }) => (
-                <Input
-                  aria-describedby="addCloudStoragePrivateHelp"
-                  className="form-check-input"
-                  id="addCloudStoragePrivate"
-                  type="checkbox"
-                  checked={field.value}
-                  innerRef={field.ref}
-                  onBlur={field.onBlur}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-            <Label
-              className={cx("form-check-label", "ms-2")}
-              for="addCloudStoragePrivate"
-            >
-              Requires credentials
-            </Label>
-            <FormText id="addCloudStoragePrivateHelp" tag="div">
-              Check this box if this cloud storage requires credentials to be
-              used.
-            </FormText>
-          </div>
-        </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
-          <XLg className={cx("bi", "me-1")} />
-          Close
-        </Button>
-        <Button disabled={result.isLoading} type="submit">
-          {result.isLoading ? (
-            <Loader className="me-1" inline size={16} />
-          ) : (
-            <PlusLg className={cx("bi", "me-1")} />
-          )}
-          Add Storage
-        </Button>
-      </ModalFooter>
-    </Form>
-  );
-}
-
-interface SimpleAddCloudStorageForm {
-  name: string;
-  endpointUrl: string;
-  private: boolean;
-}
-
-interface AddCloudStorageCredentialsStepProps {
-  item: CloudStorageListItem;
-}
-
-function AddCloudStorageCredentialsStep({
-  item,
-}: AddCloudStorageCredentialsStepProps) {
-  const { sensitive_fields, storage } = item;
-  const { configuration, name, project_id, storage_id } = storage;
-
-  const [updateCloudStorage, result] = useUpdateCloudStorageMutation();
-
-  const { control, handleSubmit } = useForm<AddCloudStorageCredentialsForm>({
-    defaultValues: {
-      sensitiveFields: (sensitive_fields ?? []).map(({ name }) => ({
-        name,
-        required: false,
-      })),
-    },
-  });
-  const { fields: sensitiveFields } = useFieldArray({
-    control,
-    name: "sensitiveFields",
-  });
-  const onSubmit = useCallback(
-    (data: AddCloudStorageCredentialsForm) => {
-      console.log(data);
-
-      const updateConfig = data.sensitiveFields.reduce(
-        (prev, { name, required }) => ({
-          ...prev,
-          ...(required ? { [name]: "<sensitive>" } : {}),
-        }),
-        {} as Record<string, string>
-      );
-
-      updateCloudStorage({
-        project_id,
-        storage_id,
-        configuration: {
-          ...configuration,
-          ...updateConfig,
-        },
-      });
-    },
-    [configuration, project_id, storage_id, updateCloudStorage]
-  );
-
-  return (
-    <Form
-      className="form-rk-green"
-      noValidate
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <ModalBody>
-        <h5>Credentials</h5>
-        <p>
-          Please select which credentials are required for the{" "}
-          <strong>{name}</strong> cloud storage.
-        </p>
-
-        <div className="form-rk-green">
-          {sensitiveFields.map((item, index) => (
-            <div className="mb-3" key={item.id}>
-              <Controller
-                control={control}
-                name={`sensitiveFields.${index}.required`}
-                render={({ field }) => (
-                  <Input
-                    className="form-check-input"
-                    id={`configureCloudStorageCredentials-${item.id}`}
-                    type="checkbox"
-                    checked={field.value}
-                    innerRef={field.ref}
-                    onBlur={field.onBlur}
-                    onChange={field.onChange}
-                  />
-                )}
-              />
-              <Label
-                className={cx("form-check-label", "ms-2")}
-                for={`configureCloudStorageCredentials-${item.id}`}
-              >
-                {item.name}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button disabled={result.isLoading} type="submit">
-          {result.isLoading ? (
-            <Loader className="me-1" inline size={16} />
-          ) : (
-            <PlusLg className={cx("bi", "me-1")} />
-          )}
-          Save credentials
-        </Button>
-      </ModalFooter>
-    </Form>
-  );
-}
-
-interface AddCloudStorageCredentialsForm {
-  sensitiveFields: { name: string; required: boolean }[];
-}
 
 interface CloudStorageListProps {
   storageForProject: CloudStorageListItem[];
