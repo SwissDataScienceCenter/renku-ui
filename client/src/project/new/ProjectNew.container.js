@@ -421,10 +421,35 @@ function NewProject(props) {
   const { availableVisibilities, isFetchingVisibilities } =
     useGetVisibilities(namespace);
 
+  const validateForm = useCallback(
+    (newInput = null, newTemplates = null, update = null) => {
+      const projects = {
+        members: projectsMember,
+        fetching: isFetchingProjects,
+      };
+      coordinator?.validate(
+        newInput,
+        newTemplates,
+        update,
+        projects,
+        namespaces,
+        isFetchingVisibilities
+      );
+    },
+    [
+      coordinator,
+      isFetchingProjects,
+      namespaces,
+      projectsMember,
+      isFetchingVisibilities,
+    ]
+  );
+
   /*
-   * Start fetching templates and get automatedData
+   * Start fetching templates and get automatedData. We can execute that only once
    */
   useEffect(() => {
+    removeAutomated();
     if (!coordinator || !user.logged) return;
     coordinator.setConfig(
       params["TEMPLATES"].custom,
@@ -432,60 +457,51 @@ function NewProject(props) {
     );
     coordinator.resetInput();
     coordinator.getTemplates();
-    removeAutomated();
     extractAutomatedData();
   }, []); // eslint-disable-line  react-hooks/exhaustive-deps
 
   /*
    * Start Auto fill form when namespaces are ready
    */
-  useEffect(
-    () => {
-      if (
-        automatedData &&
-        !namespaces?.fetching &&
-        !newProject.automated.finished
-      )
-        coordinator?.setAutomated(
-          automatedData,
-          undefined,
-          namespaces,
-          availableVisibilities,
-          setNamespace
-        );
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      automatedData,
-      namespaces.list,
-      namespaces.fetching,
-      newProject.automated.finished,
-    ]
-  );
+  useEffect(() => {
+    if (!automatedData || newProject.automated.finished) return;
+    if (automatedData && namespaces.fetched && !newProject.automated.finished) {
+      coordinator?.setAutomated(
+        automatedData,
+        undefined,
+        namespaces,
+        availableVisibilities,
+        setNamespace
+      );
+    }
+  }, [
+    automatedData,
+    namespaces,
+    availableVisibilities,
+    coordinator,
+    newProject.automated.finished,
+  ]);
 
   /*
    * Validate form when projects/namespace are ready or the auto fill form finished
    */
-  useEffect(
-    () => {
-      if (
-        !user.logged ||
-        namespaces.fetching ||
-        (newProject.automated.received && !newProject.automated.finished)
-      )
-        return;
-      validateForm(null, null, true);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      namespaces.list,
-      namespaces.fetching,
-      projectsMember,
-      isFetchingProjects,
-      newProject.automated.received,
-      newProject.automated.finished,
-    ]
-  );
+  useEffect(() => {
+    if (!user.logged) return;
+    if (
+      !namespaces.fetched ||
+      (newProject.automated.received && !newProject.automated.finished)
+    )
+      return;
+    validateForm(null, null, true);
+  }, [
+    user.logged,
+    validateForm,
+    namespaces.fetched,
+    projectsMember,
+    isFetchingProjects,
+    newProject.automated.received,
+    newProject.automated.finished,
+  ]);
 
   /*
    * Calculate visibilities when namespace change
@@ -514,28 +530,13 @@ function NewProject(props) {
         }
       }
     } catch (e) {
+      // This usually happens when the link is wrong and the base64 string is broken
       coordinator.setAutomated(null, e);
     }
   };
 
   const removeAutomated = (manuallyReset = true) => {
     coordinator?.resetAutomated(manuallyReset);
-  };
-
-  const validateForm = (
-    newInput = null,
-    newTemplates = null,
-    update = null
-  ) => {
-    const projects = { members: projectsMember, fetching: isFetchingProjects };
-    coordinator?.validate(
-      newInput,
-      newTemplates,
-      update,
-      projects,
-      namespaces,
-      isFetchingVisibilities
-    );
   };
 
   const createEncodedUrl = (data) => {
