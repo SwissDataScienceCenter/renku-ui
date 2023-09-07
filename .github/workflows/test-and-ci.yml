@@ -73,6 +73,37 @@ jobs:
           cd server
           npm run lint
 
+#  check-port-storybook:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Check Port Availability
+#        run: |
+#          port=6006
+#
+#          if nc -z localhost $port; then
+#            echo "Port $port is available"
+#          else
+#            echo "Port $port is not available"
+#            exit 1
+#          fi
+
+  test-storybook:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.17.1'
+      - name: Install dependencies
+        run: npm install
+      - name: Build Storybook and run tests
+        run: npm run storybook-compile-and-test
+
   lint-e2e:
     runs-on: ubuntu-22.04
     steps:
