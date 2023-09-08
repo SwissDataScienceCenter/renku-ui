@@ -25,10 +25,12 @@ import { setCommit } from "../../startSessionOptionsSlice";
 
 interface UseDefaultCommitOptionArgs {
   commits: GitLabRepositoryCommit[] | undefined;
+  currentCommit: string;
 }
 
 export default function useDefaultCommitOption({
   commits,
+  currentCommit,
 }: UseDefaultCommitOptionArgs): void {
   const location = useLocation();
   const searchParams = useMemo(
@@ -66,5 +68,5 @@ export default function useDefaultCommitOption({
     }
 
     dispatch(setCommit(commits[0].id));
-  }, [commitFromUrl, commits, dispatch]);
+  }, [commitFromUrl, commits, dispatch, currentCommit]);
 }

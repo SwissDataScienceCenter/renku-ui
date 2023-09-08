@@ -168,7 +168,7 @@ function useAutostartSessionOptions(): void {
 
   // Select default options
   useDefaultBranchOption({ branches, defaultBranch });
-  useDefaultCommitOption({ commits });
+  useDefaultCommitOption({ commits, currentCommit: commit });
   useDefaultUrlOption({ projectConfig });
   useDefaultSessionClassOption({ resourcePools });
   useDefaultStorageOption({
