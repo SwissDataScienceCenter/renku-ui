@@ -17,13 +17,13 @@
  */
 
 export function parseCloudStorageConfiguration(
-  configContent: string
+  formattedConfiguration: string
 ): Record<string, string> {
   // Parse lines of rclone configuration
-  const configLineRegex = /^(?<key>[^=]+)=(?<value>.*)$/;
+  const configurationLineRegex = /^(?<key>[^=]+)=(?<value>.*)$/;
 
-  const entries = configContent.split("\n").flatMap((line) => {
-    const match = line.match(configLineRegex);
+  const entries = formattedConfiguration.split("\n").flatMap((line) => {
+    const match = line.match(configurationLineRegex);
     if (!match) {
       return [];
     }
@@ -40,4 +40,18 @@ export function parseCloudStorageConfiguration(
     (obj, { key, value }) => ({ ...obj, [key]: value }),
     {}
   );
+}
+
+export function formatCloudStorageConfiguration({
+  configuration,
+  name,
+}: {
+  configuration: Record<string, string | undefined>;
+  name: string;
+}): string {
+  const lines = Object.entries(configuration)
+    .filter(([, value]) => value != null)
+    .map(([key, value]) => `${key} = ${value}`)
+    .join("\n");
+  return `[${name}]\n${lines}\n`;
 }

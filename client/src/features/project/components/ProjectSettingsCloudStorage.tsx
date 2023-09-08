@@ -48,8 +48,8 @@ import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { User } from "../../../model/RenkuModels";
 import {
-  CloudStorageConfiguration,
   CloudStorage,
+  CloudStorageConfiguration,
 } from "../../dataServices/dataServices.types";
 import {
   useDeleteCloudStorageMutation,
@@ -57,7 +57,11 @@ import {
   useUpdateCloudStorageMutation,
 } from "../../dataServices/dataServicesApi";
 import { StateModelProject } from "../Project";
-import { parseCloudStorageConfiguration } from "../utils/projectCloudStorage.utils";
+import { CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER } from "../projectCloudStorage.constants";
+import {
+  formatCloudStorageConfiguration,
+  parseCloudStorageConfiguration,
+} from "../utils/projectCloudStorage.utils";
 import AddCloudStorageButton from "./AddCloudStorageButton";
 
 export default function ProjectSettingsCloudStorage() {
@@ -129,7 +133,7 @@ export default function ProjectSettingsCloudStorage() {
         </Col>
       </Row>
 
-      <CloudStorageListAlt storageForProject={storageForProject} />
+      <CloudStorageList storageForProject={storageForProject} />
     </CloudStorageSection>
   );
 }
@@ -153,17 +157,11 @@ function CloudStorageSection({
   );
 }
 
-const configPlaceHolder =
-  "[example]\n\
-type = s3\n\
-provider = AWS\n\
-region = us-east-1";
-
 interface CloudStorageListProps {
   storageForProject: CloudStorage[];
 }
 
-function CloudStorageListAlt({ storageForProject }: CloudStorageListProps) {
+function CloudStorageList({ storageForProject }: CloudStorageListProps) {
   if (storageForProject.length == 0) {
     return null;
   }
@@ -171,10 +169,10 @@ function CloudStorageListAlt({ storageForProject }: CloudStorageListProps) {
   return (
     <Container className={cx("p-0", "mt-2")} fluid>
       <Row className={cx("row-cols-1", "gy-2")}>
-        {storageForProject.map(({ storage }, index) => (
-          <CloudStorageItemAlt
-            key={`${storage.name}-${index}`}
-            storage={storage}
+        {storageForProject.map((storageDefinition, index) => (
+          <CloudStorageItem
+            key={`${storageDefinition.storage.name}-${index}`}
+            storageDefinition={storageDefinition}
           />
         ))}
       </Row>
@@ -182,13 +180,18 @@ function CloudStorageListAlt({ storageForProject }: CloudStorageListProps) {
   );
 }
 
-function CloudStorageItemAlt({ storage }: CloudStorageItemProps) {
+interface CloudStorageItemProps {
+  storageDefinition: CloudStorage;
+}
+
+function CloudStorageItem({ storageDefinition }: CloudStorageItemProps) {
+  const { storage } = storageDefinition;
   const { configuration, name, source_path, target_path } = storage;
 
-  const configContent = `[${name}]
-${Object.entries(configuration)
-  .map(([key, value]) => `${key} = ${value}`)
-  .join("\n")}`;
+  const formattedConfiguration = formatCloudStorageConfiguration({
+    configuration,
+    name,
+  });
 
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
@@ -230,8 +233,8 @@ ${Object.entries(configuration)
         </CardBody>
         <Collapse isOpen={isOpen}>
           <CloudStorageItemCollapsibleContent
-            configContent={configContent}
-            storage={storage}
+            formattedConfiguration={formattedConfiguration}
+            storageDefinition={storageDefinition}
           />
         </Collapse>
       </Card>
@@ -239,10 +242,15 @@ ${Object.entries(configuration)
   );
 }
 
+interface CloudStorageItemCollapsibleContentProps {
+  formattedConfiguration: string;
+  storageDefinition: CloudStorage;
+}
+
 function CloudStorageItemCollapsibleContent({
-  configContent,
-  storage,
-}: CloudStorageDetailsAltProps) {
+  formattedConfiguration,
+  storageDefinition,
+}: CloudStorageItemCollapsibleContentProps) {
   const [editMode, setEditMode] = useState(false);
   const toggleEditMode = useCallback(() => {
     setEditMode((editMode) => !editMode);
@@ -252,103 +260,99 @@ function CloudStorageItemCollapsibleContent({
     <CardBody className="pt-0">
       {editMode ? (
         <EditCloudStorage
-          configContent={configContent}
-          storage={storage}
+          formattedConfiguration={formattedConfiguration}
+          storageDefinition={storageDefinition}
           toggleEditMode={toggleEditMode}
         />
       ) : (
-        <CloudStorageDetailsAlt
-          configContent={configContent}
-          storage={storage}
+        <CloudStorageDetails
+          formattedConfiguration={formattedConfiguration}
+          storageDefinition={storageDefinition}
+          toggleEditMode={toggleEditMode}
         />
       )}
+    </CardBody>
+  );
+}
+
+function CloudStorageDetails({
+  formattedConfiguration,
+  storageDefinition,
+  toggleEditMode,
+}: CloudStorageDetailsProps) {
+  const { storage } = storageDefinition;
+  const { configuration, name, source_path, storage_type, target_path } =
+    storage;
+
+  return (
+    <>
+      <section>
+        <div>
+          <div className="text-rk-text-light">
+            <small>Name</small>
+          </div>
+          <div>{name}</div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>Storage Type</small>
+          </div>
+          <div>{storage_type}</div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>
+              Source Path {"("}usually &lt;bucket&gt; or
+              &lt;bucket&gt;/&lt;folder&gt;{")"}
+            </small>
+          </div>
+          <div>
+            <code>{source_path}</code>
+          </div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>
+              Mount Point {"("}this is where the storage will be mounted during
+              sessions{")"}
+            </small>
+          </div>
+          <div>
+            <code>{target_path}</code>
+          </div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>Requires credentials</small>
+          </div>
+          <div>{storage.private ? "Yes" : "No"}</div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>
+              Configuration (uses <code>rclone config</code>)
+            </small>
+          </div>
+          <div>
+            <textarea
+              className="form-control"
+              readOnly
+              rows={Object.keys(configuration).length + 2}
+              value={formattedConfiguration}
+            />
+          </div>
+        </div>
+      </section>
 
       <section className={cx("d-flex", "justify-content-end", "mt-3")}>
         <Button color="outline-secondary" onClick={toggleEditMode}>
           <PencilSquare className={cx("bi", "me-1")} />
           Edit
         </Button>
-        <DeleteCloudStorageButton storage={storage} />
+        <DeleteCloudStorageButton storageDefinition={storageDefinition} />
       </section>
-    </CardBody>
+    </>
   );
-}
-
-interface CloudStorageDetailsAltProps {
-  configContent: string;
-  storage: CloudStorageConfiguration;
-}
-
-function CloudStorageDetailsAlt({
-  configContent,
-  storage,
-}: CloudStorageDetailsAltProps) {
-  const { configuration, name, source_path, storage_type, target_path } =
-    storage;
-
-  return (
-    <section>
-      <div>
-        <div className="text-rk-text-light">
-          <small>Name</small>
-        </div>
-        <div>{name}</div>
-      </div>
-      <div className="mt-2">
-        <div className="text-rk-text-light">
-          <small>Storage Type</small>
-        </div>
-        <div>{storage_type}</div>
-      </div>
-      <div className="mt-2">
-        <div className="text-rk-text-light">
-          <small>
-            Source Path {"("}usually &lt;bucket&gt; or
-            &lt;bucket&gt;/&lt;folder&gt;{")"}
-          </small>
-        </div>
-        <div>
-          <code>{source_path}</code>
-        </div>
-      </div>
-      <div className="mt-2">
-        <div className="text-rk-text-light">
-          <small>
-            Target Path {"("}this is where the storage will be mounted during
-            sessions{")"}
-          </small>
-        </div>
-        <div>
-          <code>{target_path}</code>
-        </div>
-      </div>
-      <div className="mt-2">
-        <div className="text-rk-text-light">
-          <small>Requires credentials</small>
-        </div>
-        <div>{storage.private ? "Yes" : "No"}</div>
-      </div>
-      <div className="mt-2">
-        <div className="text-rk-text-light">
-          <small>
-            Configuration (uses <code>rclone config</code>)
-          </small>
-        </div>
-        <div>
-          <textarea
-            className="form-control"
-            readOnly
-            rows={Object.keys(configuration).length + 2}
-            value={configContent}
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-interface CloudStorageItemProps {
-  storage: CloudStorageConfiguration;
 }
 
 interface CloudStorageModalProps {
@@ -358,16 +362,17 @@ interface CloudStorageModalProps {
 }
 
 interface CloudStorageDetailsProps {
-  configContent: string;
-  storage: CloudStorageConfiguration;
+  formattedConfiguration: string;
+  storageDefinition: CloudStorage;
   toggleEditMode: () => void;
 }
 
 function EditCloudStorage({
-  configContent,
-  storage,
+  formattedConfiguration,
+  storageDefinition,
   toggleEditMode,
 }: CloudStorageDetailsProps) {
+  const { storage } = storageDefinition;
   const { name, source_path, storage_id, target_path } = storage;
 
   const projectId = useSelector<
@@ -383,7 +388,7 @@ function EditCloudStorage({
     handleSubmit,
   } = useForm<UpdateCloudStorageForm>({
     defaultValues: {
-      configContent,
+      formattedConfiguration,
       name,
       private: storage.private,
       source_path,
@@ -404,9 +409,11 @@ function EditCloudStorage({
       const privateUpdate =
         storage.private !== data.private ? { private: data.private } : {};
       const configUpdate =
-        configContent !== data.configContent
+        formattedConfiguration !== data.formattedConfiguration
           ? {
-              configuration: parseCloudStorageConfiguration(data.configContent),
+              configuration: parseCloudStorageConfiguration(
+                data.formattedConfiguration
+              ),
             }
           : {};
 
@@ -421,7 +428,7 @@ function EditCloudStorage({
       });
     },
     [
-      configContent,
+      formattedConfiguration,
       name,
       projectId,
       source_path,
@@ -444,150 +451,149 @@ function EditCloudStorage({
       noValidate
       onSubmit={handleSubmit(onSubmit)}
     >
-      <ModalBody>
-        <div className="form-rk-green">
-          <div className="mb-3">
-            <Label className="form-label" for="updateCloudStorageName">
-              Name
-            </Label>
-            <Controller
-              control={control}
-              name="name"
-              render={({ field }) => (
-                <Input
-                  className={cx("form-control", errors.name && "is-invalid")}
-                  id="updateCloudStorageName"
-                  placeholder="storage"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">Please provide a name</div>
-          </div>
+      <div className="form-rk-green">
+        <div className="mb-3">
+          <Label className="form-label" for="updateCloudStorageName">
+            Name
+          </Label>
+          <Controller
+            control={control}
+            name="name"
+            render={({ field }) => (
+              <Input
+                className={cx("form-control", errors.name && "is-invalid")}
+                id="updateCloudStorageName"
+                placeholder="storage"
+                type="text"
+                {...field}
+              />
+            )}
+            rules={{ required: true }}
+          />
+          <div className="invalid-feedback">Please provide a name</div>
+        </div>
 
-          <div className="mb-3">
-            <Label className="form-label" for="updateCloudStorageSourcePath">
-              Source Path
-            </Label>
-            <Controller
-              control={control}
-              name="source_path"
-              render={({ field }) => (
-                <Input
-                  className={cx(
-                    "form-control",
-                    errors.source_path && "is-invalid"
-                  )}
-                  id="updateCloudStorageSourcePath"
-                  placeholder="bucket/folder"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">
-              Please provide a valid source path
-            </div>
-          </div>
-
-          <div className="mb-3">
-            <Label className="form-label" for="updateCloudStorageTargetPath">
-              Target Path
-            </Label>
-            <Controller
-              control={control}
-              name="target_path"
-              render={({ field }) => (
-                <Input
-                  className={cx(
-                    "form-control",
-                    errors.target_path && "is-invalid"
-                  )}
-                  id="updateCloudStorageTargetPath"
-                  placeholder="folder"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">
-              Please provide a valid target path
-            </div>
-          </div>
-
-          <div className="mb-3">
-            <Controller
-              control={control}
-              name="private"
-              render={({ field }) => (
-                <Input
-                  aria-describedby="updateCloudStoragePrivateHelp"
-                  className="form-check-input"
-                  id="updateCloudStoragePrivate"
-                  type="checkbox"
-                  checked={field.value}
-                  innerRef={field.ref}
-                  onBlur={field.onBlur}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-            <Label
-              className={cx("form-check-label", "ms-2")}
-              for="updateCloudStoragePrivate"
-            >
-              Requires credentials
-            </Label>
-            <FormText id="updateCloudStoragePrivateHelp" tag="div">
-              Check this box if this cloud storage requires credentials to be
-              used.
-            </FormText>
-          </div>
-
-          <div className="mb-3">
-            <Label className="form-label" for="updateCloudStorageConfig">
-              Configuration
-            </Label>
-            <FormText id="updateCloudStorageConfigHelp" tag="div">
-              You can paste here the output of{" "}
-              <code className="user-select-all">
-                rclone config show &lt;name&gt;
-              </code>
-              .
-            </FormText>
-            <Controller
-              control={control}
-              name="configContent"
-              render={({ field }) => (
-                <textarea
-                  aria-describedby="updateCloudStorageConfigHelp"
-                  className={cx(
-                    "form-control",
-                    errors.configContent && "is-invalid"
-                  )}
-                  id="updateCloudStorageConfig"
-                  placeholder={configPlaceHolder}
-                  rows={Object.keys(storage.configuration).length + 2}
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">
-              Please provide a valid <code>rclone</code> configuration
-            </div>
+        <div className="mb-3">
+          <Label className="form-label" for="updateCloudStorageSourcePath">
+            Source Path
+          </Label>
+          <Controller
+            control={control}
+            name="source_path"
+            render={({ field }) => (
+              <Input
+                className={cx(
+                  "form-control",
+                  errors.source_path && "is-invalid"
+                )}
+                id="updateCloudStorageSourcePath"
+                placeholder="bucket/folder"
+                type="text"
+                {...field}
+              />
+            )}
+            rules={{ required: true }}
+          />
+          <div className="invalid-feedback">
+            Please provide a valid source path
           </div>
         </div>
-      </ModalBody>
-      <ModalFooter>
+
+        <div className="mb-3">
+          <Label className="form-label" for="updateCloudStorageTargetPath">
+            Mount Point
+          </Label>
+          <Controller
+            control={control}
+            name="target_path"
+            render={({ field }) => (
+              <Input
+                className={cx(
+                  "form-control",
+                  errors.target_path && "is-invalid"
+                )}
+                id="updateCloudStorageTargetPath"
+                placeholder="folder"
+                type="text"
+                {...field}
+              />
+            )}
+            rules={{ required: true }}
+          />
+          <div className="invalid-feedback">
+            Please provide a valid mount point
+          </div>
+        </div>
+
+        <div className="mb-3">
+          <Controller
+            control={control}
+            name="private"
+            render={({ field }) => (
+              <Input
+                aria-describedby="updateCloudStoragePrivateHelp"
+                className="form-check-input"
+                id="updateCloudStoragePrivate"
+                type="checkbox"
+                checked={field.value}
+                innerRef={field.ref}
+                onBlur={field.onBlur}
+                onChange={field.onChange}
+              />
+            )}
+          />
+          <Label
+            className={cx("form-check-label", "ms-2")}
+            for="updateCloudStoragePrivate"
+          >
+            Requires credentials
+          </Label>
+          <FormText id="updateCloudStoragePrivateHelp" tag="div">
+            Check this box if this cloud storage requires credentials to be
+            used.
+          </FormText>
+        </div>
+
+        <div className="mb-3">
+          <Label className="form-label" for="updateCloudStorageConfig">
+            Configuration
+          </Label>
+          <FormText id="updateCloudStorageConfigHelp" tag="div">
+            You can paste here the output of{" "}
+            <code className="user-select-all">
+              rclone config show &lt;name&gt;
+            </code>
+            .
+          </FormText>
+          <Controller
+            control={control}
+            name="formattedConfiguration"
+            render={({ field }) => (
+              <textarea
+                aria-describedby="updateCloudStorageConfigHelp"
+                className={cx(
+                  "form-control",
+                  errors.formattedConfiguration && "is-invalid"
+                )}
+                id="updateCloudStorageConfig"
+                placeholder={CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER}
+                rows={Object.keys(storage.configuration).length + 2}
+                {...field}
+              />
+            )}
+            rules={{ required: true }}
+          />
+          <div className="invalid-feedback">
+            Please provide a valid <code>rclone</code> configuration
+          </div>
+        </div>
+      </div>
+
+      <section className={cx("d-flex", "justify-content-end", "mt-3")}>
         <Button
-          className="ms-2"
-          color="outline-secondary"
+          className={cx("btn-outline-rk-green", "ms-2")}
           onClick={toggleEditMode}
+          type="button"
         >
           <XLg className={cx("bi", "me-1")} />
           Discard
@@ -596,20 +602,23 @@ function EditCloudStorage({
           <PencilSquare className={cx("bi", "me-1")} />
           Save changes
         </Button>
-      </ModalFooter>
+        <DeleteCloudStorageButton storageDefinition={storageDefinition} />
+      </section>
     </Form>
   );
 }
 
 interface UpdateCloudStorageForm {
-  configContent: string;
+  formattedConfiguration: string;
   name: string;
   private: boolean;
   source_path: string;
   target_path: string;
 }
 
-function DeleteCloudStorageButton({ storage }: CloudStorageItemProps) {
+function DeleteCloudStorageButton({
+  storageDefinition,
+}: CloudStorageItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -623,7 +632,7 @@ function DeleteCloudStorageButton({ storage }: CloudStorageItemProps) {
       </Button>
       <DeleteCloudStorageModal
         isOpen={isOpen}
-        storage={storage}
+        storage={storageDefinition.storage}
         toggle={toggle}
       />
     </>
