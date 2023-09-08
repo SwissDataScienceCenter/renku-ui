@@ -586,26 +586,12 @@ function ForkProjectModal() {
 function StartNewSessionOptions() {
   const dispatch = useDispatch();
 
-  // // Reset start session options slice when we navigate away
-  // useEffect(() => {
-  //   return () => {
-  //     dispatch(startSessionOptionsSlice.actions.reset());
-  //   };
-  // }, [dispatch]);
-
-  const [hasDoneReset, setHasDoneReset] = useState(false);
-
+  // Reset start session options slice when we navigate away
   useEffect(() => {
-    if (hasDoneReset) {
-      return;
-    }
-    dispatch(startSessionOptionsSlice.actions.reset());
-    setHasDoneReset(true);
-  }, [dispatch, hasDoneReset]);
-
-  if (!hasDoneReset) {
-    return null;
-  }
+    return () => {
+      dispatch(startSessionOptionsSlice.actions.reset());
+    };
+  }, [dispatch]);
 
   return (
     <>
