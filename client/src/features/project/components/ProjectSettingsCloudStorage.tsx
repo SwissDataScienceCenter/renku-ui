@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ChevronDown,
   PencilSquare,
@@ -60,6 +60,7 @@ import { StateModelProject } from "../Project";
 import { CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER } from "../projectCloudStorage.constants";
 import {
   formatCloudStorageConfiguration,
+  getSensitiveFieldDefinitions,
   parseCloudStorageConfiguration,
 } from "../utils/projectCloudStorage.utils";
 import AddCloudStorageButton from "./AddCloudStorageButton";
@@ -284,6 +285,11 @@ function CloudStorageDetails({
   const { configuration, name, source_path, storage_type, target_path } =
     storage;
 
+  const sensitiveFieldDefinitions = useMemo(
+    () => getSensitiveFieldDefinitions(storageDefinition),
+    [storageDefinition]
+  );
+
   return (
     <>
       <section>
@@ -326,6 +332,9 @@ function CloudStorageDetails({
             <small>Requires credentials</small>
           </div>
           <div>{storage.private ? "Yes" : "No"}</div>
+        </div>
+        <div className="mt-2">
+          {JSON.stringify(sensitiveFieldDefinitions, null, 2)}
         </div>
         <div className="mt-2">
           <div className="text-rk-text-light">

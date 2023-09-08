@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+import {
+  CloudStorage,
+  CloudStorageSensitiveFieldDefinition,
+} from "../../dataServices/dataServices.types";
+
 export function parseCloudStorageConfiguration(
   formattedConfiguration: string
 ): Record<string, string> {
@@ -54,4 +59,23 @@ export function formatCloudStorageConfiguration({
     .map(([key, value]) => `${key} = ${value}`)
     .join("\n");
   return `[${name}]\n${lines}\n`;
+}
+
+export function getSensitiveFieldDefinitions(
+  storageDefinition: CloudStorage
+):
+  | (CloudStorageSensitiveFieldDefinition & { required: boolean })[]
+  | undefined {
+  const { sensitive_fields, storage } = storageDefinition;
+  const { configuration } = storage;
+
+  const providedSensitiveFields = Object.entries(configuration)
+    .filter(([, value]) => value === "<sensitive>")
+    .map(([key]) => key);
+  const sensitiveFieldDefinitions = sensitive_fields?.map((field) => ({
+    ...field,
+    required: providedSensitiveFields.includes(field.name),
+  }));
+
+  return sensitiveFieldDefinitions;
 }
