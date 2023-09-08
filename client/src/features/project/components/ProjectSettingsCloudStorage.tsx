@@ -42,24 +42,24 @@ import {
   ModalFooter,
   Row,
 } from "reactstrap";
-import { ACCESS_LEVELS } from "../../api-client";
-import { ErrorAlert } from "../../components/Alert";
-import { Loader } from "../../components/Loader";
-import LoginAlert from "../../components/loginAlert/LoginAlert";
+import { ACCESS_LEVELS } from "../../../api-client";
+import { ErrorAlert } from "../../../components/Alert";
+import { Loader } from "../../../components/Loader";
+import LoginAlert from "../../../components/loginAlert/LoginAlert";
+import { User } from "../../../model/RenkuModels";
 import {
   CloudStorage,
   CloudStorageListItem,
-} from "../../features/dataServices/dataServices.types";
+} from "../../dataServices/dataServices.types";
 import {
   useDeleteCloudStorageMutation,
   useGetCloudStorageForProjectQuery,
   useUpdateCloudStorageMutation,
-} from "../../features/dataServices/dataServicesApi";
-import { StateModelProject } from "../../features/project/Project";
+} from "../../dataServices/dataServicesApi";
+import { StateModelProject } from "../Project";
 import AddCloudStorageButton, {
   parseConfigContent,
-} from "../../features/project/components/AddCloudStorageButton";
-import { User } from "../../model/RenkuModels";
+} from "./AddCloudStorageButton";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(

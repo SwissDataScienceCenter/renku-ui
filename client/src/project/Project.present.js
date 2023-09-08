@@ -75,7 +75,7 @@ import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 import { ProjectSettingsNav } from "./settings";
-import ProjectSettingsCloudStorage from "./components/ProjectSettingsCloudStorage";
+import ProjectSettingsCloudStorage from "../features/project/components/ProjectSettingsCloudStorage";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
