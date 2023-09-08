@@ -17,6 +17,7 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import sortBy from "lodash/sortBy";
 import {
   AddCloudStorageForProjectParams,
   CloudStorage,
@@ -60,6 +61,8 @@ export const dataServicesApi = createApi({
           params: { project_id },
         };
       },
+      transformResponse: (list: CloudStorageListItem[]) =>
+        sortBy(list, [({ storage }) => storage.name]),
       providesTags: (result) =>
         result
           ? [
