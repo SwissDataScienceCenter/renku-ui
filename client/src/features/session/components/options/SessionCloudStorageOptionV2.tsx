@@ -427,40 +427,52 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
     },
     [dispatch, index, storage]
   );
+
+  const [tempConfigContent, setTempConfigContent] = useState(configContent);
   const onChangeConfiguration = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
-      const value = event.target.value;
-      const parsedConfig = parseConfigContent(value);
+      setTempConfigContent(event.target.value);
+    },
+    []
+  );
+  const onUpdateConfiguration = useCallback(() => {
+    const value = tempConfigContent;
+    const parsedConfig = parseConfigContent(value);
 
-      const sensitiveFieldKeys =
-        storage.sensitive_fields?.map(({ name }) => name) ?? [];
-      const filteredConfig = Object.entries(parsedConfig)
-        .filter(([key]) => !sensitiveFieldKeys.includes(key))
-        .reduce(
-          (prev, [key, value]) => ({ ...prev, [key]: value }),
-          {} as Record<string, string>
-        );
-      const newSensitiveFields = Object.entries(parsedConfig)
-        .filter(([key]) => sensitiveFieldKeys.includes(key))
-        .map(([name, value]) => ({ name, value }));
-      const sensitiveConfig = newSensitiveFields.reduce(
-        (prev, { name }) => ({ ...prev, [name]: "<sensitive>" }),
+    const sensitiveFieldKeys =
+      storage.sensitive_fields?.map(({ name }) => name) ?? [];
+    const filteredConfig = Object.entries(parsedConfig)
+      .filter(([key]) => !sensitiveFieldKeys.includes(key))
+      .reduce(
+        (prev, [key, value]) => ({ ...prev, [key]: value }),
         {} as Record<string, string>
       );
+    const newSensitiveFields = Object.entries(parsedConfig)
+      .filter(([key]) => sensitiveFieldKeys.includes(key))
+      .map(([name, value]) => ({ name, value }));
+    const oldSensitiveFields = (storage.sensitive_fields ?? []).filter(
+      ({ name }) => !newSensitiveFields.map(({ name }) => name).includes(name)
+    );
+    const sensitiveConfig = newSensitiveFields.reduce(
+      (prev, { name }) => ({ ...prev, [name]: "<sensitive>" }),
+      {} as Record<string, string>
+    );
 
-      dispatch(
-        updateCloudStorageV2Item({
-          index,
-          storage: {
-            ...storage,
-            configuration: { ...filteredConfig, ...sensitiveConfig },
-            sensitive_fields: newSensitiveFields,
-          },
-        })
-      );
-    },
-    [dispatch, index, storage]
-  );
+    dispatch(
+      updateCloudStorageV2Item({
+        index,
+        storage: {
+          ...storage,
+          configuration: { ...filteredConfig, ...sensitiveConfig },
+          sensitive_fields: [...oldSensitiveFields, ...newSensitiveFields],
+        },
+      })
+    );
+  }, [dispatch, index, storage, tempConfigContent]);
+
+  useEffect(() => {
+    setTempConfigContent(configContent);
+  }, [configContent]);
 
   return (
     <div className="form-rk-green">
@@ -521,9 +533,20 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
           id={`updateCloudStorageConfig-${index}`}
           // placeholder={configPlaceHolder}
           rows={Object.keys(storage.configuration).length + 2}
-          value={configContent}
+          value={tempConfigContent}
           onChange={onChangeConfiguration}
         />
+        <div className={cx("d-flex", "justify-content-end", "mt-1")}>
+          <Button
+            className="btn-sm"
+            disabled={configContent === tempConfigContent}
+            type="button"
+            onClick={onUpdateConfiguration}
+          >
+            <PencilSquare className={cx("bi", "me-1")} />
+            Save changes
+          </Button>
+        </div>
       </div>
     </div>
   );
