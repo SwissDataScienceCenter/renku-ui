@@ -40,9 +40,7 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
-  ModalHeader,
   Row,
-  Table,
 } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
 import { ErrorAlert } from "../../components/Alert";
@@ -79,6 +77,7 @@ export default function ProjectSettingsCloudStorage() {
   const {
     data: storageForProject,
     error,
+    isFetching,
     isLoading,
   } = useGetCloudStorageForProjectQuery({
     project_id: `${projectId}`,
@@ -124,7 +123,7 @@ export default function ProjectSettingsCloudStorage() {
   }
 
   return (
-    <CloudStorageSection>
+    <CloudStorageSection isFetching={isFetching}>
       <Row>
         <Col>
           <AddCloudStorageButton />
@@ -132,15 +131,23 @@ export default function ProjectSettingsCloudStorage() {
       </Row>
 
       <CloudStorageListAlt storageForProject={storageForProject} />
-      <CloudStorageList storageForProject={storageForProject} />
     </CloudStorageSection>
   );
 }
 
-function CloudStorageSection({ children }: { children?: ReactNode }) {
+function CloudStorageSection({
+  isFetching,
+  children,
+}: {
+  isFetching?: boolean;
+  children?: ReactNode;
+}) {
   return (
     <div className="mt-2">
-      <h3>Cloud storage settings</h3>
+      <h3>
+        Cloud storage settings
+        {isFetching && <Loader className="ms-1" inline size={20} />}
+      </h3>
       <p>Here you can configure cloud storage to be used during sessions.</p>
       <div className="form-rk-green">{children}</div>
     </div>
@@ -341,143 +348,14 @@ function CloudStorageDetailsAlt({
   );
 }
 
-function CloudStorageList({ storageForProject }: CloudStorageListProps) {
-  if (storageForProject.length == 0) {
-    return null;
-  }
-
-  return (
-    <Row
-      className={cx(
-        "mt-4",
-        "d-none" // TODO: remove these components
-      )}
-    >
-      <Col className="table-responsive">
-        <Table className="table-hover">
-          <thead>
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Source Path</th>
-              <th scope="col">Mount Point</th>
-              <th scope="col">
-                <span className="visually-hidden">Actions</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody className="align-middle">
-            {storageForProject.map(({ storage }) => (
-              <CloudStorageItem key={storage.name} storage={storage} />
-            ))}
-          </tbody>
-        </Table>
-      </Col>
-    </Row>
-  );
-}
-
 interface CloudStorageItemProps {
   storage: CloudStorage;
-}
-
-function CloudStorageItem({ storage }: CloudStorageItemProps) {
-  const { name, source_path, target_path } = storage;
-
-  return (
-    <tr>
-      <th scope="row">{name}</th>
-      <td>
-        <code>{source_path}</code>
-      </td>
-      <td>
-        <code>{target_path}</code>
-      </td>
-      <td className="text-end">
-        <span
-          className={cx("d-inline-flex", "flex-row", "flex-no-wrap")}
-          style={{ width: "max-content" }}
-        >
-          <ViewCloudStorageButton storage={storage} />
-          <DeleteCloudStorageButton storage={storage} />
-        </span>
-      </td>
-    </tr>
-  );
-}
-
-function ViewCloudStorageButton({ storage }: CloudStorageItemProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = useCallback(() => {
-    setIsOpen((open) => !open);
-  }, []);
-
-  return (
-    <>
-      <Button color="outline-secondary" onClick={toggle}>
-        View Details
-      </Button>
-      <ViewCloudStorageModal
-        isOpen={isOpen}
-        storage={storage}
-        toggle={toggle}
-      />
-    </>
-  );
 }
 
 interface CloudStorageModalProps {
   isOpen: boolean;
   storage: CloudStorage;
   toggle: () => void;
-}
-
-function ViewCloudStorageModal({
-  isOpen,
-  storage,
-  toggle,
-}: CloudStorageModalProps) {
-  const { configuration, name } = storage;
-
-  const configContent = `[${name}]
-${Object.entries(configuration)
-  .map(([key, value]) => `${key} = ${value}`)
-  .join("\n")}`;
-
-  const [editMode, setEditMode] = useState(false);
-  const toggleEditMode = useCallback(() => {
-    setEditMode((editMode) => !editMode);
-  }, []);
-
-  // Reset `editMode` when closing modal
-  useEffect(() => {
-    if (!isOpen) {
-      setEditMode(false);
-    }
-  }, [isOpen]);
-
-  return (
-    <Modal
-      className="modal-dialog-centered"
-      isOpen={isOpen}
-      size="lg"
-      toggle={toggle}
-    >
-      <ModalHeader toggle={toggle}>Cloud Storage Details</ModalHeader>
-      {editMode ? (
-        <EditCloudStorage
-          configContent={configContent}
-          storage={storage}
-          toggleEditMode={toggleEditMode}
-        />
-      ) : (
-        <CloudStorageDetails
-          configContent={configContent}
-          storage={storage}
-          toggleEditMode={toggleEditMode}
-        />
-      )}
-    </Modal>
-  );
 }
 
 interface CloudStorageDetailsProps {
@@ -515,8 +393,6 @@ function EditCloudStorage({
   });
   const onSubmit = useCallback(
     (data: UpdateCloudStorageForm) => {
-      console.log(data);
-
       const nameUpdate = name !== data.name ? { name: data.name } : {};
       const sourcePathUpdate =
         source_path !== data.source_path
@@ -717,12 +593,7 @@ function EditCloudStorage({
           <XLg className={cx("bi", "me-1")} />
           Discard
         </Button>
-        <Button
-          className="ms-2"
-          disabled={!isDirty}
-          // onClick={handleSubmit(onSubmit)}
-          type="submit"
-        >
+        <Button className="ms-2" disabled={!isDirty} type="submit">
           <PencilSquare className={cx("bi", "me-1")} />
           Save changes
         </Button>
@@ -737,87 +608,6 @@ interface UpdateCloudStorageForm {
   private: boolean;
   source_path: string;
   target_path: string;
-}
-
-function CloudStorageDetails({
-  configContent,
-  storage,
-  toggleEditMode,
-}: CloudStorageDetailsProps) {
-  const { configuration, name, source_path, storage_type, target_path } =
-    storage;
-
-  return (
-    <>
-      <ModalBody>
-        <div>
-          <div className="text-rk-text-light">
-            <small>Name</small>
-          </div>
-          <div>{name}</div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>Storage Type</small>
-          </div>
-          <div>{storage_type}</div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>
-              Source Path {"("}usually &lt;bucket&gt; or
-              &lt;bucket&gt;/&lt;folder&gt;{")"}
-            </small>
-          </div>
-          <div>
-            <code>{source_path}</code>
-          </div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>
-              Target Path {"("}this is where the storage will be mounted during
-              sessions{")"}
-            </small>
-          </div>
-          <div>
-            <code>{target_path}</code>
-          </div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>Requires credentials</small>
-          </div>
-          <div>{storage.private ? "Yes" : "No"}</div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>
-              Configuration (uses <code>rclone config</code>)
-            </small>
-          </div>
-          <div>
-            <textarea
-              className="form-control"
-              readOnly
-              rows={Object.keys(configuration).length + 2}
-              value={configContent}
-            />
-          </div>
-        </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button
-          className="ms-2"
-          color="outline-secondary"
-          onClick={toggleEditMode}
-        >
-          <PencilSquare className={cx("bi", "me-1")} />
-          Edit
-        </Button>
-      </ModalFooter>
-    </>
-  );
 }
 
 function DeleteCloudStorageButton({ storage }: CloudStorageItemProps) {
