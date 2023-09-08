@@ -88,7 +88,8 @@ export const StartNotebookServerOptions = () => {
   if (
     serverOptionsIsLoading ||
     projectConfigIsLoading ||
-    !coreSupportComputed
+    !coreSupportComputed ||
+    !commit
   ) {
     const message = serverOptionsIsLoading
       ? "Getting RenkuLab settings..."
@@ -153,6 +154,7 @@ const DefaultUrlOption = () => {
   });
   const {
     apiVersion,
+    backendAvailable,
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
@@ -165,7 +167,7 @@ const DefaultUrlOption = () => {
       gitLabProjectId: gitLabProjectId ?? 0,
       metadataVersion,
       projectRepositoryUrl,
-      skip: !coreSupportComputed || !commit,
+      skip: !backendAvailable || !coreSupportComputed || !commit,
     });
 
   const defaultUrlOptions = mergeDefaultUrlOptions({
