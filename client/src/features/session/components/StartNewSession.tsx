@@ -593,14 +593,12 @@ function StartNewSessionOptions() {
     };
   }, [dispatch]);
 
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
-
   return (
     <>
-      {commit && <SessionDockerImage />}
+      <SessionDockerImage />
       <SessionBranchOption />
       <SessionCommitOption />
-      {commit && <StartNotebookServerOptions />}
+      <StartNotebookServerOptions />
       <SessionEnvironmentVariables />
       <SessionCloudStorageOption />
     </>
