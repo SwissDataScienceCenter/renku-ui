@@ -48,8 +48,8 @@ import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { User } from "../../../model/RenkuModels";
 import {
+  CloudStorageConfiguration,
   CloudStorage,
-  CloudStorageListItem,
 } from "../../dataServices/dataServices.types";
 import {
   useDeleteCloudStorageMutation,
@@ -160,7 +160,7 @@ provider = AWS\n\
 region = us-east-1";
 
 interface CloudStorageListProps {
-  storageForProject: CloudStorageListItem[];
+  storageForProject: CloudStorage[];
 }
 
 function CloudStorageListAlt({ storageForProject }: CloudStorageListProps) {
@@ -276,7 +276,7 @@ function CloudStorageItemCollapsibleContent({
 
 interface CloudStorageDetailsAltProps {
   configContent: string;
-  storage: CloudStorage;
+  storage: CloudStorageConfiguration;
 }
 
 function CloudStorageDetailsAlt({
@@ -348,18 +348,18 @@ function CloudStorageDetailsAlt({
 }
 
 interface CloudStorageItemProps {
-  storage: CloudStorage;
+  storage: CloudStorageConfiguration;
 }
 
 interface CloudStorageModalProps {
   isOpen: boolean;
-  storage: CloudStorage;
+  storage: CloudStorageConfiguration;
   toggle: () => void;
 }
 
 interface CloudStorageDetailsProps {
   configContent: string;
-  storage: CloudStorage;
+  storage: CloudStorageConfiguration;
   toggleEditMode: () => void;
 }
 

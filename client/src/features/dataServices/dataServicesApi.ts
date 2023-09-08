@@ -21,7 +21,6 @@ import sortBy from "lodash/sortBy";
 import {
   AddCloudStorageForProjectParams,
   CloudStorage,
-  CloudStorageListItem,
   DeleteCloudStorageParams,
   GetCloudStorageForProjectParams,
   ResourcePool,
@@ -52,7 +51,7 @@ export const dataServicesApi = createApi({
       providesTags: ["ResourcePool"],
     }),
     getCloudStorageForProject: builder.query<
-      CloudStorageListItem[],
+      CloudStorage[],
       GetCloudStorageForProjectParams
     >({
       query: ({ project_id }) => {
@@ -61,7 +60,7 @@ export const dataServicesApi = createApi({
           params: { project_id },
         };
       },
-      transformResponse: (list: CloudStorageListItem[]) =>
+      transformResponse: (list: CloudStorage[]) =>
         sortBy(list, [({ storage }) => storage.name]),
       providesTags: (result) =>
         result
@@ -75,7 +74,7 @@ export const dataServicesApi = createApi({
           : [{ id: "LIST", type: "CloudStorage" }],
     }),
     addCloudStorageForProject: builder.mutation<
-      CloudStorageListItem,
+      CloudStorage,
       AddCloudStorageForProjectParams
     >({
       query: (params) => {

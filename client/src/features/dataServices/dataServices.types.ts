@@ -61,6 +61,11 @@ export interface ResourcePoolsQueryParams {
 }
 
 export interface CloudStorage {
+  storage: CloudStorageConfiguration;
+  sensitive_fields?: CloudStorageSensitiveFieldDefinition[];
+}
+
+export interface CloudStorageConfiguration {
   configuration: Record<string, string | undefined>;
   name: string;
   private: boolean;
@@ -72,12 +77,8 @@ export interface CloudStorage {
 }
 
 export interface CloudStorageSensitiveFieldDefinition {
+  help: string;
   name: string;
-}
-
-export interface CloudStorageListItem {
-  storage: CloudStorage;
-  sensitive_fields?: CloudStorageSensitiveFieldDefinition[];
 }
 
 export interface GetCloudStorageForProjectParams {

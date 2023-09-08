@@ -34,12 +34,16 @@ import {
 } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import { CloudStorageListItem } from "../../dataServices/dataServices.types";
+import {
+  CloudStorage,
+  CloudStorageSensitiveFieldDefinition,
+} from "../../dataServices/dataServices.types";
 import {
   useAddCloudStorageForProjectMutation,
   useUpdateCloudStorageMutation,
 } from "../../dataServices/dataServicesApi";
 import { StateModelProject } from "../Project";
+import { CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER } from "../projectCloudStorage.constants";
 import { parseCloudStorageConfiguration } from "../utils/projectCloudStorage.utils";
 
 export default function AddCloudStorageButton() {
@@ -80,8 +84,8 @@ function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
       };
     });
   }, []);
-  const goToCredentialsStep = useCallback((storage: CloudStorageListItem) => {
-    setState({ step: "credentials", storage });
+  const goToCredentialsStep = useCallback((storageDefinition: CloudStorage) => {
+    setState({ step: "credentials", storageDefinition });
   }, []);
 
   // Reset state when closed
@@ -126,7 +130,10 @@ function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
         </ModalBody>
       )}
       {state.step === "credentials" ? (
-        <AddCloudStorageCredentialsStep item={state.storage} toggle={toggle} />
+        <AddCloudStorageCredentialsStep
+          storageDefinition={state.storageDefinition}
+          toggle={toggle}
+        />
       ) : state.mode === "advanced" ? (
         <AdvancedAddCloudStorage
           goToCredentialsStep={goToCredentialsStep}
@@ -149,16 +156,13 @@ type AddCloudStorageModalState =
     }
   | {
       step: "credentials";
-      storage: CloudStorageListItem;
+      storageDefinition: CloudStorage;
     };
 
 interface AddCloudStorageProps {
-  goToCredentialsStep: (storage: CloudStorageListItem) => void;
+  goToCredentialsStep: (storageDefinition: CloudStorage) => void;
   toggle: () => void;
 }
-
-const configPlaceHolder =
-  "[example]\ntype = s3\nprovider = AWS\nregion = us-east-1";
 
 function AdvancedAddCloudStorage({
   goToCredentialsStep,
@@ -178,16 +182,15 @@ function AdvancedAddCloudStorage({
     handleSubmit,
   } = useForm<AdvancedAddCloudStorageForm>({
     defaultValues: {
-      config: "",
+      configuration: "",
       name: "",
-      private: false,
+      private: true,
       source_path: "",
     },
   });
   const onSubmit = useCallback(
     (data: AdvancedAddCloudStorageForm) => {
-      const configuration = parseCloudStorageConfiguration(data.config);
-
+      const configuration = parseCloudStorageConfiguration(data.configuration);
       addCloudStorageForProject({
         configuration,
         name: data.name,
@@ -200,6 +203,7 @@ function AdvancedAddCloudStorage({
     [addCloudStorageForProject, projectId]
   );
 
+  // Handle picking required credentials if necessary
   useEffect(() => {
     if (!result.isSuccess) {
       return;
@@ -318,13 +322,16 @@ function AdvancedAddCloudStorage({
             </FormText>
             <Controller
               control={control}
-              name="config"
+              name="configuration"
               render={({ field }) => (
                 <textarea
                   aria-describedby="addCloudStorageConfigHelp"
-                  className={cx("form-control", errors.config && "is-invalid")}
+                  className={cx(
+                    "form-control",
+                    errors.configuration && "is-invalid"
+                  )}
                   id="addCloudStorageConfig"
-                  placeholder={configPlaceHolder}
+                  placeholder={CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER}
                   rows={10}
                   {...field}
                 />
@@ -339,16 +346,24 @@ function AdvancedAddCloudStorage({
       </ModalBody>
       <ModalFooter>
         <Button className="btn-outline-rk-green" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button type="submit">Next</Button>
+        <Button disabled={result.isLoading} type="submit">
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <PlusLg className={cx("bi", "me-1")} />
+          )}
+          Add Storage
+        </Button>
       </ModalFooter>
     </Form>
   );
 }
 
 interface AdvancedAddCloudStorageForm {
-  config: string;
+  configuration: string;
   name: string;
   private: boolean;
   source_path: string;
@@ -390,6 +405,7 @@ function SimpleAddCloudStorage({
     [addCloudStorageForProject, projectId]
   );
 
+  // Handle picking required credentials if necessary
   useEffect(() => {
     if (!result.isSuccess) {
       return;
@@ -514,23 +530,23 @@ interface SimpleAddCloudStorageForm {
 }
 
 interface AddCloudStorageCredentialsStepProps {
-  item: CloudStorageListItem;
+  storageDefinition: CloudStorage;
   toggle: () => void;
 }
 
 function AddCloudStorageCredentialsStep({
-  item,
+  storageDefinition,
   toggle,
 }: AddCloudStorageCredentialsStepProps) {
-  const { sensitive_fields, storage } = item;
+  const { sensitive_fields, storage } = storageDefinition;
   const { configuration, name, project_id, storage_id } = storage;
 
   const [updateCloudStorage, result] = useUpdateCloudStorageMutation();
 
   const { control, handleSubmit } = useForm<AddCloudStorageCredentialsForm>({
     defaultValues: {
-      sensitiveFields: (sensitive_fields ?? []).map(({ name }) => ({
-        name,
+      sensitiveFields: (sensitive_fields ?? []).map(({ ...field }) => ({
+        ...field,
         required: false,
       })),
     },
@@ -588,6 +604,7 @@ function AddCloudStorageCredentialsStep({
                 name={`sensitiveFields.${index}.required`}
                 render={({ field }) => (
                   <Input
+                    aria-describedby={`configureCloudStorageCredentialsHelp-${item.id}`}
                     className="form-check-input"
                     id={`configureCloudStorageCredentials-${item.id}`}
                     type="checkbox"
@@ -604,6 +621,12 @@ function AddCloudStorageCredentialsStep({
               >
                 {item.name}
               </Label>
+              <FormText
+                id={`configureCloudStorageCredentialsHelp-${item.id}`}
+                tag="div"
+              >
+                {item.help}
+              </FormText>
             </div>
           ))}
         </div>
@@ -623,5 +646,7 @@ function AddCloudStorageCredentialsStep({
 }
 
 interface AddCloudStorageCredentialsForm {
-  sensitiveFields: { name: string; required: boolean }[];
+  sensitiveFields: (CloudStorageSensitiveFieldDefinition & {
+    required: boolean;
+  })[];
 }
