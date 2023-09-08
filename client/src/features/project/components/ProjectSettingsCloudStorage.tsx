@@ -57,9 +57,8 @@ import {
   useUpdateCloudStorageMutation,
 } from "../../dataServices/dataServicesApi";
 import { StateModelProject } from "../Project";
-import AddCloudStorageButton, {
-  parseConfigContent,
-} from "./AddCloudStorageButton";
+import { parseCloudStorageConfiguration } from "../utils/projectCloudStorage.utils";
+import AddCloudStorageButton from "./AddCloudStorageButton";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -407,7 +406,7 @@ function EditCloudStorage({
       const configUpdate =
         configContent !== data.configContent
           ? {
-              configuration: parseConfigContent(data.configContent),
+              configuration: parseCloudStorageConfiguration(data.configContent),
             }
           : {};
 

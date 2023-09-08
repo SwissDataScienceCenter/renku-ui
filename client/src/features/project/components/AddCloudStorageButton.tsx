@@ -40,6 +40,7 @@ import {
   useUpdateCloudStorageMutation,
 } from "../../dataServices/dataServicesApi";
 import { StateModelProject } from "../Project";
+import { parseCloudStorageConfiguration } from "../utils/projectCloudStorage.utils";
 
 export default function AddCloudStorageButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -185,9 +186,7 @@ function AdvancedAddCloudStorage({
   });
   const onSubmit = useCallback(
     (data: AdvancedAddCloudStorageForm) => {
-      console.log(data);
-
-      const configuration = parseConfigContent(data.config);
+      const configuration = parseCloudStorageConfiguration(data.config);
 
       addCloudStorageForProject({
         configuration,
@@ -212,7 +211,6 @@ function AdvancedAddCloudStorage({
       toggle();
       return;
     }
-    console.log("goToCredentialsStep");
     goToCredentialsStep(result.data);
   }, [goToCredentialsStep, result.data, result.isSuccess, toggle]);
 
@@ -381,7 +379,6 @@ function SimpleAddCloudStorage({
   });
   const onSubmit = useCallback(
     (data: SimpleAddCloudStorageForm) => {
-      console.log(data);
       addCloudStorageForProject({
         name: data.name,
         private: data.private,
@@ -404,7 +401,6 @@ function SimpleAddCloudStorage({
       toggle();
       return;
     }
-    console.log("goToCredentialsStep");
     goToCredentialsStep(result.data);
   }, [goToCredentialsStep, result.data, result.isSuccess, toggle]);
 
@@ -545,8 +541,6 @@ function AddCloudStorageCredentialsStep({
   });
   const onSubmit = useCallback(
     (data: AddCloudStorageCredentialsForm) => {
-      console.log(data);
-
       const updateConfig = data.sensitiveFields.reduce(
         (prev, { name, required }) => ({
           ...prev,
@@ -630,30 +624,4 @@ function AddCloudStorageCredentialsStep({
 
 interface AddCloudStorageCredentialsForm {
   sensitiveFields: { name: string; required: boolean }[];
-}
-
-export function parseConfigContent(
-  configContent: string
-): Record<string, string> {
-  // Parse lines of rclone configuration
-  const configLineRegex = /^(?<key>[^=]+)=(?<value>.*)$/;
-
-  const entries = configContent.split("\n").flatMap((line) => {
-    const match = line.match(configLineRegex);
-    if (!match) {
-      return [];
-    }
-
-    const key = match.groups?.["key"]?.trim() ?? "";
-    const value = match.groups?.["value"]?.trim() ?? "";
-    if (!key) {
-      return [];
-    }
-    return [{ key, value }];
-  });
-
-  return entries.reduce(
-    (obj, { key, value }) => ({ ...obj, [key]: value }),
-    {}
-  );
 }

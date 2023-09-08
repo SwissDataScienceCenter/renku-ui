@@ -40,7 +40,7 @@ import { Loader } from "../../../../components/Loader";
 import { Url } from "../../../../utils/helpers/url";
 import { useGetCloudStorageForProjectQuery } from "../../../dataServices/dataServicesApi";
 import { StateModelProject } from "../../../project/Project";
-import { parseConfigContent } from "../../../project/components/AddCloudStorageButton";
+import { parseCloudStorageConfiguration } from "../../../project/utils/projectCloudStorage.utils";
 import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
 import { SessionCloudStorageV2 } from "../../startSessionOptions.types";
 import {
@@ -396,7 +396,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
   );
   const onUpdateConfiguration = useCallback(() => {
     const value = tempConfigContent;
-    const parsedConfig = parseConfigContent(value);
+    const parsedConfig = parseCloudStorageConfiguration(value);
 
     const sensitiveFieldKeys =
       storage.sensitive_fields?.map(({ name }) => name) ?? [];
