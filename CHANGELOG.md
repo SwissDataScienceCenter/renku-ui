@@ -1,5 +1,12 @@
 # Changes
 
+## [3.12.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.12.0...3.12.1) (2023-09-07)
+
+This release includes relevant changes non-visible to the users. It also includes the urgent bugfix from version 3.11.1
+
+- Take advantage of Core Service API versions ([#2718](https://github.com/SwissDataScienceCenter/renku-ui/issues/2718), [#2755](https://github.com/SwissDataScienceCenter/renku-ui/issues/2755), [#2764](https://github.com/SwissDataScienceCenter/renku-ui/issues/2764))
+- Fix bootstrap icons ([#2772](https://github.com/SwissDataScienceCenter/renku-ui/issues/2772))
+
 ## [3.12.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.11.0...3.12.0) (2023-08-31)
 
 ### Features
@@ -10,6 +17,12 @@
 
 - Use the migrations endpoint correctly -- we were accidentally routing older projects to the wrong backend version ([#2766](https://github.com/SwissDataScienceCenter/renku-ui/issues/2766)).
 - Use the "dev" label properly on the footer in the Renku version section ([#2776](https://github.com/SwissDataScienceCenter/renku-ui/issues/2776)).
+
+## [3.11.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.11.0...3.11.1) (2023-09-07)
+
+### Bug Fixes
+
+- Handle embedded template variables in project creation links ([#2789](https://github.com/SwissDataScienceCenter/renku-ui/issues/2789))
 
 ## [3.11.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.10.0...3.11.0) (2023-08-22)
 
