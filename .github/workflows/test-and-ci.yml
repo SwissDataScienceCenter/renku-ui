@@ -101,8 +101,10 @@ jobs:
           node-version: '18.17.1'
       - name: Install dependencies
         run: npm install
-      - name: Build Storybook and run tests
-        run: npm run storybook-compile-and-test
+      - name: Build Storybook
+        run: npm run storybook-build && npm run storybook-start-server
+      - name: Run tests
+        run: npm run storybook-test
 
   lint-e2e:
     runs-on: ubuntu-22.04

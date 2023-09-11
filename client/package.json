@@ -88,9 +88,9 @@
     "format-commit": "pretty-quick --staged --pattern \"client/**/*.*\"",
     "storybook": "storybook dev -p 6006 -s public",
     "storybook-build": "storybook build -s public --quiet",
-    "storybook-start-server": "http-server storybook-static --port 6006 --silent",
-    "storybook-wait-server": "wait-on tcp:6006",
-    "storybook-test": "test-storybook ",
+    "storybook-start-server": "http-server storybook-static --port 6006",
+    "storybook-wait-server": "wait-on http://127.0.0.1:6006",
+    "storybook-test": "test-storybook --maxWorkers=2",
     "storybook-compile-and-test": "concurrently -k -s first -n 'BUILD,TEST' -c 'magenta,blue' 'npm run storybook-build && npm run storybook-start-server' 'npm run storybook-wait-server && npm run storybook-test'"
   },
   "devDependencies": {
