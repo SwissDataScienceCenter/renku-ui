@@ -17,8 +17,8 @@
  */
 
 import { ChangeEvent } from "react";
-
-import { Briefcase, HddStack, Input } from "../../utils/ts-wrappers";
+import { Briefcase, HddStack } from "react-bootstrap-icons";
+import { Input } from "reactstrap";
 import "./TypeEntityFilter.css";
 /**
  *  renku-ui

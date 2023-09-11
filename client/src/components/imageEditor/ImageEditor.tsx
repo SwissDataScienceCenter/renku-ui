@@ -1,13 +1,8 @@
+import picaFn from "pica";
 import { useEffect, useRef } from "react";
 import AvatarEditor, { Position } from "react-avatar-editor";
-import picaFn from "pica";
-
-import {
-  ArrowClockwise,
-  Button,
-  ZoomIn,
-  ZoomOut,
-} from "../../utils/ts-wrappers";
+import { ArrowClockwise, ZoomIn, ZoomOut } from "react-bootstrap-icons";
+import { Button } from "reactstrap";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface ImageEditorProps {

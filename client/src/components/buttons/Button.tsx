@@ -22,25 +22,25 @@
  *  Button code and presentation.
  */
 
-import { Fragment, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+import { Fragment, useState } from "react";
+import { ChevronDown } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
   Button,
   ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  UncontrolledTooltip,
+  ButtonGroup,
   Col,
+  DropdownMenu,
+  DropdownToggle,
+  UncontrolledTooltip,
 } from "reactstrap";
-import { ButtonGroup } from "reactstrap";
-import cx from "classnames";
 import { simpleHash } from "../../utils/helpers/HelperFunctions";
-import { LoadingLabel, SuccessLabel } from "../formlabels/FormLabels";
 import { ThrottledTooltip } from "../Tooltip";
-import { ChevronDown } from "../../utils/ts-wrappers";
+import { LoadingLabel, SuccessLabel } from "../formlabels/FormLabels";
 
 type ButtonWithMenuProps = {
   children?:
@@ -286,10 +286,10 @@ function RoundButtonGroup({ children }: { children: React.ReactNode[] }) {
 }
 
 export {
-  RefreshButton,
   ButtonWithMenu,
   CardButton,
   GoBackButton,
   InlineSubmitButton,
+  RefreshButton,
   RoundButtonGroup,
 };

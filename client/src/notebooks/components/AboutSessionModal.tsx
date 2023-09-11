@@ -23,19 +23,15 @@
  *  AboutSessionModal component
  */
 
+import { InfoCircle } from "react-bootstrap-icons";
 import { useSelector } from "react-redux";
+import { Modal, ModalBody, ModalHeader } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { EntityType } from "../../components/entities/Entities";
 import EntityHeader from "../../components/entityHeader/EntityHeader";
 import { Docs } from "../../utils/constants/Docs";
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
-import {
-  InfoCircle,
-  Modal,
-  ModalBody,
-  ModalHeader,
-} from "../../utils/ts-wrappers";
 import { NotebookServerRow } from "../Notebooks.present";
 import { Notebook, ProjectMetadata } from "./Session";
 import "./SessionModal.css";

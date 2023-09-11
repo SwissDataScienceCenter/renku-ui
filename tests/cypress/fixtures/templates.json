@@ -31,6 +31,48 @@
         "description": "The simplest renku project template with files for renku CLI and launching projects on renkulab.",
         "folder": "minimal",
         "variables": {}
+      },
+      {
+        "description": "A simple Renku project with a basic directory structure to add a dataset to an omnibenchmark project.",
+        "folder": "omni-data-py",
+        "name": "Omnibenchmark dataset",
+        "variables": {
+          "benchmark_name": {
+            "default_value": "omni_batch_py",
+            "description": "Name of the omnibenchmark to link this project with.",
+            "enum": [
+              "terraform",
+              "omniclustering",
+              "bc2_2023",
+              "omni_clustering",
+              "iris_example",
+              "CCC_benchmark",
+              "spatial-clustering",
+              "omni_batch_py",
+              "omniclustering_pinned",
+              "iris_versioned"
+            ],
+            "type": "enum"
+          },
+          "dataset_keyword": {
+            "description": "Dataset keyword to make this dataset reachable for other projects/ omnibenchmarks components."
+          },
+          "metadata_description": {
+            "description": "(optional) A complete description of the experimental design, for e.g. the treatment, condition, specificities, etc."
+          },
+          "project_title": {
+            "description": "Long, human readable project title."
+          },
+          "study_link": {
+            "description": "(optional) If any, link to the original study (zenodo, GEO,...)."
+          },
+          "study_note": {
+            "description": "(optional) Any additional notes about the dataset."
+          },
+          "study_tissue": {
+            "description": "(optional) Tissue/ cell line used to generate the data."
+          }
+        }
       }
     ]
   }
