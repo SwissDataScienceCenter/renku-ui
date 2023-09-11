@@ -48,8 +48,9 @@ import {
   gitLabUrlFromProfileUrl,
   slugFromTitle,
 } from "../../utils/helpers/HelperFunctions";
-import { Url, getSearchParams } from "../../utils/helpers/url";
+import { arrayStringEquals } from "../../utils/helpers/ArrayUtils";
 import { atobUTF8, btoaUTF8 } from "../../utils/helpers/Encoding";
+import { Url, getSearchParams } from "../../utils/helpers/url";
 import { newProjectSchema } from "../../model/RenkuModels";
 import AppContext from "../../utils/context/appContext";
 import useGetNamespaces from "../../utils/customHooks/UseGetNamespaces";
@@ -58,52 +59,6 @@ import useGetVisibilities from "../../utils/customHooks/UseGetVisibilities";
 import { Loader } from "../../components/Loader";
 
 const CUSTOM_REPO_NAME = "Custom";
-
-/** helper function -- fork notifications */
-// TODO: restore after #1585
-// function addForkNotification(
-//   notifications,
-//   url,
-//   info,
-//   startingLocation,
-//   success = true,
-//   excludeStarting = false,
-//   visibilityException = false
-// ) {
-//   if (success && !visibilityException) {
-//     const locations = excludeStarting ? [url] : [url, startingLocation];
-//     notifications.addSuccess(
-//       notifications.Topics.PROJECT_FORKED,
-//       `Project ${info.name} successfully created.`,
-//       url,
-//       "Show project",
-//       locations,
-//       `The project has been successfully forked to ${info.namespace}/${info.path}`
-//     );
-//   } else if (visibilityException) {
-//     const locations = excludeStarting ? [url] : [url, startingLocation];
-//     notifications.addWarning(
-//       notifications.Topics.PROJECT_FORKED,
-//       `Project ${info.name} has been created with an exception.`,
-//       url,
-//       "Show project",
-//       locations,
-//       `The project has been successfully forked to ${info.namespace}/${info.path}
-//       although it was not possible to configure the visibility${visibilityException?.message}`
-//     );
-//   } else {
-//     const locations = excludeStarting ? [] : [startingLocation];
-//     notifications.addError(
-//       notifications.Topics.PROJECT_FORKED,
-//       "Forking operation did not complete.",
-//       startingLocation,
-//       "Try again",
-//       locations,
-//       "The fork operation did not run to completion. It is possible the project has been created, but some" +
-//         "elements may have not been cloned properly."
-//     );
-//   }
-// }
 
 function ForkProject(props) {
   const { client, forkedId, forkedTitle, projectVisibility, toggleModal } =
@@ -142,7 +97,8 @@ function ForkProject(props) {
       });
       history.push(loginUrl);
     }
-  }, []); //eslint-disable-line
+    // This only needs to run once
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Monitor changes to projects list
   useEffect(() => {
@@ -200,7 +156,7 @@ function ForkProject(props) {
       setVisibilities(null);
       setVisibility(null);
     }
-  }, [fullNamespace, availableVisibilities, isFetchingVisibilities]); // eslint-disable-line
+  }, [fullNamespace, availableVisibilities, isFetchingVisibilities]);
 
   // Monitor component mounted state -- helper to prevent illegal action when the fork takes long
   const mounted = useRef(false);
@@ -420,29 +376,81 @@ function NewProject(props) {
     useGetUserProjects();
   const { availableVisibilities, isFetchingVisibilities } =
     useGetVisibilities(namespace);
+  const [metaValidation, setMetaValidation] = useState({
+    errors: {},
+    warnings: {},
+  });
 
   const validateForm = useCallback(
-    (newInput = null, newTemplates = null, update = null) => {
+    (newInput = null, newTemplates = null) => {
       const projects = {
         members: projectsMember,
         fetching: isFetchingProjects,
       };
-      coordinator?.validate(
+      if (coordinator == null) return;
+      const result = coordinator.validate(
         newInput,
         newTemplates,
-        update,
+        false, // we manage validation state locally, not in the coordinator
         projects,
         namespaces,
         isFetchingVisibilities
       );
+      const { errors, warnings } = result;
+      const mv = { errors: errors.$set, warnings: warnings.$set };
+      if (
+        arrayStringEquals(
+          Object.keys(mv.errors),
+          Object.keys(metaValidation.errors)
+        ) &&
+        arrayStringEquals(
+          Object.keys(mv.warnings),
+          Object.keys(metaValidation.warnings)
+        ) &&
+        arrayStringEquals(
+          Object.values(mv.errors),
+          Object.values(metaValidation.errors)
+        ) &&
+        arrayStringEquals(
+          Object.values(mv.warnings),
+          Object.values(metaValidation.warnings)
+        )
+      )
+        return;
+      setMetaValidation(mv);
     },
     [
       coordinator,
       isFetchingProjects,
+      isFetchingVisibilities,
       namespaces,
       projectsMember,
-      isFetchingVisibilities,
+      metaValidation,
     ]
+  );
+
+  const extractAutomatedData = useCallback(() => {
+    const searchParams = getSearchParams();
+    try {
+      const data = getDataFromParams(searchParams);
+      if (data) {
+        setAutomatedData(data);
+        if (!importingDataset) {
+          const newUrl = Url.get(Url.pages.project.new);
+          history.push(newUrl);
+        }
+      }
+    } catch (e) {
+      // This usually happens when the link is wrong and the base64 string is broken
+      coordinator.setAutomated(null, e);
+    }
+  }, [coordinator, importingDataset, history]);
+
+  const removeAutomated = useCallback(
+    (manuallyReset = true) => {
+      coordinator?.resetAutomated(manuallyReset);
+    },
+    [coordinator]
   );
 
   /*
@@ -458,22 +466,26 @@ function NewProject(props) {
     coordinator.resetInput();
     coordinator.getTemplates();
     extractAutomatedData();
-  }, []); // eslint-disable-line  react-hooks/exhaustive-deps
+  }, [coordinator, extractAutomatedData, user, params, removeAutomated]);
 
   /*
    * Start Auto fill form when namespaces are ready
    */
   useEffect(() => {
-    if (!automatedData || newProject.automated.finished) return;
-    if (automatedData && namespaces.fetched && !newProject.automated.finished) {
-      coordinator?.setAutomated(
-        automatedData,
-        undefined,
-        namespaces,
-        availableVisibilities,
-        setNamespace
-      );
-    }
+    if (
+      !automatedData ||
+      newProject.automated.finished ||
+      !namespaces.fetched ||
+      availableVisibilities == null
+    )
+      return;
+    coordinator?.setAutomated(
+      automatedData,
+      undefined,
+      namespaces,
+      availableVisibilities,
+      setNamespace
+    );
   }, [
     automatedData,
     namespaces,
@@ -492,16 +504,23 @@ function NewProject(props) {
       (newProject.automated.received && !newProject.automated.finished)
     )
       return;
-    validateForm(null, null, true);
+    validateForm(null, null);
   }, [
     user.logged,
     validateForm,
     namespaces.fetched,
-    projectsMember,
-    isFetchingProjects,
     newProject.automated.received,
     newProject.automated.finished,
   ]);
+
+  const setProperty = useCallback(
+    (property, value) => {
+      coordinator?.setProperty(property, value);
+      let updateObj = { input: { [property]: value } };
+      validateForm(updateObj, null);
+    },
+    [coordinator, validateForm]
+  );
 
   /*
    * Calculate visibilities when namespace change
@@ -514,30 +533,25 @@ function NewProject(props) {
       return;
     }
     coordinator?.setVisibilities(availableVisibilities, namespace);
-    setProperty("namespace", namespace.full_path);
-    setProperty("visibility", availableVisibilities.default);
-  }, [namespace, availableVisibilities, isFetchingVisibilities]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const extractAutomatedData = () => {
-    const searchParams = getSearchParams();
-    try {
-      const data = getDataFromParams(searchParams);
-      if (data) {
-        setAutomatedData(data);
-        if (!importingDataset) {
-          const newUrl = Url.get(Url.pages.project.new);
-          history.push(newUrl);
-        }
-      }
-    } catch (e) {
-      // This usually happens when the link is wrong and the base64 string is broken
-      coordinator.setAutomated(null, e);
+    if (newProject.input.namespace !== namespace.full_path) {
+      setProperty("namespace", namespace.full_path);
+      setProperty("visibility", availableVisibilities.default);
     }
-  };
-
-  const removeAutomated = (manuallyReset = true) => {
-    coordinator?.resetAutomated(manuallyReset);
-  };
+    if (
+      !availableVisibilities.visibilities.includes(newProject.input.visibility)
+    ) {
+      setProperty("visibility", availableVisibilities.default);
+    }
+  }, [
+    availableVisibilities,
+    coordinator,
+    isFetchingVisibilities,
+    namespace,
+    newProject.input.namespace,
+    newProject.input.visibility,
+    setProperty,
+    user.logged,
+  ]);
 
   const createEncodedUrl = (data) => {
     if (!data || !Object.keys(data).length)
@@ -568,12 +582,6 @@ function NewProject(props) {
 
   const refreshUserProjects = () => {
     refetchUserProjects();
-  };
-
-  const setProperty = (property, value) => {
-    coordinator?.setProperty(property, value);
-    let updateObj = { input: { [property]: value } };
-    validateForm(updateObj, null, true);
   };
 
   const setNamespaceProperty = (namespace) => {
@@ -607,10 +615,9 @@ function NewProject(props) {
 
     // validate -- we do this cause we don't show errors on pristine variables
     if (coordinator?.invalidatePristine()) return;
-    let validation = coordinator?.getValidation();
     if (
-      Object.keys(validation.errors).length ||
-      Object.keys(validation.warnings).length
+      Object.keys(metaValidation.errors).length ||
+      Object.keys(metaValidation.warnings).length
     )
       return;
 
@@ -650,9 +657,16 @@ function NewProject(props) {
     setTemplateProperty,
     setVariable,
   };
-
-  const newProps = {
+  const newProjectMeta = {
+    ...newProject.meta,
+    ...{ validation: metaValidation },
+  };
+  const mergedNewProject = {
     ...newProject,
+    ...{ meta: newProjectMeta },
+  };
+  const newProps = {
+    ...mergedNewProject,
     handlers,
     importingDataset,
     isFetchingProjects,
