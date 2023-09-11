@@ -61,50 +61,49 @@ const CUSTOM_REPO_NAME = "Custom";
 
 /** helper function -- fork notifications */
 // TODO: restore after #1585
-// eslint-disable-next-line
-function addForkNotification(
-  notifications,
-  url,
-  info,
-  startingLocation,
-  success = true,
-  excludeStarting = false,
-  visibilityException = false
-) {
-  if (success && !visibilityException) {
-    const locations = excludeStarting ? [url] : [url, startingLocation];
-    notifications.addSuccess(
-      notifications.Topics.PROJECT_FORKED,
-      `Project ${info.name} successfully created.`,
-      url,
-      "Show project",
-      locations,
-      `The project has been successfully forked to ${info.namespace}/${info.path}`
-    );
-  } else if (visibilityException) {
-    const locations = excludeStarting ? [url] : [url, startingLocation];
-    notifications.addWarning(
-      notifications.Topics.PROJECT_FORKED,
-      `Project ${info.name} has been created with an exception.`,
-      url,
-      "Show project",
-      locations,
-      `The project has been successfully forked to ${info.namespace}/${info.path}
-      although it was not possible to configure the visibility${visibilityException?.message}`
-    );
-  } else {
-    const locations = excludeStarting ? [] : [startingLocation];
-    notifications.addError(
-      notifications.Topics.PROJECT_FORKED,
-      "Forking operation did not complete.",
-      startingLocation,
-      "Try again",
-      locations,
-      "The fork operation did not run to completion. It is possible the project has been created, but some" +
-        "elements may have not been cloned properly."
-    );
-  }
-}
+// function addForkNotification(
+//   notifications,
+//   url,
+//   info,
+//   startingLocation,
+//   success = true,
+//   excludeStarting = false,
+//   visibilityException = false
+// ) {
+//   if (success && !visibilityException) {
+//     const locations = excludeStarting ? [url] : [url, startingLocation];
+//     notifications.addSuccess(
+//       notifications.Topics.PROJECT_FORKED,
+//       `Project ${info.name} successfully created.`,
+//       url,
+//       "Show project",
+//       locations,
+//       `The project has been successfully forked to ${info.namespace}/${info.path}`
+//     );
+//   } else if (visibilityException) {
+//     const locations = excludeStarting ? [url] : [url, startingLocation];
+//     notifications.addWarning(
+//       notifications.Topics.PROJECT_FORKED,
+//       `Project ${info.name} has been created with an exception.`,
+//       url,
+//       "Show project",
+//       locations,
+//       `The project has been successfully forked to ${info.namespace}/${info.path}
+//       although it was not possible to configure the visibility${visibilityException?.message}`
+//     );
+//   } else {
+//     const locations = excludeStarting ? [] : [startingLocation];
+//     notifications.addError(
+//       notifications.Topics.PROJECT_FORKED,
+//       "Forking operation did not complete.",
+//       startingLocation,
+//       "Try again",
+//       locations,
+//       "The fork operation did not run to completion. It is possible the project has been created, but some" +
+//         "elements may have not been cloned properly."
+//     );
+//   }
+// }
 
 function ForkProject(props) {
   const { client, forkedId, forkedTitle, projectVisibility, toggleModal } =
