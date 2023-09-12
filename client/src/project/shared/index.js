@@ -24,6 +24,5 @@
  */
 
 import { ProjectAvatarEdit } from "./ProjectAvatar.container";
-import { ProjectTags, ProjectTagList } from "./ProjectTag.container";
 
-export { ProjectAvatarEdit, ProjectTags, ProjectTagList };
+export { ProjectAvatarEdit };

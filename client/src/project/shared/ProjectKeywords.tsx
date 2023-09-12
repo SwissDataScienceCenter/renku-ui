@@ -16,40 +16,63 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+/**
+ *  renku-ui
+ *
+ *  Keywords.tsx
+ *  Project Keywords Input
+ */
+
+import { useCallback, useEffect, useState } from "react";
+
 import {
   useGetProjectIndexingStatusQuery,
   useUpdateProjectMutation,
-} from "../projectKgApi";
-import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
-import { SettingRequiresKg } from "./ProjectSettingsUtils";
+} from "../../features/project/projectKgApi";
+import { useProjectMetadataQuery } from "../../features/projects/projectsKgApi";
+import { SettingRequiresKg } from "../../features/project/components/ProjectSettingsUtils";
 import {
   extractRkErrorRemoteBranch,
   RtkErrorAlert,
-} from "../../../components/errors/RtkErrorAlert";
-import ProjectWarningForMerge from "./ProjectWarningForMerge";
+} from "../../components/errors/RtkErrorAlert";
+import ProjectWarningForMerge from "../../features/project/components/ProjectWarningForMerge";
 import InlineSubmitInput, {
   InputCard,
-} from "../../../components/inlineSubmitInput/InlineSubmitInput";
+} from "../../components/inlineSubmitInput/InlineSubmitInput";
 
-interface ProjectSettingsDescriptionProps {
-  isMaintainer: boolean;
-  projectFullPath: string;
+export function sortedKeywordsList(keywordsListOrNull?: string[]) {
+  const keywordsList = keywordsListOrNull || [];
+  const tlSet = new Set(keywordsList);
+  const tl = Array.from(tlSet);
+  tl.sort();
+  return tl;
+}
+
+interface ProjectKeywordsProps {
   projectId: number;
+  projectFullPath: string;
+  isMaintainer: boolean;
   branch?: string;
   gitUrl: string;
 }
-export function ProjectSettingsDescription({
-  isMaintainer,
-  projectFullPath,
-  projectId,
+function ProjectKeywordsInput({
   branch,
   gitUrl,
-}: ProjectSettingsDescriptionProps) {
-  const [description, setDescription] = useState("");
-  const [succeeded, setSucceeded] = React.useState<boolean | undefined>(
-    undefined
-  );
+  projectFullPath,
+  projectId,
+  isMaintainer,
+}: ProjectKeywordsProps) {
+  const keywordListToString = (keywords: string[] = []) => {
+    const keywordsList = sortedKeywordsList(keywords);
+    return keywordsList.join(", ");
+  };
+
+  const keywordsStringToList = (keywords: string) => {
+    const keywordsList = keywords.split(", ");
+    return sortedKeywordsList(keywordsList);
+  };
+
+  const [keywords, setKeywords] = useState<string>("");
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
     skip: !projectFullPath || !projectId,
   });
@@ -69,7 +92,7 @@ export function ProjectSettingsDescription({
       isLoading: isLoadingMutation,
       isSuccess,
       isError,
-      error: errorDescription,
+      error: errorKeywords,
       reset,
     },
   ] = useUpdateProjectMutation();
@@ -77,76 +100,72 @@ export function ProjectSettingsDescription({
   const onSubmit = useCallback(() => {
     updateProject({
       projectPathWithNamespace: projectFullPath,
-      project: { description },
+      project: { keywords: keywordsStringToList(keywords) },
       projectId,
-    })
-      .unwrap()
-      .then(() => setSucceeded(true))
-      .catch(() => setSucceeded(false));
-  }, [description, projectFullPath, updateProject, projectId]);
+    });
+  }, [keywords, projectFullPath, updateProject, projectId]);
 
-  const setDescriptionAndReset = (newDescription: string) => {
-    setDescription(newDescription);
-    // Reset mutation when changing description after an update.
+  const setKeywordsAndReset = (newKeywords: string) => {
+    setKeywords(newKeywords);
     reset();
   };
 
   useEffect(() => {
-    if (projectMetadata.data?.description)
-      setDescription(projectMetadata.data?.description);
-  }, [projectMetadata.data?.description]);
+    if (projectMetadata.data?.keywords)
+      setKeywords(keywordListToString(projectMetadata.data?.keywords));
+  }, [projectMetadata.data?.keywords]);
 
   const readOnly =
     !isMaintainer ||
     projectIndexingStatus.isLoading ||
     projectMetadata.isLoading;
-  const pristine = description === projectMetadata.data?.description;
+  const pristine =
+    keywords === keywordListToString(projectMetadata.data?.keywords);
 
   if (projectIndexingStatus.data?.activated === false)
     return (
-      <InputCard label="Project Description" id="indexProjectDescription">
+      <InputCard label="Project Keywords" id="indexProjectKeywords">
         <SettingRequiresKg />
       </InputCard>
     );
 
   const showMergeWarning =
-    !succeeded &&
-    isError &&
-    errorDescription &&
-    extractRkErrorRemoteBranch(errorDescription);
+    isError && errorKeywords && extractRkErrorRemoteBranch(errorKeywords);
   const errorAlert = showMergeWarning ? (
     <ProjectWarningForMerge
-      error={errorDescription}
-      changeDescription="description"
+      error={errorKeywords}
+      changeDescription="keywords"
       defaultBranch={branch}
       externalUrl={gitUrl}
     />
-  ) : isError && errorDescription ? (
-    <RtkErrorAlert error={errorDescription} dismissible={false} />
+  ) : isError && errorKeywords ? (
+    <RtkErrorAlert error={errorKeywords} dismissible={false} />
   ) : null;
 
   return (
     <InlineSubmitInput
       classNameSubmitButton="updateProjectSettings"
-      dataCyCard="settings-description"
-      dataCyInput="description-input"
+      dataCyCard="settings-keywords"
+      dataCyInput="keywords-input"
       disabled={isLoadingMutation}
       doneText="Updated"
       errorToDisplay={errorAlert}
-      id="projectDescription"
-      inputHint="A short description for the project"
+      id="projectKeywords"
+      inputHint="Comma-separated list of keywords"
       isDone={isSuccess}
       isSubmitting={isLoadingMutation}
-      label="Project Description"
+      label="Project Keywords"
       loading={projectIndexingStatus.isLoading || projectMetadata.isLoading}
-      onChange={(e) => setDescriptionAndReset(e.target.value)}
+      onChange={(e) => setKeywordsAndReset(e.target.value)}
       onSubmit={onSubmit}
       pristine={pristine}
       readOnly={readOnly}
       submittingText="Updating"
       text="Update"
-      tooltipPristine="Modify description to update value"
-      value={description}
+      tooltipPristine="Modify keywords to update value"
+      value={keywords}
     />
   );
 }
+
+export default ProjectKeywordsInput;

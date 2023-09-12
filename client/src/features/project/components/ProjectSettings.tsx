@@ -18,14 +18,17 @@
 
 import { Card, CardBody, Col, Row } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
-import { Visibilities } from "../../../components/visibility/Visibility";
-import { NotificationsManager } from "../../../notifications/notifications.types";
-import { EditVisibility } from "../../../project/new/components/Visibility";
-import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";
-import { ProjectSettingsDescription } from "./ProjectSettingsDescription";
-import { ProjectSettingsGeneralDeleteProject } from "./ProjectSettingsGeneralDeleteProject";
 import { ProjectMigrationStatus } from "./migrations/ProjectCoreMigrations";
 import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
+import {
+  ProjectSettingsGeneralDeleteProject,
+} from "./ProjectSettingsGeneralDeleteProject";
+import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";
+import { NotificationsManager } from "../../../notifications/notifications.types";
+import { ProjectSettingsDescription } from "./ProjectSettingsDescription";
+import { EditVisibility } from "../../../project/new/components/Visibility";
+import { Visibilities } from "../../../components/visibility/Visibility";
+import ProjectKeywordsInput from "../../../project/shared/ProjectKeywords";
 
 // ****** SETTINGS COMPONENTS ****** //
 
@@ -73,10 +76,16 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
         projectId={props.metadata?.id}
       />
       <ProjectSettingsDescription
-        apiVersion={props.apiVersion}
+        branch={props.metadata?.defaultBranch}
         gitUrl={props.metadata?.externalUrl}
         isMaintainer={isMaintainer}
-        metadataVersion={props.metadataVersion}
+        projectId={props.metadata?.id}
+        projectFullPath={props.projectPathWithNamespace}
+      />
+      <ProjectKeywordsInput
+        branch={props.metadata?.defaultBranch}
+        gitUrl={props.metadata?.externalUrl}
+        isMaintainer={isMaintainer}
         projectId={props.metadata?.id}
         projectFullPath={props.projectPathWithNamespace}
       />

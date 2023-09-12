@@ -241,10 +241,11 @@ export function EditVisibility({
       if (projectData)
         updateProject({
           projectPathWithNamespace: projectData.path,
-          visibility: newVisibility,
+          project: { visibility: newVisibility },
+          projectId,
         });
     },
-    [projectData, updateProject]
+    [projectData, updateProject, projectId]
   );
 
   const onChange = useCallback(
@@ -269,7 +270,11 @@ export function EditVisibility({
 
   const message =
     isError && error ? (
-      <RtkErrorAlert error={error} dismissible={false} />
+      <RtkErrorAlert
+        error={error}
+        dismissible={false}
+        property="visibility_level"
+      />
     ) : isSuccess ? (
       <SuccessAlert dismissible={false} timeout={0}>
         The visibility of the project has been modified

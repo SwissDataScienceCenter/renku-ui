@@ -40,7 +40,6 @@ interface errorDataMessage {
     message: string;
   };
 }
-
 export const projectKgApi = createApi({
   reducerPath: "projectKg",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/kg/" }),
@@ -144,34 +143,32 @@ export const projectKgApi = createApi({
       },
     }),
     updateProject: builder.mutation<UpdateProjectResponse, EditProjectParams>({
-      query: ({ projectPathWithNamespace, visibility }) => {
+      query: ({ projectPathWithNamespace, project }) => {
         return {
-          method: "PUT",
+          method: "PATCH",
           url: `projects/${projectPathWithNamespace}`,
           body: {
-            visibility,
+            ...project,
           },
         };
       },
       invalidatesTags: (result, err, args) => [
         { type: "project", id: args.projectPathWithNamespace },
       ],
-      transformErrorResponse: (error) => {
-        const { status, data } = error;
-        if (status === 500 && typeof data === "object" && data != null) {
-          const data_ = data as { message?: unknown };
-          if (
-            typeof data_.message === "string" &&
-            data_.message.match(/403 Forbidden/i)
-          ) {
-            const newError: FetchBaseQueryError = {
-              status: 403,
-              data,
-            };
-            return newError;
-          }
-        }
-        return error;
+      onQueryStarted: (args, { dispatch, queryFulfilled }) => {
+        queryFulfilled
+          .then((result) => {
+            if (result.data?.severity === "info") {
+              dispatch(
+                projectsKgApi.util.invalidateTags([
+                  { type: "project-kg-metadata", id: args.projectId },
+                ])
+              );
+            }
+          })
+          .catch((err) => {
+            return err;
+          });
       },
     }),
   }),
