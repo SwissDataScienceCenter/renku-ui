@@ -175,7 +175,7 @@ The full documentation for Storybook can be found [here](https://storybook.js.or
 
 Storybook's test runner transforms stories into executable tests, supporting Chromium and Firefox browsers. It ensures error-free rendering for non-play stories. For interactive stories with play functions, it validates both play function errors and successful assertions.
 
-    $ npm run start-storybook-and-test
+    $ npm run storybook-compile-and-test
 
 ### Telepresence
 
