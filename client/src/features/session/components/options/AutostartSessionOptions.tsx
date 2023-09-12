@@ -369,7 +369,7 @@ function useAutostartSessionOptions(): void {
     );
     startSession({
       branch: currentBranch,
-      cloudStorage: [],
+      cloudStorageV2: [], // TODO: populate this
       commit,
       defaultUrl,
       environmentVariables: {},

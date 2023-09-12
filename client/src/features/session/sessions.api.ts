@@ -29,6 +29,7 @@ import {
   Sessions,
   StartSessionParams,
 } from "./sessions.types";
+import { convertCloudStorageForSessionApi } from "./sessions.utils";
 
 interface StopSessionArgs {
   serverName: string;
@@ -112,7 +113,7 @@ const sessionsApi = createApi({
     startSession: builder.mutation<Session, StartSessionParams>({
       query: ({
         branch,
-        cloudStorage,
+        cloudStorageV2,
         commit,
         defaultUrl,
         environmentVariables,
@@ -123,14 +124,18 @@ const sessionsApi = createApi({
         sessionClass,
         storage,
       }) => {
-        const cloudstorage = cloudStorage.map(
-          ({ accessKey, bucket, endpoint, secretKey }) => ({
-            access_key: accessKey,
-            bucket,
-            endpoint,
-            secret_key: secretKey,
-          })
-        );
+        // const cloudstorage = cloudStorage.map(
+        //   ({ accessKey, bucket, endpoint, secretKey }) => ({
+        //     access_key: accessKey,
+        //     bucket,
+        //     endpoint,
+        //     secret_key: secretKey,
+        //   })
+        // );
+        const cloudstorage = cloudStorageV2
+          .map(convertCloudStorageForSessionApi)
+          .flatMap((item) => (item == null ? [] : [item]));
+        console.log({ cloudstorage });
         const body = {
           branch,
           ...(cloudstorage.length > 0 ? { cloudstorage } : {}),

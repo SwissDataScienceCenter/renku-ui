@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { SessionCloudStorageMount } from "./startSessionOptions.types";
+import { SessionCloudStorageV2 } from "./startSessionOptions.types";
 
 export interface DockerImage {
   image: string;
@@ -92,7 +92,8 @@ export interface GetSessionsRawResponse {
 
 export interface StartSessionParams {
   branch: string;
-  cloudStorage: SessionCloudStorageMount[];
+  // cloudStorage: SessionCloudStorageMount[];
+  cloudStorageV2: SessionCloudStorageV2[];
   commit: string;
   defaultUrl: string;
   environmentVariables: Record<string, string>;
@@ -108,3 +109,24 @@ export interface PatchSessionParams {
   sessionName: string;
   state: Extract<"running" | "hibernated", SessionStatusState>;
 }
+
+export type CloudStorageDefinitionForSessionApi =
+  | {
+      configuration: {
+        type: "s3";
+        endpoint: string;
+        access_key_id?: string;
+        secret_access_key?: string;
+      };
+      source_path: string;
+      target_path: string;
+    }
+  | {
+      configuration: {
+        type: "azureblob";
+        endpoint: string;
+        secret_access_key: string;
+      };
+      source_path: string;
+      target_path: string;
+    };

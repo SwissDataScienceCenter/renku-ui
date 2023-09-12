@@ -44,10 +44,6 @@ import ProgressStepsIndicator, {
 } from "../../../components/progress/ProgressSteps";
 import { ShareLinkSessionModal } from "../../../components/shareLinkSession/ShareLinkSession";
 import { LockStatus, User } from "../../../model/RenkuModels";
-import {
-  isCloudStorageBucketValid,
-  isCloudStorageEndpointValid,
-} from "../../../notebooks/ObjectStoresConfig.present";
 import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
@@ -599,9 +595,10 @@ function StartNewSessionOptions() {
       <SessionBranchOption />
       <SessionCommitOption />
       <StartNotebookServerOptions />
-      <SessionEnvironmentVariables />
+      {/* <SessionEnvironmentVariables /> */}
       {/* <SessionCloudStorageOption /> */}
       <SessionCloudStorageOptionV2 />
+      <SessionEnvironmentVariables />
     </>
   );
 }
@@ -624,7 +621,8 @@ function StartSessionButton() {
 
   const {
     branch,
-    cloudStorage,
+    // cloudStorage,
+    cloudStorageV2,
     commit,
     defaultUrl,
     dockerImageStatus,
@@ -644,16 +642,17 @@ function StartSessionButton() {
   });
 
   const onStart = useCallback(() => {
-    const cloudStorageValidated = cloudStorage.filter(
-      ({ bucket, endpoint }) => {
-        const isEndpointValid = isCloudStorageEndpointValid({ endpoint });
-        const hasDuplicate =
-          !!bucket &&
-          cloudStorage.filter((mount) => mount.bucket === bucket).length > 1;
-        const isBucketValid = isCloudStorageBucketValid({ bucket });
-        return isEndpointValid && !hasDuplicate && isBucketValid;
-      }
-    );
+    // const cloudStorageValidated = cloudStorage.filter(
+    //   ({ bucket, endpoint }) => {
+    //     const isEndpointValid = isCloudStorageEndpointValid({ endpoint });
+    //     const hasDuplicate =
+    //       !!bucket &&
+    //       cloudStorage.filter((mount) => mount.bucket === bucket).length > 1;
+    //     const isBucketValid = isCloudStorageBucketValid({ bucket });
+    //     return isEndpointValid && !hasDuplicate && isBucketValid;
+    //   }
+    // );
+    const cloudStorageValidated = cloudStorageV2.filter(({ active }) => active);
 
     const environmentVariablesRecord = environmentVariables
       .filter(({ name, value }) => name && value)
@@ -677,7 +676,7 @@ function StartSessionButton() {
     );
     startSession({
       branch,
-      cloudStorage: cloudStorageValidated,
+      cloudStorageV2: cloudStorageValidated,
       commit,
       defaultUrl,
       environmentVariables: environmentVariablesRecord,
@@ -690,7 +689,7 @@ function StartSessionButton() {
     });
   }, [
     branch,
-    cloudStorage,
+    cloudStorageV2,
     commit,
     defaultUrl,
     dispatch,
