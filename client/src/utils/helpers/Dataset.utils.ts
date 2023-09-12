@@ -20,7 +20,7 @@ import { cleanGitUrl } from "./ProjectFunctions";
 interface DatasetImages {
   content_url: string;
 }
-export interface IDataset {
+export interface Dataset {
   identifier?: string;
   images?: DatasetImages[];
   mediaContent?: string | null;
@@ -29,14 +29,19 @@ export interface IDataset {
  * Add the URL for the marquee image to the dataset if is an image git url. Modifies the dataset object.
  * @param {string} gitUrl
  * @param {Dataset} dataset
+ * @param {string} defaultBranch
  */
-export function addMarqueeImageToDataset(gitUrl: string, dataset: IDataset) {
-  const urlRoot = cleanGitUrl(gitUrl) + "/-/raw/master";
-  let mediaUrl = dataset?.images?.[0]?.content_url ?? null;
-  if (mediaUrl !== null && mediaUrl.startsWith(".renku/dataset_images/"))
-    mediaUrl = `${urlRoot}/${mediaUrl}`;
-
-  dataset.mediaContent = mediaUrl;
+export function addMarqueeImageToDataset(
+  gitUrl: string,
+  dataset: Dataset,
+  defaultBranch = "master"
+) {
+  const urlRoot = `${cleanGitUrl(gitUrl)}/-/raw/${defaultBranch}/`;
+  const contentUrl = dataset?.images?.[0]?.content_url ?? null;
+  if (contentUrl) {
+    const mediaUrl = new URL(contentUrl, urlRoot);
+    dataset.mediaContent = mediaUrl.toString();
+  }
   return dataset;
 }
 
@@ -44,7 +49,7 @@ export function addMarqueeImageToDataset(gitUrl: string, dataset: IDataset) {
  * Remove dashes from the dataset identifier
  * @param {Dataset} dataset
  */
-export function cleanDatasetId(dataset: IDataset) {
+export function cleanDatasetId(dataset: Dataset) {
   if (dataset.identifier)
     dataset.identifier = dataset.identifier.replace(/-/g, "");
   return dataset;

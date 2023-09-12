@@ -131,7 +131,11 @@ export default function addDatasetMethods(client) {
     });
   };
 
-  client.listProjectDatasetsFromCoreService = (git_url, versionUrl = null) => {
+  client.listProjectDatasetsFromCoreService = (
+    git_url,
+    versionUrl = null,
+    defaultBranch
+  ) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
@@ -148,7 +152,7 @@ export default function addDatasetMethods(client) {
       .then((response) => {
         if (response.data.result && response.data.result.datasets.length > 0) {
           response.data.result.datasets.map((d) =>
-            addMarqueeImageToDataset(git_url, cleanDatasetId(d))
+            addMarqueeImageToDataset(git_url, cleanDatasetId(d), defaultBranch)
           );
         }
 
