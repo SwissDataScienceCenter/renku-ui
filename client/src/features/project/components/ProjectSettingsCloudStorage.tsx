@@ -289,6 +289,13 @@ function CloudStorageDetails({
     () => getSensitiveFieldDefinitions(storageDefinition),
     [storageDefinition]
   );
+  const requiredCredentials = useMemo(
+    () =>
+      sensitiveFieldDefinitions?.filter(
+        ({ requiredCredential }) => requiredCredential
+      ),
+    [sensitiveFieldDefinitions]
+  );
 
   return (
     <>
@@ -312,9 +319,7 @@ function CloudStorageDetails({
               &lt;bucket&gt;/&lt;folder&gt;{")"}
             </small>
           </div>
-          <div>
-            <code>{source_path}</code>
-          </div>
+          <div>{source_path}</div>
         </div>
         <div className="mt-2">
           <div className="text-rk-text-light">
@@ -323,9 +328,7 @@ function CloudStorageDetails({
               sessions{")"}
             </small>
           </div>
-          <div>
-            <code>{target_path}</code>
-          </div>
+          <div>{target_path}</div>
         </div>
         <div className="mt-2">
           <div className="text-rk-text-light">
@@ -333,9 +336,24 @@ function CloudStorageDetails({
           </div>
           <div>{storage.private ? "Yes" : "No"}</div>
         </div>
-        <div className="mt-2">
-          {JSON.stringify(sensitiveFieldDefinitions, null, 2)}
-        </div>
+        {storage.private && (
+          <div className="mt-2">
+            <div className="text-rk-text-light">
+              <small>Required crendentials</small>
+            </div>
+            {requiredCredentials != null && requiredCredentials.length > 0 ? (
+              <ul className="ps-4">
+                {requiredCredentials.map(({ name }, index) => (
+                  <li key={index}>{name}</li>
+                ))}
+              </ul>
+            ) : (
+              <div>
+                <span className="fst-italic">None</span>
+              </div>
+            )}
+          </div>
+        )}
         <div className="mt-2">
           <div className="text-rk-text-light">
             <small>

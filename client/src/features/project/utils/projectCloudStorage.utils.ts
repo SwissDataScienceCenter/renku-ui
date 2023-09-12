@@ -64,7 +64,7 @@ export function formatCloudStorageConfiguration({
 export function getSensitiveFieldDefinitions(
   storageDefinition: CloudStorage
 ):
-  | (CloudStorageSensitiveFieldDefinition & { required: boolean })[]
+  | (CloudStorageSensitiveFieldDefinition & { requiredCredential: boolean })[]
   | undefined {
   const { sensitive_fields, storage } = storageDefinition;
   const { configuration } = storage;
@@ -74,7 +74,7 @@ export function getSensitiveFieldDefinitions(
     .map(([key]) => key);
   const sensitiveFieldDefinitions = sensitive_fields?.map((field) => ({
     ...field,
-    required: providedSensitiveFields.includes(field.name),
+    requiredCredential: providedSensitiveFields.includes(field.name),
   }));
 
   return sensitiveFieldDefinitions;
