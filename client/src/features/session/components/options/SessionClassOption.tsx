@@ -67,6 +67,7 @@ export const SessionClassOption = () => {
   });
   const {
     apiVersion,
+    backendAvailable,
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
@@ -77,7 +78,7 @@ export const SessionClassOption = () => {
     gitLabProjectId: gitLabProjectId ?? 0,
     metadataVersion,
     projectRepositoryUrl,
-    skip: !coreSupportComputed || !commit,
+    skip: !backendAvailable || !coreSupportComputed || !commit,
   });
 
   // Resource pools

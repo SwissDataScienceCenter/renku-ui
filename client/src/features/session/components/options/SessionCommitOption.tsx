@@ -60,10 +60,10 @@ export default function SessionCommitOption() {
     refetch,
   } = useGetRepositoryCommitsQuery(
     {
-      branch: currentBranch || defaultBranch,
+      branch: currentBranch,
       projectId: `${gitLabProjectId ?? 0}`,
     },
-    { skip: !gitLabProjectId }
+    { skip: !gitLabProjectId || !currentBranch }
   );
 
   const dispatch = useDispatch();

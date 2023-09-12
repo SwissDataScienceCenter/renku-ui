@@ -122,7 +122,7 @@ describe("Add new project", () => {
     cy.get_cy("url-repository").clear().type("valid-url");
     cy.get_cy("fetch-templates-button").click();
     cy.wait("@getCustomTemplatesValid");
-    cy.get_cy("project-template-card").should("have.length", 5);
+    cy.get_cy("project-template-card").should("have.length", 6);
 
     // cannot submit the form if the title and template are missing
     cy.get_cy("create-project-button").click();
@@ -175,9 +175,11 @@ describe("Add new project shared link", () => {
   });
 
   it("prefill values all values (custom template)", () => {
-    // eslint-disable-next-line max-len
     const customValues =
-      "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwiZGVzY3JpcHRpb24iOiIgdGhpcyBhIGN1c3RvbSBkZXNjcmlwdGlvbiIsIm5hbWVzcGFjZSI6ImUyZSIsInZpc2liaWxpdHkiOiJpbnRlcm5hbCIsInVybCI6Imh0dHBzOi8vZ2l0aHViLmNvbS9Td2lzc0RhdGFTY2llbmNlQ2VudGVyL3Jlbmt1LXByb2plY3QtdGVtcGxhdGUiLCJyZWYiOiJtYXN0ZXIiLCJ0ZW1wbGF0ZSI6IkN1c3RvbS9SLW1pbmltYWwifQ%3D%3D";
+      "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwiZGVzY3JpcHRpb24iOiIgdGhpcyBhIGN1c3RvbSBkZXNjcml" +
+      "wdGlvbiIsIm5hbWVzcGFjZSI6ImUyZSIsInZpc2liaWxpdHkiOiJpbnRlcm5hbCIsInVybCI6Imh0dHBzOi8v" +
+      "Z2l0aHViLmNvbS9Td2lzc0RhdGFTY2llbmNlQ2VudGVyL3Jlbmt1LXByb2plY3QtdGVtcGxhdGUiLCJyZWYiO" +
+      "iJtYXN0ZXIiLCJ0ZW1wbGF0ZSI6IkN1c3RvbS9SLW1pbmltYWwifQ%3D%3D";
     fixtures
       .templates(false, "*", "getTemplates")
       .getNamespace(
@@ -188,38 +190,38 @@ describe("Add new project shared link", () => {
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
-    // check title
+    // Check feedback messages
+    cy.get_cy("project-creation-embedded-fetching").should("be.visible");
+    cy.get_cy("project-creation-embedded-info").should("be.visible", {
+      timeout: 20_000,
+    });
+
+    // Check the prefill values
     cy.get_cy("field-group-title").should("contain.value", "new project");
-    // check description
     cy.get_cy("field-group-description").should(
       "contain.text",
       "this a custom description"
     );
-    // check namespace
     cy.get_cy("project-slug").should("contain.value", "e2e/new-project");
-    // check visibility
     cy.get_cy("visibility-public").should("not.be.checked");
     cy.get_cy("visibility-internal").should("be.checked");
     cy.get_cy("visibility-private").should("not.be.checked");
-
-    // check custom template source
-    // eslint-disable-next-line max-len
     cy.get_cy("url-repository").should(
       "contain.value",
       "https://github.com/SwissDataScienceCenter/renku-project-template"
     );
     cy.get_cy("ref-repository").should("contain.value", "master");
-
-    // check selected template
     cy.get_cy("project-template-card")
       .get(".selected")
       .should("contain.text", "Basic R (4.1.2) Project");
   });
 
   it("prefill values custom template", () => {
-    // eslint-disable-next-line max-len
     const customValues =
-      "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwiZGVzY3JpcHRpb24iOiIgdGhpcyBhIGN1c3RvbSBkZXNjcmlwdGlvbiIsIm5hbWVzcGFjZSI6ImUyZSIsInZpc2liaWxpdHkiOiJpbnRlcm5hbCIsInVybCI6Imh0dHBzOi8vZ2l0aHViLmNvbS9Td2lzc0RhdGFTY2llbmNlQ2VudGVyL3Jlbmt1LXByb2plY3QtdGVtcGxhdGUiLCJyZWYiOiJtYXN0ZXIifQ%3D%3D";
+      "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwiZGVzY3JpcHRpb24iOiIgdGhpcyBhIGN1c3RvbSBkZXNjcml" +
+      "wdGlvbiIsIm5hbWVzcGFjZSI6ImUyZSIsInZpc2liaWxpdHkiOiJpbnRlcm5hbCIsInVybCI6Imh0dHBzOi8v" +
+      "Z2l0aHViLmNvbS9Td2lzc0RhdGFTY2llbmNlQ2VudGVyL3Jlbmt1LXByb2plY3QtdGVtcGxhdGUiLCJyZWYiO" +
+      "iJtYXN0ZXIifQ%3D%3D";
     const templateUrl =
       "https://github.com/SwissDataScienceCenter/renku-project-template";
     const templateRef = "master";
@@ -233,13 +235,18 @@ describe("Add new project shared link", () => {
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
-    // check custom templates
+    // Check feedback messages
+    cy.get_cy("project-creation-embedded-fetching").should("be.visible");
+    cy.get_cy("project-creation-embedded-info").should("be.visible", {
+      timeout: 20_000,
+    });
+
+    // Check custom templates
     cy.get_cy("url-repository").should("contain.value", templateUrl);
     cy.get_cy("ref-repository").should("contain.value", templateRef);
   });
 
   it("prefill values renkuLab template", () => {
-    // eslint-disable-next-line max-len
     const customValues =
       "?data=eyJ0ZW1wbGF0ZSI6IlJlbmt1L2p1bGlhLW1pbmltYWwifQ%3D%3D";
     fixtures
@@ -252,9 +259,110 @@ describe("Add new project shared link", () => {
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
-    // check selected template
+    // Check feedback messages
+    cy.get_cy("project-creation-embedded-fetching").should("be.visible");
+    cy.get_cy("project-creation-embedded-info").should("be.visible", {
+      timeout: 20_000,
+    });
+
+    // Check selected template
     cy.get_cy("project-template-card")
       .get(".selected")
       .should("contain.text", "Basic Julia (1.7.1) Project");
+  });
+
+  it("use the target template and select the custom variables", () => {
+    const customValues =
+      "?data=eyJ1cmwiOiJodHRwczovL2dpdGh1Yi5jb20vb21uaWJlbmNobWFyay9jb250cmlidXRlZC1wcm9qZWN" +
+      "0LXRlbXBsYXRlcyIsInJlZiI6Im1haW4iLCJ0ZW1wbGF0ZSI6IkN1c3RvbS9vbW5pLWRhdGEtcHkiLCJ2YXJp" +
+      "YWJsZXMiOnsiYmVuY2htYXJrX25hbWUiOiJvbW5pX2NsdXN0ZXJpbmciLCJkYXRhc2V0X2tleXdvcmQiOiJ0Z" +
+      "XN0IHZhbHVlIiwibWV0YWRhdGFfZGVzY3JpcHRpb24iOiIiLCJwcm9qZWN0X3RpdGxlIjoiYW5vdGhlciByYW" +
+      "5kb20gdmFsdWUiLCJzdHVkeV9saW5rIjoiIiwic3R1ZHlfbm90ZSI6IiIsInN0dWR5X3Rpc3N1ZSI6IiJ9fQ";
+    fixtures
+      .templates(false, "*", "getTemplates")
+      .getNamespace(
+        "internal-space",
+        "getInternalNamespace",
+        "projects/namespace-128.json"
+      );
+    cy.visit(`projects/new${customValues}`);
+    cy.wait("@getTemplates");
+
+    // Check feedback messages
+    cy.get_cy("project-creation-embedded-fetching").should("be.visible");
+    cy.get_cy("project-creation-embedded-info").should("be.visible", {
+      timeout: 20_000,
+    });
+
+    // Check selected template
+    cy.get_cy("project-template-card")
+      .get(".selected")
+      .should("contain.text", "Omnibenchmark dataset");
+    cy.get("#parameter-benchmark_name").should("have.value", "omni_clustering");
+    cy.get("#parameter-dataset_keyword").should("have.value", "test value");
+    cy.get("#parameter-project_title").should(
+      "have.value",
+      "another random value"
+    );
+  });
+
+  it("display warning on non-essential fields", () => {
+    const customValues =
+      "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwibmFtZXNwYWNlIjoiZmFrZSJ9";
+    fixtures
+      .templates(false, "*", "getTemplates")
+      .getNamespace(
+        "internal-space",
+        "getInternalNamespace",
+        "projects/namespace-128.json"
+      );
+    cy.visit(`projects/new${customValues}`);
+    cy.wait("@getTemplates");
+
+    // Check feedback messages
+    cy.get_cy("project-creation-embedded-fetching").should("be.visible");
+    cy.get_cy("project-creation-embedded-warning")
+      .should("be.visible", {
+        timeout: 20_000,
+      })
+      .contains("button", "Show warnings")
+      .click();
+    cy.get_cy("project-creation-embedded-warning")
+      .contains(`The namespace "fake" is not available.`)
+      .should("be.visible");
+    cy.get_cy("project-creation-embedded-info").should("not.exist");
+
+    // Other valid fields should be filled in correctly
+    cy.get_cy("field-group-title").should("contain.value", "new project");
+  });
+
+  it("display errors on essential fields", () => {
+    const customValues =
+      "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwidGVtcGxhdGUiOiJmYWtlIn0=";
+    fixtures
+      .templates(false, "*", "getTemplates")
+      .getNamespace(
+        "internal-space",
+        "getInternalNamespace",
+        "projects/namespace-128.json"
+      );
+    cy.visit(`projects/new${customValues}`);
+    cy.wait("@getTemplates");
+
+    // Check feedback messages
+    cy.get_cy("project-creation-embedded-fetching").should("be.visible");
+    cy.get_cy("project-creation-embedded-error")
+      .should("be.visible", {
+        timeout: 20_000,
+      })
+      .contains("button", "Show error")
+      .click();
+    cy.get_cy("project-creation-embedded-error")
+      .contains(`The template "fake" is not available.`)
+      .should("be.visible");
+    cy.get_cy("project-creation-embedded-info").should("not.exist");
+
+    // Other valid fields should be filled in correctly
+    cy.get_cy("field-group-title").should("contain.value", "new project");
   });
 });

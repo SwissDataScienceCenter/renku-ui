@@ -162,6 +162,10 @@ class NewProjectCoordinator {
    * @param {object} [setNamespace] - function to set namespace, it is necessary to calculate visibilities
    */
   setAutomated(data, error, namespaces, availableVisibilities, setNamespace) {
+    // ? This is a safeguard in case it's accidentally invoked multiple times.
+    const currentStatus = this.model.get("automated");
+    if (currentStatus.received && currentStatus.valid && currentStatus.step > 0)
+      return;
     let automated = newProjectSchema.createInitialized().automated;
     if (error) {
       automated = {
