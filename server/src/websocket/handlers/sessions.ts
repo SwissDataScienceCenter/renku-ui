@@ -34,10 +34,21 @@ interface Session {
     }[];
     message?: string;
     readyNumContainers: number;
-    state: string;
+    state: {
+      pod_name: string;
+      [key: string]: unknown;
+    };
     totalNumContainers: number;
+    [key: string]: unknown;
   };
 }
+const validStatuses = [
+  "details",
+  "message",
+  "readyNumContainers",
+  "state",
+  "totalNumContainers",
+];
 
 function handlerRequestSessionStatus(
   data: Record<string, unknown>,
@@ -62,10 +73,30 @@ function heartbeatRequestSessionStatus(
     .then((response) => {
       const statusFetched = response as unknown as SessionsResult;
       const servers = statusFetched?.servers ?? {};
+
+      // Keep only relevant status information, without warning messages
       const cleanStatus: Record<string, Session> = {};
-      // only keep status information
       Object.keys(servers).map((key) => {
-        cleanStatus[key] = { status: servers[key].status };
+        try {
+          const initialStatus: Session["status"] = {
+            details: [],
+            readyNumContainers: -1,
+            state: {
+              pod_name: "",
+            },
+            totalNumContainers: -1,
+          };
+          const filedsToKeep = Object.keys(servers[key].status).filter(
+            (status) => validStatuses.includes(status)
+          );
+          const filteredStatus = filedsToKeep.reduce((obj, val: string) => {
+            obj[val] = servers[key].status[val];
+            return obj;
+          }, initialStatus);
+          cleanStatus[key] = { status: filteredStatus };
+        } catch (e) {
+          cleanStatus[key] = { status: servers[key].status };
+        }
       });
 
       const sortedObject = sortObjectProperties(
