@@ -2,7 +2,7 @@ import {
   addMarqueeImageToDataset,
   cleanDatasetId,
   IDataset,
-} from "./DatasetFunctions";
+} from "./Dataset.utils";
 
 describe("addMarqueeImageToDataset", () => {
   it("should complete the git url in the dataset object when content_url is a git url", () => {

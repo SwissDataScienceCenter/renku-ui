@@ -18,7 +18,7 @@
 import {
   addMarqueeImageToDataset,
   cleanDatasetId,
-} from "../utils/helpers/DatasetFunctions";
+} from "../utils/helpers/Dataset.utils";
 
 export default function addDatasetMethods(client) {
   function createFileUploadFormData(file) {
