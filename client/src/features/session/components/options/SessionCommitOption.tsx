@@ -52,7 +52,6 @@ export default function SessionCommitOption() {
   );
 
   const currentBranch = useStartSessionOptionsSelector(({ branch }) => branch);
-  // const currentCommit = useStartSessionOptionsSelector(({ commit }) => commit);
 
   const {
     data: commits,
@@ -61,7 +60,6 @@ export default function SessionCommitOption() {
     refetch,
   } = useGetRepositoryCommitsQuery(
     {
-      // branch: currentBranch || defaultBranch,
       branch: currentBranch,
       projectId: `${gitLabProjectId ?? 0}`,
     },
@@ -78,10 +76,7 @@ export default function SessionCommitOption() {
     [dispatch]
   );
 
-  useDefaultCommitOption({
-    commits,
-    // currentCommit
-  });
+  useDefaultCommitOption({ commits });
 
   // Commit limit
   const [limit, setLimit] = useState<number>(25);
