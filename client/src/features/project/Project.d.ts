@@ -354,6 +354,11 @@ interface UpdateProjectResponse {
   branch?: string;
 }
 
+export interface GitlabProjectResponse {
+  visibility: Visibilities;
+  path_with_namespace: string;
+}
+
 type KgMetadataLink = {
   rel: string;
   href: string;
