@@ -52,7 +52,7 @@ export default function SessionCommitOption() {
   );
 
   const currentBranch = useStartSessionOptionsSelector(({ branch }) => branch);
-  const currentCommit = useStartSessionOptionsSelector(({ commit }) => commit);
+  // const currentCommit = useStartSessionOptionsSelector(({ commit }) => commit);
 
   const {
     data: commits,
@@ -78,7 +78,10 @@ export default function SessionCommitOption() {
     [dispatch]
   );
 
-  useDefaultCommitOption({ commits, currentCommit });
+  useDefaultCommitOption({
+    commits,
+    // currentCommit
+  });
 
   // Commit limit
   const [limit, setLimit] = useState<number>(25);
