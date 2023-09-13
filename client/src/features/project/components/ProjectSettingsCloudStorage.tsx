@@ -308,14 +308,14 @@ function CloudStorageDetails({
         </div>
         <div className="mt-2">
           <div className="text-rk-text-light">
-            <small>Storage Type</small>
+            <small>Storage type</small>
           </div>
           <div>{storage_type}</div>
         </div>
         <div className="mt-2">
           <div className="text-rk-text-light">
             <small>
-              Source Path {"("}usually &lt;bucket&gt; or
+              Source path {"("}usually &lt;bucket&gt; or
               &lt;bucket&gt;/&lt;folder&gt;{")"}
             </small>
           </div>
@@ -324,7 +324,7 @@ function CloudStorageDetails({
         <div className="mt-2">
           <div className="text-rk-text-light">
             <small>
-              Mount Point {"("}this is where the storage will be mounted during
+              Mount point {"("}this is where the storage will be mounted during
               sessions{")"}
             </small>
           </div>
@@ -413,6 +413,7 @@ function EditCloudStorage({
     control,
     formState: { errors, isDirty },
     handleSubmit,
+    watch,
   } = useForm<UpdateCloudStorageForm>({
     defaultValues: {
       formattedConfiguration,
@@ -466,6 +467,8 @@ function EditCloudStorage({
     ]
   );
 
+  const watchPrivateToggle = watch("private");
+
   useEffect(() => {
     if (result.isSuccess || result.isError) {
       toggleEditMode();
@@ -502,7 +505,7 @@ function EditCloudStorage({
 
         <div className="mb-3">
           <Label className="form-label" for="updateCloudStorageSourcePath">
-            Source Path
+            Source path
           </Label>
           <Controller
             control={control}
@@ -528,7 +531,7 @@ function EditCloudStorage({
 
         <div className="mb-3">
           <Label className="form-label" for="updateCloudStorageTargetPath">
-            Mount Point
+            Mount point
           </Label>
           <Controller
             control={control}
@@ -580,6 +583,12 @@ function EditCloudStorage({
             used.
           </FormText>
         </div>
+
+        {watchPrivateToggle && (
+          <div className="mb-3">
+            <div className="form-label">Required credentials</div>
+          </div>
+        )}
 
         <div className="mb-3">
           <Label className="form-label" for="updateCloudStorageConfig">
