@@ -92,7 +92,6 @@ export interface GetSessionsRawResponse {
 
 export interface StartSessionParams {
   branch: string;
-  // cloudStorage: SessionCloudStorageMount[];
   cloudStorageV2: SessionCloudStorageV2[];
   commit: string;
   defaultUrl: string;
@@ -123,6 +122,7 @@ export type CloudStorageDefinitionForSessionApi =
     }
   | {
       configuration: {
+        // eslint-disable-next-line spellcheck/spell-checker
         type: "azureblob";
         endpoint: string;
         secret_access_key: string;

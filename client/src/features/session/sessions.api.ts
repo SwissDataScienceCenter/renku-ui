@@ -124,18 +124,9 @@ const sessionsApi = createApi({
         sessionClass,
         storage,
       }) => {
-        // const cloudstorage = cloudStorage.map(
-        //   ({ accessKey, bucket, endpoint, secretKey }) => ({
-        //     access_key: accessKey,
-        //     bucket,
-        //     endpoint,
-        //     secret_key: secretKey,
-        //   })
-        // );
         const cloudstorage = cloudStorageV2
           .map(convertCloudStorageForSessionApi)
           .flatMap((item) => (item == null ? [] : [item]));
-        console.log({ cloudstorage });
         const body = {
           branch,
           ...(cloudstorage.length > 0 ? { cloudstorage } : {}),
