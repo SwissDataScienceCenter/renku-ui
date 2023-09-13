@@ -19,7 +19,7 @@
 import {
   CloudStorage,
   CloudStorageSensitiveFieldDefinition,
-} from "../../dataServices/dataServices.types";
+} from "../projectCloudStorage.types";
 
 export function parseCloudStorageConfiguration(
   formattedConfiguration: string

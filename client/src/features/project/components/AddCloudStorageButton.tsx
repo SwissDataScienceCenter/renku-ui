@@ -34,16 +34,16 @@ import {
 } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import {
-  CloudStorage,
-  CloudStorageSensitiveFieldDefinition,
-} from "../../dataServices/dataServices.types";
+import { StateModelProject } from "../Project";
 import {
   useAddCloudStorageForProjectMutation,
   useUpdateCloudStorageMutation,
-} from "../../dataServices/dataServicesApi";
-import { StateModelProject } from "../Project";
+} from "../projectCloudStorage.api";
 import { CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER } from "../projectCloudStorage.constants";
+import {
+  CloudStorage,
+  CloudStorageSensitiveFieldDefinition,
+} from "../projectCloudStorage.types";
 import { parseCloudStorageConfiguration } from "../utils/projectCloudStorage.utils";
 
 export default function AddCloudStorageButton() {

@@ -18,6 +18,7 @@
 
 import cx from "classnames";
 import {
+  Fragment,
   ReactNode,
   useCallback,
   useEffect,
@@ -57,18 +58,18 @@ import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { User } from "../../../model/RenkuModels";
-import {
-  CloudStorage,
-  CloudStorageConfiguration,
-  CloudStorageSensitiveFieldDefinition,
-} from "../../dataServices/dataServices.types";
+import { StateModelProject } from "../Project";
 import {
   useDeleteCloudStorageMutation,
   useGetCloudStorageForProjectQuery,
   useUpdateCloudStorageMutation,
-} from "../../dataServices/dataServicesApi";
-import { StateModelProject } from "../Project";
+} from "../projectCloudStorage.api";
 import { CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER } from "../projectCloudStorage.constants";
+import {
+  CloudStorage,
+  CloudStorageConfiguration,
+  CloudStorageSensitiveFieldDefinition,
+} from "../projectCloudStorage.types";
 import {
   formatCloudStorageConfiguration,
   getSensitiveFieldDefinitions,
@@ -358,9 +359,6 @@ function CloudStorageDetails({
                   <li key={index}>
                     {name}
                     <CredentialMoreInfo help={help} />
-                    {/* <button type="button">
-                      <InfoCircleFill className={cx("bi", "ms-1")} />
-                    </button> */}
                   </li>
                 ))}
               </ul>
@@ -413,11 +411,11 @@ function CredentialMoreInfo({ help }: { help: string }) {
           {help
             .trim()
             .split("\n")
-            .map((line) => (
-              <>
+            .map((line, index) => (
+              <Fragment key={index}>
                 {line}
                 <br />
-              </>
+              </Fragment>
             ))}
         </PopoverBody>
       </UncontrolledPopover>
