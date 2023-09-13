@@ -17,8 +17,19 @@
  */
 
 import cx from "classnames";
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { ChevronDown, PencilSquare } from "react-bootstrap-icons";
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  ChevronDown,
+  InfoCircleFill,
+  PencilSquare,
+} from "react-bootstrap-icons";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
@@ -31,7 +42,9 @@ import {
   FormText,
   Input,
   Label,
+  PopoverBody,
   Row,
+  UncontrolledPopover,
 } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../../api-client";
 import { ErrorAlert } from "../../../../components/Alert";
@@ -39,8 +52,13 @@ import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import { Url } from "../../../../utils/helpers/url";
 import { StateModelProject } from "../../../project/Project";
+import CredentialsHelpText from "../../../project/components/CredentialsHelpText";
 import { useGetCloudStorageForProjectQuery } from "../../../project/projectCloudStorage.api";
-import { parseCloudStorageConfiguration } from "../../../project/utils/projectCloudStorage.utils";
+import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../../project/projectCloudStorage.constants";
+import {
+  formatCloudStorageConfiguration,
+  parseCloudStorageConfiguration,
+} from "../../../project/utils/projectCloudStorage.utils";
 import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
 import { SessionCloudStorageV2 } from "../../startSessionOptions.types";
 import {
@@ -128,7 +146,8 @@ function CloudStorageList() {
         active: true,
         ...(sensitive_fields
           ? {
-              sensitive_fields: sensitive_fields.map(({ name }) => ({
+              sensitive_fields: sensitive_fields.map(({ name, ...rest }) => ({
+                ...rest,
                 name,
                 value: "",
               })),
@@ -157,7 +176,7 @@ function CloudStorageList() {
         <Container className="p-0" fluid>
           <Row className={cx("row-cols-1", "gy-2")}>
             {cloudStorageList.map((storage, index) => (
-              <CloudStorageItemAlt
+              <CloudStorageItem
                 index={index}
                 key={`${storage.name}-${index}`}
                 storage={storage}
@@ -170,14 +189,19 @@ function CloudStorageList() {
   );
 }
 
-function CloudStorageItemAlt({ index, storage }: CloudStorageItemProps) {
+interface CloudStorageItemProps {
+  index: number;
+  storage: SessionCloudStorageV2;
+}
+
+function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
   const { active, configuration, name, sensitive_fields, target_path } =
     storage;
 
   const providedSensitiveFields = useMemo(
     () =>
       Object.entries(configuration)
-        .filter(([, value]) => value === "<sensitive>")
+        .filter(([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN)
         .map(([key]) => key),
     [configuration]
   );
@@ -214,6 +238,7 @@ function CloudStorageItemAlt({ index, storage }: CloudStorageItemProps) {
       const value = event.target.value;
       const newSensitiveFields = [...sensitive_fields];
       newSensitiveFields.splice(fieldIndex, 1, {
+        ...sensitive_fields[fieldIndex],
         name,
         value,
       });
@@ -282,8 +307,11 @@ function CloudStorageItemAlt({ index, storage }: CloudStorageItemProps) {
                     for={`credentials-${index}-${item.name}`}
                   >
                     {item.name}
+                    <span className={cx("fw-bold", "text-danger")}>*</span>
+                    <CredentialMoreInfo help={item.help} />
                   </Label>
                   <Input
+                    className={cx(!item.value && "is-invalid")}
                     id={`credentials-${index}-${item.name}`}
                     type="text"
                     value={item.value}
@@ -325,6 +353,23 @@ function CloudStorageItemAlt({ index, storage }: CloudStorageItemProps) {
   );
 }
 
+function CredentialMoreInfo({ help }: { help: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  return (
+    <>
+      <span ref={ref}>
+        <InfoCircleFill className={cx("bi", "ms-1")} tabIndex={0} />
+      </span>
+      <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
+        <PopoverBody>
+          <CredentialsHelpText help={help} />
+        </PopoverBody>
+      </UncontrolledPopover>
+    </>
+  );
+}
+
 function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
   const { namespace, path } = useSelector<
     RootStateOrAny,
@@ -341,7 +386,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
   const providedSensitiveFields = useMemo(
     () =>
       Object.entries(configuration)
-        .filter(([, value]) => value === "<sensitive>")
+        .filter(([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN)
         .map(([key]) => key),
     [configuration]
   );
@@ -357,9 +402,10 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
     {} as Record<string, string>
   );
   const configWithCredentials = { ...configuration, ...configCredentials };
-  const configContent = `[${name}]\n${Object.entries(configWithCredentials)
-    .map(([key, value]) => `${key} = ${value}`)
-    .join("\n")}\n`;
+  const configContent = formatCloudStorageConfiguration({
+    configuration: configWithCredentials,
+    name,
+  });
 
   const dispatch = useDispatch();
 
@@ -396,26 +442,41 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
     []
   );
   const onUpdateConfiguration = useCallback(() => {
-    const value = tempConfigContent;
-    const parsedConfig = parseCloudStorageConfiguration(value);
+    const parsedConfiguration =
+      parseCloudStorageConfiguration(tempConfigContent);
 
     const sensitiveFieldKeys =
       storage.sensitive_fields?.map(({ name }) => name) ?? [];
-    const filteredConfig = Object.entries(parsedConfig)
-      .filter(([key]) => !sensitiveFieldKeys.includes(key))
+
+    const updatedExistingConfiguration = Object.keys(configuration)
+      .flatMap((key) =>
+        sensitiveFieldKeys.includes(key)
+          ? [[key, CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN] as const]
+          : parsedConfiguration[key] != null
+          ? [[key, parsedConfiguration[key]] as const]
+          : []
+      )
       .reduce(
-        (prev, [key, value]) => ({ ...prev, [key]: value }),
+        (obj, [key, value]) => ({ ...obj, [key]: value }),
         {} as Record<string, string>
       );
-    const newSensitiveFields = Object.entries(parsedConfig)
-      .filter(([key]) => sensitiveFieldKeys.includes(key))
-      .map(([name, value]) => ({ name, value }));
-    const oldSensitiveFields = (storage.sensitive_fields ?? []).filter(
-      ({ name }) => !newSensitiveFields.map(({ name }) => name).includes(name)
-    );
-    const sensitiveConfig = newSensitiveFields.reduce(
-      (prev, { name }) => ({ ...prev, [name]: "<sensitive>" }),
-      {} as Record<string, string>
+    const updatedNewConfiguration = Object.entries(parsedConfiguration)
+      .filter(([key]) => !Object.keys(updateCloudStorageV2Item).includes(key))
+      .map(([key, value]) =>
+        sensitiveFieldKeys.includes(key)
+          ? ([key, CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN] as const)
+          : ([key, value] as const)
+      )
+      .reduce(
+        (obj, [key, value]) => ({ ...obj, [key]: value }),
+        {} as Record<string, string>
+      );
+
+    const updatedSensitiveFields = storage.sensitive_fields?.map(
+      ({ name, help }) =>
+        parsedConfiguration[name] != null
+          ? { name, help, value: parsedConfiguration[name] }
+          : { name, help, value: "" }
     );
 
     dispatch(
@@ -423,12 +484,15 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
         index,
         storage: {
           ...storage,
-          configuration: { ...filteredConfig, ...sensitiveConfig },
-          sensitive_fields: [...oldSensitiveFields, ...newSensitiveFields],
+          configuration: {
+            ...updatedExistingConfiguration,
+            ...updatedNewConfiguration,
+          },
+          sensitive_fields: updatedSensitiveFields,
         },
       })
     );
-  }, [dispatch, index, storage, tempConfigContent]);
+  }, [configuration, dispatch, index, storage, tempConfigContent]);
 
   useEffect(() => {
     setTempConfigContent(configContent);
@@ -491,7 +555,6 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
           aria-describedby={`updateCloudStorageConfigHelp-${index}`}
           className="form-control"
           id={`updateCloudStorageConfig-${index}`}
-          // placeholder={configPlaceHolder}
           rows={Object.keys(storage.configuration).length + 2}
           value={tempConfigContent}
           onChange={onChangeConfiguration}
@@ -510,11 +573,6 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
       </div>
     </div>
   );
-}
-
-interface CloudStorageItemProps {
-  index: number;
-  storage: SessionCloudStorageV2;
 }
 
 function S3ExplanationLink() {

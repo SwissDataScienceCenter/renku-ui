@@ -446,7 +446,7 @@ function SimpleAddCloudStorage({
               name="name"
               render={({ field }) => (
                 <Input
-                  className={cx("form-control", errors.name && "is-invalid")}
+                  className={cx(errors.name && "is-invalid")}
                   id="addCloudStorageName"
                   placeholder="storage"
                   type="text"
@@ -467,10 +467,7 @@ function SimpleAddCloudStorage({
               name="endpointUrl"
               render={({ field }) => (
                 <Input
-                  className={cx(
-                    "form-control",
-                    errors.endpointUrl && "is-invalid"
-                  )}
+                  className={cx(errors.endpointUrl && "is-invalid")}
                   id="addCloudStorageUrl"
                   placeholder="s3://bucket.endpoint.example.com/"
                   type="text"
