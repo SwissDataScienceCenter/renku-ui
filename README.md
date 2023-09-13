@@ -177,6 +177,16 @@ Storybook's test runner transforms stories into executable tests, supporting Chr
 
     $ npm run storybook-compile-and-test
 
+
+
+#### Deployment
+
+Storybook is deployed at the following location:
+
+- **URL**: `/storybook/`
+
+To access Storybook, visit the specified URL path in your web browser after your application is deployed.
+
 ### Telepresence
 
 Telepresence can be used to develop the UI in a realistic setting. The client folder includes a `run-telepresence.sh` script that is tailored for the SDSC development cluster.

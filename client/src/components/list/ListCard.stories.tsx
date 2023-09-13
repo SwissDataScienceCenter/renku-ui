@@ -47,7 +47,7 @@ export const ListCardProject: Story = {
 export const ListCardProjectWithImage: Story = {
   args: {
     ...args,
-    imageUrl: "../Zurich.jpg",
+    imageUrl: "../stockimages/Zurich.jpg",
   },
 };
 
@@ -62,6 +62,6 @@ export const ListCardDatasetWithImage: Story = {
   args: {
     ...args,
     itemType: EntityType.Dataset,
-    imageUrl: "../Zurich.jpg",
+    imageUrl: "../stockimages/Zurich.jpg",
   },
 };
