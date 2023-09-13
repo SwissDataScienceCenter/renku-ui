@@ -311,7 +311,8 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
                     <CredentialMoreInfo help={item.help} />
                   </Label>
                   <Input
-                    className={cx(!item.value && "is-invalid")}
+                    className={cx(!item.value && active && "is-invalid")}
+                    disabled={!active}
                     id={`credentials-${index}-${item.name}`}
                     type="text"
                     value={item.value}
