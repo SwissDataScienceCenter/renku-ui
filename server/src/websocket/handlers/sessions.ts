@@ -26,6 +26,7 @@ import { simpleHash, sortObjectProperties } from "../../utils";
 interface SessionsResult {
   servers: Record<string, Session>;
 }
+
 interface Session {
   status: {
     details: {
@@ -42,13 +43,6 @@ interface Session {
     [key: string]: unknown;
   };
 }
-const validStatuses = [
-  "details",
-  "message",
-  "readyNumContainers",
-  "state",
-  "totalNumContainers",
-];
 
 function handlerRequestSessionStatus(
   data: Record<string, unknown>,
@@ -75,33 +69,31 @@ function heartbeatRequestSessionStatus(
       const servers = statusFetched?.servers ?? {};
 
       // Keep only relevant status information, without warning messages
-      const cleanStatus: Record<string, Session> = {};
-      Object.keys(servers).map((key) => {
-        try {
-          const initialStatus: Session["status"] = {
-            details: [],
-            readyNumContainers: -1,
-            state: {
-              pod_name: "",
-            },
-            totalNumContainers: -1,
+      const cleanedServerEntries = Object.entries(servers).map(
+        ([key, session]) => {
+          const {
+            details,
+            message,
+            readyNumContainers,
+            state,
+            totalNumContainers,
+          } = session.status;
+          const cleanedStatus = {
+            details: details ?? [],
+            ...(message ? { message } : {}),
+            readyNumContainers: readyNumContainers ?? -1,
+            state: state ?? { pod_name: "" },
+            totalNumContainers: totalNumContainers ?? -1,
           };
-          const fieldsToKeep = Object.keys(servers[key].status).filter(
-            (status) => validStatuses.includes(status)
-          );
-          const filteredStatus = fieldsToKeep.reduce((obj, val: string) => {
-            obj[val] = servers[key].status[val];
-            return obj;
-          }, initialStatus);
-          cleanStatus[key] = { status: filteredStatus };
-        } catch (e) {
-          cleanStatus[key] = { status: servers[key].status };
+          return [key, { status: cleanedStatus }] as const;
         }
-      });
-
-      const sortedObject = sortObjectProperties(
-        cleanStatus as Record<string, never>
       );
+      const cleanedServers = cleanedServerEntries.reduce(
+        (obj, [key, value]) => ({ ...obj, [key]: value }),
+        {} as Record<string, Session>
+      );
+
+      const sortedObject = sortObjectProperties(cleanedServers);
       const currentHashedSessions = simpleHash(
         JSON.stringify(sortedObject)
       ).toString();
