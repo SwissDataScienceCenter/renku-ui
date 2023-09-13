@@ -17,9 +17,17 @@
  */
 
 import cx from "classnames";
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ChevronDown,
+  InfoCircleFill,
   PencilSquare,
   TrashFill,
   XLg,
@@ -40,7 +48,9 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
+  PopoverBody,
   Row,
+  UncontrolledPopover,
 } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ErrorAlert } from "../../../components/Alert";
@@ -344,8 +354,14 @@ function CloudStorageDetails({
             </div>
             {requiredCredentials != null && requiredCredentials.length > 0 ? (
               <ul className="ps-4">
-                {requiredCredentials.map(({ name }, index) => (
-                  <li key={index}>{name}</li>
+                {requiredCredentials.map(({ name, help }, index) => (
+                  <li key={index}>
+                    {name}
+                    <CredentialMoreInfo help={help} />
+                    {/* <button type="button">
+                      <InfoCircleFill className={cx("bi", "ms-1")} />
+                    </button> */}
+                  </li>
                 ))}
               </ul>
             ) : (
@@ -366,6 +382,7 @@ function CloudStorageDetails({
               className="form-control"
               readOnly
               rows={Object.keys(configuration).length + 2}
+              tabIndex={-1}
               value={formattedConfiguration}
             />
           </div>
@@ -379,6 +396,31 @@ function CloudStorageDetails({
         </Button>
         <DeleteCloudStorageButton storageDefinition={storageDefinition} />
       </section>
+    </>
+  );
+}
+
+function CredentialMoreInfo({ help }: { help: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  return (
+    <>
+      <span ref={ref}>
+        <InfoCircleFill className={cx("bi", "ms-1")} tabIndex={0} />
+      </span>
+      <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
+        <PopoverBody>
+          {help
+            .trim()
+            .split("\n")
+            .map((line) => (
+              <>
+                {line}
+                <br />
+              </>
+            ))}
+        </PopoverBody>
+      </UncontrolledPopover>
     </>
   );
 }
@@ -402,21 +444,6 @@ function EditCloudStorage({
 }: CloudStorageDetailsProps) {
   const { sensitive_fields, storage } = storageDefinition;
   const { configuration, name, source_path, storage_id, target_path } = storage;
-
-  // const providedSensitiveFields = useMemo(
-  //   () =>
-  //     Object.entries(configuration)
-  //       .filter(([, value]) => value === "<sensitive>")
-  //       .map(([key]) => key),
-  //   [configuration]
-  // );
-  // const requiredSensitiveFields = useMemo(
-  //   () =>
-  //     sensitive_fields
-  //       ?.map(({ name }) => name)
-  //       .filter((name) => providedSensitiveFields.includes(name)) ?? [],
-  //   [providedSensitiveFields, sensitive_fields]
-  // );
 
   const sensitiveFieldDefinitions = useMemo(
     () => getSensitiveFieldDefinitions(storageDefinition),
@@ -653,6 +680,7 @@ function EditCloudStorage({
                     for={`updateCloudStorageCredentials-${item.id}`}
                   >
                     {item.name}
+                    <CredentialMoreInfo help={item.help} />
                   </Label>
                 </div>
               ))}
