@@ -24,7 +24,7 @@ import {
   TrashFill,
   XLg,
 } from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { RootStateOrAny, useSelector } from "react-redux";
 import {
   Button,
@@ -50,6 +50,7 @@ import { User } from "../../../model/RenkuModels";
 import {
   CloudStorage,
   CloudStorageConfiguration,
+  CloudStorageSensitiveFieldDefinition,
 } from "../../dataServices/dataServices.types";
 import {
   useDeleteCloudStorageMutation,
@@ -399,8 +400,35 @@ function EditCloudStorage({
   storageDefinition,
   toggleEditMode,
 }: CloudStorageDetailsProps) {
-  const { storage } = storageDefinition;
-  const { name, source_path, storage_id, target_path } = storage;
+  const { sensitive_fields, storage } = storageDefinition;
+  const { configuration, name, source_path, storage_id, target_path } = storage;
+
+  // const providedSensitiveFields = useMemo(
+  //   () =>
+  //     Object.entries(configuration)
+  //       .filter(([, value]) => value === "<sensitive>")
+  //       .map(([key]) => key),
+  //   [configuration]
+  // );
+  // const requiredSensitiveFields = useMemo(
+  //   () =>
+  //     sensitive_fields
+  //       ?.map(({ name }) => name)
+  //       .filter((name) => providedSensitiveFields.includes(name)) ?? [],
+  //   [providedSensitiveFields, sensitive_fields]
+  // );
+
+  const sensitiveFieldDefinitions = useMemo(
+    () => getSensitiveFieldDefinitions(storageDefinition),
+    [storageDefinition]
+  );
+  const requiredCredentials = useMemo(
+    () =>
+      sensitiveFieldDefinitions
+        ?.filter(({ requiredCredential }) => requiredCredential)
+        .map(({ name }) => name) ?? [],
+    [sensitiveFieldDefinitions]
+  );
 
   const projectId = useSelector<
     RootStateOrAny,
@@ -421,10 +449,18 @@ function EditCloudStorage({
       private: storage.private,
       source_path,
       target_path,
+
+      requiredCredentials: sensitiveFieldDefinitions ?? [],
     },
+  });
+  const { fields: requiredCredentialsFields } = useFieldArray({
+    control,
+    name: "requiredCredentials",
   });
   const onSubmit = useCallback(
     (data: UpdateCloudStorageForm) => {
+      console.log({ data });
+
       const nameUpdate = name !== data.name ? { name: data.name } : {};
       const sourcePathUpdate =
         source_path !== data.source_path
@@ -436,14 +472,21 @@ function EditCloudStorage({
           : {};
       const privateUpdate =
         storage.private !== data.private ? { private: data.private } : {};
+      const credentialsUpdate = data.requiredCredentials
+        .filter(({ requiredCredential }) => requiredCredential)
+        .reduce(
+          (obj, { name }) => ({ ...obj, [name]: "<sensitive>" }),
+          {} as Record<string, string>
+        );
       const configUpdate =
         formattedConfiguration !== data.formattedConfiguration
           ? {
-              configuration: parseCloudStorageConfiguration(
-                data.formattedConfiguration
-              ),
+              configuration: {
+                ...parseCloudStorageConfiguration(data.formattedConfiguration),
+                ...credentialsUpdate,
+              },
             }
-          : {};
+          : { configuration: credentialsUpdate };
 
       updateCloudStorage({
         storage_id,
@@ -584,9 +627,36 @@ function EditCloudStorage({
           </FormText>
         </div>
 
-        {watchPrivateToggle && (
+        {watchPrivateToggle && requiredCredentialsFields.length > 0 && (
           <div className="mb-3">
             <div className="form-label">Required credentials</div>
+            <div>
+              {requiredCredentialsFields.map((item, index) => (
+                <div key={index}>
+                  <Controller
+                    control={control}
+                    name={`requiredCredentials.${index}.requiredCredential`}
+                    render={({ field }) => (
+                      <Input
+                        className="form-check-input"
+                        id={`updateCloudStorageCredentials-${item.id}`}
+                        type="checkbox"
+                        checked={field.value}
+                        innerRef={field.ref}
+                        onBlur={field.onBlur}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <Label
+                    className={cx("form-check-label", "ms-2")}
+                    for={`updateCloudStorageCredentials-${item.id}`}
+                  >
+                    {item.name}
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -650,6 +720,10 @@ interface UpdateCloudStorageForm {
   private: boolean;
   source_path: string;
   target_path: string;
+
+  requiredCredentials: (CloudStorageSensitiveFieldDefinition & {
+    requiredCredential: boolean;
+  })[];
 }
 
 function DeleteCloudStorageButton({
