@@ -86,10 +86,10 @@ function heartbeatRequestSessionStatus(
             },
             totalNumContainers: -1,
           };
-          const filedsToKeep = Object.keys(servers[key].status).filter(
+          const fieldsToKeep = Object.keys(servers[key].status).filter(
             (status) => validStatuses.includes(status)
           );
-          const filteredStatus = filedsToKeep.reduce((obj, val: string) => {
+          const filteredStatus = fieldsToKeep.reduce((obj, val: string) => {
             obj[val] = servers[key].status[val];
             return obj;
           }, initialStatus);
