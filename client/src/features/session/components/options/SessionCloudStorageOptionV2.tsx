@@ -301,14 +301,15 @@ function CloudStorageItemAlt({ index, storage }: CloudStorageItemProps) {
               "align-items-center",
               "w-100",
               "p-3",
-              "pt-2",
+              "py-2",
               "bg-transparent",
-              "border-0"
+              "border-0",
+              "border-top"
             )}
             onClick={toggle}
             type="button"
           >
-            <div>Storage details</div>
+            <div>More details</div>
             <div className="ms-auto">
               <ChevronDown />
             </div>
@@ -475,7 +476,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
         />
       </div>
 
-      <div className="mb-3">
+      <div>
         <Label className="form-label" for={`updateCloudStorageConfig-${index}`}>
           Configuration
         </Label>
