@@ -18,7 +18,6 @@
 
 import cx from "classnames";
 import {
-  Fragment,
   ReactNode,
   useCallback,
   useEffect,
@@ -64,18 +63,22 @@ import {
   useGetCloudStorageForProjectQuery,
   useUpdateCloudStorageMutation,
 } from "../projectCloudStorage.api";
-import { CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER } from "../projectCloudStorage.constants";
+import {
+  CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
+  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
+} from "../projectCloudStorage.constants";
 import {
   CloudStorage,
   CloudStorageConfiguration,
-  CloudStorageSensitiveFieldDefinition,
+  CloudStorageCredential,
 } from "../projectCloudStorage.types";
 import {
   formatCloudStorageConfiguration,
-  getSensitiveFieldDefinitions,
+  getCredentialFieldDefinitions,
   parseCloudStorageConfiguration,
 } from "../utils/projectCloudStorage.utils";
 import AddCloudStorageButton from "./AddCloudStorageButton";
+import CredentialsHelpText from "./CredentialsHelpText";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -288,147 +291,6 @@ function CloudStorageItemCollapsibleContent({
   );
 }
 
-function CloudStorageDetails({
-  formattedConfiguration,
-  storageDefinition,
-  toggleEditMode,
-}: CloudStorageDetailsProps) {
-  const { storage } = storageDefinition;
-  const { configuration, name, source_path, storage_type, target_path } =
-    storage;
-
-  const sensitiveFieldDefinitions = useMemo(
-    () => getSensitiveFieldDefinitions(storageDefinition),
-    [storageDefinition]
-  );
-  const requiredCredentials = useMemo(
-    () =>
-      sensitiveFieldDefinitions?.filter(
-        ({ requiredCredential }) => requiredCredential
-      ),
-    [sensitiveFieldDefinitions]
-  );
-
-  return (
-    <>
-      <section>
-        <div>
-          <div className="text-rk-text-light">
-            <small>Name</small>
-          </div>
-          <div>{name}</div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>Storage type</small>
-          </div>
-          <div>{storage_type}</div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>
-              Source path {"("}usually &lt;bucket&gt; or
-              &lt;bucket&gt;/&lt;folder&gt;{")"}
-            </small>
-          </div>
-          <div>{source_path}</div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>
-              Mount point {"("}this is where the storage will be mounted during
-              sessions{")"}
-            </small>
-          </div>
-          <div>{target_path}</div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>Requires credentials</small>
-          </div>
-          <div>{storage.private ? "Yes" : "No"}</div>
-        </div>
-        {storage.private && (
-          <div className="mt-2">
-            <div className="text-rk-text-light">
-              <small>Required crendentials</small>
-            </div>
-            {requiredCredentials != null && requiredCredentials.length > 0 ? (
-              <ul className="ps-4">
-                {requiredCredentials.map(({ name, help }, index) => (
-                  <li key={index}>
-                    {name}
-                    <CredentialMoreInfo help={help} />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div>
-                <span className="fst-italic">None</span>
-              </div>
-            )}
-          </div>
-        )}
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>
-              Configuration (uses <code>rclone config</code>)
-            </small>
-          </div>
-          <div>
-            <textarea
-              className="form-control"
-              readOnly
-              rows={Object.keys(configuration).length + 2}
-              tabIndex={-1}
-              value={formattedConfiguration}
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className={cx("d-flex", "justify-content-end", "mt-3")}>
-        <Button color="outline-secondary" onClick={toggleEditMode}>
-          <PencilSquare className={cx("bi", "me-1")} />
-          Edit
-        </Button>
-        <DeleteCloudStorageButton storageDefinition={storageDefinition} />
-      </section>
-    </>
-  );
-}
-
-function CredentialMoreInfo({ help }: { help: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-
-  return (
-    <>
-      <span ref={ref}>
-        <InfoCircleFill className={cx("bi", "ms-1")} tabIndex={0} />
-      </span>
-      <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
-        <PopoverBody>
-          {help
-            .trim()
-            .split("\n")
-            .map((line, index) => (
-              <Fragment key={index}>
-                {line}
-                <br />
-              </Fragment>
-            ))}
-        </PopoverBody>
-      </UncontrolledPopover>
-    </>
-  );
-}
-
-interface CloudStorageModalProps {
-  isOpen: boolean;
-  storage: CloudStorageConfiguration;
-  toggle: () => void;
-}
-
 interface CloudStorageDetailsProps {
   formattedConfiguration: string;
   storageDefinition: CloudStorage;
@@ -440,19 +302,12 @@ function EditCloudStorage({
   storageDefinition,
   toggleEditMode,
 }: CloudStorageDetailsProps) {
-  const { sensitive_fields, storage } = storageDefinition;
-  const { configuration, name, source_path, storage_id, target_path } = storage;
+  const { storage } = storageDefinition;
+  const { name, source_path, storage_id, target_path } = storage;
 
-  const sensitiveFieldDefinitions = useMemo(
-    () => getSensitiveFieldDefinitions(storageDefinition),
+  const credentialFieldDefinitions = useMemo(
+    () => getCredentialFieldDefinitions(storageDefinition),
     [storageDefinition]
-  );
-  const requiredCredentials = useMemo(
-    () =>
-      sensitiveFieldDefinitions
-        ?.filter(({ requiredCredential }) => requiredCredential)
-        .map(({ name }) => name) ?? [],
-    [sensitiveFieldDefinitions]
   );
 
   const projectId = useSelector<
@@ -474,8 +329,7 @@ function EditCloudStorage({
       private: storage.private,
       source_path,
       target_path,
-
-      requiredCredentials: sensitiveFieldDefinitions ?? [],
+      requiredCredentials: credentialFieldDefinitions ?? [],
     },
   });
   const { fields: requiredCredentialsFields } = useFieldArray({
@@ -484,8 +338,6 @@ function EditCloudStorage({
   });
   const onSubmit = useCallback(
     (data: UpdateCloudStorageForm) => {
-      console.log({ data });
-
       const nameUpdate = name !== data.name ? { name: data.name } : {};
       const sourcePathUpdate =
         source_path !== data.source_path
@@ -497,21 +349,32 @@ function EditCloudStorage({
           : {};
       const privateUpdate =
         storage.private !== data.private ? { private: data.private } : {};
-      const credentialsUpdate = data.requiredCredentials
-        .filter(({ requiredCredential }) => requiredCredential)
-        .reduce(
-          (obj, { name }) => ({ ...obj, [name]: "<sensitive>" }),
-          {} as Record<string, string>
-        );
-      const configUpdate =
+      const credentialsUpdate = data.private
+        ? data.requiredCredentials
+            .filter(({ requiredCredential }) => requiredCredential)
+            .reduce(
+              (obj, { name }) => ({
+                ...obj,
+                [name]: CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
+              }),
+              {} as Record<string, string>
+            )
+        : {};
+      const parsedConfiguration =
         formattedConfiguration !== data.formattedConfiguration
-          ? {
-              configuration: {
-                ...parseCloudStorageConfiguration(data.formattedConfiguration),
-                ...credentialsUpdate,
-              },
-            }
-          : { configuration: credentialsUpdate };
+          ? parseCloudStorageConfiguration(data.formattedConfiguration)
+          : storage.configuration;
+      const sensitiveFields =
+        credentialFieldDefinitions?.map(({ name }) => name) ?? [];
+      const filteredConfiguration = Object.entries(parsedConfiguration)
+        .filter(([key]) => !sensitiveFields.includes(key))
+        .reduce(
+          (obj, [key, value]) => ({ ...obj, [key]: value }),
+          {} as Record<string, string | undefined>
+        );
+      const configurationUpdate = {
+        configuration: { ...filteredConfiguration, ...credentialsUpdate },
+      };
 
       updateCloudStorage({
         storage_id,
@@ -520,14 +383,16 @@ function EditCloudStorage({
         ...sourcePathUpdate,
         ...targetPathUpdate,
         ...privateUpdate,
-        ...configUpdate,
+        ...configurationUpdate,
       });
     },
     [
+      credentialFieldDefinitions,
       formattedConfiguration,
       name,
       projectId,
       source_path,
+      storage.configuration,
       storage.private,
       storage_id,
       target_path,
@@ -731,7 +596,11 @@ function EditCloudStorage({
           Discard
         </Button>
         <Button className="ms-2" disabled={!isDirty} type="submit">
-          <PencilSquare className={cx("bi", "me-1")} />
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <PencilSquare className={cx("bi", "me-1")} />
+          )}
           Save changes
         </Button>
         <DeleteCloudStorageButton storageDefinition={storageDefinition} />
@@ -746,10 +615,134 @@ interface UpdateCloudStorageForm {
   private: boolean;
   source_path: string;
   target_path: string;
+  requiredCredentials: CloudStorageCredential[];
+}
 
-  requiredCredentials: (CloudStorageSensitiveFieldDefinition & {
-    requiredCredential: boolean;
-  })[];
+function CloudStorageDetails({
+  formattedConfiguration,
+  storageDefinition,
+  toggleEditMode,
+}: CloudStorageDetailsProps) {
+  const { storage } = storageDefinition;
+  const { configuration, name, source_path, storage_type, target_path } =
+    storage;
+
+  const credentialFieldDefinitions = useMemo(
+    () => getCredentialFieldDefinitions(storageDefinition),
+    [storageDefinition]
+  );
+  const requiredCredentials = useMemo(
+    () =>
+      credentialFieldDefinitions?.filter(
+        ({ requiredCredential }) => requiredCredential
+      ),
+    [credentialFieldDefinitions]
+  );
+
+  return (
+    <>
+      <section>
+        <div>
+          <div className="text-rk-text-light">
+            <small>Name</small>
+          </div>
+          <div>{name}</div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>Storage type</small>
+          </div>
+          <div>{storage_type}</div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>
+              Source path {"("}usually &lt;bucket&gt; or
+              &lt;bucket&gt;/&lt;folder&gt;{")"}
+            </small>
+          </div>
+          <div>{source_path}</div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>
+              Mount point {"("}this is where the storage will be mounted during
+              sessions{")"}
+            </small>
+          </div>
+          <div>{target_path}</div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>Requires credentials</small>
+          </div>
+          <div>{storage.private ? "Yes" : "No"}</div>
+        </div>
+        {storage.private && (
+          <div className="mt-2">
+            <div className="text-rk-text-light">
+              <small>Required crendentials</small>
+            </div>
+            {requiredCredentials != null && requiredCredentials.length > 0 ? (
+              <ul className="ps-4">
+                {requiredCredentials.map(({ name, help }, index) => (
+                  <li key={index}>
+                    {name}
+                    <CredentialMoreInfo help={help} />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div>
+                <span className="fst-italic">None</span>
+              </div>
+            )}
+          </div>
+        )}
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>
+              Configuration (uses <code>rclone config</code>)
+            </small>
+          </div>
+          <div>
+            <textarea
+              className="form-control"
+              readOnly
+              rows={Object.keys(configuration).length + 2}
+              tabIndex={-1}
+              value={formattedConfiguration}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className={cx("d-flex", "justify-content-end", "mt-3")}>
+        <Button color="outline-secondary" onClick={toggleEditMode}>
+          <PencilSquare className={cx("bi", "me-1")} />
+          Edit
+        </Button>
+        <DeleteCloudStorageButton storageDefinition={storageDefinition} />
+      </section>
+    </>
+  );
+}
+
+function CredentialMoreInfo({ help }: { help: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  return (
+    <>
+      <span ref={ref}>
+        <InfoCircleFill className={cx("bi", "ms-1")} tabIndex={0} />
+      </span>
+      <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
+        <PopoverBody>
+          <CredentialsHelpText help={help} />
+        </PopoverBody>
+      </UncontrolledPopover>
+    </>
+  );
 }
 
 function DeleteCloudStorageButton({
@@ -775,11 +768,17 @@ function DeleteCloudStorageButton({
   );
 }
 
+interface DeleteCloudStorageModalProps {
+  isOpen: boolean;
+  storage: CloudStorageConfiguration;
+  toggle: () => void;
+}
+
 function DeleteCloudStorageModal({
   isOpen,
   storage,
   toggle,
-}: CloudStorageModalProps) {
+}: DeleteCloudStorageModalProps) {
   const { name, storage_id } = storage;
 
   const projectId = useSelector<

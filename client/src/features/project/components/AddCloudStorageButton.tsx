@@ -39,12 +39,19 @@ import {
   useAddCloudStorageForProjectMutation,
   useUpdateCloudStorageMutation,
 } from "../projectCloudStorage.api";
-import { CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER } from "../projectCloudStorage.constants";
+import {
+  CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
+  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
+} from "../projectCloudStorage.constants";
 import {
   CloudStorage,
-  CloudStorageSensitiveFieldDefinition,
+  CloudStorageCredential,
 } from "../projectCloudStorage.types";
-import { parseCloudStorageConfiguration } from "../utils/projectCloudStorage.utils";
+import {
+  getCredentialFieldDefinitions,
+  parseCloudStorageConfiguration,
+} from "../utils/projectCloudStorage.utils";
+import CredentialsHelpText from "./CredentialsHelpText";
 
 export default function AddCloudStorageButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -309,7 +316,7 @@ function AdvancedAddCloudStorage({
             </div>
           </div>
 
-          <div className="mb-3">
+          <div>
             <Label className="form-label" for="addCloudStorageConfig">
               Configuration
             </Label>
@@ -538,29 +545,28 @@ function AddCloudStorageCredentialsStep({
   storageDefinition,
   toggle,
 }: AddCloudStorageCredentialsStepProps) {
-  const { sensitive_fields, storage } = storageDefinition;
+  const { storage } = storageDefinition;
   const { configuration, name, project_id, storage_id } = storage;
 
   const [updateCloudStorage, result] = useUpdateCloudStorageMutation();
 
   const { control, handleSubmit } = useForm<AddCloudStorageCredentialsForm>({
     defaultValues: {
-      sensitiveFields: (sensitive_fields ?? []).map(({ ...field }) => ({
-        ...field,
-        required: false,
-      })),
+      requiredCredentials: getCredentialFieldDefinitions(storageDefinition),
     },
   });
-  const { fields: sensitiveFields } = useFieldArray({
+  const { fields: credentialFields } = useFieldArray({
     control,
-    name: "sensitiveFields",
+    name: "requiredCredentials",
   });
   const onSubmit = useCallback(
     (data: AddCloudStorageCredentialsForm) => {
-      const updateConfig = data.sensitiveFields.reduce(
-        (prev, { name, required }) => ({
+      const updateConfig = data.requiredCredentials.reduce(
+        (prev, { name, requiredCredential }) => ({
           ...prev,
-          ...(required ? { [name]: "<sensitive>" } : {}),
+          ...(requiredCredential
+            ? { [name]: CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN }
+            : {}),
         }),
         {} as Record<string, string>
       );
@@ -597,11 +603,11 @@ function AddCloudStorageCredentialsStep({
         </p>
 
         <div className="form-rk-green">
-          {sensitiveFields.map((item, index) => (
-            <div className="mb-3" key={item.id}>
+          {credentialFields.map((item, index) => (
+            <div key={item.id}>
               <Controller
                 control={control}
-                name={`sensitiveFields.${index}.required`}
+                name={`requiredCredentials.${index}.requiredCredential`}
                 render={({ field }) => (
                   <Input
                     aria-describedby={`configureCloudStorageCredentialsHelp-${item.id}`}
@@ -625,7 +631,8 @@ function AddCloudStorageCredentialsStep({
                 id={`configureCloudStorageCredentialsHelp-${item.id}`}
                 tag="div"
               >
-                {item.help}
+                {/* {item.help} */}
+                <CredentialsHelpText help={item.help} />
               </FormText>
             </div>
           ))}
@@ -646,7 +653,5 @@ function AddCloudStorageCredentialsStep({
 }
 
 interface AddCloudStorageCredentialsForm {
-  sensitiveFields: (CloudStorageSensitiveFieldDefinition & {
-    required: boolean;
-  })[];
+  requiredCredentials: CloudStorageCredential[];
 }

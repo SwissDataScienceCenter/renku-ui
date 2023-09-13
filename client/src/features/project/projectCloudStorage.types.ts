@@ -37,6 +37,11 @@ export interface CloudStorageSensitiveFieldDefinition {
   name: string;
 }
 
+export interface CloudStorageCredential
+  extends CloudStorageSensitiveFieldDefinition {
+  requiredCredential: boolean;
+}
+
 export interface GetCloudStorageForProjectParams {
   project_id: string;
 }

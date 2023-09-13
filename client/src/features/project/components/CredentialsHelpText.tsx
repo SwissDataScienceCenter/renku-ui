@@ -16,7 +16,26 @@
  * limitations under the License.
  */
 
-export const CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN = "<sensitive>";
+import { Fragment } from "react";
 
-export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
-  "[example]\ntype = s3\nprovider = AWS\nregion = us-east-1";
+interface CredentialsHelpTextProps {
+  help: string;
+}
+
+export default function CredentialsHelpText({
+  help,
+}: CredentialsHelpTextProps) {
+  return (
+    <>
+      {help
+        .trim()
+        .split("\n")
+        .map((line, index) => (
+          <Fragment key={index}>
+            {line}
+            <br />
+          </Fragment>
+        ))}
+    </>
+  );
+}
