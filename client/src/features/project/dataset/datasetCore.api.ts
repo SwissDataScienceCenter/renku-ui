@@ -21,6 +21,7 @@ import type { ImageInputImage } from "../../../components/form-field/ImageInput"
 import type { Creator } from "../Project";
 import type { DatasetFormState } from "./datasetForm.slice";
 import type { DatasetImage } from "./dataset.types";
+import { DatasetUploaderFile } from "./datasetForm.slice";
 
 export type DatasetFormFields = DatasetFormState["form"];
 
@@ -102,20 +103,27 @@ function getCreator(creator: Creator) {
   return newCreator;
 }
 
+function getFileIds(
+  files: Omit<DatasetUploaderFile, "file">[]
+): { file_id: string }[] {
+  return files.flatMap((file) => {
+    if (Array.isArray(file.file_id))
+      return file.file_id.map((id) => ({ file_id: id as string }));
+    return { file_id: file.file_id as string };
+  });
+}
 function gatherDatasetFilesForSubmit(datasetInput: DatasetFormFields) {
   // TODO: make sure file_status is kept in the form
   const pendingFiles = datasetInput.files
     .filter((f) => f.file_status === FILE_STATUS.PENDING)
     .map((f) => ({ file_url: f.file_name }));
-  const readyFiles = datasetInput.files
-    .filter(
-      (f) =>
-        f.file_status !== FILE_STATUS.PENDING &&
-        f.file_status !== FILE_STATUS.ADDED &&
-        f.file_id !== undefined
-    )
-    .map((f) => ({ file_id: f.file_id }));
-  return { readyFiles, pendingFiles };
+  const readyFiles = datasetInput.files.filter(
+    (f) =>
+      f.file_status !== FILE_STATUS.PENDING &&
+      f.file_status !== FILE_STATUS.ADDED &&
+      f.file_id !== undefined
+  );
+  return { readyFiles: getFileIds(readyFiles), pendingFiles };
 }
 
 async function getDatasetImagesForSubmit(
