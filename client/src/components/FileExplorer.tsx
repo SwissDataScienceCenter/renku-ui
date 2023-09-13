@@ -337,9 +337,18 @@ function FileExplorer(props: FileExplorerProps) {
   const setOpenFolder = React.useCallback(
     (filePath: string) => {
       if (filesTree == null) return;
-      filesTree.hash[filePath].childrenOpen =
-        !filesTree.hash[filePath].childrenOpen;
-      setFilesTree(filesTree);
+      const updatedFilesTree = {
+        ...filesTree,
+        hash: {
+          ...filesTree.hash,
+          [filePath]: {
+            ...filesTree.hash[filePath],
+            childrenOpen: !filesTree.hash[filePath].childrenOpen,
+          },
+        },
+      };
+
+      setFilesTree(updatedFilesTree);
     },
     [filesTree]
   );
