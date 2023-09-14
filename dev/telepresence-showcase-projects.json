@@ -1,0 +1,38 @@
+{
+  "enabled": true,
+  "title": "Renku real-world use cases: Conducted by SDSC and ETH Domain",
+  "description": "The case studies presented here **bridge the gap** from domain to data science and provide experts from both sides with the means to examine, confirm, and extend the datasets and their analyses, without extensive investments of time and infrastructure.",
+  "projects": [
+    {
+      "identifier": "renku-ui-tests/stable-project",
+      "overrideDescription": "The ADORE dataset was created as part of the SDSC project \"MLTox: Enhancing Toxicological Testing through Machine Learning\". This repository contains the benchmark dataset as well as the code to generate it from raw data.",
+      "overrideImageUrl": "https://gitlab.renkulab.io/uploads/-/system/project/avatar/36159/graphical_abstract.png",
+      "overrideTitle": "MLTox/ADORE: A benchmark Dataset fOR machine learning in Ecotoxicology"
+    },
+    {
+      "identifier": "renku-ui-tests/stable-project",
+      "overrideDescription": "OADAT is one of the outcomes of a larger project, which proposed several methodologies to improve image quality by means of geometric distortion correction, noise reduction, and semantic segmentation, for a novel emerging non-invasive clinical imaging modality called optoacoustic imaging.",
+      "overrideImageUrl": "https://gitlab.renkulab.io/uploads/-/system/project/avatar/19124/oadat-evaluate-avatar.jpeg",
+      "overrideTitle": "OADAT: Large scale optoacoustic imaging data"
+    },
+    {
+      "identifier": "renku-ui-tests/stable-project",
+      "overrideDescription": "In the Machine Learning for Electron Detectors project (MLED), the aim is to predict the exact point of impact of an electron in Hybrid pixel detectors from trajectory images. Hybrid pixel detectors show great potential for use in Electron Microscopy, but poor spatial resolution - caused by large pixel size and multiple scattering in the sensor layer - are holding them back. The goal is to use Machine Learning trained on simulation and measurement data to improve spatial resolution by determining the point where the electron hits the detector and assigning the signal to the correct pixel.",
+      "overrideImageUrl": "https://gitlab.renkulab.io/uploads/-/system/project/avatar/36795/Screenshot_2023-07-13_005545.jpg",
+      "overrideTitle": "MLED: Machine Learning for Electron Detectors project"
+    },
+    { "identifier": "renku-ui-tests/stable-project" },
+    { "identifier": "cramakri/test-image-project" },
+    {
+      "identifier": "renku-ui-tests/renku-project-v10",
+      "overrideDescription": "### Testing\n\nA project for testing.",
+      "overrideTitle": "UI Test Project"
+    },
+    { "identifier": "renku-ui-tests/stable-project" },
+    {
+      "identifier": "renku-ui-tests/renku-project-v10",
+      "overrideDescription": "### Testing\n\nA project for testing.",
+      "overrideTitle": "UI Test Project"
+    }
+  ]
+}

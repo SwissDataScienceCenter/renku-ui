@@ -28,7 +28,17 @@ export type AnonymousHomeConfig = {
         contentMd: string;
       };
     };
-    projects: unknown[];
+    showcase: {
+      enabled: boolean;
+      title: string;
+      description: string;
+      projects: {
+        identifier: string;
+        overrideDescription?: string;
+        overrideImageUrl?: string;
+        overrideTitle?: string;
+      }[];
+    };
     tutorialLink: string;
   };
   model: unknown;

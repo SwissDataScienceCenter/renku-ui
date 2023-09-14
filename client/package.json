@@ -70,6 +70,7 @@
     "showdown-katex": "^0.6.0",
     "showdown-mermaid": "0.0.1",
     "styled-jsx": "^5.1.0",
+    "swiper": "^9.4.1",
     "uuid": "^3.3.3",
     "xregexp": "^4.4.0",
     "yaml": "^2.3.1"
@@ -214,6 +215,9 @@
     ]
   },
   "jest": {
+    "moduleNameMapper": {
+      "swiper/css": "swiper/swiper.min.css"
+    },
     "resetMocks": false,
     "transformIgnorePatterns": [
       "^node_modules/(?!(highlight.js|katex|react-markdown|react-pdf)).*/"

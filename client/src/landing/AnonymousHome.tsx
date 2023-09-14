@@ -62,6 +62,7 @@ import logo_SDSC from "./Logos/SDSC.svg";
 
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import { BottomNav, TopNav } from "./anonymousHomeNav";
+import SectionShowcase from "./SectionShowcase";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -235,7 +236,7 @@ function TutorialLink({ className, role, title, url }: TutorialLinkProps) {
   );
 }
 
-function Section4(props: { tutorialLink: string }) {
+function SectionTryOut(props: { tutorialLink: string }) {
   const backgroundUrl = VisualDetail;
   return (
     <div
@@ -291,20 +292,6 @@ function Section4(props: { tutorialLink: string }) {
               url={Docs.READ_THE_DOCS_ROOT}
             />
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Section5(
-  props: Pick<AnonymousHomeConfig["homeCustomized"], "projects">
-) {
-  return props.projects == null || props.projects.length < 1 ? null : (
-    <div id="rk-anon-home-section5">
-      <div className="rk-anon-home-section-content">
-        <div className="rk-pt-l">
-          <h3 className="text-rk-pink">Look at some example projects</h3>
         </div>
       </div>
     </div>
@@ -608,8 +595,8 @@ function StandardHome(props: AnonymousHomeConfig) {
       <Section1 {...props} />
       <SectionFeatures />
       <SectionUseCases />
-      <Section4 tutorialLink={props.homeCustomized.tutorialLink} />
-      <Section5 projects={props.homeCustomized.projects} />
+      <SectionShowcase {...props.homeCustomized.showcase} />
+      <SectionTryOut tutorialLink={props.homeCustomized.tutorialLink} />
       <Section6 />
       <BottomNav {...props} />
     </>
