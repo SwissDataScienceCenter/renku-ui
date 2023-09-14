@@ -16,17 +16,121 @@
  * limitations under the License.
  */
 
-import DashboardMessage from "./DashboardMessage";
 import { Meta, StoryObj } from "@storybook/react";
+import { ARG_REDUX_PATH } from "addon-redux";
+import { useContext } from "react";
+import AppContext from "../../../utils/context/appContext";
+import DashboardMessage from "./DashboardMessage";
 
-const meta: Meta<typeof DashboardMessage> = {
+interface DashboardMessageArgs {
+  enabled: boolean;
+  text: string;
+  additionalText: string;
+  style: "plain" | "success" | "info" | "warning" | "danger";
+  dismissible: boolean;
+  dismissed: boolean;
+}
+
+const description = `
+Customizable message to be displayed on the Dashboard.
+`.trim();
+
+const defaultText = `
+# Welcome to Renku! 🐸
+
+You are running inside Storybook!
+
+As you can see, this message supports UTF-8 characters and **Markdown** notation.
+`.trim();
+
+const meta: Meta<DashboardMessageArgs> = {
+  args: {
+    enabled: true,
+    text: defaultText,
+    additionalText: "",
+    style: "info",
+    dismissible: false,
+    dismissed: false,
+  },
+  argTypes: {
+    enabled: { type: "boolean" },
+    text: { type: "string" },
+    additionalText: { type: "string" },
+    style: {
+      type: {
+        name: "enum",
+        value: ["plain", "success", "info", "warning", "danger"],
+      },
+      control: "select",
+    },
+    dismissible: { type: "boolean" },
+    dismissed: {
+      control: "boolean",
+      [ARG_REDUX_PATH]: "dashboardMessage.dismissed",
+    },
+  },
   component: DashboardMessage,
+  decorators: [
+    // Add some background around the component, to show the white background
+    // used by the "plain" style.
+    (Story) => (
+      <div className="p-3 bg-body">
+        <Story />
+      </div>
+    ),
+    // Setup the `params` in `AppContext` which control how the dashboard
+    // message is rendered.
+    (Story, { args }) => {
+      const { enabled, text, additionalText, style, dismissible } = args;
+
+      const existingContext = useContext(AppContext);
+      const context = {
+        ...existingContext,
+        params: {
+          DASHBOARD_MESSAGE: {
+            enabled,
+            text,
+            additionalText,
+            style,
+            dismissible,
+          },
+        },
+      };
+
+      return (
+        <AppContext.Provider value={context}>
+          <Story />
+        </AppContext.Provider>
+      );
+    },
+  ],
+  parameters: {
+    docs: {
+      description: {
+        component: description,
+      },
+    },
+    controls: {
+      disable: false,
+    },
+  },
   title: "components/DashboardMessage",
 };
 export default meta;
 
 type Story = StoryObj<typeof DashboardMessage>;
 
-export const Test: Story = {
-  render: () => <DashboardMessage />,
+export const Default: Story = {
+  render: (_args) => <DashboardMessage />,
+};
+
+export const WithAdditionalText: Story = {
+  args: {
+    additionalText: `
+This is some additional text.
+
+* It also supports **Markdown** notation.
+`.trim(),
+  },
+  render: (_args) => <DashboardMessage />,
 };
