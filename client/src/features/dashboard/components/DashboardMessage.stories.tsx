@@ -32,7 +32,10 @@ interface DashboardMessageArgs {
 }
 
 const description = `
-Customizable message to be displayed on the Dashboard.
+This component renders a message to be displayed on the Dashboard.
+
+The message and its appearance can be customized by tweaking the
+deployment values.
 `.trim();
 
 const defaultText = `
@@ -121,6 +124,7 @@ export default meta;
 type Story = StoryObj<typeof DashboardMessage>;
 
 export const Default: Story = {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   render: (_args) => <DashboardMessage />,
 };
 
@@ -132,5 +136,6 @@ This is some additional text.
 * It also supports **Markdown** notation.
 `.trim(),
   },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   render: (_args) => <DashboardMessage />,
 };
