@@ -205,7 +205,7 @@ class NewProjectCoordinator {
       ? automatedObject
       : newProjectSchema.createInitialized().automated;
     let availableVariables = [];
-    let visibilities;
+    let visibilities = availableVisibilities?.visibilities;
     const { data } = automated;
     let getDataAttempts = 0;
     let maxAttempts = 60;
@@ -317,6 +317,7 @@ class NewProjectCoordinator {
         availableVariables = templateAvailable.variables;
       }
     }
+
     if (data.visibility) {
       if (!visibilities) {
         // wait for namespace visibilities to be available
@@ -575,7 +576,6 @@ class NewProjectCoordinator {
         namespace: {
           visibility: availableVisibilities.default,
           visibilities: availableVisibilities.visibilities,
-          fetched: new Date(),
           fetching: false,
           id: namespace.full_path,
         },
