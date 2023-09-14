@@ -319,7 +319,8 @@ function PullSessionBtn({ togglePullSession }: PullSessionBtnProps) {
         innerRef={ref}
         onClick={togglePullSession}
       >
-        <ArrowClockwise className="text-rk-dark" title="pull" />
+        <ArrowClockwise className="text-rk-dark" />
+        <span className="visually-hidden">Pull changes</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
         Pull changes
@@ -349,7 +350,8 @@ function SaveSessionBtn({ toggleSaveSession }: SaveSessionProps) {
         innerRef={ref}
         onClick={toggleSaveSession}
       >
-        <Save className="text-rk-dark" title="save" />
+        <Save className="text-rk-dark" />
+        <span className="visually-hidden">Save session</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
         Save session
@@ -379,7 +381,8 @@ function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
         innerRef={ref}
         onClick={toggleModalResources}
       >
-        <Journals className="text-rk-dark" title="help" />
+        <Journals className="text-rk-dark" />
+        <span className="visually-hidden">Resources</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
         Resources
@@ -422,6 +425,7 @@ function StopSessionBtn({ toggleStopSession }: StopSessionBtnProps) {
         onClick={toggleStopSession}
       >
         {icon}
+        <span className="visually-hidden">{tooltip}</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>
         {tooltip}
