@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { userEvent } from "@storybook/testing-library";
+import { expect } from "@storybook/jest";
 import { ButtonWithMenu } from "./Button";
 import { StoryObj } from "@storybook/react";
 import { DropdownItem } from "reactstrap";
@@ -29,10 +31,10 @@ type Story = StoryObj<typeof ButtonWithMenu>;
 
 const defaultAction = <Button key="button-main-primary">Main Action</Button>;
 const options = [
-  <DropdownItem key="option-a" data-testId="option-a">
+  <DropdownItem key="option-a" data-cy="option-a">
     Option A
   </DropdownItem>,
-  <DropdownItem key="option-b" data-testId="option-b">
+  <DropdownItem key="option-b" data-cy="option-b">
     Option B
   </DropdownItem>,
 ];
@@ -90,6 +92,14 @@ export const Primary: Story = {
       story: { height: "150px" },
     },
   },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(
+      canvasElement.querySelector('[data-cy="more-menu"]') as Element
+    );
+    await expect(
+      canvasElement.querySelector('[data-cy="option-a"]') as Element
+    ).toBeVisible();
+  },
 };
 
 const defaultActionSecondary = (
@@ -109,5 +119,13 @@ export const Secondary: Story = {
     docs: {
       story: { height: "150px" },
     },
+  },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(
+      canvasElement.querySelector('[data-cy="more-menu"]') as Element
+    );
+    await expect(
+      canvasElement.querySelector('[data-cy="option-b"]') as Element
+    ).toBeVisible();
   },
 };
