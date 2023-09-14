@@ -129,6 +129,7 @@ function CreatorForm(props: CreatorFormProps) {
             disabled={props.disabled}
             className="mb-3 p-0 border-0 text-danger bg-transparent"
             onClick={props.deleteCreator}
+            data-cy="creator-delete"
           >
             <FontAwesomeIcon icon={faUserMinus} />
           </Button>
