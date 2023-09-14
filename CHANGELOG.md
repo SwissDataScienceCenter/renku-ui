@@ -1,5 +1,19 @@
 # Changes
 
+## [3.12.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.12.1...3.12.2) (2023-09-14)
+
+### Features
+
+* **storybook** deploy and test Storybook ([#2212](https://github.com/SwissDataScienceCenter/renku-ui/issues/2212), [#2300](https://github.com/SwissDataScienceCenter/renku-ui/issues/2300), [#2748](https://github.com/SwissDataScienceCenter/renku-ui/issues/2748), [#2773](https://github.com/SwissDataScienceCenter/renku-ui/issues/2773))
+* **dataset** add dataset to project uses versioned core-service endpoints ([#2788](https://github.com/SwissDataScienceCenter/renku-ui/issues/2788))
+
+### Bug Fixes
+
+* **dataset** support dataset avatar with external url ([#2765](https://github.com/SwissDataScienceCenter/renku-ui/issues/2765), [#2791](https://github.com/SwissDataScienceCenter/renku-ui/issues/2791))
+* **dataset** unzip multiple dataset files ([#2754](https://github.com/SwissDataScienceCenter/renku-ui/issues/2754), [#2786](https://github.com/SwissDataScienceCenter/renku-ui/issues/2786))
+* fix render loops in creating new projects ([#2788](https://github.com/SwissDataScienceCenter/renku-ui/issues/2788))
+
+
 ## [3.12.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.12.0...3.12.1) (2023-09-07)
 
 This release includes relevant changes non-visible to the users. It also includes the urgent bugfix from version 3.11.1
