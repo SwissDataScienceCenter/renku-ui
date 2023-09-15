@@ -34,6 +34,7 @@ import {
 } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { RenkuMarkdown } from "../../../components/markdown/RenkuMarkdown";
 import { StateModelProject } from "../Project";
 import {
   useAddCloudStorageForProjectMutation,
@@ -51,7 +52,8 @@ import {
   getCredentialFieldDefinitions,
   parseCloudStorageConfiguration,
 } from "../utils/projectCloudStorage.utils";
-import CredentialsHelpText from "./CredentialsHelpText";
+
+import styles from "./AddCloudStorageButton.module.scss";
 
 export default function AddCloudStorageButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -104,9 +106,11 @@ function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
 
   return (
     <Modal
-      className="modal-dialog-centered"
+      centered
+      className={styles.modal}
       fullscreen="lg"
       isOpen={isOpen}
+      // scrollable
       size="lg"
       toggle={toggle}
     >
@@ -628,8 +632,8 @@ function AddCloudStorageCredentialsStep({
                 id={`configureCloudStorageCredentialsHelp-${item.id}`}
                 tag="div"
               >
-                {/* {item.help} */}
-                <CredentialsHelpText help={item.help} />
+                {/* <CredentialsHelpText help={item.help} /> */}
+                <RenkuMarkdown markdownText={item.help} />
               </FormText>
             </div>
           ))}

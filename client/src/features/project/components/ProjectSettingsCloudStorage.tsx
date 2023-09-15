@@ -26,6 +26,7 @@ import {
   useState,
 } from "react";
 import {
+  CheckLg,
   ChevronDown,
   InfoCircleFill,
   PencilSquare,
@@ -894,9 +895,15 @@ function DeleteCloudStorageModal({
       </ModalBody>
       <ModalFooter className="pt-0">
         <Button className="ms-2" color="outline-secondary" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
           Cancel, keep configuration
         </Button>
         <Button className="ms-2" color="danger" onClick={onDelete}>
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <CheckLg className={cx("bi", "me-1")} />
+          )}
           Yes, delete this configuration
         </Button>
       </ModalFooter>
