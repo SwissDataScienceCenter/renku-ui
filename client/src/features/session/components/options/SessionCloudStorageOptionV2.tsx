@@ -27,6 +27,7 @@ import {
 } from "react";
 import {
   ChevronDown,
+  ExclamationTriangleFill,
   InfoCircleFill,
   PencilSquare,
 } from "react-bootstrap-icons";
@@ -68,7 +69,7 @@ import {
 } from "../../startSessionOptionsSlice";
 
 export default function SessionCloudStorageOptionV2() {
-  const { data, isLoading } = useGetNotebooksVersionsQuery();
+  const { data: notebooksVersion, isLoading } = useGetNotebooksVersionsQuery();
 
   if (isLoading) {
     return (
@@ -81,7 +82,10 @@ export default function SessionCloudStorageOptionV2() {
     );
   }
 
-  return data?.cloudStorageEnabled.s3 ? <SessionS3CloudStorageOption /> : null;
+  return notebooksVersion?.cloudStorageEnabled.s3 ||
+    notebooksVersion?.cloudStorageEnabled.azureBlob ? (
+    <SessionS3CloudStorageOption />
+  ) : null;
 }
 
 function SessionS3CloudStorageOption() {
@@ -125,6 +129,7 @@ function CloudStorageList() {
 
   const dispatch = useDispatch();
 
+  const { data: notebooksVersion } = useGetNotebooksVersionsQuery();
   const {
     data: storageForProject,
     error,
@@ -136,6 +141,11 @@ function CloudStorageList() {
     { skip: !devAccess }
   );
 
+  const support = useMemo(
+    () => (notebooksVersion?.cloudStorageEnabled.s3 ? "s3" : "azure"),
+    [notebooksVersion?.cloudStorageEnabled]
+  );
+
   // Populate session cloud storage from project's settings
   useEffect(() => {
     if (storageForProject == null) {
@@ -143,7 +153,12 @@ function CloudStorageList() {
     }
     const initialCloudStorage: SessionCloudStorageV2[] = storageForProject.map(
       ({ storage, sensitive_fields }) => ({
-        active: true,
+        active:
+          (storage.storage_type === "s3" && support === "s3") ||
+          (storage.storage_type === "azureblob" && support === "azure"),
+        supported:
+          (storage.storage_type === "s3" && support === "s3") ||
+          (storage.storage_type === "azureblob" && support === "azure"),
         ...(sensitive_fields
           ? {
               sensitive_fields: sensitive_fields.map(({ name, ...rest }) => ({
@@ -157,7 +172,7 @@ function CloudStorageList() {
       })
     );
     dispatch(setCloudStorageV2(initialCloudStorage));
-  }, [dispatch, storageForProject]);
+  }, [dispatch, storageForProject, support]);
 
   if (isLoading) {
     return <Loader />;
@@ -195,8 +210,14 @@ interface CloudStorageItemProps {
 }
 
 function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
-  const { active, configuration, name, sensitive_fields, target_path } =
-    storage;
+  const {
+    active,
+    configuration,
+    name,
+    sensitive_fields,
+    supported,
+    target_path,
+  } = storage;
 
   const providedSensitiveFields = useMemo(
     () =>
@@ -263,6 +284,7 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
             <Input
               className="form-check-input"
               checked={active}
+              disabled={!supported}
               id="cloudStorageItemActive"
               onChange={onToggleActive}
               type="checkbox"
@@ -292,7 +314,17 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
           </div>
         </CardBody>
 
-        {requiredSensitiveFields != null &&
+        {!supported && (
+          <CardBody className="py-0">
+            <p className={cx("form-text", "text-danger", "mt-0", "mb-1")}>
+              <ExclamationTriangleFill className={cx("bi", "me-1")} />
+              This cloud storage configuration is currently not supported.
+            </p>
+          </CardBody>
+        )}
+
+        {supported &&
+          requiredSensitiveFields != null &&
           requiredSensitiveFields.length > 0 && (
             <CardBody className="py-0">
               <h5 className={cx("fs-6", "m-0")}>Credentials</h5>

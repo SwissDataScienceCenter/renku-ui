@@ -53,7 +53,7 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
-import { ErrorAlert } from "../../../components/Alert";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { User } from "../../../model/RenkuModels";
@@ -79,6 +79,8 @@ import {
 } from "../utils/projectCloudStorage.utils";
 import AddCloudStorageButton from "./AddCloudStorageButton";
 import CredentialsHelpText from "./CredentialsHelpText";
+import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
+import { NotebooksVersion } from "../../versions/versions";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -95,12 +97,25 @@ export default function ProjectSettingsCloudStorage() {
 
   const {
     data: storageForProject,
-    error,
-    isFetching,
-    isLoading,
+    // error,
+    // isFetching,
+    // isLoading,
+    error: storageError,
+    isFetching: storageIsFetching,
+    isLoading: storageIsLoading,
   } = useGetCloudStorageForProjectQuery({
     project_id: `${projectId}`,
   });
+  const {
+    data: notebooksVersion,
+    error: versionError,
+    isFetching: versionIsFetching,
+    isLoading: versionIsLoading,
+  } = useGetNotebooksVersionsQuery();
+
+  const error = storageError || versionError;
+  const isFetching = storageIsFetching || versionIsFetching;
+  const isLoading = storageIsLoading || versionIsLoading;
 
   if (!logged) {
     const textIntro =
@@ -129,7 +144,7 @@ export default function ProjectSettingsCloudStorage() {
     );
   }
 
-  if (!storageForProject || error) {
+  if (!storageForProject || !notebooksVersion || error) {
     return (
       <CloudStorageSection>
         <ErrorAlert dismissible={false}>
@@ -143,6 +158,8 @@ export default function ProjectSettingsCloudStorage() {
 
   return (
     <CloudStorageSection isFetching={isFetching}>
+      <CloudStorageSupportNotice notebooksVersion={notebooksVersion} />
+
       <Row>
         <Col>
           <AddCloudStorageButton />
@@ -168,8 +185,67 @@ function CloudStorageSection({
         {isFetching && <Loader className="ms-1" inline size={20} />}
       </h3>
       <p>Here you can configure cloud storage to be used during sessions.</p>
-      <div className="form-rk-green">{children}</div>
+      <div>{children}</div>
     </div>
+  );
+}
+
+interface CloudStorageSupportNoticeProps {
+  notebooksVersion: NotebooksVersion;
+}
+
+function CloudStorageSupportNotice({
+  notebooksVersion,
+}: CloudStorageSupportNoticeProps) {
+  const support = useMemo(
+    () =>
+      notebooksVersion.cloudStorageEnabled.s3
+        ? "s3"
+        : notebooksVersion.cloudStorageEnabled.azureBlob
+        ? "azure"
+        : "none",
+    [notebooksVersion.cloudStorageEnabled]
+  );
+
+  const startLocally = (
+    <p className="mb-0">
+      You can always mount cloud storage when starting local sessions with the
+      CLI.
+    </p>
+  );
+
+  if (support === "none") {
+    return (
+      <WarnAlert dismissible={false}>
+        <p>
+          Note that this instance of Renku does not support mounting cloud
+          storage in sessions.
+        </p>
+        {startLocally}
+      </WarnAlert>
+    );
+  }
+
+  if (support === "azure") {
+    return (
+      <InfoAlert dismissible={false} timeout={0}>
+        <p>
+          This instance of Renku currently only supports starting sessions with
+          Azure Blob Store cloud storage.
+        </p>
+        {startLocally}
+      </InfoAlert>
+    );
+  }
+
+  return (
+    <InfoAlert dismissible={false} timeout={0}>
+      <p>
+        This instance of Renku currently only supports starting sessions with S3
+        or S3-compatible cloud storage.
+      </p>
+      {startLocally}
+    </InfoAlert>
   );
 }
 
