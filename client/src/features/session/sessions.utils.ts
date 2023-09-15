@@ -65,11 +65,14 @@ export function convertCloudStorageForSessionApi(
   } = cloudStorage;
 
   if (storage_type === "s3" || configuration["type"] === "s3") {
-    const endpoint = configuration["endpoint"]
-      ? configuration["endpoint"]
-      : configuration["region"]
-      ? `https://s3.${configuration["region"]}.amazonaws.com`
-      : "https://s3.amazonaws.com";
+    const endpoint =
+      configuration["endpoint"] && configuration["endpoint"].startsWith("http")
+        ? configuration["endpoint"]
+        : configuration["endpoint"]
+        ? `https://${configuration["endpoint"]}`
+        : configuration["region"]
+        ? `https://s3.${configuration["region"]}.amazonaws.com`
+        : "https://s3.amazonaws.com";
 
     return {
       configuration: {
