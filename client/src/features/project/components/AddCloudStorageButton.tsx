@@ -23,6 +23,10 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { RootStateOrAny, useSelector } from "react-redux";
 import {
   Button,
+  Card,
+  CardBody,
+  Col,
+  Container,
   Form,
   FormText,
   Input,
@@ -31,6 +35,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Row,
 } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
@@ -603,41 +608,46 @@ function AddCloudStorageCredentialsStep({
           <strong>{name}</strong> cloud storage.
         </p>
 
-        <div className="form-rk-green">
-          {credentialFields.map((item, index) => (
-            <div key={item.id}>
-              <Controller
-                control={control}
-                name={`requiredCredentials.${index}.requiredCredential`}
-                render={({ field }) => (
-                  <Input
-                    aria-describedby={`configureCloudStorageCredentialsHelp-${item.id}`}
-                    className="form-check-input"
-                    id={`configureCloudStorageCredentials-${item.id}`}
-                    type="checkbox"
-                    checked={field.value}
-                    innerRef={field.ref}
-                    onBlur={field.onBlur}
-                    onChange={field.onChange}
-                  />
-                )}
-              />
-              <Label
-                className={cx("form-check-label", "ms-2")}
-                for={`configureCloudStorageCredentials-${item.id}`}
-              >
-                {item.name}
-              </Label>
-              <FormText
-                id={`configureCloudStorageCredentialsHelp-${item.id}`}
-                tag="div"
-              >
-                {/* <CredentialsHelpText help={item.help} /> */}
-                <RenkuMarkdown markdownText={item.help} />
-              </FormText>
-            </div>
-          ))}
-        </div>
+        <Container className={cx("form-rk-green", "p-0")} fluid>
+          <Row className={cx("row-cols-1", "gy-2")}>
+            {credentialFields.map((item, index) => (
+              <Col>
+                <Card key={item.id}>
+                  <CardBody className="pb-0">
+                    <Controller
+                      control={control}
+                      name={`requiredCredentials.${index}.requiredCredential`}
+                      render={({ field }) => (
+                        <Input
+                          aria-describedby={`configureCloudStorageCredentialsHelp-${item.id}`}
+                          className="form-check-input"
+                          id={`configureCloudStorageCredentials-${item.id}`}
+                          type="checkbox"
+                          checked={field.value}
+                          innerRef={field.ref}
+                          onBlur={field.onBlur}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    />
+                    <Label
+                      className={cx("form-check-label", "ms-2")}
+                      for={`configureCloudStorageCredentials-${item.id}`}
+                    >
+                      {item.name}
+                    </Label>
+                    <FormText
+                      id={`configureCloudStorageCredentialsHelp-${item.id}`}
+                      tag="div"
+                    >
+                      <RenkuMarkdown markdownText={item.help} />
+                    </FormText>
+                  </CardBody>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </Container>
       </ModalBody>
       <ModalFooter>
         <Button disabled={result.isLoading} type="submit">
