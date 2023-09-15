@@ -115,7 +115,7 @@ function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
       className={styles.modal}
       fullscreen="lg"
       isOpen={isOpen}
-      // scrollable
+      scrollable
       size="lg"
       toggle={toggle}
     >
@@ -597,7 +597,13 @@ function AddCloudStorageCredentialsStep({
 
   return (
     <Form
-      className="form-rk-green"
+      className={cx(
+        "form-rk-green",
+        "d-flex",
+        "flex-column",
+        "mh-100",
+        "overflow-y-hidden"
+      )}
       noValidate
       onSubmit={handleSubmit(onSubmit)}
     >
@@ -611,8 +617,8 @@ function AddCloudStorageCredentialsStep({
         <Container className={cx("form-rk-green", "p-0")} fluid>
           <Row className={cx("row-cols-1", "gy-2")}>
             {credentialFields.map((item, index) => (
-              <Col>
-                <Card key={item.id}>
+              <Col key={item.id}>
+                <Card>
                   <CardBody className="pb-0">
                     <Controller
                       control={control}
