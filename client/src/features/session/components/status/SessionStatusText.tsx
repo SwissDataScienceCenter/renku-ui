@@ -55,7 +55,9 @@ export default function SessionStatusText({
       ? Duration.fromISO("")
       : Duration.fromObject({ seconds: hibernatedSecondsThreshold });
   const hibernationCullTimestamp =
-    hibernationDateTime && hibernationThresholdDuration
+    hibernationDateTime &&
+    hibernationThresholdDuration &&
+    hibernationThresholdDuration.isValid
       ? hibernationDateTime.plus(hibernationThresholdDuration)
       : null;
 
