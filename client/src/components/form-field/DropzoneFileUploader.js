@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -666,6 +666,10 @@ function InputUrl({
   errorUrlInput,
   urlInputValue,
 }) {
+  const onKeyDown = useCallback(
+    (e) => displayFilesHandler.onUrlInputEnter(e, urlInputValue),
+    [displayFilesHandler, urlInputValue]
+  );
   if (displayFilesHandler == null) return null;
   return (
     <>
@@ -682,16 +686,14 @@ function InputUrl({
           disabled={disabled}
           id={URL_FILE_ID}
           placeholder="Upload a file using a URL"
-          onKeyDown={(e) =>
-            displayFilesHandler.onUrlInputEnter(e, urlInputValue)
-          }
+          onKeyDown={onKeyDown}
           onChange={(e) => displayFilesHandler.onUrlInputChange(e)}
           value={urlInputValue}
         />
         <Button
           className="btn-outline-rk-pink"
           id="addFileButton"
-          onClick={(e) => displayFilesHandler.onUrlInputEnter(e)}
+          onClick={onKeyDown}
         >
           Add File from URL
         </Button>
