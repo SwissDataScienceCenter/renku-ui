@@ -478,14 +478,31 @@ function SimpleAddCloudStorage({
               <Label className="form-label" for="addCloudStorageUrl">
                 Endpoint URL
               </Label>
+              <FormText id="addCloudStorageUrlHelp" tag="div">
+                <p className="mb-0">
+                  For AWS S3 buckets, supported URLs are of the form:
+                </p>
+                <ul className={cx("mb-0", "ps-4")}>
+                  <li>{"s3://s3.<region>.amazonaws.com/<bucket>/[path]"}</li>
+                  <li>{"s3://<bucket>.s3.<region>.amazonaws.com/[path]"}</li>
+                  <li>{"s3://<bucket>/"}</li>
+                </ul>
+                <p className="mb-0">
+                  For S3-compatible buckets, supported URLs are of the form:
+                </p>
+                <ul className={cx("mb-0", "ps-4")}>
+                  <li>{"https://<endpoint>/<bucket>/[path]"}</li>
+                </ul>
+              </FormText>
               <Controller
                 control={control}
                 name="endpointUrl"
                 render={({ field }) => (
                   <Input
+                    aria-describedby="addCloudStorageUrlHelp"
                     className={cx(errors.endpointUrl && "is-invalid")}
                     id="addCloudStorageUrl"
-                    placeholder="s3://bucket.endpoint.example.com/"
+                    placeholder="s3://bucket.s3.region.amazonaws.com/"
                     type="text"
                     {...field}
                   />
