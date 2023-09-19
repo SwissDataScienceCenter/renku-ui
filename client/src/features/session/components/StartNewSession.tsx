@@ -50,6 +50,7 @@ import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
 import { Url } from "../../../utils/helpers/url";
+import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../project/projectCloudStorage.constants";
 import { useStartSessionMutation } from "../sessions.api";
 import startSessionSlice, {
   setError,
@@ -633,7 +634,26 @@ function StartSessionButton() {
     storage,
   } = useStartSessionOptionsSelector();
 
-  const enabled = dockerImageStatus === "available";
+  const missingCredentialsStorage = useMemo(
+    () =>
+      cloudStorageV2
+        .filter(({ active }) => active)
+        .filter(({ configuration, sensitive_fields }) => {
+          const providedSensitiveFields = Object.entries(configuration)
+            .filter(
+              ([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN
+            )
+            .map(([key]) => key);
+          const requiredSensitiveFields = sensitive_fields?.filter(({ name }) =>
+            providedSensitiveFields.includes(name)
+          );
+          return requiredSensitiveFields?.find(({ value }) => !value);
+        }),
+    [cloudStorageV2]
+  );
+
+  const enabled =
+    dockerImageStatus === "available" && missingCredentialsStorage.length == 0;
 
   const dispatch = useDispatch();
 
@@ -710,7 +730,7 @@ function StartSessionButton() {
   }, []);
 
   const startSessionButton = (
-    <Button disabled={!enabled} onClick={onStart}>
+    <Button disabled={!enabled} onClick={onStart} type="submit">
       <FontAwesomeIcon className="me-2" icon={faPlay} />
       Start Session
     </Button>
@@ -726,6 +746,17 @@ function StartSessionButton() {
           />
           The image for this commit is not available. See the{" "}
           <strong>Docker Image</strong> section for details.
+        </div>
+      )}
+
+      {missingCredentialsStorage.length > 0 && (
+        <div className={cx("text-danger", "pb-2")}>
+          <FontAwesomeIcon className="me-1" icon={faExclamationTriangle} />
+          Please provide credentials for the following cloud storage
+          {missingCredentialsStorage.length > 1 && "s"}:{" "}
+          <strong>
+            {missingCredentialsStorage.map(({ name }) => name).join(", ")}
+          </strong>
         </div>
       )}
 
@@ -747,7 +778,11 @@ function StartSessionButton() {
 
         {(dockerImageStatus === "not-available" ||
           dockerImageStatus === "building") && (
-          <Button color="primary" onClick={onStart}>
+          <Button
+            color="primary"
+            disabled={missingCredentialsStorage.length > 0}
+            onClick={onStart}
+          >
             <FontAwesomeIcon className="me-2" icon={faPlay} />
             Start with base image
           </Button>
