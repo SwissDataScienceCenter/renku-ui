@@ -98,9 +98,6 @@ export default function ProjectSettingsCloudStorage() {
 
   const {
     data: storageForProject,
-    // error,
-    // isFetching,
-    // isLoading,
     error: storageError,
     isFetching: storageIsFetching,
     isLoading: storageIsLoading,

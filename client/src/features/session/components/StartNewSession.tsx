@@ -248,7 +248,9 @@ function SessionStartError() {
   }
 
   const color =
-    error === "docker-image-building" || error === "session-class"
+    error === "docker-image-building" ||
+    error === "session-class" ||
+    error === "cloud-storage-credentials"
       ? "warning"
       : "danger";
 
@@ -289,6 +291,12 @@ function SessionStartError() {
         The session could not start because the commit{" "}
         <code>{errorMessage}</code> does not exist. Please select another commit
         to start a session.
+      </>
+    ) : error === "cloud-storage-credentials" ? (
+      <>
+        The session could not start because some cloud storage configurations
+        require credentials. Please add the requested credentials or deactivate
+        the corresponding cloud storages to start a session.
       </>
     ) : (
       <>The session could not start for an unknown reason.</>

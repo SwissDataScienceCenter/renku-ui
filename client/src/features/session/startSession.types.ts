@@ -27,6 +27,7 @@ export interface StartSession {
     | "backend-error"
     | "invalid-branch"
     | "invalid-commit"
+    | "cloud-storage-credentials"
     | "existing-session"
     | null;
   errorMessage: string;

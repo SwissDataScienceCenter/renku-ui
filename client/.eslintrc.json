@@ -95,6 +95,7 @@
           "autosaves",
           "autostart",
           "autosuggest",
+          "azureblob",
           "backend",
           "beforeunload",
           "bioconductor",
