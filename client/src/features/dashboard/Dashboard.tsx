@@ -19,12 +19,12 @@
 import { useEffect } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
-import { DashboardMessage } from "./components/DashboardMessage";
-import { ProjectsDashboard } from "./components/ProjectsDashboard";
-import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
-import { DatasetDashboard } from "./components/DatasetsDashboard";
-import { NotebooksCoordinator } from "../../notebooks";
 import { SshModal } from "../../components/ssh/ssh";
+import { NotebooksCoordinator } from "../../notebooks";
+import DashboardMessage from "./components/DashboardMessage";
+import { DatasetDashboard } from "./components/DatasetsDashboard";
+import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
+import { ProjectsDashboard } from "./components/ProjectsDashboard";
 
 import "./Dashboard.scss";
 
