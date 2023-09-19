@@ -124,7 +124,7 @@ function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
         Add Cloud Storage
       </ModalHeader>
       {state.step === "configuration" && (
-        <ModalBody>
+        <ModalBody className="flex-shrink-0">
           <div className="form-rk-green">
             <div className={cx("form-check", "form-switch")}>
               <Input
@@ -235,137 +235,143 @@ function AdvancedAddCloudStorage({
   }, [goToCredentialsStep, result.data, result.isSuccess, toggle]);
 
   return (
-    <Form
-      className="form-rk-green"
-      noValidate
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <>
       <ModalBody>
-        {result.error && <RtkErrorAlert error={result.error} />}
+        <Form
+          className="form-rk-green"
+          noValidate
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          {result.error && <RtkErrorAlert error={result.error} />}
 
-        <div className="form-rk-green">
-          <p className="mb-3">
-            Advanded mode uses <code>rclone</code> configurations to set up
-            cloud storage.
-          </p>
+          <div className="form-rk-green">
+            <p className="mb-3">
+              Advanded mode uses <code>rclone</code> configurations to set up
+              cloud storage.
+            </p>
 
-          <div className="mb-3">
-            <Label className="form-label" for="addCloudStorageName">
-              Name
-            </Label>
-            <Controller
-              control={control}
-              name="name"
-              render={({ field }) => (
-                <Input
-                  className={cx("form-control", errors.name && "is-invalid")}
-                  id="addCloudStorageName"
-                  placeholder="storage"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">Please provide a name</div>
-          </div>
+            <div className="mb-3">
+              <Label className="form-label" for="addCloudStorageName">
+                Name
+              </Label>
+              <Controller
+                control={control}
+                name="name"
+                render={({ field }) => (
+                  <Input
+                    className={cx("form-control", errors.name && "is-invalid")}
+                    id="addCloudStorageName"
+                    placeholder="storage"
+                    type="text"
+                    {...field}
+                  />
+                )}
+                rules={{ required: true }}
+              />
+              <div className="invalid-feedback">Please provide a name</div>
+            </div>
 
-          <div className="mb-3">
-            <Controller
-              control={control}
-              name="private"
-              render={({ field }) => (
-                <Input
-                  aria-describedby="addCloudStoragePrivateHelp"
-                  className="form-check-input"
-                  id="addCloudStoragePrivate"
-                  type="checkbox"
-                  checked={field.value}
-                  innerRef={field.ref}
-                  onBlur={field.onBlur}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-            <Label
-              className={cx("form-check-label", "ms-2")}
-              for="addCloudStoragePrivate"
-            >
-              Requires credentials
-            </Label>
-            <FormText id="addCloudStoragePrivateHelp" tag="div">
-              Check this box if this cloud storage requires credentials to be
-              used.
-            </FormText>
-          </div>
+            <div className="mb-3">
+              <Controller
+                control={control}
+                name="private"
+                render={({ field }) => (
+                  <Input
+                    aria-describedby="addCloudStoragePrivateHelp"
+                    className="form-check-input"
+                    id="addCloudStoragePrivate"
+                    type="checkbox"
+                    checked={field.value}
+                    innerRef={field.ref}
+                    onBlur={field.onBlur}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <Label
+                className={cx("form-check-label", "ms-2")}
+                for="addCloudStoragePrivate"
+              >
+                Requires credentials
+              </Label>
+              <FormText id="addCloudStoragePrivateHelp" tag="div">
+                Check this box if this cloud storage requires credentials to be
+                used.
+              </FormText>
+            </div>
 
-          <div className="mb-3">
-            <Label className="form-label" for="addCloudStorageSourcePath">
-              Source Path
-            </Label>
-            <Controller
-              control={control}
-              name="source_path"
-              render={({ field }) => (
-                <Input
-                  className={cx(
-                    "form-control",
-                    errors.source_path && "is-invalid"
-                  )}
-                  id="addCloudStorageSourcePath"
-                  placeholder="bucket/folder"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">
-              Please provide a valid source path
+            <div className="mb-3">
+              <Label className="form-label" for="addCloudStorageSourcePath">
+                Source Path
+              </Label>
+              <Controller
+                control={control}
+                name="source_path"
+                render={({ field }) => (
+                  <Input
+                    className={cx(
+                      "form-control",
+                      errors.source_path && "is-invalid"
+                    )}
+                    id="addCloudStorageSourcePath"
+                    placeholder="bucket/folder"
+                    type="text"
+                    {...field}
+                  />
+                )}
+                rules={{ required: true }}
+              />
+              <div className="invalid-feedback">
+                Please provide a valid source path
+              </div>
+            </div>
+
+            <div>
+              <Label className="form-label" for="addCloudStorageConfig">
+                Configuration
+              </Label>
+              <FormText id="addCloudStorageConfigHelp" tag="div">
+                You can paste here the output of{" "}
+                <code className="user-select-all">
+                  rclone config show &lt;name&gt;
+                </code>
+                .
+              </FormText>
+              <Controller
+                control={control}
+                name="configuration"
+                render={({ field }) => (
+                  <textarea
+                    aria-describedby="addCloudStorageConfigHelp"
+                    className={cx(
+                      "form-control",
+                      errors.configuration && "is-invalid"
+                    )}
+                    id="addCloudStorageConfig"
+                    placeholder={CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER}
+                    rows={10}
+                    {...field}
+                  />
+                )}
+                rules={{ required: true }}
+              />
+              <div className="invalid-feedback">
+                Please provide a valid <code>rclone</code> configuration
+              </div>
             </div>
           </div>
-
-          <div>
-            <Label className="form-label" for="addCloudStorageConfig">
-              Configuration
-            </Label>
-            <FormText id="addCloudStorageConfigHelp" tag="div">
-              You can paste here the output of{" "}
-              <code className="user-select-all">
-                rclone config show &lt;name&gt;
-              </code>
-              .
-            </FormText>
-            <Controller
-              control={control}
-              name="configuration"
-              render={({ field }) => (
-                <textarea
-                  aria-describedby="addCloudStorageConfigHelp"
-                  className={cx(
-                    "form-control",
-                    errors.configuration && "is-invalid"
-                  )}
-                  id="addCloudStorageConfig"
-                  placeholder={CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER}
-                  rows={10}
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">
-              Please provide a valid <code>rclone</code> configuration
-            </div>
-          </div>
-        </div>
+        </Form>
       </ModalBody>
       <ModalFooter>
         <Button className="btn-outline-rk-green" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button disabled={result.isLoading} type="submit">
+        <Button
+          disabled={result.isLoading}
+          onClick={handleSubmit(onSubmit)}
+          type="submit"
+        >
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (
@@ -374,7 +380,7 @@ function AdvancedAddCloudStorage({
           Add Storage
         </Button>
       </ModalFooter>
-    </Form>
+    </>
   );
 }
 
@@ -437,93 +443,99 @@ function SimpleAddCloudStorage({
   }, [goToCredentialsStep, result.data, result.isSuccess, toggle]);
 
   return (
-    <Form
-      className="form-rk-green"
-      noValidate
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <>
       <ModalBody>
-        {result.error && <RtkErrorAlert error={result.error} />}
+        <Form
+          className="form-rk-green"
+          noValidate
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          {result.error && <RtkErrorAlert error={result.error} />}
 
-        <div className="form-rk-green">
-          <div className="mb-3">
-            <Label className="form-label" for="addCloudStorageName">
-              Name
-            </Label>
-            <Controller
-              control={control}
-              name="name"
-              render={({ field }) => (
-                <Input
-                  className={cx(errors.name && "is-invalid")}
-                  id="addCloudStorageName"
-                  placeholder="storage"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">Please provide a name</div>
-          </div>
+          <div className="form-rk-green">
+            <div className="mb-3">
+              <Label className="form-label" for="addCloudStorageName">
+                Name
+              </Label>
+              <Controller
+                control={control}
+                name="name"
+                render={({ field }) => (
+                  <Input
+                    className={cx(errors.name && "is-invalid")}
+                    id="addCloudStorageName"
+                    placeholder="storage"
+                    type="text"
+                    {...field}
+                  />
+                )}
+                rules={{ required: true }}
+              />
+              <div className="invalid-feedback">Please provide a name</div>
+            </div>
 
-          <div className="mb-3">
-            <Label className="form-label" for="addCloudStorageUrl">
-              Endpoint URL
-            </Label>
-            <Controller
-              control={control}
-              name="endpointUrl"
-              render={({ field }) => (
-                <Input
-                  className={cx(errors.endpointUrl && "is-invalid")}
-                  id="addCloudStorageUrl"
-                  placeholder="s3://bucket.endpoint.example.com/"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">Please provide a valid URL</div>
-          </div>
+            <div className="mb-3">
+              <Label className="form-label" for="addCloudStorageUrl">
+                Endpoint URL
+              </Label>
+              <Controller
+                control={control}
+                name="endpointUrl"
+                render={({ field }) => (
+                  <Input
+                    className={cx(errors.endpointUrl && "is-invalid")}
+                    id="addCloudStorageUrl"
+                    placeholder="s3://bucket.endpoint.example.com/"
+                    type="text"
+                    {...field}
+                  />
+                )}
+                rules={{ required: true }}
+              />
+              <div className="invalid-feedback">Please provide a valid URL</div>
+            </div>
 
-          <div className="mb-3">
-            <Controller
-              control={control}
-              name="private"
-              render={({ field }) => (
-                <Input
-                  aria-describedby="addCloudStoragePrivateHelp"
-                  className="form-check-input"
-                  id="addCloudStoragePrivate"
-                  type="checkbox"
-                  checked={field.value}
-                  innerRef={field.ref}
-                  onBlur={field.onBlur}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-            <Label
-              className={cx("form-check-label", "ms-2")}
-              for="addCloudStoragePrivate"
-            >
-              Requires credentials
-            </Label>
-            <FormText id="addCloudStoragePrivateHelp" tag="div">
-              Check this box if this cloud storage requires credentials to be
-              used.
-            </FormText>
+            <div className="mb-3">
+              <Controller
+                control={control}
+                name="private"
+                render={({ field }) => (
+                  <Input
+                    aria-describedby="addCloudStoragePrivateHelp"
+                    className="form-check-input"
+                    id="addCloudStoragePrivate"
+                    type="checkbox"
+                    checked={field.value}
+                    innerRef={field.ref}
+                    onBlur={field.onBlur}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <Label
+                className={cx("form-check-label", "ms-2")}
+                for="addCloudStoragePrivate"
+              >
+                Requires credentials
+              </Label>
+              <FormText id="addCloudStoragePrivateHelp" tag="div">
+                Check this box if this cloud storage requires credentials to be
+                used.
+              </FormText>
+            </div>
           </div>
-        </div>
+        </Form>
       </ModalBody>
       <ModalFooter>
         <Button className="btn-outline-rk-green" onClick={toggle}>
           <XLg className={cx("bi", "me-1")} />
           Close
         </Button>
-        <Button disabled={result.isLoading} type="submit">
+        <Button
+          disabled={result.isLoading}
+          onClick={handleSubmit(onSubmit)}
+          type="submit"
+        >
           {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (
@@ -532,7 +544,7 @@ function SimpleAddCloudStorage({
           Add Storage
         </Button>
       </ModalFooter>
-    </Form>
+    </>
   );
 }
 
