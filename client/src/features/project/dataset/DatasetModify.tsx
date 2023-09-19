@@ -244,9 +244,11 @@ function DatasetModifyForm(props: DatasetModifyFormProps) {
         register={register("files", {
           validate: (files: DatasetFormState["form"]["files"]) =>
             files.every((file) =>
-              [FILE_STATUS.ADDED, FILE_STATUS.UPLOADED].includes(
-                file.file_status
-              )
+              [
+                FILE_STATUS.ADDED,
+                FILE_STATUS.PENDING,
+                FILE_STATUS.UPLOADED,
+              ].includes(file.file_status)
             ),
         })}
         value={getValues("files")}
