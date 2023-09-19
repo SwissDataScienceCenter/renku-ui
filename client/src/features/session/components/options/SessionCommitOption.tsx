@@ -86,7 +86,7 @@ export default function SessionCommitOption() {
   }, []);
   const filteredCommits = limit > 0 ? commits?.slice(0, limit) : commits;
 
-  if (isFetching) {
+  if (isFetching || !gitLabProjectId || !currentBranch) {
     return (
       <div className="field-group">
         <div className="form-label">
