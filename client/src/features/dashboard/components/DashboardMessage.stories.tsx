@@ -113,9 +113,6 @@ const meta: Meta<DashboardMessageArgs> = {
         component: description,
       },
     },
-    controls: {
-      disable: false,
-    },
   },
   title: "components/DashboardMessage",
 };
