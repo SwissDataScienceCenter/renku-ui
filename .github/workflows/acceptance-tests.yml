@@ -103,10 +103,7 @@ jobs:
           test-timeout-mins: "60"
 
   cypress-acceptance-tests:
-    if: |
-      github.event.action != 'closed' &&
-      needs.check-deploy.outputs.pr-contains-string == 'true' &&
-      (needs.check-deploy.outputs.test-enabled == 'true' || needs.check-deploy.outputs.test-cypress-enabled == 'true')
+    if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'
     needs: [check-deploy, deploy-pr]
     runs-on: ubuntu-22.04
 
