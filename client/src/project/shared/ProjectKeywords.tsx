@@ -25,6 +25,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { trim } from "lodash";
 import {
   useGetProjectIndexingStatusQuery,
   useUpdateProjectMutation,
@@ -68,6 +69,7 @@ function ProjectKeywordsInput({
   };
 
   const keywordsStringToList = (keywords: string) => {
+    if (trim(keywords).length === 0) return [];
     const keywordsList = keywords.split(", ");
     return sortedKeywordsList(keywordsList);
   };
