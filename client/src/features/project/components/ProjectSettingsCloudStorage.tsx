@@ -27,7 +27,6 @@ import {
 } from "react";
 import {
   CheckLg,
-  ChevronDown,
   InfoCircleFill,
   PencilSquare,
   TrashFill,
@@ -56,8 +55,11 @@ import {
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
+import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import { User } from "../../../model/RenkuModels";
+import { NotebooksVersion } from "../../versions/versions";
+import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
 import { StateModelProject } from "../Project";
 import {
   useDeleteCloudStorageMutation,
@@ -80,8 +82,6 @@ import {
 } from "../utils/projectCloudStorage.utils";
 import AddCloudStorageButton from "./AddCloudStorageButton";
 import CredentialsHelpText from "./CredentialsHelpText";
-import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
-import { NotebooksVersion } from "../../versions/versions";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -316,7 +316,7 @@ function CloudStorageItem({ storageDefinition }: CloudStorageItemProps) {
                 <span>{target_path}</span>
               </div>
               <div className="ms-auto">
-                <ChevronDown />
+                <ChevronFlippedIcon flipped={isOpen} />
               </div>
             </button>
           </h3>

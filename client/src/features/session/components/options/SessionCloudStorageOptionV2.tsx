@@ -26,7 +26,7 @@ import {
   useState,
 } from "react";
 import {
-  ChevronDown,
+  // ChevronDown,
   ExclamationTriangleFill,
   InfoCircleFill,
   PencilSquare,
@@ -67,6 +67,7 @@ import {
   updateCloudStorageV2Item,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
+import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 
 export default function SessionCloudStorageOptionV2() {
   const { data: notebooksVersion, isLoading } = useGetNotebooksVersionsQuery();
@@ -372,7 +373,7 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
           >
             <div>More details</div>
             <div className="ms-auto">
-              <ChevronDown />
+              <ChevronFlippedIcon flipped={isOpen} />
             </div>
           </button>
         </CardBody>
