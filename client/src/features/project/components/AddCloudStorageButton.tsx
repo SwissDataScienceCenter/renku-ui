@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CheckLg, CloudFill, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { RootStateOrAny, useSelector } from "react-redux";
@@ -59,6 +59,7 @@ import {
 } from "../utils/projectCloudStorage.utils";
 
 import styles from "./AddCloudStorageButton.module.scss";
+import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
 
 export default function AddCloudStorageButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -400,6 +401,18 @@ function SimpleAddCloudStorage({
     StateModelProject["metadata"]["id"]
   >((state) => state.stateModel.project.metadata.id);
 
+  const { data: notebooksVersion } = useGetNotebooksVersionsQuery();
+  const support = useMemo(
+    () =>
+      notebooksVersion != null && notebooksVersion.cloudStorageEnabled.s3
+        ? "s3"
+        : notebooksVersion != null &&
+          notebooksVersion.cloudStorageEnabled.azureBlob
+        ? "azure"
+        : "none",
+    [notebooksVersion]
+  );
+
   const [addCloudStorageForProject, result] =
     useAddCloudStorageForProjectMutation();
 
@@ -479,20 +492,58 @@ function SimpleAddCloudStorage({
                 Endpoint URL
               </Label>
               <FormText id="addCloudStorageUrlHelp" tag="div">
-                <p className="mb-0">
-                  For AWS S3 buckets, supported URLs are of the form:
-                </p>
-                <ul className={cx("mb-0", "ps-4")}>
-                  <li>{"s3://s3.<region>.amazonaws.com/<bucket>/[path]"}</li>
-                  <li>{"s3://<bucket>.s3.<region>.amazonaws.com/[path]"}</li>
-                  <li>{"s3://<bucket>/"}</li>
-                </ul>
-                <p className="mb-0">
-                  For S3-compatible buckets, supported URLs are of the form:
-                </p>
-                <ul className={cx("mb-0", "ps-4")}>
-                  <li>{"https://<endpoint>/<bucket>/[path]"}</li>
-                </ul>
+                {support === "s3" ? (
+                  <>
+                    <p className="mb-0">
+                      For AWS S3 buckets, supported URLs are of the form:
+                    </p>
+                    <ul className={cx("mb-0", "ps-4")}>
+                      <li>
+                        {"s3://s3.<region>.amazonaws.com/<bucket>/[path]"}
+                      </li>
+                      <li>
+                        {"s3://<bucket>.s3.<region>.amazonaws.com/[path]"}
+                      </li>
+                      <li>{"s3://<bucket>/"}</li>
+                    </ul>
+                    <p className="mb-0">
+                      For S3-compatible buckets, supported URLs are of the form:
+                    </p>
+                    <ul className={cx("mb-0", "ps-4")}>
+                      <li>{"https://<endpoint>/<bucket>/[path]"}</li>
+                    </ul>
+                  </>
+                ) : (
+                  <>
+                    <p className="mb-0">
+                      Supported Azure Blob Store URLs are of the form:
+                    </p>
+                    <ul className={cx("mb-0", "ps-4")}>
+                      <li>
+                        {
+                          "azure://<account>.dfs.core.windows.net/<container>/[path]"
+                        }
+                      </li>
+                      <li>
+                        {
+                          "az://<account>.dfs.core.windows.net/<container>/[path]"
+                        }
+                      </li>
+                      <li>
+                        {
+                          "azure://<account>.blob.core.windows.net/<container>/[path]"
+                        }
+                      </li>
+                      <li>
+                        {
+                          "az://<account>.blob.core.windows.net/<container>/[path]"
+                        }
+                      </li>
+                      <li>{"azure://<container>/[path]"}</li>
+                      <li>{"az://<container>/[path]"}</li>
+                    </ul>
+                  </>
+                )}
               </FormText>
               <Controller
                 control={control}
@@ -502,7 +553,11 @@ function SimpleAddCloudStorage({
                     aria-describedby="addCloudStorageUrlHelp"
                     className={cx(errors.endpointUrl && "is-invalid")}
                     id="addCloudStorageUrl"
-                    placeholder="s3://bucket.s3.region.amazonaws.com/"
+                    placeholder={
+                      support === "s3"
+                        ? "s3://bucket.s3.region.amazonaws.com/"
+                        : "azure://account.blob.core.windows.net/container"
+                    }
                     type="text"
                     {...field}
                   />
