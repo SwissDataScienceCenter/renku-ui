@@ -25,33 +25,34 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
+import { useSelector } from "react-redux";
 import { Redirect } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { useSelector } from "react-redux";
 
+import { LoginHelper, LoginRedirect } from "./authentication";
+import { Loader } from "./components/Loader";
+import ShowDataset from "./dataset/Dataset.container";
+import { DatasetCoordinator } from "./dataset/Dataset.state";
+import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
+import AdminPage from "./features/admin/AdminPage";
+import { Dashboard } from "./features/dashboard/Dashboard";
+import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
+import SearchPage from "./features/kgSearch/KgSearchPage";
+import { Unavailable } from "./features/maintenance/Maintenance";
+import Help from "./help";
+import { AnonymousHome, FooterNavbar, RenkuNavBar } from "./landing";
+import { NotFound } from "./not-found";
+import { Notebooks } from "./notebooks";
+import { NotificationsManager, NotificationsPage } from "./notifications";
+import { Cookie, Privacy } from "./privacy";
 import { Project } from "./project";
 import { ProjectList } from "./project/list";
 import { NewProject } from "./project/new";
-import { AnonymousHome, RenkuNavBar, FooterNavbar } from "./landing";
-import { Notebooks } from "./notebooks";
-import { LoginRedirect, LoginHelper } from "./authentication";
-import Help from "./help";
-import { NotFound } from "./not-found";
-import ShowDataset from "./dataset/Dataset.container";
-import { Cookie, Privacy } from "./privacy";
-import { NotificationsManager, NotificationsPage } from "./notifications";
 import { StyleGuide } from "./styleguide";
-import { Url } from "./utils/helpers/url";
-import { Unavailable } from "./features/maintenance/Maintenance";
-import { Loader } from "./components/Loader";
-import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
-import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
+import { Url } from "./utils/helpers/url";
 import { setupWebSocket } from "./websocket";
-import SearchPage from "./features/kgSearch/KgSearchPage";
-import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
-import { Dashboard } from "./features/dashboard/Dashboard";
 
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -296,6 +297,11 @@ function CentralContentContainer(props) {
               </ContainerWrap>
             )}
           />
+          <Route path="/admin">
+            <ContainerWrap>
+              <AdminPage />
+            </ContainerWrap>
+          </Route>
           <Route path="*" render={(p) => <NotFound {...p} />} />
         </Switch>
       </AppContext.Provider>
