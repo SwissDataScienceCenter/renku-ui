@@ -16,13 +16,7 @@
  * limitations under the License.
  */
 
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   faCheck,
   faEdit,
@@ -80,6 +74,11 @@ import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { Url } from "../../utils/helpers/url";
 import styles from "./ProjectSettingsSessions.module.scss";
 
+type CoreServiceVersionedApiParams = {
+  apiVersion: string | undefined;
+  metadataVersion: number | undefined;
+};
+
 export const ProjectSettingsSessions = () => {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
     (state) => state.stateModel.user.logged
@@ -110,9 +109,10 @@ export const ProjectSettingsSessions = () => {
     branch: defaultBranch ?? undefined,
   });
   const {
+    apiVersion,
     backendAvailable,
     computed: coreSupportComputed,
-    versionUrl,
+    metadataVersion,
   } = coreSupport;
   const {
     data: projectConfig,
@@ -121,8 +121,9 @@ export const ProjectSettingsSessions = () => {
     error,
   } = useGetConfigQuery(
     {
+      apiVersion,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
     },
     { skip: !coreSupportComputed }
   );
@@ -239,15 +240,18 @@ export const ProjectSettingsSessions = () => {
         <p>Settings can be changed only by developers and maintainers.</p>
       )}
       <DefaultUrlOption
+        apiVersion={apiVersion}
+        metadataVersion={metadataVersion}
         serverOptions={serverOptions}
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
-        versionUrl={versionUrl}
         devAccess={devAccess}
       />
 
       <ComputeResourceOption
+        apiVersion={apiVersion}
+        metadataVersion={metadataVersion}
         devAccess={devAccess}
         optionInputAddon="CPUs"
         optionLabel="Number of CPUs"
@@ -260,9 +264,10 @@ export const ProjectSettingsSessions = () => {
         optionValue={projectConfig.config.sessions?.legacyConfig?.cpuRequest}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
-        versionUrl={versionUrl}
       />
       <ComputeResourceOption
+        apiVersion={apiVersion}
+        metadataVersion={metadataVersion}
         devAccess={devAccess}
         optionInputAddon="GB"
         optionInputAddonTooltip="Gigabytes"
@@ -277,9 +282,10 @@ export const ProjectSettingsSessions = () => {
         optionValue={projectConfig.config.sessions?.legacyConfig?.memoryRequest}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
-        versionUrl={versionUrl}
       />
       <ComputeResourceOption
+        apiVersion={apiVersion}
+        metadataVersion={metadataVersion}
         devAccess={devAccess}
         optionInputAddon="GB"
         optionInputAddonTooltip="Gigabytes"
@@ -292,9 +298,10 @@ export const ProjectSettingsSessions = () => {
         optionValue={projectConfig.config.sessions?.storage}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
-        versionUrl={versionUrl}
       />
       <ComputeResourceOption
+        apiVersion={apiVersion}
+        metadataVersion={metadataVersion}
         devAccess={devAccess}
         optionInputAddon="GPUs"
         optionLabel="Number of GPUs"
@@ -307,30 +314,32 @@ export const ProjectSettingsSessions = () => {
         optionValue={projectConfig.config.sessions?.legacyConfig?.gpuRequest}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
-        versionUrl={versionUrl}
       />
 
       <AutoFetchLfsOption
+        apiVersion={apiVersion}
+        metadataVersion={metadataVersion}
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
-        versionUrl={versionUrl}
         devAccess={devAccess}
       />
 
       <ProjectSettingsSessionsAdvanced
+        apiVersion={apiVersion}
+        metadataVersion={metadataVersion}
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
-        versionUrl={versionUrl}
         devAccess={devAccess}
       />
 
       <ProjectSettingsSessionsUnknown
+        apiVersion={apiVersion}
+        metadataVersion={metadataVersion}
         projectConfig={projectConfig}
         projectConfigIsFetching={projectConfigIsFetching}
         projectRepositoryUrl={projectRepositoryUrl}
-        versionUrl={versionUrl}
         devAccess={devAccess}
       />
     </SessionsDiv>
@@ -437,21 +446,21 @@ const UpdateStatus = () => {
   );
 };
 
-interface DefaultUrlOptionProps {
+interface DefaultUrlOptionProps extends CoreServiceVersionedApiParams {
   serverOptions: ServerOptions;
   projectConfig: ProjectConfig;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
-  versionUrl: string;
   devAccess: boolean;
 }
 
 const DefaultUrlOption = ({
+  apiVersion,
+  metadataVersion,
   serverOptions,
   projectConfig,
   projectConfigIsFetching,
   projectRepositoryUrl,
-  versionUrl,
   devAccess,
 }: DefaultUrlOptionProps) => {
   const defaultUrlOptions = [
@@ -480,26 +489,34 @@ const DefaultUrlOption = ({
     (_event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
       setNewValue(value);
       updateConfig({
+        apiVersion,
+        metadataVersion,
         projectRepositoryUrl,
-        versionUrl,
         update: {
           "interactive.default_url": value,
         },
       });
     },
-    [projectRepositoryUrl, updateConfig, versionUrl]
+    [apiVersion, metadataVersion, projectRepositoryUrl, updateConfig]
   );
 
   const onReset = useCallback(() => {
     setNewValue(defaultValue);
     updateConfig({
+      apiVersion,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
       update: {
         "interactive.default_url": defaultValue,
       },
     });
-  }, [defaultValue, projectRepositoryUrl, updateConfig, versionUrl]);
+  }, [
+    apiVersion,
+    defaultValue,
+    metadataVersion,
+    projectRepositoryUrl,
+    updateConfig,
+  ]);
 
   // Reset the temporary value when the API responds with an error
   useEffect(() => {
@@ -564,7 +581,7 @@ const ResetOption = ({ optionId, disabled, onReset }: ResetOptionProps) => {
   );
 };
 
-interface ComputeResourceOptionProps {
+interface ComputeResourceOptionProps extends CoreServiceVersionedApiParams {
   devAccess: boolean;
   optionInputAddon?: string;
   optionInputAddonTooltip?: ReactNode;
@@ -578,10 +595,11 @@ interface ComputeResourceOptionProps {
   optionValue: number | undefined;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
-  versionUrl: string;
 }
 
 function ComputeResourceOption({
+  apiVersion,
+  metadataVersion,
   devAccess,
   optionInputAddon,
   optionInputAddonTooltip,
@@ -595,7 +613,6 @@ function ComputeResourceOption({
   optionValue,
   projectConfigIsFetching,
   projectRepositoryUrl,
-  versionUrl,
 }: ComputeResourceOptionProps) {
   // Temporary value for optimistic UI update
   const [newValue, setNewValue] = useState<number | null>(null);
@@ -615,37 +632,41 @@ function ComputeResourceOption({
       const value = event.target.valueAsNumber;
       setNewValue(value);
       debouncedUpdateConfig({
+        apiVersion,
+        metadataVersion,
         projectRepositoryUrl,
-        versionUrl,
         update: {
           [optionName]: `${value}${optionSuffix}`,
         },
       });
     },
     [
+      apiVersion,
+      metadataVersion,
       debouncedUpdateConfig,
       optionName,
       optionSuffix,
       projectRepositoryUrl,
-      versionUrl,
     ]
   );
 
   const onReset = useCallback(() => {
     setNewValue(optionDefaultValue ?? null);
     updateConfig({
+      apiVersion,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
       update: {
         [optionName]: null,
       },
     });
   }, [
+    apiVersion,
+    metadataVersion,
     optionDefaultValue,
     optionName,
     projectRepositoryUrl,
     updateConfig,
-    versionUrl,
   ]);
 
   // Reset the temporary value when the API responds with an error
@@ -705,19 +726,19 @@ function ComputeResourceOption({
 
 const INPUT_NUMBER_DEBOUNCE_MS = 1_000;
 
-interface AutoFetchLfsOptionProps {
+interface AutoFetchLfsOptionProps extends CoreServiceVersionedApiParams {
   projectConfig: ProjectConfig;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
-  versionUrl: string;
   devAccess: boolean;
 }
 
 const AutoFetchLfsOption = ({
+  apiVersion,
+  metadataVersion,
   projectConfig,
   projectConfigIsFetching,
   projectRepositoryUrl,
-  versionUrl,
   devAccess,
 }: AutoFetchLfsOptionProps) => {
   // Temporary value for optimistic UI update
@@ -733,24 +754,32 @@ const AutoFetchLfsOption = ({
   const onChange = useCallback(() => {
     setNewValue(!selectedAutoFetchLfs);
     updateConfig({
+      apiVersion,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
       update: {
         "interactive.lfs_auto_fetch": `${!selectedAutoFetchLfs}`,
       },
     });
-  }, [projectRepositoryUrl, selectedAutoFetchLfs, updateConfig, versionUrl]);
+  }, [
+    apiVersion,
+    metadataVersion,
+    projectRepositoryUrl,
+    selectedAutoFetchLfs,
+    updateConfig,
+  ]);
 
   const onReset = useCallback(() => {
     setNewValue(false);
     updateConfig({
+      apiVersion,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
       update: {
         "interactive.lfs_auto_fetch": null,
       },
     });
-  }, [projectRepositoryUrl, updateConfig, versionUrl]);
+  }, [apiVersion, metadataVersion, projectRepositoryUrl, updateConfig]);
 
   // Reset the temporary value when the API responds with an error
   useEffect(() => {
@@ -783,19 +812,20 @@ const AutoFetchLfsOption = ({
   );
 };
 
-interface ProjectSettingsSessionsAdvancedProps {
+interface ProjectSettingsSessionsAdvancedProps
+  extends CoreServiceVersionedApiParams {
   projectConfig: ProjectConfig;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
-  versionUrl: string;
   devAccess: boolean;
 }
 
 const ProjectSettingsSessionsAdvanced = ({
+  apiVersion,
+  metadataVersion,
   projectConfig,
   projectConfigIsFetching,
   projectRepositoryUrl,
-  versionUrl,
   devAccess,
 }: ProjectSettingsSessionsAdvancedProps) => {
   const imageIsSet = !!projectConfig.config.sessions?.dockerImage;
@@ -836,10 +866,11 @@ const ProjectSettingsSessionsAdvanced = ({
                 </WarnAlert>
               )}
               <PinnedImageOption
+                apiVersion={apiVersion}
+                metadataVersion={metadataVersion}
                 projectConfig={projectConfig}
                 projectConfigIsFetching={projectConfigIsFetching}
                 projectRepositoryUrl={projectRepositoryUrl}
-                versionUrl={versionUrl}
                 devAccess={devAccess}
               />
             </AccordionBody>
@@ -856,19 +887,19 @@ const AccordionFixed = (
   }
 ) => <Accordion {...props} />;
 
-interface PinnedImageOptionProps {
+interface PinnedImageOptionProps extends CoreServiceVersionedApiParams {
   projectConfig: ProjectConfig;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
-  versionUrl: string;
   devAccess: boolean;
 }
 
 const PinnedImageOption = ({
+  apiVersion,
+  metadataVersion,
   projectConfig,
   projectConfigIsFetching,
   projectRepositoryUrl,
-  versionUrl,
   devAccess,
 }: PinnedImageOptionProps) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -896,24 +927,32 @@ const PinnedImageOption = ({
   const onSave = useCallback(() => {
     setIsEditing(false);
     updateConfig({
+      apiVersion,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
       update: {
         "interactive.image": newValue,
       },
     });
-  }, [newValue, projectRepositoryUrl, updateConfig, versionUrl]);
+  }, [
+    apiVersion,
+    metadataVersion,
+    newValue,
+    projectRepositoryUrl,
+    updateConfig,
+  ]);
 
   const onResetValue = useCallback(() => {
     setNewValue("");
     updateConfig({
+      apiVersion,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
       update: {
         "interactive.image": null,
       },
     });
-  }, [projectRepositoryUrl, updateConfig, versionUrl]);
+  }, [apiVersion, metadataVersion, projectRepositoryUrl, updateConfig]);
 
   // Reset the temporary value when the API responds with an error
   useEffect(() => {
@@ -1052,19 +1091,20 @@ const PinnedImageOption = ({
   );
 };
 
-interface ProjectSettingsSessionsUnknownProps {
+interface ProjectSettingsSessionsUnknownProps
+  extends CoreServiceVersionedApiParams {
   projectConfig: ProjectConfig;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
-  versionUrl: string;
   devAccess: boolean;
 }
 
 const ProjectSettingsSessionsUnknown = ({
+  apiVersion,
+  metadataVersion,
   projectConfig,
   projectConfigIsFetching,
   projectRepositoryUrl,
-  versionUrl,
   devAccess,
 }: ProjectSettingsSessionsUnknownProps) => {
   const unknownConfig = projectConfig.config.sessions?.unknownConfig ?? {};
@@ -1100,12 +1140,13 @@ const ProjectSettingsSessionsUnknown = ({
               </p>
               {unknownConfigKeys.map((optionKey) => (
                 <UnknownOption
+                  apiVersion={apiVersion}
+                  metadataVersion={metadataVersion}
                   key={optionKey}
                   optionKey={optionKey}
                   optionValue={unknownConfig[optionKey]}
                   projectConfigIsFetching={projectConfigIsFetching}
                   projectRepositoryUrl={projectRepositoryUrl}
-                  versionUrl={versionUrl}
                   devAccess={devAccess}
                 />
               ))}
@@ -1117,23 +1158,23 @@ const ProjectSettingsSessionsUnknown = ({
   );
 };
 
-interface UnknownOptionProps {
+interface UnknownOptionProps extends CoreServiceVersionedApiParams {
   optionKey: string;
   optionLabel?: string;
   optionValue: string;
   projectConfigIsFetching: boolean;
   projectRepositoryUrl: string;
-  versionUrl: string;
   devAccess: boolean;
 }
 
 const UnknownOption = ({
+  apiVersion,
+  metadataVersion,
   optionKey,
   optionLabel,
   optionValue,
   projectConfigIsFetching,
   projectRepositoryUrl,
-  versionUrl,
   devAccess,
 }: UnknownOptionProps) => {
   const shortKey = optionKey.toLocaleLowerCase().startsWith("interactive")
@@ -1147,13 +1188,20 @@ const UnknownOption = ({
 
   const onResetValue = useCallback(() => {
     updateConfig({
+      apiVersion,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
       update: {
         [optionKey]: null,
       },
     });
-  }, [optionKey, projectRepositoryUrl, updateConfig, versionUrl]);
+  }, [
+    apiVersion,
+    metadataVersion,
+    optionKey,
+    projectRepositoryUrl,
+    updateConfig,
+  ]);
 
   const disabled = !devAccess || isLoading || projectConfigIsFetching;
 

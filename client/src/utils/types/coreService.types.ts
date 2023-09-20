@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -15,25 +15,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { Story } from "@storybook/react";
-import SortingEntities, {
-  SortingInputProps,
-  SortingOptions,
-} from "./SortingEntities";
 
-export default {
-  title: "components/SortingEntities",
-  component: SortingEntities,
-  argTypes: {},
-};
+export interface CoreVersionUrl {
+  apiVersion?: string;
+  metadataVersion?: number;
+}
 
-const Template: Story<SortingInputProps> = (args) => (
-  <SortingEntities {...args} />
-);
+export interface CoreRepositoryParams {
+  gitUrl: string; // this usually maps to git_url
+  branch?: string;
+}
 
-export const Default = Template.bind({});
-Default.args = {
-  styleType: "desk",
-  sort: SortingOptions.AscTitle,
-};
+export interface CoreErrorContent {
+  code: number;
+  devMessage: string;
+  devReference?: string;
+  sentry?: string;
+  userMessage: string;
+  userReference?: string;
+}
+
+export interface CoreErrorResponse {
+  error: CoreErrorContent;
+}
+
+export interface CoreResponse<T> {
+  error?: CoreErrorContent;
+  result?: T;
+}

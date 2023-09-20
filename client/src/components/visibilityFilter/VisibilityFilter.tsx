@@ -15,10 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+
 import { ChangeEvent } from "react";
+import { Globe, Lock, People } from "react-bootstrap-icons";
+import { Input } from "reactstrap";
 import "./VisibilityFilter.css";
-import { Globe, Input, Lock, People } from "../../utils/ts-wrappers";
 
 /**
  *  renku-ui

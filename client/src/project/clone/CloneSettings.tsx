@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "reactstrap";
 import { CommandCopy } from "../../components/commandCopy/CommandCopy";
 

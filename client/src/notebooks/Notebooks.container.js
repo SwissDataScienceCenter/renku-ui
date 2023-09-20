@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 import qs from "query-string";
 
@@ -29,6 +29,7 @@ import {
   CheckNotebookIcon,
 } from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
+import AppContext from "../utils/context/appContext";
 import { Url } from "../utils/helpers/url";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import ShowSessionFullscreen from "./components/SessionFullScreen";
@@ -289,6 +290,8 @@ class Notebooks extends Component {
  * @param {string} [message] - provide a useful information or warning message
  */
 class StartNotebookServer extends Component {
+  static contextType = AppContext;
+
   constructor(props) {
     super(props);
     this.model = props.model.subModel("notebooks");
@@ -709,8 +712,10 @@ class StartNotebookServer extends Component {
           )
         : undefined;
 
+    const { coreApiVersionedUrlConfig } = this.context;
     const coreSupport = computeBackendData({
       availableVersions,
+      coreApiVersionedUrlConfig,
       projectVersion,
     });
 
@@ -724,6 +729,8 @@ class StartNotebookServer extends Component {
     this.state.rtkQuerySubscriptions.push(getConfig.unsubscribe);
 
     const { data: projectConfig } = await getConfig;
+    // TODO Do not mutate state directly. Use setState()
+    // eslint-disable-next-line react/no-direct-mutation-state
     this.state.projectConfig = projectConfig;
   }
 
@@ -742,6 +749,8 @@ class StartNotebookServer extends Component {
     this.state.rtkQuerySubscriptions.push(getResourcePools.unsubscribe);
 
     const { data: resourcePools } = await getResourcePools;
+    // TODO: Do not mutate state directly. Use setState()
+    // eslint-disable-next-line react/no-direct-mutation-state
     this.state.resourcePools = resourcePools;
   }
 

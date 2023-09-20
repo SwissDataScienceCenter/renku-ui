@@ -39,6 +39,7 @@ echo " TEMPLATES=${TEMPLATES}"
 echo " PREVIEW_THRESHOLD=${PREVIEW_THRESHOLD}"
 echo " UPLOAD_THRESHOLD=${UPLOAD_THRESHOLD}"
 echo " HOMEPAGE=${HOMEPAGE}"
+echo " CORE_API_VERSION_CONFIG=${CORE_API_VERSION_CONFIG}"
 echo "==================================================="
 
 echo "Privacy file contains the following markdown (first 5 lines):"
@@ -67,7 +68,8 @@ tee > "${NGINX_PATH}/config.json" << EOF
   "PREVIEW_THRESHOLD": ${PREVIEW_THRESHOLD},
   "UPLOAD_THRESHOLD": ${UPLOAD_THRESHOLD},
   "STATUSPAGE_ID": "${STATUSPAGE_ID}",
-  "HOMEPAGE": ${HOMEPAGE}
+  "HOMEPAGE": ${HOMEPAGE},
+  "CORE_API_VERSION_CONFIG": ${CORE_API_VERSION_CONFIG}
 }
 EOF
 echo "config.json created in ${NGINX_PATH}"

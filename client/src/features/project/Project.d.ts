@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-import { CoreErrorContent } from "../../utils/definitions";
+import {
+  CoreErrorContent,
+  CoreVersionUrl,
+} from "../../utils/types/coreService.types";
 import {
   MigrationStartScopes,
   ProjectIndexingStatuses,
@@ -24,15 +27,11 @@ import {
 } from "./projectEnums";
 import { Visibilities } from "../../components/visibility/Visibility";
 
-export interface CoreServiceParams {
-  versionUrl?: string;
-}
-
 type DatasetImage = {
   _links: { href: string }[];
 };
 
-export interface GetDatasetFilesParams extends CoreServiceParams {
+export interface GetDatasetFilesParams extends CoreVersionUrl {
   git_url: string;
   name: string;
 }
@@ -161,7 +160,8 @@ export interface CoreSectionError extends CoreErrorContent {
   type: "error";
 }
 
-export interface MigrationStatusParams {
+export interface MigrationStatusParams
+  extends Pick<CoreVersionUrl, "apiVersion"> {
   branch?: string;
   gitUrl: string;
 }
@@ -231,7 +231,8 @@ export interface ProjectActivateIndexingResponse {
   message: string;
 }
 
-export interface MigrationStartParams {
+export interface MigrationStartParams
+  extends Pick<CoreVersionUrl, "apiVersion"> {
   branch?: string;
   gitUrl: string;
   scope?: MigrationStartScopes;
@@ -321,7 +322,7 @@ export interface ProjectConfigSection {
   };
 }
 
-export interface UpdateDescriptionParams {
+export interface UpdateDescriptionParams extends CoreVersionUrl {
   description: string;
   gitUrl: string;
   projectId: number;

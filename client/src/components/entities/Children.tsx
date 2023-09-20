@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
-
 import { EntityType } from "./Entities";
 import { Badge, UncontrolledTooltip } from "../../utils/ts-wrappers";
 // import { stylesByItemType } from "../../helpers/HelperFunctions";

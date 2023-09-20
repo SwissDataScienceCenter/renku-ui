@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 
-import React from "react";
-import { EntityType } from "./Entities";
+import { People, Person } from "react-bootstrap-icons";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
-import { People, Person } from "../../utils/ts-wrappers";
+import { EntityType } from "./Entities";
 
 /**
  *  renku-ui

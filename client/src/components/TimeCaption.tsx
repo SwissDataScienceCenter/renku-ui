@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import cx from "classnames";
 import { DateTime, Duration } from "luxon";
 import { UncontrolledTooltip } from "reactstrap";

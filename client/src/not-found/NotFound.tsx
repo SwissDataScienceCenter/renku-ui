@@ -23,7 +23,7 @@
  *  Components for the not-found page
  */
 
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";

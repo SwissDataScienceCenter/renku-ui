@@ -162,6 +162,10 @@ class NewProjectCoordinator {
    * @param {object} [setNamespace] - function to set namespace, it is necessary to calculate visibilities
    */
   setAutomated(data, error, namespaces, availableVisibilities, setNamespace) {
+    // ? This is a safeguard in case it's accidentally invoked multiple times.
+    const currentStatus = this.model.get("automated");
+    if (currentStatus.received && currentStatus.valid && currentStatus.step > 0)
+      return;
     let automated = newProjectSchema.createInitialized().automated;
     if (error) {
       automated = {
@@ -201,7 +205,7 @@ class NewProjectCoordinator {
       ? automatedObject
       : newProjectSchema.createInitialized().automated;
     let availableVariables = [];
-    let visibilities;
+    let visibilities = availableVisibilities?.visibilities;
     const { data } = automated;
     let getDataAttempts = 0;
     let maxAttempts = 60;
@@ -313,6 +317,7 @@ class NewProjectCoordinator {
         availableVariables = templateAvailable.variables;
       }
     }
+
     if (data.visibility) {
       if (!visibilities) {
         // wait for namespace visibilities to be available
@@ -571,7 +576,6 @@ class NewProjectCoordinator {
         namespace: {
           visibility: availableVisibilities.default,
           visibilities: availableVisibilities.visibilities,
-          fetched: new Date(),
           fetching: false,
           id: namespace.full_path,
         },

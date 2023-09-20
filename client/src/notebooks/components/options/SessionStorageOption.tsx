@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
 import { clamp } from "lodash";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
@@ -54,11 +54,16 @@ export const SessionStorageOption = () => {
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const {
+    apiVersion,
+    computed: coreSupportComputed,
+    metadataVersion,
+  } = coreSupport;
   const { data: projectConfig } = useGetConfigQuery(
     {
+      apiVersion,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
     },
     { skip: !coreSupportComputed }
   );

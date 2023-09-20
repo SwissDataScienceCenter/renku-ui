@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+
 import {
   ErrorLabel,
   HelperLabel,
@@ -30,7 +30,7 @@ interface LabelsProps {
 }
 
 export default {
-  title: "components/FormLabels",
+  title: "Components/Forms/Labels",
 };
 
 export const Input = (args: LabelsProps) => (

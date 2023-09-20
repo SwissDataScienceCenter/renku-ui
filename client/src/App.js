@@ -23,7 +23,7 @@
  *  Coordinator for the application.
  */
 
-import React, { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Redirect } from "react-router";
 import { Route, Switch } from "react-router-dom";
@@ -64,7 +64,7 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 };
 
 function CentralContentContainer(props) {
-  const { notifications, user, socket } = props;
+  const { coreApiVersionedUrlConfig, notifications, socket, user } = props;
 
   if (
     !props.user.logged &&
@@ -89,6 +89,7 @@ function CentralContentContainer(props) {
     client: props.client,
     params: props.params,
     location: props.location,
+    coreApiVersionedUrlConfig,
   };
 
   return (

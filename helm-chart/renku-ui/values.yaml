@@ -57,7 +57,7 @@ client:
 
   image:
     repository: renku/renku-ui
-    tag: "3.10.0"
+    tag: "3.12.2"
     pullPolicy: IfNotPresent
 
     ## Optionally specify an array of imagePullSecrets.
@@ -191,6 +191,16 @@ client:
     tutorialLink: https://renku.readthedocs.io/en/stable/tutorials/01_firststeps.html
     # Projects to highlight on the homepage
     projects: []
+  coreApiVersionConfig:
+    ## Configuration to specify which version of the core-service API should be used
+    # "/" indicates that the latest version should be used
+    # A version number "2.0" can be used to specify one explicitly
+    # The coreApiVersion specifies the default version to use
+    coreApiVersion: "/"
+    # With overrides, the version for a specific metadata version can be changed
+    # overrides:
+    #   9: "/"
+    #   10: "/"
   canary:
     enabled: false
     image:
@@ -205,7 +215,7 @@ server:
 
   image:
     repository: renku/renku-ui-server
-    tag: "3.10.0"
+    tag: "3.12.2"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: []

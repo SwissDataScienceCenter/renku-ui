@@ -1,13 +1,26 @@
-module.exports = {
-  stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
+import { StorybookConfig } from "@storybook/react-webpack5";
+const config: StorybookConfig = {
+  stories: ["../src/**/*.stories.@(js|jsx|ts|tsx)"],
+  staticDirs: ["../public"],
   addons: [
     "@storybook/addon-links",
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
     "@storybook/preset-create-react-app",
     "addon-redux",
+    {
+      name: "@storybook/addon-docs",
+      options: {
+        configureJSX: true,
+      },
+    },
   ],
-  framework: "@storybook/react",
+
+  framework: {
+    name: "@storybook/react-webpack5",
+    options: {},
+  },
+
   typescript: {
     reactDocgen: "react-docgen-typescript",
     reactDocgenTypescriptOptions: {
@@ -17,10 +30,10 @@ module.exports = {
       },
     },
   },
-  core: {
-    builder: "@storybook/builder-webpack5",
-  },
+
   docs: {
     autodocs: true,
   },
 };
+
+export default config;

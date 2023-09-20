@@ -23,7 +23,7 @@
  *  Presentational components for privacy.
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 import CookieConsent from "react-cookie-consent";
 import { WarnAlert } from "../components/Alert";
 import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";

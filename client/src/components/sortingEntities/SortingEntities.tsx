@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from "react";
+
 import { ChangeEvent } from "react";
 import { Input, Label } from "../../utils/ts-wrappers";
 

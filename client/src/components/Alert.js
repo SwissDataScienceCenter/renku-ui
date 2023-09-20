@@ -22,7 +22,7 @@
  *  Alert code and presentation.
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 import { Alert } from "reactstrap";
 
 import rkDangerIcon from "../styles/icons/assets/danger.svg";

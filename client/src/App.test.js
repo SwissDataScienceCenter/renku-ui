@@ -1,4 +1,3 @@
-import React from "react";
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -9,6 +8,7 @@ import App from "./App";
 import { testClient as client } from "./api-client";
 import { StateModel, globalSchema } from "./model";
 import { generateFakeUser } from "./user/User.test";
+import { createCoreApiVersionedUrlConfig } from "./utils/helpers/url";
 
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
@@ -48,12 +48,16 @@ describe("rendering", () => {
     const div = document.createElement("div");
     const root = createRoot(div);
     const user = generateFakeUser();
+    const coreApiVersionedUrlConfig = createCoreApiVersionedUrlConfig({
+      coreApiVersion: "/",
+    });
     await act(async () => {
       root.render(
         <Provider store={model.reduxStore}>
           <Router>
             <App
               client={client}
+              coreApiVersionedUrlConfig={coreApiVersionedUrlConfig}
               model={model}
               user={user}
               location={fakeLocation}

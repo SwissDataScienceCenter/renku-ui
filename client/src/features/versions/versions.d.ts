@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { CoreErrorContent } from "../../utils/definitions";
+import { CoreErrorContent } from "../../utils/types/coreService.types";
 
 interface CoreComponent {
   data: {

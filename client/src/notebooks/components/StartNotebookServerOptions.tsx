@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import cx from "classnames";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import {
@@ -66,11 +66,16 @@ export const StartNotebookServerOptions = () => {
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const {
+    apiVersion,
+    computed: coreSupportComputed,
+    metadataVersion,
+  } = coreSupport;
   const { isLoading: projectConfigIsLoading } = useGetConfigQuery(
     {
+      apiVersion,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
     },
     { skip: !coreSupportComputed }
   );
@@ -119,12 +124,17 @@ const DefaultUrlOption = () => {
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const {
+    apiVersion,
+    computed: coreSupportComputed,
+    metadataVersion,
+  } = coreSupport;
   const { data: projectConfig, isLoading: projectConfigIsLoading } =
     useGetConfigQuery(
       {
+        apiVersion,
+        metadataVersion,
         projectRepositoryUrl,
-        versionUrl,
         // ...(branchName ? { branch: branchName } : {}),
       },
       { skip: !coreSupportComputed }
@@ -217,11 +227,16 @@ const AutoFetchLfsOption = () => {
     gitUrl: projectRepositoryUrl ?? undefined,
     branch: defaultBranch ?? undefined,
   });
-  const { computed: coreSupportComputed, versionUrl } = coreSupport;
+  const {
+    apiVersion,
+    computed: coreSupportComputed,
+    metadataVersion,
+  } = coreSupport;
   const { data: projectConfig } = useGetConfigQuery(
     {
+      apiVersion,
+      metadataVersion,
       projectRepositoryUrl,
-      versionUrl,
     },
     { skip: !coreSupportComputed }
   );

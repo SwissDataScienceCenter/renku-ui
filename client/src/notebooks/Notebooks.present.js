@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, memo } from "react";
+import { Component, Fragment, memo } from "react";
 import {
   faExternalLinkAlt,
   faFileAlt,

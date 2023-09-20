@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { ThrottledTooltip } from "../Tooltip";
 import { RootStateOrAny, useSelector } from "react-redux";
 
@@ -40,7 +40,7 @@ function EntityTags({ hideEmptyTags, multiline, tagList }: EntityTagsProps) {
     : "text-truncate text-dark";
   const isUpdatingValue = useSelector(
     (state: RootStateOrAny) =>
-      state.stateModel.project?.metadata?.tagList?.updating
+      state.stateModel?.project?.metadata?.tagList?.updating
   );
 
   if (isUpdatingValue) {

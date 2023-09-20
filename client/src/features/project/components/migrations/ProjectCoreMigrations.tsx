@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   faArrowAltCircleUp,
   faCheckCircle,
@@ -32,7 +32,7 @@ import { RtkOrCoreError } from "../../../../components/errors/RtkErrorAlert";
 import { Docs } from "../../../../utils/constants/Docs";
 import { TemplateSourceRenku } from "../../../../utils/constants/Migrations";
 import { RenkuRepositories } from "../../../../utils/constants/Repositories";
-import { CoreErrorContent } from "../../../../utils/definitions";
+import { CoreErrorContent } from "../../../../utils/types/coreService.types";
 import {
   CoreSectionError,
   MigrationStatus,
@@ -77,21 +77,26 @@ export function ProjectMigrationStatus({
     gitUrl,
     branch,
   });
-  const { backendAvailable, computed: coreSupportComputed } = coreSupport;
+  const {
+    apiVersion,
+    backendAvailable,
+    computed: coreSupportComputed,
+  } = coreSupport;
   const isSupported = coreSupportComputed && backendAvailable;
   const checkingSupport = !coreSupportComputed;
 
   const skip = !gitUrl || !branch;
   const { data, isLoading, isFetching, error } =
     projectCoreApi.useGetMigrationStatusQuery(
-      { gitUrl, branch },
+      { apiVersion, gitUrl, branch },
       { refetchOnMountOrArgChange: 60 * 5, skip }
     );
   const [startMigration, migrationStatus] =
     projectCoreApi.useStartMigrationMutation();
   const updateProject = useCallback(
-    (scope: MigrationStartScopes) => startMigration({ branch, gitUrl, scope }),
-    [branch, gitUrl, startMigration]
+    (scope: MigrationStartScopes) =>
+      startMigration({ apiVersion, branch, gitUrl, scope }),
+    [apiVersion, branch, gitUrl, startMigration]
   );
 
   const sectionCyId = "project-version";

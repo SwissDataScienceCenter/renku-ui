@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -666,6 +666,10 @@ function InputUrl({
   errorUrlInput,
   urlInputValue,
 }) {
+  const onKeyDown = useCallback(
+    (e) => displayFilesHandler.onUrlInputEnter(e, urlInputValue),
+    [displayFilesHandler, urlInputValue]
+  );
   if (displayFilesHandler == null) return null;
   return (
     <>
@@ -682,16 +686,14 @@ function InputUrl({
           disabled={disabled}
           id={URL_FILE_ID}
           placeholder="Upload a file using a URL"
-          onKeyDown={(e) =>
-            displayFilesHandler.onUrlInputEnter(e, urlInputValue)
-          }
+          onKeyDown={onKeyDown}
           onChange={(e) => displayFilesHandler.onUrlInputChange(e)}
           value={urlInputValue}
         />
         <Button
           className="btn-outline-rk-pink"
           id="addFileButton"
-          onClick={(e) => displayFilesHandler.onUrlInputEnter(e)}
+          onClick={onKeyDown}
         >
           Add File from URL
         </Button>
@@ -773,7 +775,7 @@ function FileStatusComp({ file, uploadCompressedFile, uploadThresholdSoft }) {
           icon={faExclamationTriangle}
         />
         <span className="mb-1">&nbsp;Unzip on upload?</span>
-        <span className="me-1">
+        <span className="me-1 d-flex gap-2">
           <span
             data-cy="upload-compressed-yes"
             className="text-primary text-button"
@@ -786,7 +788,7 @@ function FileStatusComp({ file, uploadCompressedFile, uploadThresholdSoft }) {
             }
           >
             Yes
-          </span>{" "}
+          </span>
           or
           <span
             data-cy="upload-compressed-no"

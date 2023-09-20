@@ -140,6 +140,53 @@ We have an ever-growing suite of UI tests developed with Cypress. The tests can 
     $ npm install
     $ npm run e2e:local
 
+### Storybook
+
+We use [Storybook](https://storybook.js.org) to create interactive stories for our UI components.
+Stories provide a visual representation of how our components behave in different scenarios.
+
+#### Run Storybook
+
+Run the following command to start Storybook:
+
+    $ npm run storybook
+
+This should automatically open your browser at http://localhost:6006 where you can see your components in action.
+
+#### Write stories
+
+To create new story files for your components, just add a new `<ComponentName>.stories.tsx` file.
+As an example of a well-structured and documented story, you can check out the Button component
+in `client/src/components/buttons/Buttons.stories.tsx`.
+
+The full documentation for Storybook can be found [here](https://storybook.js.org/docs/react/writing-stories/introduction).
+
+#### Best Practices
+
+- Add stories files in the same directory as your component.
+- Name your story after the target component `<ComponentName>.stories.tsx`. Use the `title` property in the story definition to group related stories by categories. E.G.. `components/buttons/buttonWithMenu`.
+- It's good to showcase different variations of your component. Use multiple stories to demonstrate how props and states affect the component and how that helps in serving different use cases.
+- Provide a clear and concise description for each story. Include details on its purpose, usage, and any relevant notes.
+- Use `Args` to tweak props' values, making the components interactive so that users can play with them.
+- Wherever relevant, please include stories that demonstrate responsive behavior across various devices.
+- You can use `addon-redux` for state management on components that require to get data from the Redis store.
+
+#### Testing Stories:
+
+Storybook's test runner transforms stories into executable tests, supporting Chromium and Firefox browsers. It ensures error-free rendering for non-play stories. For interactive stories with play functions, it validates both play function errors and successful assertions.
+
+    $ npm run storybook-compile-and-test
+
+
+
+#### Deployment
+
+Storybook is deployed at the following location:
+
+- **URL**: `/storybook/`
+
+To access Storybook, visit the specified URL path in your web browser after your application is deployed.
+
 ### Telepresence
 
 Telepresence can be used to develop the UI in a realistic setting. The client folder includes a `run-telepresence.sh` script that is tailored for the SDSC development cluster.
@@ -151,9 +198,7 @@ Telepresence replaces the UI client pod in the target Kubernetes instance. All t
 
 The `run-telepresence.sh` script uses the current K8s context as returned by `kubectl config current-context`. You can deploy your own RenkuLab application (using the helm chart in the renku repository) for development; alternatively the renku-ui repository includes CI tasks that can deploy the code for a PR. To take advantage of this task, add
 
-```
-/deploy #persist
-```
+    $ /deploy #persist
 
 To the body of your PR description.
 
@@ -165,9 +210,7 @@ There are a few environment variables you may want to set when starting telepres
 
 For example:
 
-```
     $ SENTRY=0 PR=1166 ./run-telepresence.sh
-```
 
 There are also further configuration possibilities offered by the `run-telepresence.sh` script. For
 specific use cases, you may need to modify the script directly, since not all options are configurable through environment variables.

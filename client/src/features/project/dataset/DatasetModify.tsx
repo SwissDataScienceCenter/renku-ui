@@ -19,12 +19,10 @@
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import type { FieldErrors } from "react-hook-form";
-import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import cx from "classnames";
-
-import { Button, UncontrolledAlert } from "reactstrap";
+import { Button, FormGroup, UncontrolledAlert } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import CreatorsInput, {
@@ -41,83 +39,31 @@ import TextAreaInput from "../../../components/form-field/TextAreaInput";
 import type { RenkuUser } from "../../../model/RenkuModels";
 import { FormErrorFields } from "../../../project/new/components/FormValidations";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
-
 import { DatasetCore, IDatasetFiles } from "../../project/Project";
-
 import {
   reset,
+  setFiles,
   setFormValues,
   setServerError,
   setServerWarning,
   useDatasetFormSelector,
 } from "./datasetForm.slice";
 import type { DatasetFormState, ServerError } from "./datasetForm.slice";
-import { pollForDatasetCreation, postDataset } from "./datasetCore.api";
+import { createSubmitDataset } from "./datasetCore.api";
 import type {
   DatasetFormFields,
   DatasetPostClient,
-  FileUploadJob,
+  PostDataset,
 } from "./datasetCore.api";
-
-function formatJobsStatsWarning(
-  jobsStats: FileUploadJob[],
-  overviewCommitsUrl: string
-) {
-  const failedJobs = jobsStats.filter((j) => j.job_status === "FAILED");
-  const ongoingJobs = jobsStats.filter((j) => j.job_status !== "FAILED");
-  const failed = failedJobs.map((job) => (
-    <div key={"warn-" + job.file_url} className="pl-2">
-      - {job.file_url}
-      <br />
-    </div>
-  ));
-  const inProgress = ongoingJobs.map((job) => (
-    <div key={"warn-" + job.file_url} className="pl-2">
-      - {job.file_url}
-      <br />
-    </div>
-  ));
-  return (
-    <div>
-      <p className="mb-2">
-        <strong>
-          The operation was successful, but some warnings were raised during the
-          process.
-        </strong>
-      </p>
-      {ongoingJobs.length > 0 && (
-        <div>
-          This operation is taking too long and it will continue being processed
-          in the background.
-          <br />
-          Please check the datasets list later to make sure that the changes are
-          visible in the project. <br />
-          You can also check the{" "}
-          <Link to={overviewCommitsUrl}>commits list</Link> in the project to
-          see if commits for the new dataset appear there.
-          <br />
-          <br />
-        </div>
-      )}
-      {failed.length > 0 && (
-        <div>
-          <strong>Some files had errors on upload:</strong>
-          <br />
-          {failed}
-        </div>
-      )}
-      {inProgress.length > 0 && (
-        <div>
-          <strong>Uploads in progress:</strong>
-          <br />
-          {inProgress}
-        </div>
-      )}
-      <br />
-      <br />
-    </div>
-  );
-}
+import {
+  useAddFilesMutation,
+  usePostDatasetMutation,
+} from "../../datasets/datasetsCore.api";
+import {
+  AddFilesParams,
+  PostDatasetParams,
+} from "../../datasets/datasets.types";
+import { CoreErrorResponse } from "../../../utils/types/coreService.types";
 
 export type PostSubmitProps = {
   datasetId: string;
@@ -140,7 +86,7 @@ async function redirectAfterSubmit({
   dispatch(reset());
   await fetchDatasets(true, versionUrl);
   history.push({
-    pathname: `/projects/${projectPathWithNamespace}/datasets/${datasetId}/`,
+    pathname: `/projects/${projectPathWithNamespace}/datasets/${datasetId}`,
     state,
   });
 }
@@ -178,10 +124,12 @@ function DatasetCreateSubmitGroup(props: DatasetCreateSubmitGroupProps) {
   );
 
   return (
-    <div>
-      {submitButton}
-      {cancelButton}
-    </div>
+    <FormGroup className="row">
+      <div>
+        {submitButton}
+        {cancelButton}
+      </div>
+    </FormGroup>
   );
 }
 
@@ -296,9 +244,11 @@ function DatasetModifyForm(props: DatasetModifyFormProps) {
         register={register("files", {
           validate: (files: DatasetFormState["form"]["files"]) =>
             files.every((file) =>
-              [FILE_STATUS.ADDED, FILE_STATUS.UPLOADED].includes(
-                file.file_status
-              )
+              [
+                FILE_STATUS.ADDED,
+                FILE_STATUS.PENDING,
+                FILE_STATUS.UPLOADED,
+              ].includes(file.file_status)
             ),
         })}
         value={getValues("files")}
@@ -369,12 +319,7 @@ function formatServerWarning(
   if (warning.source === "remoteBranch") {
     return serverWarningMessageForMerge(warning.error.reason, props);
   }
-  if (warning.source === "jobs") {
-    return formatJobsStatsWarning(
-      warning.context.problemJobs as FileUploadJob[],
-      props.overviewCommitsUrl
-    );
-  }
+  return null;
 }
 
 function formatServerError(error: ServerError) {
@@ -403,6 +348,7 @@ function formatServerError(error: ServerError) {
   );
 }
 export interface DatasetModifyProps extends DatasetModifyDisplayProps {
+  apiVersion: string | undefined;
   client: DatasetPostClient;
   dataset: DatasetModifyFormProps["dataset"];
   defaultBranch: string;
@@ -410,9 +356,9 @@ export interface DatasetModifyProps extends DatasetModifyDisplayProps {
   externalUrl: string;
   fetchDatasets: PostSubmitProps["fetchDatasets"];
   history: ReturnType<typeof useHistory>;
-  httpProjectUrl: string;
   initialized: boolean;
   location: { pathname: string };
+  metadataVersion: number | undefined;
   notifications: unknown;
   onCancel: () => void;
   overviewCommitsUrl: string;
@@ -424,6 +370,7 @@ export interface DatasetModifyProps extends DatasetModifyDisplayProps {
 export default function DatasetModify(props: DatasetModifyProps) {
   const dispatch = useDispatch();
   const {
+    apiVersion,
     client,
     dataset,
     defaultBranch,
@@ -431,6 +378,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
     fetchDatasets,
     history,
     location,
+    metadataVersion,
     overviewCommitsUrl,
     projectPathWithNamespace,
     setSubmitting,
@@ -456,6 +404,10 @@ export default function DatasetModify(props: DatasetModifyProps) {
     [dispatch]
   );
 
+  const [postDatasetMutation] = usePostDatasetMutation();
+  const [addFilesMutation] = useAddFilesMutation();
+
+  // TODO: split the monolithic onSubmit function and use the mutation statuses
   const onSubmit: SubmitHandler<DatasetFormFields> = React.useCallback(
     async (data: DatasetFormFields) => {
       setSubmitting(true);
@@ -465,80 +417,165 @@ export default function DatasetModify(props: DatasetModifyProps) {
       if (name) submitData.name = name;
 
       try {
-        const { dataset, response } = await postDataset(submitData, {
-          client,
-          defaultBranch,
-          edit,
-          externalUrl,
-          versionUrl,
-        });
-        if (response.data.error != null) {
-          const error = response.data.error;
-          setSubmitting(false);
-          if (!error.errorOnFileAdd) {
-            setError({ source: "general", error });
-            return;
-          }
-          if (!edit) {
-            // Go to the new dataset page and show the error there
-            await redirectAfterSubmit({
-              datasetId: dataset?.name ?? "", // dataset is not null here
-              fetchDatasets: fetchDatasets,
-              history: history,
-              projectPathWithNamespace: projectPathWithNamespace,
-              state: { errorOnCreation: true },
-              dispatch,
-              versionUrl,
-            });
-            return;
-          }
-          setServerError({ source: "edit", error });
-          return;
-        }
-        if (dataset == null) {
-          setSubmitting(false);
-          setServerError({
-            source: "general",
-            error: {
-              reason: "Could not create dataset.",
-            },
-          });
-          return;
-        }
-
-        const result = response.data.result;
-        if (result.remote_branch !== defaultBranch) {
-          setSubmitting(false);
-          setWarning({
-            source: "remoteBranch",
-            error: { reason: response.data.result.remote_branch },
-          });
-          return;
-        }
-
-        const postCreationResponse = await pollForDatasetCreation(
-          result,
+        // step 1: prepare the dataset
+        const groomedDataset = await createSubmitDataset(
+          submitData,
           client,
           versionUrl
         );
-        setSubmitting(false);
-        if (postCreationResponse.problemJobs.length === 0) {
-          await redirectAfterSubmit({
-            datasetId: dataset.name ?? props.dataset?.name ?? "",
-            fetchDatasets,
-            history,
-            projectPathWithNamespace,
-            state: undefined,
-            dispatch,
-            versionUrl,
-          });
+        // ? "data" means that an error occurred
+        if (
+          "data" in groomedDataset ||
+          (groomedDataset?.images && "data" in groomedDataset.images)
+        ) {
+          const reason =
+            "data" in groomedDataset
+              ? "Could not create dataset."
+              : "Could not add dataset image";
+          dispatch(
+            setServerError({
+              source: "general",
+              error: {
+                reason,
+              },
+            })
+          );
+
+          setSubmitting(false);
           return;
         }
-        setWarning({
-          source: "jobs",
-          context: { problemJobs: postCreationResponse.problemJobs },
-        });
-        setSubmitting(false);
+
+        // step 2: create or modify the dataset metadata -- no files
+        const datasetMutationParams: PostDatasetParams = {
+          apiVersion,
+          branch: defaultBranch,
+          dataset: groomedDataset as PostDataset,
+          edit,
+          gitUrl: externalUrl,
+          metadataVersion,
+        };
+        // ? this was a quick fix; we should _not_ use then/catch but rather rely on postDatasetStatus
+        postDatasetMutation(datasetMutationParams)
+          .then(async (response) => {
+            if ("error" in response) {
+              const coreError =
+                "data" in response.error
+                  ? (response.error.data as CoreErrorResponse).error
+                  : null;
+              const error = coreError
+                ? { ...coreError, reason: coreError.devMessage }
+                : { reason: response.error.toString() };
+              setError({ source: "general", error });
+              setSubmitting(false);
+              return;
+            }
+            // ? this happens when the project's default branch is protected
+            if (response.data.remoteBranch !== defaultBranch) {
+              setWarning({
+                source: "remoteBranch",
+                error: { reason: response.data.remoteBranch },
+              });
+            }
+
+            // return when there are no files to add and the branch is not protected
+            if (!groomedDataset.files?.length) {
+              if (response.data.remoteBranch === defaultBranch) {
+                await redirectAfterSubmit({
+                  datasetId: dataset?.name ?? response.data.name,
+                  fetchDatasets,
+                  history,
+                  projectPathWithNamespace,
+                  state: undefined,
+                  dispatch,
+                  versionUrl,
+                });
+              }
+
+              setSubmitting(false);
+              return;
+            }
+
+            // step 3: add the files (if any)
+            const addFilesParams: AddFilesParams = {
+              apiVersion,
+              branch: response.data.remoteBranch ?? defaultBranch,
+              files: groomedDataset.files,
+              gitUrl: externalUrl,
+              metadataVersion,
+              name: groomedDataset.name,
+            };
+            addFilesMutation(addFilesParams)
+              .then(async (filesResponse) => {
+                if ("error" in filesResponse) {
+                  const fileCoreError =
+                    "data" in filesResponse.error
+                      ? (filesResponse.error.data as CoreErrorResponse).error
+                      : null;
+                  const error = fileCoreError
+                    ? { ...fileCoreError, reason: fileCoreError.devMessage }
+                    : { reason: filesResponse.error.toString() };
+                  dispatch(setFiles([]));
+                  // ? redirect to the dataset page if dataset was created
+                  if (!edit) {
+                    await redirectAfterSubmit({
+                      datasetId: response.data.name,
+                      fetchDatasets,
+                      history,
+                      projectPathWithNamespace,
+                      state: { errorOnCreation: true },
+                      dispatch,
+                      versionUrl,
+                    });
+                  }
+                  setError({ source: "edit", error });
+                  setSubmitting(false);
+                  return;
+                }
+
+                // ? Do not redirect if the dataset was created in another branch, we should display the warning
+                if (response.data.remoteBranch === defaultBranch) {
+                  await redirectAfterSubmit({
+                    datasetId: dataset?.name ?? response.data.name,
+                    fetchDatasets,
+                    history,
+                    projectPathWithNamespace,
+                    state: undefined,
+                    dispatch,
+                    versionUrl,
+                  });
+                }
+
+                setSubmitting(false);
+                return;
+              })
+              // This _should_ never happen with the current implementation of addFilesMutation. Just in case...
+              .catch((error) => {
+                setError({
+                  source: "general",
+                  error: {
+                    reason:
+                      "Could not add files to dataset: " +
+                      (error as Error).toString(),
+                  },
+                });
+
+                dispatch(setFiles([]));
+                setSubmitting(false);
+                return;
+              });
+          })
+          .catch((error) => {
+            setSubmitting(false);
+            setError({
+              source: "general",
+              error: {
+                reason: "Could not create dataset: " + error.toString(),
+              },
+            });
+
+            setSubmitting(false);
+            return;
+          });
       } catch (error) {
         setError({
           source: "general",
@@ -549,16 +586,20 @@ export default function DatasetModify(props: DatasetModifyProps) {
       }
     },
     [
+      apiVersion,
+      addFilesMutation,
       client,
+      dataset?.name,
       defaultBranch,
       dispatch,
       edit,
       externalUrl,
       fetchDatasets,
       history,
+      metadataVersion,
       name,
+      postDatasetMutation,
       projectPathWithNamespace,
-      props.dataset?.name,
       setError,
       setSubmitting,
       setWarning,

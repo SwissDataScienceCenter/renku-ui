@@ -1,5 +1,5 @@
 /*!
- * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,17 +16,24 @@
  * limitations under the License.
  */
 
-interface CoreErrorContent {
-  code: number;
-  devMessage: string;
-  devReference?: string;
-  sentry?: string;
-  userMessage: string;
-  userReference?: string;
-}
+import { StoryFn as Story } from "@storybook/react";
+import SortingEntities, {
+  SortingInputProps,
+  SortingOptions,
+} from "./SortingEntities";
 
-interface CoreErrorResponse {
-  error: CoreErrorContent;
-}
+export default {
+  title: "components/Search/SortingEntities",
+  component: SortingEntities,
+  argTypes: {},
+};
 
-export type { CoreErrorContent, CoreErrorResponse };
+const Template: Story<SortingInputProps> = (args) => (
+  <SortingEntities {...args} />
+);
+
+export const Default = Template.bind({});
+Default.args = {
+  styleType: "mobile",
+  sort: SortingOptions.AscTitle,
+};

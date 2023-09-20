@@ -84,8 +84,9 @@ const DatasetsMixin = {
     if (core.datasets && core.error == null && !forceReFetch) return core;
     this.setUpdating({ datasets: { core: true } });
     const gitUrl = this.get("metadata.externalUrl");
+    const defaultBranch = this.get("metadata.defaultBranch");
     return client
-      .listProjectDatasetsFromCoreService(gitUrl, versionUrl)
+      .listProjectDatasetsFromCoreService(gitUrl, versionUrl, defaultBranch)
       .then((response) => {
         let responseDs = response.data.error
           ? response.data

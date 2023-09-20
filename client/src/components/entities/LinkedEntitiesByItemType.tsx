@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useRef } from "react";
-import { UncontrolledTooltip } from "reactstrap";
-import "./Entities.css";
+import { ReactNode, useRef } from "react";
+import { Briefcase, HddStack } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
+import { UncontrolledTooltip } from "reactstrap";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { LoadingLabel } from "../formlabels/FormLabels";
-import { Briefcase, HddStack } from "../../utils/ts-wrappers";
 import { EntityType } from "./Entities";
+import "./Entities.css";
 
 /**
  *  renku-ui

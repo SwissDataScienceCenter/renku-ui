@@ -23,8 +23,6 @@
  *  Container components for help
  */
 
-import React from "react";
-
 import { Help as HelpPresent } from "./Help.present";
 
 function Help(props) {

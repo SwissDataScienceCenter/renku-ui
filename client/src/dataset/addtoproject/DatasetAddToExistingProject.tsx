@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "reactstrap";
 
@@ -33,7 +33,10 @@ import type {
 } from "./DatasetAdd.types";
 import DatasetAddToProjectStatus from "./DatasetAddToProjectStatus";
 
-type THit = Record<"id" | "name" | "subgroup" | "value", string>;
+type THit = Record<
+  "default_branch" | "id" | "name" | "subgroup" | "value",
+  string
+>;
 
 type AddDatasetExistingProjectProps = {
   dataset: unknown;
@@ -96,6 +99,7 @@ function AddDatasetExistingProject({
     searchDomain.forEach((d: ExistingProject) => {
       if (regex.exec(d.path_with_namespace) != null) {
         hits[d.path_with_namespace] = {
+          default_branch: d.default_branch,
           value: d.http_url_to_repo,
           name: d.path_with_namespace,
           subgroup: d.path_with_namespace.split("/")[0],

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 import { Badge, CardBody, Card, CardHeader } from "reactstrap";
 import graphlib from "graphlib";
 import dagreD3 from "dagre-d3";

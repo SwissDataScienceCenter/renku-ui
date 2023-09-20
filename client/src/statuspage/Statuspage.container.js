@@ -23,7 +23,6 @@
  *  Components for the displaying information from statuspage.io
  */
 
-import React from "react";
 import { connect } from "react-redux";
 
 import {

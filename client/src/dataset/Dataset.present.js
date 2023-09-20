@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import _ from "lodash";
@@ -39,6 +39,7 @@ import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
 import { Url } from "../utils/helpers/url";
 import { DatasetError } from "./DatasetError";
 import {
+  cleanModifyLocation,
   getDatasetAuthors,
   getDatasetImageUrl,
   getUpdatedDatasetImage,
@@ -136,21 +137,21 @@ function DisplayProjects(props) {
         <Table size="sm" borderless>
           <thead>
             <tr>
-              <th>Name</th>
-              <th className="text-center">Date Created</th>
-              <th className="text-center">Created By</th>
+              <th className="bg-transparent">Name</th>
+              <th className="bg-transparent text-center">Date Created</th>
+              <th className="bg-transparent text-center">Created By</th>
             </tr>
           </thead>
           <tbody>
             {props.projects.map((project, index) => (
               <tr data-cy="project-using-dataset" key={project.name + index}>
-                <td className="text-break">
+                <td className="bg-transparent text-break">
                   <Link to={`${props.projectsUrl}/${project.path}`}>
                     {project.path}
                   </Link>
                 </td>
                 {project.created && project.created.dateCreated ? (
-                  <td className="text-center">
+                  <td className="bg-transparent text-center">
                     {toHumanDateTime({
                       datetime: project.created.dateCreated,
                       format: "date",
@@ -158,7 +159,9 @@ function DisplayProjects(props) {
                   </td>
                 ) : null}
                 {project.created && project.created.agent ? (
-                  <td className="text-center">{project.created.agent.name}</td>
+                  <td className="bg-transparent text-center">
+                    {project.created.agent.name}
+                  </td>
                 ) : null}
               </tr>
             ))}
@@ -241,16 +244,21 @@ function DisplayInfoTable(props) {
       <tbody className="text-rk-text">
         {source ? (
           <tr>
-            <td className="text-dark fw-bold" style={{ width: "120px" }}>
+            <td
+              className="text-dark fw-bold bg-transparent"
+              style={{ width: "120px" }}
+            >
               Source
             </td>
-            <td>{source}</td>
+            <td className="bg-transparent">{source}</td>
           </tr>
         ) : null}
         {dataset.published?.creator?.length >= 3 ? (
           <tr>
-            <td className="text-dark fw-bold col-auto">Author(s)</td>
-            <td>{authors}</td>
+            <td className="text-dark fw-bold col-auto bg-transparent">
+              Author(s)
+            </td>
+            <td className="bg-transparent">{authors}</td>
           </tr>
         ) : null}
       </tbody>
@@ -263,7 +271,9 @@ function ErrorAfterCreation(props) {
     <Link
       className="float-right me-1 mb-1"
       id="editDatasetTooltip"
-      to={{ pathname: "modify", state: { dataset: props.dataset } }}
+      to={(location) =>
+        cleanModifyLocation(location, { dataset: props.dataset })
+      }
     >
       <Button size="sm" color="danger" className="btn-icon-text">
         <FontAwesomeIcon icon={faPen} color="dark" /> Edit
@@ -356,10 +366,14 @@ function EditDatasetButton({
       className="float-right mb-1"
       id="editDatasetTooltip"
       data-cy="edit-dataset-button"
-      to={{
-        pathname: "modify",
-        state: { dataset, files, isFilesFetching, filesFetchError },
-      }}
+      to={(location) =>
+        cleanModifyLocation(location, {
+          dataset,
+          files,
+          isFilesFetching,
+          filesFetchError,
+        })
+      }
     >
       <Button
         className="btn-rk-white text-rk-pink icon-button"
@@ -565,10 +579,12 @@ export default function DatasetView(props) {
         ) : null}
         {props.insideProject && props.maintainer ? (
           <DeleteDataset
+            apiVersion={props.apiVersion}
             client={props.client}
             dataset={dataset}
             externalUrl={props.externalUrl}
             history={props.history}
+            metadataVersion={props.metadataVersion}
             modalOpen={deleteDatasetModalOpen}
             projectPathWithNamespace={props.projectPathWithNamespace}
             setModalOpen={setDeleteDatasetModalOpen}

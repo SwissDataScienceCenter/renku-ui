@@ -1,5 +1,62 @@
 # Changes
 
+## [3.12.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.12.1...3.12.2) (2023-09-14)
+
+### Features
+
+* **storybook** deploy and test Storybook ([#2212](https://github.com/SwissDataScienceCenter/renku-ui/issues/2212), [#2300](https://github.com/SwissDataScienceCenter/renku-ui/issues/2300), [#2748](https://github.com/SwissDataScienceCenter/renku-ui/issues/2748), [#2773](https://github.com/SwissDataScienceCenter/renku-ui/issues/2773))
+* **dataset** add dataset to project uses versioned core-service endpoints ([#2788](https://github.com/SwissDataScienceCenter/renku-ui/issues/2788))
+
+### Bug Fixes
+
+* **dataset** support dataset avatar with external url ([#2765](https://github.com/SwissDataScienceCenter/renku-ui/issues/2765), [#2791](https://github.com/SwissDataScienceCenter/renku-ui/issues/2791))
+* **dataset** unzip multiple dataset files ([#2754](https://github.com/SwissDataScienceCenter/renku-ui/issues/2754), [#2786](https://github.com/SwissDataScienceCenter/renku-ui/issues/2786))
+* fix render loops in creating new projects ([#2788](https://github.com/SwissDataScienceCenter/renku-ui/issues/2788))
+
+
+## [3.12.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.12.0...3.12.1) (2023-09-07)
+
+This release includes relevant changes non-visible to the users. It also includes the urgent bugfix from version 3.11.1
+
+- Take advantage of Core Service API versions ([#2718](https://github.com/SwissDataScienceCenter/renku-ui/issues/2718), [#2755](https://github.com/SwissDataScienceCenter/renku-ui/issues/2755), [#2764](https://github.com/SwissDataScienceCenter/renku-ui/issues/2764))
+- Fix bootstrap icons ([#2772](https://github.com/SwissDataScienceCenter/renku-ui/issues/2772))
+
+## [3.12.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.11.0...3.12.0) (2023-08-31)
+
+### Features
+
+- Update landing page for non-logged users ([#2681](https://github.com/SwissDataScienceCenter/renku-ui/issues/2681), [#2741](https://github.com/SwissDataScienceCenter/renku-ui/issues/2741)).
+
+### Bug Fixes
+
+- Use the migrations endpoint correctly -- we were accidentally routing older projects to the wrong backend version ([#2766](https://github.com/SwissDataScienceCenter/renku-ui/issues/2766)).
+- Use the "dev" label properly on the footer in the Renku version section ([#2776](https://github.com/SwissDataScienceCenter/renku-ui/issues/2776)).
+
+## [3.11.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.11.0...3.11.1) (2023-09-07)
+
+### Bug Fixes
+
+- Handle embedded template variables in project creation links ([#2789](https://github.com/SwissDataScienceCenter/renku-ui/issues/2789))
+
+## [3.11.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.10.0...3.11.0) (2023-08-22)
+
+### Features
+
+- Simplify distinguishing projects linked to datasets by showing the full slug in a tooltip when hovering on the project name ([#2617](https://github.com/SwissDataScienceCenter/renku-ui/issues/2617), [#2707](https://github.com/SwissDataScienceCenter/renku-ui/issues/2707)).
+- Add a new section in the project settings to change visibility ([#2515](https://github.com/SwissDataScienceCenter/renku-ui/issues/2515), [#2648](https://github.com/SwissDataScienceCenter/renku-ui/issues/2648)).
+- Use KG to fetch and store project descriptions ([#2631](https://github.com/SwissDataScienceCenter/renku-ui/issues/2631), [#2438](https://github.com/SwissDataScienceCenter/renku-ui/issues/2438)).
+- Show version of Renku and the backend components ([#2664](https://github.com/SwissDataScienceCenter/renku-ui/issues/2664), [#2703](https://github.com/SwissDataScienceCenter/renku-ui/issues/2703)).
+- Use 'metadata processing' instead of 'Knowledge Graph' ([#2553](https://github.com/SwissDataScienceCenter/renku-ui/issues/2553), [#2709](https://github.com/SwissDataScienceCenter/renku-ui/issues/2709)).
+
+### Bug Fixes
+
+- Allow navigating back after login ([#2682](https://github.com/SwissDataScienceCenter/renku-ui/issues/2682), [#2711](https://github.com/SwissDataScienceCenter/renku-ui/issues/2711)).
+- Sort project datasets by the user-friendly title instead of the hidden name ([#1514](https://github.com/SwissDataScienceCenter/renku-ui/issues/1514), [#2702](https://github.com/SwissDataScienceCenter/renku-ui/issues/2702)).
+- Update the loader spinner to fix DOM nesting errors ([#2658](https://github.com/SwissDataScienceCenter/renku-ui/issues/2658), [#2750](https://github.com/SwissDataScienceCenter/renku-ui/issues/2750)).
+- Restore maintenance page ([#2715](https://github.com/SwissDataScienceCenter/renku-ui/issues/2715)).
+- Use a common project URL when invoking renku-core APIs ([#2714](https://github.com/SwissDataScienceCenter/renku-ui/issues/2714), [#2722](https://github.com/SwissDataScienceCenter/renku-ui/issues/2722)).
+- Prevent fake warnings from memory constraints on sessions ([#2757](https://github.com/SwissDataScienceCenter/renku-ui/issues/2757)).
+
 ## [3.10.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.9.0...3.10.0) (2023-07-24)
 
 ### Features

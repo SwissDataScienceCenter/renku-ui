@@ -16,8 +16,9 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useState } from "react";
-
+import { Fragment, useState } from "react";
+import { Loader } from "../../components/Loader";
+import { Notebook } from "./Session";
 import {
   Button,
   Col,
@@ -26,16 +27,14 @@ import {
   ModalBody,
   ModalHeader,
   Row,
-  Save,
-} from "../../utils/ts-wrappers";
-import { Loader } from "../../components/Loader";
-import { Notebook } from "./Session";
+} from "reactstrap";
+import { Save } from "react-bootstrap-icons";
 
 /* eslint-disable @typescript-eslint/ban-types */
 
 interface StopSessionProps {
   stopNotebook: Function;
-  closeModal: Function;
+  closeModal: () => void;
   isOpen: boolean;
   notebook: Notebook;
   urlList: any; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -68,9 +67,9 @@ function StopSession({
 }
 
 interface StopSessionModalProps {
-  stopSession: Function;
+  stopSession: () => void;
   stopping: boolean;
-  closeModal: Function;
+  closeModal: () => void;
   isOpen: boolean;
 }
 function StopSessionModal({

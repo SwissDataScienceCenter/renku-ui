@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { Button, DropdownItem } from "reactstrap";
@@ -105,7 +105,7 @@ function StartSessionButton({
   );
 
   const currentSessions = useSelector(
-    (state: RootStateOrAny) => state.stateModel.notebooks?.notebooks?.all
+    (state: RootStateOrAny) => state.stateModel?.notebooks?.notebooks?.all
   );
   const localSessionRunning = currentSessions
     ? // eslint-disable-next-line @typescript-eslint/no-explicit-any

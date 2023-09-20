@@ -15,31 +15,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import { StoryObj } from "@storybook/react";
 import { FormGeneratorCreatorsInput } from "./CreatorsInput";
-import type { CreatorInputProps } from "./CreatorsInput";
-import { Story } from "@storybook/react";
+import { userEvent } from "@storybook/testing-library";
+import { expect } from "@storybook/jest";
 
 export default {
-  title: "components/CreatorsInput",
+  title: "Components/Forms/FormGeneratorCreatorsInput",
   component: FormGeneratorCreatorsInput,
 };
-
-const Template: Story<CreatorInputProps> = (args) => (
-  <FormGeneratorCreatorsInput {...args} />
-);
-export const Default = Template.bind({});
-Default.args = {
-  name: "author",
-  label: "Creators",
-  setInputs: () => true,
-  value: [
-    {
-      id: 1,
-      name: "E2E User",
-      email: "e2e.test@renku.ch",
-      affiliation: "creator",
-      default: true,
-    },
-  ],
+type Story = StoryObj<typeof FormGeneratorCreatorsInput>;
+export const Default: Story = {
+  args: {
+    name: "author",
+    label: "Creators",
+    setInputs: () => true,
+    value: [
+      {
+        id: 1,
+        name: "E2E User",
+        email: "e2e.test@renku.ch",
+        affiliation: "creator",
+        default: true,
+      },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(
+      canvasElement.querySelector('[data-cy="addCreatorButton"]') as Element
+    );
+    await expect(
+      canvasElement.querySelectorAll('[data-cy="creator-name"]').length
+    ).toEqual(1);
+    await userEvent.click(
+      canvasElement.querySelector('[data-cy="creator-delete"]') as Element
+    );
+    await expect(
+      canvasElement.querySelectorAll('[data-cy="creator-name"]')
+    ).toHaveLength(0);
+  },
 };

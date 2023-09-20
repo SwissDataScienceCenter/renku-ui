@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import cx from "classnames";
 import { ChevronDown } from "react-bootstrap-icons";
 import { useDispatch } from "react-redux";
@@ -31,7 +31,7 @@ import {
 } from "../message/dashboardMessageSlice";
 import styles from "./DashboardMessage.module.scss";
 
-export function DashboardMessage() {
+export default function DashboardMessage() {
   const { params } = useContext(AppContext);
 
   const dashboardParams = useMemo(

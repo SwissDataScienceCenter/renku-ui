@@ -16,13 +16,12 @@
  * limitations under the License.
  */
 
-import React from "react";
-import { Story } from "@storybook/react";
+import { StoryFn as Story } from "@storybook/react";
 import { NewProjectTemplate, Repository } from "../../model/RenkuModels";
 import TemplateSelector, { TemplateSelectorProps } from "./TemplateSelector";
 
 export default {
-  title: "components/TemplateSelector",
+  title: "Components/Forms/Template Selector",
   component: TemplateSelector,
   argTypes: {
     repositories: {

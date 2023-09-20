@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -80,8 +80,13 @@ function AddDatasetNewProject({
       });
       return false;
     }
+    const default_branch = fetchProject?.data?.all?.default_branch;
     // 2. create project object for importing
-    const project = { value: urlProjectOrigin, name: projectPath };
+    const project = {
+      default_branch,
+      value: urlProjectOrigin,
+      name: projectPath,
+    };
     setNewProject(project);
     // 3. send to import dataset
     handlers.submitCallback(project);

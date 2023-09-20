@@ -3,22 +3,13 @@ import { enhancer as withReduxEnhancer } from "addon-redux";
 import "../src/styles/index.scss";
 
 import AppContext from "../src/utils/context/appContext";
-import { createStore } from "../src/utils/helpers/EnhancedState.js";
+import { createStore } from "../src/utils/helpers/EnhancedState";
 import { MemoryRouter } from "react-router-dom";
+import { Preview } from "@storybook/react";
 
 // This how the documentation recommends introducing the store into storybook
 // https://storybook.js.org/addons/@dreamworld/addon-redux/
 export const store = createStore({}, [withReduxEnhancer]);
-
-export const parameters = {
-  actions: { argTypesRegex: "^on[A-Z].*" },
-  controls: {
-    matchers: {
-      color: /(background|color)$/i,
-      date: /Date$/,
-    },
-  },
-};
 
 export const decorators = [
   (Story) => {
@@ -40,3 +31,26 @@ export const decorators = [
     );
   },
 ];
+
+const preview: Preview = {
+  parameters: {
+    actions: { argTypesRegex: "^on[A-Z].*" },
+    controls: {
+      expanded: true,
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/,
+      },
+    },
+    viewMode: "docs",
+    docs: {
+      toc: true,
+    },
+    options: {
+      storySort: {
+        method: "alphabetical",
+      },
+    },
+  },
+};
+export default preview;

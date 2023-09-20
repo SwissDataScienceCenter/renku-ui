@@ -16,6 +16,11 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
+      annotations:
+        # Force a restart of the pod on every helm chart upgrade, rollback and install, because we need to make sure we
+        # have the latest chart version in the environment variables derived from a configmap, and environment variables
+        # from configmaps do not update automatically.
+        reloader: {{ randAlphaNum 16 | quote }}
       labels:
         app: {{ .appName }}
         release: {{ .Release.Name }}
@@ -98,6 +103,8 @@ spec:
                   key: chart_version
             - name: HOMEPAGE
               value: {{ toJson .Values.client.homepage | quote }}
+            - name: CORE_API_VERSION_CONFIG
+              value: {{ toJson .Values.client.coreApiVersionConfig | quote }}
           livenessProbe:
             httpGet:
               path: /

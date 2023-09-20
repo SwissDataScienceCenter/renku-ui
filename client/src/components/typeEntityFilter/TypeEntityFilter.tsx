@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { ChangeEvent } from "react";
 
-import { Briefcase, HddStack, Input } from "../../utils/ts-wrappers";
+import { ChangeEvent } from "react";
+import { Briefcase, HddStack } from "react-bootstrap-icons";
+import { Input } from "reactstrap";
 import "./TypeEntityFilter.css";
 /**
  *  renku-ui

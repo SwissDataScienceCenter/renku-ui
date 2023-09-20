@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, useEffect, useState } from "react";
+import { Component, Fragment, useEffect, useState } from "react";
 import {
   faBook,
   faCog,
@@ -1363,6 +1363,7 @@ class ServerOptionLaunch extends Component {
       (key) =>
         ![
           "cpu_request",
+          "mem_request",
           "memory_request",
           "disk_request",
           "gpu_request",

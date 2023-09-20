@@ -23,7 +23,6 @@
  *  New project test code.
  */
 
-import React from "react";
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
@@ -34,6 +33,7 @@ import { StateModel, globalSchema } from "../../model";
 import { ForkProject } from "./index";
 import { testClient as client } from "../../api-client";
 import { generateFakeUser } from "../../user/User.test";
+import AppContext from "../../utils/context/appContext";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],
@@ -43,11 +43,18 @@ fakeHistory.push({
   pathname: "/projects",
   search: "?page=1",
 });
+const fakeLocation = { pathname: "" };
 
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
+  const templates = { custom: false, repositories: [{}] };
 
   const loggedUser = generateFakeUser();
+  const appContext = {
+    client: client,
+    params: { TEMPLATES: templates },
+    location: fakeLocation,
+  };
 
   it("renders ForkProject without crashing for logged user", async () => {
     const div = document.createElement("div");
@@ -58,12 +65,14 @@ describe("rendering", () => {
       root.render(
         <Provider store={model.reduxStore}>
           <MemoryRouter>
-            <ForkProject
-              client={client}
-              model={model}
-              history={fakeHistory}
-              user={loggedUser}
-            />
+            <AppContext.Provider value={appContext}>
+              <ForkProject
+                client={client}
+                model={model}
+                history={fakeHistory}
+                user={loggedUser}
+              />
+            </AppContext.Provider>
           </MemoryRouter>
         </Provider>
       );

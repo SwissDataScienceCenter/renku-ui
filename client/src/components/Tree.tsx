@@ -16,23 +16,17 @@
  * limitations under the License.
  */
 
-import React from "react";
-import { Link } from "react-router-dom";
-
-import EntityCreators, { EntityCreator } from "./entities/Creators";
-import { EntityExecutions } from "./entities/Executions";
-import EntityDuration from "./entities/Duration";
-import {
-  CaretDownFill,
-  CaretRightFill,
-  Col,
-  Diagram2,
-} from "../utils/ts-wrappers";
-import { EntityChildrenDot } from "./entities/Children";
-import { EntityType, WorkflowType } from "./entities/Entities";
-import { simpleHash } from "../utils/helpers/HelperFunctions";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { CaretDownFill, CaretRightFill, Diagram2 } from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
+import { Col } from "reactstrap";
+import { simpleHash } from "../utils/helpers/HelperFunctions";
 import { IconLink } from "./ExternalLinks";
+import { EntityChildrenDot } from "./entities/Children";
+import EntityCreators, { EntityCreator } from "./entities/Creators";
+import EntityDuration from "./entities/Duration";
+import { EntityType, WorkflowType } from "./entities/Entities";
+import { EntityExecutions } from "./entities/Executions";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

@@ -123,10 +123,12 @@ function ProjectAddDataset(props: any) {
     <Col>
       {newDataset ? (
         <ProjectDatasetNew
+          apiVersion={props.apiVersion}
           client={props.client}
           fetchDatasets={props.fetchDatasets}
           history={props.history}
           location={props.location}
+          metadataVersion={props.metadataVersion}
           model={props.model}
           notifications={props.notifications}
           params={props.params}
@@ -200,9 +202,11 @@ function ProjectDatasetsView(props: any) {
     branch: defaultBranch ?? undefined,
   });
   const {
+    apiVersion,
     backendAvailable,
     computed: coreSupportComputed,
     backendErrorMessage,
+    metadataVersion,
     versionUrl,
   } = coreSupport;
 
@@ -381,6 +385,8 @@ function ProjectDatasetsView(props: any) {
               <ProjectAddDataset
                 key="projectsAddDataset"
                 {...props}
+                apiVersion={apiVersion}
+                metadataVersion={metadataVersion}
                 versionUrl={versionUrl}
               />
             </>
@@ -401,6 +407,7 @@ function ProjectDatasetsView(props: any) {
                   />
                 </Col>
                 <ProjectDatasetEdit
+                  apiVersion={apiVersion}
                   client={props.client}
                   dataset={locationState?.dataset}
                   datasetId={decodeURIComponent(p.match.params.datasetId ?? "")}
@@ -410,6 +417,7 @@ function ProjectDatasetsView(props: any) {
                   history={props.history}
                   isFilesFetching={locationState?.isFilesFetching ?? false}
                   location={props.location}
+                  metadataVersion={metadataVersion}
                   model={props.model}
                   notifications={props.notifications}
                   params={props.params}

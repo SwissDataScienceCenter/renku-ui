@@ -23,20 +23,14 @@
  *  Entity Button component
  */
 
-import React from "react";
-import { Link } from "react-router-dom";
+import { faCog, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faCog, faTrash } from "@fortawesome/free-solid-svg-icons";
-
-import { EntityType } from "./Entities";
-import {
-  Button,
-  Funnel,
-  FunnelFill,
-  UncontrolledTooltip,
-} from "../../utils/ts-wrappers";
-import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
+import { Funnel, FunnelFill } from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
+import { Button, UncontrolledTooltip } from "reactstrap";
 import { StartSessionButton } from "../../features/session/components/SessionButtons";
+import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
+import { EntityType } from "./Entities";
 
 export interface EntityButtonProps {
   type: EntityType;
@@ -59,7 +53,7 @@ function EntityButton({ type, slug }: EntityButtonProps) {
 
 export interface EntityDeleteButtonProps {
   itemType: "project" | "dataset";
-  action: Function; // eslint-disable-line @typescript-eslint/ban-types
+  action: () => void;
 }
 function EntityDeleteButtonButton({
   itemType,
@@ -171,7 +165,7 @@ function FilterButton({ isOpen, toggle }: FilterButtonProps) {
 
 export {
   EntityButton,
-  EntityModifyButton,
   EntityDeleteButtonButton,
+  EntityModifyButton,
   FilterButton,
 };

@@ -50,12 +50,14 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { Loader } from "../../../components/Loader";
 
 type ChangeDatasetProps = {
+  apiVersion: string | undefined;
   client: DatasetPostClient;
   fetchDatasets: PostSubmitProps["fetchDatasets"];
   history: ReturnType<typeof useHistory>;
   location: { pathname: string };
   model: unknown;
   notifications: unknown;
+  metadataVersion: number | undefined;
   params: unknown;
   submitting: boolean;
   setSubmitting: (submitting: boolean) => void;
@@ -100,7 +102,6 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
   const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
-  const httpProjectUrl = projectMetadata.httpUrl;
   const projectPathWithNamespace = projectMetadata.pathWithNamespace;
 
   const projectPath = projectMetadata.path;
@@ -119,15 +120,19 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
   const { dataset, history, submitting, setSubmitting } = props;
 
   const onCancel = React.useCallback(() => {
+    const targetPath = { path: projectPathWithNamespace };
     const pathname = dataset
-      ? `/projects/${projectPathWithNamespace}/datasets/${dataset.name}`
-      : `/projects/${projectPathWithNamespace}/datasets`;
+      ? Url.get(Url.pages.project.datasets.dataset, {
+          ...targetPath,
+          dataset: dataset.name,
+        })
+      : Url.get(Url.pages.project.datasets.base, { ...targetPath });
     history.push({ pathname });
   }, [dataset, history, projectPathWithNamespace]);
 
   if (accessLevel < ACCESS_LEVELS.MAINTAINER) {
     return (
-      <Col sm={12} md={10} lg={8}>
+      <Col>
         <Alert timeout={0} color="primary">
           Your access level does not allow you to create or modify datasets in
           this project.
@@ -169,6 +174,7 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
 
   return (
     <DatasetModify
+      apiVersion={props.apiVersion}
       client={props.client}
       dataset={props.dataset}
       defaultBranch={projectMetadata.defaultBranch}
@@ -177,8 +183,8 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
       fetchDatasets={props.fetchDatasets}
       initialized={true}
       history={props.history}
-      httpProjectUrl={httpProjectUrl}
       location={props.location}
+      metadataVersion={props.metadataVersion}
       notifications={props.notifications}
       onCancel={onCancel}
       overviewCommitsUrl={overviewCommitsUrl}
@@ -223,10 +229,12 @@ function ProjectDatasetNew(
         />
         <ProjectDatasetNewEdit
           key="datasetCreate"
+          apiVersion={props.apiVersion}
           client={props.client}
           fetchDatasets={props.fetchDatasets}
           history={props.history}
           location={props.location}
+          metadataVersion={props.metadataVersion}
           model={props.model}
           notifications={props.notifications}
           params={props.params}
@@ -267,6 +275,7 @@ function ProjectDatasetEditForm(
   return (
     <ProjectDatasetNewEdit
       key="datasetModify"
+      apiVersion={props.apiVersion}
       client={props.client}
       dataset={props.dataset}
       datasetId={props.datasetId}
@@ -274,6 +283,7 @@ function ProjectDatasetEditForm(
       files={files}
       history={props.history}
       location={props.location}
+      metadataVersion={props.metadataVersion}
       model={props.model}
       notifications={props.notifications}
       setSubmitting={setSubmitting}
@@ -327,6 +337,7 @@ function ProjectDatasetEdit(props: ProjectDatasetEditProps) {
     >
       <ProjectDatasetEditForm
         key="datasetModify"
+        apiVersion={props.apiVersion}
         client={props.client}
         dataset={dataset}
         datasetId={datasetId}
@@ -334,6 +345,7 @@ function ProjectDatasetEdit(props: ProjectDatasetEditProps) {
         files={props.files}
         history={props.history}
         location={props.location}
+        metadataVersion={props.metadataVersion}
         model={props.model}
         notifications={props.notifications}
         setSubmitting={setSubmitting}

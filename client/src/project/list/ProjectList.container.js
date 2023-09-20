@@ -17,7 +17,7 @@
  */
 
 import _ from "lodash";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import { ProjectList as ProjectListPresent } from "./ProjectList.present";
 import { Url, getSearchParams } from "../../utils/helpers/url";

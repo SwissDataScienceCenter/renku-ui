@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import React from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -84,13 +83,11 @@ function WorkflowsList({
     branch: defaultBranch,
   });
   const {
+    apiVersion,
     backendAvailable,
     computed: coreSupportComputed,
-    versionUrl,
+    metadataVersion,
   } = coreSupport;
-  const metadataVersion = versionUrl
-    ? parseInt(versionUrl.slice(1))
-    : undefined;
 
   // Verify backend support and availability
   const unsupported =
@@ -113,9 +110,9 @@ function WorkflowsList({
   const workflowsDisplay = useWorkflowsSelector();
 
   // Fetch workflow list
-  const skipList = !versionUrl || !repositoryUrl || unsupported;
+  const skipList = !metadataVersion || !repositoryUrl || unsupported;
   const workflowsQuery = useGetWorkflowListQuery(
-    { coreUrl: versionUrl ?? "", gitUrl: repositoryUrl, reference, fullPath },
+    { apiVersion, gitUrl: repositoryUrl, metadataVersion, reference, fullPath },
     { skip: skipList }
   );
   const workflows = {
@@ -129,14 +126,15 @@ function WorkflowsList({
     orderProperty: workflowsDisplay.orderProperty,
   };
   const waiting =
-    !versionUrl || !coreSupportComputed || workflowsQuery.isLoading;
+    !metadataVersion || !coreSupportComputed || workflowsQuery.isLoading;
 
   // Fetch workflow details
   const skipDetails = skipList || !selected ? true : false;
   const workflowDetailQuery = useGetWorkflowDetailQuery(
     {
-      coreUrl: versionUrl ?? "",
+      apiVersion,
       gitUrl: repositoryUrl,
+      metadataVersion,
       workflowId: selected,
       reference,
       fullPath,

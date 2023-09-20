@@ -23,7 +23,6 @@
  *  Tests for datasets inside projects.
  */
 
-import React from "react";
 import { Provider } from "react-redux";
 import { createRoot } from "react-dom/client";
 import { createMemoryHistory } from "history";

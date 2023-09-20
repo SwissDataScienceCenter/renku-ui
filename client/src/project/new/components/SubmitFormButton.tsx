@@ -22,7 +22,7 @@
  *  SubmitFormButton.tsx
  *  Submit Button create new project
  */
-import React, { MouseEventHandler, useState } from "react";
+import { MouseEventHandler, useState } from "react";
 import ShareLinkModal from "./ShareLinkModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
@@ -41,13 +41,31 @@ interface SubmitFormButtonProps {
   meta: NewProjectMeta;
 }
 
-const SubmitFormButton = ({
+function ImportSubmitFormButton({
+  handlers,
+}: Pick<SubmitFormButtonProps, "handlers">) {
+  return (
+    <>
+      <div className="mt-4 d-flex justify-content-end">
+        <Button
+          data-cy="add-dataset-submit-button"
+          id="create-new-project"
+          color="rk-pink"
+          onClick={handlers.onSubmit}
+        >
+          Add Dataset New Project
+        </Button>
+      </div>
+    </>
+  );
+}
+
+function StandardSubmitFormButton({
   createDataAvailable,
   handlers,
   input,
-  importingDataset,
   meta,
-}: SubmitFormButtonProps) => {
+}: Omit<SubmitFormButtonProps, "importingDataset">) {
   const [showModal, setShotModal] = useState(false);
   const toggleModal = () => {
     setShotModal((showModal) => !showModal);
@@ -79,33 +97,39 @@ const SubmitFormButton = ({
       <FontAwesomeIcon icon={faLink} /> Create link
     </DropdownItem>
   );
-  // when is also importing a new dataset show a different submit button
-  const button = !importingDataset ? (
-    <ButtonWithMenu
-      color="rk-green"
-      default={createProject}
-      direction="up"
-      isPrincipal={true}
-    >
-      {createLink}
-    </ButtonWithMenu>
-  ) : (
-    <Button
-      data-cy="add-dataset-submit-button"
-      id="create-new-project"
-      color="rk-pink"
-      onClick={handlers.onSubmit}
-    >
-      Add Dataset New Project
-    </Button>
-  );
 
   return (
     <>
       {shareLinkModal}
-      <div className="mt-4 d-flex justify-content-end">{button}</div>
+      <div className="mt-4 d-flex justify-content-end">
+        <ButtonWithMenu
+          color="rk-green"
+          default={createProject}
+          direction="up"
+          isPrincipal={true}
+        >
+          {createLink}
+        </ButtonWithMenu>
+      </div>
     </>
   );
-};
+}
+
+function SubmitFormButton({
+  createDataAvailable,
+  handlers,
+  input,
+  importingDataset,
+  meta,
+}: SubmitFormButtonProps) {
+  if (importingDataset) {
+    return <ImportSubmitFormButton handlers={handlers} />;
+  }
+  return (
+    <StandardSubmitFormButton
+      {...{ createDataAvailable, handlers, input, meta }}
+    />
+  );
+}
 
 export default SubmitFormButton;

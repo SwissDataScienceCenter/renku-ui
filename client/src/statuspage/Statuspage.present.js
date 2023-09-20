@@ -23,7 +23,7 @@
  *  Components for the displaying information from statuspage.io
  */
 
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import {
   faCheckCircle,
   faExclamationCircle,

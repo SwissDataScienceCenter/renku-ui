@@ -22,7 +22,6 @@
  *  ProjectIdentifier.tsx
  *  Identifier form group component.
  */
-import React from "react";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
 import { FormGroup, Input } from "../../../utils/ts-wrappers";
 import {

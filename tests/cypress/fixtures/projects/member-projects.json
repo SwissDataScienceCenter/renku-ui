@@ -7,6 +7,7 @@
       },
       "nodes": [
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/43792",
           "name": "test-import-project",
           "fullPath": "e2e/test-import-project",
@@ -22,6 +23,7 @@
           }
         },
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/43781",
           "name": "testing-datasets",
           "fullPath": "e2e/testing-datasets",
@@ -37,6 +39,7 @@
           }
         },
         {
+          "repository": { "rootRef": "master" },
           "id": "gid://gitlab/Project/39646",
           "name": "local-test-project",
           "fullPath": "e2e/local-test-project",

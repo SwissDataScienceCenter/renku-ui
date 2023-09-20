@@ -15,6 +15,7 @@ type AddDatasetStatus = { status: string; text?: string };
 type SubmitProject = {
   name: string;
   value: string;
+  default_branch: string;
 };
 
 interface ExistingProject extends SubmitProject {
