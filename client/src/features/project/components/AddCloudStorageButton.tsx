@@ -202,6 +202,7 @@ function AdvancedAddCloudStorage({
       configuration: "",
       name: "",
       private: true,
+      readonly: true,
       source_path: "",
     },
   });
@@ -212,6 +213,7 @@ function AdvancedAddCloudStorage({
         configuration,
         name: data.name,
         private: data.private,
+        readonly: true, // TODO
         project_id: `${projectId}`,
         source_path: data.source_path,
         target_path: data.name,
@@ -302,6 +304,54 @@ function AdvancedAddCloudStorage({
             </div>
 
             <div className="mb-3">
+              <div className="form-label">Mode</div>
+              <Controller
+                control={control}
+                name="readonly"
+                render={({ field }) => (
+                  <>
+                    <div className="form-check">
+                      <Input
+                        type="radio"
+                        className="form-check-input"
+                        name="readonlyRadio"
+                        id="addCloudStorageReadOnly"
+                        autoComplete="off"
+                        checked={field.value}
+                        onBlur={field.onBlur}
+                        onChange={() => field.onChange(true)}
+                      />
+                      <Label
+                        className={cx("form-check-label", "ms-2")}
+                        for="addCloudStorageReadOnly"
+                      >
+                        Read-only
+                      </Label>
+                    </div>
+                    <div className="form-check">
+                      <Input
+                        type="radio"
+                        className="form-check-input"
+                        name="readonlyRadio"
+                        id="addCloudStorageReadWrite"
+                        autoComplete="off"
+                        checked={!field.value}
+                        onBlur={field.onBlur}
+                        onChange={() => field.onChange(false)}
+                      />
+                      <Label
+                        className={cx("form-check-label", "ms-2")}
+                        for="addCloudStorageReadWrite"
+                      >
+                        Read/Write
+                      </Label>
+                    </div>
+                  </>
+                )}
+              />
+            </div>
+
+            <div className="mb-3">
               <Label className="form-label" for="addCloudStorageSourcePath">
                 Source Path
               </Label>
@@ -389,6 +439,7 @@ interface AdvancedAddCloudStorageForm {
   configuration: string;
   name: string;
   private: boolean;
+  readonly: boolean;
   source_path: string;
 }
 
@@ -425,6 +476,7 @@ function SimpleAddCloudStorage({
       name: "",
       endpointUrl: "",
       private: true,
+      readonly: true,
     },
   });
   const onSubmit = useCallback(
@@ -433,6 +485,7 @@ function SimpleAddCloudStorage({
         name: data.name,
         private: data.private,
         project_id: `${projectId}`,
+        readonly: data.readonly,
         storage_url: data.endpointUrl,
         target_path: data.name,
       });
@@ -595,6 +648,54 @@ function SimpleAddCloudStorage({
                 used.
               </FormText>
             </div>
+
+            <div>
+              <div className="form-label">Mode</div>
+              <Controller
+                control={control}
+                name="readonly"
+                render={({ field }) => (
+                  <>
+                    <div className="form-check">
+                      <Input
+                        type="radio"
+                        className="form-check-input"
+                        name="readonlyRadio"
+                        id="addCloudStorageReadOnly"
+                        autoComplete="off"
+                        checked={field.value}
+                        onBlur={field.onBlur}
+                        onChange={() => field.onChange(true)}
+                      />
+                      <Label
+                        className={cx("form-check-label", "ms-2")}
+                        for="addCloudStorageReadOnly"
+                      >
+                        Read-only
+                      </Label>
+                    </div>
+                    <div className="form-check">
+                      <Input
+                        type="radio"
+                        className="form-check-input"
+                        name="readonlyRadio"
+                        id="addCloudStorageReadWrite"
+                        autoComplete="off"
+                        checked={!field.value}
+                        onBlur={field.onBlur}
+                        onChange={() => field.onChange(false)}
+                      />
+                      <Label
+                        className={cx("form-check-label", "ms-2")}
+                        for="addCloudStorageReadWrite"
+                      >
+                        Read/Write
+                      </Label>
+                    </div>
+                  </>
+                )}
+              />
+            </div>
           </div>
         </Form>
       </ModalBody>
@@ -624,6 +725,7 @@ interface SimpleAddCloudStorageForm {
   name: string;
   endpointUrl: string;
   private: boolean;
+  readonly: boolean;
 }
 
 interface AddCloudStorageCredentialsStepProps {

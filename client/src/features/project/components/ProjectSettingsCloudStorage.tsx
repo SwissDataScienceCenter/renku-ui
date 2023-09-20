@@ -377,7 +377,7 @@ function EditCloudStorage({
   toggleEditMode,
 }: CloudStorageDetailsProps) {
   const { storage } = storageDefinition;
-  const { name, source_path, storage_id, target_path } = storage;
+  const { name, readonly, source_path, storage_id, target_path } = storage;
 
   const credentialFieldDefinitions = useMemo(
     () => getCredentialFieldDefinitions(storageDefinition),
@@ -401,6 +401,7 @@ function EditCloudStorage({
       formattedConfiguration,
       name,
       private: storage.private,
+      readonly,
       source_path,
       target_path,
       requiredCredentials: credentialFieldDefinitions ?? [],
@@ -423,6 +424,8 @@ function EditCloudStorage({
           : {};
       const privateUpdate =
         storage.private !== data.private ? { private: data.private } : {};
+      const readonlyUpdate =
+        readonly !== data.readonly ? { readonly: data.readonly } : {};
       const credentialsUpdate = data.private
         ? data.requiredCredentials
             .filter(({ requiredCredential }) => requiredCredential)
@@ -457,6 +460,7 @@ function EditCloudStorage({
         ...sourcePathUpdate,
         ...targetPathUpdate,
         ...privateUpdate,
+        ...readonlyUpdate,
         ...configurationUpdate,
       });
     },
@@ -465,6 +469,7 @@ function EditCloudStorage({
       formattedConfiguration,
       name,
       projectId,
+      readonly,
       source_path,
       storage.configuration,
       storage.private,
@@ -591,6 +596,54 @@ function EditCloudStorage({
           </FormText>
         </div>
 
+        <div className="mb-3">
+          <div className="form-label">Mode</div>
+          <Controller
+            control={control}
+            name="readonly"
+            render={({ field }) => (
+              <>
+                <div className="form-check">
+                  <Input
+                    type="radio"
+                    className="form-check-input"
+                    name="readonlyRadio"
+                    id="updateCloudStorageReadOnly"
+                    autoComplete="off"
+                    checked={field.value}
+                    onBlur={field.onBlur}
+                    onChange={() => field.onChange(true)}
+                  />
+                  <Label
+                    className={cx("form-check-label", "ms-2")}
+                    for="updateCloudStorageReadOnly"
+                  >
+                    Read-only
+                  </Label>
+                </div>
+                <div className="form-check">
+                  <Input
+                    type="radio"
+                    className="form-check-input"
+                    name="readonlyRadio"
+                    id="updateCloudStorageReadWrite"
+                    autoComplete="off"
+                    checked={!field.value}
+                    onBlur={field.onBlur}
+                    onChange={() => field.onChange(false)}
+                  />
+                  <Label
+                    className={cx("form-check-label", "ms-2")}
+                    for="updateCloudStorageReadWrite"
+                  >
+                    Read/Write
+                  </Label>
+                </div>
+              </>
+            )}
+          />
+        </div>
+
         {watchPrivateToggle && requiredCredentialsFields.length > 0 && (
           <div className="mb-3">
             <div className="form-label">Required credentials</div>
@@ -687,6 +740,7 @@ interface UpdateCloudStorageForm {
   formattedConfiguration: string;
   name: string;
   private: boolean;
+  readonly: boolean;
   source_path: string;
   target_path: string;
   requiredCredentials: CloudStorageCredential[];
@@ -698,8 +752,14 @@ function CloudStorageDetails({
   toggleEditMode,
 }: CloudStorageDetailsProps) {
   const { storage } = storageDefinition;
-  const { configuration, name, source_path, storage_type, target_path } =
-    storage;
+  const {
+    configuration,
+    name,
+    readonly,
+    source_path,
+    storage_type,
+    target_path,
+  } = storage;
 
   const credentialFieldDefinitions = useMemo(
     () => getCredentialFieldDefinitions(storageDefinition),
@@ -773,6 +833,12 @@ function CloudStorageDetails({
             )}
           </div>
         )}
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>Mode</small>
+          </div>
+          <div>{readonly ? "Read-only" : "Read/Write"}</div>
+        </div>
         <div className="mt-2">
           <div className="text-rk-text-light">
             <small>

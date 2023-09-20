@@ -26,6 +26,7 @@ export interface CloudStorageConfiguration {
   name: string;
   private: boolean;
   project_id: string;
+  readonly: boolean;
   source_path: string;
   storage_id: string;
   storage_type: string;
@@ -55,6 +56,7 @@ export interface AdvancedAddCloudStorageForProjectParams {
   name: string;
   private: boolean;
   project_id: string;
+  readonly: boolean;
   source_path: string;
   target_path: string;
 }
@@ -63,6 +65,7 @@ export interface SimpleAddCloudStorageForProjectParams {
   name: string;
   private: boolean;
   project_id: string;
+  readonly: boolean;
   storage_url: string;
   target_path: string;
 }
@@ -72,6 +75,7 @@ export interface UpdateCloudStorageParams {
   name?: string;
   private?: boolean;
   project_id: string;
+  readonly?: boolean;
   storage_id: string;
   source_path?: string;
   target_path?: string;
