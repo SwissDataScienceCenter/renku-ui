@@ -415,7 +415,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
     path,
   });
 
-  const { configuration, name, source_path, target_path } = storage;
+  const { configuration, name, readonly, source_path, target_path } = storage;
 
   const providedSensitiveFields = useMemo(
     () =>
@@ -467,6 +467,14 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
     },
     [dispatch, index, storage]
   );
+  const onChangeReadWriteMode = useCallback(() => {
+    dispatch(
+      updateCloudStorageV2Item({
+        index,
+        storage: { ...storage, readonly: !storage.readonly },
+      })
+    );
+  }, [dispatch, index, storage]);
 
   const [tempConfigContent, setTempConfigContent] = useState(configContent);
   const onChangeConfiguration = useCallback(
@@ -572,6 +580,44 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
           value={target_path}
           onChange={onChangeTargetPath}
         />
+      </div>
+
+      <div className="mb-3">
+        <div className="form-label">Mode</div>
+        <div className="form-check">
+          <Input
+            type="radio"
+            className="form-check-input"
+            name={`updateCloudStorageReadOnlyRadio-${index}`}
+            id={`updateCloudStorageReadOnly-${index}`}
+            autoComplete="off"
+            checked={!!readonly}
+            onChange={onChangeReadWriteMode}
+          />
+          <Label
+            className={cx("form-check-label", "ms-2")}
+            for={`updateCloudStorageReadOnly-${index}`}
+          >
+            Read-only
+          </Label>
+        </div>
+        <div className="form-check">
+          <Input
+            type="radio"
+            className="form-check-input"
+            name={`updateCloudStorageReadOnlyRadio-${index}`}
+            id={`updateCloudStorageReadWrite-${index}`}
+            autoComplete="off"
+            checked={!readonly}
+            onChange={onChangeReadWriteMode}
+          />
+          <Label
+            className={cx("form-check-label", "ms-2")}
+            for={`updateCloudStorageReadWrite-${index}`}
+          >
+            Read/Write
+          </Label>
+        </div>
       </div>
 
       <div>

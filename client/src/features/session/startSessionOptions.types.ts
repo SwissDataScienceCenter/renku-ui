@@ -43,6 +43,7 @@ export interface SessionCloudStorageV2 {
   configuration: Record<string, string | undefined>;
   name: string;
   private: boolean;
+  readonly: boolean;
   source_path: string;
   sensitive_fields?: { name: string; help: string; value: string }[];
   storage_id: string | null;

@@ -607,7 +607,7 @@ function EditCloudStorage({
                   <Input
                     type="radio"
                     className="form-check-input"
-                    name="readonlyRadio"
+                    name="updateCloudStorageReadOnlyRadio"
                     id="updateCloudStorageReadOnly"
                     autoComplete="off"
                     checked={field.value}
@@ -625,7 +625,7 @@ function EditCloudStorage({
                   <Input
                     type="radio"
                     className="form-check-input"
-                    name="readonlyRadio"
+                    name="updateCloudStorageReadOnlyRadio"
                     id="updateCloudStorageReadWrite"
                     autoComplete="off"
                     checked={!field.value}

@@ -660,7 +660,7 @@ function SimpleAddCloudStorage({
                       <Input
                         type="radio"
                         className="form-check-input"
-                        name="readonlyRadio"
+                        name="addCloudStorageReadOnlyRadio"
                         id="addCloudStorageReadOnly"
                         autoComplete="off"
                         checked={field.value}
@@ -678,7 +678,7 @@ function SimpleAddCloudStorage({
                       <Input
                         type="radio"
                         className="form-check-input"
-                        name="readonlyRadio"
+                        name="addCloudStorageReadOnlyRadio"
                         id="addCloudStorageReadWrite"
                         autoComplete="off"
                         checked={!field.value}

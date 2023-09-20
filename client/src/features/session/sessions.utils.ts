@@ -58,6 +58,7 @@ export function convertCloudStorageForSessionApi(
 ): CloudStorageDefinitionForSessionApi | null {
   const {
     configuration,
+    readonly,
     sensitive_fields,
     source_path,
     storage_type,
@@ -85,6 +86,7 @@ export function convertCloudStorageForSessionApi(
           ({ name }) => name === "secret_access_key"
         )?.value,
       },
+      readonly,
       source_path,
       target_path,
     };
@@ -99,6 +101,7 @@ export function convertCloudStorageForSessionApi(
           sensitive_fields?.find(({ name }) => name === "secret_access_key")
             ?.value ?? "",
       },
+      readonly,
       source_path,
       target_path,
     };

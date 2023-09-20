@@ -117,6 +117,7 @@ export type CloudStorageDefinitionForSessionApi =
         access_key_id?: string;
         secret_access_key?: string;
       };
+      readonly: boolean;
       source_path: string;
       target_path: string;
     }
@@ -127,6 +128,7 @@ export type CloudStorageDefinitionForSessionApi =
         endpoint: string;
         secret_access_key: string;
       };
+      readonly: boolean;
       source_path: string;
       target_path: string;
     };
