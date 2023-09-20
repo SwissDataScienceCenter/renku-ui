@@ -53,6 +53,7 @@ import { StyleGuide } from "./styleguide";
 import AppContext from "./utils/context/appContext";
 import { Url } from "./utils/helpers/url";
 import { setupWebSocket } from "./websocket";
+import { useGetUserInfoQuery } from "./features/user/user.api";
 
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -66,6 +67,10 @@ export const ContainerWrap = ({ children, fullSize = false }) => {
 
 function CentralContentContainer(props) {
   const { coreApiVersionedUrlConfig, notifications, socket, user } = props;
+
+  const { data: userInfo } = useGetUserInfoQuery(undefined, {
+    skip: !props.user.logged,
+  });
 
   if (
     !props.user.logged &&
@@ -297,11 +302,13 @@ function CentralContentContainer(props) {
               </ContainerWrap>
             )}
           />
-          <Route path="/admin">
-            <ContainerWrap>
-              <AdminPage />
-            </ContainerWrap>
-          </Route>
+          {userInfo?.isAdmin && (
+            <Route path="/admin">
+              <ContainerWrap>
+                <AdminPage />
+              </ContainerWrap>
+            </Route>
+          )}
           <Route path="*" render={(p) => <NotFound {...p} />} />
         </Switch>
       </AppContext.Provider>

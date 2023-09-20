@@ -23,42 +23,44 @@
  *  NavBar for logged-in and logged-out users.
  */
 
+import { faGitlab } from "@fortawesome/free-brands-svg-icons";
+import { faQuestionCircle, faUser } from "@fortawesome/free-regular-svg-icons";
+import { faBars, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Component, Fragment } from "react";
+import { Search } from "react-bootstrap-icons";
 import { Link, Route, Switch } from "react-router-dom";
 import {
-  UncontrolledDropdown,
-  DropdownItem,
-  Navbar,
-  Nav,
-  NavbarToggler,
   Collapse,
-  NavItem,
-  DropdownToggle,
+  DropdownItem,
   DropdownMenu,
+  DropdownToggle,
+  Nav,
+  NavItem,
+  Navbar,
+  NavbarToggler,
+  UncontrolledDropdown,
 } from "reactstrap";
-import { Search } from "react-bootstrap-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faBars } from "@fortawesome/free-solid-svg-icons";
-import { faQuestionCircle, faUser } from "@fortawesome/free-regular-svg-icons";
-import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
+import { useSelector } from "react-redux";
+import { LoginHelper } from "../authentication";
+import { UserAvatar } from "../components/Avatar";
+import { ExternalDocsLink, ExternalLink } from "../components/ExternalLinks";
+import { Loader } from "../components/Loader";
+import { RenkuNavLink } from "../components/RenkuNavLink";
+import { parseChartVersion } from "../help/HelpRelease";
+import { NotificationsMenu } from "../notifications";
+import { StatuspageBanner } from "../statuspage";
+import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 import {
   getActiveProjectPathWithNamespace,
   gitLabUrlFromProfileUrl,
 } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
+import AdminNavBarItem from "./AdminNavBarItem";
 import { NavBarWarnings } from "./NavBarWarnings";
-import { NotificationsMenu } from "../notifications";
-import { LoginHelper } from "../authentication";
-import { StatuspageBanner } from "../statuspage";
+
 import "./NavBar.css";
-import { UserAvatar } from "../components/Avatar";
-import { ExternalDocsLink, ExternalLink } from "../components/ExternalLinks";
-import { RenkuNavLink } from "../components/RenkuNavLink";
-import { Loader } from "../components/Loader";
-import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
-import { useSelector } from "react-redux";
-import { parseChartVersion } from "../help/HelpRelease";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -399,6 +401,7 @@ class LoggedInNavBar extends Component {
                 <NavItem className="nav-item col-1 col-lg-auto">
                   <RenkuToolbarItemUser {...this.props} />
                 </NavItem>
+                <AdminNavBarItem />
               </Nav>
             </Collapse>
           </Navbar>
@@ -593,5 +596,9 @@ function FooterNavbar({ location, params }) {
   );
 }
 
-export { RenkuNavBar, FooterNavbar };
-export { RenkuToolbarHelpMenu, RenkuToolbarNotifications };
+export {
+  FooterNavbar,
+  RenkuNavBar,
+  RenkuToolbarHelpMenu,
+  RenkuToolbarNotifications,
+};
