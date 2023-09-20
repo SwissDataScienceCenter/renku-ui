@@ -79,7 +79,7 @@ function ImagePreview({
     });
   }, [originalImageInput]);
 
-  const selectedIndex = value.selected;
+  const selectedIndex = value?.selected ?? -1;
   const imageSize = { width: 133, height: 77, borderRadius: "8px" };
   const imageStyle = { ...imageSize, objectFit: "cover" };
   const imagePreviewStyle = {
@@ -418,8 +418,8 @@ function ImageInput(props) {
   } = props;
   const [sizeAlert, setSizeAlert] = useState(null);
   const [originalImageInput, setOriginalImageInput] = useState(null);
-  const options = value.options;
-  const selectedIndex = value.selected;
+  const options = value?.options ?? [];
+  const selectedIndex = value?.selected ?? -1;
   const selected =
     selectedIndex > -1
       ? options[selectedIndex]
