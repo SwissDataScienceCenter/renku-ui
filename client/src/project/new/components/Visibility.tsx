@@ -260,10 +260,10 @@ export function EditVisibility({
 
   const onCancel = useCallback(() => {
     setIsOpen(!isOpen);
+    reset();
     if (!isSuccess) {
       setNewVisibility(projectData?.visibility);
     } else {
-      reset();
       refetchProjectData(); //make sure the visibility is updated
     }
   }, [isOpen, isSuccess, projectData?.visibility, refetchProjectData, reset]);
