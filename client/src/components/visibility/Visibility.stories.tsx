@@ -16,25 +16,30 @@
  * limitations under the License.
  */
 
-import { StoryFn as Story } from "@storybook/react";
-import VisibilitiesInput, {
-  Visibilities,
-  VisibilitiesInputProps,
-} from "./Visibility";
+import { Meta, StoryObj } from "@storybook/react";
+import VisibilitiesInput, { Visibilities } from "./Visibility";
 
-export default {
+const meta: Meta<typeof VisibilitiesInput> = {
   title: "Components/Forms/VisibilitiesInput",
   component: VisibilitiesInput,
   argTypes: {
     namespaceVisibility: {
-      options: Visibilities,
+      options: [
+        Visibilities.Public,
+        Visibilities.Internal,
+        Visibilities.Private,
+      ],
       control: { type: "select" },
       description:
         "according to the namespace some options are automatically disabled unless the" +
         '"disabled" option is activated which forces it to disable all the options',
     },
     value: {
-      options: Visibilities,
+      options: [
+        Visibilities.Public,
+        Visibilities.Internal,
+        Visibilities.Private,
+      ],
       control: { type: "select" },
     },
     disabled: {
@@ -49,47 +54,52 @@ export default {
       control: { type: "boolean" },
     },
     name: {
-      control: {
-        type: "text",
+      table: {
+        disable: true,
       },
-      description: "To customize input name. Default: visibility",
     },
   },
 };
+export default meta;
+type Story = StoryObj<typeof VisibilitiesInput>;
 
-const Template: Story<VisibilitiesInputProps> = (args) => (
-  <VisibilitiesInput {...args} />
-);
-
-export const Default = Template.bind({});
-Default.args = {
-  namespaceVisibility: Visibilities.Public,
-  value: Visibilities.Internal,
+export const Default: Story = {
+  args: {
+    namespaceVisibility: Visibilities.Public,
+    value: Visibilities.Internal,
+    disabled: false,
+    isInvalid: false,
+    isRequired: false,
+  },
 };
 
-export const NoNamespace = Template.bind({});
-NoNamespace.args = {
-  namespaceVisibility: undefined,
-  name: "visibility2",
+export const NoNamespace: Story = {
+  args: {
+    namespaceVisibility: undefined,
+    name: "visibility2",
+  },
 };
 
-export const Disabled = Template.bind({});
-Disabled.args = {
-  namespaceVisibility: Visibilities.Public,
-  disabled: true,
-  name: "visibility3",
+export const Disabled: Story = {
+  args: {
+    namespaceVisibility: Visibilities.Public,
+    disabled: true,
+    name: "visibility3",
+  },
 };
 
-export const Invalid = Template.bind({});
-Invalid.args = {
-  namespaceVisibility: Visibilities.Public,
-  isRequired: true,
-  isInvalid: true,
-  name: "visibility4",
+export const Invalid: Story = {
+  args: {
+    namespaceVisibility: Visibilities.Public,
+    isRequired: true,
+    isInvalid: true,
+    name: "visibility4",
+  },
 };
 
-export const Limited = Template.bind({});
-Limited.args = {
-  namespaceVisibility: Visibilities.Private,
-  name: "visibility5",
+export const Limited: Story = {
+  args: {
+    namespaceVisibility: Visibilities.Private,
+    name: "visibility5",
+  },
 };

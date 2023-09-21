@@ -15,16 +15,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { StoryObj } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 import { FormGeneratorCreatorsInput } from "./CreatorsInput";
 import { userEvent } from "@storybook/testing-library";
 import { expect } from "@storybook/jest";
 
-export default {
+const meta: Meta<typeof FormGeneratorCreatorsInput> = {
   title: "Components/Forms/FormGeneratorCreatorsInput",
   component: FormGeneratorCreatorsInput,
+  argTypes: {
+    name: {
+      table: {
+        disable: true,
+      },
+    },
+    label: {
+      table: {
+        disable: true,
+      },
+    },
+    setInputs: {
+      table: {
+        disable: true,
+      },
+    },
+    alert: {
+      table: {
+        disable: true,
+      },
+    },
+    help: {
+      table: {
+        disable: true,
+      },
+    },
+  },
 };
+export default meta;
 type Story = StoryObj<typeof FormGeneratorCreatorsInput>;
+
 export const Default: Story = {
   args: {
     name: "author",
@@ -39,6 +68,7 @@ export const Default: Story = {
         default: true,
       },
     ],
+    disabled: false,
   },
   play: async ({ canvasElement }) => {
     await userEvent.click(

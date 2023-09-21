@@ -13,11 +13,35 @@ const meta: Meta = {
     notebooks: {
       control: { type: "text" },
       [ARG_REDUX_PATH]: "stateModel.notebooks.notebooks.all",
+      table: {
+        disable: true,
+      },
     },
     updatingTagList: {
       control: { type: "boolean" },
       [ARG_REDUX_PATH]: "stateModel.project.metadata.tagList.updating",
+      table: {
+        disable: true,
+      },
     },
+    type: {
+      table: {
+        disable: true,
+      },
+    },
+    itemType: {
+      control: "radio",
+      options: [EntityType.Project, EntityType.Dataset],
+    },
+    visibility: {
+      control: "radio",
+      options: [
+        Visibilities.Public,
+        Visibilities.Internal,
+        Visibilities.Private,
+      ],
+    },
+    timeCaption: { control: "date" },
   },
 };
 export default meta;
