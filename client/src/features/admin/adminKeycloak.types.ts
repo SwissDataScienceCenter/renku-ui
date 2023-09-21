@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
-export interface AdminComputeResources {
+export interface KeycloakUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface KeycloakUsersQueryParams {
   keycloakToken: string;
-  keycloakTokenIsValid: boolean;
 }

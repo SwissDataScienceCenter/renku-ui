@@ -16,7 +16,27 @@
  * limitations under the License.
  */
 
-export interface AdminComputeResources {
-  keycloakToken: string;
-  keycloakTokenIsValid: boolean;
-}
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { KeycloakUser, KeycloakUsersQueryParams } from "./adminKeycloak.types";
+
+const adminKeycloakApi = createApi({
+  reducerPath: "adminKeycloakApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "auth/admin/realms/Renku" }),
+  tagTypes: [],
+  endpoints: (builder) => ({
+    getKeycloakUsers: builder.query<KeycloakUser[], KeycloakUsersQueryParams>({
+      query: ({ keycloakToken }) => {
+        return {
+          url: "users",
+          headers: {
+            Authorization: `Bearer ${keycloakToken}`,
+          },
+        };
+      },
+    }),
+  }),
+});
+
+export default adminKeycloakApi;
+
+export const { useGetKeycloakUsersQuery } = adminKeycloakApi;

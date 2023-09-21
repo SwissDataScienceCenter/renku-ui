@@ -50,6 +50,8 @@ import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 import adminComputeResourcesSlice from "../../features/admin/adminComputeResources.slice";
+import adminComputeResourcesApi from "../../features/admin/adminComputeResources.api";
+import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -80,6 +82,8 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [workflowsSlice.name]: workflowsSlice.reducer,
     [userApi.reducerPath]: userApi.reducer,
     [adminComputeResourcesSlice.name]: adminComputeResourcesSlice.reducer,
+    [adminComputeResourcesApi.reducerPath]: adminComputeResourcesApi.reducer,
+    [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
   };
 
   // For the moment, disable the custom middleware, since it causes problems for our app.
@@ -104,7 +108,9 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(sessionSidecarApi.middleware)
         .concat(versionsApi.middleware)
         .concat(workflowsApi.middleware)
-        .concat(userApi.middleware),
+        .concat(userApi.middleware)
+        .concat(adminComputeResourcesApi.middleware)
+        .concat(adminKeycloakApi.middleware),
     enhancers,
   });
   return store;

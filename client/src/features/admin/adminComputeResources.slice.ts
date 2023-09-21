@@ -22,6 +22,7 @@ import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 
 const initialState: AdminComputeResources = {
   keycloakToken: "",
+  keycloakTokenIsValid: false,
 };
 
 const adminComputeResourcesSlice = createSlice({
@@ -31,12 +32,16 @@ const adminComputeResourcesSlice = createSlice({
     setKeycloakToken: (state, action: PayloadAction<string>) => {
       state.keycloakToken = action.payload;
     },
+    setKeycloakTokenIsValid: (state, action: PayloadAction<boolean>) => {
+      state.keycloakTokenIsValid = action.payload;
+    },
     reset: () => initialState,
   },
 });
 
 export default adminComputeResourcesSlice;
-export const { setKeycloakToken } = adminComputeResourcesSlice.actions;
+export const { setKeycloakToken, setKeycloakTokenIsValid } =
+  adminComputeResourcesSlice.actions;
 
 export const useAdminComputeResourcesSelector = createSliceSelector(
   adminComputeResourcesSlice
