@@ -48,6 +48,15 @@ interface AddResourcePoolClassPartial {
   default: boolean;
 }
 
+export interface UpdateResourcePoolParams {
+  resourcePoolId: number;
+
+  name?: string;
+  public?: boolean;
+  quota?: Resources;
+  default?: boolean;
+}
+
 export interface DeleteResourcePoolParams {
   resourcePoolId: number;
 }

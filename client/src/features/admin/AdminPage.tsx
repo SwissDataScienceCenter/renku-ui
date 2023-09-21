@@ -43,6 +43,7 @@ import { Loader } from "../../components/Loader";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { ResourcePool } from "../dataServices/dataServices";
 import AddResourcePoolButton from "./AddResourcePoolButton";
+import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
 import {
   useDeleteResourcePoolMutation,
   useGetResourcePoolsQuery,
@@ -315,6 +316,9 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
             <div>{quota.memory}&nbsp;GB RAM</div>
             <div className="vr"></div>
             <div>{quota.gpu} GPUs</div>
+            <div className="ms-2">
+              <UpdateResourcePoolQuotaButton resourcePool={resourcePool} />
+            </div>
           </div>
         ) : (
           <p>No quota</p>

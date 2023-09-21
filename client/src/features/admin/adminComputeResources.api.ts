@@ -21,6 +21,7 @@ import { ResourcePool } from "../dataServices/dataServices";
 import {
   AddResourcePoolParams,
   DeleteResourcePoolParams,
+  UpdateResourcePoolParams,
 } from "./adminComputeResources.types";
 
 const adminComputeResourcesApi = createApi({
@@ -69,6 +70,21 @@ const adminComputeResourcesApi = createApi({
       },
       invalidatesTags: ["ResourcePool"],
     }),
+    updateResourcePool: builder.mutation<
+      ResourcePool,
+      UpdateResourcePoolParams
+    >({
+      query: ({ resourcePoolId, ...params }) => {
+        return {
+          method: "PATCH",
+          url: `resource_pools/${resourcePoolId}`,
+          body: { ...params },
+        };
+      },
+      invalidatesTags: (_result, _error, { resourcePoolId }) => [
+        { id: resourcePoolId, type: "ResourcePool" },
+      ],
+    }),
     deleteResourcePool: builder.mutation<
       ResourcePool,
       DeleteResourcePoolParams
@@ -90,5 +106,6 @@ export const {
   useGetResourcePoolsQuery,
   useGetUsersQuery,
   useAddResourcePoolMutation,
+  useUpdateResourcePoolMutation,
   useDeleteResourcePoolMutation,
 } = adminComputeResourcesApi;
