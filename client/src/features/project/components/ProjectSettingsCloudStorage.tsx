@@ -259,9 +259,9 @@ function CloudStorageList({ storageForProject }: CloudStorageListProps) {
   return (
     <Container className={cx("p-0", "mt-2")} fluid>
       <Row className={cx("row-cols-1", "gy-2")}>
-        {storageForProject.map((storageDefinition, index) => (
+        {storageForProject.map((storageDefinition) => (
           <CloudStorageItem
-            key={`${storageDefinition.storage.name}-${index}`}
+            key={storageDefinition.storage.name}
             storageDefinition={storageDefinition}
           />
         ))}
@@ -495,7 +495,7 @@ function EditCloudStorage({
     >
       <div className="form-rk-green">
         <div className="mb-3">
-          <Label className="form-label" for="updateCloudStorageName">
+          <Label className="form-label" for={`updateCloudStorageName-${name}`}>
             Name
           </Label>
           <Controller
@@ -504,7 +504,7 @@ function EditCloudStorage({
             render={({ field }) => (
               <Input
                 className={cx("form-control", errors.name && "is-invalid")}
-                id="updateCloudStorageName"
+                id={`updateCloudStorageName-${name}`}
                 placeholder="storage"
                 type="text"
                 {...field}
@@ -516,7 +516,10 @@ function EditCloudStorage({
         </div>
 
         <div className="mb-3">
-          <Label className="form-label" for="updateCloudStorageSourcePath">
+          <Label
+            className="form-label"
+            for={`updateCloudStorageSourcePath-${name}`}
+          >
             Source path
           </Label>
           <Controller
@@ -528,7 +531,7 @@ function EditCloudStorage({
                   "form-control",
                   errors.source_path && "is-invalid"
                 )}
-                id="updateCloudStorageSourcePath"
+                id={`updateCloudStorageSourcePath-${name}`}
                 placeholder="bucket/folder"
                 type="text"
                 {...field}
@@ -542,7 +545,10 @@ function EditCloudStorage({
         </div>
 
         <div className="mb-3">
-          <Label className="form-label" for="updateCloudStorageTargetPath">
+          <Label
+            className="form-label"
+            for={`updateCloudStorageTargetPath-${name}`}
+          >
             Mount point
           </Label>
           <Controller
@@ -554,7 +560,7 @@ function EditCloudStorage({
                   "form-control",
                   errors.target_path && "is-invalid"
                 )}
-                id="updateCloudStorageTargetPath"
+                id={`updateCloudStorageTargetPath-${name}`}
                 placeholder="folder"
                 type="text"
                 {...field}
@@ -573,9 +579,9 @@ function EditCloudStorage({
             name="private"
             render={({ field }) => (
               <Input
-                aria-describedby="updateCloudStoragePrivateHelp"
+                aria-describedby={`updateCloudStoragePrivateHelp-${name}`}
                 className="form-check-input"
-                id="updateCloudStoragePrivate"
+                id={`updateCloudStoragePrivate-${name}`}
                 type="checkbox"
                 checked={field.value}
                 innerRef={field.ref}
@@ -586,11 +592,11 @@ function EditCloudStorage({
           />
           <Label
             className={cx("form-check-label", "ms-2")}
-            for="updateCloudStoragePrivate"
+            for={`updateCloudStoragePrivate-${name}`}
           >
             Requires credentials
           </Label>
-          <FormText id="updateCloudStoragePrivateHelp" tag="div">
+          <FormText id={`updateCloudStoragePrivateHelp-${name}`} tag="div">
             Check this box if this cloud storage requires credentials to be
             used.
           </FormText>
@@ -607,8 +613,8 @@ function EditCloudStorage({
                   <Input
                     type="radio"
                     className="form-check-input"
-                    name="updateCloudStorageReadOnlyRadio"
-                    id="updateCloudStorageReadOnly"
+                    name={`updateCloudStorageReadOnlyRadio-${name}`}
+                    id={`updateCloudStorageReadOnly-${name}`}
                     autoComplete="off"
                     checked={field.value}
                     onBlur={field.onBlur}
@@ -616,7 +622,7 @@ function EditCloudStorage({
                   />
                   <Label
                     className={cx("form-check-label", "ms-2")}
-                    for="updateCloudStorageReadOnly"
+                    for={`updateCloudStorageReadOnly-${name}`}
                   >
                     Read-only
                   </Label>
@@ -625,8 +631,8 @@ function EditCloudStorage({
                   <Input
                     type="radio"
                     className="form-check-input"
-                    name="updateCloudStorageReadOnlyRadio"
-                    id="updateCloudStorageReadWrite"
+                    name={`updateCloudStorageReadOnlyRadio-${name}`}
+                    id={`updateCloudStorageReadWrite-${name}`}
                     autoComplete="off"
                     checked={!field.value}
                     onBlur={field.onBlur}
@@ -634,7 +640,7 @@ function EditCloudStorage({
                   />
                   <Label
                     className={cx("form-check-label", "ms-2")}
-                    for="updateCloudStorageReadWrite"
+                    for={`updateCloudStorageReadWrite-${name}`}
                   >
                     Read/Write
                   </Label>
@@ -656,7 +662,7 @@ function EditCloudStorage({
                     render={({ field }) => (
                       <Input
                         className="form-check-input"
-                        id={`updateCloudStorageCredentials-${item.id}`}
+                        id={`updateCloudStorageCredentials-${name}-${item.id}`}
                         type="checkbox"
                         checked={field.value}
                         innerRef={field.ref}
@@ -667,7 +673,7 @@ function EditCloudStorage({
                   />
                   <Label
                     className={cx("form-check-label", "ms-2")}
-                    for={`updateCloudStorageCredentials-${item.id}`}
+                    for={`updateCloudStorageCredentials-${name}-${item.id}`}
                   >
                     {item.name}
                     <CredentialMoreInfo help={item.help} />
@@ -679,10 +685,13 @@ function EditCloudStorage({
         )}
 
         <div className="mb-3">
-          <Label className="form-label" for="updateCloudStorageConfig">
+          <Label
+            className="form-label"
+            for={`updateCloudStorageConfig-${name}`}
+          >
             Configuration
           </Label>
-          <FormText id="updateCloudStorageConfigHelp" tag="div">
+          <FormText id={`updateCloudStorageConfigHelp-${name}`} tag="div">
             You can paste here the output of{" "}
             <code className="user-select-all">
               rclone config show &lt;name&gt;
@@ -694,12 +703,12 @@ function EditCloudStorage({
             name="formattedConfiguration"
             render={({ field }) => (
               <textarea
-                aria-describedby="updateCloudStorageConfigHelp"
+                aria-describedby={`updateCloudStorageConfigHelp-${name}`}
                 className={cx(
                   "form-control",
                   errors.formattedConfiguration && "is-invalid"
                 )}
-                id="updateCloudStorageConfig"
+                id={`updateCloudStorageConfig-${name}`}
                 placeholder={CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER}
                 rows={Object.keys(storage.configuration).length + 2}
                 {...field}
