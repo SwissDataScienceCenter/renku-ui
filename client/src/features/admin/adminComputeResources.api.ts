@@ -21,13 +21,14 @@ import { ResourcePool } from "../dataServices/dataServices";
 import {
   AddResourcePoolParams,
   DeleteResourcePoolParams,
+  GetResourcePoolUsersParams,
   UpdateResourcePoolParams,
 } from "./adminComputeResources.types";
 
 const adminComputeResourcesApi = createApi({
   reducerPath: "adminComputeResourcesApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/data" }),
-  tagTypes: ["ResourcePool"],
+  tagTypes: ["ResourcePool", "ResourcePoolUser"],
   endpoints: (builder) => ({
     getResourcePools: builder.query<ResourcePool[], void>({
       query: () => {
@@ -44,6 +45,26 @@ const adminComputeResourcesApi = createApi({
               "ResourcePool",
             ]
           : ["ResourcePool"],
+    }),
+    getResourcePoolUsers: builder.query<unknown[], GetResourcePoolUsersParams>({
+      query: ({ resourcePoolId }) => {
+        return {
+          url: `resource_pools/${resourcePoolId}/users`,
+        };
+      },
+      providesTags: (result, _error, { resourcePoolId }) =>
+        result
+          ? [
+              ...result.map(
+                () =>
+                  ({
+                    id: `${resourcePoolId}-`,
+                    type: "ResourcePoolUser",
+                  } as const)
+              ),
+              { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
+            ]
+          : [{ id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" }],
     }),
     getUsers: builder.query<unknown[], void>({
       query: () => {
@@ -104,6 +125,7 @@ export default adminComputeResourcesApi;
 
 export const {
   useGetResourcePoolsQuery,
+  useGetResourcePoolUsersQuery,
   useGetUsersQuery,
   useAddResourcePoolMutation,
   useUpdateResourcePoolMutation,

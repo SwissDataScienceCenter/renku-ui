@@ -46,6 +46,7 @@ import AddResourcePoolButton from "./AddResourcePoolButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
 import {
   useDeleteResourcePoolMutation,
+  useGetResourcePoolUsersQuery,
   useGetResourcePoolsQuery,
   useGetUsersQuery,
 } from "./adminComputeResources.api";
@@ -55,6 +56,7 @@ import {
   useAdminComputeResourcesSelector,
 } from "./adminComputeResources.slice";
 import { useGetKeycloakUsersQuery } from "./adminKeycloak.api";
+import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 
 export default function AdminPage() {
   return (
@@ -326,11 +328,52 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
         <div>
           <pre>{JSON.stringify(resourcePool.classes, null, 2)}</pre>
         </div>
+
+        <ResourcePoolUsers resourcePool={resourcePool} />
       </CardBody>
       <CardBody className={cx("d-flex", "flex-row", "justify-content-end")}>
         <DeleteResourcePoolButton resourcePool={resourcePool} />
       </CardBody>
     </Card>
+  );
+}
+
+function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
+  const { id } = resourcePool;
+
+  const keycloakTokenIsValid = useAdminComputeResourcesSelector(
+    ({ keycloakTokenIsValid }) => keycloakTokenIsValid
+  );
+
+  const {
+    data: resourcePoolUsers,
+    error: resourcePoolUsersError,
+    isLoading: resourcePoolUsersIsLoading,
+  } = useGetResourcePoolUsersQuery({ resourcePoolId: id });
+
+  const isLoading = resourcePoolUsersIsLoading;
+  const error = resourcePoolUsersError;
+
+  if (isLoading) {
+    return (
+      <div>
+        <Loader className="me-2" inline size={16} />
+        Loading users...
+      </div>
+    );
+  }
+
+  if (error || !resourcePoolUsers) {
+    return <RtkErrorAlert error={error} />;
+  }
+
+  return (
+    <div>
+      <p>Users: {resourcePoolUsers.length}</p>
+      {keycloakTokenIsValid ? null : (
+        <p>Please set a valid Keycloak token to view and edit users.</p>
+      )}
+    </div>
   );
 }
 
