@@ -18,11 +18,15 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import { ResourcePool } from "../dataServices/dataServices";
+import {
+  AddResourcePoolParams,
+  DeleteResourcePoolParams,
+} from "./adminComputeResources.types";
 
 const adminComputeResourcesApi = createApi({
   reducerPath: "adminComputeResourcesApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/data" }),
-  tagTypes: [],
+  tagTypes: ["ResourcePool"],
   endpoints: (builder) => ({
     getResourcePools: builder.query<ResourcePool[], void>({
       query: () => {
@@ -30,6 +34,15 @@ const adminComputeResourcesApi = createApi({
           url: "resource_pools",
         };
       },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(
+                ({ id }) => ({ id, type: "ResourcePool" } as const)
+              ),
+              "ResourcePool",
+            ]
+          : ["ResourcePool"],
     }),
     getUsers: builder.query<unknown[], void>({
       query: () => {
@@ -38,10 +51,44 @@ const adminComputeResourcesApi = createApi({
         };
       },
     }),
+    addResourcePool: builder.mutation<ResourcePool, AddResourcePoolParams>({
+      query: ({ name, public: isPublic, classes, quota }) => {
+        const body = {
+          name,
+          public: isPublic,
+          default: false,
+          classes,
+          quota,
+        };
+
+        return {
+          method: "POST",
+          url: "resource_pools",
+          body,
+        };
+      },
+      invalidatesTags: ["ResourcePool"],
+    }),
+    deleteResourcePool: builder.mutation<
+      ResourcePool,
+      DeleteResourcePoolParams
+    >({
+      query: ({ resourcePoolId }) => {
+        return {
+          method: "DELETE",
+          url: `resource_pools/${resourcePoolId}`,
+        };
+      },
+      invalidatesTags: ["ResourcePool"],
+    }),
   }),
 });
 
 export default adminComputeResourcesApi;
 
-export const { useGetResourcePoolsQuery, useGetUsersQuery } =
-  adminComputeResourcesApi;
+export const {
+  useGetResourcePoolsQuery,
+  useGetUsersQuery,
+  useAddResourcePoolMutation,
+  useDeleteResourcePoolMutation,
+} = adminComputeResourcesApi;

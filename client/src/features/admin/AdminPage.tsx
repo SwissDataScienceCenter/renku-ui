@@ -17,24 +17,43 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  CheckCircleFill,
+  CheckLg,
+  TrashFill,
+  XLg,
+} from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { Button, Form, Input, Label } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Form,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+} from "reactstrap";
+import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
+import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
+import { ResourcePool } from "../dataServices/dataServices";
+import AddResourcePoolButton from "./AddResourcePoolButton";
+import {
+  useDeleteResourcePoolMutation,
+  useGetResourcePoolsQuery,
+  useGetUsersQuery,
+} from "./adminComputeResources.api";
 import {
   setKeycloakToken,
   setKeycloakTokenIsValid,
   useAdminComputeResourcesSelector,
 } from "./adminComputeResources.slice";
-import {
-  useGetResourcePoolsQuery,
-  useGetUsersQuery,
-} from "./adminComputeResources.api";
-import { ErrorAlert } from "../../components/Alert";
-import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { useGetKeycloakUsersQuery } from "./adminKeycloak.api";
-import { CheckCircleFill } from "react-bootstrap-icons";
 
 export default function AdminPage() {
   return (
@@ -233,6 +252,166 @@ function AdminComputeResourcesOverview() {
         <div className="vr"></div>
         <div>Resource pools: {resourcePools.length}</div>
       </div>
+
+      <ResourcePoolsList />
     </div>
+  );
+}
+
+function ResourcePoolsList() {
+  const { data: resourcePools } = useGetResourcePoolsQuery();
+
+  if (!resourcePools) {
+    return null;
+  }
+
+  return (
+    <div className="mt-2">
+      <h3 className="fs-6">Resource Pools</h3>
+
+      <AddResourcePoolButton />
+
+      {resourcePools.map((pool) => (
+        <ResourcePoolItem key={pool.id} resourcePool={pool} />
+      ))}
+    </div>
+  );
+}
+
+interface ResourcePoolItemProps {
+  resourcePool: ResourcePool;
+}
+
+function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
+  const { name, default: isDefault, public: isPublic, quota } = resourcePool;
+
+  return (
+    <Card className="mt-2">
+      <CardHeader
+        className={cx(
+          "bg-white",
+          "border-0",
+          "fs-6",
+          "fw-bold",
+          "pt-3",
+          "pb-0"
+        )}
+        tag="h5"
+      >
+        {name}
+        {isDefault && <>{" (This is the default pool)"}</>}
+      </CardHeader>
+      <CardBody>
+        <p>
+          {isPublic
+            ? "Public pool (everyone can use it)"
+            : "Private pool (requires special access)"}
+        </p>
+        {quota != null ? (
+          <div className={cx("hstack", "gap-2")}>
+            <div>Quota:</div>
+            <div>{quota.cpu} CPUs</div>
+            <div className="vr"></div>
+            <div>{quota.memory}&nbsp;GB RAM</div>
+            <div className="vr"></div>
+            <div>{quota.gpu} GPUs</div>
+          </div>
+        ) : (
+          <p>No quota</p>
+        )}
+        <div>
+          <pre>{JSON.stringify(resourcePool.classes, null, 2)}</pre>
+        </div>
+      </CardBody>
+      <CardBody className={cx("d-flex", "flex-row", "justify-content-end")}>
+        <DeleteResourcePoolButton resourcePool={resourcePool} />
+      </CardBody>
+    </Card>
+  );
+}
+
+interface DeleteResourcePoolButtonProps {
+  resourcePool: ResourcePool;
+}
+
+function DeleteResourcePoolButton({
+  resourcePool,
+}: DeleteResourcePoolButtonProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((open) => !open);
+  }, []);
+
+  return (
+    <>
+      <Button
+        className="ms-2"
+        color="outline-danger"
+        disabled={resourcePool.default}
+        onClick={toggle}
+      >
+        <TrashFill className={cx("bi", "me-1")} />
+        Delete
+        {resourcePool.default && " (The default pool cannot be deleted)"}
+      </Button>
+      <DeleteResourcePoolModal
+        isOpen={isOpen}
+        resourcePool={resourcePool}
+        toggle={toggle}
+      />
+    </>
+  );
+}
+
+interface DeleteResourcePoolModalProps {
+  isOpen: boolean;
+  resourcePool: ResourcePool;
+  toggle: () => void;
+}
+
+function DeleteResourcePoolModal({
+  isOpen,
+  resourcePool,
+  toggle,
+}: DeleteResourcePoolModalProps) {
+  const { id, name } = resourcePool;
+
+  const [deleteResourcePool, result] = useDeleteResourcePoolMutation();
+  const onDelete = useCallback(() => {
+    deleteResourcePool({ resourcePoolId: id });
+  }, [deleteResourcePool, id]);
+
+  useEffect(() => {
+    if (result.isSuccess || result.isError) {
+      toggle();
+    }
+  }, [result.isError, result.isSuccess, toggle]);
+
+  return (
+    <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
+      <ModalBody>
+        <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
+          Are you sure?
+        </h3>
+        <p className="mb-0">
+          Please confirm that you want to delete the <strong>{name}</strong>{" "}
+          resource pool.
+        </p>
+      </ModalBody>
+      <ModalFooter className="pt-0">
+        <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel, keep resource pool
+        </Button>
+        <Button className="ms-2" color="danger" onClick={onDelete}>
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <CheckLg className={cx("bi", "me-1")} />
+          )}
+          Yes, delete this resource pool
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 }
