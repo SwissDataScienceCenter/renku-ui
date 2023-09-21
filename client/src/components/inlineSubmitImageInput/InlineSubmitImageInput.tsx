@@ -27,10 +27,12 @@ import ImageInput, {
 interface OptionType {
   [key: string]: string | File; // You can specify the type you expect for the properties here
 }
-interface ImageValue {
+export interface ImageValue {
   selected: number;
   options: OptionType[];
 }
+
+export const INITIAL_IMAGE_VALUE = { options: [], selected: -1 };
 interface InputSubmitButtonsProps {
   currentImageName: string;
   doneText: string;
@@ -109,7 +111,7 @@ function InputSubmitButtons({
   );
 }
 
-interface InlineImageInputProps {
+export interface InlineImageInputProps {
   alert: string | null;
   currentImageName: string;
   doneText: string;
@@ -122,11 +124,11 @@ interface InlineImageInputProps {
   label: string;
   name: string;
   onCancel: () => void;
-  onChange: (value: string) => void;
+  onChange: (value: ImageValue) => void;
   onSubmit: (value: File) => void;
   readOnly: boolean;
   submitButtonId: string;
-  initialValue: ImageValue;
+  value: ImageValue;
 }
 function InlineSubmitImageInput({
   alert,
@@ -145,21 +147,19 @@ function InlineSubmitImageInput({
   onSubmit,
   readOnly,
   submitButtonId,
-  initialValue,
+  value,
 }: InlineImageInputProps) {
-  const [value, setValue] = useState(initialValue);
   const [pristine, setPristine] = useState(true);
 
   const cancelValue = () => {
-    setValue(initialValue);
     if (onCancel) onCancel();
   };
 
   const changeValue = (value: string) => {
-    setValue(value as unknown as ImageValue);
     setPristine(false);
-    if (onChange) onChange(value);
+    if (onChange) onChange(value as unknown as ImageValue);
   };
+
   const defaultFormat = "image/png, image/jpeg, image/gif, image/tiff";
 
   return (
@@ -187,7 +187,7 @@ function InlineSubmitImageInput({
         textPristine={""}
         value={value}
         onCancel={cancelValue}
-        readOnly={readOnly || pristine} //settingsReadOnly
+        readOnly={readOnly || pristine}
         isDone={isDone}
         isSubmitting={isSubmitting}
         pristine={pristine}

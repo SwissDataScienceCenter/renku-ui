@@ -15,9 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, StoryObj } from "@storybook/react";
-
-import InlineSubmitImageInput from "./InlineSubmitImageInput";
+import { useState } from "react";
+import { Meta } from "@storybook/react";
+import { action } from "@storybook/addon-actions";
+import InlineSubmitImageInput, {
+  ImageValue,
+  INITIAL_IMAGE_VALUE,
+  InlineImageInputProps,
+} from "./InlineSubmitImageInput";
 
 const meta: Meta = {
   title: "components/Forms/InlineSubmitImageInput",
@@ -59,14 +64,17 @@ const meta: Meta = {
 };
 export default meta;
 
-type Story = StoryObj<typeof InlineSubmitImageInput>;
+export const Default = (_args: InlineImageInputProps) => {
+  const [value, setValue] = useState<ImageValue>();
 
-export const Default: Story = {
-  render: (_args) => {
-    return (
-      <div className="form-rk-green">
-        <InlineSubmitImageInput {..._args} />
-      </div>
-    );
-  },
+  return (
+    <InlineSubmitImageInput
+      {..._args}
+      value={value ?? INITIAL_IMAGE_VALUE}
+      onChange={(newValue) => {
+        action("setValue")(newValue);
+        setValue(newValue);
+      }}
+    />
+  );
 };

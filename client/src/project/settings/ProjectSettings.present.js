@@ -23,11 +23,8 @@
  *  Project settings presentational components.
  */
 
-import { Col, Nav, NavItem, Row } from "reactstrap";
-import { InfoAlert } from "../../components/Alert";
+import { Nav, NavItem } from "reactstrap";
 import { RenkuNavLink } from "../../components/RenkuNavLink";
-import LoginAlert from "../../components/loginAlert/LoginAlert";
-import { ProjectAvatarEdit } from "../shared";
 
 //** Navigation **//
 
@@ -47,53 +44,4 @@ function ProjectSettingsNav(props) {
   );
 }
 
-//** General settings **//
-
-function ProjectSettingsGeneral(props) {
-  let loginElement = null;
-  if (!props.user.logged) {
-    const textPre = "You can";
-    const textPost = "here.";
-    loginElement = (
-      <p className="mt-3 mb-0">
-        <LoginAlert
-          logged={false}
-          noWrapper={true}
-          textPre={textPre}
-          textPost={textPost}
-        />
-      </p>
-    );
-  }
-
-  if (props.settingsReadOnly) {
-    return (
-      <InfoAlert dismissible={false} timeout={0}>
-        <p className="mb-0">
-          Project settings can be changed only by maintainers.
-        </p>
-        {loginElement}
-      </InfoAlert>
-    );
-  }
-
-  return (
-    <div className="form-rk-green">
-      <Row>
-        <Col xs={12}>
-          <div className="card card-body mb-4">
-            <ProjectAvatarEdit
-              externalUrl={props.externalUrl}
-              avatarUrl={props.metadata.avatarUrl}
-              onAvatarChange={props.onAvatarChange}
-              settingsReadOnly={props.settingsReadOnly}
-              includeRequiredLabel={false}
-            />
-          </div>
-        </Col>
-      </Row>
-    </div>
-  );
-}
-
-export { ProjectSettingsGeneral, ProjectSettingsNav };
+export { ProjectSettingsNav };

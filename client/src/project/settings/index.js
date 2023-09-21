@@ -23,9 +23,6 @@
  *
  */
 
-import {
-  ProjectSettingsGeneral,
-  ProjectSettingsNav,
-} from "./ProjectSettings.present";
+import { ProjectSettingsNav } from "./ProjectSettings.present";
 
-export { ProjectSettingsGeneral, ProjectSettingsNav };
+export { ProjectSettingsNav };

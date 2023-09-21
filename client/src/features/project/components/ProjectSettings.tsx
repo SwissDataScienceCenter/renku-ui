@@ -21,12 +21,14 @@ import { ACCESS_LEVELS } from "../../../api-client";
 import { ProjectMigrationStatus } from "./migrations/ProjectCoreMigrations";
 import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
 import { ProjectSettingsGeneralDeleteProject } from "./ProjectSettingsGeneralDeleteProject";
-import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import { ProjectSettingsDescription } from "./ProjectSettingsDescription";
 import { EditVisibility } from "../../../project/new/components/Visibility";
 import { Visibilities } from "../../../components/visibility/Visibility";
 import ProjectKeywordsInput from "../../../project/shared/ProjectKeywords";
+import { ProjectSettingsAvatar } from "./ProjectSettingAvatar";
+import { InfoAlert } from "../../../components/Alert";
+import LoginAlert from "../../../components/loginAlert/LoginAlert";
 
 // ****** SETTINGS COMPONENTS ****** //
 
@@ -54,9 +56,25 @@ interface ProjectSettingsGeneralProps {
     logged: boolean;
   };
   [key: string]: unknown;
+  settingsReadOnly: boolean;
 }
 export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
   const isMaintainer = props.metadata?.accessLevel >= ACCESS_LEVELS.MAINTAINER;
+  let loginElement = null;
+  if (!props.user.logged) {
+    const textPre = "You can";
+    const textPost = "here.";
+    loginElement = (
+      <p className="mt-3 mb-0">
+        <LoginAlert
+          logged={false}
+          noWrapper={true}
+          textPre={textPre}
+          textPost={textPost}
+        />
+      </p>
+    );
+  }
   return (
     <>
       <ProjectSettingsGeneralWrapped
@@ -65,35 +83,52 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
         isMaintainer={isMaintainer}
         projectId={props.metadata?.id}
       />
-      <EditVisibility
-        namespace={props.metadata.namespace}
-        namespaceKind={props.metadata.namespaceKind}
-        forkedProjectId={props.forkedFromProject?.id}
-        isMaintainer={isMaintainer}
-        pathWithNamespace={props.projectPathWithNamespace}
-        projectId={props.metadata?.id}
-      />
-      <ProjectSettingsDescription
-        branch={props.metadata?.defaultBranch}
-        gitUrl={props.metadata?.externalUrl}
-        isMaintainer={isMaintainer}
-        projectId={props.metadata?.id}
-        projectFullPath={props.projectPathWithNamespace}
-      />
-      <ProjectKeywordsInput
-        branch={props.metadata?.defaultBranch}
-        gitUrl={props.metadata?.externalUrl}
-        isMaintainer={isMaintainer}
-        projectId={props.metadata?.id}
-        projectFullPath={props.projectPathWithNamespace}
-      />
-      <ProjectSettingsGeneralLegacy {...props} />
-      <ProjectSettingsGeneralDeleteProject
-        isMaintainer={isMaintainer}
-        notifications={props.notifications}
-        projectPathWithNamespace={props.projectPathWithNamespace}
-        userLogged={props.user.logged}
-      />
+      {props.settingsReadOnly ? (
+        <InfoAlert dismissible={false} timeout={0}>
+          <p className="mb-0">
+            Project settings can be changed only by maintainers.
+          </p>
+          {loginElement}
+        </InfoAlert>
+      ) : (
+        <>
+          <EditVisibility
+            namespace={props.metadata.namespace}
+            namespaceKind={props.metadata.namespaceKind}
+            forkedProjectId={props.forkedFromProject?.id}
+            isMaintainer={isMaintainer}
+            pathWithNamespace={props.projectPathWithNamespace}
+            projectId={props.metadata?.id}
+          />
+          <ProjectSettingsDescription
+            branch={props.metadata?.defaultBranch}
+            gitUrl={props.metadata?.externalUrl}
+            isMaintainer={isMaintainer}
+            projectId={props.metadata?.id}
+            projectFullPath={props.projectPathWithNamespace}
+          />
+          <ProjectKeywordsInput
+            branch={props.metadata?.defaultBranch}
+            gitUrl={props.metadata?.externalUrl}
+            isMaintainer={isMaintainer}
+            projectId={props.metadata?.id}
+            projectFullPath={props.projectPathWithNamespace}
+          />
+          <ProjectSettingsAvatar
+            branch={props.metadata?.defaultBranch}
+            gitUrl={props.metadata?.externalUrl}
+            isMaintainer={isMaintainer}
+            projectId={props.metadata?.id}
+            projectFullPath={props.projectPathWithNamespace}
+          />
+          <ProjectSettingsGeneralDeleteProject
+            isMaintainer={isMaintainer}
+            notifications={props.notifications}
+            projectPathWithNamespace={props.projectPathWithNamespace}
+            userLogged={props.user.logged}
+          />
+        </>
+      )}
     </>
   );
 }

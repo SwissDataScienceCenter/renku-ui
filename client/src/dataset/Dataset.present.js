@@ -41,9 +41,9 @@ import { DatasetError } from "./DatasetError";
 import {
   cleanModifyLocation,
   getDatasetAuthors,
-  getDatasetImageUrl,
   getUpdatedDatasetImage,
 } from "./DatasetFunctions";
+import { getEntityImageUrl } from "../utils/helpers/HelperFunctions";
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
@@ -477,7 +477,7 @@ export default function DatasetView(props) {
   const imageUrl = dataset.mediaContent
     ? getUpdatedDatasetImage(dataset.mediaContent, datasetDate)
     : dataset.images?.length > 0
-    ? getUpdatedDatasetImage(getDatasetImageUrl(dataset.images), datasetDate)
+    ? getUpdatedDatasetImage(getEntityImageUrl(dataset.images), datasetDate)
     : undefined;
 
   const settingsUrl = Url.get(Url.pages.project.settings, {

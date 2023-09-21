@@ -348,6 +348,12 @@ export interface EditProjectParams {
   projectId: number;
 }
 
+export interface EditAvatarProjectParams {
+  projectPathWithNamespace: string;
+  avatar: File;
+  projectId: number;
+}
+
 interface UpdateProjectResponse {
   message: string;
   severity: string;
@@ -414,3 +420,11 @@ export type KgMetadataResponse = {
 export type ProjectKgParams = {
   projectPath?: string;
 };
+
+export interface ImagesLinks {
+  _links: {
+    rel: string;
+    href: string;
+  }[];
+  location: string;
+}

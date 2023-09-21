@@ -34,6 +34,7 @@ import {
   FormGroup,
   Input,
   InputGroup,
+  Label,
   Row,
 } from "reactstrap";
 
@@ -415,6 +416,7 @@ function ImageInput(props) {
     disabled = false,
     required = false,
     submitting,
+    includeRequiredLabel,
   } = props;
   const [sizeAlert, setSizeAlert] = useState(null);
   const [originalImageInput, setOriginalImageInput] = useState(null);
@@ -452,7 +454,11 @@ function ImageInput(props) {
   return (
     <>
       <Row key="row-title">
-        <InputLabel className="ps-3" text={label} isRequired={required} />
+        {includeRequiredLabel ? (
+          <InputLabel className="ps-3" text={label} isRequired={required} />
+        ) : (
+          <Label>{label}</Label>
+        )}
       </Row>
       <Row key="row-content">
         <Col xs={12}>
