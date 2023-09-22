@@ -213,7 +213,7 @@ function AdvancedAddCloudStorage({
         configuration,
         name: data.name,
         private: data.private,
-        readonly: true, // TODO
+        readonly: data.readonly,
         project_id: `${projectId}`,
         source_path: data.source_path,
         target_path: data.name,

@@ -85,3 +85,7 @@ export interface DeleteCloudStorageParams {
   project_id: string;
   storage_id: string;
 }
+
+export interface ValidateCloudStorageConfigurationParams {
+  configuration: Record<string, string | undefined>;
+}

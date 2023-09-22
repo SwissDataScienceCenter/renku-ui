@@ -483,6 +483,7 @@ function EditCloudStorage({
       });
     },
     [
+      configuration,
       credentialFieldDefinitions,
       formattedConfiguration,
       name,

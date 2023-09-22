@@ -24,12 +24,13 @@ import {
   DeleteCloudStorageParams,
   GetCloudStorageForProjectParams,
   UpdateCloudStorageParams,
+  ValidateCloudStorageConfigurationParams,
 } from "./projectCloudStorage.types";
 
 const projectCloudStorageApi = createApi({
   reducerPath: "projectCloudStorage",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/ui-server/api/data/storage",
+    baseUrl: "/ui-server/api/data",
   }),
   tagTypes: ["CloudStorage"],
   endpoints: (builder) => ({
@@ -39,7 +40,7 @@ const projectCloudStorageApi = createApi({
     >({
       query: ({ project_id }) => {
         return {
-          url: "",
+          url: "storage",
           params: { project_id },
         };
       },
@@ -63,7 +64,7 @@ const projectCloudStorageApi = createApi({
       query: (params) => {
         return {
           method: "POST",
-          url: "",
+          url: "storage",
           body: { ...params },
         };
       },
@@ -76,7 +77,7 @@ const projectCloudStorageApi = createApi({
       query: ({ storage_id, ...params }) => {
         return {
           method: "PATCH",
-          url: `${storage_id}`,
+          url: `storage/${storage_id}`,
           body: { ...params },
         };
       },
@@ -88,11 +89,23 @@ const projectCloudStorageApi = createApi({
       query: ({ project_id, storage_id }) => {
         return {
           method: "DELETE",
-          url: `${storage_id}`,
+          url: `storage/${storage_id}`,
           body: { project_id },
         };
       },
       invalidatesTags: [{ id: "LIST", type: "CloudStorage" }],
+    }),
+    validateCloudStorageConfiguration: builder.mutation<
+      unknown,
+      ValidateCloudStorageConfigurationParams
+    >({
+      query: ({ configuration }) => {
+        return {
+          method: "POST",
+          url: "storage_schema/validate",
+          body: { ...configuration },
+        };
+      },
     }),
   }),
 });
@@ -103,4 +116,5 @@ export const {
   useAddCloudStorageForProjectMutation,
   useUpdateCloudStorageMutation,
   useDeleteCloudStorageMutation,
+  useValidateCloudStorageConfigurationMutation,
 } = projectCloudStorageApi;

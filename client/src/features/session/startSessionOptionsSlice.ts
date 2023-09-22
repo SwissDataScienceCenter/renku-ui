@@ -50,6 +50,12 @@ export const startSessionOptionsSlice = createSlice({
     addCloudStorageMount: (state) => {
       state.cloudStorage.push({ bucket: "", endpoint: "" });
     },
+    addCloudStorageV2: (
+      state,
+      action: PayloadAction<SessionCloudStorageV2>
+    ) => {
+      state.cloudStorageV2.push(action.payload);
+    },
     addEnvironmentVariable: (state) => {
       state.environmentVariables.push({ name: "", value: "" });
     },
@@ -58,6 +64,9 @@ export const startSessionOptionsSlice = createSlice({
       action: PayloadAction<{ index: number }>
     ) => {
       state.cloudStorage.splice(action.payload.index, 1);
+    },
+    removeCloudStorageV2: (state, action: PayloadAction<{ index: number }>) => {
+      state.cloudStorageV2.splice(action.payload.index, 1);
     },
     removeEnvironmentVariable: (
       state,
@@ -139,8 +148,10 @@ export const startSessionOptionsSlice = createSlice({
 
 export const {
   addCloudStorageMount,
+  addCloudStorageV2,
   addEnvironmentVariable,
   removeCloudStorageMount,
+  removeCloudStorageV2,
   removeEnvironmentVariable,
   setBranch,
   setCloudStorageV2,
