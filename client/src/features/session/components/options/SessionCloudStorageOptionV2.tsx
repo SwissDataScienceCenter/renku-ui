@@ -130,9 +130,6 @@ function SessionS3CloudStorageOption() {
         <Link to={settingsStorageUrl}>Project&apos;s settings</Link>.
       </div>
       <CloudStorageList />
-      <div className="mt-2">
-        <AddTemporaryCloudStorageButton />
-      </div>
     </div>
   );
 }
@@ -222,6 +219,9 @@ function CloudStorageList() {
           </Row>
         </Container>
       )}
+      <div className="mt-2">
+        <AddTemporaryCloudStorageButton />
+      </div>
     </>
   );
 }
