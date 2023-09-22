@@ -377,7 +377,14 @@ function EditCloudStorage({
   toggleEditMode,
 }: CloudStorageDetailsProps) {
   const { storage } = storageDefinition;
-  const { name, readonly, source_path, storage_id, target_path } = storage;
+  const {
+    configuration,
+    name,
+    readonly,
+    source_path,
+    storage_id,
+    target_path,
+  } = storage;
 
   const credentialFieldDefinitions = useMemo(
     () => getCredentialFieldDefinitions(storageDefinition),
@@ -449,8 +456,19 @@ function EditCloudStorage({
           (obj, [key, value]) => ({ ...obj, [key]: value }),
           {} as Record<string, string | undefined>
         );
+      const removedKeysConfiguration = Object.keys(configuration)
+        .filter((key) => !sensitiveFields.includes(key))
+        .filter((key) => !Object.keys(filteredConfiguration).includes(key))
+        .reduce(
+          (obj, key) => ({ ...obj, [key]: null }),
+          {} as Record<string, string | undefined | null>
+        );
       const configurationUpdate = {
-        configuration: { ...filteredConfiguration, ...credentialsUpdate },
+        configuration: {
+          ...filteredConfiguration,
+          ...credentialsUpdate,
+          ...removedKeysConfiguration,
+        },
       };
 
       updateCloudStorage({
