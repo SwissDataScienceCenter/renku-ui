@@ -25,7 +25,7 @@
 
 import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { Row, Col } from "reactstrap";
+import { CardImg, Col, Row } from "reactstrap";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper";
 import cx from "classnames";
@@ -92,21 +92,45 @@ export function FixedLineHeightContainer({
   );
 }
 
+function ShowcaseCardImage({
+  imageUrl,
+}: Pick<ShowcaseCardDisplayProps, "imageUrl">) {
+  const hasImage = imageUrl != null;
+  if (hasImage)
+    return (
+      <CardImg
+        alt="Showcase project image"
+        style={{
+          display: "block",
+          objectFit: "contain",
+          objectPosition: "center top",
+          paddingRight: "1px",
+        }}
+        className={styles.cardHeaderEntity}
+        src={imageUrl}
+        top
+      />
+    );
+  return (
+    <>
+      <div
+        className={cx(
+          styles.cardHeaderEntity,
+          styles.cardHeaderEntity__missing
+        )}
+      >
+        <div className="card-bg-title user-select-none">Missing Image</div>
+      </div>
+    </>
+  );
+}
+
 function ShowcaseCardDisplay({
   description,
   identifier,
   imageUrl,
   title,
 }: ShowcaseCardDisplayProps) {
-  const hasImage = imageUrl != null;
-  const imageStyles = hasImage
-    ? {
-        backgroundImage: `url("${imageUrl}")`,
-        backgroundPositionX: "center",
-        backgroundSize: "contain",
-        backgroundRepeat: "no-repeat",
-      }
-    : {};
   return (
     <div
       data-cy="showcase-card"
@@ -116,17 +140,7 @@ function ShowcaseCardDisplay({
       )}
     >
       <div className="card">
-        <div
-          style={imageStyles}
-          className={cx(
-            styles.cardHeaderEntity,
-            !hasImage && styles.cardHeaderEntity__missing
-          )}
-        >
-          {!hasImage && (
-            <div className="card-bg-title user-select-none">Missing Image</div>
-          )}
-        </div>
+        <ShowcaseCardImage imageUrl={imageUrl} />
         <div className={styles.cardBody}>
           <FixedLineHeightContainer
             isHeightFixed={true}
