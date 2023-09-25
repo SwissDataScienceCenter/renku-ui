@@ -102,7 +102,7 @@ Development started in 2017, and we have striven to change our development style
 to reflect the evolving best practices around the tools we use.
 
 Not all code conforms to the guidelines and best practices laid out in this
-document and you might find older code using deprecated technologies. that will
+document and you might find older code using deprecated technologies. That will
 be refactored in the future.
 
 We use [TypeScript](https://www.typescriptlang.org) in all new code but we still
@@ -140,7 +140,9 @@ In short:
   [slices](https://redux-toolkit.js.org/usage/usage-with-typescript#createslice) that
   encapsulate the state they need and add the slices into the
   [global store](https://redux-toolkit.js.org/api/configureStore).
-- Use the `useSelector` hook to access information from slices in components.
+- Use slice-specific selector hooks (E.G.
+  [useWorkflowsSelector](https://github.com/SwissDataScienceCenter/renku-ui/blob/master/client/src/features/workflows/WorkflowsSlice.ts)),
+  or the `useSelector` hook to access global state.
 - Use the `useDispatch` hook to make changes to the state in components.
 
 Also, please use [RTK Query](https://redux-toolkit.js.org/tutorials/rtk-query) to
@@ -153,13 +155,25 @@ Based on [these suggestions from Redux](https://redux.js.org/faq/code-structure)
 
 Here are the folders in `/client/src` where to place new components:
 
-- `features`: create/use sub-folders to contain files identifying single features. These sometimes correspond to Renku abstractions, like "Projects", "Datasets", "Sessions", or to cross-entity features such as "Search" and "Dashboard". All RTK queries should be triggered by components in this folder. Most of the actions to save data in the Redux store slices should be defined here as well.
-- `components`: add here components that can be reused in different contexts. If something is clearly a shared component (E.G. `RenkuAlert`), put it here. If it's not obvious, and currently used by just one component, you can leave it in the `feature` folder (follow the principle: do not over-engineer it too early). Mind that we also store most of the temporary values in the Redux store, so you can define actions here if necessary.
-- `utils`: put here anything generic that doesn't fall into the previous categories (E.G. constants, helper functions, wrappers).
+- `features`: create/use sub-folders to contain files identifying single features.
+  These sometimes correspond to Renku abstractions, like "Projects", "Datasets",
+  "Sessions", or to cross-entity features such as "Search" and "Dashboard".
+  Wherever relevant, please add `*Api.ts` files containg the RTK queries and `*Slice.ts`
+  files for slices.
+- `components`: add here components that can be reused in different contexts. If
+  something is clearly a shared component (E.G. `RenkuAlert`), put it here. If it's
+  not obvious, and currently used by just one component, you can leave it in the
+  `feature` folder (follow the principle: do not over-engineer it too early).
+  Mind that we also store most of the temporary values in the Redux store, so you
+  can define actions here if necessary.
+- `utils`: put here anything generic that doesn't fall into the previous categories
+  (E.G. constants, helper functions, wrappers).
 
-Picking the perfect place isn't always straightforward and our current folder structure still has many outdated components that don't follow the convention. We plan to move them when already touching the code for other changes.
+Picking the perfect place isn't always straightforward and our current folder structure
+still has many outdated components that don't follow the convention. We plan to move
+them when already touching the code for other changes.
 
-#### **Use CSS modules**
+#### **Use CSS modules for local styles**
 
 We use [CSS modules](https://github.com/css-modules/css-modules) to apply CSS styles
 locally and avoid leaking styles to the whole web application.
