@@ -23,13 +23,12 @@
  *  LoginAlert component storybook
  */
 
-import { StoryFn as Story } from "@storybook/react";
-import { MemoryRouter } from "react-router-dom";
-import LoginAlert, { LoginAlertProps } from "./LoginAlert";
+import { Meta, StoryObj } from "@storybook/react";
+import LoginAlert from "./LoginAlert";
 
 // TODO: re-enable MemoryRouter as soon as the version is compatible again
 
-export default {
+const meta: Meta<typeof LoginAlert> = {
   title: "components/LoginAlert",
   component: LoginAlert,
   argTypes: {
@@ -55,28 +54,27 @@ export default {
     },
   },
 };
+export default meta;
+type Story = StoryObj<typeof LoginAlert>;
 
-const Template: Story<LoginAlertProps> = (args) => (
-  <MemoryRouter>
-    <LoginAlert {...args} />
-  </MemoryRouter>
-);
-
-export const Complete = Template.bind({});
-Complete.args = {
-  logged: false,
-  textLogin: "log in",
-  textIntro: "You need to log in to modify workflows.",
-  textPost: " and unleash your creativity.",
-  textPre: "To unlock it, please ",
+export const Complete: Story = {
+  args: {
+    logged: false,
+    textLogin: "log in",
+    textIntro: "You need to log in to modify workflows.",
+    textPost: " and unleash your creativity.",
+    textPre: "To unlock it, please ",
+  },
 };
 
-export const Default = Template.bind({});
-Default.args = {
-  logged: false,
+export const Default: Story = {
+  args: {
+    logged: false,
+  },
 };
 
-export const Logged = Template.bind({});
-Logged.args = {
-  logged: true,
+export const Logged: Story = {
+  args: {
+    logged: true,
+  },
 };
