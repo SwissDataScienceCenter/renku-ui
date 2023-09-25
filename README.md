@@ -186,17 +186,21 @@ before we merge a PR.
 
 #### Unit tests
 
-We use [jest](https://jestjs.io) for unit testing.
+We use [jest](https://jestjs.io) _only_ for unit testing.
 
 Unit tests are used to test individual functions. We don't have a fixed rule for
 the amount of coverage we require, but we try to cover all the helper functions and
-the most important functions used by components.
+the most important functions used by components. Note, we do not test components
+using jest/jsdom anymore. Tests that require a browser/DOM environment are implemented
+either in Storybook or Cypress (see below). There might be legacy tests that still
+use `jest` with components.
 
 Files containing unit tests are named `*.test.ts`. Usually, they refer to a specific
 file in the `src` folder, so you can find the tests for `src/*/MyComponent.tsx`
 in `src/*/MyComponent.test.ts`.
 
-You can run the unit tests manually using the following command:
+You can run the unit tests manually using the following command in the client
+subfolder:
 
     $ cd client
     $ npm test
@@ -273,7 +277,7 @@ use Cypress to develop the UI without a dedicated RenkuLab deployment.
 You can run Cypress tests using the following command:
 
     $ cd tests
-    $ npm run e2e:local
+    $ npm run e2e
 
 ### Utilities and additional information
 
@@ -318,6 +322,14 @@ Try to run it to get more instructions:
 Telepresence replaces the UI client pod in the target Kubernetes instance. All the traffic
 is then redirected to a local process, making changes to files almost immediately available
 in your development RenkuLab instance.
+
+##### Configuration
+
+The script allows configuration of certain aspects of the deployment through environment
+variables. Take a look at the script to see all the options that are available.
+The script generates a `config.json` file into the `client/public` folder, and you can
+modify this file with a text editor and reload the browser to test out different
+configuration settings.
 
 ### Navigation map
 
@@ -411,7 +423,7 @@ We use Express to handle HTTP requests and WS to handle WebSocket connections.
 ### Code structure
 
 We have an abstraction for storage in the `storage` folder. Currently, we support
-only Redis and we don't plan to use the UI server to store non-volatile data.
+only Redis, and we do not currently to use the UI server to store non-volatile data.
 We use Redis to store user tokens and temporary data.
 
 The authentication logic is in the `authentication` folder, including the middleware
