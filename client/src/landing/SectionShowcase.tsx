@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -170,14 +170,11 @@ function ShowcaseCard({
   if (isLoading) return <Loader />;
   const images = projectMetadata?.images;
   const details: Partial<ShowcaseCardDisplayProps> = {
-    description: projectMetadata?.description,
+    description: overrideDescription ?? projectMetadata?.description,
     identifier,
-    imageUrl: images?.length ? images[0].location : undefined,
-    title: projectMetadata?.name,
+    imageUrl: overrideImageUrl ?? images?.at(0)?.location,
+    title: overrideTitle ?? projectMetadata?.name,
   };
-  if (overrideDescription) details.description = overrideDescription;
-  if (overrideImageUrl) details.imageUrl = overrideImageUrl;
-  if (overrideTitle) details.title = overrideTitle;
 
   return <ShowcaseCardDisplay {...defaultedShowcaseCardProps(details)} />;
 }
