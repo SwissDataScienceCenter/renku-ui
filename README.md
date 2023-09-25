@@ -140,7 +140,7 @@ In short:
   [slices](https://redux-toolkit.js.org/usage/usage-with-typescript#createslice) that
   encapsulate the state they need and add the slices into the
   [global store](https://redux-toolkit.js.org/api/configureStore).
-- Use slice-specific selector hooks (E.G.
+- Use slice-specific selector hooks (e.g.
   [useWorkflowsSelector](https://github.com/SwissDataScienceCenter/renku-ui/blob/master/client/src/features/workflows/WorkflowsSlice.ts)),
   or the `useSelector` hook to access global state.
 - Use the `useDispatch` hook to make changes to the state in components.
@@ -161,13 +161,13 @@ Here are the folders in `/client/src` where to place new components:
   Wherever relevant, please add `*.api.ts` files containg the RTK queries and `*.slice.ts`
   files for slices.
 - `components`: add here components that can be reused in different contexts. If
-  something is clearly a shared component (E.G. `RenkuAlert`), put it here. If it's
+  something is clearly a shared component (e.g. `RenkuAlert`), put it here. If it's
   not obvious, and currently used by just one component, you can leave it in the
   `feature` folder (follow the principle: do not over-engineer it too early).
   Mind that we also store most of the temporary values in the Redux store, so you
   can define actions here if necessary.
 - `utils`: put here anything generic that doesn't fall into the previous categories
-  (E.G. constants, helper functions, wrappers).
+  (e.g. constants, helper functions, wrappers).
 
 Picking the perfect place isn't always straightforward and our current folder structure
 still has many outdated components that don't follow the convention. We plan to move
@@ -402,7 +402,7 @@ The main responsibilities of the server include:
 
 - Managing access tokens.
 - Creating a WebSocket client that can invoke APIs on behalf of the user.
-- Storing temporary data for the client (E.G. recent searches and recently
+- Storing temporary data for the client (e.g. recent searches and recently
   visited projects or).
 
 Though the server is the first recipient of service requests from the client,
