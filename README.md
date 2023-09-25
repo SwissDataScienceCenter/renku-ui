@@ -158,7 +158,7 @@ Here are the folders in `/client/src` where to place new components:
 - `features`: create/use sub-folders to contain files identifying single features.
   These sometimes correspond to Renku abstractions, like "Projects", "Datasets",
   "Sessions", or to cross-entity features such as "Search" and "Dashboard".
-  Wherever relevant, please add `*Api.ts` files containg the RTK queries and `*Slice.ts`
+  Wherever relevant, please add `*.api.ts` files containg the RTK queries and `*.slice.ts`
   files for slices.
 - `components`: add here components that can be reused in different contexts. If
   something is clearly a shared component (E.G. `RenkuAlert`), put it here. If it's
