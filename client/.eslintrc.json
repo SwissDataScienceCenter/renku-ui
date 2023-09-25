@@ -87,6 +87,7 @@
         "skipWords": [
           "accessor",
           "allowfullscreen",
+          "amazonaws",
           "apiversion",
           "ascii",
           "asciimath",
@@ -198,6 +199,7 @@
           "rclone",
           "react",
           "readme",
+          "readonly",
           "Ravey",
           "rect",
           "redux",
