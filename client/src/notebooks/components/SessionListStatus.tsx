@@ -16,12 +16,7 @@
  * limitations under the License.
  */
 
-import {
-  faCheckCircle,
-  faExclamationTriangle,
-  faInfoCircle,
-  faTimesCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import {
@@ -31,64 +26,22 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import { Clipboard } from "../../components/Clipboard";
-import { Loader } from "../../components/Loader";
-import { SessionStatus } from "../../utils/constants/Notebooks";
-import type { NotebookAnnotations } from "./Session";
+import SessionHibernationStatusDetails from "../../features/session/components/status/SessionHibernationStatusDetails";
+import SessionStatusIcon from "../../features/session/components/status/SessionStatusIcon";
+import SessionStatusText from "../../features/session/components/status/SessionStatusText";
+import { SessionStatusState } from "../../features/session/sessions.types";
+import { getSessionStatusColor } from "../../features/session/utils/sessionStatus.utils";
+import type { NotebookAnnotations } from "./session.types";
 
-type SessionRunningStatus = "failed" | "running" | "starting" | "stopping";
-
-type SessionListRowCoreProps = {
+interface SessionListRowCoreProps {
   annotations: NotebookAnnotations;
-  details: { message: string };
-  status: SessionRunningStatus;
+  details: { message: string | undefined };
+  status: SessionStatusState;
   uid: string;
-};
-
-function getStatusObject(status: SessionRunningStatus, defaultImage: boolean) {
-  switch (status) {
-    case SessionStatus.running:
-      return {
-        color: defaultImage ? "warning" : "success",
-        icon: defaultImage ? (
-          <FontAwesomeIcon
-            icon={faExclamationTriangle}
-            inverse={true}
-            size="lg"
-          />
-        ) : (
-          <FontAwesomeIcon icon={faCheckCircle} size="lg" />
-        ),
-        text: "Running",
-      };
-    case SessionStatus.starting:
-      return {
-        color: "warning",
-        icon: <Loader size={16} inline />,
-        text: "Starting...",
-      };
-    case SessionStatus.stopping:
-      return {
-        color: "warning",
-        icon: <Loader size={16} inline />,
-        text: "Stopping...",
-      };
-    case SessionStatus.failed:
-      return {
-        color: "danger",
-        icon: <FontAwesomeIcon icon={faTimesCircle} size="lg" />,
-        text: "Error",
-      };
-    default:
-      return {
-        color: "danger",
-        icon: <FontAwesomeIcon icon={faExclamationTriangle} size="lg" />,
-        text: "Unknown",
-      };
-  }
 }
 
 interface SessionListRowStatusProps extends SessionListRowCoreProps {
-  startTime: string;
+  startTimestamp: string;
 }
 
 function SessionListRowStatusExtraDetails({
@@ -127,25 +80,24 @@ function SessionListRowStatusExtraDetails({
   );
 }
 
-function SessionListRowStatus(props: SessionListRowStatusProps) {
-  const { status, details, uid, annotations, startTime } = props;
-  const data = getStatusObject(status, annotations.default_image_used);
-  const textColor = {
-    running: "text-secondary",
-    failed: "text-danger",
-    starting: "text-secondary",
-    stopping: "text-secondary",
-  };
-
-  const textStatus =
-    status === SessionStatus.running
-      ? `${data.text} since ${startTime}`
-      : data.text;
+function SessionListRowStatus({
+  status,
+  details,
+  uid,
+  annotations,
+  startTimestamp,
+}: SessionListRowStatusProps) {
+  // Do not use "warning" color when a default image is in use
+  const color = getSessionStatusColor({ defaultImage: false, status });
 
   return (
     <>
-      <span className={`time-caption font-weight-bold ${textColor[status]}`}>
-        {textStatus}
+      <span className={cx("time-caption", "font-weight-bold", `text-${color}`)}>
+        <SessionStatusText
+          annotations={annotations}
+          startTimestamp={startTimestamp}
+          status={status}
+        />
         <SessionListRowStatusExtraDetails
           details={details}
           status={status}
@@ -158,7 +110,7 @@ function SessionListRowStatus(props: SessionListRowStatusProps) {
 
 interface SessionListRowStatusIconProps extends SessionListRowCoreProps {
   image: string;
-  spaced: boolean;
+  spaced?: boolean;
 }
 
 type SessionListRowStatusIconPopoverProps = Pick<
@@ -175,9 +127,11 @@ function SessionListRowStatusIconPopover({
   id,
   status,
 }: SessionListRowStatusIconPopoverProps) {
-  if (status !== SessionStatus.running && status !== SessionStatus.failed)
+  if (status !== "running" && status !== "failed" && status !== "hibernated") {
     return null;
-  if (status === SessionStatus.failed) {
+  }
+
+  if (status === "failed") {
     return (
       <UncontrolledPopover target={id} trigger="legacy" placement="right">
         <PopoverHeader>Kubernetes pod status</PopoverHeader>
@@ -189,19 +143,44 @@ function SessionListRowStatusIconPopover({
     );
   }
 
-  if (!image) return null;
-  const policy = annotations.default_image_used ? (
+  const policy = annotations.default_image_used && (
     <span>
       <br />
-      <span className="font-weight-bold">Warning:</span> a fallback image was
-      used.
+      <span className="fw-bold">Warning:</span> a fallback image was used.
     </span>
-  ) : null;
+  );
+
+  if (status === "hibernated") {
+    return (
+      <UncontrolledPopover placement="bottom" target={id} trigger="legacy">
+        <PopoverHeader>Details</PopoverHeader>
+        <PopoverBody>
+          <h3 className="fs-6 fw-bold">Paused session</h3>
+          <SessionHibernationStatusDetails annotations={annotations} />
+
+          {image && (
+            <>
+              <span className="fw-bold">Image source:</span> {image}
+              <span className="ms-1">
+                <Clipboard clipboardText={image} />
+              </span>
+              {policy}
+            </>
+          )}
+        </PopoverBody>
+      </UncontrolledPopover>
+    );
+  }
+
+  if (!image) {
+    return null;
+  }
+
   return (
-    <UncontrolledPopover target={id} trigger="legacy" placement="bottom">
+    <UncontrolledPopover placement="bottom" target={id} trigger="legacy">
       <PopoverHeader>Details</PopoverHeader>
       <PopoverBody>
-        <span className="font-weight-bold">Image source:</span> {image}
+        <span className="fw-bold">Image source:</span> {image}
         <span className="ms-1">
           <Clipboard clipboardText={image} />
         </span>
@@ -211,7 +190,7 @@ function SessionListRowStatusIconPopover({
   );
 }
 
-function SessionListRowStatusIcon({
+function SessionListRowStatusBadge({
   annotations,
   details,
   image,
@@ -219,14 +198,16 @@ function SessionListRowStatusIcon({
   status,
   uid,
 }: SessionListRowStatusIconProps) {
-  const data = getStatusObject(status, annotations.default_image_used);
+  const defaultImage = annotations.default_image_used;
+
   const className = cx("text-nowrap p-1 cursor-pointer", spaced && "mb-2");
+  const color = getSessionStatusColor({ defaultImage, status });
   const id = `${uid}-status`;
 
   return (
     <div>
-      <Badge id={id} color={data.color} className={className}>
-        {data.icon}
+      <Badge id={id} color={color} className={className}>
+        <SessionStatusIcon defaultImage={defaultImage} status={status} />
       </Badge>
       <SessionListRowStatusIconPopover
         annotations={annotations}
@@ -239,5 +220,7 @@ function SessionListRowStatusIcon({
   );
 }
 
-export { SessionListRowStatus, SessionListRowStatusIcon, getStatusObject };
-export type { SessionRunningStatus };
+export {
+  SessionListRowStatus,
+  SessionListRowStatusBadge as SessionListRowStatusIcon,
+};

@@ -35,7 +35,6 @@ import {
 } from "../../utils/ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ThrottledTooltip } from "../Tooltip";
-import { EnvVariablesField } from "../../notebooks/components/EnviromentVariables";
 import { CommandCopy } from "../commandCopy/CommandCopy";
 
 interface ShareLinkSessionProps {
@@ -85,6 +84,11 @@ interface ProjectFilters {
   commit: {
     id: string;
   };
+}
+
+interface EnvVariablesField {
+  key: string;
+  value: string;
 }
 
 interface ShareLinkSessionModalProps {
@@ -283,12 +287,13 @@ const ShareLinkSessionOpenFileModal = ({
   }, [filters, filePath]);
 
   const goToSpecifyCommit = () => {
-    const state = {
-      filePath,
-      showShareLinkModal: true,
-      from: location.pathname,
-    };
-    history.push({ pathname: launchNotebookUrl, search: "", state });
+    const search = new URLSearchParams({ filePath, showCreateLink: "1" });
+    const state = { from: location.pathname };
+    history.push({
+      pathname: launchNotebookUrl,
+      search: search.toString(),
+      state,
+    });
   };
 
   const markdown = `[![launch - renku](${Url.get(

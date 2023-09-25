@@ -30,24 +30,25 @@ import {
 
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
 import { dataServicesApi } from "../../features/dataServices/dataServicesApi";
-import { displaySlice } from "../../features/display/displaySlice";
-import { datasetFormSlice } from "../../features/project/dataset";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
+import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
+import { datasetFormSlice } from "../../features/project/dataset";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
+import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKgApi";
 import { projectsApi } from "../../features/projects/projectsApi";
 import { projectsKgApi } from "../../features/projects/projectsKgApi";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
-import { sessionApi } from "../../features/session/sessionApi";
+import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
+import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
-import projectGitlabApi from "../../features/project/projectGitlabApi";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -56,26 +57,29 @@ export const createStore = <S = any, A extends Action = AnyAction>(
 ) => {
   const enhancedReducer = {
     ...renkuStateModelReducer,
+    // Slices
     [dashboardMessageSlice.name]: dashboardMessageSlice.reducer,
-    [dataServicesApi.reducerPath]: dataServicesApi.reducer,
     [datasetFormSlice.name]: datasetFormSlice.reducer,
-    [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [displaySlice.name]: displaySlice.reducer,
-    [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [kgInactiveProjectsSlice.name]: kgInactiveProjectsSlice.reducer,
+    [startSessionSlice.name]: startSessionSlice.reducer,
+    [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
+    [workflowsSlice.name]: workflowsSlice.reducer,
+    // APIs
+    [dataServicesApi.reducerPath]: dataServicesApi.reducer,
+    [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
+    [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
-    [projectGitlabApi.reducerPath]: projectGitlabApi.reducer,
+    [projectGitLabApi.reducerPath]: projectGitLabApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
     [projectsKgApi.reducerPath]: projectsKgApi.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
-    [sessionApi.reducerPath]: sessionApi.reducer,
+    [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
-    [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
-    [workflowsSlice.name]: workflowsSlice.reducer,
   };
 
   // For the moment, disable the custom middleware, since it causes problems for our app.
@@ -91,12 +95,13 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(inactiveKgProjectsApi.middleware)
         .concat(kgSearchApi.middleware)
         .concat(projectCoreApi.middleware)
-        .concat(projectGitlabApi.middleware)
+        .concat(projectGitLabApi.middleware)
         .concat(projectKgApi.middleware)
         .concat(projectsApi.middleware)
         .concat(projectsKgApi.middleware)
         .concat(recentUserActivityApi.middleware)
-        .concat(sessionApi.middleware)
+        .concat(sessionSidecarApi.middleware)
+        .concat(sessionsApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(versionsApi.middleware)
         .concat(workflowsApi.middleware),

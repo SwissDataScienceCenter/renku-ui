@@ -28,7 +28,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Funnel, FunnelFill } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { Button, UncontrolledTooltip } from "reactstrap";
-import { StartSessionButton } from "../../features/session/components/SessionButtons";
+import SimpleSessionButton from "../../features/session/components/SimpleSessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { EntityType } from "./Entities";
 
@@ -41,7 +41,7 @@ function EntityButton({ type, slug }: EntityButtonProps) {
     case "project":
       return (
         <div className="card-button">
-          <StartSessionButton fullPath={slug} />
+          <SimpleSessionButton fullPath={slug} />
         </div>
       );
     case "dataset":

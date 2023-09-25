@@ -25,36 +25,36 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
+import { useSelector } from "react-redux";
 import { Redirect } from "react-router";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { useSelector } from "react-redux";
 
+import { LoginHelper, LoginRedirect } from "./authentication";
+import { Loader } from "./components/Loader";
+import ShowDataset from "./dataset/Dataset.container";
+import { DatasetCoordinator } from "./dataset/Dataset.state";
+import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
+import { Dashboard } from "./features/dashboard/Dashboard";
+import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
+import SearchPage from "./features/kgSearch/KgSearchPage";
+import { Unavailable } from "./features/maintenance/Maintenance";
+import AnonymousSessionsList from "./features/session/components/AnonymousSessionsList";
+import Help from "./help";
+import { AnonymousHome, FooterNavbar, RenkuNavBar } from "./landing";
+import { NotFound } from "./not-found";
+import { NotificationsManager, NotificationsPage } from "./notifications";
+import { Cookie, Privacy } from "./privacy";
 import { Project } from "./project";
 import { ProjectList } from "./project/list";
 import { NewProject } from "./project/new";
-import { AnonymousHome, RenkuNavBar, FooterNavbar } from "./landing";
-import { Notebooks } from "./notebooks";
-import { LoginRedirect, LoginHelper } from "./authentication";
-import Help from "./help";
-import { NotFound } from "./not-found";
-import ShowDataset from "./dataset/Dataset.container";
-import { Cookie, Privacy } from "./privacy";
-import { NotificationsManager, NotificationsPage } from "./notifications";
 import { StyleGuide } from "./styleguide";
-import { Url } from "./utils/helpers/url";
-import { Unavailable } from "./features/maintenance/Maintenance";
-import { Loader } from "./components/Loader";
-import DatasetAddToProject from "./dataset/addtoproject/DatasetAddToProject";
-import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
+import { Url } from "./utils/helpers/url";
 import { setupWebSocket } from "./websocket";
-import SearchPage from "./features/kgSearch/KgSearchPage";
-import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
-import { Dashboard } from "./features/dashboard/Dashboard";
 
-import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
+import "./App.css";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize
@@ -87,9 +87,11 @@ function CentralContentContainer(props) {
 
   const appContext = {
     client: props.client,
-    params: props.params,
-    location: props.location,
     coreApiVersionedUrlConfig,
+    location: props.location,
+    model: props.model,
+    notifications,
+    params: props.params,
   };
 
   return (
@@ -209,26 +211,9 @@ function CentralContentContainer(props) {
               />
             )}
           />
-          <Route
-            exact
-            path="/sessions"
-            render={(p) =>
-              !user.logged ? (
-                <ContainerWrap>
-                  <Notebooks
-                    key="sessions"
-                    standalone={true}
-                    client={props.client}
-                    model={props.model}
-                    blockAnonymous={blockAnonymous}
-                    {...p}
-                  />
-                </ContainerWrap>
-              ) : (
-                <Redirect to="/" />
-              )
-            }
-          />
+          <Route exact path={Url.get(Url.pages.sessions)}>
+            {!user.logged ? <AnonymousSessionsList /> : <Redirect to="/" />}
+          </Route>
           <Route
             path="/datasets/:identifier/add"
             render={(p) => (

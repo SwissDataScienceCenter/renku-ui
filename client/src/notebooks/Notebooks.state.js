@@ -81,6 +81,13 @@ const ExpectedAnnotations = {
       "gitlabProjectId",
       "projectName",
       "repository",
+      "hibernation",
+      "hibernationBranch",
+      "hibernationCommitSha",
+      "hibernationDate",
+      "hibernationDirty",
+      "hibernationSynchronized",
+      "hibernatedSecondsThreshold",
     ],
     default: {
       branch: "unknown",
@@ -90,6 +97,13 @@ const ExpectedAnnotations = {
       gitlabProjectId: 0,
       projectName: "unknown",
       repository: "https://none",
+      hibernation: {},
+      hibernationBranch: "",
+      hibernationCommitSha: "",
+      hibernationDate: "",
+      hibernationDirty: false,
+      hibernationSynchronized: false,
+      hibernatedSecondsThreshold: "0",
     },
   },
 };
@@ -113,7 +127,11 @@ const NotebooksHelper = {
       ) {
         let value = annotations[prefix + annotation] ?? annotations[annotation];
         // convert text boolean where a boolean is expected
-        if (annotation === "default_image_used") {
+        if (
+          annotation === "default_image_used" ||
+          annotation === "hibernationDirty" ||
+          annotation === "hibernationSynchronized"
+        ) {
           const origValue =
             annotations[prefix + annotation] ?? annotations[annotation];
           if (
@@ -124,6 +142,18 @@ const NotebooksHelper = {
           )
             value = true;
           else value = false;
+        }
+        // convert text json
+        if (annotation === "hibernation") {
+          try {
+            value = JSON.parse(value);
+          } catch (error) {
+            if (error instanceof SyntaxError) {
+              value = {};
+            } else {
+              throw error;
+            }
+          }
         }
         cleaned[annotation] = value;
       } else {
@@ -1296,7 +1326,8 @@ class NotebooksCoordinator {
       branch,
       commit,
       image,
-      options,
+      // options,
+      { serverOptions: { defaultUrl: startSessionOptions.defaultUrl } },
       env_variables
     );
   }
