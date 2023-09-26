@@ -77,17 +77,17 @@ import {
   parseCloudStorageConfiguration,
 } from "../../../project/utils/projectCloudStorage.utils";
 import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
-import { SessionCloudStorageV2 } from "../../startSessionOptions.types";
+import { SessionCloudStorage } from "../../startSessionOptions.types";
 import {
-  addCloudStorageV2,
-  removeCloudStorageV2,
-  setCloudStorageV2,
-  updateCloudStorageV2Item,
+  addCloudStorageItem,
+  removeCloudStorageItem,
+  setCloudStorage,
+  updateCloudStorageItem,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 
-export default function SessionCloudStorageOptionV2() {
+export default function SessionCloudStorageOption() {
   const { data: notebooksVersion, isLoading } = useGetNotebooksVersionsQuery();
 
   if (isLoading) {
@@ -143,7 +143,7 @@ function CloudStorageList() {
   const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
   const cloudStorageList = useStartSessionOptionsSelector(
-    ({ cloudStorageV2 }) => cloudStorageV2
+    ({ cloudStorage }) => cloudStorage
   );
 
   const dispatch = useDispatch();
@@ -170,7 +170,7 @@ function CloudStorageList() {
     if (storageForProject == null) {
       return;
     }
-    const initialCloudStorage: SessionCloudStorageV2[] = storageForProject.map(
+    const initialCloudStorage: SessionCloudStorage[] = storageForProject.map(
       ({ storage, sensitive_fields }) => ({
         active:
           (storage.storage_type === "s3" && support === "s3") ||
@@ -190,7 +190,7 @@ function CloudStorageList() {
         ...storage,
       })
     );
-    dispatch(setCloudStorageV2(initialCloudStorage));
+    dispatch(setCloudStorage(initialCloudStorage));
   }, [dispatch, storageForProject, support]);
 
   if (isLoading) {
@@ -228,7 +228,7 @@ function CloudStorageList() {
 
 interface CloudStorageItemProps {
   index: number;
-  storage: SessionCloudStorageV2;
+  storage: SessionCloudStorage;
 }
 
 function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
@@ -265,7 +265,7 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
 
   const onToggleActive = useCallback(() => {
     dispatch(
-      updateCloudStorageV2Item({
+      updateCloudStorageItem({
         index,
         storage: { ...storage, active: !storage.active },
       })
@@ -286,7 +286,7 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
         value,
       });
       dispatch(
-        updateCloudStorageV2Item({
+        updateCloudStorageItem({
           index,
           storage: {
             ...storage,
@@ -298,7 +298,7 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
     [dispatch, index, sensitive_fields, storage]
   );
   const onRemoveItem = useCallback(() => {
-    dispatch(removeCloudStorageV2({ index: index }));
+    dispatch(removeCloudStorageItem({ index: index }));
   }, [dispatch, index]);
 
   return (
@@ -501,7 +501,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
     (event: ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
       dispatch(
-        updateCloudStorageV2Item({
+        updateCloudStorageItem({
           index,
           storage: { ...storage, source_path: value },
         })
@@ -513,7 +513,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
     (event: ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
       dispatch(
-        updateCloudStorageV2Item({
+        updateCloudStorageItem({
           index,
           storage: { ...storage, target_path: value },
         })
@@ -523,7 +523,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
   );
   const onChangeReadWriteMode = useCallback(() => {
     dispatch(
-      updateCloudStorageV2Item({
+      updateCloudStorageItem({
         index,
         storage: { ...storage, readonly: !storage.readonly },
       })
@@ -557,7 +557,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
         {} as Record<string, string>
       );
     const updatedNewConfiguration = Object.entries(parsedConfiguration)
-      .filter(([key]) => !Object.keys(updateCloudStorageV2Item).includes(key))
+      .filter(([key]) => !Object.keys(updateCloudStorageItem).includes(key))
       .map(([key, value]) =>
         sensitiveFieldKeys.includes(key)
           ? ([key, CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN] as const)
@@ -576,7 +576,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
     );
 
     dispatch(
-      updateCloudStorageV2Item({
+      updateCloudStorageItem({
         index,
         storage: {
           ...storage,
@@ -767,7 +767,7 @@ function AddTemporaryCloudStorageModal({
       const data = getValues();
       const configuration = parseCloudStorageConfiguration(data.configuration);
       dispatch(
-        addCloudStorageV2({
+        addCloudStorageItem({
           active: true,
           configuration,
           name: data.name,

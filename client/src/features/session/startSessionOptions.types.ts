@@ -18,8 +18,7 @@
 
 export interface StartSessionOptions {
   branch: string;
-  cloudStorage: SessionCloudStorageMount[];
-  cloudStorageV2: SessionCloudStorageV2[];
+  cloudStorage: SessionCloudStorage[];
   commit: string;
   defaultUrl: string;
   dockerImageBuildStatus: DockerImageBuildStatus;
@@ -31,14 +30,7 @@ export interface StartSessionOptions {
   storage: number;
 }
 
-export interface SessionCloudStorageMount {
-  accessKey?: string;
-  bucket: string;
-  endpoint: string;
-  secretKey?: string;
-}
-
-export interface SessionCloudStorageV2 {
+export interface SessionCloudStorage {
   active: boolean;
   configuration: Record<string, string | undefined>;
   name: string;

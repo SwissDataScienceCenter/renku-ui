@@ -113,7 +113,7 @@ const sessionsApi = createApi({
     startSession: builder.mutation<Session, StartSessionParams>({
       query: ({
         branch,
-        cloudStorageV2,
+        cloudStorage,
         commit,
         defaultUrl,
         environmentVariables,
@@ -124,7 +124,7 @@ const sessionsApi = createApi({
         sessionClass,
         storage,
       }) => {
-        const cloudstorage = cloudStorageV2
+        const cloudstorage = cloudStorage
           .map(convertCloudStorageForSessionApi)
           .flatMap((item) => (item == null ? [] : [item]));
         const body = {

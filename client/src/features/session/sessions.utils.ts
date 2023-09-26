@@ -24,7 +24,7 @@ import {
   Session,
   Sessions,
 } from "./sessions.types";
-import { SessionCloudStorageV2 } from "./startSessionOptions.types";
+import { SessionCloudStorage } from "./startSessionOptions.types";
 
 interface GetRunningSessionArgs {
   autostartUrl: string;
@@ -53,7 +53,7 @@ export function getRunningSession({
 }
 
 export function convertCloudStorageForSessionApi(
-  cloudStorage: SessionCloudStorageV2
+  cloudStorage: SessionCloudStorage
 ): CloudStorageDefinitionForSessionApi | null {
   const {
     configuration,

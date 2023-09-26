@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { SessionCloudStorageV2 } from "./startSessionOptions.types";
+import { SessionCloudStorage } from "./startSessionOptions.types";
 
 export interface DockerImage {
   image: string;
@@ -92,7 +92,7 @@ export interface GetSessionsRawResponse {
 
 export interface StartSessionParams {
   branch: string;
-  cloudStorageV2: SessionCloudStorageV2[];
+  cloudStorage: SessionCloudStorage[];
   commit: string;
   defaultUrl: string;
   environmentVariables: Record<string, string>;

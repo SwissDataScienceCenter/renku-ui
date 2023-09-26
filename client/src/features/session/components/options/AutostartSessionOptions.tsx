@@ -103,7 +103,7 @@ function useAutostartSessionOptions(): void {
 
   const {
     branch: currentBranch,
-    cloudStorageV2,
+    cloudStorage,
     commit,
     defaultUrl,
     dockerImageStatus,
@@ -409,7 +409,7 @@ function useAutostartSessionOptions(): void {
     );
     startSession({
       branch: currentBranch,
-      cloudStorageV2: cloudStorageV2.filter(({ active }) => active),
+      cloudStorage: cloudStorage.filter(({ active }) => active),
       commit,
       defaultUrl,
       environmentVariables: {},
@@ -422,7 +422,7 @@ function useAutostartSessionOptions(): void {
     });
   }, [
     branches,
-    cloudStorageV2,
+    cloudStorage,
     commit,
     commits,
     currentBranch,

@@ -20,8 +20,8 @@ import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { CloudStorage } from "../../../project/projectCloudStorage.types";
 import { NotebooksVersion } from "../../../versions/versions";
-import { SessionCloudStorageV2 } from "../../startSessionOptions.types";
-import { setCloudStorageV2 } from "../../startSessionOptionsSlice";
+import { SessionCloudStorage } from "../../startSessionOptions.types";
+import { setCloudStorage } from "../../startSessionOptionsSlice";
 import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../../project/projectCloudStorage.constants";
 import { setError } from "../../startSession.slice";
 
@@ -47,7 +47,7 @@ export default function useDefaultCloudStorageOption({
       return;
     }
 
-    const initialCloudStorage: SessionCloudStorageV2[] = storageForProject.map(
+    const initialCloudStorage: SessionCloudStorage[] = storageForProject.map(
       ({ storage, sensitive_fields }) => ({
         active:
           (storage.storage_type === "s3" && support === "s3") ||
@@ -84,6 +84,6 @@ export default function useDefaultCloudStorageOption({
       return;
     }
 
-    dispatch(setCloudStorageV2(initialCloudStorage));
+    dispatch(setCloudStorage(initialCloudStorage));
   }, [dispatch, storageForProject, support]);
 }

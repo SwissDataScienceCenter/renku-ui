@@ -66,7 +66,7 @@ import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
 import AutostartSessionOptions from "./options/AutostartSessionOptions";
 import SessionBranchOption from "./options/SessionBranchOption";
-import SessionCloudStorageOptionV2 from "./options/SessionCloudStorageOptionV2";
+import SessionCloudStorageOption from "./options/SessionCloudStorageOption";
 import SessionCommitOption from "./options/SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
 import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
@@ -604,7 +604,7 @@ function StartNewSessionOptions() {
       <SessionBranchOption />
       <SessionCommitOption />
       <StartNotebookServerOptions />
-      <SessionCloudStorageOptionV2 />
+      <SessionCloudStorageOption />
       <SessionEnvironmentVariables />
     </>
   );
@@ -628,7 +628,7 @@ function StartSessionButton() {
 
   const {
     branch,
-    cloudStorageV2,
+    cloudStorage,
     commit,
     defaultUrl,
     dockerImageStatus,
@@ -641,7 +641,7 @@ function StartSessionButton() {
 
   const missingCredentialsStorage = useMemo(
     () =>
-      cloudStorageV2
+      cloudStorage
         .filter(({ active }) => active)
         .filter(({ configuration, sensitive_fields }) => {
           const providedSensitiveFields = Object.entries(configuration)
@@ -654,7 +654,7 @@ function StartSessionButton() {
           );
           return requiredSensitiveFields?.find(({ value }) => !value);
         }),
-    [cloudStorageV2]
+    [cloudStorage]
   );
 
   const enabled =
@@ -667,7 +667,7 @@ function StartSessionButton() {
   });
 
   const onStart = useCallback(() => {
-    const cloudStorageValidated = cloudStorageV2.filter(({ active }) => active);
+    const cloudStorageValidated = cloudStorage.filter(({ active }) => active);
 
     const environmentVariablesRecord = environmentVariables
       .filter(({ name, value }) => name && value)
@@ -691,7 +691,7 @@ function StartSessionButton() {
     );
     startSession({
       branch,
-      cloudStorageV2: cloudStorageValidated,
+      cloudStorage: cloudStorageValidated,
       commit,
       defaultUrl,
       environmentVariables: environmentVariablesRecord,
@@ -704,7 +704,7 @@ function StartSessionButton() {
     });
   }, [
     branch,
-    cloudStorageV2,
+    cloudStorage,
     commit,
     defaultUrl,
     dispatch,
