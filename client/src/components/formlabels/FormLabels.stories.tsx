@@ -23,77 +23,61 @@ import {
   InputLabel,
   LoadingLabel,
 } from "./FormLabels";
+import { Meta, StoryObj } from "@storybook/react";
+import { LabelProps } from "reactstrap";
 
-interface LabelsProps {
-  text: string;
-  isRequired: boolean;
-}
-
-export default {
+const meta: Meta<typeof InputLabel> = {
   title: "Components/Forms/Labels",
+  component: InputLabel,
+};
+export default meta;
+type Story = StoryObj<typeof InputLabel>;
+
+export const Default: Story = {
+  args: {
+    text: "My Label",
+  },
 };
 
-export const Input = (args: LabelsProps) => (
-  <>
-    <InputLabel isRequired={args.isRequired} text={args.text} />
-  </>
-);
-Input.args = {
-  text: "My Label",
+export const Required: Story = {
+  args: {
+    text: "My Label",
+    isRequired: true,
+  },
 };
 
-export const Required = (args: LabelsProps) => (
-  <>
-    <InputLabel isRequired={args.isRequired} text={args.text} />
-  </>
-);
-Required.args = {
-  text: "My Label",
-  isRequired: true,
+export const Optional: Story = {
+  args: {
+    text: "My Label",
+    isRequired: false,
+  },
 };
 
-export const Optional = (args: LabelsProps) => (
-  <>
-    <InputLabel isRequired={args.isRequired} text={args.text} />
-  </>
-);
-Optional.args = {
-  text: "My Label",
-  isRequired: false,
+export const Loading = {
+  render: (args: LabelProps) => <LoadingLabel text={args.text} />,
+  args: {
+    text: "Fetching templates...",
+  },
 };
 
-export const Loading = (args: LabelsProps) => (
-  <>
-    <LoadingLabel text={args.text} />
-  </>
-);
-Loading.args = {
-  text: "Fetching templates...",
+type StoryHelper = StoryObj<typeof HelperLabel>;
+export const Helper: StoryHelper = {
+  render: (args) => <HelperLabel text={args.text} />,
+  args: {
+    text: "Fetch templates first, or switch template source to RenkuLab",
+  },
 };
 
-export const Helper = (args: LabelsProps) => (
-  <>
-    <HelperLabel text={args.text} />
-  </>
-);
-Helper.args = {
-  text: "Fetch templates first, or switch template source to RenkuLab",
+export const InputHint = {
+  render: (args: LabelProps) => <InputHintLabel text={args.text} />,
+  args: {
+    text: "Provide a number between 0 and 9",
+  },
 };
 
-export const InputHint = (args: LabelsProps) => (
-  <>
-    <InputHintLabel text={args.text} />
-  </>
-);
-InputHint.args = {
-  text: "Provide a number between 0 and 9",
-};
-
-export const Error = (args: LabelsProps) => (
-  <>
-    <ErrorLabel text={args.text} />
-  </>
-);
-Error.args = {
-  text: "Please select a template",
+export const Error = {
+  render: (args: LabelProps) => <ErrorLabel text={args.text} />,
+  args: {
+    text: "Please select a template",
+  },
 };

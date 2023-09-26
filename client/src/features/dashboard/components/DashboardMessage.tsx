@@ -31,7 +31,7 @@ import {
 } from "../message/dashboardMessageSlice";
 import styles from "./DashboardMessage.module.scss";
 
-export function DashboardMessage() {
+export default function DashboardMessage() {
   const { params } = useContext(AppContext);
 
   const dashboardParams = useMemo(

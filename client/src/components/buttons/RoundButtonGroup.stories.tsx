@@ -17,7 +17,7 @@
  */
 import { Button } from "../../utils/ts-wrappers";
 import { RoundButtonGroup } from "./Button";
-import { Meta } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof Button> = {
   component: RoundButtonGroup,
@@ -33,17 +33,37 @@ const meta: Meta<typeof Button> = {
 };
 
 export default meta;
+type Story = StoryObj<typeof RoundButtonGroup>;
 
-const optionsGroupButton = [
-  <Button key="button-x" className="btn-outline-rk-green">
-    Option X
-  </Button>,
-  <Button key="button-y" className="btn-outline-rk-green">
-    Option Y
-  </Button>,
-];
-export const Default = () => (
-  <>
-    <RoundButtonGroup>{optionsGroupButton}</RoundButtonGroup>
-  </>
-);
+export const Default: Story = {
+  render: () => {
+    return (
+      <RoundButtonGroup>
+        <Button key="button-x" className="btn-outline-rk-green">
+          Fork
+        </Button>
+        <Button key="button-y" className="btn-outline-rk-green">
+          15
+        </Button>
+      </RoundButtonGroup>
+    );
+  },
+};
+
+export const MultipleButtons: Story = {
+  render: () => {
+    return (
+      <RoundButtonGroup>
+        <Button key="button-x" className="btn-outline-rk-green">
+          Pull
+        </Button>
+        <Button key="button-y" className="btn-outline-rk-green">
+          Push
+        </Button>
+        <Button key="button-z" className="btn-outline-rk-green">
+          Merge
+        </Button>
+      </RoundButtonGroup>
+    );
+  },
+};

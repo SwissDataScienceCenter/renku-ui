@@ -16,14 +16,10 @@
  * limitations under the License.
  */
 
-import { StoryFn as Story } from "@storybook/react";
-import ProgressIndicator, {
-  ProgressIndicatorProps,
-  ProgressStyle,
-  ProgressType,
-} from "./Progress";
+import { Meta, StoryObj } from "@storybook/react";
+import ProgressIndicator, { ProgressStyle, ProgressType } from "./Progress";
 
-export default {
+const meta: Meta<typeof ProgressIndicator> = {
   title: "components/ProgressIndicator",
   component: ProgressIndicator,
   argTypes: {
@@ -63,41 +59,46 @@ export default {
     },
   },
 };
+export default meta;
+type Story = StoryObj<typeof ProgressIndicator>;
 
-const Template: Story<ProgressIndicatorProps> = (args) => (
-  <ProgressIndicator {...args} />
-);
-export const Default = Template.bind({});
-Default.args = {
-  title: "Creating Project",
-  description: "We've receive your project information. This may take a while.",
-  type: ProgressType.Indeterminate,
-  style: ProgressStyle.Dark,
-  percentage: undefined,
-  currentStatus: undefined,
-  feedback: "We will notify you when the process is completed",
+export const Default: Story = {
+  args: {
+    title: "Creating Project",
+    description:
+      "We've receive your project information. This may take a while.",
+    type: ProgressType.Indeterminate,
+    style: ProgressStyle.Dark,
+    percentage: undefined,
+    currentStatus: undefined,
+    feedback: "We will notify you when the process is completed",
+  },
 };
 
-export const Determinate = Template.bind({});
-Determinate.args = {
-  type: ProgressType.Determinate,
-  style: ProgressStyle.Dark,
-  title: "Creating Project",
-  description: "We've receive your project information. This may take a while.",
-  percentage: 10,
-  currentStatus: "Indexing is running... ",
-  feedback:
-    "You'll be redirected to the new project page when the creation is completed.",
+export const Determinate: Story = {
+  args: {
+    type: ProgressType.Determinate,
+    style: ProgressStyle.Dark,
+    title: "Creating Project",
+    description:
+      "We've receive your project information. This may take a while.",
+    percentage: 10,
+    currentStatus: "Indexing is running... ",
+    feedback:
+      "You'll be redirected to the new project page when the creation is completed.",
+  },
 };
 
-export const LightStyle = Template.bind({});
-LightStyle.args = {
-  type: ProgressType.Determinate,
-  style: ProgressStyle.Light,
-  title: "Creating Project",
-  description: "We've receive your project information. This may take a while.",
-  percentage: 60,
-  currentStatus: "Indexing is running... ",
-  feedback:
-    "You'll be redirected to the new project page when the creation is completed.",
+export const LightStyle: Story = {
+  args: {
+    type: ProgressType.Determinate,
+    style: ProgressStyle.Light,
+    title: "Creating Project",
+    description:
+      "We've receive your project information. This may take a while.",
+    percentage: 60,
+    currentStatus: "Indexing is running... ",
+    feedback:
+      "You'll be redirected to the new project page when the creation is completed.",
+  },
 };

@@ -16,14 +16,11 @@
  * limitations under the License.
  */
 
-import { StoryFn as Story } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 import { ProgressStyle, ProgressType } from "./Progress";
-import ProgressStepsIndicator, {
-  ProgressStepsIndicatorProps,
-  StepsProgressBar,
-} from "./ProgressSteps";
+import ProgressStepsIndicator, { StepsProgressBar } from "./ProgressSteps";
 
-export default {
+const meta: Meta<typeof ProgressStepsIndicator> = {
   title: "components/ProgressIndicatorSteps",
   component: ProgressStepsIndicator,
   argTypes: {
@@ -41,20 +38,8 @@ export default {
       description: "Style for background. Light or Dark",
     },
     type: {
-      control: { type: "radio" },
-      options: [ProgressType.Determinate, ProgressType.Indeterminate],
-      description: "Type of progress-bar. Indeterminate or Determinate",
-    },
-    percentage: {
-      control: {
-        type: "range",
-        min: 0,
-        max: 100,
-      },
-    },
-    message: {
-      control: {
-        type: "text",
+      table: {
+        disable: true,
       },
     },
   },
@@ -103,15 +88,15 @@ const status = {
   state: "starting",
   totalNumContainers: 7,
 };
+export default meta;
+type Story = StoryObj<typeof ProgressStepsIndicator>;
 
-const Template: Story<ProgressStepsIndicatorProps> = (args) => (
-  <ProgressStepsIndicator {...args} />
-);
-export const Default = Template.bind({});
-Default.args = {
-  title: "Starting Session (continuing from autosave)",
-  description: "Starting the containers for your session",
-  type: ProgressType.Determinate,
-  style: ProgressStyle.Dark,
-  status: status.details as StepsProgressBar[],
+export const Default: Story = {
+  args: {
+    title: "Starting Session (continuing from autosave)",
+    description: "Starting the containers for your session",
+    type: ProgressType.Determinate,
+    style: ProgressStyle.Dark,
+    status: status.details as StepsProgressBar[],
+  },
 };

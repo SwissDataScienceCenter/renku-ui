@@ -16,24 +16,29 @@
  * limitations under the License.
  */
 
-import { StoryFn as Story } from "@storybook/react";
-import { VisibilityFilterProps, VisibilityFilter } from "./VisibilityFilter";
+import { Meta, StoryObj } from "@storybook/react";
+import { VisibilityFilter } from "./VisibilityFilter";
 
-export default {
+const meta: Meta<typeof VisibilityFilter> = {
   title: "components/Search/VisibilityFilter",
   component: VisibilityFilter,
-  argTypes: {},
+  argTypes: {
+    handler: {
+      table: {
+        disable: true,
+      },
+    },
+  },
 };
+export default meta;
+type Story = StoryObj<typeof VisibilityFilter>;
 
-const Template: Story<VisibilityFilterProps> = (args) => (
-  <VisibilityFilter {...args} />
-);
-
-export const Default = Template.bind({});
-Default.args = {
-  value: {
-    public: false,
-    internal: false,
-    private: false,
+export const Default: Story = {
+  args: {
+    value: {
+      public: true,
+      internal: false,
+      private: false,
+    },
   },
 };
