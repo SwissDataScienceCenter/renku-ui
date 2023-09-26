@@ -52,7 +52,6 @@ export function getRunningSession({
   return sorted.at(0);
 }
 
-/* eslint-disable spellcheck/spell-checker */
 export function convertCloudStorageForSessionApi(
   cloudStorage: SessionCloudStorageV2
 ): CloudStorageDefinitionForSessionApi | null {
@@ -109,4 +108,3 @@ export function convertCloudStorageForSessionApi(
 
   return null;
 }
-/* eslint-enable spellcheck/spell-checker */

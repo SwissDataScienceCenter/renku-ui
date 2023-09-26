@@ -20,13 +20,13 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-// import { ChevronDown } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
-import { simpleHash } from "../../../../utils/helpers/HelperFunctions";
-import styles from "./migrations.module.scss";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
+import { simpleHash } from "../../../../utils/helpers/HelperFunctions";
+
+import styles from "./migrations.module.scss";
 
 interface MoreInfoLinkProps {
   url: string;

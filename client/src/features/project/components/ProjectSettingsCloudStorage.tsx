@@ -57,6 +57,7 @@ import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
+import { RenkuMarkdown } from "../../../components/markdown/RenkuMarkdown";
 import { User } from "../../../model/RenkuModels";
 import { NotebooksVersion } from "../../versions/versions";
 import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
@@ -81,7 +82,6 @@ import {
   parseCloudStorageConfiguration,
 } from "../utils/projectCloudStorage.utils";
 import AddCloudStorageButton from "./AddCloudStorageButton";
-import CredentialsHelpText from "./CredentialsHelpText";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -906,7 +906,7 @@ function CredentialMoreInfo({ help }: { help: string }) {
       </span>
       <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
         <PopoverBody>
-          <CredentialsHelpText help={help} />
+          <RenkuMarkdown markdownText={help} />
         </PopoverBody>
       </UncontrolledPopover>
     </>

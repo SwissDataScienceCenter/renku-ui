@@ -123,7 +123,6 @@ export type CloudStorageDefinitionForSessionApi =
     }
   | {
       configuration: {
-        // eslint-disable-next-line spellcheck/spell-checker
         type: "azureblob";
         endpoint: string;
         secret_access_key: string;

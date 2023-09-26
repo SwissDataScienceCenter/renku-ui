@@ -409,7 +409,6 @@ function useAutostartSessionOptions(): void {
     );
     startSession({
       branch: currentBranch,
-      // cloudStorageV2: [], // TODO: populate this
       cloudStorageV2: cloudStorageV2.filter(({ active }) => active),
       commit,
       defaultUrl,

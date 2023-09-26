@@ -604,8 +604,6 @@ function StartNewSessionOptions() {
       <SessionBranchOption />
       <SessionCommitOption />
       <StartNotebookServerOptions />
-      {/* <SessionEnvironmentVariables /> */}
-      {/* <SessionCloudStorageOption /> */}
       <SessionCloudStorageOptionV2 />
       <SessionEnvironmentVariables />
     </>
@@ -630,7 +628,6 @@ function StartSessionButton() {
 
   const {
     branch,
-    // cloudStorage,
     cloudStorageV2,
     commit,
     defaultUrl,
@@ -670,16 +667,6 @@ function StartSessionButton() {
   });
 
   const onStart = useCallback(() => {
-    // const cloudStorageValidated = cloudStorage.filter(
-    //   ({ bucket, endpoint }) => {
-    //     const isEndpointValid = isCloudStorageEndpointValid({ endpoint });
-    //     const hasDuplicate =
-    //       !!bucket &&
-    //       cloudStorage.filter((mount) => mount.bucket === bucket).length > 1;
-    //     const isBucketValid = isCloudStorageBucketValid({ bucket });
-    //     return isEndpointValid && !hasDuplicate && isBucketValid;
-    //   }
-    // );
     const cloudStorageValidated = cloudStorageV2.filter(({ active }) => active);
 
     const environmentVariablesRecord = environmentVariables

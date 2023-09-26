@@ -325,8 +325,6 @@ export default function ProjectSettingsSessions() {
         devAccess={devAccess}
       />
 
-      {/* <SessionCloudStorageOption /> */}
-
       <ProjectSettingsSessionsAdvanced
         apiVersion={apiVersion}
         metadataVersion={metadataVersion}
