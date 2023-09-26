@@ -8,6 +8,9 @@ const commitHash = require("child_process")
   .trim();
 const version = commitHash ? commitHash : "dev";
 
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+
 module.exports = {
   webpack: {
     configure: {
@@ -16,6 +19,7 @@ module.exports = {
         chunkFilename: `[name].[fullhash]-${version}.chunk.js`,
       },
     },
+    plugins: [new BundleAnalyzerPlugin()],
   },
   jest: {
     configure: {
