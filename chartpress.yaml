@@ -13,7 +13,7 @@ charts:
         contextPath: client/
         # Dockerfile path relative to chartpress.yaml
         dockerfilePath: client/Dockerfile
-        valuesPath: client.image
+        valuesPath: ui.client.image
         paths:
           - client
           - tests
@@ -28,7 +28,7 @@ charts:
         contextPath: server/
         # Dockerfile path relative to chartpress.yaml
         dockerfilePath: server/Dockerfile
-        valuesPath: server.image
+        valuesPath: ui.server.image
         paths:
           - client
           - tests
