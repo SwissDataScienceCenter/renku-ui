@@ -41,6 +41,7 @@ describe("rendering", () => {
     const props = {
       settingsUrl: "",
       settingsSessionsUrl: "",
+      settingsCloudStorageUrl: "",
     };
 
     const div = document.createElement("div");
