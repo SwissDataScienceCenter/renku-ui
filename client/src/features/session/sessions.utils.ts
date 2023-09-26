@@ -19,12 +19,7 @@
 import { DateTime } from "luxon";
 import { NotebooksHelper } from "../../notebooks";
 import { Url } from "../../utils/helpers/url";
-import {
-  CloudStorageDefinitionForSessionApi,
-  Session,
-  Sessions,
-} from "./sessions.types";
-import { SessionCloudStorage } from "./startSessionOptions.types";
+import { Session, Sessions } from "./sessions.types";
 
 interface GetRunningSessionArgs {
   autostartUrl: string;
@@ -50,61 +45,4 @@ export function getRunningSession({
     DateTime.fromISO(b.started).diff(DateTime.fromISO(a.started)).valueOf()
   );
   return sorted.at(0);
-}
-
-export function convertCloudStorageForSessionApi(
-  cloudStorage: SessionCloudStorage
-): CloudStorageDefinitionForSessionApi | null {
-  const {
-    configuration,
-    readonly,
-    sensitive_fields,
-    source_path,
-    storage_type,
-    target_path,
-  } = cloudStorage;
-
-  if (storage_type === "s3" || configuration["type"] === "s3") {
-    const endpoint =
-      configuration["endpoint"] && configuration["endpoint"].startsWith("http")
-        ? configuration["endpoint"]
-        : configuration["endpoint"]
-        ? `https://${configuration["endpoint"]}`
-        : configuration["region"]
-        ? `https://s3.${configuration["region"]}.amazonaws.com`
-        : "https://s3.amazonaws.com";
-
-    return {
-      configuration: {
-        type: "s3",
-        endpoint,
-        access_key_id: sensitive_fields?.find(
-          ({ name }) => name === "access_key_id"
-        )?.value,
-        secret_access_key: sensitive_fields?.find(
-          ({ name }) => name === "secret_access_key"
-        )?.value,
-      },
-      readonly,
-      source_path,
-      target_path,
-    };
-  }
-
-  if (storage_type === "azureblob" || configuration["type"] === "azureblob") {
-    return {
-      configuration: {
-        type: "azureblob",
-        endpoint: configuration["account"] ?? "",
-        secret_access_key:
-          sensitive_fields?.find(({ name }) => name === "secret_access_key")
-            ?.value ?? "",
-      },
-      readonly,
-      source_path,
-      target_path,
-    };
-  }
-
-  return null;
 }

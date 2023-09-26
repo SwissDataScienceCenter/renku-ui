@@ -17,6 +17,7 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { convertCloudStorageForSessionApi } from "./sessions.api.utils";
 import {
   DockerImage,
   GetDockerImageParams,
@@ -29,7 +30,6 @@ import {
   Sessions,
   StartSessionParams,
 } from "./sessions.types";
-import { convertCloudStorageForSessionApi } from "./sessions.utils";
 
 interface StopSessionArgs {
   serverName: string;
