@@ -2,10 +2,7 @@
 // ? REF: https://github.com/gsoft-inc/craco
 
 // get the commit short hash
-const commitHash = require("child_process")
-  .execSync("echo $RENKU_UI_SHORT_SHA")
-  .toString()
-  .trim();
+const commitHash = process.env.RENKU_UI_SHORT_SHA?.trim();
 const version = commitHash ? commitHash : "dev";
 
 module.exports = {
