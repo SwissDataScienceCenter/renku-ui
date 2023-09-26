@@ -37,7 +37,8 @@ import { Clipboard } from "../components/Clipboard";
 import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import { TimeCaption } from "../components/TimeCaption";
-import NotebookPreview from "../components/notebook";
+// import NotebookPreview from "../components/notebook";
+import LazyNotebookPreview from "../components/notebook/LazyNotebookRender";
 import { CheckNotebookStatus } from "../notebooks";
 import { CheckNotebookIcon } from "../notebooks/NotebookStart.present";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
@@ -500,11 +501,23 @@ const StyledNotebook = memo((props) => {
       setDisplayMode={setDisplayMode}
     />,
     <CardBody key="notebook">
-      <NotebookPreview
+      {/* <Suspense fallback={<Loader />}>
+        <LazyNotebookPreview
+          defaultStyle={false}
+          loadMathjax={false}
+          notebook={notebook}
+        />
+      </Suspense> */}
+      <LazyNotebookPreview
         defaultStyle={false}
         loadMathjax={false}
         notebook={notebook}
       />
+      {/* <NotebookPreview
+        defaultStyle={false}
+        loadMathjax={false}
+        notebook={notebook}
+      /> */}
     </CardBody>,
   ];
 }, _.isEqual);
