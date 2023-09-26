@@ -372,7 +372,7 @@ function configureWebsocket(
       // Try to parse the message to a WsClientMessage
       let clientMessage: WsClientMessage;
       try {
-        clientMessage = JSON.parse(message as string);
+        clientMessage = JSON.parse(message.toString());
         const res = checkWsClientMessage(clientMessage);
         if (!res)
           throw new Error(
