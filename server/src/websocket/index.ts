@@ -17,27 +17,29 @@
  */
 
 import ws from "ws";
+import * as SentryLib from "@sentry/node";
 
-import config from "../config";
-import logger from "../logger";
-import { checkWsClientMessage, WsMessage, WsClientMessage } from "./WsMessages";
-import { Storage } from "../storage";
+import APIClient from "../api-client";
 import { Authenticator } from "../authentication";
 import { wsRenkuAuth } from "../authentication/middleware";
+import config from "../config";
+import logger from "../logger";
+import { Storage } from "../storage";
 import { getCookieValueByName } from "../utils";
-import {
-  handlerRequestServerVersion,
-  heartbeatRequestServerVersion,
-} from "./handlers/clientVersion";
-import APIClient from "../api-client";
-import {
-  handlerRequestSessionStatus,
-  heartbeatRequestSessionStatus,
-} from "./handlers/sessions";
+import { errorHandler } from "../utils/errorHandler";
+import { WsClientMessage, WsMessage, checkWsClientMessage } from "./WsMessages";
 import {
   handlerRequestActivationKgStatus,
   heartbeatRequestActivationKgStatus,
 } from "./handlers/activationKgStatus";
+import {
+  handlerRequestServerVersion,
+  heartbeatRequestServerVersion,
+} from "./handlers/clientVersion";
+import {
+  handlerRequestSessionStatus,
+  heartbeatRequestSessionStatus,
+} from "./handlers/sessions";
 
 // *** Channels ***
 // No need to store data in Redis since it's used only locally. We can modify this if necessary.
@@ -263,6 +265,20 @@ function configureWebsocket(
 ): void {
   server.on("connection", async (socket, request) => {
     // ? Should we Upgrade here? And verify the Origin since same-origin policy doesn't work for WS?
+
+    // handle errors
+    socket.on("error", async (error) => {
+      errorHandler.handleError(error);
+    });
+
+    if (config.sentry.enabled) {
+      SentryLib.setContext("WebSocket", {
+        protocol: socket.protocol,
+        url: socket.url,
+      });
+      const requestData = SentryLib.extractRequestData(request);
+      SentryLib.setContext("WebSocket Initial Request", requestData);
+    }
 
     // get the user id
     const sessionId = getCookieValueByName(

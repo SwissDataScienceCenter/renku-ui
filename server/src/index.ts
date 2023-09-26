@@ -102,7 +102,6 @@ if (config.websocket.enabled) {
   addWebSocketServerContext(wsServer);
   authPromise.then(() => {
     logger.info("Configuring WebSocket server");
-
     configureWebsocket(wsServer, authenticator, storage, apiClient);
   });
 }
@@ -111,6 +110,9 @@ function shutdown() {
   server.close(() => {
     storage.shutdown();
     logger.info("Shutdown completed.");
+    setImmediate(() => {
+      process.exit(0);
+    });
   });
 }
 

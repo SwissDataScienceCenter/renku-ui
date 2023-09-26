@@ -152,12 +152,19 @@ export function addWebSocketServerContext(wss: Server): void {
 
   const context = {
     address: wss.address(),
-    options: wss.options,
+    options: Object.entries(wss.options)
+      .filter(
+        ([, value]) =>
+          (typeof value !== "object" && typeof value !== "function") ||
+          value == null
+      )
+      .reduce(
+        (obj, [key, value]) => ({ ...obj, [key]: value }),
+        {} as Record<string, unknown>
+      ),
     path: wss.path,
   };
-  console.log("WSS context:");
-  console.log(context);
-  SentryLib.setContext("WebSocketServer", context);
+  SentryLib.setContext("WebSocket Server", context);
 }
 
 export { initializeSentry };
