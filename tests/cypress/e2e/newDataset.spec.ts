@@ -186,6 +186,9 @@ describe("Project new dataset", () => {
       statusCode: 500,
     };
     fixtures.uploadDatasetFile("errorUploadFile", "", options);
+    cy.gui_new_dataset({
+      title: "New dataset fail",
+    });
     cy.get('[data-cy="dropzone"]').attachFile("/datasets/files/bigFile.bin", {
       subjectType: "drag-n-drop",
     });
@@ -195,7 +198,7 @@ describe("Project new dataset", () => {
     );
     cy.get_cy("submit-button").click();
     cy.get("div.error-feedback")
-      .contains("Please fix problems in the following fields: Title, Files")
+      .contains("Please fix problems in the following field: Files")
       .should("exist");
   });
 
