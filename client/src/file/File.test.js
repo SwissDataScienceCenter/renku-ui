@@ -28,14 +28,14 @@ import { MemoryRouter } from "react-router-dom";
 import { act } from "react-test-renderer";
 
 import { testClient as client } from "../api-client";
-import { generateFakeUser } from "../user/User.test";
-import { ShowFile, JupyterButton, FilePreview } from "./index";
 import { StateModel, globalSchema } from "../model";
+import { generateFakeUser } from "../user/User.test";
 import {
   NotebookSourceDisplayMode,
   sanitizeNotebook,
   tweakCellMetadata,
 } from "./File.present";
+import { JupyterButton, ShowFile } from "./index";
 
 const model = new StateModel(globalSchema);
 

@@ -23,19 +23,8 @@
  *  Tests for project/list.
  */
 
-import { MemoryRouter } from "react-router-dom";
-import { createMemoryHistory } from "history";
-import TestRenderer, { act } from "react-test-renderer";
-import { Provider } from "react-redux";
-
-import { testClient as client } from "../../api-client";
-import { generateFakeUser } from "../../user/User.test";
 import { Url } from "../../utils/helpers/url";
 import { tests } from "./ProjectList.container";
-import AppContext from "../../utils/context/appContext";
-import { ProjectList } from "./";
-import { globalSchema, StateModel } from "../../model";
-import { Suspense } from "react";
 
 describe("helper functions", () => {
   it("removeDefaultParams", () => {
