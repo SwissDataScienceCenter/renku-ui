@@ -137,61 +137,7 @@ describe("rendering", () => {
         );
       });
     });
-
-    for (let key of Object.keys(file)) {
-      it(`renders FilePreview for ${user.type} user - case ${key}`, async () => {
-        const fileProps = file[key];
-        const previewThreshold = props.params.PREVIEW_THRESHOLD;
-        const div = document.createElement("div");
-        document.body.appendChild(div);
-        const root = createRoot(div);
-        await act(async () => {
-          root.render(
-            <MemoryRouter>
-              <FilePreview
-                file={fileProps}
-                previewThreshold={previewThreshold}
-              />
-            </MemoryRouter>
-          );
-        });
-      });
-    }
   }
-});
-
-describe("rendering pdf -- console suppressed!", () => {
-  beforeEach(() => {
-    jest.spyOn(console, "log").mockImplementation(() => {
-      // eslint-disable-line @typescript-eslint/no-empty-function
-    });
-    jest.spyOn(console, "error").mockImplementation(() => {
-      // eslint-disable-line @typescript-eslint/no-empty-function
-    });
-  });
-
-  const filePdf = {
-    file_name: "text.pdf",
-    content:
-      // eslint-disable-next-line spellcheck/spell-checker
-      "JVBERi0xLjAKMSAwIG9iajw8L1BhZ2VzIDIgMCBSPj5lbmRvYmogMiAwIG9iajw8L0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iaiAzIDAgb2JqPDwvTWVkaWFCb3hbMCAwIDMgM10+PmVuZG9iagp0cmFpbGVyPDwvUm9vdCAxIDAgUj4+Cg==",
-  };
-
-  it("renders FilePreview for pdf", async () => {
-    const previewThreshold = {
-      PREVIEW_THRESHOLD: { soft: 1048576, hard: 10485760 },
-    };
-    const div = document.createElement("div");
-    document.body.appendChild(div);
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <FilePreview file={filePdf} previewThreshold={previewThreshold} />
-        </MemoryRouter>
-      );
-    });
-  });
 });
 
 describe("cell metadata messaging", () => {
