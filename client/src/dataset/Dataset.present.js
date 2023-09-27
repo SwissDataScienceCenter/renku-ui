@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-import { useState } from "react";
 import { faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import _ from "lodash";
+import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useHistory } from "react-router-dom";
 import { Button, Card, CardBody, CardHeader, Col, Table } from "reactstrap";
@@ -33,7 +33,7 @@ import { EntityDeleteButtonButton } from "../components/entities/Buttons";
 import EntityHeader from "../components/entityHeader/EntityHeader";
 import { CoreErrorAlert } from "../components/errors/CoreErrorAlert";
 import { CoreError } from "../components/errors/CoreErrorHelpers";
-import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
+import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import DeleteDataset from "../project/datasets/delete";
 import { toHumanDateTime } from "../utils/helpers/DateTimeUtils";
 import { Url } from "../utils/helpers/url";
@@ -180,7 +180,7 @@ function DisplayDescription(props) {
       <CardHeader className="bg-white p-3 ps-4">Dataset description</CardHeader>
       <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
         {props.insideProject ? (
-          <RenkuMarkdown
+          <LazyRenkuMarkdown
             projectPathWithNamespace={props.projectPathWithNamespace}
             filePath={""}
             fixRelativePaths={true}
@@ -190,7 +190,7 @@ function DisplayDescription(props) {
             projectId={props.projectId}
           />
         ) : (
-          <RenkuMarkdown markdownText={props.description} />
+          <LazyRenkuMarkdown markdownText={props.description} />
         )}
       </CardBody>
     </Card>

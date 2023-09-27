@@ -16,15 +16,16 @@
  * limitations under the License.
  */
 
-import { RenkuMarkdown } from "./RenkuMarkdown";
+// import { RenkuMarkdown } from "./RenkuMarkdown";
+import LazyRenkuMarkdown from "./LazyRenkuMarkdown";
 import { Meta, StoryObj } from "@storybook/react";
 
-const meta: Meta<typeof RenkuMarkdown> = {
-  title: "components/RenkuMarkdown",
-  component: RenkuMarkdown,
+const meta: Meta<typeof LazyRenkuMarkdown> = {
+  title: "components/LazyRenkuMarkdown",
+  component: LazyRenkuMarkdown,
 };
 export default meta;
-type Story = StoryObj<typeof RenkuMarkdown>;
+type Story = StoryObj<typeof LazyRenkuMarkdown>;
 
 const text2 = `
 # h1 Heading 

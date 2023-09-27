@@ -17,14 +17,15 @@
  */
 
 import React from "react";
-import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
+// import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
 import { CardBody } from "reactstrap";
 
-import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
+import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { encodeImageBase64 } from "../components/markdown/RenkuMarkdownWithPathTranslation";
 import { atobUTF8 } from "../utils/helpers/Encoding";
 import { FileNoPreview, StyledNotebook } from "./File.present";
 import LazyCodePreview from "./LazyCodePreview";
+import LazyPDFViewer from "./LazyPDFViewer";
 
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
@@ -200,7 +201,9 @@ function FilePreview(props: FilePreviewProps) {
   if ("pdf" === fileType) {
     return (
       <CardBody key="file preview" className="pb-0 bg-white">
-        <PDFViewer file={`data:application/pdf;base64,${props.file.content}`} />
+        <LazyPDFViewer
+          file={`data:application/pdf;base64,${props.file.content}`}
+        />
       </CardBody>
     );
   }
@@ -221,7 +224,7 @@ function FilePreview(props: FilePreviewProps) {
     const content = atobUTF8(props.file.content);
     return (
       <CardBody key="file preview" className="pb-0 bg-white">
-        <RenkuMarkdown
+        <LazyRenkuMarkdown
           projectPathWithNamespace={props.projectPathWithNamespace}
           filePath={props.file.file_path}
           markdownText={content}
@@ -297,33 +300,33 @@ function JupyterNotebookContainer(props: JupyterNotebookContainerProps) {
   return <StyledNotebook {...notebookProps} />;
 }
 
-type PdfViewerProps = {
-  file: string;
-};
+// type PdfViewerProps = {
+//   file: string;
+// };
 
-export function PDFViewer(props: PdfViewerProps) {
-  const [numPages, setNumPages] = React.useState<number | undefined>(undefined);
+// export function PDFViewer(props: PdfViewerProps) {
+//   const [numPages, setNumPages] = React.useState<number | undefined>(undefined);
 
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-    setNumPages(numPages);
-  }
+//   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
+//     setNumPages(numPages);
+//   }
 
-  return (
-    <Document
-      file={props.file}
-      onLoadSuccess={onDocumentLoadSuccess}
-      renderMode="svg"
-    >
-      {Array.from(new Array(numPages), (el, index) => (
-        <Page
-          className="rk-pdf-page"
-          key={`page_${index + 1}`}
-          pageNumber={index + 1}
-        />
-      ))}
-    </Document>
-  );
-}
+//   return (
+//     <Document
+//       file={props.file}
+//       onLoadSuccess={onDocumentLoadSuccess}
+//       renderMode="svg"
+//     >
+//       {Array.from(new Array(numPages), (el, index) => (
+//         <Page
+//           className="rk-pdf-page"
+//           key={`page_${index + 1}`}
+//           pageNumber={index + 1}
+//         />
+//       ))}
+//     </Document>
+//   );
+// }
 
 export default FilePreview;
 export type { FilePreviewProps };
