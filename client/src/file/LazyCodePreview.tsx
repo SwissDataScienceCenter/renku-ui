@@ -17,18 +17,18 @@
  */
 
 import { ComponentProps, Suspense, lazy } from "react";
-import { Loader } from "../Loader";
+import { Loader } from "../components/Loader";
 
-const NotebookRender = lazy(() => import("./NotebookRender"));
+const CodePreview = lazy(() => import("./CodePreview"));
 
-// ? Lazy loading of NotebookRender allows us to split off ~950kB from
+// ? Lazy loading of CodePreview allows us to split off ~300kB from
 // ? the main bundle.
-export default function LazyNotebookRender(
-  props: ComponentProps<typeof NotebookRender>
+export default function LazyCodePreview(
+  props: ComponentProps<typeof CodePreview>
 ) {
   return (
     <Suspense fallback={<Loader />}>
-      <NotebookRender {...props} />
+      <CodePreview {...props} />
     </Suspense>
   );
 }
