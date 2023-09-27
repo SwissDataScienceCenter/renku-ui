@@ -31,7 +31,6 @@ import { Input, FormGroup, FormText, Label } from "reactstrap";
 import FormLabel from "./FormLabel";
 import { ErrorLabel } from "../formlabels/FormLabels";
 
-// import CkEditor from "./CkEditor";
 import LazyCkEditor from "./LazyCkEditor";
 
 type EditMarkdownSwitchProps = {

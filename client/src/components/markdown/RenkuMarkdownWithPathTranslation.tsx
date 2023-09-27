@@ -49,7 +49,6 @@ type RenkuMarkdownWithPathTranslationProps = {
   /** Is the file inside a project? */
   insideProject: boolean;
   /** The markdown text to display */
-  // markdownText: string;
   markdownHtml: string;
   /** Sizes at which the UI shows a preview or not */
   previewThreshold: FilePreviewProps["previewThreshold"];

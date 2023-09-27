@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-// import { RenkuMarkdown } from "./RenkuMarkdown";
 import LazyRenkuMarkdown from "./LazyRenkuMarkdown";
 import { Meta, StoryObj } from "@storybook/react";
 

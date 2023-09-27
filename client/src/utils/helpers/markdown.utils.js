@@ -23,6 +23,9 @@ import showdownKatex from "showdown-katex";
 import showdownMermaid from "showdown-mermaid";
 import DOMPurify from "dompurify";
 
+// ! This functions should only be imported from src/components/markdown/RenkuMarkdown.js
+// ! If imported multiple times, the main bundle will contain showdown and
+// ! other showdown extensions, adding ~700kB to the main bundle.
 export function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
   // Reference: https://github.com/showdownjs/showdown/wiki/Showdown-Options
   const showdownOptions = {

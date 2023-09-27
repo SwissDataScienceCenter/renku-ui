@@ -17,7 +17,6 @@
  */
 
 import React from "react";
-// import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
 import { CardBody } from "reactstrap";
 
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
@@ -299,34 +298,6 @@ function JupyterNotebookContainer(props: JupyterNotebookContainerProps) {
   // Implemented this way to keep TS happy
   return <StyledNotebook {...notebookProps} />;
 }
-
-// type PdfViewerProps = {
-//   file: string;
-// };
-
-// export function PDFViewer(props: PdfViewerProps) {
-//   const [numPages, setNumPages] = React.useState<number | undefined>(undefined);
-
-//   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-//     setNumPages(numPages);
-//   }
-
-//   return (
-//     <Document
-//       file={props.file}
-//       onLoadSuccess={onDocumentLoadSuccess}
-//       renderMode="svg"
-//     >
-//       {Array.from(new Array(numPages), (el, index) => (
-//         <Page
-//           className="rk-pdf-page"
-//           key={`page_${index + 1}`}
-//           pageNumber={index + 1}
-//         />
-//       ))}
-//     </Document>
-//   );
-// }
 
 export default FilePreview;
 export type { FilePreviewProps };
