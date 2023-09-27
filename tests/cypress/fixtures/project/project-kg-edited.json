@@ -1,0 +1,52 @@
+{
+  "version": "10",
+  "_links": [
+    {
+      "rel": "self",
+      "href": "https://renku-ci-ui-2648.dev.renku.ch/knowledge-graph/projects/e2e/local-test-project"
+    },
+    {
+      "rel": "datasets",
+      "href": "https://renku-ci-ui-2648.dev.renku.ch/knowledge-graph/projects/e2e/local-test-project/datasets"
+    }
+  ],
+  "identifier": 39646,
+  "path": "e2e/local-test-project",
+  "name": "local-test-project",
+  "visibility": "public",
+  "created": {
+    "creator": {
+      "email": "e2e@renku.com",
+      "name": "E2E User"
+    },
+    "dateCreated": "2023-07-21T06:45:02Z"
+  },
+  "dateModified": "2023-07-21T06:45:03.482Z",
+  "urls": {
+    "readme": "https://gitlab.dev.renku.ch/e2e/local-test-project/-/blob/master/README.md",
+    "ssh": "git@gitlab.dev.renku.ch:e2e/local-test-project.git",
+    "http": "https://gitlab.dev.renku.ch/e2e/local-test-project.git",
+    "web": "https://gitlab.dev.renku.ch/e2e/local-test-project"
+  },
+  "forking": {
+    "forksCount": 0
+  },
+  "keywords": ["abcde"],
+  "starsCount": 0,
+  "permissions": {
+    "projectAccess": {
+      "level": {
+        "name": "Maintainer",
+        "value": 40
+      }
+    }
+  },
+  "images": [],
+  "statistics": {
+    "commitsCount": 1,
+    "storageSize": 492830,
+    "repositorySize": 492830,
+    "lfsObjectsSize": 0,
+    "jobArtifactsSize": 0
+  }
+}

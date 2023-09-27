@@ -20,9 +20,7 @@ import { Card, CardBody, Col, Row } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ProjectMigrationStatus } from "./migrations/ProjectCoreMigrations";
 import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
-import {
-  ProjectSettingsGeneralDeleteProject,
-} from "./ProjectSettingsGeneralDeleteProject";
+import { ProjectSettingsGeneralDeleteProject } from "./ProjectSettingsGeneralDeleteProject";
 import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import { ProjectSettingsDescription } from "./ProjectSettingsDescription";

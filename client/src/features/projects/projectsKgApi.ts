@@ -16,7 +16,12 @@
  * limitations under the License.
  */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { KgMetadataResponse, ProjectKgParams } from "../project/Project";
+import {
+  EditProjectParams,
+  KgMetadataResponse,
+  ProjectKgParams,
+  UpdateProjectResponse,
+} from "../project/Project";
 
 type JsonLdValue<T> = {
   "@value": T;
@@ -79,10 +84,28 @@ export const projectsKgApi = createApi({
         { type: "project-kg-metadata", id: params.projectId },
       ],
     }),
+    updateProject: builder.mutation<UpdateProjectResponse, EditProjectParams>({
+      query: ({ projectPathWithNamespace, project }) => {
+        return {
+          method: "PATCH",
+          url: `projects/${projectPathWithNamespace}`,
+          body: {
+            ...project,
+          },
+        };
+      },
+      invalidatesTags: (result, err, args) => [
+        { type: "project-kg-metadata", id: args.projectId },
+      ],
+    }),
   }),
 });
 
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
-export const { useProjectJsonLdQuery, useProjectMetadataQuery } = projectsKgApi;
+export const {
+  useProjectJsonLdQuery,
+  useProjectMetadataQuery,
+  useUpdateProjectMutation,
+} = projectsKgApi;
 export type { ProjectKgContent };

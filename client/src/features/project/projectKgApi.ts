@@ -26,11 +26,9 @@ import {
   DatasetKg,
   DeleteProjectParams,
   DeleteProjectResponse,
-  EditProjectParams,
   GetDatasetKgParams,
   ProjectActivateIndexingResponse,
   ProjectIndexingStatusResponse,
-  UpdateProjectResponse,
 } from "./Project";
 import { ProjectIndexingStatuses } from "./projectEnums";
 import { projectsKgApi } from "../projects/projectsKgApi";
@@ -142,35 +140,6 @@ export const projectKgApi = createApi({
         });
       },
     }),
-    updateProject: builder.mutation<UpdateProjectResponse, EditProjectParams>({
-      query: ({ projectPathWithNamespace, project }) => {
-        return {
-          method: "PATCH",
-          url: `projects/${projectPathWithNamespace}`,
-          body: {
-            ...project,
-          },
-        };
-      },
-      invalidatesTags: (result, err, args) => [
-        { type: "project", id: args.projectPathWithNamespace },
-      ],
-      onQueryStarted: (args, { dispatch, queryFulfilled }) => {
-        queryFulfilled
-          .then((result) => {
-            if (result.data?.severity === "info") {
-              dispatch(
-                projectsKgApi.util.invalidateTags([
-                  { type: "project-kg-metadata", id: args.projectId },
-                ])
-              );
-            }
-          })
-          .catch((err) => {
-            return err;
-          });
-      },
-    }),
   }),
 });
 
@@ -179,5 +148,4 @@ export const {
   useGetDatasetKgQuery,
   useGetProjectIndexingStatusQuery,
   useDeleteProjectMutation,
-  useUpdateProjectMutation,
 } = projectKgApi;
