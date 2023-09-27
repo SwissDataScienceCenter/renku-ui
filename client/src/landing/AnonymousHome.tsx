@@ -62,7 +62,7 @@ import logo_SDSC from "./Logos/SDSC.svg";
 
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import { BottomNav, TopNav } from "./anonymousHomeNav";
-import SectionShowcase from "./SectionShowcase";
+import SectionShowcase, { validatedShowcaseConfig } from "./SectionShowcase";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -595,7 +595,9 @@ function StandardHome(props: AnonymousHomeConfig) {
       <Section1 {...props} />
       <SectionFeatures />
       <SectionUseCases />
-      <SectionShowcase {...props.homeCustomized.showcase} />
+      <SectionShowcase
+        {...validatedShowcaseConfig(props.homeCustomized.showcase)}
+      />
       <SectionTryOut tutorialLink={props.homeCustomized.tutorialLink} />
       <Section6 />
       <BottomNav {...props} />

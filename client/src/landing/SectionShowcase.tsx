@@ -239,3 +239,59 @@ export default function SectionShowcase({
     </div>
   );
 }
+
+function validatedShowcaseProjectConfig(
+  project: AnonymousHomeConfig["homeCustomized"]["showcase"]["projects"][0]
+) {
+  if (project.identifier == null) {
+    return {
+      identifier: "/",
+      overrideDescription: project.overrideDescription,
+      overrideImageUrl: project.overrideImageUrl,
+      overrideTitle: "Missing identifier",
+    };
+  }
+  return {
+    identifier: project.identifier,
+    overrideDescription: project.overrideDescription,
+    overrideImageUrl: project.overrideImageUrl,
+    overrideTitle: project.overrideTitle,
+  };
+}
+
+export function validatedShowcaseConfig(
+  params: unknown
+): AnonymousHomeConfig["homeCustomized"]["showcase"] {
+  const disabledConfig = {
+    enabled: false,
+    description: "",
+    projects: [],
+    title: "",
+  };
+  if (params == null || typeof params !== "object" || !("enabled" in params)) {
+    return disabledConfig;
+  }
+
+  const config = params as Partial<
+    AnonymousHomeConfig["homeCustomized"]["showcase"]
+  >;
+  if (config.enabled == null) return disabledConfig;
+  if (config.enabled !== true)
+    return {
+      description: config.description ?? "",
+      enabled: false,
+      projects: config.projects ?? [],
+      title: config.title ?? "",
+    };
+
+  const projects = config.projects ?? [];
+
+  return {
+    description: config.description ?? "Missing description",
+    enabled: true,
+    projects: projects.map((project) =>
+      validatedShowcaseProjectConfig(project)
+    ),
+    title: config.title ?? "Missing title",
+  };
+}
