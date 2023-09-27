@@ -168,14 +168,16 @@ describe("Project new dataset", () => {
     cy.get('[data-cy="dropzone"]').attachFile("/datasets/files/bigFile.bin", {
       subjectType: "drag-n-drop",
     });
+    cy.get("span").contains("Unzip on upload?").should("be.visible");
+    cy.get_cy("upload-compressed-yes").should("be.visible").click();
     // ? Needed for tests running through GitHub actions
-    cy.wait(1000, { log: false }); // eslint-disable-line cypress/no-unnecessary-waiting
+    cy.wait(1_000); // eslint-disable-line cypress/no-unnecessary-waiting
     cy.get('[data-cy="dropzone"]').attachFile(
       "/datasets/files/count_flights.txt",
       { subjectType: "drag-n-drop" }
     );
     // ? Needed for tests running through GitHub actions
-    cy.wait(5000, { log: false }); // eslint-disable-line cypress/no-unnecessary-waiting
+    cy.wait(3_000); // eslint-disable-line cypress/no-unnecessary-waiting
     cy.wait("@uploadDatasetFile");
     cy.get_cy("file-name-column").should("have.length", 3);
   });
@@ -186,9 +188,11 @@ describe("Project new dataset", () => {
       statusCode: 500,
     };
     fixtures.uploadDatasetFile("errorUploadFile", "", options);
+    cy.wait(1_000); // eslint-disable-line cypress/no-unnecessary-waiting
     cy.get('[data-cy="dropzone"]').attachFile("/datasets/files/bigFile.bin", {
       subjectType: "drag-n-drop",
     });
+    cy.wait(1_000); // eslint-disable-line cypress/no-unnecessary-waiting
     cy.wait("@errorUploadFile", { timeout: 10_000 });
     cy.get_cy("upload-error-message").contains(
       "Server responded with 500 code."
