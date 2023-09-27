@@ -63,47 +63,6 @@ describe("rendering", () => {
     params: { PREVIEW_THRESHOLD: { soft: 1048576, hard: 10485760 } },
   };
 
-  const file = {
-    image: {
-      file_name: "image.jpeg",
-      content:
-        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
-    },
-    text: {
-      file_name: "text.csv",
-      content: "Q291bnRyeSwxOTkwLDE5OTBfbG93ZXIsIDE5OTBfdXBwZXIsMT",
-    },
-    code: {
-      file_name: "text.py",
-      content: "Q291bnRyeSwxOTkwLDE5OTBfbG93ZXIsIDE5OTBfdXBwZXIsMT",
-    },
-    markdown: {
-      file_name: "markdown.md",
-      content: "Q291bnRyeSwxOTkwLDE5OTBfbG93ZXIsIDE5OTBfdXBwZXIsMT",
-    },
-    noExtension: {
-      file_name: "noExtension",
-      content: "Q291bnRyeSwxOTkwLDE5OTBfbG93ZXIsIDE5OTBfdXBwZXIsMT",
-    },
-    noPreview: {
-      file_name: "no_preview.unknown",
-    },
-    lfs: {
-      file_name: "doesNotMatter",
-      content:
-        // eslint-disable-next-line spellcheck/spell-checker
-        "dmVyc2lvbiBodHRwczovL2dpdC1sZnMuZ2l0aHViLmNvbS9zcGVjL3YxCm9pZCBzaGEyNTY6NGMzYjM5Mj",
-    },
-    sizeBig: {
-      file_name: "doesNotMatter",
-      size: 1024 * 1024 * 2,
-    },
-    sizeTooBig: {
-      file_name: "doesNotMatter",
-      size: 1024 * 1024 * 20,
-    },
-  };
-
   for (let user of users) {
     it(`renders JupyterButton for ${user.type} user`, async () => {
       const div = document.createElement("div");
