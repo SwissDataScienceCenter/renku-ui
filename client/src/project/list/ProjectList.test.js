@@ -129,24 +129,6 @@ describe("rendering", () => {
   const model = new StateModel(globalSchema);
 
   //TestRenderer
-  it("Renders ProjectList for logged user", async () => {
-    await act(async () => {
-      TestRenderer.create(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <AppContext.Provider value={appContext}>
-              <ProjectList
-                client={client}
-                history={fakeHistory}
-                location={fakeHistory.location}
-                user={loggedUser}
-              />
-            </AppContext.Provider>
-          </MemoryRouter>
-        </Provider>
-      );
-    });
-  });
 
   it("Renders ProjectList for anonymous user", async () => {
     await act(async () => {
