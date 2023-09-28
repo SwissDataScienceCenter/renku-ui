@@ -36,7 +36,10 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+import { Loader } from "../../components/Loader";
+import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { ResourcePool } from "../dataServices/dataServices";
+import { useAddUsersToResourcePoolMutation } from "./adminComputeResources.api";
 import { useAdminComputeResourcesSelector } from "./adminComputeResources.slice";
 import adminKeycloakApi from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
@@ -81,19 +84,28 @@ function AddUserToResourcePoolModal({
 }: AddUserToResourcePoolModalProps) {
   const [pickedUser, setPickedUser] = useState<KeycloakUser | null>(null);
 
+  const [addUsersToResourcePool, result] = useAddUsersToResourcePoolMutation();
+
   const {
     formState: { errors },
     handleSubmit,
     register,
     setValue,
+    reset,
   } = useForm<AddUserToResourcePoolForm>({
     defaultValues: {
       userId: "",
     },
   });
-  const onSubmit = useCallback((data: AddUserToResourcePoolForm) => {
-    console.log({ data });
-  }, []);
+  const onSubmit = useCallback(
+    (data: AddUserToResourcePoolForm) => {
+      addUsersToResourcePool({
+        resourcePoolId: resourcePool.id,
+        userIds: [data.userId],
+      });
+    },
+    [addUsersToResourcePool, resourcePool.id]
+  );
 
   const onPickUser = useCallback((user: KeycloakUser | null | undefined) => {
     if (user != null) {
@@ -107,6 +119,20 @@ function AddUserToResourcePoolModal({
     }
   }, [pickedUser, setValue]);
 
+  useEffect(() => {
+    if (!result.isSuccess) {
+      return;
+    }
+    toggle();
+  }, [result.isSuccess, toggle]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      reset();
+      result.reset();
+    }
+  }, [isOpen, reset, result]);
+
   return (
     <Modal centered fullscreen="lg" isOpen={isOpen} size="lg" toggle={toggle}>
       <ModalHeader toggle={toggle}>
@@ -118,7 +144,7 @@ function AddUserToResourcePoolModal({
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
-          {/* {result.error && <RtkErrorAlert error={result.error} />} */}
+          {result.error && <RtkErrorAlert error={result.error} />}
 
           <div className="mb-3">
             <Label
@@ -154,15 +180,15 @@ function AddUserToResourcePoolModal({
           Close
         </Button>
         <Button
-          // disabled={result.isLoading}
+          disabled={result.isLoading}
           onClick={handleSubmit(onSubmit)}
           type="submit"
         >
-          {/* {result.isLoading ? (
+          {result.isLoading ? (
             <Loader className="me-1" inline size={16} />
           ) : (
             <PersonFillAdd className={cx("bi", "me-1")} />
-          )} */}
+          )}
           Add User to Resource Pool
         </Button>
       </ModalFooter>

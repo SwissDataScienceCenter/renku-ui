@@ -64,3 +64,8 @@ export interface UpdateResourcePoolParams {
 export interface DeleteResourcePoolParams {
   resourcePoolId: number;
 }
+
+export interface AddUsersToResourcePoolParams {
+  resourcePoolId: number;
+  userIds: string[];
+}

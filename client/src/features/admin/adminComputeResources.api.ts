@@ -20,6 +20,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import { ResourcePool } from "../dataServices/dataServices";
 import {
   AddResourcePoolParams,
+  AddUsersToResourcePoolParams,
   DeleteResourcePoolParams,
   GetResourcePoolUsersParams,
   UpdateResourcePoolParams,
@@ -118,6 +119,22 @@ const adminComputeResourcesApi = createApi({
       },
       invalidatesTags: ["ResourcePool"],
     }),
+    addUsersToResourcePool: builder.mutation<
+      void,
+      AddUsersToResourcePoolParams
+    >({
+      query: ({ resourcePoolId, userIds }) => {
+        const body = userIds.map((id) => ({ id }));
+        return {
+          method: "POST",
+          url: `resource_pools/${resourcePoolId}/users`,
+          body,
+        };
+      },
+      invalidatesTags: (_result, _error, { resourcePoolId }) => [
+        { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
+      ],
+    }),
   }),
 });
 
@@ -130,4 +147,5 @@ export const {
   useAddResourcePoolMutation,
   useUpdateResourcePoolMutation,
   useDeleteResourcePoolMutation,
+  useAddUsersToResourcePoolMutation,
 } = adminComputeResourcesApi;
