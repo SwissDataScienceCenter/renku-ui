@@ -17,18 +17,15 @@
  */
 
 import { Card, CardBody, Col, Row } from "reactstrap";
-
-import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";
 import { ACCESS_LEVELS } from "../../../api-client";
+import { Visibilities } from "../../../components/visibility/Visibility";
+import { NotificationsManager } from "../../../notifications/notifications.types";
+import { EditVisibility } from "../../../project/new/components/Visibility";
+import { ProjectSettingsGeneral as ProjectSettingsGeneralLegacy } from "../../../project/settings";
+import { ProjectSettingsDescription } from "./ProjectSettingsDescription";
+import { ProjectSettingsGeneralDeleteProject } from "./ProjectSettingsGeneralDeleteProject";
 import { ProjectMigrationStatus } from "./migrations/ProjectCoreMigrations";
 import { ProjectKnowledgeGraph } from "./migrations/ProjectKgStatus";
-import {
-  ProjectSettingsGeneralDeleteProject,
-  Notifications,
-} from "./ProjectSettingsGeneralDeleteProject";
-import { ProjectSettingsDescription } from "./ProjectSettingsDescription";
-import { EditVisibility } from "../../../project/new/components/Visibility";
-import { Visibilities } from "../../../components/visibility/Visibility";
 
 // ****** SETTINGS COMPONENTS ****** //
 
@@ -50,7 +47,7 @@ interface ProjectSettingsGeneralProps {
     [key: string]: unknown;
   };
   metadataVersion?: number;
-  notifications: Notifications;
+  notifications: NotificationsManager;
   projectPathWithNamespace: string;
   user: {
     logged: boolean;

@@ -26,7 +26,7 @@
 import { Component } from "react";
 import CookieConsent from "react-cookie-consent";
 import { WarnAlert } from "../components/Alert";
-import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
+import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 
 /**
  * Return the HTML content with support for react routing
@@ -50,8 +50,8 @@ class Privacy extends Component {
     }
 
     const stringContent = atob(content);
-    return <RenkuMarkdown markdownText={stringContent} />;
+    return <LazyRenkuMarkdown markdownText={stringContent} />;
   }
 }
 
-export { Privacy, CookieBanner };
+export { CookieBanner, Privacy };

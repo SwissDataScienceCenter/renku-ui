@@ -23,9 +23,10 @@
  *  Presentational components.
  */
 
-import { Component, Fragment, useEffect } from "react";
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+import { Component, Fragment, useEffect } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import {
   Alert,
@@ -46,8 +47,8 @@ import { ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import { RenkuNavLink } from "../components/RenkuNavLink";
 import { ThrottledTooltip } from "../components/Tooltip";
-import { GoBackButton, RoundButtonGroup } from "../components/buttons/Button";
-import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
+import { RoundButtonGroup } from "../components/buttons/Button";
+import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { SshModal } from "../components/ssh/ssh";
 import {
   ProjectDatasetsView,
@@ -58,15 +59,9 @@ import {
 import ProjectPageTitle from "../features/project/components/ProjectPageTitle";
 import { ProjectSettingsGeneral } from "../features/project/components/ProjectSettings";
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
+import ProjectSessionsRouter from "../features/session/components/ProjectSessionsRouter";
 import { SpecialPropVal } from "../model/Model";
 import { NamespaceProjects } from "../namespace";
-import {
-  Notebooks,
-  NotebooksCoordinator,
-  ShowSession,
-  StartNotebookServer,
-} from "../notebooks";
-import { Docs } from "../utils/constants/Docs";
 import { Url } from "../utils/helpers/url";
 import { WorkflowsList } from "../workflows";
 import "./Project.css";
@@ -506,35 +501,21 @@ function ForkedFromLink({ forkedFromProject, projectsUrl }) {
   );
 }
 
-class ProjectViewHeader extends Component {
-  constructor(props) {
-    // ? Temporary workaround to fetch sessions at least once when opening the project header.
-    super(props);
-    const notebooksModel = props.model.subModel("notebooks");
-    const userModel = props.model.subModel("user");
-    const notebookCoordinator = new NotebooksCoordinator(
-      props.client,
-      notebooksModel,
-      userModel
-    );
-    notebookCoordinator.fetchNotebooks();
-  }
+function ProjectViewHeader(props) {
+  const forkedFromLink = (
+    <ForkedFromLink
+      forkedFromProject={props.forkedFromProject}
+      projectsUrl={props.projectsUrl}
+    />
+  );
 
-  render() {
-    const forkedFromLink = (
-      <ForkedFromLink
-        forkedFromProject={this.props.forkedFromProject}
-        projectsUrl={this.props.projectsUrl}
-      />
-    );
-    return (
-      <ProjectViewHeaderMinimal
-        key="minimalHeader"
-        forkedFromLink={forkedFromLink}
-        {...this.props}
-      />
-    );
-  }
+  return (
+    <ProjectViewHeaderMinimal
+      key="minimalHeader"
+      forkedFromLink={forkedFromLink}
+      {...props}
+    />
+  );
 }
 
 class ProjectNav extends Component {
@@ -637,7 +618,7 @@ class ProjectViewReadme extends Component {
           className="p-4"
           data-cy="project-readme"
         >
-          <RenkuMarkdown
+          <LazyRenkuMarkdown
             projectPathWithNamespace={this.props.metadata.pathWithNamespace}
             filePath={""}
             fixRelativePaths={true}
@@ -815,306 +796,6 @@ class ProjectViewFiles extends Component {
   }
 }
 
-const ProjectSessions = (props) => {
-  const locationFrom = props.history?.location?.state?.from;
-  const filePath = props.history?.location?.state?.filePath;
-  const backNotebookLabel = filePath
-    ? `Back to ${filePath}`
-    : "Back to notebook file";
-  const backButtonLabel = locationFrom
-    ? backNotebookLabel
-    : `Back to ${props.metadata.pathWithNamespace}`;
-  const backUrl = locationFrom ?? props.baseUrl;
-
-  const backButton = <GoBackButton label={backButtonLabel} url={backUrl} />;
-
-  return [
-    <Col key="content" xs={12}>
-      <Switch>
-        <Route
-          exact
-          path={props.notebookServersUrl}
-          render={() => (
-            <>
-              {backButton}
-              <ProjectNotebookServers {...props} />
-            </>
-          )}
-        />
-        <Route
-          path={props.launchNotebookUrl}
-          render={() => (
-            <ProjectStartNotebookServer
-              key="startNotebookForm"
-              {...props}
-              backUrl={backUrl}
-              defaultBackButton={backButton}
-            />
-          )}
-        />
-        <Route
-          path={props.sessionShowUrl}
-          render={(p) => (
-            <Fragment>
-              <ProjectShowSession {...props} match={p.match} />
-            </Fragment>
-          )}
-        />
-      </Switch>
-    </Col>,
-  ];
-};
-
-function notebookWarning(
-  userLogged,
-  accessLevel,
-  forkUrl,
-  postLoginUrl,
-  externalUrl,
-  props
-) {
-  if (!userLogged) {
-    const to = Url.get(Url.pages.login.link, { pathname: postLoginUrl });
-    return (
-      <InfoAlert timeout={0} key="permissions-warning">
-        <p>
-          As an anonymous user, you can start{" "}
-          <ExternalLink
-            role="text"
-            title="Sessions"
-            url={Docs.rtdHowToGuide(
-              "renkulab/session-stopping-and-saving.html"
-            )}
-          />
-          , but you cannot save your work.
-        </p>
-        <p className="mb-0">
-          <Link className="btn btn-primary btn-sm" to={to}>
-            Log in
-          </Link>{" "}
-          for full access.
-        </p>
-      </InfoAlert>
-    );
-  } else if (accessLevel < ACCESS_LEVELS.DEVELOPER) {
-    return (
-      <InfoAlert timeout={0} key="permissions-warning">
-        <p>
-          You have limited permissions for this project. You can launch a
-          session, but you will not be able to save any changes. If you want to
-          save your work, consider one of the following:
-        </p>
-        <ul className="mb-0">
-          <li>
-            <ForkProjectModal
-              className="btn btn-primary btn-sm"
-              client={props.client}
-              history={props.history}
-              model={props.model}
-              notifications={props.notifications}
-              title={
-                props.metadata && props.metadata.title
-                  ? props.metadata.title
-                  : ""
-              }
-              id={props.metadata && props.metadata.id ? props.metadata.id : 0}
-              forkProjectDisabled={false}
-              projectVisibility={props.metadata.visibility}
-              user={props.user}
-              externalUrl={props.externalUrl}
-              showForkCount={false}
-            />{" "}
-            and start a session from your fork.
-          </li>
-          <li className="pt-1">
-            <ExternalLink
-              size="sm"
-              title="Contact a maintainer"
-              url={`${externalUrl}/-/project_members`}
-            />{" "}
-            and ask them to{" "}
-            <ExternalLink
-              role="text"
-              title="grant you the necessary permissions"
-              url={Docs.rtdHowToGuide("renkulab/collaboration.html")}
-            />
-            .
-          </li>
-        </ul>
-      </InfoAlert>
-    );
-  }
-  return null;
-}
-
-class ProjectShowSession extends Component {
-  render() {
-    const {
-      blockAnonymous,
-      client,
-      externalUrl,
-      history,
-      launchNotebookUrl,
-      location,
-      match,
-      metadata,
-      model,
-      notifications,
-      forkUrl,
-      user,
-      notebookServersUrl,
-    } = this.props;
-    const warning = notebookWarning(
-      user.logged,
-      metadata.accessLevel,
-      forkUrl,
-      location.pathname,
-      externalUrl,
-      this.props
-    );
-
-    return (
-      <ShowSession
-        blockAnonymous={blockAnonymous}
-        client={client}
-        history={history}
-        location={location}
-        match={match}
-        message={warning}
-        model={model}
-        notifications={notifications}
-        scope={{
-          namespace: this.props.metadata.namespace,
-          project: this.props.metadata.path,
-        }}
-        standalone={false}
-        urlNewSession={launchNotebookUrl}
-        notebookServersUrl={notebookServersUrl}
-        projectName={this.props.metadata.title}
-      />
-    );
-  }
-}
-
-class ProjectNotebookServers extends Component {
-  render() {
-    const {
-      client,
-      metadata,
-      model,
-      user,
-      forkUrl,
-      location,
-      externalUrl,
-      launchNotebookUrl,
-      blockAnonymous,
-    } = this.props;
-    const warning = notebookWarning(
-      user.logged,
-      metadata.accessLevel,
-      forkUrl,
-      location.pathname,
-      externalUrl,
-      this.props
-    );
-
-    return (
-      <Notebooks
-        standalone={false}
-        client={client}
-        model={model}
-        location={location}
-        message={warning}
-        urlNewSession={launchNotebookUrl}
-        blockAnonymous={blockAnonymous}
-        scope={{
-          namespace: this.props.metadata.namespace,
-          project: this.props.metadata.path,
-          defaultBranch: this.props.metadata.defaultBranch,
-        }}
-      />
-    );
-  }
-}
-
-const ProjectStartNotebookServer = (props) => {
-  const {
-    branches,
-    client,
-    commits,
-    model,
-    user,
-    forkUrl,
-    externalUrl,
-    location,
-    metadata,
-    fetchBranches,
-    fetchCommits,
-    notebookServersUrl,
-    history,
-    blockAnonymous,
-    notifications,
-    projectCoordinator,
-    lockStatus,
-    backUrl,
-    defaultBackButton,
-  } = props;
-  const warning = notebookWarning(
-    user.logged,
-    metadata.accessLevel,
-    forkUrl,
-    location.pathname,
-    externalUrl,
-    props
-  );
-
-  const locationEnhanced =
-    location && location.state && location.state.successUrl
-      ? location
-      : {
-          ...props.location,
-          state: {
-            ...props.location.state,
-            successUrl: notebookServersUrl,
-          },
-        };
-
-  const scope = {
-    defaultBranch: props.metadata.defaultBranch,
-    namespace: props.metadata.namespace,
-    project: props.metadata.path,
-    filePath: location?.state?.filePath,
-  };
-
-  return (
-    <StartNotebookServer
-      accessLevel={metadata?.accessLevel}
-      autosaved={branches.autosaved}
-      blockAnonymous={blockAnonymous}
-      branches={branches.standard}
-      client={client}
-      commits={commits}
-      externalUrl={externalUrl}
-      fetchingBranches={branches.fetching}
-      history={history}
-      location={locationEnhanced}
-      lockStatus={lockStatus}
-      message={warning}
-      model={model}
-      notebooks={projectCoordinator.model.baseModel.get("notebooks")}
-      notifications={notifications}
-      refreshBranches={fetchBranches}
-      refreshCommits={fetchCommits}
-      scope={scope}
-      successUrl={notebookServersUrl}
-      user={user}
-      openShareLinkModal={location?.state?.openShareLinkModal}
-      backUrl={backUrl}
-      defaultBackButton={defaultBackButton}
-    />
-  );
-};
-
 function ProjectSettings(props) {
   return (
     <Col key="settings">
@@ -1252,40 +933,30 @@ function ProjectView(props) {
         <Route
           exact
           path={props.baseUrl}
-          render={() => (
-            <ProjectViewHeader {...props} minimalistHeader={false} />
-          )}
+          render={() => <ProjectViewHeader {...props} />}
         />
         <Route
           path={props.overviewUrl}
-          render={() => (
-            <ProjectViewHeader {...props} minimalistHeader={false} />
-          )}
+          render={() => <ProjectViewHeader {...props} />}
         />
-        <Route path={props.notebookServersUrl} render={() => null} />
-        <Route path={props.editDatasetUrl} render={() => null} />
-        <Route path={props.datasetUrl} render={() => null} />
-        <Route path={props.sessionShowUrl} render={() => null} />
+        <Route path={props.editDatasetUrl} />
+        <Route path={props.datasetUrl} />
+        <Route path={props.launchNotebookUrl} />
+        <Route path={props.sessionShowUrl} />
         <Route
           path={props.newDatasetUrl}
-          component={() => (
-            <ProjectViewHeader {...props} minimalistHeader={true} />
-          )}
+          component={() => <ProjectViewHeader {...props} />}
         />
-        <Route
-          component={() => (
-            <ProjectViewHeader {...props} minimalistHeader={true} />
-          )}
-        />
+        <Route component={() => <ProjectViewHeader {...props} />} />
       </Switch>
       <Switch key="projectNav">
-        <Route path={props.notebookServersUrl} render={() => null} />
-        <Route path={props.editDatasetUrl} render={() => null} />
-        <Route path={props.datasetUrl} render={() => null} />
-        <Route path={props.sessionShowUrl} render={() => null} />
+        <Route path={props.editDatasetUrl} />
+        <Route path={props.datasetUrl} />
+        <Route path={props.launchNotebookUrl} />
+        <Route path={props.sessionShowUrl} />
         <Route component={() => <ProjectNav key="nav" {...props} />} />
       </Switch>
-      <Row key="content">
+      <Row key="content" className={cx(isShowSession && "m-0")}>
         <Switch>
           <Route
             exact
@@ -1319,10 +990,9 @@ function ProjectView(props) {
               />
             )}
           />
-          <Route
-            path={props.notebookServersUrl}
-            render={() => <ProjectSessions key="sessions" {...props} />}
-          />
+          <Route path={props.notebookServersUrl}>
+            <ProjectSessionsRouter key="sessions" />
+          </Route>
           <Route component={NotFoundInsideProject} />
         </Switch>
       </Row>

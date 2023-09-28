@@ -16,13 +16,7 @@
  * limitations under the License.
  */
 
-import {
-  ChangeEvent,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import { useHistory } from "react-router";
@@ -39,12 +33,13 @@ import {
 } from "reactstrap";
 import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
-import { useDeleteProjectMutation } from "../projectKgApi";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
+import { NotificationsManager } from "../../../notifications/notifications.types";
+import { useDeleteProjectMutation } from "../projectKgApi";
 
 interface ProjectSettingsGeneralDeleteProjectProps {
   isMaintainer: boolean;
-  notifications: Notifications;
+  notifications: NotificationsManager;
   projectPathWithNamespace: string;
   userLogged: boolean;
 }
@@ -197,22 +192,11 @@ const ShowError = ({
   );
 };
 
-export interface Notifications {
-  addSuccess: (
-    topic: string,
-    desc?: ReactNode,
-    link?: string,
-    linkText?: string,
-    awareLocations?: string[],
-    longDesc?: string
-  ) => Notifications;
-}
-
 const addNotification = ({
   notifications,
   projectPathWithNamespace,
 }: {
-  notifications: Notifications;
+  notifications: NotificationsManager;
   projectPathWithNamespace: string;
 }) => {
   notifications.addSuccess(

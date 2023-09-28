@@ -352,7 +352,7 @@ export const projectCoreApi = createApi({
   }),
 });
 
-const transformGetConfigRawResponse = (
+export const transformGetConfigRawResponse = (
   response: GetConfigRawResponse
 ): ProjectConfig => {
   if (response.error) {

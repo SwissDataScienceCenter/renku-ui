@@ -23,25 +23,14 @@
  *  SessionButtons components.
  */
 
-import { faStop } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  ArrowClockwise,
-  ArrowLeft,
-  Briefcase,
-  Journals,
-  Save,
-} from "react-bootstrap-icons";
+import { ArrowLeft } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
-import { Button } from "reactstrap";
-import { ThrottledTooltip } from "../../components/Tooltip";
-
-/* eslint-disable @typescript-eslint/ban-types */
 
 interface GoBackProps {
   urlBack: string;
 }
-function GoBackBtn({ urlBack }: GoBackProps) {
+
+export function GoBackBtn({ urlBack }: GoBackProps) {
   return (
     <Link
       className="fullscreen-back-button btn bg-white text-dark d-flex align-items-center gap-2 no-focus"
@@ -52,108 +41,3 @@ function GoBackBtn({ urlBack }: GoBackProps) {
     </Link>
   );
 }
-
-interface StopSessionProps {
-  toggleStopSession: Function;
-}
-function StopSessionBtn({ toggleStopSession }: StopSessionProps) {
-  return (
-    <div>
-      <Button
-        id="stop-session-button"
-        data-cy="stop-session-button"
-        className="border-0 bg-transparent text-dark p-0 mt-1 no-focus"
-        onClick={() => toggleStopSession()}
-      >
-        <FontAwesomeIcon className="text-rk-dark" icon={faStop} />
-      </Button>
-      <ThrottledTooltip target="stop-session-button" tooltip="Stop session" />
-    </div>
-  );
-}
-
-interface SaveSessionProps {
-  toggleSaveSession: Function;
-}
-function SaveSessionBtn({ toggleSaveSession }: SaveSessionProps) {
-  return (
-    <div>
-      <Button
-        id="save-session-button"
-        data-cy="save-session-button"
-        className="border-0 bg-transparent text-dark p-0 no-focus"
-        onClick={() => toggleSaveSession()}
-      >
-        <Save className="text-rk-dark" title="save" />
-      </Button>
-      <ThrottledTooltip target="save-session-button" tooltip="Save session" />
-    </div>
-  );
-}
-
-interface PullSessionProps {
-  togglePullSession: Function;
-}
-function PullSessionBtn({ togglePullSession }: PullSessionProps) {
-  return (
-    <div>
-      <Button
-        id="pull-changes-button"
-        data-cy="pull-changes-button"
-        className="border-0 bg-transparent text-dark p-0 no-focus"
-        onClick={() => togglePullSession()}
-      >
-        <ArrowClockwise className="text-rk-dark" title="pull" />
-      </Button>
-      <ThrottledTooltip
-        placement="bottom"
-        target="pull-changes-button"
-        tooltip="Pull changes"
-      />
-    </div>
-  );
-}
-
-interface ResourcesProps {
-  toggleModalResources: Function;
-}
-function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
-  return (
-    <div>
-      <Button
-        id="resources-button"
-        data-cy="resources-button"
-        className="border-0 bg-transparent text-dark p-0 no-focus"
-        onClick={() => toggleModalResources()}
-      >
-        <Journals className="text-rk-dark" title="help" />
-      </Button>
-      <ThrottledTooltip target="resources-button" tooltip="Resources" />
-    </div>
-  );
-}
-
-interface AboutProps {
-  toggleModalAbout: Function;
-  projectName: string;
-}
-function AboutBtn({ toggleModalAbout, projectName }: AboutProps) {
-  return (
-    <Button
-      className="border-0 bg-transparent no-focus text-rk-green p-0"
-      data-cy="about-button"
-      onClick={() => toggleModalAbout()}
-    >
-      <Briefcase /> {projectName}
-    </Button>
-  );
-}
-
-export {
-  AboutBtn,
-  GoBackBtn,
-  PullSessionBtn,
-  ResourcesBtn,
-  SaveSessionBtn,
-  StopSessionBtn,
-};

@@ -196,7 +196,7 @@ describe("display a project", () => {
   });
 
   it("displays project file > notebook with python output", () => {
-    fixtures.projectFiles().getSessions;
+    fixtures.projectFiles().getSessions();
     cy.visit("/projects/e2e/local-test-project/files");
     cy.wait("@getProjectFilesRoot");
     cy.contains("01-CountFlights.ipynb").scrollIntoView();

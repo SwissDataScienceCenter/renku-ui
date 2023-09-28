@@ -16,46 +16,32 @@
  * limitations under the License.
  */
 
-import { Link } from "react-router-dom";
-import {
-  Fragment,
-  ReactNode,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import {
-  Badge,
-  PopoverBody,
-  PopoverHeader,
-  UncontrolledPopover,
-} from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { ListElementProps } from "./List.d";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { PopoverBody, PopoverHeader, UncontrolledPopover } from "reactstrap";
+import SessionButton from "../../features/session/components/SessionButton";
+import SessionStatusBadge from "../../features/session/components/status/SessionStatusBadge";
+import SessionStatusText from "../../features/session/components/status/SessionStatusText";
+import { Notebook } from "../../notebooks/components/session.types";
+import AppContext from "../../utils/context/appContext";
+import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
+import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
+import { Clipboard } from "../Clipboard";
 import { ExternalLink } from "../ExternalLinks";
 import { TimeCaption } from "../TimeCaption";
-import VisibilityIcon from "../entities/VisibilityIcon";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
-import { Clipboard } from "../Clipboard";
-import { SessionStatus } from "../../utils/constants/Notebooks";
-import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
-import AppContext from "../../utils/context/appContext";
-import { getStatusObject } from "../../notebooks/components/SessionListStatus";
-import type { SessionRunningStatus } from "../../notebooks/components/SessionListStatus";
-import { SessionButton } from "../../features/session/components/SessionButtons";
-import { Notebook } from "../../notebooks/components/Session";
-import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
+import VisibilityIcon from "../entities/VisibilityIcon";
+import { ListElementProps } from "./List.d";
 import "./ListBar.scss";
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /** Helper function for formatting the resource list */
 interface ResourceListProps {
-  resources: Record<string, any>;
+  resources: Record<string, number | string>;
 }
 function ResourceList({ resources }: ResourceListProps) {
   const resourcesKeys = Object.keys(resources);
@@ -69,61 +55,6 @@ function ResourceList({ resources }: ResourceListProps) {
     );
   });
   return <div className="text-truncate">{items}</div>;
-}
-
-interface SessionStatusIconProps {
-  status: string;
-  data: {
-    icon: ReactNode;
-    color: string;
-    text: string;
-  };
-  sessionId: string;
-  errorSession: string;
-  defaultImage: boolean;
-}
-function SessionStatusIcon({
-  status,
-  data,
-  sessionId,
-  errorSession,
-  defaultImage,
-}: SessionStatusIconProps) {
-  const policy = defaultImage ? <div>A fallback image was used.</div> : null;
-  const popover =
-    status === SessionStatus.failed ||
-    (status === SessionStatus.running && defaultImage) ? (
-      <UncontrolledPopover
-        target={sessionId}
-        trigger="hover"
-        placement="bottom"
-      >
-        <PopoverHeader>
-          {status === SessionStatus.failed
-            ? "Error Details"
-            : "Warning Details"}
-        </PopoverHeader>
-        <PopoverBody>
-          {errorSession}
-          {policy}
-        </PopoverBody>
-      </UncontrolledPopover>
-    ) : null;
-
-  return (
-    <div
-      id={sessionId}
-      className={`d-flex align-items-center gap-1 ${
-        status === SessionStatus.failed ? "cursor-pointer" : ""
-      }`}
-    >
-      <Badge color={data.color}>{data.icon}</Badge>
-      <span className={`text-${data.color} small session-status-text`}>
-        {data.text}
-      </span>
-      {popover}
-    </div>
-  );
 }
 
 /*
@@ -206,7 +137,6 @@ function ListBarSession({
   itemType,
   labelCaption,
   notebook,
-  showLogs,
   slug,
   timeCaption,
   title,
@@ -216,20 +146,14 @@ function ListBarSession({
   const { client } = useContext(AppContext);
   const [commit, setCommit] = useState(null);
 
-  const [sessionStatus, setSessionStatus] = useState(SessionStatus.starting);
-  useEffect(() => {
-    setSessionStatus(notebook?.status?.state);
-  }, [notebook?.status?.state]);
-  const forceSessionStatus = (status: string) => {
-    setSessionStatus(status);
-  };
-
   useEffect(() => {
     client
       .getCommits(id, notebook.annotations.branch)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((commitsFetched: Record<string, any>) => {
         if (commitsFetched.data?.length > 0) {
           const sessionCommit = commitsFetched.data.filter(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (commit: Record<string, any>) =>
               commit.id === notebook.annotations["commit-sha"]
           );
@@ -243,15 +167,7 @@ function ListBarSession({
 
   /* session part */
   const resources = notebook.resources?.requests;
-  const sessionId = notebook.name;
-  const statusData = getStatusObject(
-    sessionStatus as SessionRunningStatus,
-    notebook.annotations["default_image_used"]
-  );
-  const sessionTimeLabel =
-    sessionStatus === SessionStatus.running
-      ? `${statusData.text} since `
-      : statusData.text;
+
   const sessionDetailsPopover = commit ? (
     <SessionDetailsPopOver commit={commit} image={notebook.image} />
   ) : null;
@@ -320,7 +236,14 @@ function ListBarSession({
           className="listBar-entity-creators"
         />
       </div>
-      <div className="entity-date listBar-entity-date">
+      <div
+        className={cx(
+          "entity-date",
+          "listBar-entity-date",
+          "align-self-start",
+          "mt-2"
+        )}
+      >
         <TimeCaption
           className="text-rk-text-light text-truncate"
           enableTooltip
@@ -329,43 +252,37 @@ function ListBarSession({
         />
       </div>
       <div className="entity-action d-flex align-items-baseline gap-1">
-        <SessionButton
-          fullPath={fullPath}
-          gitUrl={gitUrl}
-          notebook={notebook}
-          showLogs={showLogs}
-          stopSessionCallback={(server: string, status: string) =>
-            forceSessionStatus(status)
-          }
-        />
+        <SessionButton fullPath={fullPath} gitUrl={gitUrl} />
       </div>
       <div className="session-resources text-truncate">
         <ResourceList resources={resources} />
       </div>
-      <div className="session-time text-truncate">
+      <div
+        className={cx(
+          "session-time",
+          "text-truncate",
+          "flex-wrap",
+          "column-gap-2"
+        )}
+      >
         <div className="d-flex">
-          <span className="session-info">
-            Branch
-            <span className="text-decoration-underline mx-1">
-              {notebook.annotations["branch"]}
-            </span>
-          </span>
           <div className="session-icon-details">{sessionDetailsPopover}</div>
         </div>
-        <TimeCaption
-          className="text-rk-text-light text-truncate"
-          enableTooltip
-          datetime={notebook.started}
-          prefix={sessionTimeLabel || ""}
-        />
+        <span
+          className={cx("time-caption", "text-rk-text-light", "text-truncate")}
+        >
+          <SessionStatusText
+            annotations={notebook.annotations}
+            startTimestamp={notebook.started}
+            status={notebook.status.state}
+          />
+        </span>
       </div>
       <div className="session-icon">
-        <SessionStatusIcon
-          status={sessionStatus}
-          data={statusData}
+        <SessionStatusBadge
+          annotations={notebook.annotations}
           defaultImage={notebook.annotations["default_image_used"]}
-          errorSession={notebook.status.message || ""}
-          sessionId={sessionId}
+          status={notebook.status}
         />
       </div>
     </div>

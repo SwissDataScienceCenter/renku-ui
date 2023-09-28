@@ -146,14 +146,14 @@ function simpleHash(str: string, seed = 0): number {
 }
 
 function sortObjectProperties(
-  unsortedObject: Record<string, never>
-): Record<string, never> {
+  unsortedObject: Record<string, unknown>
+): Record<string, unknown> {
   return Object.keys(unsortedObject)
     .sort()
-    .reduce((obj, key: string) => {
-      obj[key] = unsortedObject[key];
-      return obj;
-    }, {} as Record<string, never>);
+    .reduce(
+      (obj, key) => ({ ...obj, [key]: unsortedObject[key] }),
+      {} as Record<string, unknown>
+    );
 }
 
 export {

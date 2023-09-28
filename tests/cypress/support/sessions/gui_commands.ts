@@ -17,10 +17,17 @@
  */
 
 Cypress.Commands.add("gui_open_logs", () => {
-  cy.get(".sessionsButton").find("[data-cy='more-menu']").click();
-  cy.get_cy("session-log-button").click();
+  cy.get_cy("session-container")
+    .find(".sessionsButton")
+    .first()
+    .find("[data-cy='more-menu']")
+    .click();
+  cy.get_cy("session-log-button").filter(":visible").click();
 });
 
 Cypress.Commands.add("gui_open_session", () => {
-  cy.get_cy("open-session").click();
+  cy.get_cy("session-container")
+    .find("[data-cy='open-session']")
+    .first()
+    .click();
 });

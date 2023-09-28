@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import React, { memo, useState } from "react";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import DOMPurify from "dompurify";
 import _ from "lodash";
+import React, { memo, useState } from "react";
 import {
   Badge,
   Button,
@@ -37,11 +37,13 @@ import { Clipboard } from "../components/Clipboard";
 import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import { TimeCaption } from "../components/TimeCaption";
-import NotebookPreview from "../components/notebook";
-import { CheckNotebookIcon, CheckNotebookStatus } from "../notebooks";
+import LazyNotebookPreview from "../components/notebook/LazyNotebookRender";
+import { CheckNotebookStatus } from "../notebooks";
+import { CheckNotebookIcon } from "../notebooks/NotebookStart.present";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 import { FilePreview } from "./index";
+
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
 
 const commitMessageLengthLimit = 120;
@@ -499,7 +501,7 @@ const StyledNotebook = memo((props) => {
       setDisplayMode={setDisplayMode}
     />,
     <CardBody key="notebook">
-      <NotebookPreview
+      <LazyNotebookPreview
         defaultStyle={false}
         loadMathjax={false}
         notebook={notebook}

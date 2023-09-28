@@ -23,8 +23,10 @@ import type { CoreApiVersionedUrlConfig } from "../helpers/url";
 type IAppContext = {
   client: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   coreApiVersionedUrlConfig: CoreApiVersionedUrlConfig;
-  params: unknown;
   location: unknown;
+  model: unknown;
+  notifications: unknown;
+  params: unknown;
 };
 
 const AppContext = React.createContext<IAppContext>({
@@ -32,8 +34,10 @@ const AppContext = React.createContext<IAppContext>({
   coreApiVersionedUrlConfig: createCoreApiVersionedUrlConfig({
     coreApiVersion: "/",
   }),
-  params: undefined,
   location: undefined,
+  model: undefined,
+  notifications: undefined,
+  params: undefined,
 });
 
 export default AppContext;

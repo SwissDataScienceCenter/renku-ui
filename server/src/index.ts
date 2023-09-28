@@ -22,17 +22,20 @@ import morgan from "morgan";
 import ws from "ws";
 
 import APIClient from "./api-client";
+import { Authenticator } from "./authentication";
+import { registerAuthenticationRoutes } from "./authentication/routes";
 import config from "./config";
-import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
 import logger from "./logger";
 import routes from "./routes";
-import { Authenticator } from "./authentication";
-import { configureWebsocket } from "./websocket";
-import { errorHandler } from "./utils/errorHandler";
-import { initializePrometheus } from "./utils/prometheus/prometheus";
-import { initializeSentry } from "./utils/sentry/sentry";
 import { RedisStorage } from "./storage/RedisStorage";
-import { registerAuthenticationRoutes } from "./authentication/routes";
+import { errorHandler } from "./utils/errorHandler";
+import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
+import { initializePrometheus } from "./utils/prometheus/prometheus";
+import {
+  addWebSocketServerContext,
+  initializeSentry,
+} from "./utils/sentry/sentry";
+import { configureWebsocket } from "./websocket";
 
 const app = express();
 const port = config.server.port;
@@ -96,9 +99,9 @@ const apiClient = new APIClient();
 if (config.websocket.enabled) {
   const path = `${config.server.prefix}${config.server.wsSuffix}`;
   const wsServer = new ws.Server({ server, path });
+  addWebSocketServerContext(wsServer);
   authPromise.then(() => {
     logger.info("Configuring WebSocket server");
-
     configureWebsocket(wsServer, authenticator, storage, apiClient);
   });
 }
@@ -107,6 +110,9 @@ function shutdown() {
   server.close(() => {
     storage.shutdown();
     logger.info("Shutdown completed.");
+    setImmediate(() => {
+      process.exit(0);
+    });
   });
 }
 

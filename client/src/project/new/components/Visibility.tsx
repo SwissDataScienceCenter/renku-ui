@@ -31,30 +31,30 @@ import {
   ModalBody,
   ModalHeader,
 } from "reactstrap";
+import { SuccessAlert } from "../../../components/Alert";
+import { ExternalLink } from "../../../components/ExternalLinks";
+import { Loader } from "../../../components/Loader";
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import { LoadingLabel } from "../../../components/formlabels/FormLabels";
 import VisibilitiesInput, {
-  Visibilities,
   VISIBILITY_ITEMS,
+  Visibilities,
 } from "../../../components/visibility/Visibility";
+import { SettingRequiresKg } from "../../../features/project/components/ProjectSettingsUtils";
+import { useGetProjectByIdQuery } from "../../../features/project/projectGitLab.api";
+import {
+  useGetProjectIndexingStatusQuery,
+  useUpdateProjectMutation,
+} from "../../../features/project/projectKgApi";
+import { useGetGroupByPathQuery } from "../../../features/projects/projectsApi";
+import { useProjectMetadataQuery } from "../../../features/projects/projectsKgApi";
+import { GitlabLinks } from "../../../utils/constants/Docs";
+import { computeVisibilities } from "../../../utils/helpers/HelperFunctions";
 import {
   NewProjectHandlers,
   NewProjectInputs,
   NewProjectMeta,
 } from "./newProject.d";
-import { LoadingLabel } from "../../../components/formlabels/FormLabels";
-import { GitlabLinks } from "../../../utils/constants/Docs";
-import { ExternalLink } from "../../../components/ExternalLinks";
-import {
-  useGetProjectIndexingStatusQuery,
-  useUpdateProjectMutation,
-} from "../../../features/project/projectKgApi";
-import { useGetProjectByIdQuery } from "../../../features/project/projectGitlabApi";
-import { useGetGroupByPathQuery } from "../../../features/projects/projectsApi";
-import { computeVisibilities } from "../../../utils/helpers/HelperFunctions";
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import { SuccessAlert } from "../../../components/Alert";
-import { Loader } from "../../../components/Loader";
-import { useProjectMetadataQuery } from "../../../features/projects/projectsKgApi";
-import { SettingRequiresKg } from "../../../features/project/components/ProjectSettingsUtils";
 
 interface VisibilityProps {
   handlers: NewProjectHandlers;

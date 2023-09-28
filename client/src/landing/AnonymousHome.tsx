@@ -32,7 +32,7 @@ import { useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
-import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
+import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { ExternalLink } from "../components/ExternalLinks";
 import { stateToSearchString } from "../features/kgSearch";
 import { StatuspageBanner } from "../statuspage";
@@ -639,7 +639,7 @@ function CustomizedAnonymousHome(props: AnonymousHomeConfig) {
       <div className="rk-anon-home-section-content">
         <Row>
           <Col className="rk-pt-l rk-w-s">
-            <RenkuMarkdown key="home" markdownText={content} />
+            <LazyRenkuMarkdown key="home" markdownText={content} />
           </Col>
         </Row>
       </div>

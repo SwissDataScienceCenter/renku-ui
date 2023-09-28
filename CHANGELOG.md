@@ -1,18 +1,33 @@
 # Changes
 
+## [3.13.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.12.2...3.13.0) (2023-09-27)
+
+### Features
+
+- Support persistent sessions, allowing logged user to pause sessions ([#2686](https://github.com/SwissDataScienceCenter/renku-ui/issues/2686), [#2526](https://github.com/SwissDataScienceCenter/renku-ui/issues/2526)).
+
+### Bug Fixes
+
+- Fix adding files by URL to datasets ([#2800](https://github.com/SwissDataScienceCenter/renku-ui/issues/2800)).
+
+### BREAKING CHANGES
+
+The previous autosave mechanism, based on GitLab branches, is phased out in favor of the new persistent sessions.
+
+- Requires renku-notebooks 1.19.0 or greater.
+
 ## [3.12.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.12.1...3.12.2) (2023-09-14)
 
 ### Features
 
-* **storybook** deploy and test Storybook ([#2212](https://github.com/SwissDataScienceCenter/renku-ui/issues/2212), [#2300](https://github.com/SwissDataScienceCenter/renku-ui/issues/2300), [#2748](https://github.com/SwissDataScienceCenter/renku-ui/issues/2748), [#2773](https://github.com/SwissDataScienceCenter/renku-ui/issues/2773))
-* **dataset** add dataset to project uses versioned core-service endpoints ([#2788](https://github.com/SwissDataScienceCenter/renku-ui/issues/2788))
+- **storybook** deploy and test Storybook ([#2212](https://github.com/SwissDataScienceCenter/renku-ui/issues/2212), [#2300](https://github.com/SwissDataScienceCenter/renku-ui/issues/2300), [#2748](https://github.com/SwissDataScienceCenter/renku-ui/issues/2748), [#2773](https://github.com/SwissDataScienceCenter/renku-ui/issues/2773))
+- **dataset** add dataset to project uses versioned core-service endpoints ([#2788](https://github.com/SwissDataScienceCenter/renku-ui/issues/2788))
 
 ### Bug Fixes
 
-* **dataset** support dataset avatar with external url ([#2765](https://github.com/SwissDataScienceCenter/renku-ui/issues/2765), [#2791](https://github.com/SwissDataScienceCenter/renku-ui/issues/2791))
-* **dataset** unzip multiple dataset files ([#2754](https://github.com/SwissDataScienceCenter/renku-ui/issues/2754), [#2786](https://github.com/SwissDataScienceCenter/renku-ui/issues/2786))
-* fix render loops in creating new projects ([#2788](https://github.com/SwissDataScienceCenter/renku-ui/issues/2788))
-
+- **dataset** support dataset avatar with external url ([#2765](https://github.com/SwissDataScienceCenter/renku-ui/issues/2765), [#2791](https://github.com/SwissDataScienceCenter/renku-ui/issues/2791))
+- **dataset** unzip multiple dataset files ([#2754](https://github.com/SwissDataScienceCenter/renku-ui/issues/2754), [#2786](https://github.com/SwissDataScienceCenter/renku-ui/issues/2786))
+- fix render loops in creating new projects ([#2788](https://github.com/SwissDataScienceCenter/renku-ui/issues/2788))
 
 ## [3.12.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.12.0...3.12.1) (2023-09-07)
 

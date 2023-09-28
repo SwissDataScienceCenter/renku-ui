@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import { StoryFn as Story } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 import { NewProjectTemplate, Repository } from "../../model/RenkuModels";
-import TemplateSelector, { TemplateSelectorProps } from "./TemplateSelector";
+import TemplateSelector from "./TemplateSelector";
 
-export default {
+const meta: Meta<typeof TemplateSelector> = {
   title: "Components/Forms/Template Selector",
   component: TemplateSelector,
   argTypes: {
@@ -65,9 +65,8 @@ export default {
   },
 };
 
-const Template: Story<TemplateSelectorProps> = (args) => (
-  <TemplateSelector {...args} />
-);
+export default meta;
+type Story = StoryObj<typeof TemplateSelector>;
 
 const repositories: Repository[] = [
   {
@@ -135,56 +134,62 @@ const templates: NewProjectTemplate[] = [
   },
 ];
 
-export const Default = Template.bind({});
-Default.args = {
-  repositories,
-  templates,
-  isRequired: true,
-  isInvalid: false,
-  isDisabled: false,
+export const Default: Story = {
+  args: {
+    repositories,
+    templates,
+    isRequired: true,
+    isInvalid: false,
+    isDisabled: false,
+  },
 };
 
-export const FetchingTemplates = Template.bind({});
-FetchingTemplates.args = {
-  repositories,
-  templates,
-  isRequired: true,
-  isInvalid: false,
-  isDisabled: false,
-  isFetching: true,
+export const FetchingTemplates: Story = {
+  args: {
+    repositories,
+    templates,
+    isRequired: true,
+    isInvalid: false,
+    isDisabled: false,
+    isFetching: true,
+  },
 };
 
-export const CustomRepoNoFetchedData = Template.bind({});
-CustomRepoNoFetchedData.args = {
-  repositories,
-  templates,
-  isRequired: true,
-  isInvalid: false,
-  isDisabled: false,
-  noFetchedUserRepo: true,
+export const CustomRepoNoFetchedData: Story = {
+  args: {
+    repositories,
+    templates,
+    isRequired: true,
+    isInvalid: false,
+    isDisabled: false,
+    noFetchedUserRepo: true,
+  },
 };
 
-export const Selected = Template.bind({});
-Selected.args = {
-  repositories,
-  templates,
-  selected: "Renku/python-minimal",
-  isRequired: true,
-  isInvalid: false,
-  isDisabled: false,
+export const Selected: Story = {
+  args: {
+    repositories,
+    templates,
+    selected: "Renku/python-minimal",
+    isRequired: true,
+    isInvalid: false,
+    isDisabled: false,
+  },
 };
 
-export const Invalid = Template.bind({});
-Invalid.args = {
-  repositories,
-  templates,
-  isRequired: true,
-  isInvalid: true,
+export const Invalid: Story = {
+  args: {
+    repositories,
+    templates,
+    isRequired: true,
+    isInvalid: true,
+  },
 };
 
-export const Disabled = Template.bind({});
-Disabled.args = {
-  repositories,
-  templates,
-  isDisabled: true,
+export const Disabled: Story = {
+  args: {
+    repositories,
+    templates,
+    isDisabled: true,
+  },
 };

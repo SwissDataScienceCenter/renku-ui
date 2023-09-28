@@ -40,10 +40,11 @@ import { Dashboard } from "./features/dashboard/Dashboard";
 import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProjects";
 import SearchPage from "./features/kgSearch/KgSearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
+import AnonymousSessionsList from "./features/session/components/AnonymousSessionsList";
+import { useGetUserInfoQuery } from "./features/user/user.api";
 import Help from "./help";
 import { AnonymousHome, FooterNavbar, RenkuNavBar } from "./landing";
 import { NotFound } from "./not-found";
-import { Notebooks } from "./notebooks";
 import { NotificationsManager, NotificationsPage } from "./notifications";
 import { Cookie, Privacy } from "./privacy";
 import { Project } from "./project";
@@ -53,10 +54,9 @@ import { StyleGuide } from "./styleguide";
 import AppContext from "./utils/context/appContext";
 import { Url } from "./utils/helpers/url";
 import { setupWebSocket } from "./websocket";
-import { useGetUserInfoQuery } from "./features/user/user.api";
 
-import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
+import "./App.css";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize
@@ -93,9 +93,11 @@ function CentralContentContainer(props) {
 
   const appContext = {
     client: props.client,
-    params: props.params,
-    location: props.location,
     coreApiVersionedUrlConfig,
+    location: props.location,
+    model: props.model,
+    notifications,
+    params: props.params,
   };
 
   return (
@@ -215,26 +217,9 @@ function CentralContentContainer(props) {
               />
             )}
           />
-          <Route
-            exact
-            path="/sessions"
-            render={(p) =>
-              !user.logged ? (
-                <ContainerWrap>
-                  <Notebooks
-                    key="sessions"
-                    standalone={true}
-                    client={props.client}
-                    model={props.model}
-                    blockAnonymous={blockAnonymous}
-                    {...p}
-                  />
-                </ContainerWrap>
-              ) : (
-                <Redirect to="/" />
-              )
-            }
-          />
+          <Route exact path={Url.get(Url.pages.sessions)}>
+            {!user.logged ? <AnonymousSessionsList /> : <Redirect to="/" />}
+          </Route>
           <Route
             path="/datasets/:identifier/add"
             render={(p) => (
