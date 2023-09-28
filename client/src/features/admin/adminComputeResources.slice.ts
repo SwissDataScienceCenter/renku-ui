@@ -30,7 +30,11 @@ const adminComputeResourcesSlice = createSlice({
   initialState,
   reducers: {
     setKeycloakToken: (state, action: PayloadAction<string>) => {
-      state.keycloakToken = action.payload;
+      const trimmed = action.payload.trim();
+      const token = trimmed.toLowerCase().startsWith("bearer")
+        ? trimmed.slice("bearer".length).trim()
+        : trimmed;
+      state.keycloakToken = token;
     },
     setKeycloakTokenIsValid: (state, action: PayloadAction<boolean>) => {
       state.keycloakTokenIsValid = action.payload;
