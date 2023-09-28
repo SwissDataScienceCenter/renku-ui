@@ -57,6 +57,8 @@ import {
 } from "./adminComputeResources.slice";
 import { useGetKeycloakUsersQuery } from "./adminKeycloak.api";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import { NavLink } from "react-router-dom";
+import { ExternalLink } from "../../components/ExternalLinks";
 
 export default function AdminPage() {
   return (
@@ -106,7 +108,10 @@ function KeycloakTokenInput() {
         <div className="mb-3">
           <p>
             Go to{" "}
-            {"https://renku-ci-ui-2752.dev.renku.ch/auth/admin/Renku/console/"}
+            <ExternalLink url="/auth/admin/Renku/console/">
+              Keycloak
+            </ExternalLink>{" "}
+            for the token.
           </p>
         </div>
 
