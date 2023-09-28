@@ -214,11 +214,11 @@ export default function SectionShowcase({
         </Row>
         <Swiper
           breakpoints={{
-            800: {
+            992: {
               slidesPerView: 2,
             },
 
-            1320: {
+            1400: {
               slidesPerView: 3,
             },
           }}
