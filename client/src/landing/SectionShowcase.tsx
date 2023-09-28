@@ -31,7 +31,7 @@ import { Pagination } from "swiper";
 import cx from "classnames";
 
 import type { EntityDescriptionContainerProps } from "../components/entities/Description";
-import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
+import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { useProjectMetadataQuery } from "../features/projects/projectsKgApi";
 import { Loader } from "../components/Loader";
 
@@ -151,7 +151,7 @@ function ShowcaseCardDisplay({
             <h4 className="lh-sm">{title}</h4>
           </FixedLineHeightContainer>
           <FixedLineHeightContainer isHeightFixed={true} numberLines={5}>
-            <RenkuMarkdown markdownText={description} />
+            <LazyRenkuMarkdown markdownText={description} />
           </FixedLineHeightContainer>
           <div className="mt-4 mb-4">
             <Link
@@ -210,7 +210,7 @@ export default function SectionShowcase({
         <Row className="rk-pt-m">
           <Col md={10}>
             <h3 className="text-rk-green">{title}</h3>
-            <RenkuMarkdown markdownText={description} />
+            <LazyRenkuMarkdown markdownText={description} />
           </Col>
         </Row>
         <Swiper
