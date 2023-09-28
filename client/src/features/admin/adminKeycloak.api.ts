@@ -25,12 +25,14 @@ const adminKeycloakApi = createApi({
   tagTypes: [],
   endpoints: (builder) => ({
     getKeycloakUsers: builder.query<KeycloakUser[], KeycloakUsersQueryParams>({
-      query: ({ keycloakToken }) => {
+      query: ({ keycloakToken, search }) => {
+        const params = search ? { search } : undefined;
         return {
           url: "users",
           headers: {
             Authorization: `Bearer ${keycloakToken}`,
           },
+          params,
         };
       },
     }),

@@ -25,4 +25,5 @@ export interface KeycloakUser {
 
 export interface KeycloakUsersQueryParams {
   keycloakToken: string;
+  search?: string;
 }

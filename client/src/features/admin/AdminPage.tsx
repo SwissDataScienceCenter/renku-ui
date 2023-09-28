@@ -39,10 +39,13 @@ import {
   ModalFooter,
 } from "reactstrap";
 import { ErrorAlert } from "../../components/Alert";
+import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
+import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { ResourcePool } from "../dataServices/dataServices";
 import AddResourcePoolButton from "./AddResourcePoolButton";
+import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
 import {
   useDeleteResourcePoolMutation,
@@ -56,9 +59,6 @@ import {
   useAdminComputeResourcesSelector,
 } from "./adminComputeResources.slice";
 import { useGetKeycloakUsersQuery } from "./adminKeycloak.api";
-import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { NavLink } from "react-router-dom";
-import { ExternalLink } from "../../components/ExternalLinks";
 
 export default function AdminPage() {
   return (
@@ -209,7 +209,7 @@ function KeycloakTokenCheck() {
 
   return (
     <p>
-      <CheckCircleFill className="me-1" />
+      <CheckCircleFill className={cx("bi", "me-1")} />
       Your Keycloak token is valid.
     </p>
   );
@@ -375,7 +375,9 @@ function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
   return (
     <div>
       <p>Users: {resourcePoolUsers.length}</p>
-      {keycloakTokenIsValid ? null : (
+      {keycloakTokenIsValid ? (
+        <AddUserToResourcePoolButton resourcePool={resourcePool} />
+      ) : (
         <p>Please set a valid Keycloak token to view and edit users.</p>
       )}
     </div>
