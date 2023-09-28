@@ -106,7 +106,7 @@ function ShowcaseCardImage({
           objectPosition: "center top",
           paddingRight: "1px",
         }}
-        className={styles.cardHeaderEntity}
+        className={cx(styles.cardHeaderEntity, "rounded-top")}
         src={imageUrl}
         top
       />
@@ -116,7 +116,8 @@ function ShowcaseCardImage({
       <div
         className={cx(
           styles.cardHeaderEntity,
-          styles.cardHeaderEntity__missing
+          styles.cardHeaderEntity__missing,
+          "rounded-top"
         )}
       >
         <div className="card-bg-title user-select-none">Missing Image</div>
