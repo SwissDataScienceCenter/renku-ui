@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "3.12.2",
+  "version": "3.13.0",
   "private": true,
   "dependencies": {
     "@ckeditor/ckeditor5-react": "^5.1.0",
@@ -78,6 +78,7 @@
     "start-js": "BROWSER=none REACT_APP_UI_DEV_MODE=$UI_DEV_MODE REACT_APP_RENKU_UI_URL=$RENKU_UI_URL craco --max_old_space_size=4096 start",
     "start": "react-scripts start",
     "build": "REACT_APP_UI_DEV_MODE=false craco --max_old_space_size=4096 build",
+    "build:analyze": "REACT_APP_UI_DEV_MODE=false craco --max_old_space_size=4096 build --analyze",
     "test": "craco test",
     "eject": "craco eject",
     "lint": "eslint --max-warnings=0 src/",
@@ -163,7 +164,8 @@
     "styled-components": "^5.3.5",
     "typescript": "^4.5.2",
     "wait-on": "^7.0.1",
-    "webpack": "^5.76.0"
+    "webpack": "^5.76.0",
+    "webpack-bundle-analyzer": "^4.9.1"
   },
   "overrides": {
     "@storybook/addon-docs": {

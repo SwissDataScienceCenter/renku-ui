@@ -20,7 +20,7 @@ import { CSSProperties, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import cx from "classnames";
 
-import { RenkuMarkdown } from "../markdown/RenkuMarkdown";
+import LazyRenkuMarkdown from "../markdown/LazyRenkuMarkdown";
 
 export interface EntityDescriptionProps {
   className?: string;
@@ -48,7 +48,7 @@ export default function EntityDescription({
   const content =
     description && typeof description === "string" ? (
       <>
-        <RenkuMarkdown
+        <LazyRenkuMarkdown
           markdownText={description}
           singleLine={numberLines === 1}
         />

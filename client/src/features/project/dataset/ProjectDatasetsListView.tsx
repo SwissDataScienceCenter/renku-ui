@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button, Row, Col } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
-import { MarkdownTextExcerpt } from "../../../components/markdown/RenkuMarkdown";
+import LazyMarkdownTextExcerpt from "../../../components/markdown/LazyMarkdownTextExcerpt";
 import { Loader } from "../../../components/Loader";
 import ListDisplay from "../../../components/List";
 import { ThrottledTooltip } from "../../../components/Tooltip";
@@ -27,7 +27,7 @@ function datasetToDict(
     description:
       dataset.description !== undefined && dataset.description !== null ? (
         <Fragment>
-          <MarkdownTextExcerpt
+          <LazyMarkdownTextExcerpt
             markdownText={dataset.description}
             singleLine={gridDisplay ? false : true}
             charsLimit={gridDisplay ? 200 : 100}
