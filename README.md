@@ -179,6 +179,17 @@ We use [CSS modules](https://github.com/css-modules/css-modules) to apply CSS st
 locally and avoid leaking styles to the whole web application.
 No additional configuration is needed since Create React App [supports CSS modules out of the box](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet).
 
+### Code splitting
+
+If a component requires a large package, it can be loaded on demand by using the `lazy()` function from React.
+
+Here is an example:
+
+- The component itself: [NotebookRender.tsx](./client/src/components/notebook/NotebookRender.tsx)
+- The wrapper allowing for lazy loading: [LazyNotebookRender.tsx](./client/src/components/notebook/LazyNotebookRender.tsx)
+
+In this case, we save ~950kB from being included in the final bundle.
+
 ### Testing
 
 We split testing into multiple categories. All these tests are required to pass
@@ -330,6 +341,16 @@ variables. Take a look at the script to see all the options that are available.
 The script generates a `config.json` file into the `client/public` folder, and you can
 modify this file with a text editor and reload the browser to test out different
 configuration settings.
+
+#### Bundle analysis
+
+The [`webpack-bundle-analyzer`](https://github.com/webpack-contrib/webpack-bundle-analyzer) plugin can be used to analyze the final bundle and see which Node packages take up a lot of space.
+
+Use the `build:analyze` script to start it:
+
+```bash
+$ npm run build:analyze
+```
 
 ### Navigation map
 

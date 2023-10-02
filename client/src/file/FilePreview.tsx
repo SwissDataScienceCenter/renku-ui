@@ -16,18 +16,17 @@
  * limitations under the License.
  */
 
-import hljs from "highlight.js";
 import React from "react";
 import { CardBody } from "reactstrap";
-import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
-import DOMPurify from "dompurify";
+
+import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
+import { encodeImageBase64 } from "../components/markdown/RenkuMarkdownWithPathTranslation";
+import { atobUTF8 } from "../utils/helpers/Encoding";
+import { FileNoPreview, StyledNotebook } from "./File.present";
+import LazyCodePreview from "./LazyCodePreview";
+import LazyPDFViewer from "./LazyPDFViewer";
 
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-
-import { FileNoPreview, StyledNotebook } from "./File.present";
-import { atobUTF8 } from "../utils/helpers/Encoding";
-import { encodeImageBase64 } from "../components/markdown/RenkuMarkdownWithPathTranslation";
-import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
 
 /* eslint-disable spellcheck/spell-checker */
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];
@@ -201,7 +200,9 @@ function FilePreview(props: FilePreviewProps) {
   if ("pdf" === fileType) {
     return (
       <CardBody key="file preview" className="pb-0 bg-white">
-        <PDFViewer file={`data:application/pdf;base64,${props.file.content}`} />
+        <LazyPDFViewer
+          file={`data:application/pdf;base64,${props.file.content}`}
+        />
       </CardBody>
     );
   }
@@ -222,7 +223,7 @@ function FilePreview(props: FilePreviewProps) {
     const content = atobUTF8(props.file.content);
     return (
       <CardBody key="file preview" className="pb-0 bg-white">
-        <RenkuMarkdown
+        <LazyRenkuMarkdown
           projectPathWithNamespace={props.projectPathWithNamespace}
           filePath={props.file.file_path}
           markdownText={content}
@@ -252,7 +253,7 @@ function FilePreview(props: FilePreviewProps) {
   if (fileIsCode) {
     return (
       <CardBody key="file preview" className="pb-0 bg-white">
-        <CodePreview
+        <LazyCodePreview
           content={props.file.content}
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           fileExtension={getFileExtension()!}
@@ -280,49 +281,6 @@ function FilePreview(props: FilePreviewProps) {
   );
 }
 
-/* eslint-disable */
-// See https://github.com/highlightjs/highlight.js/blob/main/SUPPORTED_LANGUAGES.md
-const hljsNameMap: Record<string, string> = {
-  jl: "julia",
-  f: "fortran",
-  for: "fortran",
-  ftn: "fortran",
-  fpp: "fortran",
-  f03: "fortran",
-  f08: "fortran",
-  m: "objectivec",
-  mat: "matlab",
-};
-/* eslint-enable */
-function extensionToHljsName(ext: string) {
-  return hljsNameMap[ext] ?? ext;
-}
-
-type CodePreviewProps = {
-  content: string;
-  fileExtension: string;
-};
-
-function CodePreview(props: CodePreviewProps) {
-  const codeBlock = React.useRef<HTMLPreElement>(null);
-  React.useEffect(() => {
-    if (codeBlock.current) {
-      codeBlock.current.innerHTML = DOMPurify.sanitize(
-        codeBlock.current.innerHTML
-      );
-      hljs.highlightBlock(codeBlock.current);
-    }
-  }, [codeBlock]);
-
-  const languageName = extensionToHljsName(props.fileExtension);
-
-  return (
-    <pre ref={codeBlock} className={`hljs language-${languageName} bg-white`}>
-      {atobUTF8(props.content)}
-    </pre>
-  );
-}
-
 type JupyterNotebookContainerProps = {
   client: unknown;
   filePath: string;
@@ -339,34 +297,6 @@ function JupyterNotebookContainer(props: JupyterNotebookContainerProps) {
   };
   // Implemented this way to keep TS happy
   return <StyledNotebook {...notebookProps} />;
-}
-
-type PdfViewerProps = {
-  file: string;
-};
-
-export function PDFViewer(props: PdfViewerProps) {
-  const [numPages, setNumPages] = React.useState<number | undefined>(undefined);
-
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-    setNumPages(numPages);
-  }
-
-  return (
-    <Document
-      file={props.file}
-      onLoadSuccess={onDocumentLoadSuccess}
-      renderMode="svg"
-    >
-      {Array.from(new Array(numPages), (el, index) => (
-        <Page
-          className="rk-pdf-page"
-          key={`page_${index + 1}`}
-          pageNumber={index + 1}
-        />
-      ))}
-    </Document>
-  );
 }
 
 export default FilePreview;

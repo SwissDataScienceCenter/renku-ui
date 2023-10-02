@@ -25,12 +25,12 @@
 
 import * as SentryLib from "@sentry/node";
 import express from "express";
+import type { Server } from "ws";
 
-import { getRelease } from "../index";
 import config from "../../config";
 import logger from "../../logger";
+import { clamp, getRelease } from "../index";
 import requestHandlerMiddleware from "../middlewares/requestHandlerMiddleware";
-import { clamp } from "../index";
 
 export interface SentryConfiguration {
   url: string;
@@ -144,5 +144,27 @@ const initializeSentry = (app: express.Application): void => {
   }
   logger.info(`Sentry Initialized: ${sentryInitialized}`);
 };
+
+export function addWebSocketServerContext(wss: Server): void {
+  if (!config.sentry.enabled) {
+    return;
+  }
+
+  const context = {
+    address: wss.address(),
+    options: Object.entries(wss.options)
+      .filter(
+        ([, value]) =>
+          (typeof value !== "object" && typeof value !== "function") ||
+          value == null
+      )
+      .reduce(
+        (obj, [key, value]) => ({ ...obj, [key]: value }),
+        {} as Record<string, unknown>
+      ),
+    path: wss.path,
+  };
+  SentryLib.setContext("WebSocket Server", context);
+}
 
 export { initializeSentry };

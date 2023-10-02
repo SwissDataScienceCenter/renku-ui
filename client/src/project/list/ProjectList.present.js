@@ -48,7 +48,7 @@ import "../Project.css";
 import { Label } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import { RenkuNavLink } from "../../components/RenkuNavLink";
-import { MarkdownTextExcerpt } from "../../components/markdown/RenkuMarkdown";
+import LazyMarkdownTextExcerpt from "../../components/markdown/LazyMarkdownTextExcerpt";
 import ListDisplay from "../../components/List";
 
 function ProjectListRows(props) {
@@ -68,7 +68,7 @@ function ProjectListRows(props) {
       creators: project.owner ? [project.owner] : [project.namespace],
       description: project.description ? (
         <Fragment>
-          <MarkdownTextExcerpt
+          <LazyMarkdownTextExcerpt
             markdownText={project.description}
             singleLine={gridDisplay ? false : true}
             charsLimit={gridDisplay ? 200 : 150}

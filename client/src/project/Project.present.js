@@ -23,10 +23,10 @@
  *  Presentational components.
  */
 
-import { Component, Fragment, useEffect } from "react";
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
+import { Component, Fragment, useEffect } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import {
   Alert,
@@ -48,7 +48,7 @@ import { Loader } from "../components/Loader";
 import { RenkuNavLink } from "../components/RenkuNavLink";
 import { ThrottledTooltip } from "../components/Tooltip";
 import { RoundButtonGroup } from "../components/buttons/Button";
-import { RenkuMarkdown } from "../components/markdown/RenkuMarkdown";
+import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { SshModal } from "../components/ssh/ssh";
 import {
   ProjectDatasetsView,
@@ -619,7 +619,7 @@ class ProjectViewReadme extends Component {
           className="p-4"
           data-cy="project-readme"
         >
-          <RenkuMarkdown
+          <LazyRenkuMarkdown
             projectPathWithNamespace={this.props.metadata.pathWithNamespace}
             filePath={""}
             fixRelativePaths={true}

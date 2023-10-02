@@ -22,10 +22,10 @@
  *  RenkuMarkdown code and presentation.
  */
 
-import { useEffect } from "react";
 import mermaid from "mermaid";
+import { useEffect } from "react";
+import { sanitizedHTMLFromMarkdown } from "../../utils/helpers/markdown.utils";
 import RenkuMarkdownWithPathTranslation from "./RenkuMarkdownWithPathTranslation";
-import { sanitizedHTMLFromMarkdown } from "../../utils/helpers/HelperFunctions";
 
 mermaid.initialize({
   startOnLoad: true,
@@ -43,10 +43,18 @@ function RenkuMarkdown(props) {
     mermaid.contentLoaded();
   });
 
-  if (props.fixRelativePaths)
-    return <RenkuMarkdownWithPathTranslation {...props} />;
-
   const { singleLine, className, markdownText, style } = props;
+  const markdownHtml = sanitizedHTMLFromMarkdown(markdownText, singleLine);
+
+  if (props.fixRelativePaths) {
+    return (
+      <RenkuMarkdownWithPathTranslation
+        markdownHtml={markdownHtml}
+        {...props}
+      />
+    );
+  }
+
   let classNameMarkdown = "text-break renku-markdown";
   if (singleLine) classNameMarkdown += " children-no-spacing";
   if (className) classNameMarkdown += " " + className;
@@ -56,7 +64,7 @@ function RenkuMarkdown(props) {
       className={classNameMarkdown}
       style={style}
       dangerouslySetInnerHTML={{
-        __html: sanitizedHTMLFromMarkdown(markdownText, singleLine),
+        __html: markdownHtml,
       }}
     ></div>
   );
@@ -91,4 +99,4 @@ function MarkdownTextExcerpt(props) {
   );
 }
 
-export { RenkuMarkdown, MarkdownTextExcerpt };
+export { MarkdownTextExcerpt, RenkuMarkdown };

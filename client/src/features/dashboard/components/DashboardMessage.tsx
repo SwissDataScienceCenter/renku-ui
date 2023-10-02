@@ -22,7 +22,7 @@ import { useDispatch } from "react-redux";
 import { Collapse } from "reactstrap";
 import { RenkuAlert } from "../../../components/Alert";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
-import { RenkuMarkdown } from "../../../components/markdown/RenkuMarkdown";
+import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import AppContext from "../../../utils/context/appContext";
 import { validateDashboardMessageParams } from "../message/dashboardMessage.utils";
 import {
@@ -65,7 +65,7 @@ export default function DashboardMessage() {
       dismissCallback={dismiss}
       dataCy="dashboard-message"
     >
-      <RenkuMarkdown markdownText={text} />
+      <LazyRenkuMarkdown markdownText={text} />
       <DashboardMessageMore additionalText={additionalText} />
     </RenkuAlert>
   );
@@ -90,7 +90,7 @@ function DashboardMessageMore({ additionalText }: { additionalText: string }) {
         </a>
       </p>
       <Collapse isOpen={show}>
-        <RenkuMarkdown markdownText={additionalText} />
+        <LazyRenkuMarkdown markdownText={additionalText} />
       </Collapse>
     </>
   );

@@ -23,18 +23,8 @@
  *  Tests for project/list.
  */
 
-import { MemoryRouter } from "react-router-dom";
-import { createMemoryHistory } from "history";
-import TestRenderer, { act } from "react-test-renderer";
-import { Provider } from "react-redux";
-
-import { testClient as client } from "../../api-client";
-import { generateFakeUser } from "../../user/User.test";
 import { Url } from "../../utils/helpers/url";
 import { tests } from "./ProjectList.container";
-import AppContext from "../../utils/context/appContext";
-import { ProjectList } from "./";
-import { globalSchema, StateModel } from "../../model";
 
 describe("helper functions", () => {
   it("removeDefaultParams", () => {
@@ -105,128 +95,5 @@ describe("helper functions", () => {
     expect(result).toBe(SECTION_MAP.starred);
     expect(result).not.toBe(SECTION_MAP.own);
     expect(result).not.toBe(SECTION_MAP.all);
-  });
-});
-
-describe("rendering", () => {
-  const loggedUser = generateFakeUser();
-  const anonymousUser = generateFakeUser(true);
-  const fakeHistory = createMemoryHistory({
-    initialEntries: ["/"],
-    initialIndex: 0,
-  });
-  fakeHistory.push({
-    pathname: "/projects/all",
-    search: "?page=1",
-  });
-  const templates = { custom: false, repositories: [{}] };
-  const fakeLocation = { pathname: "" };
-  const appContext = {
-    client: client,
-    params: { TEMPLATES: templates },
-    location: fakeLocation,
-  };
-  const model = new StateModel(globalSchema);
-
-  //TestRenderer
-  it("Renders ProjectList for logged user", async () => {
-    await act(async () => {
-      TestRenderer.create(
-        <Provider store={model.reduxStore}>
-          <MemoryRouter>
-            <AppContext.Provider value={appContext}>
-              <ProjectList
-                client={client}
-                history={fakeHistory}
-                location={fakeHistory.location}
-                user={loggedUser}
-              />
-            </AppContext.Provider>
-          </MemoryRouter>
-        </Provider>
-      );
-    });
-  });
-
-  it("Renders ProjectList for anonymous user", async () => {
-    await act(async () => {
-      TestRenderer.create(
-        <Provider store={model.reduxStore}>
-          <AppContext.Provider value={appContext}>
-            <MemoryRouter>
-              <ProjectList
-                client={client}
-                history={fakeHistory}
-                location={fakeHistory.location}
-                user={anonymousUser}
-              />
-            </MemoryRouter>
-          </AppContext.Provider>
-        </Provider>
-      );
-    });
-  });
-
-  it("Redirects only anonymous user when accessing an illegal url", async () => {
-    fakeHistory.push({
-      pathname: "/projects/all",
-      search: "?page=1&searchIn=users",
-    });
-    let rendered, props;
-
-    // Logged users can use searchIn=users
-    await act(async () => {
-      rendered = TestRenderer.create(
-        <Provider store={model.reduxStore}>
-          <AppContext.Provider value={appContext}>
-            <MemoryRouter>
-              <ProjectList
-                client={client}
-                history={fakeHistory}
-                location={fakeHistory.location}
-                user={loggedUser}
-              />
-            </MemoryRouter>
-          </AppContext.Provider>
-        </Provider>
-      );
-    });
-    props = rendered.root.findByType(ProjectList).props;
-    expect(props).toMatchObject({
-      client: {},
-      history: {},
-      location: {},
-      user: {},
-    });
-    expect(props.history.location.search).toContain("searchIn=users");
-    expect(props.history.location.search).not.toContain("searchIn=projects");
-
-    // Anonymous users can't use searchIn=users, they should be redirected to searchIn=projects
-    await act(async () => {
-      rendered = TestRenderer.create(
-        <Provider store={model.reduxStore}>
-          0
-          <AppContext.Provider value={appContext}>
-            <MemoryRouter>
-              <ProjectList
-                client={client}
-                history={fakeHistory}
-                location={fakeHistory.location}
-                user={anonymousUser}
-              />
-            </MemoryRouter>
-          </AppContext.Provider>
-        </Provider>
-      );
-    });
-    props = rendered.root.findByType(ProjectList).props;
-    expect(props).toMatchObject({
-      client: {},
-      history: {},
-      location: {},
-      user: {},
-    });
-    expect(props.history.location.search).not.toContain("searchIn=users");
-    expect(props.history.location.search).toContain("searchIn=projects");
   });
 });

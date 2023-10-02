@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import { CardBody, Card } from "reactstrap";
-import ReactDOMServer from "react-dom/server";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
-import "katex/dist/katex.min.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import ReactDOMServer from "react-dom/server";
+import { Card, CardBody } from "reactstrap";
 import { FilePreview } from "../../file";
 import type { FilePreviewProps } from "../../file/FilePreview";
-import { sanitizedHTMLFromMarkdown } from "../../utils/helpers/HelperFunctions";
 import { Url } from "../../utils/helpers/url";
+
+import "katex/dist/katex.min.css";
 
 const patterns = {
   fileRefFull: /!\[(.*?)\]\((.*?)\)/g, //with !
@@ -49,7 +49,7 @@ type RenkuMarkdownWithPathTranslationProps = {
   /** Is the file inside a project? */
   insideProject: boolean;
   /** The markdown text to display */
-  markdownText: string;
+  markdownHtml: string;
   /** Sizes at which the UI shows a preview or not */
   previewThreshold: FilePreviewProps["previewThreshold"];
   /** The project id */
@@ -186,10 +186,7 @@ function RenkuMarkdownWithPathTranslation(
   if (singleLine) className += " children-no-spacing";
   const filesPathArray = props.filePath.split("/").slice(0, -1).reverse();
 
-  const markdownToHtml = sanitizedHTMLFromMarkdown(
-    props.markdownText,
-    singleLine
-  );
+  const markdownToHtml = props.markdownHtml;
   const divWithMarkdown = document.createElement("div");
   //can we do this with dangerously set inner html???
   divWithMarkdown.innerHTML = markdownToHtml;
@@ -327,8 +324,8 @@ function RenkuMarkdownWithPathTranslation(
 function GuardedRenkuMarkdownWithPathTranslation(
   props: RenkuMarkdownWithPathTranslationProps
 ) {
-  // Return null if markdownText is null, otherwise there are problems with the hooks
-  if (props.markdownText == null) return null;
+  // Return null if markdownHtml is null, otherwise there are problems with the hooks
+  if (props.markdownHtml == null) return null;
 
   return <RenkuMarkdownWithPathTranslation {...props} />;
 }
