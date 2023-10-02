@@ -17,14 +17,17 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { ResourcePool } from "../dataServices/dataServices";
+import { ResourceClass, ResourcePool } from "../dataServices/dataServices";
 import {
+  AddResourceClassParams,
   AddResourcePoolParams,
   AddUsersToResourcePoolParams,
+  DeleteResourceClassParams,
   DeleteResourcePoolParams,
   GetResourcePoolUsersParams,
   RemoveUserFromResourcePoolParams,
   ResourcePoolUser,
+  UpdateResourceClassParams,
   UpdateResourcePoolParams,
 } from "./adminComputeResources.types";
 
@@ -105,7 +108,7 @@ const adminComputeResourcesApi = createApi({
         return {
           method: "PATCH",
           url: `resource_pools/${resourcePoolId}`,
-          body: { ...params },
+          body: params,
         };
       },
       invalidatesTags: (_result, _error, { resourcePoolId }) => [
@@ -123,6 +126,44 @@ const adminComputeResourcesApi = createApi({
         };
       },
       invalidatesTags: ["ResourcePool"],
+    }),
+    addResourceClass: builder.mutation<ResourceClass, AddResourceClassParams>({
+      query: ({ resourcePoolId, ...params }) => {
+        return {
+          method: "POST",
+          url: `resource_pools/${resourcePoolId}/classes`,
+          body: params,
+        };
+      },
+      invalidatesTags: (_result, _error, { resourcePoolId }) => [
+        { id: resourcePoolId, type: "ResourcePool" },
+      ],
+    }),
+    updateResourceClass: builder.mutation<
+      ResourceClass,
+      UpdateResourceClassParams
+    >({
+      query: ({ resourceClassId, resourcePoolId, ...params }) => {
+        return {
+          method: "PATCH",
+          url: `resource_pools/${resourcePoolId}/classes/${resourceClassId}`,
+          body: params,
+        };
+      },
+      invalidatesTags: (_result, _error, { resourcePoolId }) => [
+        { id: resourcePoolId, type: "ResourcePool" },
+      ],
+    }),
+    deleteResourceClass: builder.mutation<void, DeleteResourceClassParams>({
+      query: ({ resourceClassId, resourcePoolId }) => {
+        return {
+          method: "DELETE",
+          url: `resource_pools/${resourcePoolId}/classes/${resourceClassId}`,
+        };
+      },
+      invalidatesTags: (_result, _error, { resourcePoolId }) => [
+        { id: resourcePoolId, type: "ResourcePool" },
+      ],
     }),
     addUsersToResourcePool: builder.mutation<
       void,
@@ -166,6 +207,9 @@ export const {
   useAddResourcePoolMutation,
   useUpdateResourcePoolMutation,
   useDeleteResourcePoolMutation,
+  useAddResourceClassMutation,
+  useUpdateResourceClassMutation,
+  useDeleteResourceClassMutation,
   useAddUsersToResourcePoolMutation,
   useRemoveUserFromResourcePoolMutation,
 } = adminComputeResourcesApi;

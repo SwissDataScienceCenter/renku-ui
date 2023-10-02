@@ -129,7 +129,7 @@ function AddResourcePoolModal({ isOpen, toggle }: AddResourcePoolModalProps) {
 
   return (
     <Modal centered fullscreen="lg" isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader toggle={toggle}>Add Resource Pool</ModalHeader>
+      <ModalHeader toggle={toggle}>Add resource pool</ModalHeader>
       <ModalBody>
         <Form
           className="form-rk-green"

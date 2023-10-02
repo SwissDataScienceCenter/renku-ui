@@ -69,6 +69,36 @@ export interface DeleteResourcePoolParams {
   resourcePoolId: number;
 }
 
+export interface AddResourceClassParams {
+  resourcePoolId: number;
+
+  name: string;
+  cpu: number;
+  memory: number;
+  gpu: number;
+  default_storage: number;
+  max_storage: number;
+  default: boolean;
+}
+
+export interface UpdateResourceClassParams {
+  resourcePoolId: number;
+  resourceClassId: number;
+
+  name?: string;
+  cpu?: number;
+  memory?: number;
+  gpu?: number;
+  default_storage?: number;
+  max_storage?: number;
+  default?: boolean;
+}
+
+export interface DeleteResourceClassParams {
+  resourcePoolId: number;
+  resourceClassId: number;
+}
+
 export interface AddUsersToResourcePoolParams {
   resourcePoolId: number;
   userIds: string[];

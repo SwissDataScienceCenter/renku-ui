@@ -44,7 +44,7 @@ import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
-import { ResourcePool } from "../dataServices/dataServices";
+import { ResourcePool, ResourceClass } from "../dataServices/dataServices";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
 import UpdateResourcePoolQuotaButton from "./UpdateResourcePoolQuotaButton";
@@ -66,6 +66,9 @@ import {
 } from "./adminKeycloak.api";
 import { ResourcePoolUser } from "./adminComputeResources.types";
 import { KeycloakUser } from "./adminKeycloak.types";
+import UpdateResourceClassButton from "./UpdateResourceClassButton";
+import AddResourceClassButton from "./AddResourceClassButton";
+import DeleteResourceClassButton from "./DeleteResourceClassButton";
 
 export default function AdminPage() {
   return (
@@ -337,9 +340,11 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
         ) : (
           <p>No quota</p>
         )}
-        <div>
-          <pre>{JSON.stringify(resourcePool.classes, null, 2)}</pre>
-        </div>
+
+        <ResourceClassList
+          classes={resourcePool.classes}
+          resourcePool={resourcePool}
+        />
 
         {!isPublic && <ResourcePoolUsers resourcePool={resourcePool} />}
       </CardBody>
@@ -347,6 +352,83 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
         <DeleteResourcePoolButton resourcePool={resourcePool} />
       </CardBody>
     </Card>
+  );
+}
+
+interface ResourceClassListProps {
+  classes: ResourceClass[];
+  resourcePool: ResourcePool;
+}
+
+function ResourceClassList({ classes, resourcePool }: ResourceClassListProps) {
+  return (
+    <>
+      <p className="mb-0">Classes:</p>
+      <div>
+        <AddResourceClassButton resourcePool={resourcePool} />
+      </div>
+      <ul>
+        {classes.map((resourceClass) => (
+          <ResourceClassItem
+            key={resourceClass.id}
+            resourceClass={resourceClass}
+            resourcePool={resourcePool}
+          />
+        ))}
+      </ul>
+    </>
+  );
+}
+
+interface ResourceClassItemProps {
+  resourceClass: ResourceClass;
+  resourcePool: ResourcePool;
+}
+
+function ResourceClassItem({
+  resourceClass,
+  resourcePool,
+}: ResourceClassItemProps) {
+  const {
+    cpu,
+    default: isDefault,
+    default_storage,
+    gpu,
+    max_storage,
+    memory,
+    name,
+  } = resourceClass;
+
+  return (
+    <li>
+      <div className={cx("hstack", "gap-2")}>
+        <div>
+          <strong>{name}</strong> {isDefault && " (default)"}:
+        </div>
+        <div>{cpu} CPUs</div>
+        <div className="vr"></div>
+        <div>{memory}&nbsp;GB RAM</div>
+        <div className="vr"></div>
+        <div>{gpu} GPUs</div>
+        <div className="vr"></div>
+        <div>{default_storage} GB default disk</div>
+        <div className="vr"></div>
+        <div>{max_storage} GB max disk</div>
+        <div className="ms-2">
+          {isDefault ? (
+            <UpdateResourceClassButton
+              resourceClass={resourceClass}
+              resourcePool={resourcePool}
+            />
+          ) : (
+            <DeleteResourceClassButton
+              resourceClass={resourceClass}
+              resourcePool={resourcePool}
+            />
+          )}
+        </div>
+      </div>
+    </li>
   );
 }
 

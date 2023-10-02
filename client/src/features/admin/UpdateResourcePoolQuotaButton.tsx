@@ -103,10 +103,10 @@ function UpdateResourcePoolQuotaModal({
   );
 
   useEffect(() => {
-    if (result.isSuccess || result.isError) {
+    if (result.isSuccess) {
       toggle();
     }
-  }, [result.isError, result.isSuccess, toggle]);
+  }, [result.isSuccess, toggle]);
 
   return (
     <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
