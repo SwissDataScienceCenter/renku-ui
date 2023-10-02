@@ -21,6 +21,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   CheckCircleFill,
   CheckLg,
+  PersonFillX,
   TrashFill,
   XLg,
 } from "react-bootstrap-icons";
@@ -52,13 +53,19 @@ import {
   useGetResourcePoolUsersQuery,
   useGetResourcePoolsQuery,
   useGetUsersQuery,
+  useRemoveUserFromResourcePoolMutation,
 } from "./adminComputeResources.api";
 import {
   setKeycloakToken,
   setKeycloakTokenIsValid,
   useAdminComputeResourcesSelector,
 } from "./adminComputeResources.slice";
-import { useGetKeycloakUsersQuery } from "./adminKeycloak.api";
+import {
+  useGetKeycloakUserQuery,
+  useGetKeycloakUsersQuery,
+} from "./adminKeycloak.api";
+import { ResourcePoolUser } from "./adminComputeResources.types";
+import { KeycloakUser } from "./adminKeycloak.types";
 
 export default function AdminPage() {
   return (
@@ -334,7 +341,7 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
           <pre>{JSON.stringify(resourcePool.classes, null, 2)}</pre>
         </div>
 
-        <ResourcePoolUsers resourcePool={resourcePool} />
+        {!isPublic && <ResourcePoolUsers resourcePool={resourcePool} />}
       </CardBody>
       <CardBody className={cx("d-flex", "flex-row", "justify-content-end")}>
         <DeleteResourcePoolButton resourcePool={resourcePool} />
@@ -376,11 +383,173 @@ function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
     <div>
       <p>Users: {resourcePoolUsers.length}</p>
       {keycloakTokenIsValid ? (
-        <AddUserToResourcePoolButton resourcePool={resourcePool} />
+        <>
+          <AddUserToResourcePoolButton resourcePool={resourcePool} />
+          <ResourcePoolUsersList
+            resourcePool={resourcePool}
+            resourcePoolUsers={resourcePoolUsers}
+          />
+        </>
       ) : (
         <p>Please set a valid Keycloak token to view and edit users.</p>
       )}
     </div>
+  );
+}
+
+interface ResourcePoolUsersListProps {
+  resourcePool: ResourcePool;
+  resourcePoolUsers: ResourcePoolUser[];
+}
+
+function ResourcePoolUsersList({
+  resourcePool,
+  resourcePoolUsers,
+}: ResourcePoolUsersListProps) {
+  return (
+    <ul>
+      {resourcePoolUsers.map((user) => (
+        <ResourcePoolUserItem
+          key={user.id}
+          resourcePool={resourcePool}
+          resourcePoolUser={user}
+        />
+      ))}
+    </ul>
+  );
+}
+
+interface ResourcePoolUserItemProps {
+  resourcePool: ResourcePool;
+  resourcePoolUser: ResourcePoolUser;
+}
+
+function ResourcePoolUserItem({
+  resourcePool,
+  resourcePoolUser,
+}: ResourcePoolUserItemProps) {
+  const keycloakToken = useAdminComputeResourcesSelector(
+    ({ keycloakToken }) => keycloakToken
+  );
+
+  const {
+    data: user,
+    error,
+    isLoading,
+  } = useGetKeycloakUserQuery({
+    keycloakToken,
+    userId: resourcePoolUser.id,
+  });
+
+  if (isLoading) {
+    return (
+      <li>
+        <Loader className="me-1" inline size={16} />
+        <span className="fst-italic">loading user {resourcePoolUser.id}</span>
+      </li>
+    );
+  }
+
+  if (error || !user) {
+    return <li>Error loading user {resourcePoolUser.id}</li>;
+  }
+
+  return (
+    <li>
+      {`${user.firstName} ${user.lastName} <${user.email}>`}
+      <RemoveUserFromResourcePoolButton
+        resourcePool={resourcePool}
+        user={user}
+      />
+    </li>
+  );
+}
+
+interface RemoveUserFromResourcePoolButtonProps {
+  resourcePool: ResourcePool;
+  user: KeycloakUser;
+}
+
+function RemoveUserFromResourcePoolButton({
+  resourcePool,
+  user,
+}: RemoveUserFromResourcePoolButtonProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((open) => !open);
+  }, []);
+
+  return (
+    <>
+      <Button className="ms-2" color="outline-danger" onClick={toggle}>
+        <PersonFillX className={cx("bi", "me-1")} />
+        Remove
+      </Button>
+      <RemoveUserFromResourcePoolModal
+        isOpen={isOpen}
+        resourcePool={resourcePool}
+        toggle={toggle}
+        user={user}
+      />
+    </>
+  );
+}
+
+interface RemoveUserFromResourcePoolModalProps {
+  isOpen: boolean;
+  resourcePool: ResourcePool;
+  toggle: () => void;
+  user: KeycloakUser;
+}
+
+function RemoveUserFromResourcePoolModal({
+  isOpen,
+  resourcePool,
+  toggle,
+  user,
+}: RemoveUserFromResourcePoolModalProps) {
+  const [removeUserFromResourcePool, result] =
+    useRemoveUserFromResourcePoolMutation();
+  const onRemove = useCallback(() => {
+    removeUserFromResourcePool({
+      resourcePoolId: resourcePool.id,
+      userId: user.id,
+    });
+  }, [removeUserFromResourcePool, resourcePool.id, user.id]);
+
+  useEffect(() => {
+    if (result.isSuccess || result.isError) {
+      toggle();
+    }
+  }, [result.isError, result.isSuccess, toggle]);
+
+  return (
+    <Modal centered isOpen={isOpen} size="lg" toggle={toggle}>
+      <ModalBody>
+        <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
+          Are you sure?
+        </h3>
+        <p className="mb-0">
+          Please confirm that you want to remove{" "}
+          <strong>{`${user.firstName} ${user.lastName} <${user.email}>`}</strong>{" "}
+          from the <strong>{resourcePool.name}</strong> resource pool.
+        </p>
+      </ModalBody>
+      <ModalFooter className="pt-0">
+        <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel
+        </Button>
+        <Button className="ms-2" color="danger" onClick={onRemove}>
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <CheckLg className={cx("bi", "me-1")} />
+          )}
+          Yes, remove user
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 }
 

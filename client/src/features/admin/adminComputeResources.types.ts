@@ -23,6 +23,10 @@ export interface AdminComputeResources {
   keycloakTokenIsValid: boolean;
 }
 
+export interface ResourcePoolUser {
+  id: string;
+}
+
 export interface GetResourcePoolUsersParams {
   resourcePoolId: number;
 }
@@ -68,4 +72,9 @@ export interface DeleteResourcePoolParams {
 export interface AddUsersToResourcePoolParams {
   resourcePoolId: number;
   userIds: string[];
+}
+
+export interface RemoveUserFromResourcePoolParams {
+  resourcePoolId: number;
+  userId: string;
 }

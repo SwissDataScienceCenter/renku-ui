@@ -22,8 +22,23 @@ import { KeycloakUser, KeycloakUsersQueryParams } from "./adminKeycloak.types";
 const adminKeycloakApi = createApi({
   reducerPath: "adminKeycloakApi",
   baseQuery: fetchBaseQuery({ baseUrl: "auth/admin/realms/Renku" }),
-  tagTypes: [],
+  tagTypes: ["KeycloakUser"],
   endpoints: (builder) => ({
+    getKeycloakUser: builder.query<
+      KeycloakUser,
+      { keycloakToken: string; userId: string }
+    >({
+      query: ({ keycloakToken, userId }) => {
+        return {
+          url: `users/${userId}`,
+          headers: {
+            Authorization: `Bearer ${keycloakToken}`,
+          },
+        };
+      },
+      providesTags: (result) =>
+        result ? [{ id: `${result.id}`, type: "KeycloakUser" }] : [],
+    }),
     getKeycloakUsers: builder.query<KeycloakUser[], KeycloakUsersQueryParams>({
       query: ({ keycloakToken, search }) => {
         const params = search ? { search } : undefined;
@@ -35,10 +50,24 @@ const adminKeycloakApi = createApi({
           params,
         };
       },
+      providesTags: (result, _error, { search }) =>
+        result
+          ? [
+              ...result.map(
+                ({ id }) =>
+                  ({
+                    id,
+                    type: "KeycloakUser",
+                  } as const)
+              ),
+              { id: `LIST-${search}`, type: "KeycloakUser" },
+            ]
+          : [{ id: `LIST-${search}`, type: "KeycloakUser" }],
     }),
   }),
 });
 
 export default adminKeycloakApi;
 
-export const { useGetKeycloakUsersQuery } = adminKeycloakApi;
+export const { useGetKeycloakUserQuery, useGetKeycloakUsersQuery } =
+  adminKeycloakApi;

@@ -23,6 +23,8 @@ import {
   AddUsersToResourcePoolParams,
   DeleteResourcePoolParams,
   GetResourcePoolUsersParams,
+  RemoveUserFromResourcePoolParams,
+  ResourcePoolUser,
   UpdateResourcePoolParams,
 } from "./adminComputeResources.types";
 
@@ -47,7 +49,10 @@ const adminComputeResourcesApi = createApi({
             ]
           : ["ResourcePool"],
     }),
-    getResourcePoolUsers: builder.query<unknown[], GetResourcePoolUsersParams>({
+    getResourcePoolUsers: builder.query<
+      ResourcePoolUser[],
+      GetResourcePoolUsersParams
+    >({
       query: ({ resourcePoolId }) => {
         return {
           url: `resource_pools/${resourcePoolId}/users`,
@@ -57,9 +62,9 @@ const adminComputeResourcesApi = createApi({
         result
           ? [
               ...result.map(
-                () =>
+                ({ id }) =>
                   ({
-                    id: `${resourcePoolId}-`,
+                    id,
                     type: "ResourcePoolUser",
                   } as const)
               ),
@@ -67,7 +72,7 @@ const adminComputeResourcesApi = createApi({
             ]
           : [{ id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" }],
     }),
-    getUsers: builder.query<unknown[], void>({
+    getUsers: builder.query<ResourcePoolUser[], void>({
       query: () => {
         return {
           url: "users",
@@ -135,6 +140,20 @@ const adminComputeResourcesApi = createApi({
         { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
       ],
     }),
+    removeUserFromResourcePool: builder.mutation<
+      void,
+      RemoveUserFromResourcePoolParams
+    >({
+      query: ({ resourcePoolId, userId }) => {
+        return {
+          method: "DELETE",
+          url: `resource_pools/${resourcePoolId}/users/${userId}`,
+        };
+      },
+      invalidatesTags: (_result, _error, { resourcePoolId }) => [
+        { id: `LIST-${resourcePoolId}`, type: "ResourcePoolUser" },
+      ],
+    }),
   }),
 });
 
@@ -148,4 +167,5 @@ export const {
   useUpdateResourcePoolMutation,
   useDeleteResourcePoolMutation,
   useAddUsersToResourcePoolMutation,
+  useRemoveUserFromResourcePoolMutation,
 } = adminComputeResourcesApi;
