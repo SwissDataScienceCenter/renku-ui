@@ -17,12 +17,13 @@
  */
 
 import { Link } from "react-router-dom";
-import { JupyterIcon } from "../components/Icon";
+// import { JupyterIcon } from "../components/Icon";
 import { Loader } from "../components/Loader";
 import { ThrottledTooltip } from "../components/Tooltip";
 import { SessionStatusStateEnum } from "../features/session/sessions.types";
 import { Url } from "../utils/helpers/url";
 import { NotebooksHelper } from "./index";
+import JupyterIcon from "../components/icons/JupyterIcon";
 
 // * CheckNotebookIcon code * //
 export const CheckNotebookIcon = ({
@@ -59,7 +60,12 @@ export const CheckNotebookIcon = ({
       });
       const state = { from: location.pathname, filePath };
       tooltip = "Connect to JupyterLab";
-      icon = <JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />;
+      icon = (
+        <JupyterIcon
+          className="svg-inline--fa fa-w-16 icon-link"
+          hasOrangeAccent
+        />
+      );
       link = <Link to={{ pathname: sessionUrl, state }}>{icon}</Link>;
     } else if (
       status === SessionStatusStateEnum.starting ||
@@ -73,12 +79,7 @@ export const CheckNotebookIcon = ({
       link = loader;
     } else {
       tooltip = "Check session status";
-      icon = (
-        <JupyterIcon
-          svgClass="svg-inline--fa fa-w-16 icon-link"
-          grayscale={true}
-        />
-      );
+      icon = <JupyterIcon className="svg-inline--fa fa-w-16 icon-link" />;
       link = <Link to={launchNotebookUrl}>{icon}</Link>;
     }
   } else {
@@ -89,12 +90,7 @@ export const CheckNotebookIcon = ({
       state: { successUrl },
     };
     tooltip = "Start a session";
-    icon = (
-      <JupyterIcon
-        svgClass="svg-inline--fa fa-w-16 icon-link"
-        grayscale={true}
-      />
-    );
+    icon = <JupyterIcon className="svg-inline--fa fa-w-16 icon-link" />;
     link = <Link to={target}>{icon}</Link>;
   }
 
