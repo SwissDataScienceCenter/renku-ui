@@ -16,6 +16,24 @@
  * limitations under the License.
  */
 
-export interface UserInfo {
+export type UserInfo = AnonymousUserInfo | LoggedInUserInfo;
+
+export interface AnonymousUserInfo {
+  isLoggedIn: false;
+}
+
+export interface LoggedInUserInfo extends UserInfoResponse {
+  isLoggedIn: true;
   isAdmin: boolean;
+}
+
+export interface UserInfoResponse {
+  email: string;
+  email_verified: boolean;
+  family_name: string;
+  given_name: string;
+  groups: string[];
+  name: string;
+  preferred_username: string;
+  sub: string;
 }

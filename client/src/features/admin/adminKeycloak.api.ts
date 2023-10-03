@@ -21,9 +21,18 @@ import { KeycloakUser, KeycloakUsersQueryParams } from "./adminKeycloak.types";
 
 const adminKeycloakApi = createApi({
   reducerPath: "adminKeycloakApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "auth/admin/realms/Renku" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "ui-server/api/kc/admin/realms/Renku",
+  }),
   tagTypes: ["KeycloakUser"],
   endpoints: (builder) => ({
+    getKeycloakUserInfo: builder.query<unknown, void>({
+      query: () => {
+        return {
+          url: "",
+        };
+      },
+    }),
     getKeycloakUser: builder.query<
       KeycloakUser,
       { keycloakToken: string; userId: string }

@@ -17,21 +17,30 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { UserInfo } from "./user.types";
+import { UserInfo, UserInfoResponse } from "./user.types";
 
 const userApi = createApi({
   reducerPath: "userApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/auth/" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "ui-server/api/kc/realms/Renku",
+  }),
   tagTypes: ["User"],
   endpoints: (builder) => ({
     getUserInfo: builder.query<UserInfo, void>({
-      queryFn: async () => {
-        // ? The endpoint does not exist yet on renku-gateway
-        const search = new URLSearchParams(window.location.search);
-        if (search.get("isAdmin")) {
-          return { data: { isAdmin: true } };
+      query: () => {
+        return {
+          url: "protocol/openid-connect/userinfo",
+          validateStatus: (response) => {
+            return response.status < 400 || response.status == 401;
+          },
+        };
+      },
+      transformResponse: (result: UserInfoResponse | null | undefined) => {
+        if (result == null) {
+          return { isLoggedIn: false };
         }
-        return { data: { isAdmin: false } };
+        const isAdmin = result.groups.includes("renku-admin");
+        return { ...result, isLoggedIn: true, isAdmin };
       },
     }),
   }),

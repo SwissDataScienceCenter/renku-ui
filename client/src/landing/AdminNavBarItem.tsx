@@ -28,7 +28,7 @@ export default function AdminNavBarItem() {
 
   const { data: userInfo } = useGetUserInfoQuery();
 
-  if (!userLogged || !userInfo?.isAdmin) {
+  if (!userLogged || !userInfo?.isLoggedIn || !userInfo.isAdmin) {
     return null;
   }
 
