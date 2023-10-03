@@ -23,7 +23,10 @@ export interface KeycloakUser {
   email: string;
 }
 
+export interface KeycloakUserQueryParams {
+  userId: string;
+}
+
 export interface KeycloakUsersQueryParams {
-  keycloakToken: string;
   search?: string;
 }

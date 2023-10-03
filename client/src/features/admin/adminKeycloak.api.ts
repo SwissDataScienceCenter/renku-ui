@@ -17,7 +17,11 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { KeycloakUser, KeycloakUsersQueryParams } from "./adminKeycloak.types";
+import {
+  KeycloakUser,
+  KeycloakUserQueryParams,
+  KeycloakUsersQueryParams,
+} from "./adminKeycloak.types";
 
 const adminKeycloakApi = createApi({
   reducerPath: "adminKeycloakApi",
@@ -26,36 +30,20 @@ const adminKeycloakApi = createApi({
   }),
   tagTypes: ["KeycloakUser"],
   endpoints: (builder) => ({
-    getKeycloakUserInfo: builder.query<unknown, void>({
-      query: () => {
-        return {
-          url: "",
-        };
-      },
-    }),
-    getKeycloakUser: builder.query<
-      KeycloakUser,
-      { keycloakToken: string; userId: string }
-    >({
-      query: ({ keycloakToken, userId }) => {
+    getKeycloakUser: builder.query<KeycloakUser, KeycloakUserQueryParams>({
+      query: ({ userId }) => {
         return {
           url: `users/${userId}`,
-          headers: {
-            Authorization: `Bearer ${keycloakToken}`,
-          },
         };
       },
       providesTags: (result) =>
         result ? [{ id: `${result.id}`, type: "KeycloakUser" }] : [],
     }),
     getKeycloakUsers: builder.query<KeycloakUser[], KeycloakUsersQueryParams>({
-      query: ({ keycloakToken, search }) => {
+      query: ({ search }) => {
         const params = search ? { search } : undefined;
         return {
           url: "users",
-          headers: {
-            Authorization: `Bearer ${keycloakToken}`,
-          },
           params,
         };
       },

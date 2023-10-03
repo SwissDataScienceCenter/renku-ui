@@ -29,6 +29,7 @@ const userApi = createApi({
     getUserInfo: builder.query<UserInfo, void>({
       query: () => {
         return {
+          // eslint-disable-next-line spellcheck/spell-checker
           url: "protocol/openid-connect/userinfo",
           validateStatus: (response) => {
             return response.status < 400 || response.status == 401;

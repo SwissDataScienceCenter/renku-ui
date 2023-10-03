@@ -50,7 +50,7 @@ import userApi from "../../features/user/user.api";
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
-import adminComputeResourcesSlice from "../../features/admin/adminComputeResources.slice";
+// import adminComputeResourcesSlice from "../../features/admin/adminComputeResources.slice";
 import adminComputeResourcesApi from "../../features/admin/adminComputeResources.api";
 import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 
@@ -86,7 +86,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [workflowsApi.reducerPath]: workflowsApi.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     [userApi.reducerPath]: userApi.reducer,
-    [adminComputeResourcesSlice.name]: adminComputeResourcesSlice.reducer,
+    // [adminComputeResourcesSlice.name]: adminComputeResourcesSlice.reducer,
     [adminComputeResourcesApi.reducerPath]: adminComputeResourcesApi.reducer,
     [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
   };

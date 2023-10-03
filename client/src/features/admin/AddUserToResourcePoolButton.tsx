@@ -40,7 +40,6 @@ import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import { ResourcePool } from "../dataServices/dataServices";
 import { useAddUsersToResourcePoolMutation } from "./adminComputeResources.api";
-import { useAdminComputeResourcesSelector } from "./adminComputeResources.slice";
 import adminKeycloakApi from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
 
@@ -205,10 +204,6 @@ interface UserAutoSuggestProps {
 }
 
 function UserAutoSuggest({ onPickUser }: UserAutoSuggestProps) {
-  const keycloakToken = useAdminComputeResourcesSelector(
-    ({ keycloakToken }) => keycloakToken
-  );
-
   const [suggestions, setSuggestions] = useState<KeycloakUser[]>([]);
   const [value, setValue] = useState("");
 
@@ -239,13 +234,9 @@ function UserAutoSuggest({ onPickUser }: UserAutoSuggestProps) {
 
   const onSuggestionsFetchRequested = useCallback(
     ({ value }: SuggestionsFetchRequestedParams) => {
-      console.log({ value });
-      getKeycloakUsers(
-        { keycloakToken, search: value },
-        /*preferCacheValue=*/ true
-      );
+      getKeycloakUsers({ search: value }, /*preferCacheValue=*/ true);
     },
-    [getKeycloakUsers, keycloakToken]
+    [getKeycloakUsers]
   );
 
   const onSuggestionSelected = useCallback(
@@ -265,7 +256,6 @@ function UserAutoSuggest({ onPickUser }: UserAutoSuggestProps) {
   );
 
   useEffect(() => {
-    console.log({ users });
     if (users) {
       setSuggestions(users);
     }
