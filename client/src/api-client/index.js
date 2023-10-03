@@ -244,8 +244,11 @@ class APIClient {
    * Return upload file endpoint url.
    * @returns string
    */
-  uploadFileURL() {
-    return `${this.baseUrl}/renku/cache.files_upload?override_existing=true`;
+  uploadFileURL(versionUrl) {
+    return this.versionedCoreUrl(
+      "cache.files_upload?override_existing=true",
+      versionUrl
+    );
   }
 }
 
