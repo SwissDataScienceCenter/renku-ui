@@ -57,7 +57,7 @@ import {
   gitLabUrlFromProfileUrl,
 } from "../utils/helpers/HelperFunctions";
 import { Url } from "../utils/helpers/url";
-import AdminNavBarItem from "./AdminNavBarItem";
+import AdminDropdownItem from "./AdminDropdownItem";
 import { NavBarWarnings } from "./NavBarWarnings";
 
 import "./NavBar.css";
@@ -113,37 +113,36 @@ class RenkuToolbarItemUser extends Component {
 
     return (
       <UncontrolledDropdown className="nav-item dropdown">
-        <Fragment>
-          <DropdownToggle className="nav-link" nav caret id="profile-dropdown">
-            <FontAwesomeIcon icon={faUser} id="userIcon" />
-          </DropdownToggle>
-          <DropdownMenu
-            className="user-menu btn-with-menu-options"
-            end
-            key="user-bar"
-            aria-labelledby="user-menu"
-          >
-            <DropdownItem className="p-0">
-              <ExternalLink
-                url={`${gatewayURL}/auth/user-profile`}
-                title="Account"
-                className="dropdown-item"
-                role="link"
-              />
-            </DropdownItem>
-            <DropdownItem divider />
-            <a
-              id="logout-link"
+        <DropdownToggle className="nav-link" nav caret id="profile-dropdown">
+          <FontAwesomeIcon icon={faUser} id="userIcon" />
+        </DropdownToggle>
+        <DropdownMenu
+          className="user-menu btn-with-menu-options"
+          end
+          key="user-bar"
+          aria-labelledby="user-menu"
+        >
+          <DropdownItem className="p-0">
+            <ExternalLink
+              url={`${gatewayURL}/auth/user-profile`}
+              title="Account"
               className="dropdown-item"
-              onClick={() => {
-                LoginHelper.notifyLogout();
-              }}
-              href={`${uiserverURL}/auth/logout?redirect_url=${redirect_url}`}
-            >
-              Logout
-            </a>
-          </DropdownMenu>
-        </Fragment>
+              role="link"
+            />
+          </DropdownItem>
+          <AdminDropdownItem />
+          <DropdownItem divider />
+          <a
+            id="logout-link"
+            className="dropdown-item"
+            onClick={() => {
+              LoginHelper.notifyLogout();
+            }}
+            href={`${uiserverURL}/auth/logout?redirect_url=${redirect_url}`}
+          >
+            Logout
+          </a>
+        </DropdownMenu>
       </UncontrolledDropdown>
     );
   }
@@ -401,7 +400,6 @@ class LoggedInNavBar extends Component {
                 <NavItem className="nav-item col-1 col-lg-auto">
                   <RenkuToolbarItemUser {...this.props} />
                 </NavItem>
-                <AdminNavBarItem />
               </Nav>
             </Collapse>
           </Navbar>

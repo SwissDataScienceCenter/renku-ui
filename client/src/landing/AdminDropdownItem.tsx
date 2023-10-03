@@ -17,11 +17,11 @@
  */
 
 import { RootStateOrAny, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { DropdownItem } from "reactstrap";
 import { useGetUserInfoQuery } from "../features/user/user.api";
-import { NavItem } from "reactstrap";
-import { RenkuNavLink } from "../components/RenkuNavLink";
 
-export default function AdminNavBarItem() {
+export default function AdminDropdownItem() {
   const userLogged = useSelector<RootStateOrAny, boolean>(
     (state) => state.stateModel.user.logged
   );
@@ -33,8 +33,11 @@ export default function AdminNavBarItem() {
   }
 
   return (
-    <NavItem className="nav-item col-1 col-lg-auto">
-      <RenkuNavLink to="/admin" title="Admin" />
-    </NavItem>
+    <>
+      <DropdownItem divider />
+      <Link to="/admin" className="dropdown-item">
+        Renku Admin Panel
+      </Link>
+    </>
   );
 }
