@@ -43,7 +43,7 @@ interface InlineInputProps {
   tooltipPristine: string;
   value: string;
 }
-function InlineSubmitInput({
+export default function InlineSubmitInput({
   classNameSubmitButton,
   dataCyCard,
   dataCyInput,
@@ -127,5 +127,3 @@ export function InputCard({ children, label, id }: InputCardProps) {
     </Card>
   );
 }
-
-export default InlineSubmitInput;

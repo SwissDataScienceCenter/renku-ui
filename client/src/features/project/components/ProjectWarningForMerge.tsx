@@ -23,15 +23,13 @@ function ProjectWarningForMerge({
   return (
     <WarnAlert timeout={0} dismissible={false}>
       <p>
-        The operation was successful, but{" "}
-        <strong>
-          this project requires use of merge requests to make changes.
-        </strong>
+        The operation was successful, but this project has{" "}
+        <strong>protected branches</strong>.
       </p>
       <p>
-        Create a merge request to bring the changes from{" "}
-        <strong>{remoteBranch}</strong> into <strong>{defaultBranch}</strong> to
-        see the {changeDescription} in your project.
+        You need to manually create a merge request from{" "}
+        <strong>{remoteBranch}</strong> to <strong>{defaultBranch}</strong> to
+        see the new {changeDescription} in your project.
       </p>
       <p>
         This can be done on the{" "}
