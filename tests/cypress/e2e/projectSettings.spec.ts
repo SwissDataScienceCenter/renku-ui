@@ -239,3 +239,72 @@ describe("Project settings page", () => {
     cy.get_cy("project-settings-general-delete-project").should("not.exist");
   });
 });
+
+describe("Cloud storage settings page", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = true;
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures
+      .projects()
+      .projectTest()
+      .projectById("getProjectsById", 39646)
+      .getProjectKG()
+      .projectLockStatus()
+      .projectMigrationUpToDate();
+    cy.visit("/projects/e2e/local-test-project");
+  });
+
+  it("is accessible from the main settings page", () => {
+    cy.visit("/projects/e2e/local-test-project/settings");
+    cy.get_cy("settings-navbar")
+      .contains("Cloud Storage")
+      .should("be.visible")
+      .click();
+    cy.get_cy("settings-container")
+      .contains("Cloud storage settings")
+      .should("be.visible");
+    cy.url().should(
+      "include",
+      "/projects/e2e/local-test-project/settings/storage"
+    );
+  });
+
+  it("shows an existing storage", () => {
+    fixtures.versions().cloudStorage();
+    cy.visit("/projects/e2e/local-test-project/settings/storage");
+    cy.wait("@getNotebooksVersions");
+    cy.wait("@getCloudStorage");
+
+    cy.get_cy("settings-container")
+      .find(".card")
+      .contains("Example storage")
+      .should("be.visible");
+    cy.get_cy("settings-container")
+      .find(".card")
+      .contains("bucket/source")
+      .should("be.visible");
+    cy.get_cy("settings-container")
+      .find(".card")
+      .contains("mount/path")
+      .should("be.visible");
+  });
+
+  it.only("can update an existing storage", () => {
+    fixtures.versions().cloudStorage();
+    cy.visit("/projects/e2e/local-test-project/settings/storage");
+    cy.wait("@getNotebooksVersions");
+    cy.wait("@getCloudStorage");
+
+    cy.get_cy("settings-container")
+      .find(".card")
+      .contains("Example storage")
+      .should("be.visible")
+      .click();
+    cy.get_cy("settings-container")
+      .find(".card")
+      .find("button")
+      .contains("Edit")
+      .click();
+  });
+});
