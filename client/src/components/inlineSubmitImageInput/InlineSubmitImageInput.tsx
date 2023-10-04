@@ -130,7 +130,7 @@ export interface InlineImageInputProps {
   submitButtonId: string;
   value: ImageValue;
 }
-function InlineSubmitImageInput({
+export default function InlineSubmitImageInput({
   alert,
   currentImageName,
   doneText,
@@ -165,20 +165,20 @@ function InlineSubmitImageInput({
   return (
     <div>
       <ImageInput
-        name={name}
-        label={label}
-        value={value}
-        help={null}
-        maxSize={imageMaxSize}
         alert={alert}
-        modes={[ImageInputMode.FILE]}
-        format={imageFormat ?? defaultFormat}
         disabled={isDisabled}
-        submitting={isSubmitting}
+        format={imageFormat ?? defaultFormat}
+        help={null}
+        includeRequiredLabel={includeRequiredLabel}
+        label={label}
+        maxSize={imageMaxSize}
+        modes={[ImageInputMode.FILE]}
+        name={name}
         setInputs={(e: ChangeEvent<HTMLInputElement>) => {
           changeValue(e.target.value);
         }}
-        includeRequiredLabel={includeRequiredLabel}
+        submitting={isSubmitting}
+        value={value}
       />
       <InputSubmitButtons
         currentImageName={currentImageName}
@@ -196,5 +196,3 @@ function InlineSubmitImageInput({
     </div>
   );
 }
-
-export default InlineSubmitImageInput;

@@ -157,7 +157,7 @@ export function ProjectSettingsAvatar({
       externalUrl={gitUrl}
     />
   ) : isError && errorAvatar ? (
-    <RtkErrorAlert error={errorAvatar} dismissible={false} />
+    <RtkErrorAlert error={errorAvatar} dismissible={false} property="avatar" />
   ) : null;
 
   const initialValue = getCurrentImageAvatar(
