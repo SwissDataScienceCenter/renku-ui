@@ -36,16 +36,21 @@ describe("Project settings page", () => {
   });
 
   it("update project tags", () => {
-    fixtures.updateProject(
-      "39646",
-      "updateProject",
-      "project/update-project-tag-description.json"
+    fixtures.updateProjectKG(
+      "updateProjectKG",
+      "project/update-project-tag-description.json",
+      200
+    );
+    fixtures.getProjectKG(
+      "getProjectKGEdited",
+      "project/project-kg-edited.json"
     );
     cy.visit("/projects/e2e/local-test-project/settings");
-    cy.get_cy("tags-input").should("not.contain.text", "abcde");
-    cy.get_cy("tags-input").type("abcde");
-    cy.get_cy("update-tag-button").click();
-    cy.wait("@updateProject");
+    cy.get_cy("keywords-input").should("not.contain.text", "abcde");
+    cy.get_cy("keywords-input").type("abcde");
+    cy.get_cy("projectKeywords-button").click();
+    cy.wait("@updateProjectKG");
+    cy.wait("@getProjectKGEdited");
     cy.get_cy("entity-tag-list").should("contain.text", "abcde");
   });
 
@@ -121,12 +126,15 @@ describe("Project settings page", () => {
 
     // edit the description -- load the new fixtures
     cy.get_cy("description-input").type("description abcde");
-    fixtures.editProject();
+    fixtures.updateProjectKG(
+      "updateProjectKG",
+      "project/project-kg-edited.json"
+    );
     fixtures.getProjectKG(
       "getProjectKGdescription",
       "project/edit/project-kg-description.json"
     );
-    cy.get_cy("update-desc-button").click();
+    cy.get_cy("projectDescription-button").click();
 
     // verify the change goes through but is not immediate everywhere else (E.G. on the header)
     cy.get_cy("settings-description")
