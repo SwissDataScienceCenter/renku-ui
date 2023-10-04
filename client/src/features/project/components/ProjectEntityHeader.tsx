@@ -66,6 +66,7 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
       description={descriptionKg}
       statusButton={statusButton}
       visibility={projectMetadataQuery.data?.visibility || visibility}
+      tagList={projectMetadataQuery.data?.keywords ?? []}
     />
   );
 }

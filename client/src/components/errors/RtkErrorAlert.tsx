@@ -23,14 +23,53 @@ import { ErrorAlert } from "../Alert";
 import { CoreErrorAlert } from "./CoreErrorAlert";
 import { CoreErrorResponse } from "../../utils/types/coreService.types";
 import { extractTextFromObject } from "../../utils/helpers/TextUtils";
+import { UpdateProjectResponse } from "../../features/project/Project";
+
+export function extractRkErrorMessage(
+  error: FetchBaseQueryError | SerializedError,
+  property = "message"
+): string {
+  if ("error" in error && error.error.length) return error.error.toString();
+  if ("message" in error && error.message?.length)
+    return error.message.toString();
+
+  if (
+    "data" in error &&
+    typeof error.data === "object" &&
+    error.data !== null &&
+    property in error.data
+  ) {
+    const message = (error.data as Record<string, unknown>)[property];
+    if (typeof message === "string") return message;
+    return extractTextFromObject(message as Record<string, unknown>).join(" ");
+  }
+  if ("data" in error) return JSON.stringify(error.data);
+  return "No details available.";
+}
+
+export function extractRkErrorRemoteBranch(
+  error: FetchBaseQueryError | SerializedError
+): string | undefined {
+  if (
+    "data" in error &&
+    typeof error.data === "object" &&
+    error.data !== null &&
+    "branch" in error.data
+  ) {
+    return (error?.data as UpdateProjectResponse)?.branch;
+  }
+  return undefined;
+}
 
 interface RtkErrorAlertProps {
   error: FetchBaseQueryError | SerializedError | undefined | null;
   dismissible?: boolean;
+  property?: string;
 }
 export function RtkErrorAlert({
   error,
   dismissible = true,
+  property = "message",
 }: RtkErrorAlertProps) {
   // ? REF: https://redux-toolkit.js.org/rtk-query/usage-with-typescript#type-safe-error-handling
   if (error == null) return null;
@@ -44,26 +83,7 @@ export function RtkErrorAlert({
       : "Unknown";
 
   // message
-  const extractErrorMessage = (
-    error: FetchBaseQueryError | SerializedError
-  ): string => {
-    if ("error" in error && error.error.length) return error.error.toString();
-    if ("message" in error && error.message?.length)
-      return error.message.toString();
-    if (
-      "data" in error &&
-      typeof error.data === "object" &&
-      error.data !== null &&
-      "message" in error.data
-    ) {
-      return extractTextFromObject(error.data as Record<string, unknown>).join(
-        " "
-      );
-    }
-    if ("data" in error) return JSON.stringify(error.data);
-    return "No details available.";
-  };
-  const errorMessage = extractErrorMessage(error);
+  const errorMessage = extractRkErrorMessage(error, property);
 
   return (
     <ErrorAlert dismissible={dismissible}>

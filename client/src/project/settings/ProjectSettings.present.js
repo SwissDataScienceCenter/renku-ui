@@ -27,7 +27,7 @@ import { Col, Nav, NavItem, Row } from "reactstrap";
 import { InfoAlert } from "../../components/Alert";
 import { RenkuNavLink } from "../../components/RenkuNavLink";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
-import { ProjectAvatarEdit, ProjectTags } from "../shared";
+import { ProjectAvatarEdit } from "../shared";
 
 //** Navigation **//
 
@@ -81,13 +81,6 @@ function ProjectSettingsGeneral(props) {
     <div className="form-rk-green">
       <Row>
         <Col xs={12}>
-          <div className="card card-body mb-4">
-            <ProjectTags
-              tagList={props.metadata.tagList}
-              onProjectTagsChange={props.onProjectTagsChange}
-              settingsReadOnly={props.settingsReadOnly}
-            />
-          </div>
           <div className="card card-body mb-4">
             <ProjectAvatarEdit
               externalUrl={props.externalUrl}
