@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import yaml from "yaml";
-
 import { fetchJson } from "./utils";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import { projectKgApi } from "../features/project/projectKgApi";
@@ -469,7 +467,8 @@ function addProjectMethods(client) {
       .then((manifestSha) =>
         fetchJson(`${formattedApiURL}/git/blobs/${manifestSha}`)
       )
-      .then((data) => {
+      .then(async (data) => {
+        const yaml = await import("yaml");
         return yaml.parse(atob(data.content));
       })
       .then((data) => {

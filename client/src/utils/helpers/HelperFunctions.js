@@ -289,8 +289,8 @@ async function sleep(seconds) {
 const generateZip = async (files, name) => {
   if (!files.length && !name) return;
 
-  const JSZip = await require("jszip");
-  const { saveAs } = await require("file-saver");
+  const JSZip = await import("jszip");
+  const { saveAs } = await import("file-saver");
   const zip = new JSZip();
 
   for (const file of files) zip.file(file?.name, file?.content);
