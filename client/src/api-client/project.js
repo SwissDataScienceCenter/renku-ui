@@ -16,17 +16,8 @@
  * limitations under the License.
  */
 
-import { fetchJson } from "./utils";
 import { sleep } from "../utils/helpers/HelperFunctions";
 import { projectKgApi } from "../features/project/projectKgApi";
-
-function getApiUrlFromRepoUrl(url) {
-  const urlArray = url.split("/");
-  urlArray.splice(urlArray.length - 2, 0, "repos");
-  url = urlArray.join("/");
-  if (url.includes("https://")) return url.replace("https://", "https://api.");
-  if (url.includes("http://")) return url.replace("http://", "http://api.");
-}
 
 function buildTreeLazy(
   name,
@@ -455,26 +446,6 @@ function addProjectMethods(client) {
       headers: headers,
       body: formData,
     });
-  };
-
-  client.getProjectTemplates = (renkuTemplatesUrl, renkuTemplatesRef) => {
-    const formattedApiURL = getApiUrlFromRepoUrl(renkuTemplatesUrl);
-    return fetchJson(`${formattedApiURL}/git/trees/${renkuTemplatesRef}`)
-      .then(
-        (data) =>
-          data.tree.filter((obj) => obj.path === "manifest.yaml")[0]["sha"]
-      )
-      .then((manifestSha) =>
-        fetchJson(`${formattedApiURL}/git/blobs/${manifestSha}`)
-      )
-      .then(async (data) => {
-        const yaml = await import("yaml");
-        return yaml.parse(atob(data.content));
-      })
-      .then((data) => {
-        data.push(client.getEmptyProjectObject());
-        return data;
-      });
   };
 
   client.fetchDatasetFromKG = async (id) => {
