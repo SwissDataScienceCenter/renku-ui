@@ -43,7 +43,7 @@ function KgActivationHeader() {
   return (
     <>
       <h1 className="activationHeader d-flex gap-2 my-3 align-items-center">
-        Projects that are not indexed
+        Projects requiring indexing
         <FontAwesomeIcon
           id="activation-question"
           className="cursor-pointer"

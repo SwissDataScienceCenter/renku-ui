@@ -16,14 +16,18 @@
  * limitations under the License.
  */
 
-import { Progress } from "../../../utils/ts-wrappers";
+import { Progress } from "reactstrap";
 
+import { Loader } from "../../../components/Loader";
 import { InactiveKgProjects } from "../InactiveKgProjects";
 
 interface ActivationProgressProps {
   project: InactiveKgProjects;
 }
 function ActivationProgress({ project }: ActivationProgressProps) {
+  if (project.progressActivation === null)
+    return <small className="fst-italic">Not indexed</small>;
+
   if (project.progressActivation === -2)
     return (
       <small className="text-danger">
@@ -41,19 +45,12 @@ function ActivationProgress({ project }: ActivationProgressProps) {
   if (project.progressActivation === 100)
     return <small className="text-success">Activated</small>;
 
-  if (project.progressActivation === null)
-    return <small className="fst-italic">Inactive</small>;
-
+  const progressStyle = { height: "1rem", width: "4rem" };
   if (project.progressActivation === 0 || project.progressActivation === -1) {
     return (
-      <Progress
-        animated
-        striped
-        className="my-3"
-        color="rk-text"
-        style={{ height: "12px", width: "200px" }}
-        value={100}
-      />
+      <div>
+        <Loader size={16} />
+      </div>
     );
   }
 
@@ -63,7 +60,7 @@ function ActivationProgress({ project }: ActivationProgressProps) {
       animated
       className="my-3"
       color="rk-text"
-      style={{ height: "12px", width: "200px" }}
+      style={progressStyle}
       value={project.progressActivation}
     />
   );

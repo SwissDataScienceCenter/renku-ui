@@ -18,7 +18,6 @@
 
 import { Channel } from "../index";
 import { WsMessage } from "../WsMessages";
-import * as util from "util";
 import APIClient from "../../api-client";
 import { AsyncSemaphore } from "../../utils/asyncSemaphore";
 import logger from "../../logger";
@@ -29,7 +28,8 @@ type ActivationStatus = {
 };
 
 interface ActivationResult {
-  progress: number;
+  activated: boolean;
+  progress: { done: number; total: number; percentage: number };
 }
 
 function sendMessage(data: string, channel: Channel) {
@@ -50,14 +50,14 @@ function getActivationStatus(
       const previousStatuses = channel.data.get(
         "activationProjects"
       ) as ActivationStatus;
-      const currentStatus = status?.progress ?? -1;
-      const previousStatus = previousStatuses
+      const currentProgress = status?.progress.percentage ?? -1;
+      const previousProgress = previousStatuses
         ? previousStatuses[`${id}`]
         : null;
-      if (!util.isDeepStrictEqual(previousStatus, currentStatus)) {
-        const currentStatuses = {
+      if (currentProgress != previousProgress) {
+        const currentStatuses: ActivationStatus = {
           ...previousStatuses,
-          [`${id}`]: currentStatus,
+          [`${id}`]: currentProgress,
         };
         sendMessage(JSON.stringify(currentStatuses), channel);
         channel.data.set("activationProjects", currentStatuses);
@@ -77,7 +77,10 @@ function getActivationStatus(
         const previousStatuses = channel.data.get(
           "activationProjects"
         ) as ActivationStatus;
-        const currentStatuses = { ...previousStatuses, [`${id}`]: -2 };
+        const currentStatuses: ActivationStatus = {
+          ...previousStatuses,
+          [`${id}`]: -2,
+        };
         sendMessage(JSON.stringify(currentStatuses), channel);
         channel.data.set("activationProjects", currentStatuses);
       }

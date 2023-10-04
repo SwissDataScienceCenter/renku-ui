@@ -25,7 +25,6 @@ import {
   ModalBody as WrappedModalBody,
   ModalHeader as WrappedModalHeader,
   ModalFooter as WrappedModalFooter,
-  Progress as WrappedProgress,
   Row as WrappedRow,
   Table as WrappedTable,
 } from "reactstrap";
@@ -220,12 +219,8 @@ function AccordionBody(props) {
   return <WrappedAccordionBody {...props} />;
 }
 
-function Progress(props) {
-  return <WrappedProgress {...props} />;
-}
-
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
-export { Alert, Badge, Button, ButtonDropdown, ButtonGroup, Progress };
+export { Alert, Badge, Button, ButtonDropdown, ButtonGroup };
 export {
   Card,
   CardBody,

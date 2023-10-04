@@ -16,7 +16,12 @@
  * limitations under the License.
  */
 
-import { checkWsServerMessage, WsMessage, WsServerMessage } from "./WsMessages";
+import {
+  checkWsServerMessage,
+  sendPullKgActivationStatus,
+  WsMessage,
+  WsServerMessage,
+} from "./WsMessages";
 import {
   handleUserInit,
   handleUserUiVersion,
@@ -151,12 +156,7 @@ function setupWebSocket(
       })
       .map((p: InactiveKgProjects) => p.id);
 
-    if (projectIds.length) {
-      const message = JSON.stringify(
-        new WsMessage({ projects: projectIds }, "pullKgActivationStatus")
-      );
-      socket.send(message);
-    }
+    if (projectIds.length) sendPullKgActivationStatus(projectIds, socket);
   }
 
   function resumePendingProcesses(model: any, socket: any) {
