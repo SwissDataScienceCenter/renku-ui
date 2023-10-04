@@ -429,9 +429,6 @@ class View extends Component {
   }
 
   eventHandlers = {
-    onProjectTagsChange: (tags) => {
-      return this.projectCoordinator.setTags(this.props.client, tags);
-    },
     onAvatarChange: (avatarFile) => {
       return this.projectCoordinator.setAvatar(this.props.client, avatarFile);
     },
@@ -463,19 +460,6 @@ class View extends Component {
     },
     fetchCommits: (branch = null) => {
       return this.projectCoordinator.fetchCommits(branch);
-    },
-    fetchProject: (usePendingRefresh) => {
-      if (usePendingRefresh) {
-        const pendingRefreshing = this.projectCoordinator.get(
-          "metadata.pendingRefresh"
-        );
-        if (pendingRefreshing) {
-          this.projectCoordinator.fetchProject(this.props.client);
-          this.projectCoordinator.set("metadata.pendingRefresh", false);
-        }
-      } else {
-        this.projectCoordinator.fetchProject(this.props.client);
-      }
     },
   };
 
