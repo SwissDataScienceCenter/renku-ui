@@ -25,7 +25,7 @@ const FileLineage = lazy(() =>
   }))
 );
 
-// ? Lazy loading of CkEditor allows us to split off ~270kB from
+// ? Lazy loading of FileLineage allows us to split off ~107kB from
 // ? the main bundle.
 export default function LazyFileLineage(
   props: ComponentProps<typeof FileLineage>
