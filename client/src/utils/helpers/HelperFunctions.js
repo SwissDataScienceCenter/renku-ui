@@ -251,6 +251,15 @@ function isURL(str) {
   return !!pattern.test(str);
 }
 
+function isValidURL(url) {
+  try {
+    new URL(url);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 function hasSpecialCharacters(text) {
   const spCharts = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/; // eslint-disable-line
   return spCharts.test(text);
@@ -394,6 +403,7 @@ export {
   groupBy,
   gitLabUrlFromProfileUrl,
   isURL,
+  isValidURL,
   verifyTitleCharacters,
   convertUnicodeToAscii,
   refreshIfNecessary,
