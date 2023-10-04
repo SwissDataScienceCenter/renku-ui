@@ -17,41 +17,73 @@
  */
 import { RootStateOrAny, useSelector } from "react-redux";
 import { useInactiveProjectSelector } from "../../inactiveKgProjects/inactiveKgProjectsSlice";
-import useGetInactiveProjects from "../../../utils/customHooks/UseGetInactiveProjects";
+
+import { useGetInactiveKgProjectsQuery } from "../../inactiveKgProjects/InactiveKgProjectsApi";
 import { WarnAlert } from "../../../components/Alert";
 import { Link } from "react-router-dom";
+
+function InactiveProjectsWarning({
+  isEstimate,
+  totalProjects,
+}: {
+  isEstimate: boolean;
+  totalProjects: number;
+}) {
+  const projectsText =
+    totalProjects === 1 ? "1 project" : `${totalProjects} projects`;
+  const totalProjectsText = isEstimate
+    ? `at least ${projectsText}`
+    : projectsText;
+  return (
+    <WarnAlert>
+      <div data-cy="inactive-kg-project-alert">
+        Metadata indexing is not activated on {totalProjectsText}.{" "}
+        <Link to="/inactive-kg-projects">
+          Activate indexing on your projects
+        </Link>{" "}
+        to properly integrate them with Renku.
+      </div>
+    </WarnAlert>
+  );
+}
+
+const PROJECTS_PER_PAGE = 10;
+
+function EstimatedInactiveProjectsWarning({ userId }: { userId: number }) {
+  const { data, isFetching, isLoading } = useGetInactiveKgProjectsQuery({
+    userId,
+    perPage: PROJECTS_PER_PAGE,
+    page: 1,
+  });
+
+  const totalProjects = data?.data.length;
+  if (isLoading || isFetching || totalProjects == null || totalProjects === 0)
+    return null;
+
+  const isEstimate = totalProjects === PROJECTS_PER_PAGE;
+  return (
+    <InactiveProjectsWarning
+      isEstimate={isEstimate}
+      totalProjects={totalProjects}
+    />
+  );
+}
 
 export function ProjectsInactiveKGWarning() {
   const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
   const projectList = useInactiveProjectSelector();
-  const { data, isFetching, isLoading } = useGetInactiveProjects(
-    user?.data?.id
-  );
-
   if (!user.logged) return null;
 
-  if (isLoading || isFetching || data?.length === 0) return null;
+  if (projectList.length < 1)
+    return <EstimatedInactiveProjectsWarning userId={user?.data?.id} />;
 
-  let totalProjects;
-  if (projectList.length > 0) {
-    totalProjects = projectList.filter(
-      (p) => p.progressActivation !== 100
-    ).length;
-    if (totalProjects === 0) return null;
-  } else {
-    totalProjects = data?.length;
-  }
+  const totalProjects = projectList.filter(
+    (p) => p.progressActivation !== 100
+  ).length;
+  if (totalProjects === 0) return null;
 
   return (
-    <WarnAlert>
-      <div data-cy="inactive-kg-project-alert">
-        You have {totalProjects} projects that are not being indexed.{" "}
-        <Link to="/inactive-kg-projects">
-          Activate indexing on your projects
-        </Link>{" "}
-        to make them searchable on Renku.
-      </div>
-    </WarnAlert>
+    <InactiveProjectsWarning isEstimate={false} totalProjects={totalProjects} />
   );
 }
 
