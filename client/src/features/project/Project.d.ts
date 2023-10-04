@@ -337,13 +337,21 @@ export interface UpdateDescriptionResponse {
   result?: UpdateDescriptionDetails;
 }
 
+export interface Project {
+  visibility?: Visibilities;
+  description?: string;
+  keywords?: string[];
+}
 export interface EditProjectParams {
   projectPathWithNamespace: string;
-  visibility: Visibilities;
+  project: Project;
+  projectId: number;
 }
 
-export interface UpdateProjectResponse {
-  projectId: number;
+interface UpdateProjectResponse {
+  message: string;
+  severity: string;
+  branch?: string;
 }
 
 type KgMetadataLink = {

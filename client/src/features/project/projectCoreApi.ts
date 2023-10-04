@@ -33,12 +33,8 @@ import type {
   MigrationStatusResponse,
   ProjectConfig,
   ProjectConfigSection,
-  UpdateDescriptionParams,
-  UpdateDescriptionResponse,
 } from "./Project";
 import { MigrationStartScopes } from "./projectEnums";
-import { projectKgApi } from "./projectKgApi";
-import { projectsKgApi } from "../projects/projectsKgApi";
 import { versionedPathForEndpoint } from "../../utils/helpers/url/versionedUrls";
 import { CoreVersionUrl } from "../../utils/types/coreService.types";
 
@@ -54,10 +50,6 @@ interface GetConfigRawResponse {
   };
   error?: unknown;
 }
-
-// Expected seconds of delay before the KG is aware of the latest changes.
-// TODO: this won't be useful anymore once we get status updates though WebSockets.
-const KG_STATUS_DELAY = 5;
 
 const KNOWN_CONFIG_KEYS = [
   "interactive.default_url",
@@ -310,45 +302,6 @@ export const projectCoreApi = createApi({
         { type: "ProjectConfig", id: arg.projectRepositoryUrl },
       ],
     }),
-    updateDescription: builder.mutation<
-      UpdateDescriptionResponse,
-      UpdateDescriptionParams
-    >({
-      query: (data) => {
-        return {
-          body: { description: data.description, git_url: data.gitUrl },
-          method: "POST",
-          url: versionedPathForEndpoint({
-            endpoint: "project.edit",
-            metadataVersion: data.metadataVersion,
-            apiVersion: data.apiVersion,
-          }),
-          validateStatus: (response, body) => {
-            return response.status < 400 && !body.error?.code;
-          },
-        };
-      },
-      // ? Invalidating immediatley won't work since KG needs a moment to pick up the change.
-      onCacheEntryAdded: (params, { dispatch, cacheDataLoaded }) => {
-        cacheDataLoaded.then(() => {
-          // ? Wait until (hopefully) KG has picked the event from GitLab -invalidate the related tags.
-          setTimeout(() => {
-            dispatch(
-              projectKgApi.util.invalidateTags([
-                { type: "project-indexing", id: params.projectId },
-              ])
-            );
-            // ? invalidate also metadata in the unlikely case the change is quicker than the timeout.
-            dispatch(
-              projectsKgApi.util.invalidateTags([
-                { type: "project-kg-metadata", id: params.projectId },
-              ])
-            );
-          }, KG_STATUS_DELAY * 1000);
-        });
-      },
-      transformErrorResponse: (error) => transformRenkuCoreErrorResponse(error),
-    }),
   }),
 });
 
@@ -458,5 +411,4 @@ export const {
   useStartMigrationMutation,
   useGetConfigQuery,
   useUpdateConfigMutation,
-  useUpdateDescriptionMutation,
 } = projectCoreApi;

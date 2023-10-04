@@ -42,12 +42,12 @@ import VisibilitiesInput, {
 } from "../../../components/visibility/Visibility";
 import { SettingRequiresKg } from "../../../features/project/components/ProjectSettingsUtils";
 import { useGetProjectByIdQuery } from "../../../features/project/projectGitLab.api";
-import {
-  useGetProjectIndexingStatusQuery,
-  useUpdateProjectMutation,
-} from "../../../features/project/projectKgApi";
+import { useGetProjectIndexingStatusQuery } from "../../../features/project/projectKgApi";
 import { useGetGroupByPathQuery } from "../../../features/projects/projectsApi";
-import { useProjectMetadataQuery } from "../../../features/projects/projectsKgApi";
+import {
+  useProjectMetadataQuery,
+  useUpdateProjectMutation,
+} from "../../../features/projects/projectsKgApi";
 import { GitlabLinks } from "../../../utils/constants/Docs";
 import { computeVisibilities } from "../../../utils/helpers/HelperFunctions";
 import {
@@ -241,10 +241,11 @@ export function EditVisibility({
       if (projectData)
         updateProject({
           projectPathWithNamespace: projectData.path,
-          visibility: newVisibility,
+          project: { visibility: newVisibility },
+          projectId,
         });
     },
-    [projectData, updateProject]
+    [projectData, updateProject, projectId]
   );
 
   const onChange = useCallback(
@@ -259,17 +260,21 @@ export function EditVisibility({
 
   const onCancel = useCallback(() => {
     setIsOpen(!isOpen);
+    reset();
     if (!isSuccess) {
       setNewVisibility(projectData?.visibility);
     } else {
-      reset();
       refetchProjectData(); //make sure the visibility is updated
     }
   }, [isOpen, isSuccess, projectData?.visibility, refetchProjectData, reset]);
 
   const message =
     isError && error ? (
-      <RtkErrorAlert error={error} dismissible={false} />
+      <RtkErrorAlert
+        error={error}
+        dismissible={false}
+        property="visibility_level"
+      />
     ) : isSuccess ? (
       <SuccessAlert dismissible={false} timeout={0}>
         The visibility of the project has been modified
