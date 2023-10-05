@@ -160,6 +160,7 @@ interface DatasetModifyFormProps extends DatasetModifyDisplayProps {
   onCancel: () => void;
   onSubmit: SubmitHandler<DatasetFormFields>;
   projectPathWithNamespace: string;
+  versionUrl: string;
 }
 function DatasetModifyForm(props: DatasetModifyFormProps) {
   const {
@@ -255,6 +256,7 @@ function DatasetModifyForm(props: DatasetModifyFormProps) {
         setValue={(files: DatasetFormState["form"]["files"]) =>
           setValue("files", files)
         }
+        versionUrl={props.versionUrl}
       />
       <ImageInput
         label="Image"
@@ -662,6 +664,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
         projectPathWithNamespace={props.projectPathWithNamespace}
         submitButtonText={props.submitButtonText}
         submitLoaderText={props.submitLoaderText}
+        versionUrl={props.versionUrl}
       />
       {formState.context.serverError && (
         <div className="mt-2">
