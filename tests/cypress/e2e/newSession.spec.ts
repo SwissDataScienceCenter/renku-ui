@@ -33,7 +33,8 @@ describe("launch sessions", () => {
       .sessionServerOptions()
       .resourcePoolsTest()
       .projectConfigShow()
-      .projectLockStatus();
+      .projectLockStatus()
+      .cloudStorage();
     cy.visit("/projects/e2e/local-test-project");
   });
 
@@ -162,28 +163,44 @@ describe("launch sessions", () => {
     fixtures.newSessionPipelines().newSessionJobs().newSessionImages();
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
-    cy.contains("Configure Cloud Storage").should("be.visible").click();
-    cy.contains("Cloud Storage Configuration").should("be.visible");
+    cy.get(".form-label").contains("Cloud Storage").should("be.visible");
+    cy.get("button")
+      .contains("Add Temporary Cloud Storage")
+      .should("be.visible")
+      .and("not.be.disabled");
 
-    // Test endpoint validation
-    cy.contains("button", "Add Bucket").should("be.visible").click();
-    cy.contains("Please enter a valid URL for the endpoint").should(
-      "be.visible"
-    );
-    cy.get('input[name="endpoint"]').type("url");
-    cy.contains("Please enter a valid URL for the endpoint").should(
-      "be.visible"
-    );
-    cy.get('input[name="endpoint"]').type(".com");
-    cy.contains("Please enter a valid URL for the endpoint").should(
-      "not.exist"
-    );
+    cy.get(".card").contains("Example storage").should("be.visible");
+    cy.get(".card")
+      .contains("Mount point")
+      .should("be.visible")
+      .siblings()
+      .contains("mount/path")
+      .should("be.visible");
 
-    // Test bucket validation
-    cy.contains("Please enter a valid bucket name").should("be.visible");
-    cy.get('input[name="bucket"]').type("ab");
-    cy.contains("Please enter a valid bucket name").should("be.visible");
-    cy.get('input[name="bucket"]').type("c");
-    cy.contains("Please enter a valid bucket name").should("not.exist");
+    cy.get(".card")
+      .find("button")
+      .contains("More details")
+      .should("be.visible")
+      .click();
+
+    cy.get("label")
+      .contains("Source Path")
+      .should("be.visible")
+      .siblings("input")
+      .should("have.value", "bucket/source")
+      .should("be.visible");
+
+    cy.get("label")
+      .contains("Mount Point")
+      .should("be.visible")
+      .siblings("input")
+      .should("have.value", "mount/path")
+      .should("be.visible");
+
+    cy.contains("Read-only").siblings("input").should("be.checked");
+    cy.get("label")
+      .contains("Read/Write")
+      .siblings("input")
+      .should("not.be.checked");
   });
 });
