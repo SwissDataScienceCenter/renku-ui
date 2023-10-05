@@ -290,8 +290,9 @@ describe("Cloud storage settings page", () => {
       .should("be.visible");
   });
 
-  it.only("can update an existing storage", () => {
+  it("can update an existing storage", () => {
     fixtures.versions().cloudStorage();
+    fixtures.patchCloudStorage();
     cy.visit("/projects/e2e/local-test-project/settings/storage");
     cy.wait("@getNotebooksVersions");
     cy.wait("@getCloudStorage");
@@ -305,6 +306,172 @@ describe("Cloud storage settings page", () => {
       .find(".card")
       .find("button")
       .contains("Edit")
+      .should("be.visible")
       .click();
+
+    cy.get("label").contains("Name").click();
+    cy.get(":focused").type("{selectAll}My special storage");
+
+    cy.get("label").contains("Source path").click();
+    cy.get(":focused").type("/subfolder");
+
+    cy.get("label").contains("Mount point").click();
+    cy.get(":focused").type("{selectAll}/mnt/special");
+
+    cy.get("label")
+      .contains("Requires credentials")
+      .click()
+      .siblings("input")
+      .should("not.be.checked");
+
+    cy.get("label")
+      .contains("Read/Write")
+      .click()
+      .siblings("input")
+      .should("be.checked");
+    cy.get("label")
+      .contains("Read-only")
+      .siblings("input")
+      .should("not.be.checked");
+
+    cy.get("button[type='submit']")
+      .contains("Save changes")
+      .should("be.visible")
+      .click();
+
+    cy.wait("@patchCloudStorage").then(({ request }) => {
+      const { body } = request;
+      const {
+        name,
+        private: isPrivate,
+        readonly,
+        source_path,
+        target_path,
+      } = body;
+
+      expect(name).to.equal("My special storage");
+      expect(isPrivate).to.be.false;
+      expect(readonly).to.be.false;
+      expect(source_path).to.equal("bucket/source/subfolder");
+      expect(target_path).to.equal("/mnt/special");
+    });
+  });
+
+  it("can remove an existing storage", () => {
+    fixtures.versions().cloudStorage();
+    fixtures.deleteCloudStorage();
+    cy.visit("/projects/e2e/local-test-project/settings/storage");
+    cy.wait("@getNotebooksVersions");
+    cy.wait("@getCloudStorage");
+
+    cy.get_cy("settings-container")
+      .find(".card")
+      .contains("Example storage")
+      .should("be.visible")
+      .click();
+
+    cy.get_cy("settings-container")
+      .find(".card")
+      .find("button")
+      .contains("Delete")
+      .should("be.visible")
+      .click();
+
+    cy.get(".modal").contains("Are you sure?").should("be.visible");
+    cy.get(".modal")
+      .find("button")
+      .contains("Yes")
+      .should("be.visible")
+      .click();
+
+    cy.wait("@deleteCloudStorage");
+  });
+
+  it("can add new storage (simple)", () => {
+    fixtures
+      .versions(undefined, {
+        core: "version-core.json",
+        notebooks: "version-notebooks-s3.json",
+        ui: "version-ui.json",
+      })
+      .cloudStorage();
+    fixtures.postCloudStorage().patchCloudStorage();
+    cy.visit("/projects/e2e/local-test-project/settings/storage");
+    cy.wait("@getNotebooksVersions");
+    cy.wait("@getCloudStorage");
+
+    cy.get_cy("settings-container")
+      .find("button")
+      .contains("Add Cloud Storage")
+      .should("be.visible")
+      .click();
+
+    cy.get(".modal").contains("Add Cloud Storage").should("be.visible");
+
+    cy.get("label").contains("Name").click();
+    cy.get(":focused").type("My new storage");
+
+    cy.get(".modal")
+      .contains("For AWS S3 buckets, supported URLs are of the form")
+      .should("be.visible");
+    cy.get("label").contains("Endpoint URL").click();
+    cy.get(":focused").type("s3://data.s3.eu-central-2.amazonaws.com/folder");
+
+    cy.get("label")
+      .contains("Requires credentials")
+      .siblings("input")
+      .should("be.checked");
+
+    cy.get("label")
+      .contains("Read/Write")
+      .click()
+      .siblings("input")
+      .should("be.checked");
+    cy.get("label")
+      .contains("Read-only")
+      .siblings("input")
+      .should("not.be.checked");
+
+    cy.get("button[type='submit']")
+      .contains("Add Storage")
+      .should("be.visible")
+      .click();
+
+    cy.wait("@postCloudStorage").then(({ request }) => {
+      const { body } = request;
+      const { name, private: isPrivate, readonly, target_path } = body;
+
+      expect(name).to.equal("My new storage");
+      expect(isPrivate).to.be.true;
+      expect(readonly).to.be.false;
+      expect(target_path).to.equal("My new storage");
+    });
+
+    cy.get(".modal").contains("Please select which credentials are required");
+
+    cy.get("label")
+      .contains("first")
+      .click()
+      .siblings("input")
+      .should("be.checked");
+
+    cy.get("label")
+      .contains("second")
+      .siblings("input")
+      .should("not.be.checked");
+
+    cy.get("button[type='submit']")
+      .contains("Finish cloud storage setup")
+      .should("be.visible")
+      .click();
+
+    cy.wait("@patchCloudStorage").then(({ request }) => {
+      const { body } = request;
+      const { configuration } = body;
+
+      expect(configuration).to.haveOwnProperty("first");
+      expect(configuration["first"]).to.equal("<sensitive>");
+      expect(configuration).not.to.haveOwnProperty("second");
+    });
   });
 });

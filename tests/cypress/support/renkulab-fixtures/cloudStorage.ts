@@ -33,5 +33,39 @@ export const CloudStorage = <T extends FixturesConstructor>(Parent: T) => {
       }).as(name);
       return this;
     }
+
+    postCloudStorage(
+      name = "postCloudStorage",
+      fixture = "cloudStorage/new-cloud-storage.json"
+    ) {
+      cy.intercept(
+        { method: "POST", path: "/ui-server/api/data/storage" },
+        {
+          statusCode: 201,
+          fixture,
+        }
+      ).as(name);
+      return this;
+    }
+
+    patchCloudStorage(name = "patchCloudStorage") {
+      cy.intercept(
+        { method: "PATCH", path: "/ui-server/api/data/storage/*" },
+        {
+          statusCode: 201,
+        }
+      ).as(name);
+      return this;
+    }
+
+    deleteCloudStorage(name = "deleteCloudStorage") {
+      cy.intercept(
+        { method: "DELETE", path: "/ui-server/api/data/storage/*" },
+        {
+          statusCode: 204,
+        }
+      ).as(name);
+      return this;
+    }
   };
 };
