@@ -178,10 +178,6 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
         "/ui-server/api/renku/*/cache.files_upload" + params,
         fixture
       ).as(name);
-      cy.intercept(
-        "/ui-server/api/renku/cache.files_upload" + params,
-        fixture
-      ).as(name);
       return this;
     }
 
