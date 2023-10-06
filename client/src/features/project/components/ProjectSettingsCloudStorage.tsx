@@ -621,6 +621,40 @@ function EditCloudStorage({
           </FormText>
         </div>
 
+        {watchPrivateToggle && requiredCredentialsFields.length > 0 && (
+          <div className="mb-3">
+            <div className="form-label">Required credentials</div>
+            <div>
+              {requiredCredentialsFields.map((item, index) => (
+                <div key={index}>
+                  <Controller
+                    control={control}
+                    name={`requiredCredentials.${index}.requiredCredential`}
+                    render={({ field }) => (
+                      <Input
+                        className="form-check-input"
+                        id={`updateCloudStorageCredentials-${name}-${item.id}`}
+                        type="checkbox"
+                        checked={field.value}
+                        innerRef={field.ref}
+                        onBlur={field.onBlur}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <Label
+                    className={cx("form-check-label", "ms-2")}
+                    for={`updateCloudStorageCredentials-${name}-${item.id}`}
+                  >
+                    {item.name}
+                    <CredentialMoreInfo help={item.help} />
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="mb-3">
           <div className="form-label">Mode</div>
           <Controller
@@ -668,40 +702,6 @@ function EditCloudStorage({
             )}
           />
         </div>
-
-        {watchPrivateToggle && requiredCredentialsFields.length > 0 && (
-          <div className="mb-3">
-            <div className="form-label">Required credentials</div>
-            <div>
-              {requiredCredentialsFields.map((item, index) => (
-                <div key={index}>
-                  <Controller
-                    control={control}
-                    name={`requiredCredentials.${index}.requiredCredential`}
-                    render={({ field }) => (
-                      <Input
-                        className="form-check-input"
-                        id={`updateCloudStorageCredentials-${name}-${item.id}`}
-                        type="checkbox"
-                        checked={field.value}
-                        innerRef={field.ref}
-                        onBlur={field.onBlur}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                  <Label
-                    className={cx("form-check-label", "ms-2")}
-                    for={`updateCloudStorageCredentials-${name}-${item.id}`}
-                  >
-                    {item.name}
-                    <CredentialMoreInfo help={item.help} />
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         <div className="mb-3">
           <Label
