@@ -25,7 +25,7 @@
 
 import { Component } from "react";
 import { connect } from "react-redux";
-import _ from "lodash";
+import { groupBy } from "lodash";
 
 import Present from "./Project.present";
 import { ProjectCoordinator, MigrationStatus } from "./Project.state";
@@ -60,7 +60,7 @@ const subRoutes = {
 };
 
 // SubRoutes grouped by depth
-const srMap = _.groupBy(Object.values(subRoutes), (v) => v.split("/").length);
+const srMap = groupBy(Object.values(subRoutes), (v) => v.split("/").length);
 const maxSrMapDepth = Math.max(
   ...Object.keys(srMap).map((k) => Number.parseInt(k))
 );
