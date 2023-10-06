@@ -725,7 +725,7 @@ function StartSessionButton() {
   }, []);
 
   const startSessionButton = (
-    <Button disabled={!enabled} onClick={onStart} type="submit">
+    <Button disabled={!enabled} onClick={onStart} type="button">
       <FontAwesomeIcon className="me-2" icon={faPlay} />
       Start Session
     </Button>
