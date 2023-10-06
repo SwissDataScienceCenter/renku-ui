@@ -60,8 +60,9 @@ import { ACCESS_LEVELS } from "../../../../api-client";
 import { ErrorAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
+import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
-import { RenkuMarkdown } from "../../../../components/markdown/RenkuMarkdown";
+import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import { Url } from "../../../../utils/helpers/url";
 import { StateModelProject } from "../../../project/Project";
 import {
@@ -85,7 +86,6 @@ import {
   updateCloudStorageItem,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 
 export default function SessionCloudStorageOption() {
   const { data: notebooksVersion, isLoading } = useGetNotebooksVersionsQuery();
@@ -451,7 +451,7 @@ function CredentialMoreInfo({ help }: { help: string }) {
       </span>
       <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
         <PopoverBody>
-          <RenkuMarkdown markdownText={help} />
+          <LazyRenkuMarkdown markdownText={help} />
         </PopoverBody>
       </UncontrolledPopover>
     </>

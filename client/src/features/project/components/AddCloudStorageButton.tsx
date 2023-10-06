@@ -39,7 +39,6 @@ import {
 } from "reactstrap";
 import { Loader } from "../../../components/Loader";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import { RenkuMarkdown } from "../../../components/markdown/RenkuMarkdown";
 import { StateModelProject } from "../Project";
 import {
   useAddCloudStorageForProjectMutation,
@@ -58,8 +57,9 @@ import {
   parseCloudStorageConfiguration,
 } from "../utils/projectCloudStorage.utils";
 
-import styles from "./AddCloudStorageButton.module.scss";
+import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
+import styles from "./AddCloudStorageButton.module.scss";
 
 export default function AddCloudStorageButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -834,7 +834,7 @@ function AddCloudStorageCredentialsStep({
                       id={`configureCloudStorageCredentialsHelp-${item.id}`}
                       tag="div"
                     >
-                      <RenkuMarkdown markdownText={item.help} />
+                      <LazyRenkuMarkdown markdownText={item.help} />
                     </FormText>
                   </CardBody>
                 </Card>

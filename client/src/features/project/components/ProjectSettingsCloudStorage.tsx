@@ -57,7 +57,7 @@ import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
-import { RenkuMarkdown } from "../../../components/markdown/RenkuMarkdown";
+import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { User } from "../../../model/RenkuModels";
 import { NotebooksVersion } from "../../versions/versions";
 import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
@@ -906,7 +906,7 @@ function CredentialMoreInfo({ help }: { help: string }) {
       </span>
       <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
         <PopoverBody>
-          <RenkuMarkdown markdownText={help} />
+          <LazyRenkuMarkdown markdownText={help} />
         </PopoverBody>
       </UncontrolledPopover>
     </>
