@@ -25,6 +25,5 @@
 
 import { JupyterButton, ShowFile } from "./File.container";
 import FilePreview from "./FilePreview";
-import { FileLineage } from "./Lineage.container";
 
-export { FilePreview, FileLineage, JupyterButton, ShowFile };
+export { FilePreview, JupyterButton, ShowFile };

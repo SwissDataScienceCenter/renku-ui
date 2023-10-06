@@ -401,7 +401,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       const fixture = this.useMockedData
         ? { fixture: result, statusCode }
         : undefined;
-      cy.intercept("PUT", "/ui-server/api/kg/projects/**", fixture).as(name);
+      cy.intercept("PATCH", "/ui-server/api/kg/projects/**", fixture).as(name);
       return this;
     }
 

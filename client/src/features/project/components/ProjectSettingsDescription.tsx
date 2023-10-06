@@ -16,36 +16,40 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState } from "react";
-import { Card, CardBody, FormText, Input, Label } from "reactstrap";
-
-import { Loader } from "../../../components/Loader";
-import { InlineSubmitButton } from "../../../components/buttons/Button";
+import React, { useCallback, useEffect, useState } from "react";
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
-import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
-import { useUpdateDescriptionMutation } from "../projectCoreApi";
-import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
+import {
+  useProjectMetadataQuery,
+  useUpdateProjectMutation,
+} from "../../projects/projectsKgApi";
 import { SettingRequiresKg } from "./ProjectSettingsUtils";
 import {
-  CoreErrorContent,
-  CoreVersionUrl,
-} from "../../../utils/types/coreService.types";
+  extractRkErrorRemoteBranch,
+  RtkErrorAlert,
+} from "../../../components/errors/RtkErrorAlert";
+import ProjectWarningForMerge from "./ProjectWarningForMerge";
+import InlineSubmitInput, {
+  InputCard,
+} from "../../../components/inlineSubmitInput/InlineSubmitInput";
 
-interface ProjectSettingsDescriptionProps extends CoreVersionUrl {
-  gitUrl: string;
+interface ProjectSettingsDescriptionProps {
   isMaintainer: boolean;
   projectFullPath: string;
   projectId: number;
+  branch?: string;
+  gitUrl: string;
 }
 export function ProjectSettingsDescription({
-  apiVersion,
-  gitUrl,
   isMaintainer,
-  metadataVersion,
   projectFullPath,
   projectId,
+  branch,
+  gitUrl,
 }: ProjectSettingsDescriptionProps) {
   const [description, setDescription] = useState("");
+  const [succeeded, setSucceeded] = React.useState<boolean | undefined>(
+    undefined
+  );
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
     skip: !projectFullPath || !projectId,
   });
@@ -58,30 +62,33 @@ export function ProjectSettingsDescription({
         !projectIndexingStatus.data?.activated,
     }
   );
-  const [updateDescriptionMutation, updateDescriptionStatus] =
-    useUpdateDescriptionMutation();
+
+  const [
+    updateProject,
+    {
+      isLoading: isLoadingMutation,
+      isSuccess,
+      isError,
+      error: errorDescription,
+      reset,
+    },
+  ] = useUpdateProjectMutation();
+
   const onSubmit = useCallback(() => {
-    updateDescriptionMutation({
-      apiVersion,
-      description,
-      gitUrl,
-      metadataVersion,
+    updateProject({
+      projectPathWithNamespace: projectFullPath,
+      project: { description },
       projectId,
-    });
-  }, [
-    apiVersion,
-    description,
-    gitUrl,
-    metadataVersion,
-    projectId,
-    updateDescriptionMutation,
-  ]);
+    })
+      .unwrap()
+      .then(() => setSucceeded(true))
+      .catch(() => setSucceeded(false));
+  }, [description, projectFullPath, updateProject, projectId]);
 
   const setDescriptionAndReset = (newDescription: string) => {
     setDescription(newDescription);
     // Reset mutation when changing description after an update.
-    if (!updateDescriptionStatus.isUninitialized)
-      updateDescriptionStatus.reset();
+    reset();
   };
 
   useEffect(() => {
@@ -95,78 +102,51 @@ export function ProjectSettingsDescription({
     projectMetadata.isLoading;
   const pristine = description === projectMetadata.data?.description;
 
-  if (projectIndexingStatus.isLoading || projectMetadata.isLoading)
-    return (
-      <DescriptionCard>
-        <Loader className="ms-1" inline size={16} />
-      </DescriptionCard>
-    );
-
   if (projectIndexingStatus.data?.activated === false)
     return (
-      <DescriptionCard>
+      <InputCard label="Project Description" id="indexProjectDescription">
         <SettingRequiresKg />
-      </DescriptionCard>
+      </InputCard>
     );
 
-  const inputField = (
-    <Input
-      data-cy="description-input"
-      disabled={updateDescriptionStatus.isLoading}
-      id="projectDescription"
-      onChange={(e) => setDescriptionAndReset(e.target.value)}
-      readOnly={readOnly}
-      value={description}
+  const showMergeWarning =
+    !succeeded &&
+    isError &&
+    errorDescription &&
+    extractRkErrorRemoteBranch(errorDescription);
+  const errorAlert = showMergeWarning ? (
+    <ProjectWarningForMerge
+      error={errorDescription}
+      changeDescription="description"
+      defaultBranch={branch}
+      externalUrl={gitUrl}
     />
-  );
+  ) : isError && errorDescription ? (
+    <RtkErrorAlert error={errorDescription} dismissible={false} />
+  ) : null;
 
-  const submitButton = readOnly ? null : (
-    <InlineSubmitButton
-      className="updateProjectSettings"
+  return (
+    <InlineSubmitInput
+      classNameSubmitButton="updateProjectSettings"
+      dataCyCard="settings-description"
+      dataCyInput="description-input"
+      disabled={isLoadingMutation}
       doneText="Updated"
-      id="update-desc"
-      isDone={updateDescriptionStatus.isSuccess}
-      isReadOnly={readOnly || pristine}
-      isSubmitting={updateDescriptionStatus.isLoading}
+      errorToDisplay={errorAlert}
+      id="projectDescription"
+      inputHint="A short description for the project"
+      isDone={isSuccess}
+      isSubmitting={isLoadingMutation}
+      label="Project Description"
+      loading={projectIndexingStatus.isLoading || projectMetadata.isLoading}
+      onChange={(e) => setDescriptionAndReset(e.target.value)}
       onSubmit={onSubmit}
       pristine={pristine}
+      readOnly={readOnly}
       submittingText="Updating"
       text="Update"
       tooltipPristine="Modify description to update value"
+      value={description}
     />
-  );
-
-  const error =
-    updateDescriptionStatus.error && "data" in updateDescriptionStatus.error ? (
-      <CoreErrorAlert
-        error={updateDescriptionStatus.error.data as CoreErrorContent}
-      />
-    ) : null;
-
-  return (
-    <DescriptionCard>
-      <div className="d-flex" data-cy="settings-description">
-        {inputField}
-        {submitButton}
-      </div>
-      <FormText>A short description for the project</FormText>
-      {error}
-    </DescriptionCard>
-  );
-}
-
-interface DescriptionCardProps {
-  children: React.ReactNode;
-}
-function DescriptionCard({ children }: DescriptionCardProps) {
-  return (
-    <Card className="mb-4">
-      <CardBody>
-        <Label className="me-2" for="projectDescription">
-          Project Description
-        </Label>
-        {children}
-      </CardBody>
-    </Card>
   );
 }

@@ -173,15 +173,15 @@ class DisplayFilesHandler extends FileUploadHandler {
     );
   }
 
-  getUploadURL(client, data) {
+  getUploadURL(client, data, versionUrl) {
     if (data.length && data[0].type === "application/zip") {
       const currentFile = this.getFileByName(data[0].name);
       if (currentFile.file_uncompress === FILE_COMPRESSED.UNCOMPRESS_YES)
-        return `${client.uploadFileURL()}&unpack_archive=true`;
+        return `${client.uploadFileURL(versionUrl)}&unpack_archive=true`;
       if (currentFile.file_uncompress === FILE_COMPRESSED.UNCOMPRESS_NO)
-        return `${client.uploadFileURL()}&unpack_archive=false`;
+        return `${client.uploadFileURL(versionUrl)}&unpack_archive=false`;
     }
-    return client.uploadFileURL();
+    return client.uploadFileURL(versionUrl);
   }
 
   onUrlInputChange(e) {
@@ -868,6 +868,7 @@ function FileUploaderInput({
   setDisplayFiles,
   uploadThresholdSoft,
   value,
+  versionUrl,
 }) {
   //send value as an already built tree/hash to display and
   // delete from the files/paths /data/dataset-name so i can check if the file is there or not
@@ -902,7 +903,7 @@ function FileUploaderInput({
     });
 
     const myDropzone = new Dropzone("#dropzone", {
-      url: (data) => displayFilesHandler.getUploadURL(client, data),
+      url: (data) => displayFilesHandler.getUploadURL(client, data, versionUrl),
       chunking: true,
       forceChunking: true,
       addRemoveLinks: true,
