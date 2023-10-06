@@ -30,6 +30,7 @@ import {
   Button,
   Form,
   Input,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
@@ -112,6 +113,11 @@ function AddUserToResourcePoolModal({
     }
   }, []);
 
+  const onResetUser = useCallback(() => {
+    setPickedUser(null);
+    setValue("userId", "");
+  }, [setValue]);
+
   useEffect(() => {
     if (pickedUser != null) {
       setValue("userId", pickedUser.id);
@@ -145,30 +151,43 @@ function AddUserToResourcePoolModal({
         >
           {result.error && <RtkErrorAlert error={result.error} />}
 
-          <div className="mb-3">
+          <div className={cx("mb-3", pickedUser == null && "d-none")}>
             <Label
               className="form-label"
               for="addUserToResourcePoolUserDisplay"
             >
               User
             </Label>
-            <Input
-              className={cx("form-control", errors.userId && "is-invalid")}
-              disabled
-              id="addUserToResourcePoolUserDisplay"
-              type="text"
-              value={
-                pickedUser != null
-                  ? `${pickedUser.firstName} ${pickedUser.lastName} <${pickedUser.email}>`
-                  : ""
-              }
-            />
-            <input {...register("userId", { required: true })} type="hidden" />
-            <div className="invalid-feedback">Please pick a user</div>
+            <InputGroup>
+              <Input
+                className={cx(
+                  "rounded-0",
+                  "rounded-start",
+                  errors.userId && "is-invalid"
+                )}
+                disabled
+                id="addUserToResourcePoolUserDisplay"
+                type="text"
+                value={
+                  pickedUser != null
+                    ? `${pickedUser.firstName} ${pickedUser.lastName} <${pickedUser.email}>`
+                    : ""
+                }
+              />
+              <Button className="rounded-end" onClick={onResetUser}>
+                <XLg className={cx("bi", "me-1")} />
+                Clear
+              </Button>
+              <input
+                {...register("userId", { required: true })}
+                type="hidden"
+              />
+              <div className="invalid-feedback">Please pick a user</div>
+            </InputGroup>
           </div>
 
-          <div>
-            <div className="form-label">User search</div>
+          <div className={cx("mb-3", pickedUser != null && "d-none")}>
+            <div className="form-label">User</div>
             <UserAutoSuggest onPickUser={onPickUser} />
           </div>
         </Form>
