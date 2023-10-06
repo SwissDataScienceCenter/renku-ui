@@ -72,10 +72,6 @@ function renkuFetch(url, options) {
   );
 }
 
-function fetchJson(...args) {
-  return fetch(...args).then((response) => response.json());
-}
-
 function formatEnvironmentVariables(variables) {
   const env_variables = {};
   if (variables?.length > 0) {
@@ -87,10 +83,4 @@ function formatEnvironmentVariables(variables) {
   return env_variables;
 }
 
-export {
-  fetchJson,
-  renkuFetch,
-  formatEnvironmentVariables,
-  AUTH_HEADER,
-  RETURN_TYPES,
-};
+export { renkuFetch, formatEnvironmentVariables, AUTH_HEADER, RETURN_TYPES };

@@ -73,9 +73,6 @@ const methods = {
   getRepositoryFile: {
     response: null,
   },
-  getProjectTemplates: {
-    response: [],
-  },
   getNotebookServerOptions: {
     response: {},
   },

@@ -24,7 +24,7 @@
  */
 
 import * as SentryLib from "@sentry/react";
-import _ from "lodash";
+import { clamp } from "lodash";
 import { API_ERRORS } from "../../../api-client/errors";
 
 const NAMESPACE_DEFAULT = "unknown";
@@ -118,7 +118,7 @@ function sentryInit(
   // Save data
   sentryUrl = url;
   sentryNamespace = namespace;
-  sentrySampleRate = _.clamp(parseFloat(sampleRate) || 0, 0, 1);
+  sentrySampleRate = clamp(parseFloat(sampleRate) || 0, 0, 1);
 
   // Initialize client
   // ? Reference: https://docs.sentry.io/platforms/javascript/configuration/options/

@@ -18,9 +18,11 @@ module.exports = {
         chunkFilename: `[name].[fullhash]-${version}.chunk.js`,
       },
     },
-    plugins: [
-      ...(BundleAnalyzerPlugin != null ? [new BundleAnalyzerPlugin()] : []),
-    ],
+    plugins: {
+      add: [
+        ...(BundleAnalyzerPlugin != null ? [new BundleAnalyzerPlugin()] : []),
+      ],
+    },
   },
   jest: {
     configure: {

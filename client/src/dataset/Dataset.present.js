@@ -18,7 +18,7 @@
 
 import { faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import _ from "lodash";
+import { isEmpty, groupBy } from "lodash";
 import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useHistory } from "react-router-dom";
@@ -72,7 +72,7 @@ function DisplayFiles(props) {
   }
 
   const files = props.files.hasPart;
-  const filesMap = _.groupBy(files, (file) => file.atLocation.split("/")[0]);
+  const filesMap = groupBy(files, (file) => file.atLocation.split("/")[0]);
   const filesFolderLength = Object.keys(filesMap);
   const fileLengthCutoff = 5;
 
@@ -416,7 +416,7 @@ export default function DatasetView(props) {
   if (props.loadingDatasets) return <Loader />;
 
   if (dataset === undefined || !dataset?.exists) {
-    if (!_.isEmpty(props.fetchError)) {
+    if (!isEmpty(props.fetchError)) {
       return (
         <DatasetError
           fetchError={props.fetchError}

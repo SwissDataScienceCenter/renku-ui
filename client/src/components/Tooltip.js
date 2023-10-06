@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { uniqueId as uniqueIdFn } from "lodash";
+import { useState } from "react";
 import { Tooltip } from "reactstrap";
-import _ from "lodash";
 
 /**
  *  renku-ui
@@ -97,7 +97,7 @@ function ThrottledTooltip(props) {
  * @param {string} [tooltip] - the text of the tooltip
  */
 function TooltipToggleButton(props) {
-  const [uniqueId] = useState(`tooltip-toggle-${_.uniqueId()}`);
+  const [uniqueId] = useState(`tooltip-toggle-${uniqueIdFn()}`);
 
   return (
     <span onClick={props.onClick}>
