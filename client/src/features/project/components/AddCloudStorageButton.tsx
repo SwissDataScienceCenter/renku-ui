@@ -228,6 +228,7 @@ function AdvancedAddCloudStorage({
       return;
     }
     if (
+      !result.data.storage.private ||
       result.data.sensitive_fields == null ||
       result.data.sensitive_fields.length == 0
     ) {
@@ -499,6 +500,7 @@ function SimpleAddCloudStorage({
       return;
     }
     if (
+      !result.data.storage.private ||
       result.data.sensitive_fields == null ||
       result.data.sensitive_fields.length == 0
     ) {
