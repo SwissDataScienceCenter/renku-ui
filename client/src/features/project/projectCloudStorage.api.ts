@@ -17,7 +17,7 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import sortBy from "lodash/sortBy";
+import { sortBy } from "lodash";
 import {
   AddCloudStorageForProjectParams,
   CloudStorage,
