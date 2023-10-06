@@ -19,7 +19,7 @@
 set -e
 
 # script directory
-SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 CURRENT_CONTEXT=`kubectl config current-context`
 WELCOME_MESSAGE="## Welcome to Renku through telepresence
