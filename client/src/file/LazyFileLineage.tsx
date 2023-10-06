@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,14 +16,23 @@
  * limitations under the License.
  */
 
-/**
- *  incubator-renku-ui
- *
- *  file/index.js
- *  Module for file rendering in Renku.
- */
+import { ComponentProps, Suspense, lazy } from "react";
+import { Loader } from "../components/Loader";
 
-import { JupyterButton, ShowFile } from "./File.container";
-import FilePreview from "./FilePreview";
+const FileLineage = lazy(() =>
+  import("./Lineage.container").then((module) => ({
+    default: module.FileLineage,
+  }))
+);
 
-export { FilePreview, JupyterButton, ShowFile };
+// ? Lazy loading of FileLineage allows us to split off ~107kB from
+// ? the main bundle.
+export default function LazyFileLineage(
+  props: ComponentProps<typeof FileLineage>
+) {
+  return (
+    <Suspense fallback={<Loader />}>
+      <FileLineage {...props} />
+    </Suspense>
+  );
+}

@@ -23,7 +23,7 @@
  *  Notebooks controller code.
  */
 
-import _ from "lodash";
+import { isEqual } from "lodash";
 
 import { API_ERRORS } from "../api-client/errors";
 import { formatEnvironmentVariables } from "../api-client/utils";
@@ -567,7 +567,7 @@ class NotebooksCoordinator {
           ) {
             updatedNotebooks.fetched = new Date();
             const currentServers = this.model.get("notebooks.all");
-            if (!_.isEqual(resp.data, currentServers))
+            if (!isEqual(resp.data, currentServers))
               updatedNotebooks.all = { $set: resp.data };
           }
           // TODO: re-invoke `fetchNotebooks()` immediately if parameters are outdated

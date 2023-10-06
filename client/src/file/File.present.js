@@ -19,7 +19,8 @@
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import DOMPurify from "dompurify";
-import _ from "lodash";
+import { isEqual } from "lodash";
+
 import React, { memo, useState } from "react";
 import {
   Badge,
@@ -508,7 +509,7 @@ const StyledNotebook = memo((props) => {
       />
     </CardBody>,
   ];
-}, _.isEqual);
+}, isEqual);
 StyledNotebook.displayName = "StyledNotebook";
 
 const JupyterButtonPresent = (props) => {

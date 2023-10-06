@@ -24,7 +24,7 @@ import {
 import { ListElementProps } from "../../components/list/List.d";
 import { Url } from "./url";
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
-import _ from "lodash";
+import { isEqual } from "lodash";
 import { getDatasetImageUrl } from "../../dataset/DatasetFunctions";
 
 const getDatasetIdentifier = (links: KgSearchResultLink[]): string => {
@@ -118,5 +118,5 @@ export function hasInitialFilterValues(filters: FiltersProperties) {
     typeDate: DateFilterTypes.all,
   };
 
-  return _.isEqual(filterInitialState, filters);
+  return isEqual(filterInitialState, filters);
 }

@@ -15,11 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useRef, useState } from "react";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { uniqueId as uniqueIdFn } from "lodash";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import _ from "lodash/util";
 import { ThrottledTooltip } from "./Tooltip";
 
 /**
@@ -148,7 +148,7 @@ function ExternalDocsLink(props) {
  * @param {string} [tooltip] - the text of the tooltip
  */
 function IconLink(props) {
-  const [uniqueId] = useState(`icon-link-${_.uniqueId()}`);
+  const [uniqueId] = useState(`icon-link-${uniqueIdFn()}`);
   let iconClass = "icon-link ";
   if (props.className) iconClass += props.className;
 
@@ -220,4 +220,4 @@ function ExternalIconLink(props) {
     : ExternalIconLinkWithoutTooltip(myProps);
 }
 
-export { ExternalLink, ExternalDocsLink, ExternalIconLink, IconLink };
+export { ExternalDocsLink, ExternalIconLink, ExternalLink, IconLink };
