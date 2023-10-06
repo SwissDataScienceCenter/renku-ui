@@ -51,7 +51,7 @@ export default function UpdateResourceClassButton({
 
   return (
     <>
-      <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
+      <Button className="btn-sm" color="outline-rk-green" onClick={toggle}>
         Update
       </Button>
       <UpdateResourceClassModal

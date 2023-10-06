@@ -16,28 +16,24 @@
  * limitations under the License.
  */
 
-import { RootStateOrAny, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { DropdownItem } from "reactstrap";
-import { useGetUserInfoQuery } from "../features/user/user.api";
+import cx from "classnames";
+import { ChevronDown, IconProps } from "react-bootstrap-icons";
+import styles from "./ChevronFlippedIcon.module.scss";
 
-export default function AdminDropdownItem() {
-  const userLogged = useSelector<RootStateOrAny, boolean>(
-    (state) => state.stateModel.user.logged
+interface ChevronFlippedIconProps extends IconProps {
+  flipped?: boolean;
+}
+
+export default function ChevronFlippedIcon({
+  className: className_,
+  flipped,
+  ...rest
+}: ChevronFlippedIconProps) {
+  const className = cx(
+    "accordion",
+    styles.chevron,
+    flipped && styles.chevronIsOpen,
+    className_
   );
-
-  const { data: userInfo } = useGetUserInfoQuery();
-
-  if (!userLogged || !userInfo?.isLoggedIn || !userInfo.isAdmin) {
-    return null;
-  }
-
-  return (
-    <>
-      <DropdownItem divider />
-      <Link to="/admin" className="dropdown-item">
-        Admin Panel
-      </Link>
-    </>
-  );
+  return <ChevronDown className={className} {...rest} />;
 }

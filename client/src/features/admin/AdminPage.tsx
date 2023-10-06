@@ -24,6 +24,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Collapse,
   Modal,
   ModalBody,
   ModalFooter,
@@ -31,6 +32,7 @@ import {
 import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
+import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
 import { ResourceClass, ResourcePool } from "../dataServices/dataServices";
 import AddResourceClassButton from "./AddResourceClassButton";
@@ -53,7 +55,7 @@ import { KeycloakUser } from "./adminKeycloak.types";
 export default function AdminPage() {
   return (
     <>
-      <h1 className={cx("fs-2", "mb-3")}>Renku Admin Panel</h1>
+      <h1 className={cx("fs-2", "mb-3")}>Admin Panel</h1>
       <ComputeResourcesSection />
     </>
   );
@@ -145,54 +147,74 @@ interface ResourcePoolItemProps {
 function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
   const { name, default: isDefault, public: isPublic, quota } = resourcePool;
 
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((isOpen) => !isOpen);
+  }, []);
+
   return (
     <Card className="mt-2">
       <CardHeader
-        className={cx(
-          "bg-white",
-          "border-0",
-          "fs-6",
-          "fw-bold",
-          "pt-3",
-          "pb-0"
-        )}
+        className={cx("bg-white", "border-0", "rounded", "fs-6", "p-0")}
         tag="h5"
       >
-        {name}
-        {isDefault && <>{" (This is the default pool)"}</>}
-      </CardHeader>
-      <CardBody>
-        <p>
-          {isPublic
-            ? "Public pool (everyone can use it)"
-            : "Private pool (requires special access)"}
-        </p>
-        {quota != null ? (
-          <div className={cx("hstack", "gap-2")}>
-            <div>Quota:</div>
-            <div>{quota.cpu} CPUs</div>
-            <div className="vr"></div>
-            <div>{quota.memory}&nbsp;GB RAM</div>
-            <div className="vr"></div>
-            <div>{quota.gpu} GPUs</div>
-            <div className="ms-2">
-              <UpdateResourcePoolQuotaButton resourcePool={resourcePool} />
-            </div>
+        <button
+          className={cx(
+            "d-flex",
+            "gap-3",
+            "align-items-center",
+            "w-100",
+            "p-3",
+            "bg-transparent",
+            "border-0",
+            "fw-bold"
+          )}
+          onClick={toggle}
+          type="button"
+        >
+          {name}
+          {isDefault && <>{" (This is the default pool)"}</>}
+          <div className="ms-auto">
+            <ChevronFlippedIcon flipped={isOpen} />
           </div>
-        ) : (
-          <p>No quota</p>
-        )}
+        </button>
+      </CardHeader>
+      <Collapse isOpen={isOpen}>
+        <CardBody className="pt-0">
+          <p>
+            {isPublic
+              ? "Public pool (everyone can use it)"
+              : "Private pool (requires special access)"}
+          </p>
+          {quota != null ? (
+            <div className={cx("hstack", "gap-2")}>
+              <div>Quota:</div>
+              <div>{quota.cpu} CPUs</div>
+              <div className="vr"></div>
+              <div>{quota.memory}&nbsp;GB RAM</div>
+              <div className="vr"></div>
+              <div>{quota.gpu} GPUs</div>
+              <div className="ms-3">
+                <UpdateResourcePoolQuotaButton resourcePool={resourcePool} />
+              </div>
+            </div>
+          ) : (
+            <p>No quota</p>
+          )}
 
-        <ResourceClassList
-          classes={resourcePool.classes}
-          resourcePool={resourcePool}
-        />
+          <ResourceClassList
+            classes={resourcePool.classes}
+            resourcePool={resourcePool}
+          />
 
-        {!isPublic && <ResourcePoolUsers resourcePool={resourcePool} />}
-      </CardBody>
-      <CardBody className={cx("d-flex", "flex-row", "justify-content-end")}>
-        <DeleteResourcePoolButton resourcePool={resourcePool} />
-      </CardBody>
+          {!isPublic && <ResourcePoolUsers resourcePool={resourcePool} />}
+        </CardBody>
+        <CardBody
+          className={cx("d-flex", "flex-row", "justify-content-end", "pt-0")}
+        >
+          <DeleteResourcePoolButton resourcePool={resourcePool} />
+        </CardBody>
+      </Collapse>
     </Card>
   );
 }
@@ -209,7 +231,7 @@ function ResourceClassList({ classes, resourcePool }: ResourceClassListProps) {
       <div>
         <AddResourceClassButton resourcePool={resourcePool} />
       </div>
-      <ul>
+      <ul className={cx("mt-2", "mb-0", "vstack", "gap-2")}>
         {classes.map((resourceClass) => (
           <ResourceClassItem
             key={resourceClass.id}
@@ -245,7 +267,8 @@ function ResourceClassItem({
     <li>
       <div className={cx("hstack", "gap-2")}>
         <div>
-          <strong>{name}</strong> {isDefault && " (default)"}:
+          <strong>{name}</strong>
+          {isDefault && " (default)"}:
         </div>
         <div>{cpu} CPUs</div>
         <div className="vr"></div>
@@ -256,7 +279,7 @@ function ResourceClassItem({
         <div>{default_storage} GB default disk</div>
         <div className="vr"></div>
         <div>{max_storage} GB max disk</div>
-        <div className="ms-2">
+        <div className="ms-3">
           {isDefault ? (
             <UpdateResourceClassButton
               resourceClass={resourceClass}
@@ -301,7 +324,7 @@ function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
 
   return (
     <div>
-      <p>Users: {resourcePoolUsers.length}</p>
+      <p className="mb-0">Users: {resourcePoolUsers.length}</p>
       <AddUserToResourcePoolButton resourcePool={resourcePool} />
       <ResourcePoolUsersList
         resourcePool={resourcePool}
@@ -321,7 +344,7 @@ function ResourcePoolUsersList({
   resourcePoolUsers,
 }: ResourcePoolUsersListProps) {
   return (
-    <ul>
+    <ul className={cx("mt-2", "mb-0", "vstack", "gap-2")}>
       {resourcePoolUsers.map((user) => (
         <ResourcePoolUserItem
           key={user.id}
@@ -365,11 +388,15 @@ function ResourcePoolUserItem({
 
   return (
     <li>
-      {`${user.firstName} ${user.lastName} <${user.email}>`}
-      <RemoveUserFromResourcePoolButton
-        resourcePool={resourcePool}
-        user={user}
-      />
+      <div className={cx("hstack", "gap-2")}>
+        <div>{`${user.firstName} ${user.lastName} <${user.email}>`}</div>
+        <div className="ms-3">
+          <RemoveUserFromResourcePoolButton
+            resourcePool={resourcePool}
+            user={user}
+          />
+        </div>
+      </div>
     </li>
   );
 }
@@ -390,7 +417,7 @@ function RemoveUserFromResourcePoolButton({
 
   return (
     <>
-      <Button className="ms-2" color="outline-danger" onClick={toggle}>
+      <Button className="btn-sm" color="outline-danger" onClick={toggle}>
         <PersonFillX className={cx("bi", "me-1")} />
         Remove
       </Button>

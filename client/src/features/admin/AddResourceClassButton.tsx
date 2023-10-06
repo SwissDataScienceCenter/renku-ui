@@ -68,7 +68,8 @@ export default function AddResourceClassButton({
   return (
     <>
       <Button className="ms-2" color="outline-rk-green" onClick={toggle}>
-        Add class
+        <PlusLg className={cx("bi", "me-1")} />
+        Add Class
       </Button>
       <AddResourceClassModal
         isOpen={isOpen}

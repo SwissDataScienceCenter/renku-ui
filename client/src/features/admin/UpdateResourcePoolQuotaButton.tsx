@@ -54,7 +54,7 @@ export default function UpdateResourcePoolQuotaButton({
   return (
     <>
       <Button
-        className="ms-2"
+        className="btn-sm"
         color="outline-rk-green"
         disabled={resourcePool.quota == null}
         onClick={toggle}

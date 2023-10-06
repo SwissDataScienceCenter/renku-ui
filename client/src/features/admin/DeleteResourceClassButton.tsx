@@ -59,7 +59,7 @@ export default function DeleteResourceClassButton({
   return (
     <>
       <Button
-        className="ms-2"
+        className="btn-sm"
         color="outline-danger"
         disabled={resourceClass.default}
         onClick={toggle}
