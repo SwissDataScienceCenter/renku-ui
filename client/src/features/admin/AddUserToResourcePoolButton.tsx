@@ -133,6 +133,7 @@ function AddUserToResourcePoolModal({
 
   useEffect(() => {
     if (!isOpen) {
+      setPickedUser(null);
       reset();
       result.reset();
     }
