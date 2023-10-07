@@ -1,4 +1,4 @@
-[![Test and CI](https://github.com/SwissDataScienceCenter/renku-ui/workflows/Test%20and%20CI/badge.svg)](https://github.com/SwissDataScienceCenter/renku-ui/actions?query=branch%3Amaster+workflow%3A%22Test+and+CI%22)
+[![Test and CI](https://github.com/SwissDataScienceCenter/renku-ui/actions/workflows/test-and-ci.yml/badge.svg)](https://github.com/SwissDataScienceCenter/renku-ui/actions/workflows/test-and-ci.yml)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square)](https://conventionalcommits.org)
 [![Release](https://img.shields.io/github/tag/SwissDataScienceCenter/renku-ui.svg)](https://github.com/SwissDataScienceCenter/renku-ui/releases)
 
