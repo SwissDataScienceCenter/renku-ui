@@ -1,8 +1,6 @@
 {
-  "message": {
-    "visibility_level": [
-      "internal is not allowed in a private group.",
-      "internal is not allowed since the fork source project has lower visibility."
-    ]
-  }
+  "visibility_level": [
+    "internal is not allowed in a private group.",
+    "internal is not allowed since the fork source project has lower visibility."
+  ]
 }

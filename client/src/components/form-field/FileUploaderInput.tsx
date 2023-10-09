@@ -87,6 +87,7 @@ type FileUploaderInputProps = {
   register: UseFormRegisterReturn;
   value: DatasetFormState["form"]["files"];
   setValue: (value: DatasetFormState["form"]["files"]) => void;
+  versionUrl: string;
 };
 
 function FileUploaderInput(props: FileUploaderInputProps) {
@@ -121,6 +122,7 @@ function FileUploaderInput(props: FileUploaderInputProps) {
       setDisplayFiles={setDisplayFiles}
       uploadThresholdSoft={UPLOAD_THRESHOLD_SOFT}
       value={props.value}
+      versionUrl={props.versionUrl}
     />
   );
 }

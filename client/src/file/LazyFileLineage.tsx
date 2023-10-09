@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,13 +16,23 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  shared
- *  Shared components for projects.
- */
+import { ComponentProps, Suspense, lazy } from "react";
+import { Loader } from "../components/Loader";
 
-import { ProjectAvatarEdit } from "./ProjectAvatar.container";
+const FileLineage = lazy(() =>
+  import("./Lineage.container").then((module) => ({
+    default: module.FileLineage,
+  }))
+);
 
-export { ProjectAvatarEdit };
+// ? Lazy loading of FileLineage allows us to split off ~107kB from
+// ? the main bundle.
+export default function LazyFileLineage(
+  props: ComponentProps<typeof FileLineage>
+) {
+  return (
+    <Suspense fallback={<Loader />}>
+      <FileLineage {...props} />
+    </Suspense>
+  );
+}

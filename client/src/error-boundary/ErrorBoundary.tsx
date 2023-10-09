@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 
-import { ReactNode } from "react";
 import * as Sentry from "@sentry/react";
 import cx from "classnames";
+import { ReactNode, useCallback } from "react";
+
 import styles from "./ErrorBoundary.module.scss";
 
 interface AppErrorBoundaryProps {
@@ -26,8 +27,24 @@ interface AppErrorBoundaryProps {
 }
 
 export function AppErrorBoundary({ children }: AppErrorBoundaryProps) {
+  // Handle chunk load errors by reloading the page
+  const onError = useCallback((error: Error) => {
+    if (error.name === "ChunkLoadError") {
+      const url = new URL(window.location.href);
+      const hasReloaded = !!+(
+        url.searchParams.get("reloadForChunkError") ?? ""
+      );
+      if (!hasReloaded) {
+        url.searchParams.set("reloadForChunkError", "1");
+        window.location.replace(url);
+      }
+    }
+  }, []);
+
   return (
-    <Sentry.ErrorBoundary fallback={ErrorPage}>{children}</Sentry.ErrorBoundary>
+    <Sentry.ErrorBoundary onError={onError} fallback={ErrorPage}>
+      {children}
+    </Sentry.ErrorBoundary>
   );
 }
 
