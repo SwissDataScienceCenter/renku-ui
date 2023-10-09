@@ -296,7 +296,7 @@ function SessionStartError() {
       <>
         The session could not start because some cloud storage configurations
         require credentials. Please add the requested credentials or deactivate
-        the corresponding cloud storages to start a session.
+        the corresponding configurations to start a session.
       </>
     ) : (
       <>The session could not start for an unknown reason.</>
