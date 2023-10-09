@@ -16,33 +16,15 @@
  * limitations under the License.
  */
 
-import APIClient from "../../api-client";
 import sessionsApi from "../../features/session/sessions.api";
 import { StateModel } from "../../model";
-// import { NotebooksCoordinator } from "../../notebooks";
-// import { isSessionUrl } from "../../utils/helpers/url/Url";
 
 function handleSessionsStatus(
   data: Record<string, unknown>,
   webSocket: WebSocket,
-  model: StateModel,
-  getLocation: Function, // eslint-disable-line @typescript-eslint/ban-types
-  client: APIClient
+  model: StateModel
 ) {
-  if ((data.message as boolean) && client && model) {
-    // const location = getLocation();
-
-    // if (!isSessionUrl(location?.pathname)) {
-    //   const notebooksModel = model.subModel("notebooks");
-    //   const userModel = model.subModel("user");
-    //   const notebookCoordinator = new NotebooksCoordinator(
-    //     client,
-    //     notebooksModel,
-    //     userModel
-    //   );
-    //   notebookCoordinator.fetchNotebooks();
-    // }
-
+  if ((data.message as boolean) && model) {
     model.reduxStore.dispatch(
       sessionsApi.endpoints.invalidateSessions.initiate()
     );

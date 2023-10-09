@@ -33,16 +33,11 @@ import {
   StatusHelper,
 } from "./Model";
 import { globalSchema } from "./GlobalSchema";
-import {
-  formGeneratorSchema,
-  // notebooksSchema,
-  projectSchema,
-} from "./RenkuModels";
+import { formGeneratorSchema, projectSchema } from "./RenkuModels";
 
 export {
   formGeneratorSchema,
   globalSchema,
-  // notebooksSchema,
   projectSchema,
   PropertyName,
   Schema,

@@ -32,7 +32,6 @@ import { ProjectCoordinator, MigrationStatus } from "./Project.state";
 import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
 import qs from "query-string";
 import { DatasetCoordinator } from "../dataset/Dataset.state";
-// import { NotebooksCoordinator } from "../notebooks";
 
 const subRoutes = {
   overview: "overview",
@@ -188,7 +187,6 @@ function mapProjectStateToProps(state, ownProps) {
     // fields (mostly non-project) that should trigger a re-render
     triggerDataset: refreshTrigger(state.stateModel.dataset),
     triggerForm: isOnDatasetEditPage ? {} : null,
-    // triggerNotebooks: refreshTrigger(state.stateModel.notebooks),
   };
 }
 
@@ -209,12 +207,6 @@ class View extends Component {
       props.client,
       props.model.subModel("dataset")
     );
-    // this.notebookCoordinator = new NotebooksCoordinator(
-    //   props.client,
-    //   props.model.subModel("notebooks")
-    // );
-    // // reset filter file path when load a new project
-    // this.notebookCoordinator.setNotebookFilePath(null);
   }
 
   componentDidMount() {
