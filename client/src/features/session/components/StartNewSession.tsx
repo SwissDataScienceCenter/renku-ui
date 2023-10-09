@@ -50,7 +50,7 @@ import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
 import { Url } from "../../../utils/helpers/url";
-import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../project/projectCloudStorage.constants";
+import { getProvidedSensitiveFields } from "../../project/utils/projectCloudStorage.utils";
 import { useStartSessionMutation } from "../sessions.api";
 import startSessionSlice, {
   setError,
@@ -644,11 +644,8 @@ function StartSessionButton() {
       cloudStorage
         .filter(({ active }) => active)
         .filter(({ configuration, sensitive_fields }) => {
-          const providedSensitiveFields = Object.entries(configuration)
-            .filter(
-              ([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN
-            )
-            .map(([key]) => key);
+          const providedSensitiveFields =
+            getProvidedSensitiveFields(configuration);
           const requiredSensitiveFields = sensitive_fields?.filter(({ name }) =>
             providedSensitiveFields.includes(name)
           );

@@ -19,6 +19,7 @@
 import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../projectCloudStorage.constants";
 import {
   CloudStorage,
+  CloudStorageConfiguration,
   CloudStorageCredential,
 } from "../projectCloudStorage.types";
 
@@ -68,13 +69,19 @@ export function getCredentialFieldDefinitions(
   const { sensitive_fields, storage } = storageDefinition;
   const { configuration } = storage;
 
-  const providedSensitiveFields = Object.entries(configuration)
-    .filter(([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN)
-    .map(([key]) => key);
+  const providedSensitiveFields = getProvidedSensitiveFields(configuration);
   const credentialFieldDefinitions = sensitive_fields?.map((field) => ({
     ...field,
     requiredCredential: providedSensitiveFields.includes(field.name),
   }));
 
   return credentialFieldDefinitions;
+}
+
+export function getProvidedSensitiveFields(
+  configuration: CloudStorageConfiguration["configuration"]
+): string[] {
+  return Object.entries(configuration)
+    .filter(([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN)
+    .map(([key]) => key);
 }

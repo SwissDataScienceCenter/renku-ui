@@ -75,6 +75,7 @@ import {
 } from "../../../project/projectCloudStorage.constants";
 import {
   formatCloudStorageConfiguration,
+  getProvidedSensitiveFields,
   parseCloudStorageConfiguration,
 } from "../../../project/utils/projectCloudStorage.utils";
 import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
@@ -242,10 +243,7 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
   } = storage;
 
   const providedSensitiveFields = useMemo(
-    () =>
-      Object.entries(configuration)
-        .filter(([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN)
-        .map(([key]) => key),
+    () => getProvidedSensitiveFields(configuration),
     [configuration]
   );
   const requiredSensitiveFields = useMemo(
@@ -472,10 +470,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
   const { configuration, name, readonly, source_path, target_path } = storage;
 
   const providedSensitiveFields = useMemo(
-    () =>
-      Object.entries(configuration)
-        .filter(([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN)
-        .map(([key]) => key),
+    () => getProvidedSensitiveFields(configuration),
     [configuration]
   );
   const requiredSensitiveFields = useMemo(

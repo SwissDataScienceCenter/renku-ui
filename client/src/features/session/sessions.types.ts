@@ -109,25 +109,20 @@ export interface PatchSessionParams {
   state: Extract<"running" | "hibernated", SessionStatusState>;
 }
 
-export type CloudStorageDefinitionForSessionApi =
-  | {
-      configuration: {
+export interface CloudStorageDefinitionForSessionApi {
+  configuration:
+    | {
         type: "s3";
         endpoint: string;
         access_key_id?: string;
         secret_access_key?: string;
-      };
-      readonly: boolean;
-      source_path: string;
-      target_path: string;
-    }
-  | {
-      configuration: {
+      }
+    | {
         type: "azureblob";
         endpoint: string;
         secret_access_key: string;
       };
-      readonly: boolean;
-      source_path: string;
-      target_path: string;
-    };
+  readonly: boolean;
+  source_path: string;
+  target_path: string;
+}

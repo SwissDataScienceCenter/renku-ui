@@ -19,11 +19,11 @@
 import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { CloudStorage } from "../../../project/projectCloudStorage.types";
+import { getProvidedSensitiveFields } from "../../../project/utils/projectCloudStorage.utils";
 import { NotebooksVersion } from "../../../versions/versions";
+import { setError } from "../../startSession.slice";
 import { SessionCloudStorage } from "../../startSessionOptions.types";
 import { setCloudStorage } from "../../startSessionOptionsSlice";
-import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../../project/projectCloudStorage.constants";
-import { setError } from "../../startSession.slice";
 
 interface UseDefaultCloudStorageOptionArgs {
   notebooksVersion: NotebooksVersion | undefined;
@@ -48,32 +48,14 @@ export default function useDefaultCloudStorageOption({
     }
 
     const initialCloudStorage: SessionCloudStorage[] = storageForProject.map(
-      ({ storage, sensitive_fields }) => ({
-        active:
-          (storage.storage_type === "s3" && support === "s3") ||
-          (storage.storage_type === "azureblob" && support === "azure"),
-        supported:
-          (storage.storage_type === "s3" && support === "s3") ||
-          (storage.storage_type === "azureblob" && support === "azure"),
-        ...(sensitive_fields
-          ? {
-              sensitive_fields: sensitive_fields.map(({ name, ...rest }) => ({
-                ...rest,
-                name,
-                value: "",
-              })),
-            }
-          : {}),
-        ...storage,
-      })
+      getInitialCloudStorageItem(support)
     );
 
     const missingCredentialsStorage = initialCloudStorage
       .filter(({ active }) => active)
       .filter(({ configuration, sensitive_fields }) => {
-        const providedSensitiveFields = Object.entries(configuration)
-          .filter(([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN)
-          .map(([key]) => key);
+        const providedSensitiveFields =
+          getProvidedSensitiveFields(configuration);
         const requiredSensitiveFields = sensitive_fields?.filter(({ name }) =>
           providedSensitiveFields.includes(name)
         );
@@ -86,4 +68,27 @@ export default function useDefaultCloudStorageOption({
 
     dispatch(setCloudStorage(initialCloudStorage));
   }, [dispatch, storageForProject, support]);
+}
+
+function getInitialCloudStorageItem(
+  support: "s3" | "azure"
+): (storageDefinition: CloudStorage) => SessionCloudStorage {
+  return ({ storage, sensitive_fields }) => ({
+    active:
+      (storage.storage_type === "s3" && support === "s3") ||
+      (storage.storage_type === "azureblob" && support === "azure"),
+    supported:
+      (storage.storage_type === "s3" && support === "s3") ||
+      (storage.storage_type === "azureblob" && support === "azure"),
+    ...(sensitive_fields
+      ? {
+          sensitive_fields: sensitive_fields.map(({ name, ...rest }) => ({
+            ...rest,
+            name,
+            value: "",
+          })),
+        }
+      : {}),
+    ...storage,
+  });
 }
