@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import _ from "lodash";
+import { isEqual } from "lodash";
 import { useState, useEffect } from "react";
 
 import { ProjectList as ProjectListPresent } from "./ProjectList.present";
@@ -155,7 +155,7 @@ function useLocation(location, params, setParams, setTargetUser) {
       newParamsFull.searchIn = SEARCH_IN_MAP.projects.value;
 
     const newParams = { ...newParamsFull, section: newSection };
-    if (_.isEqual(newParams, params)) return undefined;
+    if (isEqual(newParams, params)) return undefined;
 
     setParams((p) => {
       const newParams = { ...p, ...newParamsFull, section: newSection };

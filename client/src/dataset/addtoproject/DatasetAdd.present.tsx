@@ -19,9 +19,9 @@
 import { useState } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
-import _ from "lodash";
 import { Row, Col } from "reactstrap";
 import { Button } from "reactstrap";
+import { isEmpty } from "lodash";
 import { ButtonGroup, Table } from "reactstrap";
 
 import AddDatasetExistingProject from "./DatasetAddToExistingProject";
@@ -161,7 +161,7 @@ function DatasetAdd(props: DatasetAddProps) {
   // Return early if there is no dataset
   if (!dataset) return <Loader />;
   if (!dataset?.exists) {
-    if (!_.isEmpty(dataset?.fetchError)) {
+    if (!isEmpty(dataset?.fetchError)) {
       return (
         <DatasetError
           fetchError={dataset?.fetchError}
