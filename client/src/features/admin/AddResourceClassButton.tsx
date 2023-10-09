@@ -91,7 +91,7 @@ function AddResourceClassModal({
   resourcePool,
   toggle,
 }: AddResourceClassModalProps) {
-  const { id } = resourcePool;
+  const { id, quota } = resourcePool;
 
   const [addResourceClass, result] = useAddResourceClassMutation();
 
@@ -168,14 +168,18 @@ function AddResourceClassModal({
               name="cpu"
               render={({ field }) => (
                 <Input
+                  className={cx(errors.cpu && "is-invalid")}
                   id={`addResourceClassCpu-${id}`}
                   type="number"
                   min={0.1}
                   step={0.1}
+                  max={quota?.cpu}
                   {...field}
                 />
               )}
+              rules={{ min: 0.1, max: quota?.cpu }}
             />
+            <div className="invalid-feedback">Invalid value for CPUs</div>
           </div>
 
           <div className="mb-3">
@@ -187,14 +191,18 @@ function AddResourceClassModal({
               name="memory"
               render={({ field }) => (
                 <Input
+                  className={cx(errors.memory && "is-invalid")}
                   id={`addResourceClassMemory-${id}`}
                   type="number"
                   min={1}
                   step={1}
+                  max={quota?.memory}
                   {...field}
                 />
               )}
+              rules={{ min: 1, max: quota?.memory }}
             />
+            <div className="invalid-feedback">Invalid value for memory</div>
           </div>
 
           <div className="mb-3">
@@ -206,14 +214,19 @@ function AddResourceClassModal({
               name="gpu"
               render={({ field }) => (
                 <Input
+                  className={cx(errors.gpu && "is-invalid")}
                   id={`addResourceClassGpu-${id}`}
                   type="number"
+                  disabled={quota?.gpu == 0}
                   min={0}
                   step={1}
+                  max={quota?.gpu}
                   {...field}
                 />
               )}
-            />
+              rules={{ min: 0, max: quota?.gpu }}
+            />{" "}
+            <div className="invalid-feedback">Invalid value for GPUs</div>
           </div>
 
           <div className="mb-3">

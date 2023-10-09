@@ -81,6 +81,7 @@ function UpdateResourceClassModal({
   toggle,
 }: UpdateResourceClassModalProps) {
   const { id } = resourceClass;
+  const { quota } = resourcePool;
 
   const [updateResourceClass, result] = useUpdateResourceClassMutation();
 
@@ -156,6 +157,7 @@ function UpdateResourceClassModal({
               name="cpu"
               render={({ field }) => (
                 <Input
+                  className={cx(errors.cpu && "is-invalid")}
                   id={`updateResourceClassCpu-${id}`}
                   type="number"
                   min={0.1}
@@ -163,7 +165,9 @@ function UpdateResourceClassModal({
                   {...field}
                 />
               )}
+              rules={{ min: 0.1, max: quota?.cpu }}
             />
+            <div className="invalid-feedback">Invalid value for CPUs</div>
           </div>
 
           <div className="mb-3">
@@ -178,6 +182,7 @@ function UpdateResourceClassModal({
               name="memory"
               render={({ field }) => (
                 <Input
+                  className={cx(errors.memory && "is-invalid")}
                   id={`updateResourceClassMemory-${id}`}
                   type="number"
                   min={1}
@@ -185,7 +190,9 @@ function UpdateResourceClassModal({
                   {...field}
                 />
               )}
+              rules={{ min: 1, max: quota?.memory }}
             />
+            <div className="invalid-feedback">Invalid value for memory</div>
           </div>
 
           <div className="mb-3">
@@ -197,6 +204,7 @@ function UpdateResourceClassModal({
               name="gpu"
               render={({ field }) => (
                 <Input
+                  className={cx(errors.gpu && "is-invalid")}
                   id={`updateResourceClassGpu-${id}`}
                   type="number"
                   min={0}
@@ -204,7 +212,9 @@ function UpdateResourceClassModal({
                   {...field}
                 />
               )}
+              rules={{ min: 0, max: quota?.gpu }}
             />
+            <div className="invalid-feedback">Invalid value for GPUs</div>
           </div>
 
           <div className="mb-3">
