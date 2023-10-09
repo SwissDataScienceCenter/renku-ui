@@ -17,7 +17,7 @@
  */
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -220,9 +220,18 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
   const { data, isFetching, isLoading, error } =
     useSearchEntitiesQuery(searchRequest);
 
-  const { data: sessions } = useGetSessionsQuery();
+  const { data: sessions, isLoading: isLoadingSessions } =
+    useGetSessionsQuery();
+
+  useEffect(() => {
+    console.log({ sessions });
+  }, [sessions]);
 
   const sessionsFormatted = getFormattedSessionsAnnotations(sessions ?? {});
+  useEffect(() => {
+    console.log({ sessionsFormatted });
+  }, [sessionsFormatted]);
+
   const { projects, isFetchingProjects } = useGetRecentlyVisitedProjects(
     TOTAL_RECENTLY_VISITED_PROJECT,
     sessionsFormatted
@@ -230,7 +239,7 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
   const totalUserProjects =
     isFetching || isLoading || !data || error ? undefined : data.total;
   let projectsToShow;
-  if (isFetchingProjects) {
+  if (isLoadingSessions || isFetchingProjects) {
     projectsToShow = <Loader />;
   } else {
     projectsToShow =
@@ -265,7 +274,7 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
             </span>
           </Link>
         </div>
-        {<SessionsToShow currentSessions={sessionsFormatted} />}
+        <SessionsToShow currentSessions={sessionsFormatted} />
         {projectsToShow}
         {otherProjectsBtn}
       </div>
@@ -291,7 +300,12 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
     );
   };
 
+  // ? Using `async` inside `useEffect()` requires keeping track of the latest
+  // ? promise and only letting that one commit to the component state.
+  const getProjectCurrentSessionsRef = useRef(0);
+
   useEffect(() => {
+    const capturedRef = ++getProjectCurrentSessionsRef.current;
     const getProjectCurrentSessions = async () => {
       const sessionProject: SessionProject[] = [];
       for (const session of currentSessions) {
@@ -303,10 +317,13 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
         );
         sessionProject.push({ ...project, notebook: session });
       }
-      setItems(sessionProject);
+      // Commit the update only if this is the latest `useEffect()` call
+      if (capturedRef == getProjectCurrentSessionsRef.current) {
+        setItems(sessionProject);
+      }
     };
     getProjectCurrentSessions();
-  }, [currentSessions]); // eslint-disable-line
+  }, [client, currentSessions]);
 
   if (items?.length) {
     const element = items.map((item: SessionProject) => {
