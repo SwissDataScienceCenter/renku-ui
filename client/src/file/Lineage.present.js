@@ -24,7 +24,6 @@ import * as d3 from "d3";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
-import { JupyterButton } from "./index";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 import { ExternalIconLink } from "../components/ExternalLinks";
