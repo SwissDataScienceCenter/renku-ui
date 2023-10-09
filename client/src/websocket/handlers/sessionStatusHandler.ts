@@ -19,8 +19,8 @@
 import APIClient from "../../api-client";
 import sessionsApi from "../../features/session/sessions.api";
 import { StateModel } from "../../model";
-import { NotebooksCoordinator } from "../../notebooks";
-import { isSessionUrl } from "../../utils/helpers/url/Url";
+// import { NotebooksCoordinator } from "../../notebooks";
+// import { isSessionUrl } from "../../utils/helpers/url/Url";
 
 function handleSessionsStatus(
   data: Record<string, unknown>,
@@ -30,18 +30,18 @@ function handleSessionsStatus(
   client: APIClient
 ) {
   if ((data.message as boolean) && client && model) {
-    const location = getLocation();
+    // const location = getLocation();
 
-    if (!isSessionUrl(location?.pathname)) {
-      const notebooksModel = model.subModel("notebooks");
-      const userModel = model.subModel("user");
-      const notebookCoordinator = new NotebooksCoordinator(
-        client,
-        notebooksModel,
-        userModel
-      );
-      notebookCoordinator.fetchNotebooks();
-    }
+    // if (!isSessionUrl(location?.pathname)) {
+    //   const notebooksModel = model.subModel("notebooks");
+    //   const userModel = model.subModel("user");
+    //   const notebookCoordinator = new NotebooksCoordinator(
+    //     client,
+    //     notebooksModel,
+    //     userModel
+    //   );
+    //   notebookCoordinator.fetchNotebooks();
+    // }
 
     model.reduxStore.dispatch(
       sessionsApi.endpoints.invalidateSessions.initiate()

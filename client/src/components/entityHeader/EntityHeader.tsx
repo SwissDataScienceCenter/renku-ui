@@ -23,11 +23,11 @@
  *  Entity Header component
  */
 
-import { RootStateOrAny, useSelector } from "react-redux";
 import { useDisplaySelector } from "../../features/display";
 import SessionButton from "../../features/session/components/SessionButton";
+import { useGetSessionsQuery } from "../../features/session/sessions.api";
+import { getRunningSession } from "../../features/session/sessions.utils";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
-import { getSessionRunning } from "../../utils/helpers/SessionFunctions";
 import { Url } from "../../utils/helpers/url";
 import { EnvironmentLogs } from "../Logs";
 import { TimeCaption } from "../TimeCaption";
@@ -89,19 +89,17 @@ function EntityHeader({
   visibility,
 }: EntityHeaderProps) {
   // Find sessions
-  const sessions = useSelector(
-    (state: RootStateOrAny) => state.stateModel.notebooks?.notebooks
-  );
+  const { data: sessions } = useGetSessionsQuery();
+
   const projectData = { namespace: "", path: fullPath };
   const sessionAutostartUrl = Url.get(
     Url.pages.project.session.autostart,
     projectData
   );
-  const notebook =
-    sessions.fetched && sessions.all
-      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (getSessionRunning(sessions.all, sessionAutostartUrl) as any)
-      : false;
+
+  const runningSession = sessions
+    ? getRunningSession({ autostartUrl: sessionAutostartUrl, sessions })
+    : null;
 
   // Set the main button based on running sessions
   const mainButton =
@@ -115,7 +113,7 @@ function EntityHeader({
     itemType === "project" ? (
       <EnvironmentLogs
         name={displayModal.targetServer}
-        annotations={notebook?.annotations ?? {}}
+        annotations={runningSession?.annotations ?? {}}
       />
     ) : null;
   const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};

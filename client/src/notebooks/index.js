@@ -23,6 +23,6 @@
  *
  */
 
-import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
+import { NotebooksHelper } from "./Notebooks.state";
 
-export { NotebooksCoordinator, NotebooksHelper };
+export { NotebooksHelper };

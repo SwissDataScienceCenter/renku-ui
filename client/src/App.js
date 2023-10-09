@@ -116,11 +116,7 @@ function CentralContentContainer(props) {
             render={() =>
               props.user.logged ? (
                 <ContainerWrap>
-                  <Dashboard
-                    model={props.model}
-                    user={props.user}
-                    client={props.client}
-                  />
+                  <Dashboard />
                 </ContainerWrap>
               ) : null
             }

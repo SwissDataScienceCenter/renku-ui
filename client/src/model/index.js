@@ -35,14 +35,14 @@ import {
 import { globalSchema } from "./GlobalSchema";
 import {
   formGeneratorSchema,
-  notebooksSchema,
+  // notebooksSchema,
   projectSchema,
 } from "./RenkuModels";
 
 export {
   formGeneratorSchema,
   globalSchema,
-  notebooksSchema,
+  // notebooksSchema,
   projectSchema,
   PropertyName,
   Schema,

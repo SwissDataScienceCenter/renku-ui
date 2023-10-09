@@ -15,38 +15,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Fragment, useContext, useEffect, useState } from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Fragment, useContext, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 
+import { InfoAlert } from "../../../components/Alert";
+import { ExternalLink } from "../../../components/ExternalLinks";
+import ListDisplay from "../../../components/List";
+import { Loader } from "../../../components/Loader";
+import { EnvironmentLogs } from "../../../components/Logs";
+import ListBarSession from "../../../components/list/ListBarSessions";
+import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
+import { Notebook } from "../../../notebooks/components/session.types";
+import { urlMap } from "../../../project/list/ProjectList.container";
+import { Docs } from "../../../utils/constants/Docs";
+import AppContext from "../../../utils/context/appContext";
+import useGetRecentlyVisitedProjects from "../../../utils/customHooks/useGetRecentlyVisitedProjects";
+import {
+  cleanGitUrl,
+  formatProjectMetadata,
+} from "../../../utils/helpers/ProjectFunctions";
+import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionFunctions";
+import { Url } from "../../../utils/helpers/url";
+import { displaySlice, useDisplaySelector } from "../../display";
 import { EntityType } from "../../kgSearch";
 import { KgAuthor } from "../../kgSearch/KgSearch";
 import {
   SearchEntitiesQueryParams,
   useSearchEntitiesQuery,
 } from "../../kgSearch/KgSearchApi";
-import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
-import { InfoAlert } from "../../../components/Alert";
-import { Docs } from "../../../utils/constants/Docs";
-import { ExternalLink } from "../../../components/ExternalLinks";
-import { urlMap } from "../../../project/list/ProjectList.container";
-import { Url } from "../../../utils/helpers/url";
-import ListDisplay from "../../../components/List";
-import { Loader } from "../../../components/Loader";
-import useGetRecentlyVisitedProjects from "../../../utils/customHooks/useGetRecentlyVisitedProjects";
-import AppContext from "../../../utils/context/appContext";
-import {
-  cleanGitUrl,
-  formatProjectMetadata,
-} from "../../../utils/helpers/ProjectFunctions";
-import ListBarSession from "../../../components/list/ListBarSessions";
-import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionFunctions";
-import { Notebook } from "../../../notebooks/components/session.types";
 import { stateToSearchString } from "../../kgSearch/KgSearchState";
-import { displaySlice, useDisplaySelector } from "../../display";
-import { EnvironmentLogs } from "../../../components/Logs";
+import { useGetSessionsQuery } from "../../session/sessions.api";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -218,10 +219,10 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
   };
   const { data, isFetching, isLoading, error } =
     useSearchEntitiesQuery(searchRequest);
-  const currentSessions = useSelector(
-    (state: RootStateOrAny) => state.stateModel.notebooks?.notebooks?.all
-  );
-  const sessionsFormatted = getFormattedSessionsAnnotations(currentSessions);
+
+  const { data: sessions } = useGetSessionsQuery();
+
+  const sessionsFormatted = getFormattedSessionsAnnotations(sessions ?? {});
   const { projects, isFetchingProjects } = useGetRecentlyVisitedProjects(
     TOTAL_RECENTLY_VISITED_PROJECT,
     sessionsFormatted
