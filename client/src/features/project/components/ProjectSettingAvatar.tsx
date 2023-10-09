@@ -41,6 +41,20 @@ import { getEntityImageUrl } from "../../../utils/helpers/HelperFunctions";
 
 const CURRENT_AVATAR_NAME = "[Current Avatar]";
 
+function getCurrentImageAvatar(images?: ImagesLinks[]): ImageValue {
+  return images && images.length > 0
+    ? ({
+        options: [
+          {
+            [Prop.NAME]: CURRENT_AVATAR_NAME,
+            [Prop.URL]: getEntityImageUrl(images),
+          },
+        ],
+        selected: 0,
+      } as ImageValue)
+    : INITIAL_IMAGE_VALUE;
+}
+
 interface ProjectSettingsAvatarProps {
   isMaintainer: boolean;
   projectFullPath: string;
@@ -96,24 +110,13 @@ export function ProjectSettingsAvatar({
       .catch(() => setSucceeded(false));
   }, [avatar, projectFullPath, updateProject, projectId]);
 
-  const setAvatarAndReset = (newAvatar: ImageValue) => {
-    setAvatar(newAvatar);
-    reset();
-  };
-
-  const getCurrentImageAvatar = (images?: ImagesLinks[]): ImageValue => {
-    return images && images.length > 0
-      ? ({
-          options: [
-            {
-              [Prop.NAME]: CURRENT_AVATAR_NAME,
-              [Prop.URL]: getEntityImageUrl(images),
-            },
-          ],
-          selected: 0,
-        } as ImageValue)
-      : INITIAL_IMAGE_VALUE;
-  };
+  const setAvatarAndReset = useCallback(
+    (newAvatar: ImageValue) => {
+      setAvatar(newAvatar);
+      reset();
+    },
+    [setAvatar, reset]
+  );
 
   useEffect(() => {
     setAvatar(
@@ -123,14 +126,14 @@ export function ProjectSettingsAvatar({
     );
   }, [projectMetadata.data?.images]);
 
-  const onCancel = () => {
+  const onCancel = useCallback(() => {
     setAvatar(
       getCurrentImageAvatar(
         projectMetadata.data?.images as unknown as ImagesLinks[]
       )
     );
     reset();
-  };
+  }, [reset, setAvatar, projectMetadata.data?.images]);
 
   const readOnly =
     !isMaintainer ||
@@ -187,7 +190,7 @@ export function ProjectSettingsAvatar({
             submitButtonId="update-avatar"
             value={avatar ?? initialValue}
           />
-          {errorAlert}
+          <div className="my-2">{errorAlert}</div>
         </CardBody>
       </Card>
     </>

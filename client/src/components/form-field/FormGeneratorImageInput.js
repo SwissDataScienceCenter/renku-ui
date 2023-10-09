@@ -304,7 +304,7 @@ function ImageContentInput({
           Select an image file (max size {formatBytes(maxSize)}).
           <br />
           Images will be cropped to {CARD_IMAGE_DIMENSIONS.width}px &times;{" "}
-          {CARD_IMAGE_DIMENSIONS.height}px to achieve the desirable size{" "}
+          {CARD_IMAGE_DIMENSIONS.height}px to achieve the target size{" "}
           {formatBytes(expectedFinalSize)}
         </span>
       );
