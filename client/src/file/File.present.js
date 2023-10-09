@@ -39,8 +39,6 @@ import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import { TimeCaption } from "../components/TimeCaption";
 import LazyNotebookPreview from "../components/notebook/LazyNotebookRender";
-import { CheckNotebookStatus } from "../notebooks";
-import { CheckNotebookIcon } from "../notebooks/NotebookStart.present";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 import { FilePreview } from "./index";
@@ -512,41 +510,8 @@ const StyledNotebook = memo((props) => {
 }, isEqual);
 StyledNotebook.displayName = "StyledNotebook";
 
-const JupyterButtonPresent = (props) => {
-  if (!props.access) {
-    return (
-      <CheckNotebookIcon
-        fetched={true}
-        location={props.location}
-        launchNotebookUrl={props.launchNotebookUrl}
-        filePath={props.filePath}
-      />
-    );
-  }
-
-  if (props.updating) {
-    return (
-      <span className="ms-2 pb-1">
-        <Loader inline size={19} />
-      </span>
-    );
-  }
-
-  return (
-    <CheckNotebookStatus
-      client={props.client}
-      model={props.model}
-      scope={props.scope}
-      location={props.location}
-      launchNotebookUrl={props.launchNotebookUrl}
-      filePath={props.filePath}
-    />
-  );
-};
-
 export {
   FileNoPreview,
-  JupyterButtonPresent,
   NotebookSourceDisplayMode,
   ShowFile,
   StyledNotebook,
