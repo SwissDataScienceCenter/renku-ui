@@ -223,14 +223,7 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
   const { data: sessions, isLoading: isLoadingSessions } =
     useGetSessionsQuery();
 
-  useEffect(() => {
-    console.log({ sessions });
-  }, [sessions]);
-
   const sessionsFormatted = getFormattedSessionsAnnotations(sessions ?? {});
-  useEffect(() => {
-    console.log({ sessionsFormatted });
-  }, [sessionsFormatted]);
 
   const { projects, isFetchingProjects } = useGetRecentlyVisitedProjects(
     TOTAL_RECENTLY_VISITED_PROJECT,
