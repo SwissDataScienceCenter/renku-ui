@@ -89,6 +89,10 @@ export const CheckNotebookIcon = ({
       search: "?autostart=1&notebook=" + encodeURIComponent(filePath),
       state: { successUrl },
     };
+
+    console.log({ successUrl });
+    console.log({ target });
+
     tooltip = "Start a session";
     icon = <JupyterIcon className="svg-inline--fa fa-w-16 icon-link" />;
     link = <Link to={target}>{icon}</Link>;

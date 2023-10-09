@@ -32,6 +32,7 @@ import { Clipboard } from "../components/Clipboard";
 import { KgStatusWrapper } from "../components/kgStatus/KgStatus.tsx";
 
 import "./Lineage.css";
+import SessionFileButton from "../features/session/components/SessionFileButton";
 
 function cropLabelStart(limit, label) {
   if (label.length > limit) return "<...>" + label.substr(label.length - limit);
@@ -316,16 +317,9 @@ class FileLineage extends Component {
       />
     );
 
-    let buttonJupyter = null;
-    if (filePath.endsWith(".ipynb")) {
-      buttonJupyter = (
-        <JupyterButton
-          {...this.props}
-          file={{ file_path: this.props.path }}
-          projectPath={this.props.projectPathOnly}
-        />
-      );
-    }
+    const buttonJupyter = filePath.endsWith(".ipynb") ? (
+      <SessionFileButton filePath={this.props.filePath} />
+    ) : null;
 
     const fileInfo =
       this.props.filesTree?.hash && this.props.gitFilePath
