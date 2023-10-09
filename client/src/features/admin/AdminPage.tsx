@@ -34,7 +34,10 @@ import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../components/icons/ChevronFlippedIcon";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
-import { ResourceClass, ResourcePool } from "../dataServices/dataServices";
+import {
+  ResourceClass,
+  ResourcePool,
+} from "../dataServices/dataServices.types";
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";

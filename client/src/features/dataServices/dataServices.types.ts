@@ -50,7 +50,6 @@ export interface Resources {
   cpu: number;
   memory: number;
   gpu: number;
-  // storage: number;
 }
 
 export interface ResourcePoolsQueryParams {

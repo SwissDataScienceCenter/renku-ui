@@ -35,7 +35,10 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { ResourceClass, ResourcePool } from "../dataServices/dataServices";
+import {
+  ResourceClass,
+  ResourcePool,
+} from "../dataServices/dataServices.types";
 import { Button, Modal, ModalBody, ModalFooter } from "reactstrap";
 import { CheckLg, TrashFill, XLg } from "react-bootstrap-icons";
 import cx from "classnames";

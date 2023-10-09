@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { Resources } from "../dataServices/dataServices";
+import { ResourceClass, Resources } from "../dataServices/dataServices.types";
 
 export interface AdminComputeResources {
   keycloakToken: string;
@@ -34,27 +34,11 @@ export interface GetResourcePoolUsersParams {
 export interface AddResourcePoolParams {
   name: string;
   public: boolean;
-  classes: AddResourcePoolClassPartial[];
+  classes: ResourceClassDefinition[];
   quota: Resources;
 }
 
-interface AddResourcePoolClassPartial {
-  name: string;
-  cpu: number;
-
-  /** Memory (RAM) in Gigabytes */
-  memory: number;
-
-  gpu: number;
-
-  /** Max disk storage in Gigabytes */
-  max_storage: number;
-
-  /** Default disk storage in Gigabytes */
-  default_storage: number;
-
-  default: boolean;
-}
+type ResourceClassDefinition = Omit<ResourceClass, "id" | "matching">;
 
 export interface UpdateResourcePoolParams {
   resourcePoolId: number;
@@ -69,29 +53,14 @@ export interface DeleteResourcePoolParams {
   resourcePoolId: number;
 }
 
-export interface AddResourceClassParams {
+export interface AddResourceClassParams extends ResourceClassDefinition {
   resourcePoolId: number;
-
-  name: string;
-  cpu: number;
-  memory: number;
-  gpu: number;
-  default_storage: number;
-  max_storage: number;
-  default: boolean;
 }
 
-export interface UpdateResourceClassParams {
+export interface UpdateResourceClassParams
+  extends Partial<ResourceClassDefinition> {
   resourcePoolId: number;
   resourceClassId: number;
-
-  name?: string;
-  cpu?: number;
-  memory?: number;
-  gpu?: number;
-  default_storage?: number;
-  max_storage?: number;
-  default?: boolean;
 }
 
 export interface DeleteResourceClassParams {

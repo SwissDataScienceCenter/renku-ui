@@ -17,7 +17,10 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { ResourceClass, ResourcePool } from "../dataServices/dataServices";
+import {
+  ResourceClass,
+  ResourcePool,
+} from "../dataServices/dataServices.types";
 import {
   AddResourceClassParams,
   AddResourcePoolParams,

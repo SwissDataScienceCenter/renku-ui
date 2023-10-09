@@ -39,8 +39,8 @@ import { Loader } from "../../../../components/Loader";
 import {
   ResourceClass,
   ResourcePool,
-} from "../../../dataServices/dataServices";
-import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
+} from "../../../dataServices/dataServices.types";
+import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import { ProjectConfig } from "../../../project/Project";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";

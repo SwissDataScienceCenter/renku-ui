@@ -32,7 +32,7 @@ import {
 } from "reactstrap";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { ResourcePool } from "../dataServices/dataServices";
+import { ResourcePool } from "../dataServices/dataServices.types";
 import { useUpdateResourcePoolMutation } from "./adminComputeResources.api";
 
 interface UpdateResourcePoolQuotaButtonProps {

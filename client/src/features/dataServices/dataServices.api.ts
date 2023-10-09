@@ -17,7 +17,7 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { ResourcePool, ResourcePoolsQueryParams } from "./dataServices";
+import { ResourcePool, ResourcePoolsQueryParams } from "./dataServices.types";
 
 export const dataServicesApi = createApi({
   reducerPath: "dataServices",
@@ -41,5 +41,7 @@ export const dataServicesApi = createApi({
     }),
   }),
 });
+
+export default dataServicesApi;
 
 export const { useGetResourcePoolsQuery } = dataServicesApi;

@@ -30,7 +30,10 @@ import {
   ModalHeader,
 } from "reactstrap";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
-import { ResourceClass, ResourcePool } from "../dataServices/dataServices";
+import {
+  ResourceClass,
+  ResourcePool,
+} from "../dataServices/dataServices.types";
 import { useUpdateResourceClassMutation } from "./adminComputeResources.api";
 import { CheckLg, XLg } from "react-bootstrap-icons";
 import { Loader } from "../../components/Loader";
