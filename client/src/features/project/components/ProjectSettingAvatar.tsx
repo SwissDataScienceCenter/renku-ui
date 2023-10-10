@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 import {
   useProjectMetadataQuery,
@@ -70,9 +70,7 @@ export function ProjectSettingsAvatar({
   gitUrl,
 }: ProjectSettingsAvatarProps) {
   const [avatar, setAvatar] = useState<ImageValue>();
-  const [succeeded, setSucceeded] = useState<boolean | undefined>(
-    undefined
-  );
+  const [succeeded, setSucceeded] = useState<boolean | undefined>(undefined);
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
     skip: !projectFullPath || !projectId,
   });
