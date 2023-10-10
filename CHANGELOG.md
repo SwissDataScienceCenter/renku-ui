@@ -1,5 +1,21 @@
 # Changes
 
+## [3.13.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.13.0...3.13.1) (2023-10-10)
+
+### BREAKING CHANGES
+
+- The Helm charts have been moved to the [main renku repository](https://github.com/SwissDataScienceCenter/renku) ([#2823](https://github.com/SwissDataScienceCenter/renku-ui/pull/2823), [renku#3254](https://github.com/SwissDataScienceCenter/renku/pull/3254))
+
+### Features
+
+- Reduce the compiled bundle size to improve performance of the UI ([#2818](https://github.com/SwissDataScienceCenter/renku-ui/pull/2818), [#2827](https://github.com/SwissDataScienceCenter/renku-ui/pull/2827), [#2832](https://github.com/SwissDataScienceCenter/renku-ui/pull/2832))
+- **Dashboard:** Speed up showing the warning for non-indexed projects ([#2824](https://github.com/SwissDataScienceCenter/renku-ui/pull/2824))
+- **Projects:** Use the KG API to update a project's metadata for the following cases: visibility, keywords and description ([#2793](https://github.com/SwissDataScienceCenter/renku-ui/pull/2793))
+
+### Bug Fixes
+
+- **Datasets:** Use versioned URL of `renku-core` when uploading files to a dataset ([#2831](https://github.com/SwissDataScienceCenter/renku-ui/pull/2831))
+
 ## [3.13.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.12.2...3.13.0) (2023-09-27)
 
 ### Features
