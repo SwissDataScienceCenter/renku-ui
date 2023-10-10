@@ -24,10 +24,19 @@ import { FixturesConstructor } from "./fixtures";
 
 function User<T extends FixturesConstructor>(Parent: T) {
   return class UserFixtures extends Parent {
-    userTest(name = "getUser") {
+    userTest(
+      names = { user: "getUser", keycloakUser: "getKeycloakUser" },
+      fixtures = { user: "user.json", keycloakUser: "keycloak-user.json" }
+    ) {
       cy.intercept("/ui-server/api/user", {
-        fixture: "user.json",
-      }).as(name);
+        fixture: fixtures.user,
+      }).as(names.user);
+      cy.intercept(
+        "/ui-server/api/kc/realms/Renku/protocol/openid-connect/userinfo",
+        {
+          fixture: fixtures.keycloakUser,
+        }
+      ).as(names.keycloakUser);
       return this;
     }
 

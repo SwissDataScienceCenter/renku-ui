@@ -1,0 +1,11 @@
+{
+  "email": "e2e@renku.ch",
+  "email_verified": false,
+  "family_name": "User",
+  "given_name": "E2E",
+  "groups": ["offline_access", "default-roles-renku", "uma_authorization"],
+  "name": "E2E User",
+  "preferred_username": "e2e@renku.ch",
+  "sub": "8c18c7e2-e0ed-4428-a240-7ea7ed6e60c1",
+  "upn": "e2e@renku.ch"
+}
