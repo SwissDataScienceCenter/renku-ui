@@ -1,0 +1,107 @@
+/*!
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import Fixtures from "../support/renkulab-fixtures";
+import "../support/utils";
+
+describe("admin page", () => {
+  const fixtures = new Fixtures(cy);
+  beforeEach(() => {
+    fixtures.config().versions();
+    cy.visit("/");
+  });
+
+  it("should not show the link to the admin page to an anonymous user", () => {
+    fixtures.userNone();
+    cy.wait("@getUser");
+
+    cy.visit("/admin");
+
+    cy.contains("404").should("be.visible");
+    cy.contains("Page not found").should("be.visible");
+  });
+
+  it("should not show the admin page to a regular user", () => {
+    fixtures.userTest();
+    cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
+
+    cy.visit("/admin");
+
+    cy.contains("404").should("be.visible");
+    cy.contains("Page not found").should("be.visible");
+  });
+
+  it("should not show the link to the admin page to a regular user", () => {
+    fixtures.userTest();
+    cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
+
+    cy.get("#profile-dropdown").should("be.visible").click();
+
+    cy.get("#profile-dropdown")
+      .siblings(".dropdown-menu")
+      .should("be.visible")
+      .contains("Account");
+
+    cy.get("#profile-dropdown")
+      .siblings(".dropdown-menu")
+      .contains("Admin Panel")
+      .should("not.exist");
+  });
+
+  it("should show the admin page", () => {
+    fixtures.userAdmin();
+    cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
+
+    cy.visit("/admin");
+
+    cy.get("h1").contains("Admin Panel").should("be.visible");
+  });
+
+  it("should show the link to the admin page", () => {
+    fixtures.userAdmin();
+    cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
+
+    cy.get("#profile-dropdown").should("be.visible").click();
+
+    cy.get("#profile-dropdown")
+      .siblings(".dropdown-menu")
+      .should("be.visible")
+      .contains("Account");
+
+    cy.get("#profile-dropdown")
+      .siblings(".dropdown-menu")
+      .find("a")
+      .contains("Admin Panel")
+      .should("be.visible")
+      .and("have.attr", "href", "/admin");
+  });
+
+  //   it("should show compute resources", () => {
+  //     fixtures.userAdmin();
+  //     cy.wait("@getUser");
+  //     cy.wait("@getKeycloakUser");
+
+  //     cy.visit("/admin");
+
+  //     cy.get("h1").contains("Admin Panel").should("be.visible");
+  //   });
+});
