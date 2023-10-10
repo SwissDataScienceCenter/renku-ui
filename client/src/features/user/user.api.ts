@@ -24,7 +24,7 @@ const RENKU_ADMIN_GROUP_NAME = "renku-admin";
 const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "ui-server/api/kc/realms/Renku",
+    baseUrl: "/ui-server/api/kc/realms/Renku",
   }),
   tagTypes: ["User"],
   endpoints: (builder) => ({

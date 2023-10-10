@@ -26,7 +26,7 @@ import {
 const adminKeycloakApi = createApi({
   reducerPath: "adminKeycloakApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "ui-server/api/kc/admin/realms/Renku",
+    baseUrl: "/ui-server/api/kc/admin/realms/Renku",
   }),
   tagTypes: ["KeycloakUser"],
   endpoints: (builder) => ({
