@@ -70,7 +70,7 @@ export function ProjectSettingsAvatar({
   gitUrl,
 }: ProjectSettingsAvatarProps) {
   const [avatar, setAvatar] = useState<ImageValue>();
-  const [succeeded, setSucceeded] = React.useState<boolean | undefined>(
+  const [succeeded, setSucceeded] = useState<boolean | undefined>(
     undefined
   );
   const projectIndexingStatus = useGetProjectIndexingStatusQuery(projectId, {
