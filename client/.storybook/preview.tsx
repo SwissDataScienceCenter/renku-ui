@@ -6,6 +6,7 @@ import AppContext from "../src/utils/context/appContext";
 import { createStore } from "../src/utils/helpers/EnhancedState";
 import { MemoryRouter } from "react-router-dom";
 import { Preview } from "@storybook/react";
+import { Provider } from "react-redux";
 
 // This how the documentation recommends introducing the store into storybook
 // https://storybook.js.org/addons/@dreamworld/addon-redux/
@@ -25,7 +26,9 @@ export const decorators = [
     return (
       <MemoryRouter initialEntries={["/"]}>
         <AppContext.Provider value={appContext}>
-          <Story />
+          <Provider store={store}>
+            <Story />
+          </Provider>
         </AppContext.Provider>
       </MemoryRouter>
     );
