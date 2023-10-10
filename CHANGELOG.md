@@ -8,7 +8,7 @@
 
 ### Features
 
-- Reduce the compiled bundle size to improve performance of the UI ([#2818](https://github.com/SwissDataScienceCenter/renku-ui/pull/2818), [#2827](https://github.com/SwissDataScienceCenter/renku-ui/pull/2827),[#2832](https://github.com/SwissDataScienceCenter/renku-ui/pull/2832))
+- Reduce the compiled bundle size to improve performance of the UI ([#2818](https://github.com/SwissDataScienceCenter/renku-ui/pull/2818), [#2827](https://github.com/SwissDataScienceCenter/renku-ui/pull/2827), [#2832](https://github.com/SwissDataScienceCenter/renku-ui/pull/2832))
 - **Dashboard:** Speed up showing the warning for non-indexed projects ([#2824](https://github.com/SwissDataScienceCenter/renku-ui/pull/2824))
 - **Projects:** Use the KG API to update a project's metadata for the following cases: visibility, keywords and description ([#2793](https://github.com/SwissDataScienceCenter/renku-ui/pull/2793))
 
