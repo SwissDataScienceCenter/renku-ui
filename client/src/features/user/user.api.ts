@@ -19,6 +19,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { UserInfo, UserInfoResponse } from "./user.types";
 
+const RENKU_ADMIN_GROUP_NAME = "renku-admin";
+
 const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
@@ -40,7 +42,7 @@ const userApi = createApi({
         if (result == null) {
           return { isLoggedIn: false };
         }
-        const isAdmin = result.groups.includes("renku-admin");
+        const isAdmin = result.groups.includes(RENKU_ADMIN_GROUP_NAME);
         return { ...result, isLoggedIn: true, isAdmin };
       },
     }),
