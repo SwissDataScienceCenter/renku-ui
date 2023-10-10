@@ -4,7 +4,7 @@
 
 ### BREAKING CHANGES
 
-- The Helm charts have been moved to the [main renku repository](https://github.com/SwissDataScienceCenter/renku) ([#2823](https://github.com/SwissDataScienceCenter/renku-ui/pull/2823))
+- The Helm charts have been moved to the [main renku repository](https://github.com/SwissDataScienceCenter/renku) ([#2823](https://github.com/SwissDataScienceCenter/renku-ui/pull/2823), [renku#3254](https://github.com/SwissDataScienceCenter/renku/pull/3254))
 
 ### Features
 
