@@ -58,6 +58,7 @@ import {
 } from "../features/project";
 import ProjectPageTitle from "../features/project/components/ProjectPageTitle";
 import { ProjectSettingsGeneral } from "../features/project/components/ProjectSettings";
+import ProjectSettingsCloudStorage from "../features/project/components/ProjectSettingsCloudStorage";
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import ProjectSessionsRouter from "../features/session/components/ProjectSessionsRouter";
 import { SpecialPropVal } from "../model/Model";
@@ -74,8 +75,6 @@ import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
-import { ProjectSettingsNav } from "./settings";
-import ProjectSettingsCloudStorage from "../features/project/components/ProjectSettingsCloudStorage";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -797,6 +796,27 @@ class ProjectViewFiles extends Component {
   }
 }
 
+function ProjectSettingsNav(props) {
+  return (
+    <Nav
+      className="flex-column nav-light nav-pills-underline"
+      data-cy="settings-navbar"
+    >
+      <NavItem>
+        <RenkuNavLink to={props.settingsUrl} title="General" />
+      </NavItem>
+      <NavItem>
+        <RenkuNavLink to={props.settingsSessionsUrl} title="Sessions" />
+      </NavItem>
+      <NavItem>
+        <RenkuNavLink
+          to={props.settingsCloudStorageUrl}
+          title="Cloud Storage"
+        />
+      </NavItem>
+    </Nav>
+  );
+}
 function ProjectSettings(props) {
   return (
     <Col key="settings">
