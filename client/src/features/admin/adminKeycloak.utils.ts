@@ -16,19 +16,27 @@
  * limitations under the License.
  */
 
-export interface KeycloakUser {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-}
+const DEFAULT_KEYCLOAK_REALM = "Renku";
 
-export interface KeycloakUserQueryParams {
-  realm: string;
-  userId: string;
-}
+export function validateKeycloakRealmParams(params: unknown): string {
+  if (
+    params == null ||
+    typeof params !== "object" ||
+    !("KEYCLOAK_REALM" in params)
+  ) {
+    return DEFAULT_KEYCLOAK_REALM;
+  }
 
-export interface KeycloakUsersQueryParams {
-  realm: string;
-  search?: string;
+  const params_ = params as { KEYCLOAK_REALM: unknown };
+
+  const realm =
+    typeof params_.KEYCLOAK_REALM === "string"
+      ? params_.KEYCLOAK_REALM.trim()
+      : "";
+
+  if (!realm) {
+    return DEFAULT_KEYCLOAK_REALM;
+  }
+
+  return realm;
 }

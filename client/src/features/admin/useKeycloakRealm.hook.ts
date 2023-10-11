@@ -16,19 +16,17 @@
  * limitations under the License.
  */
 
-export interface KeycloakUser {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-}
+import { useContext, useMemo } from "react";
+import AppContext from "../../utils/context/appContext";
+import { validateKeycloakRealmParams } from "./adminKeycloak.utils";
 
-export interface KeycloakUserQueryParams {
-  realm: string;
-  userId: string;
-}
+export default function useKeycloakRealm() {
+  const { params } = useContext(AppContext);
 
-export interface KeycloakUsersQueryParams {
-  realm: string;
-  search?: string;
+  const keycloakRealm = useMemo(
+    () => validateKeycloakRealmParams(params),
+    [params]
+  );
+
+  return keycloakRealm;
 }

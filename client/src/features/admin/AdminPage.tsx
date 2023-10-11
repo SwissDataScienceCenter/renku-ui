@@ -54,6 +54,7 @@ import {
 import { ResourcePoolUser } from "./adminComputeResources.types";
 import { useGetKeycloakUserQuery } from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
+import useKeycloakRealm from "./useKeycloakRealm.hook";
 
 export default function AdminPage() {
   return (
@@ -368,11 +369,13 @@ function ResourcePoolUserItem({
   resourcePool,
   resourcePoolUser,
 }: ResourcePoolUserItemProps) {
+  const realm = useKeycloakRealm();
   const {
     data: user,
     error,
     isLoading,
   } = useGetKeycloakUserQuery({
+    realm,
     userId: resourcePoolUser.id,
   });
 

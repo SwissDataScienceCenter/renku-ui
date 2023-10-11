@@ -43,6 +43,7 @@ import { ResourcePool } from "../dataServices/dataServices.types";
 import { useAddUsersToResourcePoolMutation } from "./adminComputeResources.api";
 import adminKeycloakApi from "./adminKeycloak.api";
 import { KeycloakUser } from "./adminKeycloak.types";
+import useKeycloakRealm from "./useKeycloakRealm.hook";
 
 interface AddUserToResourcePoolButtonProps {
   resourcePool: ResourcePool;
@@ -224,6 +225,8 @@ interface UserAutoSuggestProps {
 }
 
 function UserAutoSuggest({ onPickUser }: UserAutoSuggestProps) {
+  const realm = useKeycloakRealm();
+
   const [suggestions, setSuggestions] = useState<KeycloakUser[]>([]);
   const [value, setValue] = useState("");
 
@@ -254,9 +257,9 @@ function UserAutoSuggest({ onPickUser }: UserAutoSuggestProps) {
 
   const onSuggestionsFetchRequested = useCallback(
     ({ value }: SuggestionsFetchRequestedParams) => {
-      getKeycloakUsers({ search: value }, /*preferCacheValue=*/ true);
+      getKeycloakUsers({ realm, search: value }, /*preferCacheValue=*/ true);
     },
-    [getKeycloakUsers]
+    [getKeycloakUsers, realm]
   );
 
   const onSuggestionSelected = useCallback(

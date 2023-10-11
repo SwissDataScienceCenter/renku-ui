@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
   KeycloakUser,
   KeycloakUserQueryParams,
@@ -26,24 +26,24 @@ import {
 const adminKeycloakApi = createApi({
   reducerPath: "adminKeycloakApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/ui-server/api/kc/admin/realms/Renku",
+    baseUrl: "/ui-server/api/kc/admin/realms",
   }),
   tagTypes: ["KeycloakUser"],
   endpoints: (builder) => ({
     getKeycloakUser: builder.query<KeycloakUser, KeycloakUserQueryParams>({
-      query: ({ userId }) => {
+      query: ({ realm, userId }) => {
         return {
-          url: `users/${userId}`,
+          url: `${realm}/users/${userId}`,
         };
       },
       providesTags: (result) =>
         result ? [{ id: `${result.id}`, type: "KeycloakUser" }] : [],
     }),
     getKeycloakUsers: builder.query<KeycloakUser[], KeycloakUsersQueryParams>({
-      query: ({ search }) => {
+      query: ({ realm, search }) => {
         const params = search ? { search } : undefined;
         return {
-          url: "users",
+          url: `${realm}/users`,
           params,
         };
       },
