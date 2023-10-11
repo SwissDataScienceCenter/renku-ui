@@ -19,31 +19,20 @@
 import { FixturesConstructor } from "./fixtures";
 
 /**
- * Fixtures for Data Services
+ * Fixtures for the Admin page
  */
 
-export const DataServices = <T extends FixturesConstructor>(Parent: T) => {
-  return class DataServicesFixtures extends Parent {
-    resourcePoolsTest(
-      name = "getResourcePools",
-      fixture = "dataServices/resource-pools.json"
+export const Admin = <T extends FixturesConstructor>(Parent: T) => {
+  return class AdminFixtures extends Parent {
+    adminKeycloakUser(
+      name = "getAdminKeycloakUser",
+      fixture = "admin/user-1.json",
+      userId = "user-1",
+      realm = "Renku"
     ) {
-      cy.intercept("/ui-server/api/data/resource_pools*", {
+      cy.intercept(`/ui-server/api/kc/admin/realms/${realm}/users/${userId}`, {
         fixture,
       }).as(name);
-      return this;
-    }
-
-    adminResourcePoolUsers(
-      name = "getAdminResourcePoolUsers",
-      fixture = "dataServices/resource-pool-users.json"
-    ) {
-      cy.intercept("/ui-server/api/data/users", {
-        fixture,
-      }).as(name);
-      cy.intercept("/ui-server/api/data/resource_pools/*/users", {
-        fixture,
-      });
       return this;
     }
   };

@@ -1,0 +1,21 @@
+{
+  "id": "user-1",
+  "createdTimestamp": 1696326933258,
+  "username": "user1@renku.ch",
+  "enabled": true,
+  "totp": false,
+  "emailVerified": false,
+  "firstName": "User",
+  "lastName": "One",
+  "email": "user1@renku.ch",
+  "disableableCredentialTypes": [],
+  "requiredActions": [],
+  "notBefore": 0,
+  "access": {
+    "manageGroupMembership": false,
+    "view": true,
+    "mapRoles": false,
+    "impersonate": false,
+    "manage": false
+  }
+}

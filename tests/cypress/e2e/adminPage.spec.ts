@@ -95,13 +95,95 @@ describe("admin page", () => {
       .and("have.attr", "href", "/admin");
   });
 
-  //   it("should show compute resources", () => {
-  //     fixtures.userAdmin();
-  //     cy.wait("@getUser");
-  //     cy.wait("@getKeycloakUser");
+  it("should show compute resources", () => {
+    fixtures
+      .userAdmin()
+      .resourcePoolsTest()
+      .adminResourcePoolUsers()
+      .adminKeycloakUser();
+    cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
 
-  //     cy.visit("/admin");
+    cy.visit("/admin");
 
-  //     cy.get("h1").contains("Admin Panel").should("be.visible");
-  //   });
+    cy.get("h1").contains("Admin Panel").should("be.visible");
+
+    // Check the "Add Resource Pool" button
+    cy.get("button").contains("Add Resource Pool").should("be.visible").click();
+    cy.get(".modal")
+      .contains(".modal-title", "Add resource pool")
+      .should("be.visible");
+    cy.get(".modal").contains("button", "Close").should("be.visible").click();
+
+    // Check one of the private pools
+    cy.get(".card")
+      .contains("button", "Special GPU pool")
+      .should("be.visible")
+      .click();
+
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("Private pool")
+      .should("be.visible");
+
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("Quota")
+      .siblings()
+      .contains("500 GPUs")
+      .should("be.visible");
+
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("button", "Add Class")
+      .should("be.visible")
+      .click();
+    cy.get(".modal")
+      .contains(".modal-title", "Add resource class to Special GPU pool")
+      .should("be.visible");
+    cy.get(".modal").contains("button", "Close").should("be.visible").click();
+
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("High-GPU class 1")
+      .should("be.visible");
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("li", "High-GPU class 1")
+      .contains("button", "Delete")
+      .should("be.visible");
+
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("button", "Add User")
+      .should("be.visible")
+      .click();
+    cy.get(".modal")
+      .contains(".modal-title", "Add User to Resource Pool: Special GPU pool")
+      .should("be.visible");
+    cy.get(".modal").contains("button", "Close").should("be.visible").click();
+
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("user1@renku.ch")
+      .should("be.visible");
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("li", "user1@renku.ch")
+      .contains("button", "Remove")
+      .should("be.visible");
+
+    cy.get(".card")
+      .contains(".card", "Special GPU pool")
+      .contains("button", "Delete")
+      .last()
+      .should("be.visible")
+      .click();
+    cy.get(".modal")
+      .contains(
+        "Please confirm that you want to delete the High-GPU class 1 resource class from the Special GPU pool resource pool."
+      )
+      .should("be.visible");
+    cy.get(".modal").contains("button", "Close").should("be.visible").click();
+  });
 });
