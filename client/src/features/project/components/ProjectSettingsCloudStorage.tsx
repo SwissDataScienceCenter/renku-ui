@@ -220,8 +220,8 @@ function CloudStorageSupportNotice({
     return (
       <InfoAlert dismissible={false} timeout={0}>
         <p>
-          This instance of Renku currently only supports starting sessions with
-          Azure Blob Store cloud storage.
+          This instance of RenkuLab currently only supports starting sessions
+          with Azure Blob Store cloud storage.
         </p>
       </InfoAlert>
     );
@@ -230,8 +230,8 @@ function CloudStorageSupportNotice({
   return (
     <InfoAlert dismissible={false} timeout={0}>
       <p>
-        This instance of Renku currently only supports starting sessions with S3
-        or S3-compatible cloud storage.
+        This instance of RenkuLab currently only supports starting sessions with
+        S3 or S3-compatible cloud storage.
       </p>
     </InfoAlert>
   );
