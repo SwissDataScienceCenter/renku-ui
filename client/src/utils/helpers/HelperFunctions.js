@@ -365,6 +365,21 @@ function stylesByItemType(itemType) {
   }
 }
 
+/**
+ * Display a file with some metadata. Has the following parameters:
+ *
+ * @param {ImagesLinks[]} images - Images link arrays
+ */
+function getEntityImageUrl(images) {
+  try {
+    // images could contain previous image url, so we get the last in the array.
+    const index = images?.length - 1;
+    return images[index]["_links"][0].href;
+  } catch {
+    return undefined;
+  }
+}
+
 export {
   capitalizeFirstLetter,
   generateZip,
@@ -375,6 +390,7 @@ export {
   simpleHash,
   parseINIString,
   formatBytes,
+  getEntityImageUrl,
   groupBy,
   gitLabUrlFromProfileUrl,
   isURL,

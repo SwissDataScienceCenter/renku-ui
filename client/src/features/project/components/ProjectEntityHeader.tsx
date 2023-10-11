@@ -21,6 +21,8 @@ import type { EntityHeaderProps } from "../../../components/entityHeader/EntityH
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
 import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
+import { ImagesLinks } from "../Project";
+import { getEntityImageUrl } from "../../../utils/helpers/HelperFunctions";
 
 type ProjectEntityHeaderProps = EntityHeaderProps & {
   branch: string;
@@ -60,6 +62,10 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
     />
   );
 
+  const entityImage = getEntityImageUrl(
+    projectMetadataQuery?.data?.images as unknown as ImagesLinks[]
+  );
+
   return (
     <EntityHeader
       {...props}
@@ -67,6 +73,7 @@ export function ProjectEntityHeader(props: ProjectEntityHeaderProps) {
       statusButton={statusButton}
       visibility={projectMetadataQuery.data?.visibility || visibility}
       tagList={projectMetadataQuery.data?.keywords ?? []}
+      imageUrl={entityImage}
     />
   );
 }

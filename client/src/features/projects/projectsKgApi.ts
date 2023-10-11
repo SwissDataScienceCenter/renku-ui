@@ -17,6 +17,7 @@
  */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
+  EditAvatarProjectParams,
   EditProjectParams,
   KgMetadataResponse,
   ProjectKgParams,
@@ -98,6 +99,24 @@ export const projectsKgApi = createApi({
         { type: "project-kg-metadata", id: args.projectId },
       ],
     }),
+    updateAvatarProject: builder.mutation<
+      UpdateProjectResponse,
+      EditAvatarProjectParams
+    >({
+      query: ({ projectPathWithNamespace, avatar }) => {
+        const bodyFormData = new FormData();
+        bodyFormData.append("image", avatar);
+        return {
+          method: "PATCH",
+          url: `projects/${projectPathWithNamespace}`,
+          body: bodyFormData,
+          formData: true,
+        };
+      },
+      invalidatesTags: (result, err, args) => [
+        { type: "project-kg-metadata", id: args.projectId },
+      ],
+    }),
   }),
 });
 
@@ -107,5 +126,6 @@ export const {
   useProjectJsonLdQuery,
   useProjectMetadataQuery,
   useUpdateProjectMutation,
+  useUpdateAvatarProjectMutation,
 } = projectsKgApi;
 export type { ProjectKgContent };
