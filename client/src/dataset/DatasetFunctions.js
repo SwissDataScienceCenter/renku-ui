@@ -52,21 +52,6 @@ function getDatasetAuthors(dataset) {
 }
 
 /**
- * Display a file with some metadata. Has the following parameters:
- *
- * @param {Object[]} images - Images link arrays
- */
-function getDatasetImageUrl(images) {
-  try {
-    // images could contain previous image url, so we get the last in the array.
-    const index = images?.length - 1;
-    return images[index]["_links"][0].href;
-  } catch {
-    return undefined;
-  }
-}
-
-/**
  * Returns image url with extra parameter to avoid outdated cached url
  *
  * @param {string} imageUrl - Url image
@@ -79,12 +64,7 @@ function getUpdatedDatasetImage(imageUrl, lastUpdateDate) {
   return `${imageUrl}?${lastUpdate}`;
 }
 
-export {
-  mapDataset,
-  getDatasetAuthors,
-  getDatasetImageUrl,
-  getUpdatedDatasetImage,
-};
+export { mapDataset, getDatasetAuthors, getUpdatedDatasetImage };
 
 /**
  * Prevents issues with the leading slash  on the dataset modify link.

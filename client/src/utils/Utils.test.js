@@ -38,6 +38,7 @@ import {
   splitAutosavedBranches,
   verifyTitleCharacters,
   slugFromTitle,
+  getEntityImageUrl,
 } from "./helpers/HelperFunctions";
 import { fixRelativePath } from "../components/markdown/RenkuMarkdownWithPathTranslation";
 
@@ -333,6 +334,33 @@ describe("Translate path for markdown", () => {
         test.expectedResult
       );
     });
+  });
+});
+
+describe("function getEntityImageUrl", () => {
+  it("get image url", () => {
+    const validImages = [
+      {
+        _links: [{ href: "url-example" }, { href: "url-example2" }],
+      },
+    ];
+    expect(getEntityImageUrl(validImages)).toEqual("url-example");
+    let invalidImages = [];
+    expect(getEntityImageUrl([])).toEqual(undefined);
+    invalidImages = [{ _links: [] }];
+    expect(getEntityImageUrl(invalidImages)).toEqual(undefined);
+    invalidImages = [
+      {
+        _links: "is not array",
+      },
+    ];
+    expect(getEntityImageUrl(invalidImages)).toEqual(undefined);
+    invalidImages = [
+      {
+        _links: [{ noHref: "url-example" }],
+      },
+    ];
+    expect(getEntityImageUrl(invalidImages)).toEqual(undefined);
   });
 });
 

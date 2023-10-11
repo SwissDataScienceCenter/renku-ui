@@ -34,6 +34,7 @@ import {
   FormGroup,
   Input,
   InputGroup,
+  Label,
   Row,
 } from "reactstrap";
 
@@ -45,6 +46,7 @@ import {
   InputLabel,
 } from "../formlabels/FormLabels";
 import ImageEditor, { CARD_IMAGE_DIMENSIONS } from "../imageEditor/ImageEditor";
+import { DESIRABLE_FINAL_IMAGE_SIZE } from "../../project/new/components/NewProjectAvatar";
 
 function userInputOption(options) {
   let userInput = options.find((o) => o[Prop.STOCK] === false);
@@ -79,7 +81,7 @@ function ImagePreview({
     });
   }, [originalImageInput]);
 
-  const selectedIndex = value.selected;
+  const selectedIndex = value?.selected ?? -1;
   const imageSize = { width: 133, height: 77, borderRadius: "8px" };
   const imageStyle = { ...imageSize, objectFit: "cover" };
   const imagePreviewStyle = {
@@ -257,21 +259,22 @@ function ImageContentInputMode({ name, modes, mode, setMode, onClick, color }) {
 }
 
 function ImageContentInput({
-  name,
-  value,
-  placeholder,
-  modes,
-  setInputs,
+  color,
+  disabled,
+  expectedFinalSize = DESIRABLE_FINAL_IMAGE_SIZE,
+  format,
   help,
   maxSize,
-  format,
-  disabled,
+  modes,
+  name,
   options,
+  placeholder,
   readOnly,
-  color,
-  sizeAlert,
-  setSizeAlert,
+  setInputs,
   setOriginalImageInput,
+  setSizeAlert,
+  sizeAlert,
+  value,
 }) {
   const [mode, setMode] = useState(modes[0]);
   const fileInput = useRef(null);
@@ -301,7 +304,8 @@ function ImageContentInput({
           Select an image file (max size {formatBytes(maxSize)}).
           <br />
           Images will be cropped to {CARD_IMAGE_DIMENSIONS.width}px &times;{" "}
-          {CARD_IMAGE_DIMENSIONS.height}px.
+          {CARD_IMAGE_DIMENSIONS.height}px to achieve the target size{" "}
+          {formatBytes(expectedFinalSize)}
         </span>
       );
     }
@@ -403,23 +407,25 @@ function ImageContentInput({
  */
 function ImageInput(props) {
   const {
-    name,
-    label,
-    value,
     alert,
-    modes,
-    setInputs,
-    help,
-    maxSize,
-    format = "image/*",
     disabled = false,
+    expectedFinalSize,
+    format = "image/*",
+    help,
+    includeRequiredLabel,
+    label,
+    maxSize,
+    modes,
+    name,
     required = false,
+    setInputs,
     submitting,
+    value,
   } = props;
   const [sizeAlert, setSizeAlert] = useState(null);
   const [originalImageInput, setOriginalImageInput] = useState(null);
-  const options = value.options;
-  const selectedIndex = value.selected;
+  const options = value?.options ?? [];
+  const selectedIndex = value?.selected ?? -1;
   const selected =
     selectedIndex > -1
       ? options[selectedIndex]
@@ -432,19 +438,20 @@ function ImageInput(props) {
   const contentImage = disabled ? null : (
     <div className="flex-grow-1">
       <ImageContentInput
-        name={name}
-        value={selected}
-        setInputs={setInputs}
+        disabled={disabled}
+        expectedFinalSize={expectedFinalSize}
+        format={format}
         help={help}
         maxSize={maxSize}
-        readOnly={submitting}
-        disabled={disabled}
-        options={options}
         modes={allowedModes}
-        format={format}
-        sizeAlert={sizeAlert}
-        setSizeAlert={setSizeAlert}
+        name={name}
+        options={options}
+        readOnly={submitting}
+        setInputs={setInputs}
         setOriginalImageInput={setOriginalImageInput}
+        setSizeAlert={setSizeAlert}
+        sizeAlert={sizeAlert}
+        value={selected}
       />
       {alert && <ErrorLabel text={alert} />}
     </div>
@@ -452,7 +459,11 @@ function ImageInput(props) {
   return (
     <>
       <Row key="row-title">
-        <InputLabel className="ps-3" text={label} isRequired={required} />
+        {includeRequiredLabel ? (
+          <InputLabel className="ps-3" text={label} isRequired={required} />
+        ) : (
+          <Label>{label}</Label>
+        )}
       </Row>
       <Row key="row-content">
         <Col xs={12}>
