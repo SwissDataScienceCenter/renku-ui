@@ -23,11 +23,11 @@ describe("admin page", () => {
   const fixtures = new Fixtures(cy);
   beforeEach(() => {
     fixtures.config().versions();
-    cy.visit("/");
   });
 
   it("should not show the link to the admin page to an anonymous user", () => {
     fixtures.userNone();
+    cy.visit("/");
     cy.wait("@getUser");
 
     cy.visit("/admin");
@@ -38,6 +38,7 @@ describe("admin page", () => {
 
   it("should not show the admin page to a regular user", () => {
     fixtures.userTest();
+    cy.visit("/");
     cy.wait("@getUser");
     cy.wait("@getKeycloakUser");
 
@@ -49,6 +50,7 @@ describe("admin page", () => {
 
   it("should not show the link to the admin page to a regular user", () => {
     fixtures.userTest();
+    cy.visit("/");
     cy.wait("@getUser");
     cy.wait("@getKeycloakUser");
 
@@ -67,6 +69,7 @@ describe("admin page", () => {
 
   it("should show the admin page", () => {
     fixtures.userAdmin();
+    cy.visit("/");
     cy.wait("@getUser");
     cy.wait("@getKeycloakUser");
 
@@ -77,6 +80,7 @@ describe("admin page", () => {
 
   it("should show the link to the admin page", () => {
     fixtures.userAdmin();
+    cy.visit("/");
     cy.wait("@getUser");
     cy.wait("@getKeycloakUser");
 
@@ -101,6 +105,7 @@ describe("admin page", () => {
       .resourcePoolsTest()
       .adminResourcePoolUsers()
       .adminKeycloakUser();
+    cy.visit("/");
     cy.wait("@getUser");
     cy.wait("@getKeycloakUser");
 
@@ -184,6 +189,6 @@ describe("admin page", () => {
         "Please confirm that you want to delete the High-GPU class 1 resource class from the Special GPU pool resource pool."
       )
       .should("be.visible");
-    cy.get(".modal").contains("button", "Close").should("be.visible").click();
+    cy.get(".modal").contains("button", "Cancel").should("be.visible").click();
   });
 });
