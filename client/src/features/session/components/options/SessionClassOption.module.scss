@@ -107,3 +107,7 @@
     background-color: #e4e7ea80;
   }
 }
+
+.form-select {
+  --bs-border-color: var(--bs-rk-border-input);
+}

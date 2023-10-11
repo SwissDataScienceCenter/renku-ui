@@ -42,6 +42,7 @@ import {
   setBranch,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
+import styles from "./SessionClassOption.module.scss";
 
 export default function SessionBranchOption() {
   const defaultBranch = useSelector<RootStateOrAny, string>(
@@ -190,6 +191,7 @@ export default function SessionBranchOption() {
         onChange={onChange}
         type="select"
         value={currentBranch}
+        className={cx(styles.formSelect)}
       >
         {filteredBranches.map(({ name }) => (
           <option key={name} value={name}>

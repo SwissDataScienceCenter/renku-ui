@@ -86,7 +86,7 @@ function ImagePreview({
   const imageStyle = { ...imageSize, objectFit: "cover" };
   const imagePreviewStyle = {
     ...imageStyle,
-    backgroundColor: "#C4C4C4",
+    backgroundColor: "#8C8C8C",
     borderRadius: "8px",
   };
   const displayValue = selected[Prop.NAME] ?? "Current Image";

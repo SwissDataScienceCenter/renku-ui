@@ -3,6 +3,9 @@
   border-radius: 5px;
   font-size: 13px;
   letter-spacing: -0.13px;
+  .bg-warning {
+    color: $rk-dark;
+  }
 }
 
 .badge--entity-card {
