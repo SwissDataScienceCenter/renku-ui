@@ -118,7 +118,7 @@ export default function ProjectSettingsCloudStorage() {
   if (!logged) {
     const textIntro =
       "Only authenticated users can access cloud storage setting.";
-    const textPost = "to visualize sessions settings.";
+    const textPost = "to view cloud storage settings.";
     return (
       <CloudStorageSection>
         <LoginAlert logged={logged} textIntro={textIntro} textPost={textPost} />
@@ -205,21 +205,13 @@ function CloudStorageSupportNotice({
     [notebooksVersion.cloudStorageEnabled]
   );
 
-  const startLocally = (
-    <p className="mb-0">
-      You can always mount cloud storage when starting local sessions with the
-      CLI.
-    </p>
-  );
-
   if (support === "none") {
     return (
       <WarnAlert dismissible={false}>
         <p>
-          Note that this instance of Renku does not support mounting cloud
-          storage in sessions.
+          This instance of RenkuLab does not support mounting cloud storage in
+          sessions.
         </p>
-        {startLocally}
       </WarnAlert>
     );
   }
@@ -231,7 +223,6 @@ function CloudStorageSupportNotice({
           This instance of Renku currently only supports starting sessions with
           Azure Blob Store cloud storage.
         </p>
-        {startLocally}
       </InfoAlert>
     );
   }
@@ -242,7 +233,6 @@ function CloudStorageSupportNotice({
         This instance of Renku currently only supports starting sessions with S3
         or S3-compatible cloud storage.
       </p>
-      {startLocally}
     </InfoAlert>
   );
 }

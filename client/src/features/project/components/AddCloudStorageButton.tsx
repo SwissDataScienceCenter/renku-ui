@@ -60,6 +60,7 @@ import {
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
 import styles from "./AddCloudStorageButton.module.scss";
+import { ExternalLink } from "../../../components/ExternalLinks";
 
 export default function AddCloudStorageButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -112,6 +113,7 @@ function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
 
   return (
     <Modal
+      backdrop="static"
       centered
       className={styles.modal}
       fullscreen="lg"
@@ -249,20 +251,34 @@ function AdvancedAddCloudStorage({
           {result.error && <RtkErrorAlert error={result.error} />}
 
           <div className="form-rk-green">
-            <p className="mb-3">
-              Advanded mode uses <code>rclone</code> configurations to set up
+            <p className="mb-0">
+              Advanced mode uses <code>rclone</code> configurations to set up
               cloud storage.
+            </p>
+            <p className="mb-3">
+              Learn more at the{" "}
+              <ExternalLink
+                url="https://rclone.org/"
+                title="rclone documentation"
+                role="link"
+              />
+              .
             </p>
 
             <div className="mb-3">
               <Label className="form-label" for="addCloudStorageName">
                 Name
               </Label>
+              <FormText id="addCloudStorageNameHelp" tag="div">
+                The name also determines the mount location, though it is
+                possible to change it later.
+              </FormText>
               <Controller
                 control={control}
                 name="name"
                 render={({ field }) => (
                   <Input
+                    aria-describedby="addCloudStorageNameHelp"
                     className={cx("form-control", errors.name && "is-invalid")}
                     id="addCloudStorageName"
                     placeholder="storage"
@@ -525,11 +541,16 @@ function SimpleAddCloudStorage({
               <Label className="form-label" for="addCloudStorageName">
                 Name
               </Label>
+              <FormText id="addCloudStorageNameHelp" tag="div">
+                The name also determines the mount location, though it is
+                possible to change it later.
+              </FormText>
               <Controller
                 control={control}
                 name="name"
                 render={({ field }) => (
                   <Input
+                    aria-describedby="addCloudStorageNameHelp"
                     className={cx(errors.name && "is-invalid")}
                     id="addCloudStorageName"
                     placeholder="storage"

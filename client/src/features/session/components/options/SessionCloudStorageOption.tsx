@@ -57,7 +57,7 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../../api-client";
-import { ErrorAlert } from "../../../../components/Alert";
+import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
@@ -730,6 +730,16 @@ function AddTemporaryCloudStorageModal({
   isOpen,
   toggle,
 }: AddTemporaryCloudStorageModalProps) {
+  const { namespace, path } = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+
+  const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
+    namespace,
+    path,
+  });
+
   const dispatch = useDispatch();
 
   const [validateCloudStorageConfiguration, result] =
@@ -800,15 +810,40 @@ function AddTemporaryCloudStorageModal({
         >
           {result.error && <RtkErrorAlert error={result.error} />}
 
+          <InfoAlert timeout={0} dismissible={false}>
+            This cloud storage will be configured for this session only. To
+            configure cloud storage permanently for this project, go to{" "}
+            <Link to={settingsStorageUrl}>Project settings</Link>.
+          </InfoAlert>
+
+          <p className="mb-0">
+            Temporary cloud storage uses <code>rclone</code> configurations to
+            set up cloud storage.
+          </p>
+          <p className="mb-3">
+            Learn more at the{" "}
+            <ExternalLink
+              url="https://rclone.org/"
+              title="rclone documentation"
+              role="link"
+            />
+            .
+          </p>
+
           <div className="mb-3">
             <Label className="form-label" for="addCloudStorageName">
               Name
             </Label>
+            <FormText id="addCloudStorageNameHelp" tag="div">
+              The name also determines the mount location, though it is possible
+              to change it later.
+            </FormText>
             <Controller
               control={control}
               name="name"
               render={({ field }) => (
                 <Input
+                  aria-describedby="addCloudStorageNameHelp"
                   className={cx("form-control", errors.name && "is-invalid")}
                   id="addCloudStorageName"
                   placeholder="storage"
