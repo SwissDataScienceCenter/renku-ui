@@ -46,7 +46,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
-import { ErrorAlert, WarnAlert } from "../../components/Alert";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { Loader } from "../../components/Loader";
 import { ThrottledTooltip } from "../../components/Tooltip";
@@ -130,11 +130,17 @@ export default function ProjectSettingsSessions() {
 
   // ? Anonymous users may have problem with notebook options, depending on the deployment
   if (!logged) {
-    const textIntro = "Only authenticated users can access sessions setting.";
-    const textPost = "to visualize sessions settings.";
+    // const textIntro = "Only authenticated users can access sessions setting.";
+    const textPost = "to view sessions settings.";
     return (
       <SessionsDiv>
-        <LoginAlert logged={logged} textIntro={textIntro} textPost={textPost} />
+        {/* <LoginAlert logged={logged} textIntro={textIntro} textPost={textPost} /> */}
+        <InfoAlert dismissible={false} timeout={0}>
+          <p className="mb-3">
+            Session settings can be changed only by developers and maintainers.
+          </p>
+          <LoginAlert logged={false} noWrapper textPost={textPost} />
+        </InfoAlert>
       </SessionsDiv>
     );
   }

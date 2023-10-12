@@ -116,12 +116,17 @@ export default function ProjectSettingsCloudStorage() {
   const isLoading = storageIsLoading || versionIsLoading;
 
   if (!logged) {
-    const textIntro =
-      "Only authenticated users can access cloud storage setting.";
+    // const textIntro =
+    //   "Only authenticated users can access cloud storage setting.";
     const textPost = "to view cloud storage settings.";
     return (
       <CloudStorageSection>
-        <LoginAlert logged={logged} textIntro={textIntro} textPost={textPost} />
+        <InfoAlert dismissible={false} timeout={0}>
+          <p className="mb-3">
+            Session settings can be changed only by developers and maintainers.
+          </p>
+          <LoginAlert logged={logged} noWrapper textPost={textPost} />
+        </InfoAlert>
       </CloudStorageSection>
     );
   }

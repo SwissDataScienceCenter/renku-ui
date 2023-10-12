@@ -62,14 +62,16 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
   const isMaintainer = props.metadata?.accessLevel >= ACCESS_LEVELS.MAINTAINER;
   let loginElement = null;
   if (!props.user.logged) {
-    const textPre = "You can";
-    const textPost = "here.";
+    // const textPre = "You can";
+    // const textPost = "here.";
+    // const textIntro = "Only authenticated users can access sessions setting.";
+    const textPost = "to view project settings.";
     loginElement = (
       <p className="mt-3 mb-0">
         <LoginAlert
           logged={false}
-          noWrapper={true}
-          textPre={textPre}
+          noWrapper
+          // textPre={textPre}
           textPost={textPost}
         />
       </p>
@@ -77,6 +79,14 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
   }
   return (
     <>
+      {props.settingsReadOnly ? (
+        <InfoAlert dismissible={false} timeout={0}>
+          <p className="mb-0">
+            Project settings can be changed only by maintainers.
+          </p>
+          {loginElement}
+        </InfoAlert>
+      ) : null}
       <ProjectSettingsGeneralWrapped
         branch={props.metadata?.defaultBranch}
         gitUrl={props.metadata?.externalUrl}
@@ -118,14 +128,14 @@ export function ProjectSettingsGeneral(props: ProjectSettingsGeneralProps) {
         projectPathWithNamespace={props.projectPathWithNamespace}
         userLogged={props.user.logged}
       />
-      {props.settingsReadOnly ? (
+      {/* {props.settingsReadOnly ? (
         <InfoAlert dismissible={false} timeout={0}>
           <p className="mb-0">
             Project settings can be changed only by maintainers.
           </p>
           {loginElement}
         </InfoAlert>
-      ) : null}
+      ) : null} */}
     </>
   );
 }
