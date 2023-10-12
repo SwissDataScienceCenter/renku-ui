@@ -74,7 +74,6 @@ import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
-import { ProjectSettingsNav } from "./settings";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -796,6 +795,21 @@ class ProjectViewFiles extends Component {
   }
 }
 
+function ProjectSettingsNav(props) {
+  return (
+    <Nav
+      className="flex-column nav-light nav-pills-underline"
+      data-cy="settings-navbar"
+    >
+      <NavItem>
+        <RenkuNavLink to={props.settingsUrl} title="General" />
+      </NavItem>
+      <NavItem>
+        <RenkuNavLink to={props.settingsSessionsUrl} title="Sessions" />
+      </NavItem>
+    </Nav>
+  );
+}
 function ProjectSettings(props) {
   return (
     <Col key="settings">
