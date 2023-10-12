@@ -23,21 +23,9 @@
  *  Notebooks controller code.
  */
 
-// import { isEqual } from "lodash";
-
-// import { API_ERRORS } from "../api-client/errors";
-// import { formatEnvironmentVariables } from "../api-client/utils";
-// import { startSessionOptionsSlice } from "../features/session/startSessionOptionsSlice";
-// import { notebooksSchema } from "../model";
-import {
-  parseINIString,
-  // sleep
-} from "../utils/helpers/HelperFunctions";
+import { parseINIString } from "../utils/helpers/HelperFunctions";
 
 const POLLING_INTERVAL = 3000;
-// const POLLING_CI = 5; // in seconds, for the sleep function
-// const IMAGE_BUILD_JOB = "image_build";
-// const RENKU_INI_PATH = ".renku/renku.ini";
 const RENKU_INI_SECTION_LEGACY = `renku "interactive"`;
 const RENKU_INI_SECTION = "interactive";
 
@@ -410,9 +398,4 @@ const NotebooksHelper = {
   validSettings: VALID_SETTINGS,
 };
 
-export {
-  LOG_ERROR_KEY,
-  NotebooksHelper,
-  ExpectedAnnotations,
-  // NotebooksCoordinator,
-};
+export { LOG_ERROR_KEY, NotebooksHelper, ExpectedAnnotations };
