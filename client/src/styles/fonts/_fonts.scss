@@ -1,10 +1,1 @@
 @import "./Inter/inter";
-
-//boostrap font family overwrite
-$font-family-base: "Inter", sans-serif;
-
-@supports (font-variation-settings: normal) {
-  :root {
-    --bs-body-font-family: "Inter var", sans-serif !important;
-  }
-}

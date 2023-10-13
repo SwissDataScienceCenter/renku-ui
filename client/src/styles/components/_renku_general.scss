@@ -1,7 +1,7 @@
 // Swap "Inter" for "Inter var" if supported (reduced network payload)
 @supports (font-variation-settings: normal) {
   :root {
-    #{$prefix}body-font-family: "Inter var", sans-serif !important;
+    --#{$prefix}body-font-family: "Inter var", sans-serif !important;
   }
 }
 
