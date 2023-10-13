@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,16 +16,7 @@
  * limitations under the License.
  */
 
-/**
- * renku-ui
- *
- * Components for project settings
- *
- */
+export const CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN = "<sensitive>";
 
-import {
-  ProjectSettingsGeneral,
-  ProjectSettingsNav,
-} from "./ProjectSettings.present";
-
-export { ProjectSettingsGeneral, ProjectSettingsNav };
+export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
+  "[example]\ntype = s3\nprovider = AWS\nregion = us-east-1";

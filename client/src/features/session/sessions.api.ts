@@ -17,6 +17,7 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { convertCloudStorageForSessionApi } from "./sessions.api.utils";
 import {
   DockerImage,
   GetDockerImageParams,
@@ -123,14 +124,9 @@ const sessionsApi = createApi({
         sessionClass,
         storage,
       }) => {
-        const cloudstorage = cloudStorage.map(
-          ({ accessKey, bucket, endpoint, secretKey }) => ({
-            access_key: accessKey,
-            bucket,
-            endpoint,
-            secret_key: secretKey,
-          })
-        );
+        const cloudstorage = cloudStorage
+          .map(convertCloudStorageForSessionApi)
+          .flatMap((item) => (item == null ? [] : [item]));
         const body = {
           branch,
           ...(cloudstorage.length > 0 ? { cloudstorage } : {}),

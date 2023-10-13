@@ -16,19 +16,20 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useCallback, useMemo } from "react";
-import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+import { ChangeEvent, useCallback, useMemo } from "react";
+import { PlusLg } from "react-bootstrap-icons";
+import { useDispatch } from "react-redux";
 import { Button, Col, Input, Row } from "reactstrap";
+import { ErrorLabel } from "../../../../components/formlabels/FormLabels";
 import {
   addEnvironmentVariable,
   removeEnvironmentVariable,
   updateEnvironmentVariable,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
-import { useDispatch } from "react-redux";
-import cx from "classnames";
-import { ErrorLabel } from "../../../../components/formlabels/FormLabels";
 
 export default function SessionEnvironmentVariables() {
   const environmentVariables = useStartSessionOptionsSelector(
@@ -57,7 +58,7 @@ export default function SessionEnvironmentVariables() {
           className="btn-outline-rk-green"
           onClick={onAddEnvironmentVariable}
         >
-          <FontAwesomeIcon className="me-1" icon={faPlus} />
+          <PlusLg className={cx("bi", "me-1")} />
           Add Variable
         </Button>
       </div>

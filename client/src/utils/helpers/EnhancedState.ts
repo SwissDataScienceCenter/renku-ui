@@ -49,6 +49,7 @@ import { startSessionOptionsSlice } from "../../features/session/startSessionOpt
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
+import projectCloudStorageApi from "../../features/project/projectCloudStorage.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -70,6 +71,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
+    [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
     [projectGitLabApi.reducerPath]: projectGitLabApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
@@ -94,6 +96,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(datasetsCoreApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
         .concat(kgSearchApi.middleware)
+        .concat(projectCloudStorageApi.middleware)
         .concat(projectCoreApi.middleware)
         .concat(projectGitLabApi.middleware)
         .concat(projectKgApi.middleware)

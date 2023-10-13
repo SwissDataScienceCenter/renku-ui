@@ -348,10 +348,21 @@ export interface EditProjectParams {
   projectId: number;
 }
 
+export interface EditAvatarProjectParams {
+  projectPathWithNamespace: string;
+  avatar: File;
+  projectId: number;
+}
+
 interface UpdateProjectResponse {
   message: string;
   severity: string;
   branch?: string;
+}
+
+export interface GitlabProjectResponse {
+  visibility: Visibilities;
+  path_with_namespace: string;
 }
 
 type KgMetadataLink = {
@@ -409,3 +420,11 @@ export type KgMetadataResponse = {
 export type ProjectKgParams = {
   projectPath?: string;
 };
+
+export interface ImagesLinks {
+  _links: {
+    rel: string;
+    href: string;
+  }[];
+  location: string;
+}

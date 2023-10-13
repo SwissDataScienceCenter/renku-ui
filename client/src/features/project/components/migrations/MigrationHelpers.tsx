@@ -20,11 +20,12 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { ChevronDown } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
+import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import { simpleHash } from "../../../../utils/helpers/HelperFunctions";
+
 import styles from "./migrations.module.scss";
 
 interface MoreInfoLinkProps {
@@ -133,20 +134,17 @@ export function CompositeTitle({
             className={cx(
               styles.sectionTitle,
               !loading && [styles.sectionTitleExpandable, "cursor-pointer"],
-              "d-flex align-items-center m-0 me-3 accordion"
+              "d-flex align-items-center m-0 me-3"
             )}
             onClick={toggleShowDetails}
           >
             <div className={`me-2 ${color}`}>{finalIcon}</div>
             <div data-cy={titleDataCy}>{title}</div>
             {!loading && (
-              <ChevronDown
-                className={cx(
-                  styles.chevron,
-                  showDetails && styles.chevronIsOpen,
-                  "ms-3"
-                )}
+              <ChevronFlippedIcon
+                className="ms-3"
                 data-cy={caretDataCy}
+                flipped={showDetails}
               />
             )}
           </h6>
