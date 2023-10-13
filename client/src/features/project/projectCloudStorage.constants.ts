@@ -16,21 +16,7 @@
  * limitations under the License.
  */
 
-import { StepsProgressBar } from "../../components/progress/ProgressSteps";
+export const CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN = "<sensitive>";
 
-export interface StartSession {
-  error:
-    | "no-commit"
-    | "docker-image-not-available"
-    | "docker-image-building"
-    | "session-class"
-    | "backend-error"
-    | "invalid-branch"
-    | "invalid-commit"
-    | "cloud-storage-credentials"
-    | "existing-session"
-    | null;
-  errorMessage: string;
-  starting: boolean;
-  steps: StepsProgressBar[];
-}
+export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
+  "[example]\ntype = s3\nprovider = AWS\nregion = us-east-1";

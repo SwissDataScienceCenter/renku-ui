@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   faCheck,
   faEdit,
@@ -25,7 +24,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import debounce from "lodash/debounce";
+import { debounce } from "lodash";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
@@ -79,7 +79,7 @@ type CoreServiceVersionedApiParams = {
   metadataVersion: number | undefined;
 };
 
-export const ProjectSettingsSessions = () => {
+export default function ProjectSettingsSessions() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
     (state) => state.stateModel.user.logged
   );
@@ -172,7 +172,7 @@ export const ProjectSettingsSessions = () => {
     );
   }
 
-  const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER;
+  const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
   if (!backendAvailable) {
     const settingsUrl = Url.get(Url.pages.project.settings, {
       namespace,
@@ -344,7 +344,7 @@ export const ProjectSettingsSessions = () => {
       />
     </SessionsDiv>
   );
-};
+}
 
 interface SessionsDivProps {
   enableSavingBadge?: boolean;

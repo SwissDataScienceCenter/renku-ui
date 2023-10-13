@@ -16,21 +16,24 @@
  * limitations under the License.
  */
 
-import { StepsProgressBar } from "../../components/progress/ProgressSteps";
+import cx from "classnames";
+import { ChevronDown, IconProps } from "react-bootstrap-icons";
+import styles from "./ChevronFlippedIcon.module.scss";
 
-export interface StartSession {
-  error:
-    | "no-commit"
-    | "docker-image-not-available"
-    | "docker-image-building"
-    | "session-class"
-    | "backend-error"
-    | "invalid-branch"
-    | "invalid-commit"
-    | "cloud-storage-credentials"
-    | "existing-session"
-    | null;
-  errorMessage: string;
-  starting: boolean;
-  steps: StepsProgressBar[];
+interface ChevronFlippedIconProps extends IconProps {
+  flipped?: boolean;
+}
+
+export default function ChevronFlippedIcon({
+  className: className_,
+  flipped,
+  ...rest
+}: ChevronFlippedIconProps) {
+  const className = cx(
+    "accordion",
+    styles.chevron,
+    flipped && styles.chevronIsOpen,
+    className_
+  );
+  return <ChevronDown className={className} {...rest} />;
 }

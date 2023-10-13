@@ -18,7 +18,7 @@
 
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { ResourceClass } from "../../../dataServices/dataServices";
+import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { ProjectConfig } from "../../../project/Project";
 import { setStorage } from "../../startSessionOptionsSlice";
 import { validateStorageAmount } from "../../utils/sessionOptions.utils";

@@ -20,13 +20,16 @@ import { useEffect, useMemo } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { StatusStepProgressBar } from "../../../../components/progress/ProgressSteps";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
+import { useGetCloudStorageForProjectQuery } from "../../../project/projectCloudStorage.api";
 import {
   useGetAllRepositoryBranchesQuery,
   useGetRepositoryCommitsQuery,
 } from "../../../project/projectGitLab.api";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
+import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
+import useDefaultCloudStorageOption from "../../hooks/options/useDefaultCloudStorageOption.hook";
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
 import useDefaultSessionClassOption from "../../hooks/options/useDefaultSessionClassOption.hook";
 import useDefaultStorageOption from "../../hooks/options/useDefaultStorageOption.hook";
@@ -100,6 +103,7 @@ function useAutostartSessionOptions(): void {
 
   const {
     branch: currentBranch,
+    cloudStorage,
     commit,
     defaultUrl,
     dockerImageStatus,
@@ -157,6 +161,21 @@ function useAutostartSessionOptions(): void {
       },
       { skip: !projectConfig }
     );
+  const { data: notebooksVersion, isFetching: notebooksVersionIsFetching } =
+    useGetNotebooksVersionsQuery();
+  const { data: storageForProject, isFetching: storageIsFetching } =
+    useGetCloudStorageForProjectQuery(
+      { project_id: `${gitLabProjectId}` },
+      {
+        skip:
+          !gitLabProjectId ||
+          !notebooksVersion ||
+          !(
+            notebooksVersion.cloudStorageEnabled.s3 ||
+            notebooksVersion.cloudStorageEnabled.azureBlob
+          ),
+      }
+    );
 
   const currentSessionClass = useMemo(
     () =>
@@ -176,6 +195,7 @@ function useAutostartSessionOptions(): void {
     projectConfig,
   });
   useDefaultAutoFetchLfsOption({ projectConfig });
+  useDefaultCloudStorageOption({ notebooksVersion, storageForProject });
 
   const dispatch = useDispatch();
 
@@ -241,6 +261,11 @@ function useAutostartSessionOptions(): void {
         },
         {
           id: 6,
+          status: StatusStepProgressBar.WAITING,
+          step: "Loading cloud storage configuration",
+        },
+        {
+          id: 7,
           status: StatusStepProgressBar.WAITING,
           step: "Requesting session",
         },
@@ -345,6 +370,21 @@ function useAutostartSessionOptions(): void {
     }
   }, [dispatch, resourcePools]);
 
+  useEffect(() => {
+    if (notebooksVersionIsFetching || storageIsFetching) {
+      dispatch(
+        updateStepStatus({ id: 6, status: StatusStepProgressBar.EXECUTING })
+      );
+    }
+  }, [dispatch, notebooksVersionIsFetching, storageIsFetching]);
+  useEffect(() => {
+    if (storageForProject != null) {
+      dispatch(
+        updateStepStatus({ id: 6, status: StatusStepProgressBar.READY })
+      );
+    }
+  }, [dispatch, storageForProject]);
+
   // Request session
   useEffect(() => {
     if (
@@ -363,13 +403,13 @@ function useAutostartSessionOptions(): void {
     dispatch(setStarting(true));
     dispatch(
       updateStepStatus({
-        id: 6,
+        id: 7,
         status: StatusStepProgressBar.EXECUTING,
       })
     );
     startSession({
       branch: currentBranch,
-      cloudStorage: [],
+      cloudStorage: cloudStorage.filter(({ active }) => active),
       commit,
       defaultUrl,
       environmentVariables: {},
@@ -382,6 +422,7 @@ function useAutostartSessionOptions(): void {
     });
   }, [
     branches,
+    cloudStorage,
     commit,
     commits,
     currentBranch,
