@@ -18,6 +18,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { InactiveKgProjects } from "./InactiveKgProjects";
 
+export enum ActivationStatusProgressError {
+  TIMEOUT = -408,
+  UNKNOWN = -2,
+}
+
 interface InactiveKgProjectsResponse {
   data: InactiveKgProjects[];
   nextPage?: number | undefined;

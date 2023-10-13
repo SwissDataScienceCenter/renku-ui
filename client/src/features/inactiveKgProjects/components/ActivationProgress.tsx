@@ -20,6 +20,7 @@ import { Progress } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
 import { InactiveKgProjects } from "../InactiveKgProjects";
+import { ActivationStatusProgressError } from "../InactiveKgProjectsApi";
 
 interface ActivationProgressProps {
   project: InactiveKgProjects;
@@ -28,17 +29,18 @@ function ActivationProgress({ project }: ActivationProgressProps) {
   if (project.progressActivation === null)
     return <small className="fst-italic">Not indexed</small>;
 
-  if (project.progressActivation === -2)
+  if (project.progressActivation === ActivationStatusProgressError.UNKNOWN)
     return (
       <small className="text-danger">
-        There was an error in activating the KG. Please contact us for help.{" "}
+        There was an error in activating the KG. Please contact us for help.
       </small>
     );
 
-  if (project.progressActivation === -408)
+  if (project.progressActivation === ActivationStatusProgressError.TIMEOUT)
     return (
       <small className="text-danger">
-        Timeout fetching the activation status. Please contact us for help.{" "}
+        The activation status is slow to progress. Check again later to see if
+        activation has completed, or contact us for help.
       </small>
     );
 
@@ -48,9 +50,12 @@ function ActivationProgress({ project }: ActivationProgressProps) {
   const progressStyle = { height: "1rem", width: "4rem" };
   if (project.progressActivation === 0 || project.progressActivation === -1) {
     return (
-      <div>
-        <Loader size={16} />
-      </div>
+      <small>
+        <div className="d-flex align-items-center">
+          <Loader size={16} />
+          &nbsp;<div>Starting...</div>
+        </div>
+      </small>
     );
   }
 

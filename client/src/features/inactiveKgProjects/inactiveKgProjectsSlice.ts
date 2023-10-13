@@ -19,6 +19,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { InactiveKgProjects } from "./InactiveKgProjects";
+import { ActivationStatusProgressError } from "./InactiveKgProjectsApi";
 
 const initialState: InactiveKgProjects[] = [];
 
@@ -42,13 +43,16 @@ export const kgInactiveProjectsSlice = createSlice({
     },
     updateProgress: (state, action: PayloadAction<ActivationStatus>) => {
       return state.map((p) => {
-        if (p.id === action.payload.id)
-          p = {
-            ...p,
-            progressActivation: action.payload.progress,
-            selected: true,
-          };
-        return p;
+        const isProgressError =
+          ActivationStatusProgressError.TIMEOUT === action.payload.progress ||
+          ActivationStatusProgressError.UNKNOWN === action.payload.progress;
+        return p.id === action.payload.id
+          ? {
+              ...p,
+              progressActivation: action.payload.progress,
+              selected: !isProgressError,
+            }
+          : p;
       });
     },
     reset: () => initialState,

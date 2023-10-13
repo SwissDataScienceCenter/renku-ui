@@ -35,6 +35,7 @@ import {
   updateProgress,
   useInactiveProjectSelector,
 } from "./inactiveKgProjectsSlice";
+import { ActivationStatusProgressError } from "./InactiveKgProjectsApi";
 
 export interface InactiveKgProjects {
   id: number;
@@ -256,13 +257,13 @@ function ProjectsNotIndexedPage({
 
   const onItemCheck = (isChecked: boolean, item: InactiveKgProjects) => {
     const tempList = projectList.map((project) => {
-      if (project.id === item.id) return { ...project, selected: isChecked };
+      if (project.id === item.id)
+        return { ...project, progressActivation: null, selected: isChecked };
       return project;
     });
     dispatch(addFullList(tempList));
   };
 
-  // ? The logic here is wrong, this should be fixed or re-worked
   const activateProjects = () => {
     setActivating(true);
     if (client && websocket.open && socket) {
@@ -281,10 +282,13 @@ function ProjectsNotIndexedPage({
   };
 
   const totalSelected =
-    projectList.filter((p) => p.selected && p.progressActivation !== 100)
+    projectList.filter((p) => p.selected && isActivationProgressing(p))
       ?.length ?? 0;
   const totalPending =
-    projectList.filter((p) => p.progressActivation !== 100)?.length ?? 0;
+    projectList.filter((p) => isActivationProgressing(p))?.length ?? 0;
+  useEffect(() => {
+    if (activating && totalSelected === 0) setActivating(false);
+  }, [activating, totalSelected]);
 
   return (
     <div className="container form-rk-green">
@@ -312,6 +316,14 @@ function ProjectsNotIndexedPage({
         </div>
       </div>
     </div>
+  );
+}
+
+function isActivationProgressing(p: InactiveKgProjects): unknown {
+  return (
+    p.progressActivation !== 100 &&
+    p.progressActivation !== ActivationStatusProgressError.UNKNOWN &&
+    p.progressActivation !== ActivationStatusProgressError.TIMEOUT
   );
 }
 
