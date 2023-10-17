@@ -42,7 +42,7 @@ import {
   setBranch,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
-import styles from "./SessionClassOption.module.scss";
+import styles from "./SessionBranchOption.module.scss";
 
 export default function SessionBranchOption() {
   const defaultBranch = useSelector<RootStateOrAny, string>(

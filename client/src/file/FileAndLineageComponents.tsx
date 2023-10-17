@@ -22,13 +22,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faProjectDiagram } from "@fortawesome/free-solid-svg-icons";
 
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
+import { useHistory } from "react-router-dom";
 
-export default function FileAndLineageSwitch(props) {
+interface FileAndLineageSwitchProps {
+  switchToPath: string;
+  insideFile: boolean;
+}
+export default function FileAndLineageSwitch({
+  switchToPath,
+  insideFile,
+}: FileAndLineageSwitchProps) {
   const fileIconRef = useRef(null);
   const lineageIconRef = useRef(null);
+  const history = useHistory();
 
   const performSwitch = () => {
-    props.history.push(props.switchToPath);
+    history.push(switchToPath);
   };
 
   return (
@@ -36,7 +45,7 @@ export default function FileAndLineageSwitch(props) {
       <ButtonGroup size="sm">
         <Button
           onClick={performSwitch}
-          active={props.insideFile}
+          active={insideFile}
           innerRef={fileIconRef}
         >
           <FontAwesomeIcon icon={faFile} />
@@ -47,7 +56,7 @@ export default function FileAndLineageSwitch(props) {
         <Button
           innerRef={lineageIconRef}
           onClick={performSwitch}
-          active={!props.insideFile}
+          active={!insideFile}
         >
           <FontAwesomeIcon icon={faProjectDiagram} />
         </Button>

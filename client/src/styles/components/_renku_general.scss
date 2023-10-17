@@ -115,5 +115,5 @@ svg:focus-visible {
 }
 
 .text-muted {
-  --bs-secondary-color: var(--bs-rk-text-light);
+  --#{$prefix}secondary-color: var(--bs-rk-text-light);
 }

@@ -122,9 +122,9 @@ class FileCard extends React.Component {
           </div>
           <div
             className={cx(
+              styles.fileIconLinks,
               "d-flex",
               "align-items-center",
-              styles.FileIconLinks,
               "gap-3"
             )}
           >
