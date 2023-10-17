@@ -407,7 +407,7 @@ export type KgMetadataResponse = {
       };
     };
   };
-  images: string[];
+  images: { location: string }[];
   statistics: {
     commitsCount: number;
     storageSize: number;
