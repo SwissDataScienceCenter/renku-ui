@@ -45,3 +45,60 @@ describe("display the maintenance page", () => {
     cy.get("h1").first().should("not.contain.text", "RenkuLab Down");
   });
 });
+
+describe("display the status page", () => {
+  const fixtures = new Fixtures(cy);
+
+  it("Shows no banner if there is no incident or maintenance", () => {
+    fixtures.config().versions().userNone().getStatuspageInfo();
+    cy.visit("/");
+    cy.wait("@getStatuspageInfo");
+    cy.get(".alert").should("not.exist");
+  });
+
+  it("Shows the banner on the home page if there is a major incident", () => {
+    fixtures
+      .config()
+      .versions()
+      .userNone()
+      .getStatuspageInfo({ fixture: "statuspage-outage.json" });
+    cy.visit("/");
+    cy.wait("@getStatuspageInfo");
+    cy.get(".alert").contains("RenkuLab is unstable").should("be.visible");
+  });
+
+  it("Shows the banner everywhere if there is a major incident", () => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .getStatuspageInfo({ fixture: "statuspage-outage.json" });
+    cy.visit("/");
+    cy.wait("@getStatuspageInfo");
+    cy.get(".alert").contains("RenkuLab is unstable").should("be.visible");
+    cy.contains("Search").click();
+    cy.get(".alert").contains("RenkuLab is unstable").should("be.visible");
+    cy.get(".btn-close").should("not.exist");
+  });
+
+  it("Shows the banner only on the dashboard if there is a minor incident", () => {
+    fixtures
+      .config()
+      .versions()
+      .userTest()
+      .getStatuspageInfo({
+        overrides: {
+          status: {
+            indicator: "minor",
+            description: "Everything is a little slow, but working",
+          },
+        },
+      });
+    cy.visit("/");
+    cy.wait("@getStatuspageInfo");
+    cy.get(".alert").contains("RenkuLab is unstable").should("be.visible");
+    cy.get(".btn-close").should("be.visible");
+    cy.contains("Search").click();
+    cy.get(".alert").should("not.exist");
+  });
+});
