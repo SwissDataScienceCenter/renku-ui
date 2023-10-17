@@ -222,8 +222,8 @@ function getLinksProjectHeader(datasets, datasetsUrl, errorGettingDatasets) {
     linksHeader.total = datasets.core.datasets.length;
     datasets.core.datasets.slice(0, 3).map((dataset) => {
       linksHeader.data.push({
-        title: dataset.title,
-        url: `${datasetsUrl}/${encodeURIComponent(dataset.name)}`,
+        title: dataset.name,
+        url: `${datasetsUrl}/${encodeURIComponent(dataset.slug)}`,
       });
     });
   }

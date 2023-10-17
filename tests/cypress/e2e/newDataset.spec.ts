@@ -46,7 +46,7 @@ describe("Project new dataset", () => {
     fixtures.createDataset();
     fixtures.uploadDatasetFile();
     cy.newDataset({
-      title: "New dataset completed",
+      name: "New dataset completed",
       keywords: ["test key 1", "key 2"],
       description: "This is a dataset description",
       file: "count_flights.txt",
@@ -70,7 +70,7 @@ describe("Project new dataset", () => {
     fixtures.createDataset();
     fixtures.uploadDatasetFile();
     cy.newDataset({
-      title: "New dataset completed",
+      name: "New dataset completed",
       creators: {
         name: "Name Creator",
         email: "email@creator.com",
@@ -102,7 +102,7 @@ describe("Project new dataset", () => {
     fixtures.createDataset();
     fixtures.uploadDatasetFile();
     cy.newDataset({
-      title: "New dataset completed",
+      name: "New dataset completed",
       creators: {
         name: "Name Creator",
         email: "email@creator.com",
@@ -142,7 +142,7 @@ describe("Project new dataset", () => {
       }
     );
     cy.newDataset({
-      title: "New dataset completed",
+      name: "New dataset completed",
     });
     cy.get('[data-cy="dropzone"]').attachFile(
       "/datasets/files/datasetFiles.zip",
@@ -184,7 +184,7 @@ describe("Project new dataset", () => {
     };
     fixtures.uploadDatasetFile("errorUploadFile", "", options);
     cy.newDataset({
-      title: "New dataset fail",
+      name: "New dataset fail",
     });
     cy.get('[data-cy="dropzone"]').attachFile("/datasets/files/bigFile.bin", {
       subjectType: "drag-n-drop",
@@ -216,7 +216,7 @@ describe("Project new dataset", () => {
       "datasets/create-dataset-title-error.json"
     );
     cy.newDataset({
-      title: "test@",
+      name: "test@",
     });
     cy.getDataCy("submit-button").click();
     cy.wait("@createDatasetError");

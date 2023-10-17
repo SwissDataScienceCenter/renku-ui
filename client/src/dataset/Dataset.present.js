@@ -308,7 +308,7 @@ function AddToProjectButton({ insideKg, locked, logged, identifier }) {
     ) : insideKg === false ? (
       <ThrottledTooltip
         target="add-dataset-to-project-button"
-        tooltip="Cannot add dataset to project, the project containing this dataset does not have kg activated"
+        tooltip="Cannot add dataset to project, the project containing this dataset is not indexed"
       />
     ) : (
       <ThrottledTooltip
@@ -427,7 +427,7 @@ export default function DatasetView(props) {
     }
   }
 
-  const datasetTitle = dataset.title || dataset.name;
+  const datasetTitle = dataset.name;
   const datasetDesc = dataset.description;
   const pageTitle = datasetDesc
     ? `${datasetTitle} • Dataset • ${datasetDesc}`
@@ -508,9 +508,10 @@ export default function DatasetView(props) {
             labelCaption={datasetPublished ? "Published" : "Created"}
             links={linksHeader}
             otherButtons={[deleteOption, modifyButton, addToProject]}
+            slug={dataset.slug}
             tagList={dataset.keywords}
             timeCaption={timeCaption}
-            title={dataset.title}
+            title={dataset.name}
             url={dataset.identifier}
           />
         </div>

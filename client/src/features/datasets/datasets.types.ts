@@ -26,18 +26,18 @@ import { PostDataset as DatasetAsApiBody } from "../project/dataset/datasetCore.
 export interface DeleteDatasetParams
   extends CoreVersionUrl,
     CoreRepositoryParams {
-  name: string;
+  slug: string;
 }
 
 interface DatasetOperationResponse {
-  name: string;
+  slug: string;
   remote_branch: string;
 }
 
 export type DeleteDatasetResponse = CoreResponse<DatasetOperationResponse>;
 
 export interface DeleteDataset {
-  name: string;
+  slug: string;
   remoteBranch: string;
 }
 
@@ -49,7 +49,7 @@ export interface PostDatasetParams
 }
 
 export interface PostDataset {
-  name: string;
+  slug: string;
   remoteBranch: string;
 }
 
@@ -57,7 +57,7 @@ export type PostDatasetResponse = CoreResponse<DatasetOperationResponse>;
 
 export interface AddFilesParams extends CoreVersionUrl, CoreRepositoryParams {
   files: DatasetFile[];
-  name: string;
+  slug: string;
 }
 
 export interface DatasetFile {
@@ -74,6 +74,6 @@ export type AddFilesResponse = CoreResponse<AddFilesOperationResponse>;
 
 export interface AddFiles {
   files: DatasetFile[];
-  name: string;
+  slug: string;
   remoteBranch: string;
 }

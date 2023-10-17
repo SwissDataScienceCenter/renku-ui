@@ -19,10 +19,11 @@ function datasetToDict(
   const timeCaption =
     dataset.created_at != null ? new Date(dataset.created_at) : "";
   return {
-    id: dataset.name,
-    url: `${datasetsUrl}/${encodeURIComponent(dataset.name)}/`,
+    id: dataset.slug,
+    url: `${datasetsUrl}/${encodeURIComponent(dataset.slug)}/`,
     itemType: "dataset",
-    title: dataset.title || dataset.name,
+    title: dataset.name,
+    slug: dataset.slug,
     tagList: dataset.keywords,
     description:
       dataset.description !== undefined && dataset.description !== null ? (
@@ -124,7 +125,7 @@ export default function DatasetsListView(props: DatasetsListViewProps) {
   const datasets = useMemo(
     () =>
       props.datasets.sort((d1, d2) =>
-        d1.title > d2.title ? 1 : d2.title > d1.title ? -1 : 0
+        d1.name > d2.name ? 1 : d2.name > d1.name ? -1 : 0
       ),
     [props.datasets]
   );

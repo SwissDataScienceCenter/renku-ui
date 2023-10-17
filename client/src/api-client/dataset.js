@@ -164,7 +164,7 @@ export default function addDatasetMethods(client) {
   };
 
   client.fetchDatasetFilesFromCoreService = (
-    name,
+    slug,
     git_url,
     versionUrl = null
   ) => {
@@ -173,7 +173,7 @@ export default function addDatasetMethods(client) {
     headers.append("X-Requested-With", "XMLHttpRequest");
 
     const url = client.versionedCoreUrl("datasets.files_list", versionUrl);
-    const queryParams = { git_url, name };
+    const queryParams = { git_url, slug };
 
     const filesPromise = client
       .clientFetch(url, {
