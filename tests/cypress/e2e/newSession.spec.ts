@@ -203,6 +203,6 @@ describe("launch sessions", () => {
         .contains("Read/Write")
         .siblings("input")
         .should("not.be.checked");
-    } 
+    }
   });
 });

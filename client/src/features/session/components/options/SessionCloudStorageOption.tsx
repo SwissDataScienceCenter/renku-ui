@@ -632,7 +632,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
         />
       </div>
 
-      { !CLOUD_STORAGE_READWRITE_ENABLED ? null :
+      {!CLOUD_STORAGE_READWRITE_ENABLED ? null : (
         <div className="mb-3">
           <div className="form-label">Mode</div>
           <div className="form-check">
@@ -670,7 +670,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
             </Label>
           </div>
         </div>
-      }
+      )}
       <div>
         <Label className="form-label" for={`updateCloudStorageConfig-${index}`}>
           Configuration
@@ -858,7 +858,7 @@ function AddTemporaryCloudStorageModal({
             <div className="invalid-feedback">Please provide a name</div>
           </div>
 
-          { !CLOUD_STORAGE_READWRITE_ENABLED ? null : 
+          {!CLOUD_STORAGE_READWRITE_ENABLED ? null : (
             <div className="mb-3">
               <div className="form-label">Mode</div>
               <Controller
@@ -906,7 +906,7 @@ function AddTemporaryCloudStorageModal({
                 )}
               />
             </div>
-          }
+          )}
           <div className="mb-3">
             <Label className="form-label" for="addCloudStorageSourcePath">
               Source Path

@@ -321,7 +321,7 @@ function AdvancedAddCloudStorage({
               </FormText>
             </div>
 
-            { !CLOUD_STORAGE_READWRITE_ENABLED ? null :
+            {!CLOUD_STORAGE_READWRITE_ENABLED ? null : (
               <div className="mb-3">
                 <div className="form-label">Mode</div>
                 <Controller
@@ -369,7 +369,7 @@ function AdvancedAddCloudStorage({
                   )}
                 />
               </div>
-            }
+            )}
 
             <div className="mb-3">
               <Label className="form-label" for="addCloudStorageSourcePath">
@@ -675,7 +675,7 @@ function SimpleAddCloudStorage({
               </FormText>
             </div>
 
-            { !CLOUD_STORAGE_READWRITE_ENABLED ? null :
+            {!CLOUD_STORAGE_READWRITE_ENABLED ? null : (
               <div>
                 <div className="form-label">Mode</div>
                 <Controller
@@ -723,7 +723,7 @@ function SimpleAddCloudStorage({
                   )}
                 />
               </div>
-            }
+            )}
           </div>
         </Form>
       </ModalBody>
