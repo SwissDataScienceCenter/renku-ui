@@ -324,15 +324,17 @@ describe("Cloud storage settings page", () => {
       .siblings("input")
       .should("not.be.checked");
 
-    cy.get("label")
-      .contains("Read/Write")
-      .click()
-      .siblings("input")
-      .should("be.checked");
-    cy.get("label")
-      .contains("Read-only")
-      .siblings("input")
-      .should("not.be.checked");
+    if (Cypress.env("CLOUD_STORAGE_READWRITE_ENABLED")) {
+      cy.get("label")
+        .contains("Read/Write")
+        .click()
+        .siblings("input")
+        .should("be.checked");
+      cy.get("label")
+        .contains("Read-only")
+        .siblings("input")
+        .should("not.be.checked");
+    }
 
     cy.get("button[type='submit']")
       .contains("Save changes")
@@ -422,15 +424,17 @@ describe("Cloud storage settings page", () => {
       .siblings("input")
       .should("be.checked");
 
-    cy.get("label")
-      .contains("Read/Write")
-      .click()
-      .siblings("input")
-      .should("be.checked");
-    cy.get("label")
-      .contains("Read-only")
-      .siblings("input")
-      .should("not.be.checked");
+    if (Cypress.env("CLOUD_STORAGE_READWRITE_ENABLED")) {
+      cy.get("label")
+        .contains("Read/Write")
+        .click()
+        .siblings("input")
+        .should("be.checked");
+      cy.get("label")
+        .contains("Read-only")
+        .siblings("input")
+        .should("not.be.checked");
+    }
 
     cy.get("button[type='submit']")
       .contains("Add Storage")
