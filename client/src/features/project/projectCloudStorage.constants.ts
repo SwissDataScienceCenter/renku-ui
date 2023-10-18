@@ -21,4 +21,4 @@ export const CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN = "<sensitive>";
 export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
   "[example]\ntype = s3\nprovider = AWS\nregion = us-east-1";
 
-export const CLOUD_STORAGE_READWRITE_ENABLED: boolean = false;
+export const CLOUD_STORAGE_READWRITE_ENABLED = false;
