@@ -324,15 +324,17 @@ describe("Cloud storage settings page", () => {
       .siblings("input")
       .should("not.be.checked");
 
-    cy.get("label")
-      .contains("Read/Write")
-      .click()
-      .siblings("input")
-      .should("be.checked");
-    cy.get("label")
-      .contains("Read-only")
-      .siblings("input")
-      .should("not.be.checked");
+    if (Cypress.env("CLOUD_STORAGE_READWRITE_ENABLED")) {
+      cy.get("label")
+        .contains("Read/Write")
+        .click()
+        .siblings("input")
+        .should("be.checked");
+      cy.get("label")
+        .contains("Read-only")
+        .siblings("input")
+        .should("not.be.checked");
+    }
 
     cy.get("button[type='submit']")
       .contains("Save changes")
@@ -351,7 +353,7 @@ describe("Cloud storage settings page", () => {
 
       expect(name).to.equal("My special storage");
       expect(isPrivate).to.be.false;
-      expect(readonly).to.be.false;
+      expect(readonly).to.be.undefined;
       expect(source_path).to.equal("bucket/source/subfolder");
       expect(target_path).to.equal("/mnt/special");
     });
@@ -422,15 +424,17 @@ describe("Cloud storage settings page", () => {
       .siblings("input")
       .should("be.checked");
 
-    cy.get("label")
-      .contains("Read/Write")
-      .click()
-      .siblings("input")
-      .should("be.checked");
-    cy.get("label")
-      .contains("Read-only")
-      .siblings("input")
-      .should("not.be.checked");
+    if (Cypress.env("CLOUD_STORAGE_READWRITE_ENABLED")) {
+      cy.get("label")
+        .contains("Read/Write")
+        .click()
+        .siblings("input")
+        .should("be.checked");
+      cy.get("label")
+        .contains("Read-only")
+        .siblings("input")
+        .should("not.be.checked");
+    }
 
     cy.get("button[type='submit']")
       .contains("Add Storage")
@@ -443,7 +447,9 @@ describe("Cloud storage settings page", () => {
 
       expect(name).to.equal("My new storage");
       expect(isPrivate).to.be.true;
-      expect(readonly).to.be.false;
+      expect(readonly).to.equal(
+        !Cypress.env("CLOUD_STORAGE_READWRITE_ENABLED")
+      );
       expect(target_path).to.equal("My new storage");
     });
 

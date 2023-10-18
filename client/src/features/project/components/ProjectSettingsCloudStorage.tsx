@@ -70,6 +70,7 @@ import {
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
+  CLOUD_STORAGE_READWRITE_ENABLED,
 } from "../projectCloudStorage.constants";
 import {
   CloudStorage,
@@ -645,54 +646,55 @@ function EditCloudStorage({
           </div>
         )}
 
-        <div className="mb-3">
-          <div className="form-label">Mode</div>
-          <Controller
-            control={control}
-            name="readonly"
-            render={({ field }) => (
-              <>
-                <div className="form-check">
-                  <Input
-                    type="radio"
-                    className="form-check-input"
-                    name={`updateCloudStorageReadOnlyRadio-${name}`}
-                    id={`updateCloudStorageReadOnly-${name}`}
-                    autoComplete="off"
-                    checked={field.value}
-                    onBlur={field.onBlur}
-                    onChange={() => field.onChange(true)}
-                  />
-                  <Label
-                    className={cx("form-check-label", "ms-2")}
-                    for={`updateCloudStorageReadOnly-${name}`}
-                  >
-                    Read-only
-                  </Label>
-                </div>
-                <div className="form-check">
-                  <Input
-                    type="radio"
-                    className="form-check-input"
-                    name={`updateCloudStorageReadOnlyRadio-${name}`}
-                    id={`updateCloudStorageReadWrite-${name}`}
-                    autoComplete="off"
-                    checked={!field.value}
-                    onBlur={field.onBlur}
-                    onChange={() => field.onChange(false)}
-                  />
-                  <Label
-                    className={cx("form-check-label", "ms-2")}
-                    for={`updateCloudStorageReadWrite-${name}`}
-                  >
-                    Read/Write
-                  </Label>
-                </div>
-              </>
-            )}
-          />
-        </div>
-
+        {!CLOUD_STORAGE_READWRITE_ENABLED ? null : (
+          <div className="mb-3">
+            <div className="form-label">Mode</div>
+            <Controller
+              control={control}
+              name="readonly"
+              render={({ field }) => (
+                <>
+                  <div className="form-check">
+                    <Input
+                      type="radio"
+                      className="form-check-input"
+                      name={`updateCloudStorageReadOnlyRadio-${name}`}
+                      id={`updateCloudStorageReadOnly-${name}`}
+                      autoComplete="off"
+                      checked={field.value}
+                      onBlur={field.onBlur}
+                      onChange={() => field.onChange(true)}
+                    />
+                    <Label
+                      className={cx("form-check-label", "ms-2")}
+                      for={`updateCloudStorageReadOnly-${name}`}
+                    >
+                      Read-only
+                    </Label>
+                  </div>
+                  <div className="form-check">
+                    <Input
+                      type="radio"
+                      className="form-check-input"
+                      name={`updateCloudStorageReadOnlyRadio-${name}`}
+                      id={`updateCloudStorageReadWrite-${name}`}
+                      autoComplete="off"
+                      checked={!field.value}
+                      onBlur={field.onBlur}
+                      onChange={() => field.onChange(false)}
+                    />
+                    <Label
+                      className={cx("form-check-label", "ms-2")}
+                      for={`updateCloudStorageReadWrite-${name}`}
+                    >
+                      Read/Write
+                    </Label>
+                  </div>
+                </>
+              )}
+            />
+          </div>
+        )}
         <div className="mb-3">
           <Label
             className="form-label"
