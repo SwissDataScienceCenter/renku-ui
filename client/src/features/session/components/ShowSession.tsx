@@ -446,7 +446,8 @@ function AboutBtn({ toggleModalAbout, projectName }: AboutBtnProps) {
         "bg-transparent",
         "no-focus",
         "text-rk-green",
-        "p-0"
+        "p-0",
+        "fw-bold"
       )}
       data-cy="about-button"
       onClick={toggleModalAbout}

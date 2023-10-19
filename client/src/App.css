@@ -46,7 +46,7 @@ html {
 
 /* Component classes */
 .time-caption {
-  color: #838383;
+  color: var(--bs-dark);
   font-size: small;
 }
 

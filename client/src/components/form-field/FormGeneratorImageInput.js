@@ -86,7 +86,6 @@ function ImagePreview({
   const imageStyle = { ...imageSize, objectFit: "cover" };
   const imagePreviewStyle = {
     ...imageStyle,
-    backgroundColor: "#C4C4C4",
     borderRadius: "8px",
   };
   const displayValue = selected[Prop.NAME] ?? "Current Image";
@@ -106,7 +105,7 @@ function ImagePreview({
   ) : (
     <div
       style={imagePreviewStyle}
-      className="d-flex justify-content-center align-items-center text-white"
+      className="d-flex justify-content-center align-items-center text-white bg-dark"
     >
       <div>No Image Yet</div>
     </div>

@@ -16,29 +16,54 @@
  * limitations under the License.
  */
 
-import { Button, ButtonGroup } from "reactstrap";
+import { useRef } from "react";
+import { Button, ButtonGroup, UncontrolledTooltip } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faProjectDiagram } from "@fortawesome/free-solid-svg-icons";
 
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
+import { useHistory } from "react-router-dom";
 
-function FileAndLineageSwitch(props) {
+interface FileAndLineageSwitchProps {
+  switchToPath: string;
+  insideFile: boolean;
+}
+export default function FileAndLineageSwitch({
+  switchToPath,
+  insideFile,
+}: FileAndLineageSwitchProps) {
+  const fileIconRef = useRef(null);
+  const lineageIconRef = useRef(null);
+  const history = useHistory();
+
   const performSwitch = () => {
-    props.history.push(props.switchToPath);
+    history.push(switchToPath);
   };
 
   return (
     <div className="form-rk-green">
       <ButtonGroup size="sm">
-        <Button onClick={performSwitch} active={props.insideFile}>
+        <Button
+          onClick={performSwitch}
+          active={insideFile}
+          innerRef={fileIconRef}
+        >
           <FontAwesomeIcon icon={faFile} />
         </Button>
-        <Button onClick={performSwitch} active={!props.insideFile}>
+        <UncontrolledTooltip target={fileIconRef}>
+          File content view
+        </UncontrolledTooltip>
+        <Button
+          innerRef={lineageIconRef}
+          onClick={performSwitch}
+          active={!insideFile}
+        >
           <FontAwesomeIcon icon={faProjectDiagram} />
         </Button>
+        <UncontrolledTooltip target={lineageIconRef}>
+          File lineage view
+        </UncontrolledTooltip>
       </ButtonGroup>
     </div>
   );
 }
-
-export { FileAndLineageSwitch };
