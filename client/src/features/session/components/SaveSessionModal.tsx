@@ -30,7 +30,6 @@ import {
   Col,
   Form,
   FormGroup,
-  FormText,
   Input,
   Label,
   Modal,
@@ -53,6 +52,7 @@ import {
   useRenkuSaveMutation,
 } from "../sidecarApi";
 import styles from "./SessionModals.module.scss";
+import { SuccessAlert } from "../../../components/Alert";
 
 interface SaveSessionModalProps {
   isOpen: boolean;
@@ -213,7 +213,7 @@ function SaveSessionStatus({
     return <SaveSessionFailedBody toggleModal={toggleModal} />;
   }
   if (succeeded === true) {
-    return <SaveSessionUpToDateBody toggleModal={toggleModal} />;
+    return <SaveSessionSuccessBody toggleModal={toggleModal} />;
   }
   if (!data.result.clean || data.result.ahead > 0) {
     return (
@@ -238,6 +238,19 @@ function SaveSessionUpToDateBody({
   return (
     <InformationalBody closeModal={toggleModal}>
       <p>Your session is up-to-date. There are no changes that need saving.</p>
+    </InformationalBody>
+  );
+}
+
+interface SaveSessionSuccessBodyProps {
+  toggleModal: () => void;
+}
+function SaveSessionSuccessBody({ toggleModal }: SaveSessionSuccessBodyProps) {
+  return (
+    <InformationalBody closeModal={toggleModal}>
+      <SuccessAlert dismissible={false} timeout={0}>
+        <p>Your session has been saved successfully.</p>
+      </SuccessAlert>
     </InformationalBody>
   );
 }
@@ -295,8 +308,8 @@ function SaveSessionBody({
     undefined
   );
   const saveText = saving ? (
-    <span>
-      <Loader className="me-1" inline size={16} />
+    <span className="d-flex gap-2">
+      <Loader inline size={16} />
       Saving Session
     </span>
   ) : (
@@ -316,13 +329,6 @@ function SaveSessionBody({
           saving={saving}
           setCommitMessage={setCommitMessage}
         />
-        {saving && (
-          <FormText color="primary">
-            <Loader className="me-1" inline size={16} />
-            Saving Session
-            <br />
-          </FormText>
-        )}
         <div className={cx("d-flex", "justify-content-end")}>
           <Button
             className={cx("float-right", "mt-1", "btn-outline-rk-green")}
