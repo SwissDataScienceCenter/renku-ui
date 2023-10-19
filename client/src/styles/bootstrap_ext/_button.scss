@@ -12,6 +12,7 @@ $borderRadius: 1000px;
 }
 
 .btn-group .btn {
+  --#{$prefix}-btn-active-color: white;
   border-radius: 0;
   padding: 5px 10px;
 }
@@ -82,15 +83,31 @@ $borderRadius: 1000px;
 .form-rk-pink {
   @extend .form-rk;
   --accent-color: var(--bs-rk-pink);
+
+  .input-group button {
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
+      background-color: #{$rk-pink-highlight};
+      color: white;
+    }
+  }
 }
 
 .form-rk-green {
   @extend .form-rk;
   --accent-color: var(--bs-rk-green);
-}
 
-.input-group button:hover {
-  background-color: transparent;
+  .input-group button {
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
+      background-color: #{$rk-green-highlight};
+      color: white;
+    }
+  }
 }
 
 .btn-secondary,
@@ -157,6 +174,7 @@ $borderRadius: 1000px;
 
 .btn-rk-pink {
   @extend .btn-rk;
+  --#{$prefix}-btn-active-color: white;
 }
 
 .btn-rk-green {
@@ -214,19 +232,17 @@ $borderRadius: 1000px;
   }
 }
 .btn-outline-rk-green {
+  --#{$prefix}-btn-active-color: white;
   background-color: white;
-  color: $rk-green;
-  --bs-btn-active-color: #{$rk-green-highlight};
-  --bs-btn-active-bg: transparent;
-  --bs-btn-active-border-color: #{$rk-green};
+  color: #{$rk-green};
 
   &:hover,
   &:focus,
   &:active,
   &.active {
-    background-color: transparent;
-    color: $rk-green-highlight;
-    border-color: $rk-green;
+    background-color: #{$rk-green-highlight};
+    color: white;
+    border-color: #{$rk-green-highlight};
   }
   &:disabled {
     color: $rk-green;
@@ -235,16 +251,16 @@ $borderRadius: 1000px;
 }
 .btn-outline-rk-pink {
   background-color: white;
-  color: $rk-pink;
-  border-color: $rk-pink;
+  color: #{$rk-pink};
+  border-color: #{$rk-pink};
 
   &:hover,
   &:focus,
   &:active,
   &.active {
-    background-color: transparent;
-    color: $rk-pink-highlight;
-    border-color: $rk-pink;
+    background-color: #{$rk-pink-highlight};
+    color: white;
+    border-color: #{$rk-pink-highlight};
   }
   &.disabled {
     background-color: transparent;
@@ -330,10 +346,6 @@ $borderRadius: 1000px;
     border-radius: 0 8px 8px 0;
   }
 
-  button:hover {
-    background-color: transparent;
-  }
-
   > .btn {
     background-color: white;
   }
@@ -342,7 +354,6 @@ $borderRadius: 1000px;
     border-width: 2.5px;
     font-weight: bold;
     box-shadow: 1px 0 10px rgb(0 0 0 / 10%);
-    background-color: white;
   }
 
   .btn-outline-primary {

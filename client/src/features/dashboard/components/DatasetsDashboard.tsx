@@ -29,6 +29,8 @@ import { KgAuthor } from "../../kgSearch/KgSearch";
 import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
 import { stateToSearchString } from "../../kgSearch/KgSearchState";
 import { Url } from "../../../utils/helpers/url";
+import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
+import ExploreIcon from "../../../components/icons/ExploreIcon";
 
 interface OtherDatasetsButtonProps {
   totalDatasets: number;
@@ -50,10 +52,8 @@ function OtherDatasetsButton({ totalDatasets }: OtherDatasetsButtonProps) {
         data-cy="view-my-datasets-btn"
         className="btn btn-outline-rk-pink"
       >
-        <div className="d-flex gap-2 text-rk-pink">
-          <img src="/frame-pink.svg" className="rk-icon rk-icon-md" />
-          View all my Datasets
-        </div>
+        <SearchEntityIcon className="me-2" size={20} />
+        View all my Datasets
       </Link>
     </div>
   ) : (
@@ -65,10 +65,8 @@ function OtherDatasetsButton({ totalDatasets }: OtherDatasetsButtonProps) {
         data-cy="explore-other-datasets-btn"
         className="btn btn-outline-rk-pink"
       >
-        <div className="d-flex gap-2 text-rk-pink">
-          <img src="/explore-pink.svg" className="rk-icon rk-icon-md" />
-          Explore other Datasets
-        </div>
+        <ExploreIcon className="me-2" size={20} />
+        Explore other Datasets
       </Link>
     </div>
   );

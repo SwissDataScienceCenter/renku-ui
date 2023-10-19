@@ -223,10 +223,12 @@ function ProjectDatasetNew(
       }
     >
       <div className="d-flex flex-column">
-        <AddDatasetButtons
-          optionSelected="addDataset"
-          toggleNewDataset={props.toggleNewDataset}
-        />
+        <div className="form-rk-pink d-flex flex-column">
+          <AddDatasetButtons
+            optionSelected="addDataset"
+            toggleNewDataset={props.toggleNewDataset}
+          />
+        </div>
         <ProjectDatasetNewEdit
           key="datasetCreate"
           apiVersion={props.apiVersion}

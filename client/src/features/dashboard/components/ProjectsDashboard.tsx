@@ -26,6 +26,8 @@ import { ExternalLink } from "../../../components/ExternalLinks";
 import ListDisplay from "../../../components/List";
 import { Loader } from "../../../components/Loader";
 import { EnvironmentLogs } from "../../../components/Logs";
+import ExploreIcon from "../../../components/icons/ExploreIcon";
+import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
 import ListBarSession from "../../../components/list/ListBarSessions";
 import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
 import { Notebook } from "../../../notebooks/components/session.types";
@@ -124,10 +126,8 @@ function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
         data-cy="view-my-projects-btn"
         className="btn btn-outline-rk-green"
       >
-        <div className="d-flex gap-2 text-rk-green">
-          <img src="/frame.svg" className="rk-icon rk-icon-md" />
-          View all my Projects
-        </div>
+        <SearchEntityIcon className="me-2" size={20} />
+        View all my Projects
       </Link>
     </div>
   ) : (
@@ -140,7 +140,7 @@ function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
         className="btn btn-outline-rk-green"
       >
         <div className="d-flex gap-2 text-rk-green">
-          <img src="/explore.svg" className="rk-icon rk-icon-md" />
+          <ExploreIcon className="me-2" size={20} />
           Explore other Projects
         </div>
       </Link>
