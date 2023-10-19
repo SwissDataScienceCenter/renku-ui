@@ -23,6 +23,7 @@
  *  Components for the displaying information from statuspage.io
  */
 
+import cx from "classnames";
 import { Fragment, useState } from "react";
 import {
   faCheckCircle,
@@ -124,10 +125,12 @@ function SiteStatusLanding(props) {
 
   if (status.indicator === "none") return null;
 
-  const alertStyle = loud ? { fontSize: "larger" } : {};
   return (
-    <WarnAlert className="container-xxl renku-container" dismissible={!loud}>
-      <div style={alertStyle}>
+    <WarnAlert
+      className={cx("container-xxl", "renku-container")}
+      dismissible={!loud}
+    >
+      <div className={cx(loud && "fs-5")}>
         RenkuLab is unstable: {status.description}. See{" "}
         <b>
           <Link to={siteStatusUrl}>RenkuLab Status</Link>
@@ -196,15 +199,14 @@ function MaintenanceSummaryLanding(props) {
   const scheduled = sortedMaintenances(props.statuspage.scheduled_maintenances);
   if (scheduled.length < 1) return <span></span>;
   const loud = props.loud != null ? props.loud : false;
-  const alertStyle = loud ? { fontSize: "larger" } : {};
   const first = scheduled[0];
   // Not use custom Alert due it use a custom icon
   return (
     <Alert color="warning" className="container-xxl renku-container">
-      <div style={alertStyle}>
+      <div className={cx(loud && "fs-5")}>
         <MaintenanceInfo maintenance={first} loud={loud} />
       </div>
-      <div style={alertStyle}>
+      <div className={cx(loud && "fs-5")}>
         See{" "}
         <b>
           <Link to={siteStatusUrl}>details</Link>
