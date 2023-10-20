@@ -23,6 +23,7 @@
  *  Components for the displaying information from statuspage.io
  */
 
+import cx from "classnames";
 import { Fragment, useState } from "react";
 import {
   faCheckCircle,
@@ -111,7 +112,7 @@ function SiteStatusDetails(props) {
       </div>
     );
   }
-  return <WarnAlert>{status.description}</WarnAlert>;
+  return <WarnAlert dismissible={false}>{status.description}</WarnAlert>;
 }
 
 /**
@@ -120,14 +121,22 @@ function SiteStatusDetails(props) {
 function SiteStatusLanding(props) {
   const status = props.statuspage.status;
   const siteStatusUrl = props.siteStatusUrl;
+  const loud = props.loud ?? false;
+
   if (status.indicator === "none") return null;
+
   return (
-    <WarnAlert className="container-xxl renku-container">
-      RenkuLab is unstable: {status.description}. See{" "}
-      <b>
-        <Link to={siteStatusUrl}>RenkuLab Status</Link>
-      </b>{" "}
-      for more details.
+    <WarnAlert
+      className={cx("container-xxl", "renku-container")}
+      dismissible={!loud}
+    >
+      <div className={cx(loud && "fs-5")}>
+        RenkuLab is unstable: {status.description}. See{" "}
+        <b>
+          <Link to={siteStatusUrl}>RenkuLab Status</Link>
+        </b>{" "}
+        for more details.
+      </div>
     </WarnAlert>
   );
 }
@@ -190,15 +199,14 @@ function MaintenanceSummaryLanding(props) {
   const scheduled = sortedMaintenances(props.statuspage.scheduled_maintenances);
   if (scheduled.length < 1) return <span></span>;
   const loud = props.loud != null ? props.loud : false;
-  const alertStyle = loud ? { fontSize: "larger" } : {};
   const first = scheduled[0];
   // Not use custom Alert due it use a custom icon
   return (
     <Alert color="warning" className="container-xxl renku-container">
-      <div style={alertStyle}>
+      <div className={cx(loud && "fs-5")}>
         <MaintenanceInfo maintenance={first} loud={loud} />
       </div>
-      <div style={alertStyle}>
+      <div className={cx(loud && "fs-5")}>
         See{" "}
         <b>
           <Link to={siteStatusUrl}>details</Link>
@@ -363,6 +371,15 @@ function StatuspageDisplay(props) {
   );
 }
 
+function maintenanceHasLoudComponent(sm) {
+  const components = sm.components.filter(componentIsLoud);
+  return components.length > 0;
+}
+
+function incidentIsMajorOrCritical(incident) {
+  return incident.impact === "major" || incident.impact === "critical";
+}
+
 /**
  * Indicate whether the statuspage banner should be shown everywhere.
  * @param {object} statusSummary
@@ -371,16 +388,23 @@ function StatuspageDisplay(props) {
 function displayLoud(statusSummary) {
   if (!statusSummary.statuspage) return false;
 
-  function maintenanceHasLoudComponent(sm) {
-    const components = sm.components.filter(componentIsLoud);
-    return components.length > 0;
-  }
   // return true if any scheduled maintenance affects the "Loud" component
   const loudMaintenances =
     statusSummary.statuspage.scheduled_maintenances.filter(
       maintenanceHasLoudComponent
     );
-  return loudMaintenances.length > 0;
+  if (loudMaintenances.length > 0) return true;
+
+  // return true if an incident.impact is major or critical
+  const majorOrCriticalIncidents = statusSummary.statuspage.incidents.filter(
+    incidentIsMajorOrCritical
+  );
+  if (majorOrCriticalIncidents.length > 0) return true;
+  // return true if the status.indicator is major or critical
+  return (
+    statusSummary.statuspage.status.indicator === "major" ||
+    statusSummary.statuspage.status.indicator === "critical"
+  );
 }
 
 /**
@@ -402,17 +426,18 @@ function StatuspageBanner(props) {
     return null;
   const statuspage = summary.statuspage;
   return (
-    <Fragment>
+    <>
       <SiteStatusLanding
         statuspage={statuspage}
         siteStatusUrl={props.siteStatusUrl}
+        loud={loud}
       />
       <MaintenanceSummaryLanding
         statuspage={statuspage}
         siteStatusUrl={props.siteStatusUrl}
         loud={loud}
       />
-    </Fragment>
+    </>
   );
 }
 

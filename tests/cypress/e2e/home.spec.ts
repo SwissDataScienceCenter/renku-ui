@@ -50,13 +50,12 @@ describe("404 page", () => {
 
 describe("display the maintenance page", () => {
   beforeEach(() => {
-    new Fixtures(cy).config().versions().renkuDown();
-    cy.visit("/");
+    new Fixtures(cy).config().versions();
   });
 
   it("displays an error when trying to get status page information", () => {
     // ! we plan to change this behavior and ignore statuspage info when unavailable #2283
-    new Fixtures(cy).config().versions().renkuDown();
+    new Fixtures(cy).renkuDown();
     cy.visit("/");
     cy.get("h1").should("have.length", 1);
     cy.get("h1").contains("RenkuLab Down").should("be.visible");
@@ -66,7 +65,9 @@ describe("display the maintenance page", () => {
   });
 
   it("displays status page information", () => {
-    new Fixtures(cy).config().versions().getStatuspageInfo();
+    // if the call to get the user fails (e.g., no .userNone() fixture)
+    // then show the status page
+    new Fixtures(cy).getStatuspageInfo();
     cy.visit("/");
     cy.wait("@getStatuspageInfo");
     cy.get("h1").should("have.length", 1);
