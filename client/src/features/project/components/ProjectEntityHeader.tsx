@@ -20,7 +20,7 @@ import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
-import { useProjectMetadataQuery } from "../../projects/projectsKgApi";
+import { useProjectMetadataQuery } from "../../project/projectKgApi";
 import { ImagesLinks } from "../Project";
 import { getEntityImageUrl } from "../../../utils/helpers/HelperFunctions";
 

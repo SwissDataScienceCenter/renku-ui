@@ -21,7 +21,7 @@ import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 import {
   useProjectMetadataQuery,
   useUpdateProjectMutation,
-} from "../../projects/projectsKgApi";
+} from "../../project/projectKgApi";
 import { SettingRequiresKg } from "./ProjectSettingsUtils";
 import {
   extractRkErrorRemoteBranch,

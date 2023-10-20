@@ -47,7 +47,7 @@ import { useGetGroupByPathQuery } from "../../../features/projects/projectsApi";
 import {
   useProjectMetadataQuery,
   useUpdateProjectMutation,
-} from "../../../features/projects/projectsKgApi";
+} from "../../../features/project/projectKgApi";
 import { GitlabLinks } from "../../../utils/constants/Docs";
 import { computeVisibilities } from "../../../utils/helpers/HelperFunctions";
 import {

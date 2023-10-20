@@ -26,22 +26,68 @@ import {
   DatasetKg,
   DeleteProjectParams,
   DeleteProjectResponse,
+  EditAvatarProjectParams,
+  EditProjectParams,
   GetDatasetKgParams,
+  KgMetadataResponse,
   ProjectActivateIndexingResponse,
   ProjectIndexingStatusResponse,
+  ProjectKgParams,
+  UpdateProjectResponse,
 } from "./Project";
 import { ProjectIndexingStatuses } from "./projectEnums";
-import { projectsKgApi } from "../projects/projectsKgApi";
 
-interface errorDataMessage {
+type JsonLdValue<T> = {
+  "@value": T;
+};
+
+type JsonLdDate = {
+  "@type": string;
+  "@value": string;
+};
+
+type KgJsonLdResponse = {
+  "@id": string;
+  "@type": string[];
+  "https://swissdatasciencecenter.github.io/renku-ontology#projectPath": JsonLdValue<string>;
+  "http://schema.org/description": JsonLdValue<string>;
+  "http://schema.org/dateModified": JsonLdDate;
+  "http://schema.org/identifier": JsonLdValue<number>;
+  "http://schema.org/creator": {
+    "@id": string;
+    "@type": string[];
+    "http://schema.org/email": JsonLdValue<string>;
+    "http://schema.org/name": JsonLdValue<string>;
+  };
+  "http://schema.org/schemaVersion": JsonLdValue<string>;
+  "https://swissdatasciencecenter.github.io/renku-ontology#projectVisibility": JsonLdValue<string>;
+  "http://schema.org/name": JsonLdValue<string>;
+  "http://schema.org/image": string[];
+  "http://schema.org/keywords": string[];
+};
+
+type ProjectKgContent = "ld+json" | "json";
+
+interface ProjectKgWithIdParams extends ProjectKgParams {
+  projectId?: number;
+}
+
+export function kgProjectRequestHeaders(content: ProjectKgContent) {
+  return {
+    Accept: `application/${content}`,
+  };
+}
+
+interface ErrorDataMessage {
   data: {
     message: string;
   };
 }
+
 export const projectKgApi = createApi({
   reducerPath: "projectKg",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/kg/" }),
-  tagTypes: ["project", "project-indexing"],
+  tagTypes: ["project", "project-indexing", "project-kg-metadata"],
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     activateIndexing: builder.mutation<ProjectActivateIndexingResponse, number>(
@@ -116,7 +162,7 @@ export const projectKgApi = createApi({
       transformErrorResponse: (errorData) => {
         if (errorData.status === 404 && errorData.data && "message") {
           if (
-            (errorData as errorDataMessage).data.message?.includes(
+            (errorData as ErrorDataMessage).data.message?.includes(
               "project cannot be found"
             )
           )
@@ -132,13 +178,60 @@ export const projectKgApi = createApi({
             result.data.details?.status === ProjectIndexingStatuses.Success
           ) {
             dispatch(
-              projectsKgApi.util.invalidateTags([
+              projectKgApi.util.invalidateTags([
                 { type: "project-kg-metadata", id: projectId },
               ])
             );
           }
         });
       },
+    }),
+    projectJsonLd: builder.query<KgJsonLdResponse, ProjectKgParams>({
+      query: (params) => ({
+        url: `projects/${params.projectPath}`,
+        headers: kgProjectRequestHeaders("ld+json"),
+      }),
+    }),
+    projectMetadata: builder.query<KgMetadataResponse, ProjectKgWithIdParams>({
+      query: (params) => ({
+        url: `projects/${params.projectPath}`,
+        headers: kgProjectRequestHeaders("json"),
+      }),
+      providesTags: (result, error, params) => [
+        { type: "project-kg-metadata", id: params.projectId },
+      ],
+    }),
+    updateProject: builder.mutation<UpdateProjectResponse, EditProjectParams>({
+      query: ({ projectPathWithNamespace, project }) => {
+        return {
+          method: "PATCH",
+          url: `projects/${projectPathWithNamespace}`,
+          body: {
+            ...project,
+          },
+        };
+      },
+      invalidatesTags: (result, err, args) => [
+        { type: "project-kg-metadata", id: args.projectId },
+      ],
+    }),
+    updateAvatarProject: builder.mutation<
+      UpdateProjectResponse,
+      EditAvatarProjectParams
+    >({
+      query: ({ projectPathWithNamespace, avatar }) => {
+        const bodyFormData = new FormData();
+        bodyFormData.append("image", avatar);
+        return {
+          method: "PATCH",
+          url: `projects/${projectPathWithNamespace}`,
+          body: bodyFormData,
+          formData: true,
+        };
+      },
+      invalidatesTags: (result, err, args) => [
+        { type: "project-kg-metadata", id: args.projectId },
+      ],
     }),
   }),
 });
@@ -148,4 +241,8 @@ export const {
   useGetDatasetKgQuery,
   useGetProjectIndexingStatusQuery,
   useDeleteProjectMutation,
+  useProjectJsonLdQuery,
+  useProjectMetadataQuery,
+  useUpdateProjectMutation,
+  useUpdateAvatarProjectMutation,
 } = projectKgApi;

@@ -21,7 +21,7 @@ import { Helmet } from "react-helmet";
 import {
   useProjectJsonLdQuery,
   useProjectMetadataQuery,
-} from "../../projects/projectsKgApi";
+} from "../../project/projectKgApi";
 import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
 
 type ProjectJsonLdProps = {

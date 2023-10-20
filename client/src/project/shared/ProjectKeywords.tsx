@@ -30,7 +30,7 @@ import { useGetProjectIndexingStatusQuery } from "../../features/project/project
 import {
   useProjectMetadataQuery,
   useUpdateProjectMutation,
-} from "../../features/projects/projectsKgApi";
+} from "../../features/project/projectKgApi";
 import { SettingRequiresKg } from "../../features/project/components/ProjectSettingsUtils";
 import {
   extractRkErrorRemoteBranch,
