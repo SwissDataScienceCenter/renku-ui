@@ -21,7 +21,7 @@
     "start:dev": "nodemon dist/src/index.js",
     "start:dev-debug": "nodemon --inspect dist/src/index.js",
     "start:dev-debug-brk": "nodemon --inspect-brk dist/src/index.js",
-    "test": "jest",
+    "test": "jest --max_old_space_size=4096 --logHeapUsage",
     "test-watch": "jest --watch"
   },
   "dependencies": {
