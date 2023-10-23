@@ -35,7 +35,7 @@ const acceptedMessages: Record<string, Array<MessageData>> = {
 };
 
 describe("Test Websocket functions", () => {
-  it("Test getWsClientMessageHandler", async () => {
+  it("Test getWsClientMessageHandler", () => {
     const actions = [
       {
         message: {
