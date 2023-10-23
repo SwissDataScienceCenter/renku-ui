@@ -170,9 +170,7 @@ function SessionFileButtonLoading({ tooltip }: SessionFileButtonLoadingProps) {
   return (
     <>
       <span data-cy="check-notebook-icon" ref={ref}>
-        <span className="ms-2 pb-1">
-          <Loader size={19} inline />
-        </span>
+        <Loader size={19} inline />
       </span>
       <UncontrolledTooltip target={ref}>{tooltip}</UncontrolledTooltip>
     </>
