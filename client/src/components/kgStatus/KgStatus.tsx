@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Progress } from "reactstrap";
 
-import { projectKgApi } from "../../features/project/projectKgApi";
+import { projectKgApi } from "../../features/project/projectKg.api";
 import { ProjectIndexingStatuses } from "../../features/project/projectEnums";
 import { InfoAlert, WarnAlert } from "../Alert";
 import { Loader } from "../Loader";

@@ -17,11 +17,11 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
+import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
 import {
   useProjectMetadataQuery,
   useUpdateAvatarProjectMutation,
-} from "../../project/projectKgApi";
+} from "../projectKg.api";
 import { SettingRequiresKg } from "./ProjectSettingsUtils";
 import {
   extractRkErrorRemoteBranch,

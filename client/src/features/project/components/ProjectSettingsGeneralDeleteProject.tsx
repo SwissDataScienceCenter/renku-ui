@@ -35,7 +35,7 @@ import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../notifications/notifications.types";
-import { useDeleteProjectMutation } from "../projectKgApi";
+import { useDeleteProjectMutation } from "../projectKg.api";
 
 interface ProjectSettingsGeneralDeleteProjectProps {
   isMaintainer: boolean;

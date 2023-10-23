@@ -26,11 +26,11 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { trim } from "lodash";
-import { useGetProjectIndexingStatusQuery } from "../../features/project/projectKgApi";
+import { useGetProjectIndexingStatusQuery } from "../../features/project/projectKg.api";
 import {
   useProjectMetadataQuery,
   useUpdateProjectMutation,
-} from "../../features/project/projectKgApi";
+} from "../../features/project/projectKg.api";
 import { SettingRequiresKg } from "../../features/project/components/ProjectSettingsUtils";
 import {
   extractRkErrorRemoteBranch,

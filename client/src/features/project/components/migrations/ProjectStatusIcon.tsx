@@ -25,7 +25,7 @@ import {
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import { Url } from "../../../../utils/helpers/url";
-import { projectKgApi } from "../../projectKgApi";
+import { projectKgApi } from "../../projectKg.api";
 import { ProjectMigrationLevel } from "../../projectEnums";
 import { getRenkuLevel } from "../../utils/migrations";
 import { UncontrolledTooltip } from "reactstrap";

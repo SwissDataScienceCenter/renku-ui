@@ -30,7 +30,7 @@ import {
   slugFromTitle,
   verifyTitleCharacters,
 } from "../../utils/helpers/HelperFunctions";
-import { projectKgApi } from "../../features/project/projectKgApi";
+import { projectKgApi } from "../../features/project/projectKg.api";
 
 // ? reference https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names
 const RESERVED_TITLE_NAMES = [

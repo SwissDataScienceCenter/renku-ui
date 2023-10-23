@@ -30,7 +30,7 @@ import type {
   IDataset,
   StateModelProject,
 } from "../Project";
-import { useGetDatasetKgQuery } from "../projectKgApi";
+import { useGetDatasetKgQuery } from "../projectKg.api";
 import { useCoreSupport } from "../useProjectCoreSupport";
 
 type IDatasetCoordinator = {

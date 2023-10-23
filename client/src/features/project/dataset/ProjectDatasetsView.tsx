@@ -37,7 +37,7 @@ import ProjectDatasetShow from "./ProjectDatasetShow";
 import ProjectDatasetImport from "./ProjectDatasetImport";
 import { ProjectDatasetEdit, ProjectDatasetNew } from "./ProjectDatasetNewEdit";
 import type { ProjectDatasetEditProps } from "./ProjectDatasetNewEdit";
-import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
+import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { StateModelProject } from "../Project";
 import { useCoreSupport } from "../useProjectCoreSupport";

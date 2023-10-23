@@ -29,7 +29,7 @@ import {
 
 import { ProjectIndexingStatusResponse } from "../../Project";
 import { ProjectIndexingStatuses } from "../../projectEnums";
-import { projectKgApi } from "../../projectKgApi";
+import { projectKgApi } from "../../projectKg.api";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Docs } from "../../../../utils/constants/Docs";
 import {

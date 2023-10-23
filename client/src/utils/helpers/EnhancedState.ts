@@ -38,7 +38,7 @@ import { kgSearchApi } from "../../features/kgSearch";
 import { datasetFormSlice } from "../../features/project/dataset";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
-import { projectKgApi } from "../../features/project/projectKgApi";
+import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projectsApi";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import sessionsApi from "../../features/session/sessions.api";

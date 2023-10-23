@@ -17,7 +17,7 @@
  */
 
 import { sleep } from "../utils/helpers/HelperFunctions";
-import { projectKgApi } from "../features/project/projectKgApi";
+import { projectKgApi } from "../features/project/projectKg.api";
 
 function buildTreeLazy(
   name,

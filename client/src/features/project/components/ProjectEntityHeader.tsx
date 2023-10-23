@@ -18,9 +18,9 @@
 
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
-import { useGetProjectIndexingStatusQuery } from "../projectKgApi";
+import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
 import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
-import { useProjectMetadataQuery } from "../../project/projectKgApi";
+import { useProjectMetadataQuery } from "../projectKg.api";
 import { ImagesLinks } from "../Project";
 import { getEntityImageUrl } from "../../../utils/helpers/HelperFunctions";
 

@@ -32,7 +32,7 @@ import cx from "classnames";
 
 import type { EntityDescriptionContainerProps } from "../components/entities/Description";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
-import { useProjectMetadataQuery } from "../features/project/projectKgApi";
+import { useProjectMetadataQuery } from "../features/project/projectKg.api";
 import { Loader } from "../components/Loader";
 
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
