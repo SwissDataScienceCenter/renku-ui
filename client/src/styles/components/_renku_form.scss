@@ -168,6 +168,7 @@
 .form-select {
   border-radius: 8px;
   background-image: url("../assets/chevron-down.svg");
+  border: var(--bs-border-width) solid var(--bs-rk-border-input);
 }
 
 .form-rk-green {
@@ -198,4 +199,8 @@
   height: 40px;
   display: flex;
   align-items: center;
+}
+
+.input-group-text {
+  border-color: var(--bs-rk-border-input);
 }

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   faExclamationTriangle,
   faLink,
@@ -25,6 +24,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Redirect, useLocation } from "react-router";
 import { Link } from "react-router-dom";
@@ -32,6 +32,7 @@ import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { InfoAlert, RenkuAlert, WarnAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
+import { Loader } from "../../../components/Loader";
 import {
   ButtonWithMenu,
   GoBackButton,
@@ -43,16 +44,13 @@ import ProgressStepsIndicator, {
 } from "../../../components/progress/ProgressSteps";
 import { ShareLinkSessionModal } from "../../../components/shareLinkSession/ShareLinkSession";
 import { LockStatus, User } from "../../../model/RenkuModels";
-import {
-  isCloudStorageBucketValid,
-  isCloudStorageEndpointValid,
-} from "../../../notebooks/ObjectStoresConfig.present";
 import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
 import { Url } from "../../../utils/helpers/url";
+import { getProvidedSensitiveFields } from "../../project/utils/projectCloudStorage.utils";
 import { useStartSessionMutation } from "../sessions.api";
 import startSessionSlice, {
   setError,
@@ -65,6 +63,7 @@ import {
   useStartSessionOptionsSelector,
 } from "../startSessionOptionsSlice";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
+import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
 import AutostartSessionOptions from "./options/AutostartSessionOptions";
 import SessionBranchOption from "./options/SessionBranchOption";
 import SessionCloudStorageOption from "./options/SessionCloudStorageOption";
@@ -72,8 +71,6 @@ import SessionCommitOption from "./options/SessionCommitOption";
 import SessionDockerImage from "./options/SessionDockerImage";
 import SessionEnvironmentVariables from "./options/SessionEnvironmentVariables";
 import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions";
-import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
-import { Loader } from "../../../components/Loader";
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
@@ -251,7 +248,9 @@ function SessionStartError() {
   }
 
   const color =
-    error === "docker-image-building" || error === "session-class"
+    error === "docker-image-building" ||
+    error === "session-class" ||
+    error === "cloud-storage-credentials"
       ? "warning"
       : "danger";
 
@@ -292,6 +291,12 @@ function SessionStartError() {
         The session could not start because the commit{" "}
         <code>{errorMessage}</code> does not exist. Please select another commit
         to start a session.
+      </>
+    ) : error === "cloud-storage-credentials" ? (
+      <>
+        The session could not start because some cloud storage configurations
+        require credentials. Please add the requested credentials or deactivate
+        the corresponding configurations to start a session.
       </>
     ) : (
       <>The session could not start for an unknown reason.</>
@@ -599,8 +604,8 @@ function StartNewSessionOptions() {
       <SessionBranchOption />
       <SessionCommitOption />
       <StartNotebookServerOptions />
-      <SessionEnvironmentVariables />
       <SessionCloudStorageOption />
+      <SessionEnvironmentVariables />
     </>
   );
 }
@@ -634,7 +639,23 @@ function StartSessionButton() {
     storage,
   } = useStartSessionOptionsSelector();
 
-  const enabled = dockerImageStatus === "available";
+  const missingCredentialsStorage = useMemo(
+    () =>
+      cloudStorage
+        .filter(({ active }) => active)
+        .filter(({ configuration, sensitive_fields }) => {
+          const providedSensitiveFields =
+            getProvidedSensitiveFields(configuration);
+          const requiredSensitiveFields = sensitive_fields?.filter(({ name }) =>
+            providedSensitiveFields.includes(name)
+          );
+          return requiredSensitiveFields?.find(({ value }) => !value);
+        }),
+    [cloudStorage]
+  );
+
+  const enabled =
+    dockerImageStatus === "available" && missingCredentialsStorage.length == 0;
 
   const dispatch = useDispatch();
 
@@ -643,16 +664,7 @@ function StartSessionButton() {
   });
 
   const onStart = useCallback(() => {
-    const cloudStorageValidated = cloudStorage.filter(
-      ({ bucket, endpoint }) => {
-        const isEndpointValid = isCloudStorageEndpointValid({ endpoint });
-        const hasDuplicate =
-          !!bucket &&
-          cloudStorage.filter((mount) => mount.bucket === bucket).length > 1;
-        const isBucketValid = isCloudStorageBucketValid({ bucket });
-        return isEndpointValid && !hasDuplicate && isBucketValid;
-      }
-    );
+    const cloudStorageValidated = cloudStorage.filter(({ active }) => active);
 
     const environmentVariablesRecord = environmentVariables
       .filter(({ name, value }) => name && value)
@@ -710,7 +722,7 @@ function StartSessionButton() {
   }, []);
 
   const startSessionButton = (
-    <Button disabled={!enabled} onClick={onStart}>
+    <Button disabled={!enabled} onClick={onStart} type="button">
       <FontAwesomeIcon className="me-2" icon={faPlay} />
       Start Session
     </Button>
@@ -726,6 +738,17 @@ function StartSessionButton() {
           />
           The image for this commit is not available. See the{" "}
           <strong>Docker Image</strong> section for details.
+        </div>
+      )}
+
+      {missingCredentialsStorage.length > 0 && (
+        <div className={cx("text-danger", "pb-2")}>
+          <FontAwesomeIcon className="me-1" icon={faExclamationTriangle} />
+          Please provide credentials for the following cloud storage
+          {missingCredentialsStorage.length > 1 && "s"}:{" "}
+          <strong>
+            {missingCredentialsStorage.map(({ name }) => name).join(", ")}
+          </strong>
         </div>
       )}
 
@@ -747,7 +770,11 @@ function StartSessionButton() {
 
         {(dockerImageStatus === "not-available" ||
           dockerImageStatus === "building") && (
-          <Button color="primary" onClick={onStart}>
+          <Button
+            color="primary"
+            disabled={missingCredentialsStorage.length > 0}
+            onClick={onStart}
+          >
             <FontAwesomeIcon className="me-2" icon={faPlay} />
             Start with base image
           </Button>

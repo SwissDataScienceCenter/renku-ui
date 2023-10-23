@@ -1,12 +1,11 @@
+import { Preview } from "@storybook/react";
 import { enhancer as withReduxEnhancer } from "addon-redux";
-
-import "../src/styles/index.scss";
-
+import { Provider } from "react-redux";
+import { MemoryRouter } from "react-router-dom";
 import AppContext from "../src/utils/context/appContext";
 import { createStore } from "../src/utils/helpers/EnhancedState";
-import { MemoryRouter } from "react-router-dom";
-import { Preview } from "@storybook/react";
-import { Provider } from "react-redux";
+
+import "../src/styles/index.scss";
 
 // This how the documentation recommends introducing the store into storybook
 // https://storybook.js.org/addons/@dreamworld/addon-redux/

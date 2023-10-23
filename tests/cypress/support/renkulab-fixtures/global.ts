@@ -24,17 +24,30 @@ import { FixturesConstructor } from "./fixtures";
 
 function Global<T extends FixturesConstructor>(Parent: T) {
   return class NewSessionFixtures extends Parent {
-    getStatuspageInfo(
+    getStatuspageInfo({
       name = "getStatuspageInfo",
-      fixture = "statuspage-operational.json"
-    ) {
-      const interceptResponse = fixture
-        ? { fixture: `statuspage/${fixture}` }
-        : { body: {} };
-      cy.intercept(
-        "https://*.statuspage.io/api/v2/summary.json",
-        interceptResponse
-      ).as(name);
+      fixture = "statuspage-operational.json",
+      overrides,
+    }: {
+      name?: string;
+      fixture?: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      overrides?: any;
+    } = {}) {
+      if (overrides == null) {
+        const interceptResponse = { fixture: `statuspage/${fixture}` };
+        cy.intercept(
+          "https://*.statuspage.io/api/v2/summary.json",
+          interceptResponse
+        ).as(name);
+        return this;
+      }
+      cy.fixture(`statuspage/${fixture}`).then((baseResponse) => {
+        const combinedResponse = { ...baseResponse, ...overrides };
+        cy.intercept("https://*.statuspage.io/api/v2/summary.json", {
+          body: combinedResponse,
+        }).as(name);
+      });
       return this;
     }
 
@@ -69,17 +82,22 @@ function Global<T extends FixturesConstructor>(Parent: T) {
         coreVersionsName: "getCoreVersions",
         notebooksVersionsName: "getNotebooksVersions",
         uiVersionName: "getUiVersion",
+      },
+      fixtures = {
+        core: "version-core.json",
+        notebooks: "version-notebooks.json",
+        ui: "version-ui.json",
       }
     ) {
       const { coreVersionsName, notebooksVersionsName, uiVersionName } = names;
       cy.intercept("/ui-server/api/versions", {
-        fixture: "version-ui.json",
+        fixture: fixtures.ui,
       }).as(uiVersionName);
       cy.intercept("/ui-server/api/renku/versions", {
-        fixture: "version-core.json",
+        fixture: fixtures.core,
       }).as(coreVersionsName);
       cy.intercept("/ui-server/api/notebooks/version", {
-        fixture: "version-notebooks.json",
+        fixture: fixtures.notebooks,
       }).as(notebooksVersionsName);
 
       return this;

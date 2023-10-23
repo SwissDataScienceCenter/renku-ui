@@ -41,6 +41,8 @@
       }
     },
     "tutorialLink": "https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html",
-    "projects": []
+    "showcase": {
+      "enabled": false
+    }
   }
 }

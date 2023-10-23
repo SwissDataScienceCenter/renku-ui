@@ -156,10 +156,12 @@ function EntityHeader({
             hideEmptyTags={hideEmptyTags}
           />
         </div>
-        <div className="entity-action d-flex align-items-baseline gap-1">
-          {mainButton}
-          {otherButtons}
-        </div>
+        {showFullHeader ? (
+          <div className="entity-action d-flex align-items-baseline gap-1">
+            {mainButton}
+            {otherButtons}
+          </div>
+        ) : null}
         <div className="entity-type-visibility align-items-baseline">
           <EntityLabel type={itemType} workflowType={null} />
           {visibility ? (

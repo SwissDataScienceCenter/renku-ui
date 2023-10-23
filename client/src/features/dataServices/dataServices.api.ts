@@ -24,6 +24,7 @@ export const dataServicesApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "/ui-server/api/data",
   }),
+  tagTypes: ["ResourcePool"],
   endpoints: (builder) => ({
     getResourcePools: builder.query<ResourcePool[], ResourcePoolsQueryParams>({
       query: ({ cpuRequest, gpuRequest, memoryRequest, storageRequest }) => {
@@ -38,6 +39,7 @@ export const dataServicesApi = createApi({
           params,
         };
       },
+      providesTags: ["ResourcePool"],
     }),
   }),
 });

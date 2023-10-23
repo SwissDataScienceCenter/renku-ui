@@ -423,9 +423,31 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    getProjectKG(name = "getProjectKG", result = "project/project-kg.json") {
-      const fixture = this.useMockedData ? { fixture: result } : undefined;
-      cy.intercept("GET", "/ui-server/api/kg/projects/**", fixture).as(name);
+    getProjectKG(params?: {
+      name?: string;
+      identifier?: string;
+      result?: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      overrides?: any;
+    }) {
+      const {
+        name = "getProjectKG",
+        identifier = "**",
+        result = "project/project-kg.json",
+        overrides,
+      } = params || {};
+      const interceptUrl = `/ui-server/api/kg/projects/${identifier}`;
+      if (overrides == null) {
+        const fixture = { fixture: result };
+        cy.intercept("GET", interceptUrl, fixture).as(name);
+        return this;
+      }
+      cy.fixture(result).then((baseResult) => {
+        const combinedResult = { ...baseResult, ...overrides };
+        cy.intercept("GET", interceptUrl, {
+          body: combinedResult,
+        }).as(name);
+      });
       return this;
     }
 

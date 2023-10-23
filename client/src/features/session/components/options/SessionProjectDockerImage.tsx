@@ -92,7 +92,7 @@ export default function SessionProjectDockerImage() {
             The Docker image build failed. You can use the base image to start a
             session, but project-specific dependencies will not be available.
           </div>
-          <div>
+          <div className="mt-3">
             <BuildAgainButton />
             <ViewPipelineLink />
           </div>
@@ -107,7 +107,7 @@ export default function SessionProjectDockerImage() {
             No Docker image found. You can use the base image to start a
             session, but project-specific dependencies will not be available.
           </div>
-          <div>
+          <div className="mt-3">
             <RunPipeline />
           </div>
         </div>
@@ -139,7 +139,7 @@ export default function SessionProjectDockerImage() {
           project-specific dependencies will not be available.
         </div>
       </div>
-      <div>
+      <div className="mt-3">
         <ViewPipelineLink />
       </div>
     </div>

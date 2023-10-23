@@ -52,7 +52,7 @@ function ListCard({
       data-cy="list-card"
       className="col text-decoration-none p-2 rk-search-result-card"
     >
-      <Link to={url} className="col text-decoration-none">
+      <div className="col text-decoration-none">
         <div className="card card-entity">
           <div
             style={imageStyles}
@@ -60,52 +60,56 @@ function ListCard({
               !imageUrl ? `card-header-entity--${itemType}` : ""
             }`}
           >
-            {!imageUrl ? (
-              <div className="card-bg-title user-select-none">{title}</div>
-            ) : null}
+            <Link to={url}>
+              {!imageUrl ? (
+                <div className="card-bg-title user-select-none">{title}</div>
+              ) : null}
+            </Link>
           </div>
           <EntityButton type={itemType} slug={path as string} />
           <div className="card-body">
-            <div
-              className="card-title text-truncate lh-sm"
-              data-cy="list-card-title"
-            >
-              {title}
-            </div>
-            <Slug multiline={false} slug={slug} />
-            <EntityCreators
-              display="list"
-              creators={creators}
-              itemType={itemType}
-            />
-            <EntityDescription
-              description={description}
-              isHeightFixed={true}
-              showSuggestion={false}
-              className="text-rk-text-light"
-            />
-            <EntityTags
-              tagList={tagList}
-              multiline={false}
-              hideEmptyTags={false}
-            />
-            <div className="d-flex align-items-center gap-3 card-small-text">
-              <EntityLabel type={itemType} workflowType={null} />
-              <VisibilityIcon
-                visibility={visibility}
-                className={colorByType.colorText}
+            <Link to={url} className="text-decoration-none">
+              <div
+                className="card-title text-truncate lh-sm"
+                data-cy="list-card-title"
+              >
+                {title}
+              </div>
+              <Slug multiline={false} slug={slug} />
+              <EntityCreators
+                display="list"
+                creators={creators}
+                itemType={itemType}
               />
-            </div>
-            <p className="card-text my-1">
-              <TimeCaption
+              <EntityDescription
+                description={description}
+                isHeightFixed={true}
+                showSuggestion={false}
                 className="text-rk-text-light"
-                datetime={timeCaption}
-                prefix={labelCaption || "Updated"}
               />
-            </p>
+              <EntityTags
+                tagList={tagList}
+                multiline={false}
+                hideEmptyTags={false}
+              />
+              <div className="d-flex align-items-center gap-3 card-small-text">
+                <EntityLabel type={itemType} workflowType={null} />
+                <VisibilityIcon
+                  visibility={visibility}
+                  className={colorByType.colorText}
+                />
+              </div>
+              <p className="card-text my-1">
+                <TimeCaption
+                  className="text-rk-text-light"
+                  datetime={timeCaption}
+                  prefix={labelCaption || "Updated"}
+                />
+              </p>
+            </Link>
           </div>
         </div>
-      </Link>
+      </div>
     </div>
   );
 }

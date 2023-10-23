@@ -1,0 +1,33 @@
+.sectionShowcase {
+  --swiper-pagination-bullet-size: 16px;
+  --swiper-pagination-bottom: 1px;
+}
+
+.sectionShowcaseCard {
+  --bs-border-width: 2px;
+  --bs-border-color: #ddd;
+  border-radius: 8px;
+  width: 372px;
+  height: 566px;
+}
+
+.cardBody {
+  min-height: 320px;
+  margin: 1.5rem 2rem 0.5rem;
+}
+
+.cardHeaderEntity {
+  // These dimensions come from ImageEditor.CARD_IMAGE_DIMENSIONS, scaled to the width of the card
+  width: 369px;
+  height: 209px;
+  background-size: cover;
+}
+
+.cardHeaderEntity__missing {
+  background-image: url("../styles/assets/projectBackgroundSmall.png");
+}
+
+.sectionShowcaseSwiper {
+  --swiper-navigation-sides-offset: 0px;
+  --swiper-theme-color: #01192d;
+}
