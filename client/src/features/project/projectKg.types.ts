@@ -1,15 +1,15 @@
 import { ProjectKgParams } from "./Project";
 
-export type JsonLdValue<T> = {
+export interface JsonLdValue<T> {
   "@value": T;
-};
+}
 
-export type JsonLdDate = {
+export interface JsonLdDate {
   "@type": string;
   "@value": string;
-};
+}
 
-export type KgJsonLdResponse = {
+export interface KgJsonLdResponse {
   "@id": string;
   "@type": string[];
   "https://swissdatasciencecenter.github.io/renku-ontology#projectPath": JsonLdValue<string>;
@@ -27,7 +27,7 @@ export type KgJsonLdResponse = {
   "http://schema.org/name": JsonLdValue<string>;
   "http://schema.org/image": string[];
   "http://schema.org/keywords": string[];
-};
+}
 
 export type ProjectKgContent = "ld+json" | "json";
 
