@@ -17,8 +17,6 @@
  */
 
 import Fixtures from "../support/renkulab-fixtures";
-import "../support/utils";
-import "../support/sessions/gui_commands";
 
 describe("launch autostart sessions", () => {
   const fixtures = new Fixtures(cy);

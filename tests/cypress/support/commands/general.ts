@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,17 +16,19 @@
  * limitations under the License.
  */
 
-import "cypress-file-upload";
+function getDataCy(value: string) {
+  return cy.get(`[data-cy=${value}]`);
+}
 
-import registerGeneralCommands from "./commands/general";
-import registerProjectsCommands from "./commands/projects";
-import registerDatasetsCommands from "./commands/datasets";
+export default function registerGeneralCommands() {
+  Cypress.Commands.add("getDataCy", getDataCy);
+}
 
-registerGeneralCommands();
-registerProjectsCommands();
-registerDatasetsCommands();
-
-Cypress.on("uncaught:exception", () => {
-  // returning false here prevents Cypress from failing the test
-  return false;
-});
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Cypress {
+    interface Chainable {
+      getDataCy: typeof getDataCy;
+    }
+  }
+}
