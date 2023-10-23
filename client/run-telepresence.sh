@@ -18,6 +18,8 @@
 
 set -e
 
+# script directory
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 CURRENT_CONTEXT=`kubectl config current-context`
 WELCOME_MESSAGE="## Welcome to Renku through telepresence
@@ -68,11 +70,11 @@ fi
 
 if [ -z "$HOMEPAGE_SHOW_PROJECTS" ]
 then
-  HOMEPAGE_PROJECTS="[]"
-  echo "HOMEPAGE_SHOW_PROJECTS is set to '${HOMEPAGE_PROJECTS}'"
+  HOMEPAGE_SHOWCASE='{"enabled": false}'
+  echo "HOMEPAGE_SHOWCASE is set to '${HOMEPAGE_SHOWCASE}'"
 else
-  HOMEPAGE_PROJECTS='[{"projectPath": "julia/flights-tutorial-julia"}, {"projectPath": "cramakri/covid-19-dashboard"}]'
-  echo "HOMEPAGE_SHOW_PROJECTS is set to '${HOMEPAGE_PROJECTS}'"
+  HOMEPAGE_SHOWCASE=`cat $SCRIPT_DIR/../dev/telepresence-showcase-projects.json`
+  echo "HOMEPAGE_SHOWCASE is set to content of '$SCRIPT_DIR/../dev/telepresence-showcase-projects.json'"
 fi
 
 if [[ -n $PR ]]
@@ -172,7 +174,7 @@ tee > ./public/config.json << EOF
       }
     },
     "tutorialLink": "${HOMEPAGE_TUTORIAL_LINK}",
-    "projects": ${HOMEPAGE_PROJECTS}
+    "showcase": ${HOMEPAGE_SHOWCASE}
   }
 }
 EOF

@@ -1,0 +1,8 @@
+/* Reuse the accordion CSS styles for the chevron */
+.chevron {
+  transition: var(--bs-accordion-btn-icon-transition);
+
+  &IsOpen {
+    transform: var(--bs-accordion-btn-icon-transform);
+  }
+}

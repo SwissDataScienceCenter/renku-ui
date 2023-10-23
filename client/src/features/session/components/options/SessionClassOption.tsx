@@ -39,7 +39,7 @@ import { Loader } from "../../../../components/Loader";
 import {
   ResourceClass,
   ResourcePool,
-} from "../../../dataServices/dataServices";
+} from "../../../dataServices/dataServices.types";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
 import { ProjectConfig } from "../../../project/Project";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";

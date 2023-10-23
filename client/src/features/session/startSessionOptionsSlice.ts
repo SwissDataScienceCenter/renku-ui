@@ -22,7 +22,7 @@ import { MIN_SESSION_STORAGE_GB } from "./startSessionOptions.constants";
 import {
   DockerImageBuildStatus,
   DockerImageStatus,
-  SessionCloudStorageMount,
+  SessionCloudStorage,
   SessionEnvironmentVariable,
   StartSessionOptions,
 } from "./startSessionOptions.types";
@@ -45,13 +45,16 @@ export const startSessionOptionsSlice = createSlice({
   name: "startSessionOptions",
   initialState,
   reducers: {
-    addCloudStorageMount: (state) => {
-      state.cloudStorage.push({ bucket: "", endpoint: "" });
+    addCloudStorageItem: (
+      state,
+      action: PayloadAction<SessionCloudStorage>
+    ) => {
+      state.cloudStorage.push(action.payload);
     },
     addEnvironmentVariable: (state) => {
       state.environmentVariables.push({ name: "", value: "" });
     },
-    removeCloudStorageMount: (
+    removeCloudStorageItem: (
       state,
       action: PayloadAction<{ index: number }>
     ) => {
@@ -69,6 +72,9 @@ export const startSessionOptionsSlice = createSlice({
       state.commit = "";
       // Also reset the docker image status when a branch is set
       state.dockerImageStatus = "unknown";
+    },
+    setCloudStorage: (state, action: PayloadAction<SessionCloudStorage[]>) => {
+      state.cloudStorage.splice(0, -1, ...action.payload);
     },
     setCommit: (state, action: PayloadAction<string>) => {
       state.commit = action.payload;
@@ -100,14 +106,11 @@ export const startSessionOptionsSlice = createSlice({
     setStorage: (state, action: PayloadAction<number>) => {
       state.storage = action.payload;
     },
-    updateCloudStorageMount: (
+    updateCloudStorageItem: (
       state,
-      action: PayloadAction<{
-        index: number;
-        mount: SessionCloudStorageMount;
-      }>
+      action: PayloadAction<{ index: number; storage: SessionCloudStorage }>
     ) => {
-      state.cloudStorage[action.payload.index] = action.payload.mount;
+      state.cloudStorage[action.payload.index] = action.payload.storage;
     },
     updateEnvironmentVariable: (
       state,
@@ -124,11 +127,12 @@ export const startSessionOptionsSlice = createSlice({
 });
 
 export const {
-  addCloudStorageMount,
+  addCloudStorageItem,
   addEnvironmentVariable,
-  removeCloudStorageMount,
+  removeCloudStorageItem,
   removeEnvironmentVariable,
   setBranch,
+  setCloudStorage,
   setCommit,
   setDefaultUrl,
   setDockerImageBuildStatus,
@@ -137,7 +141,7 @@ export const {
   setPinnedDockerImage,
   setSessionClass,
   setStorage,
-  updateCloudStorageMount,
+  updateCloudStorageItem,
   updateEnvironmentVariable,
   reset,
 } = startSessionOptionsSlice.actions;

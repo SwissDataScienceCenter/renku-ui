@@ -18,7 +18,7 @@
 
 export interface StartSessionOptions {
   branch: string;
-  cloudStorage: SessionCloudStorageMount[];
+  cloudStorage: SessionCloudStorage[];
   commit: string;
   defaultUrl: string;
   dockerImageBuildStatus: DockerImageBuildStatus;
@@ -30,11 +30,18 @@ export interface StartSessionOptions {
   storage: number;
 }
 
-export interface SessionCloudStorageMount {
-  accessKey?: string;
-  bucket: string;
-  endpoint: string;
-  secretKey?: string;
+export interface SessionCloudStorage {
+  active: boolean;
+  configuration: Record<string, string | undefined>;
+  name: string;
+  private: boolean;
+  readonly: boolean;
+  source_path: string;
+  sensitive_fields?: { name: string; help: string; value: string }[];
+  storage_id: string | null;
+  storage_type: string;
+  supported: boolean;
+  target_path: string;
 }
 
 // ? See: ./components/options/SessionProjectDockerImage.md

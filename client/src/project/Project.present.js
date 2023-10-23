@@ -39,6 +39,7 @@ import {
   Nav,
   NavItem,
   Row,
+  UncontrolledTooltip,
 } from "reactstrap";
 import { ContainerWrap } from "../App";
 import { ACCESS_LEVELS } from "../api-client";
@@ -58,6 +59,7 @@ import {
 } from "../features/project";
 import ProjectPageTitle from "../features/project/components/ProjectPageTitle";
 import { ProjectSettingsGeneral } from "../features/project/components/ProjectSettings";
+import ProjectSettingsCloudStorage from "../features/project/components/ProjectSettingsCloudStorage";
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import ProjectSessionsRouter from "../features/session/components/ProjectSessionsRouter";
 import { SpecialPropVal } from "../model/Model";
@@ -69,7 +71,7 @@ import { CloneButton } from "./clone/CloneButton";
 import GitLabConnectButton, {
   externalUrlToGitLabIdeUrl,
 } from "./components/GitLabConnect";
-import { ProjectSettingsSessions } from "./components/ProjectSettingsSessions";
+import ProjectSettingsSessions from "./components/ProjectSettingsSessions";
 import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
@@ -116,7 +118,10 @@ function ToggleForkModalButton({
       onClick={toggleModal}
     >
       <FontAwesomeIcon size="sm" icon={faCodeBranch} /> Fork
-      <ThrottledTooltip target="fork-project" tooltip="Fork" />
+      <UncontrolledTooltip
+        target="fork-project"
+        tooltip="Fork your own copy of this project"
+      />
     </Button>
   );
 }
@@ -807,6 +812,12 @@ function ProjectSettingsNav(props) {
       <NavItem>
         <RenkuNavLink to={props.settingsSessionsUrl} title="Sessions" />
       </NavItem>
+      <NavItem>
+        <RenkuNavLink
+          to={props.settingsCloudStorageUrl}
+          title="Cloud Storage"
+        />
+      </NavItem>
     </Nav>
   );
 }
@@ -826,13 +837,12 @@ function ProjectSettings(props) {
                 return <ProjectSettingsGeneral {...props} />;
               }}
             />
-            <Route
-              exact
-              path={props.settingsSessionsUrl}
-              render={() => {
-                return <ProjectSettingsSessions {...props} />;
-              }}
-            />
+            <Route exact path={props.settingsSessionsUrl}>
+              <ProjectSettingsSessions />
+            </Route>
+            <Route exact path={props.settingsCloudStorageUrl}>
+              <ProjectSettingsCloudStorage />
+            </Route>
           </Switch>
         </Col>
       </Row>

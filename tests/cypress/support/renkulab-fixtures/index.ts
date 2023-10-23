@@ -19,6 +19,7 @@
 /**
  * Common fixtures defined in one place.
  */
+import { CloudStorage } from "./cloudStorage";
 import { Dashboard } from "./dashboard";
 import { DataServices } from "./dataServices";
 import { Datasets } from "./datasets";
@@ -39,9 +40,13 @@ const Fixtures = NewProject(
     Dashboard(
       Sessions(
         DataServices(
-          Datasets(
-            Projects(
-              Session(User(Versions(Workflows(KgSearch(Global(BaseFixtures))))))
+          CloudStorage(
+            Datasets(
+              Projects(
+                Session(
+                  User(Versions(Workflows(KgSearch(Global(BaseFixtures)))))
+                )
+              )
             )
           )
         )

@@ -18,10 +18,10 @@
 
 import cx from "classnames";
 import { useCallback, useContext, useMemo, useState } from "react";
-import { ChevronDown } from "react-bootstrap-icons";
 import { useDispatch } from "react-redux";
 import { Collapse } from "reactstrap";
 import { RenkuAlert } from "../../../components/Alert";
+import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import AppContext from "../../../utils/context/appContext";
 import { validateDashboardMessageParams } from "../message/dashboardMessage.utils";
@@ -83,18 +83,10 @@ function DashboardMessageMore({ additionalText }: { additionalText: string }) {
     <>
       <p>
         <a
-          className={cx(
-            styles.readMore,
-            "d-inline-block",
-            "cursor-pointer",
-            "accordion"
-          )}
+          className={cx(styles.readMore, "d-inline-block", "cursor-pointer")}
           onClick={toggleShow}
         >
-          Read more...{" "}
-          <ChevronDown
-            className={cx(styles.chevron, show && styles.chevronIsOpen, "ms-1")}
-          />
+          Read more... <ChevronFlippedIcon className="ms-1" flipped={show} />
         </a>
       </p>
       <Collapse isOpen={show}>

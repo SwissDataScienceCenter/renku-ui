@@ -1,0 +1,16 @@
+{
+  "name": "renku-notebooks",
+  "versions": [
+    {
+      "data": {
+        "anonymousSessionsEnabled": true,
+        "cloudstorageEnabled": {
+          "azure_blob": false,
+          "s3": true
+        },
+        "sshEnabled": false
+      },
+      "version": "1.15.2"
+    }
+  ]
+}

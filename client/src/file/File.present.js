@@ -18,8 +18,10 @@
 
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
 import DOMPurify from "dompurify";
 import { isEqual } from "lodash";
+import styles from "./File.module.scss";
 
 import React, { memo, useState } from "react";
 import {
@@ -40,7 +42,7 @@ import { Loader } from "../components/Loader";
 import { TimeCaption } from "../components/TimeCaption";
 import LazyNotebookPreview from "../components/notebook/LazyNotebookRender";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
-import { FileAndLineageSwitch } from "./FileAndLineageComponents";
+import FileAndLineageSwitch from "./FileAndLineageComponents";
 import { FilePreview } from "./index";
 
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
@@ -111,14 +113,19 @@ class FileCard extends React.Component {
                 <small> {formatBytes(this.props.fileSize)}</small>
               </div>
             ) : null}
-            {/* <span className="fileBarIconButton"> */}
             <Clipboard
               clipboardText={this.props.filePath}
               className="icon-link d-flex"
             />
-            {/* </span> */}
           </div>
-          <div className="d-flex align-items-center">
+          <div
+            className={cx(
+              styles.fileIconLinks,
+              "d-flex",
+              "align-items-center",
+              "gap-3"
+            )}
+          >
             {this.props.buttonShareLinkSession}
             {this.props.buttonDownload}
             {this.props.buttonJupyter}

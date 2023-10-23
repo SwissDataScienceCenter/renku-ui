@@ -18,7 +18,7 @@
 
 import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
-import { ResourcePool } from "../../../dataServices/dataServices";
+import { ResourcePool } from "../../../dataServices/dataServices.types";
 import { setSessionClass } from "../../startSessionOptionsSlice";
 import { setError } from "../../startSession.slice";
 
