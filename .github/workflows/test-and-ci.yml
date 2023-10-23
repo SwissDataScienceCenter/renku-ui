@@ -101,9 +101,6 @@ jobs:
   run-e2e:
     needs: lint-e2e
     runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: ./tests
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -112,7 +109,7 @@ jobs:
         with:
           build: npm run install-client
           runTests: false
-          # working-directory: tests
+          working-directory: tests
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
@@ -120,7 +117,7 @@ jobs:
           start: npm run start
           wait-on: http://localhost:3000
           wait-on-timeout: 300
-          # working-directory: tests
+          working-directory: tests
       - uses: actions/upload-artifact@v3
         if: failure() # Cypress screenshots will be generated only if the test failed, thus we store screenshots only on failures
         with:
