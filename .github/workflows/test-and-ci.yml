@@ -10,6 +10,9 @@ concurrency:
 jobs:
   test-client:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./client
     steps:
       - uses: actions/checkout@v3
       - name: Set up node ${{ matrix.node-version }}
@@ -17,61 +20,48 @@ jobs:
         with:
           node-version: "18.17.1"
       - name: Install client dependencies
-        run: |
-          cd client
-          npm install
+        run: npm clean-install
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
       - name: Run test client
-        run: |
-          cd client
-          npm test
+        run: npm test
         env:
           CI: true
       - name: Run format client
-        run: |
-          cd client
-          npm run format-check
+        run: npm run format-check
       - name: Run lint client
-        run: |
-          cd client
-          npm run lint
+        run: npm run lint
       - name: Build client
-        run: |
-          cd client
-          npm run build
+        run: npm run build
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
 
   test-server:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./server
     steps:
       - uses: actions/checkout@v3
       - name: Set up node ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: "18.17.1"
-      - name: Install server dependencies and build
-        run: |
-          cd server
-          npm install
-          npm run build
+      - name: Install server dependencies
+        run: npm clean-install
+      - name: Build server
+        run: npm run build
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
       - name: Run test server
-        run: |
-          cd server
-          npm test
+        run: npm test
         env:
           CI: true
+          NODE_OPTIONS: "--max-old-space-size=4096"
       - name: Run format server
-        run: |
-          cd server
-          npm run format-check
+        run: npm run format-check
       - name: Run lint server
-        run: |
-          cd server
-          npm run lint
+        run: npm run lint
 
   test-storybook:
     timeout-minutes: 60
@@ -85,12 +75,15 @@ jobs:
         with:
           node-version: "18.17.1"
       - name: Install dependencies
-        run: npm install
+        run: npm clean-install
       - name: Build Storybook and run tests
         run: npm run storybook-compile-and-test
 
   lint-e2e:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./tests
     steps:
       - uses: actions/checkout@v3
       - name: Set up node ${{ matrix.node-version }}
@@ -98,17 +91,11 @@ jobs:
         with:
           node-version: "18.17.1"
       - name: Install project e2e dependencies
-        run: |
-          cd tests
-          npm install
+        run: npm clean-install
       - name: Run format e2e
-        run: |
-          cd tests
-          npm run format-check
+        run: npm run format-check
       - name: Run lint e2e
-        run: |
-          cd tests
-          npm run lint
+        run: npm run lint
 
   run-e2e:
     needs: lint-e2e
