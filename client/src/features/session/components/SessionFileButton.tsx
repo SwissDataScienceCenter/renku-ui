@@ -59,11 +59,7 @@ export default function SessionFileButton({
     : null;
 
   if (isLoading) {
-    return (
-      <span className="ms-2 pb-1">
-        <Loader size={19} inline />
-      </span>
-    );
+    return <Loader size={19} inline />;
   }
 
   if (runningSession == null) {
