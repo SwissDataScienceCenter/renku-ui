@@ -56,9 +56,8 @@ jobs:
       - name: Run test server
         run: npm test
         env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
-        env:
           CI: true
+          NODE_OPTIONS: "--max-old-space-size=4096"
       - name: Run format server
         run: npm run format-check
       - name: Run lint server
