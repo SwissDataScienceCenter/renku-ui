@@ -77,7 +77,10 @@ export default function SessionFileButton({
     };
 
     return (
-      <SessionFileButtonComponent target={target} tooltip="Start a session" />
+      <SessionFileButtonComponent
+        target={target}
+        tooltip="Start a session and open this notebook"
+      />
     );
   }
 
@@ -104,7 +107,7 @@ export default function SessionFileButton({
       <SessionFileButtonComponent
         hasOrangeAccent
         target={target}
-        tooltip="Connect to JupyterLab"
+        tooltip="Open this notebook in JupyterLab"
       />
     );
   }
