@@ -26,20 +26,20 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { trim } from "lodash";
-import { useGetProjectIndexingStatusQuery } from "../../features/project/projectKg.api";
 import {
-  useProjectMetadataQuery,
-  useUpdateProjectMutation,
-} from "../../features/project/projectKg.api";
-import { SettingRequiresKg } from "../../features/project/components/ProjectSettingsUtils";
-import {
-  extractRkErrorRemoteBranch,
   RtkErrorAlert,
+  extractRkErrorRemoteBranch,
 } from "../../components/errors/RtkErrorAlert";
-import ProjectWarningForMerge from "../../features/project/components/ProjectWarningForMerge";
 import InlineSubmitInput, {
   InputCard,
 } from "../../components/inlineSubmitInput/InlineSubmitInput";
+import { SettingRequiresKg } from "../../features/project/components/ProjectSettingsUtils";
+import ProjectWarningForMerge from "../../features/project/components/ProjectWarningForMerge";
+import {
+  useGetProjectIndexingStatusQuery,
+  useProjectMetadataQuery,
+  useUpdateProjectMutation,
+} from "../../features/project/projectKg.api";
 
 export function sortedKeywordsList(keywordsListOrNull?: string[]) {
   const keywordsList = keywordsListOrNull || [];

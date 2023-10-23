@@ -43,7 +43,7 @@ import {
   ProjectKgWithIdParams,
 } from "./projectKg.types";
 
-export function kgProjectRequestHeaders(content: ProjectKgContent) {
+function kgProjectRequestHeaders(content: ProjectKgContent) {
   return {
     Accept: `application/${content}`,
   };

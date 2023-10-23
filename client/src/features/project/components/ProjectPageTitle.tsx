@@ -19,10 +19,10 @@
 import { Helmet } from "react-helmet";
 
 import {
+  useGetProjectIndexingStatusQuery,
   useProjectJsonLdQuery,
   useProjectMetadataQuery,
 } from "../projectKg.api";
-import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
 
 type ProjectJsonLdProps = {
   projectId: number;

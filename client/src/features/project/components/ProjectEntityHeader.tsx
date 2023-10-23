@@ -16,13 +16,15 @@
  * limitations under the License.
  */
 
-import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import type { EntityHeaderProps } from "../../../components/entityHeader/EntityHeader";
-import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
-import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
-import { useProjectMetadataQuery } from "../projectKg.api";
-import { ImagesLinks } from "../Project";
+import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import { getEntityImageUrl } from "../../../utils/helpers/HelperFunctions";
+import { ImagesLinks } from "../Project";
+import {
+  useGetProjectIndexingStatusQuery,
+  useProjectMetadataQuery,
+} from "../projectKg.api";
+import { ProjectStatusIcon } from "./migrations/ProjectStatusIcon";
 
 type ProjectEntityHeaderProps = EntityHeaderProps & {
   branch: string;

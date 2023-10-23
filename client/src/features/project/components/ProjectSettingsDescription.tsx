@@ -17,20 +17,20 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
 import {
+  RtkErrorAlert,
+  extractRkErrorRemoteBranch,
+} from "../../../components/errors/RtkErrorAlert";
+import InlineSubmitInput, {
+  InputCard,
+} from "../../../components/inlineSubmitInput/InlineSubmitInput";
+import {
+  useGetProjectIndexingStatusQuery,
   useProjectMetadataQuery,
   useUpdateProjectMutation,
 } from "../projectKg.api";
 import { SettingRequiresKg } from "./ProjectSettingsUtils";
-import {
-  extractRkErrorRemoteBranch,
-  RtkErrorAlert,
-} from "../../../components/errors/RtkErrorAlert";
 import ProjectWarningForMerge from "./ProjectWarningForMerge";
-import InlineSubmitInput, {
-  InputCard,
-} from "../../../components/inlineSubmitInput/InlineSubmitInput";
 
 interface ProjectSettingsDescriptionProps {
   isMaintainer: boolean;

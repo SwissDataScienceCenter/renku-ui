@@ -17,27 +17,27 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
+import { Card, CardBody } from "reactstrap";
 import {
+  RtkErrorAlert,
+  extractRkErrorRemoteBranch,
+} from "../../../components/errors/RtkErrorAlert";
+import { ImageFieldPropertyName as Prop } from "../../../components/form-field/FormGeneratorImageInput";
+import InlineSubmitImageInput, {
+  INITIAL_IMAGE_VALUE,
+  ImageValue,
+} from "../../../components/inlineSubmitImageInput/InlineSubmitImageInput";
+import { InputCard } from "../../../components/inlineSubmitInput/InlineSubmitInput";
+import { PROJECT_AVATAR_MAX_SIZE } from "../../../project/new/components/NewProjectAvatar";
+import { getEntityImageUrl } from "../../../utils/helpers/HelperFunctions";
+import { ImagesLinks } from "../Project";
+import {
+  useGetProjectIndexingStatusQuery,
   useProjectMetadataQuery,
   useUpdateAvatarProjectMutation,
 } from "../projectKg.api";
 import { SettingRequiresKg } from "./ProjectSettingsUtils";
-import {
-  extractRkErrorRemoteBranch,
-  RtkErrorAlert,
-} from "../../../components/errors/RtkErrorAlert";
 import ProjectWarningForMerge from "./ProjectWarningForMerge";
-import { InputCard } from "../../../components/inlineSubmitInput/InlineSubmitInput";
-import { PROJECT_AVATAR_MAX_SIZE } from "../../../project/new/components/NewProjectAvatar";
-import InlineSubmitImageInput, {
-  ImageValue,
-  INITIAL_IMAGE_VALUE,
-} from "../../../components/inlineSubmitImageInput/InlineSubmitImageInput";
-import { ImageFieldPropertyName as Prop } from "../../../components/form-field/FormGeneratorImageInput";
-import { Card, CardBody } from "reactstrap";
-import { ImagesLinks } from "../Project";
-import { getEntityImageUrl } from "../../../utils/helpers/HelperFunctions";
 
 const CURRENT_AVATAR_NAME = "[Current Avatar]";
 

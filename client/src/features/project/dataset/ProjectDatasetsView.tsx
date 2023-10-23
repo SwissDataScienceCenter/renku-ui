@@ -16,31 +16,31 @@
  * limitations under the License.
  */
 
+import { faInfoCircle, faUserClock } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
 import { Link, Route, Switch, useHistory } from "react-router-dom";
 import { Alert, Button, Col } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faUserClock } from "@fortawesome/free-solid-svg-icons";
 
 import { ACCESS_LEVELS } from "../../../api-client";
-import { GoBackButton } from "../../../components/buttons/Button";
-import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { ErrorAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
+import { GoBackButton } from "../../../components/buttons/Button";
+import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { DatasetCoordinator } from "../../../dataset/Dataset.state";
 import { SpecialPropVal } from "../../../model/Model";
 import { Url } from "../../../utils/helpers/url";
 
-import type { DatasetCore } from "../Project";
-import ProjectDatasetListView from "./ProjectDatasetsListView";
-import ProjectDatasetShow from "./ProjectDatasetShow";
-import ProjectDatasetImport from "./ProjectDatasetImport";
-import { ProjectDatasetEdit, ProjectDatasetNew } from "./ProjectDatasetNewEdit";
-import type { ProjectDatasetEditProps } from "./ProjectDatasetNewEdit";
-import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
 import { RootStateOrAny, useSelector } from "react-redux";
+import type { DatasetCore } from "../Project";
 import { StateModelProject } from "../Project";
+import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
 import { useCoreSupport } from "../useProjectCoreSupport";
+import ProjectDatasetImport from "./ProjectDatasetImport";
+import type { ProjectDatasetEditProps } from "./ProjectDatasetNewEdit";
+import { ProjectDatasetEdit, ProjectDatasetNew } from "./ProjectDatasetNewEdit";
+import ProjectDatasetShow from "./ProjectDatasetShow";
+import ProjectDatasetListView from "./ProjectDatasetsListView";
 
 type LocationState = {
   dataset: DatasetCore;
