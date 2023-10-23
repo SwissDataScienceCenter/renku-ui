@@ -19,6 +19,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18.17.1"
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
       - name: Install client dependencies
         run: npm clean-install
         env:
@@ -47,12 +49,32 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18.17.1"
+          cache: "npm"
+          cache-dependency-path: server/package-lock.json
       - name: Install server dependencies
         run: npm clean-install
       - name: Build server
         run: npm run build
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
+
+      # Identify which test fails
+      - name: Run test server
+        run: npm run test -- --coverage=false tests/storage
+        env:
+          CI: true
+          NODE_OPTIONS: "--max-old-space-size=4096"
+      - name: Run test server
+        run: npm run test -- --coverage=false tests/utils
+        env:
+          CI: true
+          NODE_OPTIONS: "--max-old-space-size=4096"
+       - name: Run test server
+        run: npm run test -- --coverage=false tests/websocket
+        env:
+          CI: true
+          NODE_OPTIONS: "--max-old-space-size=4096"
+
       - name: Run test server
         run: npm test
         env:
@@ -74,6 +96,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "18.17.1"
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
       - name: Install dependencies
         run: npm clean-install
       - name: Build Storybook and run tests
@@ -90,6 +114,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18.17.1"
+          cache: "npm"
+          cache-dependency-path: tests/package-lock.json
       - name: Install project e2e dependencies
         run: npm clean-install
       - name: Run format e2e
