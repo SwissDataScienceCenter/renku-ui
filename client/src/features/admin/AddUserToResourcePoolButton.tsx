@@ -141,7 +141,14 @@ function AddUserToResourcePoolModal({
   }, [isOpen, reset, result]);
 
   return (
-    <Modal centered fullscreen="lg" isOpen={isOpen} size="lg" toggle={toggle}>
+    <Modal
+      backdrop="static"
+      centered
+      fullscreen="lg"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       <ModalHeader toggle={toggle}>
         Add User to Resource Pool: {resourcePool.name}
       </ModalHeader>

@@ -127,7 +127,14 @@ function AddResourceClassModal({
   }, [result.isSuccess, toggle]);
 
   return (
-    <Modal centered fullscreen="lg" isOpen={isOpen} size="lg" toggle={toggle}>
+    <Modal
+      backdrop="static"
+      centered
+      fullscreen="lg"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
       <ModalHeader toggle={toggle}>
         Add resource class to {resourcePool.name}
       </ModalHeader>
