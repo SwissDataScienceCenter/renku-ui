@@ -67,7 +67,7 @@ jobs:
         env:
           CI: true
           NODE_OPTIONS: "--max-old-space-size=4096"
-       - name: Run test server 3
+      - name: Run test server 3
         run: "npm run test -- --coverage=false tests/websocket"
         env:
           CI: true
