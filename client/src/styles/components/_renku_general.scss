@@ -120,3 +120,7 @@ svg:focus-visible {
     height: auto;
   }
 }
+
+.text-muted {
+  --#{$prefix}secondary-color: var(--bs-rk-text-light);
+}

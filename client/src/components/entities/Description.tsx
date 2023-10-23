@@ -84,14 +84,14 @@ export default function EntityDescription({
   );
 }
 
-interface EntityDescriptionContainerProps {
+export interface EntityDescriptionContainerProps {
   children: React.ReactNode;
   className?: string;
   isHeightFixed: boolean;
   numberLines: number;
 }
 
-function EntityDescriptionContainer({
+export function EntityDescriptionContainer({
   children,
   className,
   isHeightFixed,

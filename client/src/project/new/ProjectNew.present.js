@@ -371,7 +371,7 @@ class NewProject extends Component {
 
     const title = "New Project";
     const desc =
-      "Create a project to house your files, include datasets," +
+      "Create a project to house your files, include datasets, " +
       "plan your work, and collaborate on code, among other things.";
     const userRepo = config.custom && input.userRepo;
     const formOnProcess =

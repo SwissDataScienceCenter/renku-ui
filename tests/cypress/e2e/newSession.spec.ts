@@ -197,10 +197,12 @@ describe("launch sessions", () => {
       .should("have.value", "mount/path")
       .should("be.visible");
 
-    cy.contains("Read-only").siblings("input").should("be.checked");
-    cy.get("label")
-      .contains("Read/Write")
-      .siblings("input")
-      .should("not.be.checked");
+    if (Cypress.env("CLOUD_STORAGE_READWRITE_ENABLED")) {
+      cy.contains("Read-only").siblings("input").should("be.checked");
+      cy.get("label")
+        .contains("Read/Write")
+        .siblings("input")
+        .should("not.be.checked");
+    }
   });
 });

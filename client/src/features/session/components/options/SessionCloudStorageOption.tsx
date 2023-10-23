@@ -72,6 +72,7 @@ import {
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
+  CLOUD_STORAGE_READWRITE_ENABLED,
 } from "../../../project/projectCloudStorage.constants";
 import {
   formatCloudStorageConfiguration,
@@ -631,44 +632,45 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
         />
       </div>
 
-      <div className="mb-3">
-        <div className="form-label">Mode</div>
-        <div className="form-check">
-          <Input
-            type="radio"
-            className="form-check-input"
-            name={`updateCloudStorageReadOnlyRadio-${index}`}
-            id={`updateCloudStorageReadOnly-${index}`}
-            autoComplete="off"
-            checked={!!readonly}
-            onChange={onChangeReadWriteMode}
-          />
-          <Label
-            className={cx("form-check-label", "ms-2")}
-            for={`updateCloudStorageReadOnly-${index}`}
-          >
-            Read-only
-          </Label>
+      {!CLOUD_STORAGE_READWRITE_ENABLED ? null : (
+        <div className="mb-3">
+          <div className="form-label">Mode</div>
+          <div className="form-check">
+            <Input
+              type="radio"
+              className="form-check-input"
+              name={`updateCloudStorageReadOnlyRadio-${index}`}
+              id={`updateCloudStorageReadOnly-${index}`}
+              autoComplete="off"
+              checked={!!readonly}
+              onChange={onChangeReadWriteMode}
+            />
+            <Label
+              className={cx("form-check-label", "ms-2")}
+              for={`updateCloudStorageReadOnly-${index}`}
+            >
+              Read-only
+            </Label>
+          </div>
+          <div className="form-check">
+            <Input
+              type="radio"
+              className="form-check-input"
+              name={`updateCloudStorageReadOnlyRadio-${index}`}
+              id={`updateCloudStorageReadWrite-${index}`}
+              autoComplete="off"
+              checked={!readonly}
+              onChange={onChangeReadWriteMode}
+            />
+            <Label
+              className={cx("form-check-label", "ms-2")}
+              for={`updateCloudStorageReadWrite-${index}`}
+            >
+              Read/Write
+            </Label>
+          </div>
         </div>
-        <div className="form-check">
-          <Input
-            type="radio"
-            className="form-check-input"
-            name={`updateCloudStorageReadOnlyRadio-${index}`}
-            id={`updateCloudStorageReadWrite-${index}`}
-            autoComplete="off"
-            checked={!readonly}
-            onChange={onChangeReadWriteMode}
-          />
-          <Label
-            className={cx("form-check-label", "ms-2")}
-            for={`updateCloudStorageReadWrite-${index}`}
-          >
-            Read/Write
-          </Label>
-        </div>
-      </div>
-
+      )}
       <div>
         <Label className="form-label" for={`updateCloudStorageConfig-${index}`}>
           Configuration
@@ -856,54 +858,55 @@ function AddTemporaryCloudStorageModal({
             <div className="invalid-feedback">Please provide a name</div>
           </div>
 
-          <div className="mb-3">
-            <div className="form-label">Mode</div>
-            <Controller
-              control={control}
-              name="readonly"
-              render={({ field }) => (
-                <>
-                  <div className="form-check">
-                    <Input
-                      type="radio"
-                      className="form-check-input"
-                      name="readonlyRadio"
-                      id="addCloudStorageReadOnly"
-                      autoComplete="off"
-                      checked={field.value}
-                      onBlur={field.onBlur}
-                      onChange={() => field.onChange(true)}
-                    />
-                    <Label
-                      className={cx("form-check-label", "ms-2")}
-                      for="addCloudStorageReadOnly"
-                    >
-                      Read-only
-                    </Label>
-                  </div>
-                  <div className="form-check">
-                    <Input
-                      type="radio"
-                      className="form-check-input"
-                      name="readonlyRadio"
-                      id="addCloudStorageReadWrite"
-                      autoComplete="off"
-                      checked={!field.value}
-                      onBlur={field.onBlur}
-                      onChange={() => field.onChange(false)}
-                    />
-                    <Label
-                      className={cx("form-check-label", "ms-2")}
-                      for="addCloudStorageReadWrite"
-                    >
-                      Read/Write
-                    </Label>
-                  </div>
-                </>
-              )}
-            />
-          </div>
-
+          {!CLOUD_STORAGE_READWRITE_ENABLED ? null : (
+            <div className="mb-3">
+              <div className="form-label">Mode</div>
+              <Controller
+                control={control}
+                name="readonly"
+                render={({ field }) => (
+                  <>
+                    <div className="form-check">
+                      <Input
+                        type="radio"
+                        className="form-check-input"
+                        name="readonlyRadio"
+                        id="addCloudStorageReadOnly"
+                        autoComplete="off"
+                        checked={field.value}
+                        onBlur={field.onBlur}
+                        onChange={() => field.onChange(true)}
+                      />
+                      <Label
+                        className={cx("form-check-label", "ms-2")}
+                        for="addCloudStorageReadOnly"
+                      >
+                        Read-only
+                      </Label>
+                    </div>
+                    <div className="form-check">
+                      <Input
+                        type="radio"
+                        className="form-check-input"
+                        name="readonlyRadio"
+                        id="addCloudStorageReadWrite"
+                        autoComplete="off"
+                        checked={!field.value}
+                        onBlur={field.onBlur}
+                        onChange={() => field.onChange(false)}
+                      />
+                      <Label
+                        className={cx("form-check-label", "ms-2")}
+                        for="addCloudStorageReadWrite"
+                      >
+                        Read/Write
+                      </Label>
+                    </div>
+                  </>
+                )}
+              />
+            </div>
+          )}
           <div className="mb-3">
             <Label className="form-label" for="addCloudStorageSourcePath">
               Source Path

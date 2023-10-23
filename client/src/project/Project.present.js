@@ -39,6 +39,7 @@ import {
   Nav,
   NavItem,
   Row,
+  UncontrolledTooltip,
 } from "reactstrap";
 import { ContainerWrap } from "../App";
 import { ACCESS_LEVELS } from "../api-client";
@@ -117,7 +118,10 @@ function ToggleForkModalButton({
       onClick={toggleModal}
     >
       <FontAwesomeIcon size="sm" icon={faCodeBranch} /> Fork
-      <ThrottledTooltip target="fork-project" tooltip="Fork" />
+      <UncontrolledTooltip
+        target="fork-project"
+        tooltip="Fork your own copy of this project"
+      />
     </Button>
   );
 }

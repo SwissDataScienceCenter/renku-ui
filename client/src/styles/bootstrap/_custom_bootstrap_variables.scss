@@ -8,11 +8,11 @@ $rk-pink: #ca4e86;
 $rk-pink-highlight: #e35896;
 $rk-yellow: #d1bb4c;
 $rk-dark: #3a3a3d; // titles
-$rk-text: #838383; // text
+$rk-text: #757575; // contrast ratio 4.6:1 bg white
 $rk-text-medium-light: #b3b3b3;
-$rk-text-light: #8e919e;
+$rk-text-light: #545863; // contrast ratio 7:1 bg white
 $rk-light: #e4e7ea; // borders
-$rk-border-input: #dce4ec;
+$rk-border-input: #8b93a7; // contrast ratio 3:1 for background-0
 //backgrounds
 $rk-background-0: #f5f6fa;
 $rk-background-0-dark: #01192d;
@@ -29,10 +29,10 @@ $rk-success: #009568;
 $rk-danger: #b40a3c;
 $rk-warning: #d1bb4c;
 
-$rk-info-text: #0f7396;
+$rk-info-text: #0a4c63; // contrast ratio 7:1 for blue bg (#cfe3ea)
 $rk-success-text: #009568;
 $rk-danger-text: #b40a3c;
-$rk-warning-text: #897b31;
+$rk-warning-text: #7e6d20; // contrast ratio 4.5:1 for background
 $rk-dark-bg: #c5cbcf;
 
 $rk-danger-shadow: rgba(180, 10, 60, 0.5);
