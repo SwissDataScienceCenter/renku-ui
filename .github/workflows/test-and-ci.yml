@@ -57,18 +57,8 @@ jobs:
         run: npm run build
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
-      - name: Run test server 1
-        run: "npm run test -- --coverage=false tests/storage"
-        env:
-          CI: true
-          NODE_OPTIONS: "--max-old-space-size=4096"
-      - name: Run test server 2
-        run: "npm run test -- --coverage=false tests/utils"
-        env:
-          CI: true
-          NODE_OPTIONS: "--max-old-space-size=4096"
-      - name: Run test server 3
-        run: "npm run test -- --coverage=false tests/websocket"
+      - name: Run test server no coverage
+        run: npm run test -- --coverage=false
         env:
           CI: true
           NODE_OPTIONS: "--max-old-space-size=4096"
