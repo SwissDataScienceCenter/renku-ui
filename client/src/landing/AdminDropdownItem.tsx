@@ -19,7 +19,7 @@
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { DropdownItem } from "reactstrap";
-import { useGetUserInfoQuery } from "../features/user/user.api";
+import { useGetUserInfoQuery } from "../features/user/keycloakUser.api";
 
 export default function AdminDropdownItem() {
   const userLogged = useSelector<RootStateOrAny, boolean>(

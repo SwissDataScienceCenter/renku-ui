@@ -41,7 +41,7 @@ import InactiveKGProjectsPage from "./features/inactiveKgProjects/InactiveKgProj
 import SearchPage from "./features/kgSearch/KgSearchPage";
 import { Unavailable } from "./features/maintenance/Maintenance";
 import AnonymousSessionsList from "./features/session/components/AnonymousSessionsList";
-import { useGetUserInfoQuery } from "./features/user/user.api";
+import { useGetUserInfoQuery } from "./features/user/keycloakUser.api";
 import Help from "./help";
 import { AnonymousHome, FooterNavbar, RenkuNavBar } from "./landing";
 import { NotFound } from "./not-found";

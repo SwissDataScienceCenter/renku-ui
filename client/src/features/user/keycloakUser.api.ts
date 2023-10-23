@@ -17,12 +17,12 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { UserInfo, UserInfoResponse } from "./user.types";
+import { UserInfo, UserInfoResponse } from "./keycloakUser.types";
 
 const RENKU_ADMIN_GROUP_NAME = "renku-admin";
 
-const userApi = createApi({
-  reducerPath: "userApi",
+const keycloakUserApi = createApi({
+  reducerPath: "keycloakUserApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "/ui-server/api/kc/realms/Renku",
   }),
@@ -49,5 +49,5 @@ const userApi = createApi({
   }),
 });
 
-export default userApi;
-export const { useGetUserInfoQuery } = userApi;
+export default keycloakUserApi;
+export const { useGetUserInfoQuery } = keycloakUserApi;

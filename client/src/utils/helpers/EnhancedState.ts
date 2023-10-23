@@ -38,6 +38,7 @@ import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/Inactiv
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
 import { datasetFormSlice } from "../../features/project/dataset";
+import projectCloudStorageApi from "../../features/project/projectCloudStorage.api";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKgApi";
@@ -48,11 +49,10 @@ import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
-import userApi from "../../features/user/user.api";
+import keycloakUserApi from "../../features/user/keycloakUser.api";
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
-import projectCloudStorageApi from "../../features/project/projectCloudStorage.api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createStore = <S = any, A extends Action = AnyAction>(
@@ -75,6 +75,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [dataServicesApi.reducerPath]: dataServicesApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
+    [keycloakUserApi.reducerPath]: keycloakUserApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
@@ -88,7 +89,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
-    [userApi.reducerPath]: userApi.reducer,
   };
 
   // For the moment, disable the custom middleware, since it causes problems for our app.
@@ -104,6 +104,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(dataServicesApi.middleware)
         .concat(datasetsCoreApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
+        .concat(keycloakUserApi.middleware)
         .concat(kgSearchApi.middleware)
         .concat(projectCloudStorageApi.middleware)
         .concat(projectCoreApi.middleware)
@@ -116,8 +117,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(sessionsApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(versionsApi.middleware)
-        .concat(workflowsApi.middleware)
-        .concat(userApi.middleware),
+        .concat(workflowsApi.middleware),
     enhancers,
   });
   return store;
