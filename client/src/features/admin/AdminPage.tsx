@@ -191,14 +191,23 @@ function ResourcePoolItem({ resourcePool }: ResourcePoolItemProps) {
               : "Private pool (requires special access)"}
           </p>
           {quota != null ? (
-            <div className={cx("hstack", "gap-2")}>
-              <div>Quota:</div>
-              <div>{quota.cpu} CPUs</div>
-              <div className="vr"></div>
-              <div>{quota.memory}&nbsp;GB RAM</div>
-              <div className="vr"></div>
-              <div>{quota.gpu} GPUs</div>
-              <div className="ms-3">
+            <div
+              className={cx(
+                "align-items-center",
+                "row",
+                "row-cols-1",
+                "row-cols-sm-4",
+                "row-cols-md-5",
+                "text-end"
+              )}
+            >
+              <div className={cx("col", "col-sm-12", "col-md", "text-start")}>
+                Quota:
+              </div>
+              <div className="col">{quota.cpu}&nbsp;CPUs</div>
+              <div className="col">{quota.memory}&nbsp;GB RAM</div>
+              <div className="col">{quota.gpu}&nbsp;GPUs</div>
+              <div className={cx("col", "ms-auto")}>
                 <UpdateResourcePoolQuotaButton resourcePool={resourcePool} />
               </div>
             </div>
@@ -235,7 +244,7 @@ function ResourceClassList({ classes, resourcePool }: ResourceClassListProps) {
       <div>
         <AddResourceClassButton resourcePool={resourcePool} />
       </div>
-      <ul className={cx("mt-2", "mb-0", "vstack", "gap-2")}>
+      <ul className={cx("mt-2", "mb-0", "vstack", "gap-3")}>
         {classes.map((resourceClass) => (
           <ResourceClassItem
             key={resourceClass.id}
@@ -267,23 +276,23 @@ function ResourceClassItem({
     name,
   } = resourceClass;
 
+  const columnClasses = ["col-12", "col-sm-4", "col-md-3", "col-xl-2"];
+
   return (
     <li>
-      <div className={cx("hstack", "gap-2")}>
-        <div>
+      <div className={cx("align-items-center", "row", "text-end")}>
+        <div className={cx(columnClasses, "text-start")}>
           <strong>{name}</strong>
           {isDefault && " (default)"}:
         </div>
-        <div>{cpu} CPUs</div>
-        <div className="vr"></div>
-        <div>{memory}&nbsp;GB RAM</div>
-        <div className="vr"></div>
-        <div>{gpu} GPUs</div>
-        <div className="vr"></div>
-        <div>{default_storage} GB default disk</div>
-        <div className="vr"></div>
-        <div>{max_storage} GB max disk</div>
-        <div className="ms-3">
+        <div className={cx(columnClasses)}>{cpu}&nbsp;CPUs</div>
+        <div className={cx(columnClasses)}>{memory}&nbsp;GB RAM</div>
+        <div className={cx(columnClasses)}>{gpu}&nbsp;GPUs</div>
+        <div className={cx(columnClasses)}>
+          {default_storage}&nbsp;GB default disk
+        </div>
+        <div className={cx(columnClasses)}>{max_storage}&nbsp;GB max disk</div>
+        <div className={cx(columnClasses, "ms-auto")}>
           {isDefault ? (
             <UpdateResourceClassButton
               resourceClass={resourceClass}
