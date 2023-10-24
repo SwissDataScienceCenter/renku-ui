@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
+import { projectKgApi } from "../features/project/projectKg.api";
 import { sleep } from "../utils/helpers/HelperFunctions";
-import { projectKgApi } from "../features/project/projectKgApi";
 
 function buildTreeLazy(
   name,

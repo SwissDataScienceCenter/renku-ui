@@ -7,4 +7,5 @@ module.exports = {
   collectCoverage: true,
   collectCoverageFrom: ["src/**/*.ts"],
   coverageReporters: ["text"],
+  coverageProvider: "v8",
 };

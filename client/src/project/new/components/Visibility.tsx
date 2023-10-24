@@ -42,12 +42,12 @@ import VisibilitiesInput, {
 } from "../../../components/visibility/Visibility";
 import { SettingRequiresKg } from "../../../features/project/components/ProjectSettingsUtils";
 import { useGetProjectByIdQuery } from "../../../features/project/projectGitLab.api";
-import { useGetProjectIndexingStatusQuery } from "../../../features/project/projectKgApi";
-import { useGetGroupByPathQuery } from "../../../features/projects/projectsApi";
 import {
+  useGetProjectIndexingStatusQuery,
   useProjectMetadataQuery,
   useUpdateProjectMutation,
-} from "../../../features/projects/projectsKgApi";
+} from "../../../features/project/projectKg.api";
+import { useGetGroupByPathQuery } from "../../../features/projects/projectsApi";
 import { GitlabLinks } from "../../../utils/constants/Docs";
 import { computeVisibilities } from "../../../utils/helpers/HelperFunctions";
 import {
