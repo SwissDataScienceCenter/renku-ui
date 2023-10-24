@@ -17,8 +17,6 @@
  */
 
 import Fixtures from "../support/renkulab-fixtures";
-import "../support/utils";
-import "../support/sessions/gui_commands";
 
 describe("display a session", () => {
   const fixtures = new Fixtures(cy);
@@ -36,14 +34,14 @@ describe("display a session", () => {
     cy.wait("@getSessions");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
-    cy.gui_open_logs();
+    cy.openLogs();
     cy.wait("@getLogs").then((result) => {
       const logs = result.response.body;
       // validate see logs and can download it
-      cy.get_cy("log-tab")
+      cy.getDataCy("log-tab")
         .filter(":visible")
         .should("have.length", Object.keys(logs).length);
-      cy.get_cy("session-log-download-button").should("be.enabled");
+      cy.getDataCy("session-log-download-button").should("be.enabled");
     });
   });
 
@@ -52,62 +50,65 @@ describe("display a session", () => {
     cy.wait("@getSessions");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
-    cy.gui_open_logs();
+    cy.openLogs();
     // validate show a warning when there is an error loading the logs
-    cy.get_cy("logs-unavailable-message").should("be.visible");
-    cy.get_cy("session-log-download-button").should("be.disabled");
+    cy.getDataCy("logs-unavailable-message").should("be.visible");
+    cy.getDataCy("session-log-download-button").should("be.disabled");
   });
 
   it("display logs in fullscreen session", () => {
-    cy.gui_open_session();
+    cy.openSession();
     fixtures.getLogs("getLogs-empty", "sessions/emptyLogs.json");
-    cy.get_cy("resources-button").click();
+    cy.getDataCy("resources-button").click();
     // empty logs
-    cy.get_cy("logs-tab").click();
+    cy.getDataCy("logs-tab").click();
     cy.wait("@getLogs-empty");
-    cy.get_cy("no-logs-message").should("exist");
+    cy.getDataCy("no-logs-message").should("exist");
     // clean logs
     fixtures.getLogs("getLogs-clean", "sessions/cleanLogs.json");
-    cy.get_cy("retry-logs-body").click();
+    cy.getDataCy("retry-logs-body").click();
     cy.wait("@getLogs-clean");
-    cy.get_cy("no-logs-message").should("exist");
+    cy.getDataCy("no-logs-message").should("exist");
     // logs with data
     fixtures.getLogs("getLogs-full", "sessions/logs.json");
-    cy.get_cy("retry-logs-body").click();
+    cy.getDataCy("retry-logs-body").click();
     cy.wait("@getLogs-full").then((result) => {
       const logs = result.response.body;
       // validate see logs and can download it
       // eslint-disable-next-line max-nested-callbacks
       const validLogs = Object.keys(logs).filter((key) => logs[key].length > 0);
-      cy.get_cy("log-tab").should("have.length", validLogs.length);
-      cy.get_cy("session-log-download-button").should("be.enabled");
+      cy.getDataCy("log-tab").should("have.length", validLogs.length);
+      cy.getDataCy("session-log-download-button").should("be.enabled");
     });
   });
 
   it("display fullscreen session", () => {
-    cy.gui_open_session();
+    cy.openSession();
     // open about modal info
-    cy.get_cy("about-button").click();
-    cy.get_cy("list-card-title").should("contain.text", "local-test-project");
-    cy.get_cy("modal-header").find(".btn-close").click();
+    cy.getDataCy("about-button").click();
+    cy.getDataCy("list-card-title").should(
+      "contain.text",
+      "local-test-project"
+    );
+    cy.getDataCy("modal-header").find(".btn-close").click();
     // open resources modal
-    cy.get_cy("resources-button").click();
-    cy.get_cy("cheat-sheet-tab").should("exist");
-    cy.get_cy("docs-tab").should("exist");
-    cy.get_cy("logs-tab").should("exist");
-    cy.get_cy("modal-header").find(".btn-close").click();
+    cy.getDataCy("resources-button").click();
+    cy.getDataCy("cheat-sheet-tab").should("exist");
+    cy.getDataCy("docs-tab").should("exist");
+    cy.getDataCy("logs-tab").should("exist");
+    cy.getDataCy("modal-header").find(".btn-close").click();
     // stop session
-    cy.get_cy("pause-session-button").should("be.visible").click();
-    cy.get_cy("pause-session-modal-button")
+    cy.getDataCy("pause-session-button").should("be.visible").click();
+    cy.getDataCy("pause-session-modal-button")
       .should("be.visible")
       .and("be.enabled");
   });
 
   it("save session button -- no sidecar", () => {
     fixtures.getSidecarHealth(false);
-    cy.gui_open_session();
+    cy.openSession();
     // save session
-    cy.get_cy("save-session-button").click();
+    cy.getDataCy("save-session-button").click();
     cy.wait("@getSidecarHealth");
     cy.get(".modal-dialog").should("exist");
     cy.get(".modal-dialog")
@@ -124,9 +125,9 @@ describe("display a session", () => {
 
   it("save session button -- session clean", () => {
     fixtures.getSidecarHealth().getGitStatusClean();
-    cy.gui_open_session();
+    cy.openSession();
     // save session
-    cy.get_cy("save-session-button").click();
+    cy.getDataCy("save-session-button").click();
     cy.get(".modal-dialog").should("exist");
     cy.get(".modal-dialog")
       .get("h5")
@@ -140,9 +141,9 @@ describe("display a session", () => {
 
   it("save session button -- session ahead", () => {
     fixtures.getSidecarHealth().getGitStatusDirty();
-    cy.gui_open_session();
+    cy.openSession();
     // save session
-    cy.get_cy("save-session-button").click();
+    cy.getDataCy("save-session-button").click();
     cy.get(".modal-dialog").should("exist");
     cy.get(".modal-dialog")
       .get("h5")
@@ -158,9 +159,9 @@ describe("display a session", () => {
 
   it("pull changes button -- no sidecar", () => {
     fixtures.getSidecarHealth(false);
-    cy.gui_open_session();
+    cy.openSession();
     // pull changes
-    cy.get_cy("pull-changes-button").click();
+    cy.getDataCy("pull-changes-button").click();
     cy.get(".modal-dialog").should("exist");
     cy.get(".modal-dialog")
       .get("h5")
@@ -176,9 +177,9 @@ describe("display a session", () => {
 
   it("pull changes button -- sidecar error", () => {
     fixtures.getSidecarHealth().getGitStatusError();
-    cy.gui_open_session();
+    cy.openSession();
     // pull changes
-    cy.get_cy("pull-changes-button").click();
+    cy.getDataCy("pull-changes-button").click();
     cy.get(".modal-dialog").should("exist");
     cy.get(".modal-dialog")
       .get("h5")
@@ -194,9 +195,9 @@ describe("display a session", () => {
 
   it("pull changes button -- session clean", () => {
     fixtures.getSidecarHealth().getGitStatusClean();
-    cy.gui_open_session();
+    cy.openSession();
     // pull changes
-    cy.get_cy("pull-changes-button").click();
+    cy.getDataCy("pull-changes-button").click();
     cy.get(".modal-dialog").should("exist");
     cy.get(".modal-dialog")
       .get("h5")
@@ -210,9 +211,9 @@ describe("display a session", () => {
 
   it("pull changes button -- session behind", () => {
     fixtures.getSidecarHealth().getGitStatusBehind();
-    cy.gui_open_session();
+    cy.openSession();
     // pull changes
-    cy.get_cy("pull-changes-button").click();
+    cy.getDataCy("pull-changes-button").click();
     cy.get(".modal-dialog").should("exist");
     cy.get(".modal-dialog")
       .get("h5")
@@ -226,9 +227,9 @@ describe("display a session", () => {
 
   it("pull changes button -- session diverged", () => {
     fixtures.getSidecarHealth().getGitStatusDiverged();
-    cy.gui_open_session();
+    cy.openSession();
     // pull changes
-    cy.get_cy("pull-changes-button").click();
+    cy.getDataCy("pull-changes-button").click();
     cy.get(".modal-dialog").should("exist");
     cy.get(".modal-dialog")
       .get("h5")
@@ -257,7 +258,7 @@ describe("display a session with error", () => {
     cy.wait("@getSessionsError");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
-    cy.get_cy("pause-session-button").should("be.visible");
+    cy.getDataCy("pause-session-button").should("be.visible");
   });
 });
 
@@ -277,7 +278,7 @@ describe("display a session when session is being stopped", () => {
     cy.wait("@getSessionsStopping");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
-    cy.get_cy("stopping-btn").should("be.disabled");
-    cy.get_cy("stopping-btn").should("be.visible");
+    cy.getDataCy("stopping-btn").should("be.disabled");
+    cy.getDataCy("stopping-btn").should("be.visible");
   });
 });

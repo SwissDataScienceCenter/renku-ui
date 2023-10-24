@@ -18,13 +18,17 @@
 
 import "cypress-file-upload";
 
+import registerDatasetsCommands from "./commands/datasets";
 import registerGeneralCommands from "./commands/general";
 import registerProjectsCommands from "./commands/projects";
-import registerDatasetsCommands from "./commands/datasets";
+import registerSessionsCommands from "./commands/sessions";
+import registerWorkflowsCommands from "./commands/workflows";
 
+registerDatasetsCommands();
 registerGeneralCommands();
 registerProjectsCommands();
-registerDatasetsCommands();
+registerSessionsCommands();
+registerWorkflowsCommands();
 
 Cypress.on("uncaught:exception", () => {
   // returning false here prevents Cypress from failing the test

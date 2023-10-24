@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 /*!
  * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -16,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "../support/utils";
+
 import Fixtures from "../support/renkulab-fixtures";
 
 describe("display KG status information", () => {
@@ -34,20 +33,20 @@ describe("display KG status information", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
-    cy.get_cy("project-settings-knowledge-graph")
+    cy.getDataCy("project-settings-knowledge-graph")
       .contains("Project indexing")
       .should("exist");
-    cy.get_cy("project-settings-knowledge-graph")
+    cy.getDataCy("project-settings-knowledge-graph")
       .contains("Metadata indexing in progress")
       .should("not.exist");
-    cy.get_cy("kg-status-section-close").should("not.exist");
-    cy.get_cy("kg-status-section-open").should("exist").click();
-    cy.get_cy("project-settings-knowledge-graph")
+    cy.getDataCy("kg-status-section-close").should("not.exist");
+    cy.getDataCy("kg-status-section-open").should("exist").click();
+    cy.getDataCy("project-settings-knowledge-graph")
       .contains("Everything indexed")
       .should("exist");
-    cy.get_cy("kg-status-section-close").should("exist");
-    cy.get_cy("kg-status-section-open").should("not.exist");
-    cy.get_cy("project-status-icon-element").should("not.exist");
+    cy.getDataCy("kg-status-section-close").should("exist");
+    cy.getDataCy("kg-status-section-open").should("not.exist");
+    cy.getDataCy("project-status-icon-element").should("not.exist");
   });
 
   it("Metadata processed with KG indexing failure", () => {
@@ -55,59 +54,59 @@ describe("display KG status information", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
-    cy.get_cy("project-settings-knowledge-graph")
+    cy.getDataCy("project-settings-knowledge-graph")
       .contains("Project indexing")
       .should("exist");
-    cy.get_cy("project-settings-knowledge-graph")
+    cy.getDataCy("project-settings-knowledge-graph")
       .contains("Metadata indexing in progress")
       .should("not.exist");
-    cy.get_cy("kg-status-section-close").should("not.exist");
-    cy.get_cy("kg-status-section-open").should("exist").click();
-    cy.get_cy("project-settings-knowledge-graph")
+    cy.getDataCy("kg-status-section-close").should("not.exist");
+    cy.getDataCy("kg-status-section-open").should("exist").click();
+    cy.getDataCy("project-settings-knowledge-graph")
       .contains("Everything indexed*")
       .should("exist");
-    cy.get_cy("project-settings-knowledge-graph")
+    cy.getDataCy("project-settings-knowledge-graph")
       .contains("An error was raised while processing the metadata")
       .should("exist");
-    cy.get_cy("kg-status-section-close").should("exist");
-    cy.get_cy("kg-status-section-open").should("not.exist");
-    cy.get_cy("project-status-icon-element").should("not.exist");
+    cy.getDataCy("kg-status-section-close").should("exist");
+    cy.getDataCy("kg-status-section-open").should("not.exist");
+    cy.getDataCy("project-status-icon-element").should("not.exist");
   });
 
   it("Metadata indexing", () => {
     fixtures.getKgStatus("project/kgStatus/kgStatusIndexing.json");
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
-    cy.get_cy("project-settings-knowledge-graph")
+    cy.getDataCy("project-settings-knowledge-graph")
       .contains("Metadata indexing in progress...")
       .should("exist");
-    cy.get_cy("kg-status-section-close").should("not.exist");
-    cy.get_cy("kg-status-section-open").should("exist").click();
-    cy.get_cy("project-settings-knowledge-graph")
+    cy.getDataCy("kg-status-section-close").should("not.exist");
+    cy.getDataCy("kg-status-section-open").should("exist").click();
+    cy.getDataCy("project-settings-knowledge-graph")
       .contains("Processing status: 40%")
       .should("exist");
-    cy.get_cy("kg-status-section-close").should("exist");
-    cy.get_cy("kg-status-section-open").should("not.exist");
-    cy.get_cy("project-status-icon-element").should("not.exist");
+    cy.getDataCy("kg-status-section-close").should("exist");
+    cy.getDataCy("kg-status-section-open").should("not.exist");
+    cy.getDataCy("project-status-icon-element").should("not.exist");
   });
 
   it("Metadata not indexed", () => {
     fixtures.getKgStatus("project/kgStatus/kgStatus404.json");
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
-    cy.get_cy("project-settings-knowledge-graph")
+    cy.getDataCy("project-settings-knowledge-graph")
       .contains("Activate indexing")
       .should("exist");
-    cy.get_cy("kg-status-section-close").should("not.exist");
-    cy.get_cy("kg-status-section-open").should("exist").click();
-    cy.get_cy("project-settings-knowledge-graph")
+    cy.getDataCy("kg-status-section-close").should("not.exist");
+    cy.getDataCy("kg-status-section-open").should("exist").click();
+    cy.getDataCy("project-settings-knowledge-graph")
       .contains(
         "Indexing must be activated to use this project from the RenkuLab web interface"
       )
       .should("exist");
-    cy.get_cy("kg-status-section-close").should("exist");
-    cy.get_cy("kg-status-section-open").should("not.exist");
-    cy.get_cy("project-status-icon-element").should("exist");
+    cy.getDataCy("kg-status-section-close").should("exist");
+    cy.getDataCy("kg-status-section-open").should("not.exist");
+    cy.getDataCy("project-status-icon-element").should("exist");
   });
 });
 
@@ -129,23 +128,23 @@ describe("display migration information", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("Project up to date")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .get("#button-update-projectMigrationStatus")
       .should("not.exist");
-    cy.get_cy("project-version-section-close").should("not.exist");
-    cy.get_cy("project-version-section-open").should("exist").click();
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-version-section-close").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("exist").click();
+    cy.getDataCy("project-settings-migration-status")
       .contains("This project uses the latest")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("You are using the latest version")
       .should("exist");
-    cy.get_cy("project-version-section-open").should("not.exist");
-    cy.get_cy("project-version-section-close").should("exist");
-    cy.get_cy("project-status-icon-element").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("not.exist");
+    cy.getDataCy("project-version-section-close").should("exist");
+    cy.getDataCy("project-status-icon-element").should("not.exist");
   });
 
   it("displays level 2 migration: up-to-date but template potentially missing", () => {
@@ -156,23 +155,23 @@ describe("display migration information", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("Project up to date*")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .get("#button-update-projectMigrationStatus")
       .should("not.exist");
-    cy.get_cy("project-version-section-close").should("not.exist");
-    cy.get_cy("project-version-section-open").should("exist").click();
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-version-section-close").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("exist").click();
+    cy.getDataCy("project-settings-migration-status")
       .contains("This project uses the latest")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("We could not find updates ")
       .should("exist");
-    cy.get_cy("project-version-section-open").should("not.exist");
-    cy.get_cy("project-version-section-close").should("exist");
-    cy.get_cy("project-status-icon-element").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("not.exist");
+    cy.getDataCy("project-version-section-close").should("exist");
+    cy.getDataCy("project-status-icon-element").should("not.exist");
   });
 
   it("displays level 3 migration: template can be migrated", () => {
@@ -183,27 +182,27 @@ describe("display migration information", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("Project update available")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .get("#button-update-projectMigrationStatus")
       .should("exist")
       .should("not.be.disabled");
-    cy.get_cy("project-version-section-close").should("not.exist");
-    cy.get_cy("project-version-section-open").should("exist").click();
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-version-section-close").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("exist").click();
+    cy.getDataCy("project-settings-migration-status")
       .contains("This project uses the latest")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("There is a new version of the template ")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("button", "Update template")
       .should("exist");
-    cy.get_cy("project-version-section-open").should("not.exist");
-    cy.get_cy("project-version-section-close").should("exist");
-    cy.get_cy("project-status-icon-element").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("not.exist");
+    cy.getDataCy("project-version-section-close").should("exist");
+    cy.getDataCy("project-status-icon-element").should("not.exist");
   });
 
   it("displays level 3 migration: minor version update", () => {
@@ -214,30 +213,30 @@ describe("display migration information", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("Project update available")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .get("#button-update-projectMigrationStatus")
       .should("exist")
       .should("not.be.disabled");
-    cy.get_cy("project-version-section-close").should("not.exist");
-    cy.get_cy("project-version-section-open").should("exist").click();
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-version-section-close").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("exist").click();
+    cy.getDataCy("project-settings-migration-status")
       .contains("it should be safe on this project since it is a minor update")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("button", "Update version")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("There is a new version of the template ")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("button", "Update template")
       .should("exist");
-    cy.get_cy("project-version-section-open").should("not.exist");
-    cy.get_cy("project-version-section-close").should("exist");
-    cy.get_cy("project-status-icon-element").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("not.exist");
+    cy.getDataCy("project-version-section-close").should("exist");
+    cy.getDataCy("project-status-icon-element").should("not.exist");
   });
 
   it("displays level 4 migration: old updatable", () => {
@@ -248,29 +247,29 @@ describe("display migration information", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("Project update required")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .get("#button-update-projectMigrationStatus")
       .should("exist")
       .should("not.be.disabled");
-    cy.get_cy("project-version-section-close").should("not.exist");
-    cy.get_cy("project-version-section-open").should("exist").click();
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-version-section-close").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("exist").click();
+    cy.getDataCy("project-settings-migration-status")
       .contains(
         "project metadata is still on version 9 while the latest version is 10"
       )
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("An upgrade is necessary to support the project")
       .should("not.exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("button", "Update version")
       .should("exist");
-    cy.get_cy("project-version-section-open").should("not.exist");
-    cy.get_cy("project-version-section-close").should("exist");
-    cy.get_cy("project-status-icon-element").should("exist");
+    cy.getDataCy("project-version-section-open").should("not.exist");
+    cy.getDataCy("project-version-section-close").should("exist");
+    cy.getDataCy("project-status-icon-element").should("exist");
   });
 
   it("displays level 5 migration: old updatable", () => {
@@ -281,29 +280,29 @@ describe("display migration information", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("Project update required")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .get("#button-update-projectMigrationStatus")
       .should("exist")
       .should("not.be.disabled");
-    cy.get_cy("project-version-section-close").should("not.exist");
-    cy.get_cy("project-version-section-open").should("exist").click();
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-version-section-close").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("exist").click();
+    cy.getDataCy("project-settings-migration-status")
       .contains(
         "project metadata is still on version 8 while the latest version is 10"
       )
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("An upgrade is necessary to support the project")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("button", "Update version")
       .should("exist");
-    cy.get_cy("project-version-section-open").should("not.exist");
-    cy.get_cy("project-version-section-close").should("exist");
-    cy.get_cy("project-status-icon-element").should("exist");
+    cy.getDataCy("project-version-section-open").should("not.exist");
+    cy.getDataCy("project-version-section-close").should("exist");
+    cy.getDataCy("project-status-icon-element").should("exist");
   });
 
   it("displays level 5 migration: very old manual update", () => {
@@ -314,29 +313,29 @@ describe("display migration information", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("Project update required")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .get("#button-update-projectMigrationStatus")
       .should("exist")
       .should("be.disabled");
-    cy.get_cy("project-version-section-close").should("not.exist");
-    cy.get_cy("project-version-section-open").should("exist").click();
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-version-section-close").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("exist").click();
+    cy.getDataCy("project-settings-migration-status")
       .contains(
         "project metadata is still on version 5 while the latest version is 10"
       )
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("An upgrade is necessary to support the project")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("button", "Update version")
       .should("not.exist");
-    cy.get_cy("project-version-section-open").should("not.exist");
-    cy.get_cy("project-version-section-close").should("exist");
-    cy.get_cy("project-status-icon-element").should("exist");
+    cy.getDataCy("project-version-section-open").should("not.exist");
+    cy.getDataCy("project-version-section-close").should("exist");
+    cy.getDataCy("project-status-icon-element").should("exist");
   });
 
   it("displays level X migration: unknown", () => {
@@ -347,23 +346,23 @@ describe("display migration information", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("Unknown project status")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .get("#button-update-projectMigrationStatus")
       .should("not.exist");
-    cy.get_cy("project-version-section-close").should("not.exist");
-    cy.get_cy("project-version-section-open").should("exist").click();
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-version-section-close").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("exist").click();
+    cy.getDataCy("project-settings-migration-status")
       .contains("Details are not available for this unknown version ")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("button", "Update version")
       .should("not.exist");
-    cy.get_cy("project-version-section-open").should("not.exist");
-    cy.get_cy("project-version-section-close").should("exist");
-    cy.get_cy("project-status-icon-element").should("exist");
+    cy.getDataCy("project-version-section-open").should("not.exist");
+    cy.getDataCy("project-version-section-close").should("exist");
+    cy.getDataCy("project-status-icon-element").should("exist");
   });
 });
 
@@ -384,23 +383,23 @@ describe("display migration information for non maintainer", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("Project up to date")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .get("#button-update-projectMigrationStatus")
       .should("not.exist");
-    cy.get_cy("project-version-section-close").should("not.exist");
-    cy.get_cy("project-version-section-open").should("exist").click();
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-version-section-close").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("exist").click();
+    cy.getDataCy("project-settings-migration-status")
       .contains("This project uses the latest")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("You are using the latest version")
       .should("exist");
-    cy.get_cy("project-version-section-open").should("not.exist");
-    cy.get_cy("project-version-section-close").should("exist");
-    cy.get_cy("project-status-icon-element").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("not.exist");
+    cy.getDataCy("project-version-section-close").should("exist");
+    cy.getDataCy("project-status-icon-element").should("not.exist");
   });
 
   it("displays level 3 migration: minor version update", () => {
@@ -411,33 +410,33 @@ describe("display migration information for non maintainer", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("Project update available")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .get("#button-update-projectMigrationStatus")
       .should("exist")
       .should("be.disabled");
-    cy.get_cy("project-version-section-close").should("not.exist");
-    cy.get_cy("project-version-section-open").should("exist").click();
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-version-section-close").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("exist").click();
+    cy.getDataCy("project-settings-migration-status")
       .contains("it should be safe on this project since it is a minor update")
       .should("not.exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("There is a new")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("button", "Update version")
       .should("not.exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("There is a new version of the template ")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("button", "Update template")
       .should("not.exist");
-    cy.get_cy("project-version-section-open").should("not.exist");
-    cy.get_cy("project-version-section-close").should("exist");
-    cy.get_cy("project-status-icon-element").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("not.exist");
+    cy.getDataCy("project-version-section-close").should("exist");
+    cy.getDataCy("project-status-icon-element").should("not.exist");
   });
 
   it("displays level 5 migration: old updatable", () => {
@@ -448,28 +447,28 @@ describe("display migration information for non maintainer", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("Project update required")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .get("#button-update-projectMigrationStatus")
       .should("exist")
       .should("be.disabled");
-    cy.get_cy("project-version-section-close").should("not.exist");
-    cy.get_cy("project-version-section-open").should("exist").click();
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-version-section-close").should("not.exist");
+    cy.getDataCy("project-version-section-open").should("exist").click();
+    cy.getDataCy("project-settings-migration-status")
       .contains(
         "project metadata is still on version 8 while the latest version is 10"
       )
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("An upgrade is necessary to support the project")
       .should("exist");
-    cy.get_cy("project-settings-migration-status")
+    cy.getDataCy("project-settings-migration-status")
       .contains("button", "Update version")
       .should("not.exist");
-    cy.get_cy("project-version-section-open").should("not.exist");
-    cy.get_cy("project-version-section-close").should("exist");
-    cy.get_cy("project-status-icon-element").should("exist");
+    cy.getDataCy("project-version-section-open").should("not.exist");
+    cy.getDataCy("project-version-section-close").should("exist");
+    cy.getDataCy("project-status-icon-element").should("exist");
   });
 });
