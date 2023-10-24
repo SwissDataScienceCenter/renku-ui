@@ -1,5 +1,15 @@
 # Changes
 
+## [3.14.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.13.1...3.14.0) (2023-10-24)
+
+### Features
+
+- Add support for cloud storage configuration per project ([#2760](https://github.com/SwissDataScienceCenter/renku-ui/issues/2760), [#2736](https://github.com/SwissDataScienceCenter/renku-ui/issues/2736)).
+- Improve color contrast and other UX elements ([#2846](https://github.com/SwissDataScienceCenter/renku-ui/issues/2846), [#2845](https://github.com/SwissDataScienceCenter/renku-ui/issues/2845)).
+- Use the new KG API to change to the project avatar ([#2778](https://github.com/SwissDataScienceCenter/renku-ui/issues/2778), [#2806](https://github.com/SwissDataScienceCenter/renku-ui/issues/2806)).
+- Show project showcases on the landing page ([#2747](https://github.com/SwissDataScienceCenter/renku-ui/issues/2747), [#2799](https://github.com/SwissDataScienceCenter/renku-ui/issues/2799)).
+- Show status banner as loud during major outages ([#2767](https://github.com/SwissDataScienceCenter/renku-ui/issues/2767), [#2853](https://github.com/SwissDataScienceCenter/renku-ui/issues/2853)).
+
 ## [3.13.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.13.0...3.13.1) (2023-10-10)
 
 ### BREAKING CHANGES
