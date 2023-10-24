@@ -18,13 +18,10 @@
 
 import React, { Component } from "react";
 
-import {
-  StyledNotebook,
-  JupyterButtonPresent,
-  ShowFile as ShowFilePresent,
-} from "./File.present";
 import { API_ERRORS } from "../api-client";
 import { ShareLinkSessionIcon } from "../components/shareLinkSession/ShareLinkSession";
+import SessionFileButton from "../features/session/components/SessionFileButton";
+import { ShowFile as ShowFilePresent, StyledNotebook } from "./File.present";
 
 class JupyterNotebookContainer extends Component {
   render() {
@@ -36,90 +33,6 @@ class JupyterNotebookContainer extends Component {
         fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, "")}
         notebook={this.props.notebook}
         client={this.props.client}
-      />
-    );
-  }
-}
-
-/**
- * Jupyter button container component
- *
- * @param {Object} client - api-client used to query the gateway
- * @param {Object} Object - user object
- * @param {Object} branches - branches data, likely to change in a future release
- * @param {Object} branches.all - list of available branches
- * @param {Object} branches.fetch - function to invoke to refresh branches
- * @param {string} scope.projectNamespace - full path of the reference namespace
- * @param {string} scope.projectPath - path of the reference project
- * @param {string} filePath - relative path of the target notebook file
- * @param {string} launchNotebookUrl - launch notebook url
- */
-class JupyterButton extends React.Component {
-  componentDidMount() {
-    // fetch branches if needed
-    if (this.props.user.logged) {
-      const { branches } = this.props;
-      if (!branches.all.fetched || !branches.all.fetching) branches.fetch();
-    }
-  }
-
-  // we might not need this piece of code if we want to use branches in general
-  getDefaultBranch() {
-    const { branches, defaultBranch } = this.props;
-
-    // return if we don't have branches (not fetched yet)
-    if (!branches.all.standard.length) return null;
-
-    // return the full branch object corresponding to the default -- if any is set (this is generally the case)
-    if (defaultBranch) {
-      const defaultBranchObject = branches.all.standard.find(
-        (branch) => branch.name === defaultBranch
-      );
-      if (defaultBranchObject) return defaultBranchObject;
-    }
-
-    return branches.all.standard[0]?.name;
-  }
-
-  getScope() {
-    const scope = {
-      namespace: this.props.projectNamespace,
-      project: this.props.projectPath,
-    };
-    // TODO: plug in branch coming from project page when it available
-    scope.branch = this.getDefaultBranch();
-    return scope;
-  }
-
-  render() {
-    const { branches, file, user } = this.props;
-    const filePath = file && file.file_path ? file.file_path : file || "";
-
-    // anonymous users can't currently use this feature
-    if (!user.logged) {
-      return (
-        <JupyterButtonPresent
-          access={false}
-          filePath={filePath}
-          location={this.props.location}
-          launchNotebookUrl={this.props.launchNotebookUrl}
-        />
-      );
-    }
-
-    let updating = false;
-    if (branches.all.fetching || !branches.all.standard.length) updating = true;
-
-    return (
-      <JupyterButtonPresent
-        client={this.props.client}
-        model={this.props.model}
-        access={true}
-        scope={this.getScope()}
-        filePath={filePath}
-        updating={updating}
-        location={this.props.location}
-        launchNotebookUrl={this.props.launchNotebookUrl}
       />
     );
   }
@@ -209,9 +122,9 @@ class ShowFile extends React.Component {
     if (this.state.error !== null)
       filePath = this.props.filePath.split("\\").pop().split("/").pop();
 
-    let buttonJupyter = null;
-    if (this.props.filePath.endsWith(".ipynb"))
-      buttonJupyter = <JupyterButton {...this.props} file={filePath} />;
+    const buttonJupyter = this.props.filePath.endsWith(".ipynb") ? (
+      <SessionFileButton filePath={this.props.filePath} />
+    ) : null;
     const filters = {
       namespace: this.props.projectNamespace,
       project: this.props.projectPath,
@@ -269,4 +182,4 @@ class ShowFile extends React.Component {
   }
 }
 
-export { JupyterNotebookContainer as JupyterNotebook, JupyterButton, ShowFile };
+export { JupyterNotebookContainer as JupyterNotebook, ShowFile };
