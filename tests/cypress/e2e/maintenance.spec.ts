@@ -16,12 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("display the maintenance page", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
-
   // e of the resources on RenkuLab are t
   it("Shows the standard error when UI is down but no maintenance is set", () => {
     fixtures.config();
@@ -46,8 +43,6 @@ describe("display the maintenance page", () => {
 });
 
 describe("display the status page", () => {
-  const fixtures = new Fixtures(cy);
-
   it("Shows no banner if there is no incident or maintenance", () => {
     fixtures.config().versions().userNone().getStatuspageInfo();
     cy.visit("/");

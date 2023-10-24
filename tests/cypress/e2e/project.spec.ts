@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("display a project - not found", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions();
   });
@@ -123,8 +121,6 @@ describe("display a project - not found", () => {
 });
 
 describe("display a project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures
@@ -266,8 +262,6 @@ describe("display a project", () => {
 });
 
 describe("fork a project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();

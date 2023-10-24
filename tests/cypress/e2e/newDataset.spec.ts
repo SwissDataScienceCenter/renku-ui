@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("Project new dataset", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {
@@ -227,8 +225,6 @@ describe("Project new dataset", () => {
 });
 
 describe("Project new dataset without access", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   const projectPath = "e2e/local-test-project";
 
   beforeEach(() => {
@@ -255,8 +251,6 @@ describe("Project new dataset without access", () => {
 });
 
 describe("Project import dataset", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {

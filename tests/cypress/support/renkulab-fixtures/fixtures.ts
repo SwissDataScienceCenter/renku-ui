@@ -26,14 +26,16 @@ class Fixtures {
 
   constructor(cy: Cypress.Chainable) {
     this.cy = cy;
+
+    this._useMockedData = Cypress.env("USE_FIXTURES") === true;
   }
 
   get useMockedData() {
     return this._useMockedData;
   }
-  set useMockedData(value) {
-    this._useMockedData = !!value;
-  }
+  // set useMockedData(value) {
+  //   this._useMockedData = !!value;
+  // }
 }
 
 export default Fixtures;

@@ -55,5 +55,7 @@ const Fixtures = NewProject(
   )
 );
 
-export default Fixtures;
+const fixtures = new Fixtures(cy);
+export default fixtures;
+
 export type FixturesType = InstanceType<typeof Fixtures>;

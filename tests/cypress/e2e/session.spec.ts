@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("display a session", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
@@ -243,8 +241,6 @@ describe("display a session", () => {
 });
 
 describe("display a session with error", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
@@ -263,8 +259,6 @@ describe("display a session with error", () => {
 });
 
 describe("display a session when session is being stopped", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();

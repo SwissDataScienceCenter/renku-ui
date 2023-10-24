@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("Project settings page", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures
@@ -239,8 +237,6 @@ describe("Project settings page", () => {
 });
 
 describe("Cloud storage settings page", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures

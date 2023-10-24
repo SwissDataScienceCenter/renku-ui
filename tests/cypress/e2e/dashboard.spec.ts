@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 import {
   DISMISSIBLE_SIMPLE_INFO_MESSAGE_FIXTURE,
   NON_DISMISSIBLE_READ_MORE_SUCCESS_MESSAGE_FIXTURE,
@@ -29,8 +29,6 @@ const findProject = (path, projects) => {
 };
 
 describe("dashboard", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
   });
@@ -238,8 +236,6 @@ describe("dashboard", () => {
 });
 
 describe("dashboard message", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures
       .versions()

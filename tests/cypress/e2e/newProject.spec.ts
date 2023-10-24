@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("Add new project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const newProjectTitle = "new project";
   const slug = "new-project";
   const newProjectPath = `e2e/${slug}`;
@@ -163,9 +161,6 @@ describe("Add new project", () => {
 });
 
 describe("Add new project shared link", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
-
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects("getLandingUserProjects");

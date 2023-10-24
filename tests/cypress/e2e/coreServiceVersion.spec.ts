@@ -19,7 +19,7 @@
 /**
  * Fix the core service version to specific values and test a few calls
  */
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 const config = {
   overrides: {
@@ -33,8 +33,6 @@ const config = {
 };
 
 describe("display a project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config(config).versions().userTest();
     fixtures
@@ -72,8 +70,6 @@ describe("display a project", () => {
 });
 
 describe("Project dataset", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {

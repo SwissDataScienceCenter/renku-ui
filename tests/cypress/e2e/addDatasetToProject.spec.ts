@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("Add dataset to existing project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const datasetName = "abcd";
   const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
   const pathOrigin = "e2e/testing-datasets";
@@ -120,8 +118,6 @@ describe("Add dataset to existing project", () => {
 });
 
 describe("Add dataset to new project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const datasetName = "abcd";
   const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
   const pathOrigin = "e2e/testing-datasets";
@@ -201,8 +197,6 @@ describe("Add dataset to new project", () => {
 });
 
 describe("Invalid dataset", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures

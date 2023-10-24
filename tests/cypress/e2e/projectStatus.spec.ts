@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("display KG status information", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
@@ -111,8 +109,6 @@ describe("display KG status information", () => {
 });
 
 describe("display migration information", () => {
-  const fixtures = new Fixtures(cy);
-
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
@@ -367,7 +363,6 @@ describe("display migration information", () => {
 });
 
 describe("display migration information for non maintainer", () => {
-  const fixtures = new Fixtures(cy);
   beforeEach(() => {
     fixtures.config().versions().userNone();
     fixtures.projects().landingUserProjects().projectTestObserver();

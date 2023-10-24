@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 function checkDatasetInKg(cy, fixtures, projectPath) {
   const datasetName = "abcd";
@@ -80,8 +80,6 @@ function checkDatasetLimitedPermissionDisplay(
 }
 
 describe("Project dataset", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {
@@ -286,8 +284,6 @@ describe("Project dataset", () => {
 });
 
 describe("Project dataset (legacy ids)", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {
@@ -324,8 +320,6 @@ describe("Project dataset (legacy ids)", () => {
 });
 
 describe("Error loading datasets", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {
@@ -357,8 +351,6 @@ describe("Error loading datasets", () => {
 });
 
 describe("Migration check errors", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {
@@ -387,8 +379,6 @@ describe("Migration check errors", () => {
 });
 
 describe("Project dataset (locked)", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {

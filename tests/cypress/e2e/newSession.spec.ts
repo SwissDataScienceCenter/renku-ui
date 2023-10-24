@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("launch sessions", () => {
-  const fixtures = new Fixtures(cy);
   beforeEach(() => {
     fixtures.config().versions().projects().landingUserProjects();
     fixtures.projectTest().projectMigrationUpToDate();
