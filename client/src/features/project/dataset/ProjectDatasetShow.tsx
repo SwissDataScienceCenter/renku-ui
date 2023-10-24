@@ -23,14 +23,14 @@ import { ACCESS_LEVELS } from "../../../api-client";
 import DatasetView from "../../../dataset/Dataset.present";
 import AppContext from "../../../utils/context/appContext";
 import { Url } from "../../../utils/helpers/url";
-import { useGetDatasetFilesQuery } from "../projectCoreApi";
 import type {
   DatasetCore,
   DatasetKg,
   IDataset,
   StateModelProject,
 } from "../Project";
-import { useGetDatasetKgQuery } from "../projectKgApi";
+import { useGetDatasetFilesQuery } from "../projectCoreApi";
+import { useGetDatasetKgQuery } from "../projectKg.api";
 import { useCoreSupport } from "../useProjectCoreSupport";
 
 type IDatasetCoordinator = {

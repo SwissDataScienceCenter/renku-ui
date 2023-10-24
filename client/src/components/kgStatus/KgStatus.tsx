@@ -20,11 +20,11 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Progress } from "reactstrap";
 
-import { projectKgApi } from "../../features/project/projectKgApi";
 import { ProjectIndexingStatuses } from "../../features/project/projectEnums";
+import { projectKgApi } from "../../features/project/projectKg.api";
+import { Url } from "../../utils/helpers/url";
 import { InfoAlert, WarnAlert } from "../Alert";
 import { Loader } from "../Loader";
-import { Url } from "../../utils/helpers/url";
 
 /**
  * Inject the lineage status to the File Lineage component

@@ -23,14 +23,14 @@
  *  New project controller code.
  */
 
-import { CUSTOM_REPO_NAME } from "./ProjectNew.container";
+import { projectKgApi } from "../../features/project/projectKg.api";
 import { newProjectSchema } from "../../model/RenkuModels";
 import {
   sleep,
   slugFromTitle,
   verifyTitleCharacters,
 } from "../../utils/helpers/HelperFunctions";
-import { projectKgApi } from "../../features/project/projectKgApi";
+import { CUSTOM_REPO_NAME } from "./ProjectNew.container";
 
 // ? reference https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names
 const RESERVED_TITLE_NAMES = [
@@ -872,7 +872,7 @@ class NewProjectCoordinator {
   }
 }
 
-export { NewProjectCoordinator, validateTitle, checkTitleDuplicates };
+export { NewProjectCoordinator, checkTitleDuplicates, validateTitle };
 
 // test only
 export { RESERVED_TITLE_NAMES };

@@ -23,23 +23,23 @@
  *  Presentational components.
  */
 
+import cx from "classnames";
 import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { CardImg, Col, Row } from "reactstrap";
-import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper";
-import cx from "classnames";
+import { Swiper, SwiperSlide } from "swiper/react";
 
+import { Loader } from "../components/Loader";
 import type { EntityDescriptionContainerProps } from "../components/entities/Description";
 import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
-import { useProjectMetadataQuery } from "../features/projects/projectsKgApi";
-import { Loader } from "../components/Loader";
+import { useProjectMetadataQuery } from "../features/project/projectKg.api";
 
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 
 import "swiper/css";
-import "swiper/css/pagination";
 import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 import styles from "./sectionShowcase.module.scss";
 

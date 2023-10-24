@@ -96,7 +96,11 @@ const server = app.listen(port, () => {
 const apiClient = new APIClient();
 
 // start the WebSocket server
-if (config.websocket.enabled) {
+function createWsServer() {
+  if (!config.websocket.enabled) {
+    return null;
+  }
+
   const path = `${config.server.prefix}${config.server.wsSuffix}`;
   const wsServer = new ws.Server({ server, path });
   addWebSocketServerContext(wsServer);
@@ -104,15 +108,48 @@ if (config.websocket.enabled) {
     logger.info("Configuring WebSocket server");
     configureWebsocket(wsServer, authenticator, storage, apiClient);
   });
+  return wsServer;
+}
+const wsServer = createWsServer();
+
+function shutdownServer() {
+  logger.info("Shutting down server");
+  server.close((error) => {
+    if (error) {
+      logger.error(error);
+      process.exit(1);
+    } else {
+      logger.info("Shutting down storage");
+      storage.shutdown();
+      logger.info("Shutdown completed.");
+      setImmediate(() => {
+        process.exit(0);
+      });
+    }
+  });
 }
 
 function shutdown() {
-  server.close(() => {
-    storage.shutdown();
-    logger.info("Shutdown completed.");
-    setImmediate(() => {
-      process.exit(0);
+  if (wsServer != null) {
+    logger.info("Shutting down WebSocket server");
+    wsServer.clients.forEach((ws) => {
+      ws.close();
     });
+    wsServer.close((error) => {
+      if (error) {
+        logger.error(error);
+        process.exit(1);
+      } else {
+        shutdownServer();
+      }
+    });
+  } else {
+    shutdownServer();
+  }
+
+  process.on("unhandledRejection", (error) => {
+    logger.error(error);
+    process.exit(1);
   });
 }
 

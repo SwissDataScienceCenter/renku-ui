@@ -16,9 +16,6 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from "react";
-import { Collapse } from "reactstrap";
-import { Link } from "react-router-dom";
 import {
   faArrowAltCircleUp,
   faCheckCircle,
@@ -26,12 +23,15 @@ import {
   faPlusCircle,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Collapse } from "reactstrap";
 
-import { ProjectIndexingStatusResponse } from "../../Project";
-import { ProjectIndexingStatuses } from "../../projectEnums";
-import { projectKgApi } from "../../projectKgApi";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { Docs } from "../../../../utils/constants/Docs";
+import { ProjectIndexingStatusResponse } from "../../Project";
+import { ProjectIndexingStatuses } from "../../projectEnums";
+import { projectKgApi } from "../../projectKg.api";
 import {
   CompositeTitle,
   DetailsSection,
