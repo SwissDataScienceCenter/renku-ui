@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import {
   ChangeEvent,
   Dispatch,
@@ -23,7 +24,6 @@ import {
   useCallback,
   useState,
 } from "react";
-import cx from "classnames";
 import { RootStateOrAny, useSelector } from "react-redux";
 import {
   Button,
@@ -38,6 +38,7 @@ import {
   Row,
 } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
+import { SuccessAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/RenkuModels";
 import {
@@ -52,7 +53,6 @@ import {
   useRenkuSaveMutation,
 } from "../sidecarApi";
 import styles from "./SessionModals.module.scss";
-import { SuccessAlert } from "../../../components/Alert";
 
 interface SaveSessionModalProps {
   isOpen: boolean;
@@ -308,8 +308,8 @@ function SaveSessionBody({
     undefined
   );
   const saveText = saving ? (
-    <span className="d-flex gap-2">
-      <Loader inline size={16} />
+    <span>
+      <Loader className="me-2" inline size={16} />
       Saving Session
     </span>
   ) : (
