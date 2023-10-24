@@ -17,39 +17,40 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for the dashboard page
  */
 export function Dashboard<T extends FixturesConstructor>(Parent: T) {
   return class DashboardFixtures extends Parent {
-    configWithDashboardMessage({
-      name = "getConfig",
-      fixture = "config.json",
-    }: ConfigWithDashboardMessageArgs) {
+    configWithDashboardMessage(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "config.json",
+        name: "getConfig",
+      });
+
+      if (!this.useMockedData) {
+        cy.intercept("/config.json").as(name);
+        return this;
+      }
+
       if (fixture === "config.json") {
-        cy.intercept("/config.json", {
-          fixture,
-        }).as(name);
+        const response = { fixture };
+        cy.intercept("/config.json", response).as(name);
         return this;
       }
 
       cy.fixture("config.json").then((baseConfig) => {
         cy.fixture(fixture).then((layeredConfig) => {
           const combinedConfig = { ...baseConfig, ...layeredConfig };
-          cy.intercept("/config.json", {
-            body: combinedConfig,
-          }).as(name);
+          const response = { body: combinedConfig };
+          cy.intercept("/config.json", response).as(name);
         });
       });
       return this;
     }
   };
-}
-
-interface ConfigWithDashboardMessageArgs {
-  name?: string;
-  fixture?: string;
 }
 
 export const DISMISSIBLE_SIMPLE_INFO_MESSAGE_FIXTURE =

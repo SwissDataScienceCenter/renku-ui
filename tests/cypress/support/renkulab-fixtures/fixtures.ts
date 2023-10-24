@@ -33,9 +33,6 @@ class Fixtures {
   get useMockedData() {
     return this._useMockedData;
   }
-  // set useMockedData(value) {
-  //   this._useMockedData = !!value;
-  // }
 }
 
 export default Fixtures;

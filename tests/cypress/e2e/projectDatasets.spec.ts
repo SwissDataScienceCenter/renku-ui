@@ -16,12 +16,17 @@
  * limitations under the License.
  */
 
+import type { FixturesType } from "../support/renkulab-fixtures";
 import fixtures from "../support/renkulab-fixtures";
 
-function checkDatasetInKg(cy, fixtures, projectPath) {
+function checkDatasetInKg(
+  cy: Cypress.Chainable,
+  fixtures: FixturesType,
+  projectPath: string
+) {
   const datasetName = "abcd";
   const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
-  fixtures.datasetById(datasetIdentifier);
+  fixtures.datasetById({ id: datasetIdentifier });
   cy.visit(`projects/${projectPath}/datasets/${datasetName}`);
   cy.wait("@getProject");
   cy.wait("@datasetList");
@@ -30,11 +35,16 @@ function checkDatasetInKg(cy, fixtures, projectPath) {
   cy.getDataCy("not-in-kg-warning").should("not.exist");
 }
 
-function checkDatasetDisplay(cy, fixtures, datasets, projectPath) {
+function checkDatasetDisplay(
+  cy: Cypress.Chainable,
+  fixtures: FixturesType,
+  datasets,
+  projectPath: string
+) {
   datasets.forEach((d, i) => {
     const datasetIdentifier = d.identifier.replace(/-/g, "");
     const requestId = `getDatasetById${i}`;
-    fixtures.datasetById(datasetIdentifier, requestId);
+    fixtures.datasetById({ id: datasetIdentifier, name: requestId });
     cy.getDataCy("list-card-title").contains(d.title).click();
     cy.wait(`@${requestId}`);
     cy.getDataCy("dataset-title").should("contain.text", d.title);
@@ -51,15 +61,15 @@ function checkDatasetDisplay(cy, fixtures, datasets, projectPath) {
 }
 
 function checkDatasetLimitedPermissionDisplay(
-  cy,
-  fixtures,
+  cy: Cypress.Chainable,
+  fixtures: FixturesType,
   datasets,
   editDisabled = false
 ) {
   datasets.forEach((d, i) => {
     const datasetIdentifier = d.identifier.replace(/-/g, "");
     const requestId = `getDatasetById${i}`;
-    fixtures.datasetById(datasetIdentifier, requestId);
+    fixtures.datasetById({ id: datasetIdentifier, name: requestId });
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000, { log: false });
     cy.getDataCy("list-card-title").should("have.length", 3);
@@ -86,7 +96,7 @@ describe("Project dataset", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project(projectPath);
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents(undefined, 9);
     fixtures.projectMigrationUpToDate({
@@ -123,7 +133,7 @@ describe("Project dataset", () => {
         cy.getDataCy("list-card").should("have.length", totalDatasets);
         const dataset = datasets[0];
         const datasetIdentifier = dataset.identifier.replace(/-/g, "");
-        fixtures.datasetById(datasetIdentifier, "getDatasetById");
+        fixtures.datasetById({ id: datasetIdentifier });
         cy.getDataCy("list-card-title").contains(dataset.title).click();
         cy.wait("@getDatasetById");
         cy.getDataCy("edit-dataset-button").first().click();
@@ -157,11 +167,11 @@ describe("Project dataset", () => {
         );
         cy.wait("@uploadDatasetFile");
 
-        // fixtures.projectKGDatasetList(projectPath);
-        // eslint-disable-next-line max-nested-callbacks
-        fixtures.projectDatasetList(undefined, undefined, (content) => {
-          content.result.datasets[0].title = `${dataset.title} edited`;
-          return content;
+        fixtures.projectDatasetList({
+          transformResponse(content: any) {
+            content.result.datasets[0].title = `${dataset.title} edited`;
+            return content;
+          },
         });
         cy.getDataCy("submit-button").click();
         cy.wait("@editDataset")
@@ -185,11 +195,10 @@ describe("Project dataset", () => {
   });
 
   it("can edit project dataset with protected branch", () => {
-    fixtures
-      .getFiles()
-      .uploadDatasetFile()
-      .addFileDataset()
-      .editDataset(undefined, undefined, "protected");
+    fixtures.getFiles().uploadDatasetFile().addFileDataset().editDataset({
+      remoteBranch: "protected",
+    });
+    // .editDataset(undefined, undefined, "protected");
 
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProject");
@@ -201,7 +210,7 @@ describe("Project dataset", () => {
         cy.getDataCy("list-card").should("have.length", totalDatasets);
         const dataset = datasets[0];
         const datasetIdentifier = dataset.identifier.replace(/-/g, "");
-        fixtures.datasetById(datasetIdentifier, "getDatasetById");
+        fixtures.datasetById({ id: datasetIdentifier });
         cy.getDataCy("list-card-title").contains(dataset.title).click();
         cy.wait("@getDatasetById");
         cy.getDataCy("edit-dataset-button").first().click();
@@ -210,10 +219,11 @@ describe("Project dataset", () => {
         cy.get("input[name='title']").should("have.value", dataset.title);
         cy.get("input[name='title']").type(" edited");
 
-        // eslint-disable-next-line max-nested-callbacks
-        fixtures.projectDatasetList(undefined, undefined, (content) => {
-          content.result.datasets[0].title = `${dataset.title} edited`;
-          return content;
+        fixtures.projectDatasetList({
+          transformResponse(content: any) {
+            content.result.datasets[0].title = `${dataset.title} edited`;
+            return content;
+          },
         });
         cy.getDataCy("submit-button").click();
         cy.contains(
@@ -233,11 +243,11 @@ describe("Project dataset", () => {
         cy.getDataCy("list-card").should("have.length", totalDatasets);
         const dataset = datasets[0];
         const datasetIdentifier = dataset.identifier.replace(/-/g, "");
-        fixtures.datasetById(datasetIdentifier, "getDatasetById");
+        fixtures.datasetById({ id: datasetIdentifier });
         cy.getDataCy("list-card-title").contains(dataset.title).click();
         cy.wait("@getDatasetById");
         cy.getDataCy("delete-dataset-button").should("exist").click();
-        fixtures.datasetsRemove(datasetIdentifier);
+        fixtures.datasetsRemove();
         cy.get("button").contains("Delete dataset").should("exist").click();
         // dataset should be deleted
         cy.wait("@datasetsRemove");
@@ -271,7 +281,7 @@ describe("Project dataset", () => {
   it("dataset is NOT in Kg", () => {
     const datasetName = "abcd";
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
-    fixtures.invalidDataset(datasetIdentifier);
+    fixtures.invalidDataset({ id: datasetIdentifier });
     fixtures.getFiles();
     cy.visit(`projects/${projectPath}/datasets/${datasetName}`);
     cy.wait("@getProject");
@@ -290,7 +300,7 @@ describe("Project dataset (legacy ids)", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project(projectPath);
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetLegacyIdList();
     fixtures.projectTestContents(undefined, 9);
     fixtures.projectMigrationUpToDate({
@@ -326,11 +336,10 @@ describe("Error loading datasets", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project(projectPath);
-    fixtures.projectKGDatasetList(projectPath);
-    fixtures.projectDatasetList(
-      "datasetList",
-      "datasets/dataset-list-error.json"
-    );
+    fixtures.projectKGDatasetList({ path: projectPath });
+    fixtures.projectDatasetList({
+      fixture: "datasets/dataset-list-error.json",
+    });
     fixtures.projectTestContents(undefined, 9);
     fixtures.projectMigrationUpToDate({
       queryUrl: "*",
@@ -357,7 +366,7 @@ describe("Migration check errors", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project(projectPath);
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents(undefined, 9);
     fixtures.projectLockStatus();
@@ -385,7 +394,7 @@ describe("Project dataset (locked)", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project(projectPath);
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents(undefined, 9);
     fixtures.projectMigrationUpToDate({

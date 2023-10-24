@@ -25,7 +25,7 @@ describe("Project new dataset", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project(projectPath).cacheProjectList();
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.addFileDataset();
     fixtures.projectTestContents(undefined, 9);
@@ -130,15 +130,12 @@ describe("Project new dataset", () => {
   });
 
   it("upload dataset file", () => {
-    fixtures.uploadDatasetFile(
-      "multipleFilesUpload",
-      "datasets/upload-dataset-multiple-files.json",
-      {
-        override_existing: true,
-        unpack_archive: true,
-        statusCode: 200,
-      }
-    );
+    fixtures.uploadDatasetFile({
+      fixture: "datasets/upload-dataset-multiple-files.json",
+      name: "multipleFilesUpload",
+      overrideExisting: true,
+      unpackArchive: true,
+    });
     cy.newDataset({
       title: "New dataset completed",
     });
@@ -176,11 +173,12 @@ describe("Project new dataset", () => {
   });
 
   it("error upload dataset file", () => {
-    const options = {
-      override_existing: true,
+    fixtures.uploadDatasetFile({
+      fixture: "",
+      name: "errorUploadFile",
+      overrideExisting: true,
       statusCode: 500,
-    };
-    fixtures.uploadDatasetFile("errorUploadFile", "", options);
+    });
     cy.newDataset({
       title: "New dataset fail",
     });
@@ -198,10 +196,10 @@ describe("Project new dataset", () => {
   });
 
   it("shows error on empty title", () => {
-    fixtures.createDataset(
-      "createDatasetError",
-      "datasets/create-dataset-title-error.json"
-    );
+    fixtures.createDataset({
+      fixture: "datasets/create-dataset-title-error.json",
+      name: "createDatasetError",
+    });
     cy.getDataCy("submit-button").click();
     cy.get("div.error-feedback")
       .contains("Please fix problems")
@@ -209,10 +207,10 @@ describe("Project new dataset", () => {
   });
 
   it("shows error on invalid title", () => {
-    fixtures.createDataset(
-      "createDatasetError",
-      "datasets/create-dataset-title-error.json"
-    );
+    fixtures.createDataset({
+      fixture: "datasets/create-dataset-title-error.json",
+      name: "createDatasetError",
+    });
     cy.newDataset({
       title: "test@",
     });
@@ -232,7 +230,7 @@ describe("Project new dataset without access", () => {
     fixtures.projects().landingUserProjects().projectTestObserver();
     fixtures.projectLockStatus();
     fixtures.cacheProjectList();
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.createDataset();
     fixtures.projectTestContents(undefined, 9);
@@ -257,7 +255,7 @@ describe("Project import dataset", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project(projectPath).cacheProjectList();
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents(undefined, 9);
     fixtures.projectMigrationUpToDate({

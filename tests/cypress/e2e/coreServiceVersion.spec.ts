@@ -76,7 +76,7 @@ describe("Project dataset", () => {
     fixtures.config(config).versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project(projectPath);
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents(undefined, 9);
     fixtures.projectMigrationUpToDate({

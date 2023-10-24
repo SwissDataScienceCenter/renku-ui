@@ -30,7 +30,7 @@ describe("Add dataset to existing project", () => {
       "getLandingUserProjects",
       "projects/member-projects.json"
     );
-    fixtures.datasetById(datasetIdentifier);
+    fixtures.datasetById({ id: datasetIdentifier });
     fixtures
       .project(pathOrigin, "getProject", "projects/project.json", false)
       .cacheProjectList();
@@ -69,7 +69,7 @@ describe("Add dataset to existing project", () => {
 
   it("successfully import dataset", () => {
     fixtures.projectTestContents(undefined, 9);
-    fixtures.projectKGDatasetList(projectSelected);
+    fixtures.projectKGDatasetList({ path: projectSelected });
     fixtures.projectDatasetList();
     fixtures.projectTest();
     fixtures.projectLockStatus();
@@ -132,7 +132,7 @@ describe("Add dataset to new project", () => {
         "getLandingUserProjects",
         "projects/member-projects.json"
       );
-    fixtures.datasetById(datasetIdentifier);
+    fixtures.datasetById({ id: datasetIdentifier });
     fixtures
       .project(pathOrigin, "getProject", "projects/project.json", false)
       .cacheProjectList();
@@ -160,7 +160,7 @@ describe("Add dataset to new project", () => {
       "*"
     );
     fixtures.projectTestContents(undefined, 9);
-    fixtures.projectKGDatasetList(newProjectPath);
+    fixtures.projectKGDatasetList({ path: newProjectPath });
     fixtures.projectDatasetList();
     // fill form new project
     cy.createProjectAndAddDataset(newProjectTitle, newProjectPath, fixtures);
@@ -209,7 +209,7 @@ describe("Invalid dataset", () => {
 
   it("displays warning when dataset doesn't exist", () => {
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
-    fixtures.invalidDataset(datasetIdentifier);
+    fixtures.invalidDataset({ id: datasetIdentifier });
     cy.visit(`datasets/${datasetIdentifier}/add`);
     cy.wait("@invalidDataset");
     cy.get("h3").contains("Dataset not found").should("be.visible");
@@ -217,7 +217,7 @@ describe("Invalid dataset", () => {
 
   it("displays warning when dataset is invalid", () => {
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
-    fixtures.datasetById(datasetIdentifier);
+    fixtures.datasetById({ id: datasetIdentifier });
     const pathOrigin = "e2e/testing-datasets";
     fixtures.errorProject(pathOrigin).cacheProjectList();
     fixtures.interceptMigrationCheck(

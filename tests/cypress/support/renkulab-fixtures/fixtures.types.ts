@@ -16,23 +16,14 @@
  * limitations under the License.
  */
 
-import { FixturesConstructor } from "./fixtures";
-import { SimpleFixture } from "./fixtures.types";
+export type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
 
-/**
- * Fixtures for Data Services
- */
+export interface NameOnlyFixture {
+  name: string;
+}
 
-export function DataServices<T extends FixturesConstructor>(Parent: T) {
-  return class DataServicesFixtures extends Parent {
-    resourcePoolsTest(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "dataServices/resource-pools.json",
-        name: "getResourcePools",
-      });
-      const response = this.useMockedData ? { fixture } : undefined;
-      cy.intercept("/ui-server/api/data/resource_pools*", response).as(name);
-      return this;
-    }
-  };
+export interface SimpleFixture extends NameOnlyFixture {
+  fixture: string;
 }

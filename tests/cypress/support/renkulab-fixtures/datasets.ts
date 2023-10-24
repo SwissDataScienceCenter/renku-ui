@@ -17,8 +17,9 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { DeepPartial, NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
-function toLegacyIdentifier(datasetId) {
+function toLegacyIdentifier(datasetId: string): string {
   return (
     datasetId.slice(0, 8) +
     "-" +
@@ -35,184 +36,248 @@ function toLegacyIdentifier(datasetId) {
 /**
  * Fixtures for Datasets
  */
-function Datasets<T extends FixturesConstructor>(Parent: T) {
+export function Datasets<T extends FixturesConstructor>(Parent: T) {
   return class DatasetsFixtures extends Parent {
-    datasetById(
-      id = "a20838d8cd514eaab3efbd54a8104732",
-      name = "getDatasetById"
-    ) {
-      const fixture = this.useMockedData
+    datasetById(args?: Partial<DatasetByIdArgs>) {
+      const { id, name } = Cypress._.defaults({}, args, {
+        id: "a20838d8cd514eaab3efbd54a8104732",
+        name: "getDatasetById",
+      });
+      const response = this.useMockedData
         ? { fixture: `datasets/dataset_${id}.json` }
         : undefined;
-      cy.intercept(`/ui-server/api/kg/datasets/${id}`, fixture).as(name);
+      cy.intercept(`/ui-server/api/kg/datasets/${id}`, response).as(name);
       return this;
     }
 
-    datasetsRemove(datasetName: string, name = "datasetsRemove") {
-      const body = { result: { name, remote_branch: "master" } };
-      const fixture = { body };
-
+    datasetsRemove(args?: Partial<NameOnlyFixture>) {
+      const { name } = Cypress._.defaults({}, args, {
+        name: "datasetsRemove",
+      });
+      const response = this.useMockedData
+        ? { body: { result: { name, remote_branch: "master" } } }
+        : undefined;
       cy.intercept(
         "POST",
         "/ui-server/api/renku/*/datasets.remove",
-        fixture
+        response
       ).as(name);
       return this;
     }
 
-    invalidDataset(
-      id = "a46c10c94a40359181965e5c4cdabc",
-      name = "invalidDataset"
-    ) {
-      const fixture = this.useMockedData
+    invalidDataset(args?: Partial<InvalidDatasetArgs>) {
+      const { id, name } = Cypress._.defaults({}, args, {
+        id: "a46c10c94a40359181965e5c4cdabc",
+        name: "invalidDataset",
+      });
+      const response = this.useMockedData
         ? { fixture: `datasets/no-dataset.json`, statusCode: 404 }
         : undefined;
-      cy.intercept(`/ui-server/api/kg/datasets/${id}`, fixture).as(name);
+      cy.intercept(`/ui-server/api/kg/datasets/${id}`, response).as(name);
       return this;
     }
 
-    projectKGDatasetList(
-      path = "",
-      name = "datasetKGList",
-      resultFile = "datasets/project-dataset-kg-list.json"
-    ) {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept(`/ui-server/api/kg/projects/${path}/datasets`, fixture).as(
+    projectKGDatasetList(args?: Partial<ProjectKGDatasetListArgs>) {
+      const { fixture, name, path } = Cypress._.defaults({}, args, {
+        fixture: "datasets/project-dataset-kg-list.json",
+        name: "datasetKGList",
+        path: "",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept(`/ui-server/api/kg/projects/${path}/datasets`, response).as(
         name
       );
       return this;
     }
 
-    projectDatasetList(
-      name = "datasetList",
-      resultFile = "datasets/project-dataset-list.json",
-      process = (result) => result
-    ) {
-      this.cy.fixture(resultFile).then((content) => {
-        const result = process(content);
-        const fixture = { body: result };
+    projectDatasetList(args?: Partial<ProjectDatasetListArgs>) {
+      const { fixture, name, transformResponse } = Cypress._.defaults(
+        {},
+        args,
+        {
+          fixture: "datasets/project-dataset-list.json",
+          name: "datasetList",
+          transformResponse: (response: any) => response,
+        }
+      );
+
+      if (!this.useMockedData) {
+        cy.intercept("/ui-server/api/renku/**/datasets.list?git_url=*").as(
+          name
+        );
+        return this;
+      }
+
+      cy.fixture(fixture).then((content) => {
+        const result = transformResponse(content);
+        const response = { body: result };
         cy.intercept(
           "/ui-server/api/renku/**/datasets.list?git_url=*",
-          fixture
+          response
         ).as(name);
       });
       return this;
     }
 
-    projectDatasetLegacyIdList(
-      name = "datasetList",
-      resultFile = "datasets/project-dataset-list.json"
-    ) {
-      if (!this.useMockedData) return;
-      cy.fixture(resultFile).then((result) => {
-        for (const ds of result.result.datasets)
+    projectDatasetLegacyIdList(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "datasets/project-dataset-list.json",
+        name: "datasetList",
+      });
+
+      if (!this.useMockedData) {
+        cy.intercept("/ui-server/api/renku/**/datasets.list?git_url=*").as(
+          name
+        );
+        return this;
+      }
+
+      cy.fixture(fixture).then((response) => {
+        for (const ds of response.result.datasets) {
           ds.identifier = toLegacyIdentifier(ds.identifier);
+        }
         cy.intercept(
           "GET",
           "/ui-server/api/renku/*/datasets.list?git_url=*",
-          result
+          response
         ).as(name);
       });
       return this;
     }
 
-    getFiles(name = "getFiles") {
-      const fixture = this.useMockedData
-        ? { fixture: `datasets/dataset-files.json` }
-        : undefined;
-      cy.intercept("/ui-server/api/renku/*/datasets.files_list?*", fixture).as(
+    getFiles(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "datasets/dataset-files.json",
+        name: "getFiles",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/renku/*/datasets.files_list?*", response).as(
         name
       );
       return this;
     }
 
-    importToProject(
-      name = "importToProject",
-      resultFile = "datasets/datasets-import.json"
-    ) {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept("/ui-server/api/renku/*/datasets.import", fixture).as(name);
-      cy.intercept("/ui-server/api/renku/datasets.import", fixture).as(name);
+    importToProject(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "datasets/datasets-import.json",
+        name: "importToProject",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/renku/*/datasets.import", response).as(name);
+      cy.intercept("/ui-server/api/renku/datasets.import", response).as(name);
       return this;
     }
 
-    importJobCompleted(
-      name = "importJobCompleted",
-      resultFile = "datasets/import-job-completed.json"
-    ) {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept("/ui-server/api/renku/*/jobs/*", fixture).as(name);
-      cy.intercept("/ui-server/api/renku/jobs/*", fixture).as(name);
+    importJobCompleted(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "datasets/import-job-completed.json",
+        name: "importJobCompleted",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/renku/*/jobs/*", response).as(name);
+      cy.intercept("/ui-server/api/renku/jobs/*", response).as(name);
       return this;
     }
 
-    importJobError(
-      name = "importJobError",
-      resultFile = "datasets/import-job-error.json"
-    ) {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept("/ui-server/api/renku/*/jobs/*", fixture).as(name);
-      cy.intercept("/ui-server/api/renku/jobs/*", fixture).as(name);
+    importJobError(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "datasets/import-job-error.json",
+        name: "importJobError",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/renku/*/jobs/*", response).as(name);
+      cy.intercept("/ui-server/api/renku/jobs/*", response).as(name);
       return this;
     }
 
-    uploadDatasetFile(
-      name = "uploadDatasetFile",
-      resultFile = "datasets/upload-dataset-file.json",
-      options?
-    ) {
-      const fixture = this.useMockedData
-        ? { fixture: resultFile, statusCode: options?.statusCode ?? 200 }
+    uploadDatasetFile(args?: Partial<UploadDatasetFileArgs>) {
+      const { fixture, name, overrideExisting, statusCode, unpackArchive } =
+        Cypress._.defaults({}, args, {
+          fixture: "datasets/upload-dataset-file.json",
+          name: "uploadDatasetFile",
+          overrideExisting: "*",
+          statusCode: 200,
+          unpackArchive: null,
+        });
+      const params = new URLSearchParams([
+        ...(overrideExisting
+          ? [["override_existing", `${overrideExisting}`]]
+          : []),
+        ...(unpackArchive ? [["unpack_archive", `${unpackArchive}`]] : []),
+      ]).toString();
+      const url = `/ui-server/api/renku/*/cache.files_upload${
+        params ? `?${params}` : ""
+      }`;
+      const response = this.useMockedData ? { fixture, statusCode } : undefined;
+      cy.intercept(url, response).as(name);
+      return this;
+    }
+
+    createDataset(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "datasets/create-dataset.json",
+        name: "createDataset",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/renku/*/datasets.create", response).as(name);
+      return this;
+    }
+
+    editDataset(args?: DeepPartial<EditDatasetArgs>) {
+      const { edited, name, remoteBranch } = Cypress._.defaultsDeep({}, args, {
+        edited: { name: "abcd", title: "abcd edited" },
+        name: "editDataset",
+        remoteBranch: "master",
+      }) as EditDatasetArgs;
+      const response = this.useMockedData
+        ? {
+            body: {
+              result: { edited, remote_branch: remoteBranch, warnings: [] },
+            },
+          }
         : undefined;
-      let params =
-        options && options.override_existing
-          ? `?override_existing=${options.override_existing}`
-          : "*";
-
-      params =
-        options && options.unpack_archive
-          ? `${params}&unpack_archive=${options.unpack_archive}`
-          : "*";
-
-      cy.intercept(
-        "/ui-server/api/renku/*/cache.files_upload" + params,
-        fixture
-      ).as(name);
+      cy.intercept("/ui-server/api/renku/*/datasets.edit", response).as(name);
       return this;
     }
 
-    createDataset(
-      name = "createDataset",
-      resultFile = "datasets/create-dataset.json"
-    ) {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept("/ui-server/api/renku/*/datasets.create", fixture).as(name);
-      return this;
-    }
-
-    editDataset(
-      name = "editDataset",
-      edited = { name: "abcd", title: "abcd edited" },
-      remoteBranch = "master"
-    ) {
-      cy.intercept("/ui-server/api/renku/*/datasets.edit", {
-        body: {
-          result: {
-            edited: edited,
-            remote_branch: remoteBranch,
-            warnings: [],
-          },
-        },
-      }).as(name);
-      return this;
-    }
-
-    addFileDataset(name = "addFile", resultFile = "datasets/add-file.json") {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept("/ui-server/api/renku/*/datasets.add", fixture).as(name);
+    addFileDataset(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "datasets/add-file.json",
+        name: "addFile",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/renku/*/datasets.add", response).as(name);
       return this;
     }
   };
 }
 
-export { Datasets };
+interface DatasetByIdArgs {
+  id: string;
+  name: string;
+}
+
+interface InvalidDatasetArgs {
+  id: string;
+  name: string;
+}
+
+interface ProjectKGDatasetListArgs extends SimpleFixture {
+  path: string;
+}
+
+interface ProjectDatasetListArgs extends SimpleFixture {
+  transformResponse: <T = any, R = any>(response: T) => R;
+}
+
+interface UploadDatasetFileArgs extends SimpleFixture {
+  overrideExisting: boolean | "*" | null;
+  statusCode: number;
+  unpackArchive: boolean | "*" | null;
+}
+
+interface EditDatasetArgs {
+  edited: { name: string; title: string };
+  name: string;
+  remoteBranch: string;
+}

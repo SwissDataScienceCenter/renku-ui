@@ -39,7 +39,7 @@ describe("display a dataset", () => {
     const datasetName = "abcd";
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
 
-    fixtures.datasetById(datasetIdentifier);
+    fixtures.datasetById({ id: datasetIdentifier });
     cy.getDataCy("list-card-title").contains(datasetName).click();
     cy.wait("@getDatasetById")
       .its("response.body")
@@ -73,7 +73,7 @@ describe("display a dataset", () => {
 
   it("displays warning when dataset is invalid", () => {
     const invalidDatasetId = "99a46c10c94a40359181965e5c4cdabc";
-    fixtures.invalidDataset(invalidDatasetId);
+    fixtures.invalidDataset({ id: invalidDatasetId });
     cy.visit(`/datasets/${invalidDatasetId}`);
     cy.wait("@invalidDataset");
     cy.get("h3").should("contain.text", "Dataset not found");

@@ -17,31 +17,36 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for workflows
  */
 
-function Workflows<T extends FixturesConstructor>(Parent: T) {
+export function Workflows<T extends FixturesConstructor>(Parent: T) {
   return class WorkflowsFixtures extends Parent {
-    getWorkflows(resultFile = "workflows/workflows-list-links-mappings.json") {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept("/ui-server/api/renku/*/workflow_plans.list?*", fixture).as(
-        "getWorkflows"
+    getWorkflows(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "workflows/workflows-list-links-mappings.json",
+        name: "getWorkflows",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/renku/*/workflow_plans.list?*", response).as(
+        name
       );
       return this;
     }
 
-    getWorkflowDetails(
-      resultFile = "workflows/workflow-show-links-mappings.json"
-    ) {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept("/ui-server/api/renku/*/workflow_plans.show?*", fixture).as(
-        "getWorkflowDetails"
+    getWorkflowDetails(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "workflows/workflow-show-links-mappings.json",
+        name: "getWorkflowDetails",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/renku/*/workflow_plans.show?*", response).as(
+        name
       );
       return this;
     }
   };
 }
-
-export { Workflows };

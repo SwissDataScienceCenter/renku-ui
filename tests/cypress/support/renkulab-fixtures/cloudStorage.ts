@@ -17,55 +17,61 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for Cloud Storage
  */
 
-export const CloudStorage = <T extends FixturesConstructor>(Parent: T) => {
+export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
   return class CloudStorageFixtures extends Parent {
-    cloudStorage(
-      name = "getCloudStorage",
-      fixture = "cloudStorage/cloud-storage.json"
-    ) {
-      cy.intercept("/ui-server/api/data/storage*", {
-        fixture,
-      }).as(name);
+    cloudStorage(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "cloudStorage/cloud-storage.json",
+        name: "getCloudStorage",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/data/storage*", response).as(name);
       return this;
     }
 
-    postCloudStorage(
-      name = "postCloudStorage",
-      fixture = "cloudStorage/new-cloud-storage.json"
-    ) {
+    postCloudStorage(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "cloudStorage/new-cloud-storage.json",
+        name: "postCloudStorage",
+      });
+      const response = this.useMockedData
+        ? { fixture, statusCode: 201 }
+        : undefined;
       cy.intercept(
         { method: "POST", path: "/ui-server/api/data/storage" },
-        {
-          statusCode: 201,
-          fixture,
-        }
+        response
       ).as(name);
       return this;
     }
 
-    patchCloudStorage(name = "patchCloudStorage") {
+    patchCloudStorage(args?: Partial<NameOnlyFixture>) {
+      const { name } = Cypress._.defaults({}, args, {
+        name: "patchCloudStorage",
+      });
+      const response = this.useMockedData ? { statusCode: 201 } : undefined;
       cy.intercept(
         { method: "PATCH", path: "/ui-server/api/data/storage/*" },
-        {
-          statusCode: 201,
-        }
+        response
       ).as(name);
       return this;
     }
 
-    deleteCloudStorage(name = "deleteCloudStorage") {
+    deleteCloudStorage(args?: Partial<NameOnlyFixture>) {
+      const { name } = Cypress._.defaults({}, args, {
+        name: "deleteCloudStorage",
+      });
+      const response = this.useMockedData ? { statusCode: 204 } : undefined;
       cy.intercept(
         { method: "DELETE", path: "/ui-server/api/data/storage/*" },
-        {
-          statusCode: 204,
-        }
+        response
       ).as(name);
       return this;
     }
   };
-};
+}
