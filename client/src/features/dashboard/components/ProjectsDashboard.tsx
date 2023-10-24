@@ -17,7 +17,7 @@
  */
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment, useContext, useEffect, useRef, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -293,12 +293,11 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
     );
   };
 
-  // ? Using `async` inside `useEffect()` requires keeping track of the latest
-  // ? promise and only letting that one commit to the component state.
-  const getProjectCurrentSessionsRef = useRef(0);
-
   useEffect(() => {
-    const capturedRef = ++getProjectCurrentSessionsRef.current;
+    // ? Using `async` inside `useEffect()` requires keeping track of the latest
+    // ? promise and only letting that one commit to the component state.
+    let ignoreUpdate = false;
+
     const getProjectCurrentSessions = async () => {
       const sessionProject: SessionProject[] = [];
       for (const session of currentSessions) {
@@ -311,11 +310,15 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
         sessionProject.push({ ...project, notebook: session });
       }
       // Commit the update only if this is the latest `useEffect()` call
-      if (capturedRef == getProjectCurrentSessionsRef.current) {
+      if (!ignoreUpdate) {
         setItems(sessionProject);
       }
     };
     getProjectCurrentSessions();
+
+    return () => {
+      ignoreUpdate = true;
+    };
   }, [client, currentSessions]);
 
   if (items?.length) {
