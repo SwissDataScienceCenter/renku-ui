@@ -17,48 +17,60 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for Sessions
  */
 
-function Sessions<T extends FixturesConstructor>(Parent: T) {
+export function Sessions<T extends FixturesConstructor>(Parent: T) {
   return class SessionsFixtures extends Parent {
-    getSessions(name = "getSessions", resultFile = "sessions/sessions.json") {
-      cy.intercept(
-        "/ui-server/api/notebooks/servers*",
-        this.useMockedData ? { fixture: resultFile } : undefined
-      ).as(name);
+    getSessions(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "sessions/sessions.json",
+        name: "getSessions",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/notebooks/servers*", response).as(name);
 
       return this;
     }
 
-    getSessionsError(
-      name = "getSessionsError",
-      resultFile = "sessions/sessionError.json"
-    ) {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept("/ui-server/api/notebooks/servers", fixture).as(name);
+    getSessionsError(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "sessions/sessionError.json",
+        name: "getSessionsError",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/notebooks/servers", response).as(name);
       return this;
     }
 
-    getSessionsStopping(
-      name = "getSessionsStopping",
-      resultFile = "sessions/sessionStopping.json"
-    ) {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept("/ui-server/api/notebooks/servers", fixture).as(name);
+    getSessionsStopping(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "sessions/sessionStopping.json",
+        name: "getSessionsStopping",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/notebooks/servers", response).as(name);
       return this;
     }
 
-    getLogs(name = "getLogs", resultFile = "sessions/logs.json") {
-      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
-      cy.intercept("/ui-server/api/notebooks/logs/*", fixture).as(name);
+    getLogs(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "sessions/logs.json",
+        name: "getLogs",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/notebooks/logs/*", response).as(name);
       return this;
     }
 
-    getGitStatusBehind(name = "getGitStatus") {
-      const fixture = this.useMockedData
+    getGitStatusBehind(args?: Partial<NameOnlyFixture>) {
+      const { name } = Cypress._.defaults({}, args, {
+        name: "getGitStatus",
+      });
+      const response = this.useMockedData
         ? {
             body: {
               result: {
@@ -77,13 +89,15 @@ function Sessions<T extends FixturesConstructor>(Parent: T) {
             },
           }
         : undefined;
-
-      cy.intercept("/sessions/*/sidecar/jsonrpc", fixture).as(name);
+      cy.intercept("/sessions/*/sidecar/jsonrpc", response).as(name);
       return this;
     }
 
-    getGitStatusClean(name = "getGitStatus") {
-      const fixture = this.useMockedData
+    getGitStatusClean(args?: Partial<NameOnlyFixture>) {
+      const { name } = Cypress._.defaults({}, args, {
+        name: "getGitStatus",
+      });
+      const response = this.useMockedData
         ? {
             body: {
               result: {
@@ -102,13 +116,15 @@ function Sessions<T extends FixturesConstructor>(Parent: T) {
             },
           }
         : undefined;
-
-      cy.intercept("/sessions/*/sidecar/jsonrpc", fixture).as(name);
+      cy.intercept("/sessions/*/sidecar/jsonrpc", response).as(name);
       return this;
     }
 
-    getGitStatusDirty(name = "getGitStatus") {
-      const fixture = this.useMockedData
+    getGitStatusDirty(args?: Partial<NameOnlyFixture>) {
+      const { name } = Cypress._.defaults({}, args, {
+        name: "getGitStatus",
+      });
+      const response = this.useMockedData
         ? {
             body: {
               result: {
@@ -129,12 +145,15 @@ function Sessions<T extends FixturesConstructor>(Parent: T) {
           }
         : undefined;
 
-      cy.intercept("/sessions/*/sidecar/jsonrpc", fixture).as(name);
+      cy.intercept("/sessions/*/sidecar/jsonrpc", response).as(name);
       return this;
     }
 
-    getGitStatusDiverged(name = "getGitStatus") {
-      const fixture = this.useMockedData
+    getGitStatusDiverged(args?: Partial<NameOnlyFixture>) {
+      const { name } = Cypress._.defaults({}, args, {
+        name: "getGitStatus",
+      });
+      const response = this.useMockedData
         ? {
             body: {
               result: {
@@ -154,41 +173,129 @@ function Sessions<T extends FixturesConstructor>(Parent: T) {
           }
         : undefined;
 
-      cy.intercept("/sessions/*/sidecar/jsonrpc", fixture).as(name);
+      cy.intercept("/sessions/*/sidecar/jsonrpc", response).as(name);
       return this;
     }
 
-    getSidecarHealth(isRunning = true, name = "getSidecarHealth") {
-      const status = isRunning ? "running" : "down";
-      const fixture = this.useMockedData
+    getSidecarHealth(args?: Partial<GetSidecarHealthArgs>) {
+      const { name, isRunning } = Cypress._.defaults({}, args, {
+        name: "getSidecarHealth",
+        isRunning: true,
+      });
+      const response = this.useMockedData
+        ? {
+            body: { status: isRunning ? "running" : "down" },
+          }
+        : undefined;
+      cy.intercept("/sessions/*/sidecar/health*", response).as(name);
+      return this;
+    }
+
+    getGitStatusError(args?: Partial<NameOnlyFixture>) {
+      const { name } = Cypress._.defaults({}, args, {
+        name: "getGitStatus",
+      });
+      const response = this.useMockedData
         ? {
             body: {
-              status: status,
+              error: {
+                code: -32000,
+                // eslint-disable-next-line max-len
+                message:
+                  "Running a git command failed with the error: fatal: could not read Username for 'https://gitlab.dev.renku.ch': No such device or address\n",
+              },
+              id: 0,
+              jsonrpc: "2.0",
             },
           }
         : undefined;
-      cy.intercept("/sessions/*/sidecar/health*", fixture).as(name);
+      cy.intercept("/sessions/*/sidecar/jsonrpc", response).as(name);
       return this;
     }
 
-    getGitStatusError(name = "getGitStatus") {
-      const fixture = {
-        body: {
-          error: {
-            code: -32000,
-            // eslint-disable-next-line max-len
-            message:
-              "Running a git command failed with the error: fatal: could not read Username for 'https://gitlab.dev.renku.ch': No such device or address\n",
-          },
-          id: 0,
-          jsonrpc: "2.0",
-        },
-      };
+    renkuIni(args?: Partial<RenkuIniArgs>) {
+      const { fixture, name, projectId, ref } = Cypress._.defaults({}, args, {
+        fixture: "session/renku.ini",
+        name: "getRenkuIni",
+        projectId: 39646,
+        ref: "172a784d465a7bd45bacc165df2b64a591ac6b18",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept(
+        // eslint-disable-next-line max-len
+        `/ui-server/api/projects/${projectId}/repository/files/.renku%2Frenku.ini/raw?ref=${ref}`,
+        response
+      ).as(name);
+      return this;
+    }
 
-      cy.intercept("/sessions/*/sidecar/jsonrpc", fixture).as(name);
+    sessionAutosave(args?: Partial<NameOnlyFixture>) {
+      const { name } = Cypress._.defaults({}, args, {
+        name: "getSessionAutosave",
+      });
+      const response = this.useMockedData
+        ? {
+            body: {
+              autosaves: [],
+              pvsSupport: true,
+            },
+          }
+        : undefined;
+      cy.intercept(
+        "/ui-server/api/notebooks/e2e%2Flocal-test-project/autosave",
+        response
+      ).as(name);
+      return this;
+    }
+
+    sessionServersEmpty(args?: Partial<NameOnlyFixture>) {
+      const { name } = Cypress._.defaults({}, args, {
+        name: "getSessionServers",
+      });
+      const response = this.useMockedData
+        ? { body: { servers: {} } }
+        : undefined;
+      cy.intercept("/ui-server/api/notebooks/servers", response).as(name);
+      return this;
+    }
+
+    sessionServerOptions(args?: Partial<SessionServerOptionsArgs>) {
+      const { cloudStorage, fixture, name } = Cypress._.defaults({}, args, {
+        cloudStorage: null,
+        fixture: "session/server-options.json",
+        name: "getSessionServerOptions",
+      });
+
+      if (!this.useMockedData) {
+        cy.intercept("/ui-server/api/notebooks/server_options").as(name);
+        return this;
+      }
+
+      cy.fixture(fixture).then((response) => {
+        if (cloudStorage == null) {
+          delete response["cloudstorage"];
+        } else if (!cloudStorage) {
+          response["cloudstorage"]["s3"] = false;
+        }
+        cy.intercept("/ui-server/api/notebooks/server_options", response).as(
+          name
+        );
+      });
       return this;
     }
   };
 }
 
-export { Sessions };
+interface GetSidecarHealthArgs {
+  name: string;
+  isRunning: boolean;
+}
+
+interface RenkuIniArgs extends SimpleFixture {
+  projectId: number;
+  ref: string;
+}
+
+interface SessionServerOptionsArgs extends SimpleFixture {
+  cloudStorage: boolean | null;
+}

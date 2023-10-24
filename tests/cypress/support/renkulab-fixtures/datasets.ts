@@ -97,6 +97,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         {
           fixture: "datasets/project-dataset-list.json",
           name: "datasetList",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           transformResponse: (response: any) => response,
         }
       );
@@ -267,6 +268,7 @@ interface ProjectKGDatasetListArgs extends SimpleFixture {
 }
 
 interface ProjectDatasetListArgs extends SimpleFixture {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transformResponse: <T = any, R = any>(response: T) => R;
 }
 

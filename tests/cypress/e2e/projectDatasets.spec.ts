@@ -168,6 +168,7 @@ describe("Project dataset", () => {
         cy.wait("@uploadDatasetFile");
 
         fixtures.projectDatasetList({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           transformResponse(content: any) {
             content.result.datasets[0].title = `${dataset.title} edited`;
             return content;
@@ -198,7 +199,6 @@ describe("Project dataset", () => {
     fixtures.getFiles().uploadDatasetFile().addFileDataset().editDataset({
       remoteBranch: "protected",
     });
-    // .editDataset(undefined, undefined, "protected");
 
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProject");
@@ -220,6 +220,7 @@ describe("Project dataset", () => {
         cy.get("input[name='title']").type(" edited");
 
         fixtures.projectDatasetList({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           transformResponse(content: any) {
             content.result.datasets[0].title = `${dataset.title} edited`;
             return content;

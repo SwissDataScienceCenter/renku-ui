@@ -36,12 +36,12 @@ describe("dashboard", () => {
   it("user does has not own projects and no projects recently visited", () => {
     fixtures
       .projects()
-      .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
       .getLastVisitedProjects(
         "getLastVisitedProjects",
         "projects/empty-last-visited-projects.json"
       )
-      .noActiveProjects("getNoActiveProjects");
+      .noActiveProjects();
 
     cy.visit("/");
     cy.wait("@getUser");
@@ -68,7 +68,7 @@ describe("dashboard", () => {
   it("user does not have own project but has visited projects", () => {
     fixtures
       .projects()
-      .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
       .getLastVisitedProjects();
     const files = {
       "lorenzo.cavazzi.tech/readme-file-dev": 30929,
@@ -115,7 +115,7 @@ describe("dashboard", () => {
   it("user has own projects and recently visited projects", () => {
     fixtures
       .projects()
-      .entitySearch("getEntities", "kgSearch/search.json", "7")
+      .entitySearch()
       .getLastVisitedProjects(
         "getLastVisitedProjects",
         "projects/last-visited-projects-5.json"
@@ -164,12 +164,12 @@ describe("dashboard", () => {
   it("user has sessions to display in dashboard", () => {
     fixtures
       .projects()
-      .entitySearch("getEntities", "kgSearch/search.json", "7")
+      .entitySearch()
       .getLastVisitedProjects(
         "getLastVisitedProjects",
         "projects/last-visited-projects-5.json"
       )
-      .getSessions("getSessions", "sessions/sessionsWithError.json")
+      .getSessions({ fixture: "sessions/sessionsWithError.json" })
       .getProjectCommits();
     const files = {
       "dalatinrofrau/flights-usa": 55402,
@@ -241,12 +241,12 @@ describe("dashboard message", () => {
       .versions()
       .userTest()
       .projects()
-      .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
       .getLastVisitedProjects(
         "getLastVisitedProjects",
         "projects/empty-last-visited-projects.json"
       )
-      .noActiveProjects("getNoActiveProjects");
+      .noActiveProjects();
   });
 
   const visitDashboardPage = () => {

@@ -159,7 +159,10 @@ describe("Project settings page", () => {
   });
 
   it("displays project settings with cloud-storage enabled ", () => {
-    fixtures.sessionServerOptions(true).resourcePoolsTest().projectConfigShow();
+    fixtures
+      .sessionServerOptions({ cloudStorage: true })
+      .resourcePoolsTest()
+      .projectConfigShow();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
     cy.contains("Number of CPUs").should("be.visible");

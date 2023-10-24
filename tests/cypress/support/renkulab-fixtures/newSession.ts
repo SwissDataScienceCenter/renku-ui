@@ -17,57 +17,131 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { DeepPartial, SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for Sessions
  */
 
-function NewSession<T extends FixturesConstructor>(Parent: T) {
+export function NewSession<T extends FixturesConstructor>(Parent: T) {
   return class NewSessionFixtures extends Parent {
-    newSessionPipelines(
-      empty = false,
-      projectId = 39646,
-      ref = "172a784d465a7bd45bacc165df2b64a591ac6b18"
-    ) {
-      const data = empty ? [] : { fixture: "session/ci-pipelines.json" };
+    newSessionPipelines(args?: Partial<NewSessionPipelinesArgs>) {
+      const { empty, fixture, name, projectId, ref } = Cypress._.defaults(
+        {},
+        args,
+        {
+          empty: false,
+          fixture: "session/ci-pipelines.json",
+          name: "getSessionPipelines",
+          projectId: 39646,
+          ref: "172a784d465a7bd45bacc165df2b64a591ac6b18",
+        }
+      );
+      const response =
+        this.useMockedData && empty
+          ? []
+          : this.useMockedData
+          ? { fixture }
+          : undefined;
       cy.intercept(
         `/ui-server/api/projects/${projectId}/pipelines?sha=${ref}`,
-        data
-      ).as("getSessionPipelines");
+        response
+      ).as(name);
       return this;
     }
-    newSessionJobs(
-      missing = false,
-      running = false,
-      failed = false,
-      projectId = 39646,
-      pipelineId = 182743
-    ) {
-      let fixture = "session/ci-jobs.json";
-      if (missing) fixture = "session/ci-jobs-missing.json";
-      else if (running) fixture = "session/ci-jobs-running.json";
-      else if (failed) fixture = "session/ci-jobs-failed.json";
+
+    newSessionJobs(args?: Partial<NewSessionJobsArgs>) {
+      const { failed, missing, running } = Cypress._.defaults({}, args, {
+        failed: false,
+        missing: false,
+        running: false,
+      });
+      const defaultFixture = missing
+        ? "session/ci-jobs-missing.json"
+        : running
+        ? "session/ci-jobs-running.json"
+        : failed
+        ? "session/ci-jobs-failed.json"
+        : "session/ci-jobs.json";
+      const { fixture, name, pipelineId, projectId } = Cypress._.defaults(
+        {},
+        args,
+        {
+          fixture: defaultFixture,
+          name: "getSessionJobs",
+          pipelineId: 182743,
+          projectId: 39646,
+        }
+      );
+      const response = this.useMockedData ? { fixture } : undefined;
       cy.intercept(
         `/ui-server/api/projects/${projectId}/pipelines/${pipelineId}/jobs`,
-        { fixture }
-      ).as("getSessionJobs");
+        response
+      ).as(name);
       return this;
     }
-    newSessionImages(missing = false, projectId = 39646, imageTag = "172a784") {
-      const registryFixture = "session/ci-registry.json";
-      let imageFixture = "session/ci-image.json";
-      if (missing) imageFixture = "session/ci-image-missing.json";
+
+    newSessionImages(args?: DeepPartial<NewSessionImagesArgs>) {
+      const {
+        image: { missing },
+      } = Cypress._.defaultsDeep({}, args, {
+        image: { missing: false },
+      }) as NewSessionImagesArgs;
+      const defaultImageFixture = missing
+        ? "session/ci-image-missing.json"
+        : "session/ci-image.json";
+      const { image, projectId, registry } = Cypress._.defaultsDeep({}, args, {
+        image: {
+          fixture: defaultImageFixture,
+          name: "getSessionImage",
+          tag: "172a784",
+        },
+        projectId: 39646,
+        registry: {
+          fixture: "session/ci-registry.json",
+          name: "getSessionRegistries",
+        },
+      }) as NewSessionImagesArgs;
+
+      const registryResponse = this.useMockedData
+        ? { fixture: registry.fixture }
+        : undefined;
       cy.intercept(
         `/ui-server/api/projects/${projectId}/registry/repositories`,
-        { fixture: registryFixture }
-      ).as("getSessionRegistries");
+        registryResponse
+      ).as(registry.name);
+
+      const imageResponse = this.useMockedData
+        ? { fixture: image.fixture, ...(missing ? { statusCode: 404 } : {}) }
+        : undefined;
       cy.intercept(
-        `/ui-server/api/projects/${projectId}/registry/repositories/1/tags/${imageTag}`,
-        { fixture: imageFixture, ...(missing ? { statusCode: 404 } : {}) }
-      ).as("getSessionImage");
+        `/ui-server/api/projects/${projectId}/registry/repositories/1/tags/${image.tag}`,
+        imageResponse
+      ).as(image.name);
       return this;
     }
   };
 }
 
-export { NewSession };
+interface NewSessionPipelinesArgs extends SimpleFixture {
+  empty: boolean;
+  projectId: number;
+  ref: string;
+}
+
+interface NewSessionJobsArgs extends SimpleFixture {
+  failed: boolean;
+  missing: boolean;
+  pipelineId: number;
+  projectId: number;
+  running: boolean;
+}
+
+interface NewSessionImagesArgs {
+  image: SimpleFixture & {
+    missing: boolean;
+    tag: string;
+  };
+  registry: SimpleFixture;
+  projectId: number;
+}

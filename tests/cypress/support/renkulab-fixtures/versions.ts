@@ -17,21 +17,22 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for Versions
  */
 
-export const Versions = <T extends FixturesConstructor>(Parent: T) => {
+export function Versions<T extends FixturesConstructor>(Parent: T) {
   return class VersionsFixtures extends Parent {
-    sessionsVersion(
-      name = "getSessionsVersion",
-      fixture = "session/version.json"
-    ) {
-      cy.intercept("/ui-server/api/notebooks/version", {
-        fixture,
-      }).as(name);
+    sessionsVersion(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "session/version.json",
+        name: "getSessionsVersion",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/notebooks/version", response).as(name);
       return this;
     }
   };
-};
+}

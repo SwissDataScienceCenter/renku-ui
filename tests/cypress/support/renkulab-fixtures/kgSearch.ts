@@ -17,45 +17,54 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for kg search
  */
 
-function KgSearch<T extends FixturesConstructor>(Parent: T) {
+export function KgSearch<T extends FixturesConstructor>(Parent: T) {
   return class KgSearchFixtures extends Parent {
-    getLastSearch(name = "getLastSearch") {
-      cy.intercept("/ui-server/api//last-searches/6", {
+    getLastSearch(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
         fixture: "kgSearch/lastSearch.json",
-      }).as(name);
+        name: "getLastSearch",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api//last-searches/6", response).as(name);
       return this;
     }
 
-    entitySearch(
-      name = "getEntities",
-      fixture = "kgSearch/search.json",
-      total = "7",
-      params = "*"
-    ) {
-      cy.intercept(`/ui-server/api/kg/entities${params}`, {
-        fixture,
-        headers: {
-          Total: total,
-        },
-      }).as(name);
+    entitySearch(args?: Partial<EntitySearchArgs>) {
+      const { fixture, name, params, total } = Cypress._.defaults({}, args, {
+        fixture: "kgSearch/search.json",
+        name: "getEntities",
+        params: "*",
+        total: 7,
+      });
+      const response = this.useMockedData
+        ? { fixture, headers: { Total: `${total}` } }
+        : undefined;
+      cy.intercept(`/ui-server/api/kg/entities${params}`, response).as(name);
       return this;
     }
 
-    noActiveProjects(
-      name = "getNoActiveProjects",
-      fixture = "kgSearch/no-active-projects.json"
-    ) {
-      cy.intercept("/ui-server/api/kg/users/*/projects?state=NOT_ACTIVATED&*", {
-        fixture,
-      }).as(name);
+    noActiveProjects(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "kgSearch/no-active-projects.json",
+        name: "getNoActiveProjects",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept(
+        "/ui-server/api/kg/users/*/projects?state=NOT_ACTIVATED&*",
+        response
+      ).as(name);
       return this;
     }
   };
 }
 
-export { KgSearch };
+interface EntitySearchArgs extends SimpleFixture {
+  params: string;
+  total: number;
+}

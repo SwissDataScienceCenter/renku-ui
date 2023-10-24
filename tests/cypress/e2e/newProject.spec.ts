@@ -53,8 +53,9 @@ describe("Add new project", () => {
   });
 
   it("error on creating a new project", () => {
-    const error = "errors/core-error-1102.json";
-    fixtures.templates().createProject(error);
+    fixtures
+      .templates()
+      .createProject({ fixture: "errors/core-error-1102.json" });
     cy.createProject(newProjectTitle);
     cy.wait("@getTemplates");
     cy.wait("@createProject");

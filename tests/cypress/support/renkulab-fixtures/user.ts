@@ -17,36 +17,44 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for User
  */
 
-function User<T extends FixturesConstructor>(Parent: T) {
+export function User<T extends FixturesConstructor>(Parent: T) {
   return class UserFixtures extends Parent {
-    userTest(name = "getUser") {
-      cy.intercept("/ui-server/api/user", {
+    userTest(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
         fixture: "user.json",
-      }).as(name);
+        name: "getUser",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/user", response).as(name);
       return this;
     }
 
-    userNone(name = "getUser") {
-      cy.intercept("/ui-server/api/user", {
-        statusCode: 401,
-        body: {},
-      }).as(name);
+    userNone(args?: Partial<NameOnlyFixture>) {
+      const { name } = Cypress._.defaults({}, args, {
+        name: "getUser",
+      });
+      const response = this.useMockedData
+        ? { body: {}, statusCode: 401 }
+        : undefined;
+      cy.intercept("/ui-server/api/user", response).as(name);
       return this;
     }
 
-    renkuDown(name = "getUser") {
-      cy.intercept("/ui-server/api/user", {
-        statusCode: 500,
-        body: {},
-      }).as(name);
+    renkuDown(args?: Partial<NameOnlyFixture>) {
+      const { name } = Cypress._.defaults({}, args, {
+        name: "getUser",
+      });
+      const response = this.useMockedData
+        ? { body: {}, statusCode: 500 }
+        : undefined;
+      cy.intercept("/ui-server/api/user", response).as(name);
       return this;
     }
   };
 }
-
-export { User };
