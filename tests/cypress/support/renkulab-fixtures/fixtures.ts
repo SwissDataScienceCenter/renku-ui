@@ -24,7 +24,7 @@ class Fixtures {
   readonly cy: Cypress.Chainable;
   private _useMockedData: boolean;
 
-  constructor(cy) {
+  constructor(cy: Cypress.Chainable) {
     this.cy = cy;
   }
 

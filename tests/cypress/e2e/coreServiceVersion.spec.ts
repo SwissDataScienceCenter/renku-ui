@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 /*!
  * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -20,7 +19,6 @@
 /**
  * Fix the core service version to specific values and test a few calls
  */
-import "../support/utils";
 import Fixtures from "../support/renkulab-fixtures";
 
 const config = {
@@ -51,11 +49,11 @@ describe("display a project", () => {
   it("displays the project overview page", () => {
     cy.wait("@getProject");
     cy.wait("@getReadme");
-    cy.get_cy("header-project").should("be.visible");
-    cy.get_cy("project-readme")
+    cy.getDataCy("header-project").should("be.visible");
+    cy.getDataCy("project-readme")
       .should("be.visible")
       .should("contain.text", "local test project");
-    cy.get_cy("project-title")
+    cy.getDataCy("project-title")
       .should("be.visible")
       .should("contain.text", "local-test-project");
   });
@@ -63,11 +61,11 @@ describe("display a project", () => {
   it("displays lock correctly", () => {
     fixtures.projectLockStatus({ locked: true });
     cy.visit("/projects/e2e/local-test-project/settings");
-    cy.get_cy("settings-navbar")
+    cy.getDataCy("settings-navbar")
       .contains("a", "Sessions")
       .should("exist")
       .click();
-    cy.get_cy("settings-container")
+    cy.getDataCy("settings-container")
       .contains("project is currently being modified")
       .should("exist");
   });
@@ -101,7 +99,7 @@ describe("Project dataset", () => {
         const datasets = data.result.datasets;
         // all datasets are displayed
         const totalDatasets = datasets?.length;
-        cy.get_cy("list-card").should("have.length", totalDatasets);
+        cy.getDataCy("list-card").should("have.length", totalDatasets);
       });
   });
 });

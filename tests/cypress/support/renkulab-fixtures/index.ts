@@ -56,3 +56,4 @@ const Fixtures = NewProject(
 );
 
 export default Fixtures;
+export type FixturesType = InstanceType<typeof Fixtures>;

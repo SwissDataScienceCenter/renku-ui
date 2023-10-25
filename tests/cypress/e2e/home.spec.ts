@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 /*!
  * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -18,7 +17,6 @@
  */
 
 import Fixtures from "../support/renkulab-fixtures";
-import "../support/utils";
 
 describe("display the home page", () => {
   beforeEach(() => {
@@ -84,7 +82,7 @@ describe("display version information", () => {
   });
 
   it("shows release and component versions", () => {
-    cy.get_cy("version-info").should("be.visible").click();
+    cy.getDataCy("version-info").should("be.visible").click();
     cy.contains("Renku version 3.10.0").should("be.visible");
     cy.contains("UI: 3.10.0").should("be.visible");
     cy.contains("Core: v2.4.1").should("be.visible");

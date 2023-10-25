@@ -16,35 +16,19 @@
  * limitations under the License.
  */
 
-import "./projects/gui_commands";
 import "cypress-file-upload";
-import { Dataset } from "./datasets/gui_commands";
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Cypress {
-    interface Chainable {
-      get_cy(element: string): Chainable;
-      gui_logout(): void;
-      gui_new_dataset(newDataset: Dataset): void;
-      gui_open_logs(): void;
-      gui_open_session(): void;
-      gui_workflows_change_sorting(target: string): void;
-      gui_workflows_change_sort_order(): void;
-      gui_create_project(title: string): void;
-      gui_create_project_add_dataset(
-        title: string,
-        path: string,
-        fixtures
-      ): void;
-      gui_select_project_autosuggestion_list(
-        project: string,
-        fixtures,
-        migrationCheckResult
-      ): void;
-    }
-  }
-}
+import registerDatasetsCommands from "./commands/datasets";
+import registerGeneralCommands from "./commands/general";
+import registerProjectsCommands from "./commands/projects";
+import registerSessionsCommands from "./commands/sessions";
+import registerWorkflowsCommands from "./commands/workflows";
+
+registerDatasetsCommands();
+registerGeneralCommands();
+registerProjectsCommands();
+registerSessionsCommands();
+registerWorkflowsCommands();
 
 Cypress.on("uncaught:exception", () => {
   // returning false here prevents Cypress from failing the test
