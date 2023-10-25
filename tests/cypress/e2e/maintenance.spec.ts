@@ -51,7 +51,6 @@ describe("display the maintenance page when there is no user response", () => {
   });
 
   it("displays an error when trying to get status page information", () => {
-    // ! we plan to change this behavior and ignore statuspage info when unavailable #2283
     new Fixtures(cy).renkuDown().statuspageDown();
     cy.visit("/");
     cy.get("h1").should("have.length", 1);

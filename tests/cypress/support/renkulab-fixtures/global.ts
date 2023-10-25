@@ -25,12 +25,12 @@ import { FixturesConstructor } from "./fixtures";
 function Global<T extends FixturesConstructor>(Parent: T) {
   return class NewSessionFixtures extends Parent {
     getStatuspageInfo({
-      name = "getStatuspageInfo",
       fixture = "statuspage-operational.json",
+      name = "getStatuspageInfo",
       overrides,
     }: {
-      name?: string;
       fixture?: string;
+      name?: string;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       overrides?: any;
     } = {}) {
@@ -48,6 +48,14 @@ function Global<T extends FixturesConstructor>(Parent: T) {
           body: combinedResponse,
         }).as(name);
       });
+      return this;
+    }
+
+    statuspageDown(name = "getStatuspageInfo") {
+      cy.intercept("https://*.statuspage.io/api/v2/summary.jsonr", {
+        statusCode: 500,
+        body: {},
+      }).as(name);
       return this;
     }
 
