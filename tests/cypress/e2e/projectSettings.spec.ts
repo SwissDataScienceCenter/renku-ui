@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 /*!
  * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -17,7 +16,6 @@
  * limitations under the License.
  */
 
-import "../support/utils";
 import Fixtures from "../support/renkulab-fixtures";
 
 describe("Project settings page", () => {
@@ -46,28 +44,28 @@ describe("Project settings page", () => {
       result: "project/project-kg-edited.json",
     });
     cy.visit("/projects/e2e/local-test-project/settings");
-    cy.get_cy("keywords-input").should("not.contain.text", "abcde");
-    cy.get_cy("keywords-input").type("abcde");
-    cy.get_cy("projectKeywords-button").click();
+    cy.getDataCy("keywords-input").should("not.contain.text", "abcde");
+    cy.getDataCy("keywords-input").type("abcde");
+    cy.getDataCy("projectKeywords-button").click();
     cy.wait("@updateProjectKG");
     cy.wait("@getProjectKGEdited");
-    cy.get_cy("entity-tag-list").should("contain.text", "abcde");
+    cy.getDataCy("entity-tag-list").should("contain.text", "abcde");
   });
 
   it("update project visibility - success", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
 
     // public visibility should be checked
-    cy.get_cy("visibility-public").should("be.checked");
+    cy.getDataCy("visibility-public").should("be.checked");
 
     // cancel a change shouldn't change the visibility
-    cy.get_cy("visibility-private").click();
+    cy.getDataCy("visibility-private").click();
     cy.get(".modal-title").should(
       "contain.text",
       "Change visibility to Private"
     );
-    cy.get_cy("cancel-visibility-btn").click();
-    cy.get_cy("visibility-public").should("be.checked");
+    cy.getDataCy("cancel-visibility-btn").click();
+    cy.getDataCy("visibility-public").should("be.checked");
 
     // changing to internal will works
     fixtures.updateProjectKG(
@@ -75,8 +73,8 @@ describe("Project settings page", () => {
       "project/visibility/visibility-change-accepted.json",
       200
     );
-    cy.get_cy("visibility-internal").click();
-    cy.get_cy("update-visibility-btn").click();
+    cy.getDataCy("visibility-internal").click();
+    cy.getDataCy("update-visibility-btn").click();
     cy.wait("@updateProjectKG");
     cy.get(".modal-body").should(
       "contain.text",
@@ -88,17 +86,17 @@ describe("Project settings page", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
 
     // public visibility should be checked
-    cy.get_cy("visibility-public").should("be.checked");
+    cy.getDataCy("visibility-public").should("be.checked");
 
     // changing to internal won't work if visibility is restricted
     // ? we are slightly cheating here cause we are not disabling the buttons
-    cy.get_cy("visibility-internal").click();
+    cy.getDataCy("visibility-internal").click();
     fixtures.updateProjectKG(
       "updateProjectKG",
       "project/visibility/error-update-visibility.json",
       400
     );
-    cy.get_cy("update-visibility-btn").click();
+    cy.getDataCy("update-visibility-btn").click();
     cy.wait("@updateProjectKG");
     cy.get(".modal-body").should(
       "contain.text",
@@ -111,21 +109,21 @@ describe("Project settings page", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
 
     // check there is no description
-    cy.get_cy("description-input").should(
+    cy.getDataCy("description-input").should(
       "not.have.value",
       "description abcde"
     );
-    cy.get_cy("entity-description").should(
+    cy.getDataCy("entity-description").should(
       "not.contain.text",
       "description abcde"
     );
-    cy.get_cy("entity-description").should(
+    cy.getDataCy("entity-description").should(
       "contain.text",
       "This project has no description"
     );
 
     // edit the description -- load the new fixtures
-    cy.get_cy("description-input").type("description abcde");
+    cy.getDataCy("description-input").type("description abcde");
     fixtures.updateProjectKG(
       "updateProjectKG",
       "project/project-kg-edited.json"
@@ -134,13 +132,13 @@ describe("Project settings page", () => {
       name: "getProjectKGdescription",
       result: "project/edit/project-kg-description.json",
     });
-    cy.get_cy("projectDescription-button").click();
+    cy.getDataCy("projectDescription-button").click();
 
     // verify the change goes through but is not immediate everywhere else (E.G. on the header)
-    cy.get_cy("settings-description")
+    cy.getDataCy("settings-description")
       .get(".success-feedback")
       .contains("Updated");
-    cy.get_cy("description-input").should(
+    cy.getDataCy("description-input").should(
       "not.contain.text",
       "description abcde"
     );
@@ -148,8 +146,8 @@ describe("Project settings page", () => {
     // Check the header also reflects the change onnce KG processes the metadata
     fixtures.getKgStatus();
     cy.wait("@getProjectKGdescription");
-    cy.get_cy("entity-description").should("contain", "description abcde");
-    cy.get_cy("description-input").should("have.value", "description abcde");
+    cy.getDataCy("entity-description").should("contain", "description abcde");
+    cy.getDataCy("description-input").should("have.value", "description abcde");
   });
 
   it("displays project settings sessions", () => {
@@ -209,7 +207,7 @@ describe("Project settings page", () => {
     fixtures.deleteProject();
     cy.visit("/projects/e2e/local-test-project/settings");
 
-    cy.get_cy("project-settings-general-delete-project")
+    cy.getDataCy("project-settings-general-delete-project")
       .should("be.visible")
       .find("button")
       .contains("Delete project")
@@ -236,7 +234,7 @@ describe("Project settings page", () => {
   it("delete a project - not allowed", () => {
     fixtures.userNone();
     cy.visit("/projects/e2e/local-test-project/settings");
-    cy.get_cy("project-settings-general-delete-project").should("not.exist");
+    cy.getDataCy("project-settings-general-delete-project").should("not.exist");
   });
 });
 
@@ -257,11 +255,11 @@ describe("Cloud storage settings page", () => {
 
   it("is accessible from the main settings page", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
-    cy.get_cy("settings-navbar")
+    cy.getDataCy("settings-navbar")
       .contains("Cloud Storage")
       .should("be.visible")
       .click();
-    cy.get_cy("settings-container")
+    cy.getDataCy("settings-container")
       .contains("Cloud storage settings")
       .should("be.visible");
     cy.url().should(
@@ -276,15 +274,15 @@ describe("Cloud storage settings page", () => {
     cy.wait("@getNotebooksVersions");
     cy.wait("@getCloudStorage");
 
-    cy.get_cy("settings-container")
+    cy.getDataCy("settings-container")
       .find(".card")
       .contains("Example storage")
       .should("be.visible");
-    cy.get_cy("settings-container")
+    cy.getDataCy("settings-container")
       .find(".card")
       .contains("bucket/source")
       .should("be.visible");
-    cy.get_cy("settings-container")
+    cy.getDataCy("settings-container")
       .find(".card")
       .contains("mount/path")
       .should("be.visible");
@@ -297,12 +295,12 @@ describe("Cloud storage settings page", () => {
     cy.wait("@getNotebooksVersions");
     cy.wait("@getCloudStorage");
 
-    cy.get_cy("settings-container")
+    cy.getDataCy("settings-container")
       .find(".card")
       .contains("Example storage")
       .should("be.visible")
       .click();
-    cy.get_cy("settings-container")
+    cy.getDataCy("settings-container")
       .find(".card")
       .find("button")
       .contains("Edit")
@@ -366,13 +364,13 @@ describe("Cloud storage settings page", () => {
     cy.wait("@getNotebooksVersions");
     cy.wait("@getCloudStorage");
 
-    cy.get_cy("settings-container")
+    cy.getDataCy("settings-container")
       .find(".card")
       .contains("Example storage")
       .should("be.visible")
       .click();
 
-    cy.get_cy("settings-container")
+    cy.getDataCy("settings-container")
       .find(".card")
       .find("button")
       .contains("Delete")
@@ -402,7 +400,7 @@ describe("Cloud storage settings page", () => {
     cy.wait("@getNotebooksVersions");
     cy.wait("@getCloudStorage");
 
-    cy.get_cy("settings-container")
+    cy.getDataCy("settings-container")
       .find("button")
       .contains("Add Cloud Storage")
       .should("be.visible")

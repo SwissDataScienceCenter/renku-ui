@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import {
   ChangeEvent,
   Dispatch,
@@ -23,14 +24,12 @@ import {
   useCallback,
   useState,
 } from "react";
-import cx from "classnames";
 import { RootStateOrAny, useSelector } from "react-redux";
 import {
   Button,
   Col,
   Form,
   FormGroup,
-  FormText,
   Input,
   Label,
   Modal,
@@ -39,6 +38,7 @@ import {
   Row,
 } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
+import { SuccessAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/RenkuModels";
 import {
@@ -213,7 +213,7 @@ function SaveSessionStatus({
     return <SaveSessionFailedBody toggleModal={toggleModal} />;
   }
   if (succeeded === true) {
-    return <SaveSessionUpToDateBody toggleModal={toggleModal} />;
+    return <SaveSessionSuccessBody toggleModal={toggleModal} />;
   }
   if (!data.result.clean || data.result.ahead > 0) {
     return (
@@ -238,6 +238,19 @@ function SaveSessionUpToDateBody({
   return (
     <InformationalBody closeModal={toggleModal}>
       <p>Your session is up-to-date. There are no changes that need saving.</p>
+    </InformationalBody>
+  );
+}
+
+interface SaveSessionSuccessBodyProps {
+  toggleModal: () => void;
+}
+function SaveSessionSuccessBody({ toggleModal }: SaveSessionSuccessBodyProps) {
+  return (
+    <InformationalBody closeModal={toggleModal}>
+      <SuccessAlert dismissible={false} timeout={0}>
+        <p>Your session has been saved successfully.</p>
+      </SuccessAlert>
     </InformationalBody>
   );
 }
@@ -296,7 +309,7 @@ function SaveSessionBody({
   );
   const saveText = saving ? (
     <span>
-      <Loader className="me-1" inline size={16} />
+      <Loader className="me-2" inline size={16} />
       Saving Session
     </span>
   ) : (
@@ -316,13 +329,6 @@ function SaveSessionBody({
           saving={saving}
           setCommitMessage={setCommitMessage}
         />
-        {saving && (
-          <FormText color="primary">
-            <Loader className="me-1" inline size={16} />
-            Saving Session
-            <br />
-          </FormText>
-        )}
         <div className={cx("d-flex", "justify-content-end")}>
           <Button
             className={cx("float-right", "mt-1", "btn-outline-rk-green")}

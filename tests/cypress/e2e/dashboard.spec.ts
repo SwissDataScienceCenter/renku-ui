@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 /*!
  * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -22,7 +21,6 @@ import {
   DISMISSIBLE_SIMPLE_INFO_MESSAGE_FIXTURE,
   NON_DISMISSIBLE_READ_MORE_SUCCESS_MESSAGE_FIXTURE,
 } from "../support/renkulab-fixtures/dashboard";
-import "../support/utils";
 
 const findProject = (path, projects) => {
   return projects.find(
@@ -54,20 +52,20 @@ describe("dashboard", () => {
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");
 
-    cy.get_cy("dashboard-title").should(
+    cy.getDataCy("dashboard-title").should(
       "have.text",
       "Renku Dashboard - E2E User"
     );
-    cy.get_cy("project-alert").should(
+    cy.getDataCy("project-alert").should(
       "contain.text",
       "You do not have any projects yet"
     );
-    cy.get_cy("projects-container").should(
+    cy.getDataCy("projects-container").should(
       "contain.text",
       "You do not have any recently-visited projects"
     );
-    cy.get_cy("explore-other-projects-btn").should("be.visible");
-    cy.get_cy("inactive-kg-project-alert").should("exist");
+    cy.getDataCy("explore-other-projects-btn").should("be.visible");
+    cy.getDataCy("inactive-kg-project-alert").should("exist");
   });
 
   it("user does not have own project but has visited projects", () => {
@@ -105,16 +103,16 @@ describe("dashboard", () => {
     ]).then((results) => {
       const firstProject = findProject(projects[0], results);
       const projectData = firstProject.response?.body;
-      cy.get_cy("projects-container")
+      cy.getDataCy("projects-container")
         .find('[data-cy="list-card-title"]')
         .first()
         .should("have.text", projectData.name);
-      cy.get_cy("explore-other-projects-btn").should("be.visible");
-      cy.get_cy("project-alert").should(
+      cy.getDataCy("explore-other-projects-btn").should("be.visible");
+      cy.getDataCy("project-alert").should(
         "contain.text",
         "You do not have any projects yet"
       );
-      cy.get_cy("inactive-kg-project-alert").should("not.exist");
+      cy.getDataCy("inactive-kg-project-alert").should("not.exist");
     });
   });
 
@@ -158,13 +156,13 @@ describe("dashboard", () => {
     ]).then((results) => {
       const firstProject = findProject(projects[0], results);
       const projectData = firstProject.response?.body;
-      cy.get_cy("projects-container")
+      cy.getDataCy("projects-container")
         .find('[data-cy="list-card-title"]')
         .first()
         .should("have.text", projectData.name);
-      cy.get_cy("project-alert").should("not.exist");
-      cy.get_cy("explore-other-projects-btn").should("not.exist");
-      cy.get_cy("view-my-projects-btn").should("be.visible");
+      cy.getDataCy("project-alert").should("not.exist");
+      cy.getDataCy("explore-other-projects-btn").should("not.exist");
+      cy.getDataCy("view-my-projects-btn").should("be.visible");
     });
   });
 
@@ -215,26 +213,26 @@ describe("dashboard", () => {
     cy.wait("@getUser");
     cy.wait("@getKeycloakUser");
     cy.wait("@getSessions");
-    cy.get_cy("session-container").should("be.visible");
-    cy.get_cy("link-home").click({ force: true }); // eslint-disable-line cypress/no-force
+    cy.getDataCy("session-container").should("be.visible");
+    cy.getDataCy("link-home").click({ force: true }); // eslint-disable-line cypress/no-force
     cy.wait("@getLastVisitedProjects");
-    cy.get_cy("container-session").should("have.length", 3);
-    cy.get_cy("container-session")
+    cy.getDataCy("container-session").should("have.length", 3);
+    cy.getDataCy("container-session")
       .first()
       .find(".session-time")
       .should("contain.text", "Error");
-    cy.get_cy("container-session")
+    cy.getDataCy("container-session")
       .first()
       .find(".session-icon")
       .should("have.text", "Error");
-    cy.get_cy("container-session")
+    cy.getDataCy("container-session")
       .first()
       .find(".entity-action")
       .find("button")
       .first()
       .contains("Loading")
       .should("not.exist");
-    cy.get_cy("container-session")
+    cy.getDataCy("container-session")
       .first()
       .find(".entity-action")
       .find("button")
@@ -272,7 +270,7 @@ describe("dashboard message", () => {
     fixtures.config();
     visitDashboardPage();
 
-    cy.get_cy("dashboard-message").should("not.exist");
+    cy.getDataCy("dashboard-message").should("not.exist");
   });
 
   it("displays a dissmissible simple info message", () => {
@@ -281,7 +279,7 @@ describe("dashboard message", () => {
     });
     visitDashboardPage();
 
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .should("be.visible")
       .and("have.class", "alert")
       .and("have.class", "alert-info")
@@ -289,23 +287,23 @@ describe("dashboard message", () => {
       .and("include.text", "Welcome to Renku!")
       .and("include.text", "This is an example welcome message");
 
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .find(".alert-icon")
       .find('img[alt="info icon"]')
       .should("be.visible");
 
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .find("button.btn-close")
       .should("be.visible")
       .click();
 
     // The message is removed on dismissal
-    cy.get_cy("dashboard-message").should("not.exist");
+    cy.getDataCy("dashboard-message").should("not.exist");
 
     // The message stays removed after dismissal
     cy.get("#link-search").click();
     cy.get("#link-dashboard").click();
-    cy.get_cy("dashboard-message").should("not.exist");
+    cy.getDataCy("dashboard-message").should("not.exist");
   });
 
   it("displays a non-dissmissible success message with a read more section", () => {
@@ -314,7 +312,7 @@ describe("dashboard message", () => {
     });
     visitDashboardPage();
 
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .should("be.visible")
       .and("have.class", "alert")
       .and("have.class", "alert-success")
@@ -322,29 +320,31 @@ describe("dashboard message", () => {
       .and("include.text", "Welcome to Renku!")
       .and("include.text", "This is an example welcome message");
 
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .find(".alert-icon")
       .find('img[alt="success icon"]')
       .should("be.visible");
 
-    cy.get_cy("dashboard-message").find("button.btn-close").should("not.exist");
+    cy.getDataCy("dashboard-message")
+      .find("button.btn-close")
+      .should("not.exist");
 
     // Expand and collapse the "Read more" section
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .find("a")
       .contains("Read more")
       .should("be.visible")
       .click();
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .contains("This is some more text")
       .should("exist")
       .and("be.visible");
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .find("a")
       .contains("Read more")
       .should("be.visible")
       .click();
-    cy.get_cy("dashboard-message")
+    cy.getDataCy("dashboard-message")
       .contains("This is some more text")
       .should("exist")
       .and("not.be.visible");
@@ -352,6 +352,6 @@ describe("dashboard message", () => {
     // The message stays visible
     cy.get("#link-search").click();
     cy.get("#link-dashboard").click();
-    cy.get_cy("dashboard-message").should("be.visible");
+    cy.getDataCy("dashboard-message").should("be.visible");
   });
 });

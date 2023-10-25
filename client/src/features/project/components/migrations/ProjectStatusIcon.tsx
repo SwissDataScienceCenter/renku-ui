@@ -16,20 +16,20 @@
  * limitations under the License.
  */
 
-import { Link, useRouteMatch } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowAltCircleUp,
   faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link, useRouteMatch } from "react-router-dom";
 
-import { Url } from "../../../../utils/helpers/url";
-import { projectKgApi } from "../../projectKgApi";
-import { ProjectMigrationLevel } from "../../projectEnums";
-import { getRenkuLevel } from "../../utils/migrations";
 import { UncontrolledTooltip } from "reactstrap";
+import { Url } from "../../../../utils/helpers/url";
+import { ProjectMigrationLevel } from "../../projectEnums";
+import { projectKgApi } from "../../projectKg.api";
 import { useCoreSupport } from "../../useProjectCoreSupport";
+import { getRenkuLevel } from "../../utils/migrations";
 
 interface ProjectStatusIconProps {
   branch: string;

@@ -17,9 +17,7 @@
  * limitations under the License.
  */
 
-import "../support/utils";
 import Fixtures from "../support/renkulab-fixtures";
-import "../support/datasets/gui_commands";
 
 describe("display a dataset", () => {
   const fixtures = new Fixtures(cy);
@@ -35,7 +33,7 @@ describe("display a dataset", () => {
     cy.wait("@getEntities").then((data) => {
       const totalDatasets = data.response.body.length;
       // all datasets are displayed
-      cy.get_cy("list-card").should("have.length", totalDatasets);
+      cy.getDataCy("list-card").should("have.length", totalDatasets);
     });
   });
 
@@ -45,7 +43,7 @@ describe("display a dataset", () => {
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
 
     fixtures.datasetById(datasetIdentifier);
-    cy.get_cy("list-card-title").contains(datasetName).click();
+    cy.getDataCy("list-card-title").contains(datasetName).click();
     cy.wait("@getDatasetById")
       .its("response.body")
       .then((dataset) => {
@@ -57,19 +55,19 @@ describe("display a dataset", () => {
             "abcd • Dataset • Dataset for testing purposes"
           );
         // the dataset title is displayed
-        cy.get_cy("dataset-title").should("contain.text", dataset?.title);
+        cy.getDataCy("dataset-title").should("contain.text", dataset?.title);
         // files are displayed
         const totalFiles = dataset?.hasPart?.length;
-        cy.get_cy("dataset-file-title").should(
+        cy.getDataCy("dataset-file-title").should(
           "contain.text",
           `Dataset files (${totalFiles})`
         );
-        cy.get_cy("dataset-fs-element").should("have.length", 2);
+        cy.getDataCy("dataset-fs-element").should("have.length", 2);
 
         // projects that use the dataset are displayed
         const totalProjectsUsingDataset = dataset?.usedIn?.length || 0;
         if (totalProjectsUsingDataset > 1)
-          cy.get_cy("project-using-dataset").should(
+          cy.getDataCy("project-using-dataset").should(
             "have.length",
             totalProjectsUsingDataset
           );

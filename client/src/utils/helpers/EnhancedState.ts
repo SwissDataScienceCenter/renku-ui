@@ -41,9 +41,8 @@ import { datasetFormSlice } from "../../features/project/dataset";
 import projectCloudStorageApi from "../../features/project/projectCloudStorage.api";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
-import { projectKgApi } from "../../features/project/projectKgApi";
+import { projectKgApi } from "../../features/project/projectKg.api";
 import { projectsApi } from "../../features/projects/projectsApi";
-import { projectsKgApi } from "../../features/projects/projectsKgApi";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
@@ -82,7 +81,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [projectGitLabApi.reducerPath]: projectGitLabApi.reducer,
     [projectKgApi.reducerPath]: projectKgApi.reducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
-    [projectsKgApi.reducerPath]: projectsKgApi.reducer,
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
@@ -111,7 +109,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(projectGitLabApi.middleware)
         .concat(projectKgApi.middleware)
         .concat(projectsApi.middleware)
-        .concat(projectsKgApi.middleware)
         .concat(recentUserActivityApi.middleware)
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsApi.middleware)
