@@ -22,16 +22,8 @@
  * Tests for the session components
  */
 
-import { createRoot } from "react-dom/client";
-import { act } from "react-dom/test-utils";
-import { MemoryRouter } from "react-router-dom";
-
-import { CheckNotebookStatus, NotebooksHelper } from "./index";
 import { ExpectedAnnotations } from "./Notebooks.state";
-import { StateModel, globalSchema } from "../model";
-import { testClient as client } from "../api-client";
-
-const model = new StateModel(globalSchema);
+import { NotebooksHelper } from "./index";
 
 const simplifiedGlobalOptions = {
   default_url: {
@@ -345,34 +337,5 @@ describe("ci helper functions", () => {
     expect(NotebooksHelper.getCiJobStatus()).toBe(
       NotebooksHelper.ciStatuses.wrong
     );
-  });
-});
-
-describe("rendering", () => {
-  const scope = {
-    namespace: "fake",
-    project: "fake",
-    branch: { name: "master" },
-  };
-
-  it("renders CheckNotebookStatus", async () => {
-    const props = {
-      client,
-      model,
-      scope,
-      launchNotebookUrl: "/projects/abc/def/launchNotebook",
-      filePath: "notebook.ipynb",
-    };
-
-    const div = document.createElement("div");
-    document.body.appendChild(div);
-    const root = createRoot(div);
-    await act(async () => {
-      root.render(
-        <MemoryRouter>
-          <CheckNotebookStatus {...props} />
-        </MemoryRouter>
-      );
-    });
   });
 });

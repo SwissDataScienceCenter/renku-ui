@@ -46,7 +46,7 @@ function useGetSessionLogs(serverName: string, show: boolean | string) {
       fetching: isFetching,
       show: show ? serverName : false,
     });
-  }, [data, show, isFetching, isLoading, serverName]); //eslint-disable-line
+  }, [data, error, show, isFetching, isLoading, serverName]);
 
   return { logs, fetchLogs };
 }

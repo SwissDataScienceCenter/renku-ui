@@ -25,7 +25,7 @@ import { Loader } from "../../components/Loader";
 import AppContext from "../../utils/context/appContext";
 import useGetInactiveProjects from "../../utils/customHooks/UseGetInactiveProjects";
 import { WsMessage } from "../../websocket/WsMessages";
-import { projectKgApi } from "../project/projectKgApi";
+import { projectKgApi } from "../project/projectKg.api";
 import ActivationProgress from "./components/ActivationProgress";
 import KgActivationHeader from "./components/KgActivationHeader";
 import "./inactiveKgProjects.css";
