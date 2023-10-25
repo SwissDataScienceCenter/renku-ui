@@ -271,7 +271,7 @@ describe("fork a project", () => {
   });
 
   it("displays fork modal correctly", () => {
-    fixtures.projectTest(undefined, { visibility: "private" });
+    fixtures.projectTest({ overrides: { visibility: "private" } });
     cy.wait("@getProject");
     cy.get("#fork-project").click();
     cy.wait("@getNamespaces");

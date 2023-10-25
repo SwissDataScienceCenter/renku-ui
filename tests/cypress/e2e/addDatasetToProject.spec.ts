@@ -65,7 +65,7 @@ describe("Add dataset to existing project", () => {
   });
 
   it("successfully import dataset", () => {
-    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectKGDatasetList({ path: projectSelected });
     fixtures.projectDatasetList();
     fixtures.projectTest();
@@ -151,7 +151,7 @@ describe("Add dataset to new project", () => {
       name: "migrationCheckSelectedProject",
       queryUrl: "*",
     });
-    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectKGDatasetList({ path: newProjectPath });
     fixtures.projectDatasetList();
     // fill form new project

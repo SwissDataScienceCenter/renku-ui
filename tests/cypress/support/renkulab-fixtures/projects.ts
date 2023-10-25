@@ -17,7 +17,7 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
-import { DeepPartial, SimpleFixture } from "./fixtures.types";
+import { DeepPartial, NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for Projects
@@ -315,145 +315,203 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    projectLockStatus({
-      locked = false,
-      error = false,
-      legacyError = false,
-    } = {}) {
+    projectLockStatus(args?: Partial<ProjectLockStatusArgs>) {
+      const { error, legacyError, locked } = Cypress._.defaults({}, args, {
+        error: false,
+        legacyError: false,
+        locked: false,
+      });
+      const defaultFixture = error
+        ? "errors/core-error-2001.json"
+        : legacyError
+        ? "errors/core-error-old.json"
+        : null;
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: defaultFixture,
+        name: "getProjectLockStatus",
+      });
       const coreUrl = "/ui-server/api/renku/**/project.lock_status";
       const params = "git_url=*";
-      const errorFixture = legacyError
-        ? "errors/core-error-old.json"
-        : "errors/core-error-2001.json";
-      const data =
-        error || legacyError
-          ? { fixture: errorFixture }
-          : { body: { result: { locked } } };
-      cy.intercept(`${coreUrl}?${params}`, data).as("getProjectLockStatus");
+      const url = `${coreUrl}?${params}`;
+      const response =
+        this.useMockedData && fixture
+          ? { fixture }
+          : this.useMockedData
+          ? { body: { result: { locked } } }
+          : undefined;
+      cy.intercept(url, response).as(name);
       return this;
     }
 
-    projectTestContents(
-      names = {
-        configName: "getProjectConfig",
-        coreServiceVersionName: "getCoreServiceVersion",
-        coreService8VersionName: "getCoreService8Version",
-        projectBranchesName: "getProjectBranches",
-        projectCommitsName: "getProjectCommits",
-        projectReadmeCommits: "getProjectReadmeCommits",
-        readmeName: "getReadme",
-        validationName: "getValidation",
-      },
-      coreVersion = 8
-    ) {
+    projectTestContents(args?: DeepPartial<ProjectTestContentsArgs>) {
       const {
-        configName,
-        coreServiceVersionName,
-        coreService8VersionName,
-        projectBranchesName,
-        projectCommitsName,
-        readmeName,
-      } = names;
-      const { projectReadmeCommits } = names;
+        config,
+        coreServiceVersion,
+        coreServiceV8,
+        projectBranches,
+        projectCommits,
+        projectReadmeCommits,
+        readme,
+        kgStatusIndexing,
+      } = Cypress._.defaultsDeep({}, args, {
+        config: {
+          fixture: "project/test-project_config.json",
+          name: "getProjectConfig",
+        },
+        coreServiceVersion: {
+          name: "getCoreServiceVersion",
+        },
+        coreServiceV8: {
+          name: "getCoreService8Version",
+          coreVersion: 8,
+        },
+        projectBranches: {
+          fixture: "project/test-project-branches.json",
+          name: "getProjectBranches",
+        },
+        projectCommits: {
+          fixture: "project/test-project-commits.json",
+          name: "getProjectCommits",
+        },
+        projectReadmeCommits: {
+          fixture: "project/test-project-readme-commits.json",
+          name: "getProjectReadmeCommits",
+        },
+        readme: {
+          fixture: "project/test-project-readme.md",
+          name: "getReadme",
+        },
+        kgStatusIndexing: {
+          fixture: "project/kgStatus/kgStatusIndexing.json",
+          name: "getKgStatusIndexing",
+        },
+      }) as ProjectTestContentsArgs;
+
+      const configResponse = this.useMockedData
+        ? { fixture: config.fixture }
+        : undefined;
       cy.intercept(
-        "/ui-server/api/projects/*/repository/files/README.md/raw?ref=master",
-        { fixture: "project/test-project-readme.md" }
-      ).as(readmeName);
+        "/ui-server/api/renku/10/config.show?git_url=*",
+        configResponse
+      ).as(config.name);
+
+      const coreServiceVersionResponse = this.useMockedData
+        ? {
+            body: {
+              result: {
+                latest_version: "1.0.4",
+                supported_project_version: 9.0,
+              },
+            },
+          }
+        : undefined;
       cy.intercept(
-        "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=2&path=README.md&page=1",
-        { fixture: "project/test-project-readme-commits.json" }
-      ).as(projectReadmeCommits);
+        "/ui-server/api/renku/9/version",
+        coreServiceVersionResponse
+      ).as(coreServiceVersion.name);
+
+      const coreServiceV8Response = this.useMockedData
+        ? {
+            body: {
+              result: {
+                latest_version: "0.16.2",
+                supported_project_version: coreServiceV8.coreVersion,
+              },
+            },
+          }
+        : undefined;
       cy.intercept(
-        "/ui-server/api/projects/*/repository/commits?ref_name=master&page=1&per_page=100",
-        { fixture: "project/test-project-commits.json" }
-      ).as(projectCommitsName);
+        `/ui-server/api/renku/${coreServiceV8.coreVersion}/version`,
+        coreServiceV8Response
+      ).as(coreServiceV8.name);
+
+      const projectBranchesResponse = this.useMockedData
+        ? { fixture: projectBranches.fixture }
+        : undefined;
       cy.intercept(
         "/ui-server/api/projects/*/repository/branches?page=1&per_page=100",
-        { fixture: "project/test-project-branches.json" }
-      ).as(projectBranchesName);
+        projectBranchesResponse
+      ).as(projectBranches.name);
       // Intercepting with swapped pagination params is necessary because of the legacy API client
       cy.intercept(
         "/ui-server/api/projects/*/repository/branches?per_page=100&page=1",
-        { fixture: "project/test-project-branches.json" }
-      ).as(projectBranchesName);
-      cy.intercept("/ui-server/api/kg/webhooks/projects/*/events/status", {
-        fixture: "project/kgStatus/kgStatusIndexing.json",
-      });
-      cy.intercept(`/ui-server/api/renku/${coreVersion}/version`, {
-        body: {
-          result: {
-            latest_version: "0.16.2",
-            supported_project_version: coreVersion,
-          },
-        },
-      }).as(coreService8VersionName);
-      cy.intercept("/ui-server/api/renku/9/version", {
-        body: {
-          result: {
-            latest_version: "1.0.4",
-            supported_project_version: 9.0,
-          },
-        },
-      }).as(coreServiceVersionName);
-      cy.intercept("/ui-server/api/renku/10/config.show?git_url=*", {
-        fixture: "project/test-project_config.json",
-      }).as(configName);
+        projectBranchesResponse
+      ).as(projectBranches.name);
+
+      const projectCommitsResponse = this.useMockedData
+        ? { fixture: projectCommits.fixture }
+        : undefined;
+      cy.intercept(
+        "/ui-server/api/projects/*/repository/commits?ref_name=master&page=1&per_page=100",
+        projectCommitsResponse
+      ).as(projectCommits.name);
+
+      const projectReadmeCommitsResponse = this.useMockedData
+        ? { fixture: projectReadmeCommits.fixture }
+        : undefined;
+      cy.intercept(
+        "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=2&path=README.md&page=1",
+        projectReadmeCommitsResponse
+      ).as(projectReadmeCommits.name);
+
+      const readmeCommitsResponse = this.useMockedData
+        ? { fixture: readme.fixture }
+        : undefined;
+      cy.intercept(
+        "/ui-server/api/projects/*/repository/files/README.md/raw?ref=master",
+        readmeCommitsResponse
+      ).as(readme.name);
+
+      const kgStatusIndexingResponse = this.useMockedData
+        ? { fixture: kgStatusIndexing.fixture }
+        : undefined;
+      cy.intercept(
+        "/ui-server/api/kg/webhooks/projects/*/events/status",
+        kgStatusIndexingResponse
+      ).as(kgStatusIndexing.name);
+
       return this;
     }
 
-    projectTest(
-      names = {
-        configName: "getProjectConfig",
-        coreServiceVersionName: "getCoreServiceVersion",
-        coreService8VersionName: "getCoreService8Version",
-        projectBranchesName: "getProjectBranches",
-        projectCommitsName: "getProjectCommits",
-        projectName: "getProject",
-        projectReadmeCommits: "getProjectReadmeCommits",
-        readmeName: "getReadme",
-        validationName: "getValidation",
-        coreVersion: 8,
-      },
-      overrides = {
-        visibility: "public",
-      }
-    ) {
-      const { projectName } = names;
-      const { visibility } = overrides;
-      cy.fixture("project/test-project.json").then((project) => {
-        project["visibility"] = visibility;
+    projectTest(args?: DeepPartial<ProjectTestArgs>) {
+      const { project, overrides } = Cypress._.defaultsDeep({}, args, {
+        project: {
+          fixture: "project/test-project.json",
+          name: "getProject",
+        },
+        overrides: {
+          visibility: "public",
+        },
+      }) as Pick<ProjectTestArgs, "project" | "overrides">;
+
+      cy.fixture(project.fixture).then((response) => {
+        response["visibility"] = overrides.visibility;
         cy.intercept(
           "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true&doNotTrack=*",
-          project
-        ).as(projectName);
+          response
+        ).as(project.name);
       });
 
-      return this.projectTestContents(names);
+      return this.projectTestContents(args);
     }
 
-    projectTestObserver(
-      names = {
-        configName: "getProjectConfig",
-        coreServiceVersionName: "getCoreServiceVersion",
-        coreService8VersionName: "getCoreService8Version",
-        projectBranchesName: "getProjectBranches",
-        projectCommitsName: "getProjectCommits",
-        projectName: "getProject",
-        projectReadmeCommits: "getProjectReadmeCommits",
-        readmeName: "getReadme",
-        validationName: "getValidation",
-      }
-    ) {
-      const { projectName } = names;
-      cy.fixture("project/test-project.json").then((project) => {
-        project.permissions.project_access.access_level = 10;
+    projectTestObserver(args?: DeepPartial<ProjectTestObserverArgs>) {
+      const { project } = Cypress._.defaultsDeep({}, args, {
+        project: {
+          fixture: "project/test-project.json",
+          name: "getProject",
+        },
+      }) as Pick<ProjectTestObserverArgs, "project">;
+
+      cy.fixture(project.fixture).then((response) => {
+        response.permissions.project_access.access_level = 10;
         cy.intercept(
-          "GET",
           "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true&doNotTrack=*",
-          project
-        ).as(projectName);
+          response
+        ).as(project.name);
       });
-      return this.projectTestContents(names);
+
+      return this.projectTestContents(args);
     }
 
     updateProject(
@@ -629,4 +687,32 @@ interface ProjectMigrationErrorArgs extends InterceptMigrationCheckArgs {
 interface ProjectConfigShowArgs extends SimpleFixture {
   error: boolean;
   legacyError: boolean;
+}
+
+interface ProjectLockStatusArgs extends SimpleFixture {
+  error: boolean;
+  legacyError: boolean;
+  locked: boolean;
+}
+
+interface ProjectTestContentsArgs {
+  config: SimpleFixture;
+  coreServiceVersion: NameOnlyFixture;
+  coreServiceV8: { coreVersion: number; name: string };
+  projectBranches: SimpleFixture;
+  projectCommits: SimpleFixture;
+  projectReadmeCommits: SimpleFixture;
+  readme: SimpleFixture;
+  kgStatusIndexing: SimpleFixture;
+}
+
+interface ProjectTestArgs extends ProjectTestContentsArgs {
+  project: SimpleFixture;
+  overrides: {
+    visibility: "public" | "private";
+  };
+}
+
+interface ProjectTestObserverArgs extends ProjectTestContentsArgs {
+  project: SimpleFixture;
 }

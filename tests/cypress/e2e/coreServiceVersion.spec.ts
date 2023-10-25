@@ -74,7 +74,7 @@ describe("Project dataset", () => {
     fixtures.project({ path: projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
-    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
   });

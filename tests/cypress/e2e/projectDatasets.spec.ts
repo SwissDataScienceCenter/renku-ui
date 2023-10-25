@@ -98,7 +98,7 @@ describe("Project dataset", () => {
     fixtures.project({ path: projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
-    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
   });
@@ -300,7 +300,7 @@ describe("Project dataset (legacy ids)", () => {
     fixtures.project({ path: projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetLegacyIdList();
-    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
   });
@@ -335,7 +335,7 @@ describe("Error loading datasets", () => {
     fixtures.projectDatasetList({
       fixture: "datasets/dataset-list-error.json",
     });
-    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
   });
@@ -360,7 +360,7 @@ describe("Migration check errors", () => {
     fixtures.project({ path: projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
-    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectLockStatus();
   });
 
@@ -384,7 +384,7 @@ describe("Project dataset (locked)", () => {
     fixtures.project({ path: projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
-    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus({ locked: true });
   });
