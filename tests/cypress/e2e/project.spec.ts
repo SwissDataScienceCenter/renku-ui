@@ -24,7 +24,9 @@ describe("display a project - not found", () => {
   });
 
   it("displays the project not found page when the name is incorrect - logged user", () => {
-    fixtures.userTest().errorProject("e2e/not-found-test-project");
+    fixtures
+      .userTest()
+      .errorProject({ project: { path: "e2e/not-found-test-project" } });
     cy.visit("/projects/e2e/not-found-test-project");
 
     cy.getDataCy("not-found-title")
@@ -48,7 +50,9 @@ describe("display a project - not found", () => {
   });
 
   it("displays the project not found page when the name is incorrect - anon user", () => {
-    fixtures.userNone().errorProject("e2e/not-found-test-project");
+    fixtures
+      .userNone()
+      .errorProject({ project: { path: "e2e/not-found-test-project" } });
     cy.visit("/projects/e2e/not-found-test-project");
 
     cy.getDataCy("not-found-title")
@@ -72,7 +76,7 @@ describe("display a project - not found", () => {
   });
 
   it("displays the project not found page when the numeric id is incorrect - logged user", () => {
-    fixtures.userTest().errorProject("12345");
+    fixtures.userTest().errorProject({ project: { path: "12345" } });
     cy.visit("/projects/12345");
 
     cy.getDataCy("not-found-title")
@@ -96,7 +100,7 @@ describe("display a project - not found", () => {
   });
 
   it("displays the project not found page when the numeric id is incorrect - anon user", () => {
-    fixtures.userNone().errorProject("12345");
+    fixtures.userNone().errorProject({ project: { path: "12345" } });
     cy.visit("/projects/12345");
 
     cy.getDataCy("not-found-title")
@@ -123,11 +127,7 @@ describe("display a project - not found", () => {
 describe("display a project", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
-    fixtures
-      .projects()
-      .landingUserProjects()
-      .projectTest()
-      .projectById("getProjectsById", 39646);
+    fixtures.projects().landingUserProjects().projectTest().projectById();
     fixtures.projectLockStatus().projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project");
   });

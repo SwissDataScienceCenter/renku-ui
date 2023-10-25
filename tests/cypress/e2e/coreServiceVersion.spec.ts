@@ -35,11 +35,7 @@ const config = {
 describe("display a project", () => {
   beforeEach(() => {
     fixtures.config(config).versions().userTest();
-    fixtures
-      .projects()
-      .landingUserProjects()
-      .projectTest()
-      .projectById("getProjectsById", 39646);
+    fixtures.projects().landingUserProjects().projectTest().projectById();
     fixtures.projectLockStatus().projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project");
   });
@@ -75,14 +71,11 @@ describe("Project dataset", () => {
   beforeEach(() => {
     fixtures.config(config).versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath);
+    fixtures.project({ path: projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
   });
 

@@ -25,7 +25,7 @@ describe("Add new project", () => {
 
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
-    fixtures.projects().landingUserProjects("getLandingUserProjects");
+    fixtures.projects().landingUserProjects();
     cy.visit("projects/new");
   });
 
@@ -33,7 +33,11 @@ describe("Add new project", () => {
     fixtures
       .templates()
       .createProject()
-      .project(newProjectPath, "getNewProject", "projects/project.json", false)
+      .project({
+        name: "getNewProject",
+        path: newProjectPath,
+        statistics: false,
+      })
       .updateProject(newProjectPath);
     cy.createProject(newProjectTitle);
     cy.wait("@getTemplates");
@@ -138,7 +142,11 @@ describe("Add new project", () => {
     fixtures
       .templates()
       .createProject()
-      .project(newProjectPath, "getNewProject", "projects/project.json", false)
+      .project({
+        name: "getNewProject",
+        path: newProjectPath,
+        statistics: false,
+      })
       .updateProject(newProjectPath)
       .updateAvatar();
     cy.wait("@getTemplates");
@@ -164,7 +172,7 @@ describe("Add new project", () => {
 describe("Add new project shared link", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest().namespaces();
-    fixtures.projects().landingUserProjects("getLandingUserProjects");
+    fixtures.projects().landingUserProjects();
   });
 
   it("prefill values all values (custom template)", () => {

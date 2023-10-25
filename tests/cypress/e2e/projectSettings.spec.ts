@@ -24,7 +24,7 @@ describe("Project settings page", () => {
     fixtures
       .projects()
       .projectTest()
-      .projectById("getProjectsById", 39646)
+      .projectById()
       .getProjectKG()
       .projectLockStatus()
       .projectMigrationUpToDate();
@@ -245,7 +245,7 @@ describe("Cloud storage settings page", () => {
     fixtures
       .projects()
       .projectTest()
-      .projectById("getProjectsById", 39646)
+      .projectById()
       .getProjectKG()
       .projectLockStatus()
       .projectMigrationUpToDate();

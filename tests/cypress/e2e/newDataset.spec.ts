@@ -24,15 +24,12 @@ describe("Project new dataset", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath).cacheProjectList();
+    fixtures.project({ path: projectPath }).cacheProjectList();
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.addFileDataset();
     fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
     cy.visit(`projects/${projectPath}/datasets/new`);
     cy.wait("@getProject");
@@ -96,7 +93,7 @@ describe("Project new dataset", () => {
 
   it("resets form when going to a new project", () => {
     const secondProjectPath = "e2e/random-project";
-    fixtures.project(secondProjectPath);
+    fixtures.project({ path: secondProjectPath });
     fixtures.createDataset();
     fixtures.uploadDatasetFile();
     cy.newDataset({
@@ -234,10 +231,7 @@ describe("Project new dataset without access", () => {
     fixtures.projectDatasetList();
     fixtures.createDataset();
     fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
   });
 
@@ -254,14 +248,11 @@ describe("Project import dataset", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath).cacheProjectList();
+    fixtures.project({ path: projectPath }).cacheProjectList();
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
     fixtures.importToProject();
   });

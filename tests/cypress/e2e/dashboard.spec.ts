@@ -37,10 +37,9 @@ describe("dashboard", () => {
     fixtures
       .projects()
       .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/empty-last-visited-projects.json"
-      )
+      .getLastVisitedProjects({
+        fixture: "projects/empty-last-visited-projects.json",
+      })
       .noActiveProjects();
 
     cy.visit("/");
@@ -77,13 +76,14 @@ describe("dashboard", () => {
       "e2e/local-test-project": 39646,
     };
     // fixture landing page project data
-    for (const filesKey in files)
-      fixtures.project(
-        filesKey,
-        "projectLanding",
-        `projects/project_${files[filesKey]}.json`,
-        false
-      );
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        name: "projectLanding",
+        path: filesKey,
+        statistics: false,
+      });
+    }
 
     cy.visit("/");
     let projects;
@@ -113,13 +113,9 @@ describe("dashboard", () => {
   });
 
   it("user has own projects and recently visited projects", () => {
-    fixtures
-      .projects()
-      .entitySearch()
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/last-visited-projects-5.json"
-      );
+    fixtures.projects().entitySearch().getLastVisitedProjects({
+      fixture: "projects/last-visited-projects-5.json",
+    });
     const files = {
       "lorenzo.cavazzi.tech/readme-file-dev": 30929,
       "e2e/testing-datasets": 43781,
@@ -128,13 +124,13 @@ describe("dashboard", () => {
       "e2e/local-test-project-2": 44967,
     };
     // fixture landing page project data
-    for (const filesKey in files)
-      fixtures.project(
-        filesKey,
-        "getProject",
-        `projects/project_${files[filesKey]}.json`,
-        false
-      );
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        path: filesKey,
+        statistics: false,
+      });
+    }
 
     cy.visit("/");
     let projects;
@@ -165,10 +161,9 @@ describe("dashboard", () => {
     fixtures
       .projects()
       .entitySearch()
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/last-visited-projects-5.json"
-      )
+      .getLastVisitedProjects({
+        fixture: "projects/last-visited-projects-5.json",
+      })
       .getSessions({ fixture: "sessions/sessionsWithError.json" })
       .getProjectCommits();
     const files = {
@@ -181,26 +176,24 @@ describe("dashboard", () => {
       "e2e/local-test-project-2": 44967,
     };
     // fixture landing page project data
-    for (const filesKey in files)
-      fixtures.project(
-        filesKey,
-        "getProject",
-        `projects/project_${files[filesKey]}.json`,
-        false
-      );
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        path: filesKey,
+        statistics: false,
+      });
+    }
 
     fixtures
-      .project(
-        "lorenzo.cavazzi.tech/readme-file-dev",
-        "getFirstProject",
-        "projects/project_30929.json",
-        true
-      )
+      .project({
+        fixture: "projects/project_30929.json",
+        name: "getFirstProject",
+        path: "lorenzo.cavazzi.tech/readme-file-dev",
+      })
       .projectLockStatus()
       .projectMigrationUpToDate({
         queryUrl:
           "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Florenzo.cavazzi.tech%2Freadme-file-dev&branch=master",
-        fixtureName: "getMigration",
       });
     cy.visit("projects/lorenzo.cavazzi.tech/readme-file-dev/sessions");
     cy.wait("@getFirstProject");
@@ -242,10 +235,9 @@ describe("dashboard message", () => {
       .userTest()
       .projects()
       .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/empty-last-visited-projects.json"
-      )
+      .getLastVisitedProjects({
+        fixture: "projects/empty-last-visited-projects.json",
+      })
       .noActiveProjects();
   });
 

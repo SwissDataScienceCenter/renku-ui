@@ -95,14 +95,11 @@ describe("Project dataset", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath);
+    fixtures.project({ path: projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
   });
 
@@ -260,11 +257,11 @@ describe("Project dataset", () => {
 
   it("dataset limited options if has not permissions", () => {
     const projectPath = "e2e/testing-datasets";
-    fixtures.project(
-      projectPath,
-      "getProjectLimited",
-      "projects/project-limited-permissions.json"
-    );
+    fixtures.project({
+      fixture: "projects/project-limited-permissions.json",
+      name: "getProjectLimited",
+      path: projectPath,
+    });
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProjectLimited");
     cy.wait("@datasetList")
@@ -300,14 +297,11 @@ describe("Project dataset (legacy ids)", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath);
+    fixtures.project({ path: projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetLegacyIdList();
     fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
   });
 
@@ -336,16 +330,13 @@ describe("Error loading datasets", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath);
+    fixtures.project({ path: projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList({
       fixture: "datasets/dataset-list-error.json",
     });
     fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
   });
 
@@ -366,7 +357,7 @@ describe("Migration check errors", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath);
+    fixtures.project({ path: projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents(undefined, 9);
@@ -374,11 +365,7 @@ describe("Migration check errors", () => {
   });
 
   it("display project datasets", () => {
-    fixtures.projectMigrationError({
-      errorNumber: 2200,
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectMigrationError({ errorNumber: 2200, queryUrl: "*" });
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProject");
     cy.wait("@getMigration");
@@ -394,14 +381,11 @@ describe("Project dataset (locked)", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath);
+    fixtures.project({ path: projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus({ locked: true });
   });
 

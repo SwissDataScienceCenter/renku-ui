@@ -17,218 +17,301 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { DeepPartial, SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for Projects
  */
 
-interface MigrationCheckParams {
-  errorNumber?: number;
-  fixtureName?: string;
-  queryUrl?: string;
-}
+// export interface MigrationCheckParams {
+//   errorNumber?: number;
+//   fixtureName?: string;
+//   queryUrl?: string;
+// }
 
-function Projects<T extends FixturesConstructor>(Parent: T) {
+export function Projects<T extends FixturesConstructor>(Parent: T) {
   return class ProjectsFixtures extends Parent {
-    landingUserProjects(
-      name = "getLandingUserProjects",
-      fixture = "landing-user-projects.json"
-    ) {
-      cy.intercept("/ui-server/api/graphql", {
-        fixture,
-      }).as(name);
+    landingUserProjects(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "landing-user-projects.json",
+        name: "getLandingUserProjects",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/graphql", response).as(name);
       return this;
     }
 
-    getLastVisitedProjects(
-      name = "getLastVisitedProjects",
-      fixture = "projects/last-visited-projects.json"
-    ) {
-      cy.intercept("/ui-server/api/last-projects/*", {
-        fixture,
-      }).as(name);
+    getLastVisitedProjects(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "projects/last-visited-projects.json",
+        name: "getLastVisitedProjects",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/last-projects/*", response).as(name);
       return this;
     }
 
-    projects(name = "getProjects", fixture = "projects.json") {
+    projects(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "projects.json",
+        name: "getProjects",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
       cy.intercept(
         "/ui-server/api/projects?query=last_activity_at&per_page=100&starred=true&page=1",
-        { fixture }
+        response
       ).as(name);
       return this;
     }
 
-    projectsGraphQl(name = "getProjectsGraphQl", fixture = "projects.json") {
-      cy.intercept("/ui-server/api/graphql", { fixture }).as(name);
+    projectsGraphQl(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "projects.json",
+        name: "getProjectsGraphQl",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/graphql", response).as(name);
       return this;
     }
 
-    projectById(
-      name = "getProjectsById",
-      idProject,
-      fixture = "projects/project.json"
-    ) {
-      cy.intercept(`/ui-server/api/projects/${idProject}`, { fixture }).as(
-        name
-      );
+    projectById(args?: Partial<ProjectByIdArgs>) {
+      const { fixture, name, projectId } = Cypress._.defaults({}, args, {
+        fixture: "projects/project.json",
+        name: "getProjectsById",
+        projectId: 39646,
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept(`/ui-server/api/projects/${projectId}`, response).as(name);
       return this;
     }
 
-    project(
-      path = "",
-      name = "getProject",
-      result = "projects/project.json",
-      statistics = true
-    ) {
-      const fixture = this.useMockedData ? { fixture: result } : undefined;
-      cy.intercept(
-        `/ui-server/api/projects/${encodeURIComponent(
-          path
-        )}?statistics=${statistics}&doNotTrack=*`,
-        fixture
-      ).as(name);
+    project(args?: Partial<ProjectArgs>) {
+      const { fixture, name, path, statistics } = Cypress._.defaults({}, args, {
+        fixture: "projects/project.json",
+        name: "getProject",
+        path: "",
+        statistics: true,
+      });
+      const url = `/ui-server/api/projects/${encodeURIComponent(
+        path
+      )}?statistics=${statistics}&doNotTrack=*`;
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept(url, response).as(name);
       return this;
     }
 
-    projectFiles(
-      names = {
-        rootName: "getProjectFilesRoot",
-        gitAttributesName: "getGitAttributes",
-        countFlightsName: "getCountFlights",
-        historicalUseNotebookName: "getHistoricalUseNotebook",
-        latexNotebookName: "getLatexNotebook",
-        randomPyFileName: "getRandomPyFile",
-      }
-    ) {
+    projectFiles(args?: DeepPartial<ProjectFilesArgs>) {
       const {
-        countFlightsName,
-        gitAttributesName,
-        historicalUseNotebookName,
-        latexNotebookName,
-        rootName,
-      } = names;
-      const { randomPyFileName } = names;
-      cy.intercept(
-        `/ui-server/api/projects/*/repository/tree?path=&recursive=false&per_page=100&page=1`,
-        { fixture: "project/files/project-files-root.json" }
-      ).as(rootName);
-      cy.intercept(
-        `/ui-server/api/projects/*/repository/files/.gitattributes/raw?ref=master`,
-        { fixture: "project/files/project-files-git-attributes" }
-      ).as(gitAttributesName);
-      cy.intercept(
-        "/ui-server/api/projects/*/repository/files/01-CountFlights.ipynb?ref=master",
-        { fixture: "project/files/01-CountFlights.json" }
-      ).as(countFlightsName);
-      cy.intercept(
-        "/ui-server/api/projects/*/repository/files/Historical-Use.ipynb?ref=master",
-        { fixture: "project/files/Historical-Use.json" }
-      ).as(historicalUseNotebookName);
-      cy.intercept(
-        "/ui-server/api/projects/*/repository/files/latex-notebook.ipynb?ref=master",
-        { fixture: "project/files/latex-notebook.json" }
-      ).as(latexNotebookName);
-      this.cy
-        .intercept(
-          "/ui-server/api/projects/*/repository/files/random_py_file.py?ref=master",
-          { fixture: "project/files/random_py_file.json" }
-        )
-        .as(randomPyFileName);
-      return this;
-    }
+        root,
+        gitAttributes,
+        countFlights,
+        historicalUseNotebook,
+        latexNotebook,
+        randomPyFile,
+      } = Cypress._.defaultsDeep({}, args, {
+        root: {
+          fixture: "project/files/project-files-root.json",
+          name: "getProjectFilesRoot",
+        },
+        gitAttributes: {
+          fixture: "project/files/project-files-git-attributes",
+          name: "getGitAttributes",
+        },
+        countFlights: {
+          fixture: "project/files/01-CountFlights.json",
+          name: "getCountFlights",
+        },
+        historicalUseNotebook: {
+          fixture: "project/files/Historical-Use.json",
+          name: "getHistoricalUseNotebook",
+        },
+        latexNotebook: {
+          fixture: "project/files/latex-notebook.json",
+          name: "getLatexNotebook",
+        },
+        randomPyFile: {
+          fixture: "project/files/random_py_file.json",
+          name: "getRandomPyFile",
+        },
+      }) as ProjectFilesArgs;
 
-    errorProject(path = "", name = "getErrorProject") {
-      const fixture = this.useMockedData
-        ? { fixture: `projects/no-project.json`, statusCode: 404 }
+      const rootResponse = this.useMockedData
+        ? { fixture: root.fixture }
         : undefined;
       cy.intercept(
-        `/ui-server/api/projects/${encodeURIComponent(path)}?statistics=*`,
-        fixture
-      ).as(name);
+        "/ui-server/api/projects/*/repository/tree?path=&recursive=false&per_page=100&page=1",
+        rootResponse
+      ).as(root.name);
 
+      const gitAttributesResponse = this.useMockedData
+        ? { fixture: gitAttributes.fixture }
+        : undefined;
       cy.intercept(
-        "/ui-server/api/projects/null/repository/branches?per_page=100&page=1",
-        { statusCode: 404 }
-      ).as("getErrorProjectBranches");
+        "/ui-server/api/projects/*/repository/files/.gitattributes/raw?ref=master",
+        gitAttributesResponse
+      ).as(gitAttributes.name);
+
+      const countFlightsResponse = this.useMockedData
+        ? { fixture: countFlights.fixture }
+        : undefined;
+      cy.intercept(
+        "/ui-server/api/projects/*/repository/files/01-CountFlights.ipynb?ref=master",
+        countFlightsResponse
+      ).as(countFlights.name);
+
+      const historicalUseNotebookResponse = this.useMockedData
+        ? { fixture: historicalUseNotebook.fixture }
+        : undefined;
+      cy.intercept(
+        "/ui-server/api/projects/*/repository/files/Historical-Use.ipynb?ref=master",
+        historicalUseNotebookResponse
+      ).as(historicalUseNotebook.name);
+
+      const latexNotebookResponse = this.useMockedData
+        ? { fixture: latexNotebook.fixture }
+        : undefined;
+      cy.intercept(
+        "/ui-server/api/projects/*/repository/files/latex-notebook.ipynb?ref=master",
+        latexNotebookResponse
+      ).as(latexNotebook.name);
+
+      const randomPyFileResponse = this.useMockedData
+        ? { fixture: randomPyFile.fixture }
+        : undefined;
+      cy.intercept(
+        "/ui-server/api/projects/*/repository/files/random_py_file.py?ref=master",
+        randomPyFileResponse
+      ).as(randomPyFile.name);
 
       return this;
     }
 
-    changeVisibility(
-      path = "",
-      name = "changeVisibility",
-      result = "projects/change-visibility.json"
-    ) {
-      const fixture = this.useMockedData ? { fixture: result } : undefined;
-      cy.intercept("/ui-server/api/kg/webhooks/projects/*/webhooks", {
-        body: { message: "Hook created" },
+    errorProject(args?: DeepPartial<ErrorProjectArgs>) {
+      const { branches, project } = Cypress._.defaultsDeep({}, args, {
+        branches: { name: "getErrorProjectBranches", statusCode: 404 },
+        project: {
+          fixture: "projects/no-project.json",
+          name: "getErrorProject",
+          path: "",
+          statusCode: 404,
+        },
+      }) as ErrorProjectArgs;
+
+      const projectResponse = this.useMockedData
+        ? { fixture: project.fixture, statusCode: project.statusCode }
+        : undefined;
+      cy.intercept(
+        `/ui-server/api/projects/${encodeURIComponent(
+          project.path
+        )}?statistics=*`,
+        projectResponse
+      ).as(project.name);
+
+      const branchesResponse = this.useMockedData
+        ? { statusCode: branches.statusCode }
+        : undefined;
+      cy.intercept(
+        "/ui-server/api/projects/null/repository/branches?per_page=100&page=1",
+        branchesResponse
+      ).as(branches.name);
+
+      return this;
+    }
+
+    changeVisibility(args?: Partial<ChangeVisibilityArgs>) {
+      const { fixture, name, path } = Cypress._.defaults({}, args, {
+        fixture: "projects/change-visibility.json",
+        name: "changeVisibility",
+        path: "",
       });
+
+      const webhookResponse = this.useMockedData
+        ? { body: { message: "Hook created" } }
+        : undefined;
+      cy.intercept(
+        "/ui-server/api/kg/webhooks/projects/*/webhooks",
+        webhookResponse
+      );
+
+      const response = this.useMockedData ? { fixture } : undefined;
       cy.intercept(
         "PUT",
         `/ui-server/api/projects/${encodeURIComponent(path)}`,
-        fixture
+        response
       ).as(name);
+
       return this;
     }
 
-    cacheProjectList(
-      name = "getCacheProjectList",
-      result = "projects/cache-project-list.json"
-    ) {
-      const fixture = this.useMockedData ? { fixture: result } : undefined;
-      cy.intercept(`/ui-server/api/renku/cache.project_list`, fixture).as(name);
-      cy.intercept(`/ui-server/api/renku/*/cache.project_list`, fixture).as(
+    cacheProjectList(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "projects/cache-project-list.json",
+        name: "getCacheProjectList",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/renku/cache.project_list", response).as(
+        name
+      );
+      cy.intercept("/ui-server/api/renku/*/cache.project_list", response).as(
         name
       );
       return this;
     }
 
-    interceptMigrationCheck(name, fixture, queryUrl = null) {
+    interceptMigrationCheck(args?: Partial<InterceptMigrationCheckArgs>) {
+      const { fixture, name, queryUrl } = Cypress._.defaults({}, args, {
+        fixture: "project/migrationStatus/level1-all-good.json",
+        name: "migrationCheck",
+        queryUrl: "",
+      });
       const coreUrl = "/ui-server/api/renku/**/cache.migrations_check";
       const defaultQuery =
         "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Fe2e%2Flocal-test-project&branch=master";
-      cy.intercept(`${coreUrl}?${queryUrl || defaultQuery}`, {
-        fixture: fixture,
-      }).as(name);
+      const url = `${coreUrl}?${queryUrl || defaultQuery}`;
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept(url, response).as(name);
       return this;
     }
 
-    projectConfigShow({ error = false, legacyError = false } = {}) {
-      let fixture = "project/config-show.json";
-      if (error) fixture = "errors/core-error-2001.json";
-      else if (legacyError) fixture = "errors/core-error-old.json";
-      cy.intercept("/ui-server/api/renku/*/config.show?git_url=*", {
-        fixture,
-      }).as("getProjectConfigShow");
-      return this;
-    }
-
-    projectMigrationError(
-      params: MigrationCheckParams = {
-        errorNumber: 2001,
-        queryUrl: null,
-        fixtureName: "getMigration",
-      }
-    ) {
-      this.interceptMigrationCheck(
-        params.fixtureName,
-        `errors/core-error-${params.errorNumber}.json`,
-        params.queryUrl
+    projectConfigShow(args?: Partial<ProjectConfigShowArgs>) {
+      const { error, legacyError } = Cypress._.defaults({}, args, {
+        error: false,
+        legacyError: false,
+      });
+      const defaultFixture = error
+        ? "errors/core-error-2001.json"
+        : legacyError
+        ? "errors/core-error-old.json"
+        : "project/config-show.json";
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: defaultFixture,
+        name: "getProjectConfigShow",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("/ui-server/api/renku/*/config.show?git_url=*", response).as(
+        name
       );
       return this;
     }
 
-    projectMigrationUpToDate(
-      params: MigrationCheckParams = {
-        queryUrl: null,
-        fixtureName: "getMigration",
-      }
-    ) {
-      this.interceptMigrationCheck(
-        params.fixtureName,
-        "project/migrationStatus/level1-all-good.json",
-        params.queryUrl
-      );
+    projectMigrationError(args?: Partial<ProjectMigrationErrorArgs>) {
+      const errorNumber = args.errorNumber ?? 2001;
+      const { fixture, name, queryUrl } = Cypress._.defaults({}, args, {
+        fixture: `errors/core-error-${errorNumber}.json`,
+        name: "getMigration",
+        queryUrl: "",
+      });
+      this.interceptMigrationCheck({ fixture, name, queryUrl });
+      return this;
+    }
+
+    projectMigrationUpToDate(args?: Partial<InterceptMigrationCheckArgs>) {
+      const { fixture, name, queryUrl } = Cypress._.defaults({}, args, {
+        fixture: "project/migrationStatus/level1-all-good.json",
+        name: "getMigration",
+        queryUrl: "",
+      });
+      this.interceptMigrationCheck({ fixture, name, queryUrl });
       return this;
     }
 
@@ -501,4 +584,49 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
   };
 }
 
-export { Projects, MigrationCheckParams };
+interface ProjectByIdArgs extends SimpleFixture {
+  projectId: number;
+}
+
+interface ProjectArgs extends SimpleFixture {
+  path: string;
+  statistics: boolean;
+}
+
+interface ProjectFilesArgs {
+  root: SimpleFixture;
+  gitAttributes: SimpleFixture;
+  countFlights: SimpleFixture;
+  historicalUseNotebook: SimpleFixture;
+  latexNotebook: SimpleFixture;
+  randomPyFile: SimpleFixture;
+}
+
+interface ErrorProjectArgs {
+  project: SimpleFixture & {
+    path: string;
+    statusCode: number;
+  };
+
+  branches: {
+    name: string;
+    statusCode: number;
+  };
+}
+
+interface ChangeVisibilityArgs extends SimpleFixture {
+  path: string;
+}
+
+interface InterceptMigrationCheckArgs extends SimpleFixture {
+  queryUrl: string;
+}
+
+interface ProjectMigrationErrorArgs extends InterceptMigrationCheckArgs {
+  errorNumber: number;
+}
+
+interface ProjectConfigShowArgs extends SimpleFixture {
+  error: boolean;
+  legacyError: boolean;
+}
