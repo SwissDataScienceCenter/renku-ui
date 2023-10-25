@@ -16,9 +16,7 @@
  * limitations under the License.
  */
 
-import "../support/utils";
 import Fixtures from "../support/renkulab-fixtures";
-import "../support/datasets/gui_commands";
 
 describe("Add dataset to existing project", () => {
   const fixtures = new Fixtures(cy);
@@ -50,25 +48,25 @@ describe("Add dataset to existing project", () => {
     cy.wait("@getProject");
     cy.wait("@migrationCheckDatasetProject");
     // verify load dataset info
-    cy.get_cy("add-dataset-to-project-title").should("contain", datasetName);
-    cy.get_cy("add-dataset-existing-project-option-button").should(
+    cy.getDataCy("add-dataset-to-project-title").should("contain", datasetName);
+    cy.getDataCy("add-dataset-existing-project-option-button").should(
       "have.class",
       "active"
     );
-    cy.get_cy("form-project-exist").should("exist");
+    cy.getDataCy("form-project-exist").should("exist");
   });
 
   it("valid dataset", () => {
-    cy.gui_select_project_autosuggestion_list(
+    cy.selectProjectFromAutosuggestionList(
       projectSelected,
       fixtures,
       "project/migrationStatus/level1-all-good.json"
     );
-    cy.get_cy("import-dataset-status").should(
+    cy.getDataCy("import-dataset-status").should(
       "contain.text",
       "Selected project is compatible with dataset."
     );
-    cy.get_cy("add-dataset-submit-button").should("not.be.disabled");
+    cy.getDataCy("add-dataset-submit-button").should("not.be.disabled");
   });
 
   it("successfully import dataset", () => {
@@ -77,47 +75,47 @@ describe("Add dataset to existing project", () => {
     fixtures.projectDatasetList();
     fixtures.projectTest();
     fixtures.projectLockStatus();
-    cy.gui_select_project_autosuggestion_list(
+    cy.selectProjectFromAutosuggestionList(
       projectSelected,
       fixtures,
       "project/migrationStatus/level1-all-good.json"
     );
-    cy.get_cy("add-dataset-submit-button").click();
+    cy.getDataCy("add-dataset-submit-button").click();
     cy.wait("@importToProject");
     cy.wait("@importJobCompleted", { timeout: 20_000 });
     cy.url().should(
       "include",
       `projects/${projectSelected}/datasets/${datasetName}`
     );
-    cy.get_cy("dataset-title").should("contain.text", datasetName);
+    cy.getDataCy("dataset-title").should("contain.text", datasetName);
   });
 
   it("error importing dataset", () => {
-    cy.gui_select_project_autosuggestion_list(
+    cy.selectProjectFromAutosuggestionList(
       projectSelected,
       fixtures,
       "project/migrationStatus/level1-all-good.json"
     );
     fixtures.importJobError();
-    cy.get_cy("add-dataset-submit-button").click();
+    cy.getDataCy("add-dataset-submit-button").click();
     cy.wait("@importToProject");
     cy.wait("@importJobError", { timeout: 20_000 });
-    cy.get_cy("import-dataset-status").should(
+    cy.getDataCy("import-dataset-status").should(
       "contain.text",
       "Dataset import failed"
     );
   });
 
   it("error importing from project with different metadata version", () => {
-    cy.gui_select_project_autosuggestion_list(
+    cy.selectProjectFromAutosuggestionList(
       projectSelected,
       fixtures,
       "project/migrationStatus/level4-old-updatable.json"
     );
-    cy.get_cy("import-dataset-status").contains(
+    cy.getDataCy("import-dataset-status").contains(
       "cannot be newer than the project metadata version"
     );
-    cy.get_cy("add-dataset-submit-button").should("be.disabled");
+    cy.getDataCy("add-dataset-submit-button").should("be.disabled");
   });
 });
 
@@ -154,9 +152,9 @@ describe("Add dataset to new project", () => {
     cy.wait("@getProject");
     cy.wait("@migrationCheckDatasetProject");
     // check contain dataset info
-    cy.get_cy("add-dataset-to-project-title").should("contain", datasetName);
+    cy.getDataCy("add-dataset-to-project-title").should("contain", datasetName);
     // go to add dataset to new project option
-    cy.get_cy("add-dataset-new-project-option-button").click();
+    cy.getDataCy("add-dataset-new-project-option-button").click();
   });
 
   it("valid dataset, successful import", () => {
@@ -169,11 +167,7 @@ describe("Add dataset to new project", () => {
     fixtures.projectKGDatasetList(newProjectPath);
     fixtures.projectDatasetList();
     // fill form new project
-    cy.gui_create_project_add_dataset(
-      newProjectTitle,
-      newProjectPath,
-      fixtures
-    );
+    cy.createProjectAndAddDataset(newProjectTitle, newProjectPath, fixtures);
     fixtures.project(
       newProjectPath,
       "getNewProject2",
@@ -186,7 +180,7 @@ describe("Add dataset to new project", () => {
       "include",
       `projects/${newProjectPath}/datasets/${datasetName}`
     );
-    cy.get_cy("dataset-title").should("contain.text", datasetName);
+    cy.getDataCy("dataset-title").should("contain.text", datasetName);
   });
 
   it("error importing dataset", () => {
@@ -196,14 +190,13 @@ describe("Add dataset to new project", () => {
       "*"
     );
     fixtures.importJobError();
-    cy.gui_create_project_add_dataset(
-      newProjectTitle,
-      newProjectPath,
-      fixtures
-    );
+    cy.createProjectAndAddDataset(newProjectTitle, newProjectPath, fixtures);
     cy.wait("@importToProject");
     cy.wait("@importJobError", { timeout: 20_000 });
-    cy.get_cy("import-dataset-status").should("contain.text", "Something fail");
+    cy.getDataCy("import-dataset-status").should(
+      "contain.text",
+      "Something fail"
+    );
   });
 });
 
@@ -241,8 +234,8 @@ describe("Invalid dataset", () => {
     cy.visit(`datasets/${datasetIdentifier}/add`);
     cy.wait("@getDatasetById");
     cy.wait("@getErrorProject");
-    cy.get_cy("add-dataset-submit-button").should("be.disabled");
-    cy.get_cy("import-dataset-status")
+    cy.getDataCy("add-dataset-submit-button").should("be.disabled");
+    cy.getDataCy("import-dataset-status")
       .contains("Invalid Dataset")
       .should("be.visible");
   });

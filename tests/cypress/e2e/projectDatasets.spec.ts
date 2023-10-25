@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 /*!
  * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -17,9 +16,7 @@
  * limitations under the License.
  */
 
-import "../support/utils";
 import Fixtures from "../support/renkulab-fixtures";
-import "../support/datasets/gui_commands";
 
 function checkDatasetInKg(cy, fixtures, projectPath) {
   const datasetName = "abcd";
@@ -29,8 +26,8 @@ function checkDatasetInKg(cy, fixtures, projectPath) {
   cy.wait("@getProject");
   cy.wait("@datasetList");
   cy.wait("@getDatasetById");
-  cy.get_cy("add-to-project-button").should("be.enabled");
-  cy.get_cy("not-in-kg-warning").should("not.exist");
+  cy.getDataCy("add-to-project-button").should("be.enabled");
+  cy.getDataCy("not-in-kg-warning").should("not.exist");
 }
 
 function checkDatasetDisplay(cy, fixtures, datasets, projectPath) {
@@ -38,18 +35,18 @@ function checkDatasetDisplay(cy, fixtures, datasets, projectPath) {
     const datasetIdentifier = d.identifier.replace(/-/g, "");
     const requestId = `getDatasetById${i}`;
     fixtures.datasetById(datasetIdentifier, requestId);
-    cy.get_cy("list-card-title").contains(d.title).click();
+    cy.getDataCy("list-card-title").contains(d.title).click();
     cy.wait(`@${requestId}`);
-    cy.get_cy("dataset-title").should("contain.text", d.title);
-    cy.get_cy("header-project").should("not.exist");
-    cy.get_cy("go-back-button").should(
+    cy.getDataCy("dataset-title").should("contain.text", d.title);
+    cy.getDataCy("header-project").should("not.exist");
+    cy.getDataCy("go-back-button").should(
       "contain.text",
       `Back to ${projectPath}`
     );
-    cy.get_cy("edit-dataset-button").should("exist");
-    cy.get_cy("delete-dataset-button").should("exist");
+    cy.getDataCy("edit-dataset-button").should("exist");
+    cy.getDataCy("delete-dataset-button").should("exist");
 
-    cy.get_cy("go-back-button").click();
+    cy.getDataCy("go-back-button").click();
   });
 }
 
@@ -65,20 +62,20 @@ function checkDatasetLimitedPermissionDisplay(
     fixtures.datasetById(datasetIdentifier, requestId);
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000, { log: false });
-    cy.get_cy("list-card-title").should("have.length", 3);
-    cy.get_cy("list-card-title").contains(d.title).click();
+    cy.getDataCy("list-card-title").should("have.length", 3);
+    cy.getDataCy("list-card-title").contains(d.title).click();
     cy.wait(`@${requestId}`);
-    cy.get_cy("dataset-title").should("contain.text", d.title);
+    cy.getDataCy("dataset-title").should("contain.text", d.title);
 
     if (editDisabled) {
-      cy.get_cy("edit-dataset-button").should("be.disabled");
-      cy.get_cy("add-to-project-button").should("be.disabled");
+      cy.getDataCy("edit-dataset-button").should("be.disabled");
+      cy.getDataCy("add-to-project-button").should("be.disabled");
     } else {
-      cy.get_cy("edit-dataset-button").should("not.exist");
-      cy.get_cy("add-to-project-button").should("be.visible");
+      cy.getDataCy("edit-dataset-button").should("not.exist");
+      cy.getDataCy("add-to-project-button").should("be.visible");
     }
 
-    cy.get_cy("go-back-button").click();
+    cy.getDataCy("go-back-button").click();
   });
 }
 
@@ -110,7 +107,7 @@ describe("Project dataset", () => {
         const datasets = data.result.datasets;
         // all datasets are displayed
         const totalDatasets = datasets?.length;
-        cy.get_cy("list-card").should("have.length", totalDatasets);
+        cy.getDataCy("list-card").should("have.length", totalDatasets);
         checkDatasetDisplay(cy, fixtures, datasets, projectPath);
       });
   });
@@ -125,32 +122,32 @@ describe("Project dataset", () => {
       .then((data) => {
         const datasets = data.result.datasets;
         const totalDatasets = datasets?.length;
-        cy.get_cy("list-card").should("have.length", totalDatasets);
+        cy.getDataCy("list-card").should("have.length", totalDatasets);
         const dataset = datasets[0];
         const datasetIdentifier = dataset.identifier.replace(/-/g, "");
         fixtures.datasetById(datasetIdentifier, "getDatasetById");
-        cy.get_cy("list-card-title").contains(dataset.title).click();
+        cy.getDataCy("list-card-title").contains(dataset.title).click();
         cy.wait("@getDatasetById");
-        cy.get_cy("edit-dataset-button").first().click();
+        cy.getDataCy("edit-dataset-button").first().click();
         cy.wait("@getFiles");
 
         cy.get("input[name='title']").should("have.value", dataset.title);
         cy.get("input[name='title']").type(" edited");
 
-        cy.get_cy("creator-name")
+        cy.getDataCy("creator-name")
           .first()
           .should("have.value", dataset.creators[0].name);
-        cy.get_cy("creator-name")
+        cy.getDataCy("creator-name")
           .last()
           .should("have.value", dataset.creators[2].name);
-        cy.get_cy("creator-name").first().type(" edited");
+        cy.getDataCy("creator-name").first().type(" edited");
 
         cy.get("div.input-tag").contains("test");
         cy.get("div.input-tag").contains("testing datasets");
-        cy.get_cy("input-keywords").type("added");
+        cy.getDataCy("input-keywords").type("added");
 
         cy.get("div.ck-editor__main").contains("Dataset for testing purposes");
-        cy.get_cy("ckeditor-description")
+        cy.getDataCy("ckeditor-description")
           .find("p")
           .click()
           .type(". New description");
@@ -168,7 +165,7 @@ describe("Project dataset", () => {
           content.result.datasets[0].title = `${dataset.title} edited`;
           return content;
         });
-        cy.get_cy("submit-button").click();
+        cy.getDataCy("submit-button").click();
         cy.wait("@editDataset")
           .its("request.body")
           // eslint-disable-next-line max-nested-callbacks
@@ -203,13 +200,13 @@ describe("Project dataset", () => {
       .then((data) => {
         const datasets = data.result.datasets;
         const totalDatasets = datasets?.length;
-        cy.get_cy("list-card").should("have.length", totalDatasets);
+        cy.getDataCy("list-card").should("have.length", totalDatasets);
         const dataset = datasets[0];
         const datasetIdentifier = dataset.identifier.replace(/-/g, "");
         fixtures.datasetById(datasetIdentifier, "getDatasetById");
-        cy.get_cy("list-card-title").contains(dataset.title).click();
+        cy.getDataCy("list-card-title").contains(dataset.title).click();
         cy.wait("@getDatasetById");
-        cy.get_cy("edit-dataset-button").first().click();
+        cy.getDataCy("edit-dataset-button").first().click();
         cy.wait("@getFiles");
 
         cy.get("input[name='title']").should("have.value", dataset.title);
@@ -220,7 +217,7 @@ describe("Project dataset", () => {
           content.result.datasets[0].title = `${dataset.title} edited`;
           return content;
         });
-        cy.get_cy("submit-button").click();
+        cy.getDataCy("submit-button").click();
         cy.contains(
           "The operation was successful, but this project requires use of merge requests to make changes."
         ).should("be.visible");
@@ -235,13 +232,13 @@ describe("Project dataset", () => {
       .then((data) => {
         const datasets = data.result.datasets;
         const totalDatasets = datasets?.length;
-        cy.get_cy("list-card").should("have.length", totalDatasets);
+        cy.getDataCy("list-card").should("have.length", totalDatasets);
         const dataset = datasets[0];
         const datasetIdentifier = dataset.identifier.replace(/-/g, "");
         fixtures.datasetById(datasetIdentifier, "getDatasetById");
-        cy.get_cy("list-card-title").contains(dataset.title).click();
+        cy.getDataCy("list-card-title").contains(dataset.title).click();
         cy.wait("@getDatasetById");
-        cy.get_cy("delete-dataset-button").should("exist").click();
+        cy.getDataCy("delete-dataset-button").should("exist").click();
         fixtures.datasetsRemove(datasetIdentifier);
         cy.get("button").contains("Delete dataset").should("exist").click();
         // dataset should be deleted
@@ -283,8 +280,8 @@ describe("Project dataset", () => {
     cy.wait("@datasetList");
     cy.wait("@invalidDataset");
     cy.wait("@getFiles");
-    cy.get_cy("add-to-project-button").should("not.be.enabled");
-    cy.get_cy("not-in-kg-warning").should("exist");
+    cy.getDataCy("add-to-project-button").should("not.be.enabled");
+    cy.getDataCy("not-in-kg-warning").should("exist");
   });
 });
 
@@ -316,7 +313,7 @@ describe("Project dataset (legacy ids)", () => {
         const datasets = data.result.datasets;
         // all datasets are displayed
         const totalDatasets = datasets?.length;
-        cy.get_cy("list-card").should("have.length", totalDatasets);
+        cy.getDataCy("list-card").should("have.length", totalDatasets);
         checkDatasetDisplay(cy, fixtures, datasets, projectPath);
       });
   });
@@ -354,7 +351,7 @@ describe("Error loading datasets", () => {
     cy.wait("@datasetList")
       .its("response.body")
       .then(() => {
-        cy.get_cy("error-datasets-modal").should("exist");
+        cy.getDataCy("error-datasets-modal").should("exist");
       });
   });
 });
@@ -418,11 +415,11 @@ describe("Project dataset (locked)", () => {
         const datasets = data.result.datasets;
         // all datasets are displayed
         const totalDatasets = datasets?.length;
-        cy.get_cy("list-card").should("have.length", totalDatasets);
+        cy.getDataCy("list-card").should("have.length", totalDatasets);
         checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets, true);
       });
 
     cy.contains("Project is being modified.").should("be.visible");
-    cy.get_cy("add-dataset-button").should("be.disabled");
+    cy.getDataCy("add-dataset-button").should("be.disabled");
   });
 });
