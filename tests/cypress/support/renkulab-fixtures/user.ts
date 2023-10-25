@@ -40,8 +40,12 @@ function User<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    userNone(names = { user: "getUser", keycloakUser: "getKeycloakUser" }) {
+    userNone(
+      names = { user: "getUser", keycloakUser: "getKeycloakUser" },
+      delay = undefined
+    ) {
       cy.intercept("/ui-server/api/user", {
+        delay: delay,
         statusCode: 401,
         body: {},
       }).as(names.user);
