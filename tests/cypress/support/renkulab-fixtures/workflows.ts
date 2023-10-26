@@ -30,7 +30,7 @@ export function Workflows<T extends FixturesConstructor>(Parent: T) {
         fixture: "workflows/workflows-list-links-mappings.json",
         name: "getWorkflows",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/renku/*/workflow_plans.list?*", response).as(
         name
       );
@@ -42,7 +42,7 @@ export function Workflows<T extends FixturesConstructor>(Parent: T) {
         fixture: "workflows/workflow-show-links-mappings.json",
         name: "getWorkflowDetails",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/renku/*/workflow_plans.show?*", response).as(
         name
       );

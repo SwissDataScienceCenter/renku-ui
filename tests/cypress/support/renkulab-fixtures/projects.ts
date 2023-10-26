@@ -30,7 +30,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         fixture: "landing-user-projects.json",
         name: "getLandingUserProjects",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/graphql", response).as(name);
       return this;
     }
@@ -40,7 +40,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         fixture: "projects/last-visited-projects.json",
         name: "getLastVisitedProjects",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/last-projects/*", response).as(name);
       return this;
     }
@@ -50,7 +50,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         fixture: "projects.json",
         name: "getProjects",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept(
         "/ui-server/api/projects?query=last_activity_at&per_page=100&starred=true&page=1",
         response
@@ -63,7 +63,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         fixture: "projects.json",
         name: "getProjectsGraphQl",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/graphql", response).as(name);
       return this;
     }
@@ -74,7 +74,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         name: "getProjectsById",
         projectId: 39646,
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept(`/ui-server/api/projects/${projectId}`, response).as(name);
       return this;
     }
@@ -89,7 +89,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       const url = `/ui-server/api/projects/${encodeURIComponent(
         path
       )}?statistics=${statistics}&doNotTrack=*`;
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept(url, response).as(name);
       return this;
     }
@@ -129,49 +129,41 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         },
       }) as ProjectFilesArgs;
 
-      const rootResponse = this.useMockedData
-        ? { fixture: root.fixture }
-        : undefined;
+      const rootResponse = { fixture: root.fixture };
+
       cy.intercept(
         "/ui-server/api/projects/*/repository/tree?path=&recursive=false&per_page=100&page=1",
         rootResponse
       ).as(root.name);
 
-      const gitAttributesResponse = this.useMockedData
-        ? { fixture: gitAttributes.fixture }
-        : undefined;
+      const gitAttributesResponse = { fixture: gitAttributes.fixture };
+
       cy.intercept(
         "/ui-server/api/projects/*/repository/files/.gitattributes/raw?ref=master",
         gitAttributesResponse
       ).as(gitAttributes.name);
 
-      const countFlightsResponse = this.useMockedData
-        ? { fixture: countFlights.fixture }
-        : undefined;
+      const countFlightsResponse = { fixture: countFlights.fixture };
       cy.intercept(
         "/ui-server/api/projects/*/repository/files/01-CountFlights.ipynb?ref=master",
         countFlightsResponse
       ).as(countFlights.name);
 
-      const historicalUseNotebookResponse = this.useMockedData
-        ? { fixture: historicalUseNotebook.fixture }
-        : undefined;
+      const historicalUseNotebookResponse = {
+        fixture: historicalUseNotebook.fixture,
+      };
       cy.intercept(
         "/ui-server/api/projects/*/repository/files/Historical-Use.ipynb?ref=master",
         historicalUseNotebookResponse
       ).as(historicalUseNotebook.name);
 
-      const latexNotebookResponse = this.useMockedData
-        ? { fixture: latexNotebook.fixture }
-        : undefined;
+      const latexNotebookResponse = { fixture: latexNotebook.fixture };
       cy.intercept(
         "/ui-server/api/projects/*/repository/files/latex-notebook.ipynb?ref=master",
         latexNotebookResponse
       ).as(latexNotebook.name);
 
-      const randomPyFileResponse = this.useMockedData
-        ? { fixture: randomPyFile.fixture }
-        : undefined;
+      const randomPyFileResponse = { fixture: randomPyFile.fixture };
       cy.intercept(
         "/ui-server/api/projects/*/repository/files/random_py_file.py?ref=master",
         randomPyFileResponse
@@ -191,9 +183,10 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         },
       }) as ErrorProjectArgs;
 
-      const projectResponse = this.useMockedData
-        ? { fixture: project.fixture, statusCode: project.statusCode }
-        : undefined;
+      const projectResponse = {
+        fixture: project.fixture,
+        statusCode: project.statusCode,
+      };
       cy.intercept(
         `/ui-server/api/projects/${encodeURIComponent(
           project.path
@@ -201,9 +194,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         projectResponse
       ).as(project.name);
 
-      const branchesResponse = this.useMockedData
-        ? { statusCode: branches.statusCode }
-        : undefined;
+      const branchesResponse = { statusCode: branches.statusCode };
       cy.intercept(
         "/ui-server/api/projects/null/repository/branches?per_page=100&page=1",
         branchesResponse
@@ -219,15 +210,13 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         path: "",
       });
 
-      const webhookResponse = this.useMockedData
-        ? { body: { message: "Hook created" } }
-        : undefined;
+      const webhookResponse = { body: { message: "Hook created" } };
       cy.intercept(
         "/ui-server/api/kg/webhooks/projects/*/webhooks",
         webhookResponse
       );
 
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept(
         "PUT",
         `/ui-server/api/projects/${encodeURIComponent(path)}`,
@@ -242,7 +231,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         fixture: "projects/cache-project-list.json",
         name: "getCacheProjectList",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/renku/cache.project_list", response).as(
         name
       );
@@ -262,7 +251,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       const defaultQuery =
         "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Fe2e%2Flocal-test-project&branch=master";
       const url = `${coreUrl}?${queryUrl || defaultQuery}`;
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept(url, response).as(name);
       return this;
     }
@@ -281,7 +270,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         fixture: defaultFixture,
         name: "getProjectConfigShow",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/renku/*/config.show?git_url=*", response).as(
         name
       );
@@ -327,12 +316,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       const coreUrl = "/ui-server/api/renku/**/project.lock_status";
       const params = "git_url=*";
       const url = `${coreUrl}?${params}`;
-      const response =
-        this.useMockedData && fixture
-          ? { fixture }
-          : this.useMockedData
-          ? { body: { result: { locked } } }
-          : undefined;
+      const response = fixture ? { fixture } : { body: { result: { locked } } };
       cy.intercept(url, response).as(name);
       return this;
     }
@@ -381,47 +365,41 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         },
       }) as ProjectTestContentsArgs;
 
-      const configResponse = this.useMockedData
-        ? { fixture: config.fixture }
-        : undefined;
+      const configResponse = { fixture: config.fixture };
       cy.intercept(
         "/ui-server/api/renku/10/config.show?git_url=*",
         configResponse
       ).as(config.name);
 
-      const coreServiceVersionResponse = this.useMockedData
-        ? {
-            body: {
-              result: {
-                latest_version: "1.0.4",
-                supported_project_version: 9.0,
-              },
-            },
-          }
-        : undefined;
+      const coreServiceVersionResponse = {
+        body: {
+          result: {
+            latest_version: "1.0.4",
+            supported_project_version: 9.0,
+          },
+        },
+      };
+
       cy.intercept(
         "/ui-server/api/renku/9/version",
         coreServiceVersionResponse
       ).as(coreServiceVersion.name);
 
-      const coreServiceV8Response = this.useMockedData
-        ? {
-            body: {
-              result: {
-                latest_version: "0.16.2",
-                supported_project_version: coreServiceV8.coreVersion,
-              },
-            },
-          }
-        : undefined;
+      const coreServiceV8Response = {
+        body: {
+          result: {
+            latest_version: "0.16.2",
+            supported_project_version: coreServiceV8.coreVersion,
+          },
+        },
+      };
+
       cy.intercept(
         `/ui-server/api/renku/${coreServiceV8.coreVersion}/version`,
         coreServiceV8Response
       ).as(coreServiceV8.name);
 
-      const projectBranchesResponse = this.useMockedData
-        ? { fixture: projectBranches.fixture }
-        : undefined;
+      const projectBranchesResponse = { fixture: projectBranches.fixture };
       cy.intercept(
         "/ui-server/api/projects/*/repository/branches?page=1&per_page=100",
         projectBranchesResponse
@@ -432,33 +410,27 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         projectBranchesResponse
       ).as(projectBranches.name);
 
-      const projectCommitsResponse = this.useMockedData
-        ? { fixture: projectCommits.fixture }
-        : undefined;
+      const projectCommitsResponse = { fixture: projectCommits.fixture };
       cy.intercept(
         "/ui-server/api/projects/*/repository/commits?ref_name=master&page=1&per_page=100",
         projectCommitsResponse
       ).as(projectCommits.name);
 
-      const projectReadmeCommitsResponse = this.useMockedData
-        ? { fixture: projectReadmeCommits.fixture }
-        : undefined;
+      const projectReadmeCommitsResponse = {
+        fixture: projectReadmeCommits.fixture,
+      };
       cy.intercept(
         "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=2&path=README.md&page=1",
         projectReadmeCommitsResponse
       ).as(projectReadmeCommits.name);
 
-      const readmeCommitsResponse = this.useMockedData
-        ? { fixture: readme.fixture }
-        : undefined;
+      const readmeCommitsResponse = { fixture: readme.fixture };
       cy.intercept(
         "/ui-server/api/projects/*/repository/files/README.md/raw?ref=master",
         readmeCommitsResponse
       ).as(readme.name);
 
-      const kgStatusIndexingResponse = this.useMockedData
-        ? { fixture: kgStatusIndexing.fixture }
-        : undefined;
+      const kgStatusIndexingResponse = { fixture: kgStatusIndexing.fixture };
       cy.intercept(
         "/ui-server/api/kg/webhooks/projects/*/events/status",
         kgStatusIndexingResponse
@@ -516,15 +488,13 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         statusCode: 200,
       });
 
-      const webhookResponse = this.useMockedData
-        ? { body: { message: "Hook created" } }
-        : undefined;
+      const webhookResponse = { body: { message: "Hook created" } };
       cy.intercept(
         "/ui-server/api/kg/webhooks/projects/*/webhooks",
         webhookResponse
       );
 
-      const response = this.useMockedData ? { fixture, statusCode } : undefined;
+      const response = { fixture, statusCode };
       cy.intercept(
         "PUT",
         `/ui-server/api/projects/${encodeURIComponent(path)}`,
@@ -540,7 +510,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         name: "updateProjectKG",
         statusCode: 200,
       });
-      const response = this.useMockedData ? { fixture, statusCode } : undefined;
+      const response = { fixture, statusCode };
       cy.intercept("PATCH", "/ui-server/api/kg/projects/**", response).as(name);
       return this;
     }
@@ -550,9 +520,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         forbidden: false,
         name: "deleteProject",
       });
-      const response = this.useMockedData
-        ? { statusCode: forbidden ? 403 : 200 }
-        : undefined;
+      const response = { statusCode: forbidden ? 403 : 200 };
       cy.intercept("DELETE", "/ui-server/api/kg/projects/**", response).as(
         name
       );
@@ -564,7 +532,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         fixture: "project/edit/edit-project-confirm.json",
         name: "editProject",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("POST", "/ui-server/api/renku/**/project.edit", response).as(
         name
       );
@@ -584,8 +552,8 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       );
       const interceptUrl = `/ui-server/api/kg/projects/${identifier}`;
 
-      if (!this.useMockedData || overrides == null) {
-        const response = this.useMockedData ? { fixture } : undefined;
+      if (overrides == null) {
+        const response = { fixture };
         cy.intercept("GET", interceptUrl, response).as(name);
         return this;
       }
@@ -606,11 +574,6 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         projectId: 43781,
       });
 
-      if (!this.useMockedData) {
-        cy.intercept("PUT", `/ui-server/api/projects/${projectId}`).as(name);
-        return this;
-      }
-
       cy.fixture(fixture).then((response) => {
         response["avatar"] = "avatar-url";
         cy.intercept(
@@ -628,7 +591,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         name: "getNamespace",
         namespace: "",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept(`/ui-server/api/groups/${namespace}`, response).as(name);
       return this;
     }
@@ -638,7 +601,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         fixture: "project/kgStatus/kgStatusIndexedSuccess.json",
         name: "getKgStatus",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept(
         "/ui-server/api/kg/webhooks/projects/*/events/status",
         response
@@ -651,7 +614,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         fixture: "project/test-project-commits.json",
         name: "getProjectCommits",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept(
         "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=100&page=1",
         response

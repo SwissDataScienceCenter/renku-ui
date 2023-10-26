@@ -32,8 +32,8 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
         overrides: null,
       });
 
-      if (!this.useMockedData || overrides == null) {
-        const response = this.useMockedData ? { fixture } : undefined;
+      if (overrides == null) {
+        const response = { fixture };
         cy.intercept(
           "https://*.statuspage.io/api/v2/summary.json",
           response
@@ -60,8 +60,8 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
         overrides: null,
       });
 
-      if (!this.useMockedData || overrides == null) {
-        const response = this.useMockedData ? { fixture } : undefined;
+      if (overrides == null) {
+        const response = { fixture };
         cy.intercept("/config.json", response).as(name);
         return this;
       }
@@ -91,21 +91,15 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
         },
       }) as VersionsArgs;
 
-      const coreResponse = this.useMockedData
-        ? { fixture: core.fixture }
-        : undefined;
+      const coreResponse = { fixture: core.fixture };
       cy.intercept("/ui-server/api/renku/versions", coreResponse).as(core.name);
 
-      const notebooksResponse = this.useMockedData
-        ? { fixture: notebooks.fixture }
-        : undefined;
+      const notebooksResponse = { fixture: notebooks.fixture };
       cy.intercept("/ui-server/api/notebooks/version", notebooksResponse).as(
         notebooks.name
       );
 
-      const uiResponse = this.useMockedData
-        ? { fixture: ui.fixture }
-        : undefined;
+      const uiResponse = { fixture: ui.fixture };
       cy.intercept("/ui-server/api/versions", uiResponse).as(ui.name);
 
       return this;
@@ -116,7 +110,7 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
         fixture: "namespaces.json",
         name: "getNamespaces",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/namespaces?*", response).as(name);
       return this;
     }
@@ -131,7 +125,7 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
         name: "getTemplates",
         urlSource: "*",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept(
         `/ui-server/api/renku/templates.read_manifest?${urlSource}`,
         response

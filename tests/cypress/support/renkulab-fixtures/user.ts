@@ -30,7 +30,7 @@ export function User<T extends FixturesConstructor>(Parent: T) {
         fixture: "user.json",
         name: "getUser",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/user", response).as(name);
       return this;
     }
@@ -39,9 +39,7 @@ export function User<T extends FixturesConstructor>(Parent: T) {
       const { name } = Cypress._.defaults({}, args, {
         name: "getUser",
       });
-      const response = this.useMockedData
-        ? { body: {}, statusCode: 401 }
-        : undefined;
+      const response = { body: {}, statusCode: 401 };
       cy.intercept("/ui-server/api/user", response).as(name);
       return this;
     }
@@ -50,9 +48,7 @@ export function User<T extends FixturesConstructor>(Parent: T) {
       const { name } = Cypress._.defaults({}, args, {
         name: "getUser",
       });
-      const response = this.useMockedData
-        ? { body: {}, statusCode: 500 }
-        : undefined;
+      const response = { body: {}, statusCode: 500 };
       cy.intercept("/ui-server/api/user", response).as(name);
       return this;
     }

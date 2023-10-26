@@ -20,20 +20,7 @@
  * Common fixtures defined in one place.
  */
 
-class Fixtures {
-  readonly cy: Cypress.Chainable;
-  private _useMockedData: boolean;
-
-  constructor(cy: Cypress.Chainable) {
-    this.cy = cy;
-
-    this._useMockedData = Cypress.env("USE_FIXTURES") === true;
-  }
-
-  get useMockedData() {
-    return this._useMockedData;
-  }
-}
+class Fixtures {}
 
 export default Fixtures;
 

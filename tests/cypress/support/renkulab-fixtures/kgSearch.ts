@@ -30,7 +30,7 @@ export function KgSearch<T extends FixturesConstructor>(Parent: T) {
         fixture: "kgSearch/lastSearch.json",
         name: "getLastSearch",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api//last-searches/6", response).as(name);
       return this;
     }
@@ -42,9 +42,8 @@ export function KgSearch<T extends FixturesConstructor>(Parent: T) {
         params: "*",
         total: 7,
       });
-      const response = this.useMockedData
-        ? { fixture, headers: { Total: `${total}` } }
-        : undefined;
+      const response = { fixture, headers: { Total: `${total}` } };
+
       cy.intercept(`/ui-server/api/kg/entities${params}`, response).as(name);
       return this;
     }
@@ -54,7 +53,7 @@ export function KgSearch<T extends FixturesConstructor>(Parent: T) {
         fixture: "kgSearch/no-active-projects.json",
         name: "getNoActiveProjects",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept(
         "/ui-server/api/kg/users/*/projects?state=NOT_ACTIVATED&*",
         response

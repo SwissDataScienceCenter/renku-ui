@@ -30,7 +30,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
         fixture: "cloudStorage/cloud-storage.json",
         name: "getCloudStorage",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/data/storage*", response).as(name);
       return this;
     }
@@ -40,9 +40,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
         fixture: "cloudStorage/new-cloud-storage.json",
         name: "postCloudStorage",
       });
-      const response = this.useMockedData
-        ? { fixture, statusCode: 201 }
-        : undefined;
+      const response = { fixture, statusCode: 201 };
       cy.intercept(
         { method: "POST", path: "/ui-server/api/data/storage" },
         response
@@ -54,7 +52,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
       const { name } = Cypress._.defaults({}, args, {
         name: "patchCloudStorage",
       });
-      const response = this.useMockedData ? { statusCode: 201 } : undefined;
+      const response = { statusCode: 201 };
       cy.intercept(
         { method: "PATCH", path: "/ui-server/api/data/storage/*" },
         response
@@ -66,7 +64,7 @@ export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
       const { name } = Cypress._.defaults({}, args, {
         name: "deleteCloudStorage",
       });
-      const response = this.useMockedData ? { statusCode: 204 } : undefined;
+      const response = { statusCode: 204 };
       cy.intercept(
         { method: "DELETE", path: "/ui-server/api/data/storage/*" },
         response

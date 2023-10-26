@@ -37,12 +37,7 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
           ref: "172a784d465a7bd45bacc165df2b64a591ac6b18",
         }
       );
-      const response =
-        this.useMockedData && empty
-          ? []
-          : this.useMockedData
-          ? { fixture }
-          : undefined;
+      const response = empty ? [] : { fixture };
       cy.intercept(
         `/ui-server/api/projects/${projectId}/pipelines?sha=${ref}`,
         response
@@ -73,7 +68,7 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
           projectId: 39646,
         }
       );
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept(
         `/ui-server/api/projects/${projectId}/pipelines/${pipelineId}/jobs`,
         response
@@ -103,17 +98,17 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
         },
       }) as NewSessionImagesArgs;
 
-      const registryResponse = this.useMockedData
-        ? { fixture: registry.fixture }
-        : undefined;
+      const registryResponse = { fixture: registry.fixture };
       cy.intercept(
         `/ui-server/api/projects/${projectId}/registry/repositories`,
         registryResponse
       ).as(registry.name);
 
-      const imageResponse = this.useMockedData
-        ? { fixture: image.fixture, ...(missing ? { statusCode: 404 } : {}) }
-        : undefined;
+      const imageResponse = {
+        fixture: image.fixture,
+        ...(missing ? { statusCode: 404 } : {}),
+      };
+
       cy.intercept(
         `/ui-server/api/projects/${projectId}/registry/repositories/1/tags/${image.tag}`,
         imageResponse

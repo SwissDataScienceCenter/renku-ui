@@ -43,9 +43,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         id: "a20838d8cd514eaab3efbd54a8104732",
         name: "getDatasetById",
       });
-      const response = this.useMockedData
-        ? { fixture: `datasets/dataset_${id}.json` }
-        : undefined;
+      const response = { fixture: `datasets/dataset_${id}.json` };
       cy.intercept(`/ui-server/api/kg/datasets/${id}`, response).as(name);
       return this;
     }
@@ -54,9 +52,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
       const { name } = Cypress._.defaults({}, args, {
         name: "datasetsRemove",
       });
-      const response = this.useMockedData
-        ? { body: { result: { name, remote_branch: "master" } } }
-        : undefined;
+      const response = { body: { result: { name, remote_branch: "master" } } };
       cy.intercept(
         "POST",
         "/ui-server/api/renku/*/datasets.remove",
@@ -70,9 +66,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         id: "a46c10c94a40359181965e5c4cdabc",
         name: "invalidDataset",
       });
-      const response = this.useMockedData
-        ? { fixture: `datasets/no-dataset.json`, statusCode: 404 }
-        : undefined;
+      const response = { fixture: `datasets/no-dataset.json`, statusCode: 404 };
       cy.intercept(`/ui-server/api/kg/datasets/${id}`, response).as(name);
       return this;
     }
@@ -83,7 +77,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         name: "datasetKGList",
         path: "",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept(`/ui-server/api/kg/projects/${path}/datasets`, response).as(
         name
       );
@@ -101,14 +95,6 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
           transformResponse: (response: any) => response,
         }
       );
-
-      if (!this.useMockedData) {
-        cy.intercept("/ui-server/api/renku/**/datasets.list?git_url=*").as(
-          name
-        );
-        return this;
-      }
-
       cy.fixture(fixture).then((content) => {
         const result = transformResponse(content);
         const response = { body: result };
@@ -125,14 +111,6 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         fixture: "datasets/project-dataset-list.json",
         name: "datasetList",
       });
-
-      if (!this.useMockedData) {
-        cy.intercept("/ui-server/api/renku/**/datasets.list?git_url=*").as(
-          name
-        );
-        return this;
-      }
-
       cy.fixture(fixture).then((response) => {
         for (const ds of response.result.datasets) {
           ds.identifier = toLegacyIdentifier(ds.identifier);
@@ -151,7 +129,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         fixture: "datasets/dataset-files.json",
         name: "getFiles",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/renku/*/datasets.files_list?*", response).as(
         name
       );
@@ -163,7 +141,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         fixture: "datasets/datasets-import.json",
         name: "importToProject",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/renku/*/datasets.import", response).as(name);
       cy.intercept("/ui-server/api/renku/datasets.import", response).as(name);
       return this;
@@ -174,7 +152,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         fixture: "datasets/import-job-completed.json",
         name: "importJobCompleted",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/renku/*/jobs/*", response).as(name);
       cy.intercept("/ui-server/api/renku/jobs/*", response).as(name);
       return this;
@@ -185,7 +163,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         fixture: "datasets/import-job-error.json",
         name: "importJobError",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/renku/*/jobs/*", response).as(name);
       cy.intercept("/ui-server/api/renku/jobs/*", response).as(name);
       return this;
@@ -209,7 +187,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
       const url = `/ui-server/api/renku/*/cache.files_upload${
         params ? `?${params}` : ""
       }`;
-      const response = this.useMockedData ? { fixture, statusCode } : undefined;
+      const response = { fixture, statusCode };
       cy.intercept(url, response).as(name);
       return this;
     }
@@ -219,7 +197,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         fixture: "datasets/create-dataset.json",
         name: "createDataset",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/renku/*/datasets.create", response).as(name);
       return this;
     }
@@ -230,13 +208,12 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         name: "editDataset",
         remoteBranch: "master",
       }) as EditDatasetArgs;
-      const response = this.useMockedData
-        ? {
-            body: {
-              result: { edited, remote_branch: remoteBranch, warnings: [] },
-            },
-          }
-        : undefined;
+      const response = {
+        body: {
+          result: { edited, remote_branch: remoteBranch, warnings: [] },
+        },
+      };
+
       cy.intercept("/ui-server/api/renku/*/datasets.edit", response).as(name);
       return this;
     }
@@ -246,7 +223,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
         fixture: "datasets/add-file.json",
         name: "addFile",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/renku/*/datasets.add", response).as(name);
       return this;
     }

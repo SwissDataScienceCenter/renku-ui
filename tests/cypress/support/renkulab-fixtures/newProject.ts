@@ -30,7 +30,7 @@ export function NewProject<T extends FixturesConstructor>(Parent: T) {
         fixture: "project/create-project.json",
         name: "createProject",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept(
         "/ui-server/api/renku/templates.create_project",
         response

@@ -30,7 +30,7 @@ export function DataServices<T extends FixturesConstructor>(Parent: T) {
         fixture: "dataServices/resource-pools.json",
         name: "getResourcePools",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/data/resource_pools*", response).as(name);
       return this;
     }

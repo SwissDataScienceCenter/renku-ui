@@ -2,7 +2,6 @@ import { defineConfig } from "cypress";
 
 export default defineConfig({
   env: {
-    USE_FIXTURES: true,
     CLOUD_STORAGE_READWRITE_ENABLED: false,
   },
 

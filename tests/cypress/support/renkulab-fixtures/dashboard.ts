@@ -30,10 +30,10 @@ export function Dashboard<T extends FixturesConstructor>(Parent: T) {
         name: "getConfig",
       });
 
-      if (!this.useMockedData) {
-        cy.intercept("/config.json").as(name);
-        return this;
-      }
+      // if (!this.useMockedData) {
+      //   cy.intercept("/config.json").as(name);
+      //   return this;
+      // }
 
       if (fixture === "config.json") {
         const response = { fixture };

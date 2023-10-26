@@ -30,7 +30,7 @@ export function Versions<T extends FixturesConstructor>(Parent: T) {
         fixture: "session/version.json",
         name: "getSessionsVersion",
       });
-      const response = this.useMockedData ? { fixture } : undefined;
+      const response = { fixture };
       cy.intercept("/ui-server/api/notebooks/version", response).as(name);
       return this;
     }
