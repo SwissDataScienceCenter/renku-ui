@@ -80,4 +80,4 @@ function processStatusForNotifications(
   });
 }
 
-export { handleKgActivationStatus };
+export { handleKgActivationStatus, updateStatus };

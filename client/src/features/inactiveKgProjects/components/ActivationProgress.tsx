@@ -19,7 +19,7 @@
 import { Progress } from "reactstrap";
 
 import { Loader } from "../../../components/Loader";
-import { InactiveKgProjects } from "../InactiveKgProjects";
+import type { InactiveKgProjects } from "../inactiveKgProjects.types";
 import { ActivationStatusProgressError } from "../InactiveKgProjectsApi";
 
 interface ActivationProgressProps {
@@ -32,15 +32,26 @@ function ActivationProgress({ project }: ActivationProgressProps) {
   if (project.progressActivation === ActivationStatusProgressError.UNKNOWN)
     return (
       <small className="text-danger">
-        There was an error in activating the KG. Please contact us for help.
+        There was an error indexing this project. Please contact us for help.
       </small>
     );
 
   if (project.progressActivation === ActivationStatusProgressError.TIMEOUT)
     return (
       <small className="text-danger">
-        The activation status is slow to progress. Check again later to see if
-        activation has completed, or contact us for help.
+        The indexing status is slow to progress. Refresh this page or check the
+        project later to see if indexing has completed, or contact us for help.
+      </small>
+    );
+
+  if (
+    project.progressActivation ===
+    ActivationStatusProgressError.WEB_SOCKET_ERROR
+  )
+    return (
+      <small className="text-danger">
+        There was a problem with the connection to the server. Please refresh
+        this page to see if indexing has completed.
       </small>
     );
 

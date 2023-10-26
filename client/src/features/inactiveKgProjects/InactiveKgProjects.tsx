@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Balloon, Briefcase } from "react-bootstrap-icons";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -31,21 +31,18 @@ import ActivationProgress from "./components/ActivationProgress";
 import KgActivationHeader from "./components/KgActivationHeader";
 import "./inactiveKgProjects.css";
 import {
+  ActivationStatusProgressSpecial,
   addFullList,
+  updateList,
+  updateAllSelected,
   updateProgress,
   useInactiveProjectSelector,
 } from "./inactiveKgProjectsSlice";
-import { ActivationStatusProgressError } from "./InactiveKgProjectsApi";
-
-export interface InactiveKgProjects {
-  id: number;
-  title: string;
-  namespaceWithPath: string;
-  description: string;
-  visibility: "Public" | "Private" | "Intern";
-  selected: boolean;
-  progressActivation: number | null;
-}
+import { InactiveKgProjects } from "./inactiveKgProjects.types";
+import {
+  filterProgressingProjects,
+  hasActivationTerminated,
+} from "./inactiveKgProjects.utils";
 
 function ActivatingInfo({ activating }: { activating: boolean }) {
   if (!activating) return null;
@@ -237,32 +234,34 @@ function ProjectsNotIndexedPage({
 
   // hook to calculate if still activating a project of the list
   useEffect(() => {
-    const inProgress = projectList.find(
-      (p) => p.progressActivation != null && p.progressActivation !== 100
-    );
-    const totalCompleted = projectList.filter(
-      (p) => p.progressActivation === 100 || p.progressActivation === -2
-    ).length;
+    const totalProgressing = filterProgressingProjects(projectList).length;
+    const totalCompleted = projectList.filter(hasActivationTerminated).length;
     const totalSelected = projectList.filter((p) => p.selected).length;
-    if (inProgress) setActivating(true);
+    if (totalProgressing > 0) setActivating(true);
     if (totalCompleted === totalSelected) setActivating(false);
   }, [projectList]);
 
-  const onAllItemsCheck = (isChecked: boolean) => {
-    const tempList = projectList.map((project) => {
-      return { ...project, selected: isChecked };
-    });
-    dispatch(addFullList(tempList));
-  };
+  const onAllItemsCheck = useCallback(
+    (isChecked: boolean) => {
+      dispatch(updateAllSelected(isChecked));
+    },
+    [dispatch]
+  );
 
-  const onItemCheck = (isChecked: boolean, item: InactiveKgProjects) => {
-    const tempList = projectList.map((project) => {
-      if (project.id === item.id)
-        return { ...project, progressActivation: null, selected: isChecked };
-      return project;
-    });
-    dispatch(addFullList(tempList));
-  };
+  const onItemCheck = useCallback(
+    (isChecked: boolean, item: InactiveKgProjects) => {
+      const project = projectList.find((project) => project.id === item.id);
+      if (project == null) return;
+      dispatch(
+        updateList({
+          ...project,
+          progressActivation: null,
+          selected: isChecked,
+        })
+      );
+    },
+    [dispatch, projectList]
+  );
 
   const activateProjects = () => {
     setActivating(true);
@@ -273,7 +272,12 @@ function ProjectsNotIndexedPage({
       for (let i = 0; i < projectSelected.length; i++) {
         const projectId = projectSelected[i].id;
         activateIndexing(projectId);
-        dispatch(updateProgress({ id: projectId, progress: -1 }));
+        dispatch(
+          updateProgress({
+            id: projectId,
+            progress: ActivationStatusProgressSpecial.QUEUED,
+          })
+        );
         sendPullKgActivationStatus([projectId], socket);
       }
     } else {
@@ -281,11 +285,11 @@ function ProjectsNotIndexedPage({
     }
   };
 
-  const totalSelected =
-    projectList.filter((p) => p.selected && isActivationProgressing(p))
-      ?.length ?? 0;
-  const totalPending =
-    projectList.filter((p) => isActivationProgressing(p))?.length ?? 0;
+  const nonTerminatedProjects = projectList.filter(
+    (p) => !hasActivationTerminated(p)
+  );
+  const totalNonTerminated = nonTerminatedProjects.length;
+  const totalSelected = nonTerminatedProjects.filter((p) => p.selected).length;
   useEffect(() => {
     if (activating && totalSelected === 0) setActivating(false);
   }, [activating, totalSelected]);
@@ -311,19 +315,11 @@ function ProjectsNotIndexedPage({
             onItemCheck={onItemCheck}
             projectList={projectList}
             totalSelected={totalSelected}
-            totalPending={totalPending}
+            totalPending={totalNonTerminated}
           />
         </div>
       </div>
     </div>
-  );
-}
-
-function isActivationProgressing(p: InactiveKgProjects): unknown {
-  return (
-    p.progressActivation !== 100 &&
-    p.progressActivation !== ActivationStatusProgressError.UNKNOWN &&
-    p.progressActivation !== ActivationStatusProgressError.TIMEOUT
   );
 }
 
@@ -357,9 +353,9 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
       </div>
     );
   }
-  const totalActive =
+  const totalCompleted =
     projectList.filter((p) => p.progressActivation === 100)?.length ?? 0;
-  if (projectList.length === 0 || projectList.length === totalActive)
+  if (projectList.length === 0 || projectList.length === totalCompleted)
     return <AllProjectsIndexed />;
 
   return <ProjectsNotIndexedPage projectList={projectList} socket={socket} />;

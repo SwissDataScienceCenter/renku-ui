@@ -28,8 +28,15 @@ import {
   handleUserError,
 } from "./handlers/userHandlers";
 import { handleSessionsStatus } from "./handlers/sessionStatusHandler";
-import { handleKgActivationStatus } from "./handlers/kgActivationStatusHandler";
-import { InactiveKgProjects } from "../features/inactiveKgProjects/InactiveKgProjects";
+import {
+  handleKgActivationStatus,
+  updateStatus,
+} from "./handlers/kgActivationStatusHandler";
+import type { InactiveKgProjects } from "../features/inactiveKgProjects/";
+import {
+  ActivationStatusProgressError,
+  filterProgressingProjects,
+} from "../features/inactiveKgProjects/";
 import { StateModel } from "../model";
 import APIClient from "../api-client";
 
@@ -187,6 +194,22 @@ function setupWebSocket(
       errorObject: error,
       lastReceived: new Date(),
     });
+
+    // Set the status of any pending KG indexing to an error state
+    const state = model?.reduxStore?.getState();
+    // kgInactiveProjects
+    const kgInactiveProjects = state?.kgInactiveProjects;
+    if (kgInactiveProjects == null) return;
+    const progressingProjects = filterProgressingProjects(kgInactiveProjects);
+    if (progressingProjects.length === 0) return;
+
+    const kgActivation: Record<string, number> = {};
+    progressingProjects.forEach((project: InactiveKgProjects) => {
+      kgActivation[`${project.id}`] =
+        ActivationStatusProgressError.WEB_SOCKET_ERROR;
+    });
+
+    updateStatus(kgActivation, model.reduxStore);
   };
 
   webSocket.onclose = (data) => {

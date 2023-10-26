@@ -18,10 +18,14 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
-import { InactiveKgProjects } from "./InactiveKgProjects";
 import { ActivationStatusProgressError } from "./InactiveKgProjectsApi";
+import type { InactiveKgProjects } from "./inactiveKgProjects.types";
 
 const initialState: InactiveKgProjects[] = [];
+
+export enum ActivationStatusProgressSpecial {
+  QUEUED = -1,
+}
 
 interface ActivationStatus {
   id: number;
@@ -34,6 +38,11 @@ export const kgInactiveProjectsSlice = createSlice({
   reducers: {
     addFullList: (state, action: PayloadAction<InactiveKgProjects[]>) => {
       return action.payload;
+    },
+    updateAllSelected(state, action: PayloadAction<boolean>) {
+      return state.map((p) => {
+        return { ...p, selected: action.payload };
+      });
     },
     updateList: (state, action: PayloadAction<InactiveKgProjects>) => {
       return state.map((p) => {
@@ -59,7 +68,7 @@ export const kgInactiveProjectsSlice = createSlice({
   },
 });
 
-export const { updateList, addFullList, updateProgress } =
+export const { addFullList, updateAllSelected, updateList, updateProgress } =
   kgInactiveProjectsSlice.actions;
 
 export const useInactiveProjectSelector = createSliceSelector(

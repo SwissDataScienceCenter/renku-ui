@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { InactiveKgProjects } from "./InactiveKgProjects";
+import type { InactiveKgProjects } from "./inactiveKgProjects.types";
 
 export enum ActivationStatusProgressError {
   TIMEOUT = -408,
   UNKNOWN = -2,
+  WEB_SOCKET_ERROR = -1000,
 }
 
 interface InactiveKgProjectsResponse {
