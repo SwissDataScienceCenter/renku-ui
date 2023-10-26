@@ -17,7 +17,6 @@
  */
 
 import Fixtures from "../support/renkulab-fixtures";
-import "../support/utils";
 
 describe("admin page", () => {
   const fixtures = new Fixtures(cy);
