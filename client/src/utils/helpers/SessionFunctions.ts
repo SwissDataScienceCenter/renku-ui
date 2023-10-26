@@ -76,40 +76,8 @@ function getShowSessionURL(
   });
 }
 
-/**
- * Validate if a session is running calculating the startSessionURL and comparing with the given autostartSessionUrl
- *
- * @param {object} sessions - sessions object that should contain annotations for each session
- * @param {string} startSessionUrl - start session url to check if it exists in sessions object
- * @returns {boolean | object.showSessionURL} if session exist return
- * session object including show session url otherwise return false
- */
-function getSessionRunning(
-  sessions: Record<string, any>,
-  startSessionUrl: string
-) {
-  let sessionRunning = false;
-  Object.keys(sessions).forEach((sessionName) => {
-    const session = sessions[sessionName];
-    const annotations = NotebooksHelper.cleanAnnotations(
-      session.annotations
-    ) as Record<string, string>;
-    const autoStartUrl = Url.get(Url.pages.project.session.autostart, {
-      namespace: annotations["namespace"],
-      path: annotations["projectName"],
-    });
-    if (autoStartUrl === startSessionUrl)
-      sessionRunning = {
-        ...session,
-        showSessionURL: getShowSessionURL(annotations, session.name),
-      };
-  });
-  return sessionRunning;
-}
-
 export {
   getSessionRunningByProjectName,
-  getSessionRunning,
   getFormattedSessionsAnnotations,
   getShowSessionURL,
 };

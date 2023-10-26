@@ -23,7 +23,6 @@
  *
  */
 
-import { CheckNotebookStatus } from "./Notebooks.container";
-import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
+import { NotebooksHelper } from "./Notebooks.state";
 
-export { CheckNotebookStatus, NotebooksCoordinator, NotebooksHelper };
+export { NotebooksHelper };

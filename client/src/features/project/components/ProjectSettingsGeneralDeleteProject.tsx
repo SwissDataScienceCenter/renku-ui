@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import {
   Button,
@@ -35,7 +35,7 @@ import { ErrorAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../notifications/notifications.types";
-import { useDeleteProjectMutation } from "../projectKgApi";
+import { useDeleteProjectMutation } from "../projectKg.api";
 
 interface ProjectSettingsGeneralDeleteProjectProps {
   isMaintainer: boolean;

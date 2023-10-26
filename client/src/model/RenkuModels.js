@@ -353,120 +353,6 @@ const projectSchema = new Schema({
   },
 });
 
-const notebooksSchema = new Schema({
-  autosaves: {
-    schema: {
-      list: { initial: [] },
-      error: { initial: null },
-      fetched: { initial: null },
-      fetching: { initial: false },
-      pvsSupport: { initial: null },
-    },
-  },
-  notebooks: {
-    schema: {
-      all: { initial: {} },
-      poller: { initial: null },
-      fetched: { initial: null },
-      fetching: { initial: false },
-      lastParameters: { initial: null },
-    },
-  },
-  filters: {
-    schema: {
-      namespace: { initial: null },
-      project: { initial: null },
-      branch: { initial: {} },
-      commit: { initial: {} },
-      discard: { initial: false },
-      options: { initial: {} },
-      environment_variables: { initial: [] },
-      objectStoresConfiguration: { initial: [] },
-      includeMergedBranches: { initial: false },
-      displayedCommits: { initial: 25 },
-    },
-  },
-  options: {
-    schema: {
-      global: { initial: {} },
-
-      project: { initial: {} },
-      fetched: { initial: null },
-      fetching: { initial: false },
-      warnings: { initial: [] },
-    },
-  },
-  pipelines: {
-    schema: {
-      main: { initial: {} },
-      poller: { initial: null },
-      fetched: { initial: null },
-      fetching: { initial: false },
-      type: { initial: null },
-
-      lastParameters: { initial: null },
-      lastMainId: { initial: null },
-    },
-  },
-  ci: {
-    [Prop.SCHEMA]: new Schema({
-      image: {
-        [Prop.SCHEMA]: new Schema({
-          available: { [Prop.INITIAL]: null },
-          fetched: { [Prop.INITIAL]: null },
-          fetching: { [Prop.INITIAL]: false },
-          registryId: { [Prop.INITIAL]: null },
-          error: { [Prop.INITIAL]: null },
-        }),
-      },
-      pipelines: {
-        [Prop.SCHEMA]: new Schema({
-          list: { [Prop.INITIAL]: [] },
-          target: { [Prop.INITIAL]: null }, // `false` or list object id
-          available: { [Prop.INITIAL]: null },
-          fetched: { [Prop.INITIAL]: null },
-          fetching: { [Prop.INITIAL]: false },
-          error: { [Prop.INITIAL]: null },
-        }),
-      },
-      jobs: {
-        [Prop.SCHEMA]: new Schema({
-          list: { [Prop.INITIAL]: [] },
-          target: { [Prop.INITIAL]: null }, // `false` or list object id
-          available: { [Prop.INITIAL]: null },
-          fetched: { [Prop.INITIAL]: null },
-          fetching: { [Prop.INITIAL]: false },
-          reFetching: { [Prop.INITIAL]: false },
-          error: { [Prop.INITIAL]: null },
-        }),
-      },
-      looping: {
-        [Prop.SCHEMA]: new Schema({
-          available: { [Prop.INITIAL]: null },
-          fetched: { [Prop.INITIAL]: null },
-          fetching: { [Prop.INITIAL]: false },
-          error: { [Prop.INITIAL]: null },
-        }),
-      },
-      target: { [Prop.INITIAL]: null }, // target commit id
-      type: { [Prop.INITIAL]: null }, // anonymous, pinned, logged, owner
-      stage: { [Prop.INITIAL]: null }, // starting --> images --> (pipelines --> jobs -->) looping
-    }),
-  },
-  logs: {
-    schema: {
-      data: { initial: [] },
-      fetched: { initial: null },
-      fetching: { initial: false },
-    },
-  },
-  data: {
-    schema: {
-      commits: { initial: {} }, // use it as a dictionary where the key is the full commit sha
-    },
-  },
-});
-
 const datasetSchema = new Schema({
   metadata: {
     [Prop.SCHEMA]: new Schema({
@@ -558,7 +444,6 @@ export {
   environmentSchema,
   formGeneratorSchema,
   newProjectSchema,
-  notebooksSchema,
   notificationsSchema,
   projectSchema,
   projectsSchema,

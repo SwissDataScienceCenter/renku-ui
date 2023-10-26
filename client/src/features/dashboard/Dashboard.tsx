@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import { useEffect } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
 
 import { SshModal } from "../../components/ssh/ssh";
-import { NotebooksCoordinator } from "../../notebooks";
 import DashboardMessage from "./components/DashboardMessage";
 import { DatasetDashboard } from "./components/DatasetsDashboard";
 import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
@@ -28,27 +26,8 @@ import { ProjectsDashboard } from "./components/ProjectsDashboard";
 
 import "./Dashboard.scss";
 
-interface DashboardProps {
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  client: any;
-  model: any;
-  /* eslint-enable @typescript-eslint/no-explicit-any */
-}
-
-export function Dashboard({ client, model }: DashboardProps) {
+export function Dashboard() {
   const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
-
-  // Fetch sessions at least once when opening the dashboard
-  useEffect(() => {
-    const notebooksModel = model.subModel("notebooks");
-    const userModel = model.subModel("user");
-    const notebookCoordinator = new NotebooksCoordinator(
-      client,
-      notebooksModel,
-      userModel
-    );
-    notebookCoordinator.fetchNotebooks();
-  }, [client, model]);
 
   return (
     <div className="rk-dashboard">
