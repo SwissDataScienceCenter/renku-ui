@@ -16,10 +16,6 @@
  * limitations under the License.
  */
 
-// export type DeepPartial<T> = {
-//   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
-// };
-
 export type DeepRequired<T> = T extends object
   ? {
       [P in keyof T]-?: DeepRequired<T[P]>;
