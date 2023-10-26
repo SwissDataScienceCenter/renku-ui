@@ -55,7 +55,7 @@ describe("display the status page", () => {
       .config()
       .versions()
       .userNone()
-      .getStatuspageInfo({ fixture: "statuspage-outage.json" });
+      .getStatuspageInfo({ fixture: "statuspage/statuspage-outage.json" });
     cy.visit("/");
     cy.wait("@getStatuspageInfo");
     cy.get(".alert").contains("RenkuLab is unstable").should("be.visible");
@@ -66,7 +66,7 @@ describe("display the status page", () => {
       .config()
       .versions()
       .userTest()
-      .getStatuspageInfo({ fixture: "statuspage-outage.json" });
+      .getStatuspageInfo({ fixture: "statuspage/statuspage-outage.json" });
     cy.visit("/");
     cy.wait("@getStatuspageInfo");
     cy.get(".alert").contains("RenkuLab is unstable").should("be.visible");

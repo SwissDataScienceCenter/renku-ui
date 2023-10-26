@@ -23,12 +23,6 @@ import { DeepPartial, NameOnlyFixture, SimpleFixture } from "./fixtures.types";
  * Fixtures for Projects
  */
 
-// export interface MigrationCheckParams {
-//   errorNumber?: number;
-//   fixtureName?: string;
-//   queryUrl?: string;
-// }
-
 export function Projects<T extends FixturesConstructor>(Parent: T) {
   return class ProjectsFixtures extends Parent {
     landingUserProjects(args?: Partial<SimpleFixture>) {
@@ -295,7 +289,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
     }
 
     projectMigrationError(args?: Partial<ProjectMigrationErrorArgs>) {
-      const errorNumber = args.errorNumber ?? 2001;
+      const errorNumber = args?.errorNumber ?? 2001;
       const { fixture, name, queryUrl } = Cypress._.defaults({}, args, {
         fixture: `errors/core-error-${errorNumber}.json`,
         name: "getMigration",

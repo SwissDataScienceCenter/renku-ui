@@ -51,7 +51,7 @@ describe("Add new project", () => {
   });
 
   it("error on getting templates", () => {
-    fixtures.templates(true);
+    fixtures.templates({ error: true });
     cy.wait("@getTemplates");
     cy.contains("Unable to fetch templates").should("be.visible");
   });
@@ -70,10 +70,10 @@ describe("Add new project", () => {
 
   it("form validations", () => {
     fixtures
-      .templates(
-        false,
-        "url=https%3A%2F%2Fgithub.com%2FSwissDataScienceCenter%2Frenku-project-template&ref=master"
-      )
+      .templates({
+        urlSource:
+          "url=https%3A%2F%2Fgithub.com%2FSwissDataScienceCenter%2Frenku-project-template&ref=master",
+      })
       .getNamespace({
         namespace: "internal-space",
         name: "getInternalNamespace",
@@ -98,11 +98,11 @@ describe("Add new project", () => {
     cy.getDataCy("visibility-internal").should("be.disabled");
 
     // validate fetch custom templates
-    fixtures.templates(
-      true,
-      "url=invalid-url&ref=master",
-      "getCustomTemplates"
-    );
+    fixtures.templates({
+      error: true,
+      urlSource: "url=invalid-url&ref=master",
+      name: "getCustomTemplates",
+    });
     cy.getDataCy("custom-source-button").click();
     cy.getDataCy("url-repository").type("invalid-url");
     cy.getDataCy("ref-repository").type("master");
@@ -113,11 +113,10 @@ describe("Add new project", () => {
     cy.contains("Unable to fetch templates").should("be.visible");
 
     //when valid source info
-    fixtures.templates(
-      false,
-      "url=valid-url&ref=master",
-      "getCustomTemplatesValid"
-    );
+    fixtures.templates({
+      urlSource: "url=valid-url&ref=master",
+      name: "getCustomTemplatesValid",
+    });
     cy.getDataCy("url-repository").clear().type("valid-url");
     cy.getDataCy("fetch-templates-button").click();
     cy.wait("@getCustomTemplatesValid");
@@ -180,7 +179,7 @@ describe("Add new project shared link", () => {
       "wdGlvbiIsIm5hbWVzcGFjZSI6ImUyZSIsInZpc2liaWxpdHkiOiJpbnRlcm5hbCIsInVybCI6Imh0dHBzOi8v" +
       "Z2l0aHViLmNvbS9Td2lzc0RhdGFTY2llbmNlQ2VudGVyL3Jlbmt1LXByb2plY3QtdGVtcGxhdGUiLCJyZWYiO" +
       "iJtYXN0ZXIiLCJ0ZW1wbGF0ZSI6IkN1c3RvbS9SLW1pbmltYWwifQ%3D%3D";
-    fixtures.templates(false, "*", "getTemplates").getNamespace({
+    fixtures.templates().getNamespace({
       namespace: "internal-space",
       name: "getInternalNamespace",
     });
@@ -222,7 +221,7 @@ describe("Add new project shared link", () => {
     const templateUrl =
       "https://github.com/SwissDataScienceCenter/renku-project-template";
     const templateRef = "master";
-    fixtures.templates(false, "*", "getTemplates").getNamespace({
+    fixtures.templates().getNamespace({
       namespace: "internal-space",
       name: "getInternalNamespace",
     });
@@ -243,7 +242,7 @@ describe("Add new project shared link", () => {
   it("prefill values renkuLab template", () => {
     const customValues =
       "?data=eyJ0ZW1wbGF0ZSI6IlJlbmt1L2p1bGlhLW1pbmltYWwifQ%3D%3D";
-    fixtures.templates(false, "*", "getTemplates").getNamespace({
+    fixtures.templates().getNamespace({
       namespace: "internal-space",
       name: "getInternalNamespace",
     });
@@ -269,7 +268,7 @@ describe("Add new project shared link", () => {
       "YWJsZXMiOnsiYmVuY2htYXJrX25hbWUiOiJvbW5pX2NsdXN0ZXJpbmciLCJkYXRhc2V0X2tleXdvcmQiOiJ0Z" +
       "XN0IHZhbHVlIiwibWV0YWRhdGFfZGVzY3JpcHRpb24iOiIiLCJwcm9qZWN0X3RpdGxlIjoiYW5vdGhlciByYW" +
       "5kb20gdmFsdWUiLCJzdHVkeV9saW5rIjoiIiwic3R1ZHlfbm90ZSI6IiIsInN0dWR5X3Rpc3N1ZSI6IiJ9fQ";
-    fixtures.templates(false, "*", "getTemplates").getNamespace({
+    fixtures.templates().getNamespace({
       namespace: "internal-space",
       name: "getInternalNamespace",
     });
@@ -297,7 +296,7 @@ describe("Add new project shared link", () => {
   it("display warning on non-essential fields", () => {
     const customValues =
       "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwibmFtZXNwYWNlIjoiZmFrZSJ9";
-    fixtures.templates(false, "*", "getTemplates").getNamespace({
+    fixtures.templates().getNamespace({
       namespace: "internal-space",
       name: "getInternalNamespace",
     });
@@ -324,7 +323,7 @@ describe("Add new project shared link", () => {
   it("display errors on essential fields", () => {
     const customValues =
       "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwidGVtcGxhdGUiOiJmYWtlIn0=";
-    fixtures.templates(false, "*", "getTemplates").getNamespace({
+    fixtures.templates().getNamespace({
       namespace: "internal-space",
       name: "getInternalNamespace",
     });
