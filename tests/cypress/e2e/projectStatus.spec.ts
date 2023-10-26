@@ -48,7 +48,9 @@ describe("display KG status information", () => {
   });
 
   it("Metadata processed with KG indexing failure", () => {
-    fixtures.getKgStatus("project/kgStatus/kgStatusIndexedFailure.json");
+    fixtures.getKgStatus({
+      fixture: "project/kgStatus/kgStatusIndexedFailure.json",
+    });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
@@ -72,7 +74,7 @@ describe("display KG status information", () => {
   });
 
   it("Metadata indexing", () => {
-    fixtures.getKgStatus("project/kgStatus/kgStatusIndexing.json");
+    fixtures.getKgStatus({ fixture: "project/kgStatus/kgStatusIndexing.json" });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
     cy.getDataCy("project-settings-knowledge-graph")
@@ -89,7 +91,7 @@ describe("display KG status information", () => {
   });
 
   it("Metadata not indexed", () => {
-    fixtures.getKgStatus("project/kgStatus/kgStatus404.json");
+    fixtures.getKgStatus({ fixture: "project/kgStatus/kgStatus404.json" });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
     cy.getDataCy("project-settings-knowledge-graph")

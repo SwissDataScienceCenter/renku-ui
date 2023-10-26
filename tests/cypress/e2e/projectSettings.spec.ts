@@ -32,14 +32,12 @@ describe("Project settings page", () => {
   });
 
   it("update project tags", () => {
-    fixtures.updateProjectKG(
-      "updateProjectKG",
-      "project/update-project-tag-description.json",
-      200
-    );
+    fixtures.updateProjectKG({
+      fixture: "project/update-project-tag-description.json",
+    });
     fixtures.getProjectKG({
       name: "getProjectKGEdited",
-      result: "project/project-kg-edited.json",
+      fixture: "project/project-kg-edited.json",
     });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.getDataCy("keywords-input").should("not.contain.text", "abcde");
@@ -66,11 +64,9 @@ describe("Project settings page", () => {
     cy.getDataCy("visibility-public").should("be.checked");
 
     // changing to internal will works
-    fixtures.updateProjectKG(
-      "updateProjectKG",
-      "project/visibility/visibility-change-accepted.json",
-      200
-    );
+    fixtures.updateProjectKG({
+      fixture: "project/visibility/visibility-change-accepted.json",
+    });
     cy.getDataCy("visibility-internal").click();
     cy.getDataCy("update-visibility-btn").click();
     cy.wait("@updateProjectKG");
@@ -89,11 +85,10 @@ describe("Project settings page", () => {
     // changing to internal won't work if visibility is restricted
     // ? we are slightly cheating here cause we are not disabling the buttons
     cy.getDataCy("visibility-internal").click();
-    fixtures.updateProjectKG(
-      "updateProjectKG",
-      "project/visibility/error-update-visibility.json",
-      400
-    );
+    fixtures.updateProjectKG({
+      fixture: "project/visibility/error-update-visibility.json",
+      statusCode: 400,
+    });
     cy.getDataCy("update-visibility-btn").click();
     cy.wait("@updateProjectKG");
     cy.get(".modal-body").should(
@@ -122,13 +117,10 @@ describe("Project settings page", () => {
 
     // edit the description -- load the new fixtures
     cy.getDataCy("description-input").type("description abcde");
-    fixtures.updateProjectKG(
-      "updateProjectKG",
-      "project/project-kg-edited.json"
-    );
+    fixtures.updateProjectKG({ fixture: "project/project-kg-edited.json" });
     fixtures.getProjectKG({
       name: "getProjectKGdescription",
-      result: "project/edit/project-kg-description.json",
+      fixture: "project/edit/project-kg-description.json",
     });
     cy.getDataCy("projectDescription-button").click();
 

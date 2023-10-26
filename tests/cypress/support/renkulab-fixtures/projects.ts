@@ -514,130 +514,155 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       return this.projectTestContents(args);
     }
 
-    updateProject(
-      path = "",
-      name = "updateProject",
-      result = "project/update-project.json",
-      statusCode = 200
-    ) {
-      const fixture = this.useMockedData
-        ? { fixture: result, statusCode }
-        : undefined;
-      cy.intercept("/ui-server/api/kg/webhooks/projects/*/webhooks", {
-        body: { message: "Hook created" },
+    updateProject(args?: Partial<UpdateProjectArgs>) {
+      const { fixture, name, path, statusCode } = Cypress._.defaults({}, args, {
+        fixture: "project/update-project.json",
+        name: "updateProject",
+        path: "",
+        statusCode: 200,
       });
+
+      const webhookResponse = this.useMockedData
+        ? { body: { message: "Hook created" } }
+        : undefined;
+      cy.intercept(
+        "/ui-server/api/kg/webhooks/projects/*/webhooks",
+        webhookResponse
+      );
+
+      const response = this.useMockedData ? { fixture, statusCode } : undefined;
       cy.intercept(
         "PUT",
         `/ui-server/api/projects/${encodeURIComponent(path)}`,
-        fixture
+        response
       ).as(name);
+
       return this;
     }
 
-    updateProjectKG(
-      name = "updateProjectKG",
-      result = "project/update-project.json",
-      statusCode = 200
-    ) {
-      const fixture = this.useMockedData
-        ? { fixture: result, statusCode }
+    updateProjectKG(args?: Partial<UpdateProjectKGArgs>) {
+      const { fixture, name, statusCode } = Cypress._.defaults({}, args, {
+        fixture: "project/update-project.json",
+        name: "updateProjectKG",
+        statusCode: 200,
+      });
+      const response = this.useMockedData ? { fixture, statusCode } : undefined;
+      cy.intercept("PATCH", "/ui-server/api/kg/projects/**", response).as(name);
+      return this;
+    }
+
+    deleteProject(args?: Partial<DeleteProjectArgs>) {
+      const { forbidden, name } = Cypress._.defaults({}, args, {
+        forbidden: false,
+        name: "deleteProject",
+      });
+      const response = this.useMockedData
+        ? { statusCode: forbidden ? 403 : 200 }
         : undefined;
-      cy.intercept("PATCH", "/ui-server/api/kg/projects/**", fixture).as(name);
-      return this;
-    }
-
-    deleteProject(name = "deleteProject", forbidden = false) {
-      cy.intercept("DELETE", "/ui-server/api/kg/projects/**", {
-        statusCode: forbidden ? 403 : 200,
-      }).as(name);
-      return this;
-    }
-
-    editProject(
-      name = "editProject",
-      result = "project/edit/edit-project-confirm.json"
-    ) {
-      const fixture = this.useMockedData ? { fixture: result } : undefined;
-      cy.intercept("POST", "/ui-server/api/renku/**/project.edit", fixture).as(
+      cy.intercept("DELETE", "/ui-server/api/kg/projects/**", response).as(
         name
       );
       return this;
     }
 
-    getProjectKG(params?: {
-      name?: string;
-      identifier?: string;
-      result?: string;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      overrides?: any;
-    }) {
-      const {
-        name = "getProjectKG",
-        identifier = "**",
-        result = "project/project-kg.json",
-        overrides,
-      } = params || {};
+    editProject(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "project/edit/edit-project-confirm.json",
+        name: "editProject",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept("POST", "/ui-server/api/renku/**/project.edit", response).as(
+        name
+      );
+      return this;
+    }
+
+    getProjectKG(args?: Partial<GetProjectKGArgs>) {
+      const { fixture, identifier, name, overrides } = Cypress._.defaults(
+        {},
+        args,
+        {
+          fixture: "project/project-kg.json",
+          identifier: "**",
+          name: "getProjectKG",
+          overrides: null,
+        }
+      );
       const interceptUrl = `/ui-server/api/kg/projects/${identifier}`;
-      if (overrides == null) {
-        const fixture = { fixture: result };
-        cy.intercept("GET", interceptUrl, fixture).as(name);
+
+      if (!this.useMockedData || overrides == null) {
+        const response = this.useMockedData ? { fixture } : undefined;
+        cy.intercept("GET", interceptUrl, response).as(name);
         return this;
       }
-      cy.fixture(result).then((baseResult) => {
+
+      cy.fixture(fixture).then((baseResult) => {
         const combinedResult = { ...baseResult, ...overrides };
-        cy.intercept("GET", interceptUrl, {
-          body: combinedResult,
-        }).as(name);
+        const response = { body: combinedResult };
+        cy.intercept("GET", interceptUrl, response).as(name);
       });
+
       return this;
     }
 
-    updateAvatar(
-      args = {
-        projectId: 43781,
+    updateAvatar(args?: Partial<UpdateAvatarArgs>) {
+      const { fixture, name, projectId } = Cypress._.defaults({}, args, {
+        fixture: "project/update-project.json",
         name: "updateAvatar",
-        result: "project/update-project.json",
-      }
-    ) {
-      const { projectId, name, result } = args;
-      cy.fixture(result).then((project) => {
-        project["avatar"] = "avatar-url";
-        cy.intercept("PUT", `/ui-server/api/projects/${projectId}`, project).as(
-          name
-        );
+        projectId: 43781,
       });
 
+      if (!this.useMockedData) {
+        cy.intercept("PUT", `/ui-server/api/projects/${projectId}`).as(name);
+        return this;
+      }
+
+      cy.fixture(fixture).then((response) => {
+        response["avatar"] = "avatar-url";
+        cy.intercept(
+          "PUT",
+          `/ui-server/api/projects/${projectId}`,
+          response
+        ).as(name);
+      });
       return this;
     }
 
-    getNamespace(
-      namespace = "",
-      name = "getNamespace",
-      result = "projects/namespace-128.json"
-    ) {
-      const fixture = this.useMockedData ? { fixture: result } : undefined;
-      cy.intercept(`/ui-server/api/groups/${namespace}`, fixture).as(name);
+    getNamespace(args?: Partial<GetNamespaceArgs>) {
+      const { fixture, name, namespace } = Cypress._.defaults({}, args, {
+        fixture: "projects/namespace-128.json",
+        name: "getNamespace",
+        namespace: "",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept(`/ui-server/api/groups/${namespace}`, response).as(name);
       return this;
     }
 
-    getKgStatus(
-      fixture = "project/kgStatus/kgStatusIndexedSuccess.json",
-      name = "getKgStatus"
-    ) {
-      cy.intercept("/ui-server/api/kg/webhooks/projects/*/events/status", {
-        fixture,
-      }).as(name);
+    getKgStatus(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "project/kgStatus/kgStatusIndexedSuccess.json",
+        name: "getKgStatus",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
+      cy.intercept(
+        "/ui-server/api/kg/webhooks/projects/*/events/status",
+        response
+      ).as(name);
       return this;
     }
 
-    getProjectCommits(
-      name = "getProjectCommits",
-      fixture = "project/test-project-commits.json"
-    ) {
+    getProjectCommits(args?: Partial<SimpleFixture>) {
+      const { fixture, name } = Cypress._.defaults({}, args, {
+        fixture: "project/test-project-commits.json",
+        name: "getProjectCommits",
+      });
+      const response = this.useMockedData ? { fixture } : undefined;
       cy.intercept(
         "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=100&page=1",
-        { fixture }
+        response
       ).as(name);
+      return this;
     }
   };
 }
@@ -715,4 +740,31 @@ interface ProjectTestArgs extends ProjectTestContentsArgs {
 
 interface ProjectTestObserverArgs extends ProjectTestContentsArgs {
   project: SimpleFixture;
+}
+
+interface UpdateProjectArgs extends SimpleFixture {
+  path: string;
+  statusCode: number;
+}
+
+interface UpdateProjectKGArgs extends SimpleFixture {
+  statusCode: number;
+}
+
+interface DeleteProjectArgs {
+  forbidden: boolean;
+  name: string;
+}
+
+interface GetProjectKGArgs extends SimpleFixture {
+  identifier: string;
+  overrides: unknown | null;
+}
+
+interface UpdateAvatarArgs extends SimpleFixture {
+  projectId: number;
+}
+
+interface GetNamespaceArgs extends SimpleFixture {
+  namespace: string;
 }

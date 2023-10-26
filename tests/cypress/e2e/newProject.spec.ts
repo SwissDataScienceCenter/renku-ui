@@ -38,7 +38,7 @@ describe("Add new project", () => {
         path: newProjectPath,
         statistics: false,
       })
-      .updateProject(newProjectPath);
+      .updateProject({ path: newProjectPath });
     cy.createProject(newProjectTitle);
     cy.wait("@getTemplates");
     cy.wait("@createProject");
@@ -74,16 +74,15 @@ describe("Add new project", () => {
         false,
         "url=https%3A%2F%2Fgithub.com%2FSwissDataScienceCenter%2Frenku-project-template&ref=master"
       )
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      )
-      .getNamespace(
-        "private-space",
-        "getPrivateNamespace",
-        "projects/namespace-129.json"
-      );
+      .getNamespace({
+        namespace: "internal-space",
+        name: "getInternalNamespace",
+      })
+      .getNamespace({
+        namespace: "private-space",
+        name: "getPrivateNamespace",
+        fixture: "projects/namespace-129.json",
+      });
     cy.wait("@getTemplates");
 
     // validate public visibility is disabled when namespace selected has internal visibility
@@ -147,7 +146,7 @@ describe("Add new project", () => {
         path: newProjectPath,
         statistics: false,
       })
-      .updateProject(newProjectPath)
+      .updateProject({ path: newProjectPath })
       .updateAvatar();
     cy.wait("@getTemplates");
     cy.get("#project-avatar-file-input-hidden").selectFile(
@@ -181,13 +180,10 @@ describe("Add new project shared link", () => {
       "wdGlvbiIsIm5hbWVzcGFjZSI6ImUyZSIsInZpc2liaWxpdHkiOiJpbnRlcm5hbCIsInVybCI6Imh0dHBzOi8v" +
       "Z2l0aHViLmNvbS9Td2lzc0RhdGFTY2llbmNlQ2VudGVyL3Jlbmt1LXByb2plY3QtdGVtcGxhdGUiLCJyZWYiO" +
       "iJtYXN0ZXIiLCJ0ZW1wbGF0ZSI6IkN1c3RvbS9SLW1pbmltYWwifQ%3D%3D";
-    fixtures
-      .templates(false, "*", "getTemplates")
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      );
+    fixtures.templates(false, "*", "getTemplates").getNamespace({
+      namespace: "internal-space",
+      name: "getInternalNamespace",
+    });
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
@@ -226,13 +222,10 @@ describe("Add new project shared link", () => {
     const templateUrl =
       "https://github.com/SwissDataScienceCenter/renku-project-template";
     const templateRef = "master";
-    fixtures
-      .templates(false, "*", "getTemplates")
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      );
+    fixtures.templates(false, "*", "getTemplates").getNamespace({
+      namespace: "internal-space",
+      name: "getInternalNamespace",
+    });
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
@@ -250,13 +243,10 @@ describe("Add new project shared link", () => {
   it("prefill values renkuLab template", () => {
     const customValues =
       "?data=eyJ0ZW1wbGF0ZSI6IlJlbmt1L2p1bGlhLW1pbmltYWwifQ%3D%3D";
-    fixtures
-      .templates(false, "*", "getTemplates")
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      );
+    fixtures.templates(false, "*", "getTemplates").getNamespace({
+      namespace: "internal-space",
+      name: "getInternalNamespace",
+    });
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
@@ -279,13 +269,10 @@ describe("Add new project shared link", () => {
       "YWJsZXMiOnsiYmVuY2htYXJrX25hbWUiOiJvbW5pX2NsdXN0ZXJpbmciLCJkYXRhc2V0X2tleXdvcmQiOiJ0Z" +
       "XN0IHZhbHVlIiwibWV0YWRhdGFfZGVzY3JpcHRpb24iOiIiLCJwcm9qZWN0X3RpdGxlIjoiYW5vdGhlciByYW" +
       "5kb20gdmFsdWUiLCJzdHVkeV9saW5rIjoiIiwic3R1ZHlfbm90ZSI6IiIsInN0dWR5X3Rpc3N1ZSI6IiJ9fQ";
-    fixtures
-      .templates(false, "*", "getTemplates")
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      );
+    fixtures.templates(false, "*", "getTemplates").getNamespace({
+      namespace: "internal-space",
+      name: "getInternalNamespace",
+    });
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
@@ -310,13 +297,10 @@ describe("Add new project shared link", () => {
   it("display warning on non-essential fields", () => {
     const customValues =
       "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwibmFtZXNwYWNlIjoiZmFrZSJ9";
-    fixtures
-      .templates(false, "*", "getTemplates")
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      );
+    fixtures.templates(false, "*", "getTemplates").getNamespace({
+      namespace: "internal-space",
+      name: "getInternalNamespace",
+    });
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
@@ -340,13 +324,10 @@ describe("Add new project shared link", () => {
   it("display errors on essential fields", () => {
     const customValues =
       "?data=eyJ0aXRsZSI6Im5ldyBwcm9qZWN0IiwidGVtcGxhdGUiOiJmYWtlIn0=";
-    fixtures
-      .templates(false, "*", "getTemplates")
-      .getNamespace(
-        "internal-space",
-        "getInternalNamespace",
-        "projects/namespace-128.json"
-      );
+    fixtures.templates(false, "*", "getTemplates").getNamespace({
+      namespace: "internal-space",
+      name: "getInternalNamespace",
+    });
     cy.visit(`projects/new${customValues}`);
     cy.wait("@getTemplates");
 
