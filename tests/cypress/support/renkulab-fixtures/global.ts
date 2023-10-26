@@ -17,7 +17,7 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
-import { DeepPartial, SimpleFixture } from "./fixtures.types";
+import { DeepRequired, SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures generic
@@ -25,16 +25,17 @@ import { DeepPartial, SimpleFixture } from "./fixtures.types";
 
 export function Global<T extends FixturesConstructor>(Parent: T) {
   return class NewSessionFixtures extends Parent {
-    getStatuspageInfo(args?: Partial<GetStatuspageInfoArgs>) {
-      const { fixture, name, overrides } = Cypress._.defaults({}, args, {
-        fixture: "statuspage/statuspage-operational.json",
-        name: "getStatuspageInfo",
-        overrides: null,
-      });
+    getStatuspageInfo(args?: GetStatuspageInfoArgs) {
+      const {
+        fixture = "statuspage/statuspage-operational.json",
+        name = "getStatuspageInfo",
+        overrides = null,
+      } = args ?? {};
 
       if (overrides == null) {
         const response = { fixture };
         cy.intercept(
+          "GET",
           "https://*.statuspage.io/api/v2/summary.json",
           response
         ).as(name);
@@ -45,6 +46,7 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
         const combinedResult = { ...baseResult, ...overrides };
         const response = { body: combinedResult };
         cy.intercept(
+          "GET",
           "https://*.statuspage.io/api/v2/summary.json",
           response
         ).as(name);
@@ -53,29 +55,29 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    config(args?: Partial<ConfigArgs>) {
-      const { fixture, name, overrides } = Cypress._.defaults({}, args, {
-        fixture: "config.json",
-        name: "getConfig",
-        overrides: null,
-      });
+    config(args?: ConfigArgs) {
+      const {
+        fixture = "config.json",
+        name = "getConfig",
+        overrides = null,
+      } = args ?? {};
 
       if (overrides == null) {
         const response = { fixture };
-        cy.intercept("/config.json", response).as(name);
+        cy.intercept("GET", "/config.json", response).as(name);
         return this;
       }
 
       cy.fixture(fixture).then((baseResult) => {
         const combinedResult = { ...baseResult, ...overrides };
         const response = { body: combinedResult };
-        cy.intercept("/config.json", response).as(name);
+        cy.intercept("GET", "/config.json", response).as(name);
       });
 
       return this;
     }
 
-    versions(args?: DeepPartial<VersionsArgs>) {
+    versions(args?: VersionsArgs) {
       const { core, notebooks, ui } = Cypress._.defaultsDeep({}, args, {
         core: {
           fixture: "version-core.json",
@@ -89,44 +91,47 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
           fixture: "version-ui.json",
           name: "getUiVersion",
         },
-      }) as VersionsArgs;
+      }) as DeepRequired<VersionsArgs>;
 
       const coreResponse = { fixture: core.fixture };
-      cy.intercept("/ui-server/api/renku/versions", coreResponse).as(core.name);
-
-      const notebooksResponse = { fixture: notebooks.fixture };
-      cy.intercept("/ui-server/api/notebooks/version", notebooksResponse).as(
-        notebooks.name
+      cy.intercept("GET", "/ui-server/api/renku/versions", coreResponse).as(
+        core.name
       );
 
+      const notebooksResponse = { fixture: notebooks.fixture };
+      cy.intercept(
+        "GET",
+        "/ui-server/api/notebooks/version",
+        notebooksResponse
+      ).as(notebooks.name);
+
       const uiResponse = { fixture: ui.fixture };
-      cy.intercept("/ui-server/api/versions", uiResponse).as(ui.name);
+      cy.intercept("GET", "/ui-server/api/versions", uiResponse).as(ui.name);
 
       return this;
     }
 
-    namespaces(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "namespaces.json",
-        name: "getNamespaces",
-      });
+    namespaces(args?: SimpleFixture) {
+      const { fixture = "namespaces.json", name = "getNamespaces" } =
+        args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/namespaces?*", response).as(name);
+      cy.intercept("GET", "/ui-server/api/namespaces?*", response).as(name);
       return this;
     }
 
-    templates(args?: Partial<TemplatesArgs>) {
+    templates(args?: TemplatesArgs) {
       const error = args?.error ?? false;
       const defaultFixture = error
         ? "errors/core-error-1101.json"
         : "templates.json";
-      const { fixture, name, urlSource } = Cypress._.defaults({}, args, {
-        fixture: defaultFixture,
-        name: "getTemplates",
-        urlSource: "*",
-      });
+      const {
+        fixture = defaultFixture,
+        name = "getTemplates",
+        urlSource = "*",
+      } = args ?? {};
       const response = { fixture };
       cy.intercept(
+        "GET",
         `/ui-server/api/renku/templates.read_manifest?${urlSource}`,
         response
       ).as(name);
@@ -136,20 +141,20 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
 }
 
 interface GetStatuspageInfoArgs extends SimpleFixture {
-  overrides: unknown | null;
+  overrides?: { [key: string]: unknown };
 }
 
 interface ConfigArgs extends SimpleFixture {
-  overrides: unknown | null;
+  overrides?: { [key: string]: unknown };
 }
 
 interface VersionsArgs {
-  core: SimpleFixture;
-  notebooks: SimpleFixture;
-  ui: SimpleFixture;
+  core?: SimpleFixture;
+  notebooks?: SimpleFixture;
+  ui?: SimpleFixture;
 }
 
 interface TemplatesArgs extends SimpleFixture {
-  error: boolean;
-  urlSource: string;
+  error?: boolean;
+  urlSource?: string;
 }

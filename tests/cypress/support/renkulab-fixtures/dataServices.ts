@@ -25,13 +25,15 @@ import { SimpleFixture } from "./fixtures.types";
 
 export function DataServices<T extends FixturesConstructor>(Parent: T) {
   return class DataServicesFixtures extends Parent {
-    resourcePoolsTest(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "dataServices/resource-pools.json",
-        name: "getResourcePools",
-      });
+    resourcePoolsTest(args?: SimpleFixture) {
+      const {
+        fixture = "dataServices/resource-pools.json",
+        name = "getResourcePools",
+      } = args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/data/resource_pools*", response).as(name);
+      cy.intercept("GET", "/ui-server/api/data/resource_pools*", response).as(
+        name
+      );
       return this;
     }
   };

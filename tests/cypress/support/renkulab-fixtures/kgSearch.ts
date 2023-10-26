@@ -25,36 +25,36 @@ import { SimpleFixture } from "./fixtures.types";
 
 export function KgSearch<T extends FixturesConstructor>(Parent: T) {
   return class KgSearchFixtures extends Parent {
-    getLastSearch(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "kgSearch/lastSearch.json",
-        name: "getLastSearch",
-      });
+    getLastSearch(args?: SimpleFixture) {
+      const { fixture = "kgSearch/lastSearch.json", name = "getLastSearch" } =
+        args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api//last-searches/6", response).as(name);
+      cy.intercept("GET", "/ui-server/api//last-searches/6", response).as(name);
       return this;
     }
 
-    entitySearch(args?: Partial<EntitySearchArgs>) {
-      const { fixture, name, params, total } = Cypress._.defaults({}, args, {
-        fixture: "kgSearch/search.json",
-        name: "getEntities",
-        params: "*",
-        total: 7,
-      });
+    entitySearch(args?: EntitySearchArgs) {
+      const {
+        fixture = "kgSearch/search.json",
+        name = "getEntities",
+        params = "*",
+        total = 7,
+      } = args ?? {};
       const response = { fixture, headers: { Total: `${total}` } };
-
-      cy.intercept(`/ui-server/api/kg/entities${params}`, response).as(name);
+      cy.intercept("GET", `/ui-server/api/kg/entities${params}`, response).as(
+        name
+      );
       return this;
     }
 
-    noActiveProjects(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "kgSearch/no-active-projects.json",
-        name: "getNoActiveProjects",
-      });
+    noActiveProjects(args?: SimpleFixture) {
+      const {
+        fixture = "kgSearch/no-active-projects.json",
+        name = "getNoActiveProjects",
+      } = args ?? {};
       const response = { fixture };
       cy.intercept(
+        "GET",
         "/ui-server/api/kg/users/*/projects?state=NOT_ACTIVATED&*",
         response
       ).as(name);
@@ -64,6 +64,6 @@ export function KgSearch<T extends FixturesConstructor>(Parent: T) {
 }
 
 interface EntitySearchArgs extends SimpleFixture {
-  params: string;
-  total: number;
+  params?: string;
+  total?: number;
 }

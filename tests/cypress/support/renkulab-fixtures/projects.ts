@@ -17,7 +17,7 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
-import { DeepPartial, NameOnlyFixture, SimpleFixture } from "./fixtures.types";
+import { DeepRequired, NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for Projects
@@ -25,76 +25,74 @@ import { DeepPartial, NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 export function Projects<T extends FixturesConstructor>(Parent: T) {
   return class ProjectsFixtures extends Parent {
-    landingUserProjects(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "landing-user-projects.json",
-        name: "getLandingUserProjects",
-      });
+    landingUserProjects(args?: SimpleFixture) {
+      const {
+        fixture = "landing-user-projects.json",
+        name = "getLandingUserProjects",
+      } = args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/graphql", response).as(name);
+      cy.intercept("POST", "/ui-server/api/graphql", response).as(name);
       return this;
     }
 
-    getLastVisitedProjects(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "projects/last-visited-projects.json",
-        name: "getLastVisitedProjects",
-      });
+    getLastVisitedProjects(args?: SimpleFixture) {
+      const {
+        fixture = "projects/last-visited-projects.json",
+        name = "getLastVisitedProjects",
+      } = args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/last-projects/*", response).as(name);
+      cy.intercept("GET", "/ui-server/api/last-projects/*", response).as(name);
       return this;
     }
 
-    projects(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "projects.json",
-        name: "getProjects",
-      });
+    projects(args?: SimpleFixture) {
+      const { fixture = "projects.json", name = "getProjects" } = args ?? {};
       const response = { fixture };
       cy.intercept(
+        "GET",
         "/ui-server/api/projects?query=last_activity_at&per_page=100&starred=true&page=1",
         response
       ).as(name);
       return this;
     }
 
-    projectsGraphQl(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "projects.json",
-        name: "getProjectsGraphQl",
-      });
+    projectsGraphQl(args?: SimpleFixture) {
+      const { fixture = "projects.json", name = "getProjectsGraphQl" } =
+        args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/graphql", response).as(name);
+      cy.intercept("POST", "/ui-server/api/graphql", response).as(name);
       return this;
     }
 
-    projectById(args?: Partial<ProjectByIdArgs>) {
-      const { fixture, name, projectId } = Cypress._.defaults({}, args, {
-        fixture: "projects/project.json",
-        name: "getProjectsById",
-        projectId: 39646,
-      });
+    projectById(args?: ProjectByIdArgs) {
+      const {
+        fixture = "projects/project.json",
+        name = "getProjectsById",
+        projectId = 39646,
+      } = args ?? {};
       const response = { fixture };
-      cy.intercept(`/ui-server/api/projects/${projectId}`, response).as(name);
+      cy.intercept("GET", `/ui-server/api/projects/${projectId}`, response).as(
+        name
+      );
       return this;
     }
 
     project(args?: Partial<ProjectArgs>) {
-      const { fixture, name, path, statistics } = Cypress._.defaults({}, args, {
-        fixture: "projects/project.json",
-        name: "getProject",
-        path: "",
-        statistics: true,
-      });
+      const {
+        fixture = "projects/project.json",
+        name = "getProject",
+        path = "",
+        statistics = true,
+      } = args ?? {};
       const url = `/ui-server/api/projects/${encodeURIComponent(
         path
       )}?statistics=${statistics}&doNotTrack=*`;
       const response = { fixture };
-      cy.intercept(url, response).as(name);
+      cy.intercept("GET", url, response).as(name);
       return this;
     }
 
-    projectFiles(args?: DeepPartial<ProjectFilesArgs>) {
+    projectFiles(args?: ProjectFilesArgs) {
       const {
         root,
         gitAttributes,
@@ -127,11 +125,12 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
           fixture: "project/files/random_py_file.json",
           name: "getRandomPyFile",
         },
-      }) as ProjectFilesArgs;
+      }) as DeepRequired<ProjectFilesArgs>;
 
       const rootResponse = { fixture: root.fixture };
 
       cy.intercept(
+        "GET",
         "/ui-server/api/projects/*/repository/tree?path=&recursive=false&per_page=100&page=1",
         rootResponse
       ).as(root.name);
@@ -139,12 +138,14 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       const gitAttributesResponse = { fixture: gitAttributes.fixture };
 
       cy.intercept(
+        "GET",
         "/ui-server/api/projects/*/repository/files/.gitattributes/raw?ref=master",
         gitAttributesResponse
       ).as(gitAttributes.name);
 
       const countFlightsResponse = { fixture: countFlights.fixture };
       cy.intercept(
+        "GET",
         "/ui-server/api/projects/*/repository/files/01-CountFlights.ipynb?ref=master",
         countFlightsResponse
       ).as(countFlights.name);
@@ -153,18 +154,21 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         fixture: historicalUseNotebook.fixture,
       };
       cy.intercept(
+        "GET",
         "/ui-server/api/projects/*/repository/files/Historical-Use.ipynb?ref=master",
         historicalUseNotebookResponse
       ).as(historicalUseNotebook.name);
 
       const latexNotebookResponse = { fixture: latexNotebook.fixture };
       cy.intercept(
+        "GET",
         "/ui-server/api/projects/*/repository/files/latex-notebook.ipynb?ref=master",
         latexNotebookResponse
       ).as(latexNotebook.name);
 
       const randomPyFileResponse = { fixture: randomPyFile.fixture };
       cy.intercept(
+        "GET",
         "/ui-server/api/projects/*/repository/files/random_py_file.py?ref=master",
         randomPyFileResponse
       ).as(randomPyFile.name);
@@ -172,7 +176,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    errorProject(args?: DeepPartial<ErrorProjectArgs>) {
+    errorProject(args?: ErrorProjectArgs) {
       const { branches, project } = Cypress._.defaultsDeep({}, args, {
         branches: { name: "getErrorProjectBranches", statusCode: 404 },
         project: {
@@ -181,13 +185,14 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
           path: "",
           statusCode: 404,
         },
-      }) as ErrorProjectArgs;
+      }) as DeepRequired<ErrorProjectArgs>;
 
       const projectResponse = {
         fixture: project.fixture,
         statusCode: project.statusCode,
       };
       cy.intercept(
+        "GET",
         `/ui-server/api/projects/${encodeURIComponent(
           project.path
         )}?statistics=*`,
@@ -196,6 +201,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
 
       const branchesResponse = { statusCode: branches.statusCode };
       cy.intercept(
+        "GET",
         "/ui-server/api/projects/null/repository/branches?per_page=100&page=1",
         branchesResponse
       ).as(branches.name);
@@ -203,15 +209,16 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    changeVisibility(args?: Partial<ChangeVisibilityArgs>) {
-      const { fixture, name, path } = Cypress._.defaults({}, args, {
-        fixture: "projects/change-visibility.json",
-        name: "changeVisibility",
-        path: "",
-      });
+    changeVisibility(args?: ChangeVisibilityArgs) {
+      const {
+        fixture = "projects/change-visibility.json",
+        name = "changeVisibility",
+        path = "",
+      } = args ?? {};
 
       const webhookResponse = { body: { message: "Hook created" } };
       cy.intercept(
+        "POST",
         "/ui-server/api/kg/webhooks/projects/*/webhooks",
         webhookResponse
       );
@@ -226,102 +233,97 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    cacheProjectList(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "projects/cache-project-list.json",
-        name: "getCacheProjectList",
-      });
+    cacheProjectList(args?: SimpleFixture) {
+      const {
+        fixture = "projects/cache-project-list.json",
+        name = "getCacheProjectList",
+      } = args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/renku/cache.project_list", response).as(
-        name
-      );
-      cy.intercept("/ui-server/api/renku/*/cache.project_list", response).as(
-        name
-      );
+      cy.intercept(
+        "GET",
+        "/ui-server/api/renku/cache.project_list",
+        response
+      ).as(name);
+      cy.intercept(
+        "GET",
+        "/ui-server/api/renku/*/cache.project_list",
+        response
+      ).as(name);
       return this;
     }
 
-    interceptMigrationCheck(args?: Partial<InterceptMigrationCheckArgs>) {
-      const { fixture, name, queryUrl } = Cypress._.defaults({}, args, {
-        fixture: "project/migrationStatus/level1-all-good.json",
-        name: "migrationCheck",
-        queryUrl: "",
-      });
+    interceptMigrationCheck(args?: InterceptMigrationCheckArgs) {
+      const {
+        fixture = "project/migrationStatus/level1-all-good.json",
+        name = "migrationCheck",
+        queryUrl = "",
+      } = args ?? {};
       const coreUrl = "/ui-server/api/renku/**/cache.migrations_check";
       const defaultQuery =
         "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Fe2e%2Flocal-test-project&branch=master";
       const url = `${coreUrl}?${queryUrl || defaultQuery}`;
       const response = { fixture };
-      cy.intercept(url, response).as(name);
+      cy.intercept("GET", url, response).as(name);
       return this;
     }
 
-    projectConfigShow(args?: Partial<ProjectConfigShowArgs>) {
-      const { error, legacyError } = Cypress._.defaults({}, args, {
-        error: false,
-        legacyError: false,
-      });
+    projectConfigShow(args?: ProjectConfigShowArgs) {
+      const { error = false, legacyError = false } = args ?? {};
       const defaultFixture = error
         ? "errors/core-error-2001.json"
         : legacyError
         ? "errors/core-error-old.json"
         : "project/config-show.json";
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: defaultFixture,
-        name: "getProjectConfigShow",
-      });
+      const { fixture = defaultFixture, name = "getProjectConfigShow" } =
+        args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/renku/*/config.show?git_url=*", response).as(
-        name
-      );
+      cy.intercept(
+        "GET",
+        "/ui-server/api/renku/*/config.show?git_url=*",
+        response
+      ).as(name);
       return this;
     }
 
-    projectMigrationError(args?: Partial<ProjectMigrationErrorArgs>) {
-      const errorNumber = args?.errorNumber ?? 2001;
-      const { fixture, name, queryUrl } = Cypress._.defaults({}, args, {
-        fixture: `errors/core-error-${errorNumber}.json`,
-        name: "getMigration",
-        queryUrl: "",
-      });
+    projectMigrationError(args?: ProjectMigrationErrorArgs) {
+      const { errorNumber = 2001 } = args ?? {};
+      const {
+        fixture = `errors/core-error-${errorNumber}.json`,
+        name = "getMigration",
+        queryUrl = "",
+      } = args ?? {};
       this.interceptMigrationCheck({ fixture, name, queryUrl });
       return this;
     }
 
-    projectMigrationUpToDate(args?: Partial<InterceptMigrationCheckArgs>) {
-      const { fixture, name, queryUrl } = Cypress._.defaults({}, args, {
-        fixture: "project/migrationStatus/level1-all-good.json",
-        name: "getMigration",
-        queryUrl: "",
-      });
+    projectMigrationUpToDate(args?: InterceptMigrationCheckArgs) {
+      const {
+        fixture = "project/migrationStatus/level1-all-good.json",
+        name = "getMigration",
+        queryUrl = "",
+      } = args ?? {};
       this.interceptMigrationCheck({ fixture, name, queryUrl });
       return this;
     }
 
-    projectLockStatus(args?: Partial<ProjectLockStatusArgs>) {
-      const { error, legacyError, locked } = Cypress._.defaults({}, args, {
-        error: false,
-        legacyError: false,
-        locked: false,
-      });
+    projectLockStatus(args?: ProjectLockStatusArgs) {
+      const { error = false, legacyError = false, locked = false } = args ?? {};
       const defaultFixture = error
         ? "errors/core-error-2001.json"
         : legacyError
         ? "errors/core-error-old.json"
         : null;
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: defaultFixture,
-        name: "getProjectLockStatus",
-      });
+      const { fixture = defaultFixture, name = "getProjectLockStatus" } =
+        args ?? {};
       const coreUrl = "/ui-server/api/renku/**/project.lock_status";
       const params = "git_url=*";
       const url = `${coreUrl}?${params}`;
       const response = fixture ? { fixture } : { body: { result: { locked } } };
-      cy.intercept(url, response).as(name);
+      cy.intercept("GET", url, response).as(name);
       return this;
     }
 
-    projectTestContents(args?: DeepPartial<ProjectTestContentsArgs>) {
+    projectTestContents(args?: ProjectTestContentsArgs) {
       const {
         config,
         coreServiceVersion,
@@ -363,10 +365,11 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
           fixture: "project/kgStatus/kgStatusIndexing.json",
           name: "getKgStatusIndexing",
         },
-      }) as ProjectTestContentsArgs;
+      }) as DeepRequired<ProjectTestContentsArgs>;
 
       const configResponse = { fixture: config.fixture };
       cy.intercept(
+        "GET",
         "/ui-server/api/renku/10/config.show?git_url=*",
         configResponse
       ).as(config.name);
@@ -381,6 +384,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       };
 
       cy.intercept(
+        "GET",
         "/ui-server/api/renku/9/version",
         coreServiceVersionResponse
       ).as(coreServiceVersion.name);
@@ -395,23 +399,27 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       };
 
       cy.intercept(
+        "GET",
         `/ui-server/api/renku/${coreServiceV8.coreVersion}/version`,
         coreServiceV8Response
       ).as(coreServiceV8.name);
 
       const projectBranchesResponse = { fixture: projectBranches.fixture };
       cy.intercept(
+        "GET",
         "/ui-server/api/projects/*/repository/branches?page=1&per_page=100",
         projectBranchesResponse
       ).as(projectBranches.name);
       // Intercepting with swapped pagination params is necessary because of the legacy API client
       cy.intercept(
+        "GET",
         "/ui-server/api/projects/*/repository/branches?per_page=100&page=1",
         projectBranchesResponse
       ).as(projectBranches.name);
 
       const projectCommitsResponse = { fixture: projectCommits.fixture };
       cy.intercept(
+        "GET",
         "/ui-server/api/projects/*/repository/commits?ref_name=master&page=1&per_page=100",
         projectCommitsResponse
       ).as(projectCommits.name);
@@ -420,18 +428,21 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         fixture: projectReadmeCommits.fixture,
       };
       cy.intercept(
+        "GET",
         "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=2&path=README.md&page=1",
         projectReadmeCommitsResponse
       ).as(projectReadmeCommits.name);
 
       const readmeCommitsResponse = { fixture: readme.fixture };
       cy.intercept(
+        "GET",
         "/ui-server/api/projects/*/repository/files/README.md/raw?ref=master",
         readmeCommitsResponse
       ).as(readme.name);
 
       const kgStatusIndexingResponse = { fixture: kgStatusIndexing.fixture };
       cy.intercept(
+        "GET",
         "/ui-server/api/kg/webhooks/projects/*/events/status",
         kgStatusIndexingResponse
       ).as(kgStatusIndexing.name);
@@ -439,7 +450,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    projectTest(args?: DeepPartial<ProjectTestArgs>) {
+    projectTest(args?: ProjectTestArgs) {
       const { project, overrides } = Cypress._.defaultsDeep({}, args, {
         project: {
           fixture: "project/test-project.json",
@@ -448,7 +459,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         overrides: {
           visibility: "public",
         },
-      }) as Pick<ProjectTestArgs, "project" | "overrides">;
+      }) as Pick<DeepRequired<ProjectTestArgs>, "project" | "overrides">;
 
       cy.fixture(project.fixture).then((response) => {
         response["visibility"] = overrides.visibility;
@@ -461,17 +472,18 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       return this.projectTestContents(args);
     }
 
-    projectTestObserver(args?: DeepPartial<ProjectTestObserverArgs>) {
+    projectTestObserver(args?: ProjectTestObserverArgs) {
       const { project } = Cypress._.defaultsDeep({}, args, {
         project: {
           fixture: "project/test-project.json",
           name: "getProject",
         },
-      }) as Pick<ProjectTestObserverArgs, "project">;
+      }) as Pick<DeepRequired<ProjectTestObserverArgs>, "project">;
 
       cy.fixture(project.fixture).then((response) => {
         response.permissions.project_access.access_level = 10;
         cy.intercept(
+          "GET",
           "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true&doNotTrack=*",
           response
         ).as(project.name);
@@ -480,16 +492,17 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       return this.projectTestContents(args);
     }
 
-    updateProject(args?: Partial<UpdateProjectArgs>) {
-      const { fixture, name, path, statusCode } = Cypress._.defaults({}, args, {
-        fixture: "project/update-project.json",
-        name: "updateProject",
-        path: "",
-        statusCode: 200,
-      });
+    updateProject(args?: UpdateProjectArgs) {
+      const {
+        fixture = "project/update-project.json",
+        name = "updateProject",
+        path = "",
+        statusCode = 200,
+      } = args ?? {};
 
       const webhookResponse = { body: { message: "Hook created" } };
       cy.intercept(
+        "POST",
         "/ui-server/api/kg/webhooks/projects/*/webhooks",
         webhookResponse
       );
@@ -504,22 +517,19 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    updateProjectKG(args?: Partial<UpdateProjectKGArgs>) {
-      const { fixture, name, statusCode } = Cypress._.defaults({}, args, {
-        fixture: "project/update-project.json",
-        name: "updateProjectKG",
-        statusCode: 200,
-      });
+    updateProjectKG(args?: UpdateProjectKGArgs) {
+      const {
+        fixture = "project/update-project.json",
+        name = "updateProjectKG",
+        statusCode = 200,
+      } = args ?? {};
       const response = { fixture, statusCode };
       cy.intercept("PATCH", "/ui-server/api/kg/projects/**", response).as(name);
       return this;
     }
 
-    deleteProject(args?: Partial<DeleteProjectArgs>) {
-      const { forbidden, name } = Cypress._.defaults({}, args, {
-        forbidden: false,
-        name: "deleteProject",
-      });
+    deleteProject(args?: DeleteProjectArgs) {
+      const { forbidden = false, name = "deleteProject" } = args ?? {};
       const response = { statusCode: forbidden ? 403 : 200 };
       cy.intercept("DELETE", "/ui-server/api/kg/projects/**", response).as(
         name
@@ -527,11 +537,11 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    editProject(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "project/edit/edit-project-confirm.json",
-        name: "editProject",
-      });
+    editProject(args?: SimpleFixture) {
+      const {
+        fixture = "project/edit/edit-project-confirm.json",
+        name = "editProject",
+      } = args ?? {};
       const response = { fixture };
       cy.intercept("POST", "/ui-server/api/renku/**/project.edit", response).as(
         name
@@ -539,17 +549,13 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    getProjectKG(args?: Partial<GetProjectKGArgs>) {
-      const { fixture, identifier, name, overrides } = Cypress._.defaults(
-        {},
-        args,
-        {
-          fixture: "project/project-kg.json",
-          identifier: "**",
-          name: "getProjectKG",
-          overrides: null,
-        }
-      );
+    getProjectKG(args?: GetProjectKGArgs) {
+      const {
+        fixture = "project/project-kg.json",
+        identifier = "**",
+        name = "getProjectKG",
+        overrides = null,
+      } = args ?? {};
       const interceptUrl = `/ui-server/api/kg/projects/${identifier}`;
 
       if (overrides == null) {
@@ -567,12 +573,12 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    updateAvatar(args?: Partial<UpdateAvatarArgs>) {
-      const { fixture, name, projectId } = Cypress._.defaults({}, args, {
-        fixture: "project/update-project.json",
-        name: "updateAvatar",
-        projectId: 43781,
-      });
+    updateAvatar(args?: UpdateAvatarArgs) {
+      const {
+        fixture = "project/update-project.json",
+        name = "updateAvatar",
+        projectId = 43781,
+      } = args ?? {};
 
       cy.fixture(fixture).then((response) => {
         response["avatar"] = "avatar-url";
@@ -585,37 +591,41 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    getNamespace(args?: Partial<GetNamespaceArgs>) {
-      const { fixture, name, namespace } = Cypress._.defaults({}, args, {
-        fixture: "projects/namespace-128.json",
-        name: "getNamespace",
-        namespace: "",
-      });
+    getNamespace(args?: GetNamespaceArgs) {
+      const {
+        fixture = "projects/namespace-128.json",
+        name = "getNamespace",
+        namespace = "",
+      } = args ?? {};
       const response = { fixture };
-      cy.intercept(`/ui-server/api/groups/${namespace}`, response).as(name);
+      cy.intercept("GET", `/ui-server/api/groups/${namespace}`, response).as(
+        name
+      );
       return this;
     }
 
-    getKgStatus(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "project/kgStatus/kgStatusIndexedSuccess.json",
-        name: "getKgStatus",
-      });
+    getKgStatus(args?: SimpleFixture) {
+      const {
+        fixture = "project/kgStatus/kgStatusIndexedSuccess.json",
+        name = "getKgStatus",
+      } = args ?? {};
       const response = { fixture };
       cy.intercept(
+        "GET",
         "/ui-server/api/kg/webhooks/projects/*/events/status",
         response
       ).as(name);
       return this;
     }
 
-    getProjectCommits(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "project/test-project-commits.json",
-        name: "getProjectCommits",
-      });
+    getProjectCommits(args?: SimpleFixture) {
+      const {
+        fixture = "project/test-project-commits.json",
+        name = "getProjectCommits",
+      } = args ?? {};
       const response = { fixture };
       cy.intercept(
+        "GET",
         "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=100&page=1",
         response
       ).as(name);
@@ -625,103 +635,103 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
 }
 
 interface ProjectByIdArgs extends SimpleFixture {
-  projectId: number;
+  projectId?: number;
 }
 
 interface ProjectArgs extends SimpleFixture {
-  path: string;
-  statistics: boolean;
+  path?: string;
+  statistics?: boolean;
 }
 
 interface ProjectFilesArgs {
-  root: SimpleFixture;
-  gitAttributes: SimpleFixture;
-  countFlights: SimpleFixture;
-  historicalUseNotebook: SimpleFixture;
-  latexNotebook: SimpleFixture;
-  randomPyFile: SimpleFixture;
+  root?: SimpleFixture;
+  gitAttributes?: SimpleFixture;
+  countFlights?: SimpleFixture;
+  historicalUseNotebook?: SimpleFixture;
+  latexNotebook?: SimpleFixture;
+  randomPyFile?: SimpleFixture;
 }
 
 interface ErrorProjectArgs {
-  project: SimpleFixture & {
-    path: string;
-    statusCode: number;
+  project?: SimpleFixture & {
+    path?: string;
+    statusCode?: number;
   };
 
-  branches: {
-    name: string;
-    statusCode: number;
+  branches?: {
+    name?: string;
+    statusCode?: number;
   };
 }
 
 interface ChangeVisibilityArgs extends SimpleFixture {
-  path: string;
+  path?: string;
 }
 
 interface InterceptMigrationCheckArgs extends SimpleFixture {
-  queryUrl: string;
+  queryUrl?: string;
 }
 
 interface ProjectMigrationErrorArgs extends InterceptMigrationCheckArgs {
-  errorNumber: number;
+  errorNumber?: number;
 }
 
 interface ProjectConfigShowArgs extends SimpleFixture {
-  error: boolean;
-  legacyError: boolean;
+  error?: boolean;
+  legacyError?: boolean;
 }
 
 interface ProjectLockStatusArgs extends SimpleFixture {
-  error: boolean;
-  legacyError: boolean;
-  locked: boolean;
+  error?: boolean;
+  legacyError?: boolean;
+  locked?: boolean;
 }
 
 interface ProjectTestContentsArgs {
-  config: SimpleFixture;
-  coreServiceVersion: NameOnlyFixture;
-  coreServiceV8: { coreVersion: number; name: string };
-  projectBranches: SimpleFixture;
-  projectCommits: SimpleFixture;
-  projectReadmeCommits: SimpleFixture;
-  readme: SimpleFixture;
-  kgStatusIndexing: SimpleFixture;
+  config?: SimpleFixture;
+  coreServiceVersion?: NameOnlyFixture;
+  coreServiceV8?: { coreVersion?: number; name?: string };
+  projectBranches?: SimpleFixture;
+  projectCommits?: SimpleFixture;
+  projectReadmeCommits?: SimpleFixture;
+  readme?: SimpleFixture;
+  kgStatusIndexing?: SimpleFixture;
 }
 
 interface ProjectTestArgs extends ProjectTestContentsArgs {
-  project: SimpleFixture;
-  overrides: {
-    visibility: "public" | "private";
+  project?: SimpleFixture;
+  overrides?: {
+    visibility?: "public" | "private";
   };
 }
 
 interface ProjectTestObserverArgs extends ProjectTestContentsArgs {
-  project: SimpleFixture;
+  project?: SimpleFixture;
 }
 
 interface UpdateProjectArgs extends SimpleFixture {
-  path: string;
-  statusCode: number;
+  path?: string;
+  statusCode?: number;
 }
 
 interface UpdateProjectKGArgs extends SimpleFixture {
-  statusCode: number;
+  statusCode?: number;
 }
 
 interface DeleteProjectArgs {
-  forbidden: boolean;
-  name: string;
+  forbidden?: boolean;
+  name?: string;
 }
 
 interface GetProjectKGArgs extends SimpleFixture {
-  identifier: string;
-  overrides: unknown | null;
+  identifier?: string;
+  overrides?: { [key: string]: unknown };
 }
 
 interface UpdateAvatarArgs extends SimpleFixture {
-  projectId: number;
+  projectId?: number;
 }
 
 interface GetNamespaceArgs extends SimpleFixture {
-  namespace: string;
+  namespace?: string;
 }

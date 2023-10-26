@@ -380,10 +380,8 @@ describe("Cloud storage settings page", () => {
 
   it("can add new storage (simple)", () => {
     fixtures
-      .versions(undefined, {
-        core: "version-core.json",
-        notebooks: "version-notebooks-s3.json",
-        ui: "version-ui.json",
+      .versions({
+        notebooks: { fixture: "version-notebooks-s3.json" },
       })
       .cloudStorage();
     fixtures.postCloudStorage().patchCloudStorage();

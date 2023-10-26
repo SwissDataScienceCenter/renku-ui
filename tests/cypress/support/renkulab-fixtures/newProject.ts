@@ -25,13 +25,14 @@ import { SimpleFixture } from "./fixtures.types";
 
 export function NewProject<T extends FixturesConstructor>(Parent: T) {
   return class NewProjectFixtures extends Parent {
-    createProject(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "project/create-project.json",
-        name: "createProject",
-      });
+    createProject(args?: SimpleFixture) {
+      const {
+        fixture = "project/create-project.json",
+        name = "createProject",
+      } = args ?? {};
       const response = { fixture };
       cy.intercept(
+        "POST",
         "/ui-server/api/renku/templates.create_project",
         response
       ).as(name);

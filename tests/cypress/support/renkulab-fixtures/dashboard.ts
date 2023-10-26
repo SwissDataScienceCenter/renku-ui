@@ -24,15 +24,12 @@ import { SimpleFixture } from "./fixtures.types";
  */
 export function Dashboard<T extends FixturesConstructor>(Parent: T) {
   return class DashboardFixtures extends Parent {
-    configWithDashboardMessage(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "config.json",
-        name: "getConfig",
-      });
+    configWithDashboardMessage(args?: SimpleFixture) {
+      const { fixture = "config.json", name = "getConfig" } = args ?? {};
 
       if (fixture === "config.json") {
         const response = { fixture };
-        cy.intercept("/config.json", response).as(name);
+        cy.intercept("GET", "/config.json", response).as(name);
         return this;
       }
 
@@ -40,9 +37,10 @@ export function Dashboard<T extends FixturesConstructor>(Parent: T) {
         cy.fixture(fixture).then((layeredConfig) => {
           const combinedConfig = { ...baseConfig, ...layeredConfig };
           const response = { body: combinedConfig };
-          cy.intercept("/config.json", response).as(name);
+          cy.intercept("GET", "/config.json", response).as(name);
         });
       });
+
       return this;
     }
   };

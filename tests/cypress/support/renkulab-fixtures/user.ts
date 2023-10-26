@@ -25,31 +25,24 @@ import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 export function User<T extends FixturesConstructor>(Parent: T) {
   return class UserFixtures extends Parent {
-    userTest(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "user.json",
-        name: "getUser",
-      });
+    userTest(args?: SimpleFixture) {
+      const { fixture = "user.json", name = "getUser" } = args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/user", response).as(name);
+      cy.intercept("GET", "/ui-server/api/user", response).as(name);
       return this;
     }
 
-    userNone(args?: Partial<NameOnlyFixture>) {
-      const { name } = Cypress._.defaults({}, args, {
-        name: "getUser",
-      });
+    userNone(args?: NameOnlyFixture) {
+      const { name = "getUser" } = args ?? {};
       const response = { body: {}, statusCode: 401 };
-      cy.intercept("/ui-server/api/user", response).as(name);
+      cy.intercept("GET", "/ui-server/api/user", response).as(name);
       return this;
     }
 
-    renkuDown(args?: Partial<NameOnlyFixture>) {
-      const { name } = Cypress._.defaults({}, args, {
-        name: "getUser",
-      });
+    renkuDown(args?: NameOnlyFixture) {
+      const { name = "getUser" } = args ?? {};
       const response = { body: {}, statusCode: 500 };
-      cy.intercept("/ui-server/api/user", response).as(name);
+      cy.intercept("GET", "/ui-server/api/user", response).as(name);
       return this;
     }
   };

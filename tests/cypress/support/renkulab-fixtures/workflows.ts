@@ -25,27 +25,31 @@ import { SimpleFixture } from "./fixtures.types";
 
 export function Workflows<T extends FixturesConstructor>(Parent: T) {
   return class WorkflowsFixtures extends Parent {
-    getWorkflows(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "workflows/workflows-list-links-mappings.json",
-        name: "getWorkflows",
-      });
+    getWorkflows(args?: SimpleFixture) {
+      const {
+        fixture = "workflows/workflows-list-links-mappings.json",
+        name = "getWorkflows",
+      } = args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/renku/*/workflow_plans.list?*", response).as(
-        name
-      );
+      cy.intercept(
+        "GET",
+        "/ui-server/api/renku/*/workflow_plans.list?*",
+        response
+      ).as(name);
       return this;
     }
 
-    getWorkflowDetails(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "workflows/workflow-show-links-mappings.json",
-        name: "getWorkflowDetails",
-      });
+    getWorkflowDetails(args?: SimpleFixture) {
+      const {
+        fixture = "workflows/workflow-show-links-mappings.json",
+        name = "getWorkflowDetails",
+      } = args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/renku/*/workflow_plans.show?*", response).as(
-        name
-      );
+      cy.intercept(
+        "GET",
+        "/ui-server/api/renku/*/workflow_plans.show?*",
+        response
+      ).as(name);
       return this;
     }
   };

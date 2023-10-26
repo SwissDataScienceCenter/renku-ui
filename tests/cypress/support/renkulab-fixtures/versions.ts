@@ -25,13 +25,13 @@ import { SimpleFixture } from "./fixtures.types";
 
 export function Versions<T extends FixturesConstructor>(Parent: T) {
   return class VersionsFixtures extends Parent {
-    sessionsVersion(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "session/version.json",
-        name: "getSessionsVersion",
-      });
+    sessionsVersion(args?: SimpleFixture) {
+      const { fixture = "session/version.json", name = "getSessionsVersion" } =
+        args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/notebooks/version", response).as(name);
+      cy.intercept("GET", "/ui-server/api/notebooks/version", response).as(
+        name
+      );
       return this;
     }
   };

@@ -25,51 +25,49 @@ import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 export function Sessions<T extends FixturesConstructor>(Parent: T) {
   return class SessionsFixtures extends Parent {
-    getSessions(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "sessions/sessions.json",
-        name: "getSessions",
-      });
+    getSessions(args?: SimpleFixture) {
+      const { fixture = "sessions/sessions.json", name = "getSessions" } =
+        args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/notebooks/servers*", response).as(name);
-
+      cy.intercept("GET", "/ui-server/api/notebooks/servers*", response).as(
+        name
+      );
       return this;
     }
 
-    getSessionsError(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "sessions/sessionError.json",
-        name: "getSessionsError",
-      });
+    getSessionsError(args?: SimpleFixture) {
+      const {
+        fixture = "sessions/sessionError.json",
+        name = "getSessionsError",
+      } = args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/notebooks/servers", response).as(name);
+      cy.intercept("GET", "/ui-server/api/notebooks/servers", response).as(
+        name
+      );
       return this;
     }
 
-    getSessionsStopping(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "sessions/sessionStopping.json",
-        name: "getSessionsStopping",
-      });
+    getSessionsStopping(args?: SimpleFixture) {
+      const {
+        fixture = "sessions/sessionStopping.json",
+        name = "getSessionsStopping",
+      } = args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/notebooks/servers", response).as(name);
+      cy.intercept("GET", "/ui-server/api/notebooks/servers", response).as(
+        name
+      );
       return this;
     }
 
-    getLogs(args?: Partial<SimpleFixture>) {
-      const { fixture, name } = Cypress._.defaults({}, args, {
-        fixture: "sessions/logs.json",
-        name: "getLogs",
-      });
+    getLogs(args?: SimpleFixture) {
+      const { fixture = "sessions/logs.json", name = "getLogs" } = args ?? {};
       const response = { fixture };
-      cy.intercept("/ui-server/api/notebooks/logs/*", response).as(name);
+      cy.intercept("GET", "/ui-server/api/notebooks/logs/*", response).as(name);
       return this;
     }
 
-    getGitStatusBehind(args?: Partial<NameOnlyFixture>) {
-      const { name } = Cypress._.defaults({}, args, {
-        name: "getGitStatus",
-      });
+    getGitStatusBehind(args?: NameOnlyFixture) {
+      const { name = "getGitStatus" } = args ?? {};
       const response = {
         body: {
           result: {
@@ -87,15 +85,12 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
           jsonrpc: "2.0",
         },
       };
-
-      cy.intercept("/sessions/*/sidecar/jsonrpc", response).as(name);
+      cy.intercept("POST", "/sessions/*/sidecar/jsonrpc", response).as(name);
       return this;
     }
 
-    getGitStatusClean(args?: Partial<NameOnlyFixture>) {
-      const { name } = Cypress._.defaults({}, args, {
-        name: "getGitStatus",
-      });
+    getGitStatusClean(args?: NameOnlyFixture) {
+      const { name = "getGitStatus" } = args ?? {};
       const response = {
         body: {
           result: {
@@ -114,14 +109,12 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
         },
       };
 
-      cy.intercept("/sessions/*/sidecar/jsonrpc", response).as(name);
+      cy.intercept("POST", "/sessions/*/sidecar/jsonrpc", response).as(name);
       return this;
     }
 
-    getGitStatusDirty(args?: Partial<NameOnlyFixture>) {
-      const { name } = Cypress._.defaults({}, args, {
-        name: "getGitStatus",
-      });
+    getGitStatusDirty(args?: NameOnlyFixture) {
+      const { name = "getGitStatus" } = args ?? {};
       const response = {
         body: {
           result: {
@@ -140,14 +133,12 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
           jsonrpc: "2.0",
         },
       };
-      cy.intercept("/sessions/*/sidecar/jsonrpc", response).as(name);
+      cy.intercept("POST", "/sessions/*/sidecar/jsonrpc", response).as(name);
       return this;
     }
 
-    getGitStatusDiverged(args?: Partial<NameOnlyFixture>) {
-      const { name } = Cypress._.defaults({}, args, {
-        name: "getGitStatus",
-      });
+    getGitStatusDiverged(args?: NameOnlyFixture) {
+      const { name = "getGitStatus" } = args ?? {};
       const response = {
         body: {
           result: {
@@ -165,26 +156,21 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
           jsonrpc: "2.0",
         },
       };
-      cy.intercept("/sessions/*/sidecar/jsonrpc", response).as(name);
+      cy.intercept("POST", "/sessions/*/sidecar/jsonrpc", response).as(name);
       return this;
     }
 
     getSidecarHealth(args?: Partial<GetSidecarHealthArgs>) {
-      const { name, isRunning } = Cypress._.defaults({}, args, {
-        name: "getSidecarHealth",
-        isRunning: true,
-      });
+      const { name = "getSidecarHealth", isRunning = true } = args ?? {};
       const response = {
         body: { status: isRunning ? "running" : "down" },
       };
-      cy.intercept("/sessions/*/sidecar/health*", response).as(name);
+      cy.intercept("GET", "/sessions/*/sidecar/health*", response).as(name);
       return this;
     }
 
-    getGitStatusError(args?: Partial<NameOnlyFixture>) {
-      const { name } = Cypress._.defaults({}, args, {
-        name: "getGitStatus",
-      });
+    getGitStatusError(args?: NameOnlyFixture) {
+      const { name = "getGitStatus" } = args ?? {};
       const response = {
         body: {
           error: {
@@ -197,19 +183,20 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
           jsonrpc: "2.0",
         },
       };
-      cy.intercept("/sessions/*/sidecar/jsonrpc", response).as(name);
+      cy.intercept("POST", "/sessions/*/sidecar/jsonrpc", response).as(name);
       return this;
     }
 
     renkuIni(args?: Partial<RenkuIniArgs>) {
-      const { fixture, name, projectId, ref } = Cypress._.defaults({}, args, {
-        fixture: "session/renku.ini",
-        name: "getRenkuIni",
-        projectId: 39646,
-        ref: "172a784d465a7bd45bacc165df2b64a591ac6b18",
-      });
+      const {
+        fixture = "session/renku.ini",
+        name = "getRenkuIni",
+        projectId = 39646,
+        ref = "172a784d465a7bd45bacc165df2b64a591ac6b18",
+      } = args ?? {};
       const response = { fixture };
       cy.intercept(
+        "GET",
         // eslint-disable-next-line max-len
         `/ui-server/api/projects/${projectId}/repository/files/.renku%2Frenku.ini/raw?ref=${ref}`,
         response
@@ -217,10 +204,8 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    sessionAutosave(args?: Partial<NameOnlyFixture>) {
-      const { name } = Cypress._.defaults({}, args, {
-        name: "getSessionAutosave",
-      });
+    sessionAutosave(args?: NameOnlyFixture) {
+      const { name = "getSessionAutosave" } = args ?? {};
       const response = {
         body: {
           autosaves: [],
@@ -228,37 +213,39 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
         },
       };
       cy.intercept(
+        "GET",
         "/ui-server/api/notebooks/e2e%2Flocal-test-project/autosave",
         response
       ).as(name);
       return this;
     }
 
-    sessionServersEmpty(args?: Partial<NameOnlyFixture>) {
-      const { name } = Cypress._.defaults({}, args, {
-        name: "getSessionServers",
-      });
+    sessionServersEmpty(args?: NameOnlyFixture) {
+      const { name = "getSessionServers" } = args ?? {};
       const response = { body: { servers: {} } };
-      cy.intercept("/ui-server/api/notebooks/servers", response).as(name);
+      cy.intercept("GET", "/ui-server/api/notebooks/servers", response).as(
+        name
+      );
       return this;
     }
 
-    sessionServerOptions(args?: Partial<SessionServerOptionsArgs>) {
-      const { cloudStorage, fixture, name } = Cypress._.defaults({}, args, {
-        cloudStorage: null,
-        fixture: "session/server-options.json",
-        name: "getSessionServerOptions",
-      });
-
+    sessionServerOptions(args?: SessionServerOptionsArgs) {
+      const {
+        cloudStorage = null,
+        fixture = "session/server-options.json",
+        name = "getSessionServerOptions",
+      } = args ?? {};
       cy.fixture(fixture).then((response) => {
         if (cloudStorage == null) {
           delete response["cloudstorage"];
         } else if (!cloudStorage) {
           response["cloudstorage"]["s3"] = false;
         }
-        cy.intercept("/ui-server/api/notebooks/server_options", response).as(
-          name
-        );
+        cy.intercept(
+          "GET",
+          "/ui-server/api/notebooks/server_options",
+          response
+        ).as(name);
       });
       return this;
     }
@@ -266,15 +253,15 @@ export function Sessions<T extends FixturesConstructor>(Parent: T) {
 }
 
 interface GetSidecarHealthArgs {
-  name: string;
-  isRunning: boolean;
+  name?: string;
+  isRunning?: boolean;
 }
 
 interface RenkuIniArgs extends SimpleFixture {
-  projectId: number;
-  ref: string;
+  projectId?: number;
+  ref?: string;
 }
 
 interface SessionServerOptionsArgs extends SimpleFixture {
-  cloudStorage: boolean | null;
+  cloudStorage?: boolean | null;
 }

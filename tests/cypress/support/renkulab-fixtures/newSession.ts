@@ -17,7 +17,7 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
-import { DeepPartial, SimpleFixture } from "./fixtures.types";
+import { DeepRequired, SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for Sessions
@@ -25,32 +25,25 @@ import { DeepPartial, SimpleFixture } from "./fixtures.types";
 
 export function NewSession<T extends FixturesConstructor>(Parent: T) {
   return class NewSessionFixtures extends Parent {
-    newSessionPipelines(args?: Partial<NewSessionPipelinesArgs>) {
-      const { empty, fixture, name, projectId, ref } = Cypress._.defaults(
-        {},
-        args,
-        {
-          empty: false,
-          fixture: "session/ci-pipelines.json",
-          name: "getSessionPipelines",
-          projectId: 39646,
-          ref: "172a784d465a7bd45bacc165df2b64a591ac6b18",
-        }
-      );
+    newSessionPipelines(args?: NewSessionPipelinesArgs) {
+      const {
+        empty = false,
+        fixture = "session/ci-pipelines.json",
+        name = "getSessionPipelines",
+        projectId = 39646,
+        ref = "172a784d465a7bd45bacc165df2b64a591ac6b18",
+      } = args ?? {};
       const response = empty ? [] : { fixture };
       cy.intercept(
+        "GET",
         `/ui-server/api/projects/${projectId}/pipelines?sha=${ref}`,
         response
       ).as(name);
       return this;
     }
 
-    newSessionJobs(args?: Partial<NewSessionJobsArgs>) {
-      const { failed, missing, running } = Cypress._.defaults({}, args, {
-        failed: false,
-        missing: false,
-        running: false,
-      });
+    newSessionJobs(args?: NewSessionJobsArgs) {
+      const { failed = false, missing = false, running = false } = args ?? {};
       const defaultFixture = missing
         ? "session/ci-jobs-missing.json"
         : running
@@ -58,30 +51,27 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
         : failed
         ? "session/ci-jobs-failed.json"
         : "session/ci-jobs.json";
-      const { fixture, name, pipelineId, projectId } = Cypress._.defaults(
-        {},
-        args,
-        {
-          fixture: defaultFixture,
-          name: "getSessionJobs",
-          pipelineId: 182743,
-          projectId: 39646,
-        }
-      );
+      const {
+        fixture = defaultFixture,
+        name = "getSessionJobs",
+        pipelineId = 182743,
+        projectId = 39646,
+      } = args ?? {};
       const response = { fixture };
       cy.intercept(
+        "GET",
         `/ui-server/api/projects/${projectId}/pipelines/${pipelineId}/jobs`,
         response
       ).as(name);
       return this;
     }
 
-    newSessionImages(args?: DeepPartial<NewSessionImagesArgs>) {
+    newSessionImages(args?: NewSessionImagesArgs) {
       const {
         image: { missing },
       } = Cypress._.defaultsDeep({}, args, {
         image: { missing: false },
-      }) as NewSessionImagesArgs;
+      }) as Pick<DeepRequired<NewSessionImagesArgs>, "image">;
       const defaultImageFixture = missing
         ? "session/ci-image-missing.json"
         : "session/ci-image.json";
@@ -96,10 +86,11 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
           fixture: "session/ci-registry.json",
           name: "getSessionRegistries",
         },
-      }) as NewSessionImagesArgs;
+      }) as DeepRequired<NewSessionImagesArgs>;
 
       const registryResponse = { fixture: registry.fixture };
       cy.intercept(
+        "GET",
         `/ui-server/api/projects/${projectId}/registry/repositories`,
         registryResponse
       ).as(registry.name);
@@ -110,6 +101,7 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
       };
 
       cy.intercept(
+        "GET",
         `/ui-server/api/projects/${projectId}/registry/repositories/1/tags/${image.tag}`,
         imageResponse
       ).as(image.name);
@@ -119,24 +111,24 @@ export function NewSession<T extends FixturesConstructor>(Parent: T) {
 }
 
 interface NewSessionPipelinesArgs extends SimpleFixture {
-  empty: boolean;
-  projectId: number;
-  ref: string;
+  empty?: boolean;
+  projectId?: number;
+  ref?: string;
 }
 
 interface NewSessionJobsArgs extends SimpleFixture {
-  failed: boolean;
-  missing: boolean;
-  pipelineId: number;
-  projectId: number;
-  running: boolean;
+  failed?: boolean;
+  missing?: boolean;
+  pipelineId?: number;
+  projectId?: number;
+  running?: boolean;
 }
 
 interface NewSessionImagesArgs {
-  image: SimpleFixture & {
-    missing: boolean;
-    tag: string;
+  image?: SimpleFixture & {
+    missing?: boolean;
+    tag?: string;
   };
-  registry: SimpleFixture;
-  projectId: number;
+  registry?: SimpleFixture;
+  projectId?: number;
 }
