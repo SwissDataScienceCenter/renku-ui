@@ -16,45 +16,24 @@
  * limitations under the License.
  */
 
-export interface ResourcePool {
-  id: number;
+export type UserInfo = AnonymousUserInfo | LoggedInUserInfo;
+
+export interface AnonymousUserInfo {
+  isLoggedIn: false;
+}
+
+export interface LoggedInUserInfo extends UserInfoResponse {
+  isLoggedIn: true;
+  isAdmin: boolean;
+}
+
+export interface UserInfoResponse {
+  email: string;
+  email_verified: boolean;
+  family_name: string;
+  given_name: string;
+  groups: string[];
   name: string;
-  classes: ResourceClass[];
-  quota?: Resources;
-  default: boolean;
-  public: boolean;
-}
-
-export interface ResourceClass {
-  id: number;
-  name: string;
-  cpu: number;
-
-  /** Memory (RAM) in Gigabytes */
-  memory: number;
-
-  gpu: number;
-
-  /** Max disk storage in Gigabytes */
-  max_storage: number;
-
-  /** Default disk storage in Gigabytes */
-  default_storage: number;
-
-  default: boolean;
-
-  matching: boolean;
-}
-
-export interface Resources {
-  cpu: number;
-  memory: number;
-  gpu: number;
-}
-
-export interface ResourcePoolsQueryParams {
-  cpuRequest?: number;
-  gpuRequest?: number;
-  memoryRequest?: number;
-  storageRequest?: number;
+  preferred_username: string;
+  sub: string;
 }

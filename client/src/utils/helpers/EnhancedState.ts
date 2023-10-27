@@ -28,8 +28,10 @@ import {
   configureStore,
 } from "@reduxjs/toolkit";
 
+import adminComputeResourcesApi from "../../features/admin/adminComputeResources.api";
+import adminKeycloakApi from "../../features/admin/adminKeycloak.api";
 import { dashboardMessageSlice } from "../../features/dashboard/message/dashboardMessageSlice";
-import { dataServicesApi } from "../../features/dataServices/dataServicesApi";
+import { dataServicesApi } from "../../features/dataServices/dataServices.api";
 import { datasetsCoreApi } from "../../features/datasets/datasetsCore.api";
 import { displaySlice } from "../../features/display/displaySlice";
 import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/InactiveKgProjectsApi";
@@ -46,6 +48,7 @@ import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
+import keycloakUserApi from "../../features/user/keycloakUser.api";
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
@@ -66,9 +69,12 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [startSessionOptionsSlice.name]: startSessionOptionsSlice.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
     // APIs
+    [adminComputeResourcesApi.reducerPath]: adminComputeResourcesApi.reducer,
+    [adminKeycloakApi.reducerPath]: adminKeycloakApi.reducer,
     [dataServicesApi.reducerPath]: dataServicesApi.reducer,
     [datasetsCoreApi.reducerPath]: datasetsCoreApi.reducer,
     [inactiveKgProjectsApi.reducerPath]: inactiveKgProjectsApi.reducer,
+    [keycloakUserApi.reducerPath]: keycloakUserApi.reducer,
     [kgSearchApi.reducerPath]: kgSearchApi.reducer,
     [projectCloudStorageApi.reducerPath]: projectCloudStorageApi.reducer,
     [projectCoreApi.reducerPath]: projectCoreApi.reducer,
@@ -80,6 +86,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
+    [workflowsSlice.name]: workflowsSlice.reducer,
   };
 
   // For the moment, disable the custom middleware, since it causes problems for our app.
@@ -90,9 +97,12 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         immutableCheck: false,
         serializableCheck: false,
       })
+        .concat(adminComputeResourcesApi.middleware)
+        .concat(adminKeycloakApi.middleware)
         .concat(dataServicesApi.middleware)
         .concat(datasetsCoreApi.middleware)
         .concat(inactiveKgProjectsApi.middleware)
+        .concat(keycloakUserApi.middleware)
         .concat(kgSearchApi.middleware)
         .concat(projectCloudStorageApi.middleware)
         .concat(projectCoreApi.middleware)

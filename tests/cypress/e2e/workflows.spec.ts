@@ -154,6 +154,7 @@ describe("iteract with workflows", () => {
     fixtures.getWorkflows("workflows/workflows-list-links-mappings.json");
     fixtures.getWorkflowDetails("workflows/workflow-show-params.json");
     cy.visit("/projects/e2e/local-test-project/workflows");
+    cy.wait("@getWorkflows");
     cy.workflowsChangeSorting("Estimated duration");
     cy.getDataCy("workflows-browser")
       .children()
