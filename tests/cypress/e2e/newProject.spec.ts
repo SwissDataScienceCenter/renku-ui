@@ -35,10 +35,10 @@ describe("Add new project", () => {
       .createProject()
       .project({
         name: "getNewProject",
-        path: newProjectPath,
+        projectPath: newProjectPath,
         statistics: false,
       })
-      .updateProject({ path: newProjectPath });
+      .updateProject({ projectPath: newProjectPath });
     cy.createProject(newProjectTitle);
     cy.wait("@getTemplates");
     cy.wait("@createProject");
@@ -142,10 +142,10 @@ describe("Add new project", () => {
       .createProject()
       .project({
         name: "getNewProject",
-        path: newProjectPath,
+        projectPath: newProjectPath,
         statistics: false,
       })
-      .updateProject({ path: newProjectPath })
+      .updateProject({ projectPath: newProjectPath })
       .updateAvatar();
     cy.wait("@getTemplates");
     cy.get("#project-avatar-file-input-hidden").selectFile(

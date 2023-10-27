@@ -29,7 +29,7 @@ describe("Add dataset to existing project", () => {
     fixtures.landingUserProjects({ fixture: "projects/member-projects.json" });
     fixtures.datasetById({ id: datasetIdentifier });
     fixtures
-      .project({ path: pathOrigin, statistics: false })
+      .project({ projectPath: pathOrigin, statistics: false })
       .cacheProjectList();
     fixtures.projectMigrationUpToDate({
       name: "migrationCheckDatasetProject",
@@ -128,7 +128,7 @@ describe("Add dataset to new project", () => {
       .landingUserProjects({ fixture: "projects/member-projects.json" });
     fixtures.datasetById({ id: datasetIdentifier });
     fixtures
-      .project({ path: pathOrigin, statistics: false })
+      .project({ projectPath: pathOrigin, statistics: false })
       .cacheProjectList();
     fixtures.interceptMigrationCheck({
       name: "migrationCheckDatasetProject",
@@ -156,7 +156,7 @@ describe("Add dataset to new project", () => {
     fixtures.projectDatasetList();
     // fill form new project
     cy.createProjectAndAddDataset(newProjectTitle, newProjectPath, fixtures);
-    fixtures.project({ name: "getNewProject2", path: newProjectPath });
+    fixtures.project({ name: "getNewProject2", projectPath: newProjectPath });
     cy.wait("@importToProject");
     cy.wait("@importJobCompleted", { timeout: 20_000 });
     cy.url().should(

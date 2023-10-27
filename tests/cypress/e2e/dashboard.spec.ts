@@ -81,7 +81,7 @@ describe("dashboard", () => {
       fixtures.project({
         fixture: `projects/project_${files[filesKey]}.json`,
         name: `projectLanding-${filesKey}`,
-        path: filesKey,
+        projectPath: filesKey,
         statistics: false,
       });
     }
@@ -126,7 +126,8 @@ describe("dashboard", () => {
     for (const filesKey in files) {
       fixtures.project({
         fixture: `projects/project_${files[filesKey]}.json`,
-        path: filesKey,
+        name: `getProject-${filesKey}`,
+        projectPath: filesKey,
         statistics: false,
       });
     }
@@ -138,13 +139,9 @@ describe("dashboard", () => {
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
     );
-    cy.wait([
-      "@getProject",
-      "@getProject",
-      "@getProject",
-      "@getProject",
-      "@getProject",
-    ]).then((results) => {
+    cy.wait(
+      Object.keys(files).map((filesKey) => `@projectLanding-${filesKey}`)
+    ).then((results) => {
       const firstProject = findProject(projects[0], results);
       const projectData = firstProject.response?.body;
       cy.getDataCy("projects-container")
@@ -179,7 +176,7 @@ describe("dashboard", () => {
     for (const filesKey in files) {
       fixtures.project({
         fixture: `projects/project_${files[filesKey]}.json`,
-        path: filesKey,
+        projectPath: filesKey,
         statistics: false,
       });
     }
@@ -188,7 +185,7 @@ describe("dashboard", () => {
       .project({
         fixture: "projects/project_30929.json",
         name: "getFirstProject",
-        path: "lorenzo.cavazzi.tech/readme-file-dev",
+        projectPath: "lorenzo.cavazzi.tech/readme-file-dev",
       })
       .projectLockStatus()
       .projectMigrationUpToDate({

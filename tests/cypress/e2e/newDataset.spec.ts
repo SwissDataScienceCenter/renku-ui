@@ -248,7 +248,7 @@ describe("Project import dataset", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project({ path: projectPath }).cacheProjectList();
+    fixtures.project({ projectPath: projectPath }).cacheProjectList();
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });

@@ -260,7 +260,7 @@ describe("Project dataset", () => {
     fixtures.project({
       fixture: "projects/project-limited-permissions.json",
       name: "getProjectLimited",
-      path: projectPath,
+      projectPath: projectPath,
     });
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProjectLimited");
@@ -297,7 +297,7 @@ describe("Project dataset (legacy ids)", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project({ path: projectPath });
+    fixtures.project({ projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetLegacyIdList();
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
@@ -330,7 +330,7 @@ describe("Error loading datasets", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project({ path: projectPath });
+    fixtures.project({ projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList({
       fixture: "datasets/dataset-list-error.json",
@@ -357,7 +357,7 @@ describe("Migration check errors", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project({ path: projectPath });
+    fixtures.project({ projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
@@ -381,7 +381,7 @@ describe("Project dataset (locked)", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project({ path: projectPath });
+    fixtures.project({ projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
