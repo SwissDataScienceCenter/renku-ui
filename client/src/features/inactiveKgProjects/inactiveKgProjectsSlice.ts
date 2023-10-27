@@ -54,7 +54,9 @@ export const kgInactiveProjectsSlice = createSlice({
       return state.map((p) => {
         const isProgressError =
           ActivationStatusProgressError.TIMEOUT === action.payload.progress ||
-          ActivationStatusProgressError.UNKNOWN === action.payload.progress;
+          ActivationStatusProgressError.UNKNOWN === action.payload.progress ||
+          ActivationStatusProgressError.WEB_SOCKET_ERROR ===
+            action.payload.progress;
         return p.id === action.payload.id
           ? {
               ...p,
