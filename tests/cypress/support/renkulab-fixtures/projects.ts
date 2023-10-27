@@ -86,11 +86,11 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       const {
         fixture = "projects/project.json",
         name = "getProject",
-        path = "",
+        projectPath = "",
         statistics = true,
       } = args ?? {};
       const url = `/ui-server/api/projects/${encodeURIComponent(
-        path
+        projectPath
       )}?statistics=${statistics}&doNotTrack=*`;
       const response = { fixture };
       cy.intercept("GET", url, response).as(name);
@@ -216,7 +216,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       const {
         fixture = "projects/change-visibility.json",
         name = "changeVisibility",
-        path = "",
+        projectPath = "",
       } = args ?? {};
 
       const webhookResponse = { body: { message: "Hook created" } };
@@ -229,7 +229,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture };
       cy.intercept(
         "PUT",
-        `/ui-server/api/projects/${encodeURIComponent(path)}`,
+        `/ui-server/api/projects/${encodeURIComponent(projectPath)}`,
         response
       ).as(name);
 
@@ -499,7 +499,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       const {
         fixture = "project/update-project.json",
         name = "updateProject",
-        path = "",
+        projectPath = "",
         statusCode = 200,
       } = args ?? {};
 
@@ -513,7 +513,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture, statusCode };
       cy.intercept(
         "PUT",
-        `/ui-server/api/projects/${encodeURIComponent(path)}`,
+        `/ui-server/api/projects/${encodeURIComponent(projectPath)}`,
         response
       ).as(name);
 
@@ -642,7 +642,7 @@ interface ProjectByIdArgs extends SimpleFixture {
 }
 
 interface ProjectArgs extends SimpleFixture {
-  path?: string;
+  projectPath?: string;
   statistics?: boolean;
 }
 
@@ -668,7 +668,7 @@ interface ErrorProjectArgs {
 }
 
 interface ChangeVisibilityArgs extends SimpleFixture {
-  path?: string;
+  projectPath?: string;
 }
 
 interface InterceptMigrationCheckArgs extends SimpleFixture {
@@ -713,7 +713,7 @@ interface ProjectTestObserverArgs extends ProjectTestContentsArgs {
 }
 
 interface UpdateProjectArgs extends SimpleFixture {
-  path?: string;
+  projectPath?: string;
   statusCode?: number;
 }
 
