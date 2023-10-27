@@ -167,6 +167,7 @@ function setupWebSocket(
   }
 
   function resumePendingProcesses(model: any, socket: any) {
+    console.log("resumePendingProcesses");
     resumePendingKgActivation(model, socket);
   }
 
@@ -188,6 +189,7 @@ function setupWebSocket(
   };
 
   webSocket.onerror = (error) => {
+    console.log("websocket error", error);
     model.setObject({
       open: false,
       error: true,
@@ -213,6 +215,7 @@ function setupWebSocket(
   };
 
   webSocket.onclose = (data) => {
+    console.log("websocket onclose");
     let wsData: Record<string, unknown> = { open: false, error: false };
 
     // abnormal closure, restart the socket.
