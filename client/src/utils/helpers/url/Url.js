@@ -484,6 +484,14 @@ const Url = {
         ),
       },
     },
+    projectsV2: {
+      base: "/projectsV2",
+      new: "/projectsV2/new",
+      list: "/projectsV2",
+      show: new UrlRule((data) => `/projectsV2/${data.id}`, ["id"], null, [
+        "/projectsV2/id",
+      ]),
+    },
     sessions: {
       base: "/sessions",
     },
