@@ -95,7 +95,7 @@ describe("Project dataset", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project({ path: projectPath });
+    fixtures.project({ projectPath });
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });

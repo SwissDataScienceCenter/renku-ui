@@ -33,8 +33,8 @@ function createProjectAndAddDataset(
 ) {
   fixtures
     .createProject()
-    .project({ name: "getNewProject", path, statistics: false })
-    .changeVisibility({ path });
+    .project({ name: "getNewProject", projectPath: path, statistics: false })
+    .changeVisibility({ projectPath: path });
   // create project with the minimum required: title and template
   cy.getDataCy("field-group-title").type(title);
   cy.getDataCy("project-template-card").first().scrollIntoView().click();

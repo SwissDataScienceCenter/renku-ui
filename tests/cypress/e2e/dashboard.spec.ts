@@ -140,7 +140,7 @@ describe("dashboard", () => {
       (result) => (projects = result.response.body.projects)
     );
     cy.wait(
-      Object.keys(files).map((filesKey) => `@projectLanding-${filesKey}`)
+      Object.keys(files).map((filesKey) => `@getProject-${filesKey}`)
     ).then((results) => {
       const firstProject = findProject(projects[0], results);
       const projectData = firstProject.response?.body;

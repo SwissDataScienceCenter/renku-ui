@@ -24,7 +24,7 @@ describe("Project new dataset", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project({ path: projectPath }).cacheProjectList();
+    fixtures.project({ projectPath }).cacheProjectList();
     fixtures.projectKGDatasetList({ path: projectPath });
     fixtures.projectDatasetList();
     fixtures.addFileDataset();
@@ -93,7 +93,7 @@ describe("Project new dataset", () => {
 
   it("resets form when going to a new project", () => {
     const secondProjectPath = "e2e/random-project";
-    fixtures.project({ path: secondProjectPath });
+    fixtures.project({ projectPath: secondProjectPath });
     fixtures.createDataset();
     fixtures.uploadDatasetFile();
     cy.newDataset({
