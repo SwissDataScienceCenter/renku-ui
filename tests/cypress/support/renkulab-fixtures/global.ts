@@ -17,7 +17,11 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
-import { DeepRequired, SimpleFixture } from "./fixtures.types";
+import {
+  DeepRequired,
+  FixtureWithOverrides,
+  SimpleFixture,
+} from "./fixtures.types";
 
 /**
  * Fixtures generic
@@ -25,7 +29,7 @@ import { DeepRequired, SimpleFixture } from "./fixtures.types";
 
 export function Global<T extends FixturesConstructor>(Parent: T) {
   return class NewSessionFixtures extends Parent {
-    getStatuspageInfo(args?: GetStatuspageInfoArgs) {
+    getStatuspageInfo(args?: FixtureWithOverrides) {
       const {
         fixture = "statuspage/statuspage-operational.json",
         name = "getStatuspageInfo",
@@ -55,7 +59,7 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    config(args?: ConfigArgs) {
+    config(args?: FixtureWithOverrides) {
       const {
         fixture = "config.json",
         name = "getConfig",
@@ -138,14 +142,6 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
   };
-}
-
-interface GetStatuspageInfoArgs extends SimpleFixture {
-  overrides?: { [key: string]: unknown };
-}
-
-interface ConfigArgs extends SimpleFixture {
-  overrides?: { [key: string]: unknown };
 }
 
 interface VersionsArgs {

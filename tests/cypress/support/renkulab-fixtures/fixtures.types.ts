@@ -29,3 +29,7 @@ export interface NameOnlyFixture {
 export interface SimpleFixture extends NameOnlyFixture {
   fixture?: string;
 }
+
+export interface FixtureWithOverrides extends SimpleFixture {
+  overrides?: { [key: string]: unknown };
+}

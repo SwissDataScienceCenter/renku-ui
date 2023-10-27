@@ -17,7 +17,12 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
-import { DeepRequired, NameOnlyFixture, SimpleFixture } from "./fixtures.types";
+import {
+  DeepRequired,
+  FixtureWithOverrides,
+  NameOnlyFixture,
+  SimpleFixture,
+} from "./fixtures.types";
 
 /**
  * Fixtures for Projects
@@ -721,9 +726,8 @@ interface DeleteProjectArgs {
   name?: string;
 }
 
-interface GetProjectKGArgs extends SimpleFixture {
+interface GetProjectKGArgs extends FixtureWithOverrides {
   identifier?: string;
-  overrides?: { [key: string]: unknown };
 }
 
 interface UpdateAvatarArgs extends SimpleFixture {
