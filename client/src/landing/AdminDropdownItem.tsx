@@ -16,45 +16,28 @@
  * limitations under the License.
  */
 
-export interface ResourcePool {
-  id: number;
-  name: string;
-  classes: ResourceClass[];
-  quota?: Resources;
-  default: boolean;
-  public: boolean;
-}
+import { RootStateOrAny, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { DropdownItem } from "reactstrap";
+import { useGetUserInfoQuery } from "../features/user/keycloakUser.api";
 
-export interface ResourceClass {
-  id: number;
-  name: string;
-  cpu: number;
+export default function AdminDropdownItem() {
+  const userLogged = useSelector<RootStateOrAny, boolean>(
+    (state) => state.stateModel.user.logged
+  );
 
-  /** Memory (RAM) in Gigabytes */
-  memory: number;
+  const { data: userInfo } = useGetUserInfoQuery();
 
-  gpu: number;
+  if (!userLogged || !userInfo?.isLoggedIn || !userInfo.isAdmin) {
+    return null;
+  }
 
-  /** Max disk storage in Gigabytes */
-  max_storage: number;
-
-  /** Default disk storage in Gigabytes */
-  default_storage: number;
-
-  default: boolean;
-
-  matching: boolean;
-}
-
-export interface Resources {
-  cpu: number;
-  memory: number;
-  gpu: number;
-}
-
-export interface ResourcePoolsQueryParams {
-  cpuRequest?: number;
-  gpuRequest?: number;
-  memoryRequest?: number;
-  storageRequest?: number;
+  return (
+    <>
+      <DropdownItem divider />
+      <Link to="/admin" className="dropdown-item">
+        Admin Panel
+      </Link>
+    </>
+  );
 }

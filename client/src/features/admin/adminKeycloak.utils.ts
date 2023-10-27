@@ -16,45 +16,27 @@
  * limitations under the License.
  */
 
-export interface ResourcePool {
-  id: number;
-  name: string;
-  classes: ResourceClass[];
-  quota?: Resources;
-  default: boolean;
-  public: boolean;
-}
+const DEFAULT_KEYCLOAK_REALM = "Renku";
 
-export interface ResourceClass {
-  id: number;
-  name: string;
-  cpu: number;
+export function validateKeycloakRealmParams(params: unknown): string {
+  if (
+    params == null ||
+    typeof params !== "object" ||
+    !("KEYCLOAK_REALM" in params)
+  ) {
+    return DEFAULT_KEYCLOAK_REALM;
+  }
 
-  /** Memory (RAM) in Gigabytes */
-  memory: number;
+  const params_ = params as { KEYCLOAK_REALM: unknown };
 
-  gpu: number;
+  const realm =
+    typeof params_.KEYCLOAK_REALM === "string"
+      ? params_.KEYCLOAK_REALM.trim()
+      : "";
 
-  /** Max disk storage in Gigabytes */
-  max_storage: number;
+  if (!realm) {
+    return DEFAULT_KEYCLOAK_REALM;
+  }
 
-  /** Default disk storage in Gigabytes */
-  default_storage: number;
-
-  default: boolean;
-
-  matching: boolean;
-}
-
-export interface Resources {
-  cpu: number;
-  memory: number;
-  gpu: number;
-}
-
-export interface ResourcePoolsQueryParams {
-  cpuRequest?: number;
-  gpuRequest?: number;
-  memoryRequest?: number;
-  storageRequest?: number;
+  return realm;
 }

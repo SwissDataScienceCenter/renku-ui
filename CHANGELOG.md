@@ -1,5 +1,18 @@
 # Changes
 
+## [3.15.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.14.0...3.15.0) (2023-10-27)
+
+### Features
+
+- Show a confirmation text when saving a session ([#2856](https://github.com/SwissDataScienceCenter/renku-ui/pull/2856)).
+- Add an admin interface for resource pools ([#2752](https://github.com/SwissDataScienceCenter/renku-ui/pull/2752), [#2726](https://github.com/SwissDataScienceCenter/renku-ui/issues/2726)).
+
+### Bug Fixes
+
+- Merge implementations of KG API ([#2859](https://github.com/SwissDataScienceCenter/renku-ui/pull/2859), [#2829](https://github.com/SwissDataScienceCenter/renku-ui/issues/2829)).
+- Properly close all WebSocket connections upon shutdown ([#2861](https://github.com/SwissDataScienceCenter/renku-ui/pull/2861)).
+- Update the session notebook icon to use RTK query ([#2842](https://github.com/SwissDataScienceCenter/renku-ui/pull/2842), [#2759](https://github.com/SwissDataScienceCenter/renku-ui/issues/2759)).
+
 ## [3.14.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.13.1...3.14.0) (2023-10-24)
 
 ### Features

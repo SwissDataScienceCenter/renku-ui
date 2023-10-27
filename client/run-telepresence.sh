@@ -147,6 +147,7 @@ tee > ./public/config.json << EOF
   "BASE_URL": "${BASE_URL}",
   "GATEWAY_URL": "${BASE_URL}/api",
   "UISERVER_URL": "${BASE_URL}/ui-server",
+  "KEYCLOAK_REALM": "${KEYCLOAK_REALM:-Renku}",
   "WELCOME_PAGE": "${WELCOME_PAGE}",
   "DASHBOARD_MESSAGE": {
     "enabled": true,

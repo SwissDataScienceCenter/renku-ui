@@ -236,7 +236,7 @@ class Authenticator {
 
     // create and return the login url
     const authUrl = this.authClient.authorizationUrl({
-      scope: "openid",
+      scope: "openid profile email microprofile-jwt",
       code_challenge: challenge,
       code_challenge_method: "S256",
     });

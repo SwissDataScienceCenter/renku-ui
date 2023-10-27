@@ -128,7 +128,6 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       }) as DeepRequired<ProjectFilesArgs>;
 
       const rootResponse = { fixture: root.fixture };
-
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/tree?path=&recursive=false&per_page=100&page=1",
@@ -136,7 +135,6 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       ).as(root.name);
 
       const gitAttributesResponse = { fixture: gitAttributes.fixture };
-
       cy.intercept(
         "GET",
         "/ui-server/api/projects/*/repository/files/.gitattributes/raw?ref=master",

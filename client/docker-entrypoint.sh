@@ -26,6 +26,7 @@ echo " UI_SHORT_SHA=${RENKU_UI_SHORT_SHA}"
 echo " GATEWAY_URL=${GATEWAY_URL:-http://gateway.renku.build}"
 echo " UISERVER_URL=${UISERVER_URL:-http://uiserver.renku.build}"
 echo " BASE_URL=${BASE_URL:-http://renku.build}"
+echo " KEYCLOAK_REALM=${KEYCLOAK_REALM:-Renku}"
 echo " DASHBOARD_MESSAGE=${DASHBOARD_MESSAGE}"
 echo " SENTRY_URL=${SENTRY_URL}"
 echo " SENTRY_NAMESPACE=${SENTRY_NAMESPACE}"
@@ -55,6 +56,7 @@ tee > "${NGINX_PATH}/config.json" << EOF
   "BASE_URL": "${BASE_URL:-http://renku.build}",
   "GATEWAY_URL": "${GATEWAY_URL:-http://gateway.renku.build}",
   "UISERVER_URL": "${UISERVER_URL:-http://uiserver.renku.build}",
+  "KEYCLOAK_REALM": "${KEYCLOAK_REALM:-Renku}",
   "DASHBOARD_MESSAGE": ${DASHBOARD_MESSAGE},
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",

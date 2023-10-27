@@ -16,45 +16,17 @@
  * limitations under the License.
  */
 
-export interface ResourcePool {
-  id: number;
-  name: string;
-  classes: ResourceClass[];
-  quota?: Resources;
-  default: boolean;
-  public: boolean;
-}
+import { useContext, useMemo } from "react";
+import AppContext from "../../utils/context/appContext";
+import { validateKeycloakRealmParams } from "./adminKeycloak.utils";
 
-export interface ResourceClass {
-  id: number;
-  name: string;
-  cpu: number;
+export default function useKeycloakRealm() {
+  const { params } = useContext(AppContext);
 
-  /** Memory (RAM) in Gigabytes */
-  memory: number;
+  const keycloakRealm = useMemo(
+    () => validateKeycloakRealmParams(params),
+    [params]
+  );
 
-  gpu: number;
-
-  /** Max disk storage in Gigabytes */
-  max_storage: number;
-
-  /** Default disk storage in Gigabytes */
-  default_storage: number;
-
-  default: boolean;
-
-  matching: boolean;
-}
-
-export interface Resources {
-  cpu: number;
-  memory: number;
-  gpu: number;
-}
-
-export interface ResourcePoolsQueryParams {
-  cpuRequest?: number;
-  gpuRequest?: number;
-  memoryRequest?: number;
-  storageRequest?: number;
+  return keycloakRealm;
 }

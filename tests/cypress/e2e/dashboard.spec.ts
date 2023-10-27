@@ -44,6 +44,7 @@ describe("dashboard", () => {
 
     cy.visit("/");
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");
@@ -88,6 +89,7 @@ describe("dashboard", () => {
     cy.visit("/");
     let projects;
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
     );
@@ -135,6 +137,7 @@ describe("dashboard", () => {
     cy.visit("/");
     let projects;
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
     );
@@ -199,6 +202,7 @@ describe("dashboard", () => {
     cy.wait("@getFirstProject");
 
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getSessions");
     cy.getDataCy("session-container").should("be.visible");
     cy.getDataCy("link-home").click({ force: true }); // eslint-disable-line cypress/no-force
@@ -244,6 +248,7 @@ describe("dashboard message", () => {
   const visitDashboardPage = () => {
     cy.visit("/");
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");

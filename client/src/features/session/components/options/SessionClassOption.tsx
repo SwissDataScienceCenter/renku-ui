@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useMemo } from "react";
 import {
   faCheckCircle,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
+import { useCallback, useEffect, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import Select, {
@@ -36,11 +36,11 @@ import Select, {
 } from "react-select";
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
+import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import {
   ResourceClass,
   ResourcePool,
 } from "../../../dataServices/dataServices.types";
-import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
 import { ProjectConfig } from "../../../project/Project";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";

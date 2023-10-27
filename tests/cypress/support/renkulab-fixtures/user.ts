@@ -17,7 +17,7 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
-import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
+import { DeepRequired, NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for User
@@ -25,17 +25,51 @@ import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 export function User<T extends FixturesConstructor>(Parent: T) {
   return class UserFixtures extends Parent {
-    userTest(args?: SimpleFixture) {
-      const { fixture = "user.json", name = "getUser" } = args ?? {};
-      const response = { fixture };
-      cy.intercept("GET", "/ui-server/api/user", response).as(name);
+    userTest(args?: UserTestArgs) {
+      const { user, keycloakUser } = Cypress._.defaultsDeep({}, args, {
+        user: {
+          fixture: "user.json",
+          name: "getUser",
+        },
+        keycloakUser: {
+          fixture: "keycloak-user.json",
+          name: "getKeycloakUser",
+        },
+      }) as DeepRequired<UserTestArgs>;
+
+      const userResponse = { fixture: user.fixture };
+      cy.intercept("GET", "/ui-server/api/user", userResponse).as(user.name);
+
+      const keycloakUserResponse = { fixture: keycloakUser.fixture };
+      cy.intercept(
+        "GET",
+        "/ui-server/api/kc/realms/Renku/protocol/openid-connect/userinfo",
+        keycloakUserResponse
+      ).as(keycloakUser.name);
+
       return this;
     }
 
-    userNone(args?: NameOnlyFixture) {
-      const { name = "getUser" } = args ?? {};
+    userNone(args?: UserNoneArgs) {
+      const { user, keycloakUser } = Cypress._.defaultsDeep({}, args, {
+        user: {
+          name: "getUser",
+        },
+        keycloakUser: {
+          name: "getKeycloakUser",
+        },
+      }) as DeepRequired<UserNoneArgs>;
+
       const response = { body: {}, statusCode: 401 };
-      cy.intercept("GET", "/ui-server/api/user", response).as(name);
+
+      cy.intercept("GET", "/ui-server/api/user", response).as(user.name);
+
+      cy.intercept(
+        "GET",
+        "/ui-server/api/kc/realms/Renku/protocol/openid-connect/userinfo",
+        response
+      ).as(keycloakUser.name);
+
       return this;
     }
 
@@ -45,5 +79,30 @@ export function User<T extends FixturesConstructor>(Parent: T) {
       cy.intercept("GET", "/ui-server/api/user", response).as(name);
       return this;
     }
+
+    userAdmin(args?: UserTestArgs) {
+      const { user, keycloakUser } = Cypress._.defaultsDeep({}, args, {
+        user: {
+          fixture: "user.json",
+          name: "getUser",
+        },
+        keycloakUser: {
+          fixture: "keycloak-admin-user.json",
+          name: "getKeycloakUser",
+        },
+      }) as DeepRequired<UserTestArgs>;
+      this.userTest({ user, keycloakUser });
+      return this;
+    }
   };
+}
+
+interface UserTestArgs {
+  user?: SimpleFixture;
+  keycloakUser?: SimpleFixture;
+}
+
+interface UserNoneArgs {
+  user?: NameOnlyFixture;
+  keycloakUser?: NameOnlyFixture;
 }

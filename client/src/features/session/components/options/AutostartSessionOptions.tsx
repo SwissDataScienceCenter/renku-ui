@@ -19,7 +19,7 @@
 import { useEffect, useMemo } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { StatusStepProgressBar } from "../../../../components/progress/ProgressSteps";
-import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
+import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import { useGetCloudStorageForProjectQuery } from "../../../project/projectCloudStorage.api";
 import {
   useGetAllRepositoryBranchesQuery,
