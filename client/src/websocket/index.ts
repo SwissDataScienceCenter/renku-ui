@@ -152,10 +152,13 @@ function setupWebSocket(
 
   function resumePendingKgActivation(model: any, socket: any) {
     const state = model?.reduxStore?.getState();
+    if (state == null) return;
     // kgInactiveProjects
-    const projectsInProgress = state?.kgInactiveProjects;
+    const projectsInProgress: InactiveKgProjects[] | null =
+      state.kgInactiveProjects;
+    if (projectsInProgress == null) return;
     const projectIds = projectsInProgress
-      ?.filter((project: InactiveKgProjects) => {
+      .filter((project: InactiveKgProjects) => {
         return (
           project.progressActivation !== null &&
           project.progressActivation !== 100
@@ -163,11 +166,23 @@ function setupWebSocket(
       })
       .map((p: InactiveKgProjects) => p.id);
 
-    if (projectIds.length) sendPullKgActivationStatus(projectIds, socket);
+    if (projectIds.length < 1) return;
+
+    if (socket.readyState === socket.OPEN) {
+      // Send the resume request
+      sendPullKgActivationStatus(projectIds, socket);
+      return;
+    }
+
+    // There are projects to update, but the socket is not open
+    const kgActivation: Record<string, number> = {};
+    projectIds.forEach((id) => {
+      kgActivation[`${id}`] = ActivationStatusProgressError.WEB_SOCKET_ERROR;
+    });
+    updateStatus(kgActivation, model.reduxStore);
   }
 
   function resumePendingProcesses(model: any, socket: any) {
-    console.log("resumePendingProcesses");
     resumePendingKgActivation(model, socket);
   }
 
@@ -189,7 +204,6 @@ function setupWebSocket(
   };
 
   webSocket.onerror = (error) => {
-    console.log("websocket error", error);
     model.setObject({
       open: false,
       error: true,
@@ -210,12 +224,10 @@ function setupWebSocket(
       kgActivation[`${project.id}`] =
         ActivationStatusProgressError.WEB_SOCKET_ERROR;
     });
-
     updateStatus(kgActivation, model.reduxStore);
   };
 
   webSocket.onclose = (data) => {
-    console.log("websocket onclose");
     let wsData: Record<string, unknown> = { open: false, error: false };
 
     // abnormal closure, restart the socket.
