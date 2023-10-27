@@ -271,13 +271,13 @@ function ProjectsNotIndexedPage({
       );
       for (let i = 0; i < projectSelected.length; i++) {
         const projectId = projectSelected[i].id;
-        activateIndexing(projectId);
         dispatch(
           updateProgress({
             id: projectId,
             progress: ActivationStatusProgressSpecial.QUEUED,
           })
         );
+        activateIndexing(projectId);
         sendPullKgActivationStatus([projectId], socket);
       }
     } else {
