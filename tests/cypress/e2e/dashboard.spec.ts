@@ -80,7 +80,7 @@ describe("dashboard", () => {
     for (const filesKey in files) {
       fixtures.project({
         fixture: `projects/project_${files[filesKey]}.json`,
-        name: "projectLanding",
+        name: `projectLanding-${filesKey}`,
         path: filesKey,
         statistics: false,
       });
@@ -93,12 +93,9 @@ describe("dashboard", () => {
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
     );
-    cy.wait([
-      "@projectLanding",
-      "@projectLanding",
-      "@projectLanding",
-      "@projectLanding",
-    ]).then((results) => {
+    cy.wait(
+      Object.keys(files).map((filesKey) => `@projectLanding-${filesKey}`)
+    ).then((results) => {
       const firstProject = findProject(projects[0], results);
       const projectData = firstProject.response?.body;
       cy.getDataCy("projects-container")
