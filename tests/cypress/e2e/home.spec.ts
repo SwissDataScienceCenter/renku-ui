@@ -46,32 +46,21 @@ describe("404 page", () => {
   });
 });
 
-describe("display the maintenance page", () => {
+describe("display the home page even when APIs return strange responses", () => {
   beforeEach(() => {
-    fixtures.config().versions();
+    fixtures.config().versions().statuspageDown().userNone();
+    cy.visit("/");
   });
 
-  it("displays an error when trying to get status page information", () => {
-    // ! we plan to change this behavior and ignore statuspage info when unavailable #2283
-    fixtures.renkuDown();
-    cy.visit("/");
+  it("displays the home page intro text", () => {
+    cy.wait("@getUser");
     cy.get("h1").should("have.length", 1);
-    cy.get("h1").contains("RenkuLab Down").should("be.visible");
-    cy.get(".alert-content")
-      .contains("Could not retrieve status information")
-      .should("be.visible");
-  });
-
-  it("displays status page information", () => {
-    // if the call to get the user fails (e.g., no .userNone() fixture)
-    // then show the status page
-    fixtures.getStatuspageInfo();
-    cy.visit("/");
-    cy.wait("@getStatuspageInfo");
-    cy.get("h1").should("have.length", 1);
-    cy.get("h1").contains("RenkuLab Down").should("be.visible");
-    cy.get("h3").contains("RenkuLab Status").should("be.visible");
-    cy.get("h4").contains("Scheduled Maintenance Details").should("be.visible");
+    cy.get("h1")
+      .first()
+      .should(
+        "have.text",
+        "An open-source knowledge infrastructure for collaborative and reproducible data science"
+      );
   });
 });
 

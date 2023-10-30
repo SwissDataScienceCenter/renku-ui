@@ -20,6 +20,7 @@ import { FixturesConstructor } from "./fixtures";
 import {
   DeepRequired,
   FixtureWithOverrides,
+  NameOnlyFixture,
   SimpleFixture,
 } from "./fixtures.types";
 
@@ -56,6 +57,17 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
         ).as(name);
       });
 
+      return this;
+    }
+
+    statuspageDown(args?: NameOnlyFixture) {
+      const { name = "getStatuspageInfo" } = args ?? {};
+      const response = { body: {}, statusCode: 500 };
+      cy.intercept(
+        "GET",
+        "https://*.statuspage.io/api/v2/summary.jsonr",
+        response
+      ).as(name);
       return this;
     }
 

@@ -42,6 +42,34 @@ describe("display the maintenance page", () => {
   });
 });
 
+describe("display the maintenance page when there is no user response", () => {
+  beforeEach(() => {
+    new Fixtures(cy).config().versions();
+  });
+
+  it("displays an error when trying to get status page information", () => {
+    new Fixtures(cy).renkuDown().statuspageDown();
+    cy.visit("/");
+    cy.get("h1").should("have.length", 1);
+    cy.get("h1").contains("RenkuLab Down").should("be.visible");
+    cy.get(".alert-content")
+      .contains("Could not retrieve status information")
+      .should("be.visible");
+  });
+
+  it("displays status page information", () => {
+    // if the call to get the user fails (e.g., no .userNone() fixture)
+    // then show the status page
+    new Fixtures(cy).getStatuspageInfo();
+    cy.visit("/");
+    cy.wait("@getStatuspageInfo");
+    cy.get("h1").should("have.length", 1);
+    cy.get("h1").contains("RenkuLab Down").should("be.visible");
+    cy.get("h3").contains("RenkuLab Status").should("be.visible");
+    cy.get("h4").contains("Scheduled Maintenance Details").should("be.visible");
+  });
+});
+
 describe("display the status page", () => {
   it("Shows no banner if there is no incident or maintenance", () => {
     fixtures.config().versions().userNone().getStatuspageInfo();

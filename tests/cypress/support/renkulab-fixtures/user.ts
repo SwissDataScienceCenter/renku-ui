@@ -51,16 +51,21 @@ export function User<T extends FixturesConstructor>(Parent: T) {
     }
 
     userNone(args?: UserNoneArgs) {
-      const { user, keycloakUser } = Cypress._.defaultsDeep({}, args, {
+      const { user, keycloakUser, delay } = Cypress._.defaultsDeep({}, args, {
         user: {
           name: "getUser",
         },
         keycloakUser: {
           name: "getKeycloakUser",
         },
+        delay: null,
       }) as DeepRequired<UserNoneArgs>;
 
-      const response = { body: {}, statusCode: 401 };
+      const response = {
+        body: {},
+        statusCode: 401,
+        ...(delay != null ? { delay } : {}),
+      };
 
       cy.intercept("GET", "/ui-server/api/user", response).as(user.name);
 
@@ -105,4 +110,5 @@ interface UserTestArgs {
 interface UserNoneArgs {
   user?: NameOnlyFixture;
   keycloakUser?: NameOnlyFixture;
+  delay?: number | null;
 }
