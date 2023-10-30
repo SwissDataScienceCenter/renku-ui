@@ -44,11 +44,11 @@ describe("display the maintenance page", () => {
 
 describe("display the maintenance page when there is no user response", () => {
   beforeEach(() => {
-    new Fixtures(cy).config().versions();
+    fixtures.config().versions();
   });
 
   it("displays an error when trying to get status page information", () => {
-    new Fixtures(cy).renkuDown().statuspageDown();
+    fixtures.renkuDown().statuspageDown();
     cy.visit("/");
     cy.get("h1").should("have.length", 1);
     cy.get("h1").contains("RenkuLab Down").should("be.visible");
@@ -60,7 +60,7 @@ describe("display the maintenance page when there is no user response", () => {
   it("displays status page information", () => {
     // if the call to get the user fails (e.g., no .userNone() fixture)
     // then show the status page
-    new Fixtures(cy).getStatuspageInfo();
+    fixtures.getStatuspageInfo();
     cy.visit("/");
     cy.wait("@getStatuspageInfo");
     cy.get("h1").should("have.length", 1);
