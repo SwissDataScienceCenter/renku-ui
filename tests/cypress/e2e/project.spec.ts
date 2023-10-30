@@ -147,6 +147,7 @@ describe("display a project", () => {
   it("displays lock correctly", () => {
     fixtures.projectLockStatus({ locked: true });
     cy.visit("/projects/e2e/local-test-project/settings");
+    cy.wait("@getMigration");
     cy.wait("@getProjectLockStatus");
     cy.getDataCy("settings-navbar")
       .contains("a", "Sessions")

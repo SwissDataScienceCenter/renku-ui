@@ -199,6 +199,7 @@ describe("Project settings page", () => {
   it("delete a project", () => {
     fixtures.deleteProject();
     cy.visit("/projects/e2e/local-test-project/settings");
+    cy.wait("@getMigration");
 
     cy.getDataCy("project-settings-general-delete-project")
       .should("be.visible")
