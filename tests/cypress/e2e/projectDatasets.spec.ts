@@ -117,7 +117,7 @@ describe("Project dataset", () => {
       });
   });
 
-  it.only("can edit project dataset", () => {
+  it("can edit project dataset", () => {
     fixtures.getFiles().uploadDatasetFile().addFileDataset().editDataset();
 
     cy.visit(`projects/${projectPath}/datasets`);
