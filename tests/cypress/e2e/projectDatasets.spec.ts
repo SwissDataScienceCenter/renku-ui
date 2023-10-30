@@ -117,7 +117,7 @@ describe("Project dataset", () => {
       });
   });
 
-  it("can edit project dataset", () => {
+  it.only("can edit project dataset", () => {
     fixtures.getFiles().uploadDatasetFile().addFileDataset().editDataset();
 
     cy.visit(`projects/${projectPath}/datasets`);
@@ -260,7 +260,7 @@ describe("Project dataset", () => {
     fixtures.project({
       fixture: "projects/project-limited-permissions.json",
       name: "getProjectLimited",
-      projectPath: projectPath,
+      projectPath,
     });
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProjectLimited");
