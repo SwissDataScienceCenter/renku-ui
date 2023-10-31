@@ -12,7 +12,7 @@ $borderRadius: 1000px;
 }
 
 .btn-group .btn {
-  --#{$prefix}-btn-active-color: white;
+  --#{$prefix}btn-active-color: white;
   border-radius: 0;
   padding: 5px 10px;
 }
@@ -70,9 +70,10 @@ $borderRadius: 1000px;
 .form-rk {
   --accent-color: var(--bs-rk-green);
   .input-group button {
+    --#{$prefix}btn-color: #{$rk-white};
+    --#{$prefix}btn-bg: #{$rk-green};
+    --#{$prefix}btn-border-color: #{$rk-green};
     border: 1px solid var(--accent-color);
-    color: var(--accent-color);
-    background-color: white;
   }
   .btn-group:not(.btn-with-menu) button {
     border-color: var(--accent-color);
@@ -83,15 +84,15 @@ $borderRadius: 1000px;
 .form-rk-pink {
   @extend .form-rk;
   --accent-color: var(--bs-rk-pink);
+  --#{$prefix}btn-active-color: #{$rk-white};
 
   .input-group button {
-    &:hover,
-    &:focus,
-    &:active,
-    &.active {
-      background-color: #{$rk-pink-highlight};
-      color: white;
-    }
+    --#{$prefix}btn-color: #{$rk-white};
+    --#{$prefix}btn-bg: #{$rk-pink};
+    --#{$prefix}btn-border-color: #{$rk-pink};
+    --#{$prefix}btn-hover-color: white;
+    --#{$prefix}btn-hover-bg: #{$rk-pink-highlight};
+    --#{$prefix}btn-hover-border-color: #{$rk-pink-highlight};
   }
 }
 
@@ -100,13 +101,12 @@ $borderRadius: 1000px;
   --accent-color: var(--bs-rk-green);
 
   .input-group button {
-    &:hover,
-    &:focus,
-    &:active,
-    &.active {
-      background-color: #{$rk-green-highlight};
-      color: white;
-    }
+    --#{$prefix}btn-color: #{$rk-white};
+    --#{$prefix}btn-bg: #{$rk-green};
+    --#{$prefix}btn-border-color: #{$rk-green};
+    --#{$prefix}btn-hover-color: white;
+    --#{$prefix}btn-hover-bg: #{$rk-green-highlight};
+    --#{$prefix}btn-hover-border-color: #{$rk-green-highlight};
   }
 }
 
@@ -174,12 +174,25 @@ $borderRadius: 1000px;
 
 .btn-rk-pink {
   @extend .btn-rk;
-  --#{$prefix}-btn-active-color: white;
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-hover-color: white;
+  --#{$prefix}btn-hover-bg: #{$rk-pink-highlight};
+  --#{$prefix}btn-hover-border-color: #{$rk-pink-highlight};
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-active-bg: #{$rk-pink-highlight};
+  --#{$prefix}btn-active-border-color: #{$rk-pink-highlight};
 }
 
-.btn-rk-green {
+.btn-rk-green,
+.btn-secondary {
   @extend .btn-rk;
-  --bs-btn-active-color: white;
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-hover-color: white;
+  --#{$prefix}btn-hover-bg: #{$rk-green-highlight};
+  --#{$prefix}btn-hover-border-color: #{$rk-green-highlight};
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-active-bg: #{$rk-green-highlight};
+  --#{$prefix}btn-active-border-color: #{$rk-green-highlight};
 }
 
 .btn-rk-over-green {
@@ -232,7 +245,9 @@ $borderRadius: 1000px;
   }
 }
 .btn-outline-rk-green {
-  --#{$prefix}-btn-active-color: white;
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-active-bg: #{$rk-green-highlight};
+  --#{$prefix}btn-active-border-color: #{$rk-green-highlight};
   background-color: white;
   color: #{$rk-green};
 
@@ -250,6 +265,9 @@ $borderRadius: 1000px;
   }
 }
 .btn-outline-rk-pink {
+  --#{$prefix}btn-active-color: white;
+  --#{$prefix}btn-active-bg: #{$rk-pink-highlight};
+  --#{$prefix}btn-active-border-color: #{$rk-pink-highlight};
   background-color: white;
   color: #{$rk-pink};
   border-color: #{$rk-pink};

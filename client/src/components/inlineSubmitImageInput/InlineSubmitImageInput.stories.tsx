@@ -37,6 +37,7 @@ const meta: Meta = {
   },
   args: {
     alert: "",
+    color: "green",
     classNameSubmitButton: "updateProjectSettings",
     currentImageName: "",
     doneText: "Updated",

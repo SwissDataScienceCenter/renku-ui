@@ -72,7 +72,9 @@ function ButtonWithMenu(props: ButtonWithMenuProps) {
   const toggleOpen = () => setOpen(!dropdownOpen);
   const size = props.size ? props.size : "md";
   const bgColor = props.color || "rk-green";
-  const classes = props.isPrincipal ? "" : `btn-outline-${bgColor}`;
+  const classes = props.isPrincipal
+    ? `btn-${bgColor}`
+    : `btn-outline-${bgColor}`;
 
   const options = props.children ? (
     <>

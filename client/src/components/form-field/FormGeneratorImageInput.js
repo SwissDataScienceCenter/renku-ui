@@ -234,7 +234,7 @@ function ImageContentInputMode({ name, modes, mode, setMode, onClick, color }) {
 
   if (modes.length < 2)
     return (
-      <Button className={`btn-outline-${color}`} onClick={onClick}>
+      <Button className={`btn-outline-rk-${color}`} onClick={onClick}>
         {mode}
       </Button>
     );
@@ -407,6 +407,7 @@ function ImageContentInput({
 function ImageInput(props) {
   const {
     alert,
+    color,
     disabled = false,
     expectedFinalSize,
     format = "image/*",
@@ -438,6 +439,7 @@ function ImageInput(props) {
     <div className="flex-grow-1">
       <ImageContentInput
         disabled={disabled}
+        color={color}
         expectedFinalSize={expectedFinalSize}
         format={format}
         help={help}

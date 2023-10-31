@@ -59,17 +59,20 @@ function EntityDeleteButtonButton({
   itemType,
   action,
 }: EntityDeleteButtonProps) {
-  const styles = stylesByItemType(itemType);
   return (
     <>
       <Button
         id="deleteButton"
         data-cy="delete-dataset-button"
         onClick={action}
-        className="icon-button btn-rk-white"
+        className={
+          itemType == "dataset"
+            ? "icon-button btn-outline-rk-pink"
+            : "icon-button"
+        }
         size="sm"
       >
-        <FontAwesomeIcon icon={faTrash} className={styles.colorText} />
+        <FontAwesomeIcon icon={faTrash} />
       </Button>
       <UncontrolledTooltip
         key="tooltip-delete-entity"
@@ -97,7 +100,7 @@ function EntityModifyButton({ url, itemType }: EntityModifyButtonProps) {
             id="modifyButton"
             key="modify-button"
             to={`${url}/settings`}
-            className="link-rk-dark text-decoration-none"
+            className="btn-outline-rk-green text-decoration-none" //link-rk-dark
           >
             <FontAwesomeIcon icon={faCog} className={styles.colorText} />
           </Link>
@@ -117,7 +120,7 @@ function EntityModifyButton({ url, itemType }: EntityModifyButtonProps) {
             id="modifyButton"
             key="modify-button"
             to={`${url}/settings`}
-            className="link-rk-dark text-decoration-none"
+            className="btn-outline-rk-pink text-decoration-none"
           >
             <FontAwesomeIcon icon={faPen} className={styles.colorText} />
           </Link>

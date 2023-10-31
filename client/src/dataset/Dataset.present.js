@@ -322,7 +322,7 @@ function AddToProjectButton({ insideKg, locked, logged, identifier }) {
       <Button
         data-cy="add-to-project-button"
         disabled={insideKg === false || locked}
-        className="btn-rk-white text-rk-pink icon-button"
+        className="btn-outline-rk-pink icon-button"
         size="sm"
         onClick={() => goToAddToProject()}
       >
@@ -347,7 +347,7 @@ function EditDatasetButton({
     return (
       <span className="float-right mb-1" id="editDatasetTooltip">
         <Button
-          className="btn-rk-white text-rk-pink icon-button"
+          className="btn-outline-rk-pink icon-button"
           data-cy="edit-dataset-button"
           disabled={true}
           size="sm"
@@ -376,7 +376,7 @@ function EditDatasetButton({
       }
     >
       <Button
-        className="btn-rk-white text-rk-pink icon-button"
+        className="btn-outline-rk-pink icon-button"
         size="sm"
         data-cy="edit-dataset-button"
       >

@@ -15,22 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Fragment } from "react";
+import { Search } from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
+import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
 import {
   SearchEntitiesQueryParams,
   useSearchEntitiesQuery,
 } from "../../kgSearch/KgSearchApi";
-import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
-import { Fragment } from "react";
-import { Link } from "react-router-dom";
 
 import ListDisplay from "../../../components/List";
 import { Loader } from "../../../components/Loader";
-import { KgAuthor } from "../../kgSearch/KgSearch";
-import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
-import { stateToSearchString } from "../../kgSearch/KgSearchState";
-import { Url } from "../../../utils/helpers/url";
 import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
-import ExploreIcon from "../../../components/icons/ExploreIcon";
+import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
+import { Url } from "../../../utils/helpers/url";
+import { KgAuthor } from "../../kgSearch/KgSearch";
+import { stateToSearchString } from "../../kgSearch/KgSearchState";
 
 interface OtherDatasetsButtonProps {
   totalDatasets: number;
@@ -65,7 +65,7 @@ function OtherDatasetsButton({ totalDatasets }: OtherDatasetsButtonProps) {
         data-cy="explore-other-datasets-btn"
         className="btn btn-outline-rk-pink"
       >
-        <ExploreIcon className="me-2" size={20} />
+        <Search className="me-2" size={20} />
         Explore other Datasets
       </Link>
     </div>
