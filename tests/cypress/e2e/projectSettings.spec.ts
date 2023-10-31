@@ -214,6 +214,7 @@ describe("Project settings page", () => {
       .find("button")
       .contains("Delete project")
       .should("be.visible")
+      .scrollIntoView()
       .click();
 
     cy.contains("Are you absolutely sure?");
