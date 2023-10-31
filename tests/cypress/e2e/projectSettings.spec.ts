@@ -206,6 +206,7 @@ describe("Project settings page", () => {
   it("delete a project", () => {
     fixtures.deleteProject();
     cy.visit("/projects/e2e/local-test-project/settings");
+    cy.wait("@getProjectKG");
     cy.wait("@getMigration");
 
     cy.getDataCy("project-settings-general-delete-project")
@@ -256,6 +257,7 @@ describe("Cloud storage settings page", () => {
 
   it("is accessible from the main settings page", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
+    cy.wait("@getProjectKG");
     cy.wait("@getMigration");
     cy.getDataCy("settings-navbar")
       .contains("Cloud Storage")
