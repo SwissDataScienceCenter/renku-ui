@@ -214,8 +214,9 @@ describe("Project settings page", () => {
       .find("button")
       .contains("Delete project")
       .should("be.visible")
-      .scrollIntoView()
-      .click();
+      .as("delete-button")
+      .scrollIntoView();
+    cy.get("@delete-button").click();
 
     cy.contains("Are you absolutely sure?");
     cy.get("button").contains("Yes, delete this project").should("be.disabled");
