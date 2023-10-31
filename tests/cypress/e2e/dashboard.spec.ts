@@ -119,6 +119,7 @@ describe("dashboard", () => {
   it("user has own projects and recently visited projects", () => {
     fixtures
       .projects()
+      .sessionServersEmpty()
       .entitySearch("getEntities", "kgSearch/search.json", "7")
       .getLastVisitedProjects(
         "getLastVisitedProjects",
