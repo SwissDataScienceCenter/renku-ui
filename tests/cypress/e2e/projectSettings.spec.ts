@@ -29,7 +29,8 @@ describe("Project settings page", () => {
       .projectById("getProjectsById", 39646)
       .getProjectKG()
       .projectLockStatus()
-      .projectMigrationUpToDate();
+      .projectMigrationUpToDate()
+      .sessionServersEmpty();
     cy.visit("/projects/e2e/local-test-project");
   });
 
@@ -207,6 +208,7 @@ describe("Project settings page", () => {
     fixtures.deleteProject();
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.wait("@getProjectKG");
+    cy.wait("@getProjectLockStatus");
     cy.wait("@getMigration");
 
     cy.getDataCy("project-settings-general-delete-project")
@@ -261,6 +263,7 @@ describe("Cloud storage settings page", () => {
   it("is accessible from the main settings page", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.wait("@getProjectKG");
+    cy.wait("@getProjectLockStatus");
     cy.wait("@getMigration");
     cy.getDataCy("settings-navbar")
       .contains("Cloud Storage")
