@@ -253,7 +253,8 @@ describe("Cloud storage settings page", () => {
       .projectById("getProjectsById", 39646)
       .getProjectKG()
       .projectLockStatus()
-      .projectMigrationUpToDate();
+      .projectMigrationUpToDate()
+      .sessionServersEmpty();
     cy.visit("/projects/e2e/local-test-project");
   });
 
