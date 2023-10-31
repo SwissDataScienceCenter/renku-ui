@@ -71,6 +71,7 @@ describe("dashboard", () => {
   it("user does not have own project but has visited projects", () => {
     fixtures
       .projects()
+      .sessionServersEmpty()
       .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
       .getLastVisitedProjects();
     const files = {
