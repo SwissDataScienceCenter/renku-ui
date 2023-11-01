@@ -68,6 +68,7 @@ describe("dashboard", () => {
   it("user does not have own project but has visited projects", () => {
     fixtures
       .projects()
+      .sessionServersEmpty()
       .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
       .getLastVisitedProjects();
     const files = {
@@ -112,9 +113,13 @@ describe("dashboard", () => {
   });
 
   it("user has own projects and recently visited projects", () => {
-    fixtures.projects().entitySearch().getLastVisitedProjects({
-      fixture: "projects/last-visited-projects-5.json",
-    });
+    fixtures
+      .projects()
+      .sessionServersEmpty()
+      .entitySearch()
+      .getLastVisitedProjects({
+        fixture: "projects/last-visited-projects-5.json",
+      });
     const files = {
       "lorenzo.cavazzi.tech/readme-file-dev": 30929,
       "e2e/testing-datasets": 43781,
