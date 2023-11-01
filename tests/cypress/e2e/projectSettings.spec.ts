@@ -29,7 +29,8 @@ describe("Project settings page", () => {
       .projectById("getProjectsById", 39646)
       .getProjectKG()
       .projectLockStatus()
-      .projectMigrationUpToDate();
+      .projectMigrationUpToDate()
+      .sessionServersEmpty();
     cy.visit("/projects/e2e/local-test-project");
   });
 
@@ -206,13 +207,18 @@ describe("Project settings page", () => {
   it("delete a project", () => {
     fixtures.deleteProject();
     cy.visit("/projects/e2e/local-test-project/settings");
+    cy.wait("@getProjectKG");
+    cy.wait("@getProjectLockStatus");
+    cy.wait("@getMigration");
 
     cy.getDataCy("project-settings-general-delete-project")
       .should("be.visible")
       .find("button")
       .contains("Delete project")
       .should("be.visible")
-      .click();
+      .as("delete-button")
+      .scrollIntoView();
+    cy.get("@delete-button").click();
 
     cy.contains("Are you absolutely sure?");
     cy.get("button").contains("Yes, delete this project").should("be.disabled");
@@ -249,12 +255,16 @@ describe("Cloud storage settings page", () => {
       .projectById("getProjectsById", 39646)
       .getProjectKG()
       .projectLockStatus()
-      .projectMigrationUpToDate();
+      .projectMigrationUpToDate()
+      .sessionServersEmpty();
     cy.visit("/projects/e2e/local-test-project");
   });
 
   it("is accessible from the main settings page", () => {
     cy.visit("/projects/e2e/local-test-project/settings");
+    cy.wait("@getProjectKG");
+    cy.wait("@getProjectLockStatus");
+    cy.wait("@getMigration");
     cy.getDataCy("settings-navbar")
       .contains("Cloud Storage")
       .should("be.visible")
