@@ -185,7 +185,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
         project: {
           fixture: "projects/no-project.json",
           name: "getErrorProject",
-          path: "",
+          projectPath: "",
           statusCode: 404,
         },
       }) as DeepRequired<ErrorProjectArgs>;

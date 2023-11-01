@@ -75,7 +75,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
       const {
         fixture = "datasets/project-dataset-kg-list.json",
         name = "datasetKGList",
-        path = "",
+        projectPath = "",
       } = args ?? {};
       const response = { fixture };
       cy.intercept(
