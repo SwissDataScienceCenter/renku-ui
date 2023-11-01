@@ -26,7 +26,7 @@ describe("display a project - not found", () => {
   it("displays the project not found page when the name is incorrect - logged user", () => {
     fixtures
       .userTest()
-      .errorProject({ project: { path: "e2e/not-found-test-project" } });
+      .errorProject({ project: { projectPath: "e2e/not-found-test-project" } });
     cy.visit("/projects/e2e/not-found-test-project");
 
     cy.getDataCy("not-found-title")
@@ -52,7 +52,7 @@ describe("display a project - not found", () => {
   it("displays the project not found page when the name is incorrect - anon user", () => {
     fixtures
       .userNone()
-      .errorProject({ project: { path: "e2e/not-found-test-project" } });
+      .errorProject({ project: { projectPath: "e2e/not-found-test-project" } });
     cy.visit("/projects/e2e/not-found-test-project");
 
     cy.getDataCy("not-found-title")
@@ -76,7 +76,7 @@ describe("display a project - not found", () => {
   });
 
   it("displays the project not found page when the numeric id is incorrect - logged user", () => {
-    fixtures.userTest().errorProject({ project: { path: "12345" } });
+    fixtures.userTest().errorProject({ project: { projectPath: "12345" } });
     cy.visit("/projects/12345");
 
     cy.getDataCy("not-found-title")
@@ -100,7 +100,7 @@ describe("display a project - not found", () => {
   });
 
   it("displays the project not found page when the numeric id is incorrect - anon user", () => {
-    fixtures.userNone().errorProject({ project: { path: "12345" } });
+    fixtures.userNone().errorProject({ project: { projectPath: "12345" } });
     cy.visit("/projects/12345");
 
     cy.getDataCy("not-found-title")

@@ -197,7 +197,7 @@ export function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "GET",
         `/ui-server/api/projects/${encodeURIComponent(
-          project.path
+          project.projectPath
         )}?statistics=*`,
         projectResponse
       ).as(project.name);
@@ -657,7 +657,7 @@ interface ProjectFilesArgs {
 
 interface ErrorProjectArgs {
   project?: SimpleFixture & {
-    path?: string;
+    projectPath?: string;
     statusCode?: number;
   };
 

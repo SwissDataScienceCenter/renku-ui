@@ -72,7 +72,7 @@ describe("Project dataset", () => {
     fixtures.config(config).versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project({ projectPath });
-    fixtures.projectKGDatasetList({ path: projectPath });
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectMigrationUpToDate({ queryUrl: "*" });

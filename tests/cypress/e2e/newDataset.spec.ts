@@ -25,7 +25,7 @@ describe("Project new dataset", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project({ projectPath }).cacheProjectList();
-    fixtures.projectKGDatasetList({ path: projectPath });
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
     fixtures.addFileDataset();
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
@@ -227,7 +227,7 @@ describe("Project new dataset without access", () => {
     fixtures.projects().landingUserProjects().projectTestObserver();
     fixtures.projectLockStatus();
     fixtures.cacheProjectList();
-    fixtures.projectKGDatasetList({ path: projectPath });
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
     fixtures.createDataset();
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
@@ -249,7 +249,7 @@ describe("Project import dataset", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project({ projectPath }).cacheProjectList();
-    fixtures.projectKGDatasetList({ path: projectPath });
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectMigrationUpToDate({ queryUrl: "*" });

@@ -96,7 +96,7 @@ describe("Project dataset", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project({ projectPath });
-    fixtures.projectKGDatasetList({ path: projectPath });
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectMigrationUpToDate({ queryUrl: "*" });
@@ -298,7 +298,7 @@ describe("Project dataset (legacy ids)", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project({ projectPath });
-    fixtures.projectKGDatasetList({ path: projectPath });
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetLegacyIdList();
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectMigrationUpToDate({ queryUrl: "*" });
@@ -331,7 +331,7 @@ describe("Error loading datasets", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project({ projectPath });
-    fixtures.projectKGDatasetList({ path: projectPath });
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList({
       fixture: "datasets/dataset-list-error.json",
     });
@@ -358,7 +358,7 @@ describe("Migration check errors", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project({ projectPath });
-    fixtures.projectKGDatasetList({ path: projectPath });
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectLockStatus();
@@ -382,7 +382,7 @@ describe("Project dataset (locked)", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
     fixtures.project({ projectPath });
-    fixtures.projectKGDatasetList({ path: projectPath });
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
     fixtures.projectMigrationUpToDate({ queryUrl: "*" });

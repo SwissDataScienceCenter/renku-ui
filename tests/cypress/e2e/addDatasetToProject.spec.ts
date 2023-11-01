@@ -66,7 +66,7 @@ describe("Add dataset to existing project", () => {
 
   it("successfully import dataset", () => {
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
-    fixtures.projectKGDatasetList({ path: projectSelected });
+    fixtures.projectKGDatasetList({ projectPath: projectSelected });
     fixtures.projectDatasetList();
     fixtures.projectTest();
     fixtures.projectLockStatus();
@@ -152,7 +152,7 @@ describe("Add dataset to new project", () => {
       queryUrl: "*",
     });
     fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
-    fixtures.projectKGDatasetList({ path: newProjectPath });
+    fixtures.projectKGDatasetList({ projectPath: newProjectPath });
     fixtures.projectDatasetList();
     // fill form new project
     cy.createProjectAndAddDataset(newProjectTitle, newProjectPath, fixtures);
@@ -202,7 +202,9 @@ describe("Invalid dataset", () => {
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
     fixtures.datasetById({ id: datasetIdentifier });
     const pathOrigin = "e2e/testing-datasets";
-    fixtures.errorProject({ project: { path: pathOrigin } }).cacheProjectList();
+    fixtures
+      .errorProject({ project: { projectPath: pathOrigin } })
+      .cacheProjectList();
     fixtures.interceptMigrationCheck({
       name: "migrationCheckDatasetProject",
       queryUrl: "*",

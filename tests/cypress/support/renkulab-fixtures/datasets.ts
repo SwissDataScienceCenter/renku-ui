@@ -80,7 +80,7 @@ export function Datasets<T extends FixturesConstructor>(Parent: T) {
       const response = { fixture };
       cy.intercept(
         "GET",
-        `/ui-server/api/kg/projects/${path}/datasets`,
+        `/ui-server/api/kg/projects/${projectPath}/datasets`,
         response
       ).as(name);
       return this;
@@ -251,7 +251,7 @@ interface InvalidDatasetArgs {
 }
 
 interface ProjectKGDatasetListArgs extends SimpleFixture {
-  path?: string;
+  projectPath?: string;
 }
 
 interface ProjectDatasetListArgs extends SimpleFixture {
