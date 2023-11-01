@@ -798,56 +798,6 @@ class ProjectViewFiles extends Component {
   }
 }
 
-// function ProjectSettingsNav(props) {
-//   return (
-//     <Nav
-//       className="flex-column nav-light nav-pills-underline"
-//       data-cy="settings-navbar"
-//     >
-//       <NavItem>
-//         <RenkuNavLink to={props.settingsUrl} title="General" />
-//       </NavItem>
-//       <NavItem>
-//         <RenkuNavLink to={props.settingsSessionsUrl} title="Sessions" />
-//       </NavItem>
-//       <NavItem>
-//         <RenkuNavLink
-//           to={props.settingsCloudStorageUrl}
-//           title="Cloud Storage"
-//         />
-//       </NavItem>
-//     </Nav>
-//   );
-// }
-// function ProjectSettings(props) {
-//   return (
-//     <Col key="settings">
-//       <Row>
-//         <Col key="nav" sm={12} md={2}>
-//           <ProjectSettingsNav {...props} />
-//         </Col>
-//         <Col key="content" sm={12} md={10} data-cy="settings-container">
-//           <Switch>
-//             <Route
-//               exact
-//               path={props.settingsUrl}
-//               render={() => {
-//                 return <ProjectSettingsGeneral {...props} />;
-//               }}
-//             />
-//             <Route exact path={props.settingsSessionsUrl}>
-//               <ProjectSettingsSessions />
-//             </Route>
-//             <Route exact path={props.settingsCloudStorageUrl}>
-//               <ProjectSettingsCloudStorage />
-//             </Route>
-//           </Switch>
-//         </Col>
-//       </Row>
-//     </Col>
-//   );
-// }
-
 class ProjectViewLoading extends Component {
   render() {
     const info = this.props.projectId ? (
