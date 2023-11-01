@@ -22,6 +22,7 @@ import { Search } from "react-bootstrap-icons";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
+import cx from "classnames";
 import { InfoAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import ListDisplay from "../../../components/List";
@@ -124,9 +125,14 @@ function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
       <Link
         to={`${Url.get(Url.pages.searchEntities)}?${paramsUrlStrMyProjects}`}
         data-cy="view-my-projects-btn"
-        className="btn btn-outline-rk-green"
+        className={cx(
+          "btn",
+          "btn-outline-rk-green",
+          "d-flex",
+          "align-items-center"
+        )}
       >
-        <SearchEntityIcon className="me-2" size={20} />
+        <SearchEntityIcon className="me-2" width={20} height={22} />
         View all my Projects
       </Link>
     </div>
@@ -137,7 +143,12 @@ function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
           Url.pages.searchEntities
         )}?${paramsUrlStrExploreProjects}`}
         data-cy="explore-other-projects-btn"
-        className="btn btn-outline-rk-green"
+        className={cx(
+          "btn",
+          "btn-outline-rk-green",
+          "d-flex",
+          "align-items-center"
+        )}
       >
         <Search className="me-2" size={20} />
         Explore other Projects

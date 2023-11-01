@@ -18,12 +18,14 @@
 
 interface SearchEntityIconProps {
   className?: string;
-  size: number;
+  width: number;
+  height: number;
 }
 
 export default function SearchEntityIcon({
   className,
-  size,
+  width,
+  height,
 }: SearchEntityIconProps) {
   return (
     <svg
@@ -31,7 +33,8 @@ export default function SearchEntityIcon({
       className={className}
       focusable={false}
       role="img"
-      width={`${size}px`}
+      width={`${width}px`}
+      height={`${height}px`}
       viewBox="0 0 17 19"
       xmlns="http://www.w3.org/2000/svg"
     >

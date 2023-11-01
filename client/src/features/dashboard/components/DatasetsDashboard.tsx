@@ -24,6 +24,7 @@ import {
   useSearchEntitiesQuery,
 } from "../../kgSearch/KgSearchApi";
 
+import cx from "classnames";
 import ListDisplay from "../../../components/List";
 import { Loader } from "../../../components/Loader";
 import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
@@ -50,9 +51,14 @@ function OtherDatasetsButton({ totalDatasets }: OtherDatasetsButtonProps) {
       <Link
         to={`${Url.get(Url.pages.searchEntities)}?${paramsUrlStrMyDatasets}`}
         data-cy="view-my-datasets-btn"
-        className="btn btn-outline-rk-pink"
+        className={cx(
+          "btn",
+          "btn-outline-rk-pink",
+          "d-flex",
+          "align-items-center"
+        )}
       >
-        <SearchEntityIcon className="me-2" size={20} />
+        <SearchEntityIcon className="me-2" width={20} height={22} />
         View all my Datasets
       </Link>
     </div>
@@ -63,7 +69,12 @@ function OtherDatasetsButton({ totalDatasets }: OtherDatasetsButtonProps) {
           Url.pages.searchEntities
         )}?${paramsUrlStrExploreDatasets}`}
         data-cy="explore-other-datasets-btn"
-        className="btn btn-outline-rk-pink"
+        className={cx(
+          "btn",
+          "btn-outline-rk-pink",
+          "d-flex",
+          "align-items-center"
+        )}
       >
         <Search className="me-2" size={20} />
         Explore other Datasets

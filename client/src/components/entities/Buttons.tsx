@@ -100,7 +100,7 @@ function EntityModifyButton({ url, itemType }: EntityModifyButtonProps) {
             id="modifyButton"
             key="modify-button"
             to={`${url}/settings`}
-            className="btn-outline-rk-green text-decoration-none" //link-rk-dark
+            className="btn-outline-rk-green text-decoration-none"
           >
             <FontAwesomeIcon icon={faCog} className={styles.colorText} />
           </Link>
