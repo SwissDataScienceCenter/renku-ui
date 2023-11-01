@@ -38,9 +38,7 @@ export function getRunningSession({
       namespace: annotations.namespace,
       path: annotations.projectName,
     });
-    return typeof thisAutostartUrl !== "string"
-      ? thisAutostartUrl === autostartUrl
-      : thisAutostartUrl.toLowerCase() === autostartUrl.toLowerCase();
+    return thisAutostartUrl.toLowerCase() === autostartUrl.toLowerCase();
   });
   const sorted = runningSessions.sort((a, b) =>
     DateTime.fromISO(b.started).diff(DateTime.fromISO(a.started)).valueOf()
