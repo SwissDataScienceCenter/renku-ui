@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("display a session", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
@@ -46,7 +44,7 @@ describe("display a session", () => {
   });
 
   it("display error logs", () => {
-    fixtures.getLogs("getLogs", "");
+    fixtures.getLogs({ fixture: "" });
     cy.wait("@getSessions");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
@@ -58,19 +56,25 @@ describe("display a session", () => {
 
   it("display logs in fullscreen session", () => {
     cy.openSession();
-    fixtures.getLogs("getLogs-empty", "sessions/emptyLogs.json");
+    fixtures.getLogs({
+      fixture: "sessions/emptyLogs.json",
+      name: "getLogs-empty",
+    });
     cy.getDataCy("resources-button").click();
     // empty logs
     cy.getDataCy("logs-tab").click();
     cy.wait("@getLogs-empty");
     cy.getDataCy("no-logs-message").should("exist");
     // clean logs
-    fixtures.getLogs("getLogs-clean", "sessions/cleanLogs.json");
+    fixtures.getLogs({
+      fixture: "sessions/cleanLogs.json",
+      name: "getLogs-clean",
+    });
     cy.getDataCy("retry-logs-body").click();
     cy.wait("@getLogs-clean");
     cy.getDataCy("no-logs-message").should("exist");
     // logs with data
-    fixtures.getLogs("getLogs-full", "sessions/logs.json");
+    fixtures.getLogs({ name: "getLogs-full" });
     cy.getDataCy("retry-logs-body").click();
     cy.wait("@getLogs-full").then((result) => {
       const logs = result.response.body;
@@ -105,7 +109,7 @@ describe("display a session", () => {
   });
 
   it("save session button -- no sidecar", () => {
-    fixtures.getSidecarHealth(false);
+    fixtures.getSidecarHealth({ isRunning: false });
     cy.openSession();
     // save session
     cy.getDataCy("save-session-button").click();
@@ -158,7 +162,7 @@ describe("display a session", () => {
   });
 
   it("pull changes button -- no sidecar", () => {
-    fixtures.getSidecarHealth(false);
+    fixtures.getSidecarHealth({ isRunning: false });
     cy.openSession();
     // pull changes
     cy.getDataCy("pull-changes-button").click();
@@ -243,8 +247,6 @@ describe("display a session", () => {
 });
 
 describe("display a session with error", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
@@ -254,7 +256,7 @@ describe("display a session with error", () => {
   });
 
   it("display error in sessions page", () => {
-    fixtures.getLogs("getLogs", "");
+    fixtures.getLogs({ fixture: "" });
     cy.wait("@getSessionsError");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval
@@ -263,8 +265,6 @@ describe("display a session with error", () => {
 });
 
 describe("display a session when session is being stopped", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
@@ -274,7 +274,7 @@ describe("display a session when session is being stopped", () => {
   });
 
   it("display main action disabled", () => {
-    fixtures.getLogs("getLogs", "");
+    fixtures.getLogs({ fixture: "" });
     cy.wait("@getSessionsStopping");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(3500, { log: false }); // necessary because request the job status is called in a interval

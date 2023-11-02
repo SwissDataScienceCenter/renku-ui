@@ -30,7 +30,6 @@ import { KgSearch } from "./kgSearch";
 import { NewProject } from "./newProject";
 import { NewSession } from "./newSession";
 import { Projects } from "./projects";
-import { Session } from "./session";
 import { Sessions } from "./sessions";
 import { User } from "./user";
 import { Versions } from "./versions";
@@ -45,9 +44,7 @@ const Fixtures = NewProject(
             CloudStorage(
               Datasets(
                 Projects(
-                  Session(
-                    User(Versions(Workflows(KgSearch(Global(BaseFixtures)))))
-                  )
+                  User(Versions(Workflows(KgSearch(Global(BaseFixtures)))))
                 )
               )
             )
@@ -58,5 +55,7 @@ const Fixtures = NewProject(
   )
 );
 
-export default Fixtures;
+const fixtures = new Fixtures();
+export default fixtures;
+
 export type FixturesType = InstanceType<typeof Fixtures>;

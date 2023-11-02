@@ -17,55 +17,48 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for Cloud Storage
  */
 
-export const CloudStorage = <T extends FixturesConstructor>(Parent: T) => {
+export function CloudStorage<T extends FixturesConstructor>(Parent: T) {
   return class CloudStorageFixtures extends Parent {
-    cloudStorage(
-      name = "getCloudStorage",
-      fixture = "cloudStorage/cloud-storage.json"
-    ) {
-      cy.intercept("/ui-server/api/data/storage*", {
-        fixture,
-      }).as(name);
+    cloudStorage(args?: SimpleFixture) {
+      const {
+        fixture = "cloudStorage/cloud-storage.json",
+        name = "getCloudStorage",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept("GET", "/ui-server/api/data/storage*", response).as(name);
       return this;
     }
 
-    postCloudStorage(
-      name = "postCloudStorage",
-      fixture = "cloudStorage/new-cloud-storage.json"
-    ) {
-      cy.intercept(
-        { method: "POST", path: "/ui-server/api/data/storage" },
-        {
-          statusCode: 201,
-          fixture,
-        }
-      ).as(name);
+    postCloudStorage(args?: SimpleFixture) {
+      const {
+        fixture = "cloudStorage/new-cloud-storage.json",
+        name = "postCloudStorage",
+      } = args ?? {};
+      const response = { fixture, statusCode: 201 };
+      cy.intercept("POST", "/ui-server/api/data/storage", response).as(name);
       return this;
     }
 
-    patchCloudStorage(name = "patchCloudStorage") {
-      cy.intercept(
-        { method: "PATCH", path: "/ui-server/api/data/storage/*" },
-        {
-          statusCode: 201,
-        }
-      ).as(name);
+    patchCloudStorage(args?: NameOnlyFixture) {
+      const { name = "patchCloudStorage" } = args ?? {};
+      const response = { statusCode: 201 };
+      cy.intercept("PATCH", "/ui-server/api/data/storage/*", response).as(name);
       return this;
     }
 
-    deleteCloudStorage(name = "deleteCloudStorage") {
-      cy.intercept(
-        { method: "DELETE", path: "/ui-server/api/data/storage/*" },
-        {
-          statusCode: 204,
-        }
-      ).as(name);
+    deleteCloudStorage(args?: NameOnlyFixture) {
+      const { name = "deleteCloudStorage" } = args ?? {};
+      const response = { statusCode: 204 };
+      cy.intercept("DELETE", "/ui-server/api/data/storage/*", response).as(
+        name
+      );
       return this;
     }
   };
-};
+}

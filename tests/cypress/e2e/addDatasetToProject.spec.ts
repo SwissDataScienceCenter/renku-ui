@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("Add dataset to existing project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const datasetName = "abcd";
   const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
   const pathOrigin = "e2e/testing-datasets";
@@ -28,17 +26,14 @@ describe("Add dataset to existing project", () => {
 
   beforeEach(() => {
     fixtures.config().versions().userTest();
-    fixtures.landingUserProjects(
-      "getLandingUserProjects",
-      "projects/member-projects.json"
-    );
-    fixtures.datasetById(datasetIdentifier);
+    fixtures.landingUserProjects({ fixture: "projects/member-projects.json" });
+    fixtures.datasetById({ id: datasetIdentifier });
     fixtures
-      .project(pathOrigin, "getProject", "projects/project.json", false)
+      .project({ projectPath: pathOrigin, statistics: false })
       .cacheProjectList();
     fixtures.projectMigrationUpToDate({
+      name: "migrationCheckDatasetProject",
       queryUrl: "*",
-      fixtureName: "migrationCheckDatasetProject",
     });
     fixtures.importToProject();
     fixtures.importJobCompleted();
@@ -70,8 +65,8 @@ describe("Add dataset to existing project", () => {
   });
 
   it("successfully import dataset", () => {
-    fixtures.projectTestContents(undefined, 9);
-    fixtures.projectKGDatasetList(projectSelected);
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
+    fixtures.projectKGDatasetList({ projectPath: projectSelected });
     fixtures.projectDatasetList();
     fixtures.projectTest();
     fixtures.projectLockStatus();
@@ -120,8 +115,6 @@ describe("Add dataset to existing project", () => {
 });
 
 describe("Add dataset to new project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const datasetName = "abcd";
   const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
   const pathOrigin = "e2e/testing-datasets";
@@ -132,19 +125,15 @@ describe("Add dataset to new project", () => {
     fixtures.config().versions().userTest().namespaces().templates();
     fixtures
       .projects()
-      .landingUserProjects(
-        "getLandingUserProjects",
-        "projects/member-projects.json"
-      );
-    fixtures.datasetById(datasetIdentifier);
+      .landingUserProjects({ fixture: "projects/member-projects.json" });
+    fixtures.datasetById({ id: datasetIdentifier });
     fixtures
-      .project(pathOrigin, "getProject", "projects/project.json", false)
+      .project({ projectPath: pathOrigin, statistics: false })
       .cacheProjectList();
-    fixtures.interceptMigrationCheck(
-      "migrationCheckDatasetProject",
-      "project/migrationStatus/level1-all-good.json",
-      "*"
-    );
+    fixtures.interceptMigrationCheck({
+      name: "migrationCheckDatasetProject",
+      queryUrl: "*",
+    });
     cy.visit(`datasets/${datasetIdentifier}/add`);
     fixtures.importToProject();
     fixtures.importJobCompleted();
@@ -158,22 +147,16 @@ describe("Add dataset to new project", () => {
   });
 
   it("valid dataset, successful import", () => {
-    fixtures.interceptMigrationCheck(
-      "migrationCheckSelectedProject",
-      "project/migrationStatus/level1-all-good.json",
-      "*"
-    );
-    fixtures.projectTestContents(undefined, 9);
-    fixtures.projectKGDatasetList(newProjectPath);
+    fixtures.interceptMigrationCheck({
+      name: "migrationCheckSelectedProject",
+      queryUrl: "*",
+    });
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
+    fixtures.projectKGDatasetList({ projectPath: newProjectPath });
     fixtures.projectDatasetList();
     // fill form new project
     cy.createProjectAndAddDataset(newProjectTitle, newProjectPath, fixtures);
-    fixtures.project(
-      newProjectPath,
-      "getNewProject2",
-      "projects/project.json",
-      true
-    );
+    fixtures.project({ name: "getNewProject2", projectPath: newProjectPath });
     cy.wait("@importToProject");
     cy.wait("@importJobCompleted", { timeout: 20_000 });
     cy.url().should(
@@ -184,11 +167,10 @@ describe("Add dataset to new project", () => {
   });
 
   it("error importing dataset", () => {
-    fixtures.interceptMigrationCheck(
-      "migrationCheckSelectedProject",
-      "project/migrationStatus/level1-all-good.json",
-      "*"
-    );
+    fixtures.interceptMigrationCheck({
+      name: "migrationCheckSelectedProject",
+      queryUrl: "*",
+    });
     fixtures.importJobError();
     cy.createProjectAndAddDataset(newProjectTitle, newProjectPath, fixtures);
     cy.wait("@importToProject");
@@ -201,21 +183,16 @@ describe("Add dataset to new project", () => {
 });
 
 describe("Invalid dataset", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures
       .projects()
-      .landingUserProjects(
-        "getLandingUserProjects",
-        "projects/member-projects.json"
-      );
+      .landingUserProjects({ fixture: "projects/member-projects.json" });
   });
 
   it("displays warning when dataset doesn't exist", () => {
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
-    fixtures.invalidDataset(datasetIdentifier);
+    fixtures.invalidDataset({ id: datasetIdentifier });
     cy.visit(`datasets/${datasetIdentifier}/add`);
     cy.wait("@invalidDataset");
     cy.get("h3").contains("Dataset not found").should("be.visible");
@@ -223,14 +200,15 @@ describe("Invalid dataset", () => {
 
   it("displays warning when dataset is invalid", () => {
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
-    fixtures.datasetById(datasetIdentifier);
+    fixtures.datasetById({ id: datasetIdentifier });
     const pathOrigin = "e2e/testing-datasets";
-    fixtures.errorProject(pathOrigin).cacheProjectList();
-    fixtures.interceptMigrationCheck(
-      "migrationCheckDatasetProject",
-      "project/migrationStatus/level1-all-good.json",
-      "*"
-    );
+    fixtures
+      .errorProject({ project: { projectPath: pathOrigin } })
+      .cacheProjectList();
+    fixtures.interceptMigrationCheck({
+      name: "migrationCheckDatasetProject",
+      queryUrl: "*",
+    });
     cy.visit(`datasets/${datasetIdentifier}/add`);
     cy.wait("@getDatasetById");
     cy.wait("@getErrorProject");
