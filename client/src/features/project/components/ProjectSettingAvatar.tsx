@@ -170,6 +170,7 @@ export function ProjectSettingsAvatar({
         <CardBody>
           <InlineSubmitImageInput
             alert={null}
+            color="green"
             currentImageName={CURRENT_AVATAR_NAME}
             doneText="Avatar Updated"
             includeRequiredLabel={false}

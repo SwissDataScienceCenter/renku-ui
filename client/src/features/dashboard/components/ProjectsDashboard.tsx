@@ -18,14 +18,17 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment, useContext, useEffect, useState } from "react";
+import { Search } from "react-bootstrap-icons";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
+import cx from "classnames";
 import { InfoAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import ListDisplay from "../../../components/List";
 import { Loader } from "../../../components/Loader";
 import { EnvironmentLogs } from "../../../components/Logs";
+import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
 import ListBarSession from "../../../components/list/ListBarSessions";
 import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
 import { Notebook } from "../../../notebooks/components/session.types";
@@ -122,12 +125,15 @@ function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
       <Link
         to={`${Url.get(Url.pages.searchEntities)}?${paramsUrlStrMyProjects}`}
         data-cy="view-my-projects-btn"
-        className="btn btn-outline-rk-green"
+        className={cx(
+          "btn",
+          "btn-outline-rk-green",
+          "d-flex",
+          "align-items-center"
+        )}
       >
-        <div className="d-flex gap-2 text-rk-green">
-          <img src="/frame.svg" className="rk-icon rk-icon-md" />
-          View all my Projects
-        </div>
+        <SearchEntityIcon className="me-2" width={20} height={22} />
+        View all my Projects
       </Link>
     </div>
   ) : (
@@ -137,12 +143,15 @@ function OtherProjectsButton({ totalOwnProjects }: OtherProjectsButtonProps) {
           Url.pages.searchEntities
         )}?${paramsUrlStrExploreProjects}`}
         data-cy="explore-other-projects-btn"
-        className="btn btn-outline-rk-green"
+        className={cx(
+          "btn",
+          "btn-outline-rk-green",
+          "d-flex",
+          "align-items-center"
+        )}
       >
-        <div className="d-flex gap-2 text-rk-green">
-          <img src="/explore.svg" className="rk-icon rk-icon-md" />
-          Explore other Projects
-        </div>
+        <Search className="me-2" size={20} />
+        Explore other Projects
       </Link>
     </div>
   );
@@ -257,7 +266,7 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
             Projects
           </h3>
           <Link
-            className="btn btn-secondary btn-icon-text rk-dashboard-link"
+            className="btn btn-rk-green btn-icon-text rk-dashboard-link"
             role="button"
             to={urlMap.projectNewUrl}
           >

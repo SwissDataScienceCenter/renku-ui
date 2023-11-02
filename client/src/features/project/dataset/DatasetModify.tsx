@@ -263,6 +263,7 @@ function DatasetModifyForm(props: DatasetModifyFormProps) {
         name="image"
         register={register("image")}
         value={getValues("image")}
+        color="pink"
       />
       <DatasetFormErrors errors={errors} />
       <DatasetCreateSubmitGroup
