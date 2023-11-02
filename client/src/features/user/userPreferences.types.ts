@@ -24,3 +24,11 @@ export interface UserPreferences {
 export interface PinnedProjects {
   project_slugs?: string[];
 }
+
+export interface AddPinnedProjectParams {
+  project_slug: string;
+}
+
+export interface RemovePinnedProjectParams {
+  project_slug: string;
+}

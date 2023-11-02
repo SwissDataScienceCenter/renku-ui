@@ -17,8 +17,12 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { UserPreferences } from "./userPreferences.types";
 import { DataServicesError } from "../dataServices/dataServices.types";
+import {
+  AddPinnedProjectParams,
+  RemovePinnedProjectParams,
+  UserPreferences,
+} from "./userPreferences.types";
 
 const userPreferencesApi = createApi({
   reducerPath: "userPreferencesApi",
@@ -44,9 +48,39 @@ const userPreferencesApi = createApi({
         }
         return result;
       },
+      providesTags: ["UserPreferences"],
+    }),
+    addPinnedProject: builder.mutation<UserPreferences, AddPinnedProjectParams>(
+      {
+        query: ({ project_slug }) => {
+          return {
+            method: "POST",
+            url: "pinned_projects",
+            body: { project_slug },
+          };
+        },
+        invalidatesTags: ["UserPreferences"],
+      }
+    ),
+    removePinnedProject: builder.mutation<
+      UserPreferences,
+      RemovePinnedProjectParams
+    >({
+      query: ({ project_slug }) => {
+        return {
+          method: "DELETE",
+          url: "pinned_projects",
+          params: { project_slug },
+        };
+      },
+      invalidatesTags: ["UserPreferences"],
     }),
   }),
 });
 
 export default userPreferencesApi;
-export const { useGetUserPreferencesQuery } = userPreferencesApi;
+export const {
+  useGetUserPreferencesQuery,
+  useAddPinnedProjectMutation,
+  useRemovePinnedProjectMutation,
+} = userPreferencesApi;

@@ -74,6 +74,7 @@ import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
+import PinProjectButton from "../features/project/components/PinProjectButton";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -479,6 +480,7 @@ class ProjectViewHeaderOverview extends Component {
                 sshUrl={this.props.metadata.sshUrl}
                 httpUrl={this.props.metadata.httpUrl}
               />
+              <PinProjectButton />
             </div>
           </Col>
         </Row>
