@@ -18,15 +18,43 @@
 
 import { RootStateOrAny, useSelector } from "react-redux";
 import type { User } from "../../../model/RenkuModels";
-import { PinAngle } from "react-bootstrap-icons";
+import { PinAngle, PinAngleFill } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
 import cx from "classnames";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
+import { useGetUserPreferencesQuery } from "../../user/userPreferences.api";
+import { Loader } from "../../../components/Loader";
 
-export default function PinProjectButton() {
+interface PinProjectButtonProps {
+  projectSlug: string;
+}
+
+export default function PinProjectButton({
+  projectSlug,
+}: PinProjectButtonProps) {
   const userLogged = useSelector<RootStateOrAny, User["logged"]>(
     (state) => state.stateModel.user.logged
   );
+
+  const {
+    data: userPreferences,
+    isLoading,
+    isError,
+  } = useGetUserPreferencesQuery(undefined, { skip: !userLogged });
+
+  const isProjectPinned = useMemo(() => {
+    if (isLoading || isError) {
+      return undefined;
+    }
+    if (userPreferences == null) {
+      return false;
+    }
+    return (
+      userPreferences.pinned_projects.project_slugs?.find(
+        (slug) => slug.toLowerCase() === projectSlug.toLowerCase()
+      ) ?? false
+    );
+  }, [isError, isLoading, projectSlug, userPreferences]);
 
   const ref = useRef<HTMLButtonElement>(null);
 
@@ -34,18 +62,33 @@ export default function PinProjectButton() {
     return null;
   }
 
+  const tooltipMessage = isLoading
+    ? "Loading user preferences"
+    : isError
+    ? "Error: could not retrieve user preferences"
+    : isProjectPinned
+    ? "Unpin project from the dashboard"
+    : "Pin project to the dashboard";
+
   return (
     <>
       <Button
         className={cx("btn-outline-rk-green", "rounded-pill")}
+        disabled={isLoading || isError}
         innerRef={ref}
         type="button"
       >
-        <PinAngle className="bi" />
-        <span className="visually-hidden">Pin project to the dashboard</span>
+        {isLoading ? (
+          <Loader size={16} />
+        ) : isError || !isProjectPinned ? (
+          <PinAngle className="bi" />
+        ) : (
+          <PinAngleFill className="bi" />
+        )}
+        <span className="visually-hidden">{tooltipMessage}</span>
       </Button>
       <UncontrolledTooltip placement="top" target={ref}>
-        Pin project to the dashboard
+        {tooltipMessage}
       </UncontrolledTooltip>
     </>
   );

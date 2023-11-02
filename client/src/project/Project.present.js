@@ -480,7 +480,9 @@ class ProjectViewHeaderOverview extends Component {
                 sshUrl={this.props.metadata.sshUrl}
                 httpUrl={this.props.metadata.httpUrl}
               />
-              <PinProjectButton />
+              <PinProjectButton
+                projectSlug={this.props.metadata.pathWithNamespace}
+              />
             </div>
           </Col>
         </Row>
