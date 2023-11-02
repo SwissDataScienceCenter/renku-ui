@@ -71,7 +71,10 @@ export function useProjectSessions({
                 session.annotations
               ) as Session["annotations"];
               const fullPath = `${annotations["namespace"]}/${annotations["projectName"]}`;
-              return fullPath === projectPathWithNamespace;
+              return (
+                fullPath.toLowerCase() ===
+                projectPathWithNamespace.toLowerCase()
+              );
             })
             .reduce(
               (prev, [name, session]) => ({ ...prev, [name]: session }),

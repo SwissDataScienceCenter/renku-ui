@@ -16,23 +16,20 @@
  * limitations under the License.
  */
 
-import { FixturesConstructor } from "./fixtures";
-import { SimpleFixture } from "./fixtures.types";
-
-/**
- * Fixtures for Versions
- */
-
-export function Versions<T extends FixturesConstructor>(Parent: T) {
-  return class VersionsFixtures extends Parent {
-    sessionsVersion(args?: SimpleFixture) {
-      const { fixture = "session/version.json", name = "getSessionsVersion" } =
-        args ?? {};
-      const response = { fixture };
-      cy.intercept("GET", "/ui-server/api/notebooks/version", response).as(
-        name
-      );
-      return this;
+export type DeepRequired<T> = T extends object
+  ? {
+      [P in keyof T]-?: DeepRequired<T[P]>;
     }
-  };
+  : T;
+
+export interface NameOnlyFixture {
+  name?: string;
+}
+
+export interface SimpleFixture extends NameOnlyFixture {
+  fixture?: string;
+}
+
+export interface FixtureWithOverrides extends SimpleFixture {
+  overrides?: { [key: string]: unknown };
 }

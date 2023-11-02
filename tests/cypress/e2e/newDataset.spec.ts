@@ -16,25 +16,20 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("Project new dataset", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath).cacheProjectList();
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.project({ projectPath }).cacheProjectList();
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
     fixtures.addFileDataset();
-    fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
     cy.visit(`projects/${projectPath}/datasets/new`);
     cy.wait("@getProject");
@@ -98,7 +93,7 @@ describe("Project new dataset", () => {
 
   it("resets form when going to a new project", () => {
     const secondProjectPath = "e2e/random-project";
-    fixtures.project(secondProjectPath);
+    fixtures.project({ projectPath: secondProjectPath });
     fixtures.createDataset();
     fixtures.uploadDatasetFile();
     cy.newDataset({
@@ -132,15 +127,12 @@ describe("Project new dataset", () => {
   });
 
   it("upload dataset file", () => {
-    fixtures.uploadDatasetFile(
-      "multipleFilesUpload",
-      "datasets/upload-dataset-multiple-files.json",
-      {
-        override_existing: true,
-        unpack_archive: true,
-        statusCode: 200,
-      }
-    );
+    fixtures.uploadDatasetFile({
+      fixture: "datasets/upload-dataset-multiple-files.json",
+      name: "multipleFilesUpload",
+      overrideExisting: true,
+      unpackArchive: true,
+    });
     cy.newDataset({
       title: "New dataset completed",
     });
@@ -178,11 +170,12 @@ describe("Project new dataset", () => {
   });
 
   it("error upload dataset file", () => {
-    const options = {
-      override_existing: true,
+    fixtures.uploadDatasetFile({
+      fixture: "",
+      name: "errorUploadFile",
+      overrideExisting: true,
       statusCode: 500,
-    };
-    fixtures.uploadDatasetFile("errorUploadFile", "", options);
+    });
     cy.newDataset({
       title: "New dataset fail",
     });
@@ -200,10 +193,10 @@ describe("Project new dataset", () => {
   });
 
   it("shows error on empty title", () => {
-    fixtures.createDataset(
-      "createDatasetError",
-      "datasets/create-dataset-title-error.json"
-    );
+    fixtures.createDataset({
+      fixture: "datasets/create-dataset-title-error.json",
+      name: "createDatasetError",
+    });
     cy.getDataCy("submit-button").click();
     cy.get("div.error-feedback")
       .contains("Please fix problems")
@@ -211,10 +204,10 @@ describe("Project new dataset", () => {
   });
 
   it("shows error on invalid title", () => {
-    fixtures.createDataset(
-      "createDatasetError",
-      "datasets/create-dataset-title-error.json"
-    );
+    fixtures.createDataset({
+      fixture: "datasets/create-dataset-title-error.json",
+      name: "createDatasetError",
+    });
     cy.newDataset({
       title: "test@",
     });
@@ -227,8 +220,6 @@ describe("Project new dataset", () => {
 });
 
 describe("Project new dataset without access", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   const projectPath = "e2e/local-test-project";
 
   beforeEach(() => {
@@ -236,14 +227,11 @@ describe("Project new dataset without access", () => {
     fixtures.projects().landingUserProjects().projectTestObserver();
     fixtures.projectLockStatus();
     fixtures.cacheProjectList();
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
     fixtures.createDataset();
-    fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
   });
 
@@ -255,21 +243,16 @@ describe("Project new dataset without access", () => {
 });
 
 describe("Project import dataset", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath).cacheProjectList();
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.project({ projectPath }).cacheProjectList();
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
-    fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
     fixtures.importToProject();
   });

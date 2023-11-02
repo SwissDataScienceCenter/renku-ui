@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("display the home page", () => {
   beforeEach(() => {
-    new Fixtures(cy).config().versions().userNone();
+    fixtures.config().versions().userNone();
     cy.visit("/");
   });
 
@@ -37,7 +37,7 @@ describe("display the home page", () => {
 
 describe("404 page", () => {
   beforeEach(() => {
-    new Fixtures(cy).config().versions().userNone();
+    fixtures.config().versions().userNone();
     cy.visit("/xzy");
   });
 
@@ -48,11 +48,7 @@ describe("404 page", () => {
 
 describe("display the home page even when APIs return strange responses", () => {
   beforeEach(() => {
-    new Fixtures(cy)
-      .config()
-      .versions()
-      .statuspageDown()
-      .userNone(undefined, 1000);
+    fixtures.config().versions().statuspageDown().userNone();
     cy.visit("/");
   });
 
@@ -70,7 +66,7 @@ describe("display the home page even when APIs return strange responses", () => 
 
 describe("display version information", () => {
   beforeEach(() => {
-    new Fixtures(cy).config().versions().userNone();
+    fixtures.config().versions().userNone();
     cy.visit("/");
   });
 
@@ -92,7 +88,6 @@ const loremIpsum = `Lorem ipsum dolor sit amet, consectetur adipiscing elit,
 
 describe("display showcase projects", () => {
   beforeEach(() => {
-    const fixtures = new Fixtures(cy);
     fixtures.config().versions().userNone();
     const projects = {
       "lorenzo.cavazzi.tech/readme-file-dev": {
@@ -151,7 +146,7 @@ describe("display showcase projects", () => {
 
 describe("do not display showcase projects", () => {
   beforeEach(() => {
-    new Fixtures(cy)
+    fixtures
       .config({ overrides: { showcase: { enabled: false } } })
       .versions()
       .userNone();
