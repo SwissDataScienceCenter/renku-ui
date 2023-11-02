@@ -22,5 +22,5 @@ export interface UserPreferences {
 }
 
 export interface PinnedProjects {
-  project_slugs: string[];
+  project_slugs?: string[];
 }

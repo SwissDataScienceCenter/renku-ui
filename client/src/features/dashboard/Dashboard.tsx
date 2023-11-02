@@ -19,6 +19,7 @@
 import { RootStateOrAny, useSelector } from "react-redux";
 
 import { SshModal } from "../../components/ssh/ssh";
+import { useGetUserPreferencesQuery } from "../user/userPreferences.api";
 import DashboardMessage from "./components/DashboardMessage";
 import { DatasetDashboard } from "./components/DatasetsDashboard";
 import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
@@ -34,9 +35,25 @@ export function Dashboard() {
       <h1 data-cy="dashboard-title">Renku Dashboard - {user.data.name}</h1>
       <DashboardMessage />
       <ProjectsInactiveKGWarning />
+      <PinnedProjects />
       <ProjectsDashboard userName={user.data.name} />
       <DatasetDashboard userName={user.data.name} />
       <SshModal />
+    </div>
+  );
+}
+
+function PinnedProjects() {
+  const {
+    data: userPreferences,
+    isLoading,
+    isError,
+  } = useGetUserPreferencesQuery();
+
+  return (
+    <div>
+      <pre>{JSON.stringify(userPreferences, null, 2)}</pre>
+      <pre>{JSON.stringify({ isLoading, isError }, null, 2)}</pre>
     </div>
   );
 }
