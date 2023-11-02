@@ -6,7 +6,6 @@ export default defineConfig({
     specPattern: "cypress/e2e/**/*.{js,jsx,ts,tsx}",
   },
   env: {
-    USE_FIXTURES: true,
     CLOUD_STORAGE_READWRITE_ENABLED: false,
   },
   retries: {

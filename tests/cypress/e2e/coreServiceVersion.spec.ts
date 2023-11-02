@@ -19,7 +19,7 @@
 /**
  * Fix the core service version to specific values and test a few calls
  */
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 const config = {
   overrides: {
@@ -33,15 +33,9 @@ const config = {
 };
 
 describe("display a project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config(config).versions().userTest();
-    fixtures
-      .projects()
-      .landingUserProjects()
-      .projectTest()
-      .projectById("getProjectsById", 39646);
+    fixtures.projects().landingUserProjects().projectTest().projectById();
     fixtures.projectLockStatus().projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project");
   });
@@ -72,21 +66,16 @@ describe("display a project", () => {
 });
 
 describe("Project dataset", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {
     fixtures.config(config).versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(projectPath);
-    fixtures.projectKGDatasetList(projectPath);
+    fixtures.project({ projectPath });
+    fixtures.projectKGDatasetList({ projectPath });
     fixtures.projectDatasetList();
-    fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({
-      queryUrl: "*",
-      fixtureName: "getMigration",
-    });
+    fixtures.projectTestContents({ coreServiceV8: { coreVersion: 9 } });
+    fixtures.projectMigrationUpToDate({ queryUrl: "*" });
     fixtures.projectLockStatus();
   });
 
