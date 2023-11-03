@@ -21,8 +21,12 @@ import type { User } from "../../../model/RenkuModels";
 import { PinAngle, PinAngleFill } from "react-bootstrap-icons";
 import { Button, UncontrolledTooltip } from "reactstrap";
 import cx from "classnames";
-import { useMemo, useRef } from "react";
-import { useGetUserPreferencesQuery } from "../../user/userPreferences.api";
+import { useCallback, useMemo, useRef } from "react";
+import {
+  useGetUserPreferencesQuery,
+  useAddPinnedProjectMutation,
+  useRemovePinnedProjectMutation,
+} from "../../user/userPreferences.api";
 import { Loader } from "../../../components/Loader";
 
 interface PinProjectButtonProps {
@@ -36,11 +40,20 @@ export default function PinProjectButton({
     (state) => state.stateModel.user.logged
   );
 
+  if (!userLogged) {
+    return null;
+  }
+
+  return <PinProjectButtonImpl projectSlug={projectSlug} />;
+}
+
+function PinProjectButtonImpl({ projectSlug }: PinProjectButtonProps) {
   const {
     data: userPreferences,
     isLoading,
     isError,
-  } = useGetUserPreferencesQuery(undefined, { skip: !userLogged });
+    isFetching,
+  } = useGetUserPreferencesQuery();
 
   const isProjectPinned = useMemo(() => {
     if (isLoading || isError) {
@@ -56,11 +69,34 @@ export default function PinProjectButton({
     );
   }, [isError, isLoading, projectSlug, userPreferences]);
 
-  const ref = useRef<HTMLButtonElement>(null);
+  const [addPinnedProject, addPinnedProjectResult] =
+    useAddPinnedProjectMutation();
+  const [removePinnedProject, removePinnedProjectResult] =
+    useRemovePinnedProjectMutation();
 
-  if (!userLogged) {
-    return null;
-  }
+  const onClick = useCallback(() => {
+    if (
+      addPinnedProjectResult.isLoading ||
+      removePinnedProjectResult.isLoading
+    ) {
+      return;
+    }
+
+    if (isProjectPinned) {
+      removePinnedProject({ project_slug: projectSlug });
+    } else {
+      addPinnedProject({ project_slug: projectSlug });
+    }
+  }, [
+    addPinnedProject,
+    addPinnedProjectResult.isLoading,
+    isProjectPinned,
+    projectSlug,
+    removePinnedProject,
+    removePinnedProjectResult.isLoading,
+  ]);
+
+  const ref = useRef<HTMLButtonElement>(null);
 
   const tooltipMessage = isLoading
     ? "Loading user preferences"
@@ -74,12 +110,13 @@ export default function PinProjectButton({
     <>
       <Button
         className={cx("btn-outline-rk-green", "rounded-pill")}
-        disabled={isLoading || isError}
+        disabled={isFetching || isError}
         innerRef={ref}
+        onClick={onClick}
         type="button"
       >
-        {isLoading ? (
-          <Loader size={16} />
+        {isFetching ? (
+          <Loader inline size={16} />
         ) : isError || !isProjectPinned ? (
           <PinAngle className="bi" />
         ) : (
