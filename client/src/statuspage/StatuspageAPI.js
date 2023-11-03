@@ -49,7 +49,11 @@ class StatuspageAPI {
     return fetch(
       `https://${pageId}.statuspage.io/api/v2/summary.json`,
       queryParams
-    ).then((r) => r.json());
+    )
+      .then((r) => (!r.ok ? null : r.json()))
+      .catch(() => {
+        return null;
+      });
   }
 }
 
@@ -78,11 +82,19 @@ function pollStatuspage(statuspageId, model) {
   async function fetchIncidents() {
     try {
       const result = await statusPage.summary();
-      setStatusSummary(model, {
-        retrieved_at: new Date(),
-        statuspage: result,
-        error: null,
-      });
+      if (result == null) {
+        setStatusSummary(model, {
+          retrieved_at: new Date(),
+          statuspage: null,
+          error: "Could not retrieve statuspage summary",
+        });
+      } else {
+        setStatusSummary(model, {
+          retrieved_at: new Date(),
+          statuspage: result,
+          error: null,
+        });
+      }
     } catch (error) {
       // we abort the fetch when the component is unmounted, so we can ignore this error
       if (error.name !== "AbortError")

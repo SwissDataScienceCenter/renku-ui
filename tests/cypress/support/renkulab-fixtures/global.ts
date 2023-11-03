@@ -65,7 +65,7 @@ export function Global<T extends FixturesConstructor>(Parent: T) {
       const response = { body: {}, statusCode: 500 };
       cy.intercept(
         "GET",
-        "https://*.statuspage.io/api/v2/summary.jsonr",
+        "https://*.statuspage.io/api/v2/summary.json",
         response
       ).as(name);
       return this;
