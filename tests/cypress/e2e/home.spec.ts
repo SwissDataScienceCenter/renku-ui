@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("display the home page", () => {
   beforeEach(() => {
-    new Fixtures(cy).config().versions().userNone();
+    fixtures.config().versions().userNone();
     cy.visit("/");
   });
 
@@ -37,7 +37,7 @@ describe("display the home page", () => {
 
 describe("404 page", () => {
   beforeEach(() => {
-    new Fixtures(cy).config().versions().userNone();
+    fixtures.config().versions().userNone();
     cy.visit("/xzy");
   });
 
@@ -46,38 +46,27 @@ describe("404 page", () => {
   });
 });
 
-describe("display the maintenance page", () => {
+describe("display the home page even when APIs return strange responses", () => {
   beforeEach(() => {
-    new Fixtures(cy).config().versions();
+    fixtures.config().versions().statuspageDown().userNone();
+    cy.visit("/");
   });
 
-  it("displays an error when trying to get status page information", () => {
-    // ! we plan to change this behavior and ignore statuspage info when unavailable #2283
-    new Fixtures(cy).renkuDown();
-    cy.visit("/");
+  it("displays the home page intro text", () => {
+    cy.wait("@getUser");
     cy.get("h1").should("have.length", 1);
-    cy.get("h1").contains("RenkuLab Down").should("be.visible");
-    cy.get(".alert-content")
-      .contains("Could not retrieve status information")
-      .should("be.visible");
-  });
-
-  it("displays status page information", () => {
-    // if the call to get the user fails (e.g., no .userNone() fixture)
-    // then show the status page
-    new Fixtures(cy).getStatuspageInfo();
-    cy.visit("/");
-    cy.wait("@getStatuspageInfo");
-    cy.get("h1").should("have.length", 1);
-    cy.get("h1").contains("RenkuLab Down").should("be.visible");
-    cy.get("h3").contains("RenkuLab Status").should("be.visible");
-    cy.get("h4").contains("Scheduled Maintenance Details").should("be.visible");
+    cy.get("h1")
+      .first()
+      .should(
+        "have.text",
+        "An open-source knowledge infrastructure for collaborative and reproducible data science"
+      );
   });
 });
 
 describe("display version information", () => {
   beforeEach(() => {
-    new Fixtures(cy).config().versions().userNone();
+    fixtures.config().versions().userNone();
     cy.visit("/");
   });
 
@@ -99,7 +88,6 @@ const loremIpsum = `Lorem ipsum dolor sit amet, consectetur adipiscing elit,
 
 describe("display showcase projects", () => {
   beforeEach(() => {
-    const fixtures = new Fixtures(cy);
     fixtures.config().versions().userNone();
     const projects = {
       "lorenzo.cavazzi.tech/readme-file-dev": {
@@ -158,7 +146,7 @@ describe("display showcase projects", () => {
 
 describe("do not display showcase projects", () => {
   beforeEach(() => {
-    new Fixtures(cy)
+    fixtures
       .config({ overrides: { showcase: { enabled: false } } })
       .versions()
       .userNone();

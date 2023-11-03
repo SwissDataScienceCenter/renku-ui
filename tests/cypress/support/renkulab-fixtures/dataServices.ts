@@ -17,21 +17,37 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import { SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for Data Services
  */
 
-export const DataServices = <T extends FixturesConstructor>(Parent: T) => {
+export function DataServices<T extends FixturesConstructor>(Parent: T) {
   return class DataServicesFixtures extends Parent {
-    resourcePoolsTest(
-      name = "getResourcePools",
-      fixture = "dataServices/resource-pools.json"
+    resourcePoolsTest(args?: SimpleFixture) {
+      const {
+        fixture = "dataServices/resource-pools.json",
+        name = "getResourcePools",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept("GET", "/ui-server/api/data/resource_pools*", response).as(
+        name
+      );
+      return this;
+    }
+
+    adminResourcePoolUsers(
+      name = "getAdminResourcePoolUsers",
+      fixture = "dataServices/resource-pool-users.json"
     ) {
-      cy.intercept("/ui-server/api/data/resource_pools*", {
+      cy.intercept("/ui-server/api/data/users", {
         fixture,
       }).as(name);
+      cy.intercept("/ui-server/api/data/resource_pools/*/users", {
+        fixture,
+      });
       return this;
     }
   };
-};
+}

@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useMemo } from "react";
 import cx from "classnames";
+import { useCallback, useEffect, useMemo } from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Input, InputGroup, InputGroupText } from "reactstrap";
 import { ThrottledTooltip } from "../../../../components/Tooltip";
+import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
-import { useGetResourcePoolsQuery } from "../../../dataServices/dataServicesApi";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import {

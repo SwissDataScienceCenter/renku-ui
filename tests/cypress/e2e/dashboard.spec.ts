@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 import {
   DISMISSIBLE_SIMPLE_INFO_MESSAGE_FIXTURE,
   NON_DISMISSIBLE_READ_MORE_SUCCESS_MESSAGE_FIXTURE,
@@ -29,8 +29,6 @@ const findProject = (path, projects) => {
 };
 
 describe("dashboard", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
   });
@@ -38,15 +36,15 @@ describe("dashboard", () => {
   it("user does has not own projects and no projects recently visited", () => {
     fixtures
       .projects()
-      .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/empty-last-visited-projects.json"
-      )
-      .noActiveProjects("getNoActiveProjects");
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
+      .getLastVisitedProjects({
+        fixture: "projects/empty-last-visited-projects.json",
+      })
+      .noActiveProjects();
 
     cy.visit("/");
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");
@@ -70,7 +68,8 @@ describe("dashboard", () => {
   it("user does not have own project but has visited projects", () => {
     fixtures
       .projects()
-      .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
+      .sessionServersEmpty()
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
       .getLastVisitedProjects();
     const files = {
       "lorenzo.cavazzi.tech/readme-file-dev": 30929,
@@ -79,26 +78,25 @@ describe("dashboard", () => {
       "e2e/local-test-project": 39646,
     };
     // fixture landing page project data
-    for (const filesKey in files)
-      fixtures.project(
-        filesKey,
-        "projectLanding",
-        `projects/project_${files[filesKey]}.json`,
-        false
-      );
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        name: `projectLanding-${filesKey}`,
+        projectPath: filesKey,
+        statistics: false,
+      });
+    }
 
     cy.visit("/");
     let projects;
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
     );
-    cy.wait([
-      "@projectLanding",
-      "@projectLanding",
-      "@projectLanding",
-      "@projectLanding",
-    ]).then((results) => {
+    cy.wait(
+      Object.keys(files).map((filesKey) => `@projectLanding-${filesKey}`)
+    ).then((results) => {
       const firstProject = findProject(projects[0], results);
       const projectData = firstProject.response?.body;
       cy.getDataCy("projects-container")
@@ -117,11 +115,11 @@ describe("dashboard", () => {
   it("user has own projects and recently visited projects", () => {
     fixtures
       .projects()
-      .entitySearch("getEntities", "kgSearch/search.json", "7")
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/last-visited-projects-5.json"
-      );
+      .sessionServersEmpty()
+      .entitySearch()
+      .getLastVisitedProjects({
+        fixture: "projects/last-visited-projects-5.json",
+      });
     const files = {
       "lorenzo.cavazzi.tech/readme-file-dev": 30929,
       "e2e/testing-datasets": 43781,
@@ -130,27 +128,25 @@ describe("dashboard", () => {
       "e2e/local-test-project-2": 44967,
     };
     // fixture landing page project data
-    for (const filesKey in files)
-      fixtures.project(
-        filesKey,
-        "getProject",
-        `projects/project_${files[filesKey]}.json`,
-        false
-      );
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        name: `getProject-${filesKey}`,
+        projectPath: filesKey,
+        statistics: false,
+      });
+    }
 
     cy.visit("/");
     let projects;
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getLastVisitedProjects").then(
       (result) => (projects = result.response.body.projects)
     );
-    cy.wait([
-      "@getProject",
-      "@getProject",
-      "@getProject",
-      "@getProject",
-      "@getProject",
-    ]).then((results) => {
+    cy.wait(
+      Object.keys(files).map((filesKey) => `@getProject-${filesKey}`)
+    ).then((results) => {
       const firstProject = findProject(projects[0], results);
       const projectData = firstProject.response?.body;
       cy.getDataCy("projects-container")
@@ -166,12 +162,11 @@ describe("dashboard", () => {
   it("user has sessions to display in dashboard", () => {
     fixtures
       .projects()
-      .entitySearch("getEntities", "kgSearch/search.json", "7")
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/last-visited-projects-5.json"
-      )
-      .getSessions("getSessions", "sessions/sessionsWithError.json")
+      .entitySearch()
+      .getLastVisitedProjects({
+        fixture: "projects/last-visited-projects-5.json",
+      })
+      .getSessions({ fixture: "sessions/sessionsWithError.json" })
       .getProjectCommits();
     const files = {
       "dalatinrofrau/flights-usa": 55402,
@@ -183,31 +178,30 @@ describe("dashboard", () => {
       "e2e/local-test-project-2": 44967,
     };
     // fixture landing page project data
-    for (const filesKey in files)
-      fixtures.project(
-        filesKey,
-        "getProject",
-        `projects/project_${files[filesKey]}.json`,
-        false
-      );
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        projectPath: filesKey,
+        statistics: false,
+      });
+    }
 
     fixtures
-      .project(
-        "lorenzo.cavazzi.tech/readme-file-dev",
-        "getFirstProject",
-        "projects/project_30929.json",
-        true
-      )
+      .project({
+        fixture: "projects/project_30929.json",
+        name: "getFirstProject",
+        projectPath: "lorenzo.cavazzi.tech/readme-file-dev",
+      })
       .projectLockStatus()
       .projectMigrationUpToDate({
         queryUrl:
           "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Florenzo.cavazzi.tech%2Freadme-file-dev&branch=master",
-        fixtureName: "getMigration",
       });
     cy.visit("projects/lorenzo.cavazzi.tech/readme-file-dev/sessions");
     cy.wait("@getFirstProject");
 
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getSessions");
     cy.getDataCy("session-container").should("be.visible");
     cy.getDataCy("link-home").click({ force: true }); // eslint-disable-line cypress/no-force
@@ -238,24 +232,22 @@ describe("dashboard", () => {
 });
 
 describe("dashboard message", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures
       .versions()
       .userTest()
       .projects()
-      .entitySearch("getEntities", "kgSearch/emptySearch.json", "0")
-      .getLastVisitedProjects(
-        "getLastVisitedProjects",
-        "projects/empty-last-visited-projects.json"
-      )
-      .noActiveProjects("getNoActiveProjects");
+      .entitySearch({ fixture: "kgSearch/emptySearch.json", total: 0 })
+      .getLastVisitedProjects({
+        fixture: "projects/empty-last-visited-projects.json",
+      })
+      .noActiveProjects();
   });
 
   const visitDashboardPage = () => {
     cy.visit("/");
     cy.wait("@getUser");
+    cy.wait("@getKeycloakUser");
     cy.wait("@getEntities");
     cy.wait("@getLastVisitedProjects");
     cy.wait("@getNoActiveProjects");

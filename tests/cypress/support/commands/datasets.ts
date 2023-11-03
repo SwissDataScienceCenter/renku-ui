@@ -23,11 +23,11 @@ function selectProjectFromAutosuggestionList(
   fixtures: FixturesType,
   migrationCheckResult: string
 ) {
-  fixtures.interceptMigrationCheck(
-    "migrationCheckSelectedProject",
-    migrationCheckResult,
-    "*"
-  );
+  fixtures.interceptMigrationCheck({
+    name: "migrationCheckSelectedProject",
+    fixture: migrationCheckResult,
+    queryUrl: "*",
+  });
   // click in project suggestion list to display options and type project to import dataset and select it
   cy.getDataCy("form-project-exist")
     .get(".mb-3 > .react-autosuggest__container > .form-control")

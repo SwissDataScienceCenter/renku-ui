@@ -20,7 +20,7 @@ export interface ResourcePool {
   id: number;
   name: string;
   classes: ResourceClass[];
-  quota: Resources;
+  quota?: Resources;
   default: boolean;
   public: boolean;
 }
@@ -50,7 +50,6 @@ export interface Resources {
   cpu: number;
   memory: number;
   gpu: number;
-  storage: number;
 }
 
 export interface ResourcePoolsQueryParams {

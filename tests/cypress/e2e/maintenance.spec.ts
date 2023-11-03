@@ -16,12 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("display the maintenance page", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
-
   // e of the resources on RenkuLab are t
   it("Shows the standard error when UI is down but no maintenance is set", () => {
     fixtures.config();
@@ -45,9 +42,35 @@ describe("display the maintenance page", () => {
   });
 });
 
-describe("display the status page", () => {
-  const fixtures = new Fixtures(cy);
+describe("display the maintenance page when there is no user response", () => {
+  beforeEach(() => {
+    fixtures.config().versions();
+  });
 
+  it("displays an error when trying to get status page information", () => {
+    fixtures.renkuDown().statuspageDown();
+    cy.visit("/");
+    cy.get("h1").should("have.length", 1);
+    cy.get("h1").contains("RenkuLab Down").should("be.visible");
+    cy.get(".alert-content")
+      .contains("Could not retrieve status information")
+      .should("be.visible");
+  });
+
+  it("displays status page information", () => {
+    // if the call to get the user fails (e.g., no .userNone() fixture)
+    // then show the status page
+    fixtures.getStatuspageInfo();
+    cy.visit("/");
+    cy.wait("@getStatuspageInfo");
+    cy.get("h1").should("have.length", 1);
+    cy.get("h1").contains("RenkuLab Down").should("be.visible");
+    cy.get("h3").contains("RenkuLab Status").should("be.visible");
+    cy.get("h4").contains("Scheduled Maintenance Details").should("be.visible");
+  });
+});
+
+describe("display the status page", () => {
   it("Shows no banner if there is no incident or maintenance", () => {
     fixtures.config().versions().userNone().getStatuspageInfo();
     cy.visit("/");
@@ -60,7 +83,7 @@ describe("display the status page", () => {
       .config()
       .versions()
       .userNone()
-      .getStatuspageInfo({ fixture: "statuspage-outage.json" });
+      .getStatuspageInfo({ fixture: "statuspage/statuspage-outage.json" });
     cy.visit("/");
     cy.wait("@getStatuspageInfo");
     cy.get(".alert").contains("RenkuLab is unstable").should("be.visible");
@@ -71,7 +94,7 @@ describe("display the status page", () => {
       .config()
       .versions()
       .userTest()
-      .getStatuspageInfo({ fixture: "statuspage-outage.json" });
+      .getStatuspageInfo({ fixture: "statuspage/statuspage-outage.json" });
     cy.visit("/");
     cy.wait("@getStatuspageInfo");
     cy.get(".alert").contains("RenkuLab is unstable").should("be.visible");

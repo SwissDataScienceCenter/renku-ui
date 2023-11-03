@@ -17,108 +17,152 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
+import {
+  DeepRequired,
+  FixtureWithOverrides,
+  NameOnlyFixture,
+  SimpleFixture,
+} from "./fixtures.types";
 
 /**
  * Fixtures generic
  */
 
-function Global<T extends FixturesConstructor>(Parent: T) {
+export function Global<T extends FixturesConstructor>(Parent: T) {
   return class NewSessionFixtures extends Parent {
-    getStatuspageInfo({
-      name = "getStatuspageInfo",
-      fixture = "statuspage-operational.json",
-      overrides,
-    }: {
-      name?: string;
-      fixture?: string;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      overrides?: any;
-    } = {}) {
+    getStatuspageInfo(args?: FixtureWithOverrides) {
+      const {
+        fixture = "statuspage/statuspage-operational.json",
+        name = "getStatuspageInfo",
+        overrides = null,
+      } = args ?? {};
+
       if (overrides == null) {
-        const interceptResponse = { fixture: `statuspage/${fixture}` };
+        const response = { fixture };
         cy.intercept(
+          "GET",
           "https://*.statuspage.io/api/v2/summary.json",
-          interceptResponse
+          response
         ).as(name);
         return this;
       }
-      cy.fixture(`statuspage/${fixture}`).then((baseResponse) => {
-        const combinedResponse = { ...baseResponse, ...overrides };
-        cy.intercept("https://*.statuspage.io/api/v2/summary.json", {
-          body: combinedResponse,
-        }).as(name);
+
+      cy.fixture(fixture).then((baseResult) => {
+        const combinedResult = { ...baseResult, ...overrides };
+        const response = { body: combinedResult };
+        cy.intercept(
+          "GET",
+          "https://*.statuspage.io/api/v2/summary.json",
+          response
+        ).as(name);
       });
+
       return this;
     }
 
-    config(params?: {
-      name?: string;
-      fixture?: string;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      overrides?: any;
-    }) {
+    statuspageDown(args?: NameOnlyFixture) {
+      const { name = "getStatuspageInfo" } = args ?? {};
+      const response = { body: {}, statusCode: 500 };
+      cy.intercept(
+        "GET",
+        "https://*.statuspage.io/api/v2/summary.jsonr",
+        response
+      ).as(name);
+      return this;
+    }
+
+    config(args?: FixtureWithOverrides) {
       const {
-        name = "getConfig",
         fixture = "config.json",
-        overrides,
-      } = params || {};
+        name = "getConfig",
+        overrides = null,
+      } = args ?? {};
+
       if (overrides == null) {
-        cy.intercept("/config.json", {
-          fixture,
-        }).as(name);
+        const response = { fixture };
+        cy.intercept("GET", "/config.json", response).as(name);
         return this;
       }
-      cy.fixture("config.json").then((baseConfig) => {
-        const combinedConfig = { ...baseConfig, ...overrides };
-        cy.intercept("/config.json", {
-          body: combinedConfig,
-        }).as(name);
+
+      cy.fixture(fixture).then((baseResult) => {
+        const combinedResult = { ...baseResult, ...overrides };
+        const response = { body: combinedResult };
+        cy.intercept("GET", "/config.json", response).as(name);
       });
-      return this;
-    }
-
-    versions(
-      names = {
-        coreVersionsName: "getCoreVersions",
-        notebooksVersionsName: "getNotebooksVersions",
-        uiVersionName: "getUiVersion",
-      },
-      fixtures = {
-        core: "version-core.json",
-        notebooks: "version-notebooks.json",
-        ui: "version-ui.json",
-      }
-    ) {
-      const { coreVersionsName, notebooksVersionsName, uiVersionName } = names;
-      cy.intercept("/ui-server/api/versions", {
-        fixture: fixtures.ui,
-      }).as(uiVersionName);
-      cy.intercept("/ui-server/api/renku/versions", {
-        fixture: fixtures.core,
-      }).as(coreVersionsName);
-      cy.intercept("/ui-server/api/notebooks/version", {
-        fixture: fixtures.notebooks,
-      }).as(notebooksVersionsName);
 
       return this;
     }
 
-    namespaces(name = "getNamespaces") {
-      cy.intercept("/ui-server/api/namespaces?*", {
-        fixture: "namespaces.json",
-      }).as(name);
-      return this;
-    }
+    versions(args?: VersionsArgs) {
+      const { core, notebooks, ui } = Cypress._.defaultsDeep({}, args, {
+        core: {
+          fixture: "version-core.json",
+          name: "getCoreVersions",
+        },
+        notebooks: {
+          fixture: "version-notebooks.json",
+          name: "getNotebooksVersions",
+        },
+        ui: {
+          fixture: "version-ui.json",
+          name: "getUiVersion",
+        },
+      }) as DeepRequired<VersionsArgs>;
 
-    templates(error = false, urlSource = "*", name = "getTemplates") {
-      const fixture = error ? "errors/core-error-1101.json" : "templates.json";
+      const coreResponse = { fixture: core.fixture };
+      cy.intercept("GET", "/ui-server/api/renku/versions", coreResponse).as(
+        core.name
+      );
+
+      const notebooksResponse = { fixture: notebooks.fixture };
       cy.intercept(
-        "/ui-server/api/renku/templates.read_manifest?" + urlSource,
-        { fixture }
+        "GET",
+        "/ui-server/api/notebooks/version",
+        notebooksResponse
+      ).as(notebooks.name);
+
+      const uiResponse = { fixture: ui.fixture };
+      cy.intercept("GET", "/ui-server/api/versions", uiResponse).as(ui.name);
+
+      return this;
+    }
+
+    namespaces(args?: SimpleFixture) {
+      const { fixture = "namespaces.json", name = "getNamespaces" } =
+        args ?? {};
+      const response = { fixture };
+      cy.intercept("GET", "/ui-server/api/namespaces?*", response).as(name);
+      return this;
+    }
+
+    templates(args?: TemplatesArgs) {
+      const error = args?.error ?? false;
+      const defaultFixture = error
+        ? "errors/core-error-1101.json"
+        : "templates.json";
+      const {
+        fixture = defaultFixture,
+        name = "getTemplates",
+        urlSource = "*",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "GET",
+        `/ui-server/api/renku/templates.read_manifest?${urlSource}`,
+        response
       ).as(name);
       return this;
     }
   };
 }
 
-export { Global };
+interface VersionsArgs {
+  core?: SimpleFixture;
+  notebooks?: SimpleFixture;
+  ui?: SimpleFixture;
+}
+
+interface TemplatesArgs extends SimpleFixture {
+  error?: boolean;
+  urlSource?: string;
+}

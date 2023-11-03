@@ -42,6 +42,7 @@ import ProgressIndicator, {
 } from "../../../components/progress/Progress";
 import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
 import { ImportStateMessage } from "../../../utils/constants/Dataset";
+import AddDatasetButtons from "../../../components/addDatasetButtons/AddDatasetButtons";
 
 type DatasetImportClient = {
   datasetImport: (
@@ -154,6 +155,12 @@ function DatasetImportForm(
 
   return (
     <FormSchema showHeader={true} title="Import Dataset" description={desc}>
+      <div className="form-rk-pink d-flex flex-column">
+        <AddDatasetButtons
+          optionSelected="importDataset"
+          toggleNewDataset={props.toggleNewDataset}
+        />
+      </div>
       <form
         className="form-rk-pink"
         onSubmit={handleSubmit(props.submitCallback)}

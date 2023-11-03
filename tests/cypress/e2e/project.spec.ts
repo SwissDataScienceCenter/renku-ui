@@ -16,17 +16,17 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("display a project - not found", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions();
   });
 
   it("displays the project not found page when the name is incorrect - logged user", () => {
-    fixtures.userTest().errorProject("e2e/not-found-test-project");
+    fixtures
+      .userTest()
+      .errorProject({ project: { projectPath: "e2e/not-found-test-project" } });
     cy.visit("/projects/e2e/not-found-test-project");
 
     cy.getDataCy("not-found-title")
@@ -50,7 +50,9 @@ describe("display a project - not found", () => {
   });
 
   it("displays the project not found page when the name is incorrect - anon user", () => {
-    fixtures.userNone().errorProject("e2e/not-found-test-project");
+    fixtures
+      .userNone()
+      .errorProject({ project: { projectPath: "e2e/not-found-test-project" } });
     cy.visit("/projects/e2e/not-found-test-project");
 
     cy.getDataCy("not-found-title")
@@ -74,7 +76,7 @@ describe("display a project - not found", () => {
   });
 
   it("displays the project not found page when the numeric id is incorrect - logged user", () => {
-    fixtures.userTest().errorProject("12345");
+    fixtures.userTest().errorProject({ project: { projectPath: "12345" } });
     cy.visit("/projects/12345");
 
     cy.getDataCy("not-found-title")
@@ -98,7 +100,7 @@ describe("display a project - not found", () => {
   });
 
   it("displays the project not found page when the numeric id is incorrect - anon user", () => {
-    fixtures.userNone().errorProject("12345");
+    fixtures.userNone().errorProject({ project: { projectPath: "12345" } });
     cy.visit("/projects/12345");
 
     cy.getDataCy("not-found-title")
@@ -123,15 +125,9 @@ describe("display a project - not found", () => {
 });
 
 describe("display a project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
-    fixtures
-      .projects()
-      .landingUserProjects()
-      .projectTest()
-      .projectById("getProjectsById", 39646);
+    fixtures.projects().landingUserProjects().projectTest().projectById();
     fixtures.projectLockStatus().projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project");
   });
@@ -151,6 +147,8 @@ describe("display a project", () => {
   it("displays lock correctly", () => {
     fixtures.projectLockStatus({ locked: true });
     cy.visit("/projects/e2e/local-test-project/settings");
+    cy.wait("@getMigration");
+    cy.wait("@getProjectLockStatus");
     cy.getDataCy("settings-navbar")
       .contains("a", "Sessions")
       .should("exist")
@@ -266,8 +264,6 @@ describe("display a project", () => {
 });
 
 describe("fork a project", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
@@ -277,7 +273,7 @@ describe("fork a project", () => {
   });
 
   it("displays fork modal correctly", () => {
-    fixtures.projectTest(undefined, { visibility: "private" });
+    fixtures.projectTest({ overrides: { visibility: "private" } });
     cy.wait("@getProject");
     cy.get("#fork-project").click();
     cy.wait("@getNamespaces");

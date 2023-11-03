@@ -44,4 +44,6 @@ export const dataServicesApi = createApi({
   }),
 });
 
+export default dataServicesApi;
+
 export const { useGetResourcePoolsQuery } = dataServicesApi;

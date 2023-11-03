@@ -58,8 +58,7 @@ import {
   ProjectFileView,
 } from "../features/project";
 import ProjectPageTitle from "../features/project/components/ProjectPageTitle";
-import { ProjectSettingsGeneral } from "../features/project/components/ProjectSettings";
-import ProjectSettingsCloudStorage from "../features/project/components/ProjectSettingsCloudStorage";
+import ProjectSettings from "../features/project/components/ProjectSettings";
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import ProjectSessionsRouter from "../features/session/components/ProjectSessionsRouter";
 import { SpecialPropVal } from "../model/Model";
@@ -71,7 +70,6 @@ import { CloneButton } from "./clone/CloneButton";
 import GitLabConnectButton, {
   externalUrlToGitLabIdeUrl,
 } from "./components/GitLabConnect";
-import ProjectSettingsSessions from "./components/ProjectSettingsSessions";
 import { ProjectViewNotFound } from "./components/ProjectViewNotFound";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import { ForkProject } from "./new";
@@ -118,10 +116,9 @@ function ToggleForkModalButton({
       onClick={toggleModal}
     >
       <FontAwesomeIcon size="sm" icon={faCodeBranch} /> Fork
-      <UncontrolledTooltip
-        target="fork-project"
-        tooltip="Fork your own copy of this project"
-      />
+      <UncontrolledTooltip target="fork-project">
+        Fork your own copy of this project
+      </UncontrolledTooltip>
     </Button>
   );
 }
@@ -798,56 +795,6 @@ class ProjectViewFiles extends Component {
       </div>,
     ];
   }
-}
-
-function ProjectSettingsNav(props) {
-  return (
-    <Nav
-      className="flex-column nav-light nav-pills-underline"
-      data-cy="settings-navbar"
-    >
-      <NavItem>
-        <RenkuNavLink to={props.settingsUrl} title="General" />
-      </NavItem>
-      <NavItem>
-        <RenkuNavLink to={props.settingsSessionsUrl} title="Sessions" />
-      </NavItem>
-      <NavItem>
-        <RenkuNavLink
-          to={props.settingsCloudStorageUrl}
-          title="Cloud Storage"
-        />
-      </NavItem>
-    </Nav>
-  );
-}
-function ProjectSettings(props) {
-  return (
-    <Col key="settings">
-      <Row>
-        <Col key="nav" sm={12} md={2}>
-          <ProjectSettingsNav {...props} />
-        </Col>
-        <Col key="content" sm={12} md={10} data-cy="settings-container">
-          <Switch>
-            <Route
-              exact
-              path={props.settingsUrl}
-              render={() => {
-                return <ProjectSettingsGeneral {...props} />;
-              }}
-            />
-            <Route exact path={props.settingsSessionsUrl}>
-              <ProjectSettingsSessions />
-            </Route>
-            <Route exact path={props.settingsCloudStorageUrl}>
-              <ProjectSettingsCloudStorage />
-            </Route>
-          </Switch>
-        </Col>
-      </Row>
-    </Col>
-  );
 }
 
 class ProjectViewLoading extends Component {
