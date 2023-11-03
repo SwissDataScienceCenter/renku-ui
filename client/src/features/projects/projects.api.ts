@@ -21,6 +21,7 @@ import {
   ProjectMetadata,
 } from "../../utils/helpers/ProjectFunctions";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { GetProjectsFromSlugsParams } from "./projects.types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -173,6 +174,43 @@ export const projectsApi = createApi({
         }
       },
     }),
+    getProjectsFromSlugs: builder.query<any[], GetProjectsFromSlugsParams>({
+      async queryFn({ projectSlugs }, _queryApi, _extraOptions, fetchWithBQ) {
+        if (projectSlugs.length > 0) {
+          // if the user has recent projects get the project information
+          const projectRequests = [];
+          for (const project of projectSlugs) {
+            projectRequests.push(
+              fetchWithBQ(
+                `/projects/${encodeURIComponent(
+                  project
+                )}?statistics=false&doNotTrack=true`
+              )
+            );
+          }
+
+          try {
+            const resultAllProjectData = await Promise.allSettled(
+              projectRequests
+            );
+            const projectList = [];
+            for (const projectData of resultAllProjectData) {
+              if (
+                projectData.status === "fulfilled" &&
+                !projectData.value.error
+              )
+                projectList.push(formatProjectMetadata(projectData.value.data));
+            }
+
+            return { data: projectList };
+          } catch (e) {
+            return { error: e as FetchBaseQueryError };
+          }
+        } else {
+          return { data: [] };
+        }
+      },
+    }),
   }),
   refetchOnMountOrArgChange: 3,
 });
@@ -184,4 +222,5 @@ export const {
   useGetGroupByPathQuery,
   useGetMemberProjectsQuery,
   useGetRecentlyVisitedProjectsQuery,
+  useGetProjectsFromSlugsQuery,
 } = projectsApi;

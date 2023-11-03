@@ -42,7 +42,7 @@ import projectCloudStorageApi from "../../features/project/projectCloudStorage.a
 import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKg.api";
-import { projectsApi } from "../../features/projects/projectsApi";
+import { projectsApi } from "../../features/projects/projects.api";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";

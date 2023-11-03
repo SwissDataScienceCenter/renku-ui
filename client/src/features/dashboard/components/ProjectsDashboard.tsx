@@ -17,7 +17,7 @@
  */
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -47,7 +47,9 @@ import {
   useSearchEntitiesQuery,
 } from "../../kgSearch/KgSearchApi";
 import { stateToSearchString } from "../../kgSearch/KgSearchState";
+import { useGetProjectsFromSlugsQuery } from "../../projects/projects.api";
 import { useGetSessionsQuery } from "../../session/sessions.api";
+import { useGetUserPreferencesQuery } from "../../user/userPreferences.api";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -217,8 +219,11 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
     },
     userName,
   };
-  const { data, isFetching, isLoading, error } =
-    useSearchEntitiesQuery(searchRequest);
+  const {
+    data: searchProjects,
+    isLoading: isLoadingSearchProjects,
+    error: searchProjectsError,
+  } = useSearchEntitiesQuery(searchRequest);
 
   const { data: sessions, isLoading: isLoadingSessions } =
     useGetSessionsQuery();
@@ -230,14 +235,19 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
     sessionsFormatted
   );
   const totalUserProjects =
-    isFetching || isLoading || !data || error ? undefined : data.total;
+    isLoadingSearchProjects || !searchProjects || searchProjectsError
+      ? undefined
+      : searchProjects.total;
   let projectsToShow;
   if (isLoadingSessions || isFetchingProjects) {
     projectsToShow = <Loader />;
   } else {
     projectsToShow =
       projects?.length > 0 ? (
-        <ProjectListRows projects={projects} gridDisplay={false} />
+        <>
+          <h4 className="fs-5">Recently visited projects</h4>
+          <ProjectListRows projects={projects} gridDisplay={false} />
+        </>
       ) : sessionsFormatted.length === 0 ? (
         <p className="rk-dashboard-section-header">
           You do not have any recently-visited projects
@@ -267,6 +277,7 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
             </span>
           </Link>
         </div>
+        <PinnedProjects />
         <SessionsToShow currentSessions={sessionsFormatted} />
         {projectsToShow}
         {otherProjectsBtn}
@@ -354,6 +365,54 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
     return <div className="session-list">{element}</div>;
   }
   return null;
+}
+
+function PinnedProjects() {
+  const {
+    data: userPreferences,
+    isLoading: isLoadingUserPreferences,
+    isError: isErrorUserPreferences,
+  } = useGetUserPreferencesQuery();
+
+  const projectSlugs = useMemo(() => {
+    if (isLoadingUserPreferences || isErrorUserPreferences) {
+      return undefined;
+    }
+    return userPreferences?.pinned_projects.project_slugs ?? [];
+  }, [
+    isErrorUserPreferences,
+    isLoadingUserPreferences,
+    userPreferences?.pinned_projects.project_slugs,
+  ]);
+
+  const {
+    data: projects,
+    isLoading: isLoadingProjects,
+    isError: isErrorProjects,
+  } = useGetProjectsFromSlugsQuery(
+    { projectSlugs: projectSlugs ?? [] },
+    { skip: projectSlugs == null }
+  );
+
+  if (isLoadingUserPreferences || isLoadingProjects) {
+    return <Loader />;
+  }
+
+  if (
+    isErrorUserPreferences ||
+    isErrorProjects ||
+    projects == null ||
+    projects.length == 0
+  ) {
+    return null;
+  }
+
+  return (
+    <>
+      <h4 className="fs-5">Pinned projects</h4>
+      <ProjectListRows projects={projects} gridDisplay={false} />
+    </>
+  );
 }
 
 export { ProjectsDashboard };
