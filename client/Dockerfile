@@ -14,17 +14,14 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 ARG SHORT_SHA
 ENV RENKU_UI_SHORT_SHA=$SHORT_SHA
 
-# Delete this after reactstrap is released
-RUN apk update && apk upgrade && \
-    apk add --no-cache git
-
 # There is some incompatibility between craco and react-scripts >4
 # that causes problems with linting. Lint errors should have been
 # caught before we get here, so we can turn this off.
 # But look into https://github.com/gsoft-inc/craco/pull/219 for a better fix
 ENV DISABLE_ESLINT_PLUGIN=true
 RUN npm ci && \
-    npm run-script build
+    npm run-script build && \
+    npm run-script build:sentry    
 
 COPY .storybook /app/.storybook
 
