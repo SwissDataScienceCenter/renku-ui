@@ -82,7 +82,7 @@ $theme-colors: (
 $theme-colors: map-merge($theme-colors, $rk-colors);
 
 $enable-rounded: false;
-$input-bg: #ffffff;
+$input-bg: $rk-white;
 
 // Table styles
 $table-border-color: $rk-table-border;

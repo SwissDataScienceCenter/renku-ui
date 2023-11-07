@@ -174,7 +174,7 @@ function DisplayDescription(props) {
   if (!props.description) return null;
 
   return (
-    <Card key="datasetDescription" className="mb-4 my-4">
+    <Card key="datasetDescription" className="mb-4">
       <CardHeader className="bg-white p-3 ps-4">Dataset description</CardHeader>
       <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
         {props.insideProject ? (
@@ -238,7 +238,7 @@ function DisplayInfoTable(props) {
 
   // eslint-disable-next-line
   return (
-    <Table className="mb-4 table-borderless" size="sm">
+    <Table className="table-borderless" size="sm">
       <tbody className="text-rk-text">
         {source ? (
           <tr>

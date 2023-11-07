@@ -1,5 +1,8 @@
 .badge {
   border-radius: 5px;
+  &.bg-warning {
+    color: var(--bs-dark);
+  }
 }
 
 .badge--entity-card {
