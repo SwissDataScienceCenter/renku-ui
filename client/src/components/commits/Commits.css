@@ -27,7 +27,6 @@
 .commit-object {
   border: 1px solid #e4e7ea;
   line-height: 1.5rem;
-  background-color: #fff;
 }
 
 .commit-cut-message > a {

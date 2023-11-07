@@ -38,6 +38,8 @@ $rk-dark-bg: #c5cbcf;
 $rk-danger-shadow: rgba(180, 10, 60, 0.5);
 $rk-table-border: #e4e7ea;
 
+$transparent: rgba(0, 0, 0, 0);
+
 // This will be added to the theme colors in custom_bootstrap
 $rk-colors: (
   "rk-blue": $rk-blue,
@@ -79,14 +81,16 @@ $theme-colors: (
 
 $theme-colors: map-merge($theme-colors, $rk-colors);
 
-// Table styles
-$table-border-color: $rk-table-border;
-
-$body-bg: $rk-background-0; //background color
-$body-color: $rk-dark; //text color
+$enable-rounded: false;
 $input-bg: #ffffff;
 
-$enable-rounded: false; //borders in general
+// Table styles
+$table-border-color: $rk-table-border;
+$table-bg: $transparent;
+
+// Body styles
+$body-bg: $rk-background-0;
+$body-color: $rk-dark;
 
 // Box shadow
 $rk-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
@@ -97,5 +101,8 @@ $card-bg: $rk-white;
 // Font styles
 $font-family-base: "Inter", sans-serif;
 
-// Default popover styles
+// Popover styles
 $popover-bg: $rk-white;
+
+// List styles
+$list-group-bg: $transparent;
