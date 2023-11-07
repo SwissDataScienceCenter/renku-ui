@@ -138,7 +138,7 @@ export default function LoggedInNavBar() {
 function RenkuToolbarItemPlus() {
   const location = useLocation();
 
-  // Display the Issue/Notebook server related header options only if a project is active.
+  // Display the "new dataset" options only if a project is active.
   const activeProjectPathWithNamespace = getActiveProjectPathWithNamespace(
     location.pathname
   );
