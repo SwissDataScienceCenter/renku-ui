@@ -59,6 +59,7 @@ import {
 import { Url } from "../utils/helpers/url";
 import AdminDropdownItem from "./AdminDropdownItem";
 import { NavBarWarnings } from "./NavBarWarnings";
+import LoggedInNavBar2 from "../components/navbar/LoggedInNavBar";
 
 import "./NavBar.css";
 
@@ -76,16 +77,16 @@ function RenkuNavBar(props) {
     server: ":server",
   });
 
-  const menu = user.logged ? (
-    <LoggedInNavBar {...props} userAvatar={userAvatar} />
-  ) : (
-    <AnonymousNavBar {...props} userAvatar={userAvatar} />
-  );
-
   return (
     <Switch key="mainNav">
-      <Route path={sessionShowUrl} render={() => null} />
-      <Route component={() => menu} />
+      <Route path={sessionShowUrl} />
+      <Route>
+        {user.logged ? (
+          <LoggedInNavBar2 {...props} userAvatar={userAvatar} />
+        ) : (
+          <AnonymousNavBar {...props} userAvatar={userAvatar} />
+        )}
+      </Route>
     </Switch>
   );
 }
