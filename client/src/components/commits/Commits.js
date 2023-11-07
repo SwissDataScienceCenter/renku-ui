@@ -153,19 +153,19 @@ function SingleCommit(props) {
               className="text-monospace m-auto commit-buttons"
               size="sm"
             >
-              <Button color="rk-background" className="border" disabled>
-                {props.commit.short_id}
-              </Button>
               <Button
-                color="rk-background rounded-0"
+                color="rk-background"
                 className="border"
                 id={idCopyButton}
               >
-                <Clipboard clipboardText={props.commit.id} />
+                <Clipboard clipboardText={props.commit.id}>
+                  <code>{props.commit.short_id}</code>
+                </Clipboard>
               </Button>
               <UncontrolledTooltip placement="top" target={idCopyButton}>
                 Copy commit SHA
               </UncontrolledTooltip>
+              <Button className="d-none"></Button>
               <ExternalLink
                 id={idBrowseButton}
                 title={<FontAwesomeIcon icon={faFolderOpen} />}
