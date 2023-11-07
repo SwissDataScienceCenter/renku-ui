@@ -3,7 +3,7 @@ import { ARG_REDUX_PATH } from "addon-redux";
 
 import { EntityType } from "../../features/kgSearch";
 import { Visibilities } from "../visibility/Visibility";
-import { ListDisplayType } from "./List.d";
+import { ListDisplayType } from "./list.types";
 import ListCard from "./ListCard";
 
 const meta: Meta = {

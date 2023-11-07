@@ -19,7 +19,7 @@
 import { Link } from "react-router-dom";
 
 import { TimeCaption } from "../TimeCaption";
-import { ListElementProps } from "./List.d";
+import { ListElementProps } from "./list.types";
 import EntityLabel from "../entities/Label";
 import Slug from "../entities/Slug";
 import EntityCreators from "../entities/Creators";

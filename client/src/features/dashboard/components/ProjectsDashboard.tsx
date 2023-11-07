@@ -181,24 +181,22 @@ function ProjectListRows({ projects, gridDisplay }: ProjectListProps) {
   const projectItems = projects?.map((project) => getProjectFormatted(project));
 
   return (
-    <Fragment>
-      <ListDisplay
-        key="list-projects"
-        itemsType="project"
-        search={null}
-        currentPage={null}
-        gridDisplay={gridDisplay}
-        totalItems={projectItems.length}
-        perPage={projectItems.length}
-        items={projectItems}
-        gridColumnsBreakPoint={{
-          default: 2,
-          1100: 2,
-          700: 2,
-          500: 1,
-        }}
-      />
-    </Fragment>
+    <ListDisplay
+      key="list-projects"
+      itemsType="project"
+      search={null}
+      currentPage={null}
+      gridDisplay={gridDisplay}
+      totalItems={projectItems.length}
+      perPage={projectItems.length}
+      items={projectItems}
+      gridColumnsBreakPoint={{
+        default: 2,
+        1100: 2,
+        700: 2,
+        500: 1,
+      }}
+    />
   );
 }
 

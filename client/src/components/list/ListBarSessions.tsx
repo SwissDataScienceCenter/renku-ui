@@ -36,7 +36,7 @@ import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
 import VisibilityIcon from "../entities/VisibilityIcon";
-import { ListElementProps } from "./List.d";
+import { ListElementProps } from "./list.types";
 import "./ListBar.scss";
 
 /** Helper function for formatting the resource list */
