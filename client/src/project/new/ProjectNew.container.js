@@ -88,6 +88,7 @@ function ForkProject(props) {
   );
 
   const history = useHistory();
+
   const location = useLocation();
 
   useEffect(() => {
