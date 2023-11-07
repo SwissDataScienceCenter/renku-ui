@@ -1,11 +1,5 @@
 .badge {
-  font-weight: lighter;
   border-radius: 5px;
-  font-size: 13px;
-  letter-spacing: -0.13px;
-  &.bg-warning {
-    color: var(--bs-dark);
-  }
 }
 
 .badge--entity-card {
