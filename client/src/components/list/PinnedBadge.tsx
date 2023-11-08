@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback, useMemo, useRef } from "react";
 import { PinAngle, PinAngleFill } from "react-bootstrap-icons";
 import { RootStateOrAny, useSelector } from "react-redux";
-import { UncontrolledTooltip } from "reactstrap";
+import { Button, UncontrolledTooltip } from "reactstrap";
 import { EntityType } from "../../features/kgSearch";
 import {
   useAddPinnedProjectMutation,
@@ -127,11 +127,12 @@ function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
         !isProjectPinned && styles.unpinned
       )}
     >
-      <button
+      <Button
         className={cx("badge", "btn", "p-1", "fs-6", "shadow", "rounded-pill")}
+        color="rk-green"
         disabled={isFetching || isError}
         onClick={onClick}
-        ref={ref}
+        innerRef={ref}
         type="button"
       >
         {isFetching ? (
@@ -142,7 +143,7 @@ function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
           <PinAngleFill className="bi" />
         )}
         <span className="visually-hidden">{tooltipMessage}</span>
-      </button>
+      </Button>
       <UncontrolledTooltip placement="top" target={ref}>
         {tooltipMessage}
       </UncontrolledTooltip>
