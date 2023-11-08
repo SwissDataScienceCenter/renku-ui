@@ -232,26 +232,29 @@ function DisplayInfoTable(props) {
       <ExternalLink url={dataset.sameAs} title={dataset.sameAs} role="link" />
     ) : dataset.url && props.insideProject ? (
       <ExternalLink url={dataset.url} title={dataset.url} role="link" />
-    ) : null;
+    ) : (
+      "Not available"
+    );
 
   const authors = getDatasetAuthors(dataset);
+  const authorsText = authors ? authors : "Not available";
+  const authorPluralization = dataset.published?.creator?.length > 1 ? "s" : "";
 
-  // eslint-disable-next-line
   return (
-    <Table className="table-borderless" size="sm">
+    <Table className="table-borderless mb-0" size="sm">
       <tbody className="text-rk-text">
+        <tr>
+          <td className="text-dark fw-bold col-auto">
+            Author{authorPluralization}
+          </td>
+          <td>{authorsText}</td>
+        </tr>
         {source ? (
           <tr>
             <td className="text-dark fw-bold" style={{ width: "120px" }}>
               Source
             </td>
             <td>{source}</td>
-          </tr>
-        ) : null}
-        {dataset.published?.creator?.length >= 3 ? (
-          <tr>
-            <td className="text-dark fw-bold col-auto">Author(s)</td>
-            <td>{authors}</td>
           </tr>
         ) : null}
       </tbody>
