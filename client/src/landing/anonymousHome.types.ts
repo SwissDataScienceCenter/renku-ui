@@ -42,7 +42,6 @@ export interface AnonymousHomeConfig {
     tutorialLink: string;
   };
   model: unknown;
-  notifications: unknown;
   params: {
     UI_SHORT_SHA: string;
   };
