@@ -18,34 +18,28 @@
 
 import { useCallback, useState } from "react";
 import { List, Search } from "react-bootstrap-icons";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Collapse, Nav, NavItem, Navbar, NavbarToggler } from "reactstrap";
 import { NavBarWarnings } from "../../landing/NavBarWarnings";
-import { StatuspageBanner } from "../../statuspage";
-import { Url } from "../../utils/helpers/url";
 import { RenkuNavLink } from "../RenkuNavLink";
 import {
-  RenkuToolbarGitLabMenu,
   RenkuToolbarHelpMenu,
-  RenkuToolbarItemPlus,
   RenkuToolbarItemUser,
   RenkuToolbarNotifications,
 } from "./NavBarItems";
 import { RENKU_LOGO } from "./navbar.constans";
 
-interface LoggedInNavBarProps {
+interface AnonymousNavBarProps {
   model: unknown;
   notifications: unknown;
   params: unknown;
 }
 
-export default function LoggedInNavBar({
+export default function AnonymousNavBar({
   model,
   notifications,
   params,
-}: LoggedInNavBarProps) {
-  const location = useLocation();
-
+}: AnonymousNavBarProps) {
   const uiShortSha = (params as { UI_SHORT_SHA: string }).UI_SHORT_SHA;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -61,12 +55,7 @@ export default function LoggedInNavBar({
           color="primary"
           className="container-fluid flex-wrap flex-lg-nowrap renku-container"
         >
-          <Link
-            id="link-home"
-            data-cy="link-home"
-            to="/"
-            className="navbar-brand me-2 pb-0 pt-0"
-          >
+          <Link id="link-home" to="/" className="navbar-brand me-2 pb-0 pt-0">
             <img src={RENKU_LOGO} alt="Renku" height="50" className="d-block" />
           </Link>
           <NavbarToggler onClick={onToggle} className="border-0">
@@ -83,19 +72,12 @@ export default function LoggedInNavBar({
                   className="d-flex gap-2 align-items-center"
                 />
               </NavItem>
-              <NavItem
-                id="link-dashboard"
-                data-cy="link-dashboard"
-                to="/"
-                className="nav-item col-4 col-lg-auto pe-lg-4"
-              >
-                <RenkuNavLink to="/" title="Dashboard" id="link-dashboard" />
-              </NavItem>
-              <NavItem className="nav-item col-1 col-lg-auto">
-                <RenkuToolbarItemPlus />
-              </NavItem>
-              <NavItem className="nav-item col-1 col-lg-auto">
-                <RenkuToolbarGitLabMenu />
+              <NavItem className="nav-item col-4 col-lg-auto pe-4">
+                <RenkuNavLink
+                  to="/sessions"
+                  title="Sessions"
+                  id="link-sessions"
+                />
               </NavItem>
               <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarHelpMenu />
@@ -106,7 +88,7 @@ export default function LoggedInNavBar({
                   notifications={notifications}
                 />
               </NavItem>
-              <NavItem className="nav-item col-1 col-lg-auto">
+              <NavItem className="navbar-nav nav-item col-1 col-lg-auto">
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 <RenkuToolbarItemUser params={params as any} />
               </NavItem>
@@ -114,11 +96,6 @@ export default function LoggedInNavBar({
           </Collapse>
         </Navbar>
       </header>
-      <StatuspageBanner
-        siteStatusUrl={Url.get(Url.pages.help.status)}
-        model={model}
-        location={location}
-      />
       <NavBarWarnings model={model} uiShortSha={uiShortSha} />
     </>
   );

@@ -82,6 +82,7 @@ function CentralContentContainer(props) {
         homeCustomized={props.params["HOMEPAGE"]}
         user={props.user}
         model={props.model}
+        notifications={props.notifications}
         location={props.location}
         params={props.params}
       />

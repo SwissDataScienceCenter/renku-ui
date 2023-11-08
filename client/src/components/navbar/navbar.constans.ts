@@ -16,37 +16,4 @@
  * limitations under the License.
  */
 
-export interface AnonymousHomeConfig {
-  client: unknown;
-  homeCustomized: {
-    custom: {
-      enabled: boolean;
-      main: {
-        backgroundImage: {
-          url: string;
-        };
-        contentMd: string;
-      };
-    };
-    showcase: {
-      enabled: boolean;
-      title: string;
-      description: string;
-      projects: {
-        identifier: string;
-        overrideDescription?: string;
-        overrideImageUrl?: string;
-        overrideTitle?: string;
-      }[];
-    };
-    tutorialLink: string;
-  };
-  model: unknown;
-  notifications: unknown;
-  params: {
-    UI_SHORT_SHA: string;
-  };
-  urlMap: {
-    siteStatusUrl: string;
-  };
-}
+export const RENKU_LOGO = "/static/public/img/logo.svg";
