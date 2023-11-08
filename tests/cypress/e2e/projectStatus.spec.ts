@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("display KG status information", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
@@ -50,7 +48,9 @@ describe("display KG status information", () => {
   });
 
   it("Metadata processed with KG indexing failure", () => {
-    fixtures.getKgStatus("project/kgStatus/kgStatusIndexedFailure.json");
+    fixtures.getKgStatus({
+      fixture: "project/kgStatus/kgStatusIndexedFailure.json",
+    });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
@@ -74,7 +74,7 @@ describe("display KG status information", () => {
   });
 
   it("Metadata indexing", () => {
-    fixtures.getKgStatus("project/kgStatus/kgStatusIndexing.json");
+    fixtures.getKgStatus({ fixture: "project/kgStatus/kgStatusIndexing.json" });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
     cy.getDataCy("project-settings-knowledge-graph")
@@ -91,7 +91,7 @@ describe("display KG status information", () => {
   });
 
   it("Metadata not indexed", () => {
-    fixtures.getKgStatus("project/kgStatus/kgStatus404.json");
+    fixtures.getKgStatus({ fixture: "project/kgStatus/kgStatus404.json" });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.wait("@getKgStatus");
     cy.getDataCy("project-settings-knowledge-graph")
@@ -111,8 +111,6 @@ describe("display KG status information", () => {
 });
 
 describe("display migration information", () => {
-  const fixtures = new Fixtures(cy);
-
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
@@ -121,10 +119,7 @@ describe("display migration information", () => {
   });
 
   it("displays level 1 migration: up-to-date", () => {
-    fixtures.interceptMigrationCheck(
-      "migrationCheck",
-      "project/migrationStatus/level1-all-good.json"
-    );
+    fixtures.interceptMigrationCheck();
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
@@ -148,10 +143,9 @@ describe("display migration information", () => {
   });
 
   it("displays level 2 migration: up-to-date but template potentially missing", () => {
-    fixtures.interceptMigrationCheck(
-      "migrationCheck",
-      "project/migrationStatus/level2-template-core-cache.json"
-    );
+    fixtures.interceptMigrationCheck({
+      fixture: "project/migrationStatus/level2-template-core-cache.json",
+    });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
@@ -175,10 +169,9 @@ describe("display migration information", () => {
   });
 
   it("displays level 3 migration: template can be migrated", () => {
-    fixtures.interceptMigrationCheck(
-      "migrationCheck",
-      "project/migrationStatus/level3-only-template.json"
-    );
+    fixtures.interceptMigrationCheck({
+      fixture: "project/migrationStatus/level3-only-template.json",
+    });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
@@ -206,10 +199,9 @@ describe("display migration information", () => {
   });
 
   it("displays level 3 migration: minor version update", () => {
-    fixtures.interceptMigrationCheck(
-      "migrationCheck",
-      "project/migrationStatus/level3-version-minor-and-template.json"
-    );
+    fixtures.interceptMigrationCheck({
+      fixture: "project/migrationStatus/level3-version-minor-and-template.json",
+    });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
@@ -240,10 +232,9 @@ describe("display migration information", () => {
   });
 
   it("displays level 4 migration: old updatable", () => {
-    fixtures.interceptMigrationCheck(
-      "migrationCheck",
-      "project/migrationStatus/level4-old-updatable.json"
-    );
+    fixtures.interceptMigrationCheck({
+      fixture: "project/migrationStatus/level4-old-updatable.json",
+    });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
@@ -273,10 +264,9 @@ describe("display migration information", () => {
   });
 
   it("displays level 5 migration: old updatable", () => {
-    fixtures.interceptMigrationCheck(
-      "migrationCheck",
-      "project/migrationStatus/level5-old-updatable.json"
-    );
+    fixtures.interceptMigrationCheck({
+      fixture: "project/migrationStatus/level5-old-updatable.json",
+    });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
@@ -306,10 +296,9 @@ describe("display migration information", () => {
   });
 
   it("displays level 5 migration: very old manual update", () => {
-    fixtures.interceptMigrationCheck(
-      "migrationCheck",
-      "project/migrationStatus/level5-old-version.json"
-    );
+    fixtures.interceptMigrationCheck({
+      fixture: "project/migrationStatus/level5-old-version.json",
+    });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
@@ -339,10 +328,9 @@ describe("display migration information", () => {
   });
 
   it("displays level X migration: unknown", () => {
-    fixtures.interceptMigrationCheck(
-      "migrationCheck",
-      "project/migrationStatus/levelX-too-new.json"
-    );
+    fixtures.interceptMigrationCheck({
+      fixture: "project/migrationStatus/levelX-too-new.json",
+    });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
@@ -367,7 +355,6 @@ describe("display migration information", () => {
 });
 
 describe("display migration information for non maintainer", () => {
-  const fixtures = new Fixtures(cy);
   beforeEach(() => {
     fixtures.config().versions().userNone();
     fixtures.projects().landingUserProjects().projectTestObserver();
@@ -376,10 +363,7 @@ describe("display migration information for non maintainer", () => {
   });
 
   it("displays level 1 migration: up-to-date", () => {
-    fixtures.interceptMigrationCheck(
-      "migrationCheck",
-      "project/migrationStatus/level1-all-good.json"
-    );
+    fixtures.interceptMigrationCheck();
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
@@ -403,10 +387,9 @@ describe("display migration information for non maintainer", () => {
   });
 
   it("displays level 3 migration: minor version update", () => {
-    fixtures.interceptMigrationCheck(
-      "migrationCheck",
-      "project/migrationStatus/level3-version-minor-and-template.json"
-    );
+    fixtures.interceptMigrationCheck({
+      fixture: "project/migrationStatus/level3-version-minor-and-template.json",
+    });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");
@@ -440,10 +423,9 @@ describe("display migration information for non maintainer", () => {
   });
 
   it("displays level 5 migration: old updatable", () => {
-    fixtures.interceptMigrationCheck(
-      "migrationCheck",
-      "project/migrationStatus/level5-old-updatable.json"
-    );
+    fixtures.interceptMigrationCheck({
+      fixture: "project/migrationStatus/level5-old-updatable.json",
+    });
     cy.visit("/projects/e2e/local-test-project/settings");
     cy.url().should("include", "/projects/e2e/local-test-project/settings");
     cy.wait("@migrationCheck");

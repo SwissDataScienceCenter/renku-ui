@@ -117,10 +117,9 @@ function ToggleForkModalButton({
       onClick={toggleModal}
     >
       <FontAwesomeIcon size="sm" icon={faCodeBranch} /> Fork
-      <UncontrolledTooltip
-        target="fork-project"
-        tooltip="Fork your own copy of this project"
-      />
+      <UncontrolledTooltip target="fork-project">
+        Fork your own copy of this project
+      </UncontrolledTooltip>
     </Button>
   );
 }

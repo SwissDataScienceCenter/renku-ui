@@ -71,6 +71,7 @@ function NewProjectAvatar({ onAvatarChange }: NewProjectAvatarProps) {
         maxSize={PROJECT_AVATAR_MAX_SIZE}
         expectedFinalSize={DESIRABLE_FINAL_IMAGE_SIZE}
         alert={alert}
+        color="green"
         modes={[ImageInputMode.FILE]}
         format="image/png,image/jpeg,image/gif,image/tiff"
         disabled={false}

@@ -113,6 +113,7 @@ function InputSubmitButtons({
 
 export interface InlineImageInputProps {
   alert: string | null;
+  color: string;
   currentImageName: string;
   doneText: string;
   imageFormat?: string;
@@ -132,6 +133,7 @@ export interface InlineImageInputProps {
 }
 export default function InlineSubmitImageInput({
   alert,
+  color,
   currentImageName,
   doneText,
   includeRequiredLabel,
@@ -166,6 +168,7 @@ export default function InlineSubmitImageInput({
     <div>
       <ImageInput
         alert={alert}
+        color={color}
         disabled={isDisabled}
         format={imageFormat ?? defaultFormat}
         help={null}

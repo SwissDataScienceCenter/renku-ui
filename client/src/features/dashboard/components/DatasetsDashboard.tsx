@@ -15,20 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Fragment } from "react";
+import { Search } from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
+import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
 import {
   SearchEntitiesQueryParams,
   useSearchEntitiesQuery,
 } from "../../kgSearch/KgSearchApi";
-import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
-import { Fragment } from "react";
-import { Link } from "react-router-dom";
 
+import cx from "classnames";
 import ListDisplay from "../../../components/List";
 import { Loader } from "../../../components/Loader";
-import { KgAuthor } from "../../kgSearch/KgSearch";
+import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
 import { mapSearchResultToEntity } from "../../../utils/helpers/KgSearchFunctions";
-import { stateToSearchString } from "../../kgSearch/KgSearchState";
 import { Url } from "../../../utils/helpers/url";
+import { KgAuthor } from "../../kgSearch/KgSearch";
+import { stateToSearchString } from "../../kgSearch/KgSearchState";
 
 interface OtherDatasetsButtonProps {
   totalDatasets: number;
@@ -48,12 +51,15 @@ function OtherDatasetsButton({ totalDatasets }: OtherDatasetsButtonProps) {
       <Link
         to={`${Url.get(Url.pages.searchEntities)}?${paramsUrlStrMyDatasets}`}
         data-cy="view-my-datasets-btn"
-        className="btn btn-outline-rk-pink"
+        className={cx(
+          "btn",
+          "btn-outline-rk-pink",
+          "d-flex",
+          "align-items-center"
+        )}
       >
-        <div className="d-flex gap-2 text-rk-pink">
-          <img src="/frame-pink.svg" className="rk-icon rk-icon-md" />
-          View all my Datasets
-        </div>
+        <SearchEntityIcon className="me-2" width={20} height={22} />
+        View all my Datasets
       </Link>
     </div>
   ) : (
@@ -63,12 +69,15 @@ function OtherDatasetsButton({ totalDatasets }: OtherDatasetsButtonProps) {
           Url.pages.searchEntities
         )}?${paramsUrlStrExploreDatasets}`}
         data-cy="explore-other-datasets-btn"
-        className="btn btn-outline-rk-pink"
+        className={cx(
+          "btn",
+          "btn-outline-rk-pink",
+          "d-flex",
+          "align-items-center"
+        )}
       >
-        <div className="d-flex gap-2 text-rk-pink">
-          <img src="/explore-pink.svg" className="rk-icon rk-icon-md" />
-          Explore other Datasets
-        </div>
+        <Search className="me-2" size={20} />
+        Explore other Datasets
       </Link>
     </div>
   );

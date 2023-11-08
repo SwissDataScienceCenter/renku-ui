@@ -22,7 +22,7 @@ import { FixturesConstructor } from "./fixtures";
  * Fixtures for the Admin page
  */
 
-export const Admin = <T extends FixturesConstructor>(Parent: T) => {
+export function Admin<T extends FixturesConstructor>(Parent: T) {
   return class AdminFixtures extends Parent {
     adminKeycloakUser(
       name = "getAdminKeycloakUser",
@@ -36,4 +36,4 @@ export const Admin = <T extends FixturesConstructor>(Parent: T) => {
       return this;
     }
   };
-};
+}

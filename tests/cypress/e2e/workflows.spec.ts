@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import Fixtures from "../support/renkulab-fixtures";
+import fixtures from "../support/renkulab-fixtures";
 
 describe("iteract with workflows", () => {
-  const fixtures = new Fixtures(cy);
-  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
@@ -28,7 +26,7 @@ describe("iteract with workflows", () => {
   });
 
   it("get list of workflows and interact", () => {
-    fixtures.getWorkflows("workflows/workflows-list-links-mappings.json");
+    fixtures.getWorkflows();
     cy.visit("/projects/e2e/local-test-project/workflows");
     cy.getDataCy("workflows-page").should("exist");
     cy.wait("@getWorkflows");
@@ -48,9 +46,9 @@ describe("iteract with workflows", () => {
   });
 
   it("view inactive workflows and interact", () => {
-    fixtures.getWorkflows(
-      "workflows/workflows-list-links-mappings-inactive.json"
-    );
+    fixtures.getWorkflows({
+      fixture: "workflows/workflows-list-links-mappings-inactive.json",
+    });
     cy.visit("/projects/e2e/local-test-project/workflows");
     cy.getDataCy("workflows-page").should("exist");
     cy.wait("@getWorkflows");
@@ -74,7 +72,7 @@ describe("iteract with workflows", () => {
   });
 
   it("expand a workflow - waiting", () => {
-    fixtures.getWorkflows("workflows/workflows-list-links-mappings.json");
+    fixtures.getWorkflows();
     cy.intercept("/ui-server/api/renku/*/workflow_plans.show?*", {
       fixture: "workflows/workflow-show-links-mappings.json",
       delay: 1_000,
@@ -91,10 +89,10 @@ describe("iteract with workflows", () => {
   });
 
   it("expand a workflow - unavailable", () => {
-    fixtures.getWorkflows("workflows/workflows-list-links-mappings.json");
-    fixtures.getWorkflowDetails(
-      "workflows/workflow-show-details-notexists.json"
-    );
+    fixtures.getWorkflows();
+    fixtures.getWorkflowDetails({
+      fixture: "workflows/workflow-show-details-notexists.json",
+    });
     cy.visit("/projects/e2e/local-test-project/workflows");
     cy.getDataCy("workflows-browser")
       .children()
@@ -107,8 +105,8 @@ describe("iteract with workflows", () => {
   });
 
   it("interact with complex workflow mappings and links", () => {
-    fixtures.getWorkflows("workflows/workflows-list-links-mappings.json");
-    fixtures.getWorkflowDetails("workflows/workflow-show-links-mappings.json");
+    fixtures.getWorkflows();
+    fixtures.getWorkflowDetails();
 
     // clicking trigger naviation to the target URL
     cy.visit("/projects/e2e/local-test-project/workflows");
@@ -151,8 +149,10 @@ describe("iteract with workflows", () => {
   });
 
   it("interact with simple workflow inputs, outputs, parameters", () => {
-    fixtures.getWorkflows("workflows/workflows-list-links-mappings.json");
-    fixtures.getWorkflowDetails("workflows/workflow-show-params.json");
+    fixtures.getWorkflows();
+    fixtures.getWorkflowDetails({
+      fixture: "workflows/workflow-show-params.json",
+    });
     cy.visit("/projects/e2e/local-test-project/workflows");
     cy.wait("@getWorkflows");
     cy.workflowsChangeSorting("Estimated duration");
@@ -232,8 +232,10 @@ describe("iteract with workflows", () => {
   });
 
   it("open outdated workflow", () => {
-    fixtures.getWorkflows("workflows/workflows-list-links-mappings.json");
-    fixtures.getWorkflowDetails("workflows/workflow-show-outdated.json");
+    fixtures.getWorkflows();
+    fixtures.getWorkflowDetails({
+      fixture: "workflows/workflow-show-outdated.json",
+    });
     cy.visit("/projects/e2e/local-test-project/workflows");
     cy.getDataCy("workflows-browser")
       .children()

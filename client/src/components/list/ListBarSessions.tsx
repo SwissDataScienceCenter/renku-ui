@@ -252,7 +252,11 @@ function ListBarSession({
         />
       </div>
       <div className="entity-action d-flex align-items-baseline gap-1">
-        <SessionButton fullPath={fullPath} gitUrl={gitUrl} />
+        <SessionButton
+          fullPath={fullPath}
+          gitUrl={gitUrl}
+          runningSessionName={notebook.name}
+        />
       </div>
       <div className="session-resources text-truncate">
         <ResourceList resources={resources} />
