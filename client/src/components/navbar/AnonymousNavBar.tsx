@@ -88,7 +88,7 @@ export default function AnonymousNavBar({
                   notifications={notifications}
                 />
               </NavItem>
-              <NavItem className="navbar-nav nav-item col-1 col-lg-auto">
+              <NavItem className="nav-item col-1 col-lg-auto">
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 <RenkuToolbarItemUser params={params as any} />
               </NavItem>

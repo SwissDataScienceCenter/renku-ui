@@ -29,8 +29,8 @@ import { Nav, Navbar } from "reactstrap";
 
 import { ExternalDocsLink } from "../components/ExternalLinks";
 import { RenkuNavLink } from "../components/RenkuNavLink";
-import AnonymousNavBar2 from "../components/navbar/AnonymousNavBar";
-import LoggedInNavBar2 from "../components/navbar/LoggedInNavBar";
+import AnonymousNavBar from "../components/navbar/AnonymousNavBar";
+import LoggedInNavBar from "../components/navbar/LoggedInNavBar";
 import { RENKU_LOGO } from "../components/navbar/navbar.constans";
 import { parseChartVersion } from "../help/HelpRelease";
 import { Links } from "../utils/constants/Docs";
@@ -54,13 +54,13 @@ function RenkuNavBar(props) {
       <Route path={sessionShowUrl} />
       <Route>
         {user.logged ? (
-          <LoggedInNavBar2
+          <LoggedInNavBar
             model={props.model}
             notifications={props.notifications}
             params={props.params}
           />
         ) : (
-          <AnonymousNavBar2
+          <AnonymousNavBar
             model={props.model}
             notifications={props.notifications}
             params={props.params}
