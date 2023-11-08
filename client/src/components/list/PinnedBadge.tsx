@@ -22,6 +22,7 @@ import { PinAngle, PinAngleFill } from "react-bootstrap-icons";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Button, UncontrolledTooltip } from "reactstrap";
 import { EntityType } from "../../features/kgSearch";
+import { EntityType as AnotherEntityType } from "../entities/Entities";
 import {
   useAddPinnedProjectMutation,
   useGetUserPreferencesQuery,
@@ -33,7 +34,7 @@ import { Loader } from "../Loader";
 import styles from "./PinnedBadge.module.scss";
 
 interface PinnedBadgeProps {
-  entityType: EntityType;
+  entityType: EntityType | AnotherEntityType;
   slug: string;
 }
 
