@@ -155,7 +155,7 @@ function SingleCommit(props) {
             >
               <Button
                 color="rk-background"
-                className="border"
+                className="border rounded-0 rounded-start"
                 id={idCopyButton}
               >
                 <Clipboard clipboardText={props.commit.id}>
@@ -165,7 +165,6 @@ function SingleCommit(props) {
               <UncontrolledTooltip placement="top" target={idCopyButton}>
                 Copy commit SHA
               </UncontrolledTooltip>
-              <Button className="d-none"></Button>
               <ExternalLink
                 id={idBrowseButton}
                 title={<FontAwesomeIcon icon={faFolderOpen} />}
