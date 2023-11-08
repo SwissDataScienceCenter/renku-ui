@@ -17,11 +17,20 @@
  */
 
 import cx from "classnames";
-import { useMemo } from "react";
-import { PinAngleFill } from "react-bootstrap-icons";
-import { Badge } from "reactstrap";
+import { useCallback, useMemo, useRef } from "react";
+import { PinAngle, PinAngleFill } from "react-bootstrap-icons";
+import { RootStateOrAny, useSelector } from "react-redux";
+import { UncontrolledTooltip } from "reactstrap";
 import { EntityType } from "../../features/kgSearch";
-import { useGetUserPreferencesQuery } from "../../features/user/userPreferences.api";
+import {
+  useAddPinnedProjectMutation,
+  useGetUserPreferencesQuery,
+  useRemovePinnedProjectMutation,
+} from "../../features/user/userPreferences.api";
+import { User } from "../../model/RenkuModels";
+import { Loader } from "../Loader";
+
+import styles from "./PinnedBadge.module.scss";
 
 interface PinnedBadgeProps {
   entityType: EntityType;
@@ -32,31 +41,75 @@ interface PinnedBadgeProps {
  * Pinned Badge, requires parent element to have `position: relative`.
  */
 export default function PinnedBadge({ entityType, slug }: PinnedBadgeProps) {
+  const userLogged = useSelector<RootStateOrAny, User["logged"]>(
+    (state) => state.stateModel.user.logged
+  );
+
+  if (!userLogged || entityType !== EntityType.Project) {
+    return null;
+  }
+
+  return <PinnedBadgeImpl slug={slug} />;
+}
+
+function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
   const {
     data: userPreferences,
-    isLoading: isLoading,
-    isError: isError,
-  } = useGetUserPreferencesQuery(undefined, {
-    skip: entityType !== EntityType.Project,
-  });
+    isLoading,
+    isError,
+    isFetching,
+  } = useGetUserPreferencesQuery();
 
-  const isPinned = useMemo(() => {
+  const isProjectPinned = useMemo(() => {
     if (isLoading || isError) {
       return undefined;
     }
-    return userPreferences?.pinned_projects.project_slugs?.find(
-      (projectSlug) => slug.toLowerCase() === projectSlug.toLowerCase()
+    if (userPreferences == null) {
+      return false;
+    }
+    return (
+      userPreferences.pinned_projects.project_slugs?.find(
+        (projectSlug) => projectSlug.toLowerCase() === slug.toLowerCase()
+      ) ?? false
     );
+  }, [isError, isLoading, slug, userPreferences]);
+
+  const [addPinnedProject, addPinnedProjectResult] =
+    useAddPinnedProjectMutation();
+  const [removePinnedProject, removePinnedProjectResult] =
+    useRemovePinnedProjectMutation();
+
+  const onClick = useCallback(() => {
+    if (
+      addPinnedProjectResult.isLoading ||
+      removePinnedProjectResult.isLoading
+    ) {
+      return;
+    }
+
+    if (isProjectPinned) {
+      removePinnedProject({ project_slug: slug });
+    } else {
+      addPinnedProject({ project_slug: slug });
+    }
   }, [
-    isError,
-    isLoading,
+    addPinnedProject,
+    addPinnedProjectResult.isLoading,
+    isProjectPinned,
+    removePinnedProject,
+    removePinnedProjectResult.isLoading,
     slug,
-    userPreferences?.pinned_projects.project_slugs,
   ]);
 
-  if (entityType !== EntityType.Project) {
-    return null;
-  }
+  const ref = useRef<HTMLButtonElement>(null);
+
+  const tooltipMessage = isLoading
+    ? "Loading user preferences"
+    : isError
+    ? "Error: could not retrieve user preferences"
+    : isProjectPinned
+    ? "Unpin project from the dashboard"
+    : "Pin project to the dashboard";
 
   if (isLoading || isError) {
     return null;
@@ -64,15 +117,35 @@ export default function PinnedBadge({ entityType, slug }: PinnedBadgeProps) {
 
   return (
     <div
-      className={cx("position-absolute", "start-0", "top-0", "ps-1", "pt-1")}
+      className={cx(
+        "position-absolute",
+        "start-0",
+        "top-0",
+        "ps-1",
+        "pt-1",
+        styles.pinnedBadge,
+        !isProjectPinned && styles.unpinned
+      )}
     >
-      <Badge
-        className={cx("p-1", "fs-6", "text-rk-green", "shadow")}
-        color="white"
-        pill
+      <button
+        className={cx("badge", "btn", "p-1", "fs-6", "shadow", "rounded-pill")}
+        disabled={isFetching || isError}
+        onClick={onClick}
+        ref={ref}
+        type="button"
       >
-        {isPinned && <PinAngleFill className="bi" />}
-      </Badge>
+        {isFetching ? (
+          <Loader inline size={16} />
+        ) : isError || !isProjectPinned ? (
+          <PinAngle className="bi" />
+        ) : (
+          <PinAngleFill className="bi" />
+        )}
+        <span className="visually-hidden">{tooltipMessage}</span>
+      </button>
+      <UncontrolledTooltip placement="top" target={ref}>
+        {tooltipMessage}
+      </UncontrolledTooltip>
     </div>
   );
 }

@@ -1,0 +1,10 @@
+.pinnedBadgeContainer {
+  &:hover .pinnedBadge,
+  &:hover .pinnedBadge.unpinned {
+    visibility: visible;
+  }
+
+  & .pinnedBadge.unpinned {
+    visibility: hidden;
+  }
+}
