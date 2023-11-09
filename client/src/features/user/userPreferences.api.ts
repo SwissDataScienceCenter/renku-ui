@@ -27,7 +27,7 @@ import {
 const userPreferencesApi = createApi({
   reducerPath: "userPreferencesApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/ui-server/api/data/user_preferences",
+    baseUrl: "/ui-server/api/data/user/preferences",
   }),
   tagTypes: ["UserPreferences"],
   endpoints: (builder) => ({
