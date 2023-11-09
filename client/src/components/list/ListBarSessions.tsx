@@ -36,8 +36,11 @@ import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
 import VisibilityIcon from "../entities/VisibilityIcon";
+import PinnedBadge from "./PinnedBadge";
 import { ListElementProps } from "./list.types";
+
 import "./ListBar.scss";
+import pinnedBadgeStyles from "./PinnedBadge.module.scss";
 
 /** Helper function for formatting the resource list */
 interface ResourceListProps {
@@ -173,8 +176,15 @@ function ListBarSession({
   ) : null;
 
   return (
-    <div className="container-sessions" data-cy="container-session">
-      <div className="entity-image">
+    <div
+      className={cx(
+        "container-sessions",
+        pinnedBadgeStyles.pinnedBadgeContainer
+      )}
+      data-cy="container-session"
+    >
+      <div className={cx("entity-image", "position-relative")}>
+        <PinnedBadge entityType={itemType} slug={slug} />
         <Link to={url} className="text-decoration-none">
           <div
             style={imageStyles}
