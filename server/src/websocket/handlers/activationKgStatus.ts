@@ -208,7 +208,7 @@ function cleanCompletedStatuses(
   };
 }
 
-const MAX_NO_UPDATE_INTERVAL_SEC = 30; // If no progress occurs after 30s, assume something is wrong
+const MAX_NO_UPDATE_INTERVAL_SEC = 120; // If no progress occurs after 30s, assume something is wrong
 
 function exceedTimeRequest(initialFetch: Date): boolean {
   const diff = new Date().getTime() - initialFetch.getTime();
