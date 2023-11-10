@@ -29,6 +29,7 @@ import EntityLabel from "../entities/Label";
 import Slug from "../entities/Slug";
 import EntityTags from "../entities/Tags";
 import VisibilityIcon from "../entities/VisibilityIcon";
+import PinnedBadge from "./PinnedBadge";
 import { ListElementProps } from "./list.types";
 
 import "./ListCard.css";
@@ -51,13 +52,20 @@ function ListCard({
     ? { backgroundImage: `url("${imageUrl}")` }
     : {};
   const colorByType = stylesByItemType(itemType);
+
   return (
     <div
       data-cy="list-card"
       className="col text-decoration-none p-2 rk-search-result-card"
     >
       <div className="col text-decoration-none">
-        <div className="card card-entity">
+        <div className={cx("card", "card-entity", "position-relative")}>
+          <PinnedBadge
+            entityType={itemType}
+            //! This really should be `slug` but we do not get the real slug
+            //! in search cards.
+            slug={path ?? ""}
+          />
           <Link
             className={cx(
               "card-header-entity",
@@ -74,7 +82,7 @@ function ListCard({
               </div>
             )}
           </Link>
-          <EntityButton type={itemType} slug={path as string} />
+          <EntityButton type={itemType} slug={path ?? ""} />
           <Link
             className={cx("card-body", "d-block", "text-decoration-none")}
             to={url}
