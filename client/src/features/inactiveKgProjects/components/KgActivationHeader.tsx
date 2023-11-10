@@ -22,8 +22,13 @@ import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { ThrottledTooltip } from "../../../components/Tooltip";
 import { Docs } from "../../../utils/constants/Docs";
+import { WarnAlert } from "../../../components/Alert";
 
-function KgActivationHeader() {
+interface KgActivationHeaderProps {
+  isActivationSlow: boolean | null;
+}
+function KgActivationHeader({ isActivationSlow }: KgActivationHeaderProps) {
+  const showWarning = isActivationSlow === true;
   const docKg = Docs.rtdTopicGuide("miscellaneous/knowledge-graph.html");
   const tooltip = (
     <>
@@ -56,6 +61,15 @@ function KgActivationHeader() {
         autoHide={false}
         tooltip={tooltip}
       />
+      {showWarning && (
+        <WarnAlert timeout={0} dismissible={false}>
+          <p>
+            <strong>Indexing is progressing slowly.</strong> Refresh this page
+            or check the project later to see if indexing has completed, or
+            contact us for help.
+          </p>
+        </WarnAlert>
+      )}
     </>
   );
 }

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { Balloon, Briefcase } from "react-bootstrap-icons";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -33,6 +33,7 @@ import "./inactiveKgProjects.css";
 import {
   ActivationStatusProgressSpecial,
   addFullList,
+  setActivating as setActivatingAction,
   updateList,
   updateAllSelected,
   updateProgress,
@@ -89,7 +90,7 @@ function AllProjectsIndexed() {
   return (
     <div className="container form-rk-green">
       <div className="row">
-        <KgActivationHeader />
+        <KgActivationHeader isActivationSlow={null} />
       </div>
       <div className="row">
         <div className="col-md-12 p-4 border-radius-8 bg-white">
@@ -223,14 +224,27 @@ function ProjectsNotIndexedPage({
   projectList,
   socket,
 }: ProjectsNotIndexedPageProps) {
-  const [activating, setActivating] = useState(false);
+  const dispatch = useDispatch();
+
+  const activationStatus = useInactiveProjectSelector(
+    (state) => state.activationStatus
+  );
+
+  const activating = activationStatus.isActivating;
+  const isActivationSlow = activationStatus.isActivationSlow;
+  const setActivating = useCallback(
+    (value: boolean) => {
+      dispatch(setActivatingAction(value));
+    },
+    [dispatch]
+  );
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activateIndexing, _] = useActivateIndexingMutation();
   const websocket = useSelector(
     (state: RootStateOrAny) => state.stateModel.webSocket
   );
   const { client } = useContext(AppContext);
-  const dispatch = useDispatch();
 
   // hook to calculate if still activating a project of the list
   useEffect(() => {
@@ -239,7 +253,7 @@ function ProjectsNotIndexedPage({
     const totalSelected = projectList.filter((p) => p.selected).length;
     if (totalProgressing > 0) setActivating(true);
     if (totalCompleted === totalSelected) setActivating(false);
-  }, [projectList]);
+  }, [projectList, setActivating]);
 
   const onAllItemsCheck = useCallback(
     (isChecked: boolean) => {
@@ -263,7 +277,7 @@ function ProjectsNotIndexedPage({
     [dispatch, projectList]
   );
 
-  const activateProjects = () => {
+  const activateProjects = useCallback(() => {
     setActivating(true);
     if (client && websocket.open && socket) {
       const projectSelected = projectList.filter(
@@ -283,7 +297,15 @@ function ProjectsNotIndexedPage({
     } else {
       setActivating(false);
     }
-  };
+  }, [
+    activateIndexing,
+    client,
+    dispatch,
+    projectList,
+    setActivating,
+    socket,
+    websocket.open,
+  ]);
 
   const nonTerminatedProjects = projectList.filter(
     (p) => !hasActivationTerminated(p)
@@ -292,12 +314,12 @@ function ProjectsNotIndexedPage({
   const totalSelected = nonTerminatedProjects.filter((p) => p.selected).length;
   useEffect(() => {
     if (activating && totalSelected === 0) setActivating(false);
-  }, [activating, totalSelected]);
+  }, [activating, setActivating, totalSelected]);
 
   return (
     <div className="container form-rk-green">
       <div className="row">
-        <KgActivationHeader />
+        <KgActivationHeader isActivationSlow={isActivationSlow} />
       </div>
       <div className="row">
         <div className="col-md-12 p-4 border-radius-8 bg-white">
@@ -328,7 +350,9 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
   const { data, isFetching, isLoading, error } = useGetInactiveProjects(
     user?.data?.id
   );
-  const projectList = useInactiveProjectSelector();
+  const projectList = useInactiveProjectSelector(
+    (state) => state.inactiveProjects
+  );
   const dispatch = useDispatch();
 
   // hook to update project list when projects pending to activate change

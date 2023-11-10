@@ -30,13 +30,12 @@ import {
 import { handleSessionsStatus } from "./handlers/sessionStatusHandler";
 import {
   handleKgActivationStatus,
+  handleWebSocketErrorForKgActivationStatus,
+  handleWebSocketPing,
   updateStatus,
 } from "./handlers/kgActivationStatusHandler";
-import type { InactiveKgProjects } from "../features/inactiveKgProjects/";
-import {
-  ActivationStatusProgressError,
-  filterProgressingProjects,
-} from "../features/inactiveKgProjects/";
+import type { KgInactiveProjectsState } from "../features/inactiveKgProjects/";
+import { ActivationStatusProgressError } from "../features/inactiveKgProjects/";
 import { StateModel } from "../model";
 import APIClient from "../api-client";
 
@@ -139,7 +138,9 @@ function setupWebSocket(
     ) {
       const pingMessage = new WsMessage({}, "ping");
       targetWebSocket.send(pingMessage.toString());
+      // TODO: Should we remove the lastPing? It's not used anywhere and causes UI re-rendering.
       model.setObject({ lastPing: new Date(pingMessage.timestamp) });
+      handleWebSocketPing(model);
       setTimeout(() => pingWebSocketServer(targetWebSocket), timeoutIntervalMs);
     }
   }
@@ -154,17 +155,17 @@ function setupWebSocket(
     const state = model?.reduxStore?.getState();
     if (state == null) return;
     // kgInactiveProjects
-    const projectsInProgress: InactiveKgProjects[] | null =
+    const projectsInProgress: KgInactiveProjectsState | null =
       state.kgInactiveProjects;
     if (projectsInProgress == null) return;
-    const projectIds = projectsInProgress
-      .filter((project: InactiveKgProjects) => {
+    const projectIds = projectsInProgress.inactiveProjects
+      .filter((project) => {
         return (
           project.progressActivation !== null &&
           project.progressActivation !== 100
         );
       })
-      .map((p: InactiveKgProjects) => p.id);
+      .map((p) => p.id);
 
     if (projectIds.length < 1) return;
 
@@ -210,21 +211,7 @@ function setupWebSocket(
       errorObject: error,
       lastReceived: new Date(),
     });
-
-    // Set the status of any pending KG indexing to an error state
-    const state = model?.reduxStore?.getState();
-    // kgInactiveProjects
-    const kgInactiveProjects = state?.kgInactiveProjects;
-    if (kgInactiveProjects == null) return;
-    const progressingProjects = filterProgressingProjects(kgInactiveProjects);
-    if (progressingProjects.length === 0) return;
-
-    const kgActivation: Record<string, number> = {};
-    progressingProjects.forEach((project: InactiveKgProjects) => {
-      kgActivation[`${project.id}`] =
-        ActivationStatusProgressError.WEB_SOCKET_ERROR;
-    });
-    updateStatus(kgActivation, model.reduxStore);
+    handleWebSocketErrorForKgActivationStatus(model);
   };
 
   webSocket.onclose = (data) => {

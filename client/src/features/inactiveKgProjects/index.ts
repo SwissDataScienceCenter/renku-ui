@@ -17,5 +17,6 @@
  */
 
 export type { InactiveKgProjects } from "./inactiveKgProjects.types";
+export type { KgInactiveProjectsState } from "./inactiveKgProjectsSlice";
 export { filterProgressingProjects } from "./inactiveKgProjects.utils";
 export { ActivationStatusProgressError } from "./InactiveKgProjectsApi";
