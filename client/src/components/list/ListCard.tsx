@@ -16,18 +16,20 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
+import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 
+import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { TimeCaption } from "../TimeCaption";
-import { ListElementProps } from "./list.types";
-import EntityLabel from "../entities/Label";
-import Slug from "../entities/Slug";
+import { EntityButton } from "../entities/Buttons";
 import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
+import EntityLabel from "../entities/Label";
+import Slug from "../entities/Slug";
 import EntityTags from "../entities/Tags";
 import VisibilityIcon from "../entities/VisibilityIcon";
-import { EntityButton } from "../entities/Buttons";
-import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
+import { ListElementProps } from "./list.types";
 
 import "./ListCard.css";
 
@@ -45,7 +47,9 @@ function ListCard({
   url,
   visibility,
 }: ListElementProps) {
-  const imageStyles = imageUrl ? { backgroundImage: `url("${imageUrl}")` } : {};
+  const imageStyles: CSSProperties = imageUrl
+    ? { backgroundImage: `url("${imageUrl}")` }
+    : {};
   const colorByType = stylesByItemType(itemType);
   return (
     <div
@@ -54,60 +58,65 @@ function ListCard({
     >
       <div className="col text-decoration-none">
         <div className="card card-entity">
-          <div
+          <Link
+            className={cx(
+              "card-header-entity",
+              !imageUrl && `card-header-entity--${itemType}`,
+              "d-block",
+              "text-decoration-none"
+            )}
             style={imageStyles}
-            className={`card-header-entity ${
-              !imageUrl ? `card-header-entity--${itemType}` : ""
-            }`}
+            to={url}
           >
-            <Link to={url}>
-              {!imageUrl ? (
-                <div className="card-bg-title user-select-none">{title}</div>
-              ) : null}
-            </Link>
-          </div>
-          <EntityButton type={itemType} slug={path as string} />
-          <div className="card-body">
-            <Link to={url} className="text-decoration-none">
-              <div
-                className="card-title text-truncate lh-sm"
-                data-cy="list-card-title"
-              >
+            {!imageUrl && (
+              <div className={cx("card-bg-title", "user-select-none")}>
                 {title}
               </div>
-              <Slug multiline={false} slug={slug} />
-              <EntityCreators
-                display="list"
-                creators={creators}
-                itemType={itemType}
+            )}
+          </Link>
+          <EntityButton type={itemType} slug={path as string} />
+          <Link
+            className={cx("card-body", "d-block", "text-decoration-none")}
+            to={url}
+          >
+            <div
+              className="card-title text-truncate lh-sm"
+              data-cy="list-card-title"
+            >
+              {title}
+            </div>
+            <Slug multiline={false} slug={slug} />
+            <EntityCreators
+              display="list"
+              creators={creators}
+              itemType={itemType}
+            />
+            <EntityDescription
+              description={description}
+              isHeightFixed={true}
+              showSuggestion={false}
+              className="text-rk-text-light"
+            />
+            <EntityTags
+              tagList={tagList}
+              multiline={false}
+              hideEmptyTags={false}
+            />
+            <div className="d-flex align-items-center gap-3 card-small-text">
+              <EntityLabel type={itemType} workflowType={null} />
+              <VisibilityIcon
+                visibility={visibility}
+                className={colorByType.colorText}
               />
-              <EntityDescription
-                description={description}
-                isHeightFixed={true}
-                showSuggestion={false}
+            </div>
+            <p className="card-text my-1">
+              <TimeCaption
                 className="text-rk-text-light"
+                datetime={timeCaption}
+                prefix={labelCaption || "Updated"}
               />
-              <EntityTags
-                tagList={tagList}
-                multiline={false}
-                hideEmptyTags={false}
-              />
-              <div className="d-flex align-items-center gap-3 card-small-text">
-                <EntityLabel type={itemType} workflowType={null} />
-                <VisibilityIcon
-                  visibility={visibility}
-                  className={colorByType.colorText}
-                />
-              </div>
-              <p className="card-text my-1">
-                <TimeCaption
-                  className="text-rk-text-light"
-                  datetime={timeCaption}
-                  prefix={labelCaption || "Updated"}
-                />
-              </p>
-            </Link>
-          </div>
+            </p>
+          </Link>
         </div>
       </div>
     </div>
