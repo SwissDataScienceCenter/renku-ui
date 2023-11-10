@@ -16,47 +16,89 @@
  * limitations under the License.
  */
 
+import { useMemo } from "react";
 import { useGetRecentlyVisitedProjectsQuery } from "../../features/projects/projects.api";
 import { Session } from "../helpers/SessionFunctions";
+
+interface UseGetRecentlyVisitedProjectsArgs {
+  projectsCount: number;
+  currentSessions: Session[];
+  pinnedProjectSlugs: string[];
+  skip?: boolean;
+}
+
 /**
  *  useGetRecentlyVisitedProjects custom hook
  *
  *  useGetRecentlyVisitedProjects.ts
  *  hook to fetch recently visited projects and filter out those that have a session to avoid duplication
  */
-function useGetRecentlyVisitedProjects(
-  projectsCount: number,
-  currentSessions: Session[]
-) {
+function useGetRecentlyVisitedProjects({
+  currentSessions,
+  pinnedProjectSlugs,
+  projectsCount,
+  skip,
+}: UseGetRecentlyVisitedProjectsArgs) {
   // number of projects to fetch according to current sessions to avoid duplication
+  // const totalProjectsToRequest =
+  //   currentSessions.length >= projectsCount
+  //     ? currentSessions.length + 3
+  //     : projectsCount;
+  // const totalProjectsToReturn =
+  //   currentSessions.length >= projectsCount
+  //     ? 3
+  //     : projectsCount - currentSessions.length;
+
   const totalProjectsToRequest =
-    currentSessions?.length >= projectsCount
-      ? currentSessions.length + 3
-      : projectsCount;
-  const totalProjectsToReturn =
-    currentSessions?.length >= projectsCount
-      ? 3
-      : projectsCount - currentSessions.length;
-  const { data, isFetching, refetch } = useGetRecentlyVisitedProjectsQuery(
-    totalProjectsToRequest
+    projectsCount + pinnedProjectSlugs.length + currentSessions.length;
+
+  const queryResult = useGetRecentlyVisitedProjectsQuery(
+    totalProjectsToRequest,
+    { skip }
   );
-  let projectsToShow = data;
-  if (!isFetching && data?.length > 0 && currentSessions?.length > 0) {
+
+  // let projectsToShow = data;
+  // if (!isFetching && data?.length > 0 && currentSessions?.length > 0) {
+  //   const sessionProjectIds = currentSessions.map(
+  //     (session: Session) => session.annotations["gitlabProjectId"]
+  //   );
+  //   projectsToShow = data
+  //     .filter(
+  //       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //       (project: Record<string, any>) =>
+  //         !sessionProjectIds?.includes(`${project.id}`)
+  //     )
+  //     .splice(0, totalProjectsToReturn);
+  // }
+
+  const projectsToShow = useMemo(() => {
+    if (queryResult.data == null || queryResult.data.length == 0) {
+      return queryResult.data;
+    }
+
     const sessionProjectIds = currentSessions.map(
       (session: Session) => session.annotations["gitlabProjectId"]
     );
-    projectsToShow = data
+    console.log(queryResult.data);
+    return queryResult.data
       .filter(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (project: Record<string, any>) =>
-          !sessionProjectIds?.includes(`${project.id}`)
+          !sessionProjectIds.includes(`${project.id}`)
       )
-      .splice(0, totalProjectsToReturn);
-  }
+      .filter(
+        (project: Record<string, any>) =>
+          !pinnedProjectSlugs.find(
+            (slug) =>
+              slug.toLowerCase() ===
+              project["path_with_namespace"].toLowerCase()
+          )
+      )
+      .slice(0, projectsCount);
+  }, [currentSessions, pinnedProjectSlugs, projectsCount, queryResult.data]);
+
   return {
-    projects: projectsToShow,
-    isFetchingProjects: isFetching,
-    refetchProjects: refetch,
+    ...queryResult,
+    data: projectsToShow,
   };
 }
 

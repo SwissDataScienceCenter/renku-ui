@@ -232,39 +232,76 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
     error: searchProjectsError,
   } = useSearchEntitiesQuery(searchRequest);
 
-  const { data: sessions, isLoading: isLoadingSessions } =
-    useGetSessionsQuery();
-
-  const sessionsFormatted = getFormattedSessionsAnnotations(sessions ?? {});
-
-  const { projects, isFetchingProjects } = useGetRecentlyVisitedProjects(
-    TOTAL_RECENTLY_VISITED_PROJECT,
-    sessionsFormatted
-  );
   const totalUserProjects =
     isLoadingSearchProjects || !searchProjects || searchProjectsError
       ? undefined
       : searchProjects.total;
-  let projectsToShow;
-  if (isLoadingSessions || isFetchingProjects) {
-    projectsToShow = <Loader />;
-  } else {
-    projectsToShow =
-      projects?.length > 0 ? (
-        <>
-          <h4 className="fs-5">Recently visited projects</h4>
-          <ProjectListRows projects={projects} gridDisplay={false} />
-        </>
-      ) : sessionsFormatted.length === 0 ? (
-        <p className="rk-dashboard-section-header">
-          You do not have any recently-visited projects
-        </p>
-      ) : null;
-  }
+
+  const {
+    data: userPreferences,
+    isLoading: isLoadingUserPreferences,
+    isError: isErrorUserPreferences,
+  } = useGetUserPreferencesQuery();
+
+  const { data: sessions, isLoading: isLoadingSessions } =
+    useGetSessionsQuery();
+
+  const pinnedProjectSlugs = useMemo(() => {
+    if (isLoadingUserPreferences || isErrorUserPreferences) {
+      return undefined;
+    }
+    return userPreferences?.pinned_projects.project_slugs ?? [];
+  }, [
+    isErrorUserPreferences,
+    isLoadingUserPreferences,
+    userPreferences?.pinned_projects.project_slugs,
+  ]);
+
+  const sessionsFormatted = useMemo(() => {
+    if (sessions == null) {
+      return undefined;
+    }
+    return getFormattedSessionsAnnotations(sessions);
+  }, [sessions]);
+
+  const { data: projects, isLoading: isFetchingProjects } =
+    useGetRecentlyVisitedProjects({
+      currentSessions: sessionsFormatted ?? [],
+      pinnedProjectSlugs: pinnedProjectSlugs ?? [],
+      projectsCount: TOTAL_RECENTLY_VISITED_PROJECT,
+      skip: sessionsFormatted == null || pinnedProjectSlugs == null,
+    });
+
+  const content =
+    isLoadingSessions || isLoadingUserPreferences || isFetchingProjects ? (
+      <Loader />
+    ) : (
+      <>
+        {(sessionsFormatted?.length ?? 0) > 0 && (
+          <h4 className="fs-5">Sessions</h4>
+        )}
+        <SessionsToShow currentSessions={sessionsFormatted ?? []} />
+        {pinnedProjectSlugs != null && (
+          <PinnedProjects pinnedProjectSlugs={pinnedProjectSlugs} />
+        )}
+        {(projects?.length ?? 0) > 0 ? (
+          <>
+            <h4 className="fs-5">Recently visited projects</h4>
+            <ProjectListRows projects={projects} gridDisplay={false} />
+          </>
+        ) : sessionsFormatted?.length == 0 ? (
+          <p className="rk-dashboard-section-header">
+            You do not have any recently-visited projects
+          </p>
+        ) : null}
+      </>
+    );
+
   const otherProjectsBtn =
-    totalUserProjects === undefined ? null : (
+    totalUserProjects == null ? null : (
       <OtherProjectsButton totalOwnProjects={totalUserProjects} />
     );
+
   return (
     <>
       <ProjectAlert total={totalUserProjects} />
@@ -284,9 +321,9 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
             </span>
           </Link>
         </div>
-        <PinnedProjects />
-        <SessionsToShow currentSessions={sessionsFormatted} />
-        {projectsToShow}
+
+        {content}
+
         {otherProjectsBtn}
       </div>
     </>
@@ -374,49 +411,28 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
   return null;
 }
 
-function PinnedProjects() {
-  const {
-    data: userPreferences,
-    isLoading: isLoadingUserPreferences,
-    isError: isErrorUserPreferences,
-  } = useGetUserPreferencesQuery();
+interface PinnedProjectsProps {
+  pinnedProjectSlugs: string[];
+}
 
-  const projectSlugs = useMemo(() => {
-    if (isLoadingUserPreferences || isErrorUserPreferences) {
-      return undefined;
-    }
-    return userPreferences?.pinned_projects.project_slugs ?? [];
-  }, [
-    isErrorUserPreferences,
-    isLoadingUserPreferences,
-    userPreferences?.pinned_projects.project_slugs,
-  ]);
-
+function PinnedProjects({ pinnedProjectSlugs }: PinnedProjectsProps) {
   const {
     data: projects,
-    isLoading: isLoadingProjects,
-    isError: isErrorProjects,
-  } = useGetProjectsFromSlugsQuery(
-    { projectSlugs: projectSlugs ?? [] },
-    { skip: projectSlugs == null }
-  );
+    isLoading,
+    isError,
+  } = useGetProjectsFromSlugsQuery({ projectSlugs: pinnedProjectSlugs });
 
-  if (isLoadingUserPreferences || isLoadingProjects) {
+  if (isLoading) {
     return <Loader />;
   }
 
-  if (
-    isErrorUserPreferences ||
-    isErrorProjects ||
-    projects == null ||
-    projects.length == 0
-  ) {
+  if (isError || projects == null || projects.length == 0) {
     return null;
   }
 
   return (
     <>
-      <h4 className="fs-5">Pinned projects</h4>
+      <h4 className={cx("fs-5", "mt-3")}>Pinned projects</h4>
       <ProjectListRows projects={projects} gridDisplay={false} />
     </>
   );
