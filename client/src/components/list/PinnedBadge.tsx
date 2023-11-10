@@ -31,8 +31,6 @@ import {
 import { User } from "../../model/RenkuModels";
 import { Loader } from "../Loader";
 
-import styles from "./PinnedBadge.module.scss";
-
 interface PinnedBadgeProps {
   entityType: EntityType | AnotherEntityType;
   slug: string;
@@ -118,15 +116,7 @@ function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
 
   return (
     <div
-      className={cx(
-        "position-absolute",
-        "start-0",
-        "top-0",
-        "ps-1",
-        "pt-1",
-        styles.pinnedBadge,
-        !isProjectPinned && styles.unpinned
-      )}
+      className={cx("position-absolute", "start-0", "top-0", "ps-1", "pt-1")}
     >
       <Button
         className={cx("badge", "btn", "p-1", "fs-6", "shadow", "rounded-pill")}

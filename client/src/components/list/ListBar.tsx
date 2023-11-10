@@ -30,7 +30,6 @@ import PinnedBadge from "./PinnedBadge";
 import { ListElementProps } from "./list.types";
 
 import "./ListBar.scss";
-import pinnedBadgeStyles from "./PinnedBadge.module.scss";
 
 export function getMainActionByEntity(
   entityType: EntityType,
@@ -67,12 +66,7 @@ function ListBar({
   const mainButton = getMainActionByEntity(itemType, slug, gitUrl);
 
   return (
-    <div
-      className={cx(
-        "container-entity-listBar",
-        pinnedBadgeStyles.pinnedBadgeContainer
-      )}
-    >
+    <div className="container-entity-listBar">
       <div className={cx("entity-image", "position-relative")}>
         <PinnedBadge entityType={itemType} slug={slug} />
         <Link to={url} className="text-decoration-none">

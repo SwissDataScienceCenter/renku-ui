@@ -40,7 +40,6 @@ import PinnedBadge from "./PinnedBadge";
 import { ListElementProps } from "./list.types";
 
 import "./ListBar.scss";
-import pinnedBadgeStyles from "./PinnedBadge.module.scss";
 
 /** Helper function for formatting the resource list */
 interface ResourceListProps {
@@ -176,13 +175,7 @@ function ListBarSession({
   ) : null;
 
   return (
-    <div
-      className={cx(
-        "container-sessions",
-        pinnedBadgeStyles.pinnedBadgeContainer
-      )}
-      data-cy="container-session"
-    >
+    <div className="container-sessions" data-cy="container-session">
       <div className={cx("entity-image", "position-relative")}>
         <PinnedBadge entityType={itemType} slug={slug} />
         <Link to={url} className="text-decoration-none">
