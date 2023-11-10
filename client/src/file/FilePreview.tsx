@@ -199,7 +199,7 @@ function FilePreview(props: FilePreviewProps) {
   // pdf document
   if ("pdf" === fileType) {
     return (
-      <CardBody key="file preview" className="pb-0 bg-white">
+      <CardBody key="file preview" className="pb-0">
         <LazyPDFViewer
           file={`data:application/pdf;base64,${props.file.content}`}
         />
@@ -210,7 +210,7 @@ function FilePreview(props: FilePreviewProps) {
   // Free text
   if ("text" === fileType) {
     return (
-      <CardBody key="file preview" className="pb-0 bg-white">
+      <CardBody key="file preview" className="pb-0">
         <pre className="no-highlight">
           <code>{atobUTF8(props.file.content)}</code>
         </pre>
@@ -222,7 +222,7 @@ function FilePreview(props: FilePreviewProps) {
   if ("md" === fileType) {
     const content = atobUTF8(props.file.content);
     return (
-      <CardBody key="file preview" className="pb-0 bg-white">
+      <CardBody key="file preview" className="pb-0">
         <LazyRenkuMarkdown
           projectPathWithNamespace={props.projectPathWithNamespace}
           filePath={props.file.file_path}
@@ -252,7 +252,7 @@ function FilePreview(props: FilePreviewProps) {
   // Code with syntax highlighting
   if (fileIsCode) {
     return (
-      <CardBody key="file preview" className="pb-0 bg-white">
+      <CardBody key="file preview" className="pb-0">
         <LazyCodePreview
           content={props.file.content}
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -265,7 +265,7 @@ function FilePreview(props: FilePreviewProps) {
   // No extensions
   if ("none" === fileType) {
     return (
-      <CardBody key="file preview" className="pb-0 bg-white">
+      <CardBody key="file preview" className="pb-0">
         <pre className={"hljs bg-white"}>
           <code>{atobUTF8(props.file.content)}</code>
         </pre>
@@ -275,7 +275,7 @@ function FilePreview(props: FilePreviewProps) {
 
   // File extension not supported
   return (
-    <CardBody key="file preview" className="pb-0 bg-white">
+    <CardBody key="file preview" className="pb-0">
       <p>{`Unable to preview file with extension .${getFileExtension()}`}</p>
     </CardBody>
   );

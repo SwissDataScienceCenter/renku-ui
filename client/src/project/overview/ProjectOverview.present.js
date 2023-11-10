@@ -102,7 +102,7 @@ class OverviewStats extends Component {
         <CardHeader className="bg-white p-3 ps-4">
           Project Statistics
         </CardHeader>
-        <CardBody className="p-4 pt-3 pb-3 lh-lg">
+        <CardBody className="lh-lg">
           <Row>
             <Col>
               {info}
@@ -254,7 +254,7 @@ class OverviewCommits extends Component {
             {buttonGit}
           </div>
         </CardHeader>
-        <CardBody className="p-4 pt-3 pb-3 lh-lg">
+        <CardBody className="lh-lg">
           {body}
           {info}
         </CardBody>
