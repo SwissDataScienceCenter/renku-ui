@@ -36,7 +36,7 @@ import {
   ListGroup,
   ListGroupItem,
 } from "reactstrap";
-import { Clipboard } from "../components/Clipboard";
+import { Clipboard } from "../components/clipboard/Clipboard";
 import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import { TimeCaption } from "../components/TimeCaption";

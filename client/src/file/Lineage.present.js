@@ -27,7 +27,7 @@ import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
 import FileAndLineageSwitch from "./FileAndLineageComponents";
 import { ExternalIconLink } from "../components/ExternalLinks";
-import { Clipboard } from "../components/Clipboard";
+import { Clipboard } from "../components/clipboard/Clipboard";
 import { KgStatusWrapper } from "../components/kgStatus/KgStatus.tsx";
 
 import "./Lineage.css";
