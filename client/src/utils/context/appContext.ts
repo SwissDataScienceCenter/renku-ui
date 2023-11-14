@@ -17,15 +17,16 @@
  */
 
 import React from "react";
-import { createCoreApiVersionedUrlConfig } from "../helpers/url";
+import type { NotificationsManager } from "../../notifications/notifications.types";
 import type { CoreApiVersionedUrlConfig } from "../helpers/url";
+import { createCoreApiVersionedUrlConfig } from "../helpers/url";
 
 type IAppContext = {
   client: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   coreApiVersionedUrlConfig: CoreApiVersionedUrlConfig;
   location: unknown;
   model: unknown;
-  notifications: unknown;
+  notifications: NotificationsManager | undefined;
   params: unknown;
 };
 

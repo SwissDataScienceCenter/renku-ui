@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
+import type { SerializedError } from "@reduxjs/toolkit";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { useCallback, useContext, useMemo, useRef } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { PinAngle, PinAngleFill } from "react-bootstrap-icons";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Button, UncontrolledTooltip } from "reactstrap";
@@ -28,9 +30,11 @@ import {
   useRemovePinnedProjectMutation,
 } from "../../features/user/userPreferences.api";
 import { User } from "../../model/RenkuModels";
+import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
 import AppContext from "../../utils/context/appContext";
 import { Loader } from "../Loader";
 import { EntityType as AnotherEntityType } from "../entities/Entities";
+import { extractRkErrorMessage } from "../errors/RtkErrorAlert";
 
 interface PinnedBadgeProps {
   entityType: EntityType | AnotherEntityType;
@@ -54,6 +58,8 @@ export default function PinnedBadge({ entityType, slug }: PinnedBadgeProps) {
 
 function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
   const maxPinnedProjects = useGetMaxPinnedProjects();
+
+  const addErrorNotification = useErrorNotification();
 
   const {
     data: userPreferences,
@@ -109,6 +115,19 @@ function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
     removePinnedProject,
     removePinnedProjectResult.isLoading,
     slug,
+  ]);
+
+  useEffect(() => {
+    if (addPinnedProjectResult.error) {
+      addErrorNotification(addPinnedProjectResult.error);
+    }
+    if (removePinnedProjectResult.error) {
+      addErrorNotification(removePinnedProjectResult.error);
+    }
+  }, [
+    addErrorNotification,
+    addPinnedProjectResult.error,
+    removePinnedProjectResult.error,
   ]);
 
   const ref = useRef<HTMLButtonElement>(null);
@@ -190,6 +209,37 @@ function useGetMaxPinnedProjects() {
   }, [params]);
 
   return maxPinnedProjects;
+}
+
+function useErrorNotification() {
+  const { notifications } = useContext(AppContext);
+
+  const addErrorNotification = useCallback(
+    (error: FetchBaseQueryError | SerializedError) => {
+      if (!notifications) {
+        return;
+      }
+
+      const errorCode =
+        "status" in error
+          ? error.status.toString()
+          : "code" in error && error.code !== undefined
+          ? error.code.toString()
+          : "Unknown";
+      const message = extractRkErrorMessage(error, "error");
+      notifications.addError(
+        NOTIFICATION_TOPICS.USER_PREFERENCES,
+        "Unable to update user preferences",
+        undefined,
+        undefined,
+        undefined,
+        `Error ${errorCode}: "${message}"`
+      );
+    },
+    [notifications]
+  );
+
+  return addErrorNotification;
 }
 
 interface DisabledBadgeProps {
