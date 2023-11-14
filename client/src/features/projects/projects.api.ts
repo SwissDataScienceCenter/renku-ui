@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
-  formatProjectMetadata,
   ProjectMetadata,
+  formatProjectMetadata,
 } from "../../utils/helpers/ProjectFunctions";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { GetProjectsFromSlugsParams } from "./projects.types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
