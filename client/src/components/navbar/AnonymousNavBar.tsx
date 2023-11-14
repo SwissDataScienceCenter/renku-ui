@@ -28,6 +28,7 @@ import {
   RenkuToolbarNotifications,
 } from "./NavBarItems";
 import { RENKU_LOGO } from "./navbar.constans";
+import { Url } from "../../utils/helpers/url";
 
 interface AnonymousNavBarProps {
   model: unknown;
@@ -55,7 +56,11 @@ export default function AnonymousNavBar({
           color="primary"
           className="container-fluid flex-wrap flex-lg-nowrap renku-container"
         >
-          <Link id="link-home" to="/" className="navbar-brand me-2 pb-0 pt-0">
+          <Link
+            id="link-home"
+            to={Url.get(Url.pages.landing)}
+            className="navbar-brand me-2 pb-0 pt-0"
+          >
             <img src={RENKU_LOGO} alt="Renku" height="50" className="d-block" />
           </Link>
           <NavbarToggler onClick={onToggle} className="border-0">
@@ -65,7 +70,7 @@ export default function AnonymousNavBar({
             <Nav className="navbar-nav flex-row flex-nowrap ms-lg-auto">
               <NavItem className="nav-item col-4 col-lg-auto pe-lg-4">
                 <RenkuNavLink
-                  to="/search"
+                  to={Url.get(Url.pages.search)}
                   title="Search"
                   id="link-search"
                   icon={<Search />}
@@ -74,7 +79,7 @@ export default function AnonymousNavBar({
               </NavItem>
               <NavItem className="nav-item col-4 col-lg-auto pe-4">
                 <RenkuNavLink
-                  to="/sessions"
+                  to={Url.get(Url.pages.sessions)}
                   title="Sessions"
                   id="link-sessions"
                 />

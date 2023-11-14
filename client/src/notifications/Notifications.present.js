@@ -32,6 +32,7 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { Component, Fragment, useState } from "react";
 import { InboxFill } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
@@ -274,7 +275,7 @@ class NotificationsMenu extends Component {
     return (
       <Fragment>
         {/* This throws an error in test: Warning `Reference` should not be used outside of a `Manager` component. */}
-        <DropdownToggle className="nav-link" nav caret>
+        <DropdownToggle className={cx("nav-link", "fs-5")} nav caret>
           <InboxFill className="bi" id="notificationsBarIcon" />
           {badge}
         </DropdownToggle>

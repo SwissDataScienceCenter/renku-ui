@@ -31,6 +31,7 @@ import {
   RenkuToolbarItemUser,
   RenkuToolbarNotifications,
 } from "./NavBarItems";
+import cx from "classnames";
 import { RENKU_LOGO } from "./navbar.constans";
 
 interface LoggedInNavBarProps {
@@ -64,7 +65,7 @@ export default function LoggedInNavBar({
           <Link
             id="link-home"
             data-cy="link-home"
-            to="/"
+            to={Url.get(Url.pages.landing)}
             className="navbar-brand me-2 pb-0 pt-0"
           >
             <img src={RENKU_LOGO} alt="Renku" height="50" className="d-block" />
@@ -73,10 +74,18 @@ export default function LoggedInNavBar({
             <List className="bi text-rk-white" />
           </NavbarToggler>
           <Collapse isOpen={isOpen} navbar className="">
-            <Nav className="navbar-nav flex-row flex-nowrap ms-lg-auto">
+            <Nav
+              className={cx(
+                "navbar-nav",
+                "flex-row",
+                "flex-nowrap",
+                "align-items-center",
+                "ms-lg-auto"
+              )}
+            >
               <NavItem className="nav-item col-4 col-lg-auto pe-lg-4">
                 <RenkuNavLink
-                  to="/search"
+                  to={Url.get(Url.pages.search)}
                   title="Search"
                   id="link-search"
                   icon={<Search />}
@@ -86,10 +95,13 @@ export default function LoggedInNavBar({
               <NavItem
                 id="link-dashboard"
                 data-cy="link-dashboard"
-                to="/"
                 className="nav-item col-4 col-lg-auto pe-lg-4"
               >
-                <RenkuNavLink to="/" title="Dashboard" id="link-dashboard" />
+                <RenkuNavLink
+                  to={Url.get(Url.pages.landing)}
+                  title="Dashboard"
+                  id="link-dashboard"
+                />
               </NavItem>
               <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarItemPlus />

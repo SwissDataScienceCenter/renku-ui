@@ -16,10 +16,8 @@
  * limitations under the License.
  */
 
-import { faGitlab } from "@fortawesome/free-brands-svg-icons";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Person, QuestionCircle } from "react-bootstrap-icons";
+import cx from "classnames";
+import { Person, PlusLg, QuestionCircle } from "react-bootstrap-icons";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
@@ -42,6 +40,7 @@ import { Url } from "../../utils/helpers/url";
 import { ExternalDocsLink, ExternalLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import { RenkuNavLink } from "../RenkuNavLink";
+import BootstrapGitLabIcon from "../icons/BootstrapGitLabIcon";
 
 export function RenkuToolbarItemPlus() {
   const location = useLocation();
@@ -75,8 +74,14 @@ export function RenkuToolbarItemPlus() {
 
   return (
     <UncontrolledDropdown className="nav-item dropdown">
-      <DropdownToggle className="nav-link" nav caret id="plus-dropdown">
-        <FontAwesomeIcon icon={faPlus} id="createPlus" />
+      <DropdownToggle
+        className={cx("nav-link", "fs-5")}
+        nav
+        caret
+        id="plus-dropdown"
+      >
+        {/* <FontAwesomeIcon icon={faPlus} id="createPlus" /> */}
+        <PlusLg className="bi" id="createPlus" />
       </DropdownToggle>
       <DropdownMenu
         aria-labelledby="plus-menu"
@@ -113,8 +118,13 @@ export function RenkuToolbarGitLabMenu() {
 
   return (
     <UncontrolledDropdown className="nav-item dropdown">
-      <DropdownToggle className="nav-link" nav caret id="gitLab-menu">
-        <FontAwesomeIcon icon={faGitlab} id="gitLabDropdownToggle" />
+      <DropdownToggle
+        className={cx("nav-link", "fs-5")}
+        nav
+        caret
+        id="gitLab-menu"
+      >
+        <BootstrapGitLabIcon className="bi" id="gitLabDropdownToggle" />
       </DropdownToggle>
       <DropdownMenu
         className="gitLab-menu btn-with-menu-options"
@@ -162,7 +172,7 @@ function gitLabSettingsUrlFromProfileUrl(webUrl: string): string {
 export function RenkuToolbarHelpMenu() {
   return (
     <UncontrolledDropdown className="nav-item dropdown">
-      <DropdownToggle className="nav-link" nav caret>
+      <DropdownToggle className={cx("nav-link", "fs-5")} nav caret>
         <QuestionCircle className="bi" id="helpDropdownToggle" />
       </DropdownToggle>
       <DropdownMenu
@@ -266,7 +276,12 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
 
   return (
     <UncontrolledDropdown className="nav-item dropdown">
-      <DropdownToggle className="nav-link" nav caret id="profile-dropdown">
+      <DropdownToggle
+        className={cx("nav-link", "fs-5")}
+        nav
+        caret
+        id="profile-dropdown"
+      >
         <Person className="bi" id="userIcon" />
       </DropdownToggle>
       <DropdownMenu
