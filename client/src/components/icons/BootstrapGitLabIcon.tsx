@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 /*!
  * The MIT License (MIT)
  *
@@ -21,6 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+/* eslint-enable spellcheck/spell-checker */
 
 interface BootstrapGitLabIconProps {
   className?: string;
