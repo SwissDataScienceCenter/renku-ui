@@ -15,14 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment, useContext, useEffect, useState } from "react";
+import cx from "classnames";
+import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { Search } from "react-bootstrap-icons";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
-import cx from "classnames";
 import { InfoAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import ListDisplay from "../../../components/List";
@@ -232,12 +233,28 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
   const { data: sessions, isLoading: isLoadingSessions } =
     useGetSessionsQuery();
 
-  const sessionsFormatted = getFormattedSessionsAnnotations(sessions ?? {});
+  // useEffect(() => {
+  //   console.log({ sessions });
+  // }, [sessions]);
 
-  const { projects, isFetchingProjects } = useGetRecentlyVisitedProjects(
-    TOTAL_RECENTLY_VISITED_PROJECT,
-    sessionsFormatted
-  );
+  const sessionsFormatted = useMemo(() => {
+    if (sessions == null) {
+      return undefined;
+    }
+    return getFormattedSessionsAnnotations(sessions);
+  }, [sessions]);
+
+  const { projects, isFetchingProjects } = useGetRecentlyVisitedProjects({
+    projectsCount: TOTAL_RECENTLY_VISITED_PROJECT,
+    currentSessions: sessionsFormatted ?? [],
+    skip: isLoadingSessions,
+  });
+  useEffect(() => {
+    console.log({ projects });
+  }, [projects]);
+  useEffect(() => {
+    console.log({ isLoadingSessions, isFetchingProjects });
+  }, [isLoadingSessions, isFetchingProjects]);
   const totalUserProjects =
     isFetching || isLoading || !data || error ? undefined : data.total;
   let projectsToShow;
@@ -246,8 +263,8 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
   } else {
     projectsToShow =
       projects?.length > 0 ? (
-        <ProjectListRows projects={projects} gridDisplay={false} />
-      ) : sessionsFormatted.length === 0 ? (
+        <ProjectListRows projects={projects.slice(0, 1)} gridDisplay={false} />
+      ) : sessionsFormatted == null || sessionsFormatted.length === 0 ? (
         <p className="rk-dashboard-section-header">
           You do not have any recently-visited projects
         </p>
@@ -257,6 +274,17 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
     totalUserProjects === undefined ? null : (
       <OtherProjectsButton totalOwnProjects={totalUserProjects} />
     );
+
+  // if (sessionsError) {
+  //   return (
+  //     <>
+  //       <TestChildComponent />
+  //       <TestChildComponent />
+  //       <TestChildComponent />
+  //     </>
+  //   );
+  // }
+
   return (
     <>
       <ProjectAlert total={totalUserProjects} />
@@ -276,8 +304,10 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
             </span>
           </Link>
         </div>
-        <SessionsToShow currentSessions={sessionsFormatted} />
-        {projectsToShow}
+        {sessionsFormatted != null && (
+          <SessionsToShow currentSessions={sessionsFormatted} />
+        )}
+        {/* {projectsToShow} */}
         {otherProjectsBtn}
       </div>
     </>
@@ -366,3 +396,13 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
 }
 
 export { ProjectsDashboard };
+
+function TestChildComponent() {
+  const query = useGetSessionsQuery();
+
+  useEffect(() => {
+    console.log(query);
+  }, [query]);
+
+  return null;
+}

@@ -18,30 +18,41 @@
 
 import { useGetRecentlyVisitedProjectsQuery } from "../../features/projects/projectsApi";
 import { Session } from "../helpers/SessionFunctions";
+
+interface UseGetRecentlyVisitedProjectsArgs {
+  projectsCount: number;
+  currentSessions: Session[];
+  skip?: boolean;
+}
+
 /**
  *  useGetRecentlyVisitedProjects custom hook
  *
  *  useGetRecentlyVisitedProjects.ts
  *  hook to fetch recently visited projects and filter out those that have a session to avoid duplication
  */
-function useGetRecentlyVisitedProjects(
-  projectsCount: number,
-  currentSessions: Session[]
-) {
+export default function useGetRecentlyVisitedProjects({
+  currentSessions,
+  projectsCount,
+  skip,
+}: UseGetRecentlyVisitedProjectsArgs) {
   // number of projects to fetch according to current sessions to avoid duplication
   const totalProjectsToRequest =
-    currentSessions?.length >= projectsCount
+    currentSessions.length >= projectsCount
       ? currentSessions.length + 3
       : projectsCount;
   const totalProjectsToReturn =
-    currentSessions?.length >= projectsCount
+    currentSessions.length >= projectsCount
       ? 3
       : projectsCount - currentSessions.length;
+
   const { data, isFetching, refetch } = useGetRecentlyVisitedProjectsQuery(
-    totalProjectsToRequest
+    totalProjectsToRequest,
+    { skip }
   );
+
   let projectsToShow = data;
-  if (!isFetching && data?.length > 0 && currentSessions?.length > 0) {
+  if (!isFetching && data?.length > 0 && currentSessions.length > 0) {
     const sessionProjectIds = currentSessions.map(
       (session: Session) => session.annotations["gitlabProjectId"]
     );
@@ -49,7 +60,7 @@ function useGetRecentlyVisitedProjects(
       .filter(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (project: Record<string, any>) =>
-          !sessionProjectIds?.includes(`${project.id}`)
+          !sessionProjectIds.includes(`${project.id}`)
       )
       .splice(0, totalProjectsToReturn);
   }
@@ -59,5 +70,3 @@ function useGetRecentlyVisitedProjects(
     refetchProjects: refetch,
   };
 }
-
-export default useGetRecentlyVisitedProjects;
