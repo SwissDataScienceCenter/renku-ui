@@ -58,3 +58,11 @@ export interface ResourcePoolsQueryParams {
   memoryRequest?: number;
   storageRequest?: number;
 }
+
+export interface DataServicesError {
+  error: {
+    code: number;
+    detail?: string;
+    message: string;
+  };
+}
