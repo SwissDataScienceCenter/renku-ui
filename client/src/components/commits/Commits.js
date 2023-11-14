@@ -35,7 +35,7 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-import { Clipboard } from "../Clipboard";
+import { Clipboard } from "../clipboard/Clipboard";
 import { ExternalLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import { TimeCaption } from "../TimeCaption";
@@ -153,15 +153,14 @@ function SingleCommit(props) {
               className="text-monospace m-auto commit-buttons"
               size="sm"
             >
-              <Button color="rk-background" className="border" disabled>
-                {props.commit.short_id}
-              </Button>
               <Button
-                color="rk-background rounded-0"
-                className="border"
+                color="rk-background"
+                className="border rounded-0 rounded-start"
                 id={idCopyButton}
               >
-                <Clipboard clipboardText={props.commit.id} />
+                <Clipboard clipboardText={props.commit.id}>
+                  <code>{props.commit.short_id}</code>
+                </Clipboard>
               </Button>
               <UncontrolledTooltip placement="top" target={idCopyButton}>
                 Copy commit SHA

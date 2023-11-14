@@ -51,13 +51,18 @@ const lastProjectsMiddleware =
         }
 
         const userId = getUserIdFromToken(token);
+        const normalizedProjectName = projectName.toLowerCase();
         // Save as ordered collection
         storage
-          .save(`${config.data.projectsStoragePrefix}${userId}`, projectName, {
-            type: TypeData.Collections,
-            limit: config.data.projectsDefaultLength,
-            score: Date.now(),
-          })
+          .save(
+            `${config.data.projectsStoragePrefix}${userId}`,
+            normalizedProjectName,
+            {
+              type: TypeData.Collections,
+              limit: config.data.projectsDefaultLength,
+              score: Date.now(),
+            }
+          )
           .then((value) => {
             if (!value) {
               const errorMessage = `Error saving project ${projectName} for user ${userId}`;

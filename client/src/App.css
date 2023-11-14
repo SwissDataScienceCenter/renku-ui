@@ -1,49 +1,3 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
-.App-header {
-  background-color: #222;
-  height: 70px;
-  padding: 20px;
-  color: white;
-}
-
-.App-title {
-  font-size: 1.5em;
-}
-
-.App-intro {
-  font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Sticky Footer */
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-.footer {
-  /* position: absolute; to fix later */
-  bottom: 0;
-  width: 100%;
-  background-color: #f5f5f5;
-}
-
 /* Component classes */
 .time-caption {
   color: var(--bs-dark);
@@ -60,71 +14,8 @@ html {
   border: 0 !important;
 }
 
-.comment-block {
-  display: inline;
-}
-
-.expanded-reference {
-  border: 1px solid #aaa;
-  border-radius: 15px;
-  padding: 15px;
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
-
-.notebook-comparison {
-  border: 1px solid #ddd;
-  border-radius: 15px;
-  padding: 10px;
-  margin-left: 0px;
-  margin-top: 5px;
-  margin-right: 0px;
-  margin-bottom: 5px;
-}
-
 .image-preview {
   max-width: 100%;
-}
-
-.text-link {
-  background: none;
-  border: none;
-  margin: 0px;
-  padding: 0px;
-  color: blue;
-  cursor: pointer;
-  outline: none;
-}
-
-.text-link input[type="button"]:focus {
-  outline: none;
-}
-
-/* TODO: Try to replace css tooltip by reactstraps tooltip component */
-.simple-tooltip {
-  position: relative;
-  display: inline-block;
-  color: #dd0000;
-}
-
-.simple-tooltip .tooltiptext {
-  visibility: hidden;
-  background-color: #ccc;
-  width: 260px;
-  color: #000000;
-  text-align: center;
-  padding: 5px 10px;
-  border-radius: 6px;
-  position: absolute;
-  z-index: 1;
-}
-
-.simple-tooltip:hover .tooltiptext {
-  visibility: visible;
-}
-
-.deployButton {
-  margin-bottom: 10px;
 }
 
 .bouncer {
@@ -163,25 +54,6 @@ html {
   }
 }
 
-.delay1s {
-  visibility: hidden;
-  opacity: 0;
-  animation: delay1s 2s forwards;
-}
-
-@keyframes delay1s {
-  0%,
-  50% {
-    visibility: visible;
-    opacity: 0;
-  }
-
-  100% {
-    visibility: visible;
-    opacity: 1;
-  }
-}
-
 .renku-markdown code {
   padding: 0.2em 0.4em;
   font-size: 85%;
@@ -207,14 +79,6 @@ html {
 .renku-markdown .highlight pre {
   margin-bottom: 0;
   word-break: normal;
-}
-
-.mw-0 {
-  min-width: 0;
-}
-
-.limit-width {
-  max-width: 1140px;
 }
 
 .visually-hidden {

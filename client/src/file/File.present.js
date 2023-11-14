@@ -36,7 +36,7 @@ import {
   ListGroup,
   ListGroupItem,
 } from "reactstrap";
-import { Clipboard } from "../components/Clipboard";
+import { Clipboard } from "../components/clipboard/Clipboard";
 import { ExternalIconLink, ExternalLink } from "../components/ExternalLinks";
 import { Loader } from "../components/Loader";
 import { TimeCaption } from "../components/TimeCaption";
@@ -72,7 +72,7 @@ class FileCard extends React.Component {
           : this.props.commit.title;
       commitHeader = (
         <ListGroup flush>
-          <ListGroupItem>
+          <ListGroupItem className="border-bottom">
             <div className="d-flex justify-content-between flex-wrap">
               <div>
                 <a
@@ -467,7 +467,7 @@ function NotebookDisplayForm(props) {
     );
 
   return (
-    <ListGroup key="controls" flush className="border-top-0">
+    <ListGroup key="controls" flush className="border-bottom">
       <ListGroupItem>
         <div className="form-check form-switch">
           <Input
