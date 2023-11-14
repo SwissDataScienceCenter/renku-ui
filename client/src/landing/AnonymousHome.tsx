@@ -41,7 +41,6 @@ import { Url } from "../utils/helpers/url";
 import { NavBarWarnings } from "./NavBarWarnings";
 
 import VisualDetail from "./Graphics/Visual_Detail.svg";
-import VisualFooter from "./Graphics/Visual_Footer.svg";
 import VisualHead from "./Graphics/Visual_Head.svg";
 
 import graphic_containers from "./Graphics/Features/Containers.svg";
@@ -62,8 +61,6 @@ import SectionShowcase, { validatedShowcaseConfig } from "./SectionShowcase";
 import WhoWeAre from "./WhoWeAre/WhoWeAre";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import { BottomNav, TopNav } from "./anonymousHomeNav";
-
-const logo = "/static/public/img/logo.svg";
 
 const standardBgOpacity = {
   "--bs-bg-opacity": 0.4,
