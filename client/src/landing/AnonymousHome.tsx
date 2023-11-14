@@ -26,7 +26,7 @@
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { CSSProperties } from "react";
-import { Fragment } from "react";
+import { Fragment, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
 import { Col, Row } from "reactstrap";
@@ -41,7 +41,6 @@ import { Url } from "../utils/helpers/url";
 import { NavBarWarnings } from "./NavBarWarnings";
 
 import VisualDetail from "./Graphics/Visual_Detail.svg";
-import VisualFooter from "./Graphics/Visual_Footer.svg";
 import VisualHead from "./Graphics/Visual_Head.svg";
 
 import graphic_containers from "./Graphics/Features/Containers.svg";
@@ -55,16 +54,13 @@ import graphic_build from "./Graphics/Features/Build.svg";
 import graphic_collaborate from "./Graphics/Features/Collaborate.svg";
 import graphic_teach from "./Graphics/Features/Teach.svg";
 
-import logo_EPFL from "./Logos/EPFL.svg";
-import logo_ETH from "./Logos/ETH.svg";
-import logo_SDSC from "./Logos/SDSC.svg";
-
+import DividerLandingPage from "./Dividier/Divider";
+import GetStarted from "./GetSarted/GetStarted";
 import HeroLanding from "./HeroLanding/HeroLanding";
 import SectionShowcase, { validatedShowcaseConfig } from "./SectionShowcase";
+import WhoWeAre from "./WhoWeAre/WhoWeAre";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import { BottomNav, TopNav } from "./anonymousHomeNav";
-
-const logo = "/static/public/img/logo.svg";
 
 const standardBgOpacity = {
   "--bs-bg-opacity": 0.4,
@@ -224,80 +220,6 @@ function SectionTryOut(props: { tutorialLink: string }) {
               url={Docs.READ_THE_DOCS_ROOT}
             />
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Section6() {
-  const backgroundUrl = VisualFooter;
-  return (
-    <div
-      id="rk-anon-home-section6"
-      style={{
-        backgroundImage: `url(${backgroundUrl})`,
-      }}
-    >
-      <div className="rk-anon-home-section-content">
-        <div>
-          <div>
-            <img src={logo} alt="Renku" height="92" className="d-block my-1" />
-          </div>
-          <Row
-            className="rk-pt-l bg-white"
-            style={{ "--bs-bg-opacity": 0.9 } as CSSProperties}
-          >
-            <Col xs={12} lg={4}>
-              <h3>Developed at</h3>
-              <a
-                target="_blank"
-                rel="noreferrer noopener"
-                href="https://datascience.ch/"
-              >
-                <img src={logo_SDSC} alt="SDSC" height="68" />
-              </a>
-            </Col>
-            <Col xs={12} lg={4} className="rk-pt-up_to-lg-s">
-              <div>
-                <h4 className="text-rk-pink">With offices at</h4>
-                <a
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  href="https://www.epfl.ch/en/"
-                >
-                  <img
-                    className="mb-2"
-                    src={logo_EPFL}
-                    alt="EPFL"
-                    height="52"
-                  />
-                </a>
-                <div>
-                  INN Building, Station 14, 1015 Lausanne
-                  <br />
-                  +41 21 693 43 88
-                </div>
-              </div>
-            </Col>
-            <Col xs={12} lg={4} className="rk-pt-up_to-lg-s">
-              <div>
-                <h4 className="text-rk-pink">and</h4>
-                <a
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  href="https://ethz.ch/en.html"
-                >
-                  <img className="mb-2" src={logo_ETH} alt="ETH" height="52" />
-                </a>
-                <div>
-                  Turnerstrasse 1, 8092 Zürich
-                  <br />
-                  +41 44 632 80 74
-                </div>
-              </div>
-            </Col>
-          </Row>
         </div>
       </div>
     </div>
@@ -522,16 +444,24 @@ function SectionUseCases() {
 }
 
 function StandardHome(props: AnonymousHomeConfig) {
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToGetStarted = () => {
+    sectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   return (
     <>
-      <HeroLanding {...props} />
+      <HeroLanding {...props} scrollToGetStarted={scrollToGetStarted} />
+      <GetStarted {...props} sectionRef={sectionRef} />
+      <DividerLandingPage />
+      <WhoWeAre />
+      <DividerLandingPage />
       <SectionFeatures />
       <SectionUseCases />
       <SectionShowcase
         {...validatedShowcaseConfig(props.homeCustomized.showcase)}
       />
       <SectionTryOut tutorialLink={props.homeCustomized.tutorialLink} />
-      <Section6 />
       <BottomNav {...props} />
     </>
   );

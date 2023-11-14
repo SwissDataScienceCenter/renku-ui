@@ -178,7 +178,12 @@ function TopNav() {
           >
             Login
           </Link>
-          <Button onClick={toggleOpen} id="nav-hamburger" className="border-0">
+          <Button
+            onClick={toggleOpen}
+            id="nav-hamburger"
+            className="border-0"
+            title="Navigation Toggle"
+          >
             <List className="m-0 bi" />
           </Button>
         </div>

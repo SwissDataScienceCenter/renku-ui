@@ -16,38 +16,20 @@
  * limitations under the License.
  */
 
-export interface AnonymousHomeConfig {
-  client: unknown;
-  homeCustomized: {
-    custom: {
-      enabled: boolean;
-      main: {
-        backgroundImage: {
-          url: string;
-        };
-        contentMd: string;
-      };
-    };
-    showcase: {
-      enabled: boolean;
-      title: string;
-      description: string;
-      projects: {
-        identifier: string;
-        overrideDescription?: string;
-        overrideImageUrl?: string;
-        overrideTitle?: string;
-      }[];
-    };
-    tutorialLink: string;
-    projectPath: string;
-    contactEmail: string;
-  };
-  model: unknown;
-  params: {
-    UI_SHORT_SHA: string;
-  };
-  urlMap: {
-    siteStatusUrl: string;
-  };
+import skeletonCardImage from "../../styles/assets/SkeletonCard.svg";
+import "./EntityCardSkeleton.scss";
+
+export default function EntityCardSkeleton() {
+  return (
+    <div className="skeleton--wrapper">
+      <div className="skeleton--col skeleton--img">
+        <img
+          className="SkeletonCardImage"
+          src={skeletonCardImage}
+          alt="skeleton card"
+        />
+        <div className="skeleton--img-graphic skeleton-loader" />
+      </div>
+    </div>
+  );
 }

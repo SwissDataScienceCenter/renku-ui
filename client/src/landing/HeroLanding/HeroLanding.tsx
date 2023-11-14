@@ -1,11 +1,17 @@
 import cx from "classnames";
 import { Link } from "react-router-dom";
+import { Button } from "reactstrap";
 import { HomeHeader } from "../AnonymousHome";
 import heroGraphic from "../Graphics/hero_graph.svg";
 import { AnonymousHomeConfig } from "../anonymousHome.types";
 import styles from "./HeroLanding.module.scss";
 
-export default function HeroLanding(props: AnonymousHomeConfig) {
+interface HeroLandingProps extends AnonymousHomeConfig {
+  scrollToGetStarted: () => void;
+}
+export default function HeroLanding(props: HeroLandingProps) {
+  const { scrollToGetStarted } = props;
+
   return (
     <div id="rk-anon-home-hero" className="rk-bg-shaded-dark">
       <HomeHeader {...props} />
@@ -18,13 +24,13 @@ export default function HeroLanding(props: AnonymousHomeConfig) {
             <img src={heroGraphic} alt="Renku" className="graphicHero" />
           </div>
           <div className={styles.heroDescription}>
-            <h3 className="text-white">
+            <h2 className="text-white">
               The research ecosystem is fragmented.
               <span className={cx(["d-lg-block", "d-sm-inline"])}>
                 {" "}
                 Renku is where it comes together.
               </span>
-            </h3>
+            </h2>
             <p>Data, Code, and Compute all under one roof.</p>
             <div
               className={cx([
@@ -36,21 +42,21 @@ export default function HeroLanding(props: AnonymousHomeConfig) {
                 "flex-column",
               ])}
             >
-              <Link
+              <Button
                 className={cx(["btn", "btn-rk-green", styles.heroBtn])}
                 role="button"
                 id="link-try-it-out"
-                to="#rk-anon-home-get-started"
+                onClick={scrollToGetStarted}
               >
                 Try it out
-              </Link>
+              </Button>
               <Link
                 className={cx(["btn", "btn-outline-secondary", styles.heroBtn])}
                 role="button"
-                id="link-sign_up"
+                id="hero_link-sign_up"
                 to="/login"
               >
-                Create an Account
+                Create an account
               </Link>
             </div>
           </div>
