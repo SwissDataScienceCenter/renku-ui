@@ -17,19 +17,20 @@
  */
 
 import cx from "classnames";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useContext, useMemo, useRef } from "react";
 import { PinAngle, PinAngleFill } from "react-bootstrap-icons";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Button, UncontrolledTooltip } from "reactstrap";
 import { EntityType } from "../../features/kgSearch";
-import { EntityType as AnotherEntityType } from "../entities/Entities";
 import {
   useAddPinnedProjectMutation,
   useGetUserPreferencesQuery,
   useRemovePinnedProjectMutation,
 } from "../../features/user/userPreferences.api";
 import { User } from "../../model/RenkuModels";
+import AppContext from "../../utils/context/appContext";
 import { Loader } from "../Loader";
+import { EntityType as AnotherEntityType } from "../entities/Entities";
 
 interface PinnedBadgeProps {
   entityType: EntityType | AnotherEntityType;
@@ -52,6 +53,8 @@ export default function PinnedBadge({ entityType, slug }: PinnedBadgeProps) {
 }
 
 function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
+  const maxPinnedProjects = useGetMaxPinnedProjects();
+
   const {
     data: userPreferences,
     isLoading,
@@ -67,11 +70,19 @@ function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
       return false;
     }
     return (
-      userPreferences.pinned_projects.project_slugs?.find(
+      userPreferences.pinned_projects.project_slugs?.some(
         (projectSlug) => projectSlug.toLowerCase() === slug.toLowerCase()
       ) ?? false
     );
   }, [isError, isLoading, slug, userPreferences]);
+
+  const hasReachedMax = useMemo(
+    () =>
+      maxPinnedProjects > 0 &&
+      !!userPreferences?.pinned_projects.project_slugs?.length &&
+      userPreferences.pinned_projects.project_slugs.length >= maxPinnedProjects,
+    [maxPinnedProjects, userPreferences?.pinned_projects.project_slugs?.length]
+  );
 
   const [addPinnedProject, addPinnedProjectResult] =
     useAddPinnedProjectMutation();
@@ -108,10 +119,23 @@ function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
     ? "Error: could not retrieve user preferences"
     : isProjectPinned
     ? "Unpin project from the dashboard"
+    : hasReachedMax
+    ? `Cannot pin project: maximum number of pinned projects reached (${maxPinnedProjects})`
     : "Pin project to the dashboard";
 
   if (isLoading || isError) {
     return null;
+  }
+
+  if (isFetching || isError || (!isProjectPinned && hasReachedMax)) {
+    return (
+      <DisabledBadge
+        isError={isError}
+        isFetching={isFetching}
+        isProjectPinned={isProjectPinned}
+        tooltipMessage={tooltipMessage}
+      />
+    );
   }
 
   return (
@@ -121,20 +145,96 @@ function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
       <Button
         className={cx("badge", "btn", "p-1", "fs-6", "shadow", "rounded-pill")}
         color="rk-green"
-        disabled={isFetching || isError}
         onClick={onClick}
         innerRef={ref}
         type="button"
       >
-        {isFetching ? (
-          <Loader inline size={16} />
-        ) : isError || !isProjectPinned ? (
+        {!isProjectPinned ? (
           <PinAngle className="bi" />
         ) : (
           <PinAngleFill className="bi" />
         )}
         <span className="visually-hidden">{tooltipMessage}</span>
       </Button>
+      <UncontrolledTooltip placement="top" target={ref}>
+        {tooltipMessage}
+      </UncontrolledTooltip>
+    </div>
+  );
+}
+
+function useGetMaxPinnedProjects() {
+  const { params } = useContext(AppContext);
+
+  const maxPinnedProjects = useMemo(() => {
+    const params_ = params as {
+      USER_PREFERENCES_MAX_PINNED_PROJECTS?: unknown;
+    };
+    if (!("USER_PREFERENCES_MAX_PINNED_PROJECTS" in params_)) {
+      return 0;
+    }
+    if (typeof params_["USER_PREFERENCES_MAX_PINNED_PROJECTS"] === "number") {
+      return Math.max(0, params_["USER_PREFERENCES_MAX_PINNED_PROJECTS"]);
+    }
+    if (typeof params_["USER_PREFERENCES_MAX_PINNED_PROJECTS"] === "string") {
+      try {
+        return Math.max(
+          0,
+          parseInt(params_["USER_PREFERENCES_MAX_PINNED_PROJECTS"] ?? "0", 10)
+        );
+      } catch {
+        return 0;
+      }
+    }
+    return 0;
+  }, [params]);
+
+  return maxPinnedProjects;
+}
+
+interface DisabledBadgeProps {
+  isError: boolean;
+  isFetching: boolean;
+  isProjectPinned: boolean | undefined;
+  tooltipMessage: string;
+}
+
+function DisabledBadge({
+  isError,
+  isFetching,
+  isProjectPinned,
+  tooltipMessage,
+}: DisabledBadgeProps) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  return (
+    <div
+      className={cx("position-absolute", "start-0", "top-0", "ps-1", "pt-1")}
+    >
+      <span className="d-inline-block" ref={ref} tabIndex={0}>
+        <Button
+          className={cx(
+            "badge",
+            "btn",
+            "p-1",
+            "fs-6",
+            "shadow",
+            "rounded-pill"
+          )}
+          color="rk-green"
+          disabled
+          type="button"
+        >
+          {isFetching ? (
+            <Loader inline size={16} />
+          ) : isError || !isProjectPinned ? (
+            <PinAngle className="bi" />
+          ) : (
+            <PinAngleFill className="bi" />
+          )}
+          <span className="visually-hidden">{tooltipMessage}</span>
+        </Button>
+      </span>
       <UncontrolledTooltip placement="top" target={ref}>
         {tooltipMessage}
       </UncontrolledTooltip>

@@ -39,16 +39,6 @@ function useGetRecentlyVisitedProjects({
   projectsCount,
   skip,
 }: UseGetRecentlyVisitedProjectsArgs) {
-  // number of projects to fetch according to current sessions to avoid duplication
-  // const totalProjectsToRequest =
-  //   currentSessions.length >= projectsCount
-  //     ? currentSessions.length + 3
-  //     : projectsCount;
-  // const totalProjectsToReturn =
-  //   currentSessions.length >= projectsCount
-  //     ? 3
-  //     : projectsCount - currentSessions.length;
-
   const totalProjectsToRequest =
     projectsCount + pinnedProjectSlugs.length + currentSessions.length;
 
@@ -56,20 +46,6 @@ function useGetRecentlyVisitedProjects({
     totalProjectsToRequest,
     { skip }
   );
-
-  // let projectsToShow = data;
-  // if (!isFetching && data?.length > 0 && currentSessions?.length > 0) {
-  //   const sessionProjectIds = currentSessions.map(
-  //     (session: Session) => session.annotations["gitlabProjectId"]
-  //   );
-  //   projectsToShow = data
-  //     .filter(
-  //       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //       (project: Record<string, any>) =>
-  //         !sessionProjectIds?.includes(`${project.id}`)
-  //     )
-  //     .splice(0, totalProjectsToReturn);
-  // }
 
   const projectsToShow = useMemo(() => {
     if (queryResult.data == null || queryResult.data.length == 0) {
@@ -79,13 +55,14 @@ function useGetRecentlyVisitedProjects({
     const sessionProjectIds = currentSessions.map(
       (session: Session) => session.annotations["gitlabProjectId"]
     );
-    console.log(queryResult.data);
     return queryResult.data
       .filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (project: Record<string, any>) =>
           !sessionProjectIds.includes(`${project.id}`)
       )
       .filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (project: Record<string, any>) =>
           !pinnedProjectSlugs.find(
             (slug) =>
