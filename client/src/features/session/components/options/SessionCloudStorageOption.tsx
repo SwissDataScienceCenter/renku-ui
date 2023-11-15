@@ -666,7 +666,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
               className={cx("form-check-label", "ms-2")}
               for={`updateCloudStorageReadWrite-${index}`}
             >
-              Read/Write
+              Read-Write
             </Label>
           </div>
         </div>
@@ -899,7 +899,7 @@ function AddTemporaryCloudStorageModal({
                         className={cx("form-check-label", "ms-2")}
                         for="addCloudStorageReadWrite"
                       >
-                        Read/Write
+                        Read-Write
                       </Label>
                     </div>
                   </>

@@ -362,7 +362,7 @@ function AdvancedAddCloudStorage({
                           className={cx("form-check-label", "ms-2")}
                           for="addCloudStorageReadWrite"
                         >
-                          Read/Write
+                          Read-Write
                         </Label>
                       </div>
                     </>
@@ -716,7 +716,7 @@ function SimpleAddCloudStorage({
                           className={cx("form-check-label", "ms-2")}
                           for="addCloudStorageReadWrite"
                         >
-                          Read/Write
+                          Read-Write
                         </Label>
                       </div>
                     </>

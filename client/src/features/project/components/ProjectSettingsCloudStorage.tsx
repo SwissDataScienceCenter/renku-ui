@@ -687,7 +687,7 @@ function EditCloudStorage({
                       className={cx("form-check-label", "ms-2")}
                       for={`updateCloudStorageReadWrite-${name}`}
                     >
-                      Read/Write
+                      Read-Write
                     </Label>
                   </div>
                 </>
@@ -857,7 +857,7 @@ function CloudStorageDetails({
           <div className="text-rk-text-light">
             <small>Mode</small>
           </div>
-          <div>{readonly ? "Read-only" : "Read/Write"}</div>
+          <div>{readonly ? "Read-only" : "Read-Write"}</div>
         </div>
         <div className="mt-2">
           <div className="text-rk-text-light">
