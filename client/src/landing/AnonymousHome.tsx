@@ -62,6 +62,8 @@ import WhoWeAre from "./WhoWeAre/WhoWeAre";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import { BottomNav, TopNav } from "./anonymousHomeNav";
 
+const logo = "/static/public/img/logo.svg";
+
 const standardBgOpacity = {
   "--bs-bg-opacity": 0.4,
 } as CSSProperties;

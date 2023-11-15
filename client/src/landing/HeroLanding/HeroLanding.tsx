@@ -24,13 +24,13 @@ export default function HeroLanding(props: HeroLandingProps) {
             <img src={heroGraphic} alt="Renku" className="graphicHero" />
           </div>
           <div className={styles.heroDescription}>
-            <h2 className="text-white">
+            <h3 className="text-white">
               The research ecosystem is fragmented.
               <span className={cx(["d-lg-block", "d-sm-inline"])}>
                 {" "}
                 Renku is where it comes together.
               </span>
-            </h2>
+            </h3>
             <p>Data, Code, and Compute all under one roof.</p>
             <div
               className={cx([
@@ -38,6 +38,7 @@ export default function HeroLanding(props: HeroLandingProps) {
                 "gap-3",
                 "pt-5",
                 "pt-md-3",
+                "flex-md-row",
                 "flex-sm-row",
                 "flex-column",
               ])}
