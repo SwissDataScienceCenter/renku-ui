@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { useGetRecentlyVisitedProjectsQuery } from "../../features/projects/projectsApi";
+import { useGetRecentlyVisitedProjectsQuery } from "../../features/projects/projects.api";
 import { Session } from "../helpers/SessionFunctions";
 /**
  *  useGetRecentlyVisitedProjects custom hook
