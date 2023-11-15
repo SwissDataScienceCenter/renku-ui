@@ -75,12 +75,11 @@ export function RenkuToolbarItemPlus() {
   return (
     <UncontrolledDropdown className="nav-item dropdown">
       <DropdownToggle
-        className={cx("nav-link", "fs-5")}
+        className={cx("nav-link", "fs-5", "ps-sm-2", "pe-2")}
         nav
         caret
         id="plus-dropdown"
       >
-        {/* <FontAwesomeIcon icon={faPlus} id="createPlus" /> */}
         <PlusLg className="bi" id="createPlus" />
       </DropdownToggle>
       <DropdownMenu
@@ -119,7 +118,7 @@ export function RenkuToolbarGitLabMenu() {
   return (
     <UncontrolledDropdown className="nav-item dropdown">
       <DropdownToggle
-        className={cx("nav-link", "fs-5")}
+        className={cx("nav-link", "fs-5", "px-2")}
         nav
         caret
         id="gitLab-menu"
@@ -169,10 +168,23 @@ function gitLabSettingsUrlFromProfileUrl(webUrl: string): string {
   return comps.join("/");
 }
 
-export function RenkuToolbarHelpMenu() {
+interface RenkuToolbarHelpMenuProps {
+  firstItem?: boolean;
+}
+
+export function RenkuToolbarHelpMenu({ firstItem }: RenkuToolbarHelpMenuProps) {
   return (
     <UncontrolledDropdown className="nav-item dropdown">
-      <DropdownToggle className={cx("nav-link", "fs-5")} nav caret>
+      <DropdownToggle
+        className={cx(
+          "nav-link",
+          "fs-5",
+          firstItem ? "pe-2" : "px-2",
+          "ps-sm-2"
+        )}
+        nav
+        caret
+      >
         <QuestionCircle className="bi" id="helpDropdownToggle" />
       </DropdownToggle>
       <DropdownMenu
@@ -271,13 +283,13 @@ export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
     return <Loader inline size={16} />;
   } else if (!user.logged) {
     const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
-    return <RenkuNavLink to={to} title="Login" />;
+    return <RenkuNavLink className="px-2" to={to} title="Login" />;
   }
 
   return (
     <UncontrolledDropdown className="nav-item dropdown">
       <DropdownToggle
-        className={cx("nav-link", "fs-5")}
+        className={cx("nav-link", "fs-5", "px-2")}
         nav
         caret
         id="profile-dropdown"

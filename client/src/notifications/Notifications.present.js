@@ -275,7 +275,7 @@ class NotificationsMenu extends Component {
     return (
       <Fragment>
         {/* This throws an error in test: Warning `Reference` should not be used outside of a `Manager` component. */}
-        <DropdownToggle className={cx("nav-link", "fs-5")} nav caret>
+        <DropdownToggle className={cx("nav-link", "fs-5", "px-2")} nav caret>
           <InboxFill className="bi" id="notificationsBarIcon" />
           {badge}
         </DropdownToggle>

@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import { useCallback, useState } from "react";
 import { List, Search } from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router-dom";
@@ -31,7 +32,6 @@ import {
   RenkuToolbarItemUser,
   RenkuToolbarNotifications,
 } from "./NavBarItems";
-import cx from "classnames";
 import { RENKU_LOGO } from "./navbar.constans";
 
 interface LoggedInNavBarProps {
@@ -78,12 +78,13 @@ export default function LoggedInNavBar({
               className={cx(
                 "navbar-nav",
                 "flex-row",
-                "flex-nowrap",
+                "flex-wrap",
+                "flex-sm-nowrap",
                 "align-items-center",
                 "ms-lg-auto"
               )}
             >
-              <NavItem className="nav-item col-4 col-lg-auto pe-lg-4">
+              <NavItem className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4">
                 <RenkuNavLink
                   to={Url.get(Url.pages.search)}
                   title="Search"
@@ -95,7 +96,7 @@ export default function LoggedInNavBar({
               <NavItem
                 id="link-dashboard"
                 data-cy="link-dashboard"
-                className="nav-item col-4 col-lg-auto pe-lg-4"
+                className="nav-item col-12 col-sm-4 col-lg-auto pe-lg-4"
               >
                 <RenkuNavLink
                   to={Url.get(Url.pages.landing)}
@@ -103,22 +104,22 @@ export default function LoggedInNavBar({
                   id="link-dashboard"
                 />
               </NavItem>
-              <NavItem className="nav-item col-1 col-lg-auto">
+              <NavItem className="nav-item col-auto ms-sm-auto">
                 <RenkuToolbarItemPlus />
               </NavItem>
-              <NavItem className="nav-item col-1 col-lg-auto">
+              <NavItem className="nav-item col-auto">
                 <RenkuToolbarGitLabMenu />
               </NavItem>
-              <NavItem className="nav-item col-1 col-lg-auto">
+              <NavItem className="nav-item col-auto">
                 <RenkuToolbarHelpMenu />
               </NavItem>
-              <NavItem className="nav-item col-1 col-lg-auto">
+              <NavItem className="nav-item col-auto">
                 <RenkuToolbarNotifications
                   model={model}
                   notifications={notifications}
                 />
               </NavItem>
-              <NavItem className="nav-item col-1 col-lg-auto">
+              <NavItem className="nav-item col-auto">
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 <RenkuToolbarItemUser params={params as any} />
               </NavItem>
