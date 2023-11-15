@@ -95,19 +95,24 @@ nav.rk-anon-home .nav-link,
   min-height: 600px;
 }
 
-#rk-anon-home-section1 {
+#rk-anon-home-hero {
   @extend .section-content;
-  min-height: 800px;
+  min-height: 594px;
+  background-image: url("../../landing/Assets/Visual_head_dots.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position-y: center;
 
-  h1 {
-    font-size: 40px;
+  @include media-breakpoint-down(lg) {
+    background-image: none;
   }
 }
 
 @include media-breakpoint-up(md) {
-  #rk-anon-home-section1 {
+  #rk-anon-home-hero {
     h1 {
-      font-size: 50px;
+      font-size: 40px;
+      font-weight: bold;
     }
   }
 }
