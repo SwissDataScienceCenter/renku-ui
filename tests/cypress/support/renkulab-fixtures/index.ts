@@ -32,6 +32,7 @@ import { NewSession } from "./newSession";
 import { Projects } from "./projects";
 import { Sessions } from "./sessions";
 import { User } from "./user";
+import { UserPreferences } from "./user-preferences";
 import { Versions } from "./versions";
 import { Workflows } from "./workflows";
 
@@ -44,7 +45,11 @@ const Fixtures = NewProject(
             CloudStorage(
               Datasets(
                 Projects(
-                  User(Versions(Workflows(KgSearch(Global(BaseFixtures)))))
+                  User(
+                    UserPreferences(
+                      Versions(Workflows(KgSearch(Global(BaseFixtures))))
+                    )
+                  )
                 )
               )
             )

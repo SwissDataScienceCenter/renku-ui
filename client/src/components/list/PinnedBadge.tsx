@@ -164,6 +164,7 @@ function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
       <Button
         className={cx("badge", "btn", "p-1", "fs-6", "shadow", "rounded-pill")}
         color="rk-green"
+        data-cy="pin-badge"
         onClick={onClick}
         innerRef={ref}
         type="button"
