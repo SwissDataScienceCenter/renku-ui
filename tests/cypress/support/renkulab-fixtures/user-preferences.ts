@@ -17,7 +17,7 @@
  */
 
 import { FixturesConstructor } from "./fixtures";
-import { NameOnlyFixture, SimpleFixture } from "./fixtures.types";
+import { SimpleFixture } from "./fixtures.types";
 
 /**
  * Fixtures for Cloud Storage
