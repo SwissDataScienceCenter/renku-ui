@@ -1,5 +1,16 @@
 # Changes
 
+## [3.15.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.15.0...3.15.1) (2023-11-14)
+
+### Bug Fixes
+
+- Address visual glitches on many pages ([#2883](https://github.com/SwissDataScienceCenter/renku-ui/issues/2883)).
+- Fix links on the search page cards ([#2887](https://github.com/SwissDataScienceCenter/renku-ui/issues/2887)).
+- Prevent showing wrong options on the Session dropdown menu when the project namespace includes uppercase letters ([#2874](https://github.com/SwissDataScienceCenter/renku-ui/issues/2874)).
+- Correctly handle Statuspage down ([#2871](https://github.com/SwissDataScienceCenter/renku-ui/issues/2871), [#2871](https://github.com/SwissDataScienceCenter/renku-ui/issues/2871)).
+- Ignore the case when storing last visited projects to prevent duplicates on the Dashboard ([#2892](https://github.com/SwissDataScienceCenter/renku-ui/issues/2892)).
+- Restore the switch between creating and importing a dataset, and restyle the buttons ([#2857](https://github.com/SwissDataScienceCenter/renku-ui/issues/2857)).
+
 ## [3.15.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.14.0...3.15.0) (2023-10-27)
 
 ### Features
