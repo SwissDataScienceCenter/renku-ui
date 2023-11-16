@@ -18,7 +18,7 @@
 
 import { useState } from "react";
 import cx from "classnames";
-import { Clipboard } from "../Clipboard";
+import { Clipboard } from "../clipboard/Clipboard";
 import { ThrottledTooltip } from "../Tooltip";
 import styles from "./CommandCopy.module.scss";
 

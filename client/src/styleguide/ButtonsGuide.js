@@ -26,7 +26,7 @@ import {
   SuccessAlert,
   WarnAlert,
 } from "../components/Alert";
-import { Clipboard } from "../components/Clipboard";
+import { Clipboard } from "../components/clipboard/Clipboard";
 import { ButtonWithMenu, GoBackButton } from "../components/buttons/Button";
 import { ExternalLink } from "../components/ExternalLinks";
 

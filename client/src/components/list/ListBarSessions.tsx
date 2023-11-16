@@ -29,7 +29,7 @@ import { Notebook } from "../../notebooks/components/session.types";
 import AppContext from "../../utils/context/appContext";
 import { toHumanDateTime } from "../../utils/helpers/DateTimeUtils";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
-import { Clipboard } from "../Clipboard";
+import { Clipboard } from "../clipboard/Clipboard";
 import { ExternalLink } from "../ExternalLinks";
 import { TimeCaption } from "../TimeCaption";
 import EntityCreators from "../entities/Creators";
