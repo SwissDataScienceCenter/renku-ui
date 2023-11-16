@@ -278,7 +278,7 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
     ) : (
       <>
         {(sessionsFormatted?.length ?? 0) > 0 && (
-          <h4 className="fs-5">Sessions</h4>
+          <h4 className="fs-5">Projects with sessions</h4>
         )}
         <SessionsToShow currentSessions={sessionsFormatted ?? []} />
         {pinnedProjectSlugs != null && (
@@ -406,7 +406,9 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
         </Fragment>
       );
     });
-    return <div className="session-list">{element}</div>;
+    return (
+      <div className={cx("session-list", "mb-sm-2", "mb-md-4")}>{element}</div>
+    );
   }
   return null;
 }
@@ -432,7 +434,7 @@ function PinnedProjects({ pinnedProjectSlugs }: PinnedProjectsProps) {
 
   return (
     <>
-      <h4 className={cx("fs-5", "mt-3")}>Pinned projects</h4>
+      <h4 className="fs-5">Pinned projects</h4>
       <ProjectListRows projects={projects} gridDisplay={false} />
     </>
   );
