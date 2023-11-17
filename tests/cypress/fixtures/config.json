@@ -65,5 +65,6 @@
         }
       ]
     }
-  }
+  },
+  "USER_PREFERENCES_MAX_PINNED_PROJECTS": 5
 }

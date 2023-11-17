@@ -273,6 +273,7 @@ function DisabledBadge({
             "rounded-pill"
           )}
           color="rk-green"
+          data-cy="pin-badge"
           disabled
           type="button"
         >

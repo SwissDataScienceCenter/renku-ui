@@ -50,5 +50,19 @@ export function UserPreferences<T extends FixturesConstructor>(Parent: T) {
       ).as(name);
       return this;
     }
+
+    deletePinnedProject(args?: SimpleFixture) {
+      const {
+        fixture = "user-preferences/user-preferences-default.json",
+        name = "deletePinnedProject",
+      } = args ?? {};
+      const response = { fixture };
+      cy.intercept(
+        "DELETE",
+        "/ui-server/api/data/user/preferences/pinned_projects*",
+        response
+      ).as(name);
+      return this;
+    }
   };
 }

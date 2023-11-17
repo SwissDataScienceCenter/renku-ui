@@ -360,8 +360,10 @@ describe("Dashboard pins", () => {
       .sessionServersEmpty()
       .userPreferences();
     cy.visit("/");
+    cy.wait("@getUserPreferences");
 
     cy.getDataCy("projects-container").should("be.visible");
+    cy.getDataCy("projects-container").find(".bouncer").should("not.exist");
     cy.contains("Pinned projects").should("not.exist");
   });
 
@@ -392,12 +394,14 @@ describe("Dashboard pins", () => {
     }
 
     cy.visit("/");
+    cy.wait("@getUserPreferences");
     cy.wait(Object.keys(files).map((filesKey) => `@getProject-${filesKey}`));
 
     cy.getDataCy("projects-container").should("be.visible");
+    cy.getDataCy("projects-container").find(".bouncer").should("not.exist");
+    cy.contains("Recently visited projects").should("be.visible");
     cy.contains("Pinned projects").should("not.exist");
 
-    cy.wait("@getUserPreferences");
     fixtures.userPreferences({
       fixture: "user-preferences/user-preferences-1-pin.json",
       name: "getUserPreferencesNew",
@@ -422,5 +426,125 @@ describe("Dashboard pins", () => {
       .find("[data-cy=pin-badge]")
       .should("be.visible")
       .contains("Unpin project from the dashboard");
+  });
+
+  it("let the user unpin a project", () => {
+    fixtures
+      .entitySearch()
+      .getLastVisitedProjects({
+        fixture: "projects/last-visited-projects-5.json",
+      })
+      .sessionServersEmpty()
+      .userPreferences({
+        fixture: "user-preferences/user-preferences-1-pin.json",
+      })
+      .deletePinnedProject();
+    const files = {
+      "lorenzo.cavazzi.tech/readme-file-dev": 30929,
+      "e2e/testing-datasets": 43781,
+      "e2e/local-test-project": 39646,
+      "e2e/nuevo-project": 44966,
+      "e2e/local-test-project-2": 44967,
+    };
+    // fixture landing page project data
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        name: `getProject-${filesKey}`,
+        projectPath: filesKey,
+        statistics: false,
+      });
+    }
+
+    cy.visit("/");
+    cy.wait("@getUserPreferences");
+    cy.wait(Object.keys(files).map((filesKey) => `@getProject-${filesKey}`));
+
+    cy.getDataCy("projects-container").should("be.visible");
+    cy.getDataCy("projects-container").find(".bouncer").should("not.exist");
+    cy.contains("Recently visited projects").should("be.visible");
+    cy.contains("Pinned projects").should("be.visible");
+
+    fixtures.userPreferences({
+      fixture: "user-preferences/user-preferences-default.json",
+      name: "getUserPreferencesNew",
+    });
+
+    cy.contains(".container-entity-listBar", "e2e/nuevo-project")
+      .should("be.visible")
+      .as("pickedProject");
+    cy.get("@pickedProject")
+      .find("[data-cy=pin-badge]")
+      .should("be.visible")
+      .contains("Unpin project from the dashboard")
+      .parent()
+      .click();
+
+    cy.wait("@getUserPreferencesNew");
+    cy.getDataCy("projects-container").should("be.visible");
+    cy.getDataCy("projects-container").find(".bouncer").should("not.exist");
+    cy.contains("Recently visited projects").should("be.visible");
+    cy.contains("Pinned projects").should("not.exist");
+    cy.contains(".container-entity-listBar", "e2e/nuevo-project")
+      .should("be.visible")
+      .as("pickedProjectPinned");
+    cy.get("@pickedProjectPinned")
+      .find("[data-cy=pin-badge]")
+      .should("be.visible")
+      .contains("Pin project to the dashboard");
+  });
+
+  it("has a maximum number of pins", () => {
+    fixtures
+      .config({
+        overrides: {
+          USER_PREFERENCES_MAX_PINNED_PROJECTS: 3,
+        },
+      })
+      .entitySearch()
+      .getLastVisitedProjects({
+        fixture: "projects/last-visited-projects-5.json",
+      })
+      .sessionServersEmpty()
+      .userPreferences({
+        fixture: "user-preferences/user-preferences-3-pins.json",
+      })
+      .postPinnedProject();
+    const files = {
+      "lorenzo.cavazzi.tech/readme-file-dev": 30929,
+      "e2e/testing-datasets": 43781,
+      "e2e/local-test-project": 39646,
+      "e2e/nuevo-project": 44966,
+      "e2e/local-test-project-2": 44967,
+    };
+    // fixture landing page project data
+    for (const filesKey in files) {
+      fixtures.project({
+        fixture: `projects/project_${files[filesKey]}.json`,
+        name: `getProject-${filesKey}`,
+        projectPath: filesKey,
+        statistics: false,
+      });
+    }
+
+    cy.visit("/");
+    cy.wait("@getUserPreferences");
+    cy.wait(Object.keys(files).map((filesKey) => `@getProject-${filesKey}`));
+
+    cy.getDataCy("projects-container").should("be.visible");
+    cy.getDataCy("projects-container").find(".bouncer").should("not.exist");
+    cy.contains("Recently visited projects").should("be.visible");
+    cy.contains("Pinned projects").should("be.visible");
+
+    cy.contains(".container-entity-listBar", "e2e/local-test-project")
+      .should("be.visible")
+      .as("pickedProject");
+    cy.get("@pickedProject")
+      .find("[data-cy=pin-badge]")
+      .should("be.visible")
+      .and("be.disabled")
+      .contains(
+        "Cannot pin project: maximum number of pinned projects reached (3)"
+      );
   });
 });
