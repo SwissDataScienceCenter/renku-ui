@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Person, PlusLg, QuestionCircle } from "react-bootstrap-icons";
+import { Person, PlusCircleFill, QuestionCircle } from "react-bootstrap-icons";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
@@ -80,7 +80,7 @@ export function RenkuToolbarItemPlus() {
         caret
         id="plus-dropdown"
       >
-        <PlusLg className="bi" id="createPlus" />
+        <PlusCircleFill className="bi" id="createPlus" />
       </DropdownToggle>
       <DropdownMenu
         aria-labelledby="plus-menu"
