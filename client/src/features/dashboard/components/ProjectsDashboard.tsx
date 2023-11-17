@@ -241,16 +241,14 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
     error: sessionsError,
   } = useGetSessionsQuery();
 
-  const sessionsFormatted = useMemo(() => {
-    if (sessions == null) {
-      return undefined;
-    }
-    return getFormattedSessionsAnnotations(sessions);
-  }, [sessions]);
+  const sessionsFormatted = useMemo(
+    () => getFormattedSessionsAnnotations(sessions ?? {}),
+    [sessions]
+  );
 
   const { projects, isFetchingProjects } = useGetRecentlyVisitedProjects(
     TOTAL_RECENTLY_VISITED_PROJECT,
-    sessionsFormatted ?? []
+    sessionsFormatted
   );
 
   const totalUserProjects =
@@ -261,8 +259,8 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
   } else {
     projectsToShow =
       projects?.length > 0 ? (
-        <ProjectListRows projects={projects.slice(0, 1)} gridDisplay={false} />
-      ) : sessionsFormatted == null || sessionsFormatted.length === 0 ? (
+        <ProjectListRows projects={projects} gridDisplay={false} />
+      ) : sessionsFormatted.length === 0 ? (
         <p className="rk-dashboard-section-header">
           You do not have any recently-visited projects
         </p>
@@ -296,9 +294,7 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
             </span>
           </Link>
         </div>
-        {sessionsFormatted != null && (
-          <SessionsToShow currentSessions={sessionsFormatted} />
-        )}
+        <SessionsToShow currentSessions={sessionsFormatted} />
         {projectsToShow}
         {otherProjectsBtn}
       </div>
