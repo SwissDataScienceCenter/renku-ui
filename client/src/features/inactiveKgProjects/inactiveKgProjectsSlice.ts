@@ -17,7 +17,6 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { InactiveKgProjects } from "./InactiveKgProjects";
 
 const initialState: InactiveKgProjects[] = [];
@@ -57,7 +56,3 @@ export const kgInactiveProjectsSlice = createSlice({
 
 export const { updateList, addFullList, updateProgress } =
   kgInactiveProjectsSlice.actions;
-
-export const useInactiveProjectSelector = createSliceSelector(
-  kgInactiveProjectsSlice
-);

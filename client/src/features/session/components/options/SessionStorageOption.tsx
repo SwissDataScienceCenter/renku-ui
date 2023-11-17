@@ -18,10 +18,12 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Input, InputGroup, InputGroupText } from "reactstrap";
 
 import { ThrottledTooltip } from "../../../../components/Tooltip";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
@@ -31,10 +33,7 @@ import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
 } from "../../startSessionOptions.constants";
-import {
-  setStorage,
-  useStartSessionOptionsSelector,
-} from "../../startSessionOptionsSlice";
+import { setStorage } from "../../startSessionOptionsSlice";
 import { validateStorageAmount } from "../../utils/sessionOptions.utils";
 
 import styles from "./SessionStorageOption.module.scss";
@@ -59,7 +58,9 @@ export const SessionStorageOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const commit = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.commit
+  );
   const { data: projectConfig } = usePatchedProjectConfig({
     apiVersion,
     commit,
@@ -85,10 +86,11 @@ export const SessionStorageOption = () => {
     { skip: !projectConfig }
   );
 
-  const { storage, sessionClass: currentSessionClassId } =
-    useStartSessionOptionsSelector();
+  const { storage, sessionClass: currentSessionClassId } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
+  );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const currentSessionClass = useMemo(
     () =>

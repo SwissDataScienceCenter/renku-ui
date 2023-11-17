@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 import { useSelector } from "react-redux";
-
-import { useInactiveProjectSelector } from "../../inactiveKgProjects/inactiveKgProjectsSlice";
-import { useGetInactiveKgProjectsQuery } from "../../inactiveKgProjects/InactiveKgProjectsApi";
-import { WarnAlert } from "../../../components/Alert";
 import { Link } from "react-router-dom";
+
+import { WarnAlert } from "../../../components/Alert";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import type { RootState } from "../../../utils/helpers/EnhancedState";
+import { useGetInactiveKgProjectsQuery } from "../../inactiveKgProjects/InactiveKgProjectsApi";
 
 function InactiveProjectsWarning({
   isEstimate,
@@ -72,7 +72,9 @@ function EstimatedInactiveProjectsWarning({ userId }: { userId: number }) {
 
 export function ProjectsInactiveKGWarning() {
   const user = useSelector((state: RootState) => state.stateModel.user);
-  const projectList = useInactiveProjectSelector();
+  const projectList = useAppSelector(
+    ({ kgInactiveProjects }) => kgInactiveProjects
+  );
   if (!user.logged) return null;
 
   if (projectList.length < 1)

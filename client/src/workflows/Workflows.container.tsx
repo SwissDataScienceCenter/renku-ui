@@ -16,20 +16,20 @@
  * limitations under the License.
  */
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent } from "./Workflows.present";
+
+import { StateModelProject } from "../features/project/Project";
+import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import {
   useGetWorkflowDetailQuery,
   useGetWorkflowListQuery,
 } from "../features/workflows/WorkflowsApi";
-import {
-  workflowsSlice,
-  useWorkflowsSelector,
-} from "../features/workflows/WorkflowsSlice";
-import { useCoreSupport } from "../features/project/useProjectCoreSupport";
-import { StateModelProject } from "../features/project/Project";
+import { workflowsSlice } from "../features/workflows/WorkflowsSlice";
+import useAppDispatch from "../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../utils/customHooks/useAppSelector.hook";
 import type { RootState } from "../utils/helpers/EnhancedState";
+import { WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent } from "./Workflows.present";
 
 const MIN_CORE_VERSION_WORKFLOWS = 9;
 
@@ -96,7 +96,7 @@ function WorkflowsList({
     false;
 
   // Configure the functions to dispatch workflowsDisplay changes
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const toggleAscending = () =>
     dispatch(workflowsSlice.actions.toggleAscending());
   const toggleExpanded = (workflowId: string) =>
@@ -107,7 +107,9 @@ function WorkflowsList({
     dispatch(workflowsSlice.actions.setOrderProperty({ newProperty }));
   const setDetailExpanded = (targetDetails: Record<string, any>) =>
     dispatch(workflowsSlice.actions.setDetail({ targetDetails }));
-  const workflowsDisplay = useWorkflowsSelector();
+  const workflowsDisplay = useAppSelector(
+    ({ workflowsDisplay }) => workflowsDisplay
+  );
 
   // Fetch workflow list
   const skipList = !metadataVersion || !repositoryUrl || unsupported;

@@ -17,9 +17,11 @@
  */
 
 import { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { StatusStepProgressBar } from "../../../../components/progress/ProgressSteps";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import { useGetCloudStorageForProjectQuery } from "../../../project/projectCloudStorage.api";
@@ -44,17 +46,14 @@ import {
   setSteps,
   updateStepStatus,
 } from "../../startSession.slice";
-import {
-  startSessionOptionsSlice,
-  useStartSessionOptionsSelector,
-} from "../../startSessionOptionsSlice";
+import { startSessionOptionsSlice } from "../../startSessionOptionsSlice";
 import { useProjectSessions } from "../ProjectSessionsList";
 import SessionDockerImage from "./SessionDockerImage";
 
 export default function AutostartSessionOptions() {
   useAutostartSessionOptions();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Reset start session options slice when we navigate away
   useEffect(() => {
@@ -113,7 +112,7 @@ function useAutostartSessionOptions(): void {
     pinnedDockerImage,
     sessionClass: currentSessionClassId,
     storage,
-  } = useStartSessionOptionsSelector();
+  } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
 
   const { data: branches, isFetching: branchesIsFetching } =
     useGetAllRepositoryBranchesQuery(
@@ -199,7 +198,7 @@ function useAutostartSessionOptions(): void {
   useDefaultAutoFetchLfsOption({ projectConfig });
   useDefaultCloudStorageOption({ notebooksVersion, storageForProject });
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [startSession] = useStartSessionMutation({
     fixedCacheKey: "start-session",

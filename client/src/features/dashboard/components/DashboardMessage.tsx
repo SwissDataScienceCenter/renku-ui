@@ -18,17 +18,17 @@
 
 import cx from "classnames";
 import { useCallback, useContext, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
 import { Collapse } from "reactstrap";
+
 import { RenkuAlert } from "../../../components/Alert";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import AppContext from "../../../utils/context/appContext";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { validateDashboardMessageParams } from "../message/dashboardMessage.utils";
-import {
-  dashboardMessageSlice,
-  useDashboardMessageSelector,
-} from "../message/dashboardMessageSlice";
+import { dashboardMessageSlice } from "../message/dashboardMessageSlice";
+
 import styles from "./DashboardMessage.module.scss";
 
 export default function DashboardMessage() {
@@ -39,10 +39,10 @@ export default function DashboardMessage() {
     [params]
   );
 
-  const alreadyDismissed = useDashboardMessageSelector(
-    (state) => state.dismissed
+  const alreadyDismissed = useAppSelector(
+    ({ dashboardMessage }) => dashboardMessage.dismissed
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const dismiss = useCallback(
     () => dispatch(dashboardMessageSlice.actions.dismiss()),
     [dispatch]

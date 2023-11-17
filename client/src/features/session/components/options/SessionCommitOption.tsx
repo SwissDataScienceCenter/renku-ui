@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { clamp } from "lodash";
 import { ChangeEvent, useCallback, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   Button,
   FormGroup,
@@ -36,14 +36,13 @@ import {
 import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import CommitSelector from "../../../../components/commitSelector/CommitSelector";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { UncontrolledPopover } from "../../../../utils/ts-wrappers";
 import { useGetRepositoryCommitsQuery } from "../../../project/projectGitLab.api";
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
-import {
-  setCommit,
-  useStartSessionOptionsSelector,
-} from "../../startSessionOptionsSlice";
+import { setCommit } from "../../startSessionOptionsSlice";
 
 export default function SessionCommitOption() {
   const defaultBranch = useSelector<RootState, string>(
@@ -53,7 +52,9 @@ export default function SessionCommitOption() {
     (state) => state.stateModel.project.metadata.id ?? null
   );
 
-  const currentBranch = useStartSessionOptionsSelector(({ branch }) => branch);
+  const currentBranch = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.branch
+  );
 
   const {
     data: commits,
@@ -68,7 +69,7 @@ export default function SessionCommitOption() {
     { skip: !gitLabProjectId || !currentBranch }
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const onChange = useCallback(
     (commitSha: string) => {
       if (commitSha) {

@@ -25,7 +25,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Redirect, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
@@ -49,6 +49,8 @@ import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
 import { RootState } from "../../../utils/helpers/EnhancedState";
 import { Url } from "../../../utils/helpers/url";
@@ -58,12 +60,8 @@ import startSessionSlice, {
   setError,
   setStarting,
   setSteps,
-  useStartSessionSelector,
 } from "../startSession.slice";
-import {
-  startSessionOptionsSlice,
-  useStartSessionOptionsSelector,
-} from "../startSessionOptionsSlice";
+import { startSessionOptionsSlice } from "../startSessionOptionsSlice";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
 import AutostartSessionOptions from "./options/AutostartSessionOptions";
@@ -91,9 +89,11 @@ export default function StartNewSession() {
     (state) => state.stateModel.user.logged
   );
 
-  const { starting, error } = useStartSessionSelector();
+  const { starting, error } = useAppSelector(
+    ({ startSession }) => startSession
+  );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Reset start session slice when we navigate away
   useEffect(() => {
@@ -184,13 +184,13 @@ function SessionStarting() {
     (state) => state.stateModel.project.metadata.path
   );
 
-  const steps = useStartSessionSelector(({ steps }) => steps);
+  const steps = useAppSelector(({ startSession }) => startSession.steps);
 
   const [, { data: session, error }] = useStartSessionMutation({
     fixedCacheKey: "start-session",
   });
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (error) {
@@ -236,8 +236,8 @@ function SessionStarting() {
 }
 
 function SessionStartError() {
-  const { error, errorMessage } = useStartSessionSelector(
-    ({ error, errorMessage }) => ({ error, errorMessage })
+  const { error, errorMessage } = useAppSelector(
+    ({ startSession }) => startSession
   );
 
   if (!error) {
@@ -442,8 +442,9 @@ function SessionCreateLink() {
     (state) => state.stateModel.project.metadata.path
   );
 
-  const { branch, commit, environmentVariables } =
-    useStartSessionOptionsSelector();
+  const { branch, commit, environmentVariables } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
+  );
 
   const [createLinkIsOpen, setCreateLinkIsOpen] = useState(true);
   const toggleCreateLink = useCallback(() => {
@@ -590,7 +591,7 @@ function ForkProjectModal() {
 }
 
 function StartNewSessionOptions() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Reset start session options slice when we navigate away
   useEffect(() => {
@@ -638,7 +639,7 @@ function StartSessionButton() {
     pinnedDockerImage,
     sessionClass,
     storage,
-  } = useStartSessionOptionsSelector();
+  } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
 
   const missingCredentialsStorage = useMemo(
     () =>
@@ -658,7 +659,7 @@ function StartSessionButton() {
   const enabled =
     dockerImageStatus === "available" && missingCredentialsStorage.length == 0;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [startSession] = useStartSessionMutation({
     fixedCacheKey: "start-session",

@@ -28,7 +28,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import {
   Button,
@@ -52,6 +52,7 @@ import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.consta
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import AppContext from "../../../utils/context/appContext";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import type { RootState } from "../../../utils/helpers/EnhancedState";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
@@ -170,7 +171,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
     (state) => state.stateModel.user.logged
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const onToggleLogs = useCallback(() => {
     dispatch(toggleSessionLogsModal({ targetServer: session.name }));
   }, [dispatch, session.name]);

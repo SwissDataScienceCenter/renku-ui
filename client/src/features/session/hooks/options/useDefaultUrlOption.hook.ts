@@ -17,7 +17,7 @@
  */
 
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import { ProjectConfig } from "../../../project/Project";
 import { setDefaultUrl } from "../../startSessionOptionsSlice";
 
@@ -28,7 +28,7 @@ interface UseDefaultUrlOptionArgs {
 export default function useDefaultUrlOption({
   projectConfig,
 }: UseDefaultUrlOptionArgs): void {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Set initial default URL
   useEffect(() => {

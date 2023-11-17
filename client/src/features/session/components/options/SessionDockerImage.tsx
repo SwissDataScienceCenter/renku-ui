@@ -19,10 +19,10 @@
 import { useSelector } from "react-redux";
 
 import { Loader } from "../../../../components/Loader";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
-import { useStartSessionOptionsSelector } from "../../startSessionOptionsSlice";
 import SessionPinnedDockerImage from "./SessionPinnedDockerImage";
 import SessionProjectDockerImage from "./SessionProjectDockerImage";
 
@@ -46,7 +46,9 @@ export default function SessionDockerImage() {
     metadataVersion,
   } = coreSupport;
 
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const commit = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.commit
+  );
 
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
     usePatchedProjectConfig({

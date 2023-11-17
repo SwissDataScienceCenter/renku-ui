@@ -35,7 +35,7 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -64,6 +64,8 @@ import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { Url } from "../../../../utils/helpers/url";
 import { StateModelProject } from "../../../project/Project";
@@ -88,7 +90,6 @@ import {
   removeCloudStorageItem,
   setCloudStorage,
   updateCloudStorageItem,
-  useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
 
 export default function SessionCloudStorageOption() {
@@ -146,11 +147,11 @@ function CloudStorageList() {
 
   const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
-  const cloudStorageList = useStartSessionOptionsSelector(
-    ({ cloudStorage }) => cloudStorage
+  const cloudStorageList = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.cloudStorage
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const { data: notebooksVersion } = useGetNotebooksVersionsQuery();
   const {
@@ -262,7 +263,7 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
     setIsOpen((isOpen) => !isOpen);
   }, []);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onToggleActive = useCallback(() => {
     dispatch(
@@ -493,7 +494,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
     name,
   });
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onChangeSourcePath = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -744,7 +745,7 @@ function AddTemporaryCloudStorageModal({
     path,
   });
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [validateCloudStorageConfiguration, result] =
     useValidateCloudStorageConfigurationMutation();

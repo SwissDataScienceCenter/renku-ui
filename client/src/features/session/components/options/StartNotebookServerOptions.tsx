@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   Badge,
   Button,
@@ -33,6 +33,8 @@ import {
 
 import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { ProjectConfig } from "../../../project/Project";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
@@ -41,11 +43,7 @@ import useDefaultUrlOption from "../../hooks/options/useDefaultUrlOption.hook";
 import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import { useServerOptionsQuery } from "../../sessions.api";
 import { ServerOptions } from "../../sessions.types";
-import {
-  setDefaultUrl,
-  setLfsAutoFetch,
-  useStartSessionOptionsSelector,
-} from "../../startSessionOptionsSlice";
+import { setDefaultUrl, setLfsAutoFetch } from "../../startSessionOptionsSlice";
 import { SessionClassOption } from "./SessionClassOption";
 import { SessionStorageOption } from "./SessionStorageOption";
 
@@ -77,7 +75,9 @@ export const StartNotebookServerOptions = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const commit = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.commit
+  );
   const { isLoading: projectConfigIsLoading, error: errorProjectConfig } =
     usePatchedProjectConfig({
       apiVersion,
@@ -161,8 +161,9 @@ const DefaultUrlOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const { commit, defaultUrl: selectedDefaultUrl } =
-    useStartSessionOptionsSelector();
+  const { commit, defaultUrl: selectedDefaultUrl } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
+  );
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
     usePatchedProjectConfig({
       apiVersion,
@@ -178,7 +179,7 @@ const DefaultUrlOption = () => {
     projectConfig,
   });
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onChange = useCallback(
     (_event: React.MouseEvent<HTMLElement, MouseEvent>, value: string) => {
@@ -276,7 +277,9 @@ const AutoFetchLfsOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const commit = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.commit
+  );
   const { data: projectConfig } = usePatchedProjectConfig({
     apiVersion,
     commit,
@@ -286,11 +289,11 @@ const AutoFetchLfsOption = () => {
     skip: !coreSupportComputed || !commit,
   });
 
-  const lfsAutoFetch = useStartSessionOptionsSelector(
-    (state) => state.lfsAutoFetch
+  const lfsAutoFetch = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.lfsAutoFetch
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onChange = useCallback(() => {
     dispatch(setLfsAutoFetch(!lfsAutoFetch));

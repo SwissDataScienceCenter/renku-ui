@@ -24,12 +24,14 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Badge, Button, UncontrolledTooltip } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../../api-client";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { GitLabPipelineJob } from "../../../project/GitLab.types";
 import projectGitLabApi, {
@@ -45,19 +47,13 @@ import {
 import {
   setDockerImageBuildStatus,
   setDockerImageStatus,
-  useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
 
 // ? See: SessionProjectDockerImage.md
 export default function SessionProjectDockerImage() {
-  const { dockerImageBuildStatus: status, dockerImageStatus } =
-    useStartSessionOptionsSelector(
-      ({ commit, dockerImageBuildStatus, dockerImageStatus }) => ({
-        commit,
-        dockerImageBuildStatus,
-        dockerImageStatus,
-      })
-    );
+  const { dockerImageBuildStatus: status, dockerImageStatus } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
+  );
 
   useDockerImageStatusStateMachine();
 
@@ -156,7 +152,9 @@ function BuildAgainButton() {
     (state) => state.stateModel.project.metadata.accessLevel
   );
 
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const commit = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.commit
+  );
 
   const hasDevAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
@@ -176,7 +174,7 @@ function BuildAgainButton() {
 
   const [retryPipeline] = useRetryPipelineMutation();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onRetryPipeline = useCallback(() => {
     if (!gitLabProjectId || !pipelineJob) {
@@ -225,7 +223,9 @@ function ViewPipelineLink() {
     (state) => state.stateModel.project.metadata.id ?? null
   );
 
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const commit = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.commit
+  );
 
   const { data: pipelines } = useGetPipelinesQuery(
     { commit, projectId: gitLabProjectId ?? 0 },
@@ -277,13 +277,15 @@ function RunPipeline() {
     (state) => state.stateModel.project.metadata.accessLevel
   );
 
-  const branch = useStartSessionOptionsSelector(({ branch }) => branch);
+  const branch = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.branch
+  );
 
   const hasDevAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
   const [runPipeline] = useRunPipelineMutation();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onRunPipeline = useCallback(() => {
     if (!branch || !gitLabProjectId) {
@@ -319,12 +321,10 @@ function useDockerImageStatusStateMachine() {
     (state) => state.stateModel.project.metadata.id ?? null
   );
 
-  const { commit, dockerImageBuildStatus: status } =
-    useStartSessionOptionsSelector(({ commit, dockerImageBuildStatus }) => ({
-      commit,
-      dockerImageBuildStatus,
-    }));
-  const dispatch = useDispatch();
+  const { commit, dockerImageBuildStatus: status } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
+  );
+  const dispatch = useAppDispatch();
 
   const [
     getRenkuRegistry,

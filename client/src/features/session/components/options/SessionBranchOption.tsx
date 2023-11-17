@@ -20,7 +20,7 @@ import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { ChangeEvent, useCallback, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -36,14 +36,13 @@ import {
 import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { Url } from "../../../../utils/helpers/url";
 import { useGetAllRepositoryBranchesQuery } from "../../../project/projectGitLab.api";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
-import {
-  setBranch,
-  useStartSessionOptionsSelector,
-} from "../../startSessionOptionsSlice";
+import { setBranch } from "../../startSessionOptionsSlice";
 
 import styles from "./SessionBranchOption.module.scss";
 
@@ -70,9 +69,11 @@ export default function SessionBranchOption() {
     { skip: !gitLabProjectId }
   );
 
-  const currentBranch = useStartSessionOptionsSelector(({ branch }) => branch);
+  const currentBranch = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.branch
+  );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const onChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const branchName = event.target.value;

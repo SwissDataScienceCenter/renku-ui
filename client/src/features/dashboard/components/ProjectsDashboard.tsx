@@ -17,12 +17,11 @@
  */
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { Fragment, useContext, useEffect, useState } from "react";
 import { Search } from "react-bootstrap-icons";
-import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
-import cx from "classnames";
 import { InfoAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import ListDisplay from "../../../components/List";
@@ -35,6 +34,8 @@ import { Notebook } from "../../../notebooks/components/session.types";
 import { urlMap } from "../../../project/list/ProjectList.container";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import useGetRecentlyVisitedProjects from "../../../utils/customHooks/useGetRecentlyVisitedProjects";
 import {
   cleanGitUrl,
@@ -42,7 +43,7 @@ import {
 } from "../../../utils/helpers/ProjectFunctions";
 import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionFunctions";
 import { Url } from "../../../utils/helpers/url";
-import { displaySlice, useDisplaySelector } from "../../display";
+import { displaySlice } from "../../display";
 import { EntityType } from "../../kgSearch";
 import { KgAuthor } from "../../kgSearch/KgSearch";
 import {
@@ -291,11 +292,13 @@ interface SessionsToShowProps {
   currentSessions: Notebook["data"][];
 }
 function SessionsToShow({ currentSessions }: SessionsToShowProps) {
-  const displayModal = useDisplaySelector((state) => state.modals.sessionLogs);
+  const displayModal = useAppSelector(
+    ({ display }) => display.modals.sessionLogs
+  );
   const [items, setItems] = useState<any[]>([]);
   const { client } = useContext(AppContext);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const showLogs = (target: string) => {
     dispatch(
       displaySlice.actions.showSessionLogsModal({ targetServer: target })

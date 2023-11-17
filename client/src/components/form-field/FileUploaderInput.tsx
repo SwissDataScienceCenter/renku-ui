@@ -19,17 +19,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React from "react";
-import { useDispatch } from "react-redux";
-
 import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
-import {
-  setFiles,
-  useDatasetFormSelector,
-} from "../../features/project/dataset";
-import type { DatasetFormState } from "../../features/project/dataset";
 
-import DropzoneFileUploader, { FILE_STATUS } from "./DropzoneFileUploader";
 import { IDatasetFiles } from "../../features/project/Project";
+import type { DatasetFormState } from "../../features/project/dataset";
+import { setFiles } from "../../features/project/dataset";
+import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import DropzoneFileUploader, { FILE_STATUS } from "./DropzoneFileUploader";
 
 // Not sure where this comes from -- just trying to maintain existing behavior.
 const UPLOAD_THRESHOLD_SOFT = 104_857_600;
@@ -91,10 +88,10 @@ type FileUploaderInputProps = {
 };
 
 function FileUploaderInput(props: FileUploaderInputProps) {
-  const datasetUploaderFiles = useDatasetFormSelector(
-    (state) => state.form.files
+  const datasetUploaderFiles = useAppSelector(
+    ({ datasetForm }) => datasetForm.form.files
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { setValue } = props;
   const setDisplayFiles = React.useCallback(
     (files: DatasetFormState["form"]["files"]) => {
