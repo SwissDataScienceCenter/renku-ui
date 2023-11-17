@@ -47,7 +47,6 @@ import {
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-  CLOUD_STORAGE_READWRITE_ENABLED,
 } from "../projectCloudStorage.constants";
 import {
   CloudStorage,
@@ -321,55 +320,34 @@ function AdvancedAddCloudStorage({
               </FormText>
             </div>
 
-            {!CLOUD_STORAGE_READWRITE_ENABLED ? null : (
-              <div className="mb-3">
-                <div className="form-label">Mode</div>
-                <Controller
-                  control={control}
-                  name="readonly"
-                  render={({ field }) => (
-                    <>
-                      <div className="form-check">
-                        <Input
-                          type="radio"
-                          className="form-check-input"
-                          name="readonlyRadio"
-                          id="addCloudStorageReadOnly"
-                          autoComplete="off"
-                          checked={field.value}
-                          onBlur={field.onBlur}
-                          onChange={() => field.onChange(true)}
-                        />
-                        <Label
-                          className={cx("form-check-label", "ms-2")}
-                          for="addCloudStorageReadOnly"
-                        >
-                          Read-only
-                        </Label>
-                      </div>
-                      <div className="form-check">
-                        <Input
-                          type="radio"
-                          className="form-check-input"
-                          name="readonlyRadio"
-                          id="addCloudStorageReadWrite"
-                          autoComplete="off"
-                          checked={!field.value}
-                          onBlur={field.onBlur}
-                          onChange={() => field.onChange(false)}
-                        />
-                        <Label
-                          className={cx("form-check-label", "ms-2")}
-                          for="addCloudStorageReadWrite"
-                        >
-                          Read-Write
-                        </Label>
-                      </div>
-                    </>
-                  )}
-                />
-              </div>
-            )}
+            <div className="mb-3">
+              <Controller
+                control={control}
+                name="readonly"
+                render={({ field }) => (
+                  <Input
+                    aria-describedby="addCloudStorageReadOnlyHelp"
+                    className="form-check-input"
+                    id="addCloudStorageReadOnly"
+                    type="checkbox"
+                    checked={field.value}
+                    innerRef={field.ref}
+                    onBlur={field.onBlur}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <Label
+                className={cx("form-check-label", "ms-2")}
+                for="addCloudStorageReadOnly"
+              >
+                Read-only
+              </Label>
+              <FormText id="addCloudStorageReadOnlyHelp" tag="div">
+                This will mount the storage in read-only mode, regardless of
+                write permissions on the account used to access.
+              </FormText>
+            </div>
 
             <div className="mb-3">
               <Label className="form-label" for="addCloudStorageSourcePath">
@@ -496,7 +474,7 @@ function SimpleAddCloudStorage({
       name: "",
       endpointUrl: "",
       private: true,
-      readonly: true,
+      readonly: false,
     },
   });
   const onSubmit = useCallback(
@@ -675,55 +653,34 @@ function SimpleAddCloudStorage({
               </FormText>
             </div>
 
-            {!CLOUD_STORAGE_READWRITE_ENABLED ? null : (
-              <div>
-                <div className="form-label">Mode</div>
-                <Controller
-                  control={control}
-                  name="readonly"
-                  render={({ field }) => (
-                    <>
-                      <div className="form-check">
-                        <Input
-                          type="radio"
-                          className="form-check-input"
-                          name="addCloudStorageReadOnlyRadio"
-                          id="addCloudStorageReadOnly"
-                          autoComplete="off"
-                          checked={field.value}
-                          onBlur={field.onBlur}
-                          onChange={() => field.onChange(true)}
-                        />
-                        <Label
-                          className={cx("form-check-label", "ms-2")}
-                          for="addCloudStorageReadOnly"
-                        >
-                          Read-only
-                        </Label>
-                      </div>
-                      <div className="form-check">
-                        <Input
-                          type="radio"
-                          className="form-check-input"
-                          name="addCloudStorageReadOnlyRadio"
-                          id="addCloudStorageReadWrite"
-                          autoComplete="off"
-                          checked={!field.value}
-                          onBlur={field.onBlur}
-                          onChange={() => field.onChange(false)}
-                        />
-                        <Label
-                          className={cx("form-check-label", "ms-2")}
-                          for="addCloudStorageReadWrite"
-                        >
-                          Read-Write
-                        </Label>
-                      </div>
-                    </>
-                  )}
-                />
-              </div>
-            )}
+            <div className="mb-3">
+              <Controller
+                control={control}
+                name="readonly"
+                render={({ field }) => (
+                  <Input
+                    aria-describedby="addCloudStorageReadOnlyHelp"
+                    className="form-check-input"
+                    id="addCloudStorageReadOnly"
+                    type="checkbox"
+                    checked={field.value}
+                    innerRef={field.ref}
+                    onBlur={field.onBlur}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <Label
+                className={cx("form-check-label", "ms-2")}
+                for="addCloudStorageReadOnly"
+              >
+                Read-only
+              </Label>
+              <FormText id="addCloudStorageReadOnlyHelp" tag="div">
+                This will mount the storage in read-only mode, regardless of
+                write permissions on the account used to access.
+              </FormText>
+            </div>
           </div>
         </Form>
       </ModalBody>
