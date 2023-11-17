@@ -87,7 +87,7 @@ function HomeHeader(props: AnonymousHomeConfig) {
           />
         </Col>
       </Row>
-      <TopNav {...props} />
+      <TopNav />
     </Fragment>
   );
 }
