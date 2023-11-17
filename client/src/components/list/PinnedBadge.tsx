@@ -46,7 +46,7 @@ interface PinnedBadgeProps {
  */
 export default function PinnedBadge({ entityType, slug }: PinnedBadgeProps) {
   const userLogged = useSelector<RootStateOrAny, User["logged"]>(
-    (state) => state.stateModel.user.logged
+    (state) => !!state.stateModel?.user?.logged
   );
 
   if (!userLogged || entityType !== EntityType.Project) {
