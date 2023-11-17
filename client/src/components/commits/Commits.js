@@ -35,7 +35,7 @@ import {
   Row,
   UncontrolledTooltip,
 } from "reactstrap";
-import { Clipboard } from "../Clipboard";
+import { Clipboard } from "../clipboard/Clipboard";
 import { ExternalLink } from "../ExternalLinks";
 import { Loader } from "../Loader";
 import { TimeCaption } from "../TimeCaption";

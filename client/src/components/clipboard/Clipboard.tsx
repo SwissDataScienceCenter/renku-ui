@@ -23,7 +23,11 @@
  *  Clipboard code and presentation.
  */
 
-import {
+import { faCopy } from "@fortawesome/free-regular-svg-icons";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+import React, {
   Fragment,
   ReactNode,
   useCallback,
@@ -31,10 +35,6 @@ import {
   useRef,
   useState,
 } from "react";
-import ReactClipboard from "react-clipboard.js";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { faCopy } from "@fortawesome/free-regular-svg-icons";
 
 const COPY_TIMEOUT_MS = 3_000;
 
@@ -52,19 +52,30 @@ export const Clipboard = ({
   const [copied, setCopied] = useState(false);
 
   const currentTimeoutRef = useRef<number | null>(null);
-  useEffect(() => {
-    return () => {
-      if (currentTimeoutRef.current) {
-        window.clearTimeout(currentTimeoutRef.current);
-      }
-    };
-  }, []);
 
   const onSuccess = useCallback(() => {
     currentTimeoutRef.current = window.setTimeout(() => {
       setCopied(false);
     }, COPY_TIMEOUT_MS);
     setCopied(true);
+  }, []);
+
+  const onCopyToClipboard = useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+      window.navigator.clipboard.writeText(clipboardText).then(() => {
+        onSuccess();
+      });
+    },
+    [clipboardText, onSuccess]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (currentTimeoutRef.current) {
+        window.clearTimeout(currentTimeoutRef.current);
+      }
+    };
   }, []);
 
   const Wrap = children
@@ -74,12 +85,9 @@ export const Clipboard = ({
     : Fragment;
 
   return (
-    <ReactClipboard
-      component="a"
-      data-clipboard-text={clipboardText}
-      onSuccess={onSuccess}
-      className={className}
-      style={{ textDecoration: "none" }}
+    <a
+      className={cx(className, "text-decoration-none")}
+      onClick={onCopyToClipboard}
     >
       <Wrap>
         <FontAwesomeIcon
@@ -89,6 +97,6 @@ export const Clipboard = ({
         />
         {children}
       </Wrap>
-    </ReactClipboard>
+    </a>
   );
 };
