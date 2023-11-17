@@ -31,6 +31,55 @@ type RtkQueryErrorsContextType = {
   };
 };
 
+/**
+ * Context which propagates RTK Query errors down the component tree.
+ *
+ * RTK Query cache does not store errors which can create issues
+ * when a child component uses data from the errored query.
+ *
+ * Example:
+ * ```tsx
+ * function ProjectsDashboard() {
+ *   const { data: sessions } = useGetSessionsQuery();
+ *   return (
+ *     <>
+ *       {sessions.map((session) => (<Session key={sessionid} session={session} />))}
+ *     </>
+ *   );
+ * }
+ *
+ * function Session() {
+ *   const { data: sessions } = useGetSessionsQuery();  // <-- This will query again in case of error!
+ *
+ *   return (
+ *     <div>[...]</div>
+ *   );
+ * }
+ * ```
+ *
+ * In this example, we can have an infinite render loop when the "getSessions"
+ * query errors.
+ *
+ * The `RtkQueryErrorsContext` is used to propagate the query errors to be
+ * consumed by nested components.
+ *
+ * Example usage:
+ * ```tsx
+ * function Session() {
+ *   const { getSessions } = useContext(RtkQueryErrorsContext);
+ *   const { data: sessions, isError } = useGetSessionsQuery(undefined, {
+ *     skip: getSessions?.isError,
+ *   });
+ *
+ *   return (
+ *     <>
+ *       {(isError || getSessions?.isError) && (<p>An error happened</p>)}
+ *       [...]
+ *     </>
+ *   );
+ * }
+ * ```
+ */
 const RtkQueryErrorsContext = createContext<RtkQueryErrorsContextType>({});
 export default RtkQueryErrorsContext;
 
@@ -41,6 +90,25 @@ interface PropagateRtkQueryErrorProps {
   children?: ReactNode;
 }
 
+/**
+ * Propagates down an error from RTK Query
+ *
+ * Example usage:
+ * ```tsx
+ * function ProjectsDashboard() {
+ *   const { data: sessions, isError, error } = useGetSessionsQuery();
+ *   return (
+ *     <PropagateRtkQueryError
+ *       query={RtkQuery.getSessions}
+ *       isError={isErrorSessions}
+ *       error={sessionsError}
+ *     >
+ *       {sessions.map((session) => (<Session key={sessionid} session={session} />))}
+ *     </PropagateRtkQueryError>
+ *   );
+ * }
+ * ```
+ */
 export function PropagateRtkQueryError({
   query,
   isError,
