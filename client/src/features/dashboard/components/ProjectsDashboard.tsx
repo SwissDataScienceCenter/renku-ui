@@ -56,6 +56,7 @@ import {
   PropagateRtkQueryError,
   RtkQuery,
 } from "../../../utils/helpers/RtkQueryErrorsContext";
+import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -278,6 +279,7 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
       error={sessionsError}
     >
       <ProjectAlert total={totalUserProjects} />
+      {sessionsError != null && <RtkErrorAlert error={sessionsError} />}
       <div className="rk-dashboard-project" data-cy="projects-container">
         <div className="rk-dashboard-section-header d-flex justify-content-between align-items-center flex-wrap">
           <h3 className="rk-dashboard-title" key="project-header">
