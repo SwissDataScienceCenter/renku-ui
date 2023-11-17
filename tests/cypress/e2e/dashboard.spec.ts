@@ -112,10 +112,10 @@ describe("dashboard", () => {
     });
   });
 
-  it.only("user has own projects and recently visited projects", () => {
+  it("user has own projects and recently visited projects", () => {
     fixtures
       .projects()
-      // .sessionServersEmpty()
+      .sessionServersEmpty()
       .entitySearch()
       .getLastVisitedProjects({
         fixture: "projects/last-visited-projects-5.json",
