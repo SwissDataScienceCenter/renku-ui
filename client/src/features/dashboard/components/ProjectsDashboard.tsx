@@ -52,6 +52,10 @@ import {
 } from "../../kgSearch/KgSearchApi";
 import { stateToSearchString } from "../../kgSearch/KgSearchState";
 import { useGetSessionsQuery } from "../../session/sessions.api";
+import {
+  PropagateRtkQueryError,
+  RtkQuery,
+} from "../../../utils/helpers/RtkQueryErrorsContext";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -230,12 +234,12 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
   const { data, isFetching, isLoading, error } =
     useSearchEntitiesQuery(searchRequest);
 
-  const { data: sessions, isLoading: isLoadingSessions } =
-    useGetSessionsQuery();
-
-  // useEffect(() => {
-  //   console.log({ sessions });
-  // }, [sessions]);
+  const {
+    data: sessions,
+    isLoading: isLoadingSessions,
+    isError: isErrorSessions,
+    error: sessionsError,
+  } = useGetSessionsQuery();
 
   const sessionsFormatted = useMemo(() => {
     if (sessions == null) {
@@ -244,17 +248,11 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
     return getFormattedSessionsAnnotations(sessions);
   }, [sessions]);
 
-  const { projects, isFetchingProjects } = useGetRecentlyVisitedProjects({
-    projectsCount: TOTAL_RECENTLY_VISITED_PROJECT,
-    currentSessions: sessionsFormatted ?? [],
-    skip: isLoadingSessions,
-  });
-  useEffect(() => {
-    console.log({ projects });
-  }, [projects]);
-  useEffect(() => {
-    console.log({ isLoadingSessions, isFetchingProjects });
-  }, [isLoadingSessions, isFetchingProjects]);
+  const { projects, isFetchingProjects } = useGetRecentlyVisitedProjects(
+    TOTAL_RECENTLY_VISITED_PROJECT,
+    sessionsFormatted ?? []
+  );
+
   const totalUserProjects =
     isFetching || isLoading || !data || error ? undefined : data.total;
   let projectsToShow;
@@ -275,18 +273,12 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
       <OtherProjectsButton totalOwnProjects={totalUserProjects} />
     );
 
-  // if (sessionsError) {
-  //   return (
-  //     <>
-  //       <TestChildComponent />
-  //       <TestChildComponent />
-  //       <TestChildComponent />
-  //     </>
-  //   );
-  // }
-
   return (
-    <>
+    <PropagateRtkQueryError
+      query={RtkQuery.getSessions}
+      isError={isErrorSessions}
+      error={sessionsError}
+    >
       <ProjectAlert total={totalUserProjects} />
       <div className="rk-dashboard-project" data-cy="projects-container">
         <div className="rk-dashboard-section-header d-flex justify-content-between align-items-center flex-wrap">
@@ -307,10 +299,10 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
         {sessionsFormatted != null && (
           <SessionsToShow currentSessions={sessionsFormatted} />
         )}
-        {/* {projectsToShow} */}
+        {projectsToShow}
         {otherProjectsBtn}
       </div>
-    </>
+    </PropagateRtkQueryError>
   );
 }
 
@@ -396,13 +388,3 @@ function SessionsToShow({ currentSessions }: SessionsToShowProps) {
 }
 
 export { ProjectsDashboard };
-
-function TestChildComponent() {
-  const query = useGetSessionsQuery();
-
-  useEffect(() => {
-    console.log(query);
-  }, [query]);
-
-  return null;
-}
