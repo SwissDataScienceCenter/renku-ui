@@ -20,7 +20,7 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CheckLg, CloudFill, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   Button,
   Card,
@@ -37,8 +37,13 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+
+import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
+import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
+import type { RootState } from "../../../utils/helpers/EnhancedState";
+import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
 import { StateModelProject } from "../Project";
 import {
   useAddCloudStorageForProjectMutation,
@@ -46,8 +51,8 @@ import {
 } from "../projectCloudStorage.api";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
-  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   CLOUD_STORAGE_READWRITE_ENABLED,
+  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
 } from "../projectCloudStorage.constants";
 import {
   CloudStorage,
@@ -58,10 +63,7 @@ import {
   parseCloudStorageConfiguration,
 } from "../utils/projectCloudStorage.utils";
 
-import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
-import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
 import styles from "./AddCloudStorageButton.module.scss";
-import { ExternalLink } from "../../../components/ExternalLinks";
 
 export default function AddCloudStorageButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -188,10 +190,9 @@ function AdvancedAddCloudStorage({
   goToCredentialsStep,
   toggle,
 }: AddCloudStorageProps) {
-  const projectId = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]["id"]
-  >((state) => state.stateModel.project.metadata.id);
+  const projectId = useSelector<RootState, StateModelProject["metadata"]["id"]>(
+    (state) => state.stateModel.project.metadata.id
+  );
 
   const [addCloudStorageForProject, result] =
     useAddCloudStorageForProjectMutation();
@@ -467,10 +468,9 @@ function SimpleAddCloudStorage({
   goToCredentialsStep,
   toggle,
 }: AddCloudStorageProps) {
-  const projectId = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]["id"]
-  >((state) => state.stateModel.project.metadata.id);
+  const projectId = useSelector<RootState, StateModelProject["metadata"]["id"]>(
+    (state) => state.stateModel.project.metadata.id
+  );
 
   const { data: notebooksVersion } = useGetNotebooksVersionsQuery();
   const support = useMemo(

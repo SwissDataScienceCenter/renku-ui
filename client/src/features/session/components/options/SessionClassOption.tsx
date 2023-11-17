@@ -24,7 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Select, {
   ClassNamesConfig,
   GroupBase,
@@ -34,8 +34,10 @@ import Select, {
   SingleValueProps,
   components,
 } from "react-select";
+
 import { ErrorAlert, WarnAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
+import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import {
   ResourceClass,
@@ -48,17 +50,18 @@ import {
   setSessionClass,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
+
 import styles from "./SessionClassOption.module.scss";
 
 export const SessionClassOption = () => {
   // Project options
-  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+  const projectRepositoryUrl = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
-  const defaultBranch = useSelector<RootStateOrAny, string>(
+  const defaultBranch = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useSelector<RootState, number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({

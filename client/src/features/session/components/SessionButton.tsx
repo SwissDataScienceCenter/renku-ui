@@ -28,7 +28,7 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import {
   Button,
@@ -39,6 +39,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+
 import { WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
@@ -51,6 +52,7 @@ import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.consta
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import AppContext from "../../../utils/context/appContext";
+import type { RootState } from "../../../utils/helpers/EnhancedState";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
 import {
@@ -164,7 +166,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
 
   const { notifications } = useContext(AppContext);
 
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useSelector<RootState, User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 

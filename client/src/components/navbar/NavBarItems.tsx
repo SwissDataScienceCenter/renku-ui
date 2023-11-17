@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { Person, PlusCircleFill, QuestionCircle } from "react-bootstrap-icons";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import {
@@ -27,11 +27,13 @@ import {
   DropdownToggle,
   UncontrolledDropdown,
 } from "reactstrap";
+
 import { LoginHelper } from "../../authentication";
 import AdminDropdownItem from "../../landing/AdminDropdownItem";
 import { User } from "../../model/RenkuModels";
 import { NotificationsMenu } from "../../notifications";
 import { Docs, Links, RenkuPythonDocs } from "../../utils/constants/Docs";
+import type { RootState } from "../../utils/helpers/EnhancedState";
 import {
   getActiveProjectPathWithNamespace,
   gitLabUrlFromProfileUrl,
@@ -95,9 +97,7 @@ export function RenkuToolbarItemPlus() {
 }
 
 export function RenkuToolbarGitLabMenu() {
-  const user = useSelector<RootStateOrAny, User>(
-    (state) => state.stateModel.user
-  );
+  const user = useSelector<RootState, User>((state) => state.stateModel.user);
 
   if (!user.fetched) {
     return null;
@@ -271,9 +271,7 @@ interface RenkuToolbarItemUserProps {
 export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
   const location = useLocation();
 
-  const user = useSelector<RootStateOrAny, User>(
-    (state) => state.stateModel.user
-  );
+  const user = useSelector<RootState, User>((state) => state.stateModel.user);
 
   const gatewayURL = params.GATEWAY_URL;
   const uiserverURL = params.UISERVER_URL;

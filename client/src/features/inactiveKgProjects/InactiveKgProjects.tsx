@@ -18,22 +18,25 @@
 
 import { useContext, useEffect, useState } from "react";
 import { Balloon, Briefcase } from "react-bootstrap-icons";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Table } from "reactstrap";
+
 import { Loader } from "../../components/Loader";
 import AppContext from "../../utils/context/appContext";
 import useGetInactiveProjects from "../../utils/customHooks/UseGetInactiveProjects";
+import type { AppDispatch, RootState } from "../../utils/helpers/EnhancedState";
 import { WsMessage } from "../../websocket/WsMessages";
 import { projectKgApi } from "../project/projectKg.api";
 import ActivationProgress from "./components/ActivationProgress";
 import KgActivationHeader from "./components/KgActivationHeader";
-import "./inactiveKgProjects.css";
 import {
   addFullList,
   updateProgress,
   useInactiveProjectSelector,
 } from "./inactiveKgProjectsSlice";
+
+import "./inactiveKgProjects.css";
 
 export interface InactiveKgProjects {
   id: number;
@@ -51,9 +54,9 @@ interface InactiveKGProjectsPageProps {
 
 function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
   const [activating, setActivating] = useState(false);
-  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
+  const user = useSelector((state: RootState) => state.stateModel.user);
   const websocket = useSelector(
-    (state: RootStateOrAny) => state.stateModel.webSocket
+    (state: RootState) => state.stateModel.webSocket
   );
   const { data, isFetching, isLoading, error } = useGetInactiveProjects(
     user?.data?.id
@@ -105,7 +108,9 @@ function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
       );
       for (let i = 0; i < projectSelected.length; i++) {
         const projectId = projectSelected[i].id;
-        dispatch(projectKgApi.endpoints.activateIndexing.initiate(projectId));
+        (dispatch as AppDispatch)(
+          projectKgApi.endpoints.activateIndexing.initiate(projectId)
+        );
         dispatch(updateProgress({ id: projectId, progress: 0 }));
         const message = JSON.stringify(
           new WsMessage({ projects: [projectId] }, "pullKgActivationStatus")

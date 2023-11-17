@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect } from "react";
 import {
   faCog,
   faExclamationTriangle,
@@ -24,11 +23,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { useCallback, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Badge, Button, UncontrolledTooltip } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../../api-client";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
+import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { GitLabPipelineJob } from "../../../project/GitLab.types";
 import projectGitLabApi, {
   useGetPipelineJobByNameQuery,
@@ -147,10 +149,10 @@ export default function SessionProjectDockerImage() {
 }
 
 function BuildAgainButton() {
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useSelector<RootState, number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
-  const accessLevel = useSelector<RootStateOrAny, number>(
+  const accessLevel = useSelector<RootState, number>(
     (state) => state.stateModel.project.metadata.accessLevel
   );
 
@@ -219,7 +221,7 @@ function BuildAgainButton() {
 }
 
 function ViewPipelineLink() {
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useSelector<RootState, number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
 
@@ -268,10 +270,10 @@ function ViewPipelineLink() {
 }
 
 function RunPipeline() {
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useSelector<RootState, number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
-  const accessLevel = useSelector<RootStateOrAny, number>(
+  const accessLevel = useSelector<RootState, number>(
     (state) => state.stateModel.project.metadata.accessLevel
   );
 
@@ -313,7 +315,7 @@ function RunPipeline() {
 }
 
 function useDockerImageStatusStateMachine() {
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useSelector<RootState, number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
 

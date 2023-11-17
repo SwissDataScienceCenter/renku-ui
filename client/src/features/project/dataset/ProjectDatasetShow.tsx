@@ -17,11 +17,12 @@
  */
 
 import React from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { ACCESS_LEVELS } from "../../../api-client";
 import DatasetView from "../../../dataset/Dataset.present";
 import AppContext from "../../../utils/context/appContext";
+import type { RootState } from "../../../utils/helpers/EnhancedState";
 import { Url } from "../../../utils/helpers/url";
 import type {
   DatasetCore,
@@ -129,7 +130,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
   const datasetId = findDatasetId(props.datasetId, props.datasets);
 
   const { defaultBranch, externalUrl } = useSelector<
-    RootStateOrAny,
+    RootState,
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
   const { coreSupport } = useCoreSupport({
@@ -199,9 +200,9 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
 
 function ProjectDatasetShow(props: ProjectDatasetShowProps) {
   const project = useSelector(
-    (state: RootStateOrAny) => state.stateModel.project as StateModelProject
+    (state: RootState) => state.stateModel.project as StateModelProject
   );
-  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
+  const user = useSelector((state: RootState) => state.stateModel.user);
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
   const datasets = project.datasets.core.datasets;

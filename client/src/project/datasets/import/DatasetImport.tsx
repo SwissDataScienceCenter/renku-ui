@@ -23,26 +23,25 @@
  *  Presentational components.
  */
 
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import type { RootStateOrAny } from "react-redux";
-import { Col, Alert, Button, UncontrolledAlert } from "reactstrap";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { useHistory } from "react-router-dom";
-
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { Alert, Button, Col, UncontrolledAlert } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
+import AddDatasetButtons from "../../../components/addDatasetButtons/AddDatasetButtons";
 import TextInput from "../../../components/form-field/TextInput";
 import FormSchema from "../../../components/formschema/FormSchema";
 import ProgressIndicator, {
-  ProgressType,
   ProgressStyle,
+  ProgressType,
 } from "../../../components/progress/Progress";
 import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
 import { ImportStateMessage } from "../../../utils/constants/Dataset";
-import AddDatasetButtons from "../../../components/addDatasetButtons/AddDatasetButtons";
+import type { RootState } from "../../../utils/helpers/EnhancedState";
 
 type DatasetImportClient = {
   datasetImport: (
@@ -405,7 +404,7 @@ type DatasetImportProps = {
 };
 function DatasetImport(props: DatasetImportProps) {
   const { defaultBranch, externalUrl } = useSelector(
-    (state: RootStateOrAny) => state.stateModel.project.metadata
+    (state: RootState) => state.stateModel.project.metadata
   );
   const {
     coreSupport: { versionUrl },

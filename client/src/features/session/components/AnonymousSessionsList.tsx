@@ -16,18 +16,20 @@
  * limitations under the License.
  */
 
-import { useContext } from "react";
 import cx from "classnames";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { useContext } from "react";
+import { useSelector } from "react-redux";
 import { Col, Row } from "reactstrap";
+
 import { ErrorAlert, InfoAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { User } from "../../../model/RenkuModels";
 import AppContext from "../../../utils/context/appContext";
+import type { RootState } from "../../../utils/helpers/EnhancedState";
 import { useGetSessionsQuery } from "../sessions.api";
-import SessionsList from "./SessionsList";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
+import SessionsList from "./SessionsList";
 
 export default function AnonymousSessionsList() {
   const { params } = useContext(AppContext);
@@ -35,7 +37,7 @@ export default function AnonymousSessionsList() {
     params as { ANONYMOUS_SESSIONS?: boolean }
   ).ANONYMOUS_SESSIONS;
 
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useSelector<RootState, User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 

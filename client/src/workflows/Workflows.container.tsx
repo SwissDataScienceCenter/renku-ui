@@ -16,9 +16,8 @@
  * limitations under the License.
  */
 
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-
 import { WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent } from "./Workflows.present";
 import {
   useGetWorkflowDetailQuery,
@@ -30,6 +29,7 @@ import {
 } from "../features/workflows/WorkflowsSlice";
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
 import { StateModelProject } from "../features/project/Project";
+import type { RootState } from "../utils/helpers/EnhancedState";
 
 const MIN_CORE_VERSION_WORKFLOWS = 9;
 
@@ -75,7 +75,7 @@ function WorkflowsList({
   const selected = id;
 
   const { defaultBranch } = useSelector<
-    RootStateOrAny,
+    RootState,
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
   const { coreSupport } = useCoreSupport({

@@ -25,10 +25,11 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Redirect, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../api-client";
 import { InfoAlert, RenkuAlert, WarnAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
@@ -49,6 +50,7 @@ import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
+import { RootState } from "../../../utils/helpers/EnhancedState";
 import { Url } from "../../../utils/helpers/url";
 import { getProvidedSensitiveFields } from "../../project/utils/projectCloudStorage.utils";
 import { useStartSessionMutation } from "../sessions.api";
@@ -85,7 +87,7 @@ export default function StartNewSession() {
   );
   const autostart = !!searchParams.get("autostart");
 
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useSelector<RootState, User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
@@ -147,7 +149,7 @@ export default function StartNewSession() {
 }
 
 function BackButton() {
-  const pathWithNamespace = useSelector<RootStateOrAny, string>(
+  const pathWithNamespace = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
   const projectUrlData = {
@@ -175,10 +177,10 @@ interface LocationState {
 }
 
 function SessionStarting() {
-  const namespace = useSelector<RootStateOrAny, string>(
+  const namespace = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.namespace
   );
-  const path = useSelector<RootStateOrAny, string>(
+  const path = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.path
   );
 
@@ -310,7 +312,7 @@ function SessionStartError() {
 }
 
 function SessionStartSidebar() {
-  const pathWithNamespace = useSelector<RootStateOrAny, string>(
+  const pathWithNamespace = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
 
@@ -340,7 +342,7 @@ function SessionStartSidebar() {
 }
 
 function ProjectSessionLockAlert() {
-  const lockStatus = useSelector<RootStateOrAny, LockStatus>(
+  const lockStatus = useSelector<RootState, LockStatus>(
     (state) => state.stateModel.project.lockStatus
   );
 
@@ -367,7 +369,7 @@ function StartNewSessionContent() {
   );
   const showCreateLink = !!searchParams.get("showCreateLink");
 
-  const projectPathWithNamespace = useSelector<RootStateOrAny, string>(
+  const projectPathWithNamespace = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
   const projectSessions = useProjectSessions({ projectPathWithNamespace });
@@ -433,10 +435,10 @@ function SessionCreateLink() {
   );
   const filePath = searchParams.get("filePath") ?? "";
 
-  const namespace = useSelector<RootStateOrAny, string>(
+  const namespace = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.namespace
   );
-  const project = useSelector<RootStateOrAny, string>(
+  const project = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.path
   );
 
@@ -483,13 +485,12 @@ function SessionCreateLink() {
 function SessionSaveWarning() {
   const location = useLocation();
 
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useSelector<RootState, User["logged"]>(
     (state) => state.stateModel.user.logged
   );
-  const { accessLevel, externalUrl } = useSelector<
-    RootStateOrAny,
-    ProjectMetadata
-  >((state) => state.stateModel.project.metadata);
+  const { accessLevel, externalUrl } = useSelector<RootState, ProjectMetadata>(
+    (state) => state.stateModel.project.metadata
+  );
 
   if (!logged) {
     const loginUrl = Url.get(Url.pages.login.link, {
@@ -560,7 +561,7 @@ function ForkProjectModal() {
   const toggleIsOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
 
   const { id, title, visibility } = useSelector<
-    RootStateOrAny,
+    RootState,
     ProjectMetadata & { id?: number }
   >((state) => state.stateModel.project.metadata);
 
@@ -619,10 +620,10 @@ function StartSessionButton() {
   const showCreateLink = !!searchParams.get("showCreateLink");
   const filePath = searchParams.get("filePath") ?? "";
 
-  const namespace = useSelector<RootStateOrAny, string>(
+  const namespace = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.namespace
   );
-  const project = useSelector<RootStateOrAny, string>(
+  const project = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.path
   );
 

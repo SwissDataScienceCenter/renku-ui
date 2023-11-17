@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { clamp } from "lodash";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { ChangeEvent, useCallback, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Button,
   FormGroup,
@@ -32,9 +32,11 @@ import {
   PopoverHeader,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import CommitSelector from "../../../../components/commitSelector/CommitSelector";
+import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { UncontrolledPopover } from "../../../../utils/ts-wrappers";
 import { useGetRepositoryCommitsQuery } from "../../../project/projectGitLab.api";
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
@@ -44,10 +46,10 @@ import {
 } from "../../startSessionOptionsSlice";
 
 export default function SessionCommitOption() {
-  const defaultBranch = useSelector<RootStateOrAny, string>(
+  const defaultBranch = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useSelector<RootState, number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
 

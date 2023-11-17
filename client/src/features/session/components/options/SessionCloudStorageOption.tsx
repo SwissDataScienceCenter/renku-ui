@@ -35,7 +35,7 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -56,6 +56,7 @@ import {
   Row,
   UncontrolledPopover,
 } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../../api-client";
 import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
@@ -63,6 +64,7 @@ import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
+import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { Url } from "../../../../utils/helpers/url";
 import { StateModelProject } from "../../../project/Project";
 import {
@@ -71,8 +73,8 @@ import {
 } from "../../../project/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
-  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   CLOUD_STORAGE_READWRITE_ENABLED,
+  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
 } from "../../../project/projectCloudStorage.constants";
 import {
   formatCloudStorageConfiguration,
@@ -111,7 +113,7 @@ export default function SessionCloudStorageOption() {
 
 function SessionS3CloudStorageOption() {
   const { namespace, path } = useSelector<
-    RootStateOrAny,
+    RootState,
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
 
@@ -138,7 +140,7 @@ function SessionS3CloudStorageOption() {
 
 function CloudStorageList() {
   const { accessLevel, id: projectId } = useSelector<
-    RootStateOrAny,
+    RootState,
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
 
@@ -459,7 +461,7 @@ function CredentialMoreInfo({ help }: { help: string }) {
 
 function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
   const { namespace, path } = useSelector<
-    RootStateOrAny,
+    RootState,
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
 
@@ -733,7 +735,7 @@ function AddTemporaryCloudStorageModal({
   toggle,
 }: AddTemporaryCloudStorageModalProps) {
   const { namespace, path } = useSelector<
-    RootStateOrAny,
+    RootState,
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
 

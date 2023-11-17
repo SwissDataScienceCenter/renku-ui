@@ -17,8 +17,10 @@
  */
 
 import { useRef } from "react";
+import { useSelector } from "react-redux";
+
+import type { RootState } from "../../utils/helpers/EnhancedState";
 import { ThrottledTooltip } from "../Tooltip";
-import { RootStateOrAny, useSelector } from "react-redux";
 
 /**
  *  renku-ui
@@ -39,8 +41,7 @@ function EntityTags({ hideEmptyTags, multiline, tagList }: EntityTagsProps) {
     ? "d-flex flex-wrap text-rk-text-light"
     : "text-truncate text-dark";
   const isUpdatingValue = useSelector(
-    (state: RootStateOrAny) =>
-      state.stateModel?.project?.metadata?.tagList?.updating
+    (state: RootState) => state.stateModel?.project?.metadata?.tagList?.updating
   );
 
   if (isUpdatingValue) {

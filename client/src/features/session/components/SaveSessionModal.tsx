@@ -24,7 +24,7 @@ import {
   useCallback,
   useState,
 } from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   Button,
   Col,
@@ -37,6 +37,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../api-client";
 import { SuccessAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
@@ -46,12 +47,14 @@ import {
   InformationalBody,
   commitsPhrasing,
 } from "../../../notebooks/components/Sidecar";
+import type { RootState } from "../../../utils/helpers/EnhancedState";
 import {
   GitStatusResult,
   useGitStatusQuery,
   useHealthQuery,
   useRenkuSaveMutation,
 } from "../sidecarApi";
+
 import styles from "./SessionModals.module.scss";
 
 interface SaveSessionModalProps {
@@ -93,10 +96,10 @@ function RunningSaveSessionContent({
   sessionName,
   toggleModal,
 }: RunningSaveSessionContentProps) {
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useSelector<RootState, User["logged"]>(
     (state) => state.stateModel.user.logged
   );
-  const accessLevel = useSelector<RootStateOrAny, number>(
+  const accessLevel = useSelector<RootState, number>(
     (state) => state.stateModel.project.metadata.accessLevel
   );
 

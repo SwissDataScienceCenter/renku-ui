@@ -120,6 +120,17 @@ export const createStore = <S = any, A extends Action = AnyAction>(
   return store;
 };
 
+type StoreType = ReturnType<typeof createStore>;
+
+export type StrictRootState = ReturnType<StoreType["getState"]>;
+
+export type RootState = StrictRootState & {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  stateModel: any;
+};
+
+export type AppDispatch = StoreType["dispatch"];
+
 // TODO: Introduce a mock store for testing
 // import configureMockStore from 'redux-mock-store'
 // function createMockStore(reducer, name='renku') {

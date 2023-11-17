@@ -15,12 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RootStateOrAny, useSelector } from "react-redux";
-import { useInactiveProjectSelector } from "../../inactiveKgProjects/inactiveKgProjectsSlice";
+import { useSelector } from "react-redux";
 
+import { useInactiveProjectSelector } from "../../inactiveKgProjects/inactiveKgProjectsSlice";
 import { useGetInactiveKgProjectsQuery } from "../../inactiveKgProjects/InactiveKgProjectsApi";
 import { WarnAlert } from "../../../components/Alert";
 import { Link } from "react-router-dom";
+import type { RootState } from "../../../utils/helpers/EnhancedState";
 
 function InactiveProjectsWarning({
   isEstimate,
@@ -70,7 +71,7 @@ function EstimatedInactiveProjectsWarning({ userId }: { userId: number }) {
 }
 
 export function ProjectsInactiveKGWarning() {
-  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
+  const user = useSelector((state: RootState) => state.stateModel.user);
   const projectList = useInactiveProjectSelector();
   if (!user.logged) return null;
 

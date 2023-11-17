@@ -19,13 +19,15 @@
 import cx from "classnames";
 import { LocationDescriptor } from "history";
 import { ReactNode, useRef } from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { UncontrolledTooltip } from "reactstrap";
+
 import { Loader } from "../../../components/Loader";
 import JupyterIcon from "../../../components/icons/JupyterIcon";
 import { NotebooksHelper } from "../../../notebooks";
 import { NotebookAnnotations } from "../../../notebooks/components/session.types";
+import type { RootState } from "../../../utils/helpers/EnhancedState";
 import { Url } from "../../../utils/helpers/url";
 import { useGetSessionsQuery } from "../sessions.api";
 import { SessionStatusStateEnum } from "../sessions.types";
@@ -40,7 +42,7 @@ export default function SessionFileButton({
 }: SessionFileButtonProps) {
   const location = useLocation();
 
-  const projectPathWithNamespace = useSelector<RootStateOrAny, string>(
+  const projectPathWithNamespace = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
   const sessionStartUrl = Url.get(Url.pages.project.session.new, {

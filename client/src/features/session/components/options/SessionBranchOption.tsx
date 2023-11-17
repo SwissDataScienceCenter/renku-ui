@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { ChangeEvent, useCallback, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -32,9 +32,11 @@ import {
   UncontrolledPopover,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
+import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { Url } from "../../../../utils/helpers/url";
 import { useGetAllRepositoryBranchesQuery } from "../../../project/projectGitLab.api";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
@@ -42,16 +44,17 @@ import {
   setBranch,
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
+
 import styles from "./SessionBranchOption.module.scss";
 
 export default function SessionBranchOption() {
-  const defaultBranch = useSelector<RootStateOrAny, string>(
+  const defaultBranch = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useSelector<RootState, number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
-  const externalUrl = useSelector<RootStateOrAny, string>(
+  const externalUrl = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
 

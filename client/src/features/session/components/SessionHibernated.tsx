@@ -16,19 +16,21 @@
  * limitations under the License.
  */
 
-import { useCallback, useContext, useEffect, useState } from "react";
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { Alert, Button } from "reactstrap";
+
 import { Loader } from "../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import AppContext from "../../../utils/context/appContext";
+import type { RootState } from "../../../utils/helpers/EnhancedState";
 import { Url } from "../../../utils/helpers/url";
 import { usePatchSessionMutation } from "../sessions.api";
 import { Session } from "../sessions.types";
@@ -41,7 +43,7 @@ export default function SessionHibernated({ session }: SessionHibernatedProps) {
   const location = useLocation<{ filePath?: string } | undefined>();
   const locationFilePath = location.state?.filePath;
 
-  const pathWithNamespace = useSelector<RootStateOrAny, string>(
+  const pathWithNamespace = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
 

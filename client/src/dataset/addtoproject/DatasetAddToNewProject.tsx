@@ -17,15 +17,14 @@
  */
 
 import { useContext, useEffect, useState } from "react";
-
-import { RootStateOrAny, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { NewProject } from "../../project/new";
-import { Loader } from "../../components/Loader";
 import { WarnAlert } from "../../components/Alert";
+import { Loader } from "../../components/Loader";
+import { NewProject } from "../../project/new";
 import AppContext from "../../utils/context/appContext";
-
+import type { RootState } from "../../utils/helpers/EnhancedState";
 import type {
   AddDatasetHandlers,
   AddDatasetStatus,
@@ -59,7 +58,7 @@ function AddDatasetNewProject({
   const [newProject, setNewProject] = useState<TNewProject | null>(null);
   const setCurrentStatus = handlers.setCurrentStatus;
   const { client } = useContext(AppContext);
-  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
+  const user = useSelector((state: RootState) => state.stateModel.user);
 
   useEffect(() => setCurrentStatus(null), [setCurrentStatus]);
 

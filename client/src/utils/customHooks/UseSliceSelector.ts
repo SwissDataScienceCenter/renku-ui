@@ -17,12 +17,15 @@
  */
 
 import { Slice, SliceCaseReducers } from "@reduxjs/toolkit";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import type { RootState } from "../helpers/EnhancedState";
 
 export const createSliceSelector =
-  <TSliceState>(slice: Slice<TSliceState, SliceCaseReducers<TSliceState>>) =>
+  <TSliceState>(
+    slice: Slice<TSliceState, SliceCaseReducers<TSliceState>, keyof RootState>
+  ) =>
   <TState = TSliceState>(selector?: (state: TSliceState) => TState) =>
-    useSelector<RootStateOrAny, TState>(
+    useSelector<RootState, TState>(
       selector
         ? (state) => selector(state[slice.name])
         : (state) => state[slice.name]

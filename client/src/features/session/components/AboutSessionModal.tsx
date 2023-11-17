@@ -18,17 +18,20 @@
 
 import cx from "classnames";
 import { InfoCircle } from "react-bootstrap-icons";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Container, Modal, ModalBody, ModalHeader } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import { EntityType } from "../../../components/entities/Entities";
 import EntityHeader from "../../../components/entityHeader/EntityHeader";
 import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { Docs } from "../../../utils/constants/Docs";
+import type { RootState } from "../../../utils/helpers/EnhancedState";
 import { Session } from "../sessions.types";
-import styles from "./SessionModals.module.scss";
 import SessionsList from "./SessionsList";
+
+import styles from "./SessionModals.module.scss";
 
 interface AboutSessionModalProps {
   isOpen: boolean;
@@ -67,7 +70,7 @@ export default function AboutSessionModal({
 }
 
 function ProjectHeader() {
-  const projectMetadata = useSelector<RootStateOrAny, ProjectMetadata>(
+  const projectMetadata = useSelector<RootState, ProjectMetadata>(
     (state) => state.stateModel.project.metadata
   );
   const slug = projectMetadata.pathWithNamespace;

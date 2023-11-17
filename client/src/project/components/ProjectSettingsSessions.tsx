@@ -26,7 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { debounce } from "lodash";
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Accordion,
@@ -71,6 +71,7 @@ import { ServerOptions } from "../../features/session/sessions.types";
 import { LockStatus, User } from "../../model/RenkuModels";
 import { Docs } from "../../utils/constants/Docs";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
+import type { RootState } from "../../utils/helpers/EnhancedState";
 import { Url } from "../../utils/helpers/url";
 import styles from "./ProjectSettingsSessions.module.scss";
 
@@ -80,11 +81,11 @@ type CoreServiceVersionedApiParams = {
 };
 
 export default function ProjectSettingsSessions() {
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useSelector<RootState, User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
-  const locked_ = useSelector<RootStateOrAny, LockStatus["locked"]>(
+  const locked_ = useSelector<RootState, LockStatus["locked"]>(
     (state) => state.stateModel.project.lockStatus.locked
   );
   const locked = locked_ ?? false;
@@ -100,7 +101,7 @@ export default function ProjectSettingsSessions() {
     namespace,
     path,
     accessLevel,
-  } = useSelector<RootStateOrAny, StateModelProject["metadata"]>(
+  } = useSelector<RootState, StateModelProject["metadata"]>(
     (state) => state.stateModel.project.metadata
   );
 

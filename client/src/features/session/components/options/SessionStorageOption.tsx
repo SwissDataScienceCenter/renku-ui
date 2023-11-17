@@ -18,9 +18,11 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Input, InputGroup, InputGroupText } from "reactstrap";
+
 import { ThrottledTooltip } from "../../../../components/Tooltip";
+import type { RootState } from "../../../../utils/helpers/EnhancedState";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
@@ -34,17 +36,18 @@ import {
   useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
 import { validateStorageAmount } from "../../utils/sessionOptions.utils";
+
 import styles from "./SessionStorageOption.module.scss";
 
 export const SessionStorageOption = () => {
   // Project options
-  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+  const projectRepositoryUrl = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
-  const defaultBranch = useSelector<RootStateOrAny, string>(
+  const defaultBranch = useSelector<RootState, string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useSelector<RootState, number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({
