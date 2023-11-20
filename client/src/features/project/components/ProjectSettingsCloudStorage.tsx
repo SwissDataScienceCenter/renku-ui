@@ -834,9 +834,13 @@ function CloudStorageDetails({
         )}
         <div className="mt-2">
           <div className="text-rk-text-light">
-            <small>Mode</small>
+            <small>Access mode</small>
           </div>
-          <div>{readonly ? "Read-only" : "Read-Write"}</div>
+          <div>
+            {readonly
+              ? "Force Read-only"
+              : "Allow Read-Write (requires adequate privileges on the storage)"}
+          </div>
         </div>
         <div className="mt-2">
           <div className="text-rk-text-light">
