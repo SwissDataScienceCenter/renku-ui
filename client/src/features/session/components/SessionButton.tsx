@@ -51,6 +51,7 @@ import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.consta
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import AppContext from "../../../utils/context/appContext";
+import RtkQueryErrorsContext from "../../../utils/helpers/RtkQueryErrorsContext";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
 import {
@@ -85,7 +86,14 @@ export default function SessionButton({
     path: fullPath,
   });
 
-  const { data: sessions, isLoading, isError } = useGetSessionsQuery();
+  const { getSessions } = useContext(RtkQueryErrorsContext);
+  const {
+    data: sessions,
+    isLoading,
+    isError,
+  } = useGetSessionsQuery(undefined, {
+    skip: getSessions?.isError,
+  });
 
   const runningSession =
     sessions && runningSessionName && runningSessionName in sessions
@@ -107,7 +115,7 @@ export default function SessionButton({
       <SimpleSessionButton
         className="session-link-group"
         fullPath={fullPath}
-        skip={isError}
+        skip={isError || getSessions?.isError}
       />
     );
     return (
