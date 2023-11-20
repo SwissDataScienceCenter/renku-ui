@@ -38,7 +38,6 @@ export default function HeroLanding(props: HeroLandingProps) {
                 "gap-3",
                 "pt-5",
                 "pt-md-3",
-                "flex-md-row",
                 "flex-sm-row",
                 "flex-column",
               ])}
