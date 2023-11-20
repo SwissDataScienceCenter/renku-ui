@@ -40,9 +40,9 @@ import { Url } from "../utils/helpers/url";
 
 import { NavBarWarnings } from "./NavBarWarnings";
 
-import VisualDetail from "./Assets/Visual_Detail.svg";
-import VisualFooter from "./Assets/Visual_Footer.svg";
-import VisualHead from "./Assets/Visual_head_dots.svg";
+import VisualDetail from "./Graphics/Visual_Detail.svg";
+import VisualFooter from "./Graphics/Visual_Footer.svg";
+import VisualHead from "./Graphics/Visual_Head.svg";
 
 import graphic_containers from "./Graphics/Features/Containers.svg";
 import graphic_data from "./Graphics/Features/Data.svg";
@@ -96,6 +96,7 @@ type SearchInputFormFields = {
   phrase: string;
 };
 
+// Currently not used; planned for #shapeUp-issues
 export function SearchInput() {
   const { handleSubmit, register } = useForm<SearchInputFormFields>({
     defaultValues: { phrase: "" },

@@ -105,6 +105,9 @@ $borderRadius: 1000px;
 
 .btn-secondary {
   -#{$prefix}btn-active-bg: #{$rk-green-highlight};
+  &:focus {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .btn-secondary,
@@ -121,9 +124,6 @@ $borderRadius: 1000px;
   &.disabled {
     color: $rk-white;
   }
-}
-.btn-secondary:focus {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .btn-outline-secondary:hover {

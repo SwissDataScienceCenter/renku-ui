@@ -32,18 +32,12 @@ export default function HeroLanding(props: AnonymousHomeConfig) {
                 "gap-3",
                 "pt-5",
                 "pt-md-3",
-                "flex-md-row",
                 "flex-sm-row",
                 "flex-column",
               ])}
             >
               <Link
-                className={cx([
-                  "btn",
-                  "btn-rk-green",
-                  "heroBtn",
-                  styles.heroBtn,
-                ])}
+                className={cx(["btn", "btn-rk-green", styles.heroBtn])}
                 role="button"
                 id="link-try-it-out"
                 to="#rk-anon-home-get-started"
@@ -51,12 +45,7 @@ export default function HeroLanding(props: AnonymousHomeConfig) {
                 Try it out
               </Link>
               <Link
-                className={cx([
-                  "btn",
-                  "btn-outline-secondary",
-                  "heroBtn",
-                  styles.heroBtn,
-                ])}
+                className={cx(["btn", "btn-outline-secondary", styles.heroBtn])}
                 role="button"
                 id="link-sign_up"
                 to="/login"

@@ -5,6 +5,7 @@
 @import "~bootstrap/scss/mixins";
 
 #heroContainer {
+  position: relative;
   display: grid;
   grid-template-columns: auto auto;
   grid-template-rows: auto auto;

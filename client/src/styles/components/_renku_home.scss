@@ -1,3 +1,12 @@
+.rk-anon-home {
+  padding: 0;
+  position: relative;
+}
+@include media-breakpoint-down(md) {
+  .rk-anon-home {
+    padding: 0 12px;
+  }
+}
 header.rk-anon-home .nav-link {
   color: $rk-green;
   border: 1px solid;
@@ -98,13 +107,25 @@ nav.rk-anon-home .nav-link,
 #rk-anon-home-hero {
   @extend .section-content;
   min-height: 594px;
-  background-image: url("../../landing/Assets/Visual_head_dots.svg");
+  position: relative;
+}
+
+#rk-anon-home-hero::before {
+  content: "";
+  background-image: url("../../landing/Graphics/Visual_Head.svg");
   background-repeat: no-repeat;
   background-size: contain;
   background-position-y: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0.4;
 
   @include media-breakpoint-down(lg) {
     background-image: none;
+    opacity: 1;
   }
 }
 
