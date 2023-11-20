@@ -647,8 +647,8 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
           Read-only
         </Label>
         <FormText id={`updateCloudStorageReadOnlyHelp-${index}`} tag="div">
-          This will mount the storage in read-only mode, regardless of write
-          permissions on the account used to access.
+          Check this box to mount the storage in read-only mode. Use this
+          setting to prevent accidental data modifications.
         </FormText>
       </div>
 
@@ -863,8 +863,8 @@ function AddTemporaryCloudStorageModal({
               Read-only
             </Label>
             <FormText id="addCloudStorageReadOnlyHelp" tag="div">
-              This will mount the storage in read-only mode, regardless of write
-              permissions on the account used to access.
+              Check this box to mount the storage in read-only mode. Use this
+              setting to prevent accidental data modifications.
             </FormText>
           </div>
 
