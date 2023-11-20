@@ -118,20 +118,20 @@ export default function SessionButton({
         isPrincipal
         size="sm"
       >
-        <DropdownItem>
-          <Link className="text-decoration-none" to={sessionStartUrl}>
+        <li>
+          <Link className="dropdown-item" to={sessionStartUrl}>
             <img
               src={rkIconStartWithOptions}
-              className="rk-icon rk-icon-md btn-with-menu-margin"
+              className="rk-icon rk-icon-md me-2"
             />
             Start with options
           </Link>
-        </DropdownItem>
+        </li>
         {gitUrl && <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />}
         <DropdownItem divider />
-        <DropdownItem>
+        <li>
           <Link
-            className="text-decoration-none"
+            className="dropdown-item"
             to={{
               pathname: sessionStartUrl,
               search: new URLSearchParams({
@@ -146,7 +146,7 @@ export default function SessionButton({
             />
             Create session link
           </Link>
-        </DropdownItem>
+        </li>
       </ButtonWithMenu>
     );
   }
@@ -399,9 +399,9 @@ function SessionActions({ className, session }: SessionActionsProps) {
   );
 
   const createSessionLinkAction = (
-    <DropdownItem>
+    <li>
       <Link
-        className="text-decoration-none"
+        className="dropdown-item"
         to={{
           pathname: sessionStartUrl,
           search: new URLSearchParams({
@@ -416,7 +416,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
         />
         Create session link
       </Link>
-    </DropdownItem>
+    </li>
   );
 
   const logsAction = status !== "hibernated" && (
