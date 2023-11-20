@@ -23,35 +23,35 @@
  *  Presentational components for notifications
  */
 
+import {
+  faCheck,
+  faCheckCircle,
+  faExclamationTriangle,
+  faInfoCircle,
+  faLink,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { Component, Fragment, useState } from "react";
+import { InboxFill } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
   Badge,
-  DropdownMenu,
-  DropdownToggle,
-  DropdownItem,
   Button,
-  Row,
+  CardBody,
   Col,
   Collapse,
-  CardBody,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Row,
 } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faLink,
-  faInfoCircle,
-  faExclamationTriangle,
-  faInbox,
-  faTimes,
-  faCheck,
-  faCheckCircle,
-} from "@fortawesome/free-solid-svg-icons";
-
 import { NotificationsInfo } from ".";
-
-import "./Notifications.css";
 import { ExternalLink } from "../components/ExternalLinks";
 import { TimeCaption } from "../components/TimeCaption";
+
+import "./Notifications.css";
 
 /**
  * Close button for the toast notification.
@@ -275,8 +275,8 @@ class NotificationsMenu extends Component {
     return (
       <Fragment>
         {/* This throws an error in test: Warning `Reference` should not be used outside of a `Manager` component. */}
-        <DropdownToggle className="nav-link" nav caret>
-          <FontAwesomeIcon icon={faInbox} id="notificationsBarIcon" />
+        <DropdownToggle className={cx("nav-link", "fs-5", "px-2")} nav caret>
+          <InboxFill className="bi" id="notificationsBarIcon" />
           {badge}
         </DropdownToggle>
         <DropdownMenu
@@ -557,10 +557,10 @@ function NotificationPageItemDetails(props) {
 }
 
 export {
-  NotificationsMenu,
-  NotificationToast,
-  NotificationDropdownItem,
   CloseToast,
-  Notifications,
+  NotificationDropdownItem,
   NotificationPageItem,
+  NotificationToast,
+  Notifications,
+  NotificationsMenu,
 };
