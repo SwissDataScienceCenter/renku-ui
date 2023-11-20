@@ -206,9 +206,5 @@ describe("launch sessions", () => {
       .should("be.visible");
 
     cy.contains("Read-only").siblings("input").should("be.checked");
-    cy.get("label")
-      .contains("Read-Write")
-      .siblings("input")
-      .should("not.be.checked");
   });
 });

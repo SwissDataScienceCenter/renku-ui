@@ -324,12 +324,8 @@ describe("Cloud storage settings page", () => {
       .should("not.be.checked");
 
     cy.get("label")
-      .contains("Read-Write")
-      .click()
-      .siblings("input")
-      .should("be.checked");
-    cy.get("label")
       .contains("Read-only")
+      .click()
       .siblings("input")
       .should("not.be.checked");
 
@@ -419,11 +415,6 @@ describe("Cloud storage settings page", () => {
       .siblings("input")
       .should("be.checked");
 
-    cy.get("label")
-      .contains("Read-Write")
-      .click()
-      .siblings("input")
-      .should("be.checked");
     cy.get("label")
       .contains("Read-only")
       .siblings("input")

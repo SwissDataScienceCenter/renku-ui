@@ -204,7 +204,7 @@ function AdvancedAddCloudStorage({
       configuration: "",
       name: "",
       private: true,
-      readonly: true,
+      readonly: false,
       source_path: "",
     },
   });
