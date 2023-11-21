@@ -29,6 +29,7 @@ import {
   ModalBody,
   ModalFooter,
 } from "reactstrap";
+
 import { ErrorAlert } from "../../components/Alert";
 import { Loader } from "../../components/Loader";
 import { RtkErrorAlert } from "../../components/errors/RtkErrorAlert";
@@ -38,6 +39,7 @@ import {
   ResourceClass,
   ResourcePool,
 } from "../dataServices/dataServices.types";
+import AddManyUsersToResourcePoolButton from "./AddManyUsersToResourcePoolButton";
 import AddResourceClassButton from "./AddResourceClassButton";
 import AddResourcePoolButton from "./AddResourcePoolButton";
 import AddUserToResourcePoolButton from "./AddUserToResourcePoolButton";
@@ -339,6 +341,7 @@ function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
     <div>
       <p className="mb-0">Users: {resourcePoolUsers.length}</p>
       <AddUserToResourcePoolButton resourcePool={resourcePool} />
+      <AddManyUsersToResourcePoolButton resourcePool={resourcePool} />
       <ResourcePoolUsersList
         resourcePool={resourcePool}
         resourcePoolUsers={resourcePoolUsers}
