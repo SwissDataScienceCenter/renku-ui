@@ -37,30 +37,30 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { Loader } from "../../../components/Loader";
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import { StateModelProject } from "../Project";
+import { Loader } from "../../../../components/Loader";
+import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import { StateModelProject } from "../../Project";
 import {
   useAddCloudStorageForProjectMutation,
   useUpdateCloudStorageMutation,
-} from "../projectCloudStorage.api";
+} from "./projectCloudStorage.api";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-} from "../projectCloudStorage.constants";
+} from "./projectCloudStorage.constants";
 import {
   CloudStorage,
   CloudStorageCredential,
-} from "../projectCloudStorage.types";
+} from "./projectCloudStorage.types";
 import {
   getCredentialFieldDefinitions,
   parseCloudStorageConfiguration,
-} from "../utils/projectCloudStorage.utils";
+} from "../../utils/projectCloudStorage.utils";
 
-import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
-import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
+import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
+import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
 import styles from "./AddCloudStorageButton.module.scss";
-import { ExternalLink } from "../../../components/ExternalLinks";
+import { ExternalLink } from "../../../../components/ExternalLinks";
 
 export default function AddCloudStorageButton() {
   const [isOpen, setIsOpen] = useState(false);

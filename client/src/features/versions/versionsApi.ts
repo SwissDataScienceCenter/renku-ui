@@ -91,6 +91,8 @@ export const versionsApi = createApi({
           anonymousSessionsEnabled:
             singleVersion?.data?.anonymousSessionsEnabled ?? false,
           sshEnabled: singleVersion?.data?.sshEnabled ?? false,
+
+          // ! This should change
           cloudStorageEnabled: {
             s3: singleVersion?.data?.cloudstorageEnabled?.s3 ?? false,
             azureBlob:

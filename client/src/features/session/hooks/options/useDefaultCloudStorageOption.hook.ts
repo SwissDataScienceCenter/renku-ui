@@ -18,7 +18,7 @@
 
 import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
-import { CloudStorage } from "../../../project/projectCloudStorage.types";
+import { CloudStorage } from "../../../project/components/cloudStorage/projectCloudStorage.types";
 import { getProvidedSensitiveFields } from "../../../project/utils/projectCloudStorage.utils";
 import { NotebooksVersion } from "../../../versions/versions";
 import { setError } from "../../startSession.slice";

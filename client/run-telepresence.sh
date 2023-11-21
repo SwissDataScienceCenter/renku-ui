@@ -79,8 +79,8 @@ fi
 
 if [[ -n $PR ]]
 then
-  DEV_NAMESPACE=renku-ci-ui-${PR}
-  SERVICE_NAME=renku-ci-ui-${PR}-ui
+  DEV_NAMESPACE=renku-ci-nb-${PR}
+  SERVICE_NAME=renku-ci-nb-${PR}-ui
   echo "Deploying to environment for PR ${PR}: ($DEV_NAMESPACE.dev.renku.ch)"
 fi
 

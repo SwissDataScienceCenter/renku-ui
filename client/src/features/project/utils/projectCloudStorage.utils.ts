@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../projectCloudStorage.constants";
+import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../components/cloudStorage/projectCloudStorage.constants";
 import {
   CloudStorage,
   CloudStorageConfiguration,
   CloudStorageCredential,
-} from "../projectCloudStorage.types";
+} from "../components/cloudStorage/projectCloudStorage.types";
 
 export function parseCloudStorageConfiguration(
   formattedConfiguration: string

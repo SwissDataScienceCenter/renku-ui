@@ -68,11 +68,11 @@ import { StateModelProject } from "../../../project/Project";
 import {
   useGetCloudStorageForProjectQuery,
   useValidateCloudStorageConfigurationMutation,
-} from "../../../project/projectCloudStorage.api";
+} from "../../../project/components/cloudStorage/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-} from "../../../project/projectCloudStorage.constants";
+} from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import {
   formatCloudStorageConfiguration,
   getProvidedSensitiveFields,
@@ -150,6 +150,7 @@ function CloudStorageList() {
   const dispatch = useDispatch();
 
   const { data: notebooksVersion } = useGetNotebooksVersionsQuery();
+  // ! TODO: update
   const {
     data: storageForProject,
     error,

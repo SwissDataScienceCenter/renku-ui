@@ -66,22 +66,22 @@ import {
   useDeleteCloudStorageMutation,
   useGetCloudStorageForProjectQuery,
   useUpdateCloudStorageMutation,
-} from "../projectCloudStorage.api";
+} from "./cloudStorage/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-} from "../projectCloudStorage.constants";
+} from "./cloudStorage/projectCloudStorage.constants";
 import {
   CloudStorage,
   CloudStorageConfiguration,
   CloudStorageCredential,
-} from "../projectCloudStorage.types";
+} from "./cloudStorage/projectCloudStorage.types";
 import {
   formatCloudStorageConfiguration,
   getCredentialFieldDefinitions,
   parseCloudStorageConfiguration,
 } from "../utils/projectCloudStorage.utils";
-import AddCloudStorageButton from "./AddCloudStorageButton";
+import AddCloudStorageButton from "./cloudStorage/AddCloudStorageButton";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useSelector<RootStateOrAny, User["logged"]>(
@@ -215,26 +215,7 @@ function CloudStorageSupportNotice({
       </WarnAlert>
     );
   }
-
-  if (support === "azure") {
-    return (
-      <InfoAlert dismissible={false} timeout={0}>
-        <p>
-          This instance of RenkuLab currently only supports starting sessions
-          with Azure Blob Store cloud storage.
-        </p>
-      </InfoAlert>
-    );
-  }
-
-  return (
-    <InfoAlert dismissible={false} timeout={0}>
-      <p>
-        This instance of RenkuLab currently only supports starting sessions with
-        S3 or S3-compatible cloud storage.
-      </p>
-    </InfoAlert>
-  );
+  return null;
 }
 
 interface CloudStorageListProps {
