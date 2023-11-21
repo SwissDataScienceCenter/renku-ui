@@ -340,8 +340,11 @@ function ResourcePoolUsers({ resourcePool }: ResourcePoolItemProps) {
   return (
     <div>
       <p className="mb-0">Users: {resourcePoolUsers.length}</p>
-      <AddUserToResourcePoolButton resourcePool={resourcePool} />
-      <AddManyUsersToResourcePoolButton resourcePool={resourcePool} />
+      <div className={cx("d-flex", "flex-column", "flex-sm-row", "flex-wrap")}>
+        <AddUserToResourcePoolButton resourcePool={resourcePool} />
+        <span className={cx("me-2", "py-1")} />
+        <AddManyUsersToResourcePoolButton resourcePool={resourcePool} />
+      </div>
       <ResourcePoolUsersList
         resourcePool={resourcePool}
         resourcePoolUsers={resourcePoolUsers}
