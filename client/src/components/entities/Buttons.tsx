@@ -25,10 +25,10 @@
 
 import { faCog, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { motion } from "framer-motion";
 import { Funnel, FunnelFill } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { Button, UncontrolledTooltip } from "reactstrap";
-import { motion } from "framer-motion";
 import SimpleSessionButton from "../../features/session/components/SimpleSessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { EntityType } from "./Entities";

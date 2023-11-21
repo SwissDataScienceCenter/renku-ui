@@ -162,8 +162,22 @@ nav.rk-anon-home .nav-link,
     font-size: 16px;
   }
 }
+#rk-anon-home-what-is-renku {
+  .card-entity {
+    box-shadow: 3px 1px 7px 0 rgba(217, 217, 217, 0.82);
+    -webkit-box-shadow: 3px 1px 7px 0 rgba(217, 217, 217, 0.82);
+    -moz-box-shadow: 3px 1px 7px 0 rgba(217, 217, 217, 0.82);
 
-#rk-anon-home-who-we-are {
+    p {
+      font-size: 16px;
+      display: inline;
+    }
+  }
+}
+
+#rk-anon-home-who-we-are,
+#rk-anon-home-teaching,
+#rk-anon-home-what-is-renku {
   background-color: white;
   color: black;
 }

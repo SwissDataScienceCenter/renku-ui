@@ -41,6 +41,7 @@ export interface AnonymousHomeConfig {
     };
     tutorialLink: string;
     projectPath: string;
+    datasetSlug: string;
     contactEmail: string;
   };
   model: unknown;
