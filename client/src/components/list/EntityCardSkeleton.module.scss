@@ -1,16 +1,16 @@
-.SkeletonCardContainer {
+.skeletonCardContainer {
   width: 350px;
   position: relative;
 }
 
-.skeleton--wrapper {
+.skeletonWrapper {
   position: absolute;
 }
 
-.skeleton--wrapper .skeleton--img .skeleton--img-graphic {
+.skeletonWrapper .skeletonImg .skeletonImgGraphic {
   height: 100%;
 }
-.skeleton-loader:empty {
+.skeletonLoader:empty {
   width: 100%;
   position: absolute;
   top: 0;

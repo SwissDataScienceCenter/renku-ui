@@ -17,18 +17,17 @@
  */
 
 import skeletonCardImage from "../../styles/assets/SkeletonCard.svg";
-import "./EntityCardSkeleton.scss";
+import styles from "./EntityCardSkeleton.module.scss";
+import cx from "classnames";
 
 export default function EntityCardSkeleton() {
   return (
-    <div className="skeleton--wrapper">
-      <div className="skeleton--col skeleton--img">
-        <img
-          className="SkeletonCardImage"
-          src={skeletonCardImage}
-          alt="skeleton card"
+    <div className={styles.skeletonWrapper}>
+      <div className={styles.skeletonImg}>
+        <img src={skeletonCardImage} alt="skeleton card" />
+        <div
+          className={cx([styles.skeletonImgGraphic, styles.skeletonLoader])}
         />
-        <div className="skeleton--img-graphic skeleton-loader" />
       </div>
     </div>
   );

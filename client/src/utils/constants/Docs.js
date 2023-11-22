@@ -18,7 +18,6 @@ const Docs = {
   // eslint-disable-next-line
   READ_THE_DOCS_TUTORIALS_STARTING: `${READ_THE_DOCS_ROOT}/tutorials/01_firststeps.html`,
   READ_THE_DOCS_WHY_RENKU: `${READ_THE_DOCS_ROOT}/introduction/why.html`,
-  READ_THE_DOCS_CLI_RENKU: `${READ_THE_DOCS_ROOT}/how-to-guides/own_machine/cli-installation.html#cli-installation.html`,
 
   rtdHowToGuide(subPage) {
     return `${Docs.READ_THE_DOCS_HOW_TO_GUIDES}/${subPage}`;

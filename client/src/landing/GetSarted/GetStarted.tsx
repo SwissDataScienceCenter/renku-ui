@@ -47,7 +47,7 @@ export default function GetStarted(props: GetStartedProps) {
       : undefined;
 
   const projectCard = entityProps ? (
-    <ListCard {...entityProps} animated={true} />
+    <ListCard {...entityProps} animated={true} fromLanding={true} />
   ) : undefined;
 
   // eslint-disable-next-line spellcheck/spell-checker
@@ -139,7 +139,9 @@ export default function GetStarted(props: GetStartedProps) {
                 <CommandCopy command={installRenku} />
               </div>
               <ExternalDocsLink
-                url={Docs.READ_THE_DOCS_CLI_RENKU}
+                url={Docs.rtdHowToGuide(
+                  "own_machine/cli-installation.html#cli-installation.html"
+                )}
                 title="Read the documentation"
               />
             </div>

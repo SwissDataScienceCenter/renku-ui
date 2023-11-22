@@ -35,7 +35,7 @@ CURRENT_CHART=`grep -oE "(^version: )[.0-9a-f\-]*" ../helm-chart/renku-ui/Chart.
 CURRENT_COMMIT=`git rev-parse --short HEAD`
 # Set HOMEPAGE_PROJECT_PATH with the project's path with namespace to display the project on the landing page.
 # E.g.,
-#HOMEPAGE_PROJECT_PATH='limited-group/heat-flux'
+HOMEPAGE_PROJECT_PATH='limited-group/heat-flux-lp2'
 if [[ "$OSTYPE" == "linux-gnu" ]]
 then
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64 -w 0`

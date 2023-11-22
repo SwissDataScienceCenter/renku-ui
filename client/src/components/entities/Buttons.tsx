@@ -37,8 +37,14 @@ export interface EntityButtonProps {
   type: EntityType;
   slug: string;
   animated?: boolean;
+  fromLanding?: boolean;
 }
-function EntityButton({ type, slug, animated = false }: EntityButtonProps) {
+function EntityButton({
+  type,
+  slug,
+  animated = false,
+  fromLanding = false,
+}: EntityButtonProps) {
   switch (type) {
     case "project":
       return animated ? (
@@ -50,7 +56,7 @@ function EntityButton({ type, slug, animated = false }: EntityButtonProps) {
           }}
           viewport={{ once: false }}
         >
-          <SimpleSessionButton fullPath={slug} />
+          <SimpleSessionButton fullPath={slug} fromLanding={fromLanding} />
         </motion.div>
       ) : (
         <div className="card-button">
