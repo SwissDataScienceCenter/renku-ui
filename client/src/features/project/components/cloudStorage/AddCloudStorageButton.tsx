@@ -18,10 +18,18 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CheckLg, CloudFill, PlusLg, XLg } from "react-bootstrap-icons";
+import {
+  ArrowCounterclockwise,
+  CheckLg,
+  CloudFill,
+  PlusLg,
+  XLg,
+} from "react-bootstrap-icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { RootStateOrAny, useSelector } from "react-redux";
 import {
+  Breadcrumb,
+  BreadcrumbItem,
   Button,
   Card,
   CardBody,
@@ -37,11 +45,15 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { SerializedError } from "@reduxjs/toolkit";
+
 import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import { StateModelProject } from "../../Project";
 import {
   useAddCloudStorageForProjectMutation,
+  useGetCloudStorageSchemaQuery,
   useUpdateCloudStorageMutation,
 } from "./projectCloudStorage.api";
 import {
@@ -51,19 +63,22 @@ import {
 import {
   CloudStorage,
   CloudStorageCredential,
+  CloudStorageSchema,
 } from "./projectCloudStorage.types";
 import {
   getCredentialFieldDefinitions,
   parseCloudStorageConfiguration,
 } from "../../utils/projectCloudStorage.utils";
-
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
-import styles from "./AddCloudStorageButton.module.scss";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 
+import styles from "./AddCloudStorageButton.module.scss";
+
+const TEST_TOGGLE_OPEN = true;
+
 export default function AddCloudStorageButton() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(TEST_TOGGLE_OPEN);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
   }, []);
@@ -79,37 +94,120 @@ export default function AddCloudStorageButton() {
   );
 }
 
+// ** --> Existing file: projectCloudStorage.types.ts
+type AddCloudStorageState = {
+  step: number;
+  completedSteps: number;
+  totalSteps: number; // ? 0 means unknown
+  advancedMode: boolean;
+};
+
+// ** --> New file: AddCloudStorageModal
 interface AddCloudStorageModalProps {
   isOpen: boolean;
   toggle: () => void;
 }
 
 function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
-  const [state, setState] = useState<AddCloudStorageModalState>({
-    step: "configuration",
-    mode: "simple",
+  // Fetch available schema when users open the modal
+  const {
+    data: schema,
+    error: schemaError,
+    isFetching: schemaIsFetching,
+    isLoading: schemaIsLoading,
+  } = useGetCloudStorageSchemaQuery(undefined, { skip: !isOpen });
+
+  const [state, setState] = useState<AddCloudStorageState>({
+    step: 1,
+    completedSteps: 0,
+    totalSteps: 0,
+    advancedMode: false,
   });
-  const toggleAdvanced = useCallback(() => {
+
+  const setStateSafe = (newState: Partial<AddCloudStorageState>) => {
     setState((prevState) => {
-      if (prevState.step === "credentials") {
-        return prevState;
-      }
       return {
         ...prevState,
-        mode: prevState.mode === "advanced" ? "simple" : "advanced",
+        ...newState,
+      };
+    });
+  };
+
+  // TODO: add the other setters
+
+  // Reset
+  const reset = useCallback(() => {
+    setState(() => {
+      return {
+        step: 1,
+        completedSteps: 0,
+        totalSteps: 0,
+        advancedMode: false,
       };
     });
   }, []);
-  const goToCredentialsStep = useCallback((storageDefinition: CloudStorage) => {
-    setState({ step: "credentials", storageDefinition });
-  }, []);
 
-  // Reset state when closed
-  useEffect(() => {
-    if (!isOpen) {
-      setState({ step: "configuration", mode: "simple" });
-    }
-  }, [isOpen]);
+  // ? OLD CODE TO REMOVE -- FROM HERE
+  // // const [state, setState] = useState<AddCloudStorageModalState>({
+  // //   step: "configuration",
+  // //   mode: "simple",
+  // // });
+  // // const toggleAdvanced = useCallback(() => {
+  // //   setState((prevState) => {
+  // //     if (prevState.step === "credentials") {
+  // //       return prevState;
+  // //     }
+  // //     return {
+  // //       ...prevState,
+  // //       mode: prevState.mode === "advanced" ? "simple" : "advanced",
+  // //     };
+  // //   });
+  // // }, []);
+  // // const goToCredentialsStep = useCallback((storageDefinition: CloudStorage) => {
+  // //   setState({ step: "credentials", storageDefinition });
+  // // }, []);
+
+  // // // Reset state when closed
+  // // useEffect(() => {
+  // //   if (!isOpen) {
+  // //     setState({ step: "configuration", mode: "simple" });
+  // //   }
+  // // }, [isOpen]);
+  // ? OLD CODE TO REMOVE -- TO HERE
+
+  const disableAddButton = state.step !== 6;
+  const loaderAddButton = false;
+
+  const actionButton =
+    state.step == 6 ? (
+      <Button
+        disabled={disableAddButton}
+        // onClick={handleSubmit(onSubmit)}
+        type="submit"
+      >
+        {loaderAddButton ? (
+          <Loader className="me-1" inline size={16} />
+        ) : (
+          <PlusLg className={cx("bi", "me-1")} />
+        )}
+        Add Storage
+      </Button>
+    ) : (
+      <Button
+        onClick={() => {
+          setStateSafe({
+            completedSteps:
+              state.step > state.completedSteps
+                ? state.step
+                : state.completedSteps,
+            step: state.step + 1,
+          });
+        }}
+      >
+        <PlusLg className={cx("bi", "me-1")} />
+        Next step
+      </Button>
+    );
 
   return (
     <Modal
@@ -126,7 +224,30 @@ function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
         <CloudFill className={cx("bi", "me-2")} />
         Add Cloud Storage
       </ModalHeader>
-      {state.step === "configuration" && (
+
+      <ModalBody>
+        <AddCloudStorage
+          error={schemaError}
+          fetching={schemaIsFetching}
+          schema={schema}
+          setState={setStateSafe}
+          state={state}
+        />
+      </ModalBody>
+
+      <ModalFooter>
+        <Button color="outline-danger" onClick={reset}>
+          <ArrowCounterclockwise className={cx("bi", "me-1")} />
+          Reset
+        </Button>
+        <Button className="btn-outline-rk-green" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Close
+        </Button>
+        {actionButton}
+      </ModalFooter>
+
+      {/* {state.step === "configuration" && (
         <ModalBody className="flex-shrink-0">
           <div className="form-rk-green">
             <div className={cx("form-check", "form-switch")}>
@@ -163,10 +284,164 @@ function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
           goToCredentialsStep={goToCredentialsStep}
           toggle={toggle}
         />
-      )}
+      )} */}
     </Modal>
   );
 }
+
+// ** --> New file: AddCloudStorage
+interface AddCloudStorageProps2 {
+  error?: FetchBaseQueryError | SerializedError;
+  fetching: boolean;
+  schema?: CloudStorageSchema[];
+  setState: (newState: Partial<AddCloudStorageState>) => void;
+  state: AddCloudStorageState;
+}
+
+function AddCloudStorage({
+  error,
+  fetching,
+  schema,
+  setState,
+  state,
+}: AddCloudStorageProps2) {
+  if (error)
+    return <h2 className="text-bg-danger">Error - add proper Alert</h2>;
+  if (fetching) return <Loader />;
+
+  const ContentByStep =
+    state.step >= 1 && state.step <= 6 ? mapStepToElement[state.step] : null;
+
+  if (ContentByStep)
+    return (
+      <>
+        <AddStorageBreadcrumbNavbar state={state} setState={setState} />
+        <ContentByStep
+          schema={schema as CloudStorageSchema[]} // ? the `loading` variable makes sure it's never undefined
+          state={state}
+          setState={setState}
+        />
+      </>
+    );
+  return <p>Error - not implemented yet</p>;
+}
+
+interface AddStorageStepProps {
+  schema: CloudStorageSchema[];
+  state: AddCloudStorageState;
+  setState: (newState: Partial<AddCloudStorageState>) => void;
+}
+
+const mapStepToElement: {
+  [key: number]: React.ComponentType<AddStorageStepProps>;
+} = {
+  1: AddStorageSelectType,
+  2: AddStorageSelectProvider,
+  3: AddStorageMandatoryOptions,
+  4: AddStorageAdvancedOptions,
+  5: AddStorageMountOptions,
+  6: AddStorageFinalStep,
+};
+const mapStepToName: { [key: number]: string } = {
+  1: "Type",
+  2: "Provider",
+  3: "Options",
+  4: "Advanced",
+  5: "Mounting",
+  6: "Details",
+};
+
+interface AddStorageBreadcrumbNavbarProps {
+  state: AddCloudStorageState;
+  setState: (newState: Partial<AddCloudStorageState>) => void;
+}
+
+function AddStorageBreadcrumbNavbar({
+  state,
+  setState,
+}: AddStorageBreadcrumbNavbarProps) {
+  const { step, completedSteps, totalSteps } = state;
+  const items = useMemo(() => {
+    if (completedSteps === 0) return [];
+    const lastStep = completedSteps === 6 ? completedSteps : completedSteps + 1;
+    const steps = Array.from({ length: lastStep }, (_, index) => index + 1);
+    console.log(steps);
+    // if (step === completedSteps + 1) steps = [...steps, step];
+    // if (completedSteps < 6) steps = [...steps, step];
+    const completedItems = steps.map((stepNumber) => {
+      const active = stepNumber === step;
+      return (
+        <BreadcrumbItem active={active} key={stepNumber}>
+          <Button
+            className={cx("p-0", `${active ? "text-decoration-none" : ""}`)}
+            color="link"
+            disabled={active}
+            onClick={() => {
+              setState({ step: stepNumber });
+            }}
+          >
+            {mapStepToName[stepNumber]}
+          </Button>
+        </BreadcrumbItem>
+      );
+    });
+    return completedItems;
+  }, [completedSteps, setState, step]);
+
+  // completedSteps
+  // const items = [1..state]
+  if (!items) return null;
+  return <Breadcrumb>{items}</Breadcrumb>;
+}
+
+// const sessionsFormatted = useMemo(
+//   () => getFormattedSessionsAnnotations(sessions ?? {}),
+//   [sessions]
+// );
+
+function AddStorageSelectType({
+  schema,
+  state,
+  setState,
+}: AddStorageStepProps) {
+  if (!schema) return null;
+  const options = schema.map((s) => {
+    return (
+      <option key={s.name} value={s.prefix}>
+        {s.name}
+      </option>
+    );
+  });
+
+  return (
+    <>
+      <p>AddStorageSelectType - WIP</p>
+      <select>{options}</select>
+    </>
+  );
+}
+
+function AddStorageSelectProvider({ state, setState }: AddStorageStepProps) {
+  return <p>AddStorageSelectProvider</p>;
+}
+
+function AddStorageMandatoryOptions({ state, setState }: AddStorageStepProps) {
+  return <p>AddStorageMandatoryOptions</p>;
+}
+
+function AddStorageAdvancedOptions({ state, setState }: AddStorageStepProps) {
+  return <p>AddStorageAdvancedOptions</p>;
+}
+
+function AddStorageMountOptions({ state, setState }: AddStorageStepProps) {
+  return <p>AddStorageMountOptions</p>;
+}
+
+function AddStorageFinalStep({ state, setState }: AddStorageStepProps) {
+  return <p>AddStorageFinalStep</p>;
+}
+
+// -------------------------------------------------------------- //
 
 type AddCloudStorageModalState =
   | {
@@ -451,16 +726,7 @@ function SimpleAddCloudStorage({
   >((state) => state.stateModel.project.metadata.id);
 
   const { data: notebooksVersion } = useGetNotebooksVersionsQuery();
-  const support = useMemo(
-    () =>
-      notebooksVersion != null && notebooksVersion.cloudStorageEnabled.s3
-        ? "s3"
-        : notebooksVersion != null &&
-          notebooksVersion.cloudStorageEnabled.azureBlob
-        ? "azure"
-        : "none",
-    [notebooksVersion]
-  );
+  const support = notebooksVersion?.cloudStorageEnabled ?? false;
 
   const [addCloudStorageForProject, result] =
     useAddCloudStorageForProjectMutation();
@@ -549,7 +815,7 @@ function SimpleAddCloudStorage({
                 Endpoint URL
               </Label>
               <FormText id="addCloudStorageUrlHelp" tag="div">
-                {support === "s3" ? (
+                {support ? (
                   <>
                     <p className="mb-0">
                       For AWS S3 buckets, supported URLs are of the form:
@@ -610,11 +876,7 @@ function SimpleAddCloudStorage({
                     aria-describedby="addCloudStorageUrlHelp"
                     className={cx(errors.endpointUrl && "is-invalid")}
                     id="addCloudStorageUrl"
-                    placeholder={
-                      support === "s3"
-                        ? "s3://bucket.s3.region.amazonaws.com/"
-                        : "azure://account.blob.core.windows.net/container"
-                    }
+                    placeholder="s3://bucket.s3.region.amazonaws.com/"
                     type="text"
                     {...field}
                   />

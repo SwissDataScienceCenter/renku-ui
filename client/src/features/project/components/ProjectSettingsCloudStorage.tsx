@@ -65,6 +65,7 @@ import { StateModelProject } from "../Project";
 import {
   useDeleteCloudStorageMutation,
   useGetCloudStorageForProjectQuery,
+  useGetCloudStorageSchemaQuery,
   useUpdateCloudStorageMutation,
 } from "./cloudStorage/projectCloudStorage.api";
 import {
@@ -142,6 +143,7 @@ export default function ProjectSettingsCloudStorage() {
     );
   }
 
+  // ! TODO: update this, and double check how we handle/show errors
   if (!storageForProject || !notebooksVersion || error) {
     return (
       <CloudStorageSection>
@@ -158,11 +160,13 @@ export default function ProjectSettingsCloudStorage() {
     <CloudStorageSection isFetching={isFetching}>
       <CloudStorageSupportNotice notebooksVersion={notebooksVersion} />
 
-      <Row>
-        <Col>
-          <AddCloudStorageButton />
-        </Col>
-      </Row>
+      {notebooksVersion.cloudStorageEnabled && (
+        <Row>
+          <Col>
+            <AddCloudStorageButton />
+          </Col>
+        </Row>
+      )}
 
       <CloudStorageList storageForProject={storageForProject} />
     </CloudStorageSection>
@@ -195,17 +199,7 @@ interface CloudStorageSupportNoticeProps {
 function CloudStorageSupportNotice({
   notebooksVersion,
 }: CloudStorageSupportNoticeProps) {
-  const support = useMemo(
-    () =>
-      notebooksVersion.cloudStorageEnabled.s3
-        ? "s3"
-        : notebooksVersion.cloudStorageEnabled.azureBlob
-        ? "azure"
-        : "none",
-    [notebooksVersion.cloudStorageEnabled]
-  );
-
-  if (support === "none") {
+  if (!notebooksVersion.cloudStorageEnabled) {
     return (
       <WarnAlert dismissible={false}>
         <p>

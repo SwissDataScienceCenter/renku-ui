@@ -171,10 +171,7 @@ function useAutostartSessionOptions(): void {
         skip:
           !gitLabProjectId ||
           !notebooksVersion ||
-          !(
-            notebooksVersion.cloudStorageEnabled.s3 ||
-            notebooksVersion.cloudStorageEnabled.azureBlob
-          ),
+          !notebooksVersion.cloudStorageEnabled,
       }
     );
 

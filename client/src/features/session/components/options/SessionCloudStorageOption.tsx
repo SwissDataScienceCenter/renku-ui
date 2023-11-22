@@ -102,8 +102,7 @@ export default function SessionCloudStorageOption() {
     );
   }
 
-  return notebooksVersion?.cloudStorageEnabled.s3 ||
-    notebooksVersion?.cloudStorageEnabled.azureBlob ? (
+  return notebooksVersion?.cloudStorageEnabled ? (
     <SessionS3CloudStorageOption />
   ) : null;
 }
@@ -163,7 +162,7 @@ function CloudStorageList() {
   );
 
   const support = useMemo(
-    () => (notebooksVersion?.cloudStorageEnabled.s3 ? "s3" : "azure"),
+    () => (notebooksVersion?.cloudStorageEnabled ? "s3" : "none"),
     [notebooksVersion?.cloudStorageEnabled]
   );
 
@@ -174,12 +173,8 @@ function CloudStorageList() {
     }
     const initialCloudStorage: SessionCloudStorage[] = storageForProject.map(
       ({ storage, sensitive_fields }) => ({
-        active:
-          (storage.storage_type === "s3" && support === "s3") ||
-          (storage.storage_type === "azureblob" && support === "azure"),
-        supported:
-          (storage.storage_type === "s3" && support === "s3") ||
-          (storage.storage_type === "azureblob" && support === "azure"),
+        active: storage.storage_type === "s3" && support === "s3",
+        supported: storage.storage_type === "s3" && support === "s3",
         ...(sensitive_fields
           ? {
               sensitive_fields: sensitive_fields.map(({ name, ...rest }) => ({

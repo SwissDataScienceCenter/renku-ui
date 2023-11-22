@@ -89,3 +89,31 @@ export interface DeleteCloudStorageParams {
 export interface ValidateCloudStorageConfigurationParams {
   configuration: Record<string, string | undefined>;
 }
+
+export interface CloudStorageSchemaOptions {
+  name: string;
+  help: string;
+  provider: string;
+  default: number | string | boolean;
+  default_str: string;
+  examples: [
+    {
+      value: string; // ? Potential value for the option
+      help: string; // ? Help text for the _value_
+      provider: string; // ? empty for "all providers"
+    }
+  ];
+  required: boolean;
+  ispassword: boolean; // eslint-disable-line spellcheck/spell-checker
+  sensitive: boolean; // ? The service doesn't store it -- "more" sensitive? 😁
+  advanced: boolean; // ? Only shown when advanced options are enabled
+  exclusive: boolean; // ? Only one of the examples can be used when this is true
+  datatype: string;
+}
+
+export interface CloudStorageSchema {
+  name: string;
+  description: string;
+  prefix: string; // ? weird naming; it's the machine readable name
+  options: CloudStorageSchemaOptions[];
+}

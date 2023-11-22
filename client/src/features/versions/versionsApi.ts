@@ -85,19 +85,15 @@ export const versionsApi = createApi({
         if (response.versions?.length < 1)
           throw new Error("Unexpected response");
         const singleVersion = response.versions[0];
+
         return {
           name: response.name,
           version: singleVersion?.version ?? "unavailable",
           anonymousSessionsEnabled:
             singleVersion?.data?.anonymousSessionsEnabled ?? false,
           sshEnabled: singleVersion?.data?.sshEnabled ?? false,
-
-          // ! This should change
-          cloudStorageEnabled: {
-            s3: singleVersion?.data?.cloudstorageEnabled?.s3 ?? false,
-            azureBlob:
-              singleVersion?.data?.cloudstorageEnabled?.azure_blob ?? false,
-          },
+          cloudStorageEnabled:
+            singleVersion?.data?.cloudstorageEnabled ?? false,
         } as NotebooksVersion;
       },
       transformErrorResponse: () => {
@@ -106,10 +102,7 @@ export const versionsApi = createApi({
           version: "unavailable",
           anonymousSessionsEnabled: false,
           sshEnabled: false,
-          cloudStorageEnabled: {
-            s3: false,
-            azureBlob: false,
-          },
+          cloudStorageEnabled: false,
         } as NotebooksVersion;
       },
     }),
