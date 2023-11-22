@@ -139,7 +139,7 @@ function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
     : isProjectPinned
     ? "Unpin project from the dashboard"
     : hasReachedMax
-    ? `Cannot pin project: maximum number of pinned projects reached (${maxPinnedProjects})`
+    ? `There are already ${maxPinnedProjects} pinned projects. Unpin one if you want to pin this project.`
     : "Pin project to the dashboard";
 
   if (isLoading || isError) {
