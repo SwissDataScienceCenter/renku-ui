@@ -544,7 +544,7 @@ describe("Dashboard pins", () => {
       .should("be.visible")
       .and("be.disabled")
       .contains(
-        "Cannot pin project: maximum number of pinned projects reached (3)"
+        "There are already 3 pinned projects. Unpin one if you want to pin this project."
       );
   });
 });
