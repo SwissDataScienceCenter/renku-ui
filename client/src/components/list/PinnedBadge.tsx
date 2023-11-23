@@ -118,7 +118,10 @@ function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
   ]);
 
   useEffect(() => {
-    if (addPinnedProjectResult.error) {
+    if (
+      addPinnedProjectResult.error &&
+      !isMaximumPinnedError(addPinnedProjectResult.error)
+    ) {
       addErrorNotification(addPinnedProjectResult.error);
     }
     if (removePinnedProjectResult.error) {
@@ -241,6 +244,38 @@ function useErrorNotification() {
   );
 
   return addErrorNotification;
+}
+
+function isMaximumPinnedError(
+  error: FetchBaseQueryError | SerializedError
+): boolean {
+  if (!("status" in error)) {
+    return false;
+  }
+  if (error.status !== 422) {
+    return false;
+  }
+  const errorData = error.data;
+  if (
+    typeof errorData !== "object" ||
+    errorData == null ||
+    !("error" in errorData)
+  ) {
+    return false;
+  }
+  const errorObj = (errorData as { error: unknown }).error;
+  if (
+    typeof errorObj !== "object" ||
+    errorObj == null ||
+    !("message" in errorObj)
+  ) {
+    return false;
+  }
+  const message = (errorObj as { message: unknown }).message;
+  if (typeof message !== "string") {
+    return false;
+  }
+  return message.startsWith("Maximum number of pinned projects");
 }
 
 interface DisabledBadgeProps {
