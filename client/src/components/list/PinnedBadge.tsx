@@ -307,7 +307,7 @@ function DisabledBadge({
             "shadow",
             "rounded-pill"
           )}
-          color="rk-green"
+          color="rk-white"
           data-cy="pin-badge"
           disabled
           type="button"
