@@ -81,7 +81,7 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
         {image} <Clipboard clipboardText={image} />
       </span>
       <h3 className="fs-6 fw-bold mt-2">Commit Details:</h3>
-      <span className="fw-bold">Author:</span>
+      <span className="fw-bold">Author:</span>{" "}
       <span>{commit.author_name}</span>
       <br />
       <span>
