@@ -15,19 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { Search } from "react-bootstrap-icons";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
-import cx from "classnames";
-import { InfoAlert } from "../../../components/Alert";
+import { InfoAlert, WarnAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
 import ListDisplay from "../../../components/List";
 import { Loader } from "../../../components/Loader";
 import { EnvironmentLogs } from "../../../components/Logs";
+import { extractRkErrorMessage } from "../../../components/errors/RtkErrorAlert";
 import SearchEntityIcon from "../../../components/icons/SearchEntityIcon";
 import ListBarSession from "../../../components/list/ListBarSessions";
 import { SortingOptions } from "../../../components/sortingEntities/SortingEntities";
@@ -40,6 +42,10 @@ import {
   cleanGitUrl,
   formatProjectMetadata,
 } from "../../../utils/helpers/ProjectFunctions";
+import {
+  PropagateRtkQueryError,
+  RtkQuery,
+} from "../../../utils/helpers/RtkQueryErrorsContext";
 import { getFormattedSessionsAnnotations } from "../../../utils/helpers/SessionFunctions";
 import { Url } from "../../../utils/helpers/url";
 import { displaySlice, useDisplaySelector } from "../../display";
@@ -243,8 +249,12 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
     isError: isErrorUserPreferences,
   } = useGetUserPreferencesQuery();
 
-  const { data: sessions, isLoading: isLoadingSessions } =
-    useGetSessionsQuery();
+  const {
+    data: sessions,
+    isLoading: isLoadingSessions,
+    isError: isErrorSessions,
+    error: sessionsError,
+  } = useGetSessionsQuery();
 
   const pinnedProjectSlugs = useMemo(() => {
     if (isLoadingUserPreferences || isErrorUserPreferences) {
@@ -303,8 +313,18 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
     );
 
   return (
-    <>
+    <PropagateRtkQueryError
+      query={RtkQuery.getSessions}
+      isError={isErrorSessions}
+      error={sessionsError}
+    >
       <ProjectAlert total={totalUserProjects} />
+      {sessionsError != null && (
+        <WarnAlert>
+          <h5>Sessions are currently unavailable</h5>
+          <p className="mb-0">{extractRkErrorMessage(sessionsError)}</p>
+        </WarnAlert>
+      )}
       <div className="rk-dashboard-project" data-cy="projects-container">
         <div className="rk-dashboard-section-header d-flex justify-content-between align-items-center flex-wrap">
           <h3 className="rk-dashboard-title" key="project-header">
@@ -326,7 +346,7 @@ function ProjectsDashboard({ userName }: ProjectsDashboardProps) {
 
         {otherProjectsBtn}
       </div>
-    </>
+    </PropagateRtkQueryError>
   );
 }
 

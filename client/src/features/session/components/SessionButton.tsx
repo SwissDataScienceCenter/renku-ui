@@ -51,6 +51,7 @@ import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.consta
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import AppContext from "../../../utils/context/appContext";
+import RtkQueryErrorsContext from "../../../utils/helpers/RtkQueryErrorsContext";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
 import {
@@ -85,7 +86,14 @@ export default function SessionButton({
     path: fullPath,
   });
 
-  const { data: sessions, isLoading, isError } = useGetSessionsQuery();
+  const { getSessions } = useContext(RtkQueryErrorsContext);
+  const {
+    data: sessions,
+    isLoading,
+    isError,
+  } = useGetSessionsQuery(undefined, {
+    skip: getSessions?.isError,
+  });
 
   const runningSession =
     sessions && runningSessionName && runningSessionName in sessions
@@ -107,7 +115,7 @@ export default function SessionButton({
       <SimpleSessionButton
         className="session-link-group"
         fullPath={fullPath}
-        skip={isError}
+        skip={isError || getSessions?.isError}
       />
     );
     return (
@@ -118,20 +126,20 @@ export default function SessionButton({
         isPrincipal
         size="sm"
       >
-        <DropdownItem>
-          <Link className="text-decoration-none" to={sessionStartUrl}>
+        <li>
+          <Link className="dropdown-item" to={sessionStartUrl}>
             <img
               src={rkIconStartWithOptions}
-              className="rk-icon rk-icon-md btn-with-menu-margin"
+              className="rk-icon rk-icon-md me-2"
             />
             Start with options
           </Link>
-        </DropdownItem>
+        </li>
         {gitUrl && <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />}
         <DropdownItem divider />
-        <DropdownItem>
+        <li>
           <Link
-            className="text-decoration-none"
+            className="dropdown-item"
             to={{
               pathname: sessionStartUrl,
               search: new URLSearchParams({
@@ -146,7 +154,7 @@ export default function SessionButton({
             />
             Create session link
           </Link>
-        </DropdownItem>
+        </li>
       </ButtonWithMenu>
     );
   }
@@ -399,9 +407,9 @@ function SessionActions({ className, session }: SessionActionsProps) {
   );
 
   const createSessionLinkAction = (
-    <DropdownItem>
+    <li>
       <Link
-        className="text-decoration-none"
+        className="dropdown-item"
         to={{
           pathname: sessionStartUrl,
           search: new URLSearchParams({
@@ -416,7 +424,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
         />
         Create session link
       </Link>
-    </DropdownItem>
+    </li>
   );
 
   const logsAction = status !== "hibernated" && (
