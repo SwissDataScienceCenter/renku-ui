@@ -38,33 +38,22 @@ export function validateAppParams(params: unknown): AppParams {
   const params_ = params as RawAppParams;
 
   // String params
-  const BASE_URL = validateString(params_, "BASE_URL", { trim: true });
-  const GATEWAY_URL = validateString(params_, "GATEWAY_URL", { trim: true });
-  const KEYCLOAK_REALM = validateString(params_, "KEYCLOAK_REALM", {
-    trim: true,
-  });
-  const MAINTENANCE = validateString(params_, "MAINTENANCE", { trim: true });
+  const BASE_URL = validateString(params_, "BASE_URL");
+  const GATEWAY_URL = validateString(params_, "GATEWAY_URL");
+  const KEYCLOAK_REALM = validateString(params_, "KEYCLOAK_REALM");
+  const MAINTENANCE = validateString(params_, "MAINTENANCE");
   const PRIVACY_BANNER_CONTENT = validateString(
     params_,
-    "PRIVACY_BANNER_CONTENT",
-    { trim: true }
+    "PRIVACY_BANNER_CONTENT"
   );
-  const RENKU_CHART_VERSION = validateString(params_, "RENKU_CHART_VERSION", {
-    trim: true,
-  });
-  const SENTRY_NAMESPACE = validateString(params_, "SENTRY_NAMESPACE", {
-    trim: true,
-  });
-  const SENTRY_SAMPLE_RATE = validateString(params_, "SENTRY_SAMPLE_RATE", {
-    trim: true,
-  });
-  const SENTRY_URL = validateString(params_, "SENTRY_URL", { trim: true });
-  const STATUSPAGE_ID = validateString(params_, "STATUSPAGE_ID", {
-    trim: true,
-  });
-  const UISERVER_URL = validateString(params_, "UISERVER_URL", { trim: true });
-  const UI_SHORT_SHA = validateString(params_, "UI_SHORT_SHA", { trim: true });
-  const UI_VERSION = validateString(params_, "UI_VERSION", { trim: true });
+  const RENKU_CHART_VERSION = validateString(params_, "RENKU_CHART_VERSION");
+  const SENTRY_NAMESPACE = validateString(params_, "SENTRY_NAMESPACE");
+  const SENTRY_SAMPLE_RATE = validateString(params_, "SENTRY_SAMPLE_RATE");
+  const SENTRY_URL = validateString(params_, "SENTRY_URL");
+  const STATUSPAGE_ID = validateString(params_, "STATUSPAGE_ID");
+  const UISERVER_URL = validateString(params_, "UISERVER_URL");
+  const UI_SHORT_SHA = validateString(params_, "UI_SHORT_SHA");
+  const UI_VERSION = validateString(params_, "UI_VERSION");
 
   // Boolean params
   const ANONYMOUS_SESSIONS = validateBoolean(params_, "ANONYMOUS_SESSIONS");
@@ -109,23 +98,15 @@ interface RawAppParams {
   [key: string]: unknown;
 }
 
-interface ValidateStringOptions {
-  trim?: boolean;
-}
-
 function validateString(
   params: RawAppParams,
-  key: keyof AppParamsStrings,
-  options?: ValidateStringOptions
+  key: keyof AppParamsStrings
 ): string {
   const value = params[key];
   if (typeof value !== "string") {
     return DEFAULT_APP_PARAMS[key];
   }
-  if (options?.trim) {
-    return value.trim();
-  }
-  return value;
+  return value.trim();
 }
 
 function validateBoolean(
