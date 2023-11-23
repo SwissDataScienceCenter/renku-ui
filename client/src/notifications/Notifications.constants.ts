@@ -32,4 +32,5 @@ export enum NOTIFICATION_TOPICS {
   PROJECT_DELETED = "Project deleted",
   PROJECT_FORKED = "Project forked",
   KG_ACTIVATION = "KG Activation",
+  USER_PREFERENCES = "User Preferences",
 }
