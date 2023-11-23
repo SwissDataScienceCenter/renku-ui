@@ -17,7 +17,7 @@
  */
 
 import React from "react";
-import type { Params } from "../App.types";
+import type { AppParams } from "../utils/context/appParams.types";
 import { RenkuQueryParams } from "./Authentication.container";
 
 function createLoginUrl(url: string) {
@@ -32,7 +32,7 @@ function createLoginUrl(url: string) {
 }
 
 type LocationRedirectProps = {
-  params: Params;
+  params: AppParams;
   location: {
     state?: {
       previous?: string;

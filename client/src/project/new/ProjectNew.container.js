@@ -57,6 +57,7 @@ import useGetNamespaces from "../../utils/customHooks/UseGetNamespaces";
 import useGetUserProjects from "../../utils/customHooks/UseGetProjects";
 import useGetVisibilities from "../../utils/customHooks/UseGetVisibilities";
 import { Loader } from "../../components/Loader";
+import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 
 const CUSTOM_REPO_NAME = "Custom";
 
@@ -459,10 +460,8 @@ function NewProject(props) {
   useEffect(() => {
     removeAutomated();
     if (!coordinator || !user.logged) return;
-    coordinator.setConfig(
-      params["TEMPLATES"].custom,
-      params["TEMPLATES"].repositories
-    );
+    const templates = params?.TEMPLATES ?? DEFAULT_APP_PARAMS.TEMPLATES;
+    coordinator.setConfig(templates.custom, templates.repositories);
     coordinator.resetInput();
     coordinator.getTemplates();
     extractAutomatedData();

@@ -18,13 +18,13 @@
 
 import { useContext, useMemo } from "react";
 import AppContext from "../../utils/context/appContext";
-import { validateKeycloakRealmParams } from "./adminKeycloak.utils";
+import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 
 export default function useKeycloakRealm() {
   const { params } = useContext(AppContext);
 
   const keycloakRealm = useMemo(
-    () => validateKeycloakRealmParams(params),
+    () => params?.KEYCLOAK_REALM ?? DEFAULT_APP_PARAMS.KEYCLOAK_REALM,
     [params]
   );
 
