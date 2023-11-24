@@ -13,6 +13,7 @@
 - Adjust dropdown menus with anchors nested in buttons ([#2907](https://github.com/SwissDataScienceCenter/renku-ui/pull/2907)).
 - Update the workflows documentation link ([#2917](https://github.com/SwissDataScienceCenter/renku-ui/pull/2917)).
 - Correctly update progress of project indexing ([#2833](https://github.com/SwissDataScienceCenter/renku-ui/pull/2833), [#2774](https://github.com/SwissDataScienceCenter/renku-ui/issues/2774)).
+- Add whitespace after author name ([#2921](https://github.com/SwissDataScienceCenter/renku-ui/pull/2921)).
 
 ## [3.15.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.15.0...3.15.1) (2023-11-14)
 
