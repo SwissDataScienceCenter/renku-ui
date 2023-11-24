@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { useGetMemberProjectsQuery } from "../../features/projects/projectsApi";
+import { useGetMemberProjectsQuery } from "../../features/projects/projects.api";
 
 /**
  *  useGetProjects custom hook

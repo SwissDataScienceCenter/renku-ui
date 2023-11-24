@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,28 +16,19 @@
  * limitations under the License.
  */
 
-import { useGetNamespacesQuery } from "../../features/projects/projects.api";
-
-/**
- *  useGetNamespaces custom hook
- *
- *  UseGetNamespaces.ts
- *  hook to fetch Namespaces
- */
-function useGetNamespaces(ownedOnly: boolean) {
-  const { data, isFetching, isLoading, refetch } =
-    useGetNamespacesQuery(ownedOnly);
-
-  const sortedList = data
-    ? [...data].sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-    : [];
-
-  return {
-    list: sortedList ?? [],
-    fetching: isFetching,
-    fetched: !isFetching && !isLoading,
-    refetchNamespaces: refetch,
-  };
+export interface UserPreferences {
+  user_id: string;
+  pinned_projects: PinnedProjects;
 }
 
-export default useGetNamespaces;
+export interface PinnedProjects {
+  project_slugs?: string[];
+}
+
+export interface AddPinnedProjectParams {
+  project_slug: string;
+}
+
+export interface RemovePinnedProjectParams {
+  project_slug: string;
+}

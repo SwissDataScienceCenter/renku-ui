@@ -176,7 +176,8 @@ tee > ./public/config.json << EOF
     },
     "tutorialLink": "${HOMEPAGE_TUTORIAL_LINK}",
     "showcase": ${HOMEPAGE_SHOWCASE}
-  }
+  },
+  "USER_PREFERENCES_MAX_PINNED_PROJECTS": ${USER_PREFERENCES_MAX_PINNED_PROJECTS:-5}
 }
 EOF
 
