@@ -16,15 +16,26 @@
  * limitations under the License.
  */
 
-import { checkWsServerMessage, WsMessage, WsServerMessage } from "./WsMessages";
+import {
+  checkWsServerMessage,
+  sendPullKgActivationStatus,
+  WsMessage,
+  WsServerMessage,
+} from "./WsMessages";
 import {
   handleUserInit,
   handleUserUiVersion,
   handleUserError,
 } from "./handlers/userHandlers";
 import { handleSessionsStatus } from "./handlers/sessionStatusHandler";
-import { handleKgActivationStatus } from "./handlers/kgActivationStatusHandler";
-import { InactiveKgProjects } from "../features/inactiveKgProjects/InactiveKgProjects";
+import {
+  handleKgActivationStatus,
+  handleWebSocketErrorForKgActivationStatus,
+  handleWebSocketPing,
+  updateStatus,
+} from "./handlers/kgActivationStatusHandler";
+import type { KgInactiveProjectsState } from "../features/inactiveKgProjects/";
+import { ActivationStatusProgressError } from "../features/inactiveKgProjects/";
 import { StateModel } from "../model";
 import APIClient from "../api-client";
 
@@ -127,7 +138,9 @@ function setupWebSocket(
     ) {
       const pingMessage = new WsMessage({}, "ping");
       targetWebSocket.send(pingMessage.toString());
+      // TODO: Should we remove the lastPing? It's not used anywhere and causes UI re-rendering.
       model.setObject({ lastPing: new Date(pingMessage.timestamp) });
+      handleWebSocketPing(model);
       setTimeout(() => pingWebSocketServer(targetWebSocket), timeoutIntervalMs);
     }
   }
@@ -140,23 +153,34 @@ function setupWebSocket(
 
   function resumePendingKgActivation(model: any, socket: any) {
     const state = model?.reduxStore?.getState();
+    if (state == null) return;
     // kgInactiveProjects
-    const projectsInProgress = state?.kgInactiveProjects;
-    const projectIds = projectsInProgress
-      ?.filter((project: InactiveKgProjects) => {
+    const projectsInProgress: KgInactiveProjectsState | null =
+      state.kgInactiveProjects;
+    if (projectsInProgress == null) return;
+    const projectIds = projectsInProgress.inactiveProjects
+      .filter((project) => {
         return (
           project.progressActivation !== null &&
           project.progressActivation !== 100
         );
       })
-      .map((p: InactiveKgProjects) => p.id);
+      .map((p) => p.id);
 
-    if (projectIds.length) {
-      const message = JSON.stringify(
-        new WsMessage({ projects: projectIds }, "pullKgActivationStatus")
-      );
-      socket.send(message);
+    if (projectIds.length < 1) return;
+
+    if (socket.readyState === socket.OPEN) {
+      // Send the resume request
+      sendPullKgActivationStatus(projectIds, socket);
+      return;
     }
+
+    // There are projects to update, but the socket is not open
+    const kgActivation: Record<string, number> = {};
+    projectIds.forEach((id) => {
+      kgActivation[`${id}`] = ActivationStatusProgressError.WEB_SOCKET_ERROR;
+    });
+    updateStatus(kgActivation, model.reduxStore);
   }
 
   function resumePendingProcesses(model: any, socket: any) {
@@ -187,6 +211,7 @@ function setupWebSocket(
       errorObject: error,
       lastReceived: new Date(),
     });
+    handleWebSocketErrorForKgActivationStatus(model);
   };
 
   webSocket.onclose = (data) => {
