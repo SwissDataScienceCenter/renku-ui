@@ -16,7 +16,28 @@
  * limitations under the License.
  */
 
+import {
+  CloudStorageProvider,
+} from "../projectCloudStorage.types";
 export const CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN = "<sensitive>";
 
 export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
   "[example]\ntype = s3\nprovider = AWS\nregion = us-east-1";
+
+export const CLOUD_STORAGE_OVERRIDE = {
+  storages: {
+    s3: {
+      description: "Amazon S3 Compliant Storage Providers including AWS, CloudFlare, DigitalOcean and many others",
+      position: 1
+    },
+    drive: {
+      position: 2
+    },
+    webdav: {
+      position: 3
+    },
+    azure: {
+      position: 4
+    }
+  } as Record<string, Partial<CloudStorageProvider>>
+};

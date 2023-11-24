@@ -16,11 +16,13 @@
  * limitations under the License.
  */
 
-import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../components/cloudStorage/projectCloudStorage.constants";
+import { CLOUD_STORAGE_OVERRIDE, CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../components/cloudStorage/projectCloudStorage.constants";
 import {
   CloudStorage,
   CloudStorageConfiguration,
   CloudStorageCredential,
+  CloudStorageSchema,
+  CloudStorageType,
 } from "../components/cloudStorage/projectCloudStorage.types";
 
 export function parseCloudStorageConfiguration(
@@ -84,4 +86,26 @@ export function getProvidedSensitiveFields(
   return Object.entries(configuration)
     .filter(([, value]) => value === CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN)
     .map(([key]) => key);
+}
+
+export function getSchemaStorages(schemas:CloudStorageSchema[]): CloudStorageType[] | undefined {
+  const storages = schemas.map((element)=>{
+    if (Object.keys(CLOUD_STORAGE_OVERRIDE.storages).includes(element.prefix)){
+      let override = CLOUD_STORAGE_OVERRIDE.storages[element.prefix];
+      return {
+        name: (override["name"] ?? element.name),
+        description:( override["description "]?? element.description),
+        prefix: element.prefix,
+        position: override?.position??999
+      };
+    }else{
+      return {
+        name: element.name,
+        description: element.description,
+        prefix: element.prefix,
+        position: 999
+      };
+    }
+  });
+  return storages;
 }
