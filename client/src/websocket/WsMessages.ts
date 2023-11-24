@@ -59,5 +59,15 @@ function checkWsServerMessage(obj: any): obj is WsServerMessage {
   );
 }
 
+export function sendPullKgActivationStatus(
+  projects: number[],
+  socket: WebSocket
+) {
+  const message = JSON.stringify(
+    new WsMessage({ projects }, "pullKgActivationStatus")
+  );
+  socket.send(message);
+}
+
 export { checkWsServerMessage, WsMessage };
 export type { WsServerMessage };

@@ -18,18 +18,24 @@
 
 import { Channel } from "../index";
 import { WsMessage } from "../WsMessages";
-import * as util from "util";
 import APIClient from "../../api-client";
 import { AsyncSemaphore } from "../../utils/asyncSemaphore";
 import logger from "../../logger";
-import config from "../../config";
+
+type ActivationMetadata = Record<number, Date>;
 
 type ActivationStatus = {
   [key: string]: number;
 };
 
+export enum ActivationStatusProgressError {
+  TIMEOUT = -408, // eslint-disable-line no-unused-vars
+  UNKNOWN = -2, // eslint-disable-line no-unused-vars
+}
+
 interface ActivationResult {
-  progress: number;
+  activated: boolean;
+  progress: { done: number; total: number; percentage: number };
 }
 
 function sendMessage(data: string, channel: Channel) {
@@ -50,26 +56,26 @@ function getActivationStatus(
       const previousStatuses = channel.data.get(
         "activationProjects"
       ) as ActivationStatus;
-      const currentStatus = status?.progress ?? -1;
-      const previousStatus = previousStatuses
+      const currentProgress = status?.progress.percentage ?? -1;
+      const previousProgress = previousStatuses
         ? previousStatuses[`${id}`]
         : null;
-      if (!util.isDeepStrictEqual(previousStatus, currentStatus)) {
-        const currentStatuses = {
-          ...previousStatuses,
-          [`${id}`]: currentStatus,
-        };
+      if (currentProgress != previousProgress) {
+        const currentStatuses: ActivationStatus = updateActivationProgress(
+          previousStatuses,
+          id,
+          currentProgress,
+          channel
+        );
         sendMessage(JSON.stringify(currentStatuses), channel);
-        channel.data.set("activationProjects", currentStatuses);
       }
     })
     .catch((err) => {
       if (err.status != 404) {
         // remove id from project ids list
-        const projectIds = channel.data.get("projectsIds") as Record<
-          number,
-          Date
-        >;
+        const projectIds = channel.data.get(
+          "projectsIds"
+        ) as ActivationMetadata;
         delete projectIds[id];
         channel.data.set("projectsIds", projectIds);
 
@@ -77,15 +83,37 @@ function getActivationStatus(
         const previousStatuses = channel.data.get(
           "activationProjects"
         ) as ActivationStatus;
-        const currentStatuses = { ...previousStatuses, [`${id}`]: -2 };
+        const currentStatuses: ActivationStatus = {
+          ...previousStatuses,
+          [`${id}`]: ActivationStatusProgressError.UNKNOWN,
+        };
         sendMessage(JSON.stringify(currentStatuses), channel);
         channel.data.set("activationProjects", currentStatuses);
       }
     });
 }
 
+function updateActivationProgress(
+  previousStatuses: ActivationStatus,
+  id: number,
+  currentProgress: number,
+  channel: Channel
+) {
+  const currentStatuses: ActivationStatus = {
+    ...previousStatuses,
+    [`${id}`]: currentProgress,
+  };
+
+  // update the project metadata
+  const projectIds = channel.data.get("projectsIds") as ActivationMetadata;
+  projectIds[id] = new Date();
+  channel.data.set("projectsIds", projectIds);
+  channel.data.set("activationProjects", currentStatuses);
+  return currentStatuses;
+}
+
 async function getAllActivationStatus(
-  projectIds: Record<number, Date>,
+  projectIds: ActivationMetadata,
   channel: Channel,
   apiClient: APIClient,
   authHeaders: Headers
@@ -110,7 +138,7 @@ async function handlerRequestActivationKgStatus(
   if (data.projects) {
     const projectsIds = data.projects as number[];
     const projectIdsToCheck =
-      (channel.data.get("projectsIds") as Record<number, Date>) ?? {};
+      (channel.data.get("projectsIds") as ActivationMetadata) ?? {};
     projectsIds.forEach((id) => {
       if (!projectIdsToCheck[id]) projectIdsToCheck[id] = new Date();
     });
@@ -123,7 +151,7 @@ async function heartbeatRequestActivationKgStatus(
   apiClient: APIClient,
   authHeaders: Headers
 ): Promise<void> {
-  const projectsIds = channel.data.get("projectsIds") as Record<number, Date>;
+  const projectsIds = channel.data.get("projectsIds") as ActivationMetadata;
   if (projectsIds) {
     const previousStatuses = channel.data.get(
       "activationProjects"
@@ -139,7 +167,7 @@ async function heartbeatRequestActivationKgStatus(
 
 function cleanCompletedStatuses(
   statuses: ActivationStatus,
-  projectIds: Record<number, Date>,
+  projectIds: ActivationMetadata,
   channel: Channel
 ) {
   const validIds = projectIds ?? {};
@@ -166,7 +194,10 @@ function cleanCompletedStatuses(
       logger.info(
         `Removed id ${id} due timeout, starting fetching at ${projectIds[id]}`
       );
-      sendMessage(JSON.stringify({ [id]: -408 }), channel);
+      sendMessage(
+        JSON.stringify({ [id]: ActivationStatusProgressError.TIMEOUT }),
+        channel
+      );
     }
   });
 
@@ -177,10 +208,12 @@ function cleanCompletedStatuses(
   };
 }
 
+const MAX_NO_UPDATE_INTERVAL_SEC = 120; // If no progress occurs after 30s, assume something is wrong
+
 function exceedTimeRequest(initialFetch: Date): boolean {
   const diff = new Date().getTime() - initialFetch.getTime();
-  const diffMinutes = diff / 60000;
-  return diffMinutes >= config.websocket.timeoutActivationStatus;
+  const diffSecs = diff / 1000;
+  return diffSecs >= MAX_NO_UPDATE_INTERVAL_SEC;
 }
 
 export { handlerRequestActivationKgStatus, heartbeatRequestActivationKgStatus };
