@@ -1,6 +1,6 @@
 # Changes
 
-# [3.16.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.15.1...3.16.0) (2023-11-24)
+## [3.16.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.15.1...3.16.0) (2023-11-24)
 
 ### Features
 
