@@ -63,11 +63,8 @@ function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
   };
 
   return (
-    <DropdownItem onClick={() => handleClick()}>
-      <img
-        src={rkIconSsh}
-        className="rk-icon rk-icon-md btn-with-menu-margin filter-green"
-      />
+    <DropdownItem onClick={handleClick}>
+      <img src={rkIconSsh} className="rk-icon rk-icon-md me-2 filter-green" />
       Connect with SSH
     </DropdownItem>
   );

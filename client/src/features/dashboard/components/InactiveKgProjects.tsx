@@ -73,7 +73,7 @@ function EstimatedInactiveProjectsWarning({ userId }: { userId: number }) {
 export function ProjectsInactiveKGWarning() {
   const user = useSelector((state: RootState) => state.stateModel.user);
   const projectList = useAppSelector(
-    ({ kgInactiveProjects }) => kgInactiveProjects
+    ({ kgInactiveProjects }) => kgInactiveProjects.inactiveProjects
   );
   if (!user.logged) return null;
 

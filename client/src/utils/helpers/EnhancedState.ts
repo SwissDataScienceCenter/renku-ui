@@ -42,13 +42,14 @@ import projectCloudStorageApi from "../../features/project/projectCloudStorage.a
 import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKg.api";
-import { projectsApi } from "../../features/projects/projectsApi";
+import { projectsApi } from "../../features/projects/projects.api";
 import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 import sessionsApi from "../../features/session/sessions.api";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
 import keycloakUserApi from "../../features/user/keycloakUser.api";
+import userPreferencesApi from "../../features/user/userPreferences.api";
 import { versionsApi } from "../../features/versions/versionsApi";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
@@ -84,6 +85,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [recentUserActivityApi.reducerPath]: recentUserActivityApi.reducer,
     [sessionsApi.reducerPath]: sessionsApi.reducer,
     [sessionSidecarApi.reducerPath]: sessionSidecarApi.reducer,
+    [userPreferencesApi.reducerPath]: userPreferencesApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
     [workflowsSlice.name]: workflowsSlice.reducer,
@@ -113,6 +115,7 @@ export const createStore = <S = any, A extends Action = AnyAction>(
         .concat(sessionSidecarApi.middleware)
         .concat(sessionsApi.middleware)
         .concat(sessionSidecarApi.middleware)
+        .concat(userPreferencesApi.middleware)
         .concat(versionsApi.middleware)
         .concat(workflowsApi.middleware),
     enhancers,
