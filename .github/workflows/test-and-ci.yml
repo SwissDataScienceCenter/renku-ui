@@ -32,7 +32,11 @@ jobs:
       - name: Run lint client
         run: npm run lint
       - name: Build client
-        run: npm run build
+        run: npm run vite:build:yolo
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+      - name: Build client
+        run: npm run vite:build
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
 
@@ -50,7 +54,7 @@ jobs:
       - name: Install server dependencies
         run: npm clean-install
       - name: Build server
-        run: npm run build
+        run: npm run vite:build:yolo
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
       - name: Run test server
@@ -113,8 +117,8 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
-          start: npm run start
-          wait-on: http://localhost:3000
+          start: npm run vite:dev
+          wait-on: http://localhost:5173/
           wait-on-timeout: 300
           working-directory: tests
       - uses: actions/upload-artifact@v3

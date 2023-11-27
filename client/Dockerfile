@@ -5,10 +5,9 @@ RUN apk update && apk add python3 make g++
 WORKDIR /app
 
 #: Use only required files.
-COPY package.json package-lock.json tsconfig.json /app/
+COPY package.json package-lock.json tsconfig.json tsconfig.node.json vite.config.ts /app/
 COPY public /app/public
 COPY src /app/src/
-COPY craco.config.js /app/craco.config.js
 
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 ARG SHORT_SHA
@@ -24,7 +23,7 @@ RUN apk update && apk upgrade && \
 # But look into https://github.com/gsoft-inc/craco/pull/219 for a better fix
 ENV DISABLE_ESLINT_PLUGIN=true
 RUN npm ci && \
-    npm run-script build
+    npm run-script build:vite:yolo
 
 COPY .storybook /app/.storybook
 

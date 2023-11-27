@@ -35,7 +35,7 @@ import {
   Table,
   UncontrolledTooltip,
 } from "reactstrap";
-import { default as fileSize } from "filesize";
+import { filesize } from "filesize";
 import qs from "query-string";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
@@ -53,7 +53,7 @@ class OverviewStats extends Component {
     if (fetching) return <Loader inline size={16} />;
     if (value === 0) return 0;
     if (value !== null && !isNaN(value))
-      return readableSize ? fileSize(value) : value;
+      return readableSize ? filesize(value) : value;
     return "";
   }
 
