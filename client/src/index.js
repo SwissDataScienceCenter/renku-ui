@@ -20,7 +20,7 @@ import { UserCoordinator } from "./user";
 import { Sentry } from "./utils/helpers/sentry";
 import { Url, createCoreApiVersionedUrlConfig } from "./utils/helpers/url";
 import { AppErrorBoundary } from "./error-boundary/ErrorBoundary";
-import { validateAppParams } from "./utils/context/appParams.utils";
+import { validatedAppParams } from "./utils/context/appParams.utils";
 
 const configFetch = fetch("/config.json");
 const privacyFetch = fetch("/privacy-statement.md");

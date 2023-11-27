@@ -30,7 +30,7 @@ import type {
   UploadThresholdParams,
 } from "./appParams.types";
 
-export function validateAppParams(params: unknown): AppParams {
+export function validatedAppParams(params: unknown): AppParams {
   if (typeof params !== "object" || params == null) {
     return DEFAULT_APP_PARAMS;
   }
