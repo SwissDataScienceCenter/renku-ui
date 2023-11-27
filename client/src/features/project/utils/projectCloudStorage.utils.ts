@@ -24,6 +24,7 @@ import {
   CloudStorageCredential,
   CloudStorageProvider,
   CloudStorageSchema,
+  CloudStorageSchemaOptions,
   CloudStorageType,
 } from "../components/cloudStorage/projectCloudStorage.types";
 
@@ -114,7 +115,6 @@ export function getSchemaStorages(schemas: CloudStorageSchema[]): CloudStorageTy
 
 export function getSchemaProviders(schemas: CloudStorageSchema[], storage_type: string): CloudStorageProvider[] | undefined {
   let storage = schemas.filter((s) => s.prefix == storage_type);
-  debugger;
   if (storage.length != 1) {
     return undefined;
   }
@@ -143,4 +143,33 @@ export function getSchemaProviders(schemas: CloudStorageSchema[], storage_type: 
       position: 999
     }
   });
+}
+
+export function getSchemaOptions(schemas: CloudStorageSchema[], storage_type: string, provider: string | undefined): CloudStorageSchemaOptions[] | undefined {
+  let storage = schemas.filter((s) => s.prefix == storage_type);
+  if (storage.length != 1) {
+    return undefined;
+  }
+  return storage[0].options.filter((o) => {
+    if (o.name == "provider") {
+      return false;
+    }
+    if (o.provider == "") {
+      return true;
+    }
+    if (o.provider.startsWith("!")) {
+      // negative match
+      if (provider == undefined) {
+        return true;
+      }
+      let provider_match = o.provider.slice(1).split(",");
+      return !provider_match.includes(provider);
+    } else {
+      if (provider == undefined) {
+        return false;
+      }
+      let provider_match = o.provider.split(",");
+      return provider_match.includes(provider);
+    }
+  })
 }

@@ -1,5 +1,5 @@
 import { CloudStorageSchema } from "../components/cloudStorage/projectCloudStorage.types";
-import { getSchemaProviders, getSchemaStorages } from "./projectCloudStorage.utils";
+import { getSchemaOptions, getSchemaProviders, getSchemaStorages } from "./projectCloudStorage.utils";
 
 const storage_schemas = [
   {
@@ -190,6 +190,26 @@ const storage_schemas = [
         "value_str": "",
         "type": "string"
       },
+
+      {
+        "name": "region",
+        "help": "Region to connect to.",
+        "provider": "AWS",
+        "default": "",
+        "value": null,
+        "examples": null,
+        "short_opt": "",
+        "hide": 0,
+        "required": false,
+        "is_password": false,
+        "no_prefix": false,
+        "advanced": false,
+        "exclusive": false,
+        "sensitive": false,
+        "default_str": "",
+        "value_str": "",
+        "type": "string"
+      }
     ],
     "command_help": null,
     "aliases": null,
@@ -250,8 +270,79 @@ describe("getSchemaProviders", () => {
         "position": 999,
       },];
 
-    debugger;
     const textValues = getSchemaProviders(storage_schemas, "s3");
     expect(textValues).toEqual(expectedValues);
+  });
+});
+
+describe("getSchemaOptions", () => {
+  it("should return filtered schema options", () => {
+      const expectedValues = [
+        {
+         "advanced": false,
+         "default": "",
+         "default_str": "",
+         "examples": null,
+         "exclusive": false,
+         "help": `AWS Access Key ID.
+
+Leave blank for anonymous access or runtime credentials.`,
+         "hide": 0,
+         "is_password": false,
+         "name": "access_key_id",
+         "no_prefix": false,
+         "provider": "",
+         "required": false,
+         "sensitive": true,
+         "short_opt": "",
+         "type": "string",
+         "value": null,
+         "value_str": "",
+       },
+        {
+         "advanced": false,
+         "default": "",
+         "default_str": "",
+         "examples": null,
+         "exclusive": false,
+         "help": `AWS Secret Access Key (password).
+
+Leave blank for anonymous access or runtime credentials.`,
+         "hide": 0,
+         "is_password": false,
+         "name": "secret_access_key",
+         "no_prefix": false,
+         "provider": "",
+         "required": false,
+         "sensitive": true,
+         "short_opt": "",
+         "type": "string",
+         "value": null,
+         "value_str": "",
+       },
+        {
+         "advanced": false,
+         "default": "",
+         "default_str": "",
+         "examples": null,
+         "exclusive": false,
+         "help": "Region to connect to.",
+         "hide": 0,
+         "is_password": false,
+         "name": "region",
+         "no_prefix": false,
+         "provider": "AWS",
+         "required": false,
+         "sensitive": false,
+         "short_opt": "",
+         "type": "string",
+         "value": null,
+         "value_str": "",
+       }, 
+
+    ];
+    const textValues = getSchemaOptions(storage_schemas, "s3", "AWS");
+    expect(textValues).toEqual(expectedValues);
+
   })
 })
