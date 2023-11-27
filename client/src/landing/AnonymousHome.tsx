@@ -23,17 +23,16 @@
  *  Presentational components.
  */
 
-import { Fragment } from "react";
-import type { CSSProperties } from "react";
-import { Link, useHistory } from "react-router-dom";
-import { HashLink } from "react-router-hash-link";
-import { Row, Col } from "reactstrap";
-import { useForm } from "react-hook-form";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { CSSProperties } from "react";
+import { Fragment } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useHistory } from "react-router-dom";
+import { Col, Row } from "reactstrap";
 
-import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { ExternalLink } from "../components/ExternalLinks";
+import LazyRenkuMarkdown from "../components/markdown/LazyRenkuMarkdown";
 import { stateToSearchString } from "../features/kgSearch";
 import { StatuspageBanner } from "../statuspage";
 import { Docs } from "../utils/constants/Docs";
@@ -41,9 +40,9 @@ import { Url } from "../utils/helpers/url";
 
 import { NavBarWarnings } from "./NavBarWarnings";
 
-import VisualHead from "./Assets/Visual_Head.svg";
-import VisualDetail from "./Assets/Visual_Detail.svg";
-import VisualFooter from "./Assets/Visual_Footer.svg";
+import VisualDetail from "./Graphics/Visual_Detail.svg";
+import VisualFooter from "./Graphics/Visual_Footer.svg";
+import VisualHead from "./Graphics/Visual_Head.svg";
 
 import graphic_containers from "./Graphics/Features/Containers.svg";
 import graphic_data from "./Graphics/Features/Data.svg";
@@ -60,9 +59,10 @@ import logo_EPFL from "./Logos/EPFL.svg";
 import logo_ETH from "./Logos/ETH.svg";
 import logo_SDSC from "./Logos/SDSC.svg";
 
+import HeroLanding from "./HeroLanding/HeroLanding";
+import SectionShowcase, { validatedShowcaseConfig } from "./SectionShowcase";
 import type { AnonymousHomeConfig } from "./anonymousHome.types";
 import { BottomNav, TopNav } from "./anonymousHomeNav";
-import SectionShowcase, { validatedShowcaseConfig } from "./SectionShowcase";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -70,7 +70,7 @@ const standardBgOpacity = {
   "--bs-bg-opacity": 0.4,
 } as CSSProperties;
 
-function HomeHeader(props: AnonymousHomeConfig) {
+export function HomeHeader(props: AnonymousHomeConfig) {
   const { urlMap } = props;
   return (
     <Fragment>
@@ -96,7 +96,8 @@ type SearchInputFormFields = {
   phrase: string;
 };
 
-function SearchInput() {
+// Currently not used; planned for #shapeUp-issues
+export function SearchInput() {
   const { handleSubmit, register } = useForm<SearchInputFormFields>({
     defaultValues: { phrase: "" },
   });
@@ -129,75 +130,6 @@ function SearchInput() {
             <FontAwesomeIcon icon={faSearch} />
           </span>
         </form>
-      </div>
-    </div>
-  );
-}
-
-function Section1(props: AnonymousHomeConfig) {
-  const backgroundUrl = VisualHead;
-  const tutorialLink = props.homeCustomized.tutorialLink;
-  return (
-    <div
-      id="rk-anon-home-section1"
-      style={{
-        backgroundImage: `url(${backgroundUrl})`,
-      }}
-    >
-      <HomeHeader {...props} />
-      <div className="rk-anon-home-section-content">
-        <div className="rk-bg-shaded-dark text-center">
-          <Row>
-            <Col className="rk-pt-m">
-              <h1 className="text-white">
-                An open-source knowledge infrastructure for collaborative and
-                reproducible data science
-              </h1>
-            </Col>
-          </Row>
-          <Row>
-            <Col className="rk-pt-s">
-              <h3 className="text-secondary">
-                Connecting people, data, and insights
-              </h3>
-            </Col>
-          </Row>
-          <Row>
-            <Col className="rk-pt-s">
-              <SearchInput />
-            </Col>
-          </Row>
-          <Row>
-            <Col className="rk-pt-s pb-5">
-              <div>
-                <h4 className="text-white">Do you want to try Renku out?</h4>
-              </div>
-              <div className="mt-3">
-                <Link
-                  className="btn btn-outline-rk-white btn-rk-over-green m-2"
-                  role="button"
-                  id="link-sign_up"
-                  to="/login"
-                >
-                  Sign Up
-                </Link>
-                <TutorialLink
-                  className="btn btn-outline-rk-white btn-rk-over-green  m-2"
-                  role="button"
-                  title="Get Started"
-                  url={tutorialLink}
-                />
-                <HashLink
-                  className="btn btn-outline-rk-white btn-rk-over-green m-2"
-                  role="button"
-                  to="#rk-anon-home-section-features"
-                >
-                  Learn more
-                </HashLink>
-              </div>
-            </Col>
-          </Row>
-        </div>
       </div>
     </div>
   );
@@ -592,7 +524,7 @@ function SectionUseCases() {
 function StandardHome(props: AnonymousHomeConfig) {
   return (
     <>
-      <Section1 {...props} />
+      <HeroLanding {...props} />
       <SectionFeatures />
       <SectionUseCases />
       <SectionShowcase

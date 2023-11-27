@@ -156,7 +156,7 @@ function TopNav() {
   const toggleOpen = () => setIsOpen(!isOpen);
   return (
     <>
-      <header className="px-0 pt-2 pb-4 d-flex rk-anon-home">
+      <header className="pt-2 pb-4 d-flex rk-anon-home">
         <div className="align-self-center flex-grow-1">
           <img src={logo} alt="Renku" height="68" className="d-block my-1" />
         </div>
