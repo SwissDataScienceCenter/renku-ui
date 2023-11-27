@@ -88,7 +88,7 @@ export function SearchInput() {
     history.push(searchUrl);
   };
   return (
-    <div className="d-flex flex-nowrap w-100 flex-sm-grow-1 mx-0 mx-lg-2">
+    <div className="d-flex flex-nowrap w-100 mx-0">
       <div className="search-box flex-nowrap justify-content-center m-auto">
         <form
           className="quick-nav input-group flex-nowrap input-group-sm justify-content-center"
@@ -124,18 +124,20 @@ function StandardHome(props: AnonymousHomeConfig) {
       <HeroLanding {...props} scrollToGetStarted={scrollToGetStarted} />
       <GetStarted {...props} sectionRef={sectionRef} />
       <DividerLandingPage />
-      <WhoWeAre />
-      <DividerLandingPage />
       <WhatIsRenku
         projectPath={props.homeCustomized.projectPath}
         datasetSlug={props.homeCustomized.datasetSlug}
       />
       <DividerLandingPage />
-      <Teaching />
-      <DividerLandingPage />
       <SectionShowcase
         {...validatedShowcaseConfig(props.homeCustomized.showcase)}
       />
+      {props.homeCustomized.showcase.enabled ? (
+        <DividerLandingPage />
+      ) : undefined}
+      <Teaching />
+      <DividerLandingPage />
+      <WhoWeAre />
       <BottomNav {...props} />
     </>
   );

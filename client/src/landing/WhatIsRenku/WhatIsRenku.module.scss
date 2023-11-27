@@ -76,7 +76,7 @@
 #shareFeatContainer {
   display: grid;
   grid-template-columns: auto auto;
-  grid-template-rows: 0.5fr 1fr;
+  grid-template-rows: 0.5fr 0.8fr;
   grid-auto-columns: 1fr;
   gap: 0 40px;
   grid-auto-flow: row;
@@ -90,6 +90,7 @@
 
   @include media-breakpoint-up(md) {
     padding: 5em 4em;
+    grid-template-rows: 0.5fr 0.8fr;
   }
 
   @include media-breakpoint-up(lg) {
@@ -98,6 +99,13 @@
 
   @include media-breakpoint-up(xl) {
     padding: 5em 8em;
+    grid-template-rows: 0.5fr 1fr;
+    .shareFeatGraph {
+      img {
+        max-width: 564px;
+        width: 564px;
+      }
+    }
   }
 
   @include media-breakpoint-down(lg) {
@@ -114,7 +122,7 @@
 
     .shareFeatGraph {
       img {
-        max-width: 564px;
+        max-width: 450px;
         width: 100%;
       }
     }
@@ -128,8 +136,7 @@
 .shareFeatGraph {
   grid-area: shareFeatGraph;
   img {
-    max-width: 564px;
-    width: 564px;
+    width: 450px;
   }
 }
 
@@ -287,6 +294,12 @@
     .computeFeatContain {
       margin-top: 0;
     }
+
+    .computeFeatSubtext {
+      a {
+        text-align: left;
+      }
+    }
   }
 }
 
@@ -321,7 +334,7 @@
 #connectFeatContainer {
   display: grid;
   grid-template-columns: auto auto;
-  grid-template-rows: 0.5fr 0.5fr;
+  grid-template-rows: 0.2fr 0.8fr;
   grid-auto-columns: 1fr;
   gap: 0 40px;
   grid-auto-flow: row;
@@ -339,14 +352,17 @@
 
   @include media-breakpoint-up(md) {
     padding: 5em 4em;
+    grid-template-rows: 0.5fr 0.8fr;
   }
 
   @include media-breakpoint-up(lg) {
     padding: 5em 4em;
+    grid-template-rows: 0.5fr 0.8fr;
   }
 
   @include media-breakpoint-up(xl) {
     padding: 5em 8em;
+    grid-template-rows: 0.2fr 0.8fr;
   }
 
   @include media-breakpoint-down(lg) {
@@ -394,7 +410,7 @@
 #datasetFeatContainer {
   display: grid;
   grid-template-columns: auto auto auto;
-  grid-template-rows: 0.2fr 0.3fr 0.5fr;
+  grid-template-rows: 0.2fr 0.3fr 0.8fr;
   grid-auto-columns: 1fr;
   gap: 0 40px;
   grid-auto-flow: row;
@@ -409,6 +425,11 @@
 
   .datasetFeatSubtext {
     font-size: 20px;
+  }
+
+  .emptyDatasetFeat {
+    width: 350px;
+    margin: auto;
   }
 
   @include media-breakpoint-up(xs) {
@@ -438,15 +459,25 @@
       "datasetFeatOtherLink";
     gap: 40px;
     padding: 5em 1em;
-    text-align: center;
+
+    .datasetFeatTitle {
+      text-align: center;
+    }
 
     .datasetFeatOtherLink {
       margin-top: 0;
       justify-content: center;
+      text-align: center;
     }
 
     .datasetFeatContain {
       margin-top: 0;
+      text-align: center;
+    }
+
+    .emptyDatasetFeat {
+      width: 100%;
+      margin: auto;
     }
   }
 }
@@ -546,4 +577,83 @@
   a {
     font-size: 20px;
   }
+}
+
+// explore feat section
+#exploreFeatContainer {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: 0.2fr 0.9fr 0.1fr;
+  grid-auto-columns: 1fr;
+  gap: 0 40px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "exploreFeatText exploreFeatGraph"
+    "exploreFeatInput exploreFeatGraph";
+
+  @include media-breakpoint-up(xs) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(md) {
+    padding: 5em 4em;
+    grid-template-rows: 0.2fr 0.9fr 0.1fr;
+  }
+
+  @include media-breakpoint-up(lg) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(xl) {
+    padding: 5em 8em;
+    grid-template-rows: 0.2fr 0.9fr 0.1fr;
+    .shareFeatGraph {
+      img {
+        max-width: 564px;
+        width: 564px;
+      }
+    }
+  }
+
+  @include media-breakpoint-down(lg) {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "exploreFeatText"
+      "exploreFeatGraph"
+      "exploreFeatInput";
+    gap: 40px;
+    padding: 5em 1em;
+    text-align: center;
+
+    .exploreFeatGraph {
+      img {
+        max-width: 450px;
+        width: 100%;
+      }
+    }
+
+    .exploreFeatInput {
+      margin-top: 0;
+    }
+  }
+}
+
+.exploreFeatGraph {
+  grid-area: exploreFeatGraph;
+  img {
+    width: 450px;
+  }
+}
+
+.exploreFeatText {
+  grid-area: exploreFeatText;
+}
+
+.exploreFeatInput {
+  grid-area: exploreFeatInput;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
 }

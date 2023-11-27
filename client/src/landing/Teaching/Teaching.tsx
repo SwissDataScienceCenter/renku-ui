@@ -36,7 +36,7 @@ export default function Teaching() {
               src={Teaching_Graph}
               className={styles.teachingGraph}
               alt="Teaching Graph"
-              loading={"lazy"}
+              loading="lazy"
             />
           </div>
           <div className={styles.teachingContent}>
@@ -49,15 +49,15 @@ export default function Teaching() {
             </p>
             <div className="d-flex justify-content-center">
               <ExternalLink
-                className={cx([
+                className={cx(
                   styles.btnLearnMore,
                   "align-self-start",
                   "align-self-lg-center",
-                  "gap-2",
-                ])}
+                  "gap-2"
+                )}
                 color="rk-green"
                 role="button"
-                id="Learn_More_Teaching_btn"
+                id="learnMoreTeachingBtn"
                 url={Docs.rtdTopicGuide(
                   "miscellaneous/teaching_with_renkulab.html"
                 )}

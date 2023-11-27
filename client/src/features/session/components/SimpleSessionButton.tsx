@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
+import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Button } from "reactstrap";
 import { Loader } from "../../../components/Loader";
@@ -86,6 +86,7 @@ export default function SimpleSessionButton({
           state: { fromLanding },
           search: "autostart=1",
         }}
+        target={fromLanding ? "_blank" : "_self"}
       >
         <FontAwesomeIcon icon={faPlay} /> Start
       </Link>

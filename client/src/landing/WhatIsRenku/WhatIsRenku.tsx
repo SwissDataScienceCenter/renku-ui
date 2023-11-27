@@ -29,10 +29,12 @@ import { useGetDatasetKgQuery } from "../../features/project/projectKg.api";
 import { Docs, RenkuContactEmail } from "../../utils/constants/Docs";
 import { mapDatasetKgResultToEntity } from "../../utils/helpers/KgSearchFunctions";
 import { Url } from "../../utils/helpers/url";
+import { SearchInput } from "../AnonymousHome";
 import SSH_Graphic from "../Graphics/SSH_Graphic.png";
 import compute_Graphic from "../Graphics/computoOptions.svg";
-import workflow_Graphic from "../Graphics/my-workflow.svg";
+import workflow_Graphic from "../Graphics/my-workflow-yaml.png";
 import puzzleGraphic from "../Graphics/puzzlePieces.svg";
+import searchGraphic from "../Graphics/search.png";
 import TemplateSlider from "../TemplateSlider/TemplateSlider";
 import styles from "./WhatIsRenku.module.scss";
 
@@ -58,15 +60,16 @@ const TryOutSessionBtn = ({
   };
   return (
     <Link
-      className={cx([
+      className={cx(
         "btn",
         "btn-rk-green",
         styles.btnContactUs,
         "align-self-start",
         "align-self-lg-center",
-        "gap-2",
-      ])}
+        "gap-2"
+      )}
       to={url}
+      target="_blank"
     >
       {btnTitle}
     </Link>
@@ -76,10 +79,10 @@ const ShareFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
   return (
     <div id={styles.shareFeatContainer}>
       <div className={styles.shareFeatGraph}>
-        <img src={puzzleGraphic} alt="Puzzle Graph" loading={"lazy"} />
+        <img src={puzzleGraphic} alt="Puzzle Graph" loading="lazy" />
       </div>
       <div className={styles.shareFeatText}>
-        <h3>Share your whole project, not just your code.</h3>
+        <h3>Share your whole project, not just your code</h3>
         <p>
           A Renku project brings together your code, data, environment, and
           workflows.
@@ -89,7 +92,7 @@ const ShareFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
         <TryOutSessionBtn
           projectPath={projectPath}
           type="autostart"
-          btnTitle="Explore a RenkuLab Project"
+          btnTitle="Explore a project"
         />
       </div>
     </div>
@@ -127,11 +130,7 @@ const ComputeFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
   return (
     <div id={styles.computeFeatContainer}>
       <div className={styles.computeFeatGraph}>
-        <img
-          src={compute_Graphic}
-          alt="Compute Options Graph"
-          loading={"lazy"}
-        />
+        <img src={compute_Graphic} alt="Compute Options Graph" loading="lazy" />
       </div>
       <div className={styles.computeFeatTitle}>
         <h3>One project, many compute options</h3>
@@ -148,7 +147,7 @@ const ComputeFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
           btnTitle="Try out a session"
         />
       </div>
-      <div className={cx(["d-flex", "gap-3", styles.computeFeatOtherLink])}>
+      <div className={cx("d-flex", "gap-3", styles.computeFeatOtherLink)}>
         <div className="mt-1">
           <Send size={30} />
         </div>
@@ -157,10 +156,10 @@ const ComputeFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
             Want to take your Renku project to the next level?
           </span>
           <ExternalLink
-            className={"text-black"}
+            className="text-black"
             role="link"
-            id="computeFeat_link"
-            url={`mailto:${RenkuContactEmail}?subject=Renkulab%20compute%20resources`}
+            id="computeFeatLink"
+            url={`mailto:${RenkuContactEmail}?subject=RenkuLab%20compute%20resources`}
             title="Contact us about larger compute resources on RenkuLab"
           />
         </div>
@@ -184,18 +183,14 @@ const ConnectFeatSection = () => {
           or favorite IDE. Or, run your Renku project locally without RenkuLab
           at all.
         </p>
-        <p>
-          No need to keep collaborator’s environments in sync- collaborators can
-          open the same environment.
-        </p>
-        <div className={cx([styles.featDocLinks, "flex-wrap"])}>
+        <div className={cx(styles.featDocLinks, "flex-wrap")}>
           <TerminalFill size={25} />
           <div>
             Try out the{" "}
             <ExternalLink
               color=""
               role="link"
-              id="shareFeat_btn"
+              id="connectFeatBtn"
               url={Docs.rtdHowToGuide(
                 "own_machine/cli-installation.html#cli-installation.html"
               )}
@@ -214,7 +209,7 @@ const ConnectFeatSection = () => {
             <ExternalLink
               color=""
               role="link"
-              id="shareFeat_btn"
+              id="connectSSHFeatBtn"
               url={Docs.rtdHowToGuide("renkulab/ssh-into-sessions.html")}
               title="SSH Sessions"
             />{" "}
@@ -228,7 +223,7 @@ const ConnectFeatSection = () => {
             <ExternalLink
               color=""
               role="link"
-              id="shareFeat_btn"
+              id="connectCLIBtn"
               url={Docs.rtdHowToGuide(
                 "own_machine/session-running-locally.html"
               )}
@@ -266,22 +261,10 @@ const DatasetsFeatSection = ({ datasetSlug }: DatasetsFeatSection) => {
   return (
     <div id={styles.datasetFeatContainer}>
       <div className={styles.datasetFeatGraph}>
-        {isLoading ? (
-          <EntityCardSkeleton />
-        ) : !datasetSlug ? (
-          <>
-            <span className={cx(["fst-italic", "fs-small", "text-danger"])}>
-              No dataset to load, set datasetSlug in renku-ui values
-            </span>
+        {isLoading || !datasetSlug || kgFetchError ? (
+          <div className={styles.emptyDatasetFeat}>
             <EntityCardSkeleton />
-          </>
-        ) : kgFetchError ? (
-          <>
-            <span className={cx(["fst-italic", "fs-small", "text-danger"])}>
-              Error loading dataset {datasetSlug}{" "}
-            </span>
-            <EntityCardSkeleton />
-          </>
+          </div>
         ) : (
           datasetCard
         )}
@@ -296,22 +279,23 @@ const DatasetsFeatSection = ({ datasetSlug }: DatasetsFeatSection) => {
       </div>
       <div className={styles.datasetFeatContain}>
         <Link
-          className={cx([
+          className={cx(
             "btn",
             "btn-rk-green",
             styles.btnContactUs,
             "align-self-start",
             "align-self-lg-center",
-            "gap-2",
-          ])}
+            "gap-2"
+          )}
           to={`${Url.get(
             Url.pages.searchEntities
           )}?${paramsUrlStrExploreDatasets}`}
+          target="_blank"
         >
           Try out datasets
         </Link>
       </div>
-      <div className={cx(["d-flex", "gap-3", styles.datasetFeatOtherLink])}>
+      <div className={cx("d-flex", "gap-3", styles.datasetFeatOtherLink)}>
         <div className={styles.featDocLinks}>
           <BookmarksFill size={30} />
           <div>
@@ -319,7 +303,7 @@ const DatasetsFeatSection = ({ datasetSlug }: DatasetsFeatSection) => {
             <ExternalLink
               color=""
               role="link"
-              id="shareFeat_btn"
+              id="datasetFeatBtn"
               url={Docs.rtdPythonReferencePage(
                 "commands/dataset.html#examples"
               )}
@@ -339,7 +323,7 @@ const WorkflowFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
         <img src={workflow_Graphic} loading="lazy" />
       </div>
       <div className={styles.workflowFeatTitle}>
-        <h3>Keep track of how code and data connect with workflows</h3>
+        <h3>Keep track of how code and data connect</h3>
       </div>
       <div className={styles.workflowFeatContain}>
         <p>
@@ -348,18 +332,19 @@ const WorkflowFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
         </p>
         <div>
           <Link
-            className={cx([
+            className={cx(
               "btn",
               "btn-rk-green",
               styles.btnContactUs,
               "align-self-start",
               "align-self-lg-center",
-              "gap-2",
-            ])}
+              "gap-2"
+            )}
             to={Url.get(Url.pages.project.workflows, {
               namespace: "",
               path: projectPath,
             })}
+            target="_blank"
           >
             Checkout workflows
           </Link>
@@ -371,13 +356,33 @@ const WorkflowFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
             <ExternalLink
               color=""
               role="link"
-              id="shareFeat_btn"
-              url={Docs.rtdHowToGuide("workflows/index.html")}
+              id="workflowsFeatBtn"
+              url={Docs.rtdTopicGuide("workflows/index.html")}
               title="Renku Workflows"
             />{" "}
             on RenkuLab
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+const ExploreFeatSection = () => {
+  return (
+    <div id={styles.exploreFeatContainer}>
+      <div className={styles.exploreFeatGraph}>
+        <img src={searchGraphic} alt="Search Graph" loading="lazy" />
+      </div>
+      <div className={styles.exploreFeatText}>
+        <h3>Explore and Connect</h3>
+      </div>
+      <div className={styles.exploreFeatInput}>
+        <p>
+          Our Renku search page allows researchers and project managers to find
+          resources through projects and datasets.
+        </p>
+        <SearchInput />
       </div>
     </div>
   );
@@ -400,6 +405,7 @@ export default function WhatIsRenku({
         <ConnectFeatSection />
         <DatasetsFeatSection datasetSlug={datasetSlug} />
         <WorkflowFeatSection projectPath={projectPath} />
+        <ExploreFeatSection />
       </div>
     </div>
   );

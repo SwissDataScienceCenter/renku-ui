@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { Github, HeartFill, Envelope } from "react-bootstrap-icons";
+import { Envelope, Github, HeartFill } from "react-bootstrap-icons";
 import styles from "./WhoWeAre.module.scss";
 
 import { ExternalDocsLink, ExternalLink } from "../../components/ExternalLinks";
@@ -60,12 +60,12 @@ export default function WhoWeAre() {
               <div className={styles.whoWeAreLinks}>
                 <div>
                   <ExternalLink
-                    className={cx([
+                    className={cx(
                       styles.btnContactUs,
                       "align-self-start",
                       "align-self-lg-center",
-                      "gap-2",
-                    ])}
+                      "gap-2"
+                    )}
                     color="rk-green"
                     role="button"
                     id="Contact_us_btn"

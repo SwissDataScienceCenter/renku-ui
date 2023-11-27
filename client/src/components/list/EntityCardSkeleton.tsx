@@ -24,15 +24,8 @@ export default function EntityCardSkeleton() {
   return (
     <div className={styles.skeletonWrapper}>
       <div className={styles.skeletonImg}>
-        <img
-          className="skeletonCardImage"
-          src={skeletonCardImage}
-          alt="skeleton card"
-          loading={"lazy"}
-        />
-        <div
-          className={cx([styles.skeletonImgGraphic, styles.skeletonLoader])}
-        />
+        <img src={skeletonCardImage} alt="skeleton card" loading="lazy" />
+        <div className={cx(styles.skeletonImgGraphic, styles.skeletonLoader)} />
       </div>
     </div>
   );
