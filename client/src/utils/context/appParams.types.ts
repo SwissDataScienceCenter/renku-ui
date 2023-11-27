@@ -43,6 +43,7 @@ export interface AppParams {
   UI_SHORT_SHA: string;
   UI_VERSION: string;
   UPLOAD_THRESHOLD: UploadThresholdParams;
+  USER_PREFERENCES_MAX_PINNED_PROJECTS: number;
 }
 
 export type AppParamsStrings = {
@@ -53,6 +54,12 @@ export type AppParamsStrings = {
 
 export type AppParamsBooleans = {
   [K in keyof AppParams as AppParams[K] extends boolean
+    ? K
+    : never]: AppParams[K];
+};
+
+export type AppParamsNumbers = {
+  [K in keyof AppParams as AppParams[K] extends number
     ? K
     : never]: AppParams[K];
 };

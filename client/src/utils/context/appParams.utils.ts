@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { clamp } from "lodash";
 import type { DashboardMessageParams } from "../../features/dashboard/message/DashboardMessage.types";
 import type { HomepageParams } from "../../landing/anonymousHome.types";
 import type { CoreApiVersionedUrlConfig } from "../helpers/url";
@@ -23,6 +24,7 @@ import { DEFAULT_APP_PARAMS } from "./appParams.constants";
 import type {
   AppParams,
   AppParamsBooleans,
+  AppParamsNumbers,
   AppParamsStrings,
   PreviewThresholdParams,
   PrivacyBannerLayoutParams,
@@ -59,6 +61,12 @@ export function validatedAppParams(params: unknown): AppParams {
   const ANONYMOUS_SESSIONS = validateBoolean(params_, "ANONYMOUS_SESSIONS");
   const PRIVACY_ENABLED = validateBoolean(params_, "PRIVACY_ENABLED");
 
+  // Integer params
+  const USER_PREFERENCES_MAX_PINNED_PROJECTS = validateInteger(
+    params_,
+    "USER_PREFERENCES_MAX_PINNED_PROJECTS"
+  );
+
   // Object params
   const CORE_API_VERSION_CONFIG = validateCoreApiVersionConfig(params_);
   const DASHBOARD_MESSAGE = validateDashboardMessage(params_);
@@ -91,6 +99,7 @@ export function validatedAppParams(params: unknown): AppParams {
     UI_SHORT_SHA,
     UI_VERSION,
     UPLOAD_THRESHOLD,
+    USER_PREFERENCES_MAX_PINNED_PROJECTS,
   };
 }
 
@@ -115,7 +124,7 @@ function validateBoolean(
 ): boolean {
   const value = params[key];
 
-  // adjust boolean param values
+  // adjust boolean param value
   if (typeof value === "string") {
     if (value.trim().toLowerCase() === "true") {
       return true;
@@ -129,6 +138,35 @@ function validateBoolean(
     return DEFAULT_APP_PARAMS[key];
   }
   return value;
+}
+
+interface ValidateIntegerOptions {
+  min?: number;
+  max?: number;
+}
+
+function validateInteger(
+  params: RawAppParams,
+  key: keyof AppParamsNumbers,
+  options?: ValidateIntegerOptions
+): number {
+  const min = options?.min ?? Number.MIN_SAFE_INTEGER;
+  const max = options?.max ?? Number.MAX_SAFE_INTEGER;
+
+  const value = params[key];
+
+  // adjust integer param value
+  if (typeof value === "string") {
+    const parsed = parseInt(value, 10);
+    if (!isNaN(parsed)) {
+      return clamp(parsed, min, max);
+    }
+  }
+
+  if (typeof value !== "number") {
+    return DEFAULT_APP_PARAMS[key];
+  }
+  return clamp(value, min, max);
 }
 
 function validateCoreApiVersionConfig(
