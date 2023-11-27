@@ -121,12 +121,17 @@ export interface CloudStorageSchema {
 export interface CloudStorageType {
   name: string;
   description: string;
-  position: number;
+  prefix: string;
+  position: number; // UI property for sorting
 }
 
 export interface CloudStorageProvider {
   name: string;
   description: string;
-  prefix: string;
-  position: number;
+  position: number; // UI property for sorting
+}
+
+
+export interface CloudStorageOverride extends CloudStorageType{
+  providers: Record<string, Partial<CloudStorageProvider>>
 }

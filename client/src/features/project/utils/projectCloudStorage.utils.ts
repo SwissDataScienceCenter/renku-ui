@@ -16,11 +16,13 @@
  * limitations under the License.
  */
 
+import { ERROR } from "dropzone";
 import { CLOUD_STORAGE_OVERRIDE, CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../components/cloudStorage/projectCloudStorage.constants";
 import {
   CloudStorage,
   CloudStorageConfiguration,
   CloudStorageCredential,
+  CloudStorageProvider,
   CloudStorageSchema,
   CloudStorageType,
 } from "../components/cloudStorage/projectCloudStorage.types";
@@ -88,17 +90,17 @@ export function getProvidedSensitiveFields(
     .map(([key]) => key);
 }
 
-export function getSchemaStorages(schemas:CloudStorageSchema[]): CloudStorageType[] | undefined {
-  const storages = schemas.map((element)=>{
-    if (Object.keys(CLOUD_STORAGE_OVERRIDE.storages).includes(element.prefix)){
+export function getSchemaStorages(schemas: CloudStorageSchema[]): CloudStorageType[] | undefined {
+  const storages = schemas.map((element) => {
+    if (Object.keys(CLOUD_STORAGE_OVERRIDE.storages).includes(element.prefix)) {
       let override = CLOUD_STORAGE_OVERRIDE.storages[element.prefix];
       return {
-        name: (override["name"] ?? element.name),
-        description:( override["description "]?? element.description),
+        name: override["name"] ?? element.name,
+        description: override["description"] ?? element.description,
         prefix: element.prefix,
-        position: override?.position??999
+        position: override?.position ?? 999
       };
-    }else{
+    } else {
       return {
         name: element.name,
         description: element.description,
@@ -107,5 +109,38 @@ export function getSchemaStorages(schemas:CloudStorageSchema[]): CloudStorageTyp
       };
     }
   });
-  return storages;
+  return storages.sort((a, b) => a.position - b.position);
+}
+
+export function getSchemaProviders(schemas: CloudStorageSchema[], storage_type: string): CloudStorageProvider[] | undefined {
+  let storage = schemas.filter((s) => s.prefix == storage_type);
+  debugger;
+  if (storage.length != 1) {
+    return undefined;
+  }
+  let provider_option = storage[0].options.filter((o) => o.name == "provider");
+  if (provider_option.length != 1 || provider_option[0].examples == null || provider_option[0].examples.length == 0) {
+    return undefined;
+  }
+  let provider_overrides: Record<string, Partial<CloudStorageProvider>> | undefined;
+  if (Object.keys(CLOUD_STORAGE_OVERRIDE.storages).includes(storage_type)) {
+    provider_overrides = CLOUD_STORAGE_OVERRIDE.storages[storage_type].providers;
+  }
+  return provider_option[0].examples.map((e) => {
+    if (provider_overrides != undefined) {
+      if (Object.keys(provider_overrides).includes(e.value)) {
+        let override = provider_overrides[e.value];
+        return {
+          name: override.name ?? e.value,
+          description: override.description ?? e.help,
+          position: override.position ?? 999
+        };
+      }
+    }
+    return {
+      name: e.value,
+      description: e.help,
+      position: 999
+    }
+  });
 }
