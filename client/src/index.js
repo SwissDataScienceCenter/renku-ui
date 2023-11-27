@@ -43,7 +43,7 @@ Promise.all([configFetch, privacyFetch]).then((valuesRead) => {
       params_["PRIVACY_STATEMENT"] = privacy;
     }
 
-    const params = validateAppParams(params_);
+    const params = validatedAppParams(params_);
 
     // configure core api versioned url helper
     const coreApiVersionedUrlConfig = createCoreApiVersionedUrlConfig(
