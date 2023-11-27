@@ -110,14 +110,20 @@ jobs:
       - name: Install client
         uses: cypress-io/github-action@v6
         with:
-          build: npm run install-client
+          build: npm run client:install
+          runTests: false
+          working-directory: tests
+      - name: Install client
+        uses: cypress-io/github-action@v6
+        with:
+          build: npm run client:build
           runTests: false
           working-directory: tests
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
-          start: npm run vite:dev
+          start: npm run client:preview
           wait-on: http://localhost:5173/
           wait-on-timeout: 300
           working-directory: tests
