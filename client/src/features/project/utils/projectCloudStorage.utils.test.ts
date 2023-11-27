@@ -284,9 +284,7 @@ describe("getSchemaOptions", () => {
          "default_str": "",
          "examples": null,
          "exclusive": false,
-         "help": `AWS Access Key ID.
-
-Leave blank for anonymous access or runtime credentials.`,
+         "help": "AWS Access Key ID.",
          "hide": 0,
          "is_password": false,
          "name": "access_key_id",
@@ -305,9 +303,7 @@ Leave blank for anonymous access or runtime credentials.`,
          "default_str": "",
          "examples": null,
          "exclusive": false,
-         "help": `AWS Secret Access Key (password).
-
-Leave blank for anonymous access or runtime credentials.`,
+         "help": "AWS Secret Access Key (password).",
          "hide": 0,
          "is_password": false,
          "name": "secret_access_key",

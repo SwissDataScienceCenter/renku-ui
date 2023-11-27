@@ -134,4 +134,5 @@ export interface CloudStorageProvider {
 
 export interface CloudStorageOverride extends CloudStorageType{
   providers: Record<string, Partial<CloudStorageProvider>>
+  options: Record<string, string>
 }

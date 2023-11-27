@@ -150,6 +150,12 @@ export function getSchemaOptions(schemas: CloudStorageSchema[], storage_type: st
   if (storage.length != 1) {
     return undefined;
   }
+
+  let option_overrides: Record<string, Partial<CloudStorageOption>> | undefined;
+  if (Object.keys(CLOUD_STORAGE_OVERRIDE.storages).includes(storage_type)) {
+    option_overrides = CLOUD_STORAGE_OVERRIDE.storages[storage_type].options;
+  }
+
   return storage[0].options.filter((o) => {
     if (o.name == "provider") {
       return false;
@@ -171,5 +177,12 @@ export function getSchemaOptions(schemas: CloudStorageSchema[], storage_type: st
       let provider_match = o.provider.split(",");
       return provider_match.includes(provider);
     }
-  })
+  }).map((o)=>{
+      if(option_overrides != undefined && Object.keys(option_overrides).includes(o.name)){
+        return {
+          ...o, help: option_overrides[o.name]
+        }
+      }
+      return o;
+    })
 }

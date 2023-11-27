@@ -31,7 +31,10 @@ export const CLOUD_STORAGE_OVERRIDE = {
         AWS: {
           position: 1
         },
-
+      },
+      options:{
+        access_key_id:"AWS Access Key ID.",
+        secret_access_key:"AWS Secret Access Key (password)."
       }
     },
     drive: {
