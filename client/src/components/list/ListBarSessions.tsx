@@ -36,7 +36,9 @@ import EntityCreators from "../entities/Creators";
 import EntityDescription from "../entities/Description";
 import EntityLabel from "../entities/Label";
 import VisibilityIcon from "../entities/VisibilityIcon";
-import { ListElementProps } from "./List.d";
+import PinnedBadge from "./PinnedBadge";
+import { ListElementProps } from "./list.types";
+
 import "./ListBar.scss";
 
 /** Helper function for formatting the resource list */
@@ -81,8 +83,7 @@ function SessionDetailsPopOver({ commit, image }: SessionDetailsPopOverProps) {
         {image} <Clipboard clipboardText={image} />
       </span>
       <h3 className="fs-6 fw-bold mt-2">Commit Details:</h3>
-      <span className="fw-bold">Author:</span>
-      <span>{commit.author_name}</span>
+      <span className="fw-bold">Author:</span> <span>{commit.author_name}</span>
       <br />
       <span>
         <span className="fw-bold">Date:</span>{" "}
@@ -174,7 +175,8 @@ function ListBarSession({
 
   return (
     <div className="container-sessions" data-cy="container-session">
-      <div className="entity-image">
+      <div className={cx("entity-image", "position-relative")}>
+        <PinnedBadge entityType={itemType} slug={slug} />
         <Link to={url} className="text-decoration-none">
           <div
             style={imageStyles}

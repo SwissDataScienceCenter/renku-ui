@@ -17,7 +17,7 @@
  */
 
 import "./ListCard.css";
-import { ListElementProps, ListDisplayType } from "./List.d";
+import { ListElementProps, ListDisplayType } from "./list.types";
 import ListCard from "./ListCard";
 import ListBar from "./ListBar";
 

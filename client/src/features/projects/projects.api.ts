@@ -15,12 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
-  formatProjectMetadata,
   ProjectMetadata,
+  formatProjectMetadata,
 } from "../../utils/helpers/ProjectFunctions";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { GetProjectsFromSlugsParams } from "./projects.types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -136,46 +137,60 @@ export const projectsApi = createApi({
         if (projectListRequest.error)
           return { error: projectListRequest.error as FetchBaseQueryError };
         const resultProjects = projectListRequest.data as any;
-        const projects = resultProjects.projects;
+        const projectSlugs = resultProjects.projects;
 
-        if (projects?.length > 0) {
-          // if the user has recent projects get the project information
-          const projectRequests = [];
-          for (const project of projects) {
-            projectRequests.push(
-              fetchWithBQ(
-                `/projects/${encodeURIComponent(
-                  project
-                )}?statistics=false&doNotTrack=true`
-              )
-            );
-          }
-
-          try {
-            const resultAllProjectData = await Promise.allSettled(
-              projectRequests
-            );
-            const projectList = [];
-            for (const projectData of resultAllProjectData) {
-              if (
-                projectData.status === "fulfilled" &&
-                !projectData.value.error
-              )
-                projectList.push(formatProjectMetadata(projectData.value.data));
-            }
-
-            return { data: projectList };
-          } catch (e) {
-            return { error: e as FetchBaseQueryError };
-          }
-        } else {
-          return { data: [] };
-        }
+        return fetchProjectsFromSlugs({ fetchWithBQ, projectSlugs });
+      },
+    }),
+    getProjectsFromSlugs: builder.query<any[], GetProjectsFromSlugsParams>({
+      async queryFn({ projectSlugs }, _queryApi, _extraOptions, fetchWithBQ) {
+        return fetchProjectsFromSlugs({ fetchWithBQ, projectSlugs });
       },
     }),
   }),
   refetchOnMountOrArgChange: 3,
 });
+
+interface FetchProjectsFromSlugsArgs {
+  fetchWithBQ: (
+    arg: string | FetchArgs
+  ) => ReturnType<ReturnType<typeof fetchBaseQuery>>;
+  projectSlugs: string[];
+}
+
+async function fetchProjectsFromSlugs({
+  fetchWithBQ,
+  projectSlugs,
+}: FetchProjectsFromSlugsArgs) {
+  if (projectSlugs.length > 0) {
+    // Collect project information
+    const projectRequests = [];
+    for (const project of projectSlugs) {
+      projectRequests.push(
+        fetchWithBQ(
+          `/projects/${encodeURIComponent(
+            project
+          )}?statistics=false&doNotTrack=true`
+        )
+      );
+    }
+
+    try {
+      const resultAllProjectData = await Promise.allSettled(projectRequests);
+      const projectList = [];
+      for (const projectData of resultAllProjectData) {
+        if (projectData.status === "fulfilled" && !projectData.value.error)
+          projectList.push(formatProjectMetadata(projectData.value.data));
+      }
+
+      return { data: projectList };
+    } catch (e) {
+      return { error: e as FetchBaseQueryError };
+    }
+  } else {
+    return { data: [] };
+  }
+}
 
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
@@ -184,4 +199,5 @@ export const {
   useGetGroupByPathQuery,
   useGetMemberProjectsQuery,
   useGetRecentlyVisitedProjectsQuery,
+  useGetProjectsFromSlugsQuery,
 } = projectsApi;
