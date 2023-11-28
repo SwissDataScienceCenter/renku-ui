@@ -33,6 +33,9 @@ PREVIEW_THRESHOLD='{"soft":"1048576","hard":"10485760"}'
 UPLOAD_THRESHOLD='{"soft":"104857600"}'
 CURRENT_CHART=`grep -oE "(^version: )[.0-9a-f\-]*" ../helm-chart/renku-ui/Chart.yaml | cut -d" " -f2`
 CURRENT_COMMIT=`git rev-parse --short HEAD`
+# Set HOMEPAGE_PROJECT_PATH with the project's path with namespace to display the project on the landing page.
+# E.g.,
+#HOMEPAGE_PROJECT_PATH='limited-group/heat-flux-lp2'
 if [[ "$OSTYPE" == "linux-gnu" ]]
 then
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64 -w 0`
@@ -175,7 +178,8 @@ tee > ./public/config.json << EOF
       }
     },
     "tutorialLink": "${HOMEPAGE_TUTORIAL_LINK}",
-    "showcase": ${HOMEPAGE_SHOWCASE}
+    "showcase": ${HOMEPAGE_SHOWCASE},
+    "projectPath": "${HOMEPAGE_PROJECT_PATH}"
   },
   "USER_PREFERENCES_MAX_PINNED_PROJECTS": ${USER_PREFERENCES_MAX_PINNED_PROJECTS:-5}
 }

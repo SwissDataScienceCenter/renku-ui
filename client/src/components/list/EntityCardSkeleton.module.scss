@@ -1,0 +1,35 @@
+.skeletonCardContainer {
+  width: 350px;
+  position: relative;
+}
+
+.skeletonWrapper {
+  position: absolute;
+}
+
+.skeletonWrapper .skeletonImg .skeletonImgGraphic {
+  height: 100%;
+}
+.skeletonLoader:empty {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  display: block;
+  background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 80%
+    ),
+    transparent;
+  background-repeat: repeat-y;
+  background-size: 150px 200px;
+  background-position: 0 0;
+  animation: shine 2s infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% 0;
+  }
+}

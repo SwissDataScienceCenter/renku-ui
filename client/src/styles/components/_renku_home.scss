@@ -138,6 +138,36 @@ nav.rk-anon-home .nav-link,
   }
 }
 
+#rk-anon-home-get-started {
+  background-color: var(--bs-rk-background-0);
+  color: black;
+
+  .card-entity {
+    box-shadow: 3px 1px 7px 0 rgba(217, 217, 217, 0.82);
+    -webkit-box-shadow: 3px 1px 7px 0 rgba(217, 217, 217, 0.82);
+    -moz-box-shadow: 3px 1px 7px 0 rgba(217, 217, 217, 0.82);
+
+    p {
+      font-size: 16px;
+    }
+  }
+
+  .start-session-button {
+    width: 149px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 16px;
+  }
+}
+
+#rk-anon-home-who-we-are {
+  background-color: white;
+  color: black;
+}
+
 #rk-anon-home-bottom-nav {
   @extend .section-content, .bg-primary;
   color: $rk-white;
