@@ -17,8 +17,6 @@
  */
 
 import { Row, Col } from "reactstrap";
-
-import type { Params } from "../App.types";
 import { Loader } from "../components/Loader";
 import { ExternalLink } from "../components/ExternalLinks";
 import {
@@ -26,6 +24,7 @@ import {
   useGetNotebooksVersionsQuery,
 } from "../features/versions/versionsApi";
 import { RenkuRepositories } from "../utils/constants/Repositories";
+import { AppParams } from "../utils/context/appParams.types";
 
 function componentDocsUrl(
   componentUrl: string,
@@ -180,7 +179,7 @@ function ComponentDetails({ uiVersion }: { uiVersion: string }) {
 }
 
 type HelpProps = {
-  params: Params;
+  params: AppParams;
 };
 function HelpRelease({ params }: HelpProps) {
   return (
