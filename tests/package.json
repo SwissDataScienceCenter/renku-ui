@@ -15,7 +15,7 @@
     "format-commit": "pretty-quick --staged --pattern \"tests/**/*.*\"",
     "start": "npm --prefix ../client run start-js",
     "client:install": "npm --prefix ../client install",
-    "client:build": "npm --prefix ../client run vite:build:yolo",
+    "client:build": "npm --prefix ../client run vite:build",
     "client:preview": "npm --prefix ../client run vite:preview"
   },
   "author": "Swiss Data Science Center",

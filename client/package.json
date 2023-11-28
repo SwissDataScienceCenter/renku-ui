@@ -5,7 +5,6 @@
   "scripts": {
     "vite:dev": "vite",
     "vite:build": "tsc && vite build",
-    "vite:build:yolo": "vite build",
     "vite:preview": "vite preview",
     "vite:test": "vitest",
     "start-js": "BROWSER=none REACT_APP_UI_DEV_MODE=$UI_DEV_MODE REACT_APP_RENKU_UI_URL=$RENKU_UI_URL craco --max_old_space_size=4096 start",
@@ -113,6 +112,7 @@
     "@typescript-eslint/parser": "^6.12.0",
     "@vitejs/plugin-react": "^4.2.0",
     "addon-redux": "^2.0.11",
+    "concurrently": "^8.2.2",
     "eslint": "^8.54.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",

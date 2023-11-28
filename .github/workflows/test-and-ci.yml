@@ -32,10 +32,6 @@ jobs:
       - name: Run lint client
         run: npm run lint
       - name: Build client
-        run: npm run vite:build:yolo
-        env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
-      - name: Build client
         run: npm run vite:build
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
@@ -54,7 +50,7 @@ jobs:
       - name: Install server dependencies
         run: npm clean-install
       - name: Build server
-        run: npm run vite:build:yolo
+        run: npm run build
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
       - name: Run test server
@@ -113,7 +109,7 @@ jobs:
           build: npm run client:install
           runTests: false
           working-directory: tests
-      - name: Install client
+      - name: Build client
         uses: cypress-io/github-action@v6
         with:
           build: npm run client:build
