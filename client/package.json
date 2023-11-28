@@ -23,7 +23,6 @@
     "dropzone": "^6.0.0-beta.2",
     "file-saver": "^2.0.5",
     "filesize": "^6.4.0",
-    "framer-motion": "^10.16.5",
     "graphql": "^16.8.1",
     "highlight.js": "^11.8.0",
     "http-proxy": "^1.18.1",

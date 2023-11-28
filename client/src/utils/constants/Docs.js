@@ -58,6 +58,6 @@ const RenkuPythonDocs = {
   READ_THE_DOCS_ROOT: REKNU_PYTHON_READ_THE_DOCS_ROOT,
 };
 
-const RenkuContactEmail = "hello@renkulab.io";
+const RenkuContactEmail = "hello@renku.io";
 
-export { Docs, Links, RenkuPythonDocs, GitlabLinks, RenkuContactEmail };
+export { Docs, GitlabLinks, Links, RenkuContactEmail, RenkuPythonDocs };

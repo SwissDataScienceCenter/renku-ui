@@ -496,3 +496,18 @@ $borderRadius: 1000px;
   align-items: center;
   justify-content: space-evenly;
 }
+
+.btn-animation-pulse {
+  animation: pulse 2s infinite ease-in-out;
+}
+@keyframes pulse {
+  0% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scale3d(1.05, 1.05, 1.05);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

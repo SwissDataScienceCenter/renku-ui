@@ -26,24 +26,24 @@ export default function HeroLanding(props: HeroLandingProps) {
           <div className={styles.heroDescription}>
             <h2 className="text-white">
               The research ecosystem is fragmented.
-              <span className={cx(["d-lg-block", "d-sm-inline"])}>
+              <span className={cx("d-lg-block", "d-sm-inline")}>
                 {" "}
                 Renku is where it comes together.
               </span>
             </h2>
             <p>Data, Code, and Compute all under one roof.</p>
             <div
-              className={cx([
+              className={cx(
                 "d-flex",
                 "gap-3",
                 "pt-5",
                 "pt-md-3",
                 "flex-sm-row",
-                "flex-column",
-              ])}
+                "flex-column"
+              )}
             >
               <Button
-                className={cx(["btn", "btn-rk-green", styles.heroBtn])}
+                className={cx("btn", "btn-rk-green", styles.heroBtn)}
                 role="button"
                 id="link-try-it-out"
                 onClick={scrollToGetStarted}
@@ -51,7 +51,7 @@ export default function HeroLanding(props: HeroLandingProps) {
                 Try it out
               </Button>
               <Link
-                className={cx(["btn", "btn-outline-secondary", styles.heroBtn])}
+                className={cx("btn", "btn-outline-secondary", styles.heroBtn)}
                 role="button"
                 id="hero_link-sign_up"
                 to="/login"

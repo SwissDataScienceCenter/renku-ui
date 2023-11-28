@@ -28,7 +28,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Funnel, FunnelFill } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { Button, UncontrolledTooltip } from "reactstrap";
-import { motion } from "framer-motion";
 import SimpleSessionButton from "../../features/session/components/SimpleSessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { EntityType } from "./Entities";
@@ -47,20 +46,9 @@ function EntityButton({
 }: EntityButtonProps) {
   switch (type) {
     case "project":
-      return animated ? (
-        <motion.div
-          className="card-button"
-          whileInView={{
-            scale: [0.9, 1, 0.9, 1, 0.9, 1],
-            animationDuration: "3s",
-          }}
-          viewport={{ once: false }}
-        >
+      return (
+        <div className={`card-button ${animated ? "btn-animation-pulse" : ""}`}>
           <SimpleSessionButton fullPath={slug} fromLanding={fromLanding} />
-        </motion.div>
-      ) : (
-        <div className="card-button">
-          <SimpleSessionButton fullPath={slug} />
         </div>
       );
     case "dataset":

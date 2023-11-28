@@ -1,0 +1,667 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+#featContainer {
+  h3 {
+    font-size: 40px;
+    margin: 40px 0;
+    line-height: normal;
+  }
+
+  p {
+    line-height: normal;
+  }
+
+  .featDocLinks {
+    font-size: 18px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    min-height: 45px;
+    text-align: left;
+
+    a {
+      font-size: 18px;
+      color: black;
+      font-weight: bold;
+    }
+    svg {
+      flex-shrink: 0;
+    }
+    @include media-breakpoint-down(lg) {
+    }
+  }
+
+  @include media-breakpoint-up(xs) {
+    h3 {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    p {
+      font-size: 20px;
+    }
+  }
+
+  @include media-breakpoint-up(md) {
+    h3 {
+      font-size: 32px;
+    }
+
+    p {
+      font-size: 20px;
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    h3 {
+      font-size: 40px;
+    }
+    p {
+      font-size: 24px;
+    }
+  }
+
+  @include media-breakpoint-down(lg) {
+    h3 {
+      padding-top: 0;
+    }
+  }
+}
+
+// Share feat section
+#shareFeatContainer {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: 0.5fr 0.8fr;
+  grid-auto-columns: 1fr;
+  gap: 0 40px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "shareFeatText shareFeatGraph"
+    "shareFeatBtn shareFeatGraph";
+
+  @include media-breakpoint-up(xs) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(md) {
+    padding: 5em 4em;
+    grid-template-rows: 0.5fr 0.8fr;
+  }
+
+  @include media-breakpoint-up(lg) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(xl) {
+    padding: 5em 8em;
+    grid-template-rows: 0.5fr 1fr;
+    .shareFeatGraph {
+      img {
+        max-width: 564px;
+        width: 564px;
+      }
+    }
+  }
+
+  @include media-breakpoint-down(lg) {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "shareFeatText"
+      "shareFeatGraph"
+      "shareFeatBtn";
+    gap: 40px;
+    padding: 5em 1em;
+    text-align: center;
+
+    .shareFeatGraph {
+      img {
+        max-width: 450px;
+        width: 100%;
+      }
+    }
+
+    .shareFeatBtn {
+      margin-top: 0;
+    }
+  }
+}
+
+.shareFeatGraph {
+  grid-area: shareFeatGraph;
+  img {
+    width: 450px;
+  }
+}
+
+.shareFeatText {
+  grid-area: shareFeatText;
+}
+
+.shareFeatBtn {
+  grid-area: shareFeatBtn;
+  margin-top: 40px;
+
+  a {
+    font-size: 20px;
+  }
+}
+
+//environment section
+#environmentFeatContainer {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: 0.5fr 1fr;
+  grid-auto-columns: 1fr;
+  gap: 0 40px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "envFeatGraph envFeatTitle "
+    "envFeatGraph envFeatContain";
+
+  h3 {
+    margin: 0;
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+
+  @include media-breakpoint-up(xs) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(md) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(lg) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(xl) {
+    padding: 5em 8em;
+  }
+
+  @include media-breakpoint-down(lg) {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "envFeatTitle"
+      "envFeatGraph"
+      "envFeatContain";
+    gap: 40px;
+    padding: 5em 1em;
+    text-align: center;
+  }
+}
+
+.envFeatGraph {
+  grid-area: envFeatGraph;
+}
+
+.envFeatTitle {
+  grid-area: envFeatTitle;
+}
+
+.envFeatContain {
+  grid-area: envFeatContain;
+  margin-top: 40px;
+
+  a {
+    font-size: 20px;
+    margin-top: 40px;
+  }
+}
+
+//Compute section
+#computeFeatContainer {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: 0.5fr 0.5fr;
+  grid-auto-columns: 1fr;
+  gap: 0 40px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "computeFeatTitle computeFeatGraph"
+    "computeFeatContain computeFeatGraph"
+    "computeFeatOtherLink computeFeatOtherLink";
+
+  h3 {
+    margin: 0 0 40px 0;
+  }
+
+  .computeFeatSubtext {
+    font-size: 20px;
+  }
+
+  @include media-breakpoint-up(xs) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(md) {
+    padding: 5em 4em;
+    .computeFeatGraph {
+      img {
+        max-width: 500px;
+      }
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(xl) {
+    padding: 5em 8em;
+    .computeFeatGraph {
+      img {
+        max-width: 578px;
+      }
+    }
+  }
+
+  @include media-breakpoint-down(lg) {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+      "computeFeatTitle"
+      "computeFeatGraph"
+      "computeFeatContain"
+      "computeFeatOtherLink";
+    gap: 40px;
+    padding: 5em 1em;
+    text-align: center;
+
+    .computeFeatGraph {
+      img {
+        width: 100%;
+      }
+    }
+    .computeFeatOtherLink {
+      margin-top: 0;
+      justify-content: center;
+    }
+
+    .computeFeatContain {
+      margin-top: 0;
+    }
+
+    .computeFeatSubtext {
+      a {
+        text-align: left;
+      }
+    }
+  }
+}
+
+.computeFeatGraph {
+  grid-area: computeFeatGraph;
+  img {
+    max-width: 578px;
+  }
+}
+
+.computeFeatTitle {
+  grid-area: computeFeatTitle;
+}
+
+.computeFeatContain {
+  grid-area: computeFeatContain;
+  margin-top: 40px;
+
+  a {
+    font-size: 20px;
+  }
+}
+
+.computeFeatOtherLink {
+  grid-area: computeFeatOtherLink;
+  margin-top: 40px;
+  text-align: justify;
+  align-items: baseline;
+}
+
+//connect section
+#connectFeatContainer {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: 0.2fr 0.8fr;
+  grid-auto-columns: 1fr;
+  gap: 0 40px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "connectFeatGraph connectFeatTitle "
+    "connectFeatGraph connectFeatContain";
+
+  h3 {
+    margin: 0;
+  }
+
+  @include media-breakpoint-up(xs) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(md) {
+    padding: 5em 4em;
+    grid-template-rows: 0.5fr 0.8fr;
+  }
+
+  @include media-breakpoint-up(lg) {
+    padding: 5em 4em;
+    grid-template-rows: 0.5fr 0.8fr;
+  }
+
+  @include media-breakpoint-up(xl) {
+    padding: 5em 8em;
+    grid-template-rows: 0.2fr 0.8fr;
+  }
+
+  @include media-breakpoint-down(lg) {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "connectFeatTitle"
+      "connectFeatGraph"
+      "connectFeatContain";
+    gap: 40px;
+    padding: 5em 1em;
+    text-align: center;
+
+    .connectFeatContain {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .connectFeatGraph {
+      grid-area: connectFeatGraph;
+      img {
+        width: 100%;
+        max-width: 540px;
+      }
+    }
+  }
+}
+
+.connectFeatGraph {
+  grid-area: connectFeatGraph;
+  img {
+    width: 600px;
+    max-width: 600px;
+  }
+}
+
+.connectFeatTitle {
+  grid-area: connectFeatTitle;
+}
+
+.connectFeatContain {
+  grid-area: connectFeatContain;
+
+  a {
+    font-size: 20px;
+  }
+}
+
+//dataset section
+#datasetFeatContainer {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: 0.2fr 0.3fr 0.8fr;
+  grid-auto-columns: 1fr;
+  gap: 0 40px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "datasetFeatTitle datasetFeatGraph"
+    "datasetFeatContain datasetFeatGraph"
+    "datasetFeatOtherLink datasetFeatOtherLink";
+
+  h3 {
+    margin: 0 0 40px 0;
+  }
+
+  .datasetFeatSubtext {
+    font-size: 20px;
+  }
+
+  .emptyDatasetFeat {
+    width: 350px;
+    margin: auto;
+  }
+
+  @include media-breakpoint-up(xs) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(md) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(lg) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(xl) {
+    padding: 5em 8em;
+  }
+
+  @include media-breakpoint-down(lg) {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+      "datasetFeatTitle"
+      "datasetFeatGraph"
+      "datasetFeatContain"
+      "datasetFeatOtherLink";
+    gap: 40px;
+    padding: 5em 1em;
+
+    .datasetFeatTitle {
+      text-align: center;
+    }
+
+    .datasetFeatOtherLink {
+      margin-top: 0;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .datasetFeatContain {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    .emptyDatasetFeat {
+      width: 100%;
+      margin: auto;
+    }
+  }
+}
+
+.datasetFeatGraph {
+  grid-area: datasetFeatGraph;
+}
+
+.datasetFeatTitle {
+  grid-area: datasetFeatTitle;
+}
+
+.datasetFeatContain {
+  grid-area: datasetFeatContain;
+  margin-top: 40px;
+
+  a {
+    font-size: 20px;
+  }
+}
+
+.datasetFeatOtherLink {
+  grid-area: datasetFeatOtherLink;
+  margin-top: 40px;
+  text-align: justify;
+  align-items: baseline;
+}
+
+//workflow section
+#workflowFeatContainer {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: 0.3fr 0.7fr;
+  grid-auto-columns: 1fr;
+  gap: 0 40px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "workflowFeatGraph workflowFeatTitle "
+    "workflowFeatGraph workflowFeatContain";
+
+  h3 {
+    margin: 0;
+  }
+
+  @include media-breakpoint-up(xs) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(md) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(lg) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(xl) {
+    padding: 5em 8em;
+  }
+
+  @include media-breakpoint-down(lg) {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "workflowFeatTitle"
+      "workflowFeatGraph"
+      "workflowFeatContain";
+    gap: 40px;
+    padding: 5em 1em;
+    text-align: center;
+
+    .workflowFeatContain {
+      align-items: center;
+    }
+  }
+}
+
+.workflowFeatGraph {
+  grid-area: workflowFeatGraph;
+  img {
+    width: 100%;
+    max-width: 537px;
+  }
+}
+
+.workflowFeatTitle {
+  grid-area: workflowFeatTitle;
+}
+
+.workflowFeatContain {
+  grid-area: workflowFeatContain;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+
+  a {
+    font-size: 20px;
+  }
+}
+
+// explore feat section
+#exploreFeatContainer {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: 0.2fr 0.9fr 0.1fr;
+  grid-auto-columns: 1fr;
+  gap: 0 40px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "exploreFeatText exploreFeatGraph"
+    "exploreFeatInput exploreFeatGraph";
+
+  @include media-breakpoint-up(xs) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(md) {
+    padding: 5em 4em;
+    grid-template-rows: 0.2fr 0.9fr 0.1fr;
+  }
+
+  @include media-breakpoint-up(lg) {
+    padding: 5em 4em;
+  }
+
+  @include media-breakpoint-up(xl) {
+    padding: 5em 8em;
+    grid-template-rows: 0.2fr 0.9fr 0.1fr;
+    .shareFeatGraph {
+      img {
+        max-width: 564px;
+        width: 564px;
+      }
+    }
+  }
+
+  @include media-breakpoint-down(lg) {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "exploreFeatText"
+      "exploreFeatGraph"
+      "exploreFeatInput";
+    gap: 40px;
+    padding: 5em 1em;
+    text-align: center;
+
+    .exploreFeatGraph {
+      img {
+        max-width: 450px;
+        width: 100%;
+      }
+    }
+
+    .exploreFeatInput {
+      margin-top: 0;
+    }
+  }
+}
+
+.exploreFeatGraph {
+  grid-area: exploreFeatGraph;
+  img {
+    width: 450px;
+  }
+}
+
+.exploreFeatText {
+  grid-area: exploreFeatText;
+}
+
+.exploreFeatInput {
+  grid-area: exploreFeatInput;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}

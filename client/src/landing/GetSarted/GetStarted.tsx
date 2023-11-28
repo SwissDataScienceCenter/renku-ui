@@ -62,22 +62,8 @@ export default function GetStarted(props: GetStartedProps) {
             </h2>
           </div>
           <div className={styles.getStartedProject}>
-            {isLoading ? (
+            {isLoading || !projectPath || projectMetadataQuery.isError ? (
               <EntityCardSkeleton />
-            ) : !projectPath ? (
-              <>
-                <span className={cx(["fst-italic", "fs-small", "text-danger"])}>
-                  No project to load, set projectPath in renku-ui values
-                </span>
-                <EntityCardSkeleton />
-              </>
-            ) : projectMetadataQuery.isError ? (
-              <>
-                <span className={cx(["fst-italic", "fs-small", "text-danger"])}>
-                  Error loading project {projectPath}{" "}
-                </span>
-                <EntityCardSkeleton />
-              </>
             ) : (
               projectCard
             )}
@@ -90,13 +76,13 @@ export default function GetStarted(props: GetStartedProps) {
           </div>
           <div className={styles.getStartedDescription}>
             <div
-              className={cx([
+              className={cx(
                 "d-flex",
                 "align-items-center",
                 "gap-3",
                 "flex-column",
-                "flex-lg-row",
-              ])}
+                "flex-lg-row"
+              )}
             >
               <p>
                 <span className="fw-bold">Want more?</span> We offer more
@@ -104,11 +90,11 @@ export default function GetStarted(props: GetStartedProps) {
                 more.
               </p>
               <ExternalLink
-                className={cx([
+                className={cx(
                   styles.btnContactUs,
                   "align-self-start",
-                  "align-self-lg-center",
-                ])}
+                  "align-self-lg-center"
+                )}
                 color="outline-rk-green"
                 role="button"
                 id="Contact Us"
@@ -119,31 +105,32 @@ export default function GetStarted(props: GetStartedProps) {
             <div>
               <p>
                 Prefer to work from the comfort of your local environment?
-                <span className={cx(["d-lg-block", "d-sm-inline", "fw-bold"])}>
+                <span className={cx("d-lg-block", "d-sm-inline", "fw-bold")}>
                   {" "}
                   Try out the Renku CLI.
                 </span>
               </p>
-            </div>
-            <div
-              className={cx([
-                "d-flex",
-                "flex-column",
-                "flex-md-row",
-                "align-content-start",
-                "align-items-md-center",
-                "gap-4",
-              ])}
-            >
-              <div>
-                <CommandCopy command={installRenku} />
-              </div>
-              <ExternalDocsLink
-                url={Docs.rtdHowToGuide(
-                  "own_machine/cli-installation.html#cli-installation.html"
+              <div
+                className={cx(
+                  "d-flex",
+                  "flex-column",
+                  "flex-md-row",
+                  "align-content-start",
+                  "align-items-md-center",
+                  "gap-4",
+                  "mt-2"
                 )}
-                title="Read the documentation"
-              />
+              >
+                <div>
+                  <CommandCopy command={installRenku} />
+                </div>
+                <ExternalDocsLink
+                  url={Docs.rtdHowToGuide(
+                    "own_machine/cli-installation.html#cli-installation.html"
+                  )}
+                  title="Read the documentation"
+                />
+              </div>
             </div>
           </div>
         </div>

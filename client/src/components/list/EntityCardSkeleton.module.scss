@@ -1,3 +1,9 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
 .skeletonCardContainer {
   width: 350px;
   position: relative;
@@ -5,6 +11,10 @@
 
 .skeletonWrapper {
   position: absolute;
+
+  @include media-breakpoint-down(lg) {
+    position: relative;
+  }
 }
 
 .skeletonWrapper .skeletonImg .skeletonImgGraphic {

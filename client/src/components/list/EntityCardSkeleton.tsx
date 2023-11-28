@@ -16,18 +16,16 @@
  * limitations under the License.
  */
 
+import cx from "classnames";
 import skeletonCardImage from "../../styles/assets/SkeletonCard.svg";
 import styles from "./EntityCardSkeleton.module.scss";
-import cx from "classnames";
 
 export default function EntityCardSkeleton() {
   return (
     <div className={styles.skeletonWrapper}>
       <div className={styles.skeletonImg}>
-        <img src={skeletonCardImage} alt="skeleton card" />
-        <div
-          className={cx([styles.skeletonImgGraphic, styles.skeletonLoader])}
-        />
+        <img src={skeletonCardImage} alt="skeleton card" loading="lazy" />
+        <div className={cx(styles.skeletonImgGraphic, styles.skeletonLoader)} />
       </div>
     </div>
   );

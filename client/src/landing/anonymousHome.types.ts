@@ -39,6 +39,7 @@ export interface HomepageParams {
       contentMd: string;
     };
   };
+  datasetSlug: string;
   projectPath: string;
   showcase: {
     enabled: boolean;
