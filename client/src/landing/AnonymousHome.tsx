@@ -98,7 +98,7 @@ export function SearchInput() {
             type="text"
             autoComplete="off"
             className="form-control form-control-sm rk-landing-search"
-            placeholder="Explore existing public projects and datasets"
+            placeholder="Explore public projects and datasets"
             aria-label="Search input"
             {...register("phrase")}
           />

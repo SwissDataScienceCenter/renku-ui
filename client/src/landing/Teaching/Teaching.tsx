@@ -29,7 +29,7 @@ export default function Teaching() {
       <div className="rk-anon-home-section-content">
         <div id={styles.teachingContainer}>
           <div className={styles.teachingTitle}>
-            <h2>Compute courses without the hassle</h2>
+            <h2>Computing courses without the hassle</h2>
           </div>
           <div>
             <img
@@ -41,11 +41,13 @@ export default function Teaching() {
           </div>
           <div className={styles.teachingContent}>
             <p className="fw-bold">
-              Teaching <HeartFill className="text-rk-green" /> Renkulab!
+              Teachers <HeartFill className="text-rk-green" /> Renkulab!
             </p>
             <p>
-              <span>Get your students running from day 1.</span>
-              <span>All your students need is a browser! </span>
+              <span>
+                Get your students the compute environment they need from day 1.
+              </span>
+              <span>All they need is a browser!</span>
             </p>
             <div className="d-flex justify-content-center">
               <ExternalLink

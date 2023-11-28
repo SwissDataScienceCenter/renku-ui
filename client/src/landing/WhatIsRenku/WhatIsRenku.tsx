@@ -79,7 +79,7 @@ const ShareFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
   return (
     <div id={styles.shareFeatContainer}>
       <div className={styles.shareFeatGraph}>
-        <img src={puzzleGraphic} alt="Puzzle Graph" loading="lazy" />
+        <img src={puzzleGraphic} alt="Puzzle Renku graphic" loading="lazy" />
       </div>
       <div className={styles.shareFeatText}>
         <h3>Share your whole project, not just your code</h3>
@@ -89,11 +89,23 @@ const ShareFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
         </p>
       </div>
       <div className={styles.shareFeatBtn}>
-        <TryOutSessionBtn
-          projectPath={projectPath}
-          type="autostart"
-          btnTitle="Explore a project"
-        />
+        <Link
+          className={cx(
+            "btn",
+            "btn-rk-green",
+            styles.btnContactUs,
+            "align-self-start",
+            "align-self-lg-center",
+            "gap-2"
+          )}
+          to={Url.get(Url.pages.project.base, {
+            namespace: "",
+            path: projectPath,
+          })}
+          target="_blank"
+        >
+          Explore a project
+        </Link>
       </div>
     </div>
   );
@@ -172,7 +184,7 @@ const ConnectFeatSection = () => {
   return (
     <div id={styles.connectFeatContainer}>
       <div className={styles.connectFeatGraph}>
-        <img src={SSH_Graphic} loading="lazy" />
+        <img src={SSH_Graphic} loading="lazy" alt="SSH connect graphic" />
       </div>
       <div className={styles.connectFeatTitle}>
         <h3>Connect from anywhere</h3>
@@ -292,7 +304,7 @@ const DatasetsFeatSection = ({ datasetSlug }: DatasetsFeatSection) => {
           )}?${paramsUrlStrExploreDatasets}`}
           target="_blank"
         >
-          Try out datasets
+          Explore datasets
         </Link>
       </div>
       <div className={cx("d-flex", "gap-3", styles.datasetFeatOtherLink)}>
@@ -320,7 +332,7 @@ const WorkflowFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
   return (
     <div id={styles.workflowFeatContainer}>
       <div className={styles.workflowFeatGraph}>
-        <img src={workflow_Graphic} loading="lazy" />
+        <img src={workflow_Graphic} loading="lazy" alt="yaml workflow file" />
       </div>
       <div className={styles.workflowFeatTitle}>
         <h3>Keep track of how code and data connect</h3>
@@ -328,7 +340,7 @@ const WorkflowFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
       <div className={styles.workflowFeatContain}>
         <p>
           Use the simple Renku workflow file to organize your data processing
-          pipeline. Easily rerun your whole workflow, or just a few steps.
+          pipeline. Easily rerun your whole workflow, or just specific steps.
         </p>
         <div>
           <Link
@@ -346,7 +358,7 @@ const WorkflowFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
             })}
             target="_blank"
           >
-            Checkout workflows
+            Check out workflows
           </Link>
         </div>
         <div className={styles.featDocLinks}>
@@ -372,7 +384,7 @@ const ExploreFeatSection = () => {
   return (
     <div id={styles.exploreFeatContainer}>
       <div className={styles.exploreFeatGraph}>
-        <img src={searchGraphic} alt="Search Graph" loading="lazy" />
+        <img src={searchGraphic} alt="Entity search Graphic" loading="lazy" />
       </div>
       <div className={styles.exploreFeatText}>
         <h3>Explore and Connect</h3>

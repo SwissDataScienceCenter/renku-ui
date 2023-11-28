@@ -383,14 +383,22 @@
       align-items: center;
       gap: 20px;
     }
+
+    .connectFeatGraph {
+      grid-area: connectFeatGraph;
+      img {
+        width: 100%;
+        max-width: 540px;
+      }
+    }
   }
 }
 
 .connectFeatGraph {
   grid-area: connectFeatGraph;
   img {
-    width: 100%;
-    max-width: 540px;
+    width: 600px;
+    max-width: 600px;
   }
 }
 
