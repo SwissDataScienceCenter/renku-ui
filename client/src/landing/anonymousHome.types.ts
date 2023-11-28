@@ -18,29 +18,7 @@
 
 export interface AnonymousHomeConfig {
   client: unknown;
-  homeCustomized: {
-    custom: {
-      enabled: boolean;
-      main: {
-        backgroundImage: {
-          url: string;
-        };
-        contentMd: string;
-      };
-    };
-    showcase: {
-      enabled: boolean;
-      title: string;
-      description: string;
-      projects: {
-        identifier: string;
-        overrideDescription?: string;
-        overrideImageUrl?: string;
-        overrideTitle?: string;
-      }[];
-    };
-    tutorialLink: string;
-  };
+  homeCustomized: HomepageParams;
   model: unknown;
   params: {
     UI_SHORT_SHA: string;
@@ -48,4 +26,28 @@ export interface AnonymousHomeConfig {
   urlMap: {
     siteStatusUrl: string;
   };
+}
+
+export interface HomepageParams {
+  custom: {
+    enabled: boolean;
+    main: {
+      backgroundImage: {
+        url: string;
+      };
+      contentMd: string;
+    };
+  };
+  showcase: {
+    enabled: boolean;
+    title: string;
+    description: string;
+    projects: {
+      identifier: string;
+      overrideDescription?: string;
+      overrideImageUrl?: string;
+      overrideTitle?: string;
+    }[];
+  };
+  tutorialLink: string;
 }
