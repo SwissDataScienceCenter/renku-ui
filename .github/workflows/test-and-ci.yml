@@ -76,6 +76,8 @@ jobs:
           node-version: "18.17.1"
       - name: Install dependencies
         run: npm clean-install
+      - name: Install Playwright
+        run: npx playwright install --with-deps
       - name: Build Storybook and run tests
         run: npm run storybook-compile-and-test
 
