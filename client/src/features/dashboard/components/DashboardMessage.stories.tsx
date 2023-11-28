@@ -17,7 +17,7 @@
  */
 
 import { Meta, StoryObj } from "@storybook/react";
-import { ARG_REDUX_PATH } from "addon-redux";
+// import { ARG_REDUX_PATH } from "addon-redux";
 import { useContext } from "react";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
@@ -70,7 +70,7 @@ const meta: Meta<DashboardMessageArgs> = {
     dismissible: { type: "boolean" },
     dismissed: {
       control: "boolean",
-      [ARG_REDUX_PATH]: "dashboardMessage.dismissed",
+      // [ARG_REDUX_PATH]: "dashboardMessage.dismissed",
     },
   },
   component: DashboardMessage,

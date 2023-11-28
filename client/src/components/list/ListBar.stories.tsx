@@ -19,7 +19,7 @@
 import ListBar from "./ListBar";
 import { EntityType } from "../../features/kgSearch";
 import { Visibilities } from "../visibility/Visibility";
-import { ARG_REDUX_PATH } from "addon-redux";
+// import { ARG_REDUX_PATH } from "addon-redux";
 import { Meta, StoryObj } from "@storybook/react";
 
 const exampleCreators = [
@@ -60,7 +60,7 @@ const meta: Meta = {
     timeCaption: { control: "date" },
     updatingDescription: {
       control: { type: "boolean" },
-      [ARG_REDUX_PATH]: "stateModel.project.metadata.description.updating",
+      // [ARG_REDUX_PATH]: "stateModel.project.metadata.description.updating",
       defaultValue: false,
     },
   },
