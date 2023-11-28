@@ -23,6 +23,8 @@
  *  Tests for Sentry.
  */
 
+import { describe, expect, it, vi } from "vitest";
+
 const FAKE = {
   url: "https://12345abcde@sentry.dev.renku.ch/5",
   namespace: "fake_namespace",
@@ -35,10 +37,9 @@ const FAKE = {
 describe("Sentry settings", () => {
   // Avoid errors triggered by re-initializing the Sentry client.
   let Sentry;
-  beforeEach(() => {
-    jest.isolateModules(() => {
-      Sentry = require("./Sentry").Sentry; // eslint-disable-line @typescript-eslint/no-var-requires
-    });
+  beforeEach(async () => {
+    vi.resetModules();
+    Sentry = (await import("./Sentry")).Sentry;
   });
 
   it("init function - url parameter", () => {
@@ -101,10 +102,9 @@ describe("Sentry settings", () => {
 
 describe("Helper functions", () => {
   let getRelease;
-  beforeEach(() => {
-    jest.isolateModules(() => {
-      getRelease = require("./Sentry").getRelease; // eslint-disable-line @typescript-eslint/no-var-requires
-    });
+  beforeEach(async () => {
+    vi.resetModules();
+    getRelease = (await import("./Sentry")).getRelease;
   });
 
   it("getRelease", () => {
