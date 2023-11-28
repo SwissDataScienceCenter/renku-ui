@@ -1,4 +1,3 @@
-import { DropdownItem } from "reactstrap";
 import { ExternalLink } from "../../components/ExternalLinks";
 import { ButtonWithMenu } from "../../components/buttons/Button";
 import { ThrottledTooltip } from "../../components/Tooltip";
@@ -14,16 +13,20 @@ function externalUrlToGitLabIdeUrl(externalUrl: string) {
 }
 
 type GitLabLinkItemProps = {
-  size: string;
   text: string;
   url: string;
 };
 
-function GitLabLinkItem({ size, text, url }: GitLabLinkItemProps) {
+function GitLabLinkItem({ text, url }: GitLabLinkItemProps) {
   return (
-    <DropdownItem size={size}>
-      <ExternalLink className="nav-link" role="text" title={text} url={url} />
-    </DropdownItem>
+    <li>
+      <ExternalLink
+        className="dropdown-item"
+        role="text"
+        title={text}
+        url={url}
+      />
+    </li>
   );
 }
 
@@ -54,7 +57,7 @@ function GitLabConnectButton(props: GitLabConnectButtonProps) {
 
   const gitlabIDEButton =
     userLogged && gitlabIdeUrl ? (
-      <GitLabLinkItem size={size} text="Web IDE" url={gitlabIdeUrl} />
+      <GitLabLinkItem text="Web IDE" url={gitlabIdeUrl} />
     ) : null;
 
   return (
@@ -64,8 +67,8 @@ function GitLabConnectButton(props: GitLabConnectButtonProps) {
         default={gitlabProjectButton}
         size={size}
       >
-        <GitLabLinkItem size={size} text="Issues" url={gitLabIssuesUrl} />
-        <GitLabLinkItem size={size} text="Merge Requests" url={gitLabMrUrl} />
+        <GitLabLinkItem text="Issues" url={gitLabIssuesUrl} />
+        <GitLabLinkItem text="Merge Requests" url={gitLabMrUrl} />
         {gitlabIDEButton}
       </ButtonWithMenu>
       <ThrottledTooltip

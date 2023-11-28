@@ -16,27 +16,19 @@
  * limitations under the License.
  */
 
-const DEFAULT_KEYCLOAK_REALM = "Renku";
+export interface UserPreferences {
+  user_id: string;
+  pinned_projects: PinnedProjects;
+}
 
-export function validateKeycloakRealmParams(params: unknown): string {
-  if (
-    params == null ||
-    typeof params !== "object" ||
-    !("KEYCLOAK_REALM" in params)
-  ) {
-    return DEFAULT_KEYCLOAK_REALM;
-  }
+export interface PinnedProjects {
+  project_slugs?: string[];
+}
 
-  const params_ = params as { KEYCLOAK_REALM: unknown };
+export interface AddPinnedProjectParams {
+  project_slug: string;
+}
 
-  const realm =
-    typeof params_.KEYCLOAK_REALM === "string"
-      ? params_.KEYCLOAK_REALM.trim()
-      : "";
-
-  if (!realm) {
-    return DEFAULT_KEYCLOAK_REALM;
-  }
-
-  return realm;
+export interface RemovePinnedProjectParams {
+  project_slug: string;
 }

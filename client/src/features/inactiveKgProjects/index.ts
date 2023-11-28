@@ -1,5 +1,5 @@
 /*!
- * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * Copyright 2023 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,28 +16,7 @@
  * limitations under the License.
  */
 
-import { useGetNamespacesQuery } from "../../features/projects/projects.api";
-
-/**
- *  useGetNamespaces custom hook
- *
- *  UseGetNamespaces.ts
- *  hook to fetch Namespaces
- */
-function useGetNamespaces(ownedOnly: boolean) {
-  const { data, isFetching, isLoading, refetch } =
-    useGetNamespacesQuery(ownedOnly);
-
-  const sortedList = data
-    ? [...data].sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-    : [];
-
-  return {
-    list: sortedList ?? [],
-    fetching: isFetching,
-    fetched: !isFetching && !isLoading,
-    refetchNamespaces: refetch,
-  };
-}
-
-export default useGetNamespaces;
+export type { InactiveKgProjects } from "./inactiveKgProjects.types";
+export type { KgInactiveProjectsState } from "./inactiveKgProjectsSlice";
+export { filterProgressingProjects } from "./inactiveKgProjects.utils";
+export { ActivationStatusProgressError } from "./InactiveKgProjectsApi";

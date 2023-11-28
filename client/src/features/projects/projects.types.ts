@@ -16,11 +16,6 @@
  * limitations under the License.
  */
 
-type Params = {
-  BASE_URL: string;
-  RENKU_CHART_VERSION: string;
-  UI_VERSION: string;
-  UISERVER_URL: string;
-};
-
-export type { Params };
+export interface GetProjectsFromSlugsParams {
+  projectSlugs: string[];
+}
