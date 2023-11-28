@@ -59,7 +59,7 @@ const LoginHelper = {
    * Set up event listener fol localStorage authentication events. Invoke only once.
    */
   setupListener: () => {
-    window.onstorage = (event) => {
+    window.addEventListener("storage", (event) => {
       if (event.key === RenkuQueryParams.logout) {
         setTimeout(() => {
           sessionStorage.setItem(RenkuQueryParams.logout, Date.now());
@@ -69,7 +69,7 @@ const LoginHelper = {
         sessionStorage.setItem(RenkuQueryParams.login, Date.now());
         window.location.reload();
       }
-    };
+    });
   },
   /**
    * Set up event listener fol localStorage authentication events. Invoke only once.

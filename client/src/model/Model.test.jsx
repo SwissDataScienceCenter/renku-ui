@@ -26,9 +26,10 @@
 import { Component } from "react";
 import { createRoot } from "react-dom/client";
 import { act } from "react-test-renderer";
-
-import { Schema, StateModel, StateKind } from "./Model";
 import { createStore } from "redux";
+import { describe, expect, it } from "vitest";
+
+import { Schema, StateKind, StateModel } from "./Model";
 
 const simpleSchema = new Schema({
   name: { initial: "Jane Doe", mandatory: true },

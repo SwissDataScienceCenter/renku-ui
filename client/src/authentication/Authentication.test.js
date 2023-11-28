@@ -22,6 +22,8 @@
  *  Authentication.test.js
  *  Tests for authentication.
  */
+import { vi } from "vitest";
+
 import { LoginHelper } from "./Authentication.container";
 import { createLoginUrl } from "./LoginRedirect";
 
@@ -35,16 +37,26 @@ const history = {
 };
 const url = "https://fakedev.renku.ch/";
 delete window.location;
-window.location = { reload: jest.fn(), replace: jest.fn() };
+window.location = { reload: vi.fn(), replace: vi.fn() };
 
-// Mock localStorage event generator
-function dispatchFakeStorageEvent(key, newValue) {
-  /* eslint-disable no-console */
-  const original = console.error;
-  console.error = jest.fn();
-  window.dispatchEvent(new StorageEvent("storage", { key, newValue }));
-  console.error = original;
-  /* eslint-enable no-console */
+async function dispatchStorageEvent(key, newValue) {
+  // ? Dispatch Storage Event by creating it in an iframe
+  return new Promise((resolve) => {
+    const listener = (event) => {
+      if (event.key === key && event.newValue === `${newValue}`) {
+        window.removeEventListener("storage", listener);
+        resolve();
+      }
+    };
+    window.addEventListener("storage", listener);
+
+    const iframe = window.document.createElement("iframe");
+    iframe.style.display = "none";
+    window.document.body.appendChild(iframe);
+
+    iframe.contentWindow?.localStorage.setItem(key, newValue);
+    iframe.remove();
+  });
 }
 
 describe("LoginHelper functions", () => {
@@ -63,7 +75,7 @@ describe("LoginHelper functions", () => {
     localStorage.clear();
 
     LoginHelper.handleLoginParams(history);
-    expect(Object.keys(localStorage.__STORE__).length).toBe(0);
+    expect(localStorage.length).toBe(0);
     const loginUrl = createLoginUrl(url);
     const loginHistory = {
       ...history,
@@ -72,7 +84,7 @@ describe("LoginHelper functions", () => {
     const datePre = new Date().getTime();
 
     LoginHelper.handleLoginParams(loginHistory);
-    expect(Object.keys(localStorage.__STORE__).length).toBe(1);
+    expect(localStorage.length).toBe(1);
     // ? Alternative to avoid using the localStorage function: localStorage.__STORE__[queryParams.login]
     const loginDate = parseInt(localStorage.getItem(queryParams.login));
     expect(loginDate).toBeGreaterThanOrEqual(datePre);
@@ -84,14 +96,14 @@ describe("LoginHelper functions", () => {
     localStorage.clear();
     sessionStorage.clear();
     delete window.location;
-    window.location = { reload: jest.fn() };
+    window.location = { reload: vi.fn() };
 
     LoginHelper.setupListener();
-    expect(Object.keys(sessionStorage.__STORE__).length).toBe(0);
+    expect(localStorage.length).toBe(0);
     const datePre = new Date().getTime();
 
-    dispatchFakeStorageEvent(queryParams.login, new Date());
-    expect(Object.keys(sessionStorage.__STORE__).length).toBe(1);
+    await dispatchStorageEvent(queryParams.login, new Date());
+    expect(sessionStorage.length).toBe(1);
     const sessionStorageDate = parseInt(
       sessionStorage.getItem(queryParams.login)
     );
@@ -99,24 +111,24 @@ describe("LoginHelper functions", () => {
     const datePost = new Date().getTime();
     expect(sessionStorageDate).toBeLessThanOrEqual(datePost);
 
-    dispatchFakeStorageEvent(queryParams.logout, new Date());
-    expect(Object.keys(sessionStorage.__STORE__).length).toBe(1); // that takes longer due to the timeout
+    await dispatchStorageEvent(queryParams.logout, new Date());
+    expect(sessionStorage.length).toBe(1); // that takes longer due to the timeout
   });
 
   it("notifyLogout", async () => {
     localStorage.clear();
 
-    expect(Object.keys(localStorage.__STORE__).length).toBe(0);
+    expect(localStorage.length).toBe(0);
     const datePre = new Date().getTime();
 
     LoginHelper.notifyLogout();
-    expect(Object.keys(localStorage.__STORE__).length).toBe(1);
+    expect(localStorage.length).toBe(1);
     const localStorageDate = parseInt(localStorage.getItem(queryParams.logout));
     expect(localStorageDate).toBeGreaterThanOrEqual(datePre);
     const datePost = new Date().getTime();
     expect(localStorageDate).toBeLessThanOrEqual(datePost);
 
-    dispatchFakeStorageEvent(queryParams.logout, new Date());
-    expect(Object.keys(sessionStorage.__STORE__).length).toBe(1); // that takes longer due to the timeout
+    await dispatchStorageEvent(queryParams.logout, new Date());
+    expect(localStorage.length).toBe(1); // that takes longer due to the timeout
   });
 });

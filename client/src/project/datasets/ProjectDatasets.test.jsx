@@ -23,16 +23,17 @@
  *  Tests for datasets inside projects.
  */
 
-import { Provider } from "react-redux";
-import { createRoot } from "react-dom/client";
 import { createMemoryHistory } from "history";
-import { act } from "react-test-renderer";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
+import { act } from "react-test-renderer";
+import { vi } from "vitest";
 
 import { ACCESS_LEVELS, testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
-import DatasetImport from "./import/index";
 import { generateFakeUser } from "../../user/User.test";
+import DatasetImport from "./import/index";
 
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
@@ -51,7 +52,7 @@ describe("rendering", () => {
 
   beforeEach(() => {
     // ckeditor dumps some junk to the console.error. Ignore it.
-    spy = jest.spyOn(console, "error").mockImplementation(() => {
+    spy = vi.spyOn(console, "error").mockImplementation(() => {
       // eslint-disable-line @typescript-eslint/ban-types
     });
   });
