@@ -27,6 +27,7 @@ import cx from "classnames";
 import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { CardImg, Col, Row } from "reactstrap";
+// @ts-ignore ts(7016)
 import { Pagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 

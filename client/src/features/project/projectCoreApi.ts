@@ -233,7 +233,7 @@ export const projectCoreApi = createApi({
           },
         };
       },
-      invalidatesTags: (result, error, migrationParams) => [
+      invalidatesTags: (_result, _error, migrationParams) => [
         { type: "project-status", id: migrationParams.gitUrl },
       ],
     }),

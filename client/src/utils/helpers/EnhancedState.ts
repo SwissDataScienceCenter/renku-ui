@@ -88,7 +88,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [userPreferencesApi.reducerPath]: userPreferencesApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
-    [workflowsSlice.name]: workflowsSlice.reducer,
   };
 
   // For the moment, disable the custom middleware, since it causes problems for our app.

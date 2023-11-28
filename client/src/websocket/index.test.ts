@@ -17,18 +17,19 @@
  */
 
 import WS from "jest-websocket-mock";
+import { describe, expect, it } from "vitest";
 
+import APIClient, { testClient as client } from "../api-client";
 import { StateModel, globalSchema } from "../model";
+import { NotificationsManager } from "../notifications";
+import { sleep } from "../utils/helpers/HelperFunctions";
+import { WsServerMessage } from "./WsMessages";
 import {
+  MessageData,
   getWsServerMessageHandler,
   retryConnection,
   setupWebSocket,
-  MessageData,
 } from "./index";
-import { WsServerMessage } from "./WsMessages";
-import { sleep } from "../utils/helpers/HelperFunctions";
-import { NotificationsManager } from "../notifications";
-import APIClient, { testClient as client } from "../api-client";
 
 const fakeLocation = () => {
   return { pathname: "" };

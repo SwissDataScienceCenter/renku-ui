@@ -1,4 +1,6 @@
-import { StorybookConfig } from "@storybook/react-webpack5";
+import type { StorybookConfig } from "@storybook/react-vite";
+import { mergeConfig } from "vite";
+
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx)"],
   staticDirs: ["../public"],
@@ -6,7 +8,7 @@ const config: StorybookConfig = {
     "@storybook/addon-links",
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
-    "@storybook/preset-create-react-app",
+    "@storybook/preset-vite",
     "addon-redux",
     {
       name: "@storybook/addon-docs",
@@ -17,10 +19,9 @@ const config: StorybookConfig = {
   ],
 
   framework: {
-    name: "@storybook/react-webpack5",
+    name: "@storybook/react-vite",
     options: {},
   },
-
   typescript: {
     reactDocgen: "react-docgen-typescript",
     reactDocgenTypescriptOptions: {
@@ -30,9 +31,14 @@ const config: StorybookConfig = {
       },
     },
   },
-
   docs: {
     autodocs: true,
+  },
+
+  async viteFinal(config, { configType }) {
+    return mergeConfig(config, {
+      define: { "process.env": {} },
+    });
   },
 };
 
