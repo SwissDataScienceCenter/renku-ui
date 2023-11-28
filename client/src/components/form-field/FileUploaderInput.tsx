@@ -18,18 +18,18 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import React from "react";
+import React, { useContext } from "react";
+
 import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
 import { IDatasetFiles } from "../../features/project/Project";
 import type { DatasetFormState } from "../../features/project/dataset";
 import { setFiles } from "../../features/project/dataset";
+import AppContext from "../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import DropzoneFileUploader, { FILE_STATUS } from "./DropzoneFileUploader";
-
-// Not sure where this comes from -- just trying to maintain existing behavior.
-const UPLOAD_THRESHOLD_SOFT = 104_857_600;
 
 type NotificationFunctionArgs = {
   dataset: any;
@@ -88,6 +88,10 @@ type FileUploaderInputProps = {
 };
 
 function FileUploaderInput(props: FileUploaderInputProps) {
+  const { params } = useContext(AppContext);
+  const uploadThresholdSoft =
+    params?.UPLOAD_THRESHOLD.soft ?? DEFAULT_APP_PARAMS.UPLOAD_THRESHOLD.soft;
+
   const datasetUploaderFiles = useAppSelector(
     ({ datasetForm }) => datasetForm.form.files
   );
@@ -117,7 +121,7 @@ function FileUploaderInput(props: FileUploaderInputProps) {
         location: props.location,
       })}
       setDisplayFiles={setDisplayFiles}
-      uploadThresholdSoft={UPLOAD_THRESHOLD_SOFT}
+      uploadThresholdSoft={uploadThresholdSoft}
       value={props.value}
       versionUrl={props.versionUrl}
     />

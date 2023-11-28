@@ -57,14 +57,14 @@ import SessionUnavailable from "./SessionUnavailable";
 import styles from "./ShowSession.module.scss";
 import StartSessionProgressBar from "./StartSessionProgressBar";
 import StopSessionModal from "./StopSessionModal";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 
 const logo = "/static/public/img/logo.svg";
 
 export default function ShowSession() {
   const { params } = useContext(AppContext);
-  const anonymousSessionsEnabled = !!(
-    params as { ANONYMOUS_SESSIONS?: boolean }
-  ).ANONYMOUS_SESSIONS;
+  const anonymousSessionsEnabled =
+    params?.ANONYMOUS_SESSIONS ?? DEFAULT_APP_PARAMS.ANONYMOUS_SESSIONS;
 
   const logged = useSelector<RootState, User["logged"]>(
     (state) => state.stateModel.user.logged

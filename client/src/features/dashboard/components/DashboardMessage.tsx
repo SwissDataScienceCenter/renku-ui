@@ -24,9 +24,9 @@ import { RenkuAlert } from "../../../components/Alert";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import AppContext from "../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
-import { validateDashboardMessageParams } from "../message/dashboardMessage.utils";
 import { dashboardMessageSlice } from "../message/dashboardMessageSlice";
 
 import styles from "./DashboardMessage.module.scss";
@@ -35,7 +35,7 @@ export default function DashboardMessage() {
   const { params } = useContext(AppContext);
 
   const dashboardParams = useMemo(
-    () => validateDashboardMessageParams(params),
+    () => params?.DASHBOARD_MESSAGE ?? DEFAULT_APP_PARAMS.DASHBOARD_MESSAGE,
     [params]
   );
 

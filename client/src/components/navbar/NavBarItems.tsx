@@ -33,6 +33,7 @@ import AdminDropdownItem from "../../landing/AdminDropdownItem";
 import { User } from "../../model/RenkuModels";
 import { NotificationsMenu } from "../../notifications";
 import { Docs, Links, RenkuPythonDocs } from "../../utils/constants/Docs";
+import type { AppParams } from "../../utils/context/appParams.types";
 import type { RootState } from "../../utils/helpers/EnhancedState";
 import {
   getActiveProjectPathWithNamespace,
@@ -261,11 +262,7 @@ export function RenkuToolbarNotifications({
 }
 
 interface RenkuToolbarItemUserProps {
-  params: {
-    BASE_URL: string;
-    GATEWAY_URL: string;
-    UISERVER_URL: string;
-  };
+  params: AppParams;
 }
 
 export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {

@@ -26,6 +26,7 @@ import { Loader } from "../../../components/Loader";
 import ContainerWrap from "../../../components/container/ContainerWrap";
 import { User } from "../../../model/RenkuModels";
 import AppContext from "../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import type { RootState } from "../../../utils/helpers/EnhancedState";
 import { useGetSessionsQuery } from "../sessions.api";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
@@ -33,9 +34,8 @@ import SessionsList from "./SessionsList";
 
 export default function AnonymousSessionsList() {
   const { params } = useContext(AppContext);
-  const anonymousSessionsEnabled = !!(
-    params as { ANONYMOUS_SESSIONS?: boolean }
-  ).ANONYMOUS_SESSIONS;
+  const anonymousSessionsEnabled =
+    params?.ANONYMOUS_SESSIONS ?? DEFAULT_APP_PARAMS.ANONYMOUS_SESSIONS;
 
   const logged = useSelector<RootState, User["logged"]>(
     (state) => state.stateModel.user.logged

@@ -49,6 +49,7 @@ import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
@@ -74,9 +75,8 @@ import { StartNotebookServerOptions } from "./options/StartNotebookServerOptions
 
 export default function StartNewSession() {
   const { params } = useContext(AppContext);
-  const anonymousSessionsEnabled = !!(
-    params as { ANONYMOUS_SESSIONS?: boolean }
-  ).ANONYMOUS_SESSIONS;
+  const anonymousSessionsEnabled =
+    params?.ANONYMOUS_SESSIONS ?? DEFAULT_APP_PARAMS.ANONYMOUS_SESSIONS;
 
   const location = useLocation();
   const searchParams = useMemo(

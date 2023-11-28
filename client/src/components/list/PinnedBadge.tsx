@@ -33,6 +33,7 @@ import {
 import { User } from "../../model/RenkuModels";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
 import AppContext from "../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
 import { RootState } from "../../utils/helpers/EnhancedState";
 import { Loader } from "../Loader";
 import { EntityType as AnotherEntityType } from "../entities/Entities";
@@ -59,7 +60,10 @@ export default function PinnedBadge({ entityType, slug }: PinnedBadgeProps) {
 }
 
 function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
-  const maxPinnedProjects = useGetMaxPinnedProjects();
+  const { params } = useContext(AppContext);
+  const maxPinnedProjects =
+    params?.USER_PREFERENCES_MAX_PINNED_PROJECTS ??
+    DEFAULT_APP_PARAMS.USER_PREFERENCES_MAX_PINNED_PROJECTS;
 
   const addErrorNotification = useErrorNotification();
 
@@ -186,35 +190,6 @@ function PinnedBadgeImpl({ slug }: Pick<PinnedBadgeProps, "slug">) {
       </UncontrolledTooltip>
     </div>
   );
-}
-
-function useGetMaxPinnedProjects() {
-  const { params } = useContext(AppContext);
-
-  const maxPinnedProjects = useMemo(() => {
-    const params_ = params as {
-      USER_PREFERENCES_MAX_PINNED_PROJECTS?: unknown;
-    };
-    if (!("USER_PREFERENCES_MAX_PINNED_PROJECTS" in params_)) {
-      return 0;
-    }
-    if (typeof params_["USER_PREFERENCES_MAX_PINNED_PROJECTS"] === "number") {
-      return Math.max(0, params_["USER_PREFERENCES_MAX_PINNED_PROJECTS"]);
-    }
-    if (typeof params_["USER_PREFERENCES_MAX_PINNED_PROJECTS"] === "string") {
-      try {
-        return Math.max(
-          0,
-          parseInt(params_["USER_PREFERENCES_MAX_PINNED_PROJECTS"] ?? "0", 10)
-        );
-      } catch {
-        return 0;
-      }
-    }
-    return 0;
-  }, [params]);
-
-  return maxPinnedProjects;
 }
 
 function useErrorNotification() {
