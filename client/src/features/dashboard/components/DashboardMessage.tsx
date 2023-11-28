@@ -20,22 +20,24 @@ import cx from "classnames";
 import { useCallback, useContext, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Collapse } from "reactstrap";
+
 import { RenkuAlert } from "../../../components/Alert";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import AppContext from "../../../utils/context/appContext";
-import { validateDashboardMessageParams } from "../message/dashboardMessage.utils";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import {
   dashboardMessageSlice,
   useDashboardMessageSelector,
 } from "../message/dashboardMessageSlice";
+
 import styles from "./DashboardMessage.module.scss";
 
 export default function DashboardMessage() {
   const { params } = useContext(AppContext);
 
   const dashboardParams = useMemo(
-    () => validateDashboardMessageParams(params),
+    () => params?.DASHBOARD_MESSAGE ?? DEFAULT_APP_PARAMS.DASHBOARD_MESSAGE,
     [params]
   );
 
