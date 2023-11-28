@@ -23,6 +23,8 @@
  *  Tests for file components.
  */
 
+import { describe, expect, it } from "vitest";
+
 import {
   NotebookSourceDisplayMode,
   sanitizeNotebook,

@@ -78,7 +78,6 @@ export function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
   // this showdown extension only support ```ascii math or ```latex
   markdown = markdown?.replace(new RegExp("\\```math", "gm"), "```latex");
   const htmlFromMarkdown = converter.makeHtml(markdown);
-  console.log({ htmlFromMarkdown });
   const sanitized = DOMPurify.sanitize(htmlFromMarkdown);
   return sanitized;
 }

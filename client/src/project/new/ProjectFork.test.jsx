@@ -23,17 +23,18 @@
  *  New project test code.
  */
 
+import { createMemoryHistory } from "history";
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
-import { MemoryRouter } from "react-router-dom";
-import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
+import { MemoryRouter } from "react-router-dom";
+import { describe, it } from "vitest";
 
-import { StateModel, globalSchema } from "../../model";
-import { ForkProject } from "./index";
 import { testClient as client } from "../../api-client";
+import { StateModel, globalSchema } from "../../model";
 import { generateFakeUser } from "../../user/User.test";
 import AppContext from "../../utils/context/appContext";
+import { ForkProject } from "./index";
 
 const fakeHistory = createMemoryHistory({
   initialEntries: ["/"],

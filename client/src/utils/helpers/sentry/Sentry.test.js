@@ -23,7 +23,7 @@
  *  Tests for Sentry.
  */
 
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const FAKE = {
   url: "https://12345abcde@sentry.dev.renku.ch/5",

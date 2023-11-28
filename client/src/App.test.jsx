@@ -3,7 +3,7 @@ import { act } from "react-dom/test-utils";
 import * as reactRedux from "react-redux";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
-import { vi } from "vitest";
+import { beforeEach, describe, it, vi } from "vitest";
 
 import App from "./App";
 import { testClient as client } from "./api-client";

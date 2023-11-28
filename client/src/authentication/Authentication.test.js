@@ -22,7 +22,7 @@
  *  Authentication.test.js
  *  Tests for authentication.
  */
-import { vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { LoginHelper } from "./Authentication.container";
 import { createLoginUrl } from "./LoginRedirect";

@@ -26,7 +26,8 @@
 import { createRoot } from "react-dom/client";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
-import { vi } from "vitest";
+
+import { describe, it, vi } from "vitest";
 
 import LoginRedirect from "./LoginRedirect";
 

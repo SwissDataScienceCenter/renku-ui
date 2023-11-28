@@ -24,16 +24,17 @@
  */
 
 import { createRoot } from "react-dom/client";
-
 import { act } from "react-dom/test-utils";
+import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
+import { describe, it } from "vitest";
+
+import { testClient as client } from "../api-client";
+import { Dashboard } from "../features/dashboard/Dashboard";
+import { StateModel, globalSchema } from "../model";
+import { generateFakeUser } from "../user/User.test";
 import AppContext from "../utils/context/appContext";
 import { createCoreApiVersionedUrlConfig } from "../utils/helpers/url";
-import { testClient as client } from "../api-client";
-import { generateFakeUser } from "../user/User.test";
-import { StateModel, globalSchema } from "../model";
-import { Provider } from "react-redux";
-import { Dashboard } from "../features/dashboard/Dashboard";
 import { AnonymousHome } from "./index";
 
 const appContext = {
