@@ -386,6 +386,8 @@
 
     .connectFeatGraph {
       grid-area: connectFeatGraph;
+      align-items: center;
+
       img {
         width: 100%;
         max-width: 540px;
@@ -396,9 +398,24 @@
 
 .connectFeatGraph {
   grid-area: connectFeatGraph;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
   img {
     width: 600px;
     max-width: 600px;
+  }
+
+  .connectImgJupyter {
+    border: 1px solid black;
+  }
+
+  .connectImgTerminal {
+    border-left: 1px solid black;
+    border-right: 2px solid black;
+    border-top: 1px solid black;
+    border-radius: 10px;
   }
 }
 

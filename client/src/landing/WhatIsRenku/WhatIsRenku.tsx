@@ -30,7 +30,8 @@ import { Docs, RenkuContactEmail } from "../../utils/constants/Docs";
 import { mapDatasetKgResultToEntity } from "../../utils/helpers/KgSearchFunctions";
 import { Url } from "../../utils/helpers/url";
 import { SearchInput } from "../AnonymousHome";
-import SSH_Graphic from "../Graphics/SSH_Graphic.png";
+import Jupyter_Graphic from "../Graphics/jupyter-terminal.png";
+import SSH_Graphic from "../Graphics/ssh-terminal.gif";
 import compute_Graphic from "../Graphics/computoOptions.svg";
 import workflow_Graphic from "../Graphics/my-workflow-yaml.png";
 import puzzleGraphic from "../Graphics/puzzlePieces.svg";
@@ -184,7 +185,18 @@ const ConnectFeatSection = () => {
   return (
     <div id={styles.connectFeatContainer}>
       <div className={styles.connectFeatGraph}>
-        <img src={SSH_Graphic} loading="lazy" alt="SSH connect graphic" />
+        <img
+          src={Jupyter_Graphic}
+          loading="lazy"
+          alt="Jupyter connect graphic"
+          className={styles.connectImgJupyter}
+        />
+        <img
+          src={SSH_Graphic}
+          loading="lazy"
+          alt="SSH connect graphic"
+          className={styles.connectImgTerminal}
+        />
       </div>
       <div className={styles.connectFeatTitle}>
         <h3>Connect from anywhere</h3>
