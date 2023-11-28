@@ -26,6 +26,7 @@ import { Url } from "./url";
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
 import { isEqual } from "lodash";
 import { getEntityImageUrl } from "./HelperFunctions";
+import { KgMetadataResponse } from "../../features/project/Project";
 
 const getDatasetIdentifier = (links: KgSearchResultLink[]): string => {
   try {
@@ -79,6 +80,30 @@ export const mapSearchResultToEntity = (
     slug: entity.type === EntityType.Project ? entity.namespace : "",
     tagList: entity.keywords,
     timeCaption: entity.date,
+    title: entity.name,
+    url,
+    visibility: entity.visibility,
+  };
+};
+
+export const mapMetadataKgResultToEntity = (
+  entity: KgMetadataResponse
+): ListElementProps => {
+  const url = getProjectUrl(entity.path);
+  const creators = [{ name: entity.created.creator.name }];
+  const id = entity.path;
+
+  return {
+    creators,
+    description: entity.description,
+    id,
+    imageUrl: getEntityImageUrl(entity.images),
+    itemType: EntityType.Project,
+    labelCaption: "Created",
+    path: entity.path,
+    slug: entity.path,
+    tagList: entity.keywords,
+    timeCaption: entity.created.dateCreated,
     title: entity.name,
     url,
     visibility: entity.visibility,

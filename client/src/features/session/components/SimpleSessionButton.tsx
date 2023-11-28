@@ -34,12 +34,14 @@ interface SimpleSessionButtonProps {
   className?: string;
   fullPath: string;
   skip?: boolean;
+  fromLanding?: boolean;
 }
 
 export default function SimpleSessionButton({
   className: className_,
   fullPath,
   skip,
+  fromLanding = false,
 }: SimpleSessionButtonProps) {
   const className = cx(
     "btn",
@@ -51,6 +53,10 @@ export default function SimpleSessionButton({
   );
 
   const sessionAutostartUrl = Url.get(Url.pages.project.session.autostart, {
+    namespace: "",
+    path: fullPath,
+  });
+  const sessionNewUrl = Url.get(Url.pages.project.session.new, {
     namespace: "",
     path: fullPath,
   });
@@ -73,7 +79,14 @@ export default function SimpleSessionButton({
 
   if (!runningSession) {
     return (
-      <Link className={className} to={sessionAutostartUrl}>
+      <Link
+        className={className}
+        to={{
+          pathname: sessionNewUrl,
+          state: { fromLanding },
+          search: "autostart=1",
+        }}
+      >
         <FontAwesomeIcon icon={faPlay} /> Start
       </Link>
     );
@@ -83,6 +96,7 @@ export default function SimpleSessionButton({
     <ResumeOrConnectButton
       className={className}
       runningSession={runningSession}
+      fromLanding={fromLanding}
     />
   );
 }
@@ -90,11 +104,13 @@ export default function SimpleSessionButton({
 interface ResumeOrConnectButtonProps {
   className: string;
   runningSession: Session;
+  fromLanding?: boolean;
 }
 
 function ResumeOrConnectButton({
   className,
   runningSession,
+  fromLanding = false,
 }: ResumeOrConnectButtonProps) {
   const history = useHistory();
 
@@ -164,7 +180,10 @@ function ResumeOrConnectButton({
   }
 
   return (
-    <Link className={className} to={showSessionUrl}>
+    <Link
+      className={className}
+      to={{ pathname: showSessionUrl, state: { fromLanding } }}
+    >
       <div className="d-flex gap-2">
         <img src="/connect.svg" className="rk-icon rk-icon-md" /> Connect
       </div>

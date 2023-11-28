@@ -41,6 +41,10 @@ const Links = {
   MEDIUM: "https://medium.com/the-renku-blog",
   TWITTER: "https://twitter.com/RenkuIO",
   YOUTUBE: "https://www.youtube.com/channel/UCMF2tBtWU1sKWvtPl_HpI4A",
+  SDSC: "https://www.datascience.ch/",
+  ETH: "https://ethrat.ch/en/",
+  EPFL: "https://www.epfl.ch/en/",
+  ETHZ: "https://ethz.ch/en.html",
 };
 
 const GitlabLinks = {
@@ -54,4 +58,6 @@ const RenkuPythonDocs = {
   READ_THE_DOCS_ROOT: REKNU_PYTHON_READ_THE_DOCS_ROOT,
 };
 
-export { Docs, Links, RenkuPythonDocs, GitlabLinks };
+const RenkuContactEmail = "hello@renkulab.io";
+
+export { Docs, Links, RenkuPythonDocs, GitlabLinks, RenkuContactEmail };
