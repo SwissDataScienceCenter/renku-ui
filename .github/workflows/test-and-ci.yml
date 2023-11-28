@@ -24,7 +24,7 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
       - name: Run test client
-        run: npm vite:test
+        run: npm run vite:test
         env:
           CI: true
       - name: Run format client
