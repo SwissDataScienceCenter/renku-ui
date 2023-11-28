@@ -29,7 +29,6 @@ export interface AnonymousHomeConfig {
 }
 
 export interface HomepageParams {
-  contactEmail: string;
   custom: {
     enabled: boolean;
     main: {
