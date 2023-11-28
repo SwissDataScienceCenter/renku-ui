@@ -101,6 +101,7 @@
           "beforeunload",
           "bioconductor",
           "bool",
+          "booleans",
           "borderless",
           "calc",
           "cancellable",

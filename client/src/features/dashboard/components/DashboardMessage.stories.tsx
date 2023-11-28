@@ -20,6 +20,7 @@ import { Meta, StoryObj } from "@storybook/react";
 import { ARG_REDUX_PATH } from "addon-redux";
 import { useContext } from "react";
 import AppContext from "../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import DashboardMessage from "./DashboardMessage";
 
 interface DashboardMessageArgs {
@@ -90,6 +91,7 @@ const meta: Meta<DashboardMessageArgs> = {
       const context = {
         ...existingContext,
         params: {
+          ...DEFAULT_APP_PARAMS,
           DASHBOARD_MESSAGE: {
             enabled,
             text,
