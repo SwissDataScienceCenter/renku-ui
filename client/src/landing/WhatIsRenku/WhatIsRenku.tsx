@@ -30,12 +30,12 @@ import { Docs, RenkuContactEmail } from "../../utils/constants/Docs";
 import { mapDatasetKgResultToEntity } from "../../utils/helpers/KgSearchFunctions";
 import { Url } from "../../utils/helpers/url";
 import { SearchInput } from "../AnonymousHome";
-import Jupyter_Graphic from "../Graphics/jupyter-terminal.png";
-import SSH_Graphic from "../Graphics/terminal-ssh-renku.gif";
 import compute_Graphic from "../Graphics/computoOptions.svg";
+import Jupyter_Graphic from "../Graphics/jupyter-terminal.png";
 import workflow_Graphic from "../Graphics/my-workflow-yaml.png";
 import puzzleGraphic from "../Graphics/puzzlePieces.svg";
 import searchGraphic from "../Graphics/search.png";
+import SSH_Graphic from "../Graphics/terminal-ssh-renku.gif";
 import TemplateSlider from "../TemplateSlider/TemplateSlider";
 import styles from "./WhatIsRenku.module.scss";
 
@@ -56,9 +56,12 @@ const TryOutSessionBtn = ({
 
   const url = {
     pathname: sessionNewUrl,
-    state: { fromLanding: true },
-    search: type === "autostart" ? "autostart=1" : "",
+    search:
+      type === "autostart" ? "autostart=1&fromLanding=1" : "fromLanding=1",
   };
+
+  if (!projectPath) return null;
+
   return (
     <Link
       className={cx(
@@ -90,23 +93,25 @@ const ShareFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
         </p>
       </div>
       <div className={styles.shareFeatBtn}>
-        <Link
-          className={cx(
-            "btn",
-            "btn-rk-green",
-            styles.btnContactUs,
-            "align-self-start",
-            "align-self-lg-center",
-            "gap-2"
-          )}
-          to={Url.get(Url.pages.project.base, {
-            namespace: "",
-            path: projectPath,
-          })}
-          target="_blank"
-        >
-          Explore a project
-        </Link>
+        {projectPath && (
+          <Link
+            className={cx(
+              "btn",
+              "btn-rk-green",
+              styles.btnContactUs,
+              "align-self-start",
+              "align-self-lg-center",
+              "gap-2"
+            )}
+            to={Url.get(Url.pages.project.base, {
+              namespace: "",
+              path: projectPath,
+            })}
+            target="_blank"
+          >
+            Explore a project
+          </Link>
+        )}
       </div>
     </div>
   );
@@ -355,23 +360,25 @@ const WorkflowFeatSection = ({ projectPath }: WhatIsRenkuProps) => {
           pipeline. Easily rerun your whole workflow, or just specific steps.
         </p>
         <div>
-          <Link
-            className={cx(
-              "btn",
-              "btn-rk-green",
-              styles.btnContactUs,
-              "align-self-start",
-              "align-self-lg-center",
-              "gap-2"
-            )}
-            to={Url.get(Url.pages.project.workflows, {
-              namespace: "",
-              path: projectPath,
-            })}
-            target="_blank"
-          >
-            Check out workflows
-          </Link>
+          {projectPath && (
+            <Link
+              className={cx(
+                "btn",
+                "btn-rk-green",
+                styles.btnContactUs,
+                "align-self-start",
+                "align-self-lg-center",
+                "gap-2"
+              )}
+              to={Url.get(Url.pages.project.workflows, {
+                namespace: "",
+                path: projectPath,
+              })}
+              target="_blank"
+            >
+              Check out workflows
+            </Link>
+          )}
         </div>
         <div className={styles.featDocLinks}>
           <BookmarksFill size={30} />

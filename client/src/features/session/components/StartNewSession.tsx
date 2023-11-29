@@ -51,7 +51,7 @@ import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
-import { Url } from "../../../utils/helpers/url";
+import { Url, getSearchParams } from "../../../utils/helpers/url";
 import { getProvidedSensitiveFields } from "../../project/utils/projectCloudStorage.utils";
 import { useStartSessionMutation } from "../sessions.api";
 import startSessionSlice, {
@@ -158,26 +158,23 @@ function BackButton() {
   const projectUrl = Url.get(Url.pages.project, projectUrlData);
 
   const location = useLocation<LocationState | undefined>();
-  const { from, filePath, fromLanding } = location.state ?? {};
-  const buttonBackInfo = {
-    url: "",
-    label: "",
-  };
-  if (from && filePath) {
-    buttonBackInfo.label = `Back to ${filePath}`;
-    buttonBackInfo.url = from;
-  } else if (from) {
-    buttonBackInfo.label = "Back to notebook file";
-    buttonBackInfo.url = from;
-  } else if (fromLanding) {
-    buttonBackInfo.label = "Back to home";
-    buttonBackInfo.url = "/";
-  } else {
-    buttonBackInfo.label = `Back to ${pathWithNamespace}`;
-    buttonBackInfo.url = projectUrl;
-  }
 
-  return <GoBackButton label={buttonBackInfo.label} url={buttonBackInfo.url} />;
+  const { from, filePath } = location.state ?? {};
+  const searchParams = getSearchParams();
+  const fromLandingParam = (searchParams as { fromLanding?: string })
+    .fromLanding;
+  const fromLanding = location.state?.fromLanding || fromLandingParam || false;
+
+  const backUrl = from ? from : fromLanding ? "/" : projectUrl;
+  const backLabel =
+    from && filePath
+      ? `Back to ${filePath}`
+      : from
+      ? "Back to notebook file"
+      : fromLanding
+      ? "Back to home"
+      : `Back to ${pathWithNamespace}`;
+  return <GoBackButton label={backLabel} url={backUrl} />;
 }
 
 interface LocationState {
@@ -195,7 +192,10 @@ function SessionStarting() {
   );
 
   const location = useLocation<LocationState | undefined>();
-  const { fromLanding } = location.state ?? {};
+  const searchParams = getSearchParams();
+  const fromLandingParam = (searchParams as { fromLanding?: string })
+    .fromLanding;
+  const fromLanding = location.state?.fromLanding || fromLandingParam || false;
 
   const steps = useStartSessionSelector(({ steps }) => steps);
 

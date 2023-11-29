@@ -114,7 +114,7 @@ $borderRadius: 1000px;
 .btn-info,
 .btn-warning {
   color: $rk-white;
-  -#{$prefix}btn-active-color: #{$rk-white};
+  --#{$prefix}btn-active-color: #{$rk-white};
   &:hover,
   &:focus,
   &:active,
