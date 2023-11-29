@@ -31,7 +31,7 @@ import { mapDatasetKgResultToEntity } from "../../utils/helpers/KgSearchFunction
 import { Url } from "../../utils/helpers/url";
 import { SearchInput } from "../AnonymousHome";
 import Jupyter_Graphic from "../Graphics/jupyter-terminal.png";
-import SSH_Graphic from "../Graphics/ssh-terminal.gif";
+import SSH_Graphic from "../Graphics/terminal-ssh-renku.gif";
 import compute_Graphic from "../Graphics/computoOptions.svg";
 import workflow_Graphic from "../Graphics/my-workflow-yaml.png";
 import puzzleGraphic from "../Graphics/puzzlePieces.svg";
