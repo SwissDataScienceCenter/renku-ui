@@ -51,7 +51,7 @@ import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
-import { Url, getSearchParams } from "../../../utils/helpers/url";
+import { Url } from "../../../utils/helpers/url";
 import { getProvidedSensitiveFields } from "../../project/utils/projectCloudStorage.utils";
 import { useStartSessionMutation } from "../sessions.api";
 import startSessionSlice, {
@@ -160,7 +160,7 @@ function BackButton() {
   const location = useLocation<LocationState | undefined>();
 
   const { from, filePath } = location.state ?? {};
- const searchParams = useMemo(
+  const searchParams = useMemo(
     () => new URLSearchParams(location.search),
     [location.search]
   );
