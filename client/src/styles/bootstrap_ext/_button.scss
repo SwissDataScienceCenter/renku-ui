@@ -104,7 +104,7 @@ $borderRadius: 1000px;
 }
 
 .btn-secondary {
-  -#{$prefix}btn-active-bg: #{$rk-green-highlight};
+  --#{$prefix}btn-active-bg: #{$rk-green-highlight};
   &:focus {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   }
@@ -502,12 +502,12 @@ $borderRadius: 1000px;
 }
 @keyframes pulse {
   0% {
-    transform: scaleX(1);
+    transform: scale(1);
   }
   50% {
-    transform: scale3d(1.05, 1.05, 1.05);
+    transform: scale(1.05);
   }
   to {
-    transform: scaleX(1);
+    transform: scale(1);
   }
 }

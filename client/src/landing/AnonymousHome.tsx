@@ -75,7 +75,6 @@ type SearchInputFormFields = {
   phrase: string;
 };
 
-// Currently not used; planned for #shapeUp-issues
 export function SearchInput() {
   const { handleSubmit, register } = useForm<SearchInputFormFields>({
     defaultValues: { phrase: "" },

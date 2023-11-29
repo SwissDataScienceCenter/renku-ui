@@ -36,7 +36,7 @@ CURRENT_COMMIT=`git rev-parse --short HEAD`
 # Set HOMEPAGE_PROJECT_PATH with the project's path with namespace to display the project on the landing page.
 # E.g.,
 #HOMEPAGE_PROJECT_PATH='elisabet.capon/renku-demo-project-machine-learning'
-#HOMEPAGE_DATASET_SLUG='saFxX5caie56yqGhJr6BPdngHywJDQGS6p9TrcsghNvADGymnYE9rnHjW6GELRGFH3mmh6rigimnxNJJigR5YJVH2G3UcDYdAsLrxMfwfYRRDj'
+#HOMEPAGE_DATASET_SLUG='saFxX5caie56yqGhJr6BPdngHywJDQGS6w8i6jRMYnAHqbgmy92rFH6MsZBybYeLZqfdagwuEmGWNix2eFitqmD2e1qGgbYTAfWrcubkkCqDy3'
 if [[ "$OSTYPE" == "linux-gnu" ]]
 then
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64 -w 0`
