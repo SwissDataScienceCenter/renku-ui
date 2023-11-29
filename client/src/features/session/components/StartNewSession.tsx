@@ -194,10 +194,12 @@ function SessionStarting() {
   );
 
   const location = useLocation<LocationState | undefined>();
-  const searchParams = getSearchParams();
-  const fromLandingParam = (searchParams as { fromLanding?: string })
-    .fromLanding;
-  const fromLanding = location.state?.fromLanding || fromLandingParam || false;
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const fromLandingParam = !!searchParams.get("fromLanding");
+  const fromLanding = location.state?.fromLanding || fromLandingParam;
 
   const steps = useStartSessionSelector(({ steps }) => steps);
 
