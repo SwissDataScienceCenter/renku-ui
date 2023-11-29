@@ -16,11 +16,8 @@
  * limitations under the License.
  */
 
-import { useState } from "react";
-import templateJuliaGraphic from "../Graphics/templateJulia.png";
-import templatePythonGraphic from "../Graphics/templatePython.png";
-import templateRStudioGraphic from "../Graphics/templateRstudio.png";
-import styles from "./TemplateSlider.module.scss";
+import { DateTime, Duration } from "luxon";
+import { useCallback, useEffect, useState } from "react";
 
 import btnJulia from "../Graphics/btnJulia-min.png";
 import btnJuliaSelected from "../Graphics/btnJuliaSelected-min.png";
@@ -28,11 +25,48 @@ import btnPython from "../Graphics/btnPython-min.png";
 import btnPythonSelected from "../Graphics/btnPythonSelected-min.png";
 import btnRStudio from "../Graphics/btnRStudio-min.png";
 import btnRStudioSelected from "../Graphics/btnRstudioSelected-min.png";
+import templateJuliaGraphic from "../Graphics/templateJulia.png";
+import templatePythonGraphic from "../Graphics/templatePython.png";
+import templateRStudioGraphic from "../Graphics/templateRstudio.png";
+
+import styles from "./TemplateSlider.module.scss";
+
+const AUTO_CHANGE_TEMPLATE_DURATION_MS = Duration.fromObject({
+  seconds: 10,
+  // eslint-disable-next-line spellcheck/spell-checker
+}).toMillis();
 
 export default function TemplateSlider() {
-  const [templateSelected, setTemplateSelected] = useState<
-    "python" | "rStudio" | "julia"
-  >("python");
+  const [{ templateSelected, lastSelection }, setState] = useState<State>({
+    templateSelected: "python",
+    lastSelection: null,
+  });
+
+  const onSelectTemplate = useCallback(
+    (templateSelected: State["templateSelected"]) => () => {
+      setState({ templateSelected, lastSelection: DateTime.now() });
+    },
+    []
+  );
+
+  // Show the next template 10 seconds after the last change
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setState(({ templateSelected }) => ({
+        templateSelected:
+          templateSelected === "python"
+            ? "rStudio"
+            : templateSelected === "rStudio"
+            ? "julia"
+            : "python",
+        lastSelection: DateTime.now(),
+      }));
+    }, AUTO_CHANGE_TEMPLATE_DURATION_MS);
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [lastSelection]);
+
   return (
     <div className={styles.templateSlideContainer}>
       <div className={styles.templateSliderImages}>
@@ -60,21 +94,26 @@ export default function TemplateSlider() {
           src={templateSelected === "python" ? btnPythonSelected : btnPython}
           alt="Button Python"
           loading="lazy"
-          onClick={() => setTemplateSelected("python")}
+          onClick={onSelectTemplate("python")}
         />
         <img
           src={templateSelected === "rStudio" ? btnRStudioSelected : btnRStudio}
           alt="Button RStudio"
           loading="lazy"
-          onClick={() => setTemplateSelected("rStudio")}
+          onClick={onSelectTemplate("rStudio")}
         />
         <img
           src={templateSelected === "julia" ? btnJuliaSelected : btnJulia}
           alt="Button Julia"
           loading="lazy"
-          onClick={() => setTemplateSelected("julia")}
+          onClick={onSelectTemplate("julia")}
         />
       </div>
     </div>
   );
+}
+
+interface State {
+  templateSelected: "python" | "rStudio" | "julia";
+  lastSelection: DateTime | null;
 }
