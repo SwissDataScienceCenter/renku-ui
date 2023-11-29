@@ -21,7 +21,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { clamp } from "lodash";
 import { ChangeEvent, useCallback, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 import {
   Button,
   FormGroup,
@@ -38,17 +37,17 @@ import { Loader } from "../../../../components/Loader";
 import CommitSelector from "../../../../components/commitSelector/CommitSelector";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import type { RootState } from "../../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { UncontrolledPopover } from "../../../../utils/ts-wrappers";
 import { useGetRepositoryCommitsQuery } from "../../../project/projectGitLab.api";
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
 import { setCommit } from "../../startSessionOptionsSlice";
 
 export default function SessionCommitOption() {
-  const defaultBranch = useSelector<RootState, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootState, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
 

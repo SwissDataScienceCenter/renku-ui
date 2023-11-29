@@ -28,7 +28,6 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import {
   Button,
@@ -53,7 +52,7 @@ import { NotificationsManager } from "../../../notifications/notifications.types
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import AppContext from "../../../utils/context/appContext";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
-import type { RootState } from "../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import RtkQueryErrorsContext from "../../../utils/helpers/RtkQueryErrorsContext";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
@@ -175,7 +174,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
 
   const { notifications } = useContext(AppContext);
 
-  const logged = useSelector<RootState, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 

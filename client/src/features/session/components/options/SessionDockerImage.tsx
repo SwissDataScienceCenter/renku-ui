@@ -16,24 +16,22 @@
  * limitations under the License.
  */
 
-import { useSelector } from "react-redux";
-
 import { Loader } from "../../../../components/Loader";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import type { RootState } from "../../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
 import SessionPinnedDockerImage from "./SessionPinnedDockerImage";
 import SessionProjectDockerImage from "./SessionProjectDockerImage";
 
 export default function SessionDockerImage() {
-  const projectRepositoryUrl = useSelector<RootState, string>(
+  const projectRepositoryUrl = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
-  const defaultBranch = useSelector<RootState, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootState, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({

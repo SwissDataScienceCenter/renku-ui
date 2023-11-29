@@ -18,7 +18,6 @@
 
 import { useCallback, useContext, useEffect } from "react";
 import { Balloon, Briefcase } from "react-bootstrap-icons";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Table } from "reactstrap";
 
@@ -27,7 +26,7 @@ import AppContext from "../../utils/context/appContext";
 import useGetInactiveProjects from "../../utils/customHooks/UseGetInactiveProjects";
 import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
-import type { RootState } from "../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { sendPullKgActivationStatus } from "../../websocket/WsMessages";
 import { useActivateIndexingMutation } from "../project/projectKg.api";
 import ActivationProgress from "./components/ActivationProgress";
@@ -244,9 +243,7 @@ function ProjectsNotIndexedPage({
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activateIndexing, _] = useActivateIndexingMutation();
-  const websocket = useSelector(
-    (state: RootState) => state.stateModel.webSocket
-  );
+  const websocket = useLegacySelector((state) => state.stateModel.webSocket);
   const { client } = useContext(AppContext);
 
   // hook to calculate if still activating a project of the list
@@ -349,7 +346,7 @@ function ProjectsNotIndexedPage({
 }
 
 function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
-  const user = useSelector((state: RootState) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
   const { data, isFetching, isLoading, error } = useGetInactiveProjects(
     user?.data?.id
   );

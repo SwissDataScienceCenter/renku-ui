@@ -24,7 +24,6 @@ import {
   useCallback,
   useState,
 } from "react";
-import { useSelector } from "react-redux";
 import {
   Button,
   Col,
@@ -47,7 +46,7 @@ import {
   InformationalBody,
   commitsPhrasing,
 } from "../../../notebooks/components/Sidecar";
-import type { RootState } from "../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import {
   GitStatusResult,
   useGitStatusQuery,
@@ -96,10 +95,10 @@ function RunningSaveSessionContent({
   sessionName,
   toggleModal,
 }: RunningSaveSessionContentProps) {
-  const logged = useSelector<RootState, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
-  const accessLevel = useSelector<RootState, number>(
+  const accessLevel = useLegacySelector<number>(
     (state) => state.stateModel.project.metadata.accessLevel
   );
 

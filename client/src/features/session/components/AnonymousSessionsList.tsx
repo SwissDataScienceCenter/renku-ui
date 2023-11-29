@@ -18,7 +18,6 @@
 
 import cx from "classnames";
 import { useContext } from "react";
-import { useSelector } from "react-redux";
 import { Col, Row } from "reactstrap";
 
 import { ErrorAlert, InfoAlert } from "../../../components/Alert";
@@ -27,7 +26,7 @@ import ContainerWrap from "../../../components/container/ContainerWrap";
 import { User } from "../../../model/RenkuModels";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
-import type { RootState } from "../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useGetSessionsQuery } from "../sessions.api";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import SessionsList from "./SessionsList";
@@ -37,7 +36,7 @@ export default function AnonymousSessionsList() {
   const anonymousSessionsEnabled =
     params?.ANONYMOUS_SESSIONS ?? DEFAULT_APP_PARAMS.ANONYMOUS_SESSIONS;
 
-  const logged = useSelector<RootState, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 

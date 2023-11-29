@@ -16,10 +16,8 @@
  * limitations under the License.
  */
 
-import { useSelector } from "react-redux";
-
 import { SshModal } from "../../components/ssh/ssh";
-import { RootState } from "../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import DashboardMessage from "./components/DashboardMessage";
 import { DatasetDashboard } from "./components/DatasetsDashboard";
 import ProjectsInactiveKGWarning from "./components/InactiveKgProjects";
@@ -28,7 +26,7 @@ import { ProjectsDashboard } from "./components/ProjectsDashboard";
 import "./Dashboard.scss";
 
 export function Dashboard() {
-  const user = useSelector((state: RootState) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
 
   return (
     <div className="rk-dashboard">

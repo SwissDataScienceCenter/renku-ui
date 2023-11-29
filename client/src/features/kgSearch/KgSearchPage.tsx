@@ -17,8 +17,19 @@
  */
 
 import { useContext, useState } from "react";
-import { useSelector } from "react-redux";
 
+import { DatesFilter } from "../../components/dateFilter/DateFilter";
+import { FilterEntitySearch } from "../../components/entitySearchFilter/EntitySearchFilter";
+import QuickNav from "../../components/quicknav";
+import { SearchResultsContent } from "../../components/searchResultsContent/SearchResultsContent";
+import { SearchResultsHeader } from "../../components/searchResultsHeader/SearchResultsHeader";
+import SortingEntities, {
+  SortingOptions,
+} from "../../components/sortingEntities/SortingEntities";
+import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
+import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
+import AppContext from "../../utils/context/appContext";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import {
   Col,
   Modal,
@@ -26,20 +37,9 @@ import {
   ModalHeader,
   Row,
 } from "../../utils/ts-wrappers";
-import SortingEntities, {
-  SortingOptions,
-} from "../../components/sortingEntities/SortingEntities";
-import { FilterEntitySearch } from "../../components/entitySearchFilter/EntitySearchFilter";
-import { SearchResultsHeader } from "../../components/searchResultsHeader/SearchResultsHeader";
-import { SearchResultsContent } from "../../components/searchResultsContent/SearchResultsContent";
-import { useSearchEntitiesQuery } from "./KgSearchApi";
-import { KgAuthor } from "./KgSearch";
-import { TypeEntitySelection } from "../../components/typeEntityFilter/TypeEntityFilter";
-import { VisibilitiesFilter } from "../../components/visibilityFilter/VisibilityFilter";
-import { DatesFilter } from "../../components/dateFilter/DateFilter";
-import QuickNav from "../../components/quicknav";
-import AppContext from "../../utils/context/appContext";
 import ProjectsInactiveKGWarning from "../dashboard/components/InactiveKgProjects";
+import { KgAuthor } from "./KgSearch";
+import { useSearchEntitiesQuery } from "./KgSearchApi";
 import { KgSearchContextProvider, useKgSearchContext } from "./KgSearchContext";
 
 /* eslint-disable @typescript-eslint/ban-types */
@@ -119,8 +119,7 @@ function SearchPage({ userName, isLoggedUser, model }: SearchPageProps) {
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(true);
   const { client } = useContext(AppContext);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const user = useSelector((state: any) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
   const searchRequest = {
     phrase,
     sort,

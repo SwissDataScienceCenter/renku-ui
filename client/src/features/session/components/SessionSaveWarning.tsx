@@ -18,7 +18,6 @@
 
 import cx from "classnames";
 import { useCallback, useContext, useState } from "react";
-import { useSelector } from "react-redux";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { Button, Modal } from "reactstrap";
@@ -31,16 +30,16 @@ import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
-import type { RootState } from "../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 
 export default function SessionSaveWarning() {
   const location = useLocation();
 
-  const logged = useSelector<RootState, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
-  const { accessLevel, externalUrl } = useSelector<RootState, ProjectMetadata>(
+  const { accessLevel, externalUrl } = useLegacySelector<ProjectMetadata>(
     (state) => state.stateModel.project.metadata
   );
 
@@ -112,8 +111,7 @@ function ForkProjectModal() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleIsOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
 
-  const { id, title, visibility } = useSelector<
-    RootState,
+  const { id, title, visibility } = useLegacySelector<
     ProjectMetadata & { id?: number }
   >((state) => state.stateModel.project.metadata);
 

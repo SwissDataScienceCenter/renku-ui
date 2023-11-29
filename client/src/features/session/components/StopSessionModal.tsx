@@ -21,7 +21,6 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { Duration } from "luxon";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { Redirect } from "react-router";
 import {
   Button,
@@ -41,8 +40,8 @@ import { NotebookAnnotations } from "../../../notebooks/components/session.types
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import AppContext from "../../../utils/context/appContext";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { toHumanDuration } from "../../../utils/helpers/DurationUtils";
-import { RootState } from "../../../utils/helpers/EnhancedState";
 import { Url } from "../../../utils/helpers/url";
 import {
   usePatchSessionMutation,
@@ -66,7 +65,7 @@ export default function StopSessionModal({
   sessionName,
   toggleModal,
 }: StopSessionModalProps) {
-  const logged = useSelector<RootState, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
@@ -96,7 +95,7 @@ function AnonymousStopSessionModal({
   sessionName,
   toggleModal,
 }: StopSessionModalProps) {
-  const pathWithNamespace = useSelector<RootState, string>(
+  const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
   const sessionsListUrl = Url.get(Url.pages.project.session, {
@@ -179,7 +178,7 @@ function HibernateSessionModal({
   sessionName,
   toggleModal,
 }: StopSessionModalProps) {
-  const pathWithNamespace = useSelector<RootState, string>(
+  const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
   const sessionsListUrl = Url.get(Url.pages.project.session, {

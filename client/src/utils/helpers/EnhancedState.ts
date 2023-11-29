@@ -127,10 +127,12 @@ type StoreType = ReturnType<typeof createStore>;
 
 export type StrictRootState = ReturnType<StoreType["getState"]>;
 
-export type RootState = StrictRootState & {
+export type LegacyRootState = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stateModel: any;
 };
+
+export type RootState = StrictRootState & LegacyRootState;
 
 export type AppDispatch = StoreType["dispatch"];
 

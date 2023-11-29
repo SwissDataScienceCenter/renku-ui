@@ -16,12 +16,10 @@
  * limitations under the License.
  */
 
-import { useSelector } from "react-redux";
-
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ShowFile } from "../../../file";
 import LazyFileLineage from "../../../file/LazyFileLineage";
-import type { RootState } from "../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 import type { StateModelProject } from "../Project";
 
@@ -38,10 +36,10 @@ type ProjectFileLineageProps = {
 };
 
 function ProjectFileLineage(props: ProjectFileLineageProps) {
-  const project = useSelector(
-    (state: RootState) => state.stateModel.project as StateModelProject
+  const project = useLegacySelector<StateModelProject>(
+    (state) => state.stateModel.project as StateModelProject
   );
-  const user = useSelector((state: RootState) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
   const defaultBranch = projectMetadata.defaultBranch;
@@ -118,10 +116,10 @@ interface ProjectFileViewProps extends ProjectFileLineageProps {
 }
 
 function ProjectFileView(props: ProjectFileViewProps) {
-  const project = useSelector(
-    (state: RootState) => state.stateModel.project as StateModelProject
+  const project = useLegacySelector<StateModelProject>(
+    (state) => state.stateModel.project
   );
-  const user = useSelector((state: RootState) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
   const defaultBranch = projectMetadata.defaultBranch;

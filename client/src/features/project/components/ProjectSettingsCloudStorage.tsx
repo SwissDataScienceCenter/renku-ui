@@ -33,7 +33,6 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
 import {
   Button,
   Card,
@@ -60,7 +59,7 @@ import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { User } from "../../../model/RenkuModels";
-import type { RootState } from "../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { NotebooksVersion } from "../../versions/versions";
 import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
 import { StateModelProject } from "../Project";
@@ -87,13 +86,12 @@ import {
 import AddCloudStorageButton from "./AddCloudStorageButton";
 
 export default function ProjectSettingsCloudStorage() {
-  const logged = useSelector<RootState, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
   // Project options
-  const { accessLevel, id: projectId } = useSelector<
-    RootState,
+  const { accessLevel, id: projectId } = useLegacySelector<
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
 
@@ -384,7 +382,7 @@ function EditCloudStorage({
     [storageDefinition]
   );
 
-  const projectId = useSelector<RootState, StateModelProject["metadata"]["id"]>(
+  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
     (state) => state.stateModel.project.metadata.id
   );
 
@@ -942,7 +940,7 @@ function DeleteCloudStorageModal({
 }: DeleteCloudStorageModalProps) {
   const { name, storage_id } = storage;
 
-  const projectId = useSelector<RootState, StateModelProject["metadata"]["id"]>(
+  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
     (state) => state.stateModel.project.metadata.id
   );
 

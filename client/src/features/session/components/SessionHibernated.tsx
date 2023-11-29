@@ -22,7 +22,6 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { Alert, Button } from "reactstrap";
 
@@ -30,7 +29,7 @@ import { Loader } from "../../../components/Loader";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import AppContext from "../../../utils/context/appContext";
-import type { RootState } from "../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 import { usePatchSessionMutation } from "../sessions.api";
 import { Session } from "../sessions.types";
@@ -43,7 +42,7 @@ export default function SessionHibernated({ session }: SessionHibernatedProps) {
   const location = useLocation<{ filePath?: string } | undefined>();
   const locationFilePath = location.state?.filePath;
 
-  const pathWithNamespace = useSelector<RootState, string>(
+  const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
 

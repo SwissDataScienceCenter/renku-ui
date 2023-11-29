@@ -21,7 +21,6 @@ import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { PinAngle, PinAngleFill } from "react-bootstrap-icons";
-import { useSelector } from "react-redux";
 import { Button, UncontrolledTooltip } from "reactstrap";
 
 import { EntityType } from "../../features/kgSearch";
@@ -34,7 +33,7 @@ import { User } from "../../model/RenkuModels";
 import { NOTIFICATION_TOPICS } from "../../notifications/Notifications.constants";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
-import { RootState } from "../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { Loader } from "../Loader";
 import { EntityType as AnotherEntityType } from "../entities/Entities";
 import { extractRkErrorMessage } from "../errors/RtkErrorAlert";
@@ -48,7 +47,7 @@ interface PinnedBadgeProps {
  * Pinned Badge, requires parent element to have `position: relative`.
  */
 export default function PinnedBadge({ entityType, slug }: PinnedBadgeProps) {
-  const userLogged = useSelector<RootState, User["logged"]>(
+  const userLogged = useLegacySelector<User["logged"]>(
     (state) => !!state.stateModel?.user?.logged
   );
 

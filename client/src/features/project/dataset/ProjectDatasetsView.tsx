@@ -19,7 +19,6 @@
 import { faInfoCircle, faUserClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
 import { Link, Route, Switch, useHistory } from "react-router-dom";
 import { Alert, Button, Col } from "reactstrap";
 
@@ -30,7 +29,7 @@ import { GoBackButton } from "../../../components/buttons/Button";
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { DatasetCoordinator } from "../../../dataset/Dataset.state";
 import { SpecialPropVal } from "../../../model/Model";
-import type { RootState } from "../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 import type { DatasetCore } from "../Project";
 import { StateModelProject } from "../Project";
@@ -193,8 +192,7 @@ function ProjectDatasetsView(props: any) {
   });
   const kgDown = !projectIndexingStatus.data?.activated;
 
-  const { defaultBranch, externalUrl } = useSelector<
-    RootState,
+  const { defaultBranch, externalUrl } = useLegacySelector<
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
   const { coreSupport } = useCoreSupport({

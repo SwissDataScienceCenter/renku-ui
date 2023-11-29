@@ -27,7 +27,6 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Alert, Button, Col, UncontrolledAlert } from "reactstrap";
 
@@ -41,7 +40,7 @@ import ProgressIndicator, {
 } from "../../../components/progress/Progress";
 import { useCoreSupport } from "../../../features/project/useProjectCoreSupport";
 import { ImportStateMessage } from "../../../utils/constants/Dataset";
-import type { RootState } from "../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 
 type DatasetImportClient = {
   datasetImport: (
@@ -403,8 +402,8 @@ type DatasetImportProps = {
   toggleNewDataset: DatasetImportFormProps["toggleNewDataset"];
 };
 function DatasetImport(props: DatasetImportProps) {
-  const { defaultBranch, externalUrl } = useSelector(
-    (state: RootState) => state.stateModel.project.metadata
+  const { defaultBranch, externalUrl } = useLegacySelector(
+    (state) => state.stateModel.project.metadata
   );
   const {
     coreSupport: { versionUrl },

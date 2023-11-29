@@ -20,7 +20,6 @@ import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { ChangeEvent, useCallback, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -38,7 +37,7 @@ import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import type { RootState } from "../../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
 import { useGetAllRepositoryBranchesQuery } from "../../../project/projectGitLab.api";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
@@ -47,13 +46,13 @@ import { setBranch } from "../../startSessionOptionsSlice";
 import styles from "./SessionBranchOption.module.scss";
 
 export default function SessionBranchOption() {
-  const defaultBranch = useSelector<RootState, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootState, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
-  const externalUrl = useSelector<RootState, string>(
+  const externalUrl = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
 

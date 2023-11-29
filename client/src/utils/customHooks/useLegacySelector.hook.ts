@@ -16,17 +16,9 @@
  * limitations under the License.
  */
 
-import { Slice, SliceCaseReducers } from "@reduxjs/toolkit";
-import useLegacySelector from "./utils/customHooks/useLegacySelector.hook";
-import type { RootState } from "../helpers/EnhancedState";
+import type { TypedUseSelectorHook } from "react-redux";
+import { useSelector } from "react-redux";
+import type { LegacyRootState } from "../helpers/EnhancedState";
 
-export const createSliceSelector =
-  <TSliceState>(
-    slice: Slice<TSliceState, SliceCaseReducers<TSliceState>, keyof RootState>
-  ) =>
-  <TState = TSliceState>(selector?: (state: TSliceState) => TState) =>
-    useLegacySelector< TState>(
-      selector
-        ? (state) => selector(state[slice.name])
-        : (state) => state[slice.name]
-    );
+const useLegacySelector: TypedUseSelectorHook<LegacyRootState> = useSelector;
+export default useLegacySelector;

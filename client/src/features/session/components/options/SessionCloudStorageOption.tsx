@@ -35,7 +35,6 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -66,7 +65,7 @@ import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon"
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import type { RootState } from "../../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
 import { StateModelProject } from "../../../project/Project";
 import {
@@ -113,10 +112,9 @@ export default function SessionCloudStorageOption() {
 }
 
 function SessionS3CloudStorageOption() {
-  const { namespace, path } = useSelector<
-    RootState,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const { namespace, path } = useLegacySelector<StateModelProject["metadata"]>(
+    (state) => state.stateModel.project.metadata
+  );
 
   const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
     namespace,
@@ -140,8 +138,7 @@ function SessionS3CloudStorageOption() {
 }
 
 function CloudStorageList() {
-  const { accessLevel, id: projectId } = useSelector<
-    RootState,
+  const { accessLevel, id: projectId } = useLegacySelector<
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
 
@@ -461,10 +458,9 @@ function CredentialMoreInfo({ help }: { help: string }) {
 }
 
 function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
-  const { namespace, path } = useSelector<
-    RootState,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const { namespace, path } = useLegacySelector<StateModelProject["metadata"]>(
+    (state) => state.stateModel.project.metadata
+  );
 
   const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
     namespace,
@@ -735,10 +731,9 @@ function AddTemporaryCloudStorageModal({
   isOpen,
   toggle,
 }: AddTemporaryCloudStorageModalProps) {
-  const { namespace, path } = useSelector<
-    RootState,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const { namespace, path } = useLegacySelector<StateModelProject["metadata"]>(
+    (state) => state.stateModel.project.metadata
+  );
 
   const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
     namespace,

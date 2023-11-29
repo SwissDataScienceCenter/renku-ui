@@ -24,7 +24,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { Badge, Button, UncontrolledTooltip } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../../api-client";
@@ -32,7 +31,7 @@ import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import type { RootState } from "../../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { GitLabPipelineJob } from "../../../project/GitLab.types";
 import projectGitLabApi, {
   useGetPipelineJobByNameQuery,
@@ -145,10 +144,10 @@ export default function SessionProjectDockerImage() {
 }
 
 function BuildAgainButton() {
-  const gitLabProjectId = useSelector<RootState, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
-  const accessLevel = useSelector<RootState, number>(
+  const accessLevel = useLegacySelector<number>(
     (state) => state.stateModel.project.metadata.accessLevel
   );
 
@@ -219,7 +218,7 @@ function BuildAgainButton() {
 }
 
 function ViewPipelineLink() {
-  const gitLabProjectId = useSelector<RootState, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
 
@@ -270,10 +269,10 @@ function ViewPipelineLink() {
 }
 
 function RunPipeline() {
-  const gitLabProjectId = useSelector<RootState, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
-  const accessLevel = useSelector<RootState, number>(
+  const accessLevel = useLegacySelector<number>(
     (state) => state.stateModel.project.metadata.accessLevel
   );
 
@@ -317,7 +316,7 @@ function RunPipeline() {
 }
 
 function useDockerImageStatusStateMachine() {
-  const gitLabProjectId = useSelector<RootState, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
 

@@ -16,24 +16,23 @@
  * limitations under the License.
  */
 
-import { useSelector } from "react-redux";
 import { Route, Switch } from "react-router";
 import { Col } from "reactstrap";
 
-import type { RootState } from "../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 import ProjectSessionsList from "./ProjectSessionsList";
 import ShowSession from "./ShowSession";
 import StartNewSession from "./StartNewSession";
 
 export default function ProjectSessionsRouter() {
-  const pathWithNamespace = useSelector<RootState, string>(
+  const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
-  const namespace = useSelector<RootState, string>(
+  const namespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.namespace
   );
-  const path = useSelector<RootState, string>(
+  const path = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.path
   );
 

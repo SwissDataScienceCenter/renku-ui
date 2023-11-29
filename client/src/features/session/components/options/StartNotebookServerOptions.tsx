@@ -18,7 +18,6 @@
 
 import cx from "classnames";
 import { useCallback } from "react";
-import { useSelector } from "react-redux";
 import {
   Badge,
   Button,
@@ -35,7 +34,7 @@ import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import type { RootState } from "../../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { ProjectConfig } from "../../../project/Project";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
@@ -56,13 +55,13 @@ export const StartNotebookServerOptions = () => {
   const { isLoading: serverOptionsIsLoading } = useServerOptionsQuery();
 
   // Project options
-  const projectRepositoryUrl = useSelector<RootState, string>(
+  const projectRepositoryUrl = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
-  const defaultBranch = useSelector<RootState, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootState, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({
@@ -142,13 +141,13 @@ const DefaultUrlOption = () => {
     useServerOptionsQuery();
 
   // Project options
-  const projectRepositoryUrl = useSelector<RootState, string>(
+  const projectRepositoryUrl = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
-  const defaultBranch = useSelector<RootState, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootState, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({
@@ -259,13 +258,13 @@ export const mergeDefaultUrlOptions = ({
 
 const AutoFetchLfsOption = () => {
   // Project options
-  const projectRepositoryUrl = useSelector<RootState, string>(
+  const projectRepositoryUrl = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
-  const defaultBranch = useSelector<RootState, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootState, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({

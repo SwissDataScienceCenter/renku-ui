@@ -17,12 +17,11 @@
  */
 
 import { useEffect, useMemo } from "react";
-import { useSelector } from "react-redux";
 
 import { StatusStepProgressBar } from "../../../../components/progress/ProgressSteps";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
-import type { RootState } from "../../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import { useGetCloudStorageForProjectQuery } from "../../../project/projectCloudStorage.api";
 import {
@@ -72,22 +71,22 @@ export default function AutostartSessionOptions() {
 }
 
 function useAutostartSessionOptions(): void {
-  const defaultBranch = useSelector<RootState, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootState, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
-  const projectRepositoryUrl = useSelector<RootState, string>(
+  const projectRepositoryUrl = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
-  const namespace = useSelector<RootState, string>(
+  const namespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.namespace
   );
-  const project = useSelector<RootState, string>(
+  const project = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.path
   );
-  const projectPathWithNamespace = useSelector<RootState, string>(
+  const projectPathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
   const projectSessions = useProjectSessions({ projectPathWithNamespace });

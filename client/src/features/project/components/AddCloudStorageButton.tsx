@@ -20,7 +20,6 @@ import cx from "classnames";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CheckLg, CloudFill, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
 import {
   Button,
   Card,
@@ -42,7 +41,7 @@ import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
-import type { RootState } from "../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
 import { StateModelProject } from "../Project";
 import {
@@ -190,7 +189,7 @@ function AdvancedAddCloudStorage({
   goToCredentialsStep,
   toggle,
 }: AddCloudStorageProps) {
-  const projectId = useSelector<RootState, StateModelProject["metadata"]["id"]>(
+  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
     (state) => state.stateModel.project.metadata.id
   );
 
@@ -468,7 +467,7 @@ function SimpleAddCloudStorage({
   goToCredentialsStep,
   toggle,
 }: AddCloudStorageProps) {
-  const projectId = useSelector<RootState, StateModelProject["metadata"]["id"]>(
+  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
     (state) => state.stateModel.project.metadata.id
   );
 

@@ -21,7 +21,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import React from "react";
-import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Alert, Button, Col } from "reactstrap";
 
@@ -34,7 +33,7 @@ import ProgressIndicator, {
   ProgressType,
 } from "../../../components/progress/Progress";
 import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
-import type { RootState } from "../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 import type { IDatasetFiles, StateModelProject } from "../Project";
 import type {
@@ -93,10 +92,10 @@ type ProjectDatasetNewEditProps = ChangeDatasetProps &
   Partial<ProjectDatasetNewOnlyProps> &
   Partial<ProjectDatasetEditOnlyProps>;
 function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
-  const project = useSelector(
-    (state: RootState) => state.stateModel.project as StateModelProject
+  const project = useLegacySelector<StateModelProject>(
+    (state) => state.stateModel.project
   );
-  const user = useSelector((state: RootState) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
   const projectPathWithNamespace = projectMetadata.pathWithNamespace;
@@ -200,11 +199,11 @@ function ProjectDatasetNew(
     ProjectDatasetNewOnlyProps
 ) {
   const location = props.location;
-  const project = useSelector(
-    (state: RootState) => state.stateModel.project as StateModelProject
+  const project = useLegacySelector<StateModelProject>(
+    (state) => state.stateModel.project
   );
   const projectPathWithNamespace = project.metadata.pathWithNamespace;
-  const user = useSelector((state: RootState) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
   const dispatch = useAppDispatch();
   React.useEffect(() => {
     dispatch(initializeForUser({ location, projectPathWithNamespace, user }));
@@ -255,8 +254,8 @@ function ProjectDatasetEditForm(
     ProjectDatasetEditOnlyProps
 ) {
   const location = props.location;
-  const project = useSelector(
-    (state: RootState) => state.stateModel.project as StateModelProject
+  const project = useLegacySelector<StateModelProject>(
+    (state) => state.stateModel.project
   );
   const projectPathWithNamespace = project.metadata.pathWithNamespace;
   const dispatch = useAppDispatch();

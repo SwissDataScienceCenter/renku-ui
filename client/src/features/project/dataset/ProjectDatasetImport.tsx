@@ -1,8 +1,6 @@
-import { useSelector } from "react-redux";
-
 import DatasetImport from "../../../project/datasets/import";
 import type { DatasetImportProps } from "../../../project/datasets/import/DatasetImport";
-import type { RootState } from "../../../utils/helpers/EnhancedState";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import type { StateModelProject } from "../Project";
 
 type ProjectDatasetImportProps = {
@@ -17,8 +15,8 @@ type ProjectDatasetImportProps = {
 };
 
 function ProjectDatasetImport(props: ProjectDatasetImportProps) {
-  const project = useSelector(
-    (state: RootState) => state.stateModel.project as StateModelProject
+  const project = useLegacySelector<StateModelProject>(
+    (state) => state.stateModel.project
   );
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;

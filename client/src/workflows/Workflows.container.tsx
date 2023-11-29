@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import { StateModelProject } from "../features/project/Project";
@@ -28,7 +27,7 @@ import {
 import { workflowsSlice } from "../features/workflows/WorkflowsSlice";
 import useAppDispatch from "../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../utils/customHooks/useAppSelector.hook";
-import type { RootState } from "../utils/helpers/EnhancedState";
+import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { WorkflowsTreeBrowser as WorkflowsTreeBrowserPresent } from "./Workflows.present";
 
 const MIN_CORE_VERSION_WORKFLOWS = 9;
@@ -74,10 +73,9 @@ function WorkflowsList({
   const { id }: Record<string, string> = useParams();
   const selected = id;
 
-  const { defaultBranch } = useSelector<
-    RootState,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const { defaultBranch } = useLegacySelector<StateModelProject["metadata"]>(
+    (state) => state.stateModel.project.metadata
+  );
   const { coreSupport } = useCoreSupport({
     gitUrl: repositoryUrl,
     branch: defaultBranch,

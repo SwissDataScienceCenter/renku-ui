@@ -26,7 +26,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { debounce } from "lodash";
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Accordion,
@@ -45,6 +44,7 @@ import {
   Label,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../api-client";
 import { ErrorAlert, WarnAlert } from "../../components/Alert";
 import { ExternalLink } from "../../components/ExternalLinks";
@@ -70,9 +70,10 @@ import { useServerOptionsQuery } from "../../features/session/sessions.api";
 import { ServerOptions } from "../../features/session/sessions.types";
 import { LockStatus, User } from "../../model/RenkuModels";
 import { Docs } from "../../utils/constants/Docs";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { isFetchBaseQueryError } from "../../utils/helpers/ApiErrors";
-import type { RootState } from "../../utils/helpers/EnhancedState";
 import { Url } from "../../utils/helpers/url";
+
 import styles from "./ProjectSettingsSessions.module.scss";
 
 type CoreServiceVersionedApiParams = {
@@ -81,11 +82,11 @@ type CoreServiceVersionedApiParams = {
 };
 
 export default function ProjectSettingsSessions() {
-  const logged = useSelector<RootState, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
-  const locked_ = useSelector<RootState, LockStatus["locked"]>(
+  const locked_ = useLegacySelector<LockStatus["locked"]>(
     (state) => state.stateModel.project.lockStatus.locked
   );
   const locked = locked_ ?? false;
@@ -101,7 +102,7 @@ export default function ProjectSettingsSessions() {
     namespace,
     path,
     accessLevel,
-  } = useSelector<RootState, StateModelProject["metadata"]>(
+  } = useLegacySelector<StateModelProject["metadata"]>(
     (state) => state.stateModel.project.metadata
   );
 
