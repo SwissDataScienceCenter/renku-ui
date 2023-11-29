@@ -16,40 +16,17 @@
  * limitations under the License.
  */
 
-export interface AnonymousHomeConfig {
-  client: unknown;
-  homeCustomized: HomepageParams;
-  model: unknown;
-  params: {
-    UI_SHORT_SHA: string;
-  };
-  urlMap: {
-    siteStatusUrl: string;
-  };
-}
+import cx from "classnames";
+import skeletonCardImage from "../../styles/assets/SkeletonCard.svg";
+import styles from "./EntityCardSkeleton.module.scss";
 
-export interface HomepageParams {
-  custom: {
-    enabled: boolean;
-    main: {
-      backgroundImage: {
-        url: string;
-      };
-      contentMd: string;
-    };
-  };
-  datasetSlug: string;
-  projectPath: string;
-  showcase: {
-    enabled: boolean;
-    title: string;
-    description: string;
-    projects: {
-      identifier: string;
-      overrideDescription?: string;
-      overrideImageUrl?: string;
-      overrideTitle?: string;
-    }[];
-  };
-  tutorialLink: string;
+export default function EntityCardSkeleton() {
+  return (
+    <div className={styles.skeletonWrapper}>
+      <div className={styles.skeletonImg}>
+        <img src={skeletonCardImage} alt="skeleton card" loading="lazy" />
+        <div className={cx(styles.skeletonImgGraphic, styles.skeletonLoader)} />
+      </div>
+    </div>
+  );
 }

@@ -16,40 +16,7 @@
  * limitations under the License.
  */
 
-export interface AnonymousHomeConfig {
-  client: unknown;
-  homeCustomized: HomepageParams;
-  model: unknown;
-  params: {
-    UI_SHORT_SHA: string;
-  };
-  urlMap: {
-    siteStatusUrl: string;
-  };
-}
-
-export interface HomepageParams {
-  custom: {
-    enabled: boolean;
-    main: {
-      backgroundImage: {
-        url: string;
-      };
-      contentMd: string;
-    };
-  };
-  datasetSlug: string;
-  projectPath: string;
-  showcase: {
-    enabled: boolean;
-    title: string;
-    description: string;
-    projects: {
-      identifier: string;
-      overrideDescription?: string;
-      overrideImageUrl?: string;
-      overrideTitle?: string;
-    }[];
-  };
-  tutorialLink: string;
+import styles from "./Divider.module.scss";
+export default function DividerLandingPage() {
+  return <div className={styles.dividerLandingPage}></div>;
 }
