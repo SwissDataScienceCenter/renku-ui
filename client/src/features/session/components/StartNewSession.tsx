@@ -160,10 +160,12 @@ function BackButton() {
   const location = useLocation<LocationState | undefined>();
 
   const { from, filePath } = location.state ?? {};
-  const searchParams = getSearchParams();
-  const fromLandingParam = (searchParams as { fromLanding?: string })
-    .fromLanding;
-  const fromLanding = location.state?.fromLanding || fromLandingParam || false;
+ const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const fromLandingParam = !!searchParams.get("fromLanding");
+  const fromLanding = location.state?.fromLanding || fromLandingParam;
 
   const backUrl = from ? from : fromLanding ? "/" : projectUrl;
   const backLabel =
