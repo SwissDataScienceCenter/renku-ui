@@ -31,6 +31,7 @@ import { Button, UncontrolledTooltip } from "reactstrap";
 import SimpleSessionButton from "../../features/session/components/SimpleSessionButton";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { EntityType } from "./Entities";
+import cx from "classnames";
 
 export interface EntityButtonProps {
   type: EntityType;
@@ -47,7 +48,7 @@ function EntityButton({
   switch (type) {
     case "project":
       return (
-        <div className={`card-button ${animated ? "btn-animation-pulse" : ""}`}>
+        <div className={cx("card-button", animated && "btn-animation-pulse")}>
           <SimpleSessionButton fullPath={slug} fromLanding={fromLanding} />
         </div>
       );

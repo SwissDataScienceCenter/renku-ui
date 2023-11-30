@@ -83,8 +83,10 @@ export default function SimpleSessionButton({
         className={className}
         to={{
           pathname: sessionNewUrl,
-          state: { fromLanding },
-          search: "autostart=1",
+          search: new URLSearchParams({
+            autostart: "1",
+            ...(fromLanding ? { fromLanding: "1" } : {}),
+          }).toString(),
         }}
         target={fromLanding ? "_blank" : "_self"}
       >

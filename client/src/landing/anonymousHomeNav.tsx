@@ -193,7 +193,7 @@ function TopNav() {
           <Navbar className="navbar rk-anon-home px-0">
             <Nav
               className="ms-auto flex-column rk-bg-shaded-dark text-end"
-              style={{ "--rk-bg-opacity": 0.8 } as CSSProperties}
+              style={{ "--rk-bg-opacity": 0.9, zIndex: 100 } as CSSProperties}
             >
               <NavItem className="nav-item mb-2">
                 <TopNavExternalLink
