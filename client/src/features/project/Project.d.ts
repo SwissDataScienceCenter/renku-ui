@@ -33,7 +33,7 @@ type DatasetImage = {
 
 export interface GetDatasetFilesParams extends CoreVersionUrl {
   git_url: string;
-  name: string;
+  slug: string;
 }
 
 export interface GetDatasetFilesResponse {
@@ -68,8 +68,8 @@ export type DatasetAbstract = {
   keywords: string[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mediaContent: any;
-  name: string;
-  title: string;
+  name: string; // before title
+  slug: string; // before name
 };
 
 export interface DatasetCore extends DatasetAbstract {
@@ -85,7 +85,6 @@ export interface DatasetKg extends DatasetAbstract {
   usedIn: UsedIn;
   sameAs?: string;
   images?: { location: string }[];
-  slug?: string;
   project?: {
     visibility: Visibilities;
     slug: string;
