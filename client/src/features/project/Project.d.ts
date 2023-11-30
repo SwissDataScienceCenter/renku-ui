@@ -25,6 +25,7 @@ import {
   ProjectIndexingStatuses,
   ProjectMigrationLevel,
 } from "./projectEnums";
+import { Visibilities } from "../../components/visibility/Visibility";
 
 type DatasetImage = {
   _links: { href: string }[];
@@ -83,6 +84,15 @@ export interface DatasetKg extends DatasetAbstract {
   url: string;
   usedIn: UsedIn;
   sameAs?: string;
+  images?: { location: string }[];
+  slug?: string;
+  project?: {
+    visibility: Visibilities;
+    slug: string;
+    dataset?: {
+      identifier: string;
+    };
+  };
 }
 
 interface IDataset extends DatasetAbstract {
