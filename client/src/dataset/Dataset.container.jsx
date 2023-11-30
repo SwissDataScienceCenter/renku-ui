@@ -16,17 +16,17 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
-import DatasetView from "./Dataset.present";
 import { useCoreSupport } from "../features/project/useProjectCoreSupport";
+import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
+import DatasetView from "./Dataset.present";
 
 export default function ShowDataset(props) {
   const [dataset, setDataset] = useState(null);
   const [datasetFiles, setDatasetFiles] = useState(null);
 
-  const { defaultBranch, externalUrl } = useSelector(
+  const { defaultBranch, externalUrl } = useLegacySelector(
     (state) => state.stateModel.project.metadata
   );
   const { coreSupport } = useCoreSupport({
@@ -114,7 +114,7 @@ export default function ShowDataset(props) {
     versionUrl,
   ]);
 
-  const currentDataset = useSelector(
+  const currentDataset = useLegacySelector(
     (state) => state.stateModel.dataset?.metadata
   );
   useEffect(() => {
@@ -132,7 +132,9 @@ export default function ShowDataset(props) {
       setDataset(currentDataset);
   }, [currentDataset, dataset]); // eslint-disable-line
 
-  const currentFiles = useSelector((state) => state.stateModel.dataset?.files);
+  const currentFiles = useLegacySelector(
+    (state) => state.stateModel.dataset?.files
+  );
   useEffect(() => {
     if (!currentDataset.fetching && !currentFiles.fetching)
       setDatasetFiles(currentFiles);

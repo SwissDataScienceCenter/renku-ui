@@ -18,30 +18,28 @@
 
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { DropdownItem, Modal, ModalBody, ModalHeader } from "reactstrap";
 
-import { Loader } from "../Loader";
-import { useGetNotebooksVersionsQuery } from "../../features/versions/versionsApi";
 import {
   hideSshModal,
   showSshModal,
   toggleSshModal,
-  useDisplaySelector,
 } from "../../features/display";
+import { projectCoreApi } from "../../features/project/projectCoreApi";
+import { useGetNotebooksVersionsQuery } from "../../features/versions/versionsApi";
+import rkIconSshCross from "../../styles/icons/ssh-cross.svg";
+import rkIconSshTicked from "../../styles/icons/ssh-ticked.svg";
+import rkIconSsh from "../../styles/icons/ssh.svg";
+import { Docs } from "../../utils/constants/Docs";
 import AppContext from "../../utils/context/appContext";
-import { Url } from "../../utils/helpers/url";
-
+import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import { cleanGitUrl } from "../../utils/helpers/ProjectFunctions";
+import { Url, apiVersionForMetadataVersion } from "../../utils/helpers/url";
 import { InfoAlert } from "../Alert";
 import { ExternalDocsLink } from "../ExternalLinks";
-import { Docs } from "../../utils/constants/Docs";
-import rkIconSsh from "../../styles/icons/ssh.svg";
-import rkIconSshTicked from "../../styles/icons/ssh-ticked.svg";
-import rkIconSshCross from "../../styles/icons/ssh-cross.svg";
+import { Loader } from "../Loader";
 import { CommandCopy } from "../commandCopy/CommandCopy";
-import { projectCoreApi } from "../../features/project/projectCoreApi";
-import { apiVersionForMetadataVersion } from "../../utils/helpers/url";
-import { cleanGitUrl } from "../../utils/helpers/ProjectFunctions";
 
 const docsIconStyle = {
   showLinkIcon: true,
@@ -55,7 +53,7 @@ interface SshDropdownProps {
 }
 
 function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const { data, isLoading, error } = useGetNotebooksVersionsQuery();
   if (error || isLoading || !data?.sshEnabled) return null;
@@ -73,8 +71,8 @@ function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
 }
 
 function SshModal() {
-  const displayModal = useDisplaySelector((state) => state.modals.ssh);
-  const dispatch = useDispatch();
+  const displayModal = useAppSelector(({ display }) => display.modals.ssh);
+  const dispatch = useAppDispatch();
   const gitUrl = cleanGitUrl(displayModal.gitUrl);
 
   const notebooksSupport = useGetNotebooksVersionsQuery();

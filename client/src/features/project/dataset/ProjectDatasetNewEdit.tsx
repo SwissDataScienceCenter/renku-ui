@@ -16,38 +16,34 @@
  * limitations under the License.
  */
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { SerializedError } from "@reduxjs/toolkit";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import React from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Alert, Button, Col } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
+import { Loader } from "../../../components/Loader";
 import AddDatasetButtons from "../../../components/addDatasetButtons/AddDatasetButtons";
 import FormSchema from "../../../components/formschema/FormSchema";
 import ProgressIndicator, {
   ProgressStyle,
   ProgressType,
 } from "../../../components/progress/Progress";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
-
 import type { IDatasetFiles, StateModelProject } from "../Project";
-
-import type { DatasetPostClient } from "./datasetCore.api";
-
-import { initializeForDataset, initializeForUser } from "./datasetForm.slice";
-
-import DatasetModify from "./DatasetModify";
 import type {
   DatasetModifyDisplayProps,
   DatasetModifyProps,
   PostSubmitProps,
 } from "./DatasetModify";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
-import { SerializedError } from "@reduxjs/toolkit";
-import { Loader } from "../../../components/Loader";
+import DatasetModify from "./DatasetModify";
+import type { DatasetPostClient } from "./datasetCore.api";
+import { initializeForDataset, initializeForUser } from "./datasetForm.slice";
 
 type ChangeDatasetProps = {
   apiVersion: string | undefined;
@@ -96,10 +92,10 @@ type ProjectDatasetNewEditProps = ChangeDatasetProps &
   Partial<ProjectDatasetNewOnlyProps> &
   Partial<ProjectDatasetEditOnlyProps>;
 function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
-  const project = useSelector(
-    (state: RootStateOrAny) => state.stateModel.project as StateModelProject
+  const project = useLegacySelector<StateModelProject>(
+    (state) => state.stateModel.project
   );
-  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
   const projectPathWithNamespace = projectMetadata.pathWithNamespace;
@@ -203,12 +199,12 @@ function ProjectDatasetNew(
     ProjectDatasetNewOnlyProps
 ) {
   const location = props.location;
-  const project = useSelector(
-    (state: RootStateOrAny) => state.stateModel.project as StateModelProject
+  const project = useLegacySelector<StateModelProject>(
+    (state) => state.stateModel.project
   );
   const projectPathWithNamespace = project.metadata.pathWithNamespace;
-  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
-  const dispatch = useDispatch();
+  const user = useLegacySelector((state) => state.stateModel.user);
+  const dispatch = useAppDispatch();
   React.useEffect(() => {
     dispatch(initializeForUser({ location, projectPathWithNamespace, user }));
   }, [dispatch, location, projectPathWithNamespace, user]);
@@ -258,11 +254,11 @@ function ProjectDatasetEditForm(
     ProjectDatasetEditOnlyProps
 ) {
   const location = props.location;
-  const project = useSelector(
-    (state: RootStateOrAny) => state.stateModel.project as StateModelProject
+  const project = useLegacySelector<StateModelProject>(
+    (state) => state.stateModel.project
   );
   const projectPathWithNamespace = project.metadata.pathWithNamespace;
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { dataset, files } = props;
   React.useEffect(() => {
     dispatch(

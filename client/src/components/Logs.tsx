@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from "react";
 import { faSave, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useDispatch } from "react-redux";
+import React, { useEffect } from "react";
 import {
   Button,
   Modal,
@@ -32,11 +31,13 @@ import {
   TabPane,
 } from "reactstrap";
 
-import { displaySlice, useDisplaySelector } from "../features/display";
+import { displaySlice } from "../features/display";
 import { NotebooksHelper } from "../notebooks";
 import { LOG_ERROR_KEY } from "../notebooks/Notebooks.state";
 import { NotebookAnnotations } from "../notebooks/components/session.types";
 import useGetSessionLogs from "../utils/customHooks/UseGetSessionLogs";
+import useAppDispatch from "../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../utils/customHooks/useAppSelector.hook";
 import {
   capitalizeFirstLetter,
   generateZip,
@@ -319,12 +320,14 @@ interface EnvironmentLogsProps {
   name: string;
 }
 const EnvironmentLogs = ({ name, annotations }: EnvironmentLogsProps) => {
-  const displayModal = useDisplaySelector((state) => state.modals.sessionLogs);
+  const displayModal = useAppSelector(
+    ({ display }) => display.modals.sessionLogs
+  );
   const { logs, fetchLogs } = useGetSessionLogs(
     displayModal.targetServer,
     displayModal.show
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const toggleLogs = function (target: string) {
     dispatch(
       displaySlice.actions.toggleSessionLogsModal({ targetServer: target })

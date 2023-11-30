@@ -17,9 +17,8 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
-import { ActivationStatusProgressError } from "./InactiveKgProjectsApi";
 import type { InactiveKgProjects } from "./inactiveKgProjects.types";
+import { ActivationStatusProgressError } from "./InactiveKgProjectsApi";
 
 export interface KgInactiveProjectsState {
   inactiveProjects: InactiveKgProjects[];
@@ -119,7 +118,3 @@ export const {
   updateList,
   updateProgress,
 } = kgInactiveProjectsSlice.actions;
-
-export const useInactiveProjectSelector = createSliceSelector(
-  kgInactiveProjectsSlice
-);

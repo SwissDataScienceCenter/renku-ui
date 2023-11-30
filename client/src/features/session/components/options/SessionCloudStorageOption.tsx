@@ -35,7 +35,6 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -56,6 +55,7 @@ import {
   Row,
   UncontrolledPopover,
 } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../../api-client";
 import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
@@ -63,6 +63,9 @@ import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
 import { StateModelProject } from "../../../project/Project";
 import {
@@ -71,8 +74,8 @@ import {
 } from "../../../project/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
-  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   CLOUD_STORAGE_READWRITE_ENABLED,
+  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
 } from "../../../project/projectCloudStorage.constants";
 import {
   formatCloudStorageConfiguration,
@@ -86,7 +89,6 @@ import {
   removeCloudStorageItem,
   setCloudStorage,
   updateCloudStorageItem,
-  useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
 
 export default function SessionCloudStorageOption() {
@@ -110,10 +112,9 @@ export default function SessionCloudStorageOption() {
 }
 
 function SessionS3CloudStorageOption() {
-  const { namespace, path } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const { namespace, path } = useLegacySelector<StateModelProject["metadata"]>(
+    (state) => state.stateModel.project.metadata
+  );
 
   const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
     namespace,
@@ -137,18 +138,17 @@ function SessionS3CloudStorageOption() {
 }
 
 function CloudStorageList() {
-  const { accessLevel, id: projectId } = useSelector<
-    RootStateOrAny,
+  const { accessLevel, id: projectId } = useLegacySelector<
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
 
   const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
-  const cloudStorageList = useStartSessionOptionsSelector(
-    ({ cloudStorage }) => cloudStorage
+  const cloudStorageList = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.cloudStorage
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const { data: notebooksVersion } = useGetNotebooksVersionsQuery();
   const {
@@ -260,7 +260,7 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
     setIsOpen((isOpen) => !isOpen);
   }, []);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onToggleActive = useCallback(() => {
     dispatch(
@@ -458,10 +458,9 @@ function CredentialMoreInfo({ help }: { help: string }) {
 }
 
 function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
-  const { namespace, path } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const { namespace, path } = useLegacySelector<StateModelProject["metadata"]>(
+    (state) => state.stateModel.project.metadata
+  );
 
   const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
     namespace,
@@ -491,7 +490,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
     name,
   });
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onChangeSourcePath = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -732,17 +731,16 @@ function AddTemporaryCloudStorageModal({
   isOpen,
   toggle,
 }: AddTemporaryCloudStorageModalProps) {
-  const { namespace, path } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const { namespace, path } = useLegacySelector<StateModelProject["metadata"]>(
+    (state) => state.stateModel.project.metadata
+  );
 
   const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
     namespace,
     path,
   });
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [validateCloudStorageConfiguration, result] =
     useValidateCloudStorageConfigurationMutation();

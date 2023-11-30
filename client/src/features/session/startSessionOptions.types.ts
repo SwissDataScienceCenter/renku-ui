@@ -48,18 +48,12 @@ export interface SessionCloudStorage {
 export type DockerImageBuildStatus =
   | "unknown"
   | "available"
-  | "checking-ci-registry-start"
   | "checking-ci-registry"
-  | "checking-ci-image-start"
   | "checking-ci-image"
-  | "checking-ci-pipelines-start"
   | "checking-ci-pipelines"
-  | "checking-ci-jobs-start"
   | "checking-ci-jobs"
   | "ci-job-running"
-  | "checking-ci-done-registry-start"
   | "checking-ci-done-registry"
-  | "checking-ci-done-image-start"
   | "checking-ci-done-image"
   | "waiting-ci-image"
   | "error";

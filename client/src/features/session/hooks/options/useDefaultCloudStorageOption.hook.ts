@@ -17,7 +17,7 @@
  */
 
 import { useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import { CloudStorage } from "../../../project/projectCloudStorage.types";
 import { getProvidedSensitiveFields } from "../../../project/utils/projectCloudStorage.utils";
 import { NotebooksVersion } from "../../../versions/versions";
@@ -34,7 +34,7 @@ export default function useDefaultCloudStorageOption({
   notebooksVersion,
   storageForProject,
 }: UseDefaultCloudStorageOptionArgs): void {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const support = useMemo(
     () => (notebooksVersion?.cloudStorageEnabled.s3 ? "s3" : "azure"),

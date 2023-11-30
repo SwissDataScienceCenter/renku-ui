@@ -18,7 +18,6 @@
 
 import cx from "classnames";
 import { Person, PlusCircleFill, QuestionCircle } from "react-bootstrap-icons";
-import { RootStateOrAny, useSelector } from "react-redux";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import {
@@ -34,6 +33,7 @@ import { User } from "../../model/RenkuModels";
 import { NotificationsMenu } from "../../notifications";
 import { Docs, Links, RenkuPythonDocs } from "../../utils/constants/Docs";
 import type { AppParams } from "../../utils/context/appParams.types";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import {
   getActiveProjectPathWithNamespace,
   gitLabUrlFromProfileUrl,
@@ -97,9 +97,7 @@ export function RenkuToolbarItemPlus() {
 }
 
 export function RenkuToolbarGitLabMenu() {
-  const user = useSelector<RootStateOrAny, User>(
-    (state) => state.stateModel.user
-  );
+  const user = useLegacySelector<User>((state) => state.stateModel.user);
 
   if (!user.fetched) {
     return null;
@@ -269,9 +267,7 @@ interface RenkuToolbarItemUserProps {
 export function RenkuToolbarItemUser({ params }: RenkuToolbarItemUserProps) {
   const location = useLocation();
 
-  const user = useSelector<RootStateOrAny, User>(
-    (state) => state.stateModel.user
-  );
+  const user = useLegacySelector<User>((state) => state.stateModel.user);
 
   const gatewayURL = params.GATEWAY_URL;
   const uiserverURL = params.UISERVER_URL;

@@ -17,11 +17,11 @@
  */
 
 import React from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
 
 import { ACCESS_LEVELS } from "../../../api-client";
 import DatasetView from "../../../dataset/Dataset.present";
 import AppContext from "../../../utils/context/appContext";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 import type {
   DatasetCore,
@@ -128,8 +128,7 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
   const coreDataset = findDataset(props.datasetId, props.datasets);
   const datasetId = findDatasetId(props.datasetId, props.datasets);
 
-  const { defaultBranch, externalUrl } = useSelector<
-    RootStateOrAny,
+  const { defaultBranch, externalUrl } = useLegacySelector<
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
   const { coreSupport } = useCoreSupport({
@@ -198,10 +197,10 @@ function ProjectDatasetView(props: ProjectDatasetViewProps) {
 }
 
 function ProjectDatasetShow(props: ProjectDatasetShowProps) {
-  const project = useSelector(
-    (state: RootStateOrAny) => state.stateModel.project as StateModelProject
+  const project = useLegacySelector<StateModelProject>(
+    (state) => state.stateModel.project
   );
-  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
   const projectMetadata = project.metadata;
   const accessLevel = projectMetadata.accessLevel;
   const datasets = project.datasets.core.datasets;
