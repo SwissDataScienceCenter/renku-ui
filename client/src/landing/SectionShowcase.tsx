@@ -210,6 +210,7 @@ export default function SectionShowcase({
         <Row className="rk-pt-m">
           <Col md={10}>
             <h3 className="text-rk-green">{title}</h3>
+            {/*testing overwrite description*/}
             <LazyRenkuMarkdown markdownText={description} />
           </Col>
         </Row>
