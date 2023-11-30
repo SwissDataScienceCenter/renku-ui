@@ -5,7 +5,7 @@ RUN apt-get update && apt-get upgrade --quiet --assume-yes
 WORKDIR /app
 
 #? Use only required files.
-COPY package.json package-lock.json
+COPY package.json package-lock.json /app/
 RUN npm ci
 
 COPY index.html tsconfig.json tsconfig.node.json vite.config.ts /app/
