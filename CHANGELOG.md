@@ -5,7 +5,7 @@
 
 ### Bug Fixes
 
-- Ensured consistent usage of Dataset name and slug properties ([#2723](https://github.com/SwissDataScienceCenter/renku-ui/issues/2723), ([#2854](https://github.com/SwissDataScienceCenter/renku-ui/issues/2854))
+- Adapt dataset APIs to the new naming convention used in the backend ([#2723](https://github.com/SwissDataScienceCenter/renku-ui/issues/2723), ([#2854](https://github.com/SwissDataScienceCenter/renku-ui/issues/2854))
 
 ### BREAKING CHANGES
 
