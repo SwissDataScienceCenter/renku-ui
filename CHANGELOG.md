@@ -1,5 +1,20 @@
 # Changes
 
+## [3.17.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.17.0...3.17.1) (2023-11-30)
+
+
+### Bug Fixes
+
+- Ensured consistent usage of Dataset name and slug properties ([#2723](https://github.com/SwissDataScienceCenter/renku-ui/issues/2723), ([#2854](https://github.com/SwissDataScienceCenter/renku-ui/issues/2854))
+
+### BREAKING CHANGES
+
+This update aligns the dataset slug and name properties with the updated renku-core and KG API. They now return slug and name instead of name and title.
+
+- Requires renku-core version 2.8.0 or later
+- Requires renku-graph version 2.48.0 or later
+
+
 ## [3.17.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.16.0...3.17.0)   (2023-11-29)
 
 ### Features
