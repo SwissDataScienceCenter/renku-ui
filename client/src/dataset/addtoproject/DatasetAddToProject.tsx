@@ -271,7 +271,7 @@ function DatasetAddToProject({
           monitorJobStatusAndHandleResponse(
             jobId,
             selectedProject.name,
-            dataset.slug
+            dataset.slug ?? ""
           );
         }
       });

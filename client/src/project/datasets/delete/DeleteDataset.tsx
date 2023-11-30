@@ -195,7 +195,7 @@ function DeleteDataset(props: DeleteDatasetProps) {
       apiVersion: props.apiVersion,
       gitUrl: props.externalUrl,
       metadataVersion: props.metadataVersion,
-      slug: props.dataset.slug,
+      slug: props.dataset.slug ?? "",
     });
   };
 

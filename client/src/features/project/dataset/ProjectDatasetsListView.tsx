@@ -20,7 +20,7 @@ function datasetToDict(
     dataset.created_at != null ? new Date(dataset.created_at) : "";
   return {
     id: dataset.slug,
-    url: `${datasetsUrl}/${encodeURIComponent(dataset.slug)}/`,
+    url: `${datasetsUrl}/${encodeURIComponent(dataset.slug ?? "")}/`,
     itemType: "dataset",
     title: dataset.name,
     slug: dataset.slug,

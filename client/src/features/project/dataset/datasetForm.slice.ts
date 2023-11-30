@@ -154,7 +154,7 @@ export const datasetFormSlice = createSlice({
         files: [],
         image: image,
         keywords: dataset.keywords,
-        slug: dataset.slug,
+        slug: dataset.slug ?? "",
         name: dataset.name,
       };
       state.context = {

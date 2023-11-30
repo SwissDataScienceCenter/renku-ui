@@ -85,7 +85,6 @@ export interface DatasetKg extends DatasetAbstract {
   usedIn: UsedIn;
   sameAs?: string;
   images?: { location: string }[];
-  slug?: string;
   project?: {
     visibility: Visibilities;
     slug: string;
