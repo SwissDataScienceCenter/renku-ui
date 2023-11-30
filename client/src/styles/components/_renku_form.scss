@@ -83,7 +83,7 @@
 }
 
 .form-check-input:checked[type="radio"] {
-  background-image: url("../assets/check.svg");
+  background-image: url("/src/styles/assets/check.svg");
   background-color: var(--bs-primary);
   border-color: var(--bs-primary);
 }
@@ -145,7 +145,7 @@
 }
 
 .form-check-input:checked[type="checkbox"] {
-  background-image: url("../assets/check.svg");
+  background-image: url("/src/styles/assets/check.svg");
   background-color: var(--bs-primary);
   border-color: var(--bs-primary);
 }
@@ -167,7 +167,7 @@
 /* select */
 .form-select {
   border-radius: 8px;
-  background-image: url("../assets/chevron-down.svg");
+  background-image: url("/src/styles/assets/chevron-down.svg");
   border: var(--bs-border-width) solid var(--bs-rk-border-input);
 }
 

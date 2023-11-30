@@ -2,13 +2,13 @@
   background-position: center;
   background-size: cover;
   height: calc(100vh);
-  background-image: url("../styles/assets/error-background@0.50x.png");
+  background-image: url("/src/styles/assets/error-background@0.50x.png");
   color: var(--bs-rk-pink);
   overflow: auto;
   width: 100%;
 
   @media (min-width: 1500px) {
-    background-image: url("../styles/assets/error-background@1.00x.png");
+    background-image: url("/src/styles/assets/error-background@1.00x.png");
   }
 }
 
