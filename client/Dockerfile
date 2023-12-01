@@ -14,7 +14,7 @@ COPY src /app/src/
 
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-RUN npm run-script vite:build
+RUN npm run-script build
 
 COPY .storybook /app/.storybook
 

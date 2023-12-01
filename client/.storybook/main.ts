@@ -10,7 +10,6 @@ const config: StorybookConfig = {
     "@storybook/addon-interactions",
     "@storybook/addon-links",
     "@storybook/react-vite",
-    // "addon-redux",
   ],
 
   framework: {
@@ -29,12 +28,6 @@ const config: StorybookConfig = {
   },
   docs: {
     autodocs: true,
-  },
-
-  async viteFinal(config) {
-    return mergeConfig(config, {
-      define: { "process.env": {} },
-    });
   },
 };
 

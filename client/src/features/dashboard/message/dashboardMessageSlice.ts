@@ -33,5 +33,9 @@ export const dashboardMessageSlice = createSlice({
     dismiss: (state) => {
       state.dismissed = true;
     },
+    undismiss: (state) => {
+      state.dismissed = false;
+    },
+    reset: () => initialState,
   },
 });

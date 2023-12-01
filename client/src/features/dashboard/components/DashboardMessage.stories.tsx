@@ -17,11 +17,13 @@
  */
 
 import { Meta, StoryObj } from "@storybook/react";
-// import { ARG_REDUX_PATH } from "addon-redux";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
+
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 import DashboardMessage from "./DashboardMessage";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import { dashboardMessageSlice } from "../message/dashboardMessageSlice";
 
 interface DashboardMessageArgs {
   enabled: boolean;
@@ -107,6 +109,21 @@ const meta: Meta<DashboardMessageArgs> = {
           <Story />
         </AppContext.Provider>
       );
+    },
+    // Setup the `dismissed` control.
+    (Story, { args }) => {
+      const { dismissed } = args;
+      const dispatch = useAppDispatch();
+
+      useEffect(() => {
+        if (dismissed) {
+          dispatch(dashboardMessageSlice.actions.dismiss());
+        } else {
+          dispatch(dashboardMessageSlice.actions.undismiss());
+        }
+      }, [dismissed, dispatch]);
+
+      return <Story />;
     },
   ],
   parameters: {

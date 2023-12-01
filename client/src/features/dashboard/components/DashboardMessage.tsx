@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Collapse } from "reactstrap";
 
 import { RenkuAlert } from "../../../components/Alert";
@@ -47,6 +47,14 @@ export default function DashboardMessage() {
     () => dispatch(dashboardMessageSlice.actions.dismiss()),
     [dispatch]
   );
+
+  useEffect(() => {
+    console.log({ dashboardParams });
+  }, [dashboardParams]);
+
+  useEffect(() => {
+    console.log({ alreadyDismissed });
+  }, [alreadyDismissed]);
 
   if (!dashboardParams.enabled || alreadyDismissed) {
     return null;
