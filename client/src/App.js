@@ -72,25 +72,6 @@ function CentralContentContainer(props) {
     skip: !props.user.logged,
   });
 
-  if (
-    !props.user.logged &&
-    props.location.pathname === Url.get(Url.pages.landing)
-  ) {
-    return (
-      <AnonymousHome
-        client={props.client}
-        homeCustomized={props.params["HOMEPAGE"]}
-        user={props.user}
-        model={props.model}
-        location={props.location}
-        params={props.params}
-      />
-    );
-  }
-
-  // check anonymous sessions settings
-  const blockAnonymous = !user.logged && !props.params["ANONYMOUS_SESSIONS"];
-
   const appContext = {
     client: props.client,
     coreApiVersionedUrlConfig,
@@ -99,6 +80,27 @@ function CentralContentContainer(props) {
     notifications,
     params: props.params,
   };
+
+  if (
+    !props.user.logged &&
+    props.location.pathname === Url.get(Url.pages.landing)
+  ) {
+    return (
+      <AppContext.Provider value={appContext}>
+        <AnonymousHome
+          client={props.client}
+          homeCustomized={props.params["HOMEPAGE"]}
+          user={props.user}
+          model={props.model}
+          location={props.location}
+          params={props.params}
+        />
+      </AppContext.Provider>
+    );
+  }
+
+  // check anonymous sessions settings
+  const blockAnonymous = !user.logged && !props.params["ANONYMOUS_SESSIONS"];
 
   return (
     <div className="d-flex flex-grow-1">

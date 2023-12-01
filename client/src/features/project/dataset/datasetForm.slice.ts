@@ -57,7 +57,7 @@ export type DatasetFormState = {
     image: ImageInputImage;
     keywords: string[];
     name: string;
-    title: string;
+    slug: string;
   };
   context: {
     projectPathWithNamespace: string;
@@ -101,7 +101,7 @@ const initialState: DatasetFormState = {
     image: { options: [], selected: -1 },
     keywords: [],
     name: "",
-    title: "",
+    slug: "",
   },
   context: {
     projectPathWithNamespace: "",
@@ -123,7 +123,7 @@ export const datasetFormSlice = createSlice({
         image: { options: [], selected: -1 },
         keywords: [],
         name: "",
-        title: "",
+        slug: "",
       };
       state.context = {
         projectPathWithNamespace: action.payload.projectPathWithNamespace,
@@ -152,8 +152,8 @@ export const datasetFormSlice = createSlice({
         files: [],
         image: image,
         keywords: dataset.keywords,
+        slug: dataset.slug ?? "",
         name: dataset.name,
-        title: dataset.title,
       };
       state.context = {
         projectPathWithNamespace: action.payload.projectPathWithNamespace,

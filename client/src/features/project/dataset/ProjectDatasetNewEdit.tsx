@@ -120,7 +120,7 @@ function ProjectDatasetNewEdit(props: ProjectDatasetNewEditProps) {
     const pathname = dataset
       ? Url.get(Url.pages.project.datasets.dataset, {
           ...targetPath,
-          dataset: dataset.name,
+          dataset: dataset.slug,
         })
       : Url.get(Url.pages.project.datasets.base, { ...targetPath });
     history.push({ pathname });

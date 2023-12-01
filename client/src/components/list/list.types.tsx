@@ -46,6 +46,8 @@ export interface ListElementProps {
   type?: ListDisplayType;
   url: string;
   visibility: Visibilities;
+  animated?: boolean;
+  fromLanding?: boolean;
 }
 
 export interface VisibilityIconProps {

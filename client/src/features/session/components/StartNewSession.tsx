@@ -158,21 +158,31 @@ function BackButton() {
   const projectUrl = Url.get(Url.pages.project, projectUrlData);
 
   const location = useLocation<LocationState | undefined>();
+
   const { from, filePath } = location.state ?? {};
-  const backUrl = from ?? projectUrl;
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const fromLandingParam = !!searchParams.get("fromLanding");
+  const fromLanding = location.state?.fromLanding || fromLandingParam;
+
+  const backUrl = from ? from : fromLanding ? "/" : projectUrl;
   const backLabel =
     from && filePath
       ? `Back to ${filePath}`
       : from
       ? "Back to notebook file"
+      : fromLanding
+      ? "Back to home"
       : `Back to ${pathWithNamespace}`;
-
   return <GoBackButton label={backLabel} url={backUrl} />;
 }
 
 interface LocationState {
   from?: string;
   filePath?: string;
+  fromLanding?: boolean;
 }
 
 function SessionStarting() {
@@ -182,6 +192,14 @@ function SessionStarting() {
   const path = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.path
   );
+
+  const location = useLocation<LocationState | undefined>();
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const fromLandingParam = !!searchParams.get("fromLanding");
+  const fromLanding = location.state?.fromLanding || fromLandingParam;
 
   const steps = useAppSelector(({ startSession }) => startSession.steps);
 
@@ -215,7 +233,7 @@ function SessionStarting() {
             path,
             server: session.name,
           }),
-          state: { redirectFromStartServer: true },
+          state: { redirectFromStartServer: true, fromLanding: fromLanding },
         }}
       />
     );

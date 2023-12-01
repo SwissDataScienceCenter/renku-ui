@@ -175,39 +175,39 @@ function DatasetModifyForm(props: DatasetModifyFormProps) {
   } = useForm<DatasetFormFields>({
     defaultValues: props.formState.form,
   });
-  const title = watch("title");
+  const name = watch("name");
   React.useEffect(() => {
     // only update the name if the dataset does not already exist
-    if (props.dataset == null && title)
-      setValue("name", slugFromTitle(title, true));
-  }, [props.dataset, setValue, title]);
+    if (props.dataset == null && name)
+      setValue("slug", slugFromTitle(name, true));
+  }, [props.dataset, setValue, name]);
   const [areKeywordsDirty, setKeywordsDirty] = React.useState(false);
   return (
     <form className="form-rk-pink" onSubmit={handleSubmit(props.onSubmit)}>
       <TextInput
-        error={errors.title}
+        error={errors.name}
         dataCy="input-title"
         help={
           <span>
-            The title is displayed in listings of datasets. The <b>name</b> is
-            automatically derived from the title, but can be changed.
+            The name is displayed in listings of datasets. The <b>slug</b> is
+            automatically derived from the name, but can be changed.
           </span>
         }
-        label="Title"
-        name="title"
-        required={true}
-        register={register("title", { required: "A title is required" })}
-      />
-      <TextInput
-        error={errors.name}
-        help="Name is used as an identifier in renku commands."
         label="Name"
         name="name"
         required={true}
-        register={register("name", {
+        register={register("name", { required: "A name is required" })}
+      />
+      <TextInput
+        error={errors.slug}
+        help="Slug is used as an identifier in renku commands."
+        label="Slug"
+        name="slug"
+        required={true}
+        register={register("slug", {
           disabled: props.dataset != null,
           required:
-            "A name is required; a default is derived from the title, but it can be modified",
+            "A slug is required; a default is derived from the name, but it can be modified",
         })}
       />
       <CreatorsInput
@@ -390,7 +390,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
   } = props;
 
   const edit = dataset != null;
-  const name = dataset?.name;
+  const slug = dataset?.slug;
 
   const formState = useAppSelector(({ datasetForm }) => datasetForm);
 
@@ -417,8 +417,8 @@ export default function DatasetModify(props: DatasetModifyProps) {
       setSubmitting(true);
       dispatch(setFormValues(data));
       const submitData = { ...data };
-      // Do not change the name of an existing dataset
-      if (name) submitData.name = name;
+      // Do not change the slug of an existing dataset
+      if (slug) submitData.slug = slug;
 
       try {
         // step 1: prepare the dataset
@@ -485,7 +485,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
             if (!groomedDataset.files?.length) {
               if (response.data.remoteBranch === defaultBranch) {
                 await redirectAfterSubmit({
-                  datasetId: dataset?.name ?? response.data.name,
+                  datasetId: dataset?.slug ?? response.data.slug,
                   fetchDatasets,
                   history,
                   projectPathWithNamespace,
@@ -506,7 +506,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
               files: groomedDataset.files,
               gitUrl: externalUrl,
               metadataVersion,
-              name: groomedDataset.name,
+              slug: groomedDataset.slug,
             };
             addFilesMutation(addFilesParams)
               .then(async (filesResponse) => {
@@ -522,7 +522,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
                   // ? redirect to the dataset page if dataset was created
                   if (!edit) {
                     await redirectAfterSubmit({
-                      datasetId: response.data.name,
+                      datasetId: response.data.slug,
                       fetchDatasets,
                       history,
                       projectPathWithNamespace,
@@ -539,7 +539,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
                 // ? Do not redirect if the dataset was created in another branch, we should display the warning
                 if (response.data.remoteBranch === defaultBranch) {
                   await redirectAfterSubmit({
-                    datasetId: dataset?.name ?? response.data.name,
+                    datasetId: dataset?.slug ?? response.data.slug,
                     fetchDatasets,
                     history,
                     projectPathWithNamespace,
@@ -593,7 +593,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
       apiVersion,
       addFilesMutation,
       client,
-      dataset?.name,
+      dataset?.slug,
       defaultBranch,
       dispatch,
       edit,
@@ -601,7 +601,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
       fetchDatasets,
       history,
       metadataVersion,
-      name,
+      slug,
       postDatasetMutation,
       projectPathWithNamespace,
       setError,

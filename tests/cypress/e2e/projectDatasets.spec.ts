@@ -45,9 +45,9 @@ function checkDatasetDisplay(
     const datasetIdentifier = d.identifier.replace(/-/g, "");
     const requestId = `getDatasetById${i}`;
     fixtures.datasetById({ id: datasetIdentifier, name: requestId });
-    cy.getDataCy("list-card-title").contains(d.title).click();
+    cy.getDataCy("list-card-title").contains(d.name).click();
     cy.wait(`@${requestId}`);
-    cy.getDataCy("dataset-title").should("contain.text", d.title);
+    cy.getDataCy("dataset-title").should("contain.text", d.name);
     cy.getDataCy("header-project").should("not.exist");
     cy.getDataCy("go-back-button").should(
       "contain.text",
@@ -73,9 +73,9 @@ function checkDatasetLimitedPermissionDisplay(
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000, { log: false });
     cy.getDataCy("list-card-title").should("have.length", 3);
-    cy.getDataCy("list-card-title").contains(d.title).click();
+    cy.getDataCy("list-card-title").contains(d.name).click();
     cy.wait(`@${requestId}`);
-    cy.getDataCy("dataset-title").should("contain.text", d.title);
+    cy.getDataCy("dataset-title").should("contain.text", d.name);
 
     if (editDisabled) {
       cy.getDataCy("edit-dataset-button").should("be.disabled");
@@ -131,13 +131,13 @@ describe("Project dataset", () => {
         const dataset = datasets[0];
         const datasetIdentifier = dataset.identifier.replace(/-/g, "");
         fixtures.datasetById({ id: datasetIdentifier });
-        cy.getDataCy("list-card-title").contains(dataset.title).click();
+        cy.getDataCy("list-card-title").contains(dataset.name).click();
         cy.wait("@getDatasetById");
         cy.getDataCy("edit-dataset-button").first().click();
         cy.wait("@getFiles");
 
-        cy.get("input[name='title']").should("have.value", dataset.title);
-        cy.get("input[name='title']").type(" edited");
+        cy.getDataCy("input-title").should("have.value", dataset.name);
+        cy.getDataCy("input-title").type(" edited");
 
         cy.getDataCy("creator-name")
           .first()
@@ -167,7 +167,7 @@ describe("Project dataset", () => {
         fixtures.projectDatasetList({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           transformResponse(content: any) {
-            content.result.datasets[0].title = `${dataset.title} edited`;
+            content.result.datasets[0].name = `${dataset.name} edited`;
             return content;
           },
         });
@@ -176,10 +176,8 @@ describe("Project dataset", () => {
           .its("request.body")
           // eslint-disable-next-line max-nested-callbacks
           .then((body) => {
-            cy.wrap(body).its("name").should("equal", dataset.name);
-            cy.wrap(body)
-              .its("title")
-              .should("equal", `${dataset.title} edited`);
+            cy.wrap(body).its("slug").should("equal", dataset.slug);
+            cy.wrap(body).its("name").should("equal", `${dataset.name} edited`);
             cy.wrap(body).its("keywords").should("include", "added");
             cy.wrap(body.creators[0])
               .its("name")
@@ -188,7 +186,7 @@ describe("Project dataset", () => {
         cy.wait("@addFile");
         cy.wait("@datasetList", { timeout: 20_000 });
         cy.wait("@getProjectLockStatus");
-        cy.get(".card-title").contains(dataset.title);
+        cy.get(".card-title").contains(dataset.name);
       });
   });
 
@@ -208,18 +206,18 @@ describe("Project dataset", () => {
         const dataset = datasets[0];
         const datasetIdentifier = dataset.identifier.replace(/-/g, "");
         fixtures.datasetById({ id: datasetIdentifier });
-        cy.getDataCy("list-card-title").contains(dataset.title).click();
+        cy.getDataCy("list-card-title").contains(dataset.name).click();
         cy.wait("@getDatasetById");
         cy.getDataCy("edit-dataset-button").first().click();
         cy.wait("@getFiles");
 
-        cy.get("input[name='title']").should("have.value", dataset.title);
-        cy.get("input[name='title']").type(" edited");
+        cy.getDataCy("input-title").should("have.value", dataset.name);
+        cy.getDataCy("input-title").type(" edited");
 
         fixtures.projectDatasetList({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           transformResponse(content: any) {
-            content.result.datasets[0].title = `${dataset.title} edited`;
+            content.result.datasets[0].name = `${dataset.name} edited`;
             return content;
           },
         });
@@ -242,7 +240,7 @@ describe("Project dataset", () => {
         const dataset = datasets[0];
         const datasetIdentifier = dataset.identifier.replace(/-/g, "");
         fixtures.datasetById({ id: datasetIdentifier });
-        cy.getDataCy("list-card-title").contains(dataset.title).click();
+        cy.getDataCy("list-card-title").contains(dataset.name).click();
         cy.wait("@getDatasetById");
         cy.getDataCy("delete-dataset-button").should("exist").click();
         fixtures.datasetsRemove();

@@ -1,5 +1,12 @@
 # Changes
 
+## [3.17.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.16.0...3.17.0)   (2023-11-29)
+
+### Features
+
+- Redesign landing page ([#2885](https://github.com/SwissDataScienceCenter/renku-ui/issues/2885), [#2890](https://github.com/SwissDataScienceCenter/renku-ui/issues/2890), [#2891](https://github.com/SwissDataScienceCenter/renku-ui/issues/2891), [#2895](https://github.com/SwissDataScienceCenter/renku-ui/issues/2895), [#2896](https://github.com/SwissDataScienceCenter/renku-ui/issues/2896), [#2897](https://github.com/SwissDataScienceCenter/renku-ui/issues/2897), [#2911](https://github.com/SwissDataScienceCenter/renku-ui/issues/2911), [#2912](https://github.com/SwissDataScienceCenter/renku-ui/issues/2912), [#2913](https://github.com/SwissDataScienceCenter/renku-ui/issues/2913), [#2925](https://github.com/SwissDataScienceCenter/renku-ui/issues/2925))
+
+
 ## [3.16.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.15.1...3.16.0) (2023-11-24)
 
 ### Features

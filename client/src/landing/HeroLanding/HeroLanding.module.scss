@@ -1,0 +1,112 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+#heroContainer {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  gap: 0;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "heroTitle heroGraphic"
+    "heroDescription heroGraphic";
+  align-content: center;
+  align-items: center;
+}
+
+#heroContainer {
+  min-height: 594px;
+
+  h1 {
+    font-size: 40px;
+  }
+
+  h3 {
+    font-size: 20px;
+  }
+
+  p {
+    font-size: 20px;
+    padding-top: 0;
+  }
+  .heroBtn {
+    width: 200px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @include media-breakpoint-up(xs) {
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    p {
+      font-size: 16px;
+    }
+  }
+
+  @include media-breakpoint-up(md) {
+    h1 {
+      font-size: 32px;
+    }
+    .heroGraphic img {
+      width: 336px;
+      padding: 60px 0;
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    h1 {
+      font-size: 40px;
+    }
+
+    h3 {
+      font-size: 32px;
+    }
+    p {
+      font-size: 24px;
+      padding-top: 20px;
+    }
+    .heroGraphic img {
+      width: 420px;
+      padding: 0;
+    }
+  }
+
+  @include media-breakpoint-down(lg) {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+      "heroTitle"
+      "heroGraphic"
+      "heroDescription";
+    margin: 40px 0;
+  }
+}
+
+.heroGraphic {
+  grid-area: heroGraphic;
+  text-align: center;
+  padding: 60px 0;
+}
+
+.heroTitle {
+  grid-area: heroTitle;
+  display: flex;
+  height: 100%;
+  align-items: flex-end;
+  padding-bottom: 20px;
+}
+
+.heroDescription {
+  height: 100%;
+  grid-area: heroDescription;
+  padding-bottom: 40px;
+}

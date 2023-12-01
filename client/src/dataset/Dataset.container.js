@@ -39,8 +39,8 @@ export default function ShowDataset(props) {
     versionUrl,
   } = coreSupport;
 
-  const findDatasetId = (name, datasets) => {
-    const dataset = datasets?.find((d) => d.name === name);
+  const findDatasetId = (slug, datasets) => {
+    const dataset = datasets?.find((d) => d.slug === slug);
     return dataset?.identifier;
   };
 
@@ -79,9 +79,9 @@ export default function ShowDataset(props) {
 
   // use effect to calculate files
   useEffect(() => {
-    const fetchFiles = (name, externalUrl, versionUrl) => {
+    const fetchFiles = (slug, externalUrl, versionUrl) => {
       props.datasetCoordinator.fetchDatasetFilesFromCoreService(
-        name,
+        slug,
         externalUrl,
         versionUrl
       );
@@ -100,7 +100,7 @@ export default function ShowDataset(props) {
         backendAvailable &&
         !isFilesFetching
       ) {
-        fetchFiles(dataset?.name, externalUrl, versionUrl);
+        fetchFiles(dataset?.slug, externalUrl, versionUrl);
       }
     }
   }, [

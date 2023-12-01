@@ -156,7 +156,7 @@ function TopNav() {
   const toggleOpen = () => setIsOpen(!isOpen);
   return (
     <>
-      <header className="px-0 pt-2 pb-4 d-flex rk-anon-home">
+      <header className="pt-2 pb-4 d-flex rk-anon-home">
         <div className="align-self-center flex-grow-1">
           <img src={logo} alt="Renku" height="68" className="d-block my-1" />
         </div>
@@ -178,7 +178,12 @@ function TopNav() {
           >
             Login
           </Link>
-          <Button onClick={toggleOpen} id="nav-hamburger" className="border-0">
+          <Button
+            onClick={toggleOpen}
+            id="nav-hamburger"
+            className="border-0"
+            title="Navigation Toggle"
+          >
             <List className="m-0 bi" />
           </Button>
         </div>
@@ -188,7 +193,7 @@ function TopNav() {
           <Navbar className="navbar rk-anon-home px-0">
             <Nav
               className="ms-auto flex-column rk-bg-shaded-dark text-end"
-              style={{ "--rk-bg-opacity": 0.8 } as CSSProperties}
+              style={{ "--rk-bg-opacity": 0.9, zIndex: 100 } as CSSProperties}
             >
               <NavItem className="nav-item mb-2">
                 <TopNavExternalLink
