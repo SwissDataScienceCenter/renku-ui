@@ -72,7 +72,6 @@ const meta: Meta<DashboardMessageArgs> = {
     dismissible: { type: "boolean" },
     dismissed: {
       control: "boolean",
-      // [ARG_REDUX_PATH]: "dashboardMessage.dismissed",
     },
   },
   component: DashboardMessage,
@@ -119,6 +118,7 @@ const meta: Meta<DashboardMessageArgs> = {
         if (dismissed) {
           dispatch(dashboardMessageSlice.actions.dismiss());
         } else {
+          // eslint-disable-next-line spellcheck/spell-checker
           dispatch(dashboardMessageSlice.actions.undismiss());
         }
       }, [dismissed, dispatch]);
