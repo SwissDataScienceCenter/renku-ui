@@ -59,8 +59,8 @@ import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { User } from "../../../model/RenkuModels";
-import { NotebooksVersion } from "../../versions/versions";
-import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
+import { NotebooksVersion } from "../../versions/versions.types";
+import { useGetNotebooksVersionQuery } from "../../versions/versions.api";
 import { StateModelProject } from "../Project";
 import {
   useDeleteCloudStorageMutation,
@@ -110,7 +110,7 @@ export default function ProjectSettingsCloudStorage() {
     error: versionError,
     isFetching: versionIsFetching,
     isLoading: versionIsLoading,
-  } = useGetNotebooksVersionsQuery();
+  } = useGetNotebooksVersionQuery();
 
   const error = storageError || versionError;
   const isFetching = storageIsFetching || versionIsFetching;

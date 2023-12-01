@@ -18,15 +18,22 @@
 
 import { CoreErrorContent } from "../../utils/types/coreService.types";
 
-interface CoreComponent {
-  data: {
-    metadata_version: string;
-  };
+export interface BaseVersionResponse {
+  name: string;
+  versions: BaseVersion[];
+}
+
+interface BaseVersion {
   version: string;
 }
 
-export interface CoreVersionDetails {
-  name: string;
+interface CoreComponent extends BaseVersion {
+  data: {
+    metadata_version: string;
+  };
+}
+
+export interface CoreVersionDetails extends BaseVersionResponse {
   versions: CoreComponent[];
 }
 
@@ -42,7 +49,14 @@ export interface CoreVersions {
   details?: CoreComponent[];
 }
 
-interface NotebookComponent {
+export type KgVersionResponse = BaseVersionResponse;
+
+export interface KgVersion {
+  name: string;
+  version: string;
+}
+
+interface NotebookComponent extends BaseVersion {
   data: {
     anonymousSessionsEnabled: boolean;
     cloudstorageEnabled: {
@@ -51,10 +65,9 @@ interface NotebookComponent {
     };
     sshEnabled: boolean;
   };
-  version: string;
 }
 
-export interface NotebooksVersionResponse {
+export interface NotebooksVersionResponse extends BaseVersionResponse {
   name: string;
   versions: NotebookComponent[];
 }

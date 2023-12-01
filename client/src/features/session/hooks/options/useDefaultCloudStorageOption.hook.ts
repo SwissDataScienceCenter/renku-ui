@@ -20,7 +20,7 @@ import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { CloudStorage } from "../../../project/projectCloudStorage.types";
 import { getProvidedSensitiveFields } from "../../../project/utils/projectCloudStorage.utils";
-import { NotebooksVersion } from "../../../versions/versions";
+import { NotebooksVersion } from "../../../versions/versions.types";
 import { setError } from "../../startSession.slice";
 import { SessionCloudStorage } from "../../startSessionOptions.types";
 import { setCloudStorage } from "../../startSessionOptionsSlice";

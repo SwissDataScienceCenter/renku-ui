@@ -79,7 +79,7 @@ import {
   getProvidedSensitiveFields,
   parseCloudStorageConfiguration,
 } from "../../../project/utils/projectCloudStorage.utils";
-import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
+import { useGetNotebooksVersionQuery } from "../../../versions/versions.api";
 import { SessionCloudStorage } from "../../startSessionOptions.types";
 import {
   addCloudStorageItem,
@@ -90,7 +90,7 @@ import {
 } from "../../startSessionOptionsSlice";
 
 export default function SessionCloudStorageOption() {
-  const { data: notebooksVersion, isLoading } = useGetNotebooksVersionsQuery();
+  const { data: notebooksVersion, isLoading } = useGetNotebooksVersionQuery();
 
   if (isLoading) {
     return (
@@ -150,7 +150,7 @@ function CloudStorageList() {
 
   const dispatch = useDispatch();
 
-  const { data: notebooksVersion } = useGetNotebooksVersionsQuery();
+  const { data: notebooksVersion } = useGetNotebooksVersionQuery();
   const {
     data: storageForProject,
     error,

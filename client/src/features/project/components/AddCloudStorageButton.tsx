@@ -59,7 +59,7 @@ import {
 } from "../utils/projectCloudStorage.utils";
 
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
-import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
+import { useGetNotebooksVersionQuery } from "../../versions/versions.api";
 import styles from "./AddCloudStorageButton.module.scss";
 import { ExternalLink } from "../../../components/ExternalLinks";
 
@@ -472,7 +472,7 @@ function SimpleAddCloudStorage({
     StateModelProject["metadata"]["id"]
   >((state) => state.stateModel.project.metadata.id);
 
-  const { data: notebooksVersion } = useGetNotebooksVersionsQuery();
+  const { data: notebooksVersion } = useGetNotebooksVersionQuery();
   const support = useMemo(
     () =>
       notebooksVersion != null && notebooksVersion.cloudStorageEnabled.s3

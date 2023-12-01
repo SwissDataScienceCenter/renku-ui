@@ -22,7 +22,7 @@ import { useDispatch } from "react-redux";
 import { DropdownItem, Modal, ModalBody, ModalHeader } from "reactstrap";
 
 import { Loader } from "../Loader";
-import { useGetNotebooksVersionsQuery } from "../../features/versions/versionsApi";
+import { useGetNotebooksVersionQuery } from "../../features/versions/versions.api";
 import {
   hideSshModal,
   showSshModal,
@@ -57,7 +57,7 @@ interface SshDropdownProps {
 function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
   const dispatch = useDispatch();
 
-  const { data, isLoading, error } = useGetNotebooksVersionsQuery();
+  const { data, isLoading, error } = useGetNotebooksVersionQuery();
   if (error || isLoading || !data?.sshEnabled) return null;
 
   const handleClick = () => {
@@ -77,7 +77,7 @@ function SshModal() {
   const dispatch = useDispatch();
   const gitUrl = cleanGitUrl(displayModal.gitUrl);
 
-  const notebooksSupport = useGetNotebooksVersionsQuery();
+  const notebooksSupport = useGetNotebooksVersionQuery();
   const { coreApiVersionedUrlConfig } = useContext(AppContext);
   const migrationStatusApiVersion = apiVersionForMetadataVersion(
     coreApiVersionedUrlConfig,

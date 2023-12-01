@@ -20,7 +20,7 @@ import { useContext, useMemo } from "react";
 import AppContext from "../../utils/context/appContext";
 import { apiVersionForMetadataVersion } from "../../utils/helpers/url";
 import type { CoreApiVersionedUrlConfig } from "../../utils/helpers/url";
-import { useGetCoreVersionsQuery } from "../versions/versionsApi";
+import { useGetCoreVersionsQuery } from "../versions/versions.api";
 import { useGetMigrationStatusQuery } from "./projectCoreApi";
 
 export type CoreSupport =
