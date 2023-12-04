@@ -132,6 +132,10 @@ export const projectsApi = createApi({
     }),
     getRecentlyVisitedProjects: builder.query<any, number>({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
+        // console.log({ getState: _queryApi.getState });
+        // console.log({ state: _queryApi.getState() });
+        // const state:
+
         // get list of projects recently visited
         const projectListRequest = await fetchWithBQ(`/last-projects/${_arg}`);
         if (projectListRequest.error)
