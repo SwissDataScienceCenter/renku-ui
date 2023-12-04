@@ -81,6 +81,10 @@ function CentralContentContainer(props) {
     params: props.params,
   };
 
+  // Fake change to trigger deploy
+  // eslint-disable-next-line no-console
+  console.log({ appContext });
+
   if (
     !props.user.logged &&
     props.location.pathname === Url.get(Url.pages.landing)
