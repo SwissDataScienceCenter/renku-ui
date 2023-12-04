@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 
-export const CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN = "<sensitive>";
+export interface NotebooksErrorContent {
+  code: number;
+  message: string;
+}
 
-export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
-  "[example]\ntype = s3\nprovider = AWS\nregion = us-east-1";
+export interface NotebooksErrorResponse {
+  error: NotebooksErrorContent;
+}

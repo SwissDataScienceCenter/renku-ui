@@ -75,11 +75,11 @@ import { StateModelProject } from "../../../project/Project";
 import {
   useGetCloudStorageForProjectQuery,
   useValidateCloudStorageConfigurationMutation,
-} from "../../../project/projectCloudStorage.api";
+} from "../../../project/components/cloudStorage/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-} from "../../../project/projectCloudStorage.constants";
+} from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 import {
   formatCloudStorageConfiguration,
   getProvidedSensitiveFields,
@@ -108,8 +108,7 @@ export default function SessionCloudStorageOption() {
     );
   }
 
-  return notebooksVersion?.cloudStorageEnabled.s3 ||
-    notebooksVersion?.cloudStorageEnabled.azureBlob ? (
+  return notebooksVersion?.cloudStorageEnabled ? (
     <SessionS3CloudStorageOption />
   ) : null;
 }
@@ -154,6 +153,7 @@ function CloudStorageList() {
   const dispatch = useAppDispatch();
 
   const { data: notebooksVersion } = useGetNotebooksVersionsQuery();
+  // ! TODO: update
   const {
     data: storageForProject,
     error,
@@ -166,7 +166,7 @@ function CloudStorageList() {
   );
 
   const support = useMemo(
-    () => (notebooksVersion?.cloudStorageEnabled.s3 ? "s3" : "azure"),
+    () => (notebooksVersion?.cloudStorageEnabled ? "s3" : "none"),
     [notebooksVersion?.cloudStorageEnabled]
   );
 
@@ -177,12 +177,8 @@ function CloudStorageList() {
     }
     const initialCloudStorage: SessionCloudStorage[] = storageForProject.map(
       ({ storage, sensitive_fields }) => ({
-        active:
-          (storage.storage_type === "s3" && support === "s3") ||
-          (storage.storage_type === "azureblob" && support === "azure"),
-        supported:
-          (storage.storage_type === "s3" && support === "s3") ||
-          (storage.storage_type === "azureblob" && support === "azure"),
+        active: storage.storage_type === "s3" && support === "s3",
+        supported: storage.storage_type === "s3" && support === "s3",
         ...(sensitive_fields
           ? {
               sensitive_fields: sensitive_fields.map(({ name, ...rest }) => ({

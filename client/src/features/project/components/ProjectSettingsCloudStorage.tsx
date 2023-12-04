@@ -53,7 +53,7 @@ import {
 } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
-import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
+import { ErrorAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
@@ -67,22 +67,22 @@ import {
   useDeleteCloudStorageMutation,
   useGetCloudStorageForProjectQuery,
   useUpdateCloudStorageMutation,
-} from "../projectCloudStorage.api";
+} from "./cloudStorage/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-} from "../projectCloudStorage.constants";
+} from "./cloudStorage/projectCloudStorage.constants";
 import {
   CloudStorage,
   CloudStorageConfiguration,
   CloudStorageCredential,
-} from "../projectCloudStorage.types";
+} from "./cloudStorage/projectCloudStorage.types";
 import {
   formatCloudStorageConfiguration,
   getCredentialFieldDefinitions,
   parseCloudStorageConfiguration,
 } from "../utils/projectCloudStorage.utils";
-import AddCloudStorageButton from "./AddCloudStorageButton";
+import AddCloudStorageButton from "./cloudStorage/AddCloudStorageButton";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useLegacySelector<User["logged"]>(
@@ -142,6 +142,7 @@ export default function ProjectSettingsCloudStorage() {
     );
   }
 
+  // ! TODO: update this, and double check how we handle/show errors
   if (!storageForProject || !notebooksVersion || error) {
     return (
       <CloudStorageSection>
@@ -158,11 +159,13 @@ export default function ProjectSettingsCloudStorage() {
     <CloudStorageSection isFetching={isFetching}>
       <CloudStorageSupportNotice notebooksVersion={notebooksVersion} />
 
-      <Row>
-        <Col>
-          <AddCloudStorageButton />
-        </Col>
-      </Row>
+      {notebooksVersion.cloudStorageEnabled && (
+        <Row>
+          <Col>
+            <AddCloudStorageButton />
+          </Col>
+        </Row>
+      )}
 
       <CloudStorageList storageForProject={storageForProject} />
     </CloudStorageSection>
@@ -195,17 +198,7 @@ interface CloudStorageSupportNoticeProps {
 function CloudStorageSupportNotice({
   notebooksVersion,
 }: CloudStorageSupportNoticeProps) {
-  const support = useMemo(
-    () =>
-      notebooksVersion.cloudStorageEnabled.s3
-        ? "s3"
-        : notebooksVersion.cloudStorageEnabled.azureBlob
-        ? "azure"
-        : "none",
-    [notebooksVersion.cloudStorageEnabled]
-  );
-
-  if (support === "none") {
+  if (!notebooksVersion.cloudStorageEnabled) {
     return (
       <WarnAlert dismissible={false}>
         <p>
@@ -215,26 +208,7 @@ function CloudStorageSupportNotice({
       </WarnAlert>
     );
   }
-
-  if (support === "azure") {
-    return (
-      <InfoAlert dismissible={false} timeout={0}>
-        <p>
-          This instance of RenkuLab currently only supports starting sessions
-          with Azure Blob Store cloud storage.
-        </p>
-      </InfoAlert>
-    );
-  }
-
-  return (
-    <InfoAlert dismissible={false} timeout={0}>
-      <p>
-        This instance of RenkuLab currently only supports starting sessions with
-        S3 or S3-compatible cloud storage.
-      </p>
-    </InfoAlert>
-  );
+  return null;
 }
 
 interface CloudStorageListProps {
@@ -442,7 +416,7 @@ function EditCloudStorage({
       const filteredConfiguration = Object.entries(parsedConfiguration)
         .filter(([key]) => !sensitiveFields.includes(key))
         .reduce(
-          (obj, [key, value]) => ({ ...obj, [key]: value }),
+          (obj, [key, value]) => ({ ...obj, [key]: value?.toString() }),
           {} as Record<string, string | undefined>
         );
       const removedKeysConfiguration = Object.keys(configuration)

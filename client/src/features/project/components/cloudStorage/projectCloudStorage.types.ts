@@ -22,7 +22,7 @@ export interface CloudStorage {
 }
 
 export interface CloudStorageConfiguration {
-  configuration: Record<string, string | undefined>;
+  configuration: Record<string, string | number | boolean | undefined>;
   name: string;
   private: boolean;
   project_id: string;
@@ -52,7 +52,7 @@ export type AddCloudStorageForProjectParams =
   | SimpleAddCloudStorageForProjectParams;
 
 export interface AdvancedAddCloudStorageForProjectParams {
-  configuration: Record<string, string | undefined>;
+  configuration?: Record<string, string | number | boolean | undefined>;
   name: string;
   private: boolean;
   project_id: string;
@@ -61,6 +61,7 @@ export interface AdvancedAddCloudStorageForProjectParams {
   target_path: string;
 }
 
+// ! Should remove this soon
 export interface SimpleAddCloudStorageForProjectParams {
   name: string;
   private: boolean;
@@ -71,7 +72,7 @@ export interface SimpleAddCloudStorageForProjectParams {
 }
 
 export interface UpdateCloudStorageParams {
-  configuration?: Record<string, string | null | undefined>;
+  configuration?: Record<string, string | number | boolean | null | undefined>;
   name?: string;
   private?: boolean;
   project_id: string;
@@ -89,3 +90,78 @@ export interface DeleteCloudStorageParams {
 export interface ValidateCloudStorageConfigurationParams {
   configuration: Record<string, string | undefined>;
 }
+
+export type CloudStorageOptionTypes =
+  | "string"
+  | "boolean"
+  | "number"
+  | "secret";
+
+export interface CloudStorageSchemaOptions {
+  name: string;
+  help: string;
+  provider: string;
+  default: number | string | boolean;
+  default_str: string;
+  value: null | number | string | boolean;
+  examples: [
+    {
+      value: string; // ? Potential value for the option
+      help: string; // ? Help text for the _value_
+      provider: string; // ? empty for "all providers"
+    }
+  ];
+  required: boolean;
+  ispassword: boolean; // eslint-disable-line spellcheck/spell-checker
+  sensitive: boolean; // ? The service doesn't store it -- "more" sensitive? 😁
+  advanced: boolean; // ? Only shown when advanced options are enabled
+  exclusive: boolean; // ? Only one of the examples can be used when this is true
+  datatype: string;
+  type: string;
+  hide: boolean | number;
+  convertedType?: CloudStorageOptionTypes;
+  convertedDefault?: number | string | boolean;
+  convertedHide?: boolean;
+  friendlyName?: string;
+}
+
+export interface CloudStorageSchema {
+  name: string;
+  description: string;
+  prefix: string; // ? weird naming; it's the machine readable name
+  position?: number;
+  options: CloudStorageSchemaOptions[];
+}
+
+export interface CloudStorageOverride extends CloudStorageSchema {
+  providers: Record<string, Partial<CloudStorageProvider>>;
+}
+
+export interface CloudStorageProvider {
+  name: string;
+  description: string;
+  position?: number;
+}
+
+export type AddCloudStorageState = {
+  step: number;
+  completedSteps: number;
+  advancedMode: boolean;
+  showAllSchema: boolean;
+  showAllProviders: boolean;
+  showAllOptions: boolean;
+};
+
+export type CloudStorageDetailsOptions = Record<
+  string,
+  string | number | boolean | undefined
+>;
+
+export type CloudStorageDetails = {
+  schema?: string;
+  provider?: string;
+  options?: CloudStorageDetailsOptions;
+  name?: string;
+  sourcePath?: string;
+  mountPoint?: string;
+};

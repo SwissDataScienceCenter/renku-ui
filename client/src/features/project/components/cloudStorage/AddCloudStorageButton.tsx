@@ -17,8 +17,8 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { CheckLg, CloudFill, PlusLg, XLg } from "react-bootstrap-icons";
+import { useCallback, useEffect, useState } from "react";
+import { CheckLg, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   Button,
@@ -30,38 +30,35 @@ import {
   FormText,
   Input,
   Label,
-  Modal,
   ModalBody,
   ModalFooter,
-  ModalHeader,
   Row,
 } from "reactstrap";
 
-import { ExternalLink } from "../../../components/ExternalLinks";
-import { Loader } from "../../../components/Loader";
-import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
-import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
-import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
-import { StateModelProject } from "../Project";
+import { Loader } from "../../../../components/Loader";
+import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
+import { StateModelProject } from "../../Project";
 import {
   useAddCloudStorageForProjectMutation,
   useUpdateCloudStorageMutation,
-} from "./cloudStorage/projectCloudStorage.api";
+} from "./projectCloudStorage.api";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-} from "./cloudStorage/projectCloudStorage.constants";
+} from "./projectCloudStorage.constants";
 import {
   CloudStorage,
   CloudStorageCredential,
-} from "./cloudStorage/projectCloudStorage.types";
+} from "./projectCloudStorage.types";
 import {
   getCredentialFieldDefinitions,
   parseCloudStorageConfiguration,
-} from "../utils/projectCloudStorage.utils";
-
-import styles from "./AddCloudStorageButton.module.scss";
+} from "../../utils/projectCloudStorage.utils";
+import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
+import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
+import { ExternalLink } from "../../../../components/ExternalLinks";
+import AddCloudStorageModal from "./AddCloudStorageModal";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 
 export default function AddCloudStorageButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -80,111 +77,12 @@ export default function AddCloudStorageButton() {
   );
 }
 
-interface AddCloudStorageModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-}
-
-function AddCloudStorageModal({ isOpen, toggle }: AddCloudStorageModalProps) {
-  const [state, setState] = useState<AddCloudStorageModalState>({
-    step: "configuration",
-    mode: "simple",
-  });
-  const toggleAdvanced = useCallback(() => {
-    setState((prevState) => {
-      if (prevState.step === "credentials") {
-        return prevState;
-      }
-      return {
-        ...prevState,
-        mode: prevState.mode === "advanced" ? "simple" : "advanced",
-      };
-    });
-  }, []);
-  const goToCredentialsStep = useCallback((storageDefinition: CloudStorage) => {
-    setState({ step: "credentials", storageDefinition });
-  }, []);
-
-  // Reset state when closed
-  useEffect(() => {
-    if (!isOpen) {
-      setState({ step: "configuration", mode: "simple" });
-    }
-  }, [isOpen]);
-
-  return (
-    <Modal
-      backdrop="static"
-      centered
-      className={styles.modal}
-      fullscreen="lg"
-      isOpen={isOpen}
-      scrollable
-      size="lg"
-      toggle={toggle}
-    >
-      <ModalHeader toggle={toggle}>
-        <CloudFill className={cx("bi", "me-2")} />
-        Add Cloud Storage
-      </ModalHeader>
-      {state.step === "configuration" && (
-        <ModalBody className="flex-shrink-0">
-          <div className="form-rk-green">
-            <div className={cx("form-check", "form-switch")}>
-              <Input
-                className={cx("form-check-input", "rounded-pill")}
-                checked={state.mode === "advanced"}
-                id="addCloudStorageAdvancedSwitch"
-                onChange={toggleAdvanced}
-                role="switch"
-                type="checkbox"
-              />
-              <Label
-                className="form-check-label"
-                for="addCloudStorageAdvancedSwitch"
-              >
-                Advanced mode
-              </Label>
-            </div>
-          </div>
-        </ModalBody>
-      )}
-      {state.step === "credentials" ? (
-        <AddCloudStorageCredentialsStep
-          storageDefinition={state.storageDefinition}
-          toggle={toggle}
-        />
-      ) : state.mode === "advanced" ? (
-        <AdvancedAddCloudStorage
-          goToCredentialsStep={goToCredentialsStep}
-          toggle={toggle}
-        />
-      ) : (
-        <SimpleAddCloudStorage
-          goToCredentialsStep={goToCredentialsStep}
-          toggle={toggle}
-        />
-      )}
-    </Modal>
-  );
-}
-
-type AddCloudStorageModalState =
-  | {
-      step: "configuration";
-      mode: "simple" | "advanced";
-    }
-  | {
-      step: "credentials";
-      storageDefinition: CloudStorage;
-    };
-
 interface AddCloudStorageProps {
   goToCredentialsStep: (storageDefinition: CloudStorage) => void;
   toggle: () => void;
 }
-
-function AdvancedAddCloudStorage({
+// ! TEMP - remove
+export function AdvancedAddCloudStorage({
   goToCredentialsStep,
   toggle,
 }: AddCloudStorageProps) {
@@ -440,8 +338,8 @@ interface AdvancedAddCloudStorageForm {
   readonly: boolean;
   source_path: string;
 }
-
-function SimpleAddCloudStorage({
+// ! TEMP - remove
+export function SimpleAddCloudStorage({
   goToCredentialsStep,
   toggle,
 }: AddCloudStorageProps) {
@@ -450,15 +348,7 @@ function SimpleAddCloudStorage({
   );
 
   const { data: notebooksVersion } = useGetNotebooksVersionsQuery();
-  const support = useMemo(
-    () =>
-      notebooksVersion != null && notebooksVersion.cloudStorageEnabled
-        ? "s3"
-        : notebooksVersion != null && notebooksVersion.cloudStorageEnabled
-        ? "azure"
-        : "none",
-    [notebooksVersion]
-  );
+  const support = notebooksVersion?.cloudStorageEnabled ?? false;
 
   const [addCloudStorageForProject, result] =
     useAddCloudStorageForProjectMutation();
@@ -547,7 +437,7 @@ function SimpleAddCloudStorage({
                 Endpoint URL
               </Label>
               <FormText id="addCloudStorageUrlHelp" tag="div">
-                {support === "s3" ? (
+                {support ? (
                   <>
                     <p className="mb-0">
                       For AWS S3 buckets, supported URLs are of the form:
@@ -608,11 +498,7 @@ function SimpleAddCloudStorage({
                     aria-describedby="addCloudStorageUrlHelp"
                     className={cx(errors.endpointUrl && "is-invalid")}
                     id="addCloudStorageUrl"
-                    placeholder={
-                      support === "s3"
-                        ? "s3://bucket.s3.region.amazonaws.com/"
-                        : "azure://account.blob.core.windows.net/container"
-                    }
+                    placeholder="s3://bucket.s3.region.amazonaws.com/"
                     type="text"
                     {...field}
                   />
@@ -715,8 +601,8 @@ interface AddCloudStorageCredentialsStepProps {
   storageDefinition: CloudStorage;
   toggle: () => void;
 }
-
-function AddCloudStorageCredentialsStep({
+// ! TEMP - remove
+export function AddCloudStorageCredentialsStep({
   storageDefinition,
   toggle,
 }: AddCloudStorageCredentialsStepProps) {

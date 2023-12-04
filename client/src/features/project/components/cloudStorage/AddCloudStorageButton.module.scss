@@ -1,0 +1,24 @@
+@import "~/src/styles/bootstrap/_custom_bootstrap_variables.scss";
+
+.modal :global(.modal-content) {
+  height: unset !important;
+}
+
+.listGroup {
+  border: 1px solid $rk-green;
+}
+
+.listGroupItem {
+  border-bottom: 1px dotted;
+}
+
+.listGroupItemActive {
+  border: 1px solid $rk-green !important;
+  color: $rk-green;
+  &:not(:first-child) {
+    padding-top: 7px !important;
+  }
+  &:hover {
+    color: $rk-green;
+  }
+}

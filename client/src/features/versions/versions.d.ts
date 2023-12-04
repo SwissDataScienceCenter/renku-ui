@@ -45,10 +45,7 @@ export interface CoreVersions {
 interface NotebookComponent {
   data: {
     anonymousSessionsEnabled: boolean;
-    cloudstorageEnabled: {
-      s3: boolean;
-      azure_blob: boolean;
-    };
+    cloudstorageEnabled: boolean;
     sshEnabled: boolean;
   };
   version: string;
@@ -60,12 +57,9 @@ export interface NotebooksVersionResponse {
 }
 
 export interface NotebooksVersion {
-  name: string;
-  version: string;
   anonymousSessionsEnabled: boolean;
+  cloudStorageEnabled: boolean;
+  name: string;
   sshEnabled: boolean;
-  cloudStorageEnabled: {
-    s3: boolean;
-    azureBlob: boolean;
-  };
+  version: string;
 }

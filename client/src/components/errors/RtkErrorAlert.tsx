@@ -19,11 +19,15 @@
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 
-import { ErrorAlert } from "../Alert";
+import { ErrorAlert, RenkuAlert } from "../Alert";
 import { CoreErrorAlert } from "./CoreErrorAlert";
-import { CoreErrorResponse } from "../../utils/types/coreService.types";
+import {
+  CoreErrorContent,
+  CoreErrorResponse,
+} from "../../utils/types/coreService.types";
 import { extractTextFromObject } from "../../utils/helpers/TextUtils";
 import { UpdateProjectResponse } from "../../features/project/Project";
+import { NotebooksErrorResponse } from "../../utils/types/notebooksService.types";
 
 export function extractRkErrorMessage(
   error: FetchBaseQueryError | SerializedError,
@@ -103,6 +107,29 @@ export function RtkOrCoreError({ error }: RtkErrorAlertProps) {
     "error" in error.data &&
     (error.data as CoreErrorResponse).error ? (
     <CoreErrorAlert error={(error.data as CoreErrorResponse).error} />
+  ) : (
+    <RtkErrorAlert dismissible={true} error={error} />
+  );
+}
+
+export function RtkOrNotebooksError({
+  error,
+  dismissible = true,
+}: RtkErrorAlertProps) {
+  if (!error) return null;
+  return "status" in error &&
+    typeof error.status === "number" &&
+    (error.status as number) >= 400 &&
+    typeof error.data === "object" &&
+    error.data &&
+    "error" in error.data &&
+    (error.data as NotebooksErrorResponse).error ? (
+    <RenkuAlert color="danger" dismissible={dismissible} timeout={0}>
+      <h3>Error {(error.data as NotebooksErrorResponse).error.code}</h3>
+      <p className="mb-0">
+        {(error.data as NotebooksErrorResponse).error.message}
+      </p>
+    </RenkuAlert>
   ) : (
     <RtkErrorAlert dismissible={true} error={error} />
   );

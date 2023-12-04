@@ -38,7 +38,7 @@ import { inactiveKgProjectsApi } from "../../features/inactiveKgProjects/Inactiv
 import { kgInactiveProjectsSlice } from "../../features/inactiveKgProjects/inactiveKgProjectsSlice";
 import { kgSearchApi } from "../../features/kgSearch";
 import { datasetFormSlice } from "../../features/project/dataset";
-import projectCloudStorageApi from "../../features/project/projectCloudStorage.api";
+import projectCloudStorageApi from "../../features/project/components/cloudStorage/projectCloudStorage.api";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
 import projectGitLabApi from "../../features/project/projectGitLab.api";
 import { projectKgApi } from "../../features/project/projectKg.api";

@@ -32,7 +32,7 @@ export interface StartSessionOptions {
 
 export interface SessionCloudStorage {
   active: boolean;
-  configuration: Record<string, string | undefined>;
+  configuration: Record<string, boolean | number | string | undefined>;
   name: string;
   private: boolean;
   readonly: boolean;

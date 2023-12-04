@@ -110,18 +110,7 @@ export interface PatchSessionParams {
 }
 
 export interface CloudStorageDefinitionForSessionApi {
-  configuration:
-    | {
-        type: "s3";
-        endpoint: string;
-        access_key_id?: string;
-        secret_access_key?: string;
-      }
-    | {
-        type: "azureblob";
-        endpoint: string;
-        secret_access_key: string;
-      };
+  configuration: Record<string, boolean | number | string | undefined>;
   readonly: boolean;
   source_path: string;
   target_path: string;
