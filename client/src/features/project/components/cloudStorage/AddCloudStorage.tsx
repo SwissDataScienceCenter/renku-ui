@@ -82,10 +82,12 @@ export default function AddCloudStorage({
 }: AddCloudStorageProps) {
   if (error)
     return <h2 className="text-bg-danger">Error - add proper Alert</h2>;
-  if (fetching) return <Loader />;
+  if (fetching || !schema) return <Loader />;
 
   const ContentByStep =
-    state.step >= 1 && state.step <= 6 ? mapStepToElement[state.step] : null;
+    state.step >= 1 && state.step <= CLOUD_STORAGE_TOTAL_STEPS
+      ? mapStepToElement[state.step]
+      : null;
 
   if (ContentByStep)
     return (
@@ -725,9 +727,18 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
               }}
             />
           )}
-          rules={{ required: true }}
+          rules={{
+            // TODO: check this won't create a duplicate
+            validate: (value) =>
+              !value
+                ? "Please provide a name"
+                : /^[A-Za-z0-9_$]+$/.test(value) ||
+                  "Name can only contain letters, numbers, $, and _",
+          }}
         />
-        <div className="invalid-feedback">Please provide a name</div>
+        <div className="invalid-feedback">
+          {errors.name?.message?.toString()}
+        </div>
         <div className="form-text text-muted">
           This name will help you identify the storage. It should be unique for
           this project and it can only contains letter, numbers, $, _.
@@ -742,7 +753,10 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         <Controller
           name="mountPoint"
           control={control}
-          defaultValue={storage.mountPoint || ""}
+          defaultValue={
+            storage.mountPoint ||
+            `external_storage/${storage.schema?.toLowerCase()}`
+          }
           render={({ field }) => (
             <input
               id="mountPoint"

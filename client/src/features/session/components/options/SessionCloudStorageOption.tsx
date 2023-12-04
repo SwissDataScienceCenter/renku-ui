@@ -127,10 +127,6 @@ function SessionS3CloudStorageOption() {
     <div className="field-group">
       <div className="form-label">Cloud Storage</div>
       <div className={cx("form-text", "mt-0", "mb-1")}>
-        Use data from <S3ExplanationLink /> sources like AWS S3, Google Cloud
-        Storage, etc.
-      </div>
-      <div className={cx("form-text", "mt-0", "mb-1")}>
         It is recommended to configure cloud storage options from the{" "}
         <Link to={settingsStorageUrl}>Project&apos;s settings</Link>.
       </div>
@@ -139,6 +135,8 @@ function SessionS3CloudStorageOption() {
   );
 }
 
+// ! TODO -- use the same component as in project settings
+// !
 function CloudStorageList() {
   const { accessLevel, id: projectId } = useLegacySelector<
     StateModelProject["metadata"]
@@ -1014,14 +1012,4 @@ interface AddTemporaryCloudStorageForm {
   name: string;
   readonly: boolean;
   source_path: string;
-}
-
-function S3ExplanationLink() {
-  return (
-    <ExternalLink
-      role="text"
-      title="S3-compatible storage"
-      url="https://en.wikipedia.org/wiki/Amazon_S3#S3_API_and_competing_services"
-    />
-  );
 }

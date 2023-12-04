@@ -28,6 +28,7 @@ import {
 import {
   CheckLg,
   InfoCircleFill,
+  Key,
   PencilSquare,
   TrashFill,
   XLg,
@@ -83,6 +84,7 @@ import {
   parseCloudStorageConfiguration,
 } from "../utils/projectCloudStorage.utils";
 import AddCloudStorageButton from "./cloudStorage/AddCloudStorageButton";
+import { RootStateOrAny, useSelector } from "react-redux";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useLegacySelector<User["logged"]>(
@@ -238,9 +240,10 @@ interface CloudStorageItemProps {
   storageDefinition: CloudStorage;
 }
 
+// ! TODO: move this to a separate file
 function CloudStorageItem({ storageDefinition }: CloudStorageItemProps) {
   const { storage } = storageDefinition;
-  const { configuration, name, source_path, target_path } = storage;
+  const { configuration, name, target_path } = storage;
 
   const formattedConfiguration = formatCloudStorageConfiguration({
     configuration,
@@ -251,6 +254,18 @@ function CloudStorageItem({ storageDefinition }: CloudStorageItemProps) {
   const toggle = useCallback(() => {
     setIsOpen((isOpen) => !isOpen);
   }, []);
+
+  const storageType = configuration.provider
+    ? `${configuration.type}/${configuration.provider}`
+    : configuration.type;
+
+  const requiresCredentials = !storage.private ? (
+    <div className={cx("small", "d-none", "d-sm-block")}>
+      <span>
+        <Key className="bi" /> Requires credentials
+      </span>
+    </div>
+  ) : null;
 
   return (
     <Col>
@@ -272,13 +287,14 @@ function CloudStorageItem({ storageDefinition }: CloudStorageItemProps) {
             >
               <div className="fw-bold">{name}</div>
               <div className={cx("small", "d-none", "d-sm-block")}>
-                <span className="text-rk-text-light">Source path: </span>
-                <span>{source_path}</span>
+                <span className="text-rk-text-light">Storage type: </span>
+                <span>{storageType}</span>
               </div>
               <div className={cx("small", "d-none", "d-sm-block")}>
                 <span className="text-rk-text-light">Mount point: </span>
                 <span>{target_path}</span>
               </div>
+              {requiresCredentials}
               <div className="ms-auto">
                 <ChevronFlippedIcon flipped={isOpen} />
               </div>
@@ -286,59 +302,244 @@ function CloudStorageItem({ storageDefinition }: CloudStorageItemProps) {
           </h3>
         </CardBody>
         <Collapse isOpen={isOpen}>
-          <CloudStorageItemCollapsibleContent
-            formattedConfiguration={formattedConfiguration}
-            storageDefinition={storageDefinition}
-          />
+          <CardBody className="pt-0">
+            <CloudStorageDetails
+              formattedConfiguration={formattedConfiguration}
+              storageDefinition={storageDefinition}
+            />
+          </CardBody>
         </Collapse>
       </Card>
     </Col>
   );
 }
 
-interface CloudStorageItemCollapsibleContentProps {
-  formattedConfiguration: string;
-  storageDefinition: CloudStorage;
-}
-
-function CloudStorageItemCollapsibleContent({
-  formattedConfiguration,
-  storageDefinition,
-}: CloudStorageItemCollapsibleContentProps) {
-  const [editMode, setEditMode] = useState(false);
-  const toggleEditMode = useCallback(() => {
-    setEditMode((editMode) => !editMode);
-  }, []);
-
-  return (
-    <CardBody className="pt-0">
-      {editMode ? (
-        <EditCloudStorage
-          formattedConfiguration={formattedConfiguration}
-          storageDefinition={storageDefinition}
-          toggleEditMode={toggleEditMode}
-        />
-      ) : (
-        <CloudStorageDetails
-          formattedConfiguration={formattedConfiguration}
-          storageDefinition={storageDefinition}
-          toggleEditMode={toggleEditMode}
-        />
-      )}
-    </CardBody>
-  );
-}
-
 interface CloudStorageDetailsProps {
   formattedConfiguration: string;
   storageDefinition: CloudStorage;
-  toggleEditMode: () => void;
 }
 
-function EditCloudStorage({
+interface UpdateCloudStorageForm {
+  formattedConfiguration: string;
+  name: string;
+  private: boolean;
+  readonly: boolean;
+  source_path: string;
+  target_path: string;
+  requiredCredentials: CloudStorageCredential[];
+}
+
+function CloudStorageDetails({ storageDefinition }: CloudStorageDetailsProps) {
+  const { storage } = storageDefinition;
+  const { configuration, name, readonly, source_path, target_path } = storage;
+
+  const credentialFieldDefinitions = useMemo(
+    () => getCredentialFieldDefinitions(storageDefinition),
+    [storageDefinition]
+  );
+  const requiredCredentials = useMemo(
+    () =>
+      credentialFieldDefinitions?.filter(
+        ({ requiredCredential }) => requiredCredential
+      ),
+    [credentialFieldDefinitions]
+  );
+
+  return (
+    <>
+      <section>
+        <div>
+          <div className="text-rk-text-light">
+            <small>Name</small>
+          </div>
+          <div>{name}</div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>
+              Mount point {"("}this is where the storage will be mounted during
+              sessions{")"}
+            </small>
+          </div>
+          <div>{target_path}</div>
+        </div>
+        {Object.keys(configuration).map((key) => (
+          <div className="mt-2" key={key}>
+            <div className="text-rk-text-light">
+              <small className="text-capitalize">{key}</small>
+            </div>
+            <div>{configuration[key]}</div>
+          </div>
+        ))}
+        <div>
+          <div className="text-rk-text-light">
+            <small>Source path</small>
+          </div>
+          <div>{source_path}</div>
+        </div>
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>Requires credentials</small>
+          </div>
+          <div>{storage.private ? "Yes" : "No"}</div>
+        </div>
+        {storage.private && (
+          <div className="mt-2">
+            <div className="text-rk-text-light">
+              <small>Required crendentials</small>
+            </div>
+            {requiredCredentials != null && requiredCredentials.length > 0 ? (
+              <ul className="ps-4">
+                {requiredCredentials.map(({ name, help }, index) => (
+                  <li key={index}>
+                    {name}
+                    <CredentialMoreInfo help={help} />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div>
+                <span className="fst-italic">None</span>
+              </div>
+            )}
+          </div>
+        )}
+        <div className="mt-2">
+          <div className="text-rk-text-light">
+            <small>Access mode</small>
+          </div>
+          <div>
+            {readonly
+              ? "Force Read-only"
+              : "Allow Read-Write (requires adequate privileges on the storage)"}
+          </div>
+        </div>
+      </section>
+
+      <section className={cx("d-flex", "justify-content-end", "mt-3")}>
+        <Button
+          color="outline-secondary"
+          // onClick={toggleEditMode}
+        >
+          <PencilSquare className={cx("bi", "me-1")} />
+          Edit
+        </Button>
+        <DeleteCloudStorageButton storageDefinition={storageDefinition} />
+      </section>
+    </>
+  );
+}
+
+function CredentialMoreInfo({ help }: { help: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  return (
+    <>
+      <span ref={ref}>
+        <InfoCircleFill className={cx("bi", "ms-1")} tabIndex={0} />
+      </span>
+      <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
+        <PopoverBody>
+          <LazyRenkuMarkdown markdownText={help} />
+        </PopoverBody>
+      </UncontrolledPopover>
+    </>
+  );
+}
+
+function DeleteCloudStorageButton({
+  storageDefinition,
+}: CloudStorageItemProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = useCallback(() => {
+    setIsOpen((open) => !open);
+  }, []);
+
+  return (
+    <>
+      <Button className="ms-2" color="outline-danger" onClick={toggle}>
+        <TrashFill className={cx("bi", "me-1")} />
+        Delete
+      </Button>
+      <DeleteCloudStorageModal
+        isOpen={isOpen}
+        storage={storageDefinition.storage}
+        toggle={toggle}
+      />
+    </>
+  );
+}
+
+interface DeleteCloudStorageModalProps {
+  isOpen: boolean;
+  storage: CloudStorageConfiguration;
+  toggle: () => void;
+}
+
+function DeleteCloudStorageModal({
+  isOpen,
+  storage,
+  toggle,
+}: DeleteCloudStorageModalProps) {
+  const { name, storage_id } = storage;
+
+  const projectId = useSelector<
+    RootStateOrAny,
+    StateModelProject["metadata"]["id"]
+  >((state) => state.stateModel.project.metadata.id);
+
+  const [deleteCloudStorage, result] = useDeleteCloudStorageMutation();
+  const onDelete = useCallback(() => {
+    deleteCloudStorage({
+      project_id: `${projectId}`,
+      storage_id,
+    });
+  }, [deleteCloudStorage, projectId, storage_id]);
+
+  useEffect(() => {
+    if (result.isSuccess || result.isError) {
+      toggle();
+    }
+  }, [result.isError, result.isSuccess, toggle]);
+
+  return (
+    <Modal
+      className="modal-dialog-centered"
+      isOpen={isOpen}
+      size="lg"
+      toggle={toggle}
+    >
+      <ModalBody>
+        <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
+          Are you sure?
+        </h3>
+        <p className="mb-0">
+          Please confirm that you want to delete the <strong>{name}</strong>{" "}
+          storage configuration.
+        </p>
+      </ModalBody>
+      <ModalFooter className="pt-0">
+        <Button className="ms-2" color="secondary" onClick={toggle}>
+          <XLg className={cx("bi", "me-1")} />
+          Cancel, keep configuration
+        </Button>
+        <Button className="ms-2" color="outline-danger" onClick={onDelete}>
+          {result.isLoading ? (
+            <Loader className="me-1" inline size={16} />
+          ) : (
+            <CheckLg className={cx("bi", "me-1")} />
+          )}
+          Yes, delete this configuration
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+// ! TODO: remove this
+export function EditCloudStorage({
   formattedConfiguration,
   storageDefinition,
-  toggleEditMode,
 }: CloudStorageDetailsProps) {
   const { storage } = storageDefinition;
   const {
@@ -465,9 +666,9 @@ function EditCloudStorage({
 
   useEffect(() => {
     if (result.isSuccess || result.isError) {
-      toggleEditMode();
+      // toggleEditMode();
     }
-  }, [result.isError, result.isSuccess, toggleEditMode]);
+  }, [result.isError, result.isSuccess]);
 
   return (
     <Form
@@ -688,7 +889,7 @@ function EditCloudStorage({
       <section className={cx("d-flex", "justify-content-end", "mt-3")}>
         <Button
           className={cx("btn-outline-rk-green", "ms-2")}
-          onClick={toggleEditMode}
+          // onClick={toggleEditMode}
           type="button"
         >
           <XLg className={cx("bi", "me-1")} />
@@ -705,246 +906,5 @@ function EditCloudStorage({
         <DeleteCloudStorageButton storageDefinition={storageDefinition} />
       </section>
     </Form>
-  );
-}
-
-interface UpdateCloudStorageForm {
-  formattedConfiguration: string;
-  name: string;
-  private: boolean;
-  readonly: boolean;
-  source_path: string;
-  target_path: string;
-  requiredCredentials: CloudStorageCredential[];
-}
-
-function CloudStorageDetails({
-  formattedConfiguration,
-  storageDefinition,
-  toggleEditMode,
-}: CloudStorageDetailsProps) {
-  const { storage } = storageDefinition;
-  const {
-    configuration,
-    name,
-    readonly,
-    source_path,
-    storage_type,
-    target_path,
-  } = storage;
-
-  const credentialFieldDefinitions = useMemo(
-    () => getCredentialFieldDefinitions(storageDefinition),
-    [storageDefinition]
-  );
-  const requiredCredentials = useMemo(
-    () =>
-      credentialFieldDefinitions?.filter(
-        ({ requiredCredential }) => requiredCredential
-      ),
-    [credentialFieldDefinitions]
-  );
-
-  return (
-    <>
-      <section>
-        <div>
-          <div className="text-rk-text-light">
-            <small>Name</small>
-          </div>
-          <div>{name}</div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>Storage type</small>
-          </div>
-          <div>{storage_type}</div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>
-              Source path {"("}usually &lt;bucket&gt; or
-              &lt;bucket&gt;/&lt;folder&gt;{")"}
-            </small>
-          </div>
-          <div>{source_path}</div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>
-              Mount point {"("}this is where the storage will be mounted during
-              sessions{")"}
-            </small>
-          </div>
-          <div>{target_path}</div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>Requires credentials</small>
-          </div>
-          <div>{storage.private ? "Yes" : "No"}</div>
-        </div>
-        {storage.private && (
-          <div className="mt-2">
-            <div className="text-rk-text-light">
-              <small>Required crendentials</small>
-            </div>
-            {requiredCredentials != null && requiredCredentials.length > 0 ? (
-              <ul className="ps-4">
-                {requiredCredentials.map(({ name, help }, index) => (
-                  <li key={index}>
-                    {name}
-                    <CredentialMoreInfo help={help} />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div>
-                <span className="fst-italic">None</span>
-              </div>
-            )}
-          </div>
-        )}
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>Access mode</small>
-          </div>
-          <div>
-            {readonly
-              ? "Force Read-only"
-              : "Allow Read-Write (requires adequate privileges on the storage)"}
-          </div>
-        </div>
-        <div className="mt-2">
-          <div className="text-rk-text-light">
-            <small>
-              Configuration (uses <code>rclone config</code>)
-            </small>
-          </div>
-          <div>
-            <textarea
-              className="form-control"
-              readOnly
-              rows={Object.keys(configuration).length + 2}
-              tabIndex={-1}
-              value={formattedConfiguration}
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className={cx("d-flex", "justify-content-end", "mt-3")}>
-        <Button color="outline-secondary" onClick={toggleEditMode}>
-          <PencilSquare className={cx("bi", "me-1")} />
-          Edit
-        </Button>
-        <DeleteCloudStorageButton storageDefinition={storageDefinition} />
-      </section>
-    </>
-  );
-}
-
-function CredentialMoreInfo({ help }: { help: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-
-  return (
-    <>
-      <span ref={ref}>
-        <InfoCircleFill className={cx("bi", "ms-1")} tabIndex={0} />
-      </span>
-      <UncontrolledPopover target={ref} placement="right" trigger="hover focus">
-        <PopoverBody>
-          <LazyRenkuMarkdown markdownText={help} />
-        </PopoverBody>
-      </UncontrolledPopover>
-    </>
-  );
-}
-
-function DeleteCloudStorageButton({
-  storageDefinition,
-}: CloudStorageItemProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = useCallback(() => {
-    setIsOpen((open) => !open);
-  }, []);
-
-  return (
-    <>
-      <Button className="ms-2" color="outline-danger" onClick={toggle}>
-        <TrashFill className={cx("bi", "me-1")} />
-        Delete
-      </Button>
-      <DeleteCloudStorageModal
-        isOpen={isOpen}
-        storage={storageDefinition.storage}
-        toggle={toggle}
-      />
-    </>
-  );
-}
-
-interface DeleteCloudStorageModalProps {
-  isOpen: boolean;
-  storage: CloudStorageConfiguration;
-  toggle: () => void;
-}
-
-function DeleteCloudStorageModal({
-  isOpen,
-  storage,
-  toggle,
-}: DeleteCloudStorageModalProps) {
-  const { name, storage_id } = storage;
-
-  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
-    (state) => state.stateModel.project.metadata.id
-  );
-
-  const [deleteCloudStorage, result] = useDeleteCloudStorageMutation();
-  const onDelete = useCallback(() => {
-    deleteCloudStorage({
-      project_id: `${projectId}`,
-      storage_id,
-    });
-  }, [deleteCloudStorage, projectId, storage_id]);
-
-  useEffect(() => {
-    if (result.isSuccess || result.isError) {
-      toggle();
-    }
-  }, [result.isError, result.isSuccess, toggle]);
-
-  return (
-    <Modal
-      className="modal-dialog-centered"
-      isOpen={isOpen}
-      size="lg"
-      toggle={toggle}
-    >
-      <ModalBody>
-        <h3 className={cx("fs-6", "lh-base", "text-danger", "fw-bold")}>
-          Are you sure?
-        </h3>
-        <p className="mb-0">
-          Please confirm that you want to delete the <strong>{name}</strong>{" "}
-          storage configuration.
-        </p>
-      </ModalBody>
-      <ModalFooter className="pt-0">
-        <Button className="ms-2" color="outline-secondary" onClick={toggle}>
-          <XLg className={cx("bi", "me-1")} />
-          Cancel, keep configuration
-        </Button>
-        <Button className="ms-2" color="danger" onClick={onDelete}>
-          {result.isLoading ? (
-            <Loader className="me-1" inline size={16} />
-          ) : (
-            <CheckLg className={cx("bi", "me-1")} />
-          )}
-          Yes, delete this configuration
-        </Button>
-      </ModalFooter>
-    </Modal>
   );
 }

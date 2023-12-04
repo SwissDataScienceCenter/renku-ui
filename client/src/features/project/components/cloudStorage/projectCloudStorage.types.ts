@@ -22,14 +22,14 @@ export interface CloudStorage {
 }
 
 export interface CloudStorageConfiguration {
-  configuration: Record<string, string | number | boolean | undefined>;
+  configuration: CloudStorageDetailsOptions;
   name: string;
   private: boolean;
   project_id: string;
   readonly: boolean;
   source_path: string;
   storage_id: string;
-  storage_type: string;
+  storage_type: string; // This is duplicated in configuration.type
   target_path: string;
 }
 
@@ -52,7 +52,7 @@ export type AddCloudStorageForProjectParams =
   | SimpleAddCloudStorageForProjectParams;
 
 export interface AdvancedAddCloudStorageForProjectParams {
-  configuration?: Record<string, string | number | boolean | undefined>;
+  configuration?: CloudStorageDetailsOptions;
   name: string;
   private: boolean;
   project_id: string;
@@ -71,6 +71,7 @@ export interface SimpleAddCloudStorageForProjectParams {
   target_path: string;
 }
 
+// TODO: This will go away
 export interface UpdateCloudStorageParams {
   configuration?: Record<string, string | number | boolean | null | undefined>;
   name?: string;
