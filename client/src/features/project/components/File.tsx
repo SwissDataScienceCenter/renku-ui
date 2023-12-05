@@ -156,7 +156,6 @@ function ProjectFileView(props: ProjectFileViewProps) {
   );
   const sessionNewUrl = Url.get(Url.pages.project.session.new, projectUrlProps);
   const filePath = props.location.pathname.replace(fileContentUrl, "");
-  // console.log("2 🤍", { filesTree, hash: filesTree?.hash[filePath], filePath: filePath })
   return (
     <ShowFile
       key="filePreview"

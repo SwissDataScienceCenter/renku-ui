@@ -194,6 +194,37 @@ function registerApiRoutes(
     }
   );
 
+  app.get(
+    prefix + "/get-lfs-file",
+    renkuAuth(authenticator),
+    async (req, res) => {
+      console.log("👻 get lfs file")
+      try {
+        const { filePath, projectId, branchName } = req.query;
+        const apiUrl = `${projectId}/repository/files/${filePath}/raw?ref=${branchName}&lfs=true`;
+        const response = await fetch(apiUrl, { redirect: 'follow' });
+        if (!response.ok) {
+          res.status(response.status).send(`Error 🙈: ${response.statusText}`);
+          return;
+        }
+
+        const fileBuffer = await response.arrayBuffer();
+        const nodeBuffer = Buffer.from(fileBuffer);res.set({
+          'Content-Type': response.headers.get('Content-Type') || 'application/octet-stream',
+          'Content-Disposition': response.headers.get('Content-Disposition') || `attachment; filename=${filePath}`,
+        });
+
+        // Send the binary data as the response
+        res.send(nodeBuffer);
+      } catch (error) {
+        // Handle any errors that may occur during the process
+        console.error(error);
+        res.status(500).send(error);
+      }
+
+    }
+  );
+
   /*
    * All the unmatched APIs will be routed to the gateway using the http-proxy-middleware middleware
    */

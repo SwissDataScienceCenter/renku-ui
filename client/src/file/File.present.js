@@ -272,10 +272,10 @@ class FileNoPreview extends React.Component {
     );
 
     // LFS or very big files
-    if (this.props.hardLimitReached) {
+    if (this.props.lfs || this.props.hardLimitReached) {
       const reason = this.props.hardLimitReached
         ? `the file is too big (more than ${formatBytes(this.props.hardLimit)})`
-        : "";
+        : "the file is stored in Git LFS";
       return (
         <CardBody key="file preview" className="pb-0">
           <p>The preview is not available because {reason}.</p>

@@ -47,6 +47,12 @@ import {
 import { ProjectConfig } from "./Project";
 import { transformGetConfigRawResponse } from "./projectCoreApi";
 
+interface GetProjectLfsParams {
+  projectId: number;
+  filePath: string;
+  branch: string;
+}
+
 const projectGitLabApi = createApi({
   reducerPath: "projectGitLab",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
@@ -360,6 +366,23 @@ const projectGitLabApi = createApi({
             ]
           : ["Commit"],
     }),
+    getLFSFile: builder.query<any, GetProjectLfsParams>({
+      query: ({ projectId, filePath, branch }) => {
+        return {
+          url: `${projectId}/repository/files/${filePath}/raw?ref=${branch}&lfs=true`,
+          // url: `${projectId}/repository/files/${filePath}/raw?ref=${branch}`,
+        };
+      },
+      transformResponse: (response: any) => {
+        console.log("requested file lfs");
+        if (!response.result) throw new Error("Unexpected response");
+        return {
+          files: response.result.files,
+          slug: response.result.slug,
+          remoteBranch: response.result.remote_branch,
+        };
+      },
+    }),
   }),
 });
 
@@ -374,4 +397,5 @@ export const {
   useGetConfigFromRepositoryQuery,
   useGetRepositoryCommitQuery,
   useGetRepositoryCommitsQuery,
+  useGetLFSFileQuery,
 } = projectGitLabApi;

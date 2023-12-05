@@ -25,10 +25,11 @@ import { atobUTF8 } from "../utils/helpers/Encoding";
 import { FileNoPreview, StyledNotebook } from "./File.present";
 import LazyCodePreview from "./LazyCodePreview";
 import LazyPDFViewer from "./LazyPDFViewer";
-import { useGetLFSFileQuery } from "../features/project/projectGitlabApi";
 import { Loader } from "../components/Loader";
 
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import { RootStateOrAny, useSelector } from "react-redux";
+import { useGetLFSFileQuery } from "../features/project/projectGitlabApi";
 
 /* eslint-disable spellcheck/spell-checker */
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];
@@ -119,8 +120,8 @@ function fileInfoToType(
   hashElement?: HashElement,
   filename?: string
 ): FileType {
-  // This needs to be checked first
-  if (hashElement && hashElement.isLfs) return "lfs";
+  // // This needs to be checked first
+  // if (hashElement && hashElement.isLfs) return "lfs";
 
   if (!filename) return "unknown";
 
@@ -149,41 +150,78 @@ type FilePreviewProps = {
   hashElement?: HashElement;
   insideProject: boolean;
   previewThreshold: { hard: number; soft: number };
-  projectId: string;
+  projectId: number;
   projectPathWithNamespace: string;
   springConfig: unknown;
 };
 
 function FilePreview(props: FilePreviewProps) {
   const [previewAnyway, setPreviewAnyway] = React.useState(false);
-  const fileTypeLfs = fileInfoToType(props.hashElement, props.file?.file_name);
-  const fileIsCode = "code" === fileTypeLfs;
+  const currentFileTree = useSelector(
+    (state: RootStateOrAny) => state.stateModel.project?.filesTree
+  );
+  const isLfs = props.hashElement && props.hashElement.isLfs;
+  const fileType = fileInfoToType(props.hashElement, props.file?.file_name);
+  // const fileExtension = filenameExtension(props.file?.file_name);
+  const fileIsCode = "code" === fileType;
+
+  // const { data, isFetching, isLoading, error } = useGetLFSFileQuery(
+  //   { projectId: props.projectId, filePath: encodeURIComponent(props?.file?.file_path || "") , branch: props.branch },
+  //   { skip: !props?.file || !isLfs || !currentFileTree.loaded}
+  // );
 
   const { data, isFetching, isLoading, error } = useGetLFSFileQuery(
-    { projectId: props.projectId, filePath: encodeURIComponent(props?.file?.file_path || "") , branch: props.branch },
-    { skip: !props?.file || "lfs" !== fileTypeLfs}
+    {
+      projectId: props.projectId,
+      filePath: encodeURIComponent(props?.file?.file_path || ""),
+      branch: props.branch,
+    },
+    { skip: !props?.file || !isLfs || !currentFileTree.loaded }
   );
 
-  console.log("1. LFS FILE DATA ", { content: data?.content, isFetching, isLoading, skip: "lfs" !== fileTypeLfs, error })
+  if (isLfs)
+    console.log("1. LFS FILE DATA ", {
+      content: data?.content,
+      isFetching,
+      isLoading,
+      isLfs,
+      error,
+    });
 
   // File has not yet been fetched
   if (!props.file) return null;
 
   const getFileExtension = () => filenameExtension(props.file?.file_name);
 
+  console.log("🚀", {
+    props: props,
+    previewThreshold: props.previewThreshold,
+    previewAnyway,
+    content: props.file.content,
+    ext: fileType,
+    size: props.file.size,
+    isBigFile: props.file.size > props.previewThreshold.soft,
+  });
+
+  if (error)
+    return (
+      <>
+        <Loader />
+        Error
+      </>
+    );
+
   // LFS files and big files
-  if( isFetching || isLoading)
-    return <Loader/>
+  if (isFetching || isLoading || !currentFileTree.loaded) return <Loader />;
   if (
-    // "lfs" === fileTypeLfs ||
-    (props.previewThreshold &&
-      props.file.size > props.previewThreshold.soft  &&
-      !previewAnyway)
+    props.previewThreshold &&
+    props.file.size > props.previewThreshold.soft &&
+    !previewAnyway
   ) {
     return (
       <FileNoPreview
         url={props.downloadLink}
-        lfs={"lfs" === fileTypeLfs}
+        lfs={"lfs" === fileType}
         softLimit={props.previewThreshold.soft}
         softLimitReached={props.file.size > props.previewThreshold.soft}
         hardLimit={props.previewThreshold.hard}
@@ -193,14 +231,7 @@ function FilePreview(props: FilePreviewProps) {
       />
     );
   }
-  const fileType = filenameExtension(props.file?.file_name);
-  // console.log("🚀", {
-  //   props: props,
-  //   previewThreshold: props.previewThreshold,
-  //   previewAnyway,
-  //   content: props.file.content,
-  //   ext: fileType
-  // });
+
   // Various types of images
   if ("image" === fileType) {
     return (
@@ -256,6 +287,7 @@ function FilePreview(props: FilePreviewProps) {
 
   // Jupyter Notebook
   if ("ipynb" === fileType) {
+    console.log("👻 check file ipynb");
     return (
       // Do not wrap in a CardBody, the notebook container does that itself
       <JupyterNotebookContainer

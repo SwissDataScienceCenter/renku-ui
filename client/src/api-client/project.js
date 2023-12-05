@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { getFileExtension } from "../components/markdown/RenkuMarkdownWithPathTranslation";
 import { projectKgApi } from "../features/project/projectKg.api";
 import { sleep } from "../utils/helpers/HelperFunctions";
 
@@ -32,9 +33,13 @@ function buildTreeLazy(
   currentPath = jsonObj.path;
   let nodeName = name;
   let nodeType = jsonObj.type; // "tree" "blob" "commit"
+  const fileExtension = getFileExtension(name);
   const isLfs = gitAttributes
     ? gitAttributes.includes(
-        currentPath + " filter=lfs diff=lfs merge=lfs -text"
+        `${currentPath} filter=lfs diff=lfs merge=lfs -text`
+      ) ||
+      gitAttributes.includes(
+        `*.${fileExtension} filter=lfs diff=lfs merge=lfs -text`
       )
     : false;
   let newNode = {

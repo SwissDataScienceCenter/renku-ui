@@ -17,22 +17,36 @@
  */
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { GetProjectLfsParams, LFSFile } from "./Project";
 
-const projectGitlabApi = createApi({
-  reducerPath: "projectGitlab",
-  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/projects" }),
+interface GetProjectLfsParams {
+  projectId: number;
+  filePath: string;
+  branch: string;
+}
+
+export const lfsApi = createApi({
+  reducerPath: "lfsApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api" }),
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
-    getLFSFile: builder.query<LFSFile, GetProjectLfsParams>({
-      query: ({projectId, filePath, branch}) => {
+    getLFSFile: builder.query<any, GetProjectLfsParams>({
+      query: ({ projectId, filePath, branch }) => {
+        console.log("✅ send request to getLFSFile");
         return {
-          url: `${projectId}/repository/files/${filePath}?ref=${branch}&lfs=true`,
+          // url: `${projectId}/repository/files/${filePath}/raw?ref=${branch}&lfs=true`,
+          url: `get-lfs-file?projectId=${projectId}&filePath=${filePath}&branchName=${branch}`,
+        };
+      },
+      transformResponse: (response: any) => {
+        if (!response.result) throw new Error("Unexpected response");
+        return {
+          files: response.result.files,
+          slug: response.result.slug,
+          remoteBranch: response.result.remote_branch,
         };
       },
     }),
   }),
 });
 
-export default projectGitlabApi;
-export const { useGetLFSFileQuery } = projectGitlabApi;
+export const { useGetLFSFileQuery } = lfsApi;

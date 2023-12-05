@@ -62,7 +62,7 @@ type RenkuMarkdownWithPathTranslationProps = {
   style?: object;
 };
 
-const getFileExtension = (file_path: string | undefined) => {
+export const getFileExtension = (file_path: string | undefined) => {
   if (file_path == null) return undefined;
 
   if (file_path.match(/\.(.*)/) === null) return undefined;
