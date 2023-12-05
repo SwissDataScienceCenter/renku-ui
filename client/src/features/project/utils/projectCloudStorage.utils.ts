@@ -275,16 +275,20 @@ export function getSchemaOptions(
           : false;
 
         // try to infer the type
+        const optionType = option.type.toString().toLowerCase();
         // eslint-disable-next-line spellcheck/spell-checker
         if (option.ispassword || option.sensitive) {
           convertedOption.convertedType = "secret";
-        } else if (option.type.toString().toLowerCase().startsWith("bool")) {
+        } else if (optionType.startsWith("bool")) {
           convertedOption.convertedType = "boolean";
-        } else if (option.type.toString().toLowerCase().startsWith("int")) {
-          convertedOption.convertedType = "number";
-        } else if (option.type.toString().toLowerCase().startsWith("float")) {
-          convertedOption.convertedType = "number";
-        } else if (option.type.toString().toLowerCase().startsWith("number")) {
+        } else if (
+          optionType.startsWith("float") ||
+          optionType.startsWith("int") ||
+          optionType.startsWith("number") ||
+          optionType === "duration" ||
+          optionType === "sizesuffix" || // eslint-disable-line spellcheck/spell-checker
+          optionType === "multiencoder" // eslint-disable-line spellcheck/spell-checker
+        ) {
           convertedOption.convertedType = "number";
         } else {
           convertedOption.convertedType = "string";

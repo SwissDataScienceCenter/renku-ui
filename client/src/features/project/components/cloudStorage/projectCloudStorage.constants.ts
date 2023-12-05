@@ -86,7 +86,7 @@ export const CLOUD_STORAGE_SCHEMA_SHORTLIST = [
 ];
 
 export const CLOUD_STORAGE_PROVIDERS_SHORTLIST = {
-  s3: ["AWS", "Cloudflare", "DigitalOcean"], // eslint-disable-line spellcheck/spell-checker
+  s3: ["AWS", "DigitalOcean", "Switch"],
 } as Record<string, string[]>;
 
 export const CLOUD_STORAGE_TOTAL_STEPS = 3;

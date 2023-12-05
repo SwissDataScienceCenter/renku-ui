@@ -610,7 +610,12 @@ function AddStorageOptions({
                 placeholder={placeholder}
                 onChange={(e) => {
                   field.onChange(e);
-                  onFieldValueChange(o.name, e.target.value);
+                  onFieldValueChange(
+                    o.name,
+                    inputType === "number"
+                      ? parseFloat(e.target.value)
+                      : e.target.value
+                  );
                 }}
               />
             )}
@@ -732,8 +737,8 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
             validate: (value) =>
               !value
                 ? "Please provide a name"
-                : /^[A-Za-z0-9_$]+$/.test(value) ||
-                  "Name can only contain letters, numbers, $, and _",
+                : /^[A-Za-z0-9_$-]+$/.test(value) ||
+                  "Name can only contain letters, numbers, $, _, -",
           }}
         />
         <div className="invalid-feedback">
