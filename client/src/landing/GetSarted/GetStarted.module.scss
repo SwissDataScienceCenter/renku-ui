@@ -1,0 +1,162 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+#getStartedContainer {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto minmax(100px, 150px) auto;
+  gap: 0 40px;
+  grid-template-areas:
+    "getStartedTitle getStartedTitle"
+    "getStartedProject getStartedSubtitle"
+    "getStartedProject getStartedDescription";
+  min-height: 780px;
+  padding: 5em 2em;
+
+  h2 {
+    font-size: 40px;
+    text-align: center;
+  }
+  h3 {
+    font-size: 16px;
+    margin: 0;
+    padding-top: 30px;
+  }
+
+  p {
+    font-size: 16px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .getStartedTitle {
+    margin-bottom: 40px;
+  }
+
+  .btnContactUs {
+    min-width: 200px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  @include media-breakpoint-up(xs) {
+    padding: 5em 4em;
+    h2 {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    p {
+      font-size: 20px;
+    }
+    h3 {
+      font-size: 20px;
+    }
+  }
+
+  @include media-breakpoint-up(md) {
+    padding: 5em 4em;
+    grid-template-rows: auto minmax(100px, 200px) auto;
+
+    h2 {
+      font-size: 32px;
+    }
+    h3 {
+      font-size: 30px;
+    }
+    .btnContactUs {
+      min-width: 141px;
+      height: 40px;
+    }
+    p {
+      font-size: 20px;
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    grid-template-rows: auto minmax(100px, 200px) auto;
+    padding: 5em 4em;
+
+    h2 {
+      font-size: 40px;
+    }
+    h3 {
+      font-size: 30px;
+    }
+    p {
+      font-size: 20px;
+    }
+    .btnContactUs {
+      min-width: 200px;
+    }
+  }
+
+  @include media-breakpoint-up(xl) {
+    grid-template-rows: auto minmax(100px, 150px) auto;
+    padding: 5em 8em;
+
+    h2 {
+      font-size: 40px;
+    }
+    h3 {
+      font-size: 30px;
+    }
+    p {
+      font-size: 20px;
+    }
+    .btnContactUs {
+      min-width: 200px;
+    }
+  }
+
+  @include media-breakpoint-down(lg) {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+      "getStartedTitle"
+      "getStartedSubtitle"
+      "getStartedProject"
+      "getStartedDescription";
+    gap: 40px;
+    padding: 5em 1em;
+
+    h3 {
+      padding-top: 0;
+    }
+
+    .getStartedTitle {
+      margin-bottom: 0;
+    }
+
+    .getStartedProject {
+      min-width: 300px;
+    }
+    .getStartedDescription {
+      margin-top: 40px;
+    }
+  }
+}
+
+.getStartedTitle {
+  grid-area: getStartedTitle;
+}
+.getStartedProject {
+  grid-area: getStartedProject;
+  min-width: 350px;
+  height: 487px;
+}
+.getStartedSubtitle {
+  grid-area: getStartedSubtitle;
+}
+.getStartedDescription {
+  grid-area: getStartedDescription;
+  display: flex;
+  flex-flow: column;
+  gap: 40px;
+}

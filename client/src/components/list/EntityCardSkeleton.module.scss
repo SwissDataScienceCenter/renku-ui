@@ -1,0 +1,47 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/maps";
+@import "~bootstrap/scss/mixins";
+
+.skeletonCardContainer {
+  width: 350px;
+  position: relative;
+}
+
+.skeletonWrapper {
+  position: absolute;
+
+  @include media-breakpoint-down(lg) {
+    position: relative;
+  }
+}
+
+.skeletonWrapper .skeletonImg .skeletonImgGraphic {
+  height: 100%;
+}
+.skeletonLoader:empty {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  display: block;
+  background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.5) 30%,
+      rgba(255, 255, 255, 0) 60%
+    ),
+    transparent;
+  background-repeat: repeat-y;
+  background-size: 150px 200px;
+  background-position: 0 0;
+  animation: shine 3s infinite;
+}
+@keyframes shine {
+  from {
+    background-position: -100% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}

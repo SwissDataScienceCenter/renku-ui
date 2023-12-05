@@ -271,7 +271,7 @@ function DatasetAddToProject({
           monitorJobStatusAndHandleResponse(
             jobId,
             selectedProject.name,
-            dataset.name
+            dataset.slug ?? ""
           );
         }
       });
@@ -280,7 +280,7 @@ function DatasetAddToProject({
   const monitorJobStatusAndHandleResponse = (
     job_id: string,
     projectPath: string,
-    datasetName: string
+    datasetSlug: string
   ) => {
     let cont = 0;
     const INTERVAL = 6000;
@@ -294,7 +294,7 @@ function DatasetAddToProject({
             monitorJob,
             (cont * INTERVAL) / 1000,
             projectPath,
-            datasetName
+            datasetSlug
           );
       } catch (e) {
         const error = e as { message?: string };
@@ -310,7 +310,7 @@ function DatasetAddToProject({
     monitorJob: ReturnType<typeof setInterval>,
     waitedSeconds: number,
     projectPath: string,
-    datasetName: string
+    datasetSlug: string
   ) {
     if (!job) return;
     switch (job.state) {
@@ -333,7 +333,7 @@ function DatasetAddToProject({
         });
         setImportingDataset(false);
         clearInterval(monitorJob);
-        redirectUser(projectPath, datasetName);
+        redirectUser(projectPath, datasetSlug);
         break;
       case "FAILED":
         setCurrentStatus({
@@ -362,10 +362,10 @@ function DatasetAddToProject({
     }
   }
 
-  const redirectUser = (projectPath: string, datasetName: string) => {
+  const redirectUser = (projectPath: string, datasetSlug: string) => {
     setCurrentStatus(null);
     history.push({
-      pathname: `/projects/${projectPath}/datasets/${datasetName}`,
+      pathname: `/projects/${projectPath}/datasets/${datasetSlug}`,
       state: { reload: true },
     });
   };

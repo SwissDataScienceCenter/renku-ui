@@ -47,6 +47,8 @@ function ListCard({
   title,
   url,
   visibility,
+  animated = false,
+  fromLanding = false,
 }: ListElementProps) {
   const imageStyles: CSSProperties = imageUrl
     ? { backgroundImage: `url("${imageUrl}")` }
@@ -82,7 +84,12 @@ function ListCard({
               </div>
             )}
           </Link>
-          <EntityButton type={itemType} slug={path ?? ""} />
+          <EntityButton
+            type={itemType}
+            slug={path ?? ""}
+            animated={animated}
+            fromLanding={fromLanding}
+          />
           <Link
             className={cx("card-body", "d-block", "text-decoration-none")}
             to={url}

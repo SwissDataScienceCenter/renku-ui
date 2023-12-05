@@ -47,7 +47,7 @@ function notificationFunction(props: NotificationFunctionArgs) {
       ? `dataset ${props.dataset.name}`
       : "new dataset";
     const redirectUrl = props.edit
-      ? `/projects/${props.projectPathWithNamespace}/datasets/${props.dataset.name}/modify`
+      ? `/projects/${props.projectPathWithNamespace}/datasets/${props.dataset.slug}/modify`
       : `/projects/${props.projectPathWithNamespace}/datasets/new`;
     if (success) {
       props.notifications.addSuccess(

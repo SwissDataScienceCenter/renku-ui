@@ -45,6 +45,7 @@ export interface KgSearchResult {
   name: string;
   namespace: string;
   path: string;
+  slug: string;
   type: EntityType;
   visibility: Visibilities;
   images: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
