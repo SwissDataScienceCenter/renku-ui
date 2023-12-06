@@ -17,12 +17,13 @@
  */
 
 import cx from "classnames";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowCounterclockwise,
   ChevronLeft,
   ChevronRight,
   CloudFill,
+  PencilSquare,
   PlusLg,
   XLg,
 } from "react-bootstrap-icons";
@@ -44,29 +45,39 @@ import {
   useGetCloudStorageSchemaQuery,
 } from "./projectCloudStorage.api";
 import {
+  CLOUD_STORAGE_TOTAL_STEPS,
   EMPTY_CLOUD_STORAGE_DETAILS,
   EMPTY_CLOUD_STORAGE_STATE,
 } from "./projectCloudStorage.constants";
 import {
   AddCloudStorageForProjectParams,
   AddCloudStorageState,
+  CloudStorage,
   CloudStorageDetails,
   CloudStorageDetailsOptions,
 } from "./projectCloudStorage.types";
-import { hasProviderShortlist } from "../../utils/projectCloudStorage.utils";
+import {
+  getCurrentStorageDetails,
+  hasProviderShortlist,
+} from "../../utils/projectCloudStorage.utils";
 import { SuccessAlert } from "../../../../components/Alert";
 
 import styles from "./AddCloudStorageButton.module.scss";
 import AddCloudStorage from "./AddCloudStorage";
 
 interface AddCloudStorageModalProps {
+  currentStorage?: CloudStorage | null;
+  key: string;
   isOpen: boolean;
   toggle: () => void;
 }
 export default function AddCloudStorageModal({
+  currentStorage = null,
+  key,
   isOpen,
   toggle: originalToggle,
 }: AddCloudStorageModalProps) {
+  const storageId = currentStorage?.storage.storage_id ?? null;
   // Handle unmount
   useEffect(() => {
     return () => reset();
@@ -86,7 +97,23 @@ export default function AddCloudStorageModal({
     isFetching: schemaIsFetching,
   } = useGetCloudStorageSchemaQuery(undefined, { skip: !isOpen });
 
-  // Save current state -- it stays around after closing the modal, but gets flushed when the user move to another page
+  // Save current state
+  useEffect(() => {
+    const cloudStorageDetails: CloudStorageDetails = storageId
+      ? getCurrentStorageDetails(currentStorage)
+      : EMPTY_CLOUD_STORAGE_DETAILS;
+    const cloudStorageState: AddCloudStorageState = storageId
+      ? {
+          ...EMPTY_CLOUD_STORAGE_STATE,
+          step: 2,
+          completedSteps: CLOUD_STORAGE_TOTAL_STEPS,
+        }
+      : EMPTY_CLOUD_STORAGE_STATE;
+    setStorageDetails(cloudStorageDetails);
+    setState(cloudStorageState);
+  }, [storageId]); // eslint-disable-line react-hooks/exhaustive-deps
+  // ? storageId depends on the currentStorage
+
   const [success, setSuccess] = useState(false);
   const [state, setState] = useState<AddCloudStorageState>(
     EMPTY_CLOUD_STORAGE_STATE
@@ -129,11 +156,20 @@ export default function AddCloudStorageModal({
   };
 
   // Reset
-  const reset = useCallback(() => {
-    setState(() => EMPTY_CLOUD_STORAGE_STATE);
-    setStorageDetails(() => EMPTY_CLOUD_STORAGE_DETAILS);
+  const reset = () => {
+    const resetStatus = getCurrentStorageDetails(currentStorage);
+    setState(
+      storageId
+        ? {
+            ...EMPTY_CLOUD_STORAGE_STATE,
+            step: state.step,
+            completedSteps: state.completedSteps,
+          }
+        : { ...EMPTY_CLOUD_STORAGE_STATE }
+    );
+    setStorageDetails({ ...resetStatus }); // this might not work on the non-registered useForm fields
     if (success) setSuccess(false);
-  }, [success]);
+  };
 
   // Mutations
   const projectId = useSelector<
@@ -143,6 +179,8 @@ export default function AddCloudStorageModal({
   const [addCloudStorageForProject, result] =
     useAddCloudStorageForProjectMutation();
   const addStorage = () => {
+    // ! TODO: make this add or edit
+
     storageDetails.options;
 
     const storageParameters: AddCloudStorageForProjectParams = {
@@ -248,10 +286,12 @@ export default function AddCloudStorageModal({
       >
         {result.isLoading ? (
           <Loader className="me-1" inline size={16} />
+        ) : storageId ? (
+          <PencilSquare className={cx("bi", "me-1")} />
         ) : (
           <PlusLg className={cx("bi", "me-1")} />
         )}
-        Add Storage
+        {storageId ? "Edit" : "Add"} storage
       </Button>
       {disableAddButton && (
         <UncontrolledTooltip placement="top" target={`${addButtonId}-div`}>
@@ -342,9 +382,11 @@ export default function AddCloudStorageModal({
       centered
       className={styles.modal}
       fullscreen="lg"
+      id={key ?? "new-cloud-storage"}
       isOpen={isOpen}
       scrollable
       size="lg"
+      unmountOnClose={false}
       toggle={toggle}
     >
       <ModalHeader toggle={toggle}>

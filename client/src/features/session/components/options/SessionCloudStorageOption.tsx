@@ -130,9 +130,18 @@ function SessionS3CloudStorageOption() {
         It is recommended to configure cloud storage options from the{" "}
         <Link to={settingsStorageUrl}>Project&apos;s settings</Link>.
       </div>
-      <CloudStorageList />
+      <CloudStorageSection />
     </div>
   );
+}
+
+function CloudStorageSection() {
+  // storageForProject: CloudStorage[];
+
+  // - add button
+  // - list of cloud storage with the Edit button working fine
+
+  return <CloudStorageList />;
 }
 
 // ! TODO -- use the same component as in project settings

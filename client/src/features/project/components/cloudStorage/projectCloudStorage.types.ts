@@ -159,6 +159,7 @@ export type CloudStorageDetailsOptions = Record<
 >;
 
 export type CloudStorageDetails = {
+  storageId?: string;
   schema?: string;
   provider?: string;
   options?: CloudStorageDetailsOptions;

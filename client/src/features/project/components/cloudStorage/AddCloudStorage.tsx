@@ -544,7 +544,11 @@ function AddStorageOptions({
           <Controller
             name={o.name}
             control={control}
-            defaultValue={o.convertedDefault ?? undefined}
+            defaultValue={
+              storage.options && storage.options[o.name]
+                ? storage.options[o.name]
+                : o.convertedDefault ?? false
+            }
             render={({ field }) => (
               <input
                 id={o.name}
@@ -600,7 +604,11 @@ function AddStorageOptions({
           <Controller
             name={o.name}
             control={control}
-            defaultValue={o.convertedDefault ?? ""}
+            defaultValue={
+              storage.options && storage.options[o.name]
+                ? storage.options[o.name]
+                : o.convertedDefault ?? ""
+            }
             render={({ field }) => (
               <input
                 id={o.name}
@@ -737,8 +745,8 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
             validate: (value) =>
               !value
                 ? "Please provide a name"
-                : /^[A-Za-z0-9_$-]+$/.test(value) ||
-                  "Name can only contain letters, numbers, $, _, -",
+                : /^[a-zA-Z0-9_-]+$/.test(value) ||
+                  "Name can only contain letters, numbers, underscores (_), and dashes (-)",
           }}
         />
         <div className="invalid-feedback">

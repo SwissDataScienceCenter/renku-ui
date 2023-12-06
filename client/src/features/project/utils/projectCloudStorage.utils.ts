@@ -23,11 +23,13 @@ import {
   CLOUD_STORAGE_PROVIDERS_SHORTLIST,
   CLOUD_STORAGE_SCHEMA_SHORTLIST,
   CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
+  EMPTY_CLOUD_STORAGE_DETAILS,
 } from "../components/cloudStorage/projectCloudStorage.constants";
 import {
   CloudStorage,
   CloudStorageConfiguration,
   CloudStorageCredential,
+  CloudStorageDetails,
   CloudStorageProvider,
   CloudStorageSchema,
   CloudStorageSchemaOptions,
@@ -335,4 +337,29 @@ export function getSourcePathHint(targetSchema = "") {
     CLOUD_STORAGE_MOUN_PATH_HELP[targetSchema] ??
     CLOUD_STORAGE_MOUN_PATH_HELP["generic"];
   return initialText + finalText;
+}
+
+export function getCurrentStorageDetails(
+  existingCloudStorage?: CloudStorage | null
+): CloudStorageDetails {
+  if (!existingCloudStorage) {
+    return EMPTY_CLOUD_STORAGE_DETAILS;
+  }
+  const configurationOptions = existingCloudStorage.storage.configuration
+    ? existingCloudStorage.storage.configuration
+    : {};
+  const { type, provider, ...options } = configurationOptions; // eslint-disable-line @typescript-eslint/no-unused-vars
+  const storageDetails: CloudStorageDetails = {
+    storageId: existingCloudStorage.storage.storage_id,
+    schema: existingCloudStorage.storage.configuration.type as string,
+    name: existingCloudStorage.storage.name,
+    mountPoint: existingCloudStorage.storage.target_path,
+    sourcePath: existingCloudStorage.storage.source_path,
+    provider: existingCloudStorage.storage.configuration.provider
+      ? (existingCloudStorage.storage.configuration.provider as string)
+      : undefined,
+    options,
+  };
+
+  return storageDetails;
 }

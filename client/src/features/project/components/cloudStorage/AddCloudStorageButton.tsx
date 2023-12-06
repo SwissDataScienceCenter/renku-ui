@@ -18,7 +18,7 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useState } from "react";
-import { CheckLg, PlusLg, XLg } from "react-bootstrap-icons";
+import { CheckLg, PencilSquare, PlusLg, XLg } from "react-bootstrap-icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   Button,
@@ -32,7 +32,9 @@ import {
   Label,
   ModalBody,
   ModalFooter,
+  PopoverBody,
   Row,
+  UncontrolledPopover,
 } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
@@ -60,20 +62,73 @@ import { ExternalLink } from "../../../../components/ExternalLinks";
 import AddCloudStorageModal from "./AddCloudStorageModal";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 
-export default function AddCloudStorageButton() {
+interface AddCloudStorageButtonProps {
+  currentStorage?: CloudStorage | null;
+  devAccess: boolean;
+}
+export default function AddCloudStorageButton({
+  currentStorage,
+  devAccess,
+}: AddCloudStorageButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
   }, []);
 
-  return (
+  const isEdit = !!currentStorage?.storage.storage_id;
+  const localId = isEdit
+    ? `edit-cloud-storage-${currentStorage?.storage.storage_id}`
+    : "add-cloud-storage";
+  const buttonContent = isEdit ? (
     <>
-      <Button className={cx("btn-outline-rk-green")} onClick={toggle}>
-        <PlusLg className={cx("bi", "me-1")} />
-        Add Cloud Storage
-      </Button>
-      <AddCloudStorageModal isOpen={isOpen} toggle={toggle} />
+      <PencilSquare className={cx("bi", "me-1")} />
+      Edit
     </>
+  ) : (
+    <>
+      <PlusLg className={cx("bi", "me-1")} />
+      Add Cloud Storage
+    </>
+  );
+  const content = devAccess ? (
+    <>
+      <Button
+        id={`${localId}-button`}
+        className={cx("btn-outline-rk-green")}
+        onClick={toggle}
+      >
+        {buttonContent}
+      </Button>
+      <div id={`${localId}-modal`} key={`${localId}-key`}>
+        <AddCloudStorageModal
+          currentStorage={currentStorage}
+          key={currentStorage?.storage.storage_id ?? ""}
+          isOpen={isOpen}
+          toggle={toggle}
+        />
+      </div>
+    </>
+  ) : (
+    <>
+      <Button
+        id={`${localId}-button`}
+        color="outline-secondary"
+        disabled={true}
+      >
+        {buttonContent}
+      </Button>
+      <UncontrolledPopover target={localId}>
+        <PopoverBody>
+          Only developers and maintainers can edit cloud storage settings.
+        </PopoverBody>
+      </UncontrolledPopover>
+    </>
+  );
+
+  return (
+    <div className="d-inline-block" id={localId}>
+      {content}
+    </div>
   );
 }
 

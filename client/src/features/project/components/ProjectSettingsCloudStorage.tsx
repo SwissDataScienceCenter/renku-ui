@@ -95,9 +95,9 @@ export default function ProjectSettingsCloudStorage() {
   const { accessLevel, id: projectId } = useLegacySelector<
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
-
   const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
+  // Cloud storage list
   const {
     data: storageForProject,
     error: storageError,
@@ -117,6 +117,7 @@ export default function ProjectSettingsCloudStorage() {
   const isFetching = storageIsFetching || versionIsFetching;
   const isLoading = storageIsLoading || versionIsLoading;
 
+  // TODO: we can show settings anyway
   if (!logged) {
     const textIntro =
       "Only authenticated users can access cloud storage setting.";
@@ -127,14 +128,13 @@ export default function ProjectSettingsCloudStorage() {
       </CloudStorageSection>
     );
   }
-
-  if (!devAccess) {
-    return (
-      <CloudStorageSection>
-        <p>Settings can be changed only by developers and maintainers.</p>
-      </CloudStorageSection>
-    );
-  }
+  // if (!devAccess) {
+  //   return (
+  //     <CloudStorageSection>
+  //       <p>Settings can be changed only by developers and maintainers.</p>
+  //     </CloudStorageSection>
+  //   );
+  // }
 
   if (isLoading) {
     return (
@@ -164,12 +164,15 @@ export default function ProjectSettingsCloudStorage() {
       {notebooksVersion.cloudStorageEnabled && (
         <Row>
           <Col>
-            <AddCloudStorageButton />
+            <AddCloudStorageButton devAccess={devAccess} />
           </Col>
         </Row>
       )}
 
-      <CloudStorageList storageForProject={storageForProject} />
+      <CloudStorageList
+        devAccess={devAccess}
+        storageForProject={storageForProject}
+      />
     </CloudStorageSection>
   );
 }
@@ -214,10 +217,14 @@ function CloudStorageSupportNotice({
 }
 
 interface CloudStorageListProps {
+  devAccess: boolean;
   storageForProject: CloudStorage[];
 }
 
-function CloudStorageList({ storageForProject }: CloudStorageListProps) {
+function CloudStorageList({
+  devAccess,
+  storageForProject,
+}: CloudStorageListProps) {
   if (storageForProject.length == 0) {
     return null;
   }
@@ -227,6 +234,7 @@ function CloudStorageList({ storageForProject }: CloudStorageListProps) {
       <Row className={cx("row-cols-1", "gy-2")}>
         {storageForProject.map((storageDefinition) => (
           <CloudStorageItem
+            devAccess={devAccess}
             key={storageDefinition.storage.name}
             storageDefinition={storageDefinition}
           />
@@ -237,11 +245,15 @@ function CloudStorageList({ storageForProject }: CloudStorageListProps) {
 }
 
 interface CloudStorageItemProps {
+  devAccess: boolean;
   storageDefinition: CloudStorage;
 }
 
 // ! TODO: move this to a separate file
-function CloudStorageItem({ storageDefinition }: CloudStorageItemProps) {
+function CloudStorageItem({
+  devAccess,
+  storageDefinition,
+}: CloudStorageItemProps) {
   const { storage } = storageDefinition;
   const { configuration, name, target_path } = storage;
 
@@ -259,7 +271,7 @@ function CloudStorageItem({ storageDefinition }: CloudStorageItemProps) {
     ? `${configuration.type}/${configuration.provider}`
     : configuration.type;
 
-  const requiresCredentials = !storage.private ? (
+  const requiresCredentials = storage.private ? (
     <div className={cx("small", "d-none", "d-sm-block")}>
       <span>
         <Key className="bi" /> Requires credentials
@@ -304,6 +316,7 @@ function CloudStorageItem({ storageDefinition }: CloudStorageItemProps) {
         <Collapse isOpen={isOpen}>
           <CardBody className="pt-0">
             <CloudStorageDetails
+              devAccess={devAccess}
               formattedConfiguration={formattedConfiguration}
               storageDefinition={storageDefinition}
             />
@@ -315,6 +328,7 @@ function CloudStorageItem({ storageDefinition }: CloudStorageItemProps) {
 }
 
 interface CloudStorageDetailsProps {
+  devAccess: boolean;
   formattedConfiguration: string;
   storageDefinition: CloudStorage;
 }
@@ -329,7 +343,10 @@ interface UpdateCloudStorageForm {
   requiredCredentials: CloudStorageCredential[];
 }
 
-function CloudStorageDetails({ storageDefinition }: CloudStorageDetailsProps) {
+function CloudStorageDetails({
+  devAccess,
+  storageDefinition,
+}: CloudStorageDetailsProps) {
   const { storage } = storageDefinition;
   const { configuration, name, readonly, source_path, target_path } = storage;
 
@@ -343,6 +360,30 @@ function CloudStorageDetails({ storageDefinition }: CloudStorageDetailsProps) {
         ({ requiredCredential }) => requiredCredential
       ),
     [credentialFieldDefinitions]
+  );
+
+  const editButton = devAccess ? (
+    <AddCloudStorageButton
+      currentStorage={storageDefinition}
+      devAccess={devAccess}
+    />
+  ) : (
+    <div
+      className="d-inline-block"
+      id={`edit-cloud-storage-${storageDefinition.storage.storage_id}-block`}
+    >
+      <Button color="outline-secondary" disabled={true}>
+        <PencilSquare className={cx("bi", "me-1")} />
+        Edit
+      </Button>
+      <UncontrolledPopover
+        target={`edit-cloud-storage-${storageDefinition.storage.storage_id}-block`}
+      >
+        <PopoverBody>
+          Only developers and maintainers can edit cloud storage settings.
+        </PopoverBody>
+      </UncontrolledPopover>
+    </div>
   );
 
   return (
@@ -417,14 +458,11 @@ function CloudStorageDetails({ storageDefinition }: CloudStorageDetailsProps) {
       </section>
 
       <section className={cx("d-flex", "justify-content-end", "mt-3")}>
-        <Button
-          color="outline-secondary"
-          // onClick={toggleEditMode}
-        >
-          <PencilSquare className={cx("bi", "me-1")} />
-          Edit
-        </Button>
-        <DeleteCloudStorageButton storageDefinition={storageDefinition} />
+        {editButton}
+        <DeleteCloudStorageButton
+          devAccess={devAccess}
+          storageDefinition={storageDefinition}
+        />
       </section>
     </>
   );
@@ -903,7 +941,10 @@ export function EditCloudStorage({
           )}
           Save changes
         </Button>
-        <DeleteCloudStorageButton storageDefinition={storageDefinition} />
+        <DeleteCloudStorageButton
+          devAccess={true}
+          storageDefinition={storageDefinition}
+        />
       </section>
     </Form>
   );
