@@ -26,6 +26,8 @@ import { Url } from "./url";
 import { DateFilterTypes } from "../../components/dateFilter/DateFilter";
 import { isEqual } from "lodash";
 import { getEntityImageUrl } from "./HelperFunctions";
+import { DatasetKg, KgMetadataResponse } from "../../features/project/Project";
+import { Visibilities } from "../../components/visibility/Visibility";
 
 const getDatasetIdentifier = (links: KgSearchResultLink[]): string => {
   try {
@@ -82,6 +84,52 @@ export const mapSearchResultToEntity = (
     title: entity.name,
     url,
     visibility: entity.visibility,
+  };
+};
+
+export const mapMetadataKgResultToEntity = (
+  entity: KgMetadataResponse
+): ListElementProps => {
+  const url = getProjectUrl(entity.path);
+  const creators = [{ name: entity.created.creator.name }];
+  const id = entity.path;
+
+  return {
+    creators,
+    description: entity.description,
+    id,
+    imageUrl: getEntityImageUrl(entity.images),
+    itemType: EntityType.Project,
+    labelCaption: "Created",
+    path: entity.path,
+    slug: entity.path,
+    tagList: entity.keywords,
+    timeCaption: entity.created.dateCreated,
+    title: entity.name,
+    url,
+    visibility: entity.visibility,
+  };
+};
+
+export const mapDatasetKgResultToEntity = (
+  entity: DatasetKg
+): ListElementProps => {
+  const creators = [{ name: entity.published.creator[0].name }];
+  const id = entity.identifier;
+
+  return {
+    creators,
+    description: entity.description,
+    id,
+    imageUrl: entity.images ? getEntityImageUrl(entity.images) : undefined,
+    itemType: EntityType.Dataset,
+    labelCaption: "Created",
+    slug: entity.slug ?? "",
+    tagList: entity.keywords,
+    timeCaption: entity.created,
+    title: entity.name,
+    url: `datasets/${entity.project?.dataset?.identifier}`,
+    visibility: entity.project?.visibility || Visibilities.Public,
   };
 };
 

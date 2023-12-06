@@ -28,6 +28,8 @@ import {
 import {
   CloudFill,
   ExclamationTriangleFill,
+  EyeFill,
+  EyeSlashFill,
   InfoCircleFill,
   PencilSquare,
   PlusLg,
@@ -47,6 +49,7 @@ import {
   Form,
   FormText,
   Input,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
@@ -55,7 +58,9 @@ import {
   PopoverBody,
   Row,
   UncontrolledPopover,
+  UncontrolledTooltip,
 } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../../api-client";
 import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
@@ -71,8 +76,8 @@ import {
 } from "../../../project/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
-  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   CLOUD_STORAGE_READWRITE_ENABLED,
+  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
 } from "../../../project/projectCloudStorage.constants";
 import {
   formatCloudStorageConfiguration,
@@ -387,24 +392,14 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
                 storage
               </p>
               {requiredSensitiveFields.map((item, fieldIndex) => (
-                <div className="mb-3" key={fieldIndex}>
-                  <Label
-                    className="form-label"
-                    for={`credentials-${index}-${item.name}`}
-                  >
-                    {item.name}
-                    <span className={cx("fw-bold", "text-danger")}>*</span>
-                    <CredentialMoreInfo help={item.help} />
-                  </Label>
-                  <Input
-                    className={cx(!item.value && active && "is-invalid")}
-                    disabled={!active}
-                    id={`credentials-${index}-${item.name}`}
-                    type="text"
-                    value={item.value}
-                    onChange={onChangeCredential(fieldIndex)}
-                  />
-                </div>
+                <CredentialField
+                  key={fieldIndex}
+                  active={active}
+                  fieldIndex={fieldIndex}
+                  index={index}
+                  item={item}
+                  onChangeCredential={onChangeCredential}
+                />
               ))}
             </CardBody>
           )}
@@ -437,6 +432,76 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
         </Collapse>
       </Card>
     </Col>
+  );
+}
+
+interface CredentialFieldProps {
+  active: boolean;
+  fieldIndex: number;
+  index: number;
+  item: {
+    name: string;
+    help: string;
+    value: string;
+  };
+  onChangeCredential: (
+    fieldIndex: number
+  ) => (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+function CredentialField({
+  active,
+  fieldIndex,
+  index,
+  item,
+  onChangeCredential,
+}: CredentialFieldProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const onToggleVisibility = useCallback(() => {
+    setShowPassword((show) => !show);
+  }, []);
+
+  const ref = useRef<HTMLButtonElement>(null);
+
+  const helpText = showPassword ? "Hide credential" : "Show credential";
+
+  return (
+    <div className="mb-3">
+      <Label className="form-label" for={`credentials-${index}-${item.name}`}>
+        {item.name}
+        <span className={cx("fw-bold", "text-danger")}>*</span>
+        <CredentialMoreInfo help={item.help} />
+      </Label>
+      <InputGroup>
+        <Input
+          className={cx(
+            "rounded-0",
+            "rounded-start",
+            !item.value && active && "is-invalid"
+          )}
+          disabled={!active}
+          id={`credentials-${index}-${item.name}`}
+          type={showPassword ? "text" : "password"}
+          value={item.value}
+          onChange={onChangeCredential(fieldIndex)}
+        />
+        <Button
+          className="rounded-end"
+          innerRef={ref}
+          onClick={onToggleVisibility}
+        >
+          {showPassword ? (
+            <EyeSlashFill className={cx("bi")} />
+          ) : (
+            <EyeFill className={cx("bi")} />
+          )}
+          <span className="visually-hidden">{helpText}</span>
+        </Button>
+        <UncontrolledTooltip placement="top" target={ref}>
+          {helpText}
+        </UncontrolledTooltip>
+      </InputGroup>
+    </div>
   );
 }
 

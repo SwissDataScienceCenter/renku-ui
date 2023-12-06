@@ -5,7 +5,7 @@
         "keywords": ["test", "testing datasets"],
         "identifier": "4577b68957b7478bba1f07d6513b43d2",
         "images": [],
-        "title": "abcd",
+        "name": "abcd",
         "created_at": "2022-02-15 09:25:54+00:00",
         "annotations": [],
         "creators": [
@@ -27,13 +27,13 @@
         ],
         "version": null,
         "description": "Dataset for testing purposes",
-        "name": "abcd"
+        "slug": "abcd"
       },
       {
         "keywords": ["second"],
         "identifier": "897ee9effb9b42efab454011a8fba5e4",
         "images": [],
-        "title": "efgh",
+        "name": "efgh",
         "created_at": "2022-02-15 09:28:13+00:00",
         "annotations": [],
         "creators": [
@@ -50,7 +50,7 @@
         ],
         "version": null,
         "description": "",
-        "name": "efgh"
+        "slug": "efgh"
       }
     ]
   }
