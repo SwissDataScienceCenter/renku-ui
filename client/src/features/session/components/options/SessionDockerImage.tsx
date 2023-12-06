@@ -16,22 +16,22 @@
  * limitations under the License.
  */
 
-import { RootStateOrAny, useSelector } from "react-redux";
 import { Loader } from "../../../../components/Loader";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
 import usePatchedProjectConfig from "../../hooks/usePatchedProjectConfig.hook";
-import { useStartSessionOptionsSelector } from "../../startSessionOptionsSlice";
 import SessionPinnedDockerImage from "./SessionPinnedDockerImage";
 import SessionProjectDockerImage from "./SessionProjectDockerImage";
 
 export default function SessionDockerImage() {
-  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+  const projectRepositoryUrl = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
-  const defaultBranch = useSelector<RootStateOrAny, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({
@@ -44,7 +44,9 @@ export default function SessionDockerImage() {
     metadataVersion,
   } = coreSupport;
 
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const commit = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.commit
+  );
 
   const { data: projectConfig, isFetching: projectConfigIsFetching } =
     usePatchedProjectConfig({

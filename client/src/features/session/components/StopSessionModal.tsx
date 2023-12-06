@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import { useCallback, useContext, useEffect, useState } from "react";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { Duration } from "luxon";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Redirect } from "react-router";
 import {
   Button,
@@ -31,24 +31,26 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+
 import { InfoAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/RenkuModels";
+import { NotebooksHelper } from "../../../notebooks";
+import { NotebookAnnotations } from "../../../notebooks/components/session.types";
 import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.constants";
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import AppContext from "../../../utils/context/appContext";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
+import { toHumanDuration } from "../../../utils/helpers/DurationUtils";
 import { Url } from "../../../utils/helpers/url";
 import {
   usePatchSessionMutation,
   useStopSessionMutation,
 } from "../sessions.api";
-import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
-import styles from "./SessionModals.module.scss";
 import { Session } from "../sessions.types";
-import { NotebooksHelper } from "../../../notebooks";
-import { NotebookAnnotations } from "../../../notebooks/components/session.types";
-import { toHumanDuration } from "../../../utils/helpers/DurationUtils";
-import { Duration } from "luxon";
+import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
+
+import styles from "./SessionModals.module.scss";
 
 interface StopSessionModalProps {
   isOpen: boolean;
@@ -63,7 +65,7 @@ export default function StopSessionModal({
   sessionName,
   toggleModal,
 }: StopSessionModalProps) {
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
@@ -93,7 +95,7 @@ function AnonymousStopSessionModal({
   sessionName,
   toggleModal,
 }: StopSessionModalProps) {
-  const pathWithNamespace = useSelector<RootStateOrAny, string>(
+  const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
   const sessionsListUrl = Url.get(Url.pages.project.session, {
@@ -176,7 +178,7 @@ function HibernateSessionModal({
   sessionName,
   toggleModal,
 }: StopSessionModalProps) {
-  const pathWithNamespace = useSelector<RootStateOrAny, string>(
+  const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
   const sessionsListUrl = Url.get(Url.pages.project.session, {

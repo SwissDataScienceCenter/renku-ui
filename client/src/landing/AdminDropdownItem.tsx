@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-import { RootStateOrAny, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { DropdownItem } from "reactstrap";
 import { useGetUserInfoQuery } from "../features/user/keycloakUser.api";
+import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 
 export default function AdminDropdownItem() {
-  const userLogged = useSelector<RootStateOrAny, boolean>(
+  const userLogged = useLegacySelector<boolean>(
     (state) => state.stateModel.user.logged
   );
 

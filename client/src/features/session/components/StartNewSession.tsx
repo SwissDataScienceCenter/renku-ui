@@ -25,7 +25,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Redirect, useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { Button, Col, DropdownItem, Form, Modal, Row } from "reactstrap";
@@ -50,6 +49,9 @@ import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { isFetchBaseQueryError } from "../../../utils/helpers/ApiErrors";
 import { Url } from "../../../utils/helpers/url";
 import { getProvidedSensitiveFields } from "../../project/utils/projectCloudStorage.utils";
@@ -58,12 +60,8 @@ import startSessionSlice, {
   setError,
   setStarting,
   setSteps,
-  useStartSessionSelector,
 } from "../startSession.slice";
-import {
-  startSessionOptionsSlice,
-  useStartSessionOptionsSelector,
-} from "../startSessionOptionsSlice";
+import { startSessionOptionsSlice } from "../startSessionOptionsSlice";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
 import ProjectSessionsList, { useProjectSessions } from "./ProjectSessionsList";
 import AutostartSessionOptions from "./options/AutostartSessionOptions";
@@ -86,13 +84,15 @@ export default function StartNewSession() {
   );
   const autostart = !!searchParams.get("autostart");
 
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
-  const { starting, error } = useStartSessionSelector();
+  const { starting, error } = useAppSelector(
+    ({ startSession }) => startSession
+  );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Reset start session slice when we navigate away
   useEffect(() => {
@@ -148,7 +148,7 @@ export default function StartNewSession() {
 }
 
 function BackButton() {
-  const pathWithNamespace = useSelector<RootStateOrAny, string>(
+  const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
   const projectUrlData = {
@@ -186,10 +186,10 @@ interface LocationState {
 }
 
 function SessionStarting() {
-  const namespace = useSelector<RootStateOrAny, string>(
+  const namespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.namespace
   );
-  const path = useSelector<RootStateOrAny, string>(
+  const path = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.path
   );
 
@@ -201,13 +201,13 @@ function SessionStarting() {
   const fromLandingParam = !!searchParams.get("fromLanding");
   const fromLanding = location.state?.fromLanding || fromLandingParam;
 
-  const steps = useStartSessionSelector(({ steps }) => steps);
+  const steps = useAppSelector(({ startSession }) => startSession.steps);
 
   const [, { data: session, error }] = useStartSessionMutation({
     fixedCacheKey: "start-session",
   });
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (error) {
@@ -253,8 +253,8 @@ function SessionStarting() {
 }
 
 function SessionStartError() {
-  const { error, errorMessage } = useStartSessionSelector(
-    ({ error, errorMessage }) => ({ error, errorMessage })
+  const { error, errorMessage } = useAppSelector(
+    ({ startSession }) => startSession
   );
 
   if (!error) {
@@ -329,7 +329,7 @@ function SessionStartError() {
 }
 
 function SessionStartSidebar() {
-  const pathWithNamespace = useSelector<RootStateOrAny, string>(
+  const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
 
@@ -359,7 +359,7 @@ function SessionStartSidebar() {
 }
 
 function ProjectSessionLockAlert() {
-  const lockStatus = useSelector<RootStateOrAny, LockStatus>(
+  const lockStatus = useLegacySelector<LockStatus>(
     (state) => state.stateModel.project.lockStatus
   );
 
@@ -386,7 +386,7 @@ function StartNewSessionContent() {
   );
   const showCreateLink = !!searchParams.get("showCreateLink");
 
-  const projectPathWithNamespace = useSelector<RootStateOrAny, string>(
+  const projectPathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
   const projectSessions = useProjectSessions({ projectPathWithNamespace });
@@ -452,15 +452,16 @@ function SessionCreateLink() {
   );
   const filePath = searchParams.get("filePath") ?? "";
 
-  const namespace = useSelector<RootStateOrAny, string>(
+  const namespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.namespace
   );
-  const project = useSelector<RootStateOrAny, string>(
+  const project = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.path
   );
 
-  const { branch, commit, environmentVariables } =
-    useStartSessionOptionsSelector();
+  const { branch, commit, environmentVariables } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
+  );
 
   const [createLinkIsOpen, setCreateLinkIsOpen] = useState(true);
   const toggleCreateLink = useCallback(() => {
@@ -502,13 +503,12 @@ function SessionCreateLink() {
 function SessionSaveWarning() {
   const location = useLocation();
 
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
-  const { accessLevel, externalUrl } = useSelector<
-    RootStateOrAny,
-    ProjectMetadata
-  >((state) => state.stateModel.project.metadata);
+  const { accessLevel, externalUrl } = useLegacySelector<ProjectMetadata>(
+    (state) => state.stateModel.project.metadata
+  );
 
   if (!logged) {
     const loginUrl = Url.get(Url.pages.login.link, {
@@ -578,8 +578,7 @@ function ForkProjectModal() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleIsOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
 
-  const { id, title, visibility } = useSelector<
-    RootStateOrAny,
+  const { id, title, visibility } = useLegacySelector<
     ProjectMetadata & { id?: number }
   >((state) => state.stateModel.project.metadata);
 
@@ -608,7 +607,7 @@ function ForkProjectModal() {
 }
 
 function StartNewSessionOptions() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Reset start session options slice when we navigate away
   useEffect(() => {
@@ -638,10 +637,10 @@ function StartSessionButton() {
   const showCreateLink = !!searchParams.get("showCreateLink");
   const filePath = searchParams.get("filePath") ?? "";
 
-  const namespace = useSelector<RootStateOrAny, string>(
+  const namespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.namespace
   );
-  const project = useSelector<RootStateOrAny, string>(
+  const project = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.path
   );
 
@@ -656,7 +655,7 @@ function StartSessionButton() {
     pinnedDockerImage,
     sessionClass,
     storage,
-  } = useStartSessionOptionsSelector();
+  } = useAppSelector(({ startSessionOptions }) => startSessionOptions);
 
   const missingCredentialsStorage = useMemo(
     () =>
@@ -676,7 +675,7 @@ function StartSessionButton() {
   const enabled =
     dockerImageStatus === "available" && missingCredentialsStorage.length == 0;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [startSession] = useStartSessionMutation({
     fixedCacheKey: "start-session",
