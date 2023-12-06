@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-import { useCallback, useContext, useState } from "react";
 import cx from "classnames";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { useCallback, useContext, useState } from "react";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { Button, Modal } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../api-client";
 import { InfoAlert } from "../../../components/Alert";
 import { ExternalLink } from "../../../components/ExternalLinks";
@@ -30,18 +30,18 @@ import { ProjectMetadata } from "../../../notebooks/components/session.types";
 import { ForkProject } from "../../../project/new";
 import { Docs } from "../../../utils/constants/Docs";
 import AppContext from "../../../utils/context/appContext";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
 
 export default function SessionSaveWarning() {
   const location = useLocation();
 
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
-  const { accessLevel, externalUrl } = useSelector<
-    RootStateOrAny,
-    ProjectMetadata
-  >((state) => state.stateModel.project.metadata);
+  const { accessLevel, externalUrl } = useLegacySelector<ProjectMetadata>(
+    (state) => state.stateModel.project.metadata
+  );
 
   if (!logged) {
     const loginUrl = Url.get(Url.pages.login.link, {
@@ -111,8 +111,7 @@ function ForkProjectModal() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleIsOpen = useCallback(() => setIsOpen((isOpen) => !isOpen), []);
 
-  const { id, title, visibility } = useSelector<
-    RootStateOrAny,
+  const { id, title, visibility } = useLegacySelector<
     ProjectMetadata & { id?: number }
   >((state) => state.stateModel.project.metadata);
 

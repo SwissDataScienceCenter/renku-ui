@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import {
   useCallback,
   useContext,
@@ -24,23 +27,22 @@ import {
   useRef,
   useState,
 } from "react";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cx from "classnames";
 import {
   ArrowClockwise,
   Briefcase,
   Journals,
   Save,
 } from "react-bootstrap-icons";
-import { RootStateOrAny, useSelector } from "react-redux";
 import { Redirect, useLocation, useParams } from "react-router";
 import { Button, Row, UncontrolledTooltip } from "reactstrap";
+
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
 import { User } from "../../../model/RenkuModels";
 import { SESSION_TABS } from "../../../notebooks/Notebooks.present";
 import { GoBackBtn } from "../../../notebooks/components/SessionButtons";
 import AppContext from "../../../utils/context/appContext";
+import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import useWindowSize from "../../../utils/helpers/UseWindowsSize";
 import { Url } from "../../../utils/helpers/url";
 import { useGetSessionsQuery } from "../sessions.api";
@@ -55,7 +57,6 @@ import SessionUnavailable from "./SessionUnavailable";
 import styles from "./ShowSession.module.scss";
 import StartSessionProgressBar from "./StartSessionProgressBar";
 import StopSessionModal from "./StopSessionModal";
-import { DEFAULT_APP_PARAMS } from "../../../utils/context/appParams.constants";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -64,7 +65,7 @@ export default function ShowSession() {
   const anonymousSessionsEnabled =
     params?.ANONYMOUS_SESSIONS ?? DEFAULT_APP_PARAMS.ANONYMOUS_SESSIONS;
 
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
@@ -90,10 +91,10 @@ interface ShowSessionFullscreenProps {
 }
 
 function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
-  const pathWithNamespace = useSelector<RootStateOrAny, string>(
+  const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
-  const path = useSelector<RootStateOrAny, string>(
+  const path = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.path
   );
 
@@ -396,7 +397,7 @@ interface StopSessionBtnProps {
   toggleStopSession: () => void;
 }
 function StopSessionBtn({ toggleStopSession }: StopSessionBtnProps) {
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 

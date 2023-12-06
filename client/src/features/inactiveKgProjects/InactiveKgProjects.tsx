@@ -18,32 +18,34 @@
 
 import { useCallback, useContext, useEffect } from "react";
 import { Balloon, Briefcase } from "react-bootstrap-icons";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Table } from "reactstrap";
 
 import { Loader } from "../../components/Loader";
 import AppContext from "../../utils/context/appContext";
 import useGetInactiveProjects from "../../utils/customHooks/UseGetInactiveProjects";
+import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { sendPullKgActivationStatus } from "../../websocket/WsMessages";
 import { useActivateIndexingMutation } from "../project/projectKg.api";
 import ActivationProgress from "./components/ActivationProgress";
 import KgActivationHeader from "./components/KgActivationHeader";
-import "./inactiveKgProjects.css";
-import {
-  ActivationStatusProgressSpecial,
-  addFullList,
-  setActivating as setActivatingAction,
-  updateList,
-  updateAllSelected,
-  updateProgress,
-  useInactiveProjectSelector,
-} from "./inactiveKgProjectsSlice";
 import { InactiveKgProjects } from "./inactiveKgProjects.types";
 import {
   filterProgressingProjects,
   hasActivationTerminated,
 } from "./inactiveKgProjects.utils";
+import {
+  ActivationStatusProgressSpecial,
+  addFullList,
+  setActivating as setActivatingAction,
+  updateAllSelected,
+  updateList,
+  updateProgress,
+} from "./inactiveKgProjectsSlice";
+
+import "./inactiveKgProjects.css";
 
 function ActivatingInfo({ activating }: { activating: boolean }) {
   if (!activating) return null;
@@ -224,10 +226,10 @@ function ProjectsNotIndexedPage({
   projectList,
   socket,
 }: ProjectsNotIndexedPageProps) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const activationStatus = useInactiveProjectSelector(
-    (state) => state.activationStatus
+  const activationStatus = useAppSelector(
+    ({ kgInactiveProjects }) => kgInactiveProjects.activationStatus
   );
 
   const activating = activationStatus.isActivating;
@@ -241,9 +243,7 @@ function ProjectsNotIndexedPage({
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activateIndexing, _] = useActivateIndexingMutation();
-  const websocket = useSelector(
-    (state: RootStateOrAny) => state.stateModel.webSocket
-  );
+  const websocket = useLegacySelector((state) => state.stateModel.webSocket);
   const { client } = useContext(AppContext);
 
   // hook to calculate if still activating a project of the list
@@ -346,14 +346,14 @@ function ProjectsNotIndexedPage({
 }
 
 function InactiveKGProjectsPage({ socket }: InactiveKGProjectsPageProps) {
-  const user = useSelector((state: RootStateOrAny) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
   const { data, isFetching, isLoading, error } = useGetInactiveProjects(
     user?.data?.id
   );
-  const projectList = useInactiveProjectSelector(
-    (state) => state.inactiveProjects
+  const projectList = useAppSelector(
+    ({ kgInactiveProjects }) => kgInactiveProjects.inactiveProjects
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // hook to update project list when projects pending to activate change
   useEffect(() => {

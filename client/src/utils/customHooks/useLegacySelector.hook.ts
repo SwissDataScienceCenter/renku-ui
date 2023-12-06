@@ -16,22 +16,9 @@
  * limitations under the License.
  */
 
-import { createSlice } from "@reduxjs/toolkit";
+import type { TypedUseSelectorHook } from "react-redux";
+import { useSelector } from "react-redux";
+import type { LegacyRootState } from "../helpers/EnhancedState";
 
-interface DashboardMessageState {
-  dismissed: boolean;
-}
-
-const initialState: DashboardMessageState = {
-  dismissed: false,
-};
-
-export const dashboardMessageSlice = createSlice({
-  name: "dashboardMessage",
-  initialState,
-  reducers: {
-    dismiss: (state) => {
-      state.dismissed = true;
-    },
-  },
-});
+const useLegacySelector: TypedUseSelectorHook<LegacyRootState> = useSelector;
+export default useLegacySelector;

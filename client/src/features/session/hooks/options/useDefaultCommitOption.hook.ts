@@ -17,8 +17,8 @@
  */
 
 import { useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import { GitLabRepositoryCommit } from "../../../project/GitLab.types";
 import { setError } from "../../startSession.slice";
 import { setCommit } from "../../startSessionOptionsSlice";
@@ -37,7 +37,7 @@ export default function useDefaultCommitOption({
   );
   const commitFromUrl = searchParams.get("commit") ?? "";
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Select the default commit
   useEffect(() => {

@@ -18,9 +18,12 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useMemo } from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Input, InputGroup, InputGroupText } from "reactstrap";
+
 import { ThrottledTooltip } from "../../../../components/Tooltip";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { useGetResourcePoolsQuery } from "../../../dataServices/dataServices.api";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
@@ -29,22 +32,20 @@ import {
   MIN_SESSION_STORAGE_GB,
   STEP_SESSION_STORAGE_GB,
 } from "../../startSessionOptions.constants";
-import {
-  setStorage,
-  useStartSessionOptionsSelector,
-} from "../../startSessionOptionsSlice";
+import { setStorage } from "../../startSessionOptionsSlice";
 import { validateStorageAmount } from "../../utils/sessionOptions.utils";
+
 import styles from "./SessionStorageOption.module.scss";
 
 export const SessionStorageOption = () => {
   // Project options
-  const projectRepositoryUrl = useSelector<RootStateOrAny, string>(
+  const projectRepositoryUrl = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.externalUrl
   );
-  const defaultBranch = useSelector<RootStateOrAny, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
   const { coreSupport } = useCoreSupport({
@@ -56,7 +57,9 @@ export const SessionStorageOption = () => {
     computed: coreSupportComputed,
     metadataVersion,
   } = coreSupport;
-  const commit = useStartSessionOptionsSelector(({ commit }) => commit);
+  const commit = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.commit
+  );
   const { data: projectConfig } = usePatchedProjectConfig({
     apiVersion,
     commit,
@@ -82,10 +85,11 @@ export const SessionStorageOption = () => {
     { skip: !projectConfig }
   );
 
-  const { storage, sessionClass: currentSessionClassId } =
-    useStartSessionOptionsSelector();
+  const { storage, sessionClass: currentSessionClassId } = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions
+  );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const currentSessionClass = useMemo(
     () =>
