@@ -54,9 +54,7 @@ function HeaderAddDataset({ dataset }: HeaderAddDatasetProps) {
             <td className="text-dark fw-bold" style={{ width: "120px" }}>
               Dataset Title
             </td>
-            <td data-cy="add-dataset-to-project-title">
-              {dataset?.title || dataset?.name}
-            </td>
+            <td data-cy="add-dataset-to-project-title">{dataset?.name}</td>
           </tr>
           <tr>
             <td className="text-dark fw-bold" style={{ width: "120px" }}>

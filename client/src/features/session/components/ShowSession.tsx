@@ -104,7 +104,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   });
 
   const location = useLocation<
-    { redirectFromStartServer?: boolean } | undefined
+    { redirectFromStartServer?: boolean; fromLanding?: boolean } | undefined
   >();
 
   const { data: sessions, isLoading } = useGetSessionsQuery();
@@ -215,6 +215,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
   );
 
   const includeStepInTitle = location.state?.redirectFromStartServer;
+  const isFromLandingPage = location.state?.fromLanding;
   const content =
     !isLoading && thisSession == null ? (
       <SessionUnavailable />
@@ -259,7 +260,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
               "align-items-center"
             )}
           >
-            <GoBackBtn urlBack={sessionsListUrl} />
+            <GoBackBtn urlBack={isFromLandingPage ? "/" : sessionsListUrl} />
             <PullSessionBtn togglePullSession={togglePullSession} />
             <SaveSessionBtn toggleSaveSession={toggleSaveSession} />
             <ResourcesBtn toggleModalResources={toggleModalResources} />

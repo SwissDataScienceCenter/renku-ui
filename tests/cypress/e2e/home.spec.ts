@@ -28,10 +28,7 @@ describe("display the home page", () => {
     cy.get("h1").should("have.length", 1);
     cy.get("h1")
       .first()
-      .should(
-        "have.text",
-        "An open-source knowledge infrastructure for collaborative and reproducible data science"
-      );
+      .should("have.text", "Connecting the research ecosystem");
   });
 });
 
@@ -57,10 +54,7 @@ describe("display the home page even when APIs return strange responses", () => 
     cy.get("h1").should("have.length", 1);
     cy.get("h1")
       .first()
-      .should(
-        "have.text",
-        "An open-source knowledge infrastructure for collaborative and reproducible data science"
-      );
+      .should("have.text", "Connecting the research ecosystem");
   });
 });
 

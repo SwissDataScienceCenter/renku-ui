@@ -103,7 +103,7 @@ export const projectCoreApi = createApi({
   endpoints: (builder) => ({
     getDatasetFiles: builder.query<IDatasetFiles, GetDatasetFilesParams>({
       query: (params: GetDatasetFilesParams) => {
-        const queryParams = { git_url: params.git_url, name: params.name };
+        const queryParams = { git_url: params.git_url, slug: params.slug };
         const headers = {
           Accept: "application/json",
           "Content-Type": "application/json",
