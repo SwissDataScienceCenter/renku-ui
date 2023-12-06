@@ -17,7 +17,6 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { Display, ProjectConfig, SessionConfig } from "./display";
 
 const initialState: Display = {
@@ -79,5 +78,3 @@ export const {
   toggleSessionLogsModal,
   reset,
 } = displaySlice.actions;
-
-export const useDisplaySelector = createSliceSelector(displaySlice);

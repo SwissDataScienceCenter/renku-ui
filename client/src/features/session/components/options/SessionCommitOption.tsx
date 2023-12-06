@@ -16,12 +16,11 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { faCogs, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { clamp } from "lodash";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { ChangeEvent, useCallback, useRef, useState } from "react";
 import {
   Button,
   FormGroup,
@@ -32,26 +31,29 @@ import {
   PopoverHeader,
   UncontrolledTooltip,
 } from "reactstrap";
+
 import { ErrorAlert } from "../../../../components/Alert";
 import { Loader } from "../../../../components/Loader";
 import CommitSelector from "../../../../components/commitSelector/CommitSelector";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { UncontrolledPopover } from "../../../../utils/ts-wrappers";
 import { useGetRepositoryCommitsQuery } from "../../../project/projectGitLab.api";
 import useDefaultCommitOption from "../../hooks/options/useDefaultCommitOption.hook";
-import {
-  setCommit,
-  useStartSessionOptionsSelector,
-} from "../../startSessionOptionsSlice";
+import { setCommit } from "../../startSessionOptionsSlice";
 
 export default function SessionCommitOption() {
-  const defaultBranch = useSelector<RootStateOrAny, string>(
+  const defaultBranch = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.defaultBranch
   );
-  const gitLabProjectId = useSelector<RootStateOrAny, number | null>(
+  const gitLabProjectId = useLegacySelector<number | null>(
     (state) => state.stateModel.project.metadata.id ?? null
   );
 
-  const currentBranch = useStartSessionOptionsSelector(({ branch }) => branch);
+  const currentBranch = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.branch
+  );
 
   const {
     data: commits,
@@ -66,7 +68,7 @@ export default function SessionCommitOption() {
     { skip: !gitLabProjectId || !currentBranch }
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const onChange = useCallback(
     (commitSha: string) => {
       if (commitSha) {

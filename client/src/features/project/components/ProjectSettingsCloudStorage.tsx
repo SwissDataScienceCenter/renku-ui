@@ -33,7 +33,6 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { RootStateOrAny, useSelector } from "react-redux";
 import {
   Button,
   Card,
@@ -52,6 +51,7 @@ import {
   Row,
   UncontrolledPopover,
 } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../api-client";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
@@ -59,8 +59,9 @@ import ChevronFlippedIcon from "../../../components/icons/ChevronFlippedIcon";
 import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { User } from "../../../model/RenkuModels";
-import { NotebooksVersion } from "../../versions/versions.types";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { useGetNotebooksVersionQuery } from "../../versions/versions.api";
+import { NotebooksVersion } from "../../versions/versions.types";
 import { StateModelProject } from "../Project";
 import {
   useDeleteCloudStorageMutation,
@@ -69,8 +70,8 @@ import {
 } from "../projectCloudStorage.api";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
-  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   CLOUD_STORAGE_READWRITE_ENABLED,
+  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
 } from "../projectCloudStorage.constants";
 import {
   CloudStorage,
@@ -85,13 +86,12 @@ import {
 import AddCloudStorageButton from "./AddCloudStorageButton";
 
 export default function ProjectSettingsCloudStorage() {
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
   // Project options
-  const { accessLevel, id: projectId } = useSelector<
-    RootStateOrAny,
+  const { accessLevel, id: projectId } = useLegacySelector<
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
 
@@ -382,10 +382,9 @@ function EditCloudStorage({
     [storageDefinition]
   );
 
-  const projectId = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]["id"]
-  >((state) => state.stateModel.project.metadata.id);
+  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
+    (state) => state.stateModel.project.metadata.id
+  );
 
   const [updateCloudStorage, result] = useUpdateCloudStorageMutation();
 
@@ -941,10 +940,9 @@ function DeleteCloudStorageModal({
 }: DeleteCloudStorageModalProps) {
   const { name, storage_id } = storage;
 
-  const projectId = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]["id"]
-  >((state) => state.stateModel.project.metadata.id);
+  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
+    (state) => state.stateModel.project.metadata.id
+  );
 
   const [deleteCloudStorage, result] = useDeleteCloudStorageMutation();
   const onDelete = useCallback(() => {

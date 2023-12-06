@@ -17,8 +17,8 @@
  */
 
 import { useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import { GitLabRepositoryBranch } from "../../../project/GitLab.types";
 import { setError } from "../../startSession.slice";
 import { setBranch } from "../../startSessionOptionsSlice";
@@ -39,7 +39,7 @@ export default function useDefaultBranchOption({
   );
   const branchFromUrl = searchParams.get("branch") ?? "";
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Select the default branch
   useEffect(() => {

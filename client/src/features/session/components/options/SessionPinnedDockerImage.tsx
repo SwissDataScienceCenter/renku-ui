@@ -16,25 +16,26 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState } from "react";
 import {
   faExclamationTriangle,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-import { useDispatch } from "react-redux";
+import { useCallback, useEffect, useState } from "react";
 import { Badge, Button, Collapse, FormText, Input } from "reactstrap";
+
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
 import { Docs } from "../../../../utils/constants/Docs";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import { useGetDockerImageQuery } from "../../sessions.api";
 import { SESSION_CI_PIPELINE_POLLING_INTERVAL_MS } from "../../startSessionOptions.constants";
 import { DockerImageStatus } from "../../startSessionOptions.types";
 import {
   setDockerImageStatus,
   setPinnedDockerImage,
-  useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
 
 interface SessionPinnedDockerImageProps {
@@ -44,8 +45,8 @@ interface SessionPinnedDockerImageProps {
 export default function SessionPinnedDockerImage({
   dockerImage,
 }: SessionPinnedDockerImageProps) {
-  const status = useStartSessionOptionsSelector(
-    ({ dockerImageStatus }) => dockerImageStatus
+  const status = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.dockerImageStatus
   );
 
   const { data: dockerImageStatus, isLoading } = useGetDockerImageQuery(
@@ -63,7 +64,7 @@ export default function SessionPinnedDockerImage({
   const [show, setShow] = useState<boolean>(false);
   const toggleShow = useCallback(() => setShow((show) => !show), []);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Set the pinned image option
   useEffect(() => {

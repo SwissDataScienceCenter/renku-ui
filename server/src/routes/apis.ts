@@ -194,6 +194,19 @@ function registerApiRoutes(
     }
   );
 
+  // /version endpoint
+  const uiServerShortSha = process.env["RENKU_UI_SHORT_SHA"] || "unknown";
+  const uiServerVersion = process.env["UI_SERVER_VERSION"] || uiServerShortSha;
+  app.get(`${prefix}/version`, async (_req, res) => {
+    const versionObject = {
+      name: "ui-server",
+      versions: [
+        { version: uiServerVersion, data: { commitSha: uiServerShortSha } },
+      ],
+    };
+    res.json(versionObject);
+  });
+
   /*
    * All the unmatched APIs will be routed to the gateway using the http-proxy-middleware middleware
    */

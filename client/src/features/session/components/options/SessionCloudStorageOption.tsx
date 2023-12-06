@@ -28,6 +28,8 @@ import {
 import {
   CloudFill,
   ExclamationTriangleFill,
+  EyeFill,
+  EyeSlashFill,
   InfoCircleFill,
   PencilSquare,
   PlusLg,
@@ -35,7 +37,6 @@ import {
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -47,6 +48,7 @@ import {
   Form,
   FormText,
   Input,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
@@ -55,7 +57,9 @@ import {
   PopoverBody,
   Row,
   UncontrolledPopover,
+  UncontrolledTooltip,
 } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../../../api-client";
 import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
@@ -63,6 +67,9 @@ import { Loader } from "../../../../components/Loader";
 import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
 import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
 import { StateModelProject } from "../../../project/Project";
 import {
@@ -71,8 +78,8 @@ import {
 } from "../../../project/projectCloudStorage.api";
 import {
   CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
-  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   CLOUD_STORAGE_READWRITE_ENABLED,
+  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
 } from "../../../project/projectCloudStorage.constants";
 import {
   formatCloudStorageConfiguration,
@@ -86,7 +93,6 @@ import {
   removeCloudStorageItem,
   setCloudStorage,
   updateCloudStorageItem,
-  useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
 
 export default function SessionCloudStorageOption() {
@@ -110,10 +116,9 @@ export default function SessionCloudStorageOption() {
 }
 
 function SessionS3CloudStorageOption() {
-  const { namespace, path } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const { namespace, path } = useLegacySelector<StateModelProject["metadata"]>(
+    (state) => state.stateModel.project.metadata
+  );
 
   const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
     namespace,
@@ -137,18 +142,17 @@ function SessionS3CloudStorageOption() {
 }
 
 function CloudStorageList() {
-  const { accessLevel, id: projectId } = useSelector<
-    RootStateOrAny,
+  const { accessLevel, id: projectId } = useLegacySelector<
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
 
   const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
-  const cloudStorageList = useStartSessionOptionsSelector(
-    ({ cloudStorage }) => cloudStorage
+  const cloudStorageList = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.cloudStorage
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const { data: notebooksVersion } = useGetNotebooksVersionQuery();
   const {
@@ -260,7 +264,7 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
     setIsOpen((isOpen) => !isOpen);
   }, []);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onToggleActive = useCallback(() => {
     dispatch(
@@ -387,24 +391,14 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
                 storage
               </p>
               {requiredSensitiveFields.map((item, fieldIndex) => (
-                <div className="mb-3" key={fieldIndex}>
-                  <Label
-                    className="form-label"
-                    for={`credentials-${index}-${item.name}`}
-                  >
-                    {item.name}
-                    <span className={cx("fw-bold", "text-danger")}>*</span>
-                    <CredentialMoreInfo help={item.help} />
-                  </Label>
-                  <Input
-                    className={cx(!item.value && active && "is-invalid")}
-                    disabled={!active}
-                    id={`credentials-${index}-${item.name}`}
-                    type="text"
-                    value={item.value}
-                    onChange={onChangeCredential(fieldIndex)}
-                  />
-                </div>
+                <CredentialField
+                  key={fieldIndex}
+                  active={active}
+                  fieldIndex={fieldIndex}
+                  index={index}
+                  item={item}
+                  onChangeCredential={onChangeCredential}
+                />
               ))}
             </CardBody>
           )}
@@ -440,6 +434,76 @@ function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
   );
 }
 
+interface CredentialFieldProps {
+  active: boolean;
+  fieldIndex: number;
+  index: number;
+  item: {
+    name: string;
+    help: string;
+    value: string;
+  };
+  onChangeCredential: (
+    fieldIndex: number
+  ) => (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+function CredentialField({
+  active,
+  fieldIndex,
+  index,
+  item,
+  onChangeCredential,
+}: CredentialFieldProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const onToggleVisibility = useCallback(() => {
+    setShowPassword((show) => !show);
+  }, []);
+
+  const ref = useRef<HTMLButtonElement>(null);
+
+  const helpText = showPassword ? "Hide credential" : "Show credential";
+
+  return (
+    <div className="mb-3">
+      <Label className="form-label" for={`credentials-${index}-${item.name}`}>
+        {item.name}
+        <span className={cx("fw-bold", "text-danger")}>*</span>
+        <CredentialMoreInfo help={item.help} />
+      </Label>
+      <InputGroup>
+        <Input
+          className={cx(
+            "rounded-0",
+            "rounded-start",
+            !item.value && active && "is-invalid"
+          )}
+          disabled={!active}
+          id={`credentials-${index}-${item.name}`}
+          type={showPassword ? "text" : "password"}
+          value={item.value}
+          onChange={onChangeCredential(fieldIndex)}
+        />
+        <Button
+          className="rounded-end"
+          innerRef={ref}
+          onClick={onToggleVisibility}
+        >
+          {showPassword ? (
+            <EyeSlashFill className={cx("bi")} />
+          ) : (
+            <EyeFill className={cx("bi")} />
+          )}
+          <span className="visually-hidden">{helpText}</span>
+        </Button>
+        <UncontrolledTooltip placement="top" target={ref}>
+          {helpText}
+        </UncontrolledTooltip>
+      </InputGroup>
+    </div>
+  );
+}
+
 function CredentialMoreInfo({ help }: { help: string }) {
   const ref = useRef<HTMLSpanElement>(null);
 
@@ -458,10 +522,9 @@ function CredentialMoreInfo({ help }: { help: string }) {
 }
 
 function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
-  const { namespace, path } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const { namespace, path } = useLegacySelector<StateModelProject["metadata"]>(
+    (state) => state.stateModel.project.metadata
+  );
 
   const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
     namespace,
@@ -491,7 +554,7 @@ function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
     name,
   });
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onChangeSourcePath = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -732,17 +795,16 @@ function AddTemporaryCloudStorageModal({
   isOpen,
   toggle,
 }: AddTemporaryCloudStorageModalProps) {
-  const { namespace, path } = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
+  const { namespace, path } = useLegacySelector<StateModelProject["metadata"]>(
+    (state) => state.stateModel.project.metadata
+  );
 
   const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
     namespace,
     path,
   });
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [validateCloudStorageConfiguration, result] =
     useValidateCloudStorageConfigurationMutation();
