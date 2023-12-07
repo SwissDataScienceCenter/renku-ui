@@ -21,7 +21,7 @@ import { ProgressStyle, ProgressType } from "./Progress";
 import ProgressStepsIndicator, { StepsProgressBar } from "./ProgressSteps";
 
 const meta: Meta<typeof ProgressStepsIndicator> = {
-  title: "components/ProgressIndicatorSteps",
+  title: "components/Loaders/ProgressIndicatorSteps",
   component: ProgressStepsIndicator,
   argTypes: {
     title: {
