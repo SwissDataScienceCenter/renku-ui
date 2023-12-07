@@ -16,27 +16,23 @@
  * limitations under the License.
  */
 
-import { useState } from "react";
-import { RootStateOrAny, useSelector } from "react-redux";
-
-import { Row, Col } from "reactstrap";
-import { Button } from "reactstrap";
 import { isEmpty } from "lodash";
-import { ButtonGroup, Table } from "reactstrap";
+import { useState } from "react";
+import { Button, ButtonGroup, Col, Row, Table } from "reactstrap";
 
-import AddDatasetExistingProject from "./DatasetAddToExistingProject";
-import AddDatasetNewProject from "./DatasetAddToNewProject";
-import { getDatasetAuthors } from "../DatasetFunctions";
-import { DatasetError } from "../DatasetError";
+import { ContainerWrap } from "../../App";
 import { Loader } from "../../components/Loader";
 import LoginAlert from "../../components/loginAlert/LoginAlert";
-import { ContainerWrap } from "../../App";
-
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
+import { DatasetError } from "../DatasetError";
+import { getDatasetAuthors } from "../DatasetFunctions";
 import {
   AddDatasetDataset,
   AddDatasetHandlers,
   AddDatasetStatus,
 } from "./DatasetAdd.types";
+import AddDatasetExistingProject from "./DatasetAddToExistingProject";
+import AddDatasetNewProject from "./DatasetAddToNewProject";
 
 type HeaderAddDatasetProps = {
   dataset: AddDatasetDataset;
@@ -81,9 +77,7 @@ function DatasetAddMainContent({
   importingDataset,
 }: Omit<DatasetAddProps, "insideProject">) {
   const [isNewProject, setIsNewProject] = useState(false);
-  const logged = useSelector(
-    (state: RootStateOrAny) => state.stateModel.user.logged
-  );
+  const logged = useLegacySelector((state) => state.stateModel.user.logged);
   if (!logged) {
     const textIntro = "Only authenticated users can create new projects.";
     const textPost = "to create new project with dataset.";
@@ -152,9 +146,7 @@ type DatasetAddProps = {
 };
 function DatasetAdd(props: DatasetAddProps) {
   const { dataset, insideProject } = props;
-  const logged = useSelector(
-    (state: RootStateOrAny) => state.stateModel.user.logged
-  );
+  const logged = useLegacySelector((state) => state.stateModel.user.logged);
 
   // Return early if there is no dataset
   if (!dataset) return <Loader />;

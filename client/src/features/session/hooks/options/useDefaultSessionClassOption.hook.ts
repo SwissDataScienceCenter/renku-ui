@@ -17,10 +17,10 @@
  */
 
 import { useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import { ResourcePool } from "../../../dataServices/dataServices.types";
-import { setSessionClass } from "../../startSessionOptionsSlice";
 import { setError } from "../../startSession.slice";
+import { setSessionClass } from "../../startSessionOptionsSlice";
 
 interface UseDefaultSessionClassOptionArgs {
   resourcePools: ResourcePool[] | undefined;
@@ -29,7 +29,7 @@ interface UseDefaultSessionClassOptionArgs {
 export default function useDefaultSessionClassOption({
   resourcePools,
 }: UseDefaultSessionClassOptionArgs): void {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const defaultSessionClass = useMemo(
     () =>

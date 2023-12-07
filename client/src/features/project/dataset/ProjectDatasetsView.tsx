@@ -29,9 +29,8 @@ import { GoBackButton } from "../../../components/buttons/Button";
 import { CoreErrorAlert } from "../../../components/errors/CoreErrorAlert";
 import { DatasetCoordinator } from "../../../dataset/Dataset.state";
 import { SpecialPropVal } from "../../../model/Model";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../utils/helpers/url";
-
-import { RootStateOrAny, useSelector } from "react-redux";
 import type { DatasetCore } from "../Project";
 import { StateModelProject } from "../Project";
 import { useGetProjectIndexingStatusQuery } from "../projectKg.api";
@@ -193,8 +192,7 @@ function ProjectDatasetsView(props: any) {
   });
   const kgDown = !projectIndexingStatus.data?.activated;
 
-  const { defaultBranch, externalUrl } = useSelector<
-    RootStateOrAny,
+  const { defaultBranch, externalUrl } = useLegacySelector<
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
   const { coreSupport } = useCoreSupport({

@@ -17,7 +17,6 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { WorkflowsDisplay } from "./Workflows";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -71,5 +70,3 @@ export const workflowsSlice = createSlice({
     reset: () => initialState,
   },
 });
-
-export const useWorkflowsSelector = createSliceSelector(workflowsSlice);

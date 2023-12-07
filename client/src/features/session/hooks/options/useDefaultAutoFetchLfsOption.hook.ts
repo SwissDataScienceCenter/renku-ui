@@ -17,7 +17,7 @@
  */
 
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import { ProjectConfig } from "../../../project/Project";
 import { setLfsAutoFetch } from "../../startSessionOptionsSlice";
 
@@ -28,7 +28,7 @@ interface UseDefaultAutoFetchLfsOptionArgs {
 export default function useDefaultAutoFetchLfsOption({
   projectConfig,
 }: UseDefaultAutoFetchLfsOptionArgs): void {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Set initial value
   useEffect(() => {

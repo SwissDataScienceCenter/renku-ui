@@ -16,22 +16,8 @@
  * limitations under the License.
  */
 
-import { createSlice } from "@reduxjs/toolkit";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../helpers/EnhancedState";
 
-interface DashboardMessageState {
-  dismissed: boolean;
-}
-
-const initialState: DashboardMessageState = {
-  dismissed: false,
-};
-
-export const dashboardMessageSlice = createSlice({
-  name: "dashboardMessage",
-  initialState,
-  reducers: {
-    dismiss: (state) => {
-      state.dismissed = true;
-    },
-  },
-});
+const useAppDispatch: () => AppDispatch = useDispatch;
+export default useAppDispatch;

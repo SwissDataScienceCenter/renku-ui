@@ -17,12 +17,12 @@
  */
 
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import { ResourceClass } from "../../../dataServices/dataServices.types";
 import { ProjectConfig } from "../../../project/Project";
+import { setError } from "../../startSession.slice";
 import { setStorage } from "../../startSessionOptionsSlice";
 import { validateStorageAmount } from "../../utils/sessionOptions.utils";
-import { setError } from "../../startSession.slice";
 
 interface UseDefaultStorageOptionArgs {
   currentSessionClass: ResourceClass | null;
@@ -33,7 +33,7 @@ export default function useDefaultStorageOption({
   currentSessionClass,
   projectConfig,
 }: UseDefaultStorageOptionArgs): void {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Set initial storage if configured
   useEffect(() => {

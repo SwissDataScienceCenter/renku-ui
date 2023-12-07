@@ -23,7 +23,6 @@
  *  NavBar for logged-in and logged-out users.
  */
 
-import { useSelector } from "react-redux";
 import { Link, Route, Switch } from "react-router-dom";
 import { Nav, Navbar } from "reactstrap";
 
@@ -34,13 +33,14 @@ import LoggedInNavBar from "../components/navbar/LoggedInNavBar";
 import { RENKU_LOGO } from "../components/navbar/navbar.constans";
 import { parseChartVersion } from "../help/HelpRelease";
 import { Links } from "../utils/constants/Docs";
+import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../utils/helpers/url";
 
 import "./NavBar.css";
 
 function RenkuNavBar(props) {
   const { user } = props;
-  const projectMetadata = useSelector(
+  const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
   const sessionShowUrl = Url.get(Url.pages.project.session.show, {
@@ -108,10 +108,10 @@ function FooterNavbarLoggedInLinks({ privacyLink }) {
 }
 
 function FooterNavbar({ location, params }) {
-  const projectMetadata = useSelector(
+  const projectMetadata = useLegacySelector(
     (state) => state.stateModel.project?.metadata
   );
-  const user = useSelector((state) => state.stateModel.user);
+  const user = useLegacySelector((state) => state.stateModel.user);
   const sessionShowUrl = Url.get(Url.pages.project.session.show, {
     namespace: projectMetadata["namespace"],
     path: projectMetadata["path"],
