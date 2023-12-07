@@ -44,10 +44,7 @@ import {
   useAddCloudStorageForProjectMutation,
   useUpdateCloudStorageMutation,
 } from "./projectCloudStorage.api";
-import {
-  CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
-  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-} from "./projectCloudStorage.constants";
+import { CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER } from "./projectCloudStorage.constants";
 import {
   CloudStorage,
   CloudStorageCredential,
@@ -676,27 +673,29 @@ export function AddCloudStorageCredentialsStep({
     name: "requiredCredentials",
   });
   const onSubmit = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (data: AddCloudStorageCredentialsForm) => {
-      const updateConfig = data.requiredCredentials.reduce(
-        (prev, { name, requiredCredential }) => ({
-          ...prev,
-          ...(requiredCredential
-            ? { [name]: CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN }
-            : {}),
-        }),
-        {} as Record<string, string>
-      );
+      return;
+      // const updateConfig = data.requiredCredentials.reduce(
+      //   (prev, { name, requiredCredential }) => ({
+      //     ...prev,
+      //     ...(requiredCredential
+      //       ? { [name]: CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN }
+      //       : {}),
+      //   }),
+      //   {} as Record<string, string>
+      // );
 
-      updateCloudStorage({
-        project_id,
-        storage_id,
-        configuration: {
-          ...configuration,
-          ...updateConfig,
-        },
-      });
+      // updateCloudStorage({
+      //   project_id,
+      //   storage_id,
+      //   configuration: {
+      //     ...configuration,
+      //     ...updateConfig,
+      //   },
+      // });
     },
-    [configuration, project_id, storage_id, updateCloudStorage]
+    [configuration, project_id, storage_id, updateCloudStorage] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   useEffect(() => {

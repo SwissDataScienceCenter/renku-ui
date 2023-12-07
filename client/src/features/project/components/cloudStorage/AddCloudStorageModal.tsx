@@ -43,8 +43,10 @@ import { StateModelProject } from "../../Project";
 import {
   useAddCloudStorageForProjectMutation,
   useGetCloudStorageSchemaQuery,
+  useUpdateCloudStorageMutation,
 } from "./projectCloudStorage.api";
 import {
+  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
   CLOUD_STORAGE_TOTAL_STEPS,
   EMPTY_CLOUD_STORAGE_DETAILS,
   EMPTY_CLOUD_STORAGE_STATE,
@@ -55,6 +57,8 @@ import {
   CloudStorage,
   CloudStorageDetails,
   CloudStorageDetailsOptions,
+  CloudStorageSchema,
+  UpdateCloudStorageParams,
 } from "./projectCloudStorage.types";
 import {
   getCurrentStorageDetails,
@@ -64,6 +68,15 @@ import { SuccessAlert } from "../../../../components/Alert";
 
 import styles from "./AddCloudStorageButton.module.scss";
 import AddCloudStorage from "./AddCloudStorage";
+
+function findSensitive(schema: CloudStorageSchema | undefined): string[] {
+  if (!schema) return [];
+  return schema.options
+    ? schema.options
+        .filter((o) => o.ispassword || o.sensitive) // eslint-disable-line spellcheck/spell-checker
+        .map((o) => o.name)
+    : [];
+}
 
 interface AddCloudStorageModalProps {
   currentStorage?: CloudStorage | null;
@@ -105,12 +118,17 @@ export default function AddCloudStorageModal({
     const cloudStorageState: AddCloudStorageState = storageId
       ? {
           ...EMPTY_CLOUD_STORAGE_STATE,
-          step: 2,
+          step: CLOUD_STORAGE_TOTAL_STEPS,
           completedSteps: CLOUD_STORAGE_TOTAL_STEPS,
         }
       : EMPTY_CLOUD_STORAGE_STATE;
+    // // const currentSensitiveFields =
+    // //   storageId && currentStorage?.sensitive_fields
+    // //     ? currentStorage.sensitive_fields.map((field) => field.name)
+    // //     : [];
     setStorageDetails(cloudStorageDetails);
     setState(cloudStorageState);
+    // // setSensitiveFields(currentSensitiveFields);
   }, [storageId]); // eslint-disable-line react-hooks/exhaustive-deps
   // ? storageId depends on the currentStorage
 
@@ -121,6 +139,7 @@ export default function AddCloudStorageModal({
   const [storageDetails, setStorageDetails] = useState<CloudStorageDetails>(
     EMPTY_CLOUD_STORAGE_DETAILS
   );
+  // // const [sensitiveFields, setSensitiveFields] = useState<string[]>([]);
 
   // Enhanced setters
   const setStateSafe = (newState: Partial<AddCloudStorageState>) => {
@@ -156,6 +175,10 @@ export default function AddCloudStorageModal({
   };
 
   // Reset
+  const [redraw, setRedraw] = useState(false);
+  useEffect(() => {
+    if (redraw) setRedraw(false);
+  }, [redraw]);
   const reset = () => {
     const resetStatus = getCurrentStorageDetails(currentStorage);
     setState(
@@ -169,6 +192,7 @@ export default function AddCloudStorageModal({
     );
     setStorageDetails({ ...resetStatus }); // this might not work on the non-registered useForm fields
     if (success) setSuccess(false);
+    setRedraw(true); // This forces re-loading the useForm fields
   };
 
   // Mutations
@@ -176,11 +200,12 @@ export default function AddCloudStorageModal({
     RootStateOrAny,
     StateModelProject["metadata"]["id"]
   >((state) => state.stateModel.project.metadata.id);
-  const [addCloudStorageForProject, result] =
+  const [addCloudStorageForProject, addResult] =
     useAddCloudStorageForProjectMutation();
-  const addStorage = () => {
-    // ! TODO: make this add or edit
+  const [modifyCloudStorageForProject, modifyResult] =
+    useUpdateCloudStorageMutation();
 
+  const addStorage = () => {
     storageDetails.options;
 
     const storageParameters: AddCloudStorageForProjectParams = {
@@ -205,12 +230,19 @@ export default function AddCloudStorageModal({
       Object.keys(storageDetails.options).length > 0
     ) {
       const allOptions = storageDetails.options as CloudStorageDetailsOptions;
+      const sensitiveFields = schema
+        ? findSensitive(schema.find((s) => s.prefix === storageDetails.schema))
+        : currentStorage?.sensitive_fields
+        ? currentStorage.sensitive_fields.map((field) => field.name)
+        : [];
       const validOptions = Object.keys(
         storageDetails.options
       ).reduce<CloudStorageDetailsOptions>((options, key) => {
         const value = allOptions[key];
         if (value != undefined && value !== "") {
-          options[key] = value;
+          options[key] = sensitiveFields.includes(key)
+            ? CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN
+            : value;
         }
         return options;
       }, {});
@@ -222,11 +254,23 @@ export default function AddCloudStorageModal({
     }
 
     // We manually set success only when we get an ID back. That's just to sho a success message
-    addCloudStorageForProject(storageParameters).then((result) => {
-      if ("data" in result && result.data.storage.storage_id) {
-        setSuccess(true);
-      }
-    });
+    if (storageId) {
+      const storageParametersWithId: UpdateCloudStorageParams = {
+        ...storageParameters,
+        storage_id: storageId as string,
+      };
+      modifyCloudStorageForProject(storageParametersWithId).then((result) => {
+        if ("data" in result && result.data.storage.storage_id) {
+          setSuccess(true);
+        }
+      });
+    } else {
+      addCloudStorageForProject(storageParameters).then((result) => {
+        if ("data" in result && result.data.storage.storage_id) {
+          setSuccess(true);
+        }
+      });
+    }
   };
 
   const disableContinueButton =
@@ -249,14 +293,17 @@ export default function AddCloudStorageModal({
   const continueButtonId = "add-cloud-storage-next";
 
   const disableAddButton =
-    result.isLoading ||
+    addResult.isLoading ||
+    modifyResult.isLoading ||
     !storageDetails.name ||
     !storageDetails.mountPoint ||
     !storageDetails.schema ||
     (hasProviderShortlist(storageDetails.schema) && !storageDetails.provider);
   const getAddButtonDisableReason = () => {
-    if (result.isLoading) {
-      return "Please wait until the storage is added";
+    if (addResult.isLoading || modifyResult.isLoading) {
+      return `Please wait, the storage is being ${
+        storageId ? "modified" : "added"
+      }`;
     }
     if (!storageDetails.name) {
       return "Please provide a name";
@@ -284,14 +331,14 @@ export default function AddCloudStorageModal({
         disabled={disableAddButton}
         onClick={() => addStorage()}
       >
-        {result.isLoading ? (
+        {addResult.isLoading || modifyResult.isLoading ? (
           <Loader className="me-1" inline size={16} />
         ) : storageId ? (
           <PencilSquare className={cx("bi", "me-1")} />
         ) : (
           <PlusLg className={cx("bi", "me-1")} />
         )}
-        {storageId ? "Edit" : "Add"} storage
+        {storageId ? "Update" : "Add"} storage
       </Button>
       {disableAddButton && (
         <UncontrolledTooltip placement="top" target={`${addButtonId}-div`}>
@@ -325,43 +372,49 @@ export default function AddCloudStorageModal({
     </div>
   );
 
-  const backButton = result.isLoading ? null : state.step === 1 || success ? (
-    <Button className="btn-outline-rk-green" onClick={() => toggle()}>
-      <XLg className={cx("bi", "me-1")} />
-      {success ? "Close" : "Cancel"}
-    </Button>
-  ) : (
-    <Button
-      className="btn-outline-rk-green"
-      onClick={() => {
-        setStateSafe({
-          step: state.step - 1,
-        });
-      }}
-    >
-      <ChevronLeft className={cx("bi", "me-1")} />
-      Back
-    </Button>
-  );
+  const backButton =
+    addResult.isLoading || modifyResult.isLoading ? null : state.step === 1 ||
+      success ? (
+      <Button className="btn-outline-rk-green" onClick={() => toggle()}>
+        <XLg className={cx("bi", "me-1")} />
+        {success ? "Close" : "Cancel"}
+      </Button>
+    ) : (
+      <Button
+        className="btn-outline-rk-green"
+        onClick={() => {
+          setStateSafe({
+            step: state.step - 1,
+          });
+        }}
+      >
+        <ChevronLeft className={cx("bi", "me-1")} />
+        Back
+      </Button>
+    );
 
   const resetButton =
-    result.isLoading || success ? null : (
+    addResult.isLoading || modifyResult.isLoading || success ? null : (
       <Button color="outline-danger" onClick={reset}>
         <ArrowCounterclockwise className={cx("bi", "me-1")} />
         Reset
       </Button>
     );
 
-  const errorMessage = result.error ? (
-    <div className="w-100">
-      <RtkOrNotebooksError error={result.error} />
-    </div>
-  ) : null;
+  const errorMessage =
+    addResult.error || modifyResult.error ? (
+      <div className="w-100">
+        <RtkOrNotebooksError error={addResult.error || modifyResult.error} />
+      </div>
+    ) : null;
 
-  const bodyContent = success ? (
+  const bodyContent = redraw ? (
+    <Loader />
+  ) : success ? (
     <SuccessAlert dismissible={false} timeout={0}>
       <p className="p-0">
-        The storage {result?.data?.storage?.name} has been succesfully added!
+        The storage {addResult?.data?.storage?.name} has been succesfully{" "}
+        {storageId ? "updated" : "added"}.
       </p>
     </SuccessAlert>
   ) : (

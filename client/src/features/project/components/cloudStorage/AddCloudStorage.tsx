@@ -567,7 +567,11 @@ function AddStorageOptions({
             <Controller
               name={o.name}
               control={control}
-              defaultValue={o.convertedDefault ?? ""}
+              defaultValue={
+                storage.options && storage.options[o.name]
+                  ? storage.options[o.name]
+                  : o.convertedDefault ?? ""
+              }
               render={({ field }) => (
                 <input
                   id={o.name}

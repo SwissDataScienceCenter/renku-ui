@@ -184,8 +184,8 @@ function CloudStorageList() {
     }
     const initialCloudStorage: SessionCloudStorage[] = storageForProject.map(
       ({ storage, sensitive_fields }) => ({
-        active: storage.storage_type === "s3" && support === "s3",
-        supported: storage.storage_type === "s3" && support === "s3",
+        active: !!notebooksVersion?.cloudStorageEnabled,
+        supported: !!notebooksVersion?.cloudStorageEnabled,
         ...(sensitive_fields
           ? {
               sensitive_fields: sensitive_fields.map(({ name, ...rest }) => ({
@@ -199,7 +199,12 @@ function CloudStorageList() {
       })
     );
     dispatch(setCloudStorage(initialCloudStorage));
-  }, [dispatch, storageForProject, support]);
+  }, [
+    dispatch,
+    storageForProject,
+    support,
+    notebooksVersion?.cloudStorageEnabled,
+  ]);
 
   if (isLoading) {
     return <Loader />;

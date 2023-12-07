@@ -48,10 +48,7 @@ import {
   useAddCloudStorageForProjectMutation,
   useUpdateCloudStorageMutation,
 } from "./cloudStorage/projectCloudStorage.api";
-import {
-  CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
-  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-} from "./cloudStorage/projectCloudStorage.constants";
+import { CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER } from "./cloudStorage/projectCloudStorage.constants";
 import {
   CloudStorage,
   CloudStorageCredential,
@@ -721,8 +718,9 @@ function AddCloudStorageCredentialsStep({
   toggle,
 }: AddCloudStorageCredentialsStepProps) {
   const { storage } = storageDefinition;
-  const { configuration, name, project_id, storage_id } = storage;
+  const { name } = storage;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [updateCloudStorage, result] = useUpdateCloudStorageMutation();
 
   const { control, handleSubmit } = useForm<AddCloudStorageCredentialsForm>({
@@ -734,29 +732,26 @@ function AddCloudStorageCredentialsStep({
     control,
     name: "requiredCredentials",
   });
-  const onSubmit = useCallback(
-    (data: AddCloudStorageCredentialsForm) => {
-      const updateConfig = data.requiredCredentials.reduce(
-        (prev, { name, requiredCredential }) => ({
-          ...prev,
-          ...(requiredCredential
-            ? { [name]: CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN }
-            : {}),
-        }),
-        {} as Record<string, string>
-      );
-
-      updateCloudStorage({
-        project_id,
-        storage_id,
-        configuration: {
-          ...configuration,
-          ...updateConfig,
-        },
-      });
-    },
-    [configuration, project_id, storage_id, updateCloudStorage]
-  );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const onSubmit = useCallback((data: AddCloudStorageCredentialsForm) => {
+    // const updateConfig = data.requiredCredentials.reduce(
+    //   (prev, { name, requiredCredential }) => ({
+    //     ...prev,
+    //     ...(requiredCredential
+    //       ? { [name]: CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN }
+    //       : {}),
+    //   }),
+    //   {} as Record<string, string>
+    // );
+    // updateCloudStorage({
+    //   project_id,
+    //   storage_id,
+    //   configuration: {
+    //     ...configuration,
+    //     ...updateConfig,
+    //   },
+    // });
+  }, []);
 
   useEffect(() => {
     if (result.isSuccess) {

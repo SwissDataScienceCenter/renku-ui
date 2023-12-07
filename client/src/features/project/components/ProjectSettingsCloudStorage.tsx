@@ -51,6 +51,7 @@ import {
   PopoverBody,
   Row,
   UncontrolledPopover,
+  UncontrolledTooltip,
 } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -69,10 +70,7 @@ import {
   useGetCloudStorageForProjectQuery,
   useUpdateCloudStorageMutation,
 } from "./cloudStorage/projectCloudStorage.api";
-import {
-  CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
-  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-} from "./cloudStorage/projectCloudStorage.constants";
+import { CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER } from "./cloudStorage/projectCloudStorage.constants";
 import {
   CloudStorage,
   CloudStorageConfiguration,
@@ -81,7 +79,6 @@ import {
 import {
   formatCloudStorageConfiguration,
   getCredentialFieldDefinitions,
-  parseCloudStorageConfiguration,
 } from "../utils/projectCloudStorage.utils";
 import AddCloudStorageButton from "./cloudStorage/AddCloudStorageButton";
 import { RootStateOrAny, useSelector } from "react-redux";
@@ -256,6 +253,12 @@ function CloudStorageItem({
 }: CloudStorageItemProps) {
   const { storage } = storageDefinition;
   const { configuration, name, target_path } = storage;
+  const sensitiveFields = storageDefinition.sensitive_fields
+    ? storageDefinition.sensitive_fields?.map((f) => f.name)
+    : [];
+  const anySensitiveField = Object.keys(storage.configuration).some((key) =>
+    sensitiveFields.includes(key)
+  );
 
   const formattedConfiguration = formatCloudStorageConfiguration({
     configuration,
@@ -271,12 +274,25 @@ function CloudStorageItem({
     ? `${configuration.type}/${configuration.provider}`
     : configuration.type;
 
-  const requiresCredentials = storage.private ? (
-    <div className={cx("small", "d-none", "d-sm-block")}>
-      <span>
-        <Key className="bi" /> Requires credentials
+  // const requiresCredentials = anySensitiveField ? (
+  //   <div className={cx("small", "d-none", "d-sm-block")}>
+  //     <span>
+  //       <Key className="bi" /> Requires credentials
+  //     </span>
+  //   </div>
+  // ) : null;
+  const credentialId = `cloud-storage-${storage.storage_id}-credentials`;
+  const requiresCredentials = anySensitiveField ? (
+    <>
+      <span id={credentialId}>
+        <Key className={cx("bi", "me-1")} />
       </span>
-    </div>
+      <UncontrolledTooltip target={credentialId}>
+        <PopoverBody>
+          This cloud storage requires credentials to be used.
+        </PopoverBody>
+      </UncontrolledTooltip>
+    </>
   ) : null;
 
   return (
@@ -297,7 +313,9 @@ function CloudStorageItem({
               onClick={toggle}
               type="button"
             >
-              <div className="fw-bold">{name}</div>
+              <div className="fw-bold">
+                {requiresCredentials} {name}
+              </div>
               <div className={cx("small", "d-none", "d-sm-block")}>
                 <span className="text-rk-text-light">Storage type: </span>
                 <span>{storageType}</span>
@@ -306,7 +324,7 @@ function CloudStorageItem({
                 <span className="text-rk-text-light">Mount point: </span>
                 <span>{target_path}</span>
               </div>
-              {requiresCredentials}
+              {/* {requiresCredentials} */}
               <div className="ms-auto">
                 <ChevronFlippedIcon flipped={isOpen} />
               </div>
@@ -412,7 +430,7 @@ function CloudStorageDetails({
             <div>{configuration[key]}</div>
           </div>
         ))}
-        <div>
+        <div className="mt-2">
           <div className="text-rk-text-light">
             <small>Source path</small>
           </div>
@@ -580,24 +598,14 @@ export function EditCloudStorage({
   storageDefinition,
 }: CloudStorageDetailsProps) {
   const { storage } = storageDefinition;
-  const {
-    configuration,
-    name,
-    readonly,
-    source_path,
-    storage_id,
-    target_path,
-  } = storage;
+  const { name, readonly, source_path, target_path } = storage;
 
   const credentialFieldDefinitions = useMemo(
     () => getCredentialFieldDefinitions(storageDefinition),
     [storageDefinition]
   );
 
-  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
-    (state) => state.stateModel.project.metadata.id
-  );
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [updateCloudStorage, result] = useUpdateCloudStorageMutation();
 
   const {
@@ -621,83 +629,70 @@ export function EditCloudStorage({
     name: "requiredCredentials",
   });
   const onSubmit = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (data: UpdateCloudStorageForm) => {
-      const nameUpdate = name !== data.name ? { name: data.name } : {};
-      const sourcePathUpdate =
-        source_path !== data.source_path
-          ? { source_path: data.source_path }
-          : {};
-      const targetPathUpdate =
-        target_path !== data.target_path
-          ? { target_path: data.target_path }
-          : {};
-      const privateUpdate =
-        storage.private !== data.private ? { private: data.private } : {};
-      const readonlyUpdate =
-        readonly !== data.readonly ? { readonly: data.readonly } : {};
-      const credentialsUpdate = data.private
-        ? data.requiredCredentials
-            .filter(({ requiredCredential }) => requiredCredential)
-            .reduce(
-              (obj, { name }) => ({
-                ...obj,
-                [name]: CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-              }),
-              {} as Record<string, string>
-            )
-        : {};
-      const parsedConfiguration =
-        formattedConfiguration !== data.formattedConfiguration
-          ? parseCloudStorageConfiguration(data.formattedConfiguration)
-          : storage.configuration;
-      const sensitiveFields =
-        credentialFieldDefinitions?.map(({ name }) => name) ?? [];
-      const filteredConfiguration = Object.entries(parsedConfiguration)
-        .filter(([key]) => !sensitiveFields.includes(key))
-        .reduce(
-          (obj, [key, value]) => ({ ...obj, [key]: value?.toString() }),
-          {} as Record<string, string | undefined>
-        );
-      const removedKeysConfiguration = Object.keys(configuration)
-        .filter((key) => !sensitiveFields.includes(key))
-        .filter((key) => !Object.keys(filteredConfiguration).includes(key))
-        .reduce(
-          (obj, key) => ({ ...obj, [key]: null }),
-          {} as Record<string, string | undefined | null>
-        );
-      const configurationUpdate = {
-        configuration: {
-          ...filteredConfiguration,
-          ...credentialsUpdate,
-          ...removedKeysConfiguration,
-        },
-      };
-
-      updateCloudStorage({
-        storage_id,
-        project_id: `${projectId}`,
-        ...nameUpdate,
-        ...sourcePathUpdate,
-        ...targetPathUpdate,
-        ...privateUpdate,
-        ...readonlyUpdate,
-        ...configurationUpdate,
-      });
+      // const nameUpdate = name !== data.name ? { name: data.name } : {};
+      // const sourcePathUpdate =
+      //   source_path !== data.source_path
+      //     ? { source_path: data.source_path }
+      //     : {};
+      // const targetPathUpdate =
+      //   target_path !== data.target_path
+      //     ? { target_path: data.target_path }
+      //     : {};
+      // const privateUpdate =
+      //   storage.private !== data.private ? { private: data.private } : {};
+      // const readonlyUpdate =
+      //   readonly !== data.readonly ? { readonly: data.readonly } : {};
+      // const credentialsUpdate = data.private
+      //   ? data.requiredCredentials
+      //       .filter(({ requiredCredential }) => requiredCredential)
+      //       .reduce(
+      //         (obj, { name }) => ({
+      //           ...obj,
+      //           [name]: CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
+      //         }),
+      //         {} as Record<string, string>
+      //       )
+      //   : {};
+      // const parsedConfiguration =
+      //   formattedConfiguration !== data.formattedConfiguration
+      //     ? parseCloudStorageConfiguration(data.formattedConfiguration)
+      //     : storage.configuration;
+      // const sensitiveFields =
+      //   credentialFieldDefinitions?.map(({ name }) => name) ?? [];
+      // const filteredConfiguration = Object.entries(parsedConfiguration)
+      //   .filter(([key]) => !sensitiveFields.includes(key))
+      //   .reduce(
+      //     (obj, [key, value]) => ({ ...obj, [key]: value?.toString() }),
+      //     {} as Record<string, string | undefined>
+      //   );
+      // const removedKeysConfiguration = Object.keys(configuration)
+      //   .filter((key) => !sensitiveFields.includes(key))
+      //   .filter((key) => !Object.keys(filteredConfiguration).includes(key))
+      //   .reduce(
+      //     (obj, key) => ({ ...obj, [key]: null }),
+      //     {} as Record<string, string | undefined | null>
+      //   );
+      // const configurationUpdate = {
+      //   configuration: {
+      //     ...filteredConfiguration,
+      //     ...credentialsUpdate,
+      //     ...removedKeysConfiguration,
+      //   },
+      // };
+      // updateCloudStorage({
+      //   storage_id,
+      //   project_id: `${projectId}`,
+      //   ...nameUpdate,
+      //   ...sourcePathUpdate,
+      //   ...targetPathUpdate,
+      //   ...privateUpdate,
+      //   ...readonlyUpdate,
+      //   ...configurationUpdate,
+      // });
     },
-    [
-      configuration,
-      credentialFieldDefinitions,
-      formattedConfiguration,
-      name,
-      projectId,
-      readonly,
-      source_path,
-      storage.configuration,
-      storage.private,
-      storage_id,
-      target_path,
-      updateCloudStorage,
-    ]
+    []
   );
 
   const watchPrivateToggle = watch("private");
