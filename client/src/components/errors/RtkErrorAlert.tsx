@@ -21,10 +21,7 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 
 import { ErrorAlert, RenkuAlert } from "../Alert";
 import { CoreErrorAlert } from "./CoreErrorAlert";
-import {
-  CoreErrorContent,
-  CoreErrorResponse,
-} from "../../utils/types/coreService.types";
+import { CoreErrorResponse } from "../../utils/types/coreService.types";
 import { extractTextFromObject } from "../../utils/helpers/TextUtils";
 import { UpdateProjectResponse } from "../../features/project/Project";
 import { NotebooksErrorResponse } from "../../utils/types/notebooksService.types";

@@ -80,13 +80,11 @@ function findSensitive(schema: CloudStorageSchema | undefined): string[] {
 
 interface AddCloudStorageModalProps {
   currentStorage?: CloudStorage | null;
-  key: string;
   isOpen: boolean;
   toggle: () => void;
 }
 export default function AddCloudStorageModal({
   currentStorage = null,
-  key,
   isOpen,
   toggle: originalToggle,
 }: AddCloudStorageModalProps) {
@@ -435,7 +433,7 @@ export default function AddCloudStorageModal({
       centered
       className={styles.modal}
       fullscreen="lg"
-      id={key ?? "new-cloud-storage"}
+      id={currentStorage?.storage.storage_id ?? "new-cloud-storage"}
       isOpen={isOpen}
       scrollable
       size="lg"

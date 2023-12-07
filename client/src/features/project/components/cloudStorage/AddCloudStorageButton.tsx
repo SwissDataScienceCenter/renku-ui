@@ -99,7 +99,6 @@ export default function AddCloudStorageButton({
       <div id={`${localId}-modal`} key={`${localId}-key`}>
         <AddCloudStorageModal
           currentStorage={currentStorage}
-          key={currentStorage?.storage.storage_id ?? ""}
           isOpen={isOpen}
           toggle={toggle}
         />
