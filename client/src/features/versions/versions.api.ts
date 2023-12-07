@@ -80,7 +80,7 @@ export const versionsApi = createApi({
     }),
     getKgVersion: builder.query<KgVersion, void>({
       query: () => {
-        return { url: "knowledge-graph/version" };
+        return { url: "kg/version" };
       },
       transformResponse: (response: KgVersionResponse) => {
         // We assume there is only one version.
