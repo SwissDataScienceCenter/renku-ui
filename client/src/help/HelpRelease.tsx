@@ -91,11 +91,11 @@ function KgRelease() {
   if (isFetching) {
     return <Loader inline size={16} />;
   }
-  const notebooksVersion = data?.version;
-  const { taggedVersion, devHash } = parseChartVersion(notebooksVersion);
+  const kgVersion = data?.version;
+  const { taggedVersion, devHash } = parseChartVersion(kgVersion);
   return (
     <ComponentAndDevVersion
-      componentUrl={RenkuRepositories.Notebooks}
+      componentUrl={RenkuRepositories.KnowledgeGraph}
       devHash={devHash}
       taggedVersion={taggedVersion}
     />
