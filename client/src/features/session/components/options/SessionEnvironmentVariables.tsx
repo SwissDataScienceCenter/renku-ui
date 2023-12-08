@@ -21,22 +21,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { ChangeEvent, useCallback, useMemo } from "react";
 import { PlusLg } from "react-bootstrap-icons";
-import { useDispatch } from "react-redux";
 import { Button, Col, Input, Row } from "reactstrap";
+
 import { ErrorLabel } from "../../../../components/formlabels/FormLabels";
+import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import {
   addEnvironmentVariable,
   removeEnvironmentVariable,
   updateEnvironmentVariable,
-  useStartSessionOptionsSelector,
 } from "../../startSessionOptionsSlice";
 
 export default function SessionEnvironmentVariables() {
-  const environmentVariables = useStartSessionOptionsSelector(
-    ({ environmentVariables }) => environmentVariables
+  const environmentVariables = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.environmentVariables
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const onAddEnvironmentVariable = useCallback(() => {
     dispatch(addEnvironmentVariable());
   }, [dispatch]);
@@ -88,8 +89,8 @@ interface EnvironmentVariableProps {
 }
 
 function EnvironmentVariable({ index, name, value }: EnvironmentVariableProps) {
-  const environmentVariables = useStartSessionOptionsSelector(
-    ({ environmentVariables }) => environmentVariables
+  const environmentVariables = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.environmentVariables
   );
 
   const hasDuplicate = useMemo(
@@ -100,7 +101,7 @@ function EnvironmentVariable({ index, name, value }: EnvironmentVariableProps) {
     [environmentVariables, name]
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const onRemove = useCallback(() => {
     dispatch(removeEnvironmentVariable({ index }));
   }, [dispatch, index]);

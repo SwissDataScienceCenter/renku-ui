@@ -19,19 +19,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useContext } from "react";
-import { useDispatch } from "react-redux";
 
 import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
-import {
-  setFiles,
-  useDatasetFormSelector,
-} from "../../features/project/dataset";
-import type { DatasetFormState } from "../../features/project/dataset";
 
-import DropzoneFileUploader, { FILE_STATUS } from "./DropzoneFileUploader";
 import { IDatasetFiles } from "../../features/project/Project";
+import type { DatasetFormState } from "../../features/project/dataset";
+import { setFiles } from "../../features/project/dataset";
 import AppContext from "../../utils/context/appContext";
 import { DEFAULT_APP_PARAMS } from "../../utils/context/appParams.constants";
+import useAppDispatch from "../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
+import DropzoneFileUploader, { FILE_STATUS } from "./DropzoneFileUploader";
 
 type NotificationFunctionArgs = {
   dataset: any;
@@ -94,10 +92,10 @@ function FileUploaderInput(props: FileUploaderInputProps) {
   const uploadThresholdSoft =
     params?.UPLOAD_THRESHOLD.soft ?? DEFAULT_APP_PARAMS.UPLOAD_THRESHOLD.soft;
 
-  const datasetUploaderFiles = useDatasetFormSelector(
-    (state) => state.form.files
+  const datasetUploaderFiles = useAppSelector(
+    ({ datasetForm }) => datasetForm.form.files
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { setValue } = props;
   const setDisplayFiles = React.useCallback(
     (files: DatasetFormState["form"]["files"]) => {

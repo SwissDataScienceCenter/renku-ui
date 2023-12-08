@@ -50,7 +50,7 @@ import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
 import keycloakUserApi from "../../features/user/keycloakUser.api";
 import userPreferencesApi from "../../features/user/userPreferences.api";
-import { versionsApi } from "../../features/versions/versionsApi";
+import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 
@@ -88,7 +88,6 @@ export const createStore = <S = any, A extends Action = AnyAction>(
     [userPreferencesApi.reducerPath]: userPreferencesApi.reducer,
     [versionsApi.reducerPath]: versionsApi.reducer,
     [workflowsApi.reducerPath]: workflowsApi.reducer,
-    [workflowsSlice.name]: workflowsSlice.reducer,
   };
 
   // For the moment, disable the custom middleware, since it causes problems for our app.
@@ -122,6 +121,19 @@ export const createStore = <S = any, A extends Action = AnyAction>(
   });
   return store;
 };
+
+type StoreType = ReturnType<typeof createStore>;
+
+export type StrictRootState = ReturnType<StoreType["getState"]>;
+
+export type LegacyRootState = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  stateModel: any;
+};
+
+export type RootState = StrictRootState & LegacyRootState;
+
+export type AppDispatch = StoreType["dispatch"];
 
 // TODO: Introduce a mock store for testing
 // import configureMockStore from 'redux-mock-store'

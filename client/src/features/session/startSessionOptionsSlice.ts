@@ -17,7 +17,6 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createSliceSelector } from "../../utils/customHooks/UseSliceSelector";
 import { MIN_SESSION_STORAGE_GB } from "./startSessionOptions.constants";
 import {
   DockerImageBuildStatus,
@@ -145,7 +144,3 @@ export const {
   updateEnvironmentVariable,
   reset,
 } = startSessionOptionsSlice.actions;
-
-export const useStartSessionOptionsSelector = createSliceSelector(
-  startSessionOptionsSlice
-);
