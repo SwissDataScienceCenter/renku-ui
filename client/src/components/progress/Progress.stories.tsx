@@ -20,7 +20,7 @@ import { Meta, StoryObj } from "@storybook/react";
 import ProgressIndicator, { ProgressStyle, ProgressType } from "./Progress";
 
 const meta: Meta<typeof ProgressIndicator> = {
-  title: "components/ProgressIndicator",
+  title: "components/Loaders/ProgressIndicator",
   component: ProgressIndicator,
   argTypes: {
     title: {
