@@ -537,39 +537,6 @@ function ConfirmDeleteModal({
   );
 }
 
-// interface UnsavedWorkWarningProps {
-//   annotations: NotebookAnnotations;
-//   status: SessionStatusState;
-// }
-
-// function UnsavedWorkWarning({ annotations, status }: UnsavedWorkWarningProps) {
-//   const hasHibernationInfo = !!annotations["hibernationDate"];
-//   const hasUnsavedWork =
-//     !hasHibernationInfo ||
-//     annotations["hibernationDirty"] ||
-//     !annotations["hibernationSynchronized"];
-
-//   if (!hasUnsavedWork) {
-//     return null;
-//   }
-
-//   const explanation = !hasHibernationInfo
-//     ? "uncommitted files and/or unsynced commits"
-//     : annotations["hibernationDirty"] && !annotations["hibernationSynchronized"]
-//     ? "uncommitted files and unsynced commits"
-//     : annotations["hibernationDirty"]
-//     ? "uncommitted files"
-//     : "unsynced commits";
-
-//   return (
-//     <WarnAlert dismissible={false}>
-//       You {status !== "hibernated" && <>may </>} have unsaved work {"("}
-//       {explanation}
-//       {")"} in this session
-//     </WarnAlert>
-//   );
-// }
-
 function addErrorNotification({
   error,
   notifications,
