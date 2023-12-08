@@ -22,17 +22,9 @@ import cx from "classnames";
 import { Duration } from "luxon";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Redirect } from "react-router";
-import {
-  Button,
-  Col,
-  FormText,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  Row,
-} from "reactstrap";
+import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-import { InfoAlert, WarnAlert } from "../../../components/Alert";
+import { InfoAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/RenkuModels";
 import { NotebooksHelper } from "../../../notebooks";
@@ -49,6 +41,7 @@ import {
 } from "../sessions.api";
 import { Session } from "../sessions.types";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
+import UnsavedWorkWarning from "./UnsavedWorkWarning";
 
 import styles from "./SessionModals.module.scss";
 
@@ -77,7 +70,6 @@ export default function PauseOrDeleteSessionModal({
     return (
       <AnonymousDeleteSessionModal
         isOpen={isOpen}
-        session={session}
         sessionName={sessionName}
         toggleModal={toggleModal}
       />
@@ -96,9 +88,9 @@ export default function PauseOrDeleteSessionModal({
   );
 }
 
-type AnonymousDeleteSessionModalProps = Omit<
+type AnonymousDeleteSessionModalProps = Pick<
   PauseOrDeleteSessionModalProps,
-  "action" | "toggleAction"
+  "isOpen" | "sessionName" | "toggleModal"
 >;
 function AnonymousDeleteSessionModal({
   isOpen,
@@ -150,13 +142,6 @@ function AnonymousDeleteSessionModal({
         <Row>
           <Col>
             <p>Are you sure you want to delete this session?</p>
-            {isStopping ? (
-              <FormText color="primary">
-                <Loader className="me-1" inline size={16} />
-                Deleting Session
-                <br />
-              </FormText>
-            ) : null}
             <div className="d-flex justify-content-end">
               <Button
                 className={cx("float-right", "mt-1", "btn-outline-rk-green")}
@@ -172,7 +157,14 @@ function AnonymousDeleteSessionModal({
                 type="submit"
                 onClick={onStopSession}
               >
-                Delete Session
+                {isStopping ? (
+                  <>
+                    <Loader className="me-2" inline size={16} />
+                    Deleting session
+                  </>
+                ) : (
+                  <>Delete Session</>
+                )}
               </Button>
             </div>
           </Col>
@@ -329,11 +321,11 @@ function PauseSessionModalBody({
         </Col>
       </Row>
     </ModalBody>
-    // </Modal>
   );
 }
 
 function DeleteSessionModalBody({
+  session,
   sessionName,
   toggleAction,
   toggleModal,
@@ -376,21 +368,27 @@ function DeleteSessionModalBody({
     return <Redirect push to={sessionsListUrl} />;
   }
 
+  const annotations = session
+    ? (NotebooksHelper.cleanAnnotations(
+        session.annotations
+      ) as NotebookAnnotations)
+    : null;
+
   return (
-    // <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
-    //   <ModalHeader toggle={toggleModal}>Delete Session</ModalHeader>
     <ModalBody>
       <Row>
         <Col>
           <p>Are you sure you want to delete this session?</p>
-          <WarnAlert dismissible={false}>TODO: Losing work alert...</WarnAlert>
-          {isStopping ? (
-            <FormText color="primary">
-              <Loader className="me-1" inline size={16} />
-              Deleting Session
-              <br />
-            </FormText>
-          ) : null}
+          <p className="fw-bold">
+            Deleting a session will permanently remove any unsaved work.
+          </p>
+          {session != null && annotations != null && (
+            <UnsavedWorkWarning
+              annotations={annotations}
+              sessionName={sessionName}
+              status={session.status.state}
+            />
+          )}
           <div className="my-2">
             <Button
               className={cx("float-right", "p-0")}
@@ -416,13 +414,19 @@ function DeleteSessionModalBody({
               type="submit"
               onClick={onStopSession}
             >
-              Delete Session
+              {isStopping ? (
+                <>
+                  <Loader className="me-2" inline size={16} />
+                  Deleting session
+                </>
+              ) : (
+                <>Delete Session</>
+              )}
             </Button>
           </div>
         </Col>
       </Row>
     </ModalBody>
-    // </Modal>
   );
 }
 

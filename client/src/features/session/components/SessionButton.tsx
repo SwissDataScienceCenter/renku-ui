@@ -39,7 +39,6 @@ import {
   Row,
 } from "reactstrap";
 
-import { WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
 import SessionPausedIcon from "../../../components/icons/SessionPausedIcon";
@@ -65,6 +64,7 @@ import { Session, SessionStatusState } from "../sessions.types";
 import { getRunningSession } from "../sessions.utils";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
 import SimpleSessionButton from "./SimpleSessionButton";
+import UnsavedWorkWarning from "./UnsavedWorkWarning";
 
 interface SessionButtonProps {
   className?: string;
@@ -463,6 +463,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
         isOpen={showModalStopSession}
         isStopping={isStopping}
         onStopSession={onStopSession}
+        sessionName={session.name}
         status={status}
         toggleModal={toggleStopSession}
       />
@@ -475,6 +476,7 @@ interface ConfirmDeleteModalProps {
   isOpen: boolean;
   isStopping: boolean;
   onStopSession: () => void;
+  sessionName: string;
   status: SessionStatusState;
   toggleModal: () => void;
 }
@@ -484,6 +486,7 @@ function ConfirmDeleteModal({
   isOpen,
   isStopping,
   onStopSession,
+  sessionName,
   status,
   toggleModal,
 }: ConfirmDeleteModalProps) {
@@ -504,7 +507,11 @@ function ConfirmDeleteModal({
             <p className="fw-bold">
               Deleting a session will permanently remove any unsaved work.
             </p>
-            <UnsavedWorkWarning annotations={annotations} status={status} />
+            <UnsavedWorkWarning
+              annotations={annotations}
+              sessionName={sessionName}
+              status={status}
+            />
             <div className="d-flex justify-content-end">
               <Button
                 className={cx("float-right", "mt-1", "btn-outline-rk-green")}
@@ -530,38 +537,38 @@ function ConfirmDeleteModal({
   );
 }
 
-interface UnsavedWorkWarningProps {
-  annotations: NotebookAnnotations;
-  status: SessionStatusState;
-}
+// interface UnsavedWorkWarningProps {
+//   annotations: NotebookAnnotations;
+//   status: SessionStatusState;
+// }
 
-function UnsavedWorkWarning({ annotations, status }: UnsavedWorkWarningProps) {
-  const hasHibernationInfo = !!annotations["hibernationDate"];
-  const hasUnsavedWork =
-    !hasHibernationInfo ||
-    annotations["hibernationDirty"] ||
-    !annotations["hibernationSynchronized"];
+// function UnsavedWorkWarning({ annotations, status }: UnsavedWorkWarningProps) {
+//   const hasHibernationInfo = !!annotations["hibernationDate"];
+//   const hasUnsavedWork =
+//     !hasHibernationInfo ||
+//     annotations["hibernationDirty"] ||
+//     !annotations["hibernationSynchronized"];
 
-  if (!hasUnsavedWork) {
-    return null;
-  }
+//   if (!hasUnsavedWork) {
+//     return null;
+//   }
 
-  const explanation = !hasHibernationInfo
-    ? "uncommitted files and/or unsynced commits"
-    : annotations["hibernationDirty"] && !annotations["hibernationSynchronized"]
-    ? "uncommitted files and unsynced commits"
-    : annotations["hibernationDirty"]
-    ? "uncommitted files"
-    : "unsynced commits";
+//   const explanation = !hasHibernationInfo
+//     ? "uncommitted files and/or unsynced commits"
+//     : annotations["hibernationDirty"] && !annotations["hibernationSynchronized"]
+//     ? "uncommitted files and unsynced commits"
+//     : annotations["hibernationDirty"]
+//     ? "uncommitted files"
+//     : "unsynced commits";
 
-  return (
-    <WarnAlert dismissible={false}>
-      You {status !== "hibernated" && <>may </>} have unsaved work {"("}
-      {explanation}
-      {")"} in this session
-    </WarnAlert>
-  );
-}
+//   return (
+//     <WarnAlert dismissible={false}>
+//       You {status !== "hibernated" && <>may </>} have unsaved work {"("}
+//       {explanation}
+//       {")"} in this session
+//     </WarnAlert>
+//   );
+// }
 
 function addErrorNotification({
   error,
