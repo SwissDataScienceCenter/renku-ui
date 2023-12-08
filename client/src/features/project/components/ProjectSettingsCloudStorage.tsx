@@ -241,13 +241,19 @@ function CloudStorageList({
 }
 
 interface CloudStorageItemProps {
+  children?: React.ReactNode;
   devAccess: boolean;
+  disabled?: boolean;
+  noEdit?: string;
   storageDefinition: CloudStorage;
 }
 
 // ! TODO: move this to a separate file
-function CloudStorageItem({
+export function CloudStorageItem({
+  children,
   devAccess,
+  disabled,
+  noEdit,
   storageDefinition,
 }: CloudStorageItemProps) {
   const { storage } = storageDefinition;
@@ -273,13 +279,6 @@ function CloudStorageItem({
     ? `${configuration.type}/${configuration.provider}`
     : configuration.type;
 
-  // const requiresCredentials = anySensitiveField ? (
-  //   <div className={cx("small", "d-none", "d-sm-block")}>
-  //     <span>
-  //       <Key className="bi" /> Requires credentials
-  //     </span>
-  //   </div>
-  // ) : null;
   const credentialId = `cloud-storage-${storage.storage_id}-credentials`;
   const requiresCredentials = anySensitiveField ? (
     <>
@@ -287,32 +286,37 @@ function CloudStorageItem({
         <Key className={cx("bi", "me-1")} />
       </span>
       <UncontrolledTooltip target={credentialId}>
-        <PopoverBody>
-          This cloud storage requires credentials to be used.
-        </PopoverBody>
+        <PopoverBody>This cloud storage requires credentials.</PopoverBody>
       </UncontrolledTooltip>
     </>
   ) : null;
 
+  const additionalElement = children ? (
+    <CardBody className={cx("border-top", "py-2")}>{children}</CardBody>
+  ) : null;
   return (
     <Col>
       <Card>
         <CardBody className="p-0">
           <h3 className={cx("fs-6", "m-0")}>
-            <button
+            <div
               className={cx(
                 "d-flex",
                 "gap-3",
                 "align-items-center",
                 "w-100",
-                "p-3",
-                "bg-transparent",
-                "border-0"
+                "p-3"
               )}
-              onClick={toggle}
-              type="button"
             >
-              <div className="fw-bold">
+              <div
+                className={cx(
+                  "fw-bold",
+                  disabled && [
+                    "text-decoration-line-through",
+                    "text-rk-text-light",
+                  ]
+                )}
+              >
                 {requiresCredentials} {name}
               </div>
               <div className={cx("small", "d-none", "d-sm-block")}>
@@ -321,20 +325,44 @@ function CloudStorageItem({
               </div>
               <div className={cx("small", "d-none", "d-sm-block")}>
                 <span className="text-rk-text-light">Mount point: </span>
-                <span>{target_path}</span>
+                {disabled ? (
+                  <span className="fst-italic">Not mounted</span>
+                ) : (
+                  <span>{target_path}</span>
+                )}
               </div>
-              {/* {requiresCredentials} */}
-              <div className="ms-auto">
-                <ChevronFlippedIcon flipped={isOpen} />
-              </div>
-            </button>
+            </div>
           </h3>
         </CardBody>
+
+        {additionalElement}
+
+        <CardBody className="p-0 border-top">
+          <button
+            className={cx(
+              "d-flex",
+              "w-100",
+              "px-3",
+              "py-2",
+              "bg-transparent",
+              "border-0"
+            )}
+            onClick={toggle}
+            type="button"
+          >
+            <div>More details</div>
+            <div className="ms-auto">
+              <ChevronFlippedIcon flipped={isOpen} />
+            </div>
+          </button>
+        </CardBody>
+
         <Collapse isOpen={isOpen}>
           <CardBody className="pt-0">
             <CloudStorageDetails
               devAccess={devAccess}
               formattedConfiguration={formattedConfiguration}
+              noEdit={noEdit}
               storageDefinition={storageDefinition}
             />
           </CardBody>
@@ -347,6 +375,7 @@ function CloudStorageItem({
 interface CloudStorageDetailsProps {
   devAccess: boolean;
   formattedConfiguration: string;
+  noEdit?: string;
   storageDefinition: CloudStorage;
 }
 
@@ -362,6 +391,7 @@ interface UpdateCloudStorageForm {
 
 function CloudStorageDetails({
   devAccess,
+  noEdit,
   storageDefinition,
 }: CloudStorageDetailsProps) {
   const { storage } = storageDefinition;
@@ -379,29 +409,30 @@ function CloudStorageDetails({
     [credentialFieldDefinitions]
   );
 
-  const editButton = devAccess ? (
-    <AddCloudStorageButton
-      currentStorage={storageDefinition}
-      devAccess={devAccess}
-    />
-  ) : (
-    <div
-      className="d-inline-block"
-      id={`edit-cloud-storage-${storageDefinition.storage.storage_id}-block`}
-    >
-      <Button color="outline-secondary" disabled={true}>
-        <PencilSquare className={cx("bi", "me-1")} />
-        Edit
-      </Button>
-      <UncontrolledPopover
-        target={`edit-cloud-storage-${storageDefinition.storage.storage_id}-block`}
+  const editButton =
+    noEdit || !devAccess ? (
+      <div
+        className="d-inline-block"
+        id={`edit-cloud-storage-${storageDefinition.storage.storage_id}-block`}
       >
-        <PopoverBody>
-          Only developers and maintainers can edit cloud storage settings.
-        </PopoverBody>
-      </UncontrolledPopover>
-    </div>
-  );
+        <Button color="outline-secondary" disabled={true}>
+          <PencilSquare className={cx("bi", "me-1")} />
+          Edit
+        </Button>
+        <UncontrolledTooltip
+          target={`edit-cloud-storage-${storageDefinition.storage.storage_id}-block`}
+        >
+          {!devAccess
+            ? "Only developers and maintainers can edit cloud storage settings."
+            : noEdit}
+        </UncontrolledTooltip>
+      </div>
+    ) : (
+      <AddCloudStorageButton
+        currentStorage={storageDefinition}
+        devAccess={devAccess}
+      />
+    );
 
   return (
     <>

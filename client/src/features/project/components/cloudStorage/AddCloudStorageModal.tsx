@@ -120,13 +120,8 @@ export default function AddCloudStorageModal({
           completedSteps: CLOUD_STORAGE_TOTAL_STEPS,
         }
       : EMPTY_CLOUD_STORAGE_STATE;
-    // // const currentSensitiveFields =
-    // //   storageId && currentStorage?.sensitive_fields
-    // //     ? currentStorage.sensitive_fields.map((field) => field.name)
-    // //     : [];
     setStorageDetails(cloudStorageDetails);
     setState(cloudStorageState);
-    // // setSensitiveFields(currentSensitiveFields);
   }, [storageId]); // eslint-disable-line react-hooks/exhaustive-deps
   // ? storageId depends on the currentStorage
 
@@ -137,7 +132,6 @@ export default function AddCloudStorageModal({
   const [storageDetails, setStorageDetails] = useState<CloudStorageDetails>(
     EMPTY_CLOUD_STORAGE_DETAILS
   );
-  // // const [sensitiveFields, setSensitiveFields] = useState<string[]>([]);
 
   // Enhanced setters
   const setStateSafe = (newState: Partial<AddCloudStorageState>) => {
@@ -208,7 +202,7 @@ export default function AddCloudStorageModal({
     const storageParameters: AddCloudStorageForProjectParams = {
       name: storageDetails.name as string,
       private: false,
-      readonly: false,
+      readonly: storageDetails.readOnly ?? true,
       project_id: `${projectId}`,
       source_path: storageDetails.sourcePath ?? "/",
       target_path: storageDetails.mountPoint as string,

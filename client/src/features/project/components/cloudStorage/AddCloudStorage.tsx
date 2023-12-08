@@ -554,7 +554,7 @@ function AddStorageOptions({
                 id={o.name}
                 type={inputType}
                 {...field}
-                className="form-check-input ms-1"
+                className={cx("form-check-input", "ms-1")}
                 onChange={(e) => {
                   field.onChange(e);
                   onFieldValueChange(o.name, e.target.checked);
@@ -592,9 +592,9 @@ function AddStorageOptions({
               onClick={() => swapShowPassword(o.name)}
             >
               {getPasswordType(o.name) === "password" ? (
-                <EyeSlashFill className={cx("bi")} />
+                <EyeSlashFill className="bi" />
               ) : (
-                <EyeFill className={cx("bi")} />
+                <EyeFill className="bi" />
               )}
               <UncontrolledTooltip
                 placement="top"
@@ -633,7 +633,7 @@ function AddStorageOptions({
             )}
           />
         )}
-        <div className="form-text text-muted">{o.help}</div>
+        <div className={cx("form-text", "text-muted")}>{o.help}</div>
       </div>
     );
   });
@@ -687,7 +687,7 @@ function AddStorageOptions({
           />
         )}
       />
-      <div className="form-text text-muted">
+      <div className={cx("form-text", "text-muted")}>
         {getSourcePathHint(storage.schema)}
       </div>
     </div>
@@ -715,7 +715,7 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
 
   // TODO: add read-only option (if necessary)
 
-  const onFieldValueChange = (field: string, value: string) => {
+  const onFieldValueChange = (field: string, value: string | boolean) => {
     setValue(field, value);
     setStorage({ ...getValues() });
     trigger(field);
@@ -756,7 +756,7 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         <div className="invalid-feedback">
           {errors.name?.message?.toString()}
         </div>
-        <div className="form-text text-muted">
+        <div className={cx("form-text", "text-muted")}>
           This name will help you identify the storage. It should be unique for
           this project and it can only contains letter, numbers, $, _.
         </div>
@@ -789,10 +789,44 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
           rules={{ required: true }}
         />
         <div className="invalid-feedback">Please provide a mount point.</div>
-        <div className="form-text text-muted">
+        <div className={cx("form-text", "text-muted")}>
           This is the name of the folder where you will find your external
           storage in the sessions. You should pick something different from the
           folders used in the projects repository.
+        </div>
+      </div>
+
+      <div className="mb-3">
+        <Label className="form-label" for="add-storage-name">
+          Read-only
+        </Label>
+
+        <Controller
+          name="readOnly"
+          control={control}
+          defaultValue={false}
+          render={({ field }) => (
+            <input
+              id="readOnly"
+              type="checkbox"
+              {...field}
+              className={cx(
+                "form-check-input",
+                "ms-1",
+                errors.readOnly && "is-invalid"
+              )}
+              onChange={(e) => {
+                field.onChange(e);
+                onFieldValueChange("readOnly", e.target.checked);
+              }}
+              checked={storage.readOnly === false ? false : true}
+            />
+          )}
+          rules={{ required: true }}
+        />
+        <div className={cx("form-text", "text-muted")}>
+          Check this box to mount the storage in read-only mode. Use this
+          setting to prevent accidental data modifications.
         </div>
       </div>
     </form>

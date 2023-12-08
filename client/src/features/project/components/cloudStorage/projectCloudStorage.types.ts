@@ -174,4 +174,5 @@ export type CloudStorageDetails = {
   name?: string;
   sourcePath?: string;
   mountPoint?: string;
+  readOnly?: boolean;
 };

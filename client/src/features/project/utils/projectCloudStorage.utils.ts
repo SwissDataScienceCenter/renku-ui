@@ -355,6 +355,7 @@ export function getCurrentStorageDetails(
     name: existingCloudStorage.storage.name,
     mountPoint: existingCloudStorage.storage.target_path,
     sourcePath: existingCloudStorage.storage.source_path,
+    readOnly: existingCloudStorage.storage.readonly,
     provider: existingCloudStorage.storage.configuration.provider
       ? (existingCloudStorage.storage.configuration.provider as string)
       : undefined,

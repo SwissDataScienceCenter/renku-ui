@@ -17,33 +17,19 @@
  */
 
 import cx from "classnames";
-import {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   CloudFill,
-  ExclamationTriangleFill,
   EyeFill,
   EyeSlashFill,
   InfoCircleFill,
-  PencilSquare,
   PlusLg,
-  TrashFill,
   XLg,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import {
   Button,
-  Card,
-  CardBody,
-  Col,
-  Collapse,
   Container,
   Form,
   FormText,
@@ -61,11 +47,13 @@ import {
 } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../../api-client";
-import { ErrorAlert, InfoAlert } from "../../../../components/Alert";
+import { InfoAlert } from "../../../../components/Alert";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
-import { RtkErrorAlert } from "../../../../components/errors/RtkErrorAlert";
-import ChevronFlippedIcon from "../../../../components/icons/ChevronFlippedIcon";
+import {
+  RtkErrorAlert,
+  RtkOrNotebooksError,
+} from "../../../../components/errors/RtkErrorAlert";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
@@ -76,23 +64,16 @@ import {
   useGetCloudStorageForProjectQuery,
   useValidateCloudStorageConfigurationMutation,
 } from "../../../project/components/cloudStorage/projectCloudStorage.api";
-import {
-  CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER,
-  CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN,
-} from "../../../project/components/cloudStorage/projectCloudStorage.constants";
-import {
-  formatCloudStorageConfiguration,
-  getProvidedSensitiveFields,
-  parseCloudStorageConfiguration,
-} from "../../../project/utils/projectCloudStorage.utils";
+import { CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
+import { parseCloudStorageConfiguration } from "../../../project/utils/projectCloudStorage.utils";
 import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
 import { SessionCloudStorage } from "../../startSessionOptions.types";
 import {
   addCloudStorageItem,
-  removeCloudStorageItem,
   setCloudStorage,
   updateCloudStorageItem,
 } from "../../startSessionOptionsSlice";
+import { CloudStorageItem as CloudStorageItemNew } from "../../../project/components/ProjectSettingsCloudStorage";
 
 export default function SessionCloudStorageOption() {
   const { data: notebooksVersion, isLoading } = useGetNotebooksVersionsQuery();
@@ -114,53 +95,43 @@ export default function SessionCloudStorageOption() {
 }
 
 function SessionS3CloudStorageOption() {
-  const { namespace, path } = useLegacySelector<StateModelProject["metadata"]>(
-    (state) => state.stateModel.project.metadata
-  );
-
+  const { accessLevel, namespace, path } = useLegacySelector<
+    StateModelProject["metadata"]
+  >((state) => state.stateModel.project.metadata);
+  const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
   const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
     namespace,
     path,
   });
 
+  const storageSettingsRecommendation = devAccess ? (
+    <div className={cx("form-text", "mt-0", "mb-1")}>
+      It is recommended to configure cloud storage options from the{" "}
+      <Link to={settingsStorageUrl}>Project&apos;s settings</Link>.
+    </div>
+  ) : null;
+
   return (
     <div className="field-group">
       <div className="form-label">Cloud Storage</div>
-      <div className={cx("form-text", "mt-0", "mb-1")}>
-        It is recommended to configure cloud storage options from the{" "}
-        <Link to={settingsStorageUrl}>Project&apos;s settings</Link>.
-      </div>
-      <CloudStorageSection />
+      {storageSettingsRecommendation}
+      <CloudStorageSection devAccess={devAccess} />
     </div>
   );
 }
 
-function CloudStorageSection() {
-  // storageForProject: CloudStorage[];
-
-  // - add button
-  // - list of cloud storage with the Edit button working fine
-
-  return <CloudStorageList />;
+interface CloudStorageListProps {
+  devAccess: boolean;
 }
-
-// ! TODO -- use the same component as in project settings
-// !
-function CloudStorageList() {
-  const { accessLevel, id: projectId } = useLegacySelector<
-    StateModelProject["metadata"]
-  >((state) => state.stateModel.project.metadata);
-
-  const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
-
+function CloudStorageSection({ devAccess }: CloudStorageListProps) {
+  const { id: projectId } = useLegacySelector<StateModelProject["metadata"]>(
+    (state) => state.stateModel.project.metadata
+  );
+  const dispatch = useAppDispatch();
   const cloudStorageList = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.cloudStorage
   );
 
-  const dispatch = useAppDispatch();
-
-  const { data: notebooksVersion } = useGetNotebooksVersionsQuery();
-  // ! TODO: update
   const {
     data: storageForProject,
     error,
@@ -172,11 +143,6 @@ function CloudStorageList() {
     { skip: !devAccess }
   );
 
-  const support = useMemo(
-    () => (notebooksVersion?.cloudStorageEnabled ? "s3" : "none"),
-    [notebooksVersion?.cloudStorageEnabled]
-  );
-
   // Populate session cloud storage from project's settings
   useEffect(() => {
     if (storageForProject == null) {
@@ -184,8 +150,7 @@ function CloudStorageList() {
     }
     const initialCloudStorage: SessionCloudStorage[] = storageForProject.map(
       ({ storage, sensitive_fields }) => ({
-        active: !!notebooksVersion?.cloudStorageEnabled,
-        supported: !!notebooksVersion?.cloudStorageEnabled,
+        active: true,
         ...(sensitive_fields
           ? {
               sensitive_fields: sensitive_fields.map(({ name, ...rest }) => ({
@@ -199,268 +164,129 @@ function CloudStorageList() {
       })
     );
     dispatch(setCloudStorage(initialCloudStorage));
-  }, [
-    dispatch,
-    storageForProject,
-    support,
-    notebooksVersion?.cloudStorageEnabled,
-  ]);
+  }, [dispatch, storageForProject]);
 
-  if (isLoading) {
-    return <Loader />;
+  if (isLoading) return <Loader />;
+
+  if (error) {
+    return <RtkOrNotebooksError error={error} />;
   }
 
-  return (
-    <>
-      {error && (
-        <ErrorAlert>
-          <p className="mb-0">
-            Error: could not load this project&apos;s cloud storage settings.
-          </p>
-        </ErrorAlert>
-      )}
-      {cloudStorageList.length > 0 && (
-        <Container className="p-0" fluid>
-          <Row className={cx("row-cols-1", "gy-2")}>
-            {cloudStorageList.map((storage, index) => (
-              <CloudStorageItem
-                index={index}
-                key={`${storage.name}-${index}`}
-                storage={storage}
-              />
-            ))}
-          </Row>
-        </Container>
-      )}
-      <div className="mt-2">
-        <AddTemporaryCloudStorageButton />
-      </div>
-    </>
-  );
-}
+  if (!cloudStorageList || cloudStorageList.length === 0) {
+    return null;
+  }
 
-interface CloudStorageItemProps {
-  index: number;
-  storage: SessionCloudStorage;
-}
+  const storageList = cloudStorageList.map((storage, index) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { active, sensitive_fields, ...otherStorageProps } = storage;
+    const storageDefinition = {
+      storage: otherStorageProps,
+      sensitive_fields: storage.sensitive_fields,
+    };
+    const localId = `cloud-storage-${storage.name}`;
 
-function CloudStorageItem({ index, storage }: CloudStorageItemProps) {
-  const {
-    active,
-    configuration,
-    name,
-    sensitive_fields,
-    supported,
-    target_path,
-  } = storage;
-
-  const providedSensitiveFields = useMemo(
-    () => getProvidedSensitiveFields(configuration),
-    [configuration]
-  );
-  const requiredSensitiveFields = useMemo(
-    () =>
-      sensitive_fields?.filter(({ name }) =>
-        providedSensitiveFields.includes(name)
-      ),
-    [providedSensitiveFields, sensitive_fields]
-  );
-
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = useCallback(() => {
-    setIsOpen((isOpen) => !isOpen);
-  }, []);
-
-  const dispatch = useAppDispatch();
-
-  const onToggleActive = useCallback(() => {
-    dispatch(
-      updateCloudStorageItem({
-        index,
-        storage: { ...storage, active: !storage.active },
-      })
-    );
-  }, [dispatch, index, storage]);
-  const onChangeCredential = useCallback(
-    (fieldIndex: number) => (event: ChangeEvent<HTMLInputElement>) => {
-      if (sensitive_fields == null) {
-        return;
-      }
-
-      const name = sensitive_fields[fieldIndex].name;
-      const value = event.target.value;
-      const newSensitiveFields = [...sensitive_fields];
-      newSensitiveFields.splice(fieldIndex, 1, {
-        ...sensitive_fields[fieldIndex],
-        name,
-        value,
-      });
+    const onToggleActive = () =>
       dispatch(
         updateCloudStorageItem({
           index,
-          storage: {
-            ...storage,
-            sensitive_fields: newSensitiveFields,
-          },
+          storage: { ...storage, active: !storage.active },
         })
       );
-    },
-    [dispatch, index, sensitive_fields, storage]
-  );
-  const onRemoveItem = useCallback(() => {
-    dispatch(removeCloudStorageItem({ index: index }));
-  }, [dispatch, index]);
+
+    const changeCredential = (name: string, value: string) => {
+      if (sensitive_fields) {
+        const fieldIndex = sensitive_fields.findIndex((f) => f.name === name);
+        const newSensitiveFields = [...sensitive_fields];
+        newSensitiveFields.splice(fieldIndex, 1, {
+          ...sensitive_fields[fieldIndex],
+          name,
+          value,
+        });
+        dispatch(
+          updateCloudStorageItem({
+            index,
+            storage: { ...storage, sensitive_fields: newSensitiveFields },
+          })
+        );
+      }
+    };
+
+    const sensitiveFields =
+      storage.sensitive_fields && storage.sensitive_fields.length
+        ? storage.sensitive_fields.filter((f) => {
+            if (storage.configuration[f.name]) {
+              return true;
+            }
+          })
+        : null;
+
+    const requiredSensitiveFields =
+      sensitiveFields && sensitiveFields.length ? (
+        <div>
+          <p className={cx("form-text", "mt-2", "mb-1")}>
+            Please fill in the credentials required to use this cloud storage
+          </p>
+          {sensitiveFields.map((item, fieldIndex) => (
+            <CredentialField
+              key={`${item.name}-${fieldIndex}`}
+              active={active}
+              item={item}
+              changeCredential={changeCredential}
+            />
+          ))}
+        </div>
+      ) : null;
+
+    return (
+      <CloudStorageItemNew
+        devAccess={devAccess}
+        disabled={!active}
+        key={storage.name}
+        noEdit={
+          "Cannot edit storage from the session pages. Please go to the project settings."
+        }
+        storageDefinition={storageDefinition}
+      >
+        <div>
+          <Input
+            className={cx("form-check-input", "me-2")}
+            checked={active}
+            id={`${localId}-active`}
+            onChange={onToggleActive}
+            type="checkbox"
+          />
+          <Label for={`${localId}-active`}>
+            {active
+              ? "Mount the storage in this session"
+              : "Non active for this session"}
+          </Label>
+        </div>
+        {requiredSensitiveFields}
+      </CloudStorageItemNew>
+    );
+  });
 
   return (
-    <Col>
-      <Card>
-        <CardBody className={cx("pb-2", "d-flex", "align-items-center")}>
-          <div>
-            <Input
-              className="form-check-input"
-              checked={active}
-              disabled={!supported}
-              id="cloudStorageItemActive"
-              onChange={onToggleActive}
-              type="checkbox"
-            />
-            <Label className="visually-hidden" for="cloudStorageItemActive">
-              Mount in this session
-            </Label>
-          </div>
-          <h3
-            className={cx(
-              "fs-6",
-              "fw-bold",
-              "m-0",
-              "ms-2",
-              !active && ["text-decoration-line-through", "text-rk-text-light"]
-            )}
-          >
-            {name}
-            {storage.storage_id == null && (
-              <>
-                {" "}
-                <span
-                  className={cx(
-                    "fst-italic",
-                    "fw-normal",
-                    "text-rk-text-light"
-                  )}
-                >
-                  (temporary)
-                </span>
-              </>
-            )}
-          </h3>
-          <div className={cx("small", "d-none", "d-sm-block", "ms-3")}>
-            <span className="text-rk-text-light">Mount point: </span>
-            {active ? (
-              <span>{target_path}</span>
-            ) : (
-              <span className="fst-italic">Not mounted</span>
-            )}
-          </div>
-          {storage.storage_id == null && (
-            <div className="ms-auto">
-              <Button
-                className={cx(
-                  "btn-sm",
-                  "bg-transparent",
-                  "border-0",
-                  "text-danger",
-                  "p-0"
-                )}
-                onClick={onRemoveItem}
-              >
-                <TrashFill />
-              </Button>
-            </div>
-          )}
-        </CardBody>
-
-        {!supported && (
-          <CardBody className="py-0">
-            <p className={cx("form-text", "text-danger", "mt-0", "mb-1")}>
-              <ExclamationTriangleFill className={cx("bi", "me-1")} />
-              This cloud storage configuration is currently not supported.
-            </p>
-          </CardBody>
-        )}
-
-        {supported &&
-          requiredSensitiveFields != null &&
-          requiredSensitiveFields.length > 0 && (
-            <CardBody className="py-0">
-              <h5 className={cx("fs-6", "m-0")}>Credentials</h5>
-              <p className={cx("form-text", "mt-0", "mb-1")}>
-                Please fill in the credentials required to use this cloud
-                storage
-              </p>
-              {requiredSensitiveFields.map((item, fieldIndex) => (
-                <CredentialField
-                  key={fieldIndex}
-                  active={active}
-                  fieldIndex={fieldIndex}
-                  index={index}
-                  item={item}
-                  onChangeCredential={onChangeCredential}
-                />
-              ))}
-            </CardBody>
-          )}
-
-        <CardBody className="p-0">
-          <button
-            className={cx(
-              "d-flex",
-              "align-items-center",
-              "w-100",
-              "p-3",
-              "py-2",
-              "bg-transparent",
-              "border-0",
-              "border-top"
-            )}
-            onClick={toggle}
-            type="button"
-          >
-            <div>More details</div>
-            <div className="ms-auto">
-              <ChevronFlippedIcon flipped={isOpen} />
-            </div>
-          </button>
-        </CardBody>
-        <Collapse isOpen={isOpen}>
-          <CardBody className="pt-0">
-            <CloudStorageDetails index={index} storage={storage} />
-          </CardBody>
-        </Collapse>
-      </Card>
-    </Col>
+    <Container className={cx("p-0", "mt-2")} fluid>
+      <Row className={cx("row-cols-1", "gy-2")}>{storageList}</Row>
+    </Container>
   );
 }
 
 interface CredentialFieldProps {
   active: boolean;
-  fieldIndex: number;
-  index: number;
   item: {
     name: string;
     help: string;
     value: string;
   };
-  onChangeCredential: (
-    fieldIndex: number
-  ) => (event: ChangeEvent<HTMLInputElement>) => void;
+  changeCredential: (name: string, value: string) => void;
 }
 
 function CredentialField({
   active,
-  fieldIndex,
-  index,
   item,
-  onChangeCredential,
+  changeCredential,
 }: CredentialFieldProps) {
   const [showPassword, setShowPassword] = useState(false);
   const onToggleVisibility = useCallback(() => {
@@ -473,7 +299,7 @@ function CredentialField({
 
   return (
     <div className="mb-3">
-      <Label className="form-label" for={`credentials-${index}-${item.name}`}>
+      <Label className="form-label" for={`credentials-${item.name}`}>
         {item.name}
         <span className={cx("fw-bold", "text-danger")}>*</span>
         <CredentialMoreInfo help={item.help} />
@@ -486,10 +312,10 @@ function CredentialField({
             !item.value && active && "is-invalid"
           )}
           disabled={!active}
-          id={`credentials-${index}-${item.name}`}
+          id={`credentials-${item.name}`}
           type={showPassword ? "text" : "password"}
           value={item.value}
-          onChange={onChangeCredential(fieldIndex)}
+          onChange={(e) => changeCredential(item.name, e.target.value)}
         />
         <Button
           className="rounded-end"
@@ -528,237 +354,8 @@ function CredentialMoreInfo({ help }: { help: string }) {
   );
 }
 
-function CloudStorageDetails({ index, storage }: CloudStorageItemProps) {
-  const { namespace, path } = useLegacySelector<StateModelProject["metadata"]>(
-    (state) => state.stateModel.project.metadata
-  );
-
-  const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
-    namespace,
-    path,
-  });
-
-  const { configuration, name, readonly, source_path, target_path } = storage;
-
-  const providedSensitiveFields = useMemo(
-    () => getProvidedSensitiveFields(configuration),
-    [configuration]
-  );
-  const requiredSensitiveFields = useMemo(
-    () =>
-      storage.sensitive_fields?.filter(({ name }) =>
-        providedSensitiveFields.includes(name)
-      ),
-    [providedSensitiveFields, storage.sensitive_fields]
-  );
-  const configCredentials = (requiredSensitiveFields ?? []).reduce(
-    (prev, { name, value }) => ({ ...prev, [name]: value }),
-    {} as Record<string, string>
-  );
-  const configWithCredentials = { ...configuration, ...configCredentials };
-  const configContent = formatCloudStorageConfiguration({
-    configuration: configWithCredentials,
-    name,
-  });
-
-  const dispatch = useAppDispatch();
-
-  const onChangeSourcePath = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      dispatch(
-        updateCloudStorageItem({
-          index,
-          storage: { ...storage, source_path: value },
-        })
-      );
-    },
-    [dispatch, index, storage]
-  );
-  const onChangeTargetPath = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      dispatch(
-        updateCloudStorageItem({
-          index,
-          storage: { ...storage, target_path: value },
-        })
-      );
-    },
-    [dispatch, index, storage]
-  );
-  const onChangeReadWriteMode = useCallback(() => {
-    dispatch(
-      updateCloudStorageItem({
-        index,
-        storage: { ...storage, readonly: !storage.readonly },
-      })
-    );
-  }, [dispatch, index, storage]);
-
-  const [tempConfigContent, setTempConfigContent] = useState(configContent);
-  const onChangeConfiguration = useCallback(
-    (event: ChangeEvent<HTMLTextAreaElement>) => {
-      setTempConfigContent(event.target.value);
-    },
-    []
-  );
-  const onUpdateConfiguration = useCallback(() => {
-    const parsedConfiguration =
-      parseCloudStorageConfiguration(tempConfigContent);
-
-    const sensitiveFieldKeys =
-      storage.sensitive_fields?.map(({ name }) => name) ?? [];
-
-    const updatedExistingConfiguration = Object.keys(configuration)
-      .flatMap((key) =>
-        sensitiveFieldKeys.includes(key)
-          ? [[key, CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN] as const]
-          : parsedConfiguration[key] != null
-          ? [[key, parsedConfiguration[key]] as const]
-          : []
-      )
-      .reduce(
-        (obj, [key, value]) => ({ ...obj, [key]: value }),
-        {} as Record<string, string>
-      );
-    const updatedNewConfiguration = Object.entries(parsedConfiguration)
-      .filter(([key]) => !Object.keys(updateCloudStorageItem).includes(key))
-      .map(([key, value]) =>
-        sensitiveFieldKeys.includes(key)
-          ? ([key, CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN] as const)
-          : ([key, value] as const)
-      )
-      .reduce(
-        (obj, [key, value]) => ({ ...obj, [key]: value }),
-        {} as Record<string, string>
-      );
-
-    const updatedSensitiveFields = storage.sensitive_fields?.map(
-      ({ name, help }) =>
-        parsedConfiguration[name] != null
-          ? { name, help, value: parsedConfiguration[name] }
-          : { name, help, value: "" }
-    );
-
-    dispatch(
-      updateCloudStorageItem({
-        index,
-        storage: {
-          ...storage,
-          configuration: {
-            ...updatedExistingConfiguration,
-            ...updatedNewConfiguration,
-          },
-          sensitive_fields: updatedSensitiveFields,
-        },
-      })
-    );
-  }, [configuration, dispatch, index, storage, tempConfigContent]);
-
-  useEffect(() => {
-    setTempConfigContent(configContent);
-  }, [configContent]);
-
-  return (
-    <div className="form-rk-green">
-      <FormText>
-        Changes made here will apply only for this session. Use the{" "}
-        <Link to={settingsStorageUrl}>project&apos;s settings</Link> to
-        permanently change cloud storage settings.
-      </FormText>
-
-      <div className="mb-3">
-        <Label
-          className="form-label"
-          for={`updateCloudStorageSourcePath-${index}`}
-        >
-          Source Path
-        </Label>
-        <Input
-          className="form-control"
-          id={`updateCloudStorageSourcePath-${index}`}
-          placeholder="bucket/folder"
-          type="text"
-          value={source_path}
-          onChange={onChangeSourcePath}
-        />
-      </div>
-
-      <div className="mb-3">
-        <Label
-          className="form-label"
-          for={`updateCloudStorageTargetPath-${index}`}
-        >
-          Mount Point
-        </Label>
-        <Input
-          className="form-control"
-          id={`updateCloudStorageTargetPath-${index}`}
-          placeholder="folder"
-          type="text"
-          value={target_path}
-          onChange={onChangeTargetPath}
-        />
-      </div>
-
-      <div className="mb-3">
-        <Input
-          aria-describedby={`updateCloudStorageReadOnlyHelp-${index}`}
-          className="form-check-input"
-          id={`updateCloudStorageReadOnly-${index}`}
-          type="checkbox"
-          checked={!!readonly}
-          onChange={onChangeReadWriteMode}
-        />
-        <Label
-          className={cx("form-check-label", "ms-2")}
-          for={`updateCloudStorageReadOnly-${index}`}
-        >
-          Read-only
-        </Label>
-        <FormText id={`updateCloudStorageReadOnlyHelp-${index}`} tag="div">
-          Check this box to mount the storage in read-only mode. Use this
-          setting to prevent accidental data modifications.
-        </FormText>
-      </div>
-
-      <div>
-        <Label className="form-label" for={`updateCloudStorageConfig-${index}`}>
-          Configuration
-        </Label>
-        <FormText id={`updateCloudStorageConfigHelp-${index}`} tag="div">
-          You can paste here the output of{" "}
-          <code className="user-select-all">
-            rclone config show &lt;name&gt;
-          </code>
-          .
-        </FormText>
-        <textarea
-          aria-describedby={`updateCloudStorageConfigHelp-${index}`}
-          className="form-control"
-          id={`updateCloudStorageConfig-${index}`}
-          rows={Object.keys(storage.configuration).length + 2}
-          value={tempConfigContent}
-          onChange={onChangeConfiguration}
-        />
-        <div className={cx("d-flex", "justify-content-end", "mt-1")}>
-          <Button
-            className="btn-sm"
-            disabled={configContent === tempConfigContent}
-            type="button"
-            onClick={onUpdateConfiguration}
-          >
-            <PencilSquare className={cx("bi", "me-1")} />
-            Save changes
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AddTemporaryCloudStorageButton() {
+// ! TODO: restore this?
+export function AddTemporaryCloudStorageButton() {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -780,6 +377,7 @@ interface AddTemporaryCloudStorageModalProps {
   toggle: () => void;
 }
 
+// ! TODO: this should go away; we should adapt and re-use the current Cloud Storage modal
 function AddTemporaryCloudStorageModal({
   isOpen,
   toggle,
@@ -830,11 +428,11 @@ function AddTemporaryCloudStorageModal({
           configuration,
           name: data.name,
           private: false,
+          project_id: "", // ! This should be adjust, or change the interface
           readonly: data.readonly,
           source_path: data.source_path,
-          storage_id: null,
+          storage_id: "",
           storage_type: "",
-          supported: true,
           target_path: data.name,
         })
       );
