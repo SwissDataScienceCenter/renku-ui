@@ -48,6 +48,7 @@ import { Url } from "../../../utils/helpers/url";
 import { useGetSessionsQuery } from "../sessions.api";
 import AboutSessionModal from "./AboutSessionModal";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
+import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
 import PullSessionModal from "./PullSessionModal";
 import ResourcesSessionModal from "./ResourcesSessionModal";
 import SaveSessionModal from "./SaveSessionModal";
@@ -56,7 +57,6 @@ import SessionJupyter from "./SessionJupyter";
 import SessionUnavailable from "./SessionUnavailable";
 import styles from "./ShowSession.module.scss";
 import StartSessionProgressBar from "./StartSessionProgressBar";
-import StopSessionModal from "./StopSessionModal";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -190,7 +190,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     />
   );
   const stopSessionModal = (
-    <StopSessionModal
+    <PauseOrDeleteSessionModal
       isOpen={showModalStopSession}
       session={thisSession}
       sessionName={sessionName}

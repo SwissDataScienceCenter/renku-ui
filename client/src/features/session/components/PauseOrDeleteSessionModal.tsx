@@ -52,26 +52,28 @@ import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
 
 import styles from "./SessionModals.module.scss";
 
-interface StopSessionModalProps {
+interface PauseOrDeleteSessionModalProps {
+  action?: "pause" | "delete";
   isOpen: boolean;
   session: Session | undefined;
   sessionName: string;
   toggleModal: () => void;
 }
 
-export default function StopSessionModal({
+export default function PauseOrDeleteSessionModal({
+  action,
   isOpen,
   session,
   sessionName,
   toggleModal,
-}: StopSessionModalProps) {
+}: PauseOrDeleteSessionModalProps) {
   const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
   if (!logged) {
     return (
-      <AnonymousStopSessionModal
+      <AnonymousDeleteSessionModal
         isOpen={isOpen}
         session={session}
         sessionName={sessionName}
@@ -81,7 +83,8 @@ export default function StopSessionModal({
   }
 
   return (
-    <HibernateSessionModal
+    <LoggedPauseOrDeleteSessionModal
+      action={action}
       isOpen={isOpen}
       session={session}
       sessionName={sessionName}
@@ -90,11 +93,11 @@ export default function StopSessionModal({
   );
 }
 
-function AnonymousStopSessionModal({
+function AnonymousDeleteSessionModal({
   isOpen,
   sessionName,
   toggleModal,
-}: StopSessionModalProps) {
+}: Omit<PauseOrDeleteSessionModalProps, "action">) {
   const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
@@ -172,12 +175,13 @@ function AnonymousStopSessionModal({
   );
 }
 
-function HibernateSessionModal({
+function LoggedPauseOrDeleteSessionModal({
+  // action,
   isOpen,
   session,
   sessionName,
   toggleModal,
-}: StopSessionModalProps) {
+}: PauseOrDeleteSessionModalProps) {
   const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
