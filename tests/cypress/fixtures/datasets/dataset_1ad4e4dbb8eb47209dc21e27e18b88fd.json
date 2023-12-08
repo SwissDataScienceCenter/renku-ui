@@ -10,8 +10,8 @@
     }
   ],
   "identifier": "1ad4e4dbb8eb47209dc21e27e18b88fd",
-  "name": "flight-data",
-  "title": "2019-01 US Flights",
+  "slug": "flight-data",
+  "name": "2019-01 US Flights",
   "url": "https://dev.renku.ch/datasets/1ad4e4dbb8eb47209dc21e27e18b88fd",
   "sameAs": "https://doi.org/10.7910/DVN/WTZS4K",
   "versions": {

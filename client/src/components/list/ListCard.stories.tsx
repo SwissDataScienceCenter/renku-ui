@@ -1,9 +1,9 @@
 import { Meta, StoryObj } from "@storybook/react";
-import { ARG_REDUX_PATH } from "addon-redux";
+import { ARG_REDUX_PATH, PARAM_REDUX_MERGE_STATE } from "addon-redux";
 
 import { EntityType } from "../../features/kgSearch";
 import { Visibilities } from "../visibility/Visibility";
-import { ListDisplayType } from "./List.d";
+import { ListDisplayType } from "./list.types";
 import ListCard from "./ListCard";
 
 const meta: Meta = {
@@ -42,6 +42,9 @@ const meta: Meta = {
       ],
     },
     timeCaption: { control: "date" },
+  },
+  parameters: {
+    [PARAM_REDUX_MERGE_STATE]: { stateModel: { user: { logged: false } } },
   },
 };
 export default meta;

@@ -17,8 +17,9 @@
  */
 
 import { useRef } from "react";
+
+import useLegacySelector from "../../utils/customHooks/useLegacySelector.hook";
 import { ThrottledTooltip } from "../Tooltip";
-import { RootStateOrAny, useSelector } from "react-redux";
 
 /**
  *  renku-ui
@@ -38,9 +39,8 @@ function EntityTags({ hideEmptyTags, multiline, tagList }: EntityTagsProps) {
   const multilineStyles = multiline
     ? "d-flex flex-wrap text-rk-text-light"
     : "text-truncate text-dark";
-  const isUpdatingValue = useSelector(
-    (state: RootStateOrAny) =>
-      state.stateModel?.project?.metadata?.tagList?.updating
+  const isUpdatingValue = useLegacySelector(
+    (state) => state.stateModel?.project?.metadata?.tagList?.updating
   );
 
   if (isUpdatingValue) {

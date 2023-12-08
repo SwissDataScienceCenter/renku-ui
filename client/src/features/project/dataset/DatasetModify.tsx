@@ -16,58 +16,59 @@
  * limitations under the License.
  */
 
-import React from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import type { FieldErrors } from "react-hook-form";
-import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import cx from "classnames";
+import React from "react";
+import type { FieldErrors } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useHistory } from "react-router-dom";
 import { Button, FormGroup, UncontrolledAlert } from "reactstrap";
 
+import { ExternalLink } from "../../../components/ExternalLinks";
 import { Loader } from "../../../components/Loader";
 import CreatorsInput, {
   validateCreators,
 } from "../../../components/form-field/CreatorsInput";
-import { ExternalLink } from "../../../components/ExternalLinks";
-import ImageInput from "../../../components/form-field/ImageInput";
-import KeywordsInput from "../../../components/form-field/KeywordsInput";
 import FileUploaderInput, {
   FILE_STATUS,
 } from "../../../components/form-field/FileUploaderInput";
-import TextInput from "../../../components/form-field/TextInput";
+import ImageInput from "../../../components/form-field/ImageInput";
+import KeywordsInput from "../../../components/form-field/KeywordsInput";
 import TextAreaInput from "../../../components/form-field/TextAreaInput";
+import TextInput from "../../../components/form-field/TextInput";
 import type { RenkuUser } from "../../../model/RenkuModels";
 import { FormErrorFields } from "../../../project/new/components/FormValidations";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useAppSelector from "../../../utils/customHooks/useAppSelector.hook";
+import type { AppDispatch } from "../../../utils/helpers/EnhancedState";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
+import { CoreErrorResponse } from "../../../utils/types/coreService.types";
+import {
+  AddFilesParams,
+  PostDatasetParams,
+} from "../../datasets/datasets.types";
+import {
+  useAddFilesMutation,
+  usePostDatasetMutation,
+} from "../../datasets/datasetsCore.api";
 import { DatasetCore, IDatasetFiles } from "../../project/Project";
+import type {
+  DatasetFormFields,
+  DatasetPostClient,
+  PostDataset,
+} from "./datasetCore.api";
+import { createSubmitDataset } from "./datasetCore.api";
+import type { DatasetFormState, ServerError } from "./datasetForm.slice";
 import {
   reset,
   setFiles,
   setFormValues,
   setServerError,
   setServerWarning,
-  useDatasetFormSelector,
 } from "./datasetForm.slice";
-import type { DatasetFormState, ServerError } from "./datasetForm.slice";
-import { createSubmitDataset } from "./datasetCore.api";
-import type {
-  DatasetFormFields,
-  DatasetPostClient,
-  PostDataset,
-} from "./datasetCore.api";
-import {
-  useAddFilesMutation,
-  usePostDatasetMutation,
-} from "../../datasets/datasetsCore.api";
-import {
-  AddFilesParams,
-  PostDatasetParams,
-} from "../../datasets/datasets.types";
-import { CoreErrorResponse } from "../../../utils/types/coreService.types";
 
 export type PostSubmitProps = {
   datasetId: string;
-  dispatch: ReturnType<typeof useDispatch>;
+  dispatch: AppDispatch;
   fetchDatasets: (forceRefetch: boolean, versionUrl: string) => Promise<void>;
   history: DatasetModifyProps["history"];
   projectPathWithNamespace: string;
@@ -174,39 +175,39 @@ function DatasetModifyForm(props: DatasetModifyFormProps) {
   } = useForm<DatasetFormFields>({
     defaultValues: props.formState.form,
   });
-  const title = watch("title");
+  const name = watch("name");
   React.useEffect(() => {
     // only update the name if the dataset does not already exist
-    if (props.dataset == null && title)
-      setValue("name", slugFromTitle(title, true));
-  }, [props.dataset, setValue, title]);
+    if (props.dataset == null && name)
+      setValue("slug", slugFromTitle(name, true));
+  }, [props.dataset, setValue, name]);
   const [areKeywordsDirty, setKeywordsDirty] = React.useState(false);
   return (
     <form className="form-rk-pink" onSubmit={handleSubmit(props.onSubmit)}>
       <TextInput
-        error={errors.title}
+        error={errors.name}
         dataCy="input-title"
         help={
           <span>
-            The title is displayed in listings of datasets. The <b>name</b> is
-            automatically derived from the title, but can be changed.
+            The name is displayed in listings of datasets. The <b>slug</b> is
+            automatically derived from the name, but can be changed.
           </span>
         }
-        label="Title"
-        name="title"
-        required={true}
-        register={register("title", { required: "A title is required" })}
-      />
-      <TextInput
-        error={errors.name}
-        help="Name is used as an identifier in renku commands."
         label="Name"
         name="name"
         required={true}
-        register={register("name", {
+        register={register("name", { required: "A name is required" })}
+      />
+      <TextInput
+        error={errors.slug}
+        help="Slug is used as an identifier in renku commands."
+        label="Slug"
+        name="slug"
+        required={true}
+        register={register("slug", {
           disabled: props.dataset != null,
           required:
-            "A name is required; a default is derived from the title, but it can be modified",
+            "A slug is required; a default is derived from the name, but it can be modified",
         })}
       />
       <CreatorsInput
@@ -371,7 +372,7 @@ export interface DatasetModifyProps extends DatasetModifyDisplayProps {
   versionUrl: string;
 }
 export default function DatasetModify(props: DatasetModifyProps) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const {
     apiVersion,
     client,
@@ -389,9 +390,9 @@ export default function DatasetModify(props: DatasetModifyProps) {
   } = props;
 
   const edit = dataset != null;
-  const name = dataset?.name;
+  const slug = dataset?.slug;
 
-  const formState = useDatasetFormSelector();
+  const formState = useAppSelector(({ datasetForm }) => datasetForm);
 
   const setError = React.useCallback(
     (error: ServerError) => {
@@ -416,8 +417,8 @@ export default function DatasetModify(props: DatasetModifyProps) {
       setSubmitting(true);
       dispatch(setFormValues(data));
       const submitData = { ...data };
-      // Do not change the name of an existing dataset
-      if (name) submitData.name = name;
+      // Do not change the slug of an existing dataset
+      if (slug) submitData.slug = slug;
 
       try {
         // step 1: prepare the dataset
@@ -484,7 +485,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
             if (!groomedDataset.files?.length) {
               if (response.data.remoteBranch === defaultBranch) {
                 await redirectAfterSubmit({
-                  datasetId: dataset?.name ?? response.data.name,
+                  datasetId: dataset?.slug ?? response.data.slug,
                   fetchDatasets,
                   history,
                   projectPathWithNamespace,
@@ -505,7 +506,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
               files: groomedDataset.files,
               gitUrl: externalUrl,
               metadataVersion,
-              name: groomedDataset.name,
+              slug: groomedDataset.slug,
             };
             addFilesMutation(addFilesParams)
               .then(async (filesResponse) => {
@@ -521,7 +522,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
                   // ? redirect to the dataset page if dataset was created
                   if (!edit) {
                     await redirectAfterSubmit({
-                      datasetId: response.data.name,
+                      datasetId: response.data.slug,
                       fetchDatasets,
                       history,
                       projectPathWithNamespace,
@@ -538,7 +539,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
                 // ? Do not redirect if the dataset was created in another branch, we should display the warning
                 if (response.data.remoteBranch === defaultBranch) {
                   await redirectAfterSubmit({
-                    datasetId: dataset?.name ?? response.data.name,
+                    datasetId: dataset?.slug ?? response.data.slug,
                     fetchDatasets,
                     history,
                     projectPathWithNamespace,
@@ -592,7 +593,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
       apiVersion,
       addFilesMutation,
       client,
-      dataset?.name,
+      dataset?.slug,
       defaultBranch,
       dispatch,
       edit,
@@ -600,7 +601,7 @@ export default function DatasetModify(props: DatasetModifyProps) {
       fetchDatasets,
       history,
       metadataVersion,
-      name,
+      slug,
       postDatasetMutation,
       projectPathWithNamespace,
       setError,

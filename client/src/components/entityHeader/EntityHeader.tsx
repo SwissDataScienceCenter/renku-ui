@@ -23,10 +23,12 @@
  *  Entity Header component
  */
 
-import { useDisplaySelector } from "../../features/display";
+import cx from "classnames";
+
 import SessionButton from "../../features/session/components/SessionButton";
 import { useGetSessionsQuery } from "../../features/session/sessions.api";
 import { getRunningSession } from "../../features/session/sessions.utils";
+import useAppSelector from "../../utils/customHooks/useAppSelector.hook";
 import { stylesByItemType } from "../../utils/helpers/HelperFunctions";
 import { Url } from "../../utils/helpers/url";
 import { EnvironmentLogs } from "../Logs";
@@ -41,6 +43,8 @@ import LinkedEntitiesByItemType, {
 import Slug from "../entities/Slug";
 import EntityTags from "../entities/Tags";
 import VisibilityIcon from "../entities/VisibilityIcon";
+import PinnedBadge from "../list/PinnedBadge";
+
 import "./EntityHeader.scss";
 
 export interface EntityHeaderProps {
@@ -108,7 +112,9 @@ function EntityHeader({
     ) : null;
 
   // Set up support for logs modal
-  const displayModal = useDisplaySelector((state) => state.modals.sessionLogs);
+  const displayModal = useAppSelector(
+    ({ display }) => display.modals.sessionLogs
+  );
   const envLogs =
     itemType === "project" ? (
       <EnvironmentLogs
@@ -122,12 +128,14 @@ function EntityHeader({
   return (
     <>
       <div
-        className={`container-entity-header ${
-          !showFullHeader ? "container-entity-header-incomplete" : ""
-        }`}
+        className={cx(
+          "container-entity-header",
+          !showFullHeader && "container-entity-header-incomplete"
+        )}
         data-cy={`header-${itemType}`}
       >
-        <div className="entity-image">
+        <div className={cx("entity-image", "position-relative")}>
+          {fullPath && <PinnedBadge entityType={itemType} slug={fullPath} />}
           <div
             style={imageStyles}
             className={`header-entity-image ${

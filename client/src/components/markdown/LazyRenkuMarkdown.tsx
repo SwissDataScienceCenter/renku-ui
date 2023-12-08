@@ -31,7 +31,7 @@ export default function LazyRenkuMarkdown(
   props: ComponentProps<typeof RenkuMarkdown>
 ) {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<Loader size={30} />}>
       <RenkuMarkdown {...props} />
     </Suspense>
   );

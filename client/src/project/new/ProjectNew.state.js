@@ -564,7 +564,7 @@ class NewProjectCoordinator {
           fetching: true,
           id: namespace.full_path,
           visibility: null,
-          visibilities: { $set: null },
+          visibilities: null,
         },
       },
     });

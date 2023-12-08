@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { useGetNamespacesQuery } from "../../features/projects/projectsApi";
+import { useGetNamespacesQuery } from "../../features/projects/projects.api";
 
 /**
  *  useGetNamespaces custom hook

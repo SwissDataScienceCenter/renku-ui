@@ -28,7 +28,6 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import cx from "classnames";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import {
   Button,
@@ -39,6 +38,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+
 import { WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { ButtonWithMenu } from "../../../components/buttons/Button";
@@ -51,6 +51,8 @@ import { NOTIFICATION_TOPICS } from "../../../notifications/Notifications.consta
 import { NotificationsManager } from "../../../notifications/notifications.types";
 import rkIconStartWithOptions from "../../../styles/icons/start-with-options.svg";
 import AppContext from "../../../utils/context/appContext";
+import useAppDispatch from "../../../utils/customHooks/useAppDispatch.hook";
+import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
 import RtkQueryErrorsContext from "../../../utils/helpers/RtkQueryErrorsContext";
 import { Url } from "../../../utils/helpers/url";
 import { toggleSessionLogsModal } from "../../display/displaySlice";
@@ -126,20 +128,20 @@ export default function SessionButton({
         isPrincipal
         size="sm"
       >
-        <DropdownItem>
-          <Link className="text-decoration-none" to={sessionStartUrl}>
+        <li>
+          <Link className="dropdown-item" to={sessionStartUrl}>
             <img
               src={rkIconStartWithOptions}
-              className="rk-icon rk-icon-md btn-with-menu-margin"
+              className="rk-icon rk-icon-md me-2"
             />
             Start with options
           </Link>
-        </DropdownItem>
+        </li>
         {gitUrl && <SshDropdown fullPath={fullPath} gitUrl={gitUrl} />}
         <DropdownItem divider />
-        <DropdownItem>
+        <li>
           <Link
-            className="text-decoration-none"
+            className="dropdown-item"
             to={{
               pathname: sessionStartUrl,
               search: new URLSearchParams({
@@ -154,7 +156,7 @@ export default function SessionButton({
             />
             Create session link
           </Link>
-        </DropdownItem>
+        </li>
       </ButtonWithMenu>
     );
   }
@@ -172,11 +174,11 @@ function SessionActions({ className, session }: SessionActionsProps) {
 
   const { notifications } = useContext(AppContext);
 
-  const logged = useSelector<RootStateOrAny, User["logged"]>(
+  const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const onToggleLogs = useCallback(() => {
     dispatch(toggleSessionLogsModal({ targetServer: session.name }));
   }, [dispatch, session.name]);
@@ -407,9 +409,9 @@ function SessionActions({ className, session }: SessionActionsProps) {
   );
 
   const createSessionLinkAction = (
-    <DropdownItem>
+    <li>
       <Link
-        className="text-decoration-none"
+        className="dropdown-item"
         to={{
           pathname: sessionStartUrl,
           search: new URLSearchParams({
@@ -424,7 +426,7 @@ function SessionActions({ className, session }: SessionActionsProps) {
         />
         Create session link
       </Link>
-    </DropdownItem>
+    </li>
   );
 
   const logsAction = status !== "hibernated" && (

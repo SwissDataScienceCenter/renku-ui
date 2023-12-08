@@ -30,11 +30,12 @@ import {
   RenkuToolbarNotifications,
 } from "./NavBarItems";
 import { RENKU_LOGO } from "./navbar.constans";
+import type { AppParams } from "../../utils/context/appParams.types";
 
 interface AnonymousNavBarProps {
   model: unknown;
   notifications: unknown;
-  params: unknown;
+  params: AppParams;
 }
 
 export default function AnonymousNavBar({
@@ -42,7 +43,7 @@ export default function AnonymousNavBar({
   notifications,
   params,
 }: AnonymousNavBarProps) {
-  const uiShortSha = (params as { UI_SHORT_SHA: string }).UI_SHORT_SHA;
+  const uiShortSha = params.UI_SHORT_SHA;
 
   const [isOpen, setIsOpen] = useState(false);
 

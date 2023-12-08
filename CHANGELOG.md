@@ -1,5 +1,42 @@
 # Changes
 
+## [3.17.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.17.0...3.17.1) (2023-11-30)
+
+
+### Bug Fixes
+
+- Adapt dataset APIs to the new naming convention used in the backend ([#2723](https://github.com/SwissDataScienceCenter/renku-ui/issues/2723), ([#2854](https://github.com/SwissDataScienceCenter/renku-ui/issues/2854))
+
+### BREAKING CHANGES
+
+This update aligns the dataset slug and name properties with the updated renku-core and KG API. They now return slug and name instead of name and title.
+
+- Requires renku-core version 2.8.0 or later
+- Requires renku-graph version 2.48.0 or later
+
+
+## [3.17.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.16.0...3.17.0)   (2023-11-29)
+
+### Features
+
+- Redesign landing page ([#2885](https://github.com/SwissDataScienceCenter/renku-ui/issues/2885), [#2890](https://github.com/SwissDataScienceCenter/renku-ui/issues/2890), [#2891](https://github.com/SwissDataScienceCenter/renku-ui/issues/2891), [#2895](https://github.com/SwissDataScienceCenter/renku-ui/issues/2895), [#2896](https://github.com/SwissDataScienceCenter/renku-ui/issues/2896), [#2897](https://github.com/SwissDataScienceCenter/renku-ui/issues/2897), [#2911](https://github.com/SwissDataScienceCenter/renku-ui/issues/2911), [#2912](https://github.com/SwissDataScienceCenter/renku-ui/issues/2912), [#2913](https://github.com/SwissDataScienceCenter/renku-ui/issues/2913), [#2925](https://github.com/SwissDataScienceCenter/renku-ui/issues/2925))
+
+
+## [3.16.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.15.1...3.16.0) (2023-11-24)
+
+### Features
+
+- Let users pin projects to the dashboard ([#2898](https://github.com/SwissDataScienceCenter/renku-ui/pull/2898), [renku#3325](https://github.com/SwissDataScienceCenter/renku/issues/3325)).
+
+### Bug Fixes
+
+- Change icons in the navbar to use Bootstrap icons ([#2882](https://github.com/SwissDataScienceCenter/renku-ui/pull/2882), [#2763](https://github.com/SwissDataScienceCenter/renku-ui/issues/2763)).
+- Handle errors from the getSessions query in the Dashboard ([#2903](https://github.com/SwissDataScienceCenter/renku-ui/pull/2903), [#2873](https://github.com/SwissDataScienceCenter/renku-ui/issues/2873)).
+- Adjust dropdown menus with anchors nested in buttons ([#2907](https://github.com/SwissDataScienceCenter/renku-ui/pull/2907)).
+- Update the workflows documentation link ([#2917](https://github.com/SwissDataScienceCenter/renku-ui/pull/2917)).
+- Correctly update progress of project indexing ([#2833](https://github.com/SwissDataScienceCenter/renku-ui/pull/2833), [#2774](https://github.com/SwissDataScienceCenter/renku-ui/issues/2774)).
+- Add whitespace after author name ([#2921](https://github.com/SwissDataScienceCenter/renku-ui/pull/2921)).
+
 ## [3.15.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/3.15.0...3.15.1) (2023-11-14)
 
 ### Bug Fixes
