@@ -27,7 +27,6 @@ import {
   PlusLg,
   XLg,
 } from "react-bootstrap-icons";
-import { RootStateOrAny, useSelector } from "react-redux";
 import {
   Button,
   Modal,
@@ -68,6 +67,7 @@ import { SuccessAlert } from "../../../../components/Alert";
 
 import styles from "./AddCloudStorageButton.module.scss";
 import AddCloudStorage from "./AddCloudStorage";
+import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 
 function findSensitive(schema: CloudStorageSchema | undefined): string[] {
   if (!schema) return [];
@@ -194,10 +194,9 @@ export default function AddCloudStorageModal({
   };
 
   // Mutations
-  const projectId = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]["id"]
-  >((state) => state.stateModel.project.metadata.id);
+  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
+    (state) => state.stateModel.project.metadata.id
+  );
   const [addCloudStorageForProject, addResult] =
     useAddCloudStorageForProjectMutation();
   const [modifyCloudStorageForProject, modifyResult] =

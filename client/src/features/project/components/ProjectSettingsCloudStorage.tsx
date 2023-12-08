@@ -81,7 +81,6 @@ import {
   getCredentialFieldDefinitions,
 } from "../utils/projectCloudStorage.utils";
 import AddCloudStorageButton from "./cloudStorage/AddCloudStorageButton";
-import { RootStateOrAny, useSelector } from "react-redux";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useLegacySelector<User["logged"]>(
@@ -539,10 +538,9 @@ function DeleteCloudStorageModal({
 }: DeleteCloudStorageModalProps) {
   const { name, storage_id } = storage;
 
-  const projectId = useSelector<
-    RootStateOrAny,
-    StateModelProject["metadata"]["id"]
-  >((state) => state.stateModel.project.metadata.id);
+  const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
+    (state) => state.stateModel.project.metadata.id
+  );
 
   const [deleteCloudStorage, result] = useDeleteCloudStorageMutation();
   const onDelete = useCallback(() => {
