@@ -16,20 +16,22 @@
  * limitations under the License.
  */
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import {
-  CoreVersions,
+  CoreVersionDetails,
   CoreVersionResponse,
+  CoreVersions,
+  KgVersion,
+  KgVersionResponse,
   NotebooksVersion,
   NotebooksVersionResponse,
-  CoreVersionDetails,
-} from "./versions";
+} from "./versions.types";
 
 export const versionsApi = createApi({
-  reducerPath: "versions",
+  reducerPath: "versionsApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/" }),
-  tagTypes: ["versions"],
+  tagTypes: ["Version"],
   keepUnusedDataFor: 60,
   endpoints: (builder) => ({
     getCoreVersions: builder.query<CoreVersions, void>({
@@ -73,8 +75,34 @@ export const versionsApi = createApi({
           metadataVersions: [],
         } as CoreVersions;
       },
+      providesTags: (result) =>
+        result ? [{ type: "Version", id: "core" }] : [],
     }),
-    getNotebooksVersions: builder.query<NotebooksVersion, void>({
+    getKgVersion: builder.query<KgVersion, void>({
+      query: () => {
+        return { url: "kg/version" };
+      },
+      transformResponse: (response: KgVersionResponse) => {
+        // We assume there is only one version.
+        const singleVersion = response.versions.at(0);
+        if (singleVersion == null) {
+          throw new Error("Unexpected response");
+        }
+        return {
+          name: response.name,
+          version: singleVersion.version,
+        };
+      },
+      transformErrorResponse: () => {
+        return {
+          name: "error",
+          version: "unavailable",
+        } as KgVersion;
+      },
+      providesTags: (result) =>
+        result ? [{ type: "Version", id: "knowledge-graph" }] : [],
+    }),
+    getNotebooksVersion: builder.query<NotebooksVersion, void>({
       query: () => {
         return {
           url: "notebooks/version",
@@ -96,7 +124,7 @@ export const versionsApi = createApi({
             azureBlob:
               singleVersion?.data?.cloudstorageEnabled?.azure_blob ?? false,
           },
-        } as NotebooksVersion;
+        };
       },
       transformErrorResponse: () => {
         return {
@@ -110,9 +138,14 @@ export const versionsApi = createApi({
           },
         } as NotebooksVersion;
       },
+      providesTags: (result) =>
+        result ? [{ type: "Version", id: "notebooks" }] : [],
     }),
   }),
 });
 
-export const { useGetCoreVersionsQuery, useGetNotebooksVersionsQuery } =
-  versionsApi;
+export const {
+  useGetCoreVersionsQuery,
+  useGetKgVersionQuery,
+  useGetNotebooksVersionQuery,
+} = versionsApi;

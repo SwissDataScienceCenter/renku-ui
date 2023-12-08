@@ -26,7 +26,7 @@ import {
   toggleSshModal,
 } from "../../features/display";
 import { projectCoreApi } from "../../features/project/projectCoreApi";
-import { useGetNotebooksVersionsQuery } from "../../features/versions/versionsApi";
+import { useGetNotebooksVersionQuery } from "../../features/versions/versions.api";
 import rkIconSshCross from "../../styles/icons/ssh-cross.svg";
 import rkIconSshTicked from "../../styles/icons/ssh-ticked.svg";
 import rkIconSsh from "../../styles/icons/ssh.svg";
@@ -55,7 +55,7 @@ interface SshDropdownProps {
 function SshDropdown({ fullPath, gitUrl }: SshDropdownProps) {
   const dispatch = useAppDispatch();
 
-  const { data, isLoading, error } = useGetNotebooksVersionsQuery();
+  const { data, isLoading, error } = useGetNotebooksVersionQuery();
   if (error || isLoading || !data?.sshEnabled) return null;
 
   const handleClick = () => {
@@ -75,7 +75,7 @@ function SshModal() {
   const dispatch = useAppDispatch();
   const gitUrl = cleanGitUrl(displayModal.gitUrl);
 
-  const notebooksSupport = useGetNotebooksVersionsQuery();
+  const notebooksSupport = useGetNotebooksVersionQuery();
   const { coreApiVersionedUrlConfig } = useContext(AppContext);
   const migrationStatusApiVersion = apiVersionForMetadataVersion(
     coreApiVersionedUrlConfig,
