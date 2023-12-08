@@ -50,7 +50,7 @@ import startSessionSlice from "../../features/session/startSession.slice";
 import { startSessionOptionsSlice } from "../../features/session/startSessionOptionsSlice";
 import keycloakUserApi from "../../features/user/keycloakUser.api";
 import userPreferencesApi from "../../features/user/userPreferences.api";
-import { versionsApi } from "../../features/versions/versionsApi";
+import { versionsApi } from "../../features/versions/versions.api";
 import { workflowsApi } from "../../features/workflows/WorkflowsApi";
 import { workflowsSlice } from "../../features/workflows/WorkflowsSlice";
 

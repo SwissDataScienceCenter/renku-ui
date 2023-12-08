@@ -4,44 +4,102 @@
 @import "~bootstrap/scss/maps";
 @import "~bootstrap/scss/mixins";
 
-.skeletonCardContainer {
-  width: 350px;
-  position: relative;
-}
-
-.skeletonWrapper {
-  position: absolute;
-
-  @include media-breakpoint-down(lg) {
-    position: relative;
-  }
-}
-
-.skeletonWrapper .skeletonImg .skeletonImgGraphic {
+.skeletonContainer {
+  background-color: white;
   height: 100%;
-}
-.skeletonLoader:empty {
+  margin: auto;
+  max-width: 350px;
+  padding-bottom: 2em;
+  position: relative;
   width: 100%;
-  position: absolute;
-  top: 0;
-  display: block;
-  background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0) 0,
-      rgba(255, 255, 255, 0.5) 30%,
-      rgba(255, 255, 255, 0) 60%
-    ),
-    transparent;
-  background-repeat: repeat-y;
-  background-size: 150px 200px;
-  background-position: 0 0;
-  animation: shine 3s infinite;
 }
-@keyframes shine {
-  from {
-    background-position: -100% 0;
+
+.skeletonContainerBorder {
+  box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 3px 3px -2px rgba(0, 0, 0, 0.2),
+    0 1px 8px 0 rgba(0, 0, 0, 0.12);
+}
+
+.skeletonCardImg {
+  width: 100%;
+  height: 198px;
+}
+.skeletonCardBtnContainer {
+  background-color: #f3f3f3;
+  border-radius: 40px;
+  height: 40px;
+  position: absolute;
+  right: 20px;
+  top: 182px;
+  width: 120px;
+}
+.skeletonCardBtn {
+  border-radius: 40px;
+  height: 40px;
+  width: 100%;
+}
+.skeletonCardLines {
+  padding: 0 1em;
+
+  div {
+    border-radius: 2px;
   }
-  to {
-    background-position: 200% 0;
+
+  > :first-child {
+    width: 60%;
+    height: 23px;
+    margin-top: 2em;
+  }
+  > :nth-child(2) {
+    width: 30%;
+    height: 18px;
+    margin-top: 1.5em;
+  }
+  > :nth-child(3) {
+    width: 80%;
+    height: 18px;
+    margin-top: 1.5em;
+  }
+  > :nth-child(4) {
+    width: 85%;
+    height: 18px;
+    margin-top: 1em;
+  }
+  > :nth-child(5) {
+    width: 50%;
+    height: 18px;
+    margin-top: 3em;
+  }
+  > :nth-child(6) {
+    width: 70%;
+    height: 18px;
+    margin-top: 1em;
+  }
+}
+
+.skeletonLoading {
+  background: rgba(130, 130, 130, 0.2);
+  background: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    color-stop(8%, rgba(130, 130, 130, 0.2)),
+    color-stop(18%, rgba(130, 130, 130, 0.3)),
+    color-stop(33%, rgba(130, 130, 130, 0.2))
+  );
+  background: linear-gradient(
+    to right,
+    rgba(130, 130, 130, 0.2) 8%,
+    rgba(130, 130, 130, 0.3) 18%,
+    rgba(130, 130, 130, 0.2) 33%
+  );
+  background-size: 2000px 100px;
+  animation: wave-lines 2s infinite ease-out;
+}
+@keyframes wave-lines {
+  0% {
+    background-position: -660px 0;
+  }
+  100% {
+    background-position: 400px 0;
   }
 }

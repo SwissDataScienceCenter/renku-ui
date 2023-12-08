@@ -29,7 +29,7 @@ import {
   useGetRepositoryCommitsQuery,
 } from "../../../project/projectGitLab.api";
 import { useCoreSupport } from "../../../project/useProjectCoreSupport";
-import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
+import { useGetNotebooksVersionQuery } from "../../../versions/versions.api";
 import useDefaultAutoFetchLfsOption from "../../hooks/options/useDefaultAutoFetchLfsOption.hook";
 import useDefaultBranchOption from "../../hooks/options/useDefaultBranchOption.hook";
 import useDefaultCloudStorageOption from "../../hooks/options/useDefaultCloudStorageOption.hook";
@@ -162,7 +162,7 @@ function useAutostartSessionOptions(): void {
       { skip: !projectConfig }
     );
   const { data: notebooksVersion, isFetching: notebooksVersionIsFetching } =
-    useGetNotebooksVersionsQuery();
+    useGetNotebooksVersionQuery();
   const { data: storageForProject, isFetching: storageIsFetching } =
     useGetCloudStorageForProjectQuery(
       { project_id: `${gitLabProjectId}` },

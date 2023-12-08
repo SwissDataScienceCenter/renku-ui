@@ -17,15 +17,34 @@
  */
 
 import cx from "classnames";
-import skeletonCardImage from "../../styles/assets/SkeletonCard.svg";
 import styles from "./EntityCardSkeleton.module.scss";
 
-export default function EntityCardSkeleton() {
+interface EntityCardSkeletonProps {
+  includeBorder?: boolean;
+}
+export default function EntityCardSkeleton({
+  includeBorder = true,
+}: EntityCardSkeletonProps) {
   return (
-    <div className={styles.skeletonWrapper}>
-      <div className={styles.skeletonImg}>
-        <img src={skeletonCardImage} alt="skeleton card" loading="lazy" />
-        <div className={cx(styles.skeletonImgGraphic, styles.skeletonLoader)} />
+    <div
+      className={cx(
+        styles.skeletonContainer,
+        includeBorder ? styles.skeletonContainerBorder : ""
+      )}
+    >
+      <div className={cx(styles.skeletonCardImg, styles.skeletonLoading)}></div>
+      <div className={cx(styles.skeletonCardBtnContainer)}>
+        <div
+          className={cx(styles.skeletonCardBtn, styles.skeletonLoading)}
+        ></div>
+      </div>
+      <div className={styles.skeletonCardLines}>
+        <div className={styles.skeletonLoading}></div>
+        <div className={styles.skeletonLoading}></div>
+        <div className={styles.skeletonLoading}></div>
+        <div className={styles.skeletonLoading}></div>
+        <div className={styles.skeletonLoading}></div>
+        <div className={styles.skeletonLoading}></div>
       </div>
     </div>
   );

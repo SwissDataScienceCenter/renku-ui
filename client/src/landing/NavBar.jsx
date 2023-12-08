@@ -31,7 +31,7 @@ import { RenkuNavLink } from "../components/RenkuNavLink";
 import AnonymousNavBar from "../components/navbar/AnonymousNavBar";
 import LoggedInNavBar from "../components/navbar/LoggedInNavBar";
 import { RENKU_LOGO } from "../components/navbar/navbar.constans";
-import { parseChartVersion } from "../help/HelpRelease";
+import { parseChartVersion } from "../help/release.utils";
 import { Links } from "../utils/constants/Docs";
 import useLegacySelector from "../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../utils/helpers/url";

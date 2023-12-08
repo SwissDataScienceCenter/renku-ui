@@ -60,8 +60,8 @@ import LoginAlert from "../../../components/loginAlert/LoginAlert";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import { User } from "../../../model/RenkuModels";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { NotebooksVersion } from "../../versions/versions";
-import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
+import { useGetNotebooksVersionQuery } from "../../versions/versions.api";
+import { NotebooksVersion } from "../../versions/versions.types";
 import { StateModelProject } from "../Project";
 import {
   useDeleteCloudStorageMutation,
@@ -110,7 +110,7 @@ export default function ProjectSettingsCloudStorage() {
     error: versionError,
     isFetching: versionIsFetching,
     isLoading: versionIsLoading,
-  } = useGetNotebooksVersionsQuery();
+  } = useGetNotebooksVersionQuery();
 
   const error = storageError || versionError;
   const isFetching = storageIsFetching || versionIsFetching;
