@@ -32,7 +32,7 @@ import {
   Row,
 } from "reactstrap";
 
-import { InfoAlert } from "../../../components/Alert";
+import { InfoAlert, WarnAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
 import { User } from "../../../model/RenkuModels";
 import { NotebooksHelper } from "../../../notebooks";
@@ -176,12 +176,132 @@ function AnonymousDeleteSessionModal({
 }
 
 function LoggedPauseOrDeleteSessionModal({
-  // action,
+  action = "pause",
   isOpen,
   session,
   sessionName,
   toggleModal,
 }: PauseOrDeleteSessionModalProps) {
+  const [currentAction, setCurrentAction] = useState(action);
+
+  const toggleAction = useCallback(() => {
+    setCurrentAction((prevAction) =>
+      prevAction === "delete" ? "pause" : "delete"
+    );
+  }, []);
+
+  if (currentAction === "delete") {
+    return (
+      <DeleteSessionModal
+        isOpen={isOpen}
+        session={session}
+        sessionName={sessionName}
+        toggleModal={toggleModal}
+      />
+    );
+  }
+
+  return (
+    <PauseSessionModal
+      isOpen={isOpen}
+      session={session}
+      sessionName={sessionName}
+      toggleModal={toggleModal}
+    />
+  );
+}
+
+function DeleteSessionModal({
+  isOpen,
+  sessionName,
+  toggleModal,
+}: Omit<PauseOrDeleteSessionModalProps, "action">) {
+  const pathWithNamespace = useLegacySelector<string>(
+    (state) => state.stateModel.project.metadata.pathWithNamespace
+  );
+  const sessionsListUrl = Url.get(Url.pages.project.session, {
+    namespace: "",
+    path: pathWithNamespace,
+  });
+
+  const [stopSession, { isSuccess, error }] = useStopSessionMutation();
+
+  const [isStopping, setIsStopping] = useState(false);
+
+  const onStopSession = useCallback(async () => {
+    stopSession({ serverName: sessionName });
+    setIsStopping(true);
+  }, [sessionName, stopSession]);
+
+  const { isWaiting } = useWaitForSessionStatus({
+    desiredStatus: "stopping",
+    sessionName,
+    skip: !isStopping,
+  });
+
+  const { notifications } = useContext(AppContext);
+
+  useEffect(() => {
+    if (error != null) {
+      addErrorNotification({
+        error,
+        notifications: notifications as NotificationsManager,
+      });
+    }
+  }, [error, notifications]);
+
+  if (isSuccess && !isWaiting) {
+    return <Redirect push to={sessionsListUrl} />;
+  }
+
+  return (
+    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
+      <ModalHeader toggle={toggleModal}>Delete Session</ModalHeader>
+      <ModalBody>
+        <Row>
+          <Col>
+            <p>Are you sure you want to delete this session?</p>
+            <WarnAlert dismissible={false}>
+              TODO: Losing work alert...
+            </WarnAlert>
+            {isStopping ? (
+              <FormText color="primary">
+                <Loader className="me-1" inline size={16} />
+                Deleting Session
+                <br />
+              </FormText>
+            ) : null}
+            <div className="d-flex justify-content-end">
+              <Button
+                className={cx("float-right", "mt-1", "btn-outline-rk-green")}
+                disabled={isStopping}
+                onClick={toggleModal}
+              >
+                Back to Session
+              </Button>
+              <Button
+                className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
+                data-cy="delete-session-modal-button"
+                disabled={isStopping}
+                type="submit"
+                onClick={onStopSession}
+              >
+                Delete Session
+              </Button>
+            </div>
+          </Col>
+        </Row>
+      </ModalBody>
+    </Modal>
+  );
+}
+
+function PauseSessionModal({
+  isOpen,
+  session,
+  sessionName,
+  toggleModal,
+}: Omit<PauseOrDeleteSessionModalProps, "action">) {
   const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
