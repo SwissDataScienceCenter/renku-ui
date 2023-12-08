@@ -42,7 +42,6 @@ import { Loader } from "../../../components/Loader";
 import { RtkErrorAlert } from "../../../components/errors/RtkErrorAlert";
 import LazyRenkuMarkdown from "../../../components/markdown/LazyRenkuMarkdown";
 import useLegacySelector from "../../../utils/customHooks/useLegacySelector.hook";
-import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
 import { StateModelProject } from "../Project";
 import {
   useAddCloudStorageForProjectMutation,
@@ -62,6 +61,7 @@ import {
   parseCloudStorageConfiguration,
 } from "../utils/projectCloudStorage.utils";
 
+import { useGetNotebooksVersionQuery } from "../../versions/versions.api";
 import styles from "./AddCloudStorageButton.module.scss";
 
 export default function AddCloudStorageButton() {
@@ -471,7 +471,7 @@ function SimpleAddCloudStorage({
     (state) => state.stateModel.project.metadata.id
   );
 
-  const { data: notebooksVersion } = useGetNotebooksVersionsQuery();
+  const { data: notebooksVersion } = useGetNotebooksVersionQuery();
   const support = useMemo(
     () =>
       notebooksVersion != null && notebooksVersion.cloudStorageEnabled.s3

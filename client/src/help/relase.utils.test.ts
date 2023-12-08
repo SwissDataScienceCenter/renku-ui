@@ -1,4 +1,4 @@
-import { parseChartVersion } from "./HelpRelease";
+import { parseChartVersion } from "./release.utils";
 
 describe("Parse versions from chartpress", () => {
   it("parses release tagged versions", () => {
