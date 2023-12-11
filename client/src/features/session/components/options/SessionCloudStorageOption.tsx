@@ -73,7 +73,7 @@ import {
   setCloudStorage,
   updateCloudStorageItem,
 } from "../../startSessionOptionsSlice";
-import { CloudStorageItem as CloudStorageItemNew } from "../../../project/components/ProjectSettingsCloudStorage";
+import CloudStorageItem from "../../../project/components/cloudStorage/CloudStorageItem";
 
 export default function SessionCloudStorageOption() {
   const { data: notebooksVersion, isLoading } = useGetNotebooksVersionsQuery();
@@ -246,7 +246,7 @@ function CloudStorageSection({ devAccess }: CloudStorageListProps) {
       ) : null;
 
     return (
-      <CloudStorageItemNew
+      <CloudStorageItem
         devAccess={devAccess}
         disabled={!active}
         key={storage.name}
@@ -270,7 +270,7 @@ function CloudStorageSection({ devAccess }: CloudStorageListProps) {
           </Label>
         </div>
         {requiredSensitiveFields}
-      </CloudStorageItemNew>
+      </CloudStorageItem>
     );
   });
 
