@@ -198,8 +198,7 @@ function AddStorageAdvancedToggle({
         </div>
       </div>
       <UncontrolledTooltip placement="bottom" target={infoId}>
-        Advanced mode uses <code>rclone</code> configurations to set up cloud
-        storage.
+        Advanced mode uses rclone configurations to set up cloud storage.
       </UncontrolledTooltip>
     </>
   );
