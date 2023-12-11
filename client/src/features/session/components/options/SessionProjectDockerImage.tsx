@@ -332,10 +332,6 @@ function useDockerImageStatusStateMachine() {
   );
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    console.log({ dockerImageBuildStatus: status });
-  }, [status]);
-
   const [
     getRenkuRegistry,
     {
@@ -495,13 +491,6 @@ function useDockerImageStatusStateMachine() {
 
   // Handle checking the CI/CD pipeline job
   useEffect(() => {
-    console.log({
-      status,
-      pipelineJobIsFetching,
-      pipelineJobIsSuccess,
-      pipelineJobError,
-      pipelineJob,
-    });
     if (
       status !== "checking-ci-jobs" ||
       pipelineJobIsFetching ||

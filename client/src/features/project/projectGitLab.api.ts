@@ -82,7 +82,6 @@ const projectGitLabApi = createApi({
 
           const jobs = result.data as GitLabPipelineJob[];
           const found = jobs.find(({ name }) => name === jobName);
-          console.log({ jobs, found });
           if (found) {
             return { data: found };
           }
