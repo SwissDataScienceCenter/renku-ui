@@ -81,6 +81,7 @@ import {
   getCredentialFieldDefinitions,
 } from "../utils/projectCloudStorage.utils";
 import AddCloudStorageButton from "./cloudStorage/AddCloudStorageButton";
+import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 
 export default function ProjectSettingsCloudStorage() {
   const logged = useLegacySelector<User["logged"]>(
@@ -133,15 +134,18 @@ export default function ProjectSettingsCloudStorage() {
     );
   }
 
-  // ! TODO: update this, and double check how we handle/show errors
   if (!storageForProject || !notebooksVersion || error) {
     return (
       <CloudStorageSection>
-        <ErrorAlert dismissible={false}>
-          <h3 className={cx("fs-6", "fw-bold")}>
-            Error on loading cloud storage settings
-          </h3>
-        </ErrorAlert>
+        {error ? (
+          <RtkOrNotebooksError error={error} />
+        ) : (
+          <ErrorAlert dismissible={false}>
+            <h3 className={cx("fs-6", "fw-bold")}>
+              Error loading cloud storage settings.
+            </h3>
+          </ErrorAlert>
+        )}
       </CloudStorageSection>
     );
   }
@@ -150,12 +154,18 @@ export default function ProjectSettingsCloudStorage() {
     <CloudStorageSection isFetching={isFetching}>
       <CloudStorageSupportNotice notebooksVersion={notebooksVersion} />
 
-      {notebooksVersion.cloudStorageEnabled && (
+      {notebooksVersion.cloudStorageEnabled ? (
         <Row>
           <Col>
             <AddCloudStorageButton devAccess={devAccess} />
           </Col>
         </Row>
+      ) : (
+        <WarnAlert dismissible={false}>
+          <p className="mb-0">
+            Cloud storage is not enabled for this instance of RenkuLab.
+          </p>
+        </WarnAlert>
       )}
 
       <CloudStorageList
