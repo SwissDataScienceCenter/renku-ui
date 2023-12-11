@@ -105,7 +105,7 @@ function SessionS3CloudStorageOption() {
   });
 
   const storageSettingsRecommendation = devAccess ? (
-    <div className={cx("form-text", "mt-0", "mb-1")}>
+    <div className={cx("form-text", "my-1")}>
       It is recommended to configure cloud storage options from the{" "}
       <Link to={settingsStorageUrl}>Project&apos;s settings</Link>.
     </div>
@@ -173,7 +173,15 @@ function CloudStorageSection({ devAccess }: CloudStorageListProps) {
   }
 
   if (!cloudStorageList || cloudStorageList.length === 0) {
-    return null;
+    return (
+      <p className={cx("mb-1", "form-text")}>
+        No cloud storage configured for this project
+        {devAccess
+          ? ""
+          : ". Only developers can add a new one; you can fork the project if you wish to attach a storage"}
+        .
+      </p>
+    );
   }
 
   const storageList = cloudStorageList.map((storage, index) => {

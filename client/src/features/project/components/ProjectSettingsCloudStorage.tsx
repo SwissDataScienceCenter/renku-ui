@@ -113,7 +113,7 @@ export default function ProjectSettingsCloudStorage() {
   const isFetching = storageIsFetching || versionIsFetching;
   const isLoading = storageIsLoading || versionIsLoading;
 
-  // TODO: we can show settings anyway
+  // TODO: Should the data cloud storage service support this scenario?
   if (!logged) {
     const textIntro =
       "Only authenticated users can access cloud storage setting.";
@@ -124,13 +124,6 @@ export default function ProjectSettingsCloudStorage() {
       </CloudStorageSection>
     );
   }
-  // if (!devAccess) {
-  //   return (
-  //     <CloudStorageSection>
-  //       <p>Settings can be changed only by developers and maintainers.</p>
-  //     </CloudStorageSection>
-  //   );
-  // }
 
   if (isLoading) {
     return (

@@ -32,9 +32,8 @@ import {
   Label,
   ModalBody,
   ModalFooter,
-  PopoverBody,
   Row,
-  UncontrolledPopover,
+  UncontrolledTooltip,
 } from "reactstrap";
 
 import { Loader } from "../../../../components/Loader";
@@ -113,16 +112,14 @@ export default function AddCloudStorageButton({
       >
         {buttonContent}
       </Button>
-      <UncontrolledPopover target={localId}>
-        <PopoverBody>
-          Only developers and maintainers can edit cloud storage settings.
-        </PopoverBody>
-      </UncontrolledPopover>
+      <UncontrolledTooltip target={localId}>
+        Only developers and maintainers can edit cloud storage settings.
+      </UncontrolledTooltip>
     </>
   );
 
   return (
-    <div className="d-inline-block" id={localId}>
+    <div className={cx("d-inline-block", "mb-2")} id={localId}>
       {content}
     </div>
   );
