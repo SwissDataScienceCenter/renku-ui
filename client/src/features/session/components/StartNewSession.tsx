@@ -335,30 +335,34 @@ function SessionStartErrorImageBuilding() {
   const content =
     dockerImageStatus === "available" ? (
       <>
-        The session could not start because the image was still building when
-        the session was requested. You can now try to start the session:
+        <p>
+          The session could not start because the image was still building when
+          the session was requested.
+        </p>
+        <p className="mb-0">You can now try to start the session:</p>
         <StartSessionButton />
       </>
     ) : dockerImageStatus === "not-available" ? (
-      <>
+      <p className="mb-0">
         The session could not start because the image was building when the
         session was requested. The image build failed and the image is not
         available. Please select a different commit or start the session with
         the base image.
-      </>
+      </p>
     ) : (
-      <>
+      <p className="mb-0">
         The session could not start because the image is still building. Please
         wait for the build to finish, or start the session with the base image.
-      </>
+      </p>
     );
 
   return (
-    <RenkuAlert color={color} timeout={0}>
-      <p className="mb-0">{content}</p>
-      <p>
-        <code>{dockerImageStatus}</code>
-      </p>
+    <RenkuAlert
+      className={dockerImageStatus === "available" && "pb-1"}
+      color={color}
+      timeout={0}
+    >
+      {content}
     </RenkuAlert>
   );
 }
