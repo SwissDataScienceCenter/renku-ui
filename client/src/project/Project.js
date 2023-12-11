@@ -109,7 +109,7 @@ function splitProjectSubRoute(subUrl) {
   if (comps.length < 1) return result;
 
   // This could be a route that just provides a projectId
-  if (projectIdRegex.test(comps[0])) {
+  if (comps.length == 1 && projectIdRegex.test(comps[0])) {
     result.projectId = comps[0];
     result.baseUrl = `/projects/${result.projectId}`;
     return result;
