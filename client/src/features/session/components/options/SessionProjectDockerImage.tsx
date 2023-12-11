@@ -588,11 +588,14 @@ function useDockerImageStatusStateMachine() {
       return;
     }
     const tag = commit.slice(0, 7);
-    getRegistryTag({
-      projectId: gitLabProjectId,
-      registryId: registry.id,
-      tag,
-    });
+    getRegistryTag(
+      {
+        projectId: gitLabProjectId,
+        registryId: registry.id,
+        tag,
+      },
+      /*preferCacheValue=*/ false
+    );
   }, [commit, getRegistryTag, gitLabProjectId, registry, status]);
 
   // Handle checking the Docker image
