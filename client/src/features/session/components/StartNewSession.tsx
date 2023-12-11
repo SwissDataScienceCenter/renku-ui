@@ -272,7 +272,6 @@ function SessionStartError() {
   }
 
   const color =
-    // error === "docker-image-building" ||
     error === "session-class" || error === "cloud-storage-credentials"
       ? "warning"
       : "danger";
@@ -287,13 +286,7 @@ function SessionStartError() {
       <>
         Starting a session is not possible because this project has no commit.
       </>
-    ) : // error === "docker-image-building" ? (
-    //   <>
-    //     The session could not start because the image is still building. Please
-    //     wait for the build to finish, or start the session with the base image.
-    //   </>
-    // ) :
-    error === "docker-image-not-available" ? (
+    ) : error === "docker-image-not-available" ? (
       <>
         The session could not start because no image is available. Please select
         a different commit or start the session with the base image.
@@ -337,12 +330,6 @@ function SessionStartErrorImageBuilding() {
   const dockerImageStatus = useAppSelector(
     ({ startSessionOptions }) => startSessionOptions.dockerImageStatus
   );
-  /*
-   | "unknown"
-  | "available"
-  | "not-available"
-  | "building";
-   */
 
   const color = dockerImageStatus === "not-available" ? "danger" : "warning";
   const content =
