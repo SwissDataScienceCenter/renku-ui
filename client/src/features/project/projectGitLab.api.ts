@@ -82,6 +82,7 @@ const projectGitLabApi = createApi({
 
           const jobs = result.data as GitLabPipelineJob[];
           const found = jobs.find(({ name }) => name === jobName);
+          console.log({ jobs, found });
           if (found) {
             return { data: found };
           }
@@ -90,7 +91,7 @@ const projectGitLabApi = createApi({
         return { data: null };
       },
       providesTags: (result) =>
-        result ? [{ id: result.id, type: "Job" }] : [],
+        result ? [{ id: result.id, type: "Job" }] : ["Job"],
     }),
     getPipelines: builder.query<GitLabPipeline[], GetPipelinesParams>({
       query: ({ commit, projectId }) => ({
@@ -116,6 +117,7 @@ const projectGitLabApi = createApi({
       }),
       invalidatesTags: (_result, _error, { pipelineId }) => [
         { id: pipelineId, type: "Pipeline" },
+        "Job",
       ],
     }),
     runPipeline: builder.mutation<GitLabPipeline, RunPipelineParams>({

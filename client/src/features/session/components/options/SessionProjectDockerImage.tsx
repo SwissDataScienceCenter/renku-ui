@@ -180,12 +180,19 @@ function BuildAgainButton() {
       return;
     }
 
+    let reset: (() => void) | null = () => {
+      dispatch(setDockerImageBuildStatus("unknown"));
+      dispatch(setDockerImageStatus("unknown"));
+    };
     retryPipeline({
       pipelineId: pipelineJob.pipeline.id,
       projectId: gitLabProjectId,
+    }).finally(() => {
+      reset?.();
     });
-    dispatch(setDockerImageBuildStatus("unknown"));
-    dispatch(setDockerImageStatus("unknown"));
+    return () => {
+      reset = null;
+    };
   }, [dispatch, gitLabProjectId, pipelineJob, retryPipeline]);
 
   if (!hasDevAccess) {
@@ -324,6 +331,10 @@ function useDockerImageStatusStateMachine() {
     ({ startSessionOptions }) => startSessionOptions
   );
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    console.log({ dockerImageBuildStatus: status });
+  }, [status]);
 
   const [
     getRenkuRegistry,
@@ -484,6 +495,13 @@ function useDockerImageStatusStateMachine() {
 
   // Handle checking the CI/CD pipeline job
   useEffect(() => {
+    console.log({
+      status,
+      pipelineJobIsFetching,
+      pipelineJobIsSuccess,
+      pipelineJobError,
+      pipelineJob,
+    });
     if (
       status !== "checking-ci-jobs" ||
       pipelineJobIsFetching ||
@@ -512,7 +530,12 @@ function useDockerImageStatusStateMachine() {
     }
     if (
       (
-        ["running", "pending", "stopping"] as GitLabPipelineJob["status"][]
+        [
+          "running",
+          "created",
+          "pending",
+          "stopping",
+        ] as GitLabPipelineJob["status"][]
       ).includes(pipelineJob.status)
     ) {
       dispatch(setDockerImageBuildStatus("ci-job-running"));
