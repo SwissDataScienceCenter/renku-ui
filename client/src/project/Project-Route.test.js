@@ -138,37 +138,14 @@ describe("id route extraction", () => {
     expect(pathComponents.baseUrl).toEqual("/projects/1");
     expect(pathComponents.namespace).toEqual(null);
   });
-  it("handles project-id sub routes", () => {
-    const pathComponents = splitProjectSubRoute("/projects/1/overview");
-    expect(pathComponents.projectPathWithNamespace).toEqual(null);
-    expect(pathComponents.projectId).toEqual("1");
-    expect(pathComponents.baseUrl).toEqual("/projects/1");
-    expect(pathComponents.namespace).toEqual(null);
-  });
-  it("handles project-id 2-level sub routes", () => {
-    const pathComponents = splitProjectSubRoute("/projects/1/overview/stats");
-    expect(pathComponents.projectPathWithNamespace).toEqual(null);
-    expect(pathComponents.projectId).toEqual("1");
-    expect(pathComponents.baseUrl).toEqual("/projects/1");
-    expect(pathComponents.namespace).toEqual(null);
-  });
-  it("handles project-id file paths 1", () => {
-    const pathComponents = splitProjectSubRoute(
-      "/projects/1/files/blob/README.md"
+  it("accepts numeric namespaces", () => {
+    const pathComponents = splitProjectSubRoute("/projects/12345/project-name");
+    expect(pathComponents.projectPathWithNamespace).toEqual(
+      "12345/project-name"
     );
-    expect(pathComponents.projectPathWithNamespace).toEqual(null);
-    expect(pathComponents.projectId).toEqual("1");
-    expect(pathComponents.baseUrl).toEqual("/projects/1");
-    expect(pathComponents.namespace).toEqual(null);
-  });
-  it("handles project-id file paths 2", () => {
-    const pathComponents = splitProjectSubRoute(
-      "/projects/1/files/blob/root/sub1/sub2/foo.txt"
-    );
-    expect(pathComponents.projectPathWithNamespace).toEqual(null);
-    expect(pathComponents.projectId).toEqual("1");
-    expect(pathComponents.baseUrl).toEqual("/projects/1");
-    expect(pathComponents.namespace).toEqual(null);
+    expect(pathComponents.projectId).toEqual(null);
+    expect(pathComponents.baseUrl).toEqual("/projects/12345/project-name");
+    expect(pathComponents.namespace).toEqual("12345");
   });
 });
 
