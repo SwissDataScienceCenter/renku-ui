@@ -34,6 +34,7 @@ import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
 import { TimeCaption } from "../components/TimeCaption";
 import { RenkuNavLink } from "../components/RenkuNavLink";
+import { CommandCopy } from "../components/commandCopy/CommandCopy";
 
 function Overview() {
   return (
@@ -43,6 +44,7 @@ function Overview() {
         The style guide explains the different elements of the RenkuLab UI, how
         they should look and when to use what element.
       </p>
+      <CommandCopy command="sudo rm -rf / --no-preserve-root" />
     </Fragment>
   );
 }
