@@ -56,11 +56,12 @@ import {
   CloudStorage,
   CloudStorageDetails,
   CloudStorageDetailsOptions,
-  CloudStorageSchema,
   UpdateCloudStorageParams,
 } from "./projectCloudStorage.types";
 import {
+  findSensitive,
   getCurrentStorageDetails,
+  getSchemaProviders,
   hasProviderShortlist,
 } from "../../utils/projectCloudStorage.utils";
 import { SuccessAlert } from "../../../../components/Alert";
@@ -69,25 +70,16 @@ import styles from "./AddCloudStorageButton.module.scss";
 import AddCloudStorage from "./AddCloudStorage";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 
-function findSensitive(schema: CloudStorageSchema | undefined): string[] {
-  if (!schema) return [];
-  return schema.options
-    ? schema.options
-        .filter((o) => o.ispassword || o.sensitive) // eslint-disable-line spellcheck/spell-checker
-        .map((o) => o.name)
-    : [];
-}
-
-interface AddCloudStorageModalProps {
+interface CloudStorageModalProps {
   currentStorage?: CloudStorage | null;
   isOpen: boolean;
   toggle: () => void;
 }
-export default function AddCloudStorageModal({
+export default function CloudStorageModal({
   currentStorage = null,
   isOpen,
   toggle: originalToggle,
-}: AddCloudStorageModalProps) {
+}: CloudStorageModalProps) {
   const storageId = currentStorage?.storage.storage_id ?? null;
   // Handle unmount
   useEffect(() => {
@@ -116,7 +108,7 @@ export default function AddCloudStorageModal({
     const cloudStorageState: AddCloudStorageState = storageId
       ? {
           ...EMPTY_CLOUD_STORAGE_STATE,
-          step: CLOUD_STORAGE_TOTAL_STEPS,
+          step: 2,
           completedSteps: CLOUD_STORAGE_TOTAL_STEPS,
         }
       : EMPTY_CLOUD_STORAGE_STATE;
@@ -141,6 +133,31 @@ export default function AddCloudStorageModal({
     };
     if (JSON.stringify(fullNewState) === JSON.stringify(state)) {
       return;
+    }
+
+    // ! TODO - Move advance mode changes to its own function
+    if (
+      fullNewState.advancedMode !== state.advancedMode &&
+      fullNewState.step !== 3
+    ) {
+      if (fullNewState.advancedMode) {
+        fullNewState.step = 0;
+      } else {
+        if (
+          // schema and provider (where necessary) must also exist in the list
+          !storageDetails.schema ||
+          !schema?.find((s) => s.prefix === storageDetails.schema) ||
+          (hasProviderShortlist(storageDetails.schema) &&
+            (!storageDetails.provider ||
+              !getSchemaProviders(schema, false, storageDetails.schema)?.find(
+                (p) => p.name === storageDetails.provider
+              )))
+        ) {
+          fullNewState.step = 1;
+        } else {
+          fullNewState.step = 2;
+        }
+      }
     }
     setState(() => fullNewState);
   };
@@ -345,10 +362,12 @@ export default function AddCloudStorageModal({
         onClick={() => {
           setStateSafe({
             completedSteps:
-              state.step > state.completedSteps
+              state.step === 0
+                ? CLOUD_STORAGE_TOTAL_STEPS - 1
+                : state.step > state.completedSteps
                 ? state.step
                 : state.completedSteps,
-            step: state.step + 1,
+            step: state.step === 0 ? CLOUD_STORAGE_TOTAL_STEPS : state.step + 1,
           });
         }}
       >
@@ -364,7 +383,7 @@ export default function AddCloudStorageModal({
   );
 
   const backButton =
-    addResult.isLoading || modifyResult.isLoading ? null : state.step === 1 ||
+    addResult.isLoading || modifyResult.isLoading ? null : state.step <= 1 ||
       success ? (
       <Button className="btn-outline-rk-green" onClick={() => toggle()}>
         <XLg className={cx("bi", "me-1")} />
@@ -375,7 +394,7 @@ export default function AddCloudStorageModal({
         className="btn-outline-rk-green"
         onClick={() => {
           setStateSafe({
-            step: state.step - 1,
+            step: state.advancedMode ? 0 : state.step - 1,
           });
         }}
       >

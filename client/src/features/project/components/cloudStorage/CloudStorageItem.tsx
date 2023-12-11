@@ -50,10 +50,7 @@ import {
   CloudStorage,
   CloudStorageConfiguration,
 } from "./projectCloudStorage.types";
-import {
-  formatCloudStorageConfiguration,
-  getCredentialFieldDefinitions,
-} from "../../utils/projectCloudStorage.utils";
+import { getCredentialFieldDefinitions } from "../../utils/projectCloudStorage.utils";
 import AddCloudStorageButton from "./AddCloudStorageButton";
 
 interface CloudStorageItemProps {
@@ -79,11 +76,6 @@ export default function CloudStorageItem({
   const anySensitiveField = Object.keys(storage.configuration).some((key) =>
     sensitiveFields.includes(key)
   );
-
-  const formattedConfiguration = formatCloudStorageConfiguration({
-    configuration,
-    name,
-  });
 
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
@@ -176,7 +168,6 @@ export default function CloudStorageItem({
           <CardBody className="pt-0">
             <CloudStorageDetails
               devAccess={devAccess}
-              formattedConfiguration={formattedConfiguration}
               noEdit={noEdit}
               storageDefinition={storageDefinition}
             />
@@ -189,7 +180,6 @@ export default function CloudStorageItem({
 
 interface CloudStorageDetailsProps {
   devAccess: boolean;
-  formattedConfiguration: string;
   noEdit?: string;
   storageDefinition: CloudStorage;
 }

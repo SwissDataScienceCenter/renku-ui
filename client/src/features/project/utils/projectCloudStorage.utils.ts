@@ -63,19 +63,33 @@ export function parseCloudStorageConfiguration(
   );
 }
 
-export function formatCloudStorageConfiguration({
-  configuration,
-  name,
-}: {
-  configuration: Record<string, string | number | boolean | undefined>;
-  name: string;
-}): string {
-  const lines = Object.entries(configuration)
-    .filter(([, value]) => value != null)
-    .map(([key, value]) => `${key} = ${value}`)
-    .join("\n");
-  return `[${name}]\n${lines}\n`;
+export function convertFromAdvancedConfig(
+  storage: CloudStorageDetails
+): string {
+  const values: string[] = [];
+  storage.schema && values.push(`type = ${storage.schema}`);
+  storage.provider && values.push(`provider = ${storage.provider}`);
+  if (storage.options) {
+    Object.entries(storage.options).forEach(([key, value]) => {
+      if (value != undefined && value !== "") values.push(`${key} = ${value}`);
+    });
+  }
+  return values.length ? values.join("\n") + "\n" : "";
 }
+
+// export function formatCloudStorageConfiguration({
+//   configuration,
+//   name,
+// }: {
+//   configuration: Record<string, string | number | boolean | undefined>;
+//   name: string;
+// }): string {
+//   const lines = Object.entries(configuration)
+//     .filter(([, value]) => value != null)
+//     .map(([key, value]) => `${key} = ${value}`)
+//     .join("\n");
+//   return `[${name}]\n${lines}\n`;
+// }
 
 export function getCredentialFieldDefinitions(
   storageDefinition: CloudStorage
@@ -331,6 +345,7 @@ export function getSchemaOptions(
   return convertedOptions;
 }
 
+// TODO: add placeholder logic
 export function getSourcePathHint(targetSchema = "") {
   const initialText = "Source path to mount. ";
   const finalText =
@@ -363,4 +378,15 @@ export function getCurrentStorageDetails(
   };
 
   return storageDetails;
+}
+
+export function findSensitive(
+  schema: CloudStorageSchema | undefined
+): string[] {
+  if (!schema) return [];
+  return schema.options
+    ? schema.options
+        .filter((o) => o.ispassword || o.sensitive) // eslint-disable-line spellcheck/spell-checker
+        .map((o) => o.name)
+    : [];
 }
