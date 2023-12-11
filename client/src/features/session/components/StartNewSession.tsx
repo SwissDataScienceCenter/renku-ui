@@ -266,10 +266,14 @@ function SessionStartError() {
     return null;
   }
 
+  // Handle `docker-image-building` as a special case
+  if (error === "docker-image-building") {
+    return <SessionStartErrorImageBuilding />;
+  }
+
   const color =
-    error === "docker-image-building" ||
-    error === "session-class" ||
-    error === "cloud-storage-credentials"
+    // error === "docker-image-building" ||
+    error === "session-class" || error === "cloud-storage-credentials"
       ? "warning"
       : "danger";
 
@@ -283,12 +287,13 @@ function SessionStartError() {
       <>
         Starting a session is not possible because this project has no commit.
       </>
-    ) : error === "docker-image-building" ? (
-      <>
-        The session could not start because the image is still building. Please
-        wait for the build to finish, or start the session with the base image.
-      </>
-    ) : error === "docker-image-not-available" ? (
+    ) : // error === "docker-image-building" ? (
+    //   <>
+    //     The session could not start because the image is still building. Please
+    //     wait for the build to finish, or start the session with the base image.
+    //   </>
+    // ) :
+    error === "docker-image-not-available" ? (
       <>
         The session could not start because no image is available. Please select
         a different commit or start the session with the base image.
@@ -324,6 +329,29 @@ function SessionStartError() {
   return (
     <RenkuAlert color={color} timeout={0}>
       <p className="mb-0">{content}</p>
+    </RenkuAlert>
+  );
+}
+
+function SessionStartErrorImageBuilding() {
+  const dockerImageStatus = useAppSelector(
+    ({ startSessionOptions }) => startSessionOptions.dockerImageStatus
+  );
+
+  const color = "warning";
+  const content = (
+    <>
+      The session could not start because the image is still building. Please
+      wait for the build to finish, or start the session with the base image.
+    </>
+  );
+
+  return (
+    <RenkuAlert color={color} timeout={0}>
+      <p className="mb-0">{content}</p>
+      <p>
+        <code>{dockerImageStatus}</code>
+      </p>
     </RenkuAlert>
   );
 }
