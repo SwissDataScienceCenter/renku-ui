@@ -49,6 +49,7 @@ import {
   updateCloudStorageItem,
 } from "../../startSessionOptionsSlice";
 import CloudStorageItem from "../../../project/components/cloudStorage/CloudStorageItem";
+import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 
 export default function SessionCloudStorageOption() {
   const { data: notebooksVersion, isLoading } = useGetNotebooksVersionsQuery();
@@ -161,10 +162,20 @@ function CloudStorageSection({ devAccess }: CloudStorageListProps) {
   }
 
   const storageList = cloudStorageList.map((storage, index) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { active, sensitive_fields, ...otherStorageProps } = storage;
+    const { active, sensitive_fields, ...unsafeStorageProps } = storage;
+    const { configuration, ...otherStorageProps } = unsafeStorageProps;
+
+    const safeConfiguration = Object.fromEntries(
+      Object.entries(configuration).map(([key, value]) => [
+        key,
+        sensitive_fields && sensitive_fields.find((f) => f.name === key)
+          ? CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN
+          : value,
+      ])
+    );
+
     const storageDefinition = {
-      storage: otherStorageProps,
+      storage: { configuration: safeConfiguration, ...otherStorageProps },
       sensitive_fields: storage.sensitive_fields,
     };
     const localId = `cloud-storage-${storage.name}`;
@@ -186,10 +197,18 @@ function CloudStorageSection({ devAccess }: CloudStorageListProps) {
           name,
           value,
         });
+
         dispatch(
           updateCloudStorageItem({
             index,
-            storage: { ...storage, sensitive_fields: newSensitiveFields },
+            storage: {
+              ...storage,
+              configuration: {
+                ...storage.configuration,
+                [name]: value,
+              },
+              sensitive_fields: newSensitiveFields,
+            },
           })
         );
       }
