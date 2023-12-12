@@ -374,8 +374,7 @@ function AddStorageType({
         <p className="mb-0">
           <b>{s.name}</b>
           <br />
-          {/* // TODO: fix description, it should be expandable */}
-          <small>{s.description ? s.description.substring(0, 60) : ""}</small>
+          <small>{s.description}</small>
         </p>
       </ListGroupItem>
     );
@@ -455,9 +454,7 @@ function AddStorageType({
             <p className="mb-0">
               <b>{p.name}</b>
               <br />
-              <small>
-                {p.description ? p.description.substring(0, 60) : ""}
-              </small>
+              <small>{p.description}</small>
             </p>
           </ListGroupItem>
         );

@@ -78,15 +78,10 @@ export const CLOUD_STORAGE_MOUN_PATH_HELP = {
     "Depending on the provider, you can leave this blank to mount the default root or specify a folder.",
 } as Record<string, string>;
 
-export const CLOUD_STORAGE_SCHEMA_SHORTLIST = [
-  "s3",
-  "drive",
-  "webdav",
-  "azureblob",
-];
+export const CLOUD_STORAGE_SCHEMA_SHORTLIST = ["s3", "webdav", "azureblob"];
 
 export const CLOUD_STORAGE_PROVIDERS_SHORTLIST = {
-  s3: ["AWS", "DigitalOcean", "Switch"],
+  s3: ["AWS", "GCS", "Switch"],
 } as Record<string, string[]>;
 
 export const CLOUD_STORAGE_TOTAL_STEPS = 3;
