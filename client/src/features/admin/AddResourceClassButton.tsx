@@ -282,7 +282,7 @@ function AddResourceClassModal({
             />
           </div>
 
-          <div>
+          <div className="mb-3">
             <Label
               className="form-label"
               for={`addResourceClassMaxStorage-${id}`}
