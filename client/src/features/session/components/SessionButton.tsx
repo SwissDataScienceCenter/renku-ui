@@ -65,6 +65,7 @@ import { getRunningSession } from "../sessions.utils";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
 import SimpleSessionButton from "./SimpleSessionButton";
 import UnsavedWorkWarning from "./UnsavedWorkWarning";
+import { Tools } from "react-bootstrap-icons";
 
 interface SessionButtonProps {
   className?: string;
@@ -396,6 +397,15 @@ function SessionActions({ className, session }: SessionActionsProps) {
     </DropdownItem>
   );
 
+  const modifyAction = status === "hibernated" &&
+    !isStopping &&
+    !isHibernating && (
+      <DropdownItem data-cy="modify-session-button">
+        <Tools className={cx("bi", "text-rk-green", "me-2")} />
+        Modify session
+      </DropdownItem>
+    );
+
   const openInNewTabAction = (status === "starting" ||
     status === "running") && (
     <DropdownItem href={session.url} target="_blank">
@@ -450,7 +460,10 @@ function SessionActions({ className, session }: SessionActionsProps) {
     >
       {hibernateAction}
       {deleteAction}
-      {(hibernateAction || deleteAction) && <DropdownItem divider />}
+      {modifyAction}
+      {(hibernateAction || deleteAction || modifyAction) && (
+        <DropdownItem divider />
+      )}
 
       {openInNewTabAction}
       {logsAction}
