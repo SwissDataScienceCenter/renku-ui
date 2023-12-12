@@ -822,6 +822,11 @@ function AddStorageOptions({
 
   return (
     <form className="form-rk-green">
+      <h5>Options</h5>
+      <p>
+        Please fill in all the options required to connect to your storage. Mind
+        that the specific fields required depend on your storage configuration.
+      </p>
       {sourcePath}
       {optionItems}
       {advancedOptions}
@@ -850,6 +855,9 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
 
   return (
     <form className="form-rk-green">
+      <h5>Final details</h5>
+      <p>We need a few more details to mount your storage properly.</p>
+
       <div className="mb-3">
         <Label className="form-label" for="add-storage-name">
           Name
@@ -931,7 +939,7 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
         <Controller
           name="readOnly"
           control={control}
-          defaultValue={storage.readOnly ?? true}
+          defaultValue={storage.readOnly ?? false}
           render={({ field }) => (
             <input
               id="readOnly"
@@ -946,14 +954,26 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
                 field.onChange(e);
                 onFieldValueChange("readOnly", e.target.checked);
               }}
-              checked={storage.readOnly === false ? false : true}
+              checked={storage.readOnly ?? false}
             />
           )}
           rules={{ required: true }}
         />
+        {!storage.readOnly && (
+          <div className="mt-1">
+            <WarnAlert>
+              <p className="mb-0">
+                You are mounting this storage in read-write mode. If you have
+                read-only access, please check the box to prevent errors with
+                some storage types.
+              </p>
+            </WarnAlert>
+          </div>
+        )}
         <div className={cx("form-text", "text-muted")}>
-          Check this box to mount the storage in read-only mode. Use this
-          setting to prevent accidental data modifications.
+          Check this box to mount the storage in read-only mode. You should
+          always check this if you do not have credentials to write. You can use
+          this in any case to prevent accidental data modifications.
         </div>
       </div>
     </form>
