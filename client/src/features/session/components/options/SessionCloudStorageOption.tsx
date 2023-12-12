@@ -18,28 +18,14 @@
 
 import cx from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  CloudFill,
-  EyeFill,
-  EyeSlashFill,
-  InfoCircleFill,
-  PlusLg,
-  XLg,
-} from "react-bootstrap-icons";
-import { Controller, useForm } from "react-hook-form";
+import { EyeFill, EyeSlashFill, InfoCircleFill } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import {
   Button,
   Container,
-  Form,
-  FormText,
   Input,
   InputGroup,
   Label,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
   PopoverBody,
   Row,
   UncontrolledPopover,
@@ -47,29 +33,18 @@ import {
 } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../../../api-client";
-import { InfoAlert } from "../../../../components/Alert";
-import { ExternalLink } from "../../../../components/ExternalLinks";
 import { Loader } from "../../../../components/Loader";
-import {
-  RtkErrorAlert,
-  RtkOrNotebooksError,
-} from "../../../../components/errors/RtkErrorAlert";
+import { RtkOrNotebooksError } from "../../../../components/errors/RtkErrorAlert";
 import LazyRenkuMarkdown from "../../../../components/markdown/LazyRenkuMarkdown";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
 import { StateModelProject } from "../../../project/Project";
-import {
-  useGetCloudStorageForProjectQuery,
-  useValidateCloudStorageConfigurationMutation,
-} from "../../../project/components/cloudStorage/projectCloudStorage.api";
-import { CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
-import { parseCloudStorageConfiguration } from "../../../project/utils/projectCloudStorage.utils";
+import { useGetCloudStorageForProjectQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
 import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
 import { SessionCloudStorage } from "../../startSessionOptions.types";
 import {
-  addCloudStorageItem,
   setCloudStorage,
   updateCloudStorageItem,
 } from "../../startSessionOptionsSlice";
@@ -106,7 +81,7 @@ function SessionS3CloudStorageOption() {
 
   const storageSettingsRecommendation = devAccess ? (
     <div className={cx("form-text", "my-1")}>
-      It is recommended to configure cloud storage options from the{" "}
+      Cloud storage options can be adjusted from the{" "}
       <Link to={settingsStorageUrl}>Project&apos;s settings</Link>.
     </div>
   ) : null;
@@ -151,6 +126,7 @@ function CloudStorageSection({ devAccess }: CloudStorageListProps) {
     const initialCloudStorage: SessionCloudStorage[] = storageForProject.map(
       ({ storage, sensitive_fields }) => ({
         active: true,
+        supported: true,
         ...(sensitive_fields
           ? {
               sensitive_fields: sensitive_fields.map(({ name, ...rest }) => ({
@@ -250,9 +226,7 @@ function CloudStorageSection({ devAccess }: CloudStorageListProps) {
         devAccess={devAccess}
         disabled={!active}
         key={storage.name}
-        noEdit={
-          "Cannot edit storage from the session pages. Please go to the project settings."
-        }
+        noEdit={true}
         storageDefinition={storageDefinition}
       >
         <div>
@@ -264,9 +238,7 @@ function CloudStorageSection({ devAccess }: CloudStorageListProps) {
             type="checkbox"
           />
           <Label for={`${localId}-active`}>
-            {active
-              ? "Mount the storage in this session"
-              : "Non active for this session"}
+            Mount the storage in this session
           </Label>
         </div>
         {requiredSensitiveFields}
@@ -360,276 +332,4 @@ function CredentialMoreInfo({ help }: { help: string }) {
       </UncontrolledPopover>
     </>
   );
-}
-
-// ! TODO: restore this?
-export function AddTemporaryCloudStorageButton() {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = useCallback(() => {
-    setIsOpen((open) => !open);
-  }, []);
-
-  return (
-    <>
-      <Button className={cx("btn-outline-rk-green")} onClick={toggle}>
-        <PlusLg className={cx("bi", "me-1")} />
-        Add Temporary Cloud Storage
-      </Button>
-      <AddTemporaryCloudStorageModal isOpen={isOpen} toggle={toggle} />
-    </>
-  );
-}
-
-interface AddTemporaryCloudStorageModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-}
-
-// ! TODO: this should go away; we should adapt and re-use the current Cloud Storage modal
-function AddTemporaryCloudStorageModal({
-  isOpen,
-  toggle,
-}: AddTemporaryCloudStorageModalProps) {
-  const { namespace, path } = useLegacySelector<StateModelProject["metadata"]>(
-    (state) => state.stateModel.project.metadata
-  );
-
-  const settingsStorageUrl = Url.get(Url.pages.project.settings.storage, {
-    namespace,
-    path,
-  });
-
-  const dispatch = useAppDispatch();
-
-  const [validateCloudStorageConfiguration, result] =
-    useValidateCloudStorageConfigurationMutation();
-
-  const {
-    control,
-    formState: { errors },
-    getValues,
-    handleSubmit,
-    reset,
-  } = useForm<AddTemporaryCloudStorageForm>({
-    defaultValues: {
-      configuration: "",
-      name: "",
-      readonly: false,
-      source_path: "",
-    },
-  });
-  const onSubmit = useCallback(
-    (data: AddTemporaryCloudStorageForm) => {
-      const configuration = parseCloudStorageConfiguration(data.configuration);
-      validateCloudStorageConfiguration({ configuration });
-    },
-    [validateCloudStorageConfiguration]
-  );
-
-  useEffect(() => {
-    if (result.isSuccess) {
-      const data = getValues();
-      const configuration = parseCloudStorageConfiguration(data.configuration);
-      dispatch(
-        addCloudStorageItem({
-          active: true,
-          configuration,
-          name: data.name,
-          private: false,
-          project_id: "", // ! This should be adjust, or change the interface
-          readonly: data.readonly,
-          source_path: data.source_path,
-          storage_id: "",
-          storage_type: "",
-          target_path: data.name,
-        })
-      );
-      toggle();
-    }
-  }, [dispatch, getValues, result.isSuccess, toggle]);
-
-  // Reset state when closed
-  useEffect(() => {
-    if (!isOpen) {
-      reset();
-    }
-  }, [isOpen, reset]);
-
-  return (
-    <Modal centered fullscreen="lg" isOpen={isOpen} size="lg" toggle={toggle}>
-      <ModalHeader toggle={toggle}>
-        <CloudFill className={cx("bi", "me-2")} />
-        Add Temporary Cloud Storage
-      </ModalHeader>
-      <ModalBody>
-        <Form
-          className="form-rk-green"
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          {result.error && <RtkErrorAlert error={result.error} />}
-
-          <InfoAlert timeout={0} dismissible={false}>
-            This cloud storage will be configured for this session only. To
-            configure cloud storage permanently for this project, go to{" "}
-            <Link to={settingsStorageUrl}>Project settings</Link>.
-          </InfoAlert>
-
-          <p className="mb-0">
-            Temporary cloud storage uses <code>rclone</code> configurations to
-            set up cloud storage.
-          </p>
-          <p className="mb-3">
-            Learn more at the{" "}
-            <ExternalLink
-              url="https://rclone.org/"
-              title="rclone documentation"
-              role="link"
-            />
-            .
-          </p>
-
-          <div className="mb-3">
-            <Label className="form-label" for="addCloudStorageName">
-              Name
-            </Label>
-            <FormText id="addCloudStorageNameHelp" tag="div">
-              The name also determines the mount location, though it is possible
-              to change it later.
-            </FormText>
-            <Controller
-              control={control}
-              name="name"
-              render={({ field }) => (
-                <Input
-                  aria-describedby="addCloudStorageNameHelp"
-                  className={cx("form-control", errors.name && "is-invalid")}
-                  id="addCloudStorageName"
-                  placeholder="storage"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">Please provide a name</div>
-          </div>
-
-          <div className="mb-3">
-            <Controller
-              control={control}
-              name="readonly"
-              render={({ field }) => (
-                <Input
-                  aria-describedby="addCloudStorageReadOnlyHelp"
-                  className="form-check-input"
-                  id="addCloudStorageReadOnly"
-                  type="checkbox"
-                  checked={field.value}
-                  innerRef={field.ref}
-                  onBlur={field.onBlur}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-            <Label
-              className={cx("form-check-label", "ms-2")}
-              for="addCloudStorageReadOnly"
-            >
-              Read-only
-            </Label>
-            <FormText id="addCloudStorageReadOnlyHelp" tag="div">
-              Check this box to mount the storage in read-only mode. Use this
-              setting to prevent accidental data modifications.
-            </FormText>
-          </div>
-
-          <div className="mb-3">
-            <Label className="form-label" for="addCloudStorageSourcePath">
-              Source Path
-            </Label>
-            <Controller
-              control={control}
-              name="source_path"
-              render={({ field }) => (
-                <Input
-                  className={cx(
-                    "form-control",
-                    errors.source_path && "is-invalid"
-                  )}
-                  id="addCloudStorageSourcePath"
-                  placeholder="bucket/folder"
-                  type="text"
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">
-              Please provide a valid source path
-            </div>
-          </div>
-
-          <div>
-            <Label className="form-label" for="addCloudStorageConfig">
-              Configuration
-            </Label>
-            <FormText id="addCloudStorageConfigHelp" tag="div">
-              You can paste here the output of{" "}
-              <code className="user-select-all">
-                rclone config show &lt;name&gt;
-              </code>
-              .
-            </FormText>
-            <Controller
-              control={control}
-              name="configuration"
-              render={({ field }) => (
-                <textarea
-                  aria-describedby="addCloudStorageConfigHelp"
-                  className={cx(
-                    "form-control",
-                    (errors.configuration || result.isError) && "is-invalid"
-                  )}
-                  id="addCloudStorageConfig"
-                  placeholder={CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER}
-                  rows={10}
-                  {...field}
-                />
-              )}
-              rules={{ required: true }}
-            />
-            <div className="invalid-feedback">
-              Please provide a valid <code>rclone</code> configuration
-            </div>
-          </div>
-        </Form>
-      </ModalBody>
-      <ModalFooter>
-        <Button className="btn-outline-rk-green" onClick={toggle}>
-          <XLg className={cx("bi", "me-1")} />
-          Close
-        </Button>
-        <Button
-          disabled={result.isLoading}
-          onClick={handleSubmit(onSubmit)}
-          type="submit"
-        >
-          {result.isLoading ? (
-            <Loader className="me-1" inline size={16} />
-          ) : (
-            <PlusLg className={cx("bi", "me-1")} />
-          )}
-          Add Temporary Cloud Storage
-        </Button>
-      </ModalFooter>
-    </Modal>
-  );
-}
-
-interface AddTemporaryCloudStorageForm {
-  configuration: string;
-  name: string;
-  readonly: boolean;
-  source_path: string;
 }

@@ -114,20 +114,23 @@ export function RtkOrNotebooksError({
   dismissible = true,
 }: RtkErrorAlertProps) {
   if (!error) return null;
-  return "status" in error &&
+  if (
+    "status" in error &&
     typeof error.status === "number" &&
     (error.status as number) >= 400 &&
     typeof error.data === "object" &&
     error.data &&
     "error" in error.data &&
-    (error.data as NotebooksErrorResponse).error ? (
-    <RenkuAlert color="danger" dismissible={dismissible} timeout={0}>
-      <h3>Error {(error.data as NotebooksErrorResponse).error.code}</h3>
-      <p className="mb-0">
-        {(error.data as NotebooksErrorResponse).error.message}
-      </p>
-    </RenkuAlert>
-  ) : (
-    <RtkErrorAlert dismissible={true} error={error} />
-  );
+    (error.data as NotebooksErrorResponse).error
+  ) {
+    return (
+      <RenkuAlert color="danger" dismissible={dismissible} timeout={0}>
+        <h3>Error {(error.data as NotebooksErrorResponse).error.code}</h3>
+        <p className="mb-0">
+          {(error.data as NotebooksErrorResponse).error.message}
+        </p>
+      </RenkuAlert>
+    );
+  }
+  return <RtkErrorAlert dismissible={true} error={error} />;
 }

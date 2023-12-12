@@ -31,7 +31,7 @@ import { useGetNotebooksVersionsQuery } from "../../versions/versionsApi";
 import { StateModelProject } from "../Project";
 import { useGetCloudStorageForProjectQuery } from "./cloudStorage/projectCloudStorage.api";
 import { CloudStorage } from "./cloudStorage/projectCloudStorage.types";
-import AddCloudStorageButton from "./cloudStorage/AddCloudStorageButton";
+import AddOrEditCloudStorageButton from "./cloudStorage/AddOrEditCloudStorageButton";
 import { RtkOrNotebooksError } from "../../../components/errors/RtkErrorAlert";
 import CloudStorageItem from "./cloudStorage/CloudStorageItem";
 
@@ -40,13 +40,11 @@ export default function ProjectSettingsCloudStorage() {
     (state) => state.stateModel.user.logged
   );
 
-  // Project options
   const { accessLevel, id: projectId } = useLegacySelector<
     StateModelProject["metadata"]
   >((state) => state.stateModel.project.metadata);
   const devAccess = accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
-  // Cloud storage list
   const {
     data: storageForProject,
     error: storageError,
@@ -66,7 +64,6 @@ export default function ProjectSettingsCloudStorage() {
   const isFetching = storageIsFetching || versionIsFetching;
   const isLoading = storageIsLoading || versionIsLoading;
 
-  // TODO: Should the data cloud storage service support this scenario?
   if (!logged) {
     const textIntro =
       "Only authenticated users can access cloud storage setting.";
@@ -109,7 +106,7 @@ export default function ProjectSettingsCloudStorage() {
       {notebooksVersion.cloudStorageEnabled ? (
         <Row>
           <Col>
-            <AddCloudStorageButton devAccess={devAccess} />
+            <AddOrEditCloudStorageButton devAccess={devAccess} />
           </Col>
         </Row>
       ) : (

@@ -21,8 +21,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   CheckLg,
   InfoCircleFill,
-  Key,
-  PencilSquare,
+  KeyFill,
   TrashFill,
   XLg,
 } from "react-bootstrap-icons";
@@ -51,13 +50,13 @@ import {
   CloudStorageConfiguration,
 } from "./projectCloudStorage.types";
 import { getCredentialFieldDefinitions } from "../../utils/projectCloudStorage.utils";
-import AddCloudStorageButton from "./AddCloudStorageButton";
+import AddOrEditCloudStorageButton from "./AddOrEditCloudStorageButton";
 
 interface CloudStorageItemProps {
   children?: React.ReactNode;
   devAccess: boolean;
   disabled?: boolean;
-  noEdit?: string;
+  noEdit?: boolean;
   storageDefinition: CloudStorage;
 }
 
@@ -87,20 +86,20 @@ export default function CloudStorageItem({
     : configuration.type;
 
   const credentialId = `cloud-storage-${storage.storage_id}-credentials`;
-  const requiresCredentials = anySensitiveField ? (
+  const requiresCredentials = anySensitiveField && (
     <>
-      <span id={credentialId}>
-        <Key className={cx("bi", "me-1")} />
+      <span id={credentialId} tabIndex={0} data-bs-title="Requires credential">
+        <KeyFill className={cx("bi", "me-1")} />
       </span>
       <UncontrolledTooltip target={credentialId}>
         <PopoverBody>This cloud storage requires credentials.</PopoverBody>
       </UncontrolledTooltip>
     </>
-  ) : null;
+  );
 
-  const additionalElement = children ? (
+  const additionalElement = children && (
     <CardBody className={cx("border-top", "py-2")}>{children}</CardBody>
-  ) : null;
+  );
   return (
     <Col>
       <Card>
@@ -169,6 +168,7 @@ export default function CloudStorageItem({
             <CloudStorageDetails
               devAccess={devAccess}
               noEdit={noEdit}
+              requiresCredentials={anySensitiveField}
               storageDefinition={storageDefinition}
             />
           </CardBody>
@@ -180,13 +180,15 @@ export default function CloudStorageItem({
 
 interface CloudStorageDetailsProps {
   devAccess: boolean;
-  noEdit?: string;
+  noEdit?: boolean;
+  requiresCredentials: boolean;
   storageDefinition: CloudStorage;
 }
 
 function CloudStorageDetails({
   devAccess,
   noEdit,
+  requiresCredentials,
   storageDefinition,
 }: CloudStorageDetailsProps) {
   const { storage } = storageDefinition;
@@ -204,30 +206,19 @@ function CloudStorageDetails({
     [credentialFieldDefinitions]
   );
 
-  const editButton =
-    noEdit || !devAccess ? (
-      <div
-        className="d-inline-block"
-        id={`edit-cloud-storage-${storageDefinition.storage.storage_id}-block`}
-      >
-        <Button color="outline-secondary" disabled={true}>
-          <PencilSquare className={cx("bi", "me-1")} />
-          Edit
-        </Button>
-        <UncontrolledTooltip
-          target={`edit-cloud-storage-${storageDefinition.storage.storage_id}-block`}
-        >
-          {!devAccess
-            ? "Only developers and maintainers can edit cloud storage settings."
-            : noEdit}
-        </UncontrolledTooltip>
-      </div>
-    ) : (
-      <AddCloudStorageButton
-        currentStorage={storageDefinition}
-        devAccess={devAccess}
-      />
-    );
+  const editButton = noEdit ? null : (
+    <AddOrEditCloudStorageButton
+      devAccess={devAccess}
+      currentStorage={storageDefinition}
+    />
+  );
+
+  const deleteButton = noEdit ? null : (
+    <DeleteCloudStorageButton
+      devAccess={devAccess}
+      storageDefinition={storageDefinition}
+    />
+  );
 
   return (
     <>
@@ -265,15 +256,16 @@ function CloudStorageDetails({
           <div className="text-rk-text-light">
             <small>Requires credentials</small>
           </div>
-          <div>{storage.private ? "Yes" : "No"}</div>
+          <div>{requiresCredentials ? "Yes" : "No"}</div>
         </div>
-        {storage.private && (
-          <div className="mt-2">
-            <div className="text-rk-text-light">
-              <small>Required crendentials</small>
-            </div>
-            {requiredCredentials != null && requiredCredentials.length > 0 ? (
-              <ul className="ps-4">
+        {requiresCredentials &&
+          requiredCredentials &&
+          requiredCredentials.length > 0 && (
+            <div className="mt-2">
+              <div className="text-rk-text-light">
+                <small>Required crendentials</small>
+              </div>
+              <ul className={cx("ps-4", "mb-0")}>
                 {requiredCredentials.map(({ name, help }, index) => (
                   <li key={index}>
                     {name}
@@ -281,13 +273,8 @@ function CloudStorageDetails({
                   </li>
                 ))}
               </ul>
-            ) : (
-              <div>
-                <span className="fst-italic">None</span>
-              </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
         <div className="mt-2">
           <div className="text-rk-text-light">
             <small>Access mode</small>
@@ -302,10 +289,7 @@ function CloudStorageDetails({
 
       <section className={cx("d-flex", "justify-content-end", "mt-3")}>
         {editButton}
-        <DeleteCloudStorageButton
-          devAccess={devAccess}
-          storageDefinition={storageDefinition}
-        />
+        {deleteButton}
       </section>
     </>
   );
@@ -329,6 +313,7 @@ function CredentialMoreInfo({ help }: { help: string }) {
 }
 
 function DeleteCloudStorageButton({
+  devAccess,
   storageDefinition,
 }: CloudStorageItemProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -336,7 +321,7 @@ function DeleteCloudStorageButton({
     setIsOpen((open) => !open);
   }, []);
 
-  return (
+  return devAccess ? (
     <>
       <Button className="ms-2" color="outline-danger" onClick={toggle}>
         <TrashFill className={cx("bi", "me-1")} />
@@ -348,6 +333,23 @@ function DeleteCloudStorageButton({
         toggle={toggle}
       />
     </>
+  ) : (
+    <div
+      className="d-inline-block"
+      id={`delete-storage-${storageDefinition.storage.storage_id}`}
+      tabIndex={0}
+      data-bs-toggle="tooltip"
+    >
+      <Button className="ms-2" color="outline-danger" disabled={true}>
+        <TrashFill className={cx("bi", "me-1")} />
+        Delete
+      </Button>
+      <UncontrolledTooltip
+        target={`delete-storage-${storageDefinition.storage.storage_id}`}
+      >
+        Only developers and maintainers can delete cloud storage.
+      </UncontrolledTooltip>
+    </div>
   );
 }
 

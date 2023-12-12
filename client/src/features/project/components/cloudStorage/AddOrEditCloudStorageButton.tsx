@@ -24,14 +24,14 @@ import { Button, UncontrolledTooltip } from "reactstrap";
 import { CloudStorage } from "./projectCloudStorage.types";
 import AddCloudStorageModal from "./CloudStorageModal";
 
-interface AddCloudStorageButtonProps {
+interface AddOrEditCloudStorageButtonProps {
   currentStorage?: CloudStorage | null;
   devAccess: boolean;
 }
-export default function AddCloudStorageButton({
+export default function AddOrEditCloudStorageButton({
   currentStorage,
   devAccess,
-}: AddCloudStorageButtonProps) {
+}: AddOrEditCloudStorageButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = useCallback(() => {
     setIsOpen((open) => !open);
@@ -71,13 +71,20 @@ export default function AddCloudStorageButton({
     </>
   ) : (
     <>
-      <Button
-        id={`${localId}-button`}
-        color="outline-secondary"
-        disabled={true}
+      <div
+        className="d-inline-block"
+        tabIndex={0}
+        data-bs-toggle="tooltip"
+        data-bs-title="Disabled tooltip"
       >
-        {buttonContent}
-      </Button>
+        <Button
+          id={`${localId}-button`}
+          color="outline-secondary"
+          disabled={true}
+        >
+          {buttonContent}
+        </Button>
+      </div>
       <UncontrolledTooltip target={localId}>
         Only developers and maintainers can edit cloud storage settings.
       </UncontrolledTooltip>
@@ -85,7 +92,7 @@ export default function AddCloudStorageButton({
   );
 
   return (
-    <div className={cx("d-inline-block", "mb-2")} id={localId}>
+    <div className="d-inline-block" id={localId}>
       {content}
     </div>
   );

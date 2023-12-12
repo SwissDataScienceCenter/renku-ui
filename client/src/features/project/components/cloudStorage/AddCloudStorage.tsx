@@ -22,7 +22,7 @@ import {
   ExclamationTriangleFill,
   EyeFill,
   EyeSlashFill,
-  Key,
+  KeyFill,
   QuestionCircle,
 } from "react-bootstrap-icons";
 import { Controller, useForm } from "react-hook-form";
@@ -63,10 +63,10 @@ import {
   hasProviderShortlist,
   parseCloudStorageConfiguration,
 } from "../../utils/projectCloudStorage.utils";
-
-import styles from "./AddCloudStorageButton.module.scss";
 import { ExternalLink } from "../../../../components/ExternalLinks";
 import { WarnAlert } from "../../../../components/Alert";
+
+import styles from "./CloudStorage.module.scss";
 
 interface AddCloudStorageProps {
   error?: FetchBaseQueryError | SerializedError;
@@ -578,7 +578,7 @@ function SecretOptionWarning({
   return (
     <>
       <div id={id} className="d-inline">
-        <Key className={cx("bi", "ms-1")} />
+        <KeyFill className={cx("bi", "ms-1")} />
         <ExclamationTriangleFill className={cx("bi", "ms-1", "text-warning")} />
       </div>
       <UncontrolledTooltip placement="top" target={id}>

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import useAppDispatch from "../../../../utils/customHooks/useAppDispatch.hook";
 import { getProvidedSensitiveFields } from "../../../project/utils/projectCloudStorage.utils";
 import { NotebooksVersion } from "../../../versions/versions";
@@ -36,10 +36,7 @@ export default function useDefaultCloudStorageOption({
 }: UseDefaultCloudStorageOptionArgs): void {
   const dispatch = useAppDispatch();
 
-  const support = useMemo(
-    () => (notebooksVersion?.cloudStorageEnabled ? "s3" : "none"),
-    [notebooksVersion?.cloudStorageEnabled]
-  );
+  const support = !!notebooksVersion?.cloudStorageEnabled;
 
   // Populate session cloud storage from project's settings
   useEffect(() => {
@@ -71,11 +68,11 @@ export default function useDefaultCloudStorageOption({
 }
 
 function getInitialCloudStorageItem(
-  support: "s3" | "none"
+  support: boolean
 ): (storageDefinition: CloudStorage) => SessionCloudStorage {
   return ({ storage, sensitive_fields }) => ({
-    active: storage.storage_type === "s3" && support === "s3",
-    supported: storage.storage_type === "s3" && support === "s3",
+    active: support,
+    supported: support,
     ...(sensitive_fields
       ? {
           sensitive_fields: sensitive_fields.map(({ name, ...rest }) => ({

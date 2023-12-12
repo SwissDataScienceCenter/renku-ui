@@ -66,7 +66,7 @@ import {
 } from "../../utils/projectCloudStorage.utils";
 import { SuccessAlert } from "../../../../components/Alert";
 
-import styles from "./AddCloudStorageButton.module.scss";
+import styles from "./CloudStorage.module.scss";
 import AddCloudStorage from "./AddCloudStorage";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 
@@ -454,7 +454,7 @@ export default function CloudStorageModal({
     >
       <ModalHeader toggle={toggle}>
         <CloudFill className={cx("bi", "me-2")} />
-        Add Cloud Storage
+        {storageId ? "Edit" : "Add"} Cloud Storage
       </ModalHeader>
 
       <ModalBody>{bodyContent}</ModalBody>
