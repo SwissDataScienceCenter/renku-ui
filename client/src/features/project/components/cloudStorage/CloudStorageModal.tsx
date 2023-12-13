@@ -17,7 +17,7 @@
  */
 
 import cx from "classnames";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ArrowCounterclockwise,
   ChevronLeft,
@@ -81,15 +81,6 @@ export default function CloudStorageModal({
   toggle: originalToggle,
 }: CloudStorageModalProps) {
   const storageId = currentStorage?.storage.storage_id ?? null;
-
-  const toggle = () => {
-    originalToggle();
-    if (success) {
-      setSuccess(false);
-      reset();
-    }
-  };
-
   // Fetch available schema when users open the modal
   const {
     data: schema,
@@ -185,7 +176,7 @@ export default function CloudStorageModal({
   useEffect(() => {
     if (redraw) setRedraw(false);
   }, [redraw]);
-  const reset = () => {
+  const reset = useCallback(() => {
     const resetStatus = getCurrentStorageDetails(currentStorage);
     setState(
       storageId
@@ -199,7 +190,7 @@ export default function CloudStorageModal({
     setStorageDetails({ ...resetStatus });
     if (success) setSuccess(false);
     setRedraw(true); // This forces re-loading the useForm fields
-  };
+  }, [currentStorage, state, storageId, success]);
 
   // Mutations
   const projectId = useLegacySelector<StateModelProject["metadata"]["id"]>(
@@ -277,6 +268,14 @@ export default function CloudStorageModal({
       });
     }
   };
+
+  const toggle = useCallback(() => {
+    originalToggle();
+    if (success) {
+      setSuccess(false);
+      reset();
+    }
+  }, [originalToggle, reset, success]);
 
   // Handle unmount
   useEffect(() => {
