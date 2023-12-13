@@ -47,11 +47,7 @@ export interface GetCloudStorageForProjectParams {
   project_id: string;
 }
 
-export type AddCloudStorageForProjectParams =
-  | AdvancedAddCloudStorageForProjectParams
-  | SimpleAddCloudStorageForProjectParams;
-
-export interface AdvancedAddCloudStorageForProjectParams {
+export interface AddCloudStorageForProjectParams {
   configuration?: CloudStorageDetailsOptions;
   name: string;
   private: boolean;
@@ -61,35 +57,15 @@ export interface AdvancedAddCloudStorageForProjectParams {
   target_path: string;
 }
 
-// ! Should remove this soon
-export interface SimpleAddCloudStorageForProjectParams {
-  name: string;
-  private: boolean;
-  project_id: string;
-  readonly: boolean;
-  storage_url: string;
-  target_path: string;
-}
-
-// TODO: This will go away
 export interface UpdateCloudStorageParams {
   configuration?: CloudStorageDetailsOptions;
   name?: string;
   project_id: string;
-  private: boolean; // ! TODO - remove me
   readonly?: boolean;
   storage_id: string;
   source_path?: string;
   target_path?: string;
 }
-
-// configuration?: CloudStorageDetailsOptions;
-//   name: string;
-//   private: boolean;
-//   project_id: string;
-//   readonly: boolean;
-//   source_path: string;
-//   target_path: string;
 
 export interface DeleteCloudStorageParams {
   project_id: string;
