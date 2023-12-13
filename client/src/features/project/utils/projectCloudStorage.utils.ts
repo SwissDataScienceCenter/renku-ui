@@ -18,7 +18,7 @@
 
 import {
   CLOUD_OPTIONS_OVERRIDE,
-  CLOUD_STORAGE_MOUN_PATH_HELP,
+  CLOUD_STORAGE_MOUNT_PATH_HELP,
   CLOUD_STORAGE_OVERRIDE,
   CLOUD_STORAGE_PROVIDERS_SHORTLIST,
   CLOUD_STORAGE_SCHEMA_SHORTLIST,
@@ -76,20 +76,6 @@ export function convertFromAdvancedConfig(
   }
   return values.length ? values.join("\n") + "\n" : "";
 }
-
-// export function formatCloudStorageConfiguration({
-//   configuration,
-//   name,
-// }: {
-//   configuration: Record<string, string | number | boolean | undefined>;
-//   name: string;
-// }): string {
-//   const lines = Object.entries(configuration)
-//     .filter(([, value]) => value != null)
-//     .map(([key, value]) => `${key} = ${value}`)
-//     .join("\n");
-//   return `[${name}]\n${lines}\n`;
-// }
 
 export function getCredentialFieldDefinitions(
   storageDefinition: CloudStorage
@@ -349,8 +335,8 @@ export function getSchemaOptions(
 export function getSourcePathHint(targetSchema = "") {
   const initialText = "Source path to mount. ";
   const finalText =
-    CLOUD_STORAGE_MOUN_PATH_HELP[targetSchema] ??
-    CLOUD_STORAGE_MOUN_PATH_HELP["generic"];
+    CLOUD_STORAGE_MOUNT_PATH_HELP[targetSchema] ??
+    CLOUD_STORAGE_MOUNT_PATH_HELP["generic"];
   return initialText + finalText;
 }
 

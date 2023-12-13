@@ -70,7 +70,7 @@ export const CLOUD_OPTIONS_OVERRIDE = {
   },
 } as Record<string, Record<string, Partial<CloudStorageSchemaOptions>>>;
 
-export const CLOUD_STORAGE_MOUN_PATH_HELP = {
+export const CLOUD_STORAGE_MOUNT_PATH_HELP = {
   s3:
     "For S3, this is usually your bucket name. You can also mount a sub-folder by appending it to the bucket" +
     " name with a slash, e.g. `my-bucket/sub-folder`.",

@@ -337,8 +337,6 @@ function AddStorageType({
   setStorage,
 }: AddStorageStepProps) {
   const providerRef: RefObject<HTMLDivElement> = useRef(null);
-  if (!schema) return null;
-
   const scrollToProvider = () => {
     setTimeout(() => {
       if (!providerRef.current) return;
@@ -346,11 +344,9 @@ function AddStorageType({
     }, 100);
   };
 
-  // TODO: useMemo
-  const availableSchema = getSchemaStorage(
-    schema,
-    !state.showAllSchema,
-    storage.schema
+  const availableSchema = useMemo(
+    () => getSchemaStorage(schema, !state.showAllSchema, storage.schema),
+    [schema, state.showAllSchema, storage.schema]
   );
   const setFinalSchema = (value: string) => {
     setStorage({ schema: value });
@@ -420,19 +416,25 @@ function AddStorageType({
     if (state.showAllProviders) setState({ showAllProviders: false });
   };
 
-  // TODO: useMemo
-  const availableProviders = getSchemaProviders(
-    schema,
-    !state.showAllProviders,
-    storage.schema,
-    storage.provider
+  const availableProviders = useMemo(
+    () =>
+      getSchemaProviders(
+        schema,
+        !state.showAllProviders,
+        storage.schema,
+        storage.provider
+      ),
+    [schema, state.showAllProviders, storage.schema, storage.provider]
+  );
+  const providerHasShortlist = useMemo(
+    () => hasProviderShortlist(storage.schema),
+    [storage.schema]
   );
   const providerItems = availableProviders
     ? availableProviders.map((p, index) => {
         const topBorder = index === 0 ? "rounded-top-3" : null;
         const bottomBorder =
-          index === availableProviders.length - 1 &&
-          !hasProviderShortlist(storage.schema)
+          index === availableProviders.length - 1 && !providerHasShortlist
             ? "rounded-bottom-3"
             : null;
         const itemActive =
@@ -461,7 +463,7 @@ function AddStorageType({
       })
     : null;
   const finalProviderItems =
-    providerItems && hasProviderShortlist(storage.schema)
+    providerItems && providerHasShortlist
       ? [
           ...providerItems,
           <ListGroupItem
@@ -841,8 +843,6 @@ function AddStorageMount({ setStorage, storage }: AddStorageStepProps) {
     getValues,
     trigger,
   } = useForm();
-
-  // TODO: add read-only option (if necessary)
 
   const onFieldValueChange = (field: string, value: string | boolean) => {
     setValue(field, value);

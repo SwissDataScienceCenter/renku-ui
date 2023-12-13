@@ -135,7 +135,7 @@ export default function CloudStorageModal({
       return;
     }
 
-    // ! TODO - Move advance mode changes to its own function
+    // Handle advanced mode changes
     if (
       fullNewState.advancedMode !== state.advancedMode &&
       fullNewState.step !== 3
@@ -199,7 +199,7 @@ export default function CloudStorageModal({
           }
         : { ...EMPTY_CLOUD_STORAGE_STATE }
     );
-    setStorageDetails({ ...resetStatus }); // this might not work on the non-registered useForm fields
+    setStorageDetails({ ...resetStatus });
     if (success) setSuccess(false);
     setRedraw(true); // This forces re-loading the useForm fields
   };
