@@ -152,3 +152,8 @@ export type CloudStorageDetails = {
   mountPoint?: string;
   readOnly?: boolean;
 };
+
+export interface TestCloudStorageConnectionParams {
+  configuration: CloudStorageDetailsOptions;
+  source_path: string;
+}

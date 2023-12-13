@@ -24,6 +24,7 @@ import {
   CloudStorageSchema,
   DeleteCloudStorageParams,
   GetCloudStorageForProjectParams,
+  TestCloudStorageConnectionParams,
   UpdateCloudStorageParams,
   ValidateCloudStorageConfigurationParams,
 } from "./projectCloudStorage.types";
@@ -116,6 +117,18 @@ const projectCloudStorageApi = createApi({
         };
       },
     }),
+    testCloudStorageConnection: builder.mutation<
+      unknown,
+      TestCloudStorageConnectionParams
+    >({
+      query: (data) => {
+        return {
+          method: "POST",
+          url: "storage_schema/test_connection",
+          body: data,
+        };
+      },
+    }),
   }),
 });
 export default projectCloudStorageApi;
@@ -127,4 +140,5 @@ export const {
   useDeleteCloudStorageMutation,
   useValidateCloudStorageConfigurationMutation,
   useGetCloudStorageSchemaQuery,
+  useTestCloudStorageConnectionMutation,
 } = projectCloudStorageApi;
