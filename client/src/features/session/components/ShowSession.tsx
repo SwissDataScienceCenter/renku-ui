@@ -48,6 +48,7 @@ import { Url } from "../../../utils/helpers/url";
 import { useGetSessionsQuery } from "../sessions.api";
 import AboutSessionModal from "./AboutSessionModal";
 import AnonymousSessionsDisabledNotice from "./AnonymousSessionsDisabledNotice";
+import PauseOrDeleteSessionModal from "./PauseOrDeleteSessionModal";
 import PullSessionModal from "./PullSessionModal";
 import ResourcesSessionModal from "./ResourcesSessionModal";
 import SaveSessionModal from "./SaveSessionModal";
@@ -56,7 +57,6 @@ import SessionJupyter from "./SessionJupyter";
 import SessionUnavailable from "./SessionUnavailable";
 import styles from "./ShowSession.module.scss";
 import StartSessionProgressBar from "./StartSessionProgressBar";
-import StopSessionModal from "./StopSessionModal";
 
 const logo = "/static/public/img/logo.svg";
 
@@ -140,11 +140,28 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
     toggleModalResources();
   }, [toggleModalResources]);
 
-  const [showModalStopSession, setShowModalStopSession] = useState(false);
-  const toggleStopSession = useCallback(
-    () => setShowModalStopSession((show) => !show),
+  const [showModalPauseOrDeleteSession, setShowModalPauseOrDeleteSession] =
+    useState(false);
+  const togglePauseOrDeleteSession = useCallback(
+    () => setShowModalPauseOrDeleteSession((show) => !show),
     []
   );
+  const [pauseOrDeleteAction, setPauseOrDeleteAction] = useState<
+    "pause" | "delete"
+  >("pause");
+  const openPauseSession = useCallback(() => {
+    setShowModalPauseOrDeleteSession(true);
+    setPauseOrDeleteAction("pause");
+  }, []);
+  const openDeleteSession = useCallback(() => {
+    setShowModalPauseOrDeleteSession(true);
+    setPauseOrDeleteAction("delete");
+  }, []);
+  const togglePauseOrDeleteAction = useCallback(() => {
+    setPauseOrDeleteAction((prevAction) =>
+      prevAction === "delete" ? "pause" : "delete"
+    );
+  }, []);
 
   const [showModalSaveSession, setShowModalSaveSession] = useState(false);
   const toggleSaveSession = useCallback(
@@ -189,12 +206,14 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
       toggleModal={toggleResources}
     />
   );
-  const stopSessionModal = (
-    <StopSessionModal
-      isOpen={showModalStopSession}
+  const pauseOrDeleteSessionModal = (
+    <PauseOrDeleteSessionModal
+      action={pauseOrDeleteAction}
+      isOpen={showModalPauseOrDeleteSession}
       session={thisSession}
       sessionName={sessionName}
-      toggleModal={toggleStopSession}
+      toggleAction={togglePauseOrDeleteAction}
+      toggleModal={togglePauseOrDeleteSession}
     />
   );
   const saveSessionModal = (
@@ -264,7 +283,8 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
             <PullSessionBtn togglePullSession={togglePullSession} />
             <SaveSessionBtn toggleSaveSession={toggleSaveSession} />
             <ResourcesBtn toggleModalResources={toggleModalResources} />
-            <StopSessionBtn toggleStopSession={toggleStopSession} />
+            <PauseSessionBtn openPauseSession={openPauseSession} />
+            <DeleteSessionBtn openDeleteSession={openDeleteSession} />
           </div>
           <div
             className={cx(
@@ -294,7 +314,7 @@ function ShowSessionFullscreen({ sessionName }: ShowSessionFullscreenProps) {
       {resourcesModal}
       {saveSessionModal}
       {pullSessionModal}
-      {stopSessionModal}
+      {pauseOrDeleteSessionModal}
     </div>
   );
 }
@@ -393,23 +413,21 @@ function ResourcesBtn({ toggleModalResources }: ResourcesProps) {
   );
 }
 
-interface StopSessionBtnProps {
-  toggleStopSession: () => void;
+interface PauseSessionBtnProps {
+  openPauseSession: () => void;
 }
-function StopSessionBtn({ toggleStopSession }: StopSessionBtnProps) {
+function PauseSessionBtn({ openPauseSession }: PauseSessionBtnProps) {
   const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
   const ref = useRef<HTMLButtonElement>(null);
 
-  const buttonId = logged ? "pause-session-button" : "delete-session-button";
-  const icon = logged ? (
-    <SessionPausedIcon className="text-rk-dark" size={16} />
-  ) : (
-    <FontAwesomeIcon className="text-rk-dark" icon={faTrash} />
-  );
-  const tooltip = logged ? "Pause session" : "Delete session";
+  if (!logged) {
+    return null;
+  }
+  const buttonId = "pause-session-button";
+  const tooltip = "Pause session";
 
   return (
     <div>
@@ -424,9 +442,43 @@ function StopSessionBtn({ toggleStopSession }: StopSessionBtnProps) {
         data-cy={buttonId}
         id={buttonId}
         innerRef={ref}
-        onClick={toggleStopSession}
+        onClick={openPauseSession}
       >
-        {icon}
+        <SessionPausedIcon className="text-rk-dark" size={16} />
+        <span className="visually-hidden">{tooltip}</span>
+      </Button>
+      <UncontrolledTooltip placement="bottom" target={ref}>
+        {tooltip}
+      </UncontrolledTooltip>
+    </div>
+  );
+}
+
+interface DeleteSessionBtnProps {
+  openDeleteSession: () => void;
+}
+function DeleteSessionBtn({ openDeleteSession }: DeleteSessionBtnProps) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  const buttonId = "delete-session-button";
+  const tooltip = "Delete session";
+
+  return (
+    <div>
+      <Button
+        className={cx(
+          "border-0",
+          "bg-transparent",
+          "text-dark",
+          "p-0",
+          "no-focus"
+        )}
+        data-cy={buttonId}
+        id={buttonId}
+        innerRef={ref}
+        onClick={openDeleteSession}
+      >
+        <FontAwesomeIcon className="text-rk-dark" icon={faTrash} />
         <span className="visually-hidden">{tooltip}</span>
       </Button>
       <UncontrolledTooltip placement="bottom" target={ref}>

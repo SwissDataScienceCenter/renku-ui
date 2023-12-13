@@ -41,18 +41,18 @@ import useAppSelector from "../../../../utils/customHooks/useAppSelector.hook";
 import useLegacySelector from "../../../../utils/customHooks/useLegacySelector.hook";
 import { Url } from "../../../../utils/helpers/url";
 import { StateModelProject } from "../../../project/Project";
-import { useGetCloudStorageForProjectQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
-import { useGetNotebooksVersionsQuery } from "../../../versions/versionsApi";
+import { useGetNotebooksVersionQuery } from "../../../versions/versions.api";
 import { SessionCloudStorage } from "../../startSessionOptions.types";
 import {
   setCloudStorage,
   updateCloudStorageItem,
 } from "../../startSessionOptionsSlice";
 import CloudStorageItem from "../../../project/components/cloudStorage/CloudStorageItem";
+import { useGetCloudStorageForProjectQuery } from "../../../project/components/cloudStorage/projectCloudStorage.api";
 import { CLOUD_STORAGE_SENSITIVE_FIELD_TOKEN } from "../../../project/components/cloudStorage/projectCloudStorage.constants";
 
 export default function SessionCloudStorageOption() {
-  const { data: notebooksVersion, isLoading } = useGetNotebooksVersionsQuery();
+  const { data: notebooksVersion, isLoading } = useGetNotebooksVersionQuery();
 
   if (isLoading) {
     return (

@@ -22,15 +22,7 @@ import cx from "classnames";
 import { Duration } from "luxon";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Redirect } from "react-router";
-import {
-  Button,
-  Col,
-  FormText,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  Row,
-} from "reactstrap";
+import { Button, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
 import { InfoAlert } from "../../../components/Alert";
 import { Loader } from "../../../components/Loader";
@@ -49,31 +41,35 @@ import {
 } from "../sessions.api";
 import { Session } from "../sessions.types";
 import useWaitForSessionStatus from "../useWaitForSessionStatus.hook";
+import UnsavedWorkWarning from "./UnsavedWorkWarning";
 
 import styles from "./SessionModals.module.scss";
 
-interface StopSessionModalProps {
+interface PauseOrDeleteSessionModalProps {
+  action?: "pause" | "delete";
   isOpen: boolean;
   session: Session | undefined;
   sessionName: string;
+  toggleAction: () => void;
   toggleModal: () => void;
 }
 
-export default function StopSessionModal({
+export default function PauseOrDeleteSessionModal({
+  action,
   isOpen,
   session,
   sessionName,
+  toggleAction,
   toggleModal,
-}: StopSessionModalProps) {
+}: PauseOrDeleteSessionModalProps) {
   const logged = useLegacySelector<User["logged"]>(
     (state) => state.stateModel.user.logged
   );
 
   if (!logged) {
     return (
-      <AnonymousStopSessionModal
+      <AnonymousDeleteSessionModal
         isOpen={isOpen}
-        session={session}
         sessionName={sessionName}
         toggleModal={toggleModal}
       />
@@ -81,20 +77,26 @@ export default function StopSessionModal({
   }
 
   return (
-    <HibernateSessionModal
+    <LoggedPauseOrDeleteSessionModal
+      action={action}
       isOpen={isOpen}
       session={session}
       sessionName={sessionName}
+      toggleAction={toggleAction}
       toggleModal={toggleModal}
     />
   );
 }
 
-function AnonymousStopSessionModal({
+type AnonymousDeleteSessionModalProps = Pick<
+  PauseOrDeleteSessionModalProps,
+  "isOpen" | "sessionName" | "toggleModal"
+>;
+function AnonymousDeleteSessionModal({
   isOpen,
   sessionName,
   toggleModal,
-}: StopSessionModalProps) {
+}: AnonymousDeleteSessionModalProps) {
   const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
@@ -140,13 +142,6 @@ function AnonymousStopSessionModal({
         <Row>
           <Col>
             <p>Are you sure you want to delete this session?</p>
-            {isStopping ? (
-              <FormText color="primary">
-                <Loader className="me-1" inline size={16} />
-                Deleting Session
-                <br />
-              </FormText>
-            ) : null}
             <div className="d-flex justify-content-end">
               <Button
                 className={cx("float-right", "mt-1", "btn-outline-rk-green")}
@@ -162,7 +157,14 @@ function AnonymousStopSessionModal({
                 type="submit"
                 onClick={onStopSession}
               >
-                Delete Session
+                {isStopping ? (
+                  <>
+                    <Loader className="me-2" inline size={16} />
+                    Deleting session
+                  </>
+                ) : (
+                  <>Delete Session</>
+                )}
               </Button>
             </div>
           </Col>
@@ -172,12 +174,46 @@ function AnonymousStopSessionModal({
   );
 }
 
-function HibernateSessionModal({
+function LoggedPauseOrDeleteSessionModal({
+  action = "pause",
   isOpen,
   session,
   sessionName,
+  toggleAction,
   toggleModal,
-}: StopSessionModalProps) {
+}: PauseOrDeleteSessionModalProps) {
+  return (
+    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
+      <ModalHeader toggle={toggleModal}>
+        {action === "pause" ? "Pause Session" : "Delete Session"}
+      </ModalHeader>
+      {action === "pause" ? (
+        <PauseSessionModalBody
+          session={session}
+          sessionName={sessionName}
+          toggleAction={toggleAction}
+          toggleModal={toggleModal}
+        />
+      ) : (
+        <DeleteSessionModalBody
+          session={session}
+          sessionName={sessionName}
+          toggleAction={toggleAction}
+          toggleModal={toggleModal}
+        />
+      )}
+    </Modal>
+  );
+}
+
+type ModalBodyProps = Omit<PauseOrDeleteSessionModalProps, "action" | "isOpen">;
+
+function PauseSessionModalBody({
+  session,
+  sessionName,
+  toggleAction,
+  toggleModal,
+}: ModalBodyProps) {
   const pathWithNamespace = useLegacySelector<string>(
     (state) => state.stateModel.project.metadata.pathWithNamespace
   );
@@ -233,51 +269,164 @@ function HibernateSessionModal({
     : "a period";
 
   return (
-    <Modal className={styles.sessionModal} isOpen={isOpen} toggle={toggleModal}>
-      <ModalHeader toggle={toggleModal}>Pause Session</ModalHeader>
-      <ModalBody>
-        <Row>
-          <Col>
-            <p>
-              Are you sure you want to pause this session? The current state of
-              the session (new and edited files) will be preserved while the
-              session is paused.
-            </p>
-            {hibernatedSecondsThreshold > 0 && (
-              <InfoAlert dismissible={false} timeout={0}>
-                Please note that paused session are deleted after{" "}
-                {hibernationThreshold} of inactivity.
-              </InfoAlert>
-            )}
-            <div className="d-flex justify-content-end">
-              <Button
-                className={cx("float-right", "mt-1", "btn-outline-rk-green")}
-                disabled={isStopping}
-                onClick={toggleModal}
-              >
-                Back to Session
-              </Button>
-              <Button
-                className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
-                data-cy="pause-session-modal-button"
-                disabled={isStopping || session?.status.state === "starting"}
-                type="submit"
-                onClick={onHibernateSession}
-              >
-                {isStopping ? (
-                  <>
-                    <Loader className="me-2" inline size={16} />
-                    Pausing session
-                  </>
-                ) : (
-                  <>Pause Session</>
-                )}
-              </Button>
-            </div>
-          </Col>
-        </Row>
-      </ModalBody>
-    </Modal>
+    <ModalBody>
+      <Row>
+        <Col>
+          <p>
+            Are you sure you want to pause this session? The current state of
+            the session (new and edited files) will be preserved while the
+            session is paused.
+          </p>
+          {hibernatedSecondsThreshold > 0 && (
+            <InfoAlert dismissible={false} timeout={0}>
+              Please note that paused session are deleted after{" "}
+              {hibernationThreshold} of inactivity.
+            </InfoAlert>
+          )}
+          <div className="my-2">
+            <Button
+              className={cx("float-right", "p-0")}
+              color="link"
+              disabled={isStopping}
+              onClick={toggleAction}
+            >
+              Delete session instead?
+            </Button>
+          </div>
+          <div className="d-flex justify-content-end">
+            <Button
+              className={cx("float-right", "mt-1", "btn-outline-rk-green")}
+              disabled={isStopping}
+              onClick={toggleModal}
+            >
+              Back to Session
+            </Button>
+            <Button
+              className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
+              data-cy="pause-session-modal-button"
+              disabled={isStopping || session?.status.state === "starting"}
+              type="submit"
+              onClick={onHibernateSession}
+            >
+              {isStopping ? (
+                <>
+                  <Loader className="me-2" inline size={16} />
+                  Pausing session
+                </>
+              ) : (
+                <>Pause Session</>
+              )}
+            </Button>
+          </div>
+        </Col>
+      </Row>
+    </ModalBody>
+  );
+}
+
+function DeleteSessionModalBody({
+  session,
+  sessionName,
+  toggleAction,
+  toggleModal,
+}: ModalBodyProps) {
+  const pathWithNamespace = useLegacySelector<string>(
+    (state) => state.stateModel.project.metadata.pathWithNamespace
+  );
+  const sessionsListUrl = Url.get(Url.pages.project.session, {
+    namespace: "",
+    path: pathWithNamespace,
+  });
+
+  const [stopSession, { isSuccess, error }] = useStopSessionMutation();
+
+  const [isStopping, setIsStopping] = useState(false);
+
+  const onStopSession = useCallback(async () => {
+    stopSession({ serverName: sessionName });
+    setIsStopping(true);
+  }, [sessionName, stopSession]);
+
+  const { isWaiting } = useWaitForSessionStatus({
+    desiredStatus: "stopping",
+    sessionName,
+    skip: !isStopping,
+  });
+
+  const { notifications } = useContext(AppContext);
+
+  useEffect(() => {
+    if (error != null) {
+      addErrorNotification({
+        error,
+        notifications: notifications as NotificationsManager,
+      });
+    }
+  }, [error, notifications]);
+
+  if (isSuccess && !isWaiting) {
+    return <Redirect push to={sessionsListUrl} />;
+  }
+
+  const annotations = session
+    ? (NotebooksHelper.cleanAnnotations(
+        session.annotations
+      ) as NotebookAnnotations)
+    : null;
+
+  return (
+    <ModalBody>
+      <Row>
+        <Col>
+          <p>Are you sure you want to delete this session?</p>
+          <p className="fw-bold">
+            Deleting a session will permanently remove any unsaved work.
+          </p>
+          {session != null && annotations != null && (
+            <UnsavedWorkWarning
+              annotations={annotations}
+              sessionName={sessionName}
+              status={session.status.state}
+            />
+          )}
+          <div className="my-2">
+            <Button
+              className={cx("float-right", "p-0")}
+              color="link"
+              disabled={isStopping}
+              onClick={toggleAction}
+            >
+              Pause session instead?
+            </Button>
+          </div>
+          <div className="d-flex justify-content-end">
+            <Button
+              className={cx("float-right", "mt-1", "btn-outline-rk-green")}
+              disabled={isStopping}
+              onClick={toggleModal}
+            >
+              Back to Session
+            </Button>
+            <Button
+              className={cx("float-right", "mt-1", "ms-2", "btn-rk-green")}
+              data-cy="delete-session-modal-button"
+              disabled={isStopping}
+              type="submit"
+              onClick={onStopSession}
+            >
+              {isStopping ? (
+                <>
+                  <Loader className="me-2" inline size={16} />
+                  Deleting session
+                </>
+              ) : (
+                <>Delete Session</>
+              )}
+            </Button>
+          </div>
+        </Col>
+      </Row>
+    </ModalBody>
   );
 }
 

@@ -24,3 +24,6 @@ export interface NotebooksErrorContent {
 export interface NotebooksErrorResponse {
   error: NotebooksErrorContent;
 }
+
+export const CLOUD_STORAGE_CONFIGURATION_PLACEHOLDER =
+  "[example]\ntype = s3\nprovider = AWS\nregion = us-east-1";
